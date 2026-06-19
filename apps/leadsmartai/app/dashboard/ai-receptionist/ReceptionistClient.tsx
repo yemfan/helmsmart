@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, PhoneOutgoing, Settings as SettingsIcon, X } from "lucide-react";
+import { ChevronDown, ChevronUp, PhoneOutgoing, X } from "lucide-react";
 import { getAssistant } from "@/lib/realtorboss/team";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
 import MissedCallSettingsForm from "@/components/dashboard/MissedCallSettingsForm";
@@ -99,7 +99,7 @@ export default function ReceptionistClient() {
   const [calls, setCalls] = useState<ReceptionistCall[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<ReceptionistCall | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [voiceSettingsOpen, setVoiceSettingsOpen] = useState(false);
   const [outboundOpen, setOutboundOpen] = useState(false);
 
   const load = useCallback(async () => {
@@ -143,10 +143,7 @@ export default function ReceptionistClient() {
     <div className="space-y-4">
       <AssistantHeader
         assistant={assistant}
-        actions={[
-          { label: "Voice settings", href: "/dashboard/settings" },
-          { label: "Manage", href: "/dashboard/ai-team" },
-        ]}
+        actions={[{ label: "Voice settings", onClick: () => setVoiceSettingsOpen(true) }]}
       />
 
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
@@ -168,18 +165,8 @@ export default function ReceptionistClient() {
         />
       </div>
 
-      {/* Collapsibles: settings + manual outbound tools */}
+      {/* Manual outbound-call tools */}
       <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setSettingsOpen((v) => !v)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
-          aria-expanded={settingsOpen}
-        >
-          <SettingsIcon className="h-3.5 w-3.5" strokeWidth={2} />
-          Call settings
-          {settingsOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-        </button>
         <button
           type="button"
           onClick={() => setOutboundOpen((v) => !v)}
@@ -191,30 +178,6 @@ export default function ReceptionistClient() {
           {outboundOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
         </button>
       </div>
-
-      {settingsOpen && (
-        <div className="space-y-4">
-          <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <h2 className="mb-1 text-sm font-semibold text-gray-900">
-              Your Receptionist&apos;s voice &amp; knowledge
-            </h2>
-            <p className="mb-4 text-xs text-gray-500">
-              How your Receptionist greets callers and what it knows. Each assistant on your team
-              has its own knowledge base — this one answers your phone.
-            </p>
-            <ReceptionistVoiceForm />
-          </section>
-          <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <h2 className="mb-1 text-sm font-semibold text-gray-900">Missed-call settings</h2>
-            <p className="mb-4 text-xs text-gray-500">
-              Forward number, missed-call text-back template, and AI personalization. When a missed
-              caller isn&apos;t reached by text, your Receptionist calls them back at 5, 10, and 30
-              minutes until they answer.
-            </p>
-            <MissedCallSettingsForm />
-          </section>
-        </div>
-      )}
 
       {outboundOpen && (
         <div className="space-y-4">
@@ -306,6 +269,58 @@ export default function ReceptionistClient() {
       </section>
 
       {selected && <CallDetailModal call={selected} onClose={() => setSelected(null)} />}
+      {voiceSettingsOpen && <VoiceSettingsModal onClose={() => setVoiceSettingsOpen(false)} />}
+    </div>
+  );
+}
+
+function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Receptionist voice settings"
+    >
+      <div
+        className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <h2 className="text-base font-semibold text-gray-900">Receptionist voice settings</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h3 className="mb-1 text-sm font-semibold text-gray-900">
+              Your Receptionist&apos;s voice &amp; knowledge
+            </h3>
+            <p className="mb-4 text-xs text-gray-500">
+              How your Receptionist greets callers and what it knows. Each assistant on your team
+              has its own knowledge base — this one answers your phone.
+            </p>
+            <ReceptionistVoiceForm />
+          </section>
+          <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h3 className="mb-1 text-sm font-semibold text-gray-900">Missed-call settings</h3>
+            <p className="mb-4 text-xs text-gray-500">
+              Forward number, missed-call text-back template, and AI personalization. When a missed
+              caller isn&apos;t reached by text, your Receptionist calls them back at 5, 10, and 30
+              minutes until they answer.
+            </p>
+            <MissedCallSettingsForm />
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
