@@ -179,8 +179,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // pass it through unchanged.
   const htmlLang = locale === "zh-Hans" ? "zh-Hans" : "en";
 
+  // `suppressHydrationWarning` on <html>/<body> only: browser extensions
+  // (Grammarly, password managers, dark-mode) and the locale script inject
+  // attributes onto these two elements *before* React hydrates, which
+  // otherwise surfaces as React #418 on first load in production. This flag is
+  // one level deep — it ignores attribute diffs on these tags alone and never
+  // masks mismatches in the page content below.
   return (
-    <html lang={htmlLang}>
+    <html lang={htmlLang} suppressHydrationWarning>
       <head>
         {jsonLd.map((schema, i) => (
           <script
@@ -191,7 +197,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           />
         ))}
       </head>
-      <body className={`${fontHeading.variable} ${fontBody.variable} ${fontMono.variable} bg-brand-surface text-brand-text font-body`}>
+      <body
+        suppressHydrationWarning
+        className={`${fontHeading.variable} ${fontBody.variable} ${fontMono.variable} bg-brand-surface text-brand-text font-body`}
+      >
         {/*
          * Skip-to-content link — WCAG 2.4.1 "Bypass Blocks".
          * Hidden by default with `sr-only`, becomes visible on
