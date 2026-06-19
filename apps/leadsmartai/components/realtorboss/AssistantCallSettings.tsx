@@ -38,6 +38,7 @@ export function AssistantCallSettings({
   knowledgePlaceholder,
   showName = true,
   knowledgeHint,
+  defaultKnowledge,
 }: {
   type: "sales_assistant" | "receptionist" | "marketing_assistant";
   knowledgePlaceholder: string;
@@ -45,6 +46,8 @@ export function AssistantCallSettings({
   showName?: boolean;
   /** Override the knowledge helper line (defaults to call framing). */
   knowledgeHint?: string;
+  /** Seed the knowledge box with this starter brief when none is saved yet. */
+  defaultKnowledge?: string;
 }) {
   const [voiceName, setVoiceName] = useState("");
   const [voiceKnowledge, setVoiceKnowledge] = useState("");
@@ -60,14 +63,16 @@ export function AssistantCallSettings({
       .then((res) => {
         if (!alive) return;
         setVoiceName(res?.voiceName ?? "");
-        setVoiceKnowledge(res?.voiceKnowledge ?? "");
+        // Prefill the starter brief when the agent hasn't saved one yet,
+        // so the assistant launches with a usable default instead of blank.
+        setVoiceKnowledge(res?.voiceKnowledge || defaultKnowledge || "");
         setLoading(false);
       })
       .catch(() => alive && setLoading(false));
     return () => {
       alive = false;
     };
-  }, [type]);
+  }, [type, defaultKnowledge]);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
