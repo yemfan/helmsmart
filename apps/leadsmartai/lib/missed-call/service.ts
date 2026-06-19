@@ -36,6 +36,14 @@ export type MissedCallSettings = {
   ring_timeout_seconds: number;
   message_template: string;
   use_ai_personalization: boolean;
+  /** Master switch for the AI auto call-back ladder after a missed call. */
+  callback_enabled: boolean;
+  /** Minutes between call-back attempts within a day (5–240). */
+  callback_interval_minutes: number;
+  /** Call-back attempts placed per day (1–10). */
+  callback_max_per_day: number;
+  /** Days to keep attempting before opening a manual task (1–7). */
+  callback_max_days: number;
   created_at: string;
   updated_at: string;
 };
@@ -44,6 +52,12 @@ const DEFAULT_TEMPLATE =
   "Hey {{caller_name}} — {{agent_first_name}} here. Sorry I missed your call. What's the best way I can help? Happy to text or set up a quick call back.";
 
 const DEFAULT_RING_TIMEOUT_SECONDS = 20;
+const DEFAULT_CALLBACK_INTERVAL_MINUTES = 30;
+const DEFAULT_CALLBACK_MAX_PER_DAY = 3;
+const DEFAULT_CALLBACK_MAX_DAYS = 1;
+
+const SETTINGS_COLUMNS =
+  "agent_id, enabled, ring_timeout_seconds, message_template, use_ai_personalization, callback_enabled, callback_interval_minutes, callback_max_per_day, callback_max_days, created_at, updated_at";
 
 // ── Settings ──────────────────────────────────────────────────────
 
@@ -58,9 +72,7 @@ export async function getOrInitSettings(
 ): Promise<MissedCallSettings> {
   const { data, error } = await supabaseAdmin
     .from("missed_call_settings")
-    .select(
-      "agent_id, enabled, ring_timeout_seconds, message_template, use_ai_personalization, created_at, updated_at",
-    )
+    .select(SETTINGS_COLUMNS)
     .eq("agent_id", agentId)
     .maybeSingle();
 
@@ -74,6 +86,10 @@ export async function getOrInitSettings(
     ring_timeout_seconds: DEFAULT_RING_TIMEOUT_SECONDS,
     message_template: DEFAULT_TEMPLATE,
     use_ai_personalization: true,
+    callback_enabled: true,
+    callback_interval_minutes: DEFAULT_CALLBACK_INTERVAL_MINUTES,
+    callback_max_per_day: DEFAULT_CALLBACK_MAX_PER_DAY,
+    callback_max_days: DEFAULT_CALLBACK_MAX_DAYS,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
@@ -92,6 +108,10 @@ export async function updateSettings(
     ring_timeout_seconds: number;
     message_template: string;
     use_ai_personalization: boolean;
+    callback_enabled: boolean;
+    callback_interval_minutes: number;
+    callback_max_per_day: number;
+    callback_max_days: number;
   }>,
 ): Promise<{ ok: true; settings: MissedCallSettings } | { ok: false; error: string }> {
   // Validate ring timeout if provided.
@@ -103,6 +123,24 @@ export async function updateSettings(
       ok: false,
       error: "ring_timeout_seconds must be between 5 and 60.",
     };
+  }
+  if (
+    patch.callback_interval_minutes !== undefined &&
+    (patch.callback_interval_minutes < 5 || patch.callback_interval_minutes > 240)
+  ) {
+    return { ok: false, error: "callback_interval_minutes must be between 5 and 240." };
+  }
+  if (
+    patch.callback_max_per_day !== undefined &&
+    (patch.callback_max_per_day < 1 || patch.callback_max_per_day > 10)
+  ) {
+    return { ok: false, error: "callback_max_per_day must be between 1 and 10." };
+  }
+  if (
+    patch.callback_max_days !== undefined &&
+    (patch.callback_max_days < 1 || patch.callback_max_days > 7)
+  ) {
+    return { ok: false, error: "callback_max_days must be between 1 and 7." };
   }
   if (
     patch.message_template !== undefined &&
@@ -131,9 +169,7 @@ export async function updateSettings(
       },
       { onConflict: "agent_id" },
     )
-    .select(
-      "agent_id, enabled, ring_timeout_seconds, message_template, use_ai_personalization, created_at, updated_at",
-    )
+    .select(SETTINGS_COLUMNS)
     .single();
 
   if (error) {
