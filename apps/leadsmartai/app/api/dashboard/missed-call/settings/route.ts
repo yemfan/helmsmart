@@ -72,6 +72,10 @@ export async function PUT(req: Request) {
     message_template?: unknown;
     use_ai_personalization?: unknown;
     forwarding_phone?: unknown;
+    callback_enabled?: unknown;
+    callback_interval_minutes?: unknown;
+    callback_max_per_day?: unknown;
+    callback_max_days?: unknown;
   };
 
   // Validate + normalize forwarding_phone first — we may need to
@@ -152,6 +156,18 @@ export async function PUT(req: Request) {
   }
   if (typeof body.use_ai_personalization === "boolean") {
     settingsPatch.use_ai_personalization = body.use_ai_personalization;
+  }
+  if (typeof body.callback_enabled === "boolean") {
+    settingsPatch.callback_enabled = body.callback_enabled;
+  }
+  if (typeof body.callback_interval_minutes === "number") {
+    settingsPatch.callback_interval_minutes = body.callback_interval_minutes;
+  }
+  if (typeof body.callback_max_per_day === "number") {
+    settingsPatch.callback_max_per_day = body.callback_max_per_day;
+  }
+  if (typeof body.callback_max_days === "number") {
+    settingsPatch.callback_max_days = body.callback_max_days;
   }
 
   let settings = await getOrInitSettings(agentId);

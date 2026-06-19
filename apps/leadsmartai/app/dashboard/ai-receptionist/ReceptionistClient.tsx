@@ -6,7 +6,10 @@ import { ChevronDown, ChevronUp, PhoneOutgoing, X } from "lucide-react";
 import { getAssistant } from "@/lib/realtorboss/team";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
 import MissedCallSettingsForm from "@/components/dashboard/MissedCallSettingsForm";
-import { ReceptionistVoiceForm } from "@/components/realtorboss/AssistantCallSettings";
+import {
+  AssistantCallSettings,
+  ReceptionistVoiceForm,
+} from "@/components/realtorboss/AssistantCallSettings";
 import OutboundCallPanel from "@/components/dashboard/OutboundCallPanel";
 import BulkCallPanel from "@/components/dashboard/BulkCallPanel";
 import AppointmentRemindersPanel from "@/components/dashboard/AppointmentRemindersPanel";
@@ -274,7 +277,16 @@ export default function ReceptionistClient() {
   );
 }
 
+type VoiceTab = "inbound" | "outbound" | "missed";
+
+const VOICE_TABS: { key: VoiceTab; label: string }[] = [
+  { key: "inbound", label: "Inbound" },
+  { key: "outbound", label: "Outbound" },
+  { key: "missed", label: "Missed call" },
+];
+
 function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
+  const [tab, setTab] = useState<VoiceTab>("inbound");
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
@@ -299,27 +311,67 @@ function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        <div className="space-y-4">
+        {/* Tabs */}
+        <div className="mb-4 flex gap-1 rounded-lg bg-gray-100 p-1" role="tablist">
+          {VOICE_TABS.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={tab === t.key}
+              onClick={() => setTab(t.key)}
+              className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+                tab === t.key
+                  ? "bg-white text-[#0B1F44] shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {tab === "inbound" && (
           <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <h3 className="mb-1 text-sm font-semibold text-gray-900">
               Your Receptionist&apos;s voice &amp; knowledge
             </h3>
             <p className="mb-4 text-xs text-gray-500">
-              How your Receptionist greets callers and what it knows. Each assistant on your team
-              has its own knowledge base — this one answers your phone.
+              How your Receptionist greets callers and what it knows when it answers your
+              phone. Each assistant on your team has its own knowledge base.
             </p>
             <ReceptionistVoiceForm />
           </section>
+        )}
+
+        {tab === "outbound" && (
+          <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h3 className="mb-1 text-sm font-semibold text-gray-900">
+              Outbound voice &amp; knowledge
+            </h3>
+            <p className="mb-4 text-xs text-gray-500">
+              How your Receptionist sounds when it places calls — call-backs and the calls
+              you start from &ldquo;Place a call.&rdquo; Leave blank to reuse the inbound
+              knowledge base above.
+            </p>
+            <AssistantCallSettings
+              type="receptionist"
+              knowledgePlaceholder="What to mention on outbound calls — current listings, your specialties, financing partners, what makes you different…"
+              knowledgeHint="What your Receptionist may state as fact on the calls it places. Leave blank to share the inbound knowledge base."
+            />
+          </section>
+        )}
+
+        {tab === "missed" && (
           <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <h3 className="mb-1 text-sm font-semibold text-gray-900">Missed-call settings</h3>
             <p className="mb-4 text-xs text-gray-500">
-              Forward number, missed-call text-back template, and AI personalization. When a missed
-              caller isn&apos;t reached by text, your Receptionist calls them back at 5, 10, and 30
-              minutes until they answer.
+              Forward number, missed-call text-back template, AI personalization, and the
+              auto call-back ladder for callers you don&apos;t reach by text.
             </p>
             <MissedCallSettingsForm />
           </section>
-        </div>
+        )}
       </div>
     </div>
   );

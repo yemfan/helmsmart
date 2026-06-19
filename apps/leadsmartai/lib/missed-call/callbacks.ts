@@ -1,25 +1,27 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { toE164 } from "@/lib/missed-call/service";
+import { getOrInitSettings, toE164 } from "@/lib/missed-call/service";
 import { logAssistantActivity } from "@/lib/realtorboss/activities";
+
+const MS_DAY = 24 * 60 * 60_000;
 
 /**
  * Missed-call auto call-back ladder.
  *
  * When the Receptionist logs a missed call (and the caller isn't a
  * personal contact), a `receptionist_callbacks` row schedules outbound
- * AI call-backs at +5, +10, and +30 minutes after the miss. The cron
+ * AI call-backs whose cadence is configured per agent in
+ * `missed_call_settings` (Receptionist → Voice settings → Missed call):
+ * retry every `callback_interval_minutes`, up to `callback_max_per_day`
+ * attempts a day, for `callback_max_days` days. The cron
  * (/api/cron/receptionist-callbacks, every 5 minutes) places due
  * attempts via the same Retell outbound path the voice console uses.
  * The ladder resolves the moment ANY call with that caller connects —
- * they answer a call-back, or they call again and the AI answers.
+ * they answer a call-back, or they call again and the AI answers. When
+ * the configured attempts run out without reaching them, an open
+ * "call back" crm_tasks row is created so the Realtor can do it manually.
  */
-
-/** Minutes after the missed call for attempts 1, 2, 3. */
-export const CALLBACK_OFFSETS_MINUTES = [5, 10, 30] as const;
-
-export const MAX_CALLBACK_ATTEMPTS = CALLBACK_OFFSETS_MINUTES.length;
 
 export type CallbackRow = {
   id: string;
@@ -52,8 +54,13 @@ export async function scheduleCallBacks(args: {
   if (!phone) return { scheduled: false };
 
   try {
+    // The agent can switch the auto call-back ladder off while keeping
+    // the text-back on — respect that here so no ladder is created.
+    const settings = await getOrInitSettings(args.agentId);
+    if (!settings.callback_enabled) return { scheduled: false };
+
     const firstAttemptAt = new Date(
-      Date.now() + CALLBACK_OFFSETS_MINUTES[0] * 60_000,
+      Date.now() + settings.callback_interval_minutes * 60_000,
     ).toISOString();
     const { error } = await supabaseAdmin
       .from("receptionist_callbacks")
@@ -107,8 +114,10 @@ export async function resolveCallBacksForPhone(args: {
 /**
  * Place every due call-back. Runs from the every-5-minutes cron. Each row:
  * place the outbound AI call, bump the attempt counter, and either
- * schedule the next rung or exhaust the ladder after the third try
- * (flagging the Boss feed for human follow-up).
+ * schedule the next rung (next attempt is `callback_interval_minutes`
+ * out within a day, or the next day once the daily cap is hit) or
+ * exhaust the ladder once `max_per_day × max_days` attempts are spent —
+ * which also opens a manual "call back" task for the Realtor.
  *
  * Dynamic imports keep the Retell voice stack out of the module
  * graph of everything that merely schedules/resolves ladders.
@@ -165,6 +174,12 @@ export async function processDueCallBacks(limit = 25): Promise<{
         continue;
       }
 
+      // Per-agent cadence. Total attempts = per-day × days.
+      const perDay = Math.max(1, settings.callback_max_per_day);
+      const maxDays = Math.max(1, settings.callback_max_days);
+      const intervalMin = Math.max(5, settings.callback_interval_minutes);
+      const totalAttempts = perDay * maxDays;
+
       const contact = await svc.findContactByPhone(agentId, row.phone_e164);
       const leadName = contact?.name?.trim() || "the caller";
 
@@ -174,23 +189,26 @@ export async function processDueCallBacks(limit = 25): Promise<{
         leadName,
         toNumberE164: row.phone_e164,
         purpose: "follow_up",
-        detail: `They called earlier and we missed them — this is call-back attempt ${attemptNumber}. Apologize briefly for missing their call and ask how you can help.`,
+        detail: `They called earlier and we missed them — this is call-back attempt ${attemptNumber} of ${totalAttempts}. Apologize briefly for missing their call and ask how you can help.`,
       });
       placed += 1;
 
-      const isLastAttempt = attemptNumber >= MAX_CALLBACK_ATTEMPTS;
-      const nextOffsetMin = isLastAttempt
+      const isLastAttempt = attemptNumber >= totalAttempts;
+      // Within a day, the next attempt is `intervalMin` out; once the
+      // day's quota is spent, resume the next day.
+      const finishedDayQuota = attemptNumber % perDay === 0;
+      const nextAttemptAt = isLastAttempt
         ? null
-        : CALLBACK_OFFSETS_MINUTES[attemptNumber] - CALLBACK_OFFSETS_MINUTES[attemptNumber - 1];
+        : new Date(
+            Date.now() + (finishedDayQuota ? MS_DAY : intervalMin * 60_000),
+          ).toISOString();
       await supabaseAdmin
         .from("receptionist_callbacks")
         .update({
           attempts: attemptNumber,
           last_provider_call_id: callId,
           status: isLastAttempt ? "exhausted" : "scheduled",
-          next_attempt_at: nextOffsetMin
-            ? new Date(Date.now() + nextOffsetMin * 60_000).toISOString()
-            : null,
+          next_attempt_at: nextAttemptAt,
           updated_at: new Date().toISOString(),
         })
         .eq("id", row.id);
@@ -201,18 +219,31 @@ export async function processDueCallBacks(limit = 25): Promise<{
       await supabaseAdmin
         .from("call_logs")
         .update({
-          notes: `Automatic call-back (attempt ${attemptNumber} of ${MAX_CALLBACK_ATTEMPTS}) for a missed call.`,
+          notes: `Automatic call-back (attempt ${attemptNumber} of ${totalAttempts}) for a missed call.`,
         })
         .eq("twilio_call_sid", callId);
+
+      // Exhausted without reaching them → hand it to the Realtor as a task.
+      if (isLastAttempt) {
+        await createManualCallBackTask({
+          agentId,
+          contactId: row.contact_id,
+          phoneE164: row.phone_e164,
+          leadName: contact?.name?.trim() || row.phone_e164,
+          attempts: attemptNumber,
+        });
+      }
 
       void logAssistantActivity({
         agentId,
         assistantType: "receptionist",
         activityType: "missed_call_callback",
-        summary: `Called ${leadName} back (attempt ${attemptNumber} of ${MAX_CALLBACK_ATTEMPTS})`,
-        outcome: isLastAttempt ? "Final attempt — will flag if unanswered" : "Will retry if unanswered",
+        summary: `Called ${leadName} back (attempt ${attemptNumber} of ${totalAttempts})`,
+        outcome: isLastAttempt
+          ? "Couldn't reach them — added a task to call back manually"
+          : "Will retry if unanswered",
         priority: isLastAttempt ? "high" : "normal",
-        requiresAttention: false,
+        requiresAttention: isLastAttempt,
         relatedEntityType: row.contact_id ? "contact" : null,
         relatedEntityId: row.contact_id,
       });
@@ -232,4 +263,51 @@ export async function processDueCallBacks(limit = 25): Promise<{
   }
 
   return { due: rows.length, placed, exhausted, errors };
+}
+
+/**
+ * Open a manual "call back" task once the AI ladder is exhausted without
+ * reaching the caller. Deduped on the originating phone so a fresh ladder
+ * for the same number won't pile up duplicate open tasks. Best-effort —
+ * a task-write failure must not break the cron run.
+ */
+async function createManualCallBackTask(args: {
+  agentId: string;
+  contactId: string | null;
+  phoneE164: string;
+  leadName: string;
+  attempts: number;
+}): Promise<void> {
+  try {
+    const { data: existing } = await supabaseAdmin
+      .from("crm_tasks")
+      .select("id")
+      .eq("agent_id", args.agentId as never)
+      .eq("task_type", "missed_call_callback")
+      .in("status", ["open", "in_progress"])
+      .contains("metadata_json", { phone_e164: args.phoneE164 } as Record<string, unknown>)
+      .maybeSingle();
+    if (existing) return;
+
+    await supabaseAdmin.from("crm_tasks").insert({
+      agent_id: args.agentId as never,
+      contact_id: args.contactId as never,
+      title: `Call ${args.leadName} back — AI couldn't reach them`,
+      description: `Your AI Receptionist placed ${args.attempts} automatic call-back${
+        args.attempts === 1 ? "" : "s"
+      } to ${args.phoneE164} after a missed call without reaching them. Give them a call when you have a minute.`,
+      status: "open",
+      priority: "high",
+      task_type: "missed_call_callback",
+      source: "ai_call",
+      due_at: new Date().toISOString(),
+      metadata_json: {
+        phone_e164: args.phoneE164,
+        reason: "callback_exhausted",
+        attempts: args.attempts,
+      },
+    } as never);
+  } catch (e) {
+    console.error("[callbacks] manual call-back task failed:", e);
+  }
 }
