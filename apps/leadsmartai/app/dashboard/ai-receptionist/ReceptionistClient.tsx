@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, PhoneOutgoing, X } from "lucide-react";
+import { X } from "lucide-react";
 import { getAssistant } from "@/lib/realtorboss/team";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
 import MissedCallSettingsForm from "@/components/dashboard/MissedCallSettingsForm";
@@ -10,9 +10,6 @@ import {
   AssistantCallSettings,
   ReceptionistVoiceForm,
 } from "@/components/realtorboss/AssistantCallSettings";
-import OutboundCallPanel from "@/components/dashboard/OutboundCallPanel";
-import BulkCallPanel from "@/components/dashboard/BulkCallPanel";
-import AppointmentRemindersPanel from "@/components/dashboard/AppointmentRemindersPanel";
 
 /**
  * /dashboard/ai-receptionist — the ONE Receptionist page.
@@ -103,7 +100,6 @@ export default function ReceptionistClient() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<ReceptionistCall | null>(null);
   const [voiceSettingsOpen, setVoiceSettingsOpen] = useState(false);
-  const [outboundOpen, setOutboundOpen] = useState(false);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/dashboard/realtorboss/receptionist-calls?limit=100")
@@ -167,28 +163,6 @@ export default function ReceptionistClient() {
           tone={needsYou.length > 0 ? "warn" : undefined}
         />
       </div>
-
-      {/* Manual outbound-call tools */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setOutboundOpen((v) => !v)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
-          aria-expanded={outboundOpen}
-        >
-          <PhoneOutgoing className="h-3.5 w-3.5" strokeWidth={2} />
-          Place a call
-          {outboundOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-        </button>
-      </div>
-
-      {outboundOpen && (
-        <div className="space-y-4">
-          <OutboundCallPanel />
-          <AppointmentRemindersPanel />
-          <BulkCallPanel />
-        </div>
-      )}
 
       {/* The call list */}
       <section className="rounded-xl border border-gray-200 bg-white shadow-sm">

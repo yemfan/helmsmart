@@ -2,11 +2,15 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { ChevronDown, ChevronUp, PhoneOutgoing, X } from "lucide-react";
 import { getAssistant } from "@/lib/realtorboss/team";
 import { LeadProfileDrawer } from "@/components/realtorboss/LeadProfileDrawer";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
 import { AssistantCallSettings } from "@/components/realtorboss/AssistantCallSettings";
+import SalesOutreachComposer from "@/components/dashboard/SalesOutreachComposer";
+import OutboundCallPanel from "@/components/dashboard/OutboundCallPanel";
+import BulkCallPanel from "@/components/dashboard/BulkCallPanel";
+import AppointmentRemindersPanel from "@/components/dashboard/AppointmentRemindersPanel";
 
 /** Starter brief seeded into the Sales Assistant's knowledge box when the
  *  agent hasn't saved one yet — a greeting plus how it should run a call. */
@@ -54,6 +58,7 @@ export default function SalesAssistantClient() {
   const [profileLeadId, setProfileLeadId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [voiceSettingsOpen, setVoiceSettingsOpen] = useState(false);
+  const [outboundOpen, setOutboundOpen] = useState(false);
 
   const load = useCallback(async () => {
     const [summaryRes, hotRes, quietRes] = await Promise.all([
@@ -95,6 +100,15 @@ export default function SalesAssistantClient() {
         <AssistantKpiCard label="Messages sent" value={loading ? undefined : metrics?.messagesSent} hint="all time" />
       </div>
 
+      <SalesOutreachComposer
+        segmentCounts={{
+          hot: metrics?.hotLeads ?? 0,
+          quiet: metrics?.inactive7Days ?? 0,
+          all: metrics?.totalLeads ?? 0,
+        }}
+        onComplete={() => void load()}
+      />
+
       <div className="grid gap-4 lg:grid-cols-2">
         <LeadList
           title="Hot leads — call these first"
@@ -113,6 +127,30 @@ export default function SalesAssistantClient() {
           onOpenLead={setProfileLeadId}
         />
       </div>
+
+      {/* Advanced outbound tools — the composer above covers the common path;
+          these handle ad-hoc numbers, hand-picking a batch, and appointment
+          reminders. Collapsed by default so the composer stays the hero. */}
+      <div>
+        <button
+          type="button"
+          onClick={() => setOutboundOpen((v) => !v)}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+          aria-expanded={outboundOpen}
+        >
+          <PhoneOutgoing className="h-3.5 w-3.5" strokeWidth={2} />
+          More outbound tools
+          {outboundOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+        </button>
+      </div>
+
+      {outboundOpen && (
+        <div className="space-y-4">
+          <OutboundCallPanel />
+          <BulkCallPanel />
+          <AppointmentRemindersPanel />
+        </div>
+      )}
 
       <LeadProfileDrawer leadId={profileLeadId} onClose={() => setProfileLeadId(null)} />
       {voiceSettingsOpen && (
