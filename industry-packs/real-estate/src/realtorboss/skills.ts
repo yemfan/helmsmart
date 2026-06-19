@@ -205,3 +205,18 @@ export function buildVoicePlaybook(enabledSkillKeys: readonly string[]): string 
     ...lines.map((l) => `- ${l}`),
   ].join("\n");
 }
+
+/**
+ * Standing message-taking rule for the INBOUND receptionist only — how
+ * to handle callers we can't directly help (friends/family of the
+ * Realtor, or a service we don't offer such as rentals). Scoped to the
+ * receptionist on purpose: it must NOT leak into outbound Sales Assistant
+ * calls, so it's appended in `buildReceptionistVoiceNotes`, not in the
+ * shared `buildVoicePlaybook`.
+ */
+export const RECEPTIONIST_MESSAGE_PLAYBOOK = [
+  "## Taking a message — never turn a caller away cold",
+  "- On EVERY call, capture the caller's name, phone number, and the reason they called — even when you can't help them directly.",
+  "- If the caller is a friend or family member of the Realtor, or is asking about a service we don't offer (for example rentals, when we only handle buying and selling), do not just dismiss them: take their name, number, and reason, let them know you'll pass the message along, and that the Realtor will call them back at the first convenience.",
+  "- Stay warm and never make the caller feel turned away — take the message and assure them of a call-back.",
+].join("\n");

@@ -3,6 +3,7 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import {
   buildVoicePlaybook,
+  RECEPTIONIST_MESSAGE_PLAYBOOK,
   VOICE_GUARDRAILS,
   getAssistant,
   type AssistantType,
@@ -79,7 +80,17 @@ export function voiceNotesFromSkills(enabledSkills: readonly string[]): string {
   return [playbook, `## Compliance\n${VOICE_GUARDRAILS}`].filter(Boolean).join("\n\n");
 }
 
-/** Inbound-call hot path — the Receptionist's playbook. */
+/**
+ * Inbound-call hot path — the Receptionist's playbook. Unlike outbound
+ * assistants, the Receptionist always gets the message-taking rule
+ * (record name/phone/reason on every call; for friends/family or a
+ * service we don't offer, take a message and promise a Realtor
+ * call-back) — so no caller is ever turned away cold.
+ */
 export async function buildReceptionistVoiceNotes(agentId: string): Promise<string> {
-  return buildAssistantVoiceNotes(agentId, "receptionist");
+  const { enabledSkills } = await getAssistantVoiceSettings(agentId, "receptionist");
+  const playbook = buildVoicePlaybook(enabledSkills);
+  return [playbook, RECEPTIONIST_MESSAGE_PLAYBOOK, `## Compliance\n${VOICE_GUARDRAILS}`]
+    .filter(Boolean)
+    .join("\n\n");
 }

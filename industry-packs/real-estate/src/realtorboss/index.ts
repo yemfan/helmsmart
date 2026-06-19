@@ -19,6 +19,7 @@ export {
   getSkill,
   skillPrompts,
   buildVoicePlaybook,
+  RECEPTIONIST_MESSAGE_PLAYBOOK,
   type Skill,
   type SkillCategory,
 } from "./skills";
