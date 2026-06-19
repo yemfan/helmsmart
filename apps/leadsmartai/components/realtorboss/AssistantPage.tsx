@@ -4,12 +4,16 @@ import Link from "next/link";
 import type { AssistantDef } from "@/lib/realtorboss/team";
 
 /** Header block shared by the AI-team pages — name, mission, skills, action links. */
+type AssistantAction =
+  | { label: string; href: string; onClick?: never }
+  | { label: string; onClick: () => void; href?: never };
+
 export function AssistantHeader({
   assistant,
   actions,
 }: {
   assistant: AssistantDef;
-  actions?: { label: string; href: string }[];
+  actions?: AssistantAction[];
 }) {
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -27,11 +31,17 @@ export function AssistantHeader({
       </div>
       {actions && actions.length > 0 && (
         <div className="flex shrink-0 gap-2">
-          {actions.map((a) => (
-            <Link key={a.href} href={a.href} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-              {a.label}
-            </Link>
-          ))}
+          {actions.map((a) =>
+            a.href ? (
+              <Link key={a.label} href={a.href} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                {a.label}
+              </Link>
+            ) : (
+              <button key={a.label} type="button" onClick={a.onClick} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                {a.label}
+              </button>
+            ),
+          )}
         </div>
       )}
     </div>
