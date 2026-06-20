@@ -13,7 +13,6 @@ import type {
   ContactMethod,
   CrmContactRow,
   CrmLeadRow,
-  CrmPropertyReportRow,
   LeadRating,
   LeadStatus,
 } from "@leadsmart/shared";
@@ -24,8 +23,6 @@ export type { ContactFrequency, ContactMethod, LeadRating, LeadStatus };
 export type LeadRow = CrmLeadRow;
 /** Alias for {@link CrmContactRow} from `@leadsmart/shared`. */
 export type ContactRow = CrmContactRow;
-/** Alias for {@link CrmPropertyReportRow} from `@leadsmart/shared`. */
-export type PropertyReportRow = CrmPropertyReportRow;
 
 function addInterval(baseIso: string, freq: ContactFrequency) {
   const d = new Date(baseIso);
@@ -197,21 +194,6 @@ export async function getContacts(limit = 200): Promise<CrmContactRow[]> {
 
   throwIfSupabaseError(error, "Could not load contacts");
   return (data as CrmContactRow[]) ?? [];
-}
-
-export async function getReports(limit = 200): Promise<CrmPropertyReportRow[]> {
-  const { agentId } = await getCurrentAgentContext();
-  const supabase = supabaseServerClient();
-
-  const { data, error } = await supabase
-    .from("property_reports")
-    .select("id,agent_id,address,report_type,created_at")
-    .eq("agent_id", agentId)
-    .order("created_at", { ascending: false })
-    .limit(limit);
-
-  throwIfSupabaseError(error, "Could not load reports");
-  return (data as CrmPropertyReportRow[]) ?? [];
 }
 
 export async function updateLeadStatus(id: string, status: LeadStatus) {
