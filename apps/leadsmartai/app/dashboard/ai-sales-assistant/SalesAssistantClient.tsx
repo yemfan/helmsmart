@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, MessageSquare, Phone, PhoneOutgoing, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Mail, MessageSquare, Phone, PhoneOutgoing, X } from "lucide-react";
 import { getAssistant } from "@/lib/realtorboss/team";
 import { LeadProfileDrawer } from "@/components/realtorboss/LeadProfileDrawer";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
@@ -60,10 +60,10 @@ export default function SalesAssistantClient() {
   const [loading, setLoading] = useState(true);
   const [voiceSettingsOpen, setVoiceSettingsOpen] = useState(false);
   const [outboundOpen, setOutboundOpen] = useState(false);
-  const [prefill, setPrefill] = useState<{ contactId: string; channel: "call" | "sms"; nonce: number } | null>(null);
+  const [prefill, setPrefill] = useState<{ contactId: string; channel: "call" | "sms" | "email"; nonce: number } | null>(null);
   const [scheduledRefresh, setScheduledRefresh] = useState(0);
 
-  const quickAction = useCallback((contactId: string, channel: "call" | "sms") => {
+  const quickAction = useCallback((contactId: string, channel: "call" | "sms" | "email") => {
     setPrefill((p) => ({ contactId, channel, nonce: (p?.nonce ?? 0) + 1 }));
   }, []);
 
@@ -235,7 +235,7 @@ function LeadList({
   viewAllHref: string;
   onOpenLead: (id: string) => void;
   /** Aim the outreach composer at this lead + channel (per-row quick buttons). */
-  onQuickAction?: (id: string, channel: "call" | "sms") => void;
+  onQuickAction?: (id: string, channel: "call" | "sms" | "email") => void;
 }) {
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -286,6 +286,15 @@ function LeadList({
                     className="rounded-md border border-gray-200 p-1.5 text-gray-500 transition hover:bg-blue-50 hover:text-blue-600"
                   >
                     <MessageSquare className="h-3.5 w-3.5" strokeWidth={2} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onQuickAction(l.id, "email")}
+                    aria-label={`Email ${l.name ?? "lead"}`}
+                    title="Email"
+                    className="rounded-md border border-gray-200 p-1.5 text-gray-500 transition hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    <Mail className="h-3.5 w-3.5" strokeWidth={2} />
                   </button>
                 </div>
               )}

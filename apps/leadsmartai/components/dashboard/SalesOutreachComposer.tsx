@@ -61,7 +61,7 @@ export default function SalesOutreachComposer({
    * Set by a per-lead quick button to aim the composer at one contact + channel.
    * `nonce` bumps on every click so re-picking the same lead/channel re-applies.
    */
-  prefill?: { contactId: string; channel: "call" | "sms"; nonce: number } | null;
+  prefill?: { contactId: string; channel: "call" | "sms" | "email"; nonce: number } | null;
 }) {
   const [channel, setChannel] = useState<Channel>("call");
   const [purpose, setPurpose] = useState<Purpose>("follow_up");
@@ -140,16 +140,21 @@ export default function SalesOutreachComposer({
     setChannel(prefill.channel);
     setTargetMode("contact");
     const c = contacts.find((x) => x.id === prefill.contactId);
-    if (c) {
+    const addr = c ? (prefill.channel === "email" ? c.email : c.phone) : "";
+    if (c && addr) {
       setPicked(c);
-      setQuery(c.name === "Unnamed contact" ? c.phone || c.email : c.name);
+      setQuery(c.name === "Unnamed contact" ? addr : c.name);
       setStatus("idle");
       setFeedback(null);
     } else {
       setPicked(null);
       setQuery("");
       setStatus("error");
-      setFeedback("That lead has no phone number on file — add one to reach them.");
+      setFeedback(
+        prefill.channel === "email"
+          ? "That lead has no email on file — add one to reach them."
+          : "That lead has no phone number on file — add one to reach them.",
+      );
     }
     rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [prefill, contacts, loadingContacts]);
