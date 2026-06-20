@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-react";
 
-type PickContact = { id: string; name: string; phone: string };
+type PickContact = { id: string; name: string; phone: string; email: string };
 
 type Channel = "call" | "sms" | "email";
 type Purpose = "follow_up" | "survey" | "promo";
@@ -42,10 +42,11 @@ type Status = "idle" | "working" | "done" | "error";
  * Sales Assistant outreach composer — one place to run an outbound action
  * across channels: choose a channel → purpose → who → message → send now.
  *
- * Phase 1 ships Call + SMS, send-now. Email and "schedule for later" are
- * surfaced as disabled seams so phase 2 is purely additive. Calls reuse
- * /api/dashboard/voice/outbound-call(+/bulk); SMS reuses
- * /api/ai-sms/send(+/bulk).
+ * Channels: Call + SMS + Email, send-now. "Schedule for later" is surfaced as
+ * a disabled seam pending phase 2. Calls reuse
+ * /api/dashboard/voice/outbound-call(+/bulk); SMS reuses /api/ai-sms/send(+/bulk);
+ * email reuses /api/ai-email/send(+/bulk). The picker is channel-aware (phone
+ * for call/SMS, email for email) via /api/dashboard/contacts/reachable.
  */
 export default function SalesOutreachComposer({
   segmentCounts,
@@ -67,6 +68,7 @@ export default function SalesOutreachComposer({
   const [targetMode, setTargetMode] = useState<TargetMode>("contact");
   const [segment, setSegment] = useState<Segment>("quiet");
   const [message, setMessage] = useState("");
+  const [subject, setSubject] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -84,7 +86,7 @@ export default function SalesOutreachComposer({
     let alive = true;
     (async () => {
       try {
-        const res = await fetch("/api/dashboard/voice/contacts");
+        const res = await fetch("/api/dashboard/contacts/reachable");
         const data = (await res.json()) as { contacts?: PickContact[] };
         if (alive) setContacts(Array.isArray(data.contacts) ? data.contacts : []);
       } catch {
@@ -106,18 +108,26 @@ export default function SalesOutreachComposer({
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
+  // Only contacts reachable on the active channel: phone for call/SMS, email
+  // for email.
+  const reachable = useMemo(
+    () => contacts.filter((c) => (channel === "email" ? c.email : c.phone)),
+    [contacts, channel],
+  );
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const digits = q.replace(/\D/g, "");
     const list = !q
-      ? contacts
-      : contacts.filter((c) => {
+      ? reachable
+      : reachable.filter((c) => {
           const nameHit = c.name.toLowerCase().includes(q);
           const phoneHit = digits.length > 0 && c.phone.replace(/\D/g, "").includes(digits);
-          return nameHit || phoneHit;
+          const emailHit = channel === "email" && c.email.toLowerCase().includes(q);
+          return nameHit || phoneHit || emailHit;
         });
     return list.slice(0, 8);
-  }, [contacts, query]);
+  }, [reachable, query, channel]);
 
   // Apply a per-lead quick-action prefill: aim at one contact + channel and
   // scroll the composer into view. Waits for the contact list to load so we can
@@ -130,7 +140,7 @@ export default function SalesOutreachComposer({
     const c = contacts.find((x) => x.id === prefill.contactId);
     if (c) {
       setPicked(c);
-      setQuery(c.name === "Unnamed contact" ? c.phone : c.name);
+      setQuery(c.name === "Unnamed contact" ? c.phone || c.email : c.name);
       setStatus("idle");
       setFeedback(null);
     } else {
@@ -142,9 +152,10 @@ export default function SalesOutreachComposer({
     rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [prefill, contacts, loadingContacts]);
 
-  // SMS always needs a body; a survey/promo call needs the script/announcement.
+  // SMS/email always need a body; a survey/promo call needs the script/announcement.
   // A plain follow-up call lets the assistant improvise, so the message is optional.
-  const messageRequired = channel === "sms" || purpose === "survey" || purpose === "promo";
+  const messageRequired = channel !== "call" || purpose === "survey" || purpose === "promo";
+  const subjectRequired = channel === "email";
 
   const segmentCount =
     segment === "hot" ? segmentCounts.hot : segment === "quiet" ? segmentCounts.quiet : segmentCounts.all;
@@ -158,7 +169,7 @@ export default function SalesOutreachComposer({
 
   function pick(c: PickContact) {
     setPicked(c);
-    setQuery(c.name === "Unnamed contact" ? c.phone : c.name);
+    setQuery(c.name === "Unnamed contact" ? c.phone || c.email : c.name);
     setOpen(false);
     resetFeedback();
   }
@@ -170,8 +181,8 @@ export default function SalesOutreachComposer({
 
   async function gatherSegmentIds(): Promise<string[]> {
     if (segment === "all") {
-      // Contacts already loaded for the picker — all have a phone number.
-      return contacts.slice(0, MAX_BULK).map((c) => c.id);
+      // Reachable contacts already loaded — scoped to the active channel.
+      return reachable.slice(0, MAX_BULK).map((c) => c.id);
     }
     const res = await fetch(
       `/api/dashboard/leads?filter=${SEGMENT_FILTER[segment]}&pageSize=${MAX_BULK}`,
@@ -181,31 +192,41 @@ export default function SalesOutreachComposer({
   }
 
   const messageLabel =
-    channel === "sms"
-      ? "Your message"
-      : purpose === "survey"
+    channel === "call"
+      ? purpose === "survey"
         ? "What should your assistant ask?"
         : purpose === "promo"
           ? "What's the announcement?"
-          : "Anything to add? (optional)";
+          : "Anything to add? (optional)"
+      : "Your message";
 
   const messagePlaceholder =
-    channel === "sms"
+    channel === "call"
       ? purpose === "survey"
-        ? "Hi {{name}}, how was your home tour? Mind leaving a quick Google review?"
-        : purpose === "promo"
-          ? "A new listing just hit your target neighborhood — want a private showing?"
-          : "Hi {{name}}, just checking in — still looking, or is now not the right time?"
-      : purpose === "survey"
         ? 'e.g. "How was your home tour? Would you leave us a Google review?"'
         : purpose === "promo"
           ? 'e.g. "A new listing just hit your target neighborhood — want a private showing?"'
-          : "Context for the call (optional) — e.g. they asked about financing last week.";
+          : "Context for the call (optional) — e.g. they asked about financing last week."
+      : purpose === "survey"
+        ? "Hi {{name}}, how was your home tour? Mind leaving a quick review?"
+        : purpose === "promo"
+          ? "A new listing just hit your target neighborhood — want a private showing?"
+          : "Hi {{name}}, just checking in — still looking, or is now not the right time?";
 
-  function describeResult(kind: "call" | "sms", r: { sent?: number; placed?: number; failed?: number; total?: number }) {
+  const subjectPlaceholder =
+    purpose === "survey"
+      ? "How was your experience?"
+      : purpose === "promo"
+        ? "A quick update for you"
+        : "Following up";
+
+  function describeResult(
+    kind: "call" | "sms" | "email",
+    r: { sent?: number; placed?: number; failed?: number; total?: number },
+  ) {
     const ok = (kind === "call" ? r.placed : r.sent) ?? 0;
     const failed = r.failed ?? 0;
-    const verb = kind === "call" ? "calls placed" : "texts sent";
+    const verb = kind === "call" ? "calls placed" : kind === "email" ? "emails sent" : "texts sent";
     return failed > 0
       ? `${ok} ${verb}, ${failed} failed of ${r.total ?? ok + failed}.`
       : `${ok} ${verb}.`;
@@ -223,9 +244,22 @@ export default function SalesOutreachComposer({
       setFeedback("That segment is empty right now.");
       return;
     }
+    if (targetMode === "contact" && picked) {
+      const reachableOnChannel = channel === "email" ? picked.email : picked.phone;
+      if (!reachableOnChannel) {
+        setStatus("error");
+        setFeedback(channel === "email" ? "This contact has no email on file." : "This contact has no phone number on file.");
+        return;
+      }
+    }
+    if (subjectRequired && !subject.trim()) {
+      setStatus("error");
+      setFeedback("Add a subject line.");
+      return;
+    }
     if (messageRequired && !message.trim()) {
       setStatus("error");
-      setFeedback(channel === "sms" ? "Add a message to send." : "Add the script/announcement first.");
+      setFeedback(channel === "call" ? "Add the script/announcement first." : "Add a message to send.");
       return;
     }
 
@@ -259,8 +293,7 @@ export default function SalesOutreachComposer({
           if (!res.ok || !data.ok) throw new Error(data.error || "Bulk call failed.");
           setFeedback(describeResult("call", data));
         }
-      } else {
-        // SMS
+      } else if (channel === "sms") {
         if (targetMode === "contact" && picked) {
           const res = await fetch("/api/ai-sms/send", {
             method: "POST",
@@ -282,9 +315,33 @@ export default function SalesOutreachComposer({
           if (!res.ok || !data.ok) throw new Error(data.error || "Bulk SMS failed.");
           setFeedback(describeResult("sms", data));
         }
+      } else {
+        // Email
+        if (targetMode === "contact" && picked) {
+          const res = await fetch("/api/ai-email/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ leadId: picked.id, to: picked.email, subject: subject.trim(), body: message.trim() }),
+          });
+          const data = (await res.json()) as { success?: boolean; error?: string };
+          if (!res.ok || !data.success) throw new Error(data.error || "Failed to send the email.");
+          setFeedback(`Email sent to ${picked.email}.`);
+        } else {
+          const contactIds = await gatherSegmentIds();
+          if (contactIds.length === 0) throw new Error("No reachable contacts in that segment.");
+          const res = await fetch("/api/ai-email/send/bulk", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contactIds, subject: subject.trim(), body: message.trim() }),
+          });
+          const data = (await res.json()) as { ok?: boolean; error?: string; sent?: number; failed?: number; total?: number };
+          if (!res.ok || !data.ok) throw new Error(data.error || "Bulk email failed.");
+          setFeedback(describeResult("email", data));
+        }
       }
       setStatus("done");
       setMessage("");
+      setSubject("");
       clearPick();
       onComplete?.();
     } catch (e) {
@@ -295,12 +352,12 @@ export default function SalesOutreachComposer({
 
   const input =
     "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none";
+  const segmentVerb = channel === "call" ? "Call" : channel === "email" ? "Email" : "Text";
+  const singleVerb = channel === "call" ? "Place call" : channel === "email" ? "Send email" : "Send text";
   const submitLabel =
     targetMode === "segment"
-      ? `${channel === "call" ? "Call" : "Text"} ${targetCount}${overCap ? ` of ${segmentCount}` : ""}`
-      : channel === "call"
-        ? "Place call"
-        : "Send text";
+      ? `${segmentVerb} ${targetCount}${overCap ? ` of ${segmentCount}` : ""}`
+      : singleVerb;
 
   return (
     <section ref={rootRef} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -317,7 +374,7 @@ export default function SalesOutreachComposer({
       <div className="mb-4 flex gap-2">
         <ChannelTab active={channel === "call"} onClick={() => { setChannel("call"); resetFeedback(); }} icon={PhoneOutgoing} label="Call" />
         <ChannelTab active={channel === "sms"} onClick={() => { setChannel("sms"); resetFeedback(); }} icon={MessageSquare} label="SMS" />
-        <ChannelTab active={false} disabled icon={Mail} label="Email" badge="Soon" />
+        <ChannelTab active={channel === "email"} onClick={() => { setChannel("email"); resetFeedback(); }} icon={Mail} label="Email" />
       </div>
 
       {/* 2 · Purpose */}
@@ -359,9 +416,13 @@ export default function SalesOutreachComposer({
               placeholder={
                 loadingContacts
                   ? "Loading your contacts…"
-                  : contacts.length
-                    ? "Search contacts by name or number…"
-                    : "No saved contacts with a phone number yet"
+                  : reachable.length
+                    ? channel === "email"
+                      ? "Search contacts by name or email…"
+                      : "Search contacts by name or number…"
+                    : channel === "email"
+                      ? "No saved contacts with an email yet"
+                      : "No saved contacts with a phone number yet"
               }
               disabled={loadingContacts}
             />
@@ -376,7 +437,7 @@ export default function SalesOutreachComposer({
               </button>
             )}
           </div>
-          {open && contacts.length > 0 && (
+          {open && reachable.length > 0 && (
             <div className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
               {filtered.length === 0 ? (
                 <div className="px-3 py-2 text-xs text-slate-400">No matching contacts.</div>
@@ -390,7 +451,7 @@ export default function SalesOutreachComposer({
                   >
                     <User2 className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} />
                     <span className="min-w-0 flex-1 truncate text-slate-800">{c.name}</span>
-                    <span className="shrink-0 text-xs text-slate-500">{c.phone}</span>
+                    <span className="shrink-0 truncate text-xs text-slate-500">{channel === "email" ? c.email : c.phone}</span>
                   </button>
                 ))
               )}
@@ -406,7 +467,18 @@ export default function SalesOutreachComposer({
       )}
 
       {/* 4 · Message */}
-      <Step label={`4 · ${messageLabel}`} />
+      {channel === "email" && (
+        <>
+          <Step label="4 · Subject" />
+          <input
+            className={`${input} mb-3`}
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder={subjectPlaceholder}
+          />
+        </>
+      )}
+      <Step label={`${channel === "email" ? "5" : "4"} · ${messageLabel}`} />
       <textarea
         className={`${input} mb-1 resize-y`}
         rows={2}
@@ -417,10 +489,10 @@ export default function SalesOutreachComposer({
       {channel === "sms" && (
         <p className="mb-4 text-[11px] text-slate-400">“Reply STOP to unsubscribe” is added automatically.</p>
       )}
-      {channel === "call" && <div className="mb-4" />}
+      {channel !== "sms" && <div className="mb-4" />}
 
-      {/* 5 · When + submit */}
-      <Step label="5 · When" />
+      {/* When + submit */}
+      <Step label={`${channel === "email" ? "6" : "5"} · When`} />
       <div className="flex flex-wrap items-center gap-2">
         <span className={chip(true)}>
           <Send className="h-3.5 w-3.5" strokeWidth={2} />
@@ -438,7 +510,13 @@ export default function SalesOutreachComposer({
           disabled={status === "working" || (targetMode === "segment" && segmentCount === 0)}
           className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
         >
-          {channel === "call" ? <PhoneOutgoing className="h-4 w-4" strokeWidth={2} /> : <MessageSquare className="h-4 w-4" strokeWidth={2} />}
+          {channel === "call" ? (
+            <PhoneOutgoing className="h-4 w-4" strokeWidth={2} />
+          ) : channel === "email" ? (
+            <Mail className="h-4 w-4" strokeWidth={2} />
+          ) : (
+            <MessageSquare className="h-4 w-4" strokeWidth={2} />
+          )}
           {status === "working" ? "Working…" : submitLabel}
         </button>
       </div>
