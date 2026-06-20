@@ -8,6 +8,7 @@ import { LeadProfileDrawer } from "@/components/realtorboss/LeadProfileDrawer";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
 import { AssistantCallSettings } from "@/components/realtorboss/AssistantCallSettings";
 import SalesOutreachComposer from "@/components/dashboard/SalesOutreachComposer";
+import OutreachScheduledStrip from "@/components/dashboard/OutreachScheduledStrip";
 import OutboundCallPanel from "@/components/dashboard/OutboundCallPanel";
 import BulkCallPanel from "@/components/dashboard/BulkCallPanel";
 import AppointmentRemindersPanel from "@/components/dashboard/AppointmentRemindersPanel";
@@ -60,6 +61,7 @@ export default function SalesAssistantClient() {
   const [voiceSettingsOpen, setVoiceSettingsOpen] = useState(false);
   const [outboundOpen, setOutboundOpen] = useState(false);
   const [prefill, setPrefill] = useState<{ contactId: string; channel: "call" | "sms"; nonce: number } | null>(null);
+  const [scheduledRefresh, setScheduledRefresh] = useState(0);
 
   const quickAction = useCallback((contactId: string, channel: "call" | "sms") => {
     setPrefill((p) => ({ contactId, channel, nonce: (p?.nonce ?? 0) + 1 }));
@@ -111,9 +113,14 @@ export default function SalesAssistantClient() {
           quiet: metrics?.inactive7Days ?? 0,
           all: metrics?.totalLeads ?? 0,
         }}
-        onComplete={() => void load()}
+        onComplete={() => {
+          void load();
+          setScheduledRefresh((n) => n + 1);
+        }}
         prefill={prefill}
       />
+
+      <OutreachScheduledStrip refreshSignal={scheduledRefresh} />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <LeadList
