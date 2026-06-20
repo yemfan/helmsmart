@@ -1,4 +1,6 @@
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { supabaseServer } from "@/lib/supabaseServer";
+import { getAgentScopeForAgent } from "@/lib/teams/scope.server";
 import {
   CONTACT_SCORES_SELECT,
   unpackScoreRow,
@@ -175,12 +177,21 @@ export async function getLeads(params?: {
 
 export async function getContacts(limit = 200): Promise<CrmContactRow[]> {
   const { agentId } = await getCurrentAgentContext();
-  const supabase = supabaseServerClient();
+  const scope = await getAgentScopeForAgent(String(agentId));
 
-  const { data, error } = await supabase
+  // `contacts` has RLS enabled with no policies, so the session-bound client is
+  // deny-all and returns 0 rows for everyone — the contact picker + bulk
+  // call/SMS routes silently saw an empty list. Query via the service-role
+  // client with explicit `.in(agent_id, scope)` as the tenant boundary, the
+  // same pattern as /api/dashboard/leads and /api/dashboard/summary.
+  //
+  // `type` is the canonical column `lead_type` (the bare `type` column was
+  // never in the consolidated contacts schema — selecting it 42703'd). Aliased
+  // so CrmContactRow.type stays populated.
+  const { data, error } = await supabaseServer
     .from("contacts")
-    .select("id,agent_id,name,email,phone,address,type,created_at")
-    .eq("agent_id", agentId)
+    .select("id,agent_id,name,email,phone,address,type:lead_type,created_at")
+    .in("agent_id", scope.agentIds)
     .order("created_at", { ascending: false })
     .limit(limit);
 

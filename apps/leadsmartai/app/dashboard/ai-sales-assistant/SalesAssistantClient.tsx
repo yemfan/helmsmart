@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, PhoneOutgoing, X } from "lucide-react";
+import { ChevronDown, ChevronUp, MessageSquare, Phone, PhoneOutgoing, X } from "lucide-react";
 import { getAssistant } from "@/lib/realtorboss/team";
 import { LeadProfileDrawer } from "@/components/realtorboss/LeadProfileDrawer";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
@@ -59,6 +59,11 @@ export default function SalesAssistantClient() {
   const [loading, setLoading] = useState(true);
   const [voiceSettingsOpen, setVoiceSettingsOpen] = useState(false);
   const [outboundOpen, setOutboundOpen] = useState(false);
+  const [prefill, setPrefill] = useState<{ contactId: string; channel: "call" | "sms"; nonce: number } | null>(null);
+
+  const quickAction = useCallback((contactId: string, channel: "call" | "sms") => {
+    setPrefill((p) => ({ contactId, channel, nonce: (p?.nonce ?? 0) + 1 }));
+  }, []);
 
   const load = useCallback(async () => {
     const [summaryRes, hotRes, quietRes] = await Promise.all([
@@ -107,6 +112,7 @@ export default function SalesAssistantClient() {
           all: metrics?.totalLeads ?? 0,
         }}
         onComplete={() => void load()}
+        prefill={prefill}
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -117,6 +123,7 @@ export default function SalesAssistantClient() {
           empty="No hot leads right now."
           viewAllHref="/dashboard/leads?filter=hot"
           onOpenLead={setProfileLeadId}
+          onQuickAction={quickAction}
         />
         <LeadList
           title="Reactivation queue — quiet for 7+ days"
@@ -125,6 +132,7 @@ export default function SalesAssistantClient() {
           empty="No quiet leads — everyone has recent activity."
           viewAllHref="/dashboard/leads?filter=inactive"
           onOpenLead={setProfileLeadId}
+          onQuickAction={quickAction}
         />
       </div>
 
@@ -211,6 +219,7 @@ function LeadList({
   empty,
   viewAllHref,
   onOpenLead,
+  onQuickAction,
 }: {
   title: string;
   leads: Lead[];
@@ -218,6 +227,8 @@ function LeadList({
   empty: string;
   viewAllHref: string;
   onOpenLead: (id: string) => void;
+  /** Aim the outreach composer at this lead + channel (per-row quick buttons). */
+  onQuickAction?: (id: string, channel: "call" | "sms") => void;
 }) {
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -230,22 +241,48 @@ function LeadList({
       ) : (
         <div className="space-y-2">
           {leads.map((l) => (
-            <button
+            <div
               key={l.id}
-              type="button"
-              onClick={() => onOpenLead(l.id)}
-              className="flex w-full items-center justify-between rounded-lg border border-gray-100 px-3 py-2 text-left hover:bg-gray-50"
+              className="flex items-center gap-2 rounded-lg border border-gray-100 px-3 py-2 hover:bg-gray-50"
             >
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-gray-900">{l.name ?? "Unnamed lead"}</p>
-                <p className="truncate text-xs text-gray-500">
-                  {[l.ai_intent, l.source].filter(Boolean).join(" · ") || "—"}
-                </p>
-              </div>
-              {typeof l.engagement_score === "number" && (
-                <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-gray-600">{l.engagement_score}</span>
+              <button
+                type="button"
+                onClick={() => onOpenLead(l.id)}
+                className="flex min-w-0 flex-1 items-center justify-between gap-2 text-left"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-gray-900">{l.name ?? "Unnamed lead"}</p>
+                  <p className="truncate text-xs text-gray-500">
+                    {[l.ai_intent, l.source].filter(Boolean).join(" · ") || "—"}
+                  </p>
+                </div>
+                {typeof l.engagement_score === "number" && (
+                  <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-gray-600">{l.engagement_score}</span>
+                )}
+              </button>
+              {onQuickAction && (
+                <div className="flex shrink-0 items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => onQuickAction(l.id, "call")}
+                    aria-label={`Call ${l.name ?? "lead"}`}
+                    title="Call"
+                    className="rounded-md border border-gray-200 p-1.5 text-gray-500 transition hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    <Phone className="h-3.5 w-3.5" strokeWidth={2} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onQuickAction(l.id, "sms")}
+                    aria-label={`Text ${l.name ?? "lead"}`}
+                    title="SMS"
+                    className="rounded-md border border-gray-200 p-1.5 text-gray-500 transition hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    <MessageSquare className="h-3.5 w-3.5" strokeWidth={2} />
+                  </button>
+                </div>
               )}
-            </button>
+            </div>
           ))}
         </div>
       )}
