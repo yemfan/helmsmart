@@ -50,11 +50,17 @@ type Status = "idle" | "working" | "done" | "error";
 export default function SalesOutreachComposer({
   segmentCounts,
   onComplete,
+  prefill,
 }: {
   /** Live counts for the segment chips (from the page's summary metrics). */
   segmentCounts: { hot: number; quiet: number; all: number };
   /** Called after a successful send so the page can refresh its KPIs/lists. */
   onComplete?: () => void;
+  /**
+   * Set by a per-lead quick button to aim the composer at one contact + channel.
+   * `nonce` bumps on every click so re-picking the same lead/channel re-applies.
+   */
+  prefill?: { contactId: string; channel: "call" | "sms"; nonce: number } | null;
 }) {
   const [channel, setChannel] = useState<Channel>("call");
   const [purpose, setPurpose] = useState<Purpose>("follow_up");
@@ -71,6 +77,8 @@ export default function SalesOutreachComposer({
   const [open, setOpen] = useState(false);
   const [picked, setPicked] = useState<PickContact | null>(null);
   const boxRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<HTMLElement | null>(null);
+  const appliedPrefillNonce = useRef(0);
 
   useEffect(() => {
     let alive = true;
@@ -110,6 +118,29 @@ export default function SalesOutreachComposer({
         });
     return list.slice(0, 8);
   }, [contacts, query]);
+
+  // Apply a per-lead quick-action prefill: aim at one contact + channel and
+  // scroll the composer into view. Waits for the contact list to load so we can
+  // resolve the lead's phone; if the lead has none on file, say so plainly.
+  useEffect(() => {
+    if (!prefill || prefill.nonce === appliedPrefillNonce.current || loadingContacts) return;
+    appliedPrefillNonce.current = prefill.nonce;
+    setChannel(prefill.channel);
+    setTargetMode("contact");
+    const c = contacts.find((x) => x.id === prefill.contactId);
+    if (c) {
+      setPicked(c);
+      setQuery(c.name === "Unnamed contact" ? c.phone : c.name);
+      setStatus("idle");
+      setFeedback(null);
+    } else {
+      setPicked(null);
+      setQuery("");
+      setStatus("error");
+      setFeedback("That lead has no phone number on file — add one to reach them.");
+    }
+    rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [prefill, contacts, loadingContacts]);
 
   // SMS always needs a body; a survey/promo call needs the script/announcement.
   // A plain follow-up call lets the assistant improvise, so the message is optional.
@@ -272,7 +303,7 @@ export default function SalesOutreachComposer({
         : "Send text";
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section ref={rootRef} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-1 flex items-center gap-2">
         <Send className="h-4 w-4 text-blue-600" strokeWidth={2} />
         <h2 className="text-sm font-semibold text-slate-900">Run an outreach action</h2>
