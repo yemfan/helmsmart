@@ -57,6 +57,10 @@
       "schedule": "*/5 * * * *"
     },
     {
+      "path": "/api/cron/outreach-scheduler",
+      "schedule": "*/15 * * * *"
+    },
+    {
       "path": "/api/cron/boss-instructions",
       "schedule": "*/5 * * * *"
     },

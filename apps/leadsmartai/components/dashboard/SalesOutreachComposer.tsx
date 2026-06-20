@@ -69,6 +69,8 @@ export default function SalesOutreachComposer({
   const [segment, setSegment] = useState<Segment>("quiet");
   const [message, setMessage] = useState("");
   const [subject, setSubject] = useState("");
+  const [scheduleMode, setScheduleMode] = useState(false);
+  const [scheduledFor, setScheduledFor] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -262,10 +264,55 @@ export default function SalesOutreachComposer({
       setFeedback(channel === "call" ? "Add the script/announcement first." : "Add a message to send.");
       return;
     }
+    let scheduledIso: string | null = null;
+    if (scheduleMode) {
+      const when = scheduledFor ? new Date(scheduledFor) : null;
+      if (!when || Number.isNaN(when.getTime()) || when.getTime() <= Date.now()) {
+        setStatus("error");
+        setFeedback("Pick a date & time in the future.");
+        return;
+      }
+      scheduledIso = when.toISOString();
+    }
 
     setStatus("working");
     setFeedback(null);
     try {
+      if (scheduleMode && scheduledIso) {
+        const contactIds = targetMode === "contact" && picked ? [picked.id] : await gatherSegmentIds();
+        if (contactIds.length === 0) throw new Error("No reachable contacts to schedule.");
+        const res = await fetch("/api/dashboard/outreach/schedule", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            channel,
+            purpose,
+            contactIds,
+            subject: subject.trim() || undefined,
+            body: message.trim() || undefined,
+            scheduledFor: scheduledIso,
+          }),
+        });
+        const data = (await res.json()) as { ok?: boolean; error?: string; count?: number };
+        if (!res.ok || !data.ok) throw new Error(data.error || "Could not schedule the action.");
+        const noun = channel === "call" ? "call" : channel === "email" ? "email" : "text";
+        const n = data.count ?? contactIds.length;
+        const whenLabel = new Date(scheduledIso).toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        });
+        setStatus("done");
+        setFeedback(`Scheduled ${n} ${noun}${n === 1 ? "" : "s"} for ${whenLabel}.`);
+        setMessage("");
+        setSubject("");
+        clearPick();
+        setScheduleMode(false);
+        setScheduledFor("");
+        onComplete?.();
+        return;
+      }
       if (channel === "call") {
         if (targetMode === "contact" && picked) {
           const res = await fetch("/api/dashboard/voice/outbound-call", {
@@ -354,8 +401,11 @@ export default function SalesOutreachComposer({
     "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none";
   const segmentVerb = channel === "call" ? "Call" : channel === "email" ? "Email" : "Text";
   const singleVerb = channel === "call" ? "Place call" : channel === "email" ? "Send email" : "Send text";
-  const submitLabel =
-    targetMode === "segment"
+  const submitLabel = scheduleMode
+    ? targetMode === "segment"
+      ? `Schedule ${targetCount}${overCap ? ` of ${segmentCount}` : ""}`
+      : "Schedule"
+    : targetMode === "segment"
       ? `${segmentVerb} ${targetCount}${overCap ? ` of ${segmentCount}` : ""}`
       : singleVerb;
 
@@ -493,16 +543,25 @@ export default function SalesOutreachComposer({
 
       {/* When + submit */}
       <Step label={`${channel === "email" ? "6" : "5"} · When`} />
-      <div className="flex flex-wrap items-center gap-2">
-        <span className={chip(true)}>
+      <div className="mb-2 flex flex-wrap items-center gap-2">
+        <button type="button" onClick={() => { setScheduleMode(false); resetFeedback(); }} className={chip(!scheduleMode)}>
           <Send className="h-3.5 w-3.5" strokeWidth={2} />
           Send now
-        </span>
-        <span className={`${chipBase} cursor-not-allowed border-slate-200 text-slate-400`} title="Coming soon">
+        </button>
+        <button type="button" onClick={() => { setScheduleMode(true); resetFeedback(); }} className={chip(scheduleMode)}>
           <Clock className="h-3.5 w-3.5" strokeWidth={2} />
           Schedule for later
-          <span className="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500">Soon</span>
-        </span>
+        </button>
+        {scheduleMode && (
+          <input
+            type="datetime-local"
+            value={scheduledFor}
+            onChange={(e) => { setScheduledFor(e.target.value); resetFeedback(); }}
+            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs focus:border-blue-400 focus:outline-none"
+          />
+        )}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
         <span className="flex-1" />
         <button
           type="button"
@@ -510,7 +569,9 @@ export default function SalesOutreachComposer({
           disabled={status === "working" || (targetMode === "segment" && segmentCount === 0)}
           className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
         >
-          {channel === "call" ? (
+          {scheduleMode ? (
+            <Clock className="h-4 w-4" strokeWidth={2} />
+          ) : channel === "call" ? (
             <PhoneOutgoing className="h-4 w-4" strokeWidth={2} />
           ) : channel === "email" ? (
             <Mail className="h-4 w-4" strokeWidth={2} />
