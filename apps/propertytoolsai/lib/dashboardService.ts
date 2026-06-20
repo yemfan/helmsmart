@@ -75,14 +75,6 @@ export type ContactRow = {
   created_at: string;
 };
 
-export type PropertyReportRow = {
-  id: string;
-  agent_id: string;
-  address: string | null;
-  report_type: string | null;
-  created_at: string;
-};
-
 type AgentRow = {
   id: string;
   user_id: string;
@@ -252,24 +244,6 @@ export async function getContacts(limit = 200): Promise<ContactRow[]> {
 
   if (error) throw toErrorFromSupabase(error, "Could not load contacts");
   return (data as ContactRow[]) ?? [];
-}
-
-export async function getReports(limit = 200): Promise<PropertyReportRow[]> {
-  const { agentId } = await getCurrentAgentContext();
-  if (!isNumericCrmAgentId(agentId)) {
-    return [];
-  }
-  const supabase = supabaseServerClient();
-
-  const { data, error } = await supabase
-    .from("property_reports")
-    .select("id,agent_id,address,report_type,created_at")
-    .eq("agent_id", agentId)
-    .order("created_at", { ascending: false })
-    .limit(limit);
-
-  if (error) throw toErrorFromSupabase(error, "Could not load property reports");
-  return (data as PropertyReportRow[]) ?? [];
 }
 
 export async function updateLeadStatus(id: string, status: LeadStatus) {
