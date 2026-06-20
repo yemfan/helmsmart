@@ -139,6 +139,14 @@ const navConfig = {
           icon: l(<DoorOpen size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
+          // Showings the Sales Assistant books + their feedback feed
+          // the pipeline, so they live on its desk.
+          label: "Showings",
+          href: "/dashboard/showings",
+          match: ["/dashboard/showings"],
+          icon: l(<Eye size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
           // Inventory + the Presentations tab (a listing presentation
           // is how a listing gets won). match entries are EXACT paths.
           label: "Listings",
@@ -278,15 +286,8 @@ const navConfig = {
       label: "More",
       icon: p(<Wrench size={17} strokeWidth={STROKE} aria-hidden />),
       items: [
-        // Open Houses moved under the Sales Assistant.
-        {
-          label: "Showings",
-          href: "/dashboard/showings",
-          match: ["/dashboard/showings"],
-          icon: l(<Eye size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        // Listings (with the Presentations tab) moved under the
-        // Sales Assistant.
+        // Open Houses, Showings, and Listings (with Presentations) all
+        // moved under the Sales Assistant.
         {
           label: "Sales Model",
           href: "/dashboard/sales-model",
