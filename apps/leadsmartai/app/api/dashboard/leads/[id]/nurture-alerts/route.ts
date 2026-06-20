@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { supabaseServer } from "@/lib/supabaseServer";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 
 export async function GET(
@@ -8,15 +8,14 @@ export async function GET(
 ) {
   try {
     const { id: leadId } = await ctx.params;
+    // Authenticates (throws if no session) and resolves the agent.
     const { agentId } = await getCurrentAgentContext();
 
-    const supabase = supabaseServerClient();
-    const { data: userData, error: userErr } = await supabase.auth.getUser();
-    if (userErr) throw userErr;
-    if (!userData.user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-
-    // Enforce access: lead must belong to the current agent.
-    const { data: leadRow } = await supabase
+    // contacts + nurture_alerts have RLS enabled with no policy, so the
+    // session client is deny-all. Read via the service-role client with an
+    // explicit agent_id filter as the tenant boundary (same pattern as
+    // getContacts / the leads route).
+    const { data: leadRow } = await supabaseServer
       .from("contacts")
       .select("id")
       .eq("id", leadId)
@@ -24,10 +23,11 @@ export async function GET(
       .maybeSingle();
 
     if (!leadRow) {
+      // Lead doesn't belong to this agent (or doesn't exist) — no alerts.
       return NextResponse.json({ ok: true, alerts: [] });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseServer
       .from("nurture_alerts")
       .select("id,type,message,created_at")
       .eq("contact_id", leadId)
@@ -37,11 +37,9 @@ export async function GET(
     if (error) throw error;
 
     return NextResponse.json({ ok: true, alerts: data ?? [] });
-  } catch (e: any) {
-    return NextResponse.json(
-      { ok: false, error: e?.message ?? "Server error" },
-      { status: 500 }
-    );
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Server error";
+    const status = message === "Not authenticated" ? 401 : 500;
+    return NextResponse.json({ ok: false, error: message }, { status });
   }
 }
-
