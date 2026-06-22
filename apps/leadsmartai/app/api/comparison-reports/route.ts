@@ -160,7 +160,9 @@ export async function POST(req: Request) {
     const { data: inserted, error: insErr } = await supabaseServer
       .from("comparison_reports")
       .insert({
-        agent_id: agentId,
+        // comparison_reports.agent_id is uuid → use the auth user id, not the
+        // bigint agents.id (which 500'd with "invalid input syntax for uuid").
+        agent_id: user.id,
         client_name,
         properties,
         result,
