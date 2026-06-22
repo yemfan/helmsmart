@@ -148,7 +148,7 @@ export default function ClientDashboardPage() {
           <p className="font-semibold mb-1">No deal linked yet</p>
           <p className="leading-relaxed">
             We match your login email to a contact on a lead. Ask your agent to add this exact email to your
-            lead in LeadSmart, then refresh. If you expected the agent CRM instead, use{" "}
+            lead in RealtorBoss, then refresh. If you expected the agent CRM instead, use{" "}
             <Link href="/dashboard/overview" className="font-semibold underline underline-offset-2">
               Dashboard overview
             </Link>
