@@ -31,6 +31,34 @@ export type CmaQuota = {
   resetDate: string;
 };
 
+/**
+ * Increment the agent's daily CMA counter. The legacy flow relied on
+ * propertytoolsai's /api/smart-cma to enforce + increment this; now that the
+ * CRM generates CMAs itself (Claude + web search), it owns the increment too.
+ * Best-effort — a counter write must never fail a successful generation.
+ */
+export async function incrementCmaUsage(userId: string): Promise<void> {
+  const today = todayDate();
+  try {
+    const { data } = await supabaseAdmin
+      .from("cma_daily_usage")
+      .select("cma_usage_count, last_reset_date")
+      .eq("subject_key", `user:${userId}`)
+      .maybeSingle();
+    const row = (data ?? null) as { cma_usage_count: number | null; last_reset_date: string | null } | null;
+    const sameDay = row && String(row.last_reset_date ?? "") === today;
+    const next = sameDay ? Number(row?.cma_usage_count ?? 0) + 1 : 1;
+    await supabaseAdmin
+      .from("cma_daily_usage")
+      .upsert(
+        { subject_key: `user:${userId}`, cma_usage_count: next, last_reset_date: today } as never,
+        { onConflict: "subject_key" },
+      );
+  } catch (e) {
+    console.warn("[cma.incrementCmaUsage] failed:", e);
+  }
+}
+
 export async function getCmaQuotaForUser(userId: string): Promise<CmaQuota> {
   const today = todayDate();
   let used = 0;

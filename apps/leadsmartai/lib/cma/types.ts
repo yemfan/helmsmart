@@ -61,6 +61,12 @@ export type CmaValuation = {
   confidenceScore?: number | null;
 };
 
+/** A cited source the AI valuation drew a comp or market fact from. */
+export type CmaSource = {
+  title: string;
+  url: string;
+};
+
 export type CmaSnapshot = {
   subject: CmaSubject;
   comps: CmaCompRow[];
@@ -68,4 +74,14 @@ export type CmaSnapshot = {
   strategies: CmaStrategy | null;
   /** Free-text engine summary, when present. */
   summary?: string | null;
+  /**
+   * How the snapshot was produced. "ai_web_search" = Claude grounded the
+   * comps/value on live web search; "engine" = the legacy propertytoolsai
+   * comps engine. Drives the disclaimer + source rendering.
+   */
+  valuationSource?: "ai_web_search" | "engine" | null;
+  /** Cited sources backing the comps/value (AI valuations only). */
+  sources?: CmaSource[];
+  /** Shown verbatim on the report — e.g. the AI-estimate disclaimer. */
+  disclaimer?: string | null;
 };

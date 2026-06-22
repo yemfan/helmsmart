@@ -145,6 +145,13 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
         </div>
       </div>
 
+      {cma.snapshot.disclaimer ? (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
+          <span className="font-semibold">AI estimate · </span>
+          {cma.snapshot.disclaimer}
+        </div>
+      ) : null}
+
       {/* Headline value range */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-slate-900">Estimated value</h2>
@@ -247,6 +254,31 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
           <p className="mt-2 whitespace-pre-line text-sm text-slate-600">
             {cma.snapshot.summary}
           </p>
+        </section>
+      ) : null}
+
+      {cma.snapshot.sources && cma.snapshot.sources.length > 0 ? (
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-900">
+            Sources ({cma.snapshot.sources.length})
+          </h2>
+          <p className="mt-0.5 text-xs text-slate-500">
+            Where the comps and market data came from — verify before relying on the estimate.
+          </p>
+          <ul className="mt-3 space-y-1.5">
+            {cma.snapshot.sources.map((s, i) => (
+              <li key={`${s.url}-${i}`} className="truncate text-sm">
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  {s.title || s.url}
+                </a>
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
     </div>
