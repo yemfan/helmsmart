@@ -153,6 +153,12 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <a
+            href={`/api/dashboard/cma/${encodeURIComponent(cma.id)}/report`}
+            className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800"
+          >
+            📄 Generate Report
+          </a>
+          <a
             href={`/api/dashboard/cma/${encodeURIComponent(cma.id)}/pdf`}
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
           >
