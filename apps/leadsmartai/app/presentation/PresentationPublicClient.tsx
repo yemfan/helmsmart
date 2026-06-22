@@ -2,47 +2,95 @@
 
 import { useMemo } from "react";
 
-type PresentationData = {
-  property: {
-    address: string;
-    city: string | null;
-    state: string | null;
-    beds: number | null;
-    baths: number | null;
-    sqft: number | null;
-    propertyType: string | null;
-    yearBuilt: number | null;
-  };
-  estimate: {
-    estimatedValue: number | null;
-    low: number | null;
-    high: number | null;
-    avgPricePerSqft: number | null;
-    summary: string;
-  };
-  comps: Array<{
-    address: string;
-    price: number;
-    sqft: number;
-    pricePerSqft: number;
-    distanceMiles: number;
-    soldDate: string;
-    beds: number | null;
-    baths: number | null;
-    propertyType: string | null;
-  }>;
+/**
+ * Public/shared presentation view. The `presentations.data` JSON has had
+ * several shapes over time:
+ *   - current: { property, estimate, comps, pricing_strategy, market_insights, marketing_plan }
+ *   - legacy "seller_comparison": { properties:[{ address, beds, baths, sqft,
+ *       estimatedValue, low, high, avgPricePerSqft, comps }], executive_summary,
+ *       market_overview, recommendation }
+ * We normalize any shape into one safe view model so old links don't crash
+ * (the old code read data.property.address directly → "reading 'address'"
+ * on legacy rows).
+ */
+
+type RawData = Record<string, any> | null | undefined;
+
+type ViewModel = {
+  address: string;
+  beds: number | null;
+  baths: number | null;
+  sqft: number | null;
+  estimatedValue: number | null;
+  low: number | null;
+  high: number | null;
+  comps: Array<{ address: string; price: number | null; soldDate: string | null }>;
   pricing_strategy: string;
   market_insights: string;
   marketing_plan: string;
 };
 
+function num(v: unknown): number | null {
+  if (v == null) return null;
+  const n = typeof v === "number" ? v : Number(String(v).replace(/[$,]/g, ""));
+  return Number.isFinite(n) ? n : null;
+}
+
+function str(v: unknown): string {
+  return typeof v === "string" ? v : v == null ? "" : String(v);
+}
+
+function normalize(data: RawData, fallbackAddress: string): ViewModel {
+  const d = (data ?? {}) as Record<string, any>;
+  // Current shape has `property`; legacy seller_comparison nests the subject
+  // in `properties[0]`.
+  const legacySubject = Array.isArray(d.properties) ? d.properties[0] : undefined;
+  const p = (d.property ?? legacySubject ?? {}) as Record<string, any>;
+  const est = (d.estimate ?? legacySubject ?? {}) as Record<string, any>;
+  const rawComps = Array.isArray(d.comps)
+    ? d.comps
+    : Array.isArray(legacySubject?.comps)
+      ? legacySubject.comps
+      : [];
+
+  const comps = rawComps
+    .filter((c: any) => c && typeof c === "object")
+    .map((c: any) => ({
+      address: str(c.address) || "—",
+      price: num(c.price ?? c.soldPrice ?? c.sold_price),
+      soldDate: c.soldDate ?? c.sold_date ?? null,
+    }));
+
+  return {
+    address: str(p.address) || fallbackAddress || "Listing Presentation",
+    beds: num(p.beds),
+    baths: num(p.baths),
+    sqft: num(p.sqft),
+    estimatedValue: num(est.estimatedValue ?? est.estimated_value),
+    low: num(est.low),
+    high: num(est.high),
+    comps,
+    // Narrative: current keys first, then the legacy equivalents.
+    pricing_strategy: str(d.pricing_strategy || d.recommendation),
+    market_insights: str(d.market_insights || d.market_overview || d.executive_summary),
+    marketing_plan: str(d.marketing_plan || d.executive_summary),
+  };
+}
+
 export default function PresentationPublicClient({
   presentationId,
   data,
+  propertyAddress,
 }: {
   presentationId: string;
-  data: PresentationData;
+  data: RawData;
+  propertyAddress?: string;
 }) {
+  const vm = useMemo(
+    () => normalize(data, propertyAddress ?? ""),
+    [data, propertyAddress],
+  );
+
   const shareUrl = useMemo(() => {
     if (typeof window === "undefined") return "";
     return `${window.location.origin}/presentation/${encodeURIComponent(
@@ -76,11 +124,11 @@ export default function PresentationPublicClient({
       y += 8;
 
       doc.setFontSize(10);
-      doc.text(`Address: ${data.property.address}`, 12, y);
+      doc.text(`Address: ${vm.address}`, 12, y);
       y += 6;
       doc.text(
-        `${data.property.beds ?? "—"} beds • ${data.property.baths ?? "—"} baths • ${
-          data.property.sqft ? Number(data.property.sqft).toLocaleString() : "—"
+        `${vm.beds ?? "—"} beds • ${vm.baths ?? "—"} baths • ${
+          vm.sqft ? vm.sqft.toLocaleString() : "—"
         } sqft`,
         12,
         y
@@ -91,58 +139,34 @@ export default function PresentationPublicClient({
       doc.text("Estimated Value", 10, y);
       y += 6;
       doc.setFontSize(10);
-      doc.text(`Point estimate: ${formatCurrency(data.estimate.estimatedValue)}`, 12, y);
+      doc.text(`Point estimate: ${formatCurrency(vm.estimatedValue)}`, 12, y);
       y += 5;
       doc.text(
-        `Range: ${formatCurrency(data.estimate.low)} – ${formatCurrency(data.estimate.high)}`,
+        `Range: ${formatCurrency(vm.low)} – ${formatCurrency(vm.high)}`,
         12,
         y
       );
       y += 8;
 
-      doc.setFontSize(12);
-      doc.text("Pricing Strategy (AI)", 10, y);
-      y += 6;
-      doc.setFontSize(10);
-      const strategyLines = doc.splitTextToSize(data.pricing_strategy || "", 190);
-      strategyLines.forEach((ln: string) => {
-        if (y > 280) {
-          doc.addPage();
-          y = 10;
-        }
-        doc.text(ln, 12, y);
-        y += 5;
-      });
-
-      doc.addPage();
-      y = 10;
-      doc.setFontSize(12);
-      doc.text("Market Insights (AI)", 10, y);
-      y += 6;
-      const insightLines = doc.splitTextToSize(data.market_insights || "", 190);
-      insightLines.forEach((ln: string) => {
-        if (y > 280) {
-          doc.addPage();
-          y = 10;
-        }
-        doc.text(ln, 12, y);
-        y += 5;
-      });
-
-      doc.addPage();
-      y = 10;
-      doc.setFontSize(12);
-      doc.text("Marketing Plan (AI)", 10, y);
-      y += 6;
-      const planLines = doc.splitTextToSize(data.marketing_plan || "", 190);
-      planLines.forEach((ln: string) => {
-        if (y > 280) {
-          doc.addPage();
-          y = 10;
-        }
-        doc.text(ln, 12, y);
-        y += 5;
-      });
+      const section = (title: string, body: string) => {
+        doc.addPage();
+        y = 10;
+        doc.setFontSize(12);
+        doc.text(title, 10, y);
+        y += 6;
+        doc.setFontSize(10);
+        doc.splitTextToSize(body || "—", 190).forEach((ln: string) => {
+          if (y > 280) {
+            doc.addPage();
+            y = 10;
+          }
+          doc.text(ln, 12, y);
+          y += 5;
+        });
+      };
+      section("Pricing Strategy", vm.pricing_strategy);
+      section("Market Insights", vm.market_insights);
+      section("Marketing Plan", vm.marketing_plan);
 
       doc.save("listing-presentation.pdf");
     } catch (err) {
@@ -163,11 +187,11 @@ export default function PresentationPublicClient({
                 Seller Listing Presentation
               </div>
               <div className="text-2xl font-bold text-slate-900 mt-1">
-                {data.property.address}
+                {vm.address}
               </div>
               <div className="text-sm text-slate-600 mt-2">
                 Estimated range:{" "}
-                {formatCurrency(data.estimate.low)} – {formatCurrency(data.estimate.high)}
+                {formatCurrency(vm.low)} – {formatCurrency(vm.high)}
               </div>
             </div>
 
@@ -193,7 +217,7 @@ export default function PresentationPublicClient({
                 Point Estimate
               </div>
               <div className="text-3xl font-extrabold text-blue-700 mt-2">
-                {formatCurrency(data.estimate.estimatedValue)}
+                {formatCurrency(vm.estimatedValue)}
               </div>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
@@ -201,7 +225,7 @@ export default function PresentationPublicClient({
                 Beds/Baths
               </div>
               <div className="text-sm text-slate-800 font-semibold mt-2">
-                {data.property.beds ?? "—"} Beds • {data.property.baths ?? "—"} Baths
+                {vm.beds ?? "—"} Beds • {vm.baths ?? "—"} Baths
               </div>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
@@ -209,7 +233,7 @@ export default function PresentationPublicClient({
                 Sqft
               </div>
               <div className="text-sm text-slate-800 font-semibold mt-2">
-                {data.property.sqft ? Number(data.property.sqft).toLocaleString() : "—"} Sqft
+                {vm.sqft ? vm.sqft.toLocaleString() : "—"} Sqft
               </div>
             </div>
           </div>
@@ -233,11 +257,13 @@ export default function PresentationPublicClient({
                 </tr>
               </thead>
               <tbody>
-                {data.comps.length ? (
-                  data.comps.slice(0, 8).map((c, idx) => (
+                {vm.comps.length ? (
+                  vm.comps.slice(0, 8).map((c, idx) => (
                     <tr key={idx} className="border-t border-slate-100 hover:bg-slate-50">
                       <td className="px-3 py-2 whitespace-nowrap">{c.address}</td>
-                      <td className="px-3 py-2">{`$${Math.round(c.price).toLocaleString()}`}</td>
+                      <td className="px-3 py-2">
+                        {c.price == null ? "—" : `$${Math.round(c.price).toLocaleString()}`}
+                      </td>
                       <td className="px-3 py-2">{c.soldDate || "—"}</td>
                     </tr>
                   ))
@@ -257,19 +283,19 @@ export default function PresentationPublicClient({
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-2">
             <div className="text-sm font-semibold text-slate-900">Pricing Strategy</div>
             <div className="text-sm text-slate-700 whitespace-pre-wrap">
-              {data.pricing_strategy || "—"}
+              {vm.pricing_strategy || "—"}
             </div>
           </div>
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-2">
             <div className="text-sm font-semibold text-slate-900">Market Insights</div>
             <div className="text-sm text-slate-700 whitespace-pre-wrap">
-              {data.market_insights || "—"}
+              {vm.market_insights || "—"}
             </div>
           </div>
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-2">
             <div className="text-sm font-semibold text-slate-900">Marketing Plan</div>
             <div className="text-sm text-slate-700 whitespace-pre-wrap">
-              {data.marketing_plan || "—"}
+              {vm.marketing_plan || "—"}
             </div>
           </div>
         </div>
@@ -277,4 +303,3 @@ export default function PresentationPublicClient({
     </div>
   );
 }
-
