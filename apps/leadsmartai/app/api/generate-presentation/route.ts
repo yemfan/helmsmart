@@ -43,7 +43,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const ctx = await getCurrentAgentContext();
+    // Resolve the agent context from the SAME user the token gate charged
+    // (gate.user comes from getUserFromRequest, which is Bearer-aware). Passing
+    // it through keeps the gate and the data read/write on one identity so a
+    // request can't deduct tokens from user A while writing user B's data.
+    const ctx = await getCurrentAgentContext(gate.user ?? undefined);
     const presentationAgentId = ctx.userId;
 
     // 1) Valuation + comps from the SAME AI CMA engine the CMA feature

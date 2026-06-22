@@ -38,19 +38,32 @@ type AgentRow = {
   plan_type: "free" | "pro" | "elite" | string;
 };
 
-export async function getCurrentAgentContext(): Promise<{
+export async function getCurrentAgentContext(authUser?: {
+  id: string;
+  email?: string | null;
+}): Promise<{
   userId: string;
   agentId: string;
   planType: AgentRow["plan_type"];
   email: string | null;
 }> {
   const supabase = supabaseServerClient();
-  const { data: userData, error: userErr } = await supabase.auth.getUser();
-  if (userErr) {
-    const m = typeof userErr.message === "string" ? userErr.message.trim() : "";
-    throw new Error(m || "Unable to verify your session");
+
+  // When the caller has already resolved the authenticated user (e.g. a tool
+  // route that gated via `getUserFromRequest`, which is Bearer-aware), reuse
+  // that identity instead of re-reading the cookie session here. Otherwise the
+  // gate and the data lookup are two independent identity sources and a request
+  // carrying a Bearer ≠ cookie would deduct tokens from one user but read/write
+  // another's data. See lib/authFromRequest.ts.
+  let user: { id: string; email?: string | null } | null = authUser ?? null;
+  if (!user) {
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr) {
+      const m = typeof userErr.message === "string" ? userErr.message.trim() : "";
+      throw new Error(m || "Unable to verify your session");
+    }
+    user = userData.user;
   }
-  const user = userData.user;
   if (!user) throw new Error("Not authenticated");
 
   // Prefer agents.auth_user_id mapping (Supabase Auth UUID).
