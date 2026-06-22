@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getActiveAgentEntitlement } from "./getEntitlements";
+import { planSlugToAgentPlan } from "./planCatalog";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { AgentPlan } from "./types";
 
@@ -27,29 +28,6 @@ export function aiDailyLimitForPlan(plan: AgentPlan | null): number | null {
     case "starter":
     default:
       return 1; // free / unknown / no entitlement
-  }
-}
-
-/**
- * Map a leadsmart_users.plan billing slug to the canonical AgentPlan.
- * The user row uses the marketing dialect (free / pro / premium /
- * signature / team — "free" stands in for starter); product_entitlements
- * uses starter / growth / elite / signature / team.
- */
-function planSlugToAgentPlan(slug: string | null | undefined): AgentPlan {
-  switch ((slug ?? "").toLowerCase()) {
-    case "pro":
-      return "growth";
-    case "premium":
-      return "elite";
-    case "signature":
-      return "signature";
-    case "team":
-      return "team";
-    case "free":
-    case "starter":
-    default:
-      return "starter";
   }
 }
 
