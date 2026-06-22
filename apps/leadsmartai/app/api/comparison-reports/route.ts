@@ -5,6 +5,7 @@ import { consumeTokensForTool } from "@/lib/consumeTokens";
 import { calculatePropertyScore, type PropertyInput } from "@/lib/propertyScoring";
 import { generateComparisonReportAi } from "@/lib/comparisonReportAi";
 import type { ComparisonReportResult } from "@/lib/comparisonReportTypes";
+import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 
 export const runtime = "nodejs";
 
@@ -134,26 +135,19 @@ export async function POST(req: Request) {
       scored,
     });
 
-    const { data: profile } = await supabaseServer
-      .from("user_profiles")
-      .select("full_name, phone, leadsmart_users(brokerage)")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    const prof = profile as {
-      full_name?: string | null;
-      phone?: string | null;
-      leadsmart_users?: { brokerage?: string | null } | { brokerage?: string | null }[] | null;
-    } | null;
-    const ls = prof?.leadsmart_users;
-    const lsOne = ls == null ? null : Array.isArray(ls) ? ls[0] : ls;
+    // Full agent profile (name, brokerage, contact, license, headshot, logo)
+    // — same source as the seller presentation / CMA report.
+    const profile = await loadPresentationAgent(agentId);
 
     const result: ComparisonReportResult = {
       agent_snapshot: {
-        display_name: prof?.full_name ?? null,
-        email: user.email ?? null,
-        phone: prof?.phone ?? null,
-        brokerage: lsOne?.brokerage ?? null,
+        display_name: profile.name,
+        email: profile.email ?? user.email ?? null,
+        phone: profile.phone,
+        brokerage: profile.brokerage,
+        license_number: profile.licenseNumber,
+        photo_url: profile.photoUrl,
+        logo_url: profile.logoUrl,
       },
       executive_summary: ai.executive_summary,
       best_property_id: ai.best_property_id,

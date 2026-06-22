@@ -109,10 +109,31 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             <div>
               <p className="text-xs font-semibold uppercase text-slate-500">Your agent</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">
-                {agent.display_name ?? "Your real estate professional"}
-              </p>
-              {agent.brokerage ? <p className="text-slate-600">{agent.brokerage}</p> : null}
+              <div className="mt-2 flex items-center gap-3">
+                {agent.photo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={agent.photo_url}
+                    alt=""
+                    crossOrigin="anonymous"
+                    className="h-12 w-12 shrink-0 rounded-full object-cover"
+                  />
+                ) : null}
+                <div className="min-w-0">
+                  <p className="text-lg font-semibold text-slate-900">
+                    {agent.display_name ?? "Your real estate professional"}
+                  </p>
+                  {agent.brokerage ? <p className="text-slate-600">{agent.brokerage}</p> : null}
+                  {agent.license_number ? (
+                    <p className="text-xs text-slate-500">Lic #{agent.license_number}</p>
+                  ) : null}
+                  {(agent.phone || agent.email) ? (
+                    <p className="mt-0.5 text-xs text-slate-500">
+                      {[agent.phone, agent.email].filter(Boolean).join(" · ")}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
             </div>
             <div className="text-sm text-slate-600">
               <p>
