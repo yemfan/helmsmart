@@ -5,6 +5,9 @@ export type AgentSnapshot = {
   email: string | null;
   phone: string | null;
   brokerage: string | null;
+  license_number?: string | null;
+  photo_url?: string | null;
+  logo_url?: string | null;
 };
 
 export type ComparisonReportResult = {
