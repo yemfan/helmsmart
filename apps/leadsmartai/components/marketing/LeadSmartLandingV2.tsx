@@ -57,6 +57,43 @@ const ExitIntentPopup = dynamic(
 
 const PRIMARY_CTA_HREF = "/onboarding";
 
+/**
+ * Buyer & seller deliverables surfaced on the landing. Hardcoded English
+ * (new section; not yet in the i18n bundles) — concise, benefit-first.
+ */
+const AI_TOOLS: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: ChartBar,
+    title: "AI CMA",
+    body: "Pull live comparable sales and a defensible value range in minutes — grounded in real web sources, not guesswork.",
+  },
+  {
+    icon: Sparkles,
+    title: "Seller Presentation",
+    body: "A branded listing presentation — comps, pricing strategy, marketing plan, schools, and your profile — generated from one address.",
+  },
+  {
+    icon: LineChart,
+    title: "Property Deep Report",
+    body: "A complete buyer-decision report: loan affordability, deal rating, investment ROI, schools, neighborhood, and a location map.",
+  },
+  {
+    icon: Filter,
+    title: "AI House Search",
+    body: "Describe what a buyer wants in plain English; get matched listings and email the best ones to them in a click.",
+  },
+  {
+    icon: Globe2,
+    title: "Comparison Report",
+    body: "Score properties side-by-side on price, value, and fit so buyers can decide with confidence — shareable by link.",
+  },
+  {
+    icon: HandHeart,
+    title: "Net-to-Seller Sheet",
+    body: "A clean, signable net-proceeds summary so sellers see exactly what they walk away with before they accept.",
+  },
+];
+
 /* JUMP_LINKS removed — the in-page jump-link strip was deleted when
  * the marketing chrome switched from a left sidebar to a horizontal
  * top nav. Restore (with the i18n keys that still exist under
@@ -840,6 +877,51 @@ export default function LeadSmartLandingV2() {
                   {t("roi.cta_secondary")}
                 </Button>
               </div>
+            </RevealSection>
+          </div>
+        </section>
+
+        {/* ── AI TOOLS (buyer & seller deliverables) ─── */}
+        <section id="tools" className="border-t border-slate-200/80 bg-slate-50/50 px-6 py-20 dark:border-slate-800 dark:bg-slate-900/30 md:py-24">
+          <div className="mx-auto max-w-6xl">
+            <RevealSection className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#0072ce] dark:text-[#4da3e8]">
+                AI tools for buyers &amp; sellers
+              </p>
+              <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+                Win the listing. Guide the buyer.
+              </h2>
+              <p className="mt-3 text-base text-slate-600 dark:text-slate-300">
+                Beyond the CRM — generate the reports and searches that close deals, each grounded in live web data and branded with your profile.
+              </p>
+            </RevealSection>
+
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {AI_TOOLS.map((tool, i) => (
+                <RevealSection key={tool.title} delay={i * 60}>
+                  <div className="h-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-[#0072ce] dark:bg-slate-800 dark:text-[#4da3e8]">
+                      <tool.icon size={22} aria-hidden />
+                    </div>
+                    <h3 className="mt-4 font-heading text-base font-bold text-slate-900 dark:text-white">
+                      {tool.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                      {tool.body}
+                    </p>
+                  </div>
+                </RevealSection>
+              ))}
+            </div>
+
+            <RevealSection className="mt-10 text-center">
+              <Link
+                href="/features"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0072ce] hover:underline dark:text-[#4da3e8]"
+              >
+                See everything in the platform
+                <ArrowRight size={16} aria-hidden />
+              </Link>
             </RevealSection>
           </div>
         </section>
