@@ -6,6 +6,16 @@ import type { HouseListing, HouseSearchResult } from "@/lib/house-search/types";
 
 type ReachableContact = { id: string; name: string; phone: string; email: string };
 
+type HouseSearchQuota = {
+  used: number;
+  limit: number | null;
+  remaining: number | null;
+  reached: boolean;
+  warning: boolean;
+  unlimited: boolean;
+  resetDate: string;
+};
+
 function money(n: number | null): string {
   if (n == null || !Number.isFinite(n)) return "Price on request";
   return new Intl.NumberFormat("en-US", {
@@ -30,6 +40,7 @@ export default function HouseSearchClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<HouseSearchResult | null>(null);
+  const [quota, setQuota] = useState<HouseSearchQuota | null>(null);
 
   // Refinement checkboxes (suggested by the AI) — checked labels get
   // appended to the next search run.
@@ -37,6 +48,23 @@ export default function HouseSearchClient() {
 
   // Per-listing selection for the email-to-buyer step (default: all).
   const [selected, setSelected] = useState<Set<number>>(new Set());
+
+  // Daily-quota hint on load.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch("/api/dashboard/house-search/quota", { cache: "no-store" });
+        const data = (await res.json().catch(() => ({}))) as { ok?: boolean; quota?: HouseSearchQuota };
+        if (!cancelled && data.ok && data.quota) setQuota(data.quota);
+      } catch {
+        /* non-fatal — the pill just won't render */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const runSearch = useCallback(
     async (refinements: string[]) => {
@@ -54,7 +82,9 @@ export default function HouseSearchClient() {
           ok?: boolean;
           result?: HouseSearchResult;
           error?: string;
+          quota?: HouseSearchQuota;
         };
+        if (data.quota) setQuota(data.quota);
         if (!res.ok || data.ok === false || !data.result) {
           throw new Error(data.error ?? `HTTP ${res.status}`);
         }
@@ -86,9 +116,12 @@ export default function HouseSearchClient() {
     <div className="space-y-6">
       {/* Query */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <label htmlFor="hs-query" className="text-sm font-semibold text-slate-900">
-          What is your buyer looking for?
-        </label>
+        <div className="flex items-start justify-between gap-3">
+          <label htmlFor="hs-query" className="text-sm font-semibold text-slate-900">
+            What is your buyer looking for?
+          </label>
+          {quota ? <QuotaPill quota={quota} /> : null}
+        </div>
         <textarea
           id="hs-query"
           value={query}
@@ -100,12 +133,14 @@ export default function HouseSearchClient() {
         />
         <div className="mt-3 flex items-center justify-between gap-3">
           <span className="text-xs text-slate-400">
-            Searches the live web — results take up to a minute.
+            {quota?.reached
+              ? "Daily limit reached — resets at midnight UTC."
+              : "Searches the live web — results take up to a minute."}
           </span>
           <button
             type="button"
             onClick={onSearch}
-            disabled={loading || query.trim().length === 0}
+            disabled={loading || query.trim().length === 0 || quota?.reached === true}
             className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Searching…" : "Search"}
@@ -254,6 +289,22 @@ export default function HouseSearchClient() {
         </>
       ) : null}
     </div>
+  );
+}
+
+function QuotaPill({ quota }: { quota: HouseSearchQuota }) {
+  const tone = quota.reached
+    ? "bg-rose-50 text-rose-700 ring-rose-200"
+    : quota.warning
+      ? "bg-amber-50 text-amber-700 ring-amber-200"
+      : "bg-slate-50 text-slate-700 ring-slate-200";
+  return (
+    <span
+      className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold ring-1 ${tone}`}
+      title={`Daily House Search quota — resets ${quota.resetDate}`}
+    >
+      {quota.unlimited ? "Unlimited searches" : `${quota.remaining} of ${quota.limit} left today`}
+    </span>
   );
 }
 
