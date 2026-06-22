@@ -116,7 +116,9 @@ export async function createCmaForAgent(
     .insert({
       agent_id: input.agentId,
       contact_id: input.contactId ?? null,
-      subject_address: snapshot.subject.address || subjectAddress,
+      // Store the normalized agent input as the canonical display address
+      // (the route normalized it) rather than the model's free-text echo.
+      subject_address: subjectAddress || snapshot.subject.address,
       subject_json: snapshot.subject,
       comps_json: snapshot.comps,
       valuation_json: snapshot.valuation,
