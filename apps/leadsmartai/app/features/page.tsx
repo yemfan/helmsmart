@@ -71,8 +71,8 @@ const TEAM: TeamMember[] = [
   },
   {
     name: "Boss Assistant",
-    role: "Runs your day",
-    body: "Your command center — sees every lead, deal, and task, surfaces what needs you first, and tells the rest of the team what to do next.",
+    role: "Your chief of staff",
+    body: "You're the boss — just say what you want done. Your Boss Assistant figures out who should handle it, delegates to the right teammate, and reports back. One command in; the whole team to work.",
     icon: House,
     accent: "bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300",
   },
@@ -178,9 +178,9 @@ export default function FeaturesPage() {
             <br className="hidden md:inline" /> that answers the phone
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base text-slate-600 md:text-lg dark:text-slate-400">
-            An AI receptionist that picks up every call, a sales assistant that follows up,
-            and marketing, transaction, and accounting assistants behind them. You close —
-            your team handles the rest.
+            You're the boss — give one command to your Boss Assistant and it arranges the
+            work: the receptionist answers, sales follows up, marketing fills the pipeline,
+            and transactions and accounting handle the rest. You finally own a real team.
           </p>
 
           {/* Team chips */}
@@ -281,14 +281,15 @@ export default function FeaturesPage() {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              Meet the team
+              You're the boss
             </p>
             <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
               Six AI teammates. One you.
             </h2>
             <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-              Each assistant owns a job a great brokerage would hire for — working together,
-              around the clock, so you can do the part only you can: build relationships and close.
+              Tell the Boss Assistant what you want done — it arranges the work and puts the
+              right teammate on it, around the clock. You finally own a real team, without the
+              payroll, so you can do the part only you can: build relationships and close.
             </p>
           </div>
 
