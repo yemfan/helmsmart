@@ -30,21 +30,66 @@ export function aiDailyLimitForPlan(plan: AgentPlan | null): number | null {
   }
 }
 
+/**
+ * Map a leadsmart_users.plan billing slug to the canonical AgentPlan.
+ * The user row uses the marketing dialect (free / pro / premium /
+ * signature / team — "free" stands in for starter); product_entitlements
+ * uses starter / growth / elite / signature / team.
+ */
+function planSlugToAgentPlan(slug: string | null | undefined): AgentPlan {
+  switch ((slug ?? "").toLowerCase()) {
+    case "pro":
+      return "growth";
+    case "premium":
+      return "elite";
+    case "signature":
+      return "signature";
+    case "team":
+      return "team";
+    case "free":
+    case "starter":
+    default:
+      return "starter";
+  }
+}
+
 export type AiTierLimit = {
   plan: AgentPlan | null;
   /** null = unlimited. */
   limit: number | null;
 };
 
-/** Resolve the active plan for an auth user and map it to a daily AI limit. */
+/**
+ * Resolve the active plan for an auth user and map it to a daily AI limit.
+ *
+ * Source of truth is product_entitlements. But that table can lag behind a
+ * paid user's actual plan (e.g. a comp/admin-set "premium" with no synced
+ * entitlement row), which would silently under-limit them to free. So when
+ * there's no active entitlement, we fall back to leadsmart_users.plan —
+ * but only honor a PAID tier when the subscription is active, so a lapsed
+ * plan can't keep granting unlimited.
+ */
 export async function getAiTierLimitForUser(userId: string): Promise<AiTierLimit> {
-  let plan: AgentPlan | null = null;
   try {
     const ent = await getActiveAgentEntitlement(supabaseAdmin, userId);
-    plan = ent?.plan ?? null;
+    if (ent?.plan) {
+      return { plan: ent.plan, limit: aiDailyLimitForPlan(ent.plan) };
+    }
+
+    // No active entitlement — fall back to the user row's plan.
+    const { data } = await supabaseAdmin
+      .from("leadsmart_users")
+      .select("plan, subscription_status")
+      .eq("user_id", userId)
+      .maybeSingle();
+    const row = (data ?? null) as { plan: string | null; subscription_status: string | null } | null;
+    if (row && (row.subscription_status ?? "").toLowerCase() === "active") {
+      const plan = planSlugToAgentPlan(row.plan);
+      return { plan, limit: aiDailyLimitForPlan(plan) };
+    }
   } catch (e) {
-    console.warn("[aiTierLimit] entitlement read failed; treating as free:", e);
-    plan = null;
+    console.warn("[aiTierLimit] plan read failed; treating as free:", e);
   }
-  return { plan, limit: aiDailyLimitForPlan(plan) };
+  // Default: free tier.
+  return { plan: null, limit: aiDailyLimitForPlan(null) };
 }
