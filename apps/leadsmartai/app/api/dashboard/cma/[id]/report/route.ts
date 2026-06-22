@@ -1,18 +1,18 @@
-import { buildCmaPdf } from "@/lib/cma/buildCmaPdf";
+import { buildCmaReportPdf } from "@/lib/cma/buildCmaReportPdf";
 import { loadAgentIdentity } from "@/lib/cma/loadAgentIdentity";
 import { getCmaForAgent } from "@/lib/cma/service";
+import { fetchSubjectPhoto } from "@/lib/cma/streetViewPhoto";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 
 export const runtime = "nodejs";
 
 /**
- * GET /api/dashboard/cma/[id]/pdf
+ * GET /api/dashboard/cma/[id]/report
  *
- * Streams a printable / shareable CMA PDF for a saved report. Agent
- * identity (name, brokerage, license, contact info) is best-effort:
- * the PDF still generates with blank fields if any of them are
- * missing. RLS gates ownership at the DB layer; we double-check by
- * fetching with `getCmaForAgent` (returns null for unauthorized).
+ * Streams the presentation-grade CMA report — branded cover with a
+ * single Street View photo of the subject, hero value range, listing
+ * strategies, comps, and cited sources. Distinct from /pdf (the plain
+ * quick export). RLS gates ownership; we re-check via getCmaForAgent.
  */
 export async function GET(
   _req: Request,
@@ -27,23 +27,26 @@ export async function GET(
       return new Response("Not found", { status: 404 });
     }
 
-    const agent = await loadAgentIdentity(String(agentId));
+    const [agent, photo] = await Promise.all([
+      loadAgentIdentity(String(agentId)),
+      fetchSubjectPhoto(cma.snapshot.subject.address || cma.subjectAddress),
+    ]);
 
-    const bytes = buildCmaPdf({
+    const bytes = buildCmaReportPdf({
       snapshot: cma.snapshot,
       title: cma.title,
       agent,
+      photo,
       generatedAtIso: cma.createdAt,
     });
 
-    const addrSlug = cma.subjectAddress
-      .replace(/[^a-z0-9]+/gi, "-")
-      .toLowerCase()
-      .slice(0, 60) || "cma";
-    const filename = `cma-${addrSlug}-${cma.createdAt.slice(0, 10)}.pdf`;
+    const addrSlug =
+      cma.subjectAddress
+        .replace(/[^a-z0-9]+/gi, "-")
+        .toLowerCase()
+        .slice(0, 60) || "cma";
+    const filename = `cma-report-${addrSlug}-${cma.createdAt.slice(0, 10)}.pdf`;
 
-    // jsPDF returns a Uint8Array; wrap to satisfy the Blob constructor's
-    // strict BodyInit typing under lib.dom.
     const pdfBlob = new Blob([bytes.buffer as ArrayBuffer], {
       type: "application/pdf",
     });
@@ -57,7 +60,7 @@ export async function GET(
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
-    console.error("cma pdf:", err);
+    console.error("cma report:", err);
     return new Response(message, { status: 500 });
   }
 }
