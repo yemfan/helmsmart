@@ -13,7 +13,10 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       return NextResponse.json({ ok: false, error: "Not authenticated" }, { status: 401 });
     }
 
-    const { agentId } = await getCurrentAgentContext();
+    // Resolve the agent from the SAME (Bearer-aware) user the purchase is
+    // charged to — otherwise a Bearer ≠ cookie request would buy with one
+    // user's id but another's agent_id. See lib/authFromRequest.ts.
+    const { agentId } = await getCurrentAgentContext(user);
     const { id: opportunityId } = await ctx.params;
     if (!opportunityId) {
       return NextResponse.json({ ok: false, error: "Opportunity id is required" }, { status: 400 });
