@@ -227,11 +227,15 @@ export function buildCmaPdf(input: BuildCmaPdfInput): Uint8Array {
   doc.setFont("helvetica", "italic");
   doc.setFontSize(8);
   doc.setTextColor(130);
-  const disclosure = [
-    "This analysis is an opinion of value based on recent comparable sales and is not an appraisal. Actual",
-    "sale price depends on market timing, condition, presentation, and buyer demand at listing.",
-    `Generated ${formatDate(generatedAt)} by LeadSmart AI.`,
-  ];
+  // Prefer the snapshot's own disclaimer (the AI-estimate wording) when set,
+  // wrapped to the content width; otherwise the generic comps-engine wording.
+  const disclaimerLines = snapshot.disclaimer
+    ? (doc.splitTextToSize(snapshot.disclaimer, 500) as string[])
+    : [
+        "This analysis is an opinion of value based on recent comparable sales and is not an appraisal. Actual",
+        "sale price depends on market timing, condition, presentation, and buyer demand at listing.",
+      ];
+  const disclosure = [...disclaimerLines, `Generated ${formatDate(generatedAt)} by LeadSmart AI.`];
   let dy = footerY;
   for (const line of disclosure) {
     doc.text(line, LEFT_MARGIN, dy);

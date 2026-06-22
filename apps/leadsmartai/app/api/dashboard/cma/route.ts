@@ -9,6 +9,8 @@ import {
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 
 export const runtime = "nodejs";
+// AI CMA generation runs a live web-search loop — give it room.
+export const maxDuration = 300;
 
 /**
  * GET   — list this agent's CMA reports (denormalized fields only).
@@ -31,7 +33,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId, userId } = await getCurrentAgentContext();
     const body = (await req.json().catch(() => ({}))) as {
       subjectAddress?: unknown;
       contactId?: unknown;
@@ -55,6 +57,7 @@ export async function POST(req: Request) {
 
     const input: CreateCmaInput = {
       agentId: String(agentId),
+      userId: String(userId),
       subjectAddress,
       contactId: typeof body.contactId === "string" ? body.contactId : null,
       title: typeof body.title === "string" ? body.title : null,

@@ -3,7 +3,9 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 import { denormalize } from "./denormalize";
-import { fetchSmartCma, isSmartCmaFailure } from "./fetchSmartCma";
+import { generateAiCma } from "./aiCma";
+import { isSmartCmaFailure } from "./fetchSmartCma";
+import { getCmaQuotaForUser, incrementCmaUsage } from "./quota";
 import type { CmaSnapshot, CmaCompRow, CmaSubject, CmaValuation, CmaStrategy } from "./types";
 
 /**
@@ -44,6 +46,8 @@ export type CmaFullRow = CmaListRow & {
 
 export type CreateCmaInput = {
   agentId: string;
+  /** Auth user id — keys the daily CMA quota (cma_daily_usage). */
+  userId: string;
   subjectAddress: string;
   contactId?: string | null;
   title?: string | null;
@@ -76,7 +80,18 @@ export async function createCmaForAgent(
     return { ok: false, status: 400, error: "Subject address is required." };
   }
 
-  const fetched = await fetchSmartCma({
+  // The AI generation costs real tokens + web searches, so enforce the daily
+  // quota up front (the propertytoolsai engine used to own this check).
+  const quota = await getCmaQuotaForUser(input.userId);
+  if (quota.reached) {
+    return {
+      ok: false,
+      status: 429,
+      error: `Daily CMA limit reached (${quota.limit}/day). Resets tomorrow.`,
+    };
+  }
+
+  const fetched = await generateAiCma({
     address: subjectAddress,
     leadId: input.contactId ?? null,
     beds: input.beds,
@@ -90,6 +105,10 @@ export async function createCmaForAgent(
   }
   const snapshot = fetched.snapshot;
 
+  // Count the run only after a successful generation (don't burn quota on
+  // failures). Best-effort — never fails the request.
+  await incrementCmaUsage(input.userId);
+
   const denorm = denormalize(snapshot);
 
   const { data, error } = await supabaseAdmin
@@ -102,6 +121,9 @@ export async function createCmaForAgent(
       comps_json: snapshot.comps,
       valuation_json: snapshot.valuation,
       strategies_json: snapshot.strategies,
+      // Full snapshot incl. AI sources/summary/disclaimer — the per-field
+      // columns above stay populated for the denormalized list view.
+      snapshot_json: snapshot,
       estimated_value: denorm.estimatedValue,
       low_estimate: denorm.lowEstimate,
       high_estimate: denorm.highEstimate,
@@ -111,7 +133,7 @@ export async function createCmaForAgent(
       notes: input.notes ?? null,
     } as never)
     .select(
-      "id, agent_id, contact_id, subject_address, subject_json, comps_json, valuation_json, strategies_json, estimated_value, low_estimate, high_estimate, confidence_score, comp_count, title, notes, created_at, updated_at",
+      "id, agent_id, contact_id, subject_address, subject_json, comps_json, valuation_json, strategies_json, snapshot_json, estimated_value, low_estimate, high_estimate, confidence_score, comp_count, title, notes, created_at, updated_at",
     )
     .single();
 
@@ -153,7 +175,7 @@ export async function getCmaForAgent(
   const { data, error } = await supabaseAdmin
     .from("cma_reports")
     .select(
-      "id, agent_id, contact_id, subject_address, subject_json, comps_json, valuation_json, strategies_json, estimated_value, low_estimate, high_estimate, confidence_score, comp_count, title, notes, created_at, updated_at",
+      "id, agent_id, contact_id, subject_address, subject_json, comps_json, valuation_json, strategies_json, snapshot_json, estimated_value, low_estimate, high_estimate, confidence_score, comp_count, title, notes, created_at, updated_at",
     )
     .eq("id", cmaId)
     .eq("agent_id", agentId)
@@ -203,6 +225,7 @@ type RawCmaRow = RawCmaListRow & {
   comps_json: unknown;
   valuation_json: unknown;
   strategies_json: unknown;
+  snapshot_json: unknown;
   notes: string | null;
   updated_at: string;
 };
@@ -224,6 +247,17 @@ function rowToList(r: RawCmaListRow): CmaListRow {
 }
 
 function rowToFull(r: RawCmaRow): CmaFullRow {
+  // Newer rows store the complete snapshot (incl. AI sources/summary/
+  // disclaimer) in snapshot_json; fall back to the per-field columns for
+  // rows written before that column existed.
+  if (r.snapshot_json && typeof r.snapshot_json === "object") {
+    return {
+      ...rowToList(r),
+      snapshot: r.snapshot_json as CmaSnapshot,
+      notes: r.notes,
+      updatedAt: r.updated_at,
+    };
+  }
   const snapshot: CmaSnapshot = {
     subject: (r.subject_json ?? {
       address: r.subject_address,
