@@ -2,62 +2,150 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
-  Bot,
-  Calendar,
+  BarChart3,
+  CalendarCheck,
   CheckCircle2,
-  Filter,
-  Globe2,
-  HandHeart,
-  HeartHandshake,
-  LayoutGrid,
-  LineChart,
+  ClipboardList,
+  Headphones,
+  House,
+  Megaphone,
   MessageCircle,
-  MessagesSquare,
+  Mic,
   PhoneCall,
   PhoneMissed,
-  Settings2,
+  Receipt,
   Sparkles,
   TrendingUp,
-  Wand2,
-  Zap,
   type LucideIcon,
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Features — RealtorBoss",
+  title: "Your AI Real Estate Team — RealtorBoss",
   description:
-    "A complete AI system to turn leads into closed deals — capture, qualify, follow up, convert, and scale, including Missed Call Recovery AI and an AI Sales Style Engine that adapts to how you sell.",
+    "RealtorBoss is an AI team for real estate agents — an AI receptionist that answers every call, a sales assistant that follows up, plus marketing, transaction, and accounting assistants. Never miss a call or a lead again.",
   keywords: [
-    "real estate CRM features",
-    "real estate AI",
-    "missed call recovery",
-    "AI lead capture",
-    "AI follow up",
-    "real estate sales coaching",
+    "AI real estate team",
+    "AI receptionist real estate",
+    "AI voice calls real estate",
+    "missed call text back",
+    "real estate AI assistant",
+    "real estate virtual assistant",
   ],
   alternates: { canonical: "/features" },
   openGraph: {
-    title: "Features — RealtorBoss",
+    title: "Your AI Real Estate Team — RealtorBoss",
     description:
-      "Capture → Qualify → Follow Up → Convert → Close. The full RealtorBoss feature breakdown, including the Missed Call Recovery AI signature feature.",
+      "An AI team that answers the phone, follows up, markets your listings, coordinates the deal, and keeps the books.",
     url: "/features",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Features — RealtorBoss",
-    description: "The full RealtorBoss feature set in one page.",
+    title: "Your AI Real Estate Team — RealtorBoss",
+    description: "An AI team that answers the phone, follows up, and closes.",
   },
 };
 
 const PRIMARY_CTA_HREF = "/onboarding";
 
+const BRAND = "#0072ce";
+
+type TeamMember = {
+  name: string;
+  role: string;
+  body: string;
+  icon: LucideIcon;
+  accent: string; // tailwind text + bg tones
+  voice?: boolean;
+};
+
+const TEAM: TeamMember[] = [
+  {
+    name: "AI Receptionist",
+    role: "Answers every call — 24/7",
+    body: "Picks up live calls, qualifies the caller, books showings and appointments, and texts back instantly when you can't answer. Your phone is never unattended again.",
+    icon: Headphones,
+    accent: "bg-blue-50 text-[#0072ce] dark:bg-blue-900/30 dark:text-[#4da3e8]",
+    voice: true,
+  },
+  {
+    name: "Boss Assistant",
+    role: "Runs your day",
+    body: "Your command center — sees every lead, deal, and task, surfaces what needs you first, and tells the rest of the team what to do next.",
+    icon: House,
+    accent: "bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300",
+  },
+  {
+    name: "Sales Assistant",
+    role: "Follows up & converts",
+    body: "Works every lead by call, text, and email, runs CMAs and listing presentations, searches homes for buyers, and never lets a follow-up slip.",
+    icon: TrendingUp,
+    accent: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300",
+  },
+  {
+    name: "Marketing Assistant",
+    role: "Fills your pipeline",
+    body: "Generates leads, nurtures your sphere, and keeps you visible — campaigns, content, and outreach that bring new business while you work the ones you have.",
+    icon: Megaphone,
+    accent: "bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300",
+  },
+  {
+    name: "Transaction Assistant",
+    role: "Coordinates to close",
+    body: "Drives every deal from accepted offer to keys — coordinator board, offers, and a per-deal coach for pricing, risk, and negotiation.",
+    icon: ClipboardList,
+    accent: "bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-300",
+  },
+  {
+    name: "Accountant",
+    role: "Keeps the books",
+    body: "Invoices, expenses, and commission tracking — so you always know what's earned, what's owed, and what closed.",
+    icon: Receipt,
+    accent: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  },
+];
+
+const VOICE_POINTS: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: PhoneCall,
+    title: "Answers live, in your voice",
+    body: "A natural AI voice picks up inbound calls, answers questions about a listing, and qualifies the caller — day or night.",
+  },
+  {
+    icon: PhoneMissed,
+    title: "Missed-call text-back",
+    body: "Can't pick up? The moment a call ends unanswered, the caller gets a friendly text in seconds — before they call the next agent.",
+  },
+  {
+    icon: CalendarCheck,
+    title: "Books showings & appointments",
+    body: "Captures intent and puts the appointment on your calendar, then hands a qualified lead to the Sales Assistant.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Every call becomes a lead",
+    body: "Callers are logged, transcribed, and added to your pipeline automatically — no sticky notes, no lost numbers.",
+  },
+];
+
+const DAY_FLOW: Array<{ label: string; icon: LucideIcon }> = [
+  { label: "Call comes in", icon: PhoneCall },
+  { label: "Receptionist answers + qualifies", icon: Headphones },
+  { label: "Sales follows up", icon: TrendingUp },
+  { label: "Transaction coordinates", icon: ClipboardList },
+  { label: "Deal closes", icon: CheckCircle2 },
+];
+
+const TOOLS: Array<{ icon: LucideIcon; title: string }> = [
+  { icon: BarChart3, title: "AI CMA" },
+  { icon: Sparkles, title: "Seller Presentation" },
+  { icon: BarChart3, title: "Property Deep Report" },
+  { icon: House, title: "AI House Search" },
+];
+
 export default function FeaturesPage() {
-  /* AppShell already wraps non-home pages with `MarketingTopChrome`
-   * (top bar) + `PremiumSidebar` + `Footer`. The page's own
-   * `<header>` was stacking on top of that, producing two top bars
-   * and two `<main>` landmarks. Drop both — emit just the section
-   * content and let AppShell own the chrome. */
+  /* AppShell owns the marketing chrome (top nav + footer); this page
+   * emits only its section content. */
   return (
     <>
       {/* ── HERO ─── */}
@@ -73,34 +161,31 @@ export default function FeaturesPage() {
         </div>
         <div className="relative mx-auto max-w-4xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0072ce]">
-            Every feature, in one place
+            Not a CRM — a team
           </p>
           <h1 className="mt-4 font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-gray-950 md:text-5xl lg:text-[3.25rem] dark:text-white">
-            A Complete{" "}
+            Your{" "}
             <span className="bg-gradient-to-r from-[#0072ce] via-[#4F46E5] to-[#7c3aed] bg-clip-text text-transparent">
-              AI System
+              AI real estate team
             </span>
-            <br className="hidden md:inline" /> to Turn Leads Into Closed Deals
+            <br className="hidden md:inline" /> that answers the phone
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base text-slate-600 md:text-lg dark:text-slate-400">
-            Capture, qualify, follow up, and convert every lead — automatically — with
-            your AI-powered growth engine for real estate agents.
+            An AI receptionist that picks up every call, a sales assistant that follows up,
+            and marketing, transaction, and accounting assistants behind them. You close —
+            your team handles the rest.
           </p>
 
-          {/* Workflow tagline */}
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-            {["Capture", "Qualify", "Follow Up", "Convert", "Close"].map(
-              (step, i, arr) => (
-                <span key={step} className="flex items-center gap-1.5">
-                  <span className="rounded-full bg-blue-50 px-3 py-1 text-[#0072ce] ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-[#4da3e8] dark:ring-blue-800">
-                    {step}
-                  </span>
-                  {i < arr.length - 1 ? (
-                    <span aria-hidden className="text-slate-400">→</span>
-                  ) : null}
-                </span>
-              ),
-            )}
+          {/* Team chips */}
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+            {TEAM.map((m) => (
+              <span
+                key={m.name}
+                className="rounded-full bg-white px-3 py-1 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
+              >
+                {m.name}
+              </span>
+            ))}
           </div>
 
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
@@ -108,139 +193,113 @@ export default function FeaturesPage() {
               href={PRIMARY_CTA_HREF}
               className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0072ce] px-7 py-3 text-base font-semibold text-white shadow-lg shadow-[#0072ce]/20 transition hover:bg-[#005ba8] hover:shadow-xl"
             >
-              Start Your AI Deal Engine
+              Hire your AI team
               <ArrowRight size={18} aria-hidden />
             </Link>
             <Link
               href="/contact"
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-base font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              Book a Demo
+              Hear it answer a call
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ─── */}
-      <section className="bg-slate-50/70 px-6 py-20 dark:bg-slate-900/30 md:py-24">
+      {/* ── VOICE SPOTLIGHT — the differentiator ─── */}
+      <section className="border-b border-slate-200/70 bg-gradient-to-b from-blue-50/60 via-white to-white px-6 py-20 dark:border-slate-800 dark:from-blue-950/20 dark:via-slate-950 dark:to-slate-950 md:py-24">
         <div className="mx-auto max-w-6xl">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              The deal flow
-            </p>
-            <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-              From First Click to Closing —{" "}
-              <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
-                handled by AI
-              </span>
-            </h2>
-            <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-              RealtorBoss connects every step of your pipeline into one seamless system —
-              so no lead is missed, delayed, or forgotten.
-            </p>
-          </div>
-
-          <div className="mt-12">
-            <FlowDiagram
-              steps={[
-                { label: "Traffic", icon: Globe2, tone: "slate" },
-                { label: "AI Capture", icon: Filter, tone: "blue" },
-                { label: "AI Qualify", icon: Sparkles, tone: "violet" },
-                { label: "AI Follow-up", icon: MessagesSquare, tone: "amber" },
-                { label: "Agent", icon: HandHeart, tone: "emerald" },
-                { label: "Deal Closed", icon: CheckCircle2, tone: "green" },
-              ]}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ── GROWTH ENGINE — 5 deep pillar sections ─── */}
-      {GROWTH_ENGINE.map((p) => (
-        <PillarSection key={p.id} pillar={p} />
-      ))}
-
-      {/* ── AI SALES STYLE ENGINE ─── */}
-      <section className="border-y border-slate-200/80 bg-gradient-to-b from-white via-blue-50/30 to-white px-6 py-20 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 md:py-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              The differentiator
-            </p>
-            <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-              Your AI — your sales style
-            </h2>
-            <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-              Most tools send generic messages. RealtorBoss adapts to how{" "}
-              <span className="font-semibold text-slate-800 dark:text-slate-200">YOU</span>{" "}
-              sell.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {SALES_STYLES.map((s) => (
-              <div
-                key={s.name}
-                className="flex h-full flex-col rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900"
-              >
-                <div className={`inline-flex h-12 w-12 items-center justify-center rounded-xl text-2xl ${s.chip.bg} ${s.chip.text}`}>
-                  {s.emoji}
-                </div>
-                <h3 className="mt-4 font-heading text-lg font-bold text-slate-900 dark:text-white">
-                  {s.name}
-                </h3>
-                <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                  {s.tagline}
-                </p>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                  {s.body}
-                </p>
-                <p className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Best for:{" "}
-                  <span className="text-slate-700 dark:text-slate-200">{s.bestFor}</span>
-                </p>
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <p className="inline-flex items-center gap-2 rounded-full bg-[#0072ce]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#0072ce]">
+                <Mic size={13} aria-hidden /> Voice, not just chat
+              </p>
+              <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-slate-900 md:text-4xl dark:text-white">
+                Your AI Receptionist answers{" "}
+                <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
+                  every call
+                </span>
+              </h2>
+              <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
+                Agents lose deals to the agent who picks up first. RealtorBoss answers the
+                phone for you — live, 24/7 — qualifies the caller, books the appointment, and
+                texts back the second a call goes unanswered.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  href={PRIMARY_CTA_HREF}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0072ce] px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-[#005ba8]"
+                >
+                  Set up your receptionist
+                  <ArrowRight size={16} aria-hidden />
+                </Link>
               </div>
-            ))}
-          </div>
+            </div>
 
-          <p className="mt-10 text-center text-sm font-semibold text-slate-700 dark:text-slate-300">
-            👉 Stand out in a crowded market.
-          </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {VOICE_POINTS.map((v) => (
+                <div
+                  key={v.title}
+                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#0072ce] dark:bg-blue-900/30 dark:text-[#4da3e8]">
+                    <v.icon size={20} aria-hidden />
+                  </div>
+                  <h3 className="mt-3 font-heading text-sm font-bold text-slate-900 dark:text-white">
+                    {v.title}
+                  </h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                    {v.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── RESULTS ─── */}
+      {/* ── MEET THE TEAM ─── */}
       <section className="px-6 py-20 md:py-24">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              Built to increase closings — not just activity
+              Meet the team
             </p>
             <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-              Speed + consistency ={" "}
-              <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
-                revenue
-              </span>
+              Six AI teammates. One you.
             </h2>
+            <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
+              Each assistant owns a job a great brokerage would hire for — working together,
+              around the clock, so you can do the part only you can: build relationships and close.
+            </p>
           </div>
 
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {RESULTS.map((r) => (
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {TEAM.map((m) => (
               <div
-                key={r.label}
-                className="flex h-full flex-col rounded-2xl border-2 border-slate-200/80 bg-white p-7 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+                key={m.name}
+                className={`relative h-full rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:bg-slate-900 ${
+                  m.voice
+                    ? "border-[#0072ce]/40 ring-1 ring-[#0072ce]/20 dark:border-[#0072ce]/40"
+                    : "border-slate-200/80 dark:border-slate-800"
+                }`}
               >
-                <span aria-hidden className="text-3xl">
-                  {r.emoji}
-                </span>
-                <p className="mt-3 font-heading text-4xl font-extrabold text-[#0072ce] md:text-5xl">
-                  {r.value}
+                {m.voice ? (
+                  <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0072ce]">
+                    <Mic size={11} aria-hidden /> Voice
+                  </span>
+                ) : null}
+                <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${m.accent}`}>
+                  <m.icon size={22} aria-hidden />
+                </div>
+                <h3 className="mt-4 font-heading text-lg font-bold text-slate-900 dark:text-white">
+                  {m.name}
+                </h3>
+                <p className="mt-0.5 text-sm font-semibold text-[#0072ce] dark:text-[#4da3e8]">
+                  {m.role}
                 </p>
-                <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  {r.label}
-                </p>
-                <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                  {r.body}
+                <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  {m.body}
                 </p>
               </div>
             ))}
@@ -248,121 +307,59 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* ── WHY LEADSMART AI ─── */}
+      {/* ── HOW THEY WORK TOGETHER ─── */}
       <section className="border-y border-slate-200/80 bg-slate-50/70 px-6 py-20 dark:border-slate-800 dark:bg-slate-900/30 md:py-24">
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              Why RealtorBoss
+              One handoff to the next
             </p>
             <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-              Not just a CRM —{" "}
-              <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
-                a full AI closing engine
-              </span>
+              From ring to closing — handled
             </h2>
           </div>
-
-          <div className="mt-10 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    Traditional Tools
-                  </th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[#0072ce] dark:text-[#4da3e8]">
-                    RealtorBoss
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {COMPARISON.map((row) => (
-                  <tr key={row.left}>
-                    <td className="px-5 py-3.5 text-slate-600 dark:text-slate-400">
-                      <span className="mr-2 text-slate-400">✕</span>
-                      {row.left}
-                    </td>
-                    <td className="px-5 py-3.5 font-medium text-slate-900 dark:text-white">
-                      <span className="mr-2 text-emerald-600">✓</span>
-                      {row.right}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="mt-12 flex flex-wrap items-stretch justify-center gap-3">
+            {DAY_FLOW.map((step, i, arr) => (
+              <div key={step.label} className="flex items-center gap-3">
+                <div className="flex w-36 flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-5 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#0072ce] dark:bg-blue-900/30 dark:text-[#4da3e8]">
+                    <step.icon size={20} aria-hidden />
+                  </div>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                    {step.label}
+                  </span>
+                </div>
+                {i < arr.length - 1 ? (
+                  <ArrowRight size={18} className="shrink-0 text-slate-400" aria-hidden />
+                ) : null}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── ROI ─── */}
-      <section className="bg-gradient-to-b from-rose-50/80 via-white to-white px-6 py-20 dark:from-rose-950/15 dark:via-slate-950 dark:to-slate-950 md:py-24">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-700 dark:text-rose-400">
-            The cost of doing nothing
+      {/* ── TOOLS the team brings ─── */}
+      <section className="px-6 py-20 md:py-24">
+        <div className="mx-auto max-w-5xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
+            And the deliverables clients see
           </p>
-          <h2 className="mt-2 font-heading text-3xl font-bold leading-tight text-slate-900 md:text-4xl dark:text-white">
-            How many deals are you{" "}
-            <span className="text-rose-700 dark:text-rose-400">losing right now</span>?
+          <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+            Reports that win listings and guide buyers
           </h2>
-          <p className="mt-5 text-base text-slate-700 dark:text-slate-300 md:text-lg">
-            If you respond late, miss calls, or forget follow-ups — you&apos;re losing
-            deals every single month.
-          </p>
-
-          <div className="mx-auto mt-10 grid max-w-2xl gap-4 md:grid-cols-2">
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 text-left shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <p className="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
-                Without LeadSmart
-              </p>
-              <ul className="mt-3 space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-rose-500">✕</span>
-                  Hot leads going to whoever replied first
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-rose-500">✕</span>
-                  Missed calls staying missed
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-rose-500">✕</span>
-                  Follow-up cadence breaking after message two
-                </li>
-              </ul>
-            </div>
-            <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 p-5 text-left shadow-sm dark:border-emerald-800 dark:bg-emerald-950/30">
-              <p className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                With RealtorBoss
-              </p>
-              <ul className="mt-3 space-y-2 text-sm text-slate-700 dark:text-slate-200">
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-emerald-600">✓</span>
-                  Every lead is captured
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-emerald-600">✓</span>
-                  Every lead is engaged
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-0.5 text-emerald-600">✓</span>
-                  Every lead is nurtured
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <Link
-              href={PRIMARY_CTA_HREF}
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0072ce] px-6 py-3 text-base font-semibold text-white shadow-lg transition hover:bg-[#005ba8]"
-            >
-              Start Closing More Deals Today
-            </Link>
-            <Link
-              href="/agent/pricing"
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-base font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-            >
-              Estimate Your ROI
-            </Link>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            {TOOLS.map((tool) => (
+              <span
+                key={tool.title}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              >
+                <tool.icon size={16} className="text-[#0072ce]" aria-hidden />
+                {tool.title}
+              </span>
+            ))}
+            <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
+              + Comparison Report &amp; Net-to-Seller
+            </span>
           </div>
         </div>
       </section>
@@ -371,431 +368,29 @@ export default function FeaturesPage() {
       <section className="px-6 py-20 md:py-24">
         <div className="mx-auto max-w-4xl rounded-3xl bg-gradient-to-br from-[#0072ce] via-[#4F46E5] to-[#7c3aed] px-8 py-14 text-center text-white shadow-2xl md:px-12">
           <h2 className="font-heading text-3xl font-bold leading-tight md:text-4xl">
-            Your next deal is already trying to reach you.
+            Never miss a call — or a lead — again
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-base text-white/90 md:text-lg">
-            Don&apos;t miss it.
+            Put an AI team to work today. They answer, follow up, and coordinate. You close.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               href={PRIMARY_CTA_HREF}
               className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-[#0072ce] shadow-lg transition hover:bg-slate-50 md:text-base"
+              style={{ color: BRAND }}
             >
-              Activate Your AI Deal Engine
+              Hire your AI team
               <ArrowRight size={18} aria-hidden />
             </Link>
             <Link
               href="/contact"
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20 md:text-base"
             >
-              Book a Demo
+              Book a demo
             </Link>
           </div>
-          <p className="mt-6 text-xs text-white/70">
-            14-day trial on paid plans · No credit card required to start
-          </p>
         </div>
       </section>
-
-      {/* Footer is provided by AppShell — see components/AppShell.tsx
-          which renders <Footer /> for every public marketing page. */}
     </>
   );
 }
-
-/* ─────────────────────────────────────────────────────────────────
- * Pillar section (Growth Engine)
- * ──────────────────────────────────────────────────────────────── */
-
-type Pillar = {
-  id: string;
-  step: string;
-  emoji: string;
-  shortName: string;
-  /** "Why it matters" lead. */
-  headline: string;
-  /** Body sentence under the headline. */
-  rationale: string;
-  /** Concrete feature bullets. */
-  features: string[];
-  /** Outcome line (rendered with the 👉 lead). */
-  outcome: string;
-  icon: LucideIcon;
-  chip: { bg: string; text: string; border: string };
-  /** Optional inset card (e.g., Missed Call Recovery AI™ inside Follow Up). */
-  feature?: SignatureFeature;
-};
-
-type SignatureFeature = {
-  badge: string;
-  title: string;
-  copyParagraphs: string[];
-  features: string[];
-  outcomes: string[];
-  icon: LucideIcon;
-};
-
-const GROWTH_ENGINE: Pillar[] = [
-  {
-    id: "capture",
-    step: "1",
-    emoji: "🧲",
-    shortName: "Capture",
-    headline: "Turn website visitors into real opportunities",
-    rationale: "Most agents lose leads before they even enter the pipeline.",
-    features: [
-      "Smart landing pages optimized for conversion",
-      "Home value estimator (seller magnet)",
-      "Lead capture forms (web + IDX + portals)",
-      "CRM &amp; website integrations",
-    ],
-    outcome: "More leads entering your pipeline — automatically.",
-    icon: Filter,
-    chip: { bg: "bg-blue-50 dark:bg-blue-900/30", text: "text-[#0072ce] dark:text-[#4da3e8]", border: "border-blue-200 dark:border-blue-800" },
-  },
-  {
-    id: "qualify",
-    step: "2",
-    emoji: "⚡",
-    shortName: "Qualify",
-    headline: "Know who's serious — without doing the work",
-    rationale: "Not all leads are equal — your time should go to the best ones.",
-    features: [
-      "AI lead scoring (hot vs cold)",
-      "Buyer &amp; seller intent detection",
-      "Data enrichment + sphere prediction",
-    ],
-    outcome: "Focus only on high-probability deals.",
-    icon: Sparkles,
-    chip: { bg: "bg-violet-50 dark:bg-violet-900/30", text: "text-violet-600 dark:text-violet-300", border: "border-violet-200 dark:border-violet-800" },
-  },
-  {
-    id: "follow-up",
-    step: "3",
-    emoji: "🤖",
-    shortName: "Follow Up",
-    headline: "Respond to every lead in seconds — 24/7",
-    rationale: "Speed is the #1 factor in converting leads.",
-    features: [
-      "SMS + email automation",
-      "AI receptionist — answers every call &amp; books showings 24/7",
-      "AI Concierge — outbound confirmations, follow-ups &amp; surveys",
-      "Multi-step follow-up sequences",
-      "Behavior-based triggers",
-    ],
-    outcome: "No more missed opportunities.",
-    icon: Bot,
-    chip: { bg: "bg-amber-50 dark:bg-amber-900/30", text: "text-amber-600 dark:text-amber-300", border: "border-amber-200 dark:border-amber-800" },
-    feature: {
-      badge: "Signature feature",
-      title: "Missed Call Recovery AI™",
-      copyParagraphs: [
-        "When you miss a call, you're not just missing a call — you're missing a potential deal.",
-        "RealtorBoss instantly sends a text back, starts the conversation, and keeps engaging until the lead is ready to talk.",
-      ],
-      features: [
-        "Instant missed-call text-back (within seconds)",
-        "AI-powered SMS conversation",
-        "Lead qualification via text",
-        "Smart agent handoff when ready",
-      ],
-      outcomes: [
-        "Recover lost opportunities automatically",
-        "Turn missed calls into real appointments",
-      ],
-      icon: PhoneMissed,
-    },
-  },
-  {
-    id: "convert",
-    step: "4",
-    emoji: "💬",
-    shortName: "Convert",
-    headline: "Turn engagement into real deals",
-    rationale: "Leads don't close — conversations do.",
-    features: [
-      "AI conversation engine",
-      "Smart reply suggestions",
-      "Appointment booking automation",
-    ],
-    outcome: "More booked calls and showings.",
-    icon: MessageCircle,
-    chip: { bg: "bg-emerald-50 dark:bg-emerald-900/30", text: "text-emerald-600 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-800" },
-  },
-  {
-    id: "scale",
-    step: "5",
-    emoji: "📈",
-    shortName: "Scale",
-    headline: "Grow without adding more work",
-    rationale: "Manual systems don't scale — AI does.",
-    features: [
-      "Performance dashboards",
-      "AI optimization engine",
-      "Automated workflows + playbooks",
-    ],
-    outcome: "More deals without burnout.",
-    icon: LineChart,
-    chip: { bg: "bg-slate-100 dark:bg-slate-800", text: "text-slate-700 dark:text-slate-300", border: "border-slate-200 dark:border-slate-700" },
-  },
-];
-
-function PillarSection({ pillar }: { pillar: Pillar }) {
-  /* Single layout for every pillar: header block on top (icon + step
-   * badge + headline + rationale + outcome chip), feature grid
-   * below in a 2-up. The previous alternating-side layout
-   * (`flipped`) confused the reading flow — odd-numbered pillars
-   * had cards on the left and text on the right, which fought the
-   * natural left-to-right scan. Stacked layout is also kinder on
-   * narrow viewports without `lg:order-N` reshuffling. */
-  return (
-    <section
-      id={pillar.id}
-      className="border-b border-slate-200/80 px-6 py-20 dark:border-slate-800 md:py-24"
-    >
-      <div className="mx-auto max-w-5xl">
-        <div className="space-y-10">
-          {/* Header — icon + badge + headline + rationale + outcome chip */}
-          <div>
-            <div className="flex items-center gap-3">
-              <span
-                className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl ${pillar.chip.bg} ${pillar.chip.text}`}
-              >
-                <pillar.icon size={26} strokeWidth={2} aria-hidden />
-              </span>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                Step {pillar.step} · {pillar.shortName}
-              </span>
-            </div>
-            <h2 className="mt-5 font-heading text-3xl font-bold leading-tight text-slate-900 dark:text-white md:text-4xl">
-              <span aria-hidden className="mr-2">
-                {pillar.emoji}
-              </span>
-              {pillar.headline}
-            </h2>
-            <p className="mt-4 max-w-3xl text-base leading-relaxed text-slate-600 dark:text-slate-400 md:text-lg">
-              {pillar.rationale}
-            </p>
-            <p
-              className={`mt-6 inline-flex max-w-md items-start gap-2 rounded-xl border-2 px-4 py-3 text-sm font-semibold ${pillar.chip.bg} ${pillar.chip.text} ${pillar.chip.border}`}
-            >
-              <span aria-hidden>👉</span>
-              <span>{pillar.outcome}</span>
-            </p>
-          </div>
-
-          {/* Feature grid + optional signature card */}
-          <div className="space-y-5">
-            <ul
-              className="grid gap-3 sm:grid-cols-2"
-              aria-label={`${pillar.shortName} features`}
-            >
-              {pillar.features.map((f) => (
-                <li
-                  key={f}
-                  className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 text-sm leading-relaxed text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
-                >
-                  <span
-                    className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${pillar.chip.bg} ${pillar.chip.text}`}
-                    aria-hidden
-                  >
-                    <CheckCircle2 size={13} strokeWidth={2.5} />
-                  </span>
-                  <span dangerouslySetInnerHTML={{ __html: f }} />
-                </li>
-              ))}
-            </ul>
-
-            {/* Signature feature inset (Follow Up only) */}
-            {pillar.feature ? <SignatureFeatureCard feature={pillar.feature} /> : null}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/**
- * Featured callout used inside the Follow Up pillar to spotlight
- * Missed Call Recovery AI™. Strong gradient + ™ badge so it reads as
- * the genuine signature feature it is.
- */
-function SignatureFeatureCard({ feature }: { feature: SignatureFeature }) {
-  return (
-    <div className="overflow-hidden rounded-3xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 via-white to-amber-50/60 p-7 shadow-lg dark:border-amber-800/60 dark:from-amber-950/30 dark:via-slate-900 dark:to-amber-950/20">
-      <div className="flex items-center gap-3">
-        <span
-          aria-hidden
-          className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-md"
-        >
-          <feature.icon size={22} strokeWidth={2} />
-        </span>
-        <span className="rounded-full bg-amber-900 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
-          📞 {feature.badge}
-        </span>
-      </div>
-
-      <h3 className="mt-5 font-heading text-2xl font-bold leading-tight text-amber-900 md:text-3xl dark:text-amber-200">
-        {feature.title}
-      </h3>
-
-      <div className="mt-4 space-y-3 text-sm leading-relaxed text-slate-700 md:text-base dark:text-slate-300">
-        {feature.copyParagraphs.map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
-      </div>
-
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        {feature.features.map((f) => (
-          <div
-            key={f}
-            className="flex items-start gap-2.5 rounded-xl border border-amber-200/70 bg-white/80 p-3 text-xs text-slate-700 backdrop-blur dark:border-amber-800/50 dark:bg-slate-950/60 dark:text-slate-300"
-          >
-            <CheckCircle2
-              className="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
-              aria-hidden
-            />
-            <span>{f}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-5 space-y-1.5">
-        {feature.outcomes.map((o) => (
-          <p
-            key={o}
-            className="flex items-start gap-2 text-sm font-semibold text-amber-900 dark:text-amber-200"
-          >
-            <span aria-hidden>👉</span>
-            <span>{o}</span>
-          </p>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────
- * Sub-components
- * ──────────────────────────────────────────────────────────────── */
-
-type FlowTone = "slate" | "blue" | "violet" | "amber" | "emerald" | "green";
-
-const FLOW_TONE: Record<FlowTone, { bg: string; text: string; border: string }> = {
-  slate: { bg: "bg-slate-100 dark:bg-slate-800", text: "text-slate-700 dark:text-slate-300", border: "border-slate-200 dark:border-slate-700" },
-  blue: { bg: "bg-blue-50 dark:bg-blue-900/30", text: "text-[#0072ce] dark:text-[#4da3e8]", border: "border-blue-200 dark:border-blue-800" },
-  violet: { bg: "bg-violet-50 dark:bg-violet-900/30", text: "text-violet-600 dark:text-violet-300", border: "border-violet-200 dark:border-violet-800" },
-  amber: { bg: "bg-amber-50 dark:bg-amber-900/30", text: "text-amber-600 dark:text-amber-300", border: "border-amber-200 dark:border-amber-800" },
-  emerald: { bg: "bg-emerald-50 dark:bg-emerald-900/30", text: "text-emerald-600 dark:text-emerald-300", border: "border-emerald-200 dark:border-emerald-800" },
-  green: { bg: "bg-green-100 dark:bg-green-900/40", text: "text-green-700 dark:text-green-300", border: "border-green-300 dark:border-green-700" },
-};
-
-function FlowDiagram({
-  steps,
-}: {
-  steps: { label: string; icon: LucideIcon; tone: FlowTone }[];
-}) {
-  return (
-    <div className="grid grid-cols-3 gap-3 md:grid-cols-6 md:gap-2">
-      {steps.map((s, i) => {
-        const palette = FLOW_TONE[s.tone];
-        return (
-          <div
-            key={s.label}
-            className="relative flex flex-col items-center text-center"
-          >
-            <div
-              className={`flex h-16 w-16 items-center justify-center rounded-2xl border-2 ${palette.border} ${palette.bg} ${palette.text}`}
-            >
-              <s.icon size={26} strokeWidth={2} aria-hidden />
-            </div>
-            <p className="mt-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
-              {s.label}
-            </p>
-            {i < steps.length - 1 ? (
-              <span
-                aria-hidden
-                className="pointer-events-none absolute right-[-12px] top-7 hidden text-slate-300 md:block dark:text-slate-600"
-              >
-                <ArrowRight size={18} strokeWidth={2.25} />
-              </span>
-            ) : null}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-const SALES_STYLES: Array<{
-  emoji: string;
-  name: string;
-  tagline: string;
-  body: string;
-  bestFor: string;
-  chip: { bg: string; text: string };
-}> = [
-  {
-    emoji: "🤝",
-    name: "Consultative Advisor",
-    tagline: "Trust-driven.",
-    body: "Builds trust, educates, and nurtures over time. Long-game tone for buyers who need to feel guided through the process.",
-    bestFor: "Sphere referrals · long sales cycles",
-    chip: { bg: "bg-blue-50 dark:bg-blue-900/30", text: "text-[#0072ce] dark:text-[#4da3e8]" },
-  },
-  {
-    emoji: "⚡",
-    name: "Closer Mode",
-    tagline: "Fast, decisive.",
-    body: "Drives urgency and fast decisions. Direct, action-oriented, designed to convert hot leads before they shop another agent.",
-    bestFor: "PPC / portal leads · multiple-offer markets",
-    chip: { bg: "bg-amber-50 dark:bg-amber-900/30", text: "text-amber-600 dark:text-amber-300" },
-  },
-  {
-    emoji: "💬",
-    name: "Friendly Connector",
-    tagline: "Relationship-first.",
-    body: "Casual, warm, and personable — the tone that makes first-time buyers actually reply.",
-    bestFor: "First-time buyers · social-media leads",
-    chip: { bg: "bg-emerald-50 dark:bg-emerald-900/30", text: "text-emerald-600 dark:text-emerald-300" },
-  },
-];
-
-const RESULTS: Array<{ emoji: string; value: string; label: string; body: string }> = [
-  {
-    emoji: "⚡",
-    value: "90%",
-    label: "Faster response time",
-    body: "Median first-reply time drops from minutes (or hours) to seconds — the difference between you and the next agent.",
-  },
-  {
-    emoji: "📈",
-    value: "2×",
-    label: "More appointments booked",
-    body: "When AI fires the first reply in under 60 seconds, more leads show up to a tour or consultation.",
-  },
-  {
-    emoji: "💰",
-    value: "↑",
-    label: "Higher lead-to-close conversion",
-    body: "Behavior-based follow-up keeps warm leads engaged through the silent middle of the funnel.",
-  },
-];
-
-const COMPARISON: Array<{ left: string; right: string }> = [
-  { left: "Manual follow-up", right: "Instant AI engagement" },
-  { left: "Disconnected tools", right: "Unified system" },
-  { left: "Missed leads", right: "24/7 automation" },
-  { left: "Basic CRM", right: "AI growth engine" },
-  { left: "Static templates", right: "Adapts to your sales style" },
-];
-
-// Imports referenced inline above — keep so future edits don't drop them.
-void Calendar;
-void HeartHandshake;
-void LayoutGrid;
-void PhoneCall;
-void Settings2;
-void TrendingUp;
-void Wand2;
-void Zap;
