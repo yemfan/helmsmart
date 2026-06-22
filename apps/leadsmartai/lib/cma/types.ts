@@ -24,6 +24,10 @@ export type CmaCompRow = {
   soldDate: string;
   propertyType: string | null;
   pricePerSqft: number;
+  /** Lot size in square feet. Null/omitted when unknown or N/A (e.g. condos). */
+  lotSizeSqft?: number | null;
+  /** Monthly HOA dues in dollars. Null/omitted when none or unknown. */
+  hoaMonthly?: number | null;
 };
 
 export type CmaSubject = {
@@ -34,6 +38,10 @@ export type CmaSubject = {
   propertyType: string | null;
   yearBuilt: number;
   condition: string | null;
+  /** Lot size in square feet. Null/omitted when unknown or N/A (e.g. condos). */
+  lotSizeSqft?: number | null;
+  /** Monthly HOA dues in dollars. Null/omitted when none or unknown. */
+  hoaMonthly?: number | null;
 };
 
 export type CmaStrategy = {

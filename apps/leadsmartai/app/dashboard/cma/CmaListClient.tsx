@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 type CmaListRow = {
   id: string;
@@ -57,6 +60,7 @@ export default function CmaListClient() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [address, setAddress] = useState("");
   const [quota, setQuota] = useState<CmaQuota | null>(null);
+  const router = useRouter();
 
   const refreshQuota = useCallback(async () => {
     try {
@@ -111,18 +115,19 @@ export default function CmaListClient() {
         cma?: CmaListRow;
         error?: string;
       };
-      if (!res.ok || data.ok === false) {
+      if (!res.ok || data.ok === false || !data.cma) {
         throw new Error(data.error ?? `HTTP ${res.status}`);
       }
       setAddress("");
       setShowForm(false);
-      await Promise.all([refresh(), refreshQuota()]);
+      // Jump straight to the freshly generated CMA instead of the list.
+      router.push(`/dashboard/cma/${encodeURIComponent(data.cma.id)}`);
     } catch (e) {
       setSubmitError(e instanceof Error ? e.message : "Failed to create CMA");
     } finally {
       setSubmitting(false);
     }
-  }, [address, refresh, refreshQuota]);
+  }, [address, router]);
 
   return (
     <section className="space-y-4">
@@ -155,14 +160,15 @@ export default function CmaListClient() {
               <span className="text-xs font-semibold text-slate-700">
                 Subject address
               </span>
-              <input
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="123 Main St, Austin, TX 78701"
-                className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
-                disabled={submitting || quota?.reached === true}
-              />
+              <div className="mt-1">
+                <AddressAutocomplete
+                  value={address}
+                  onChange={setAddress}
+                  placeholder="123 Main St, Austin, TX 78701"
+                  className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+                  disabled={submitting || quota?.reached === true}
+                />
+              </div>
             </label>
             <div className="flex items-center justify-between gap-3">
               <div className="min-h-[20px] text-xs">

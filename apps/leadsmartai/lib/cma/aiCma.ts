@@ -34,11 +34,13 @@ Rules:
 
 When done searching, respond with EXACTLY ONE fenced JSON code block and nothing after it, matching this schema (numbers only, no $ or commas):
 
+For every property (subject and each comp) include beds, baths, lotSizeSqft, and hoaMonthly when you can find them; use null when unknown. Lot size is in square feet. hoaMonthly is the monthly HOA dues in dollars. Note: condos/townhomes typically have an HOA and no individual lot — set lotSizeSqft to null for condos.
+
 \`\`\`json
 {
-  "subject": { "address": "", "beds": 0, "baths": 0, "sqft": 0, "propertyType": null, "yearBuilt": 0, "condition": null },
+  "subject": { "address": "", "beds": 0, "baths": 0, "sqft": 0, "propertyType": null, "yearBuilt": 0, "condition": null, "lotSizeSqft": null, "hoaMonthly": null },
   "comps": [
-    { "address": "", "price": 0, "sqft": 0, "beds": 0, "baths": 0, "distanceMiles": 0, "soldDate": "YYYY-MM-DD", "propertyType": null, "pricePerSqft": 0, "sourceUrl": "" }
+    { "address": "", "price": 0, "sqft": 0, "beds": 0, "baths": 0, "distanceMiles": 0, "soldDate": "YYYY-MM-DD", "propertyType": null, "pricePerSqft": 0, "lotSizeSqft": null, "hoaMonthly": null, "sourceUrl": "" }
   ],
   "valuation": { "estimatedValue": 0, "low": 0, "high": 0, "avgPricePerSqft": 0, "confidenceScore": null },
   "strategies": { "aggressive": 0, "market": 0, "premium": 0, "daysOnMarket": { "aggressive": 0, "market": 0, "premium": 0 } },
@@ -182,6 +184,8 @@ function normalizeAi(raw: Record<string, unknown>, fallbackAddress: string): Cma
       propertyType: subject.propertyType == null ? null : String(subject.propertyType),
       yearBuilt: num(subject.yearBuilt, 0),
       condition: subject.condition == null ? null : String(subject.condition),
+      lotSizeSqft: numOrNull(subject.lotSizeSqft),
+      hoaMonthly: numOrNull(subject.hoaMonthly),
     },
     comps: rawComps
       .map<CmaCompRow | null>((c) => {
@@ -204,6 +208,8 @@ function normalizeAi(raw: Record<string, unknown>, fallbackAddress: string): Cma
           soldDate: str(o.soldDate, ""),
           propertyType: o.propertyType == null ? null : String(o.propertyType),
           pricePerSqft: num(o.pricePerSqft, 0),
+          lotSizeSqft: numOrNull(o.lotSizeSqft),
+          hoaMonthly: numOrNull(o.hoaMonthly),
         };
       })
       .filter((x): x is CmaCompRow => x !== null),
@@ -242,6 +248,13 @@ function toConfidenceInt(v: unknown): number | null {
   if (!Number.isFinite(n)) return null;
   if (n > 0 && n <= 1) n = n * 100; // 0-1 confidence → percentage
   return Math.max(1, Math.min(95, Math.round(n)));
+}
+
+/** Parse a numeric field, returning null (not 0) when absent/unknown. */
+function numOrNull(v: unknown): number | null {
+  if (v == null) return null;
+  const n = num(v, NaN);
+  return Number.isFinite(n) ? n : null;
 }
 
 function num(v: unknown, fallback: number): number {
