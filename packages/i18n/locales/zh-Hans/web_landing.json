@@ -67,17 +67,17 @@
     "pipeline_health": "漏斗健康度"
   },
   "how": {
-    "eyebrow": "交易流程",
-    "h2_prefix": "从客户到成交 — ",
-    "h2_highlight": "由 AI 处理",
-    "body": "RealtorBoss 将您的网站访客和入站流量转化为有效对话 — 并持续培育，直到他们准备好成交。",
+    "eyebrow": "团队如何运作",
+    "h2_prefix": "从来电到成交 — ",
+    "h2_highlight": "由您的 AI 团队搞定",
+    "body": "每一通电话都有人接听，每一位潜在客户都有人跟进，每一笔交易都有人协调 —— 您的 AI 团队全天候地把每一步交给下一位成员。",
     "flow": {
-      "traffic": "流量",
-      "ai_capture": "AI 捕获",
-      "ai_qualify": "AI 筛选",
-      "ai_follow_up": "AI 跟进",
-      "agent": "经纪人",
-      "deal_closed": "成交"
+      "traffic": "来电",
+      "ai_capture": "AI 前台接听",
+      "ai_qualify": "筛选并预约",
+      "ai_follow_up": "销售跟进",
+      "agent": "您成交",
+      "deal_closed": "成交完成"
     }
   },
   "growth": {

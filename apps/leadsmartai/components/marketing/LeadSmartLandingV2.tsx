@@ -20,8 +20,10 @@ import {
   Filter,
   Globe2,
   HandHeart,
+  Headphones,
   LineChart,
   MessagesSquare,
+  PhoneCall,
   PhoneMissed,
   Settings2,
   Sparkles,
@@ -469,10 +471,10 @@ export default function LeadSmartLandingV2() {
             <RevealSection delay={120} className="mt-12">
               <FlowDiagram
                 steps={[
-                  { label: t("how.flow.traffic"), icon: Globe2, tone: "slate" },
-                  { label: t("how.flow.ai_capture"), icon: Filter, tone: "blue" },
-                  { label: t("how.flow.ai_qualify"), icon: Sparkles, tone: "violet" },
-                  { label: t("how.flow.ai_follow_up"), icon: MessagesSquare, tone: "amber" },
+                  { label: t("how.flow.traffic"), icon: PhoneCall, tone: "slate" },
+                  { label: t("how.flow.ai_capture"), icon: Headphones, tone: "blue" },
+                  { label: t("how.flow.ai_qualify"), icon: CalendarCheck, tone: "violet" },
+                  { label: t("how.flow.ai_follow_up"), icon: TrendingUp, tone: "amber" },
                   { label: t("how.flow.agent"), icon: HandHeart, tone: "emerald" },
                   { label: t("how.flow.deal_closed"), icon: CheckCircle2, tone: "green" },
                 ]}
