@@ -185,6 +185,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
         </div>
         <p className="mt-3 text-[11px] text-slate-500">
           {subject.beds} bed / {subject.baths} bath / {subject.sqft.toLocaleString()} sqft
+          {subject.propertyType ? ` · ${subject.propertyType}` : ""}
           {!isCondo(subject.propertyType) && formatLot(subject.lotSizeSqft, subject.propertyType) !== "—"
             ? ` · lot ${formatLot(subject.lotSizeSqft, subject.propertyType)}`
             : ""}

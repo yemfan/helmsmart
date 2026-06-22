@@ -42,6 +42,13 @@ export type CmaSubject = {
   lotSizeSqft?: number | null;
   /** Monthly HOA dues in dollars. Null/omitted when none or unknown. */
   hoaMonthly?: number | null;
+  /**
+   * URL of the subject's listing page (Redfin / Realtor / Zillow / MLS),
+   * when the AI found the property online. The report fetches this page,
+   * extracts its og:image, and embeds that real listing photo — falling
+   * back to a Street View shot. Null when no listing page was found.
+   */
+  listingUrl?: string | null;
 };
 
 export type CmaStrategy = {
