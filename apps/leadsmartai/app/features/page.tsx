@@ -19,6 +19,7 @@ import {
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
+import CommandChainDiagram from "@/components/marketing/CommandChainDiagram";
 
 export const metadata: Metadata = {
   title: "Your AI Real Estate Team — RealtorBoss",
@@ -133,14 +134,6 @@ const VOICE_POINTS: Array<{ icon: LucideIcon; title: string; body: string; outbo
     title: "Every call becomes a lead",
     body: "Inbound and outbound calls are logged, transcribed, and added to your pipeline automatically — no sticky notes, no lost numbers.",
   },
-];
-
-const DAY_FLOW: Array<{ label: string; icon: LucideIcon }> = [
-  { label: "Call comes in", icon: PhoneCall },
-  { label: "Receptionist answers + qualifies", icon: Headphones },
-  { label: "Sales follows up", icon: TrendingUp },
-  { label: "Transaction coordinates", icon: ClipboardList },
-  { label: "Deal closes", icon: CheckCircle2 },
 ];
 
 const TOOLS: Array<{ icon: LucideIcon; title: string }> = [
@@ -326,33 +319,23 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* ── HOW THEY WORK TOGETHER ─── */}
+      {/* ── COMMAND CHAIN (interactive) ── */}
       <section className="border-y border-slate-200/80 bg-slate-50/70 px-6 py-20 dark:border-slate-800 dark:bg-slate-900/30 md:py-24">
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              One handoff to the next
+              The command chain
             </p>
             <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-              From ring to closing — handled
+              You give one order. The team does the rest.
             </h2>
+            <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
+              Pick a command and watch it cascade — the Boss Assistant plans it and assigns the
+              right teammates, who do the research and every step for you.
+            </p>
           </div>
-          <div className="mt-12 flex flex-wrap items-stretch justify-center gap-3">
-            {DAY_FLOW.map((step, i, arr) => (
-              <div key={step.label} className="flex items-center gap-3">
-                <div className="flex w-36 flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-5 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#0072ce] dark:bg-blue-900/30 dark:text-[#4da3e8]">
-                    <step.icon size={20} aria-hidden />
-                  </div>
-                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-                    {step.label}
-                  </span>
-                </div>
-                {i < arr.length - 1 ? (
-                  <ArrowRight size={18} className="shrink-0 text-slate-400" aria-hidden />
-                ) : null}
-              </div>
-            ))}
+          <div className="mt-12">
+            <CommandChainDiagram />
           </div>
         </div>
       </section>
