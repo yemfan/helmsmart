@@ -6,6 +6,7 @@ import { buildListingStrategyBands } from "./listingStrategy";
 import type { CmaPdfAgentIdentity } from "./buildCmaPdf";
 import type { SubjectPhoto } from "./streetViewPhoto";
 import type { CmaCompRow, CmaSnapshot } from "./types";
+import type { PresentationSchool } from "@/lib/presentationAI";
 
 /**
  * Professional, presentation-grade CMA report — the deliverable an
@@ -26,6 +27,14 @@ export type BuildCmaReportPdfInput = {
   agent: CmaPdfAgentIdentity;
   /** Street View photo of the subject; null when unavailable. */
   photo: SubjectPhoto | null;
+  /** Agent headshot, fetched + embedded; null hides it. */
+  agentPhoto?: SubjectPhoto | null;
+  /** Brokerage logo, fetched + embedded; null hides it. */
+  agentLogo?: SubjectPhoto | null;
+  /** Nearby schools (web-search grounded); empty hides the section. */
+  schools?: PresentationSchool[];
+  /** Neighborhood highlights; blank hides the section. */
+  neighborhood?: string | null;
   /** ISO date for the "prepared on" line. Defaults to today. */
   generatedAtIso?: string;
 };
@@ -39,6 +48,10 @@ const MARGIN = 48;
 
 export function buildCmaReportPdf(input: BuildCmaReportPdfInput): Uint8Array {
   const { snapshot, title, agent, photo } = input;
+  const agentPhoto = input.agentPhoto ?? null;
+  const agentLogo = input.agentLogo ?? null;
+  const schools = input.schools ?? [];
+  const neighborhood = (input.neighborhood ?? "").trim();
   const generatedAt = input.generatedAtIso
     ? new Date(input.generatedAtIso)
     : new Date();
@@ -141,8 +154,8 @@ export function buildCmaReportPdf(input: BuildCmaReportPdfInput): Uint8Array {
   }
   y += 6;
 
-  // Agent identity card.
-  y = drawAgentCard(doc, agent, MARGIN, right, contentW, y);
+  // Agent identity card (with headshot + brokerage logo when available).
+  y = drawAgentCard(doc, agent, agentPhoto, agentLogo, MARGIN, right, contentW, y);
   y += 8;
 
   // ── Listing strategies ─────────────────────────────────────────
@@ -180,6 +193,41 @@ export function buildCmaReportPdf(input: BuildCmaReportPdfInput): Uint8Array {
   y = drawCompTable(doc, snapshot.comps, MARGIN, right, pageH, y);
   y += 8;
 
+  // ── Neighborhood ───────────────────────────────────────────────
+  if (neighborhood) {
+    y = ensureSpace(doc, pageH, y, 70);
+    y = sectionHeader(doc, "Neighborhood", MARGIN, contentW, y);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(...MUTE);
+    for (const line of doc.splitTextToSize(neighborhood, contentW) as string[]) {
+      y = ensureSpace(doc, pageH, y, 16);
+      doc.text(line, MARGIN, y);
+      y += 12;
+    }
+    y += 6;
+  }
+
+  // ── Schools ────────────────────────────────────────────────────
+  if (schools.length > 0) {
+    y = ensureSpace(doc, pageH, y, 70);
+    y = sectionHeader(doc, "Schools", MARGIN, contentW, y);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    for (const s of schools.slice(0, 8)) {
+      y = ensureSpace(doc, pageH, y, 16);
+      doc.setTextColor(...INK);
+      doc.text(s.name, MARGIN, y);
+      const meta = [s.level, s.rating, s.distance].filter(Boolean).join(" · ");
+      if (meta) {
+        doc.setTextColor(...MUTE);
+        doc.text(meta, right - doc.getTextWidth(meta), y);
+      }
+      y += 13;
+    }
+    y += 6;
+  }
+
   // ── Sources ────────────────────────────────────────────────────
   const sources = snapshot.sources ?? [];
   if (sources.length > 0) {
@@ -216,6 +264,8 @@ export function buildCmaReportPdf(input: BuildCmaReportPdfInput): Uint8Array {
 function drawAgentCard(
   doc: jsPDF,
   agent: CmaPdfAgentIdentity,
+  agentPhoto: SubjectPhoto | null,
+  agentLogo: SubjectPhoto | null,
   leftX: number,
   rightX: number,
   contentW: number,
@@ -225,26 +275,57 @@ function drawAgentCard(
     .filter(Boolean)
     .join(" · ");
   const line2 = [agent.phone, agent.email].filter(Boolean).join(" · ");
-  if (!line1 && !line2) return y;
+  if (!line1 && !line2 && !agentPhoto) return y;
 
-  const cardH = line1 && line2 ? 48 : 32;
+  const cardH = 56;
   doc.setFillColor(248, 250, 252);
   doc.setDrawColor(226, 232, 240);
   doc.roundedRect(leftX, y, contentW, cardH, 8, 8, "FD");
-  let ty = y + 20;
+
+  // Headshot (left) — square; falls back to text-only when absent.
+  const pad = 12;
+  let textX = leftX + 14;
+  if (agentPhoto) {
+    const size = 36;
+    try {
+      doc.addImage(agentPhoto.dataUrl, agentPhoto.format, leftX + pad, y + (cardH - size) / 2, size, size);
+      textX = leftX + pad + size + 12;
+    } catch {
+      /* skip headshot on decode failure */
+    }
+  }
+
+  // "Prepared by" label + the two identity lines, vertically centered.
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTE);
+  doc.text("PREPARED BY YOUR AGENT", textX, y + 16);
+  let ty = y + 30;
   if (line1) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(...INK);
-    doc.text(line1, leftX + 14, ty);
-    ty += 14;
+    doc.text(line1, textX, ty);
+    ty += 13;
   }
   if (line2) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(...MUTE);
-    doc.text(line2, leftX + 14, ty);
+    doc.text(line2, textX, ty);
   }
+
+  // Brokerage logo (right), vertically centered.
+  if (agentLogo) {
+    const lh = 28;
+    const lw = 84;
+    try {
+      doc.addImage(agentLogo.dataUrl, agentLogo.format, rightX - lw - pad, y + (cardH - lh) / 2, lw, lh, undefined, "FAST");
+    } catch {
+      /* skip logo on decode failure */
+    }
+  }
+
   return y + cardH;
 }
 

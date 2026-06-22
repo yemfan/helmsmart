@@ -1,10 +1,17 @@
 import { buildCmaReportPdf } from "@/lib/cma/buildCmaReportPdf";
-import { loadAgentIdentity } from "@/lib/cma/loadAgentIdentity";
 import { getCmaForAgent } from "@/lib/cma/service";
-import { fetchPhotoFromListingPage, fetchSubjectPhoto } from "@/lib/cma/streetViewPhoto";
+import {
+  fetchListingPhoto,
+  fetchPhotoFromListingPage,
+  fetchSubjectPhoto,
+} from "@/lib/cma/streetViewPhoto";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { generatePresentationAISections } from "@/lib/presentationAI";
+import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 
 export const runtime = "nodejs";
+// Agent images + a schools/neighborhood web search run alongside the photo.
+export const maxDuration = 300;
 
 /**
  * GET /api/dashboard/cma/[id]/report
@@ -28,19 +35,54 @@ export async function GET(
     }
 
     const subjectAddress = cma.snapshot.subject.address || cma.subjectAddress;
-    const [agent, listingPhoto] = await Promise.all([
-      loadAgentIdentity(String(agentId)),
+    const v = cma.snapshot.valuation;
+    const [profile, listingPhoto, aiSections] = await Promise.all([
+      loadPresentationAgent(String(agentId)),
       // The real listing photo (og:image) from the subject's listing page.
       fetchPhotoFromListingPage(cma.snapshot.subject.listingUrl),
+      // Web-search grounded neighborhood + schools for the professional report.
+      generatePresentationAISections({
+        address: subjectAddress,
+        estimate: {
+          estimatedValue: v.estimatedValue ?? null,
+          low: v.low ?? null,
+          high: v.high ?? null,
+          avgPricePerSqft: v.avgPricePerSqft ?? null,
+          summary: cma.snapshot.summary ?? "",
+        },
+        comps: cma.snapshot.comps.map((c) => ({
+          address: c.address,
+          price: c.price,
+          sqft: c.sqft,
+          soldDate: c.soldDate,
+          distanceMiles: c.distanceMiles,
+        })),
+      }),
     ]);
+
     // Fall back to a Street View shot when there's no usable listing photo.
     const photo = listingPhoto ?? (await fetchSubjectPhoto(subjectAddress));
+    // Agent headshot + brokerage logo (fetched + embedded; null hides them).
+    const [agentPhoto, agentLogo] = await Promise.all([
+      fetchListingPhoto(profile.photoUrl),
+      fetchListingPhoto(profile.logoUrl),
+    ]);
 
     const bytes = buildCmaReportPdf({
       snapshot: cma.snapshot,
       title: cma.title,
-      agent,
+      agent: {
+        name: profile.name,
+        brokerage: profile.brokerage,
+        phone: profile.phone,
+        email: profile.email,
+        licenseNumber: profile.licenseNumber,
+      },
       photo,
+      agentPhoto,
+      agentLogo,
+      schools: aiSections.schools,
+      neighborhood: aiSections.neighborhood,
       generatedAtIso: cma.createdAt,
     });
 
