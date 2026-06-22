@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { generateAiCma } from "@/lib/cma/aiCma";
+import { findRecentCmaSnapshotByAddress } from "@/lib/cma/service";
 import { generatePresentationAISections } from "@/lib/presentationAI";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { consumeTokensForTool } from "@/lib/consumeTokens";
@@ -47,15 +48,25 @@ export async function POST(req: Request) {
 
     // 1) Valuation + comps from the SAME AI CMA engine the CMA feature
     // uses (Claude + live web search), so the presentation's pricing is
-    // consistent with the agent's CMA — no separate/legacy comp pipeline.
-    const cma = await generateAiCma({ address });
-    if (!cma.ok) {
-      return NextResponse.json(
-        { success: false, message: cma.error },
-        { status: cma.status },
-      );
+    // consistent with the agent's CMA. If the agent already ran a CMA for
+    // this address recently, reuse that snapshot instead of paying for a
+    // fresh web search.
+    let snap;
+    let reusedCmaId: string | null = null;
+    const existing = await findRecentCmaSnapshotByAddress(String(ctx.agentId), address, 30);
+    if (existing) {
+      snap = existing.snapshot;
+      reusedCmaId = existing.cmaId;
+    } else {
+      const cma = await generateAiCma({ address });
+      if (!cma.ok) {
+        return NextResponse.json(
+          { success: false, message: cma.error },
+          { status: cma.status },
+        );
+      }
+      snap = cma.snapshot;
     }
-    const snap = cma.snapshot;
 
     const property = {
       address: snap.subject.address,
@@ -132,6 +143,10 @@ export async function POST(req: Request) {
       success: true,
       presentation_id: String(inserted.id),
       data: presentationData,
+      // True when this reused a recent saved CMA instead of running a fresh
+      // web search; the UI can note "based on your CMA from …".
+      reused_cma: reusedCmaId != null,
+      reused_cma_id: reusedCmaId,
     });
   } catch (e: any) {
     console.error("generate-presentation error", e);

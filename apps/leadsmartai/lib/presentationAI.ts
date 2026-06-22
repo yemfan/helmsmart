@@ -1,8 +1,14 @@
+import "server-only";
+
+import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
+
 export type PresentationAISections = {
   pricing_strategy: string;
   market_insights: string;
   marketing_plan: string;
 };
+
+const MODEL = "claude-opus-4-8";
 
 function extractJsonObject(text: string): any {
   const trimmed = text.trim();
@@ -37,8 +43,6 @@ export async function generatePresentationAISections(params: {
     distanceMiles: number | null;
   }>;
 }): Promise<PresentationAISections> {
-  const apiKey = process.env.OPENAI_API_KEY;
-
   const fallback: PresentationAISections = {
     pricing_strategy:
       "Suggested approach: price competitively within the estimated range and use recent comp momentum to support your final list price. Consider offering strong initial terms (e.g., quick-close incentives) to attract qualified showings.",
@@ -49,9 +53,7 @@ export async function generatePresentationAISections(params: {
       "Marketing plan: optimize listing photos for the buyer journey, write a compelling headline focused on buyer benefits, schedule targeted social + local search ads, and use a weekly open house + follow-up cadence to build momentum.",
   };
 
-  if (!apiKey) return fallback;
-
-  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  if (!isAnthropicConfigured()) return fallback;
 
   // Avoid raw MLS/warehouse details; include only what’s needed for strategy.
   const compsForPrompt = params.comps
@@ -65,9 +67,7 @@ export async function generatePresentationAISections(params: {
       distance_miles: c.distanceMiles,
     }));
 
-  const prompt = `You are a professional real estate listing strategist.
-
-Create three sections for a homeowner presentation based on the property address, the point estimate/range, and a short list of nearby sold comps.
+  const prompt = `Create three sections for a homeowner listing presentation based on the property address, the point estimate/range, and a short list of nearby sold comps.
 
 Return ONLY valid JSON with this exact schema:
 {
@@ -94,40 +94,33 @@ Nearby sold comps (JSON):
 ${JSON.stringify(compsForPrompt, null, 2)}
 `;
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.4,
-      messages: [
-        { role: "system", content: "Return ONLY JSON. No extra keys. No markdown." },
-        { role: "user", content: prompt },
-      ],
-    }),
-  });
-
-  if (!res.ok) {
-    console.error("OpenAI request failed", await res.text().catch(() => ""));
-    return fallback;
-  }
-
-  const json = (await res.json()) as any;
-  const content = json?.choices?.[0]?.message?.content;
-  if (!content || typeof content !== "string") return fallback;
-
   try {
-    const parsed = extractJsonObject(content);
+    const client = getAnthropicClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const res: any = await client.messages.create({
+      model: MODEL,
+      max_tokens: 1500,
+      system:
+        "You are a professional real estate listing strategist. Return ONLY a JSON object with keys pricing_strategy, market_insights, marketing_plan. No markdown, no extra keys.",
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const content: unknown[] = Array.isArray(res?.content) ? res.content : [];
+    const text = content
+      .map((b) => (b as { type?: string; text?: string }))
+      .filter((b) => b.type === "text" && typeof b.text === "string")
+      .map((b) => b.text as string)
+      .join("");
+    if (!text) return fallback;
+
+    const parsed = extractJsonObject(text);
     return {
       pricing_strategy: String(parsed?.pricing_strategy ?? fallback.pricing_strategy),
       market_insights: String(parsed?.market_insights ?? fallback.market_insights),
       marketing_plan: String(parsed?.marketing_plan ?? fallback.marketing_plan),
     };
   } catch (e) {
-    console.error("OpenAI JSON parse failed", e);
+    console.error("presentation AI (Claude) failed", e);
     return fallback;
   }
 }
