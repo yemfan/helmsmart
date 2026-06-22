@@ -160,6 +160,50 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
   },
 };
 
+/**
+ * Map a leadsmart_users.plan billing slug to the canonical AgentPlan used
+ * by product_entitlements. The user row uses the marketing dialect
+ * (free / pro / premium / signature / team — "free" stands in for starter);
+ * entitlements use starter / growth / elite / signature / team.
+ */
+export function planSlugToAgentPlan(slug: string | null | undefined): AgentPlan {
+  switch ((slug ?? "").toLowerCase()) {
+    case "pro":
+      return "growth";
+    case "premium":
+      return "elite";
+    case "signature":
+      return "signature";
+    case "team":
+      return "team";
+    case "free":
+    case "starter":
+    default:
+      return "starter";
+  }
+}
+
+/**
+ * Inverse of planSlugToAgentPlan: AgentPlan → the leadsmart_users.plan
+ * billing slug ("free" for starter). Use when writing the user row so its
+ * dialect stays consistent.
+ */
+export function agentPlanToUserSlug(plan: AgentPlan): string {
+  switch (plan) {
+    case "growth":
+      return "pro";
+    case "elite":
+      return "premium";
+    case "signature":
+      return "signature";
+    case "team":
+      return "team";
+    case "starter":
+    default:
+      return "free";
+  }
+}
+
 export function planRowFromCatalog(plan: AgentPlan): {
   plan: string;
   cma_reports_per_day: number;

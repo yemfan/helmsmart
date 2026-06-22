@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { ERROR_DASHBOARD_NO_AGENT_ROW } from "@leadsmart/shared";
-import { ensureStarterEntitlement } from "@/lib/entitlements/ensureStarterEntitlement";
+import { reconcileEntitlement } from "@/lib/entitlements/ensureStarterEntitlement";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { isRedirectError } from "@/lib/isRedirectError";
 import DashboardShell from "@/components/dashboard/DashboardShell";
@@ -74,32 +74,28 @@ export default async function DashboardLayout({
         .update({ plan: "free", subscription_status: "inactive" } as Record<string, unknown>)
         .eq("user_id", ctx.userId);
     }
-    if (!staff && status && !["active", "trialing"].includes(status)) {
-      // Inactive-sub flow:
-      //   1. Auto-assign the Starter (free) entitlement. No paying
-      //      user ever expects to lose access entirely — they
-      //      should just fall to the free tier and keep using the
-      //      app. ensureStarterEntitlement is idempotent + only
-      //      acts when the user has no currently-active plan.
-      //   2. Redirect to /auth/complete-profile so the user can
-      //      confirm / pick their role before seeing the dashboard.
-      //      That page already no-ops for users who already have a
-      //      role set, so it's safe as a universal landing.
-      //
-      // After this redirect the user's subscription_status has been
-      // updated to "active" (free tier), so they won't bounce again
-      // on the next dashboard load.
+    // Ensure the user has an entitlement that MATCHES their plan. Idempotent
+    // and read-only on the happy path; only writes when a row is missing or
+    // the user row is stale. This closes the gap where an ACTIVE paid user
+    // (e.g. an admin/comp "premium") has no synced product_entitlements row
+    // and would otherwise be treated as free by every gated feature
+    // (quotas, lead/contact caps, AI actions, alerts, team).
+    if (!staff) {
       try {
-        await ensureStarterEntitlement(ctx.userId);
+        await reconcileEntitlement(ctx.userId);
       } catch (err) {
-        // Don't block the user if the assignment fails — the
-        // redirect to complete-profile still makes sense and the
-        // retry will happen naturally on next load.
         console.warn(
-          "[dashboard layout] ensureStarterEntitlement failed:",
+          "[dashboard layout] reconcileEntitlement failed:",
           err instanceof Error ? err.message : err,
         );
       }
+    }
+
+    if (!staff && status && !["active", "trialing"].includes(status)) {
+      // Inactive-sub flow: reconcile (above) already dropped them onto the
+      // Starter (free) entitlement; send them to confirm their profile.
+      // complete-profile no-ops for users who already have a role, so it's
+      // safe as a universal landing.
       redirect("/auth/complete-profile?next=/dashboard");
     }
   } catch (e) {
