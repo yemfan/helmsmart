@@ -36,6 +36,23 @@ function formatMoney(n: number | null | undefined): string {
   }).format(n);
 }
 
+function isCondo(propertyType: string | null | undefined): boolean {
+  return !!propertyType && /condo/i.test(propertyType);
+}
+
+/** Lot size for display — blank for condos (no individual lot) or when unknown. */
+function formatLot(lotSizeSqft: number | null | undefined, propertyType: string | null | undefined): string {
+  if (isCondo(propertyType)) return "—";
+  if (lotSizeSqft == null || !Number.isFinite(lotSizeSqft) || lotSizeSqft <= 0) return "—";
+  if (lotSizeSqft >= 43560) return `${(lotSizeSqft / 43560).toFixed(2)} ac`;
+  return `${Math.round(lotSizeSqft).toLocaleString()} sf`;
+}
+
+function formatHoa(hoaMonthly: number | null | undefined): string {
+  if (hoaMonthly == null || !Number.isFinite(hoaMonthly) || hoaMonthly <= 0) return "—";
+  return `$${Math.round(hoaMonthly).toLocaleString()}/mo`;
+}
+
 function formatDate(iso: string): string {
   try {
     return new Date(iso).toLocaleDateString(undefined, {
@@ -162,6 +179,10 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
         </div>
         <p className="mt-3 text-[11px] text-slate-500">
           {subject.beds} bed / {subject.baths} bath / {subject.sqft.toLocaleString()} sqft
+          {!isCondo(subject.propertyType) && formatLot(subject.lotSizeSqft, subject.propertyType) !== "—"
+            ? ` · lot ${formatLot(subject.lotSizeSqft, subject.propertyType)}`
+            : ""}
+          {formatHoa(subject.hoaMonthly) !== "—" ? ` · HOA ${formatHoa(subject.hoaMonthly)}` : ""}
           {subject.yearBuilt ? ` · built ${subject.yearBuilt}` : ""}
           {subject.condition ? ` · ${subject.condition}` : ""}
         </p>
@@ -210,10 +231,14 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
               <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-4 py-2 text-left font-semibold">Address</th>
-                  <th className="px-4 py-2 text-right font-semibold">Sold</th>
+                  <th className="px-3 py-2 text-right font-semibold">Beds</th>
+                  <th className="px-3 py-2 text-right font-semibold">Baths</th>
+                  <th className="px-3 py-2 text-right font-semibold">Sqft</th>
+                  <th className="px-3 py-2 text-right font-semibold">Lot</th>
+                  <th className="px-3 py-2 text-right font-semibold">HOA</th>
+                  <th className="px-3 py-2 text-right font-semibold">$/sqft</th>
+                  <th className="px-3 py-2 text-right font-semibold">Sold</th>
                   <th className="px-4 py-2 text-right font-semibold">Price</th>
-                  <th className="px-4 py-2 text-right font-semibold">Sqft</th>
-                  <th className="px-4 py-2 text-right font-semibold">$/sqft</th>
                   <th className="px-4 py-2 text-right font-semibold">Distance</th>
                 </tr>
               </thead>
@@ -222,20 +247,27 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
                   <tr key={`${c.address}-${i}`} className="border-t border-slate-100">
                     <td className="px-4 py-2 text-slate-900">
                       <p className="font-semibold">{c.address}</p>
-                      <p className="text-[11px] text-slate-500">
-                        {c.beds ?? "—"} bd / {c.baths ?? "—"} ba
-                        {c.propertyType ? ` · ${c.propertyType}` : ""}
-                      </p>
+                      {c.propertyType ? (
+                        <p className="text-[11px] text-slate-500">{c.propertyType}</p>
+                      ) : null}
                     </td>
-                    <td className="px-4 py-2 text-right text-slate-700">{c.soldDate}</td>
-                    <td className="px-4 py-2 text-right tabular-nums font-semibold text-slate-900">
-                      {formatMoney(c.price)}
-                    </td>
-                    <td className="px-4 py-2 text-right tabular-nums text-slate-700">
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">{c.beds ?? "—"}</td>
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">{c.baths ?? "—"}</td>
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">
                       {c.sqft.toLocaleString()}
                     </td>
-                    <td className="px-4 py-2 text-right tabular-nums text-slate-700">
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">
+                      {formatLot(c.lotSizeSqft, c.propertyType)}
+                    </td>
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">
+                      {formatHoa(c.hoaMonthly)}
+                    </td>
+                    <td className="px-3 py-2 text-right tabular-nums text-slate-700">
                       ${Math.round(c.pricePerSqft)}
+                    </td>
+                    <td className="px-3 py-2 text-right text-slate-700">{c.soldDate}</td>
+                    <td className="px-4 py-2 text-right tabular-nums font-semibold text-slate-900">
+                      {formatMoney(c.price)}
                     </td>
                     <td className="px-4 py-2 text-right tabular-nums text-slate-500">
                       {c.distanceMiles.toFixed(1)} mi
