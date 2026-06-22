@@ -1,46 +1,29 @@
 import type { Metadata } from "next";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { listListingsForAgent } from "@/lib/listings/service";
-import { supabaseServer } from "@/lib/supabaseServer";
-import ListingsTabs from "./ListingsTabs";
+import ListingsClient from "./ListingsClient";
 
 /**
- * Listings — agent-side inventory view, with Presentations as a tab
- * (a listing presentation is how a listing gets won; the old
- * /dashboard/seller-presentation page redirects here).
+ * Listings — agent-side inventory view (status, showings, offers).
  *
- * URL kept as /dashboard/properties because the CommandPalette
- * already links there; sidebar entry is "Listings" under the Sales
- * Assistant.
+ * Seller presentations used to live here as a tab; they now have their
+ * own "Seller Presentation" sidebar entry at /dashboard/presentations
+ * (the single, consolidated generator). The old /dashboard/seller-presentation
+ * route redirects there.
+ *
+ * URL kept as /dashboard/properties because the CommandPalette already
+ * links there; sidebar entry is "Listings" under the Sales Assistant.
  */
 export const metadata: Metadata = {
   title: "Listings",
-  description: "Your active listings — status, showings, offers, and seller presentations.",
-  keywords: ["listings", "inventory", "active", "presentations"],
+  description: "Your active listings — status, showings, and offers.",
+  keywords: ["listings", "inventory", "active"],
   robots: { index: false },
 };
 
-export default async function ListingsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ tab?: string }>;
-}) {
-  const [{ agentId }, { tab }] = await Promise.all([getCurrentAgentContext(), searchParams]);
+export default async function ListingsPage() {
+  const { agentId } = await getCurrentAgentContext();
+  const listings = await listListingsForAgent(String(agentId));
 
-  const [listings, { data: presentationProperties }] = await Promise.all([
-    listListingsForAgent(String(agentId)),
-    supabaseServer
-      .from("properties_warehouse")
-      .select("id, address, city, state, beds, baths, sqft, property_type, year_built")
-      .order("updated_at", { ascending: false })
-      .limit(100),
-  ]);
-
-  return (
-    <ListingsTabs
-      initialTab={tab === "presentations" ? "presentations" : "listings"}
-      listings={listings}
-      presentationProperties={(presentationProperties ?? []) as Array<Record<string, unknown>>}
-    />
-  );
+  return <ListingsClient listings={listings} />;
 }
