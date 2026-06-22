@@ -1,9 +1,12 @@
 import { supabaseBrowser } from "./supabaseBrowser";
 
 /**
- * Supabase browser client uses localStorage; API routes use cookies. Attaching
- * `Authorization: Bearer <access_token>` lets `getUserFromRequest` authenticate
- * the same session server-side.
+ * The browser client is cookie-backed (`@supabase/ssr` `createBrowserClient`),
+ * so `getSession()` reads the same session the server sees via cookies — the
+ * attached Bearer always resolves to the cookie user, never a different one.
+ * Attaching `Authorization: Bearer <access_token>` lets `getUserFromRequest`
+ * authenticate reliably for clients where the cookie may not ride along (e.g.
+ * multipart/FormData or non-browser callers).
  */
 export async function mergeAuthHeaders(base?: HeadersInit): Promise<HeadersInit> {
   const headers = new Headers(base ?? {});

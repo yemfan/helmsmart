@@ -1,10 +1,11 @@
+import type { User } from "@supabase/supabase-js";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { getUserFromRequest } from "@/lib/authFromRequest";
 import type { ToolName } from "@/lib/tokenCosts";
 import { TOOL_TOKEN_COST } from "@/lib/tokenCosts";
 
 export type ConsumeResult =
-  | { ok: true; userId: string; plan: string; tokensRemaining: number }
+  | { ok: true; userId: string; user: User | null; plan: string; tokensRemaining: number }
   | { ok: false; status: number; error: string; tokensRemaining?: number; plan?: string };
 
 export async function consumeTokensForTool(params: {
@@ -18,7 +19,7 @@ export async function consumeTokensForTool(params: {
       return { ok: false, status: 401, error: "Not authenticated" };
     }
     // guest allowed: no tokens deducted
-    return { ok: true, userId: "guest", plan: "guest", tokensRemaining: Infinity };
+    return { ok: true, userId: "guest", user: null, plan: "guest", tokensRemaining: Infinity };
   }
 
   const cost = TOOL_TOKEN_COST[params.tool];
@@ -48,6 +49,6 @@ export async function consumeTokensForTool(params: {
     };
   }
 
-  return { ok: true, userId: user.id, plan, tokensRemaining };
+  return { ok: true, userId: user.id, user, plan, tokensRemaining };
 }
 
