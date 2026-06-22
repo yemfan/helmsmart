@@ -179,6 +179,14 @@ const navConfig = {
           icon: l(<Compass size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
+          // Buyer-decision deep report: value, affordability, deal rating,
+          // ROI, schools, neighborhood, map. Pairs with House Search.
+          label: "Deep Report",
+          href: "/dashboard/deep-report",
+          match: ["/dashboard/deep-report"],
+          icon: l(<BarChart3 size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
           // The real comps/valuation CMA — price the home. Pairs with
           // Seller Presentation below (price it → pitch it → win it).
           label: "CMA",
