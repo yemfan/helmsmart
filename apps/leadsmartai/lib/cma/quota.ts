@@ -1,32 +1,31 @@
 import "server-only";
 
+import { getAiTierLimitForUser } from "@/lib/entitlements/aiTierLimit";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 /**
  * Daily-quota peek for the agent's CMA usage.
  *
- * The propertytoolsai `/api/smart-cma` endpoint enforces this quota at
- * generation time (10/day for role='agent', tracked in `cma_daily_usage`
- * keyed on `subject_key='user:${userId}'`). The CRM-side just reads the
- * SAME row to surface a "X of Y left today" hint in the new-CMA form,
- * so agents don't get rejected at submit.
- *
- * Both apps share the same Supabase, so we read directly rather than
- * calling /api/cma/check-limit cross-app — that endpoint requires
- * forwarding auth cookies, which is messy from a server-to-server
- * fetch. Direct DB read is simpler and identical.
+ * The limit is tiered by subscription (see `aiDailyLimitForPlan`): free
+ * = 1/day, Pro = 10/day, higher tiers = unlimited. Usage is counted in
+ * `cma_daily_usage` keyed on `subject_key='user:${userId}'`. The CRM
+ * reads this to surface a "X of Y left today" hint in the new-CMA form
+ * and enforces it at generation time.
  */
-
-const AGENT_DAILY_LIMIT = 10;
 
 export type CmaQuota = {
   used: number;
-  limit: number;
-  remaining: number;
+  /** null = unlimited (higher tiers). */
+  limit: number | null;
+  /** null = unlimited. */
+  remaining: number | null;
   reached: boolean;
   /** True when remaining ≤ 1 (one or zero left) — UI uses this to
-   *  switch from neutral hint to amber warning copy. */
+   *  switch from neutral hint to amber warning copy. Never true when
+   *  the plan is unlimited. */
   warning: boolean;
+  /** True when the plan has no daily cap. */
+  unlimited: boolean;
   /** YYYY-MM-DD — when the counter rolls over. */
   resetDate: string;
 };
@@ -82,7 +81,20 @@ export async function getCmaQuotaForUser(userId: string): Promise<CmaQuota> {
     used = 0;
   }
 
-  const limit = AGENT_DAILY_LIMIT;
+  const { limit } = await getAiTierLimitForUser(userId);
+  if (limit == null) {
+    // Unlimited tier — never blocks, no warning.
+    return {
+      used,
+      limit: null,
+      remaining: null,
+      reached: false,
+      warning: false,
+      unlimited: true,
+      resetDate: today,
+    };
+  }
+
   const remaining = Math.max(0, limit - used);
   return {
     used,
@@ -90,6 +102,7 @@ export async function getCmaQuotaForUser(userId: string): Promise<CmaQuota> {
     remaining,
     reached: used >= limit,
     warning: remaining <= 1,
+    unlimited: false,
     resetDate: today,
   };
 }

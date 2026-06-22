@@ -22,10 +22,11 @@ type CmaListRow = {
 
 type CmaQuota = {
   used: number;
-  limit: number;
-  remaining: number;
+  limit: number | null;
+  remaining: number | null;
   reached: boolean;
   warning: boolean;
+  unlimited?: boolean;
   resetDate: string;
 };
 
@@ -267,7 +268,9 @@ function QuotaPill({ quota }: { quota: CmaQuota }) {
       className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold ring-1 ${tone}`}
       title={`Daily CMA quota — resets ${quota.resetDate}`}
     >
-      {quota.remaining} of {quota.limit} left today
+      {quota.unlimited
+        ? "Unlimited CMAs"
+        : `${quota.remaining} of ${quota.limit} left today`}
     </span>
   );
 }

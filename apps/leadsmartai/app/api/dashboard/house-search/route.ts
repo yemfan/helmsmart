@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { generateHouseSearch } from "@/lib/house-search/aiHouseSearch";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getHouseSearchQuota, incrementHouseSearchUsage } from "@/lib/house-search/quota";
 
 export const runtime = "nodejs";
 // Web-search + multiple tool rounds can run long; give it room.
@@ -17,7 +18,7 @@ export const maxDuration = 300;
 export async function POST(req: Request) {
   try {
     // Gate on an authenticated agent (also surfaces a clean 401 in the UI).
-    await getCurrentAgentContext();
+    const { userId } = await getCurrentAgentContext();
 
     const body = (await req.json().catch(() => ({}))) as {
       query?: unknown;
@@ -31,11 +32,28 @@ export async function POST(req: Request) {
       ? body.refinements.filter((r): r is string => typeof r === "string")
       : [];
 
+    // Each run costs real tokens + web searches — enforce the tiered daily quota.
+    const quota = await getHouseSearchQuota(userId);
+    if (quota.reached) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: `Daily House Search limit reached (${quota.limit}/day). Resets tomorrow — upgrade for more.`,
+          quota,
+        },
+        { status: 429 },
+      );
+    }
+
     const res = await generateHouseSearch(query, refinements);
     if (!res.ok) {
       return NextResponse.json({ ok: false, error: res.error }, { status: res.status });
     }
-    return NextResponse.json({ ok: true, result: res.result });
+
+    // Count only successful runs (don't burn quota on failures).
+    await incrementHouseSearchUsage(userId);
+    const after = await getHouseSearchQuota(userId);
+    return NextResponse.json({ ok: true, result: res.result, quota: after });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
     console.error("house-search:", err);
