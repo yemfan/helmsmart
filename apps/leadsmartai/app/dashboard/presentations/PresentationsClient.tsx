@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
+import PresentationView from "@/components/presentations/PresentationView";
 
 type PresentationData = {
   property: {
@@ -73,11 +74,6 @@ export default function PresentationsClient({
     return `${origin}/presentation/${encodeURIComponent(presentation.presentationId)}`;
   }, [presentation?.presentationId]);
 
-  const formatCurrency = (value: number | null) =>
-    value == null || !Number.isFinite(value)
-      ? "—"
-      : `$${Math.round(value).toLocaleString()}`;
-
   const canGenerate = address.trim().length > 5;
 
   const handleGenerate = async () => {
@@ -125,120 +121,6 @@ export default function PresentationsClient({
     }
   };
 
-  const handleDownloadPdf = async () => {
-    if (!presentation) return;
-    try {
-      const jsPDF = (await import("jspdf")).default;
-      const doc = new jsPDF();
-
-      let y = 10;
-      doc.setFontSize(16);
-      doc.text("Listing Presentation", 10, y);
-      y += 8;
-
-      doc.setFontSize(10);
-      doc.text(`Address: ${presentation.data.property.address}`, 12, y);
-      y += 6;
-      doc.text(
-        `${presentation.data.property.beds ?? "—"} beds • ${presentation.data.property.baths ?? "—"} baths • ${
-          presentation.data.property.sqft ? Number(presentation.data.property.sqft).toLocaleString() : "—"
-        } sqft`,
-        12,
-        y
-      );
-      y += 7;
-
-      doc.setFontSize(12);
-      doc.text("Estimated Value", 10, y);
-      y += 6;
-      doc.setFontSize(10);
-      doc.text(`Point estimate: ${formatCurrency(presentation.data.estimate.estimatedValue)}`, 12, y);
-      y += 5;
-      doc.text(
-        `Range: ${formatCurrency(presentation.data.estimate.low)} – ${formatCurrency(presentation.data.estimate.high)}`,
-        12,
-        y
-      );
-      y += 7;
-
-      doc.setFontSize(12);
-      doc.text("Nearby Comparable Sales", 10, y);
-      y += 6;
-      doc.setFontSize(10);
-
-      const compsToShow = presentation.data.comps.slice(0, 6);
-      if (compsToShow.length === 0) {
-        doc.text("No comparable sales available yet.", 12, y);
-        y += 6;
-      } else {
-        compsToShow.forEach((c, idx) => {
-          const line = `${idx + 1}. ${c.address} — $${Math.round(c.price).toLocaleString()} (${c.soldDate})`;
-          const lines = doc.splitTextToSize(line, 185);
-          lines.forEach((ln: string) => {
-            doc.text(ln, 12, y);
-            y += 5;
-            if (y > 275) {
-              doc.addPage();
-              y = 10;
-            }
-          });
-        });
-      }
-
-      y += 5;
-      doc.setFontSize(12);
-      doc.text("Pricing Strategy (AI)", 10, y);
-      y += 6;
-      doc.setFontSize(10);
-      const strategyLines = doc.splitTextToSize(presentation.data.pricing_strategy, 190);
-      strategyLines.forEach((ln: string) => {
-        if (y > 280) {
-          doc.addPage();
-          y = 10;
-        }
-        doc.text(ln, 12, y);
-        y += 5;
-      });
-
-      doc.addPage();
-      y = 10;
-      doc.setFontSize(12);
-      doc.text("Market Insights (AI)", 10, y);
-      y += 6;
-      const insightsLines = doc.splitTextToSize(presentation.data.market_insights, 190);
-      insightsLines.forEach((ln: string) => {
-        if (y > 280) {
-          doc.addPage();
-          y = 10;
-        }
-        doc.text(ln, 12, y);
-        y += 5;
-      });
-
-      doc.addPage();
-      y = 10;
-      doc.setFontSize(12);
-      doc.text("Marketing Plan (AI)", 10, y);
-      y += 6;
-      const planLines = doc.splitTextToSize(presentation.data.marketing_plan, 190);
-      planLines.forEach((ln: string) => {
-        if (y > 280) {
-          doc.addPage();
-          y = 10;
-        }
-        doc.text(ln, 12, y);
-        y += 5;
-      });
-
-      doc.save("listing-presentation.pdf");
-    } catch (err) {
-      console.error(err);
-      alert(
-        "There was an issue generating the PDF. Make sure 'jspdf' is installed, then try again."
-      );
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
@@ -279,133 +161,29 @@ export default function PresentationsClient({
       </div>
 
       {presentation ? (
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-slate-200 flex flex-col md:flex-row md:items-start md:justify-between gap-3">
-            <div>
-              <div className="ui-card-subtitle text-slate-500">
-                Preview
-              </div>
-              <div className="text-lg font-bold text-slate-900 mt-1">
-                {presentation.data.property.address}
-              </div>
-            </div>
-
-            <div className="flex gap-2 flex-wrap">
-              <button
-                onClick={handleDownloadPdf}
-                className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-800 border border-slate-200 hover:bg-slate-50"
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <button
+              onClick={handleCopyShareLink}
+              className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-800 border border-slate-200 hover:bg-slate-50"
+            >
+              Share Link
+            </button>
+            {shareUrl ? (
+              <a
+                href={shareUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
               >
-                Download PDF
-              </button>
-              <button
-                onClick={handleCopyShareLink}
-                className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-800 border border-slate-200 hover:bg-slate-50"
-              >
-                Share Link
-              </button>
-              {shareUrl ? (
-                <a
-                  href={shareUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
-                >
-                  Open Share Page
-                </a>
-              ) : null}
-            </div>
+                Open Share Page
+              </a>
+            ) : null}
           </div>
-
-          <div className="p-5 space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-brand-surface border border-gray-200 rounded-xl p-4">
-                <div className="ui-card-subtitle text-slate-500">
-                  Point Estimate
-                </div>
-                <div className="text-3xl font-extrabold text-brand-primary mt-2">
-                  {formatCurrency(presentation.data.estimate.estimatedValue)}
-                </div>
-              </div>
-              <div className="bg-brand-surface border border-gray-200 rounded-xl p-4">
-                <div className="ui-card-subtitle text-slate-500">
-                  Range
-                </div>
-                <div className="text-lg font-bold text-slate-900 mt-2">
-                  {formatCurrency(presentation.data.estimate.low)} – {formatCurrency(presentation.data.estimate.high)}
-                </div>
-              </div>
-              <div className="bg-brand-surface border border-gray-200 rounded-xl p-4">
-                <div className="ui-card-subtitle text-slate-500">
-                  Snapshot
-                </div>
-                <div className="text-sm text-slate-800 font-semibold mt-2">
-                  {presentation.data.property.beds ?? "—"} Beds • {presentation.data.property.baths ?? "—"} Baths •{" "}
-                  {presentation.data.property.sqft ? Number(presentation.data.property.sqft).toLocaleString() : "—"} Sqft
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <div className="ui-card-title text-slate-900">Nearby Comparable Sales</div>
-              <div className="text-xs text-slate-600 mt-1">
-                Based on recent nearby comparable sold properties.
-              </div>
-              <div className="mt-3 overflow-x-auto">
-                <table className="min-w-full text-xs border-collapse">
-                  <thead>
-                    <tr className="bg-slate-50 text-left text-slate-600">
-                      <th className="ui-table-header px-3 py-2">Address</th>
-                      <th className="ui-table-header px-3 py-2">Sold</th>
-                      <th className="ui-table-header px-3 py-2">Sqft</th>
-                      <th className="ui-table-header px-3 py-2">Price/Sqft</th>
-                      <th className="ui-table-header px-3 py-2">Sold Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {presentation.data.comps.slice(0, 8).map((c, idx) => (
-                      <tr key={idx} className="border-t border-slate-100 hover:bg-slate-50">
-                        <td className="ui-table-cell px-3 py-2 whitespace-nowrap">{c.address}</td>
-                        <td className="ui-table-cell px-3 py-2">{`$${Math.round(c.price).toLocaleString()}`}</td>
-                        <td className="ui-table-cell px-3 py-2">{c.sqft ? Number(c.sqft).toLocaleString() : "—"}</td>
-                        <td className="ui-table-cell px-3 py-2">
-                          {Number.isFinite(c.pricePerSqft) ? `$${c.pricePerSqft.toFixed(0)}` : "—"}
-                        </td>
-                        <td className="ui-table-cell px-3 py-2">{c.soldDate || "—"}</td>
-                      </tr>
-                    ))}
-                    {presentation.data.comps.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="px-3 py-6 text-sm text-slate-600">
-                          No comparable sold data available yet.
-                        </td>
-                      </tr>
-                    ) : null}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white border border-slate-200 rounded-xl p-4 md:col-span-1 space-y-2">
-                <div className="ui-card-title text-slate-900">Pricing Strategy</div>
-                <div className="text-sm text-slate-700 whitespace-pre-wrap">
-                  {presentation.data.pricing_strategy || "—"}
-                </div>
-              </div>
-              <div className="bg-white border border-slate-200 rounded-xl p-4 md:col-span-1 space-y-2">
-                <div className="ui-card-title text-slate-900">Market Insights</div>
-                <div className="text-sm text-slate-700 whitespace-pre-wrap">
-                  {presentation.data.market_insights || "—"}
-                </div>
-              </div>
-              <div className="bg-white border border-slate-200 rounded-xl p-4 md:col-span-1 space-y-2">
-                <div className="ui-card-title text-slate-900">Marketing Plan</div>
-                <div className="text-sm text-slate-700 whitespace-pre-wrap">
-                  {presentation.data.marketing_plan || "—"}
-                </div>
-              </div>
-            </div>
-          </div>
+          <PresentationView
+            data={presentation.data as unknown as Record<string, unknown>}
+            propertyAddress={presentation.data?.property?.address}
+          />
         </div>
       ) : null}
 

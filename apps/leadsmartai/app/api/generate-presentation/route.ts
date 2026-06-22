@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { generateAiCma } from "@/lib/cma/aiCma";
 import { findRecentCmaSnapshotByAddress } from "@/lib/cma/service";
 import { generatePresentationAISections } from "@/lib/presentationAI";
+import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { consumeTokensForTool } from "@/lib/consumeTokens";
 
@@ -81,6 +82,9 @@ export async function POST(req: Request) {
       sqft: snap.subject.sqft || null,
       propertyType: snap.subject.propertyType,
       yearBuilt: snap.subject.yearBuilt || null,
+      // Fuller spec details for the presentation's property section.
+      lotSizeSqft: snap.subject.lotSizeSqft ?? null,
+      hoaMonthly: snap.subject.hoaMonthly ?? null,
     };
     const estimate = {
       estimatedValue: snap.valuation.estimatedValue || null,
@@ -101,19 +105,22 @@ export async function POST(req: Request) {
       propertyType: c.propertyType,
     }));
 
-    // 2) Narrative sections (pricing strategy / market insights / marketing
-    // plan) from the AI valuation + comps.
-    const aiSections = await generatePresentationAISections({
-      address: property.address,
-      estimate,
-      comps: comps.map((c) => ({
-        address: c.address,
-        price: c.price,
-        sqft: c.sqft,
-        soldDate: c.soldDate,
-        distanceMiles: c.distanceMiles,
-      })),
-    });
+    // 2) Narrative + neighborhood + schools (web-search grounded), and the
+    // agent profile block — fetched in parallel.
+    const [aiSections, agent] = await Promise.all([
+      generatePresentationAISections({
+        address: property.address,
+        estimate,
+        comps: comps.map((c) => ({
+          address: c.address,
+          price: c.price,
+          sqft: c.sqft,
+          soldDate: c.soldDate,
+          distanceMiles: c.distanceMiles,
+        })),
+      }),
+      loadPresentationAgent(String(ctx.agentId)),
+    ]);
 
     // 3) Combine into structured JSON for storage + preview.
     const presentationData = {
@@ -123,6 +130,10 @@ export async function POST(req: Request) {
       pricing_strategy: aiSections.pricing_strategy,
       market_insights: aiSections.market_insights,
       marketing_plan: aiSections.marketing_plan,
+      neighborhood: aiSections.neighborhood,
+      schools: aiSections.schools,
+      agent,
+      sources: aiSections.sources,
     };
 
     // 4) Save to `presentations`.
