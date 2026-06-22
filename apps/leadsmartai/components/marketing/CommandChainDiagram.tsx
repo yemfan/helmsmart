@@ -7,6 +7,7 @@ import {
   ClipboardList,
   Crown,
   DoorOpen,
+  FileText,
   Handshake,
   Headphones,
   House,
@@ -43,6 +44,8 @@ type Command = {
   command: string;
   assignees: TeamKey[];
   steps: string[];
+  /** The tangible deliverables the team hands back. */
+  artifacts: string[];
 };
 
 const COMMANDS: Command[] = [
@@ -58,6 +61,13 @@ const COMMANDS: Command[] = [
       "Markets it to your sphere and the portals",
       "Preps instant follow-up for every sign-in",
     ],
+    artifacts: [
+      "Just-listed flyer",
+      "Open-house sign-in",
+      "Social + portal posts",
+      "Comps research brief",
+      "Follow-up templates",
+    ],
   },
   {
     id: "seller_presentation",
@@ -70,6 +80,13 @@ const COMMANDS: Command[] = [
       "Writes the pricing strategy and marketing plan",
       "Adds schools, neighborhood & your branding",
       "Delivers a share-ready, professional report",
+    ],
+    artifacts: [
+      "AI CMA report",
+      "Listing presentation (PDF)",
+      "Pricing strategy",
+      "Marketing plan",
+      "Net-to-seller estimate",
     ],
   },
   {
@@ -84,6 +101,13 @@ const COMMANDS: Command[] = [
       "Books the showings and routes the tour",
       "Emails the buyer the full lineup",
     ],
+    artifacts: [
+      "Matched shortlist",
+      "Property Deep Reports",
+      "Comparison report",
+      "Showing schedule",
+      "Buyer email lineup",
+    ],
   },
   {
     id: "closing",
@@ -96,6 +120,12 @@ const COMMANDS: Command[] = [
       "Tracks contingencies, dates & documents",
       "Preps the net-to-seller summary",
       "Logs the commission and expenses",
+    ],
+    artifacts: [
+      "Transaction timeline",
+      "Deadline tracker",
+      "Net-to-seller sheet",
+      "Commission + expense log",
     ],
   },
 ];
@@ -193,7 +223,7 @@ export default function CommandChainDiagram() {
           })}
         </div>
 
-        {/* What the assigned team runs */}
+        {/* What the assigned team runs — processes + artifacts */}
         <div className="mt-6 w-full rounded-2xl border border-slate-200 bg-slate-50/70 p-5 dark:border-slate-800 dark:bg-slate-900/40">
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             What happens next — automatically
@@ -206,6 +236,23 @@ export default function CommandChainDiagram() {
               </li>
             ))}
           </ul>
+
+          <div className="mt-5 border-t border-slate-200 pt-4 dark:border-slate-700">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#0072ce]">
+              What you get — ready to hand over
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {active.artifacts.map((a) => (
+                <span
+                  key={a}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                >
+                  <FileText size={12} className="text-[#0072ce]" aria-hidden />
+                  {a}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
