@@ -7,6 +7,7 @@ import {
   type CreateCmaInput,
 } from "@/lib/cma/service";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { normalizeAddress } from "@/lib/cma/normalizeAddress";
 
 export const runtime = "nodejs";
 // AI CMA generation runs a live web-search loop — give it room.
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
     };
 
     const subjectAddress =
-      typeof body.subjectAddress === "string" ? body.subjectAddress.trim() : "";
+      typeof body.subjectAddress === "string" ? normalizeAddress(body.subjectAddress) : "";
     if (!subjectAddress) {
       return NextResponse.json(
         { ok: false, error: "subjectAddress is required." },
