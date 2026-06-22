@@ -156,6 +156,39 @@ export async function fetchPhotoFromListingPage(
 }
 
 /**
+ * Google Static Map of the subject (a location map with a marker), fetched
+ * server-side + base64'd so it embeds in PDFs and renders without exposing
+ * the key. Returns null when no key / fetch fails.
+ */
+export async function fetchStaticMap(
+  address: string,
+  opts: { zoom?: number; width?: number; height?: number } = {},
+): Promise<SubjectPhoto | null> {
+  const key = resolveKey();
+  const loc = address.trim();
+  if (!key || !loc) return null;
+  const zoom = opts.zoom ?? 15;
+  const w = opts.width ?? 640;
+  const h = opts.height ?? 320;
+  try {
+    const url =
+      "https://maps.googleapis.com/maps/api/staticmap" +
+      `?center=${encodeURIComponent(loc)}&zoom=${zoom}&size=${w}x${h}&scale=2` +
+      `&markers=${encodeURIComponent(`color:0x047857|${loc}`)}&key=${key}`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return null;
+    const buf = Buffer.from(await res.arrayBuffer());
+    if (buf.length === 0) return null;
+    const format = detectFormat(res.headers.get("content-type"), buf);
+    if (!format) return null;
+    const mime = format === "PNG" ? "image/png" : "image/jpeg";
+    return { dataUrl: `data:${mime};base64,${buf.toString("base64")}`, format };
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Street View Static photo of the subject. Checks the metadata endpoint
  * first — the API returns a gray "no imagery" placeholder (HTTP 200) when
  * a location has no coverage, so metadata is the only reliable signal.
