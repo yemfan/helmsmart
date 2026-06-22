@@ -7,6 +7,7 @@ import {
   composeSignature,
 } from "@/lib/signatures/compose";
 import { loadAgentSignatureProfile } from "@/lib/signatures/loadProfile";
+import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import type { HouseListing } from "./types";
 
 /**
@@ -90,6 +91,29 @@ export async function sendBuyerListings(
     ? `<div style="font-size:14px;color:#334155;margin:12px 0;">${escapeHtml(opts.note.trim())}</div>`
     : "";
 
+  // Compact branded agent header (photo + name + brokerage). Full contact
+  // details still come through in the signature appended below.
+  const agent = opts.agentId != null ? await loadPresentationAgent(opts.agentId) : null;
+  const agentHeader =
+    agent && (agent.name || agent.brokerage || agent.photoUrl)
+      ? `<table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom:16px;"><tr>
+          ${
+            agent.photoUrl
+              ? `<td width="48" style="padding-right:12px;vertical-align:middle;"><img src="${agent.photoUrl}" width="44" height="44" alt="" style="display:block;border-radius:50%;object-fit:cover;"/></td>`
+              : ""
+          }
+          <td style="vertical-align:middle;">
+            ${agent.name ? `<div style="font-size:14px;font-weight:700;color:#0f172a;">${escapeHtml(agent.name)}</div>` : ""}
+            ${agent.brokerage ? `<div style="font-size:12px;color:#64748b;">${escapeHtml(agent.brokerage)}</div>` : ""}
+          </td>
+          ${
+            agent.logoUrl
+              ? `<td align="right" style="vertical-align:middle;"><img src="${agent.logoUrl}" height="28" alt="" style="display:block;max-width:120px;"/></td>`
+              : ""
+          }
+        </tr></table>`
+      : "";
+
   const html = `
 <!DOCTYPE html>
 <html><body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
@@ -97,6 +121,7 @@ export async function sendBuyerListings(
     <tr><td align="center">
       <table width="600" cellspacing="0" cellpadding="0" border="0" style="background:white;border-radius:12px;padding:24px;max-width:600px;">
         <tr><td>
+          ${agentHeader}
           <div style="font-size:14px;color:#64748b;">${greeting}</div>
           <h1 style="font-size:20px;color:#0f172a;margin:12px 0 4px;">${count} for you to consider</h1>
           ${query ? `<div style="font-size:13px;color:#94a3b8;">${escapeHtml(query)}</div>` : ""}

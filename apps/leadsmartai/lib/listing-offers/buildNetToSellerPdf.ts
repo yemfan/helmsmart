@@ -7,6 +7,7 @@ import {
   type NetToSellerInputs,
 } from "./netToSeller";
 import type { ListingOfferRow } from "./types";
+import type { SubjectPhoto } from "@/lib/cma/streetViewPhoto";
 
 /**
  * Renders a one-page "Net-to-Seller Summary" PDF for a single
@@ -47,6 +48,8 @@ export type NetToSellerPdfInput = {
     email: string | null;
     licenseNumber: string | null;
   };
+  /** Brokerage logo (letterhead, top-right); null hides it. */
+  agentLogo?: SubjectPhoto | null;
   listingCity: string | null;
   listingState: string | null;
   listingZip: string | null;
@@ -60,7 +63,16 @@ export function buildNetToSellerPdf(input: NetToSellerPdfInput): Uint8Array {
   const rightMargin = pageWidth - 48;
   let y = 56;
 
-  // Header — title + agent identity
+  // Header — title + agent identity, with brokerage logo as letterhead.
+  if (input.agentLogo) {
+    try {
+      const lw = 96;
+      const lh = 30;
+      doc.addImage(input.agentLogo.dataUrl, input.agentLogo.format, rightMargin - lw, y - 12, lw, lh, undefined, "FAST");
+    } catch {
+      /* skip logo on decode failure */
+    }
+  }
   doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
   doc.text("Net-to-Seller Summary", leftMargin, y);

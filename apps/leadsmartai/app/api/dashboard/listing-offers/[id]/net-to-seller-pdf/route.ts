@@ -1,6 +1,8 @@
+import { fetchListingPhoto } from "@/lib/cma/streetViewPhoto";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { buildNetToSellerPdf } from "@/lib/listing-offers/buildNetToSellerPdf";
 import { getListingOfferWithCounters } from "@/lib/listing-offers/service";
+import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -95,6 +97,15 @@ export async function GET(
       // Non-fatal — PDF still generates with whatever we've got.
     }
 
+    // Brokerage logo for the letterhead (best-effort; null hides it).
+    let agentLogo = null;
+    try {
+      const profile = await loadPresentationAgent(String(agentId));
+      agentLogo = await fetchListingPhoto(profile.logoUrl);
+    } catch {
+      /* non-fatal — header just renders without a logo */
+    }
+
     const url = new URL(req.url);
     const readPct = (key: string): number | undefined => {
       const raw = url.searchParams.get(key);
@@ -112,6 +123,7 @@ export async function GET(
         otherCostsFlat: readPct("otherCostsFlat"),
       },
       agent: agentIdentity,
+      agentLogo,
       listingCity: txRow.city,
       listingState: txRow.state,
       listingZip: txRow.zip,
