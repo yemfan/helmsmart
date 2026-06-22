@@ -9,11 +9,13 @@ import {
   DoorOpen,
   Eye,
   FileSignature,
+  Handshake,
   Headphones,
   House,
   KeyRound,
   LayoutDashboard,
   LayoutGrid,
+  LineChart,
   Megaphone,
   MessageCircle,
   PenLine,
@@ -159,9 +161,19 @@ const navConfig = {
           icon: l(<House size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
+          // The real comps/valuation CMA — how a listing gets won, so it
+          // sits with the listing tools (not buried/orphaned).
+          label: "CMA",
+          href: "/dashboard/cma",
+          match: ["/dashboard/cma"],
+          icon: l(<BarChart3 size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
           // Pipeline insights — where the Sales Assistant's next
-          // opportunities come from, so it lives on its desk.
-          label: "Growth & Opportunities",
+          // opportunities come from. ("Opportunities" dropped from the
+          // label: /dashboard/opportunities is a different thing — the
+          // paid Lead Marketplace.)
+          label: "Growth",
           href: "/dashboard/growth",
           match: ["/dashboard/growth"],
           icon: l(<Rocket size={14} strokeWidth={STROKE} aria-hidden />),
@@ -221,6 +233,14 @@ const navConfig = {
           match: ["/dashboard/leads/generate"],
           icon: l(<Sparkles size={14} strokeWidth={STROKE} aria-hidden />),
         },
+        {
+          // Which lead sources actually produce revenue — tells the
+          // Realtor where to spend. Was built but unreachable.
+          label: "Lead Source ROI",
+          href: "/dashboard/lead-source-roi",
+          match: ["/dashboard/lead-source-roi"],
+          icon: l(<LineChart size={14} strokeWidth={STROKE} aria-hidden />),
+        },
       ],
     },
     {
@@ -244,6 +264,14 @@ const navConfig = {
           href: "/dashboard/offers",
           match: ["/dashboard/offers"],
           icon: l(<FileSignature size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
+          // Per-deal AI coach (pricing, risk, negotiation scripts) — was
+          // built but unreachable; lives with the deal-in-progress work.
+          label: "Deal Coach",
+          href: "/dashboard/deal-coach",
+          match: ["/dashboard/deal-coach"],
+          icon: l(<Handshake size={14} strokeWidth={STROKE} aria-hidden />),
         },
       ],
     },
