@@ -13,6 +13,7 @@ import {
   Mic,
   PhoneCall,
   PhoneMissed,
+  PhoneOutgoing,
   Receipt,
   Sparkles,
   TrendingUp,
@@ -78,7 +79,7 @@ const TEAM: TeamMember[] = [
   {
     name: "Sales Assistant",
     role: "Follows up & converts",
-    body: "Works every lead by call, text, and email, runs CMAs and listing presentations, searches homes for buyers, and never lets a follow-up slip.",
+    body: "Follows up with a real voice call — not just an SMS — plus text and email. Runs CMAs and listing presentations, searches homes for buyers, and never lets a sphere touch slip.",
     icon: TrendingUp,
     accent: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300",
   },
@@ -105,7 +106,13 @@ const TEAM: TeamMember[] = [
   },
 ];
 
-const VOICE_POINTS: Array<{ icon: LucideIcon; title: string; body: string }> = [
+const VOICE_POINTS: Array<{ icon: LucideIcon; title: string; body: string; outbound?: boolean }> = [
+  {
+    icon: PhoneOutgoing,
+    title: "Calls your sphere to follow up",
+    body: "This is the part no other CRM does: your AI places real voice calls to past clients and leads — check-ins, nurture, market updates — by phone, not just another text.",
+    outbound: true,
+  },
   {
     icon: PhoneCall,
     title: "Answers live, in your voice",
@@ -124,7 +131,7 @@ const VOICE_POINTS: Array<{ icon: LucideIcon; title: string; body: string }> = [
   {
     icon: MessageCircle,
     title: "Every call becomes a lead",
-    body: "Callers are logged, transcribed, and added to your pipeline automatically — no sticky notes, no lost numbers.",
+    body: "Inbound and outbound calls are logged, transcribed, and added to your pipeline automatically — no sticky notes, no lost numbers.",
   },
 ];
 
@@ -212,18 +219,18 @@ export default function FeaturesPage() {
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full bg-[#0072ce]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#0072ce]">
-                <Mic size={13} aria-hidden /> Voice, not just chat
+                <Mic size={13} aria-hidden /> Real voice — both directions
               </p>
               <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-slate-900 md:text-4xl dark:text-white">
-                Your AI Receptionist answers{" "}
+                It answers your calls — and{" "}
                 <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
-                  every call
+                  calls your sphere
                 </span>
               </h2>
               <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-                Agents lose deals to the agent who picks up first. RealtorBoss answers the
-                phone for you — live, 24/7 — qualifies the caller, books the appointment, and
-                texts back the second a call goes unanswered.
+                Every other CRM stops at SMS and email drips. RealtorBoss picks up the phone —
+                answering inbound calls 24/7 <span className="font-semibold text-slate-800 dark:text-slate-200">and placing real outbound voice calls</span> to
+                follow up with your sphere and leads. That conversation is what wins the listing.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
@@ -240,10 +247,21 @@ export default function FeaturesPage() {
               {VOICE_POINTS.map((v) => (
                 <div
                   key={v.title}
-                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+                  className={`rounded-2xl border bg-white p-5 shadow-sm dark:bg-slate-900 ${
+                    v.outbound
+                      ? "border-[#0072ce]/40 ring-1 ring-[#0072ce]/20 sm:col-span-2 dark:border-[#0072ce]/40"
+                      : "border-slate-200 dark:border-slate-800"
+                  }`}
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#0072ce] dark:bg-blue-900/30 dark:text-[#4da3e8]">
-                    <v.icon size={20} aria-hidden />
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#0072ce] dark:bg-blue-900/30 dark:text-[#4da3e8]">
+                      <v.icon size={20} aria-hidden />
+                    </div>
+                    {v.outbound ? (
+                      <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0072ce]">
+                        Only on RealtorBoss
+                      </span>
+                    ) : null}
                   </div>
                   <h3 className="mt-3 font-heading text-sm font-bold text-slate-900 dark:text-white">
                     {v.title}
