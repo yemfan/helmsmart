@@ -11,6 +11,7 @@ import {
   LogOut,
   MessageSquare,
   Plus,
+  Scale,
   Search,
   Settings,
   User,
@@ -71,7 +72,10 @@ const QUICK_ACTION_LINKS = [
   { href: "/dashboard/send", label: "Send Message", Icon: MessageSquare },
   { href: "/dashboard/tasks?new=1", label: "Create Task", Icon: ListTodo },
   { href: "/dashboard/calendar?new=1", label: "Create Appointment", Icon: Calendar },
-  { href: "/dashboard/comparison-report", label: "Generate CMA", Icon: BarChart3 },
+  // "Generate CMA" now opens the real comps/valuation CMA; the AI
+  // property-comparison report is its own action.
+  { href: "/dashboard/cma", label: "Generate CMA", Icon: BarChart3 },
+  { href: "/dashboard/comparison-report", label: "Compare properties", Icon: Scale },
 ] as const;
 
 function QuickActionsDropdown() {
