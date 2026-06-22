@@ -149,6 +149,14 @@ const navConfig = {
           icon: l(<Eye size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
+          // Buyer-side: AI house search the agent runs for buyers, then
+          // emails the matches. Sits with the Sales Assistant's deal work.
+          label: "House Search",
+          href: "/dashboard/house-search",
+          match: ["/dashboard/house-search"],
+          icon: l(<Compass size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
           // Inventory + the Presentations tab (a listing presentation
           // is how a listing gets won). match entries are EXACT paths.
           label: "Listings",
