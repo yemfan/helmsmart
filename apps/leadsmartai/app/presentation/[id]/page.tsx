@@ -43,6 +43,7 @@ export default async function PresentationPublicPage({
     <PresentationPublicClient
       presentationId={row.id}
       data={row.data as any}
+      propertyAddress={row.property_address}
     />
   );
 }
