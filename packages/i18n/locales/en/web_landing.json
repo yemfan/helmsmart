@@ -67,17 +67,17 @@
     "pipeline_health": "Pipeline health"
   },
   "how": {
-    "eyebrow": "The deal flow",
-    "h2_prefix": "From Lead to Closing — ",
-    "h2_highlight": "handled by AI",
-    "body": "RealtorBoss turns your website visitors and inbound traffic into qualified conversations — and keeps nurturing them until they're ready to close.",
+    "eyebrow": "How the team works",
+    "h2_prefix": "From ring to closing — ",
+    "h2_highlight": "handled by your AI team",
+    "body": "Every call gets answered, every lead gets followed up, and every deal gets coordinated — your AI team hands each one to the next, around the clock.",
     "flow": {
-      "traffic": "Traffic",
-      "ai_capture": "AI Capture",
-      "ai_qualify": "AI Qualify",
-      "ai_follow_up": "AI Follow-up",
-      "agent": "Agent",
-      "deal_closed": "Deal Closed"
+      "traffic": "Call comes in",
+      "ai_capture": "Receptionist answers",
+      "ai_qualify": "Qualifies & books",
+      "ai_follow_up": "Sales follows up",
+      "agent": "You close",
+      "deal_closed": "Deal closed"
     }
   },
   "growth": {
