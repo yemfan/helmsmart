@@ -94,10 +94,39 @@ const navConfig = {
       icon: p(<Users size={17} strokeWidth={STROKE} aria-hidden />),
     },
     {
-      label: "Transactions",
-      href: "/dashboard/transactions",
-      match: ["/dashboard/transactions"],
-      icon: p(<KeyRound size={17} strokeWidth={STROKE} aria-hidden />),
+      // Deal records hub — the listing → close lifecycle in stage order.
+      // This is the OBJECT axis (the records the agent works); the AI-driven
+      // work still lives under the assistants (Sales Assistant: CMA / Seller
+      // Presentation; Transaction Assistant: Coordinator Board / Deal Coach).
+      // Sits beside Leads: people hub + deals hub.
+      label: "Deals",
+      icon: p(<Handshake size={17} strokeWidth={STROKE} aria-hidden />),
+      items: [
+        {
+          label: "Listings",
+          href: "/dashboard/properties",
+          match: ["/dashboard/properties"],
+          icon: l(<House size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
+          label: "Showings",
+          href: "/dashboard/showings",
+          match: ["/dashboard/showings"],
+          icon: l(<Eye size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
+          label: "Offers",
+          href: "/dashboard/offers",
+          match: ["/dashboard/offers"],
+          icon: l(<FileSignature size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
+          label: "Transactions",
+          href: "/dashboard/transactions",
+          match: ["/dashboard/transactions"],
+          icon: l(<KeyRound size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+      ],
     },
     {
       // Shared by most of the team (Receptionist answers, Sales
@@ -142,28 +171,12 @@ const navConfig = {
           icon: l(<DoorOpen size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
-          // Showings the Sales Assistant books + their feedback feed
-          // the pipeline, so they live on its desk.
-          label: "Showings",
-          href: "/dashboard/showings",
-          match: ["/dashboard/showings"],
-          icon: l(<Eye size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        {
           // Buyer-side: AI house search the agent runs for buyers, then
           // emails the matches. Sits with the Sales Assistant's deal work.
           label: "House Search",
           href: "/dashboard/house-search",
           match: ["/dashboard/house-search"],
           icon: l(<Compass size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        {
-          // Inventory only now — seller presentations moved to their own
-          // entry below. match entries are EXACT paths.
-          label: "Listings",
-          href: "/dashboard/properties",
-          match: ["/dashboard/properties"],
-          icon: l(<House size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
           // The real comps/valuation CMA — price the home. Pairs with
@@ -272,12 +285,6 @@ const navConfig = {
           href: "/dashboard/transactions/coordinator",
           match: ["/dashboard/transactions/coordinator"],
           icon: l(<LayoutGrid size={14} strokeWidth={STROKE} aria-hidden />),
-        },
-        {
-          label: "Offers",
-          href: "/dashboard/offers",
-          match: ["/dashboard/offers"],
-          icon: l(<FileSignature size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
           // Per-deal AI coach (pricing, risk, negotiation scripts) — was
