@@ -1,7 +1,7 @@
 import { buildCmaReportPdf } from "@/lib/cma/buildCmaReportPdf";
 import { loadAgentIdentity } from "@/lib/cma/loadAgentIdentity";
 import { getCmaForAgent } from "@/lib/cma/service";
-import { fetchSubjectPhoto } from "@/lib/cma/streetViewPhoto";
+import { fetchPhotoFromListingPage, fetchSubjectPhoto } from "@/lib/cma/streetViewPhoto";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 
 export const runtime = "nodejs";
@@ -27,10 +27,14 @@ export async function GET(
       return new Response("Not found", { status: 404 });
     }
 
-    const [agent, photo] = await Promise.all([
+    const subjectAddress = cma.snapshot.subject.address || cma.subjectAddress;
+    const [agent, listingPhoto] = await Promise.all([
       loadAgentIdentity(String(agentId)),
-      fetchSubjectPhoto(cma.snapshot.subject.address || cma.subjectAddress),
+      // The real listing photo (og:image) from the subject's listing page.
+      fetchPhotoFromListingPage(cma.snapshot.subject.listingUrl),
     ]);
+    // Fall back to a Street View shot when there's no usable listing photo.
+    const photo = listingPhoto ?? (await fetchSubjectPhoto(subjectAddress));
 
     const bytes = buildCmaReportPdf({
       snapshot: cma.snapshot,

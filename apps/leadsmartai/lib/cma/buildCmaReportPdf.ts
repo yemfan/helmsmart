@@ -71,7 +71,7 @@ export function buildCmaReportPdf(input: BuildCmaReportPdfInput): Uint8Array {
   const photoH = 220;
   if (photo) {
     try {
-      doc.addImage(photo.dataUrl, "JPEG", MARGIN, y, contentW, photoH);
+      doc.addImage(photo.dataUrl, photo.format, MARGIN, y, contentW, photoH);
     } catch {
       drawPhotoPlaceholder(doc, MARGIN, y, contentW, photoH);
     }
@@ -424,6 +424,7 @@ function formatSubjectLine(s: CmaSnapshot): string {
   if (subj.beds) parts.push(`${subj.beds} bed`);
   if (subj.baths) parts.push(`${subj.baths} bath`);
   if (subj.sqft) parts.push(`${subj.sqft.toLocaleString()} sqft`);
+  if (subj.propertyType) parts.push(subj.propertyType);
   if (!isCondo(subj.propertyType)) {
     const lot = formatLot(subj.lotSizeSqft, subj.propertyType);
     if (lot !== "—") parts.push(`lot ${lot}`);

@@ -36,9 +36,11 @@ When done searching, respond with EXACTLY ONE fenced JSON code block and nothing
 
 For every property (subject and each comp) include beds, baths, lotSizeSqft, and hoaMonthly when you can find them; use null when unknown. Lot size is in square feet. hoaMonthly is the monthly HOA dues in dollars. Note: condos/townhomes typically have an HOA and no individual lot — set lotSizeSqft to null for condos.
 
+For the subject, also set listingUrl to the URL of the property's listing page (Redfin, Realtor.com, Zillow, or an MLS page) IF you find one during search — a real page URL you actually saw in a result, never guessed or fabricated. Prefer a Redfin or Realtor.com URL when available. Use null if you cannot find a real listing page. (We use it only to pull the home's photo.)
+
 \`\`\`json
 {
-  "subject": { "address": "", "beds": 0, "baths": 0, "sqft": 0, "propertyType": null, "yearBuilt": 0, "condition": null, "lotSizeSqft": null, "hoaMonthly": null },
+  "subject": { "address": "", "beds": 0, "baths": 0, "sqft": 0, "propertyType": null, "yearBuilt": 0, "condition": null, "lotSizeSqft": null, "hoaMonthly": null, "listingUrl": null },
   "comps": [
     { "address": "", "price": 0, "sqft": 0, "beds": 0, "baths": 0, "distanceMiles": 0, "soldDate": "YYYY-MM-DD", "propertyType": null, "pricePerSqft": 0, "lotSizeSqft": null, "hoaMonthly": null, "sourceUrl": "" }
   ],
@@ -186,6 +188,7 @@ function normalizeAi(raw: Record<string, unknown>, fallbackAddress: string): Cma
       condition: subject.condition == null ? null : String(subject.condition),
       lotSizeSqft: numOrNull(subject.lotSizeSqft),
       hoaMonthly: numOrNull(subject.hoaMonthly),
+      listingUrl: httpUrl(subject.listingUrl),
     },
     comps: rawComps
       .map<CmaCompRow | null>((c) => {
@@ -248,6 +251,13 @@ function toConfidenceInt(v: unknown): number | null {
   if (!Number.isFinite(n)) return null;
   if (n > 0 && n <= 1) n = n * 100; // 0-1 confidence → percentage
   return Math.max(1, Math.min(95, Math.round(n)));
+}
+
+/** Accept only a plausible http(s) URL (the subject listing page). */
+function httpUrl(v: unknown): string | null {
+  if (typeof v !== "string") return null;
+  const url = v.trim();
+  return /^https?:\/\//i.test(url) ? url : null;
 }
 
 /** Parse a numeric field, returning null (not 0) when absent/unknown. */
