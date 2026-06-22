@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { denormalize } from "./denormalize";
 import { generateAiCma } from "./aiCma";
 import { isSmartCmaFailure } from "./fetchSmartCma";
+import { normalizeAddress } from "./normalizeAddress";
 import { getCmaQuotaForUser, incrementCmaUsage } from "./quota";
 import type { CmaSnapshot, CmaCompRow, CmaSubject, CmaValuation, CmaStrategy } from "./types";
 
@@ -148,6 +149,47 @@ export async function createCmaForAgent(
   }
 
   return { ok: true, cma: rowToFull(data as RawCmaRow) };
+}
+
+export type ReusableCma = {
+  cmaId: string;
+  createdAt: string;
+  snapshot: CmaSnapshot;
+};
+
+/**
+ * Find the agent's most recent CMA for an address, for reuse by the
+ * Seller Presentation (so it doesn't re-run a paid web search when a
+ * fresh CMA already exists). Matches on the normalized address and a
+ * recency window; returns null when none is recent enough.
+ */
+export async function findRecentCmaSnapshotByAddress(
+  agentId: string,
+  address: string,
+  maxAgeDays = 30,
+): Promise<ReusableCma | null> {
+  const normalized = normalizeAddress(address);
+  if (!normalized) return null;
+  const sinceIso = new Date(Date.now() - maxAgeDays * 86_400_000).toISOString();
+
+  const { data, error } = await supabaseAdmin
+    .from("cma_reports")
+    .select(
+      "id, agent_id, contact_id, subject_address, subject_json, comps_json, valuation_json, strategies_json, snapshot_json, estimated_value, low_estimate, high_estimate, confidence_score, comp_count, title, notes, created_at, updated_at",
+    )
+    .eq("agent_id", agentId)
+    .eq("subject_address", normalized)
+    .gte("created_at", sinceIso)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) {
+    if (error) console.warn("[cma.findRecentCmaSnapshotByAddress] failed:", error.message);
+    return null;
+  }
+  const full = rowToFull(data as RawCmaRow);
+  return { cmaId: full.id, createdAt: full.createdAt, snapshot: full.snapshot };
 }
 
 export async function listCmasForAgent(
