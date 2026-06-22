@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
-import { getPropertyData } from "@/lib/getPropertyData";
-import { getPropertyByAddress } from "@/lib/propertyService";
-import { generateOpenHouseReportData } from "@/lib/openHouseReport";
+import { generateAiCma } from "@/lib/cma/aiCma";
 import { generatePresentationAISections } from "@/lib/presentationAI";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { consumeTokensForTool } from "@/lib/consumeTokens";
@@ -12,6 +10,8 @@ type Body = {
 };
 
 export const runtime = "nodejs";
+// The AI CMA runs live web searches across several tool rounds.
+export const maxDuration = 300;
 
 export async function POST(req: Request) {
   try {
@@ -45,30 +45,53 @@ export async function POST(req: Request) {
     const ctx = await getCurrentAgentContext();
     const presentationAgentId = ctx.userId;
 
-    // 1) Ensure property warehouse rows + snapshots exist.
-    await getPropertyData(address, true);
-
-    const property = await getPropertyByAddress(address);
-    if (!property) {
+    // 1) Valuation + comps from the SAME AI CMA engine the CMA feature
+    // uses (Claude + live web search), so the presentation's pricing is
+    // consistent with the agent's CMA — no separate/legacy comp pipeline.
+    const cma = await generateAiCma({ address });
+    if (!cma.ok) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Property not found after ingestion. Import MLS data or try again.",
-        },
-        { status: 404 }
+        { success: false, message: cma.error },
+        { status: cma.status },
       );
     }
+    const snap = cma.snapshot;
 
-    // 2) Generate estimator + CMA comp set using existing report logic.
-    const reportData = await generateOpenHouseReportData({
-      propertyId: property.id,
-      address: property.address,
-    });
+    const property = {
+      address: snap.subject.address,
+      city: null as string | null,
+      state: null as string | null,
+      beds: snap.subject.beds || null,
+      baths: snap.subject.baths || null,
+      sqft: snap.subject.sqft || null,
+      propertyType: snap.subject.propertyType,
+      yearBuilt: snap.subject.yearBuilt || null,
+    };
+    const estimate = {
+      estimatedValue: snap.valuation.estimatedValue || null,
+      low: snap.valuation.low || null,
+      high: snap.valuation.high || null,
+      avgPricePerSqft: snap.valuation.avgPricePerSqft || null,
+      summary: snap.summary ?? "",
+    };
+    const comps = snap.comps.map((c) => ({
+      address: c.address,
+      price: c.price,
+      sqft: c.sqft,
+      pricePerSqft: c.pricePerSqft,
+      distanceMiles: c.distanceMiles,
+      soldDate: c.soldDate,
+      beds: c.beds,
+      baths: c.baths,
+      propertyType: c.propertyType,
+    }));
 
+    // 2) Narrative sections (pricing strategy / market insights / marketing
+    // plan) from the AI valuation + comps.
     const aiSections = await generatePresentationAISections({
       address: property.address,
-      estimate: reportData.estimated,
-      comps: reportData.comps.map((c) => ({
+      estimate,
+      comps: comps.map((c) => ({
         address: c.address,
         price: c.price,
         sqft: c.sqft,
@@ -79,9 +102,9 @@ export async function POST(req: Request) {
 
     // 3) Combine into structured JSON for storage + preview.
     const presentationData = {
-      property: reportData.property,
-      estimate: reportData.estimated,
-      comps: reportData.comps,
+      property,
+      estimate,
+      comps,
       pricing_strategy: aiSections.pricing_strategy,
       market_insights: aiSections.market_insights,
       marketing_plan: aiSections.marketing_plan,

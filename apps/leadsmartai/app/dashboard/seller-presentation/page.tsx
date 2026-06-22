@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
 
 /**
- * Seller presentations moved into the Listings page (Presentations
- * tab) — a listing presentation is how a listing gets won. Kept as a
- * redirect for old links; the client component still lives here and
- * is imported by the Listings tabs.
+ * Seller presentations are now the consolidated generator at
+ * /dashboard/presentations (sidebar: "Seller Presentation"). Kept as a
+ * redirect for old links / bookmarks.
  */
 export default function SellerPresentationPage() {
-  redirect("/dashboard/properties?tab=presentations");
+  redirect("/dashboard/presentations");
 }

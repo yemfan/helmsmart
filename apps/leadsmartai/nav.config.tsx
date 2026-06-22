@@ -19,6 +19,7 @@ import {
   Megaphone,
   MessageCircle,
   PenLine,
+  Presentation,
   Receipt,
   Rocket,
   Route,
@@ -157,24 +158,29 @@ const navConfig = {
           icon: l(<Compass size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
-          // Inventory + the Presentations tab (a listing presentation
-          // is how a listing gets won). match entries are EXACT paths.
+          // Inventory only now — seller presentations moved to their own
+          // entry below. match entries are EXACT paths.
           label: "Listings",
           href: "/dashboard/properties",
-          match: [
-            "/dashboard/properties",
-            "/dashboard/seller-presentation",
-            "/dashboard/presentations",
-          ],
+          match: ["/dashboard/properties"],
           icon: l(<House size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
-          // The real comps/valuation CMA — how a listing gets won, so it
-          // sits with the listing tools (not buried/orphaned).
+          // The real comps/valuation CMA — price the home. Pairs with
+          // Seller Presentation below (price it → pitch it → win it).
           label: "CMA",
           href: "/dashboard/cma",
           match: ["/dashboard/cma"],
           icon: l(<BarChart3 size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
+          // Win-the-listing pitch deck — reuses the AI CMA's valuation +
+          // comps so pricing is consistent with the CMA. Single
+          // consolidated generator; old /seller-presentation redirects here.
+          label: "Seller Presentation",
+          href: "/dashboard/presentations",
+          match: ["/dashboard/presentations", "/dashboard/seller-presentation"],
+          icon: l(<Presentation size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
           // Pipeline insights — where the Sales Assistant's next
