@@ -105,6 +105,24 @@ const AI_TOOLS: Array<{ icon: LucideIcon; title: string; body: string }> = [
   },
 ];
 
+/**
+ * "Chores we kill" — the manual work that wears realtors down, and the
+ * assistant that now does it. Reinforces the "CRM is dead → a team does the
+ * work" story with concrete tasks. Hardcoded English like AI_TOOLS / KILL_CRM
+ * (not yet in the i18n bundles).
+ */
+const CHORES_KILLED: Array<{ chore: string; fix: string; who: string }> = [
+  { chore: "Building a CMA by hand", fix: "Pulls live comps and a defensible value range, then sends the report to your client.", who: "Sales Assistant" },
+  { chore: "Writing a listing presentation", fix: "Generates a branded seller presentation from one address and delivers it.", who: "Sales Assistant" },
+  { chore: "Researching the market for a client", fix: "Runs the neighborhood and market research and packages it for you.", who: "Sales Assistant" },
+  { chore: "Hunting for homes that fit a buyer", fix: "Matches listings to plain-English criteria and emails the best ones to the buyer.", who: "Sales Assistant" },
+  { chore: "Crunching investor deal math", fix: "Produces a Property Deep Report — affordability, ROI, and a deal rating.", who: "Sales Assistant" },
+  { chore: "Posting to social — consistently", fix: "Publishes on-brand posts for you, week after week.", who: "Marketing Assistant" },
+  { chore: "Always needing fresh leads", fix: "Continuously prospects and surfaces new potential leads.", who: "Marketing Assistant" },
+  { chore: "Missed calls while you're with clients", fix: "Answers every call and texts back missed ones — 24/7.", who: "Receptionist" },
+  { chore: "Cold calls you keep putting off", fix: "Cold-calls and qualifies new leads by real voice.", who: "Sales Assistant" },
+];
+
 /* JUMP_LINKS removed — the in-page jump-link strip was deleted when
  * the marketing chrome switched from a left sidebar to a horizontal
  * top nav. Restore (with the i18n keys that still exist under
@@ -507,6 +525,47 @@ export default function LeadSmartLandingV2() {
                   ))}
                 </ul>
               </RevealSection>
+            </div>
+          </div>
+        </section>
+
+        {/* ── CHORES WE KILL ─── concrete manual tasks the AI team takes off
+            the realtor's plate; extends the "CRM is dead → a team does the
+            work" story with specifics. */}
+        <section className="px-6 py-20 md:py-24">
+          <div className="mx-auto max-w-6xl">
+            <RevealSection className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
+                Chores we kill
+              </p>
+              <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+                The work that wears you down — handled
+              </h2>
+              <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
+                Give the word and your AI team does the job — then sends the finished work to your
+                client on your request. You review and close.
+              </p>
+            </RevealSection>
+
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {CHORES_KILLED.map((c, i) => (
+                <RevealSection
+                  key={c.chore}
+                  delay={(i % 3) * 90}
+                  className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <p className="text-sm font-semibold text-slate-400 line-through decoration-rose-400/50 dark:text-slate-500">
+                    {c.chore}
+                  </p>
+                  <div className="mt-3 flex items-start gap-2.5">
+                    <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-500" aria-hidden />
+                    <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{c.fix}</p>
+                  </div>
+                  <span className="mt-4 inline-flex w-fit rounded-full bg-[#0072ce]/10 px-2.5 py-1 text-[11px] font-semibold text-[#0072ce]">
+                    {c.who}
+                  </span>
+                </RevealSection>
+              ))}
             </div>
           </div>
         </section>
