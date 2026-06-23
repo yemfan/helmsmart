@@ -60,68 +60,36 @@ const ExitIntentPopup = dynamic(
 const PRIMARY_CTA_HREF = "/onboarding";
 
 /**
- * Buyer & seller deliverables surfaced on the landing. Hardcoded English
- * (new section; not yet in the i18n bundles) — concise, benefit-first.
+ * Section data is structural only (icons + i18n keys); all copy lives in the
+ * `web_landing` bundle (en + zh-Hans) and is resolved with `t()` in the render
+ * so the whole landing stays bilingual. See `kill_crm`, `chores`, `ai_tools`.
  */
-/** The "we killed the CRM" contrast — old filing-cabinet CRM vs the AI team. */
-const KILL_CRM: Array<{ old: string; now: string }> = [
-  { old: "Waits for you to feed it data", now: "Acts on its own — answers calls, calls your sphere, follows up" },
-  { old: "Needs an admin or ISA to run it", now: "You give one command; the AI team runs it" },
-  { old: "Just stores contacts", now: "Cold-calls and qualifies leads by real voice" },
-  { old: "Generic templates", now: "Trained on top-agent scripts, objections & pricing" },
-  { old: "You still do all the work", now: "You review finished reports and close" },
+
+/** The "we killed the CRM" contrast — i18n row keys under `kill_crm.rows`. */
+const KILL_CRM_ROWS = ["acts", "one_command", "cold_call", "trained", "you_close"] as const;
+
+/** Buyer & seller deliverables — icon + i18n key under `ai_tools.items`. */
+const AI_TOOLS: Array<{ icon: LucideIcon; key: string }> = [
+  { icon: ChartBar, key: "cma" },
+  { icon: Sparkles, key: "seller_presentation" },
+  { icon: LineChart, key: "deep_report" },
+  { icon: Filter, key: "house_search" },
+  { icon: Globe2, key: "comparison" },
+  { icon: HandHeart, key: "net_to_seller" },
 ];
 
-const AI_TOOLS: Array<{ icon: LucideIcon; title: string; body: string }> = [
-  {
-    icon: ChartBar,
-    title: "AI CMA",
-    body: "Pull live comparable sales and a defensible value range in minutes — grounded in real web sources, not guesswork.",
-  },
-  {
-    icon: Sparkles,
-    title: "Seller Presentation",
-    body: "A branded listing presentation — comps, pricing strategy, marketing plan, schools, and your profile — generated from one address.",
-  },
-  {
-    icon: LineChart,
-    title: "Property Deep Report",
-    body: "A complete buyer-decision report: loan affordability, deal rating, investment ROI, schools, neighborhood, and a location map.",
-  },
-  {
-    icon: Filter,
-    title: "AI House Search",
-    body: "Describe what a buyer wants in plain English; get matched listings and email the best ones to them in a click.",
-  },
-  {
-    icon: Globe2,
-    title: "Comparison Report",
-    body: "Score properties side-by-side on price, value, and fit so buyers can decide with confidence — shareable by link.",
-  },
-  {
-    icon: HandHeart,
-    title: "Net-to-Seller Sheet",
-    body: "A clean, signable net-proceeds summary so sellers see exactly what they walk away with before they accept.",
-  },
-];
-
-/**
- * "Chores we kill" — the manual work that wears realtors down, and the
- * assistant that now does it. Reinforces the "CRM is dead → a team does the
- * work" story with concrete tasks. Hardcoded English like AI_TOOLS / KILL_CRM
- * (not yet in the i18n bundles).
- */
-const CHORES_KILLED: Array<{ chore: string; fix: string; who: string }> = [
-  { chore: "Building a CMA by hand", fix: "Pulls live comps and a defensible value range, then sends the report to your client.", who: "Sales Assistant" },
-  { chore: "Writing a listing presentation", fix: "Generates a branded seller presentation from one address and delivers it.", who: "Sales Assistant" },
-  { chore: "Researching the market for a client", fix: "Runs the neighborhood and market research and packages it for you.", who: "Sales Assistant" },
-  { chore: "Hunting for homes that fit a buyer", fix: "Matches listings to plain-English criteria and emails the best ones to the buyer.", who: "Sales Assistant" },
-  { chore: "Crunching investor deal math", fix: "Produces a Property Deep Report — affordability, ROI, and a deal rating.", who: "Sales Assistant" },
-  { chore: "Posting to social — consistently", fix: "Publishes on-brand posts for you, week after week.", who: "Marketing Assistant" },
-  { chore: "Always needing fresh leads", fix: "Continuously prospects and surfaces new potential leads.", who: "Marketing Assistant" },
-  { chore: "Missed calls while you're with clients", fix: "Answers every call and texts back missed ones — 24/7.", who: "Receptionist" },
-  { chore: "Cold calls you keep putting off", fix: "Cold-calls and qualifies new leads by real voice.", who: "Sales Assistant" },
-];
+/** "Chores we kill" — i18n item keys under `chores.items`. */
+const CHORES_KILLED = [
+  "cma",
+  "presentation",
+  "research",
+  "home_match",
+  "deal_math",
+  "social",
+  "leads",
+  "missed_calls",
+  "cold_call",
+] as const;
 
 /* JUMP_LINKS removed — the in-page jump-link strip was deleted when
  * the marketing chrome switched from a left sidebar to a horizontal
@@ -482,28 +450,26 @@ export default function LeadSmartLandingV2() {
           <div className="mx-auto max-w-5xl">
             <RevealSection className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-400">
-                The CRM is dead
+                {t("kill_crm.eyebrow")}
               </p>
               <h2 className="mt-2 font-heading text-3xl font-bold text-white md:text-4xl">
-                We killed the CRM. We replaced it with a team.
+                {t("kill_crm.h2")}
               </h2>
               <p className="mx-auto mt-4 text-base text-slate-300 md:text-lg">
-                A CRM is a filing cabinet that makes you do the work — enter the data, log the
-                calls, chase the follow-up. Agents quit them for a reason. Your AI team does the
-                opposite: you give one command, it does the job.
+                {t("kill_crm.body")}
               </p>
             </RevealSection>
 
             <div className="mt-12 grid gap-6 md:grid-cols-2">
               <RevealSection className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  The old CRM
+                  {t("kill_crm.col_old")}
                 </p>
                 <ul className="mt-4 space-y-3">
-                  {KILL_CRM.map((r) => (
-                    <li key={r.old} className="flex items-start gap-2.5 text-sm text-slate-400">
+                  {KILL_CRM_ROWS.map((k) => (
+                    <li key={k} className="flex items-start gap-2.5 text-sm text-slate-400">
                       <span aria-hidden className="mt-0.5 text-rose-400">✕</span>
-                      <span className="line-through decoration-rose-500/50">{r.old}</span>
+                      <span className="line-through decoration-rose-500/50">{t(`kill_crm.rows.${k}.old`)}</span>
                     </li>
                   ))}
                 </ul>
@@ -514,13 +480,13 @@ export default function LeadSmartLandingV2() {
                 className="rounded-2xl border border-[#0072ce]/40 bg-gradient-to-br from-[#0072ce]/15 to-transparent p-6"
               >
                 <p className="text-xs font-semibold uppercase tracking-wider text-[#4da3e8]">
-                  RealtorBoss
+                  {t("kill_crm.col_us")}
                 </p>
                 <ul className="mt-4 space-y-3">
-                  {KILL_CRM.map((r) => (
-                    <li key={r.now} className="flex items-start gap-2.5 text-sm text-slate-100">
+                  {KILL_CRM_ROWS.map((k) => (
+                    <li key={k} className="flex items-start gap-2.5 text-sm text-slate-100">
                       <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-emerald-400" aria-hidden />
-                      <span>{r.now}</span>
+                      <span>{t(`kill_crm.rows.${k}.now`)}</span>
                     </li>
                   ))}
                 </ul>
@@ -536,33 +502,32 @@ export default function LeadSmartLandingV2() {
           <div className="mx-auto max-w-6xl">
             <RevealSection className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-                Chores we kill
+                {t("chores.eyebrow")}
               </p>
               <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-                The work that wears you down — handled
+                {t("chores.h2")}
               </h2>
               <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-                Give the word and your AI team does the job — then sends the finished work to your
-                client on your request. You review and close.
+                {t("chores.body")}
               </p>
             </RevealSection>
 
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {CHORES_KILLED.map((c, i) => (
+              {CHORES_KILLED.map((key, i) => (
                 <RevealSection
-                  key={c.chore}
+                  key={key}
                   delay={(i % 3) * 90}
                   className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
                 >
                   <p className="text-sm font-semibold text-slate-400 line-through decoration-rose-400/50 dark:text-slate-500">
-                    {c.chore}
+                    {t(`chores.items.${key}.chore`)}
                   </p>
                   <div className="mt-3 flex items-start gap-2.5">
                     <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-500" aria-hidden />
-                    <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{c.fix}</p>
+                    <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{t(`chores.items.${key}.fix`)}</p>
                   </div>
                   <span className="mt-4 inline-flex w-fit rounded-full bg-[#0072ce]/10 px-2.5 py-1 text-[11px] font-semibold text-[#0072ce]">
-                    {c.who}
+                    {t(`chores.items.${key}.who`)}
                   </span>
                 </RevealSection>
               ))}
@@ -1011,28 +976,28 @@ export default function LeadSmartLandingV2() {
           <div className="mx-auto max-w-6xl">
             <RevealSection className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-semibold uppercase tracking-wider text-[#0072ce] dark:text-[#4da3e8]">
-                AI tools for buyers &amp; sellers
+                {t("ai_tools.eyebrow")}
               </p>
               <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-                Win the listing. Guide the buyer.
+                {t("ai_tools.h2")}
               </h2>
               <p className="mt-3 text-base text-slate-600 dark:text-slate-300">
-                Beyond the CRM — generate the reports and searches that close deals, each grounded in live web data and branded with your profile.
+                {t("ai_tools.body")}
               </p>
             </RevealSection>
 
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {AI_TOOLS.map((tool, i) => (
-                <RevealSection key={tool.title} delay={i * 60}>
+                <RevealSection key={tool.key} delay={i * 60}>
                   <div className="h-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-[#0072ce] dark:bg-slate-800 dark:text-[#4da3e8]">
                       <tool.icon size={22} aria-hidden />
                     </div>
                     <h3 className="mt-4 font-heading text-base font-bold text-slate-900 dark:text-white">
-                      {tool.title}
+                      {t(`ai_tools.items.${tool.key}.title`)}
                     </h3>
                     <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                      {tool.body}
+                      {t(`ai_tools.items.${tool.key}.body`)}
                     </p>
                   </div>
                 </RevealSection>
@@ -1044,7 +1009,7 @@ export default function LeadSmartLandingV2() {
                 href="/features"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-[#0072ce] hover:underline dark:text-[#4da3e8]"
               >
-                See everything in the platform
+                {t("ai_tools.cta")}
                 <ArrowRight size={16} aria-hidden />
               </Link>
             </RevealSection>
