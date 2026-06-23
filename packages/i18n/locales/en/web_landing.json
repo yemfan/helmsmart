@@ -143,7 +143,7 @@
     "body_p1_emphasis": " you're missing a deal.",
     "body_p2": "Busy with a client, after hours, or already on the line — it doesn't matter how the call gets missed. Your AI texts back in seconds and keeps calling the lead back, again and again, until it connects. It never forgets and never gives up — then hands you a warm, qualified lead at the perfect moment.",
     "features": {
-      "callback": "Relentless callbacks — never gives up until it connects",
+      "callback": "Relentless callbacks until it connects — then escalates to you",
       "text_back": "Instant text-back the second a call is missed",
       "qualify": "Qualifies the lead by call & text",
       "handoff": "Hands you a warm lead at the right moment"
