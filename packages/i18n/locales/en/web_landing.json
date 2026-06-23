@@ -16,7 +16,7 @@
     "subtitle": "You're the boss — give one command to your Boss Assistant and it puts the whole AI team to work: a Receptionist that answers every call, a Sales Assistant that calls and texts every lead, and a Transaction Assistant that coordinates every deal. A full team of top-sales AI agents — virtually free next to hiring humans.",
     "bullets": {
       "speed": "Your AI calls your sphere and leads to follow up — by real voice, not just SMS like every other CRM",
-      "missed_call": "Your AI Receptionist answers and texts back missed calls — never lose a lead again",
+      "missed_call": "Your AI answers every call — and relentlessly calls back any it misses until it connects, so you never lose a lead",
       "focus": "You're the boss — give the order; your AI team handles the rest while you close"
     },
     "cta_primary": "Hire Your AI Team",
@@ -135,17 +135,17 @@
     }
   },
   "missed_call": {
-    "badge": "📞 Signature feature · part of Follow Up",
-    "h2": "Missed Call Recovery AI™",
-    "tagline": "Turn missed calls into conversations — automatically.",
-    "body_p1_prefix": "When you miss a call, you're not just missing a call —",
+    "badge": "📞 Missed Call Recovery AI™ · part of Follow Up",
+    "h2": "Never Miss a Single Call",
+    "tagline": "However a call gets missed, your AI keeps calling back — and never gives up.",
+    "body_p1_prefix": "When a call slips through, you're not just missing a call —",
     "body_p1_emphasis": " you're missing a deal.",
-    "body_p2": "RealtorBoss instantly sends a text back, starts the conversation, and keeps engaging until the lead is ready to talk — then hands off to you at the perfect moment.",
+    "body_p2": "Busy with a client, after hours, or already on the line — it doesn't matter how the call gets missed. Your AI texts back in seconds and keeps calling the lead back, again and again, until it connects. It never forgets and never gives up — then hands you a warm, qualified lead at the perfect moment.",
     "features": {
-      "text_back": "Instant missed-call text-back",
-      "sms_convo": "AI-powered SMS conversation",
-      "qualification": "Lead qualification via text",
-      "handoff": "Smart agent handoff when ready"
+      "callback": "Relentless callbacks — never gives up until it connects",
+      "text_back": "Instant text-back the second a call is missed",
+      "qualify": "Qualifies the lead by call & text",
+      "handoff": "Hands you a warm lead at the right moment"
     },
     "cta": "See how it works",
     "included_note": "Included on every paid plan"
