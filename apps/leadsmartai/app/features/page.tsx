@@ -79,8 +79,8 @@ const TEAM: TeamMember[] = [
   },
   {
     name: "Sales Assistant",
-    role: "Follows up & converts",
-    body: "Follows up with a real voice call — not just an SMS — plus text and email. Runs CMAs and listing presentations, searches homes for buyers, and never lets a sphere touch slip.",
+    role: "Prospects, follows up & converts",
+    body: "Cold-calls and qualifies new leads (budget, timeline, motivation — buyer or seller), follows up with a real voice call — not just an SMS — plus text and email, runs CMAs and listing presentations, and never lets a sphere touch slip.",
     icon: TrendingUp,
     accent: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300",
   },
@@ -113,6 +113,11 @@ const VOICE_POINTS: Array<{ icon: LucideIcon; title: string; body: string; outbo
     title: "Calls your sphere to follow up",
     body: "This is the part no other CRM does: your AI places real voice calls to past clients and leads — check-ins, nurture, market updates — by phone, not just another text.",
     outbound: true,
+  },
+  {
+    icon: PhoneOutgoing,
+    title: "Cold-calls & qualifies new leads",
+    body: "Hand it a lead list and it dials, qualifies on budget, timeline, and motivation — buyer or seller — and scores who's ready, so you spend time only on hot prospects.",
   },
   {
     icon: PhoneCall,

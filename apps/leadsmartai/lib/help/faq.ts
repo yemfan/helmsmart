@@ -135,6 +135,11 @@ export const HELP_FAQ: ReadonlyArray<HelpFaqEntry> = [
     q: "What can I get done with one command?",
     a: "Tell the Boss Assistant what you want — \"set up Saturday's open house,\" \"build a seller presentation for 123 Main St,\" or \"find and show homes to the Garcias\" — and the team does the research and every step, then hands back the finished deliverables. You review and send.",
   },
+  {
+    category: "ai_followup",
+    q: "Can the AI cold-call and qualify my leads?",
+    a: "Yes. Hand the Sales Assistant a lead list and it places outbound calls in a natural voice, qualifies each prospect on budget, timeline, and motivation — buyer or seller — then scores intent, books the hot ones, and logs notes to every contact. You work only the leads that are ready.",
+  },
 ];
 
 /** Convenience: group entries by category in the canonical category order. */

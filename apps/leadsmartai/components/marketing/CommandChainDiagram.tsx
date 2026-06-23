@@ -13,6 +13,7 @@ import {
   House,
   MapPin,
   Megaphone,
+  PhoneOutgoing,
   Receipt,
   Sparkles,
   TrendingUp,
@@ -107,6 +108,25 @@ const COMMANDS: Command[] = [
       "Comparison report",
       "Showing schedule",
       "Buyer email lineup",
+    ],
+  },
+  {
+    id: "cold_call",
+    chip: "Cold-call & qualify",
+    icon: PhoneOutgoing,
+    command: "“Cold-call my new leads and qualify them.”",
+    assignees: ["sales", "receptionist"],
+    steps: [
+      "Researches each lead before dialing",
+      "Places the outbound calls in a natural voice",
+      "Qualifies on budget, timeline & motivation — buyer or seller",
+      "Scores intent, books the hot ones, logs the rest",
+    ],
+    artifacts: [
+      "Qualified lead list",
+      "Call notes + transcripts",
+      "Intent-scored pipeline",
+      "Booked appointments",
     ],
   },
   {
