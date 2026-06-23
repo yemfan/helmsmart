@@ -385,6 +385,52 @@ export default function FeaturesPage() {
         </div>
       </section>
 
+      {/* ── VIRTUALLY FREE (economics) ── */}
+      <section className="border-y border-slate-200/80 bg-gradient-to-b from-blue-50/60 via-white to-white px-6 py-20 dark:border-slate-800 dark:from-blue-950/20 dark:via-slate-950 dark:to-slate-950 md:py-24">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
+            The economics
+          </p>
+          <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+            Hire a top-producing team —{" "}
+            <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
+              virtually free
+            </span>
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-400 md:text-lg">
+            A receptionist, an ISA, a transaction coordinator, a marketing assistant, and a
+            bookkeeper would cost you tens of thousands a year — each — and you&apos;d still have
+            to hire, train, and manage them. RealtorBoss gives you all of them, trained to sell
+            like top producers, for the price of a tool.
+          </p>
+          <ul className="mx-auto mt-8 flex max-w-2xl flex-wrap justify-center gap-3">
+            {[
+              "No payroll or benefits",
+              "Never quits, never calls in sick",
+              "Works 24/7",
+              "Trained to sell like top agents",
+            ].map((v) => (
+              <li
+                key={v}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              >
+                <CheckCircle2 size={15} className="text-emerald-500" aria-hidden />
+                {v}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-9">
+            <Link
+              href={PRIMARY_CTA_HREF}
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0072ce] px-7 py-3 text-base font-semibold text-white shadow-lg shadow-[#0072ce]/20 transition hover:bg-[#005ba8]"
+            >
+              Hire your AI team
+              <ArrowRight size={18} aria-hidden />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── COMMAND CHAIN (interactive) ── */}
       <section className="border-y border-slate-200/80 bg-slate-50/70 px-6 py-20 dark:border-slate-800 dark:bg-slate-900/30 md:py-24">
         <div className="mx-auto max-w-5xl">
