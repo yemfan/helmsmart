@@ -39,8 +39,20 @@ export function RealtorBossMark({ className }: { className?: string; tone?: Tone
         <circle cx="148" cy="90" r="9" />
         <circle cx="52" cy="152" r="9" />
         <circle cx="148" cy="152" r="9" />
-        <circle cx="100" cy="112" r="11.5" />
       </g>
+      {/* Central hub = gold "R" coin (you, the boss) */}
+      <circle cx="100" cy="112" r="23" fill={GOLD} />
+      <text
+        x="100"
+        y="123"
+        textAnchor="middle"
+        fontFamily="var(--font-heading, Arial, Helvetica, sans-serif)"
+        fontWeight={700}
+        fontSize={30}
+        fill={NAVY}
+      >
+        R
+      </text>
     </svg>
   );
 }

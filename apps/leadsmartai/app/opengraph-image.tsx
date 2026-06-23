@@ -103,7 +103,8 @@ export default async function OpengraphImage() {
                 <circle cx="48" cy="28" r="3.2" fill="#D4A017" />
                 <circle cx="16" cy="48" r="3.2" fill="#D4A017" />
                 <circle cx="48" cy="48" r="3.2" fill="#D4A017" />
-                <circle cx="32" cy="33" r="4" fill="#D4A017" />
+                <circle cx="32" cy="33" r="8" fill="#D4A017" />
+                <text x="32" y="37" textAnchor="middle" fontWeight={800} fontSize={11} fill="#0B1F44">R</text>
               </svg>
             </div>
             <div style={{ display: "flex" }}>
