@@ -140,6 +140,11 @@ export const HELP_FAQ: ReadonlyArray<HelpFaqEntry> = [
     q: "Can the AI cold-call and qualify my leads?",
     a: "Yes. Hand the Sales Assistant a lead list and it places outbound calls in a natural voice, qualifies each prospect on budget, timeline, and motivation — buyer or seller — then scores intent, books the hot ones, and logs notes to every contact. You work only the leads that are ready.",
   },
+  {
+    category: "ai_followup",
+    q: "Is this just generic AI, or is it trained for real estate?",
+    a: "It's built for real estate. The assistants are modeled on the playbooks of top-producing agents — how they qualify buyers and sellers, handle common objections, time their follow-up, and talk pricing and negotiation. Every call and message reflects proven agent best practices, not generic chatbot answers.",
+  },
 ];
 
 /** Convenience: group entries by category in the canonical category order. */

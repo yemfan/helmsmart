@@ -148,6 +148,29 @@ const TOOLS: Array<{ icon: LucideIcon; title: string }> = [
   { icon: House, title: "AI House Search" },
 ];
 
+const TRAINING_POINTS: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: MessageCircle,
+    title: "Proven scripts & talk tracks",
+    body: "Calls and messages use the language top producers use to build rapport and move a conversation forward — not generic chatbot filler.",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Objection handling that converts",
+    body: "Knows the real answers to \"we're just looking,\" \"your commission is too high,\" and \"we'll wait for the market\" — and keeps the lead engaged.",
+  },
+  {
+    icon: CalendarCheck,
+    title: "Follow-up cadence that wins",
+    body: "Times outreach the way the best agents do — fast first touch, then a persistent, polite rhythm that earns the appointment.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Pricing & negotiation instincts",
+    body: "Frames value, anchors price, and qualifies motivation with the judgment of an experienced listing and buyer's agent.",
+  },
+];
+
 export default function FeaturesPage() {
   /* AppShell owns the marketing chrome (top nav + footer); this page
    * emits only its section content. */
@@ -317,6 +340,44 @@ export default function FeaturesPage() {
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                   {m.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TRAINED ON TOP AGENTS ── */}
+      <section className="px-6 py-20 md:py-24">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
+              Not generic AI
+            </p>
+            <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+              Trained on how top agents actually sell
+            </h2>
+            <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
+              Your team isn&apos;t a chatbot with a real-estate coat of paint. Every script,
+              follow-up, and call is modeled on the playbooks of top-producing agents — how they
+              qualify, handle objections, price, and negotiate.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {TRAINING_POINTS.map((p) => (
+              <div
+                key={p.title}
+                className="flex h-full flex-col rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+              >
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#0072ce] dark:bg-blue-900/30 dark:text-[#4da3e8]">
+                  <p.icon size={20} aria-hidden />
+                </div>
+                <h3 className="mt-4 font-heading text-sm font-bold text-slate-900 dark:text-white">
+                  {p.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  {p.body}
                 </p>
               </div>
             ))}
