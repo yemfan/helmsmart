@@ -535,6 +535,38 @@ export default function LeadSmartLandingV2() {
           </div>
         </section>
 
+        {/* ── SPEAKS YOUR CLIENTS' LANGUAGE ─── every assistant converses in
+            the client's language, by voice and text; bilingual is a core
+            differentiator for multicultural markets. */}
+        <section className="px-6 py-20 md:py-24">
+          <div className="mx-auto max-w-4xl">
+            <RevealSection className="rounded-3xl border border-slate-200 bg-gradient-to-br from-[#0072ce]/5 via-white to-[#4F46E5]/5 px-8 py-12 text-center dark:border-slate-800 dark:from-[#0072ce]/10 dark:via-slate-900 dark:to-[#4F46E5]/10 md:px-12 md:py-14">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#0072ce]/10 text-[#0072ce] dark:text-[#4da3e8]">
+                <Globe2 size={24} aria-hidden />
+              </div>
+              <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce] dark:text-[#4da3e8]">
+                {t("bilingual.eyebrow")}
+              </p>
+              <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+                {t("bilingual.h2")}
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-300 md:text-lg">
+                {t("bilingual.body")}
+              </p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+                {["english", "chinese", "more"].map((l) => (
+                  <span
+                    key={l}
+                    className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                  >
+                    {t(`bilingual.langs.${l}`)}
+                  </span>
+                ))}
+              </div>
+            </RevealSection>
+          </div>
+        </section>
+
         {/* ── HOW IT WORKS ─── */}
         <section
           id="how"
