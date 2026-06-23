@@ -87,13 +87,24 @@ export default async function OpengraphImage() {
                 height: "52px",
                 background: "#0B1F44",
                 borderRadius: "14px",
-                color: "#ffffff",
-                fontSize: "20px",
-                fontWeight: 800,
-                letterSpacing: "-0.02em",
               }}
             >
-              R
+              <svg width="34" height="34" viewBox="0 0 64 64">
+                <path
+                  d="M32 14 L16 28 L16 48 L48 48 L48 28 Z"
+                  fill="none"
+                  stroke="#D4A017"
+                  strokeWidth="2.6"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+                <circle cx="32" cy="14" r="3.2" fill="#D4A017" />
+                <circle cx="16" cy="28" r="3.2" fill="#D4A017" />
+                <circle cx="48" cy="28" r="3.2" fill="#D4A017" />
+                <circle cx="16" cy="48" r="3.2" fill="#D4A017" />
+                <circle cx="48" cy="48" r="3.2" fill="#D4A017" />
+                <circle cx="32" cy="33" r="4" fill="#D4A017" />
+              </svg>
             </div>
             <div style={{ display: "flex" }}>
               <span style={{ color: "#0B1F44" }}>Realtor</span>

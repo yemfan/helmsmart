@@ -1,0 +1,21 @@
+<svg viewBox="0 0 200 200" width="512" height="512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RealtorBoss">
+  <!-- App-icon tile: navy ground, gold six-point house. Master for the
+       favicon / apple-touch / PWA icon PNGs (see scripts/generate-brand-icons.mjs). -->
+  <rect width="200" height="200" rx="46" fill="#0B1F44"/>
+  <path d="M100 46 L52 90 L52 152 L148 152 L148 90 Z" fill="none" stroke="#D4A017" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+  <g stroke="#D4A017" stroke-width="3.5" opacity="0.5">
+    <line x1="100" y1="112" x2="100" y2="46"/>
+    <line x1="100" y1="112" x2="52" y2="90"/>
+    <line x1="100" y1="112" x2="148" y2="90"/>
+    <line x1="100" y1="112" x2="52" y2="152"/>
+    <line x1="100" y1="112" x2="148" y2="152"/>
+  </g>
+  <g fill="#D4A017">
+    <circle cx="100" cy="46" r="9"/>
+    <circle cx="52" cy="90" r="9"/>
+    <circle cx="148" cy="90" r="9"/>
+    <circle cx="52" cy="152" r="9"/>
+    <circle cx="148" cy="152" r="9"/>
+    <circle cx="100" cy="112" r="11.5"/>
+  </g>
+</svg>

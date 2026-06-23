@@ -7,34 +7,36 @@ const GOLD = "#D4A017";
 
 type Tone = "light" | "dark";
 
-/** The RealtorBoss "R + team nodes" mark, inline SVG (crisp at any size).
+/** The RealtorBoss mark — a house built from six points: five teammates
+ *  wired to a central Boss hub. Inline SVG (crisp at any size).
  *  Master asset: public/brand/realtorboss/realtorboss-mark.svg
- *  `tone="dark"` renders the navy strokes white for dark surfaces. */
+ *  `tone="dark"` renders the navy house outline white for dark surfaces;
+ *  the gold nodes + connectors stay gold in both tones. */
 export function RealtorBossMark({ className, tone = "light" }: { className?: string; tone?: Tone }) {
   const stroke = tone === "dark" ? "#FFFFFF" : NAVY;
-  // Node interiors: white tile on light surfaces; transparent on dark so
-  // the gold core sits directly on the page background.
-  const nodeFill = tone === "dark" ? "none" : "#fff";
   return (
     <svg viewBox="0 0 200 200" fill="none" aria-hidden className={cn("h-8 w-8", className)}>
-      <g stroke={stroke} strokeWidth={16}>
-        <path d="M84 26 V112" />
-        <path d="M84 34 H118 Q136 34 136 52 V54 Q136 72 118 72 H102" />
-        <path d="M104 72 L131 106" />
+      <path
+        d="M100 46 L52 90 L52 152 L148 152 L148 90 Z"
+        stroke={stroke}
+        strokeWidth={9}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+      <g stroke={GOLD} strokeWidth={4} opacity={0.6}>
+        <line x1="100" y1="112" x2="100" y2="46" />
+        <line x1="100" y1="112" x2="52" y2="90" />
+        <line x1="100" y1="112" x2="148" y2="90" />
+        <line x1="100" y1="112" x2="52" y2="152" />
+        <line x1="100" y1="112" x2="148" y2="152" />
       </g>
-      <path d="M76 112 H140" stroke={stroke} strokeWidth={10} />
-      <g stroke={stroke} strokeWidth={9}>
-        <path d="M82 114 L48 142" />
-        <path d="M100 114 V142" />
-        <path d="M134 114 L152 142" />
-      </g>
-      <g>
-        <circle cx="48" cy="151" r="13" fill={nodeFill} stroke={stroke} strokeWidth={8} />
-        <circle cx="48" cy="151" r="6.5" fill={GOLD} />
-        <circle cx="100" cy="151" r="13" fill={nodeFill} stroke={stroke} strokeWidth={8} />
-        <circle cx="100" cy="151" r="6.5" fill={GOLD} />
-        <circle cx="152" cy="151" r="13" fill={nodeFill} stroke={stroke} strokeWidth={8} />
-        <circle cx="152" cy="151" r="6.5" fill={GOLD} />
+      <g fill={GOLD}>
+        <circle cx="100" cy="46" r="9" />
+        <circle cx="52" cy="90" r="9" />
+        <circle cx="148" cy="90" r="9" />
+        <circle cx="52" cy="152" r="9" />
+        <circle cx="148" cy="152" r="9" />
+        <circle cx="100" cy="112" r="11.5" />
       </g>
     </svg>
   );
