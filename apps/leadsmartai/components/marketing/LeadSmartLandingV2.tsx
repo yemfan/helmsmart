@@ -750,7 +750,7 @@ export default function LeadSmartLandingV2() {
                   </p>
                   <p>{t("missed_call.body_p2")}</p>
                   <ul className="grid gap-2 pt-2 sm:grid-cols-2">
-                    {(["callback", "text_back", "qualify", "handoff"] as const).map((featureKey) => (
+                    {(["text_back", "callback", "qualify", "handoff"] as const).map((featureKey) => (
                       <li
                         key={featureKey}
                         className="flex items-start gap-2 rounded-lg border border-amber-200/70 bg-white/70 px-3 py-2 text-sm text-slate-700 backdrop-blur dark:border-amber-800/50 dark:bg-slate-900/60 dark:text-slate-300"
