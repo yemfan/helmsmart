@@ -10,10 +10,14 @@ type Props = { params: Promise<{ id: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const row = await getShareableResultById(id);
-  if (!row) return { title: "Result | RealtorBoss" };
+  // Per-user shared calculator results — thin, one-off, no SEO value. Keep them
+  // out of the index so they don't pile up as "crawled, not indexed" in GSC.
+  const robots = { index: false, follow: false } as const;
+  if (!row) return { title: "Result | RealtorBoss", robots };
   return {
     title: `${row.title} | RealtorBoss`,
     description: row.summary ?? "Shared calculator result",
+    robots,
     openGraph: { title: row.title, description: row.summary ?? undefined },
   };
 }
