@@ -83,7 +83,7 @@ export function RealtorBossLogo({ className, compact, tone = "light" }: Props) {
         </span>
         {!compact && (
           <span
-            className="mt-1 text-[9px] font-semibold uppercase tracking-[0.16em]"
+            className="mt-1 text-[11px] font-semibold uppercase tracking-[0.12em]"
             style={{ color: body }}
           >
             Your AI Real Estate Team

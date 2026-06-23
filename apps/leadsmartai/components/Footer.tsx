@@ -137,7 +137,7 @@ export default function Footer() {
           {/* Brand — single horizontal lockup (TOM MN-002: the previous
               monogram-box + separate wordmark read as two logos). */}
           <Link href="/" aria-label="RealtorBoss home" className="inline-flex">
-            <RealtorBossLogo compact />
+            <RealtorBossLogo />
           </Link>
 
           <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-500">

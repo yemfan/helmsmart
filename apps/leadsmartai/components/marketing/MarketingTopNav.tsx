@@ -77,7 +77,7 @@ export function MarketingTopNav({
             {/* Mark-only below sm (375px iPhone SE leaves ~150px for the
              *  right-side actions after the hamburger + padding). */}
             <span className="sm:hidden"><RealtorBossMark className="h-7 w-7" /></span>
-            <span className="hidden sm:block"><RealtorBossLogo compact /></span>
+            <span className="hidden sm:block"><RealtorBossLogo /></span>
           </Link>
         </div>
 
