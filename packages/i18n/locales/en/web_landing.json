@@ -293,5 +293,15 @@
       "comparison": { "title": "Comparison Report", "body": "Score properties side-by-side on price, value, and fit so buyers can decide with confidence — shareable by link." },
       "net_to_seller": { "title": "Net-to-Seller Sheet", "body": "A clean, signable net-proceeds summary so sellers see exactly what they walk away with before they accept." }
     }
+  },
+  "bilingual": {
+    "eyebrow": "Speaks your clients' language",
+    "h2": "Your whole AI team meets clients in their language",
+    "body": "From the first call to closing, every assistant — Receptionist, Sales, and Transaction — talks with your clients in the language they're most comfortable in, by voice and by text. Win more of your market without hiring bilingual staff.",
+    "langs": {
+      "english": "English",
+      "chinese": "中文",
+      "more": "+ more languages"
+    }
   }
 }
