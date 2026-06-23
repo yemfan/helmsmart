@@ -4,22 +4,24 @@ import { cn } from "@/lib/utils";
 // Primary Navy #0B1F44 (trust, leadership), Boss Gold #D4A017 (use sparingly).
 const NAVY = "#0B1F44";
 const GOLD = "#D4A017";
+// Light-blue badge background behind the mark (reads well on white + dark).
+const TILE_BG = "#CFE5FA";
 
 type Tone = "light" | "dark";
 
 /** The RealtorBoss mark — a house built from six points: five teammates
- *  wired to a central Boss hub. Inline SVG (crisp at any size).
+ *  wired to a central Boss hub, on a light-blue badge tile. Inline SVG.
  *  Master asset: public/brand/realtorboss/realtorboss-mark.svg
- *  The house is filled (navy on light surfaces, white on dark) so the mark
- *  reads solid on a white background; the gold nodes + connectors stay gold. */
-export function RealtorBossMark({ className, tone = "light" }: { className?: string; tone?: Tone }) {
-  const fill = tone === "dark" ? "#FFFFFF" : NAVY;
+ *  Self-contained (own light-blue background), so it reads on any surface;
+ *  the `tone` prop is accepted for API compatibility but no longer needed. */
+export function RealtorBossMark({ className }: { className?: string; tone?: Tone }) {
   return (
     <svg viewBox="0 0 200 200" fill="none" aria-hidden className={cn("h-8 w-8", className)}>
+      <rect width="200" height="200" rx="44" fill={TILE_BG} />
       <path
         d="M100 46 L52 90 L52 152 L148 152 L148 90 Z"
-        fill={fill}
-        stroke={fill}
+        fill={NAVY}
+        stroke={NAVY}
         strokeWidth={10}
         strokeLinejoin="round"
         strokeLinecap="round"

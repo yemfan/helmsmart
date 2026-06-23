@@ -21,14 +21,16 @@ const brand = path.join(appRoot, "public", "brand", "realtorboss");
 const iconSvg = readFileSync(path.join(brand, "realtorboss-icon.svg"));
 const markSvg = readFileSync(path.join(brand, "realtorboss-mark.svg"));
 
-const NAVY = { r: 11, g: 31, b: 68, alpha: 1 };
+// Flatten color = the light-blue tile (#CFE5FA), so rounded-corner transparency
+// fills with the tile color instead of leaving navy/black corners.
+const TILE_BG = { r: 207, g: 229, b: 250, alpha: 1 };
 
 async function render(svg, size, out, { flatten = false } = {}) {
   let img = sharp(svg, { density: 384 }).resize(size, size, {
     fit: "contain",
     background: { r: 0, g: 0, b: 0, alpha: 0 },
   });
-  if (flatten) img = img.flatten({ background: NAVY });
+  if (flatten) img = img.flatten({ background: TILE_BG });
   await img.png().toFile(out);
   console.log("wrote", path.relative(appRoot, out), `${size}×${size}`);
 }
