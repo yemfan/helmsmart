@@ -20,15 +20,21 @@ export async function generateMetadata(props: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await props.params;
+  // IDX listing detail pages are external MLS data (duplicate of the source),
+  // go stale/404 as listings sell, and the underlying feed is being retired.
+  // Keep them out of the index so they don't accumulate as soft-404 / "crawled,
+  // not indexed" in GSC.
+  const robots = { index: false, follow: false } as const;
   const adapter = getIdxAdapter();
   const result = await adapter.getListing(id);
   if (isIdxFailure(result)) {
-    return { title: "Listing | RealtorBoss" };
+    return { title: "Listing | RealtorBoss", robots };
   }
   const l = result.data;
   return {
     title: `${l.formattedAddress} | RealtorBoss`,
     description: l.description ?? `${l.beds ?? "?"} bed ${l.baths ?? "?"} bath home for sale at ${l.formattedAddress}.`,
+    robots,
   };
 }
 
