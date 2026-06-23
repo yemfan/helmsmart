@@ -917,6 +917,77 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       "Re-export anytime — no quota, no fees.",
     ],
   },
+  {
+    slug: "ai-outbound-sphere-calls",
+    title: "Have your AI call your sphere to follow up",
+    description:
+      "Set your AI to place real outbound voice calls — not just texts — to nurture your sphere and leads. Choose who, when, and what it says.",
+    readTime: "4 min",
+    category: "ai-and-voice",
+    body: [
+      "Unlike SMS-only CRMs, RealtorBoss can pick up the phone and call your sphere for you — check-ins, just-listed/just-sold updates, price-drop alerts, and lead follow-up — in a natural AI voice from your number.",
+      "You stay in control: pick the contacts, the intent, and whether calls go out automatically or wait for your approval.",
+    ],
+    steps: [
+      "Open the Sales Assistant → Outreach and choose the Call channel (alongside SMS and Email).",
+      "Pick the audience — a smart list, a sphere segment, or a single contact.",
+      "Set the intent (check-in, market update, follow-up) and review the AI talking points; tune the tone in Settings → Voice & Style.",
+      "Choose send-now or schedule for later, and whether to auto-place or require your approval.",
+      "After each call the transcript and outcome are logged to the contact and your pipeline automatically.",
+    ],
+    related: [
+      { label: "Does RealtorBoss make phone calls? (FAQ)", href: "/help/faq#ai_followup" },
+      { label: "Configure voice AI for inbound calls", href: "/help/guides/voice-ai-inbound" },
+      { label: "Set up missed-call text-back", href: "/help/guides/missed-call-text-back" },
+    ],
+  },
+  {
+    slug: "property-deep-report",
+    title: "Generate a Property Deep Report for a buyer",
+    description:
+      "Produce a full buyer-decision report — value, loan affordability, deal rating, investment ROI, schools, neighborhood, and a location map — from one address.",
+    readTime: "3 min",
+    category: "analysis",
+    body: [
+      "The Property Deep Report is everything a buyer needs to decide, built from an address and how they'll use the home. It reuses your CMA data and adds loan affordability, an AI deal rating, and investment returns for rentals.",
+      "Each report is shareable by link and exportable to PDF, branded with your profile.",
+    ],
+    steps: [
+      "Open Sales Assistant → Deep Report.",
+      "Enter the property address and pick the intended use: primary residence, second home, or investment.",
+      "Optionally adjust the loan assumptions (down payment, rate, term) — sensible defaults are prefilled.",
+      "Click Generate. The team pulls comps, computes affordability + ROI, rates the deal, and looks up schools and the neighborhood.",
+      "Copy the share link or download the PDF to send to your buyer.",
+    ],
+    related: [
+      { label: "What reports can the AI generate? (FAQ)", href: "/help/faq#ai_followup" },
+      { label: "Run an AI House Search", href: "/help/guides/ai-house-search" },
+      { label: "Smart CMA Builder", href: "/help/guides/smart-cma-builder" },
+    ],
+  },
+  {
+    slug: "ai-house-search",
+    title: "Run an AI House Search and email a buyer",
+    description:
+      "Describe what a buyer wants in plain English, get matched real listings, refine, and email the best ones to the buyer in a click.",
+    readTime: "3 min",
+    category: "deals",
+    body: [
+      "AI House Search finds real, current listings from a natural-language brief, grounded in live web data. Add refinements as checkboxes to narrow the results, then send the best matches to your buyer.",
+      "It's the fast way to put a curated lineup in front of a buyer without manually hunting the portals.",
+    ],
+    steps: [
+      "Open Sales Assistant → House Search.",
+      "Describe the buyer's criteria in plain English (location, price, beds/baths, must-haves).",
+      "Review the matches; check any suggested refinements and re-run to narrow the list.",
+      "Select the listings to send and click Email to buyer — pick a contact or type an address.",
+      "The buyer receives a branded email with the lineup and your signature.",
+    ],
+    related: [
+      { label: "Generate a Property Deep Report", href: "/help/guides/property-deep-report" },
+      { label: "What reports can the AI generate? (FAQ)", href: "/help/faq#ai_followup" },
+    ],
+  },
 ];
 
 /** Lookup helper for the dynamic [slug] page. */

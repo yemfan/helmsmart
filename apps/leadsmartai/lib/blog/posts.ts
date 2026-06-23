@@ -47,6 +47,19 @@ export function categoryLabel(c: BlogCategory): string {
 
 export const BLOG_POSTS: ReadonlyArray<BlogPost> = [
   {
+    slug: "your-crm-should-call-your-sphere-not-just-text-it",
+    href: "/blog/your-crm-should-call-your-sphere-not-just-text-it",
+    title: "Your CRM Should Call Your Sphere — Not Just Text It",
+    description:
+      "Every CRM sends SMS and email drips. None of them pick up the phone. Here's why outbound AI voice calls to your sphere — plus an AI team you command from one instruction — is the real upgrade for 2026.",
+    publishedAt: "2026-06-23",
+    author: "Michael Ye",
+    readTime: "5 min",
+    category: "ai-and-automation",
+    kind: "article",
+    featured: true,
+  },
+  {
     slug: "why-real-estate-crms-keep-failing-solo-agents",
     href: "/blog/why-real-estate-crms-keep-failing-solo-agents",
     title: "Why Real Estate CRMs Keep Failing Solo Agents (and What LionDesk's Shutdown Reveals)",
