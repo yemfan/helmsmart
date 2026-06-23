@@ -17,13 +17,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Public marketing surfaces — high SEO priority alongside the
     // home page since they're the primary conversion targets from
     // organic search.
+    "/features",
     "/about",
+    "/pricing",
     "/agent/pricing",
     "/agent/coaching",
     "/agent/compare",
     "/integrations",
     "/free-tools",
     "/try-demo",
+    "/contact",
+    // Note: /agent and /broker are role portals (robots: noindex) — excluded.
     // /demo/* sandbox pages are explicitly `robots: { index: false }`
     // — keep them out of the sitemap so they don't drain crawl budget.
   ];
@@ -79,7 +83,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const HIGH_PRIORITY = new Set([
     "/",
+    "/features",
     "/about",
+    "/pricing",
     "/agent/pricing",
     "/agent/coaching",
     "/agent/compare",
