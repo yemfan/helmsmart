@@ -46,7 +46,8 @@ const SITE_DESCRIPTION =
   "RealtorBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.";
 
 /**
- * Tab: `app/icon.png` + `/images/lslog64.png`. Apple: `app/apple-icon.png` + `/images/ls180.png`.
+ * Tab + Apple + JSON-LD all use the RealtorBoss icons in
+ * `public/brand/realtorboss/` (regenerated via scripts/generate-brand-icons.mjs).
  * Explicit entries ensure correct absolute URLs with `metadataBase` on Vercel previews.
  */
 export const metadata: Metadata = {

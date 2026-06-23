@@ -1,33 +1,24 @@
-﻿<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-label="RealtorBoss">
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-label="RealtorBoss">
   <!--
-    RealtorBoss brand mark - an "R" delegating to three team nodes
-    (the AI Receptionist / Sales Assistant / Transaction Assistant).
-    Navy #0B1F44, gold #D4A017. Vector recreation of the approved
-    V2 concept (ringed nodes, bold strokes for small-size legibility).
+    RealtorBoss mark - a house built from six points: five teammates
+    (Receptionist, Sales, Marketing, Transaction, Accountant) wired to a
+    central Boss hub. Navy #0B1F44 outline, gold #D4A017 nodes + connectors.
+    Transparent background - for light surfaces and the wordmark lockup.
   -->
-  <g stroke="#0B1F44" stroke-width="16">
-    <!-- R stem -->
-    <path d="M84 26 V112" />
-    <!-- R bowl - bottom stops short of the stem (open in the middle) -->
-    <path d="M84 34 H118 Q136 34 136 52 V54 Q136 72 118 72 H102" />
-    <!-- R leg - connected to the bowl, lands on the base junction -->
-    <path d="M104 72 L131 106" />
+  <path d="M100 46 L52 90 L52 152 L148 152 L148 90 Z" stroke="#0B1F44" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <g stroke="#D4A017" stroke-width="4" opacity="0.6">
+    <line x1="100" y1="112" x2="100" y2="46"/>
+    <line x1="100" y1="112" x2="52" y2="90"/>
+    <line x1="100" y1="112" x2="148" y2="90"/>
+    <line x1="100" y1="112" x2="52" y2="152"/>
+    <line x1="100" y1="112" x2="148" y2="152"/>
   </g>
-  <!-- base junction the team hangs from -->
-  <path d="M76 112 H140" stroke="#0B1F44" stroke-width="10" />
-  <!-- connectors -->
-  <g stroke="#0B1F44" stroke-width="9">
-    <path d="M82 114 L48 142" />
-    <path d="M100 114 V142" />
-    <path d="M134 114 L152 142" />
-  </g>
-  <!-- team nodes: navy ring, gold core -->
-  <g>
-    <circle cx="48" cy="151" r="13" fill="#FFFFFF" stroke="#0B1F44" stroke-width="8" />
-    <circle cx="48" cy="151" r="6.5" fill="#D4A017" />
-    <circle cx="100" cy="151" r="13" fill="#FFFFFF" stroke="#0B1F44" stroke-width="8" />
-    <circle cx="100" cy="151" r="6.5" fill="#D4A017" />
-    <circle cx="152" cy="151" r="13" fill="#FFFFFF" stroke="#0B1F44" stroke-width="8" />
-    <circle cx="152" cy="151" r="6.5" fill="#D4A017" />
+  <g fill="#D4A017">
+    <circle cx="100" cy="46" r="9"/>
+    <circle cx="52" cy="90" r="9"/>
+    <circle cx="148" cy="90" r="9"/>
+    <circle cx="52" cy="152" r="9"/>
+    <circle cx="148" cy="152" r="9"/>
+    <circle cx="100" cy="112" r="11.5"/>
   </g>
 </svg>
