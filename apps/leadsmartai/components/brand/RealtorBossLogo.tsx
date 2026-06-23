@@ -10,20 +10,21 @@ type Tone = "light" | "dark";
 /** The RealtorBoss mark — a house built from six points: five teammates
  *  wired to a central Boss hub. Inline SVG (crisp at any size).
  *  Master asset: public/brand/realtorboss/realtorboss-mark.svg
- *  `tone="dark"` renders the navy house outline white for dark surfaces;
- *  the gold nodes + connectors stay gold in both tones. */
+ *  The house is filled (navy on light surfaces, white on dark) so the mark
+ *  reads solid on a white background; the gold nodes + connectors stay gold. */
 export function RealtorBossMark({ className, tone = "light" }: { className?: string; tone?: Tone }) {
-  const stroke = tone === "dark" ? "#FFFFFF" : NAVY;
+  const fill = tone === "dark" ? "#FFFFFF" : NAVY;
   return (
     <svg viewBox="0 0 200 200" fill="none" aria-hidden className={cn("h-8 w-8", className)}>
       <path
         d="M100 46 L52 90 L52 152 L148 152 L148 90 Z"
-        stroke={stroke}
-        strokeWidth={9}
+        fill={fill}
+        stroke={fill}
+        strokeWidth={10}
         strokeLinejoin="round"
         strokeLinecap="round"
       />
-      <g stroke={GOLD} strokeWidth={4} opacity={0.6}>
+      <g stroke={GOLD} strokeWidth={4} opacity={0.65}>
         <line x1="100" y1="112" x2="100" y2="46" />
         <line x1="100" y1="112" x2="52" y2="90" />
         <line x1="100" y1="112" x2="148" y2="90" />
