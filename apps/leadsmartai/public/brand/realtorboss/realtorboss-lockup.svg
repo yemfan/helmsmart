@@ -5,7 +5,7 @@
   <g transform="translate(20 20)">
     <rect width="200" height="200" rx="44" fill="#CFE5FA"/>
     <path d="M100 46 L52 90 L52 152 L148 152 L148 90 Z" fill="#0B1F44" stroke="#0B1F44" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
-    <g stroke="#D4A017" stroke-width="4" opacity="0.6">
+    <g stroke="#E8CC78" stroke-width="4" opacity="0.85">
       <line x1="100" y1="112" x2="100" y2="46"/>
       <line x1="100" y1="112" x2="52" y2="90"/>
       <line x1="100" y1="112" x2="148" y2="90"/>
