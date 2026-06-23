@@ -18,8 +18,9 @@
       <circle cx="148" cy="90" r="9"/>
       <circle cx="52" cy="152" r="9"/>
       <circle cx="148" cy="152" r="9"/>
-      <circle cx="100" cy="112" r="11.5"/>
     </g>
+    <circle cx="100" cy="112" r="23" fill="#D4A017"/>
+    <text x="100" y="123" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="30" fill="#0B1F44">R</text>
   </g>
   <text x="262" y="128" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="100" letter-spacing="-2">
     <tspan fill="#0B1F44">Realtor</tspan><tspan fill="#D4A017">Boss</tspan>
