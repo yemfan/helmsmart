@@ -4,8 +4,9 @@
     (Receptionist, Sales, Marketing, Transaction, Accountant) wired to a
     central Boss hub. Navy #0B1F44 outline, gold #D4A017 nodes + connectors.
     Transparent background - for light surfaces and the wordmark lockup.
+    The house is filled navy so the mark reads solid on white.
   -->
-  <path d="M100 46 L52 90 L52 152 L148 152 L148 90 Z" stroke="#0B1F44" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M100 46 L52 90 L52 152 L148 152 L148 90 Z" fill="#0B1F44" stroke="#0B1F44" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
   <g stroke="#D4A017" stroke-width="4" opacity="0.6">
     <line x1="100" y1="112" x2="100" y2="46"/>
     <line x1="100" y1="112" x2="52" y2="90"/>
