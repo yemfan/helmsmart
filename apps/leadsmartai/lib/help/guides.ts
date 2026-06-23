@@ -988,6 +988,30 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       { label: "What reports can the AI generate? (FAQ)", href: "/help/faq#ai_followup" },
     ],
   },
+  {
+    slug: "ai-cold-call-qualify",
+    title: "Have the AI cold-call and qualify a lead list",
+    description:
+      "Point the Sales Assistant at a lead list and it places outbound calls, qualifies buyers and sellers on budget, timeline, and motivation, and scores who's ready.",
+    readTime: "4 min",
+    category: "ai-and-voice",
+    body: [
+      "Cold outreach is the work agents most want off their plate. The Sales Assistant places real outbound voice calls to a list of new or aged leads, runs a natural qualifying conversation, and routes the hot ones to you — so you stop dialing and start closing.",
+      "It qualifies for both sides of the deal: buyers (budget, area, timeline, financing) and sellers (motivation, timeline, price expectations).",
+    ],
+    steps: [
+      "Open Sales Assistant → Outreach and choose the Call channel.",
+      "Select the lead list or smart segment to call (new leads, aged leads, a portal import).",
+      "Pick the goal — qualify buyer, qualify seller, or reactivate — and review the qualifying questions and tone.",
+      "Choose send-now or schedule, and whether calls auto-place or wait for your approval.",
+      "As calls complete, each lead is scored on intent and the qualified ones are booked; transcripts and notes log to the contact automatically.",
+    ],
+    related: [
+      { label: "Can the AI cold-call and qualify leads? (FAQ)", href: "/help/faq#ai_followup" },
+      { label: "Have your AI call your sphere", href: "/help/guides/ai-outbound-sphere-calls" },
+      { label: "Configure voice AI for inbound calls", href: "/help/guides/voice-ai-inbound" },
+    ],
+  },
 ];
 
 /** Lookup helper for the dynamic [slug] page. */
