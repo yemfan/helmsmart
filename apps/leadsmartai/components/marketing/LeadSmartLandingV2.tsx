@@ -63,6 +63,15 @@ const PRIMARY_CTA_HREF = "/onboarding";
  * Buyer & seller deliverables surfaced on the landing. Hardcoded English
  * (new section; not yet in the i18n bundles) — concise, benefit-first.
  */
+/** The "we killed the CRM" contrast — old filing-cabinet CRM vs the AI team. */
+const KILL_CRM: Array<{ old: string; now: string }> = [
+  { old: "Waits for you to feed it data", now: "Acts on its own — answers calls, calls your sphere, follows up" },
+  { old: "Needs an admin or ISA to run it", now: "You give one command; the AI team runs it" },
+  { old: "Just stores contacts", now: "Cold-calls and qualifies leads by real voice" },
+  { old: "Generic templates", now: "Trained on top-agent scripts, objections & pricing" },
+  { old: "You still do all the work", now: "You review finished reports and close" },
+];
+
 const AI_TOOLS: Array<{ icon: LucideIcon; title: string; body: string }> = [
   {
     icon: ChartBar,
@@ -260,6 +269,9 @@ export default function LeadSmartLandingV2() {
                 </span>
                 {t("hero.badge")}
               </div>
+              <p className="mb-2 text-sm font-extrabold uppercase tracking-[0.18em] text-rose-600 dark:text-rose-400">
+                {t("hero.kill_crm_banner")}
+              </p>
               <h1 className="font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-gray-950 md:text-5xl lg:text-[3.25rem] dark:text-white">
                 {t("hero.h1_prefix")}
                 <span className="bg-gradient-to-r from-[#0072ce] via-[#4F46E5] to-[#7c3aed] bg-clip-text text-transparent">
@@ -443,6 +455,58 @@ export default function LeadSmartLandingV2() {
               <BrokerageWordmark name="COLDWELL BANKER" logoSrc="/images/brokerages/ColdwellBanker.svg" />
               <BrokerageWordmark name="KELLER WILLIAMS" logoSrc="/images/brokerages/KW.png" />
               <BrokerageWordmark name="CENTURY 21" logoSrc="/images/brokerages/Century21.png" />
+            </div>
+          </div>
+        </section>
+
+        {/* ── WE KILLED THE CRM (manifesto) ─── */}
+        <section className="bg-slate-950 px-6 py-20 md:py-24">
+          <div className="mx-auto max-w-5xl">
+            <RevealSection className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-400">
+                The CRM is dead
+              </p>
+              <h2 className="mt-2 font-heading text-3xl font-bold text-white md:text-4xl">
+                We killed the CRM. We replaced it with a team.
+              </h2>
+              <p className="mx-auto mt-4 text-base text-slate-300 md:text-lg">
+                A CRM is a filing cabinet that makes you do the work — enter the data, log the
+                calls, chase the follow-up. Agents quit them for a reason. Your AI team does the
+                opposite: you give one command, it does the job.
+              </p>
+            </RevealSection>
+
+            <div className="mt-12 grid gap-6 md:grid-cols-2">
+              <RevealSection className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  The old CRM
+                </p>
+                <ul className="mt-4 space-y-3">
+                  {KILL_CRM.map((r) => (
+                    <li key={r.old} className="flex items-start gap-2.5 text-sm text-slate-400">
+                      <span aria-hidden className="mt-0.5 text-rose-400">✕</span>
+                      <span className="line-through decoration-rose-500/50">{r.old}</span>
+                    </li>
+                  ))}
+                </ul>
+              </RevealSection>
+
+              <RevealSection
+                delay={120}
+                className="rounded-2xl border border-[#0072ce]/40 bg-gradient-to-br from-[#0072ce]/15 to-transparent p-6"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#4da3e8]">
+                  RealtorBoss
+                </p>
+                <ul className="mt-4 space-y-3">
+                  {KILL_CRM.map((r) => (
+                    <li key={r.now} className="flex items-start gap-2.5 text-sm text-slate-100">
+                      <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-emerald-400" aria-hidden />
+                      <span>{r.now}</span>
+                    </li>
+                  ))}
+                </ul>
+              </RevealSection>
             </div>
           </div>
         </section>
