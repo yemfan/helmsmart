@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 // Primary Navy #0B1F44 (trust, leadership), Boss Gold #D4A017 (use sparingly).
 const NAVY = "#0B1F44";
 const GOLD = "#D4A017";
+// Lighter gold for the connector lines, so the solid nodes + R coin pop.
+const GOLD_LIGHT = "#E8CC78";
 // Light-blue badge background behind the mark (reads well on white + dark).
 const TILE_BG = "#CFE5FA";
 
@@ -26,7 +28,7 @@ export function RealtorBossMark({ className }: { className?: string; tone?: Tone
         strokeLinejoin="round"
         strokeLinecap="round"
       />
-      <g stroke={GOLD} strokeWidth={4} opacity={0.65}>
+      <g stroke={GOLD_LIGHT} strokeWidth={4} opacity={0.85}>
         <line x1="100" y1="112" x2="100" y2="46" />
         <line x1="100" y1="112" x2="52" y2="90" />
         <line x1="100" y1="112" x2="148" y2="90" />
