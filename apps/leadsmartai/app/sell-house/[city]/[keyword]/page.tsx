@@ -11,12 +11,15 @@ import {
   isValidKeywordSlugForCity,
 } from "@/lib/trafficSeo";
 
-/** Empty at build: large keyword matrix — bulk SSG OOMs Vercel. On demand + ISR. */
-export const revalidate = 86400;
-
-export function generateStaticParams() {
-  return [];
-}
+/**
+ * Render on demand at request time — NOT static/ISR. The root layout calls
+ * cookies()/headers() (locale detection), which makes the whole tree dynamic.
+ * Opting these pages into static generation (revalidate + generateStaticParams)
+ * collided with that and threw DYNAMIC_SERVER_USAGE → 500 on every keyword URL
+ * in production (the base /[city] pages have no revalidate, so they render
+ * dynamically and are fine). force-dynamic mirrors that working behavior.
+ */
+export const dynamic = "force-dynamic";
 
 function resolveKeyword(citySlug: string, keywordSlug: string) {
   return getKeywordPagesForCity("sell-house", citySlug).find((k) => k.keywordSlug === keywordSlug)?.keyword ?? "";
