@@ -17,9 +17,12 @@ import sharp from "sharp";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.resolve(here, "..");
 const brand = path.join(appRoot, "public", "brand", "realtorboss");
+// Sibling Expo app — keep its launcher icons in sync with the web brand.
+const mobileAssets = path.resolve(appRoot, "..", "leadsmart-mobile", "assets");
 
 const iconSvg = readFileSync(path.join(brand, "realtorboss-icon.svg"));
 const markSvg = readFileSync(path.join(brand, "realtorboss-mark.svg"));
+const glyphSvg = readFileSync(path.join(brand, "realtorboss-glyph.svg"));
 
 // Flatten color = the light-blue tile (#CFE5FA), so rounded-corner transparency
 // fills with the tile color instead of leaving navy/black corners.
@@ -44,9 +47,25 @@ const tasks = [
   [iconSvg, 180, path.join(appRoot, "app", "apple-icon.png"), { flatten: true }],
   // Standalone mark (transparent)
   [markSvg, 512, path.join(brand, "realtorboss-mark-512.png")],
+  // Expo mobile app icon (iOS/Android base) — opaque 1024 tile.
+  [iconSvg, 1024, path.join(mobileAssets, "icon.png"), { flatten: true }],
 ];
 
 for (const [svg, size, out, opts] of tasks) {
   await render(svg, size, out, opts);
 }
+
+// Android adaptive-icon foreground: transparent 1024 with the mark inset into
+// the launcher safe zone (the OS masks ~25% off each edge + supplies the
+// background color from app.json → adaptiveIcon.backgroundColor: #CFE5FA).
+const ADAPTIVE = 1024;
+const INNER = 700;
+const PAD = Math.round((ADAPTIVE - INNER) / 2);
+await sharp(glyphSvg, { density: 384 })
+  .resize(INNER, INNER, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  .extend({ top: PAD, bottom: PAD, left: PAD, right: PAD, background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  .png()
+  .toFile(path.join(mobileAssets, "adaptive-icon.png"));
+console.log("wrote", "../leadsmart-mobile/assets/adaptive-icon.png", "1024 (foreground)");
+
 console.log("done.");
