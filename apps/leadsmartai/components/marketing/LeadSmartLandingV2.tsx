@@ -287,6 +287,10 @@ export default function LeadSmartLandingV2() {
                   <span aria-hidden className="mt-0.5 text-lg">🎯</span>
                   <span>{t("hero.bullets.focus")}</span>
                 </li>
+                <li className="flex items-start gap-2.5">
+                  <span aria-hidden className="mt-0.5 text-lg">🏆</span>
+                  <span>{t("hero.bullets.trained")}</span>
+                </li>
               </ul>
 
               <div className="mt-8 flex flex-wrap gap-3">
