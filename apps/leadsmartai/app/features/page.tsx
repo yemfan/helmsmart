@@ -451,6 +451,9 @@ export default function FeaturesPage() {
               Pick a command and watch it cascade — the Boss Assistant plans it and assigns the
               right teammates, who do the research and every step for you.
             </p>
+            <p className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-[#0072ce]/10 px-4 py-1.5 text-sm font-semibold text-[#0072ce] dark:text-[#4da3e8]">
+              👇 Click a command below to see the results
+            </p>
           </div>
           <div className="mt-12">
             <CommandChainDiagram />
