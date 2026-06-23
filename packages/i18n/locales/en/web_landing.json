@@ -297,7 +297,7 @@
   "bilingual": {
     "eyebrow": "Speaks your clients' language",
     "h2": "Your whole AI team meets clients in their language",
-    "body": "From the first call to closing, every assistant — Receptionist, Sales, and Transaction — talks with your clients in the language they're most comfortable in, by voice and by text. Win more of your market without hiring bilingual staff.",
+    "body": "Every assistant automatically detects the language your client uses and replies in it — by voice and by text, from the first call to closing. No setup, no toggle. Win more of your market without hiring bilingual staff.",
     "langs": {
       "english": "English",
       "chinese": "中文",

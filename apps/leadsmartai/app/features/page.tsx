@@ -6,6 +6,7 @@ import {
   CalendarCheck,
   CheckCircle2,
   ClipboardList,
+  Globe2,
   Headphones,
   House,
   Megaphone,
@@ -123,6 +124,11 @@ const VOICE_POINTS: Array<{ icon: LucideIcon; title: string; body: string; outbo
     icon: PhoneCall,
     title: "Answers live, in your voice",
     body: "A natural AI voice picks up inbound calls, answers questions about a listing, and qualifies the caller — day or night.",
+  },
+  {
+    icon: Globe2,
+    title: "Talks in your client's language — automatically",
+    body: "Every assistant detects the language a client speaks and replies in it — English, 中文, and more — on calls and in texts, with no setup or toggle. Serve your whole market without hiring bilingual staff.",
   },
   {
     icon: PhoneMissed,
