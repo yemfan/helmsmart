@@ -108,6 +108,33 @@ export const HELP_FAQ: ReadonlyArray<HelpFaqEntry> = [
     q: "How do I get help from a real person?",
     a: "Open the chat bubble in your dashboard or email support@leadsmart-ai.com. Premium and Team plans include priority support with same-business-day response. We're agents-helping-agents — no offshore tier-1 script-readers.",
   },
+
+  // ── AI team & voice ───────────────────────────────────────────
+  {
+    category: "ai_followup",
+    q: "What is the RealtorBoss AI team — and who does what?",
+    a: "You're the boss. You give one command to your Boss Assistant and it delegates to the right teammate: the Receptionist answers calls, the Sales Assistant follows up, Marketing fills the pipeline, the Transaction Assistant coordinates the deal, and the Accountant keeps the books. You finally own a team — without the payroll.",
+  },
+  {
+    category: "ai_followup",
+    q: "Does RealtorBoss actually make phone calls, or just send texts?",
+    a: "Both — and that's what sets it apart. Your AI Receptionist answers inbound calls live, 24/7, and texts back the moment a call goes unanswered. Your AI also places real outbound voice calls to follow up with your sphere and leads — not just another SMS like every other CRM.",
+  },
+  {
+    category: "ai_followup",
+    q: "How is this different from other real estate CRMs?",
+    a: "Most CRMs stop at SMS and email drips and leave the work to you. RealtorBoss is an AI team you command: it answers the phone, calls your sphere by real voice, and runs whole jobs — open houses, presentations, showings, closings — from a single instruction, handing you finished reports.",
+  },
+  {
+    category: "ai_followup",
+    q: "What reports can the AI generate for me?",
+    a: "From one address it produces an AI CMA (live web comps + value range), a branded Seller Presentation, a Property Deep Report (loan affordability, deal rating, investment ROI, schools, neighborhood, location map), an AI House Search for buyers, a side-by-side Comparison Report, and a Net-to-Seller sheet — each share-ready with your branding.",
+  },
+  {
+    category: "getting_started",
+    q: "What can I get done with one command?",
+    a: "Tell the Boss Assistant what you want — \"set up Saturday's open house,\" \"build a seller presentation for 123 Main St,\" or \"find and show homes to the Garcias\" — and the team does the research and every step, then hands back the finished deliverables. You review and send.",
+  },
 ];
 
 /** Convenience: group entries by category in the canonical category order. */
