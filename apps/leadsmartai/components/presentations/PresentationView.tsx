@@ -2,6 +2,8 @@
 
 import { useMemo } from "react";
 
+import ShareReport from "@/components/share/ShareReport";
+
 /**
  * Single source of truth for rendering a seller listing presentation —
  * used by both the dashboard generator (PresentationsClient) and the
@@ -211,9 +213,12 @@ export function buildPresentationPdf(vm: VM, jsPDF: any) {
 export default function PresentationView({
   data,
   propertyAddress,
+  shareUrl = null,
 }: {
   data: RawData;
   propertyAddress?: string;
+  /** Public share URL (dashboard only) → enables the full Share menu. */
+  shareUrl?: string | null;
 }) {
   const vm = useMemo(() => normalize(data, propertyAddress ?? ""), [data, propertyAddress]);
 
@@ -281,13 +286,14 @@ export default function PresentationView({
             </div>
             <div className="mt-1 text-2xl font-bold text-slate-900">{vm.address}</div>
           </div>
-          <button
-            type="button"
-            onClick={onDownloadPdf}
-            className="shrink-0 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-          >
-            ↓ Download PDF
-          </button>
+          <div className="shrink-0">
+            <ShareReport
+              shareUrl={shareUrl}
+              onDownloadPdf={onDownloadPdf}
+              subject={`Listing Presentation — ${vm.address}`}
+              resourceLabel={`the listing presentation for ${vm.address}`}
+            />
+          </div>
         </div>
         <div className="mt-4 grid grid-cols-3 gap-px overflow-hidden rounded-xl bg-slate-200">
           {[
