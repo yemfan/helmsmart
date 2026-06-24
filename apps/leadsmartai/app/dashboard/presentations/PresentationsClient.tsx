@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import PresentationView from "@/components/presentations/PresentationView";
+import ShareReport from "@/components/share/ShareReport";
 
 type PresentationData = {
   property: {
@@ -66,6 +67,11 @@ export default function PresentationsClient({
   const [history, setHistory] = useState<PresentationHistoryRow[]>(
     initialPresentations ?? []
   );
+
+  // Absolute origin for building per-row share links (client-only to avoid
+  // an SSR/hydration mismatch).
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
 
   const shareUrl = useMemo(() => {
     if (typeof window === "undefined") return "";
@@ -191,12 +197,19 @@ export default function PresentationsClient({
                       {p.created_at ? new Date(p.created_at).toLocaleString() : "—"}
                     </td>
                     <td className="px-3 py-3">
-                      <Link
-                        href={`/presentation/${encodeURIComponent(p.id)}`}
-                        className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-3 py-2 text-xs font-semibold text-white hover:bg-[#005ca8]"
-                      >
-                        Open →
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/presentation/${encodeURIComponent(p.id)}`}
+                          className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-3 py-2 text-xs font-semibold text-white hover:bg-[#005ca8]"
+                        >
+                          Open →
+                        </Link>
+                        <ShareReport
+                          shareUrl={origin ? `${origin}/presentation/${encodeURIComponent(p.id)}` : null}
+                          subject={`Listing Presentation — ${p.property_address ?? "your home"}`}
+                          resourceLabel={`the listing presentation for ${p.property_address ?? "your home"}`}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))
