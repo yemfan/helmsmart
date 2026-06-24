@@ -1,5 +1,6 @@
 import { supabaseServer } from "@/lib/supabaseServer";
-import { scoreLead } from "@/lib/leadScoring";
+import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
+import { getLeadScoreView } from "@/lib/contacts/leadScore";
 import { generateLeadSmartNarrative } from "@/lib/leadsmart/aiClient";
 import { getLeadSmartConfig } from "@/lib/leadsmart/config";
 import { leadsmartLog } from "@/lib/leadsmart/logger";
@@ -25,7 +26,9 @@ export async function buildLeadSmartIntelligence(leadId: string): Promise<LeadSm
   const started = Date.now();
   const cfg = getLeadSmartConfig();
   try {
-    const score = await scoreLead(leadId, false);
+    // Refresh the composite rating, then read the derived score view.
+    await recomputeLeadRating(leadId);
+    const score = await getLeadScoreView(leadId);
     const ai = await generateLeadSmartNarrative({
       leadScore: score.lead_score,
       intent: score.intent,

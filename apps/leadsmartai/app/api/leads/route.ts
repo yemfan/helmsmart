@@ -3,7 +3,7 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { sendEmail } from "@/lib/email";
 import { scheduleEmailSequenceForLead } from "@/lib/emailSequences";
-import { recordLeadEvent, scoreLead } from "@/lib/leadScoring";
+import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
 import { runLeadMarketplacePipeline } from "@/lib/leadScorePipeline";
 import {
   CONSENT_SOURCE_HOME_VALUE_FUNNEL,
@@ -138,11 +138,14 @@ export async function POST(req: Request) {
       }
 
       await scheduleEmailSequenceForLead(data.id as string);
-      // Trigger initial scoring on lead creation.
+      // Trigger initial scoring on lead creation. logEngagementEvent logs the
+      // event AND refreshes the composite rating in one call.
       try {
-        await recordLeadEvent({ contact_id: data.id as any, event_type: "visit", metadata: { source: source || "landing" } });
+        await logEngagementEvent(String(data.id), "visit", {
+          source: "landing",
+          payload: { source: source || "landing" },
+        });
         await runLeadMarketplacePipeline(String(data.id));
-        await scoreLead(String(data.id), true);
       } catch {}
     }
 

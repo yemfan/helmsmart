@@ -1,5 +1,5 @@
 import { supabaseServer } from "@/lib/supabaseServer";
-import { recordLeadEvent } from "@/lib/leadScoring";
+import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
 
 export async function updateLeadPipelineStage(params: {
   agentId: string;
@@ -42,10 +42,9 @@ export async function updateLeadPipelineStage(params: {
 
   if (upErr) throw new Error(upErr.message);
 
-  await recordLeadEvent({
-    contact_id: params.leadId,
-    event_type: "pipeline_stage_change",
-    metadata: {
+  await logEngagementEvent(String(params.leadId), "pipeline_stage_change", {
+    source: "crm",
+    payload: {
       from_stage_id: prev,
       to_stage_id: params.pipelineStageId,
     },

@@ -2,7 +2,7 @@ import type { AiPipelinePlan } from "./types";
 import { getStageBySlug } from "./stages";
 import { createTask } from "./tasks";
 import { updateLeadPipelineStage } from "./leadStage";
-import { recordLeadEvent } from "@/lib/leadScoring";
+import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
 import { supabaseServer } from "@/lib/supabaseServer";
 
 function dueIso(dueInDays: number | null | undefined): string | null {
@@ -57,10 +57,9 @@ export async function applyAiPipelinePlan(params: {
   }
 
   if (createdTaskIds.length) {
-    await recordLeadEvent({
-      contact_id: leadId,
-      event_type: "ai_pipeline_tasks_created",
-      metadata: { count: createdTaskIds.length, task_ids: createdTaskIds },
+    await logEngagementEvent(String(leadId), "ai_pipeline_tasks_created", {
+      source: "ai",
+      payload: { count: createdTaskIds.length, task_ids: createdTaskIds },
     });
   }
 

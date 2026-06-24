@@ -9,7 +9,7 @@ import { getCmaUsage, incrementCmaUsage } from "@/lib/cmaUsage";
 import { getUserFromRequest } from "@/lib/authFromRequest";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { getMarketplaceSessionId } from "@/lib/marketplaceSessionId";
-import { recordLeadEvent, scoreLead } from "@/lib/leadScoring";
+import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
 
 type PropertyCore = PropertyRow;
 
@@ -190,14 +190,11 @@ export async function POST(request: Request) {
     } catch {}
 
     if (leadId) {
-      try {
-        await recordLeadEvent({
-          contact_id: leadId as any,
-          event_type: "cma_run",
-          metadata: { address },
-        });
-        await scoreLead(leadId, true);
-      } catch {}
+      // Logs the event + refreshes the composite rating in one call.
+      await logEngagementEvent(String(leadId), "cma_run", {
+        source: "tool",
+        payload: { address },
+      });
     }
 
     return NextResponse.json({
