@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
-import { recordLeadEvent, scoreLead } from "@/lib/leadScoring";
+import { scoreLead } from "@/lib/leadScoring";
+import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
 
 export async function POST(req: Request) {
   try {
@@ -36,13 +37,9 @@ export async function POST(req: Request) {
       p_event_type: "reply",
       p_metadata: {},
     });
-    try {
-      await recordLeadEvent({
-        contact_id: leadId as any,
-        event_type: "sms_reply",
-        metadata: {},
-      });
-    } catch {}
+    // Feed the email reply into the composite lead rating — a two-way signal
+    // that bumps the contact to at least warm (see recomputeLeadRating).
+    await logEngagementEvent(leadId, "email_reply", { source: "email" });
 
     // 2) Mark the message as replied (so scoring isn't duplicated).
     let updatedLog = false;
