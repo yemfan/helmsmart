@@ -23,6 +23,8 @@ export type CmaCompRow = {
   distanceMiles: number;
   soldDate: string;
   propertyType: string | null;
+  /** Year built. Null/omitted when unknown. */
+  yearBuilt?: number | null;
   pricePerSqft: number;
   /** Lot size in square feet. Null/omitted when unknown or N/A (e.g. condos). */
   lotSizeSqft?: number | null;

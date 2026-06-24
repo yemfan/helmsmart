@@ -230,13 +230,27 @@ export default function DeepReportView({ report: r, showDownload = true }: { rep
           ) : (
             <table className="w-full text-sm">
               <tbody>
-                {r.comps.slice(0, 8).map((c, i) => (
-                  <tr key={i} className="border-t border-slate-100 first:border-0">
-                    <td className="py-1.5 text-slate-800">{c.address}</td>
-                    <td className="py-1.5 text-right text-slate-600">{c.soldDate ?? "—"}</td>
-                    <td className="py-1.5 text-right font-semibold text-slate-900">{money(c.price)}</td>
-                  </tr>
-                ))}
+                {r.comps.slice(0, 8).map((c, i) => {
+                  const facts = [
+                    c.beds != null ? `${c.beds} bd` : null,
+                    c.baths != null ? `${c.baths} ba` : null,
+                    c.sqft ? `${c.sqft.toLocaleString()} sqft` : null,
+                    c.propertyType,
+                    c.yearBuilt ? `built ${c.yearBuilt}` : null,
+                  ].filter(Boolean);
+                  return (
+                    <tr key={i} className="border-t border-slate-100 align-top first:border-0">
+                      <td className="py-1.5 pr-3 text-slate-800">
+                        <div>{c.address}</div>
+                        {facts.length ? (
+                          <div className="mt-0.5 text-xs text-slate-500">{facts.join(" · ")}</div>
+                        ) : null}
+                      </td>
+                      <td className="whitespace-nowrap py-1.5 text-right text-slate-600">{c.soldDate ?? "—"}</td>
+                      <td className="whitespace-nowrap py-1.5 pl-3 text-right font-semibold text-slate-900">{money(c.price)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}

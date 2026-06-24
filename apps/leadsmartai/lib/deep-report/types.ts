@@ -54,6 +54,10 @@ export type DeepReport = {
     address: string;
     price: number | null;
     sqft: number | null;
+    beds: number | null;
+    baths: number | null;
+    propertyType: string | null;
+    yearBuilt: number | null;
     pricePerSqft: number | null;
     soldDate: string | null;
   }>;
