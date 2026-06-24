@@ -145,7 +145,22 @@ export async function captureLeadFromInboundCall(args: {
 
   if (!contactId) return { contactId: null, taskId: null, created: false };
 
-  // 2. Follow-up task (idempotent per call).
+  // 2. Follow-up task — ONLY for calls that captured an actionable lead.
+  // A greeting, a wrong number, or a quick disconnect is already in the call
+  // log; it shouldn't manufacture a high-priority to-do that just goes overdue.
+  // "Actionable" = the AI identified a buyer/seller/renter or a stated timeline.
+  // (interest is not a signal — it falls back to the call summary, so it's
+  // almost always set.)
+  const actionable =
+    ex.partyType === "buyer" ||
+    ex.partyType === "seller" ||
+    ex.partyType === "renter" ||
+    Boolean(ex.timeline.trim());
+  if (!actionable) {
+    return { contactId, taskId: null, created: false };
+  }
+
+  // Idempotent per call (a re-delivered webhook won't double-task).
   try {
     if (await hasOpenVoiceFollowUpForCall(contactId, args.providerCallId)) {
       return { contactId, taskId: null, created: false };
