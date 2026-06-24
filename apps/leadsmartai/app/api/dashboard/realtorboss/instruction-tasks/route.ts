@@ -6,24 +6,35 @@ import type { AssistantType } from "@/lib/realtorboss/team";
 import { sendSMS } from "@/lib/twilioSms";
 import { sendEmail } from "@/lib/email";
 import { toE164 } from "@/lib/missed-call/service";
+import { executeBossAction } from "@/lib/realtorboss/actions/execute";
+import { BOSS_ACTIONS, isBossActionType, missingParams } from "@/lib/realtorboss/actions/registry";
 
 export const runtime = "nodejs";
+// An "answer" can kick off a real action (e.g. CMA web-search generation).
+export const maxDuration = 120;
 
 /**
  * PATCH /api/dashboard/realtorboss/instruction-tasks
- *   { id, action: "approve" | "dismiss" }
+ *   { id, action: "approve" | "dismiss" | "answer", answer? }
  *
- * approve — actually send the assistant's draft (SMS via Twilio,
- * email via Resend) and mark the task sent. dismiss — drop it.
- * The approval moment is THE control point: nothing the Boss routes
- * to the team sends without it.
+ * approve — send the assistant's draft (SMS via Twilio, email via Resend) and
+ * mark it sent. dismiss — drop it. answer — supply a missing required param
+ * (the Boss's follow-up question), then run the action. The approval moment is
+ * THE control point: nothing the Boss routes to the team sends without it.
  */
 export async function PATCH(req: NextRequest) {
   try {
     const { agentId } = await getCurrentAgentContext();
-    const body = (await req.json().catch(() => ({}))) as { id?: unknown; action?: unknown };
+    const body = (await req.json().catch(() => ({}))) as {
+      id?: unknown;
+      action?: unknown;
+      answer?: unknown;
+    };
     const id = typeof body.id === "string" ? body.id : "";
-    const action = body.action === "approve" || body.action === "dismiss" ? body.action : null;
+    const action =
+      body.action === "approve" || body.action === "dismiss" || body.action === "answer"
+        ? body.action
+        : null;
     if (!id || !action) {
       return NextResponse.json({ ok: false, error: "Missing id or action." }, { status: 400 });
     }
@@ -31,7 +42,7 @@ export async function PATCH(req: NextRequest) {
     const { data, error } = await supabaseAdmin
       .from("boss_instruction_tasks")
       .select(
-        "id, title, assigned_to, status, matched_contact_id, draft_channel, draft_subject, draft_body, execution_note",
+        "id, title, assigned_to, status, matched_contact_id, draft_channel, draft_subject, draft_body, execution_note, action_type, params_json",
       )
       .eq("id", id)
       .eq("agent_id", agentId)
@@ -47,9 +58,33 @@ export async function PATCH(req: NextRequest) {
       draft_subject: string | null;
       draft_body: string | null;
       execution_note: string | null;
+      action_type: string | null;
+      params_json: Record<string, string> | null;
     } | null;
     if (!task) {
       return NextResponse.json({ ok: false, error: "Task not found." }, { status: 404 });
+    }
+
+    // answer — the Realtor supplied a missing required param. Merge it into the
+    // first still-missing param, then run the action.
+    if (action === "answer") {
+      const answer = typeof body.answer === "string" ? body.answer.trim() : "";
+      if (!answer) {
+        return NextResponse.json({ ok: false, error: "Type an answer first." }, { status: 400 });
+      }
+      if (task.status !== "needs_input" || !isBossActionType(task.action_type)) {
+        return NextResponse.json(
+          { ok: false, error: "This task isn't waiting on an answer." },
+          { status: 400 },
+        );
+      }
+      const type = task.action_type;
+      const params: Record<string, string> = { ...(task.params_json ?? {}) };
+      const stillMissing = missingParams(type, params);
+      const fillKey = stillMissing[0]?.key ?? BOSS_ACTIONS[type].requiredParams[0]?.key;
+      if (fillKey) params[fillKey] = answer.slice(0, 300);
+      const outcome = await executeBossAction({ agentId, taskId: id, type, params });
+      return NextResponse.json({ ok: true, status: outcome });
     }
 
     if (action === "dismiss") {

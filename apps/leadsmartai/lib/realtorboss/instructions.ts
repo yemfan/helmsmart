@@ -3,6 +3,11 @@ import "server-only";
 import { getAnthropicClient } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { logAssistantActivity } from "@/lib/realtorboss/activities";
+import {
+  actionCatalogPrompt,
+  isBossActionType,
+  type BossActionType,
+} from "@/lib/realtorboss/actions/registry";
 
 /**
  * Boss Assistant instruction channel.
@@ -38,6 +43,12 @@ export type ParsedTask = {
   contact_name: string | null;
   /** Preferred channel when the task is a message ("sms" | "email"). */
   channel: "sms" | "email" | null;
+  /** Registry action the team can run end-to-end (CMA, seller presentation,
+   *  …), or null when the task has no executable action. */
+  action: BossActionType | null;
+  /** Parameters the planner extracted for `action` (e.g. { address }).
+   *  Missing required params trigger a follow-up question at execution. */
+  params: Record<string, string>;
 };
 
 const ASSISTANT_LABELS: Record<ParsedTask["assignee"], string> = {
@@ -65,13 +76,19 @@ Routing rules:
 - Never invent specifics the Realtor didn't give you.
 - 1 to 8 tasks. If the instruction is not actionable at all (a greeting, a question, venting), return one task assigned to "realtor" titled "Review note" with the content as details.
 
+ACTIONS the team can run end-to-end. When a task is one of these, set "action" to its key and extract "params" from the instruction. Extract ONLY values the Realtor actually gave — NEVER invent an address, date, or amount. If a required param wasn't provided, still set the action and leave that param out; the Boss will ask the Realtor for it.
+${actionCatalogPrompt()}
+For any task that is NOT one of the actions above, set "action" to null and "params" to {}.
+
 Output ONLY a JSON object, no commentary, no markdown fences:
 { "tasks": [ {
   "title": "string",
   "details": "string or null",
   "assignee": "receptionist|sales_assistant|marketing_assistant|transaction_assistant|accountant|realtor",
   "contact_name": "the person or company this task is about, verbatim from the instruction, or null",
-  "channel": "sms or email when the task is sending a message (sms when they said text/SMS, email when they said email; default sms for lead messages, email for invoices), else null"
+  "channel": "sms or email when the task is sending a message (sms when they said text/SMS, email when they said email; default sms for lead messages, email for invoices), else null",
+  "action": "generate_cma | generate_seller_presentation | null",
+  "params": { "address": "verbatim address if given" }
 } ] }`;
 
 export async function parseInstruction(content: string): Promise<ParsedTask[]> {
@@ -107,6 +124,8 @@ export async function parseInstruction(content: string): Promise<ParsedTask[]> {
         assignee?: unknown;
         contact_name?: unknown;
         channel?: unknown;
+        action?: unknown;
+        params?: unknown;
       };
       const title = typeof r.title === "string" ? r.title.trim().slice(0, 200) : "";
       const assignee = VALID.has(String(r.assignee)) ? (r.assignee as ParsedTask["assignee"]) : "realtor";
@@ -114,7 +133,16 @@ export async function parseInstruction(content: string): Promise<ParsedTask[]> {
       const contactName =
         typeof r.contact_name === "string" && r.contact_name.trim() ? r.contact_name.trim().slice(0, 120) : null;
       const channel = r.channel === "sms" || r.channel === "email" ? r.channel : null;
-      return title ? { title, details, assignee, contact_name: contactName, channel } : null;
+      // Registry action + extracted params (the realtor never reaches it, so
+      // only AI-assignable tasks carry an action).
+      const action = assignee !== "realtor" && isBossActionType(r.action) ? r.action : null;
+      const params: Record<string, string> = {};
+      if (action && r.params && typeof r.params === "object") {
+        for (const [k, v] of Object.entries(r.params as Record<string, unknown>)) {
+          if (typeof v === "string" && v.trim()) params[k] = v.trim().slice(0, 300);
+        }
+      }
+      return title ? { title, details, assignee, contact_name: contactName, channel, action, params } : null;
     })
     .filter((t): t is ParsedTask => t !== null)
     .slice(0, 8);
@@ -251,25 +279,38 @@ async function processInstructionRow(
         // card and it sends. Falls back to plain "assigned" when we
         // can't execute confidently.
         const taskId = (insertedTask as { id: string } | null)?.id;
-        let executed: "awaiting_approval" | "assigned" = "assigned";
+        let executed: "awaiting_approval" | "assigned" | "needs_input" | "completed" = "assigned";
         if (taskId && t.assignee !== "realtor") {
-          const { tryExecuteTask } = await import("@/lib/realtorboss/execution");
-          executed = await tryExecuteTask({ agentId, taskId, task: t });
+          if (t.action) {
+            // Registry action — run it (or park needs_input when a required
+            // param like the property address wasn't given).
+            const { executeBossAction } = await import("@/lib/realtorboss/actions/execute");
+            executed = await executeBossAction({ agentId, taskId, type: t.action, params: t.params });
+          } else {
+            // Messaging tasks: draft for approval (existing path).
+            const { tryExecuteTask } = await import("@/lib/realtorboss/execution");
+            executed = await tryExecuteTask({ agentId, taskId, task: t });
+          }
         }
 
-        // Visibility: the owning assistant's feed shows what the Boss
-        // put on its desk — and whether a draft is waiting for you.
+        // Visibility: the owning assistant's feed shows what the Boss put on
+        // its desk — drafted, done, waiting on a detail, or just assigned.
         if (t.assignee !== "realtor") {
+          const activity =
+            executed === "awaiting_approval"
+              ? { type: "boss_task_drafted", summary: `Drafted for your approval: ${t.title}`, attn: true }
+              : executed === "needs_input"
+                ? { type: "boss_task_needs_input", summary: `Needs one detail to start: ${t.title}`, attn: true }
+                : executed === "completed"
+                  ? { type: "boss_task_completed", summary: `Done: ${t.title}`, attn: false }
+                  : { type: "boss_task_assigned", summary: `Boss Assistant assigned: ${t.title}`, attn: false };
           void logAssistantActivity({
             agentId,
             assistantType: t.assignee,
-            activityType: executed === "awaiting_approval" ? "boss_task_drafted" : "boss_task_assigned",
-            summary:
-              executed === "awaiting_approval"
-                ? `Drafted for your approval: ${t.title}`
-                : `Boss Assistant assigned: ${t.title}`,
+            activityType: activity.type,
+            summary: activity.summary,
             outcome: t.details,
-            requiresAttention: executed === "awaiting_approval",
+            requiresAttention: activity.attn,
           });
         }
       }
