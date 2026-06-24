@@ -17,7 +17,14 @@ type SavedSearchListItem = {
 };
 
 /** The saved search the current results are attached to (runs append to it). */
-type TrackedSearch = { id: string; name: string; contactId: string; runCount: number };
+type TrackedSearch = {
+  id: string;
+  name: string;
+  contactId: string;
+  runCount: number;
+  autoRun: boolean;
+  autoRunFrequency: string | null;
+};
 
 type HouseSearchQuota = {
   used: number;
@@ -36,6 +43,10 @@ function money(n: number | null): string {
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+function buyerNameFor(contacts: ReachableContact[], contactId: string): string {
+  return contacts.find((c) => c.id === contactId)?.name || "the buyer";
 }
 
 function metaLine(l: HouseListing): string {
@@ -169,7 +180,14 @@ export default function HouseSearchClient() {
       const res = await fetch(`/api/dashboard/house-search/saved/${encodeURIComponent(id)}`, { cache: "no-store" });
       const data = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
-        search?: { id: string; name: string; contactId: string; query: string };
+        search?: {
+          id: string;
+          name: string;
+          contactId: string;
+          query: string;
+          autoRun?: boolean;
+          autoRunFrequency?: string | null;
+        };
         runs?: Array<{ result: HouseSearchResult }>;
         error?: string;
       };
@@ -182,13 +200,41 @@ export default function HouseSearchClient() {
         setResult(latest);
         setSelected(new Set(latest.listings.map((_, i) => i)));
       }
-      setTracked({ id: data.search.id, name: data.search.name, contactId: data.search.contactId, runCount: runs.length });
+      setTracked({
+        id: data.search.id,
+        name: data.search.name,
+        contactId: data.search.contactId,
+        runCount: runs.length,
+        autoRun: data.search.autoRun === true,
+        autoRunFrequency: data.search.autoRunFrequency ?? null,
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load saved search");
     } finally {
       setLoading(false);
     }
   }, []);
+
+  // Schedule (or stop) the agent-requested auto-run + buyer email.
+  const setSchedule = useCallback(async (value: "off" | "daily" | "weekly") => {
+    if (!tracked) return;
+    const autoRun = value !== "off";
+    const autoRunFrequency = autoRun ? value : null;
+    // Optimistic; revert on error.
+    const prev = tracked;
+    setTracked({ ...tracked, autoRun, autoRunFrequency });
+    try {
+      const res = await fetch(`/api/dashboard/house-search/saved/${encodeURIComponent(tracked.id)}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ autoRun, autoRunFrequency }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch {
+      setTracked(prev);
+      setError("Couldn't update the schedule.");
+    }
+  }, [tracked]);
 
   return (
     <div className="space-y-6">
@@ -242,18 +288,37 @@ export default function HouseSearchClient() {
         <>
           {/* Save to a contact, or the tracked-search banner */}
           {tracked ? (
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-              <span>
-                Saved as <strong>{tracked.name}</strong> · {tracked.runCount} run{tracked.runCount === 1 ? "" : "s"}.
-                New searches &amp; refinements are added to its history.
-              </span>
-              <button
-                type="button"
-                onClick={() => setTracked(null)}
-                className="shrink-0 text-xs font-semibold text-emerald-800 underline hover:text-emerald-950"
-              >
-                Detach
-              </button>
+            <div className="space-y-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span>
+                  Saved as <strong>{tracked.name}</strong> · {tracked.runCount} run{tracked.runCount === 1 ? "" : "s"}.
+                  New searches &amp; refinements are added to its history.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setTracked(null)}
+                  className="shrink-0 text-xs font-semibold text-emerald-800 underline hover:text-emerald-950"
+                >
+                  Detach
+                </button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 border-t border-emerald-200 pt-3">
+                <label className="text-xs font-semibold text-emerald-900">Auto-send to buyer</label>
+                <select
+                  value={tracked.autoRun ? tracked.autoRunFrequency ?? "daily" : "off"}
+                  onChange={(e) => void setSchedule(e.target.value as "off" | "daily" | "weekly")}
+                  className="rounded-lg border border-emerald-300 bg-white px-2 py-1 text-xs font-medium text-slate-700"
+                >
+                  <option value="off">Off</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                </select>
+                <span className="text-xs text-emerald-800">
+                  {tracked.autoRun
+                    ? `Emails ${buyerNameFor(contacts, tracked.contactId)} new matches ${tracked.autoRunFrequency === "weekly" ? "weekly" : "daily"}.`
+                    : `Schedule re-runs that email ${buyerNameFor(contacts, tracked.contactId)} only the new listings.`}
+                </span>
+              </div>
             </div>
           ) : (
             <SaveToContactPanel
@@ -562,7 +627,14 @@ function SaveToContactPanel({
         error?: string;
       };
       if (!res.ok || data.ok === false || !data.search) throw new Error(data.error ?? `HTTP ${res.status}`);
-      onSaved({ id: data.search.id, name: data.search.name, contactId: data.search.contactId, runCount: 1 });
+      onSaved({
+        id: data.search.id,
+        name: data.search.name,
+        contactId: data.search.contactId,
+        runCount: 1,
+        autoRun: false,
+        autoRunFrequency: null,
+      });
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Failed to save");
     } finally {

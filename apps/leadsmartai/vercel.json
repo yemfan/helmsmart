@@ -73,6 +73,10 @@
       "schedule": "0 1 * * *"
     },
     {
+      "path": "/api/cron/house-search-auto-run",
+      "schedule": "0 */3 * * *"
+    },
+    {
       "path": "/api/cron/tasks-deferred",
       "schedule": "0 7 * * *"
     },
