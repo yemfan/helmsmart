@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getOpenAIConfig } from "@/lib/ai/openaiClient";
 import { findContactByPhone, toUsDisplayPhone } from "@/lib/missed-call/service";
 import { hasOpenVoiceFollowUpForCall } from "@/lib/ai-call/hot-call-task";
+import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
 
 /**
  * Turn a completed inbound AI receptionist call into CRM value:
@@ -131,7 +132,8 @@ export async function captureLeadFromInboundCall(args: {
     };
     if (ex.partyType === "buyer" || ex.partyType === "seller") row.type = ex.partyType;
     if (ex.location) row.property_address = ex.location;
-    if (ex.rating) row.rating = ex.rating; // call-derived lead heat
+    // Note: the lead's rating is set by the composite recomputeLeadRating below
+    // (off a `call_rated` event), not written directly here.
     try {
       const { data, error } = await supabaseAdmin
         .from("contacts")
@@ -143,21 +145,15 @@ export async function captureLeadFromInboundCall(args: {
     } catch (e) {
       console.error("[lead-capture] contact insert threw:", e);
     }
-  } else {
-    // Known caller — refresh the lead rating from this call (so hot leads
-    // surface), and backfill the name if we don't have one on file.
-    const patch: Record<string, unknown> = {};
-    if (ex.rating) patch.rating = ex.rating;
-    if (ex.name && !(existingName && existingName.trim())) patch.name = ex.name;
-    if (Object.keys(patch).length > 0) {
-      try {
-        await supabaseAdmin
-          .from("contacts")
-          .update(patch as never)
-          .eq("id", contactId as never);
-      } catch {
-        /* best-effort */
-      }
+  } else if (ex.name && !(existingName && existingName.trim())) {
+    // Known caller with no name on file — backfill it (rating handled below).
+    try {
+      await supabaseAdmin
+        .from("contacts")
+        .update({ name: ex.name } as never)
+        .eq("id", contactId as never);
+    } catch {
+      /* best-effort */
     }
   }
 
@@ -239,6 +235,26 @@ export async function captureLeadFromInboundCall(args: {
       event_type: "ai_lead_captured",
       metadata: { retell_call_id: args.providerCallId, task_id: taskId, party_type: ex.partyType },
     } as never);
+  } catch {
+    /* best-effort */
+  }
+
+  // 4. Feed this call's rating into the composite lead rating.
+  if (ex.rating) {
+    try {
+      await supabaseAdmin.from("contact_events").insert({
+        contact_id: contactId,
+        agent_id: args.agentId,
+        event_type: "call_rated",
+        source: "ai_call",
+        payload: { rating: ex.rating, retell_call_id: args.providerCallId } as never,
+      } as never);
+    } catch {
+      /* best-effort */
+    }
+  }
+  try {
+    await recomputeLeadRating(contactId);
   } catch {
     /* best-effort */
   }

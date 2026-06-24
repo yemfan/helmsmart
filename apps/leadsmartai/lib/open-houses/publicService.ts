@@ -1,6 +1,7 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
 import type {
   OpenHouseRow,
   OpenHouseVisitorRow,
@@ -246,6 +247,19 @@ export async function recordPublicSignin(
           .update({ contact_id: contactId })
           .eq("id", visitor.id);
         contactCreated = true;
+        // Feed open-house attendance into the composite lead rating.
+        try {
+          await supabaseAdmin.from("contact_events").insert({
+            contact_id: contactId,
+            agent_id: oh.agent_id,
+            event_type: "open_house_signin",
+            source: "open_house",
+            payload: { timeline: visitor.timeline ?? null, property_address: oh.property_address } as never,
+          } as never);
+          await recomputeLeadRating(contactId);
+        } catch {
+          /* best-effort */
+        }
       }
     } catch (err) {
       // Don't fail the sign-in if contact intake fails — the visitor

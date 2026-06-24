@@ -262,6 +262,13 @@ export async function POST(req: Request) {
       } catch {
         // best-effort housekeeping
       }
+      // An inbound reply is an engagement signal — refresh the composite rating.
+      try {
+        const { recomputeLeadRating } = await import("@/lib/contacts/recomputeLeadRating");
+        await recomputeLeadRating(leadId);
+      } catch {
+        // best-effort
+      }
     }
 
     // Auto-detect inbound language on first CJK message. No-ops when

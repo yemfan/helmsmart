@@ -13,6 +13,7 @@ import {
   markContactNotInterested,
 } from "@/lib/voice-agent/lead-capture";
 import { logAssistantActivity } from "@/lib/realtorboss/activities";
+import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -239,14 +240,26 @@ export async function POST(req: NextRequest) {
         try {
           const { data } = await supabaseAdmin
             .from("call_logs")
-            .select("agent_id, contact_id")
+            .select("agent_id, contact_id, notes")
             .eq("twilio_call_sid", callId)
             .maybeSingle();
-          const row = data as { agent_id: unknown; contact_id: string | null } | null;
+          const row = data as { agent_id: unknown; contact_id: string | null; notes: string | null } | null;
           if (!row?.agent_id) return;
           const agentId = String(row.agent_id);
 
           const { interest, rating } = await classifyCallInterest(summary, transcript);
+
+          // Add a short outcome note to the call log.
+          const noteTag = interest === "not_interested" ? "not interested" : `lead ${rating ?? "rated"}`;
+          try {
+            const existing = (row.notes ?? "").trim();
+            await supabaseAdmin
+              .from("call_logs")
+              .update({ notes: `${existing}${existing ? " · " : ""}AI: ${noteTag}` } as never)
+              .eq("twilio_call_sid", callId);
+          } catch {
+            /* best-effort */
+          }
 
           let contactId = row.contact_id;
           if (!contactId) {
@@ -270,13 +283,17 @@ export async function POST(req: NextRequest) {
             return;
           }
 
-          // Still in play — refresh the lead rating from this call.
+          // Feed this call's rating into the composite lead rating.
           if (rating) {
-            await supabaseAdmin
-              .from("contacts")
-              .update({ rating, updated_at: new Date().toISOString() } as never)
-              .eq("id", contactId as never);
+            await supabaseAdmin.from("contact_events").insert({
+              contact_id: contactId,
+              agent_id: agentId as never,
+              event_type: "call_rated",
+              source: "ai_call",
+              payload: { rating, direction: "outbound" } as never,
+            } as never);
           }
+          await recomputeLeadRating(contactId);
         } catch (e) {
           console.error("retell/call-events: disposition/rating failed", e);
         }

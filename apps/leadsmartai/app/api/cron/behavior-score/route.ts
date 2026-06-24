@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import {
-  detectIntentSignals,
-  scoreBehavior,
-  type BehaviorEvent,
-} from "@/lib/contacts/behavior/scoring";
+import { detectIntentSignals, type BehaviorEvent } from "@/lib/contacts/behavior/scoring";
+import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -17,7 +14,8 @@ export const maxDuration = 60;
  *      (the scoring window). Ignoring idle contacts keeps the batch
  *      size bounded.
  *   2. For each, load events from the last 30 days.
- *   3. Run scoreBehavior() → write to contacts.engagement_score.
+ *   3. recomputeLeadRating() → composite hot/warm/cold + engagement_score
+ *      + a contact_scores history row (single writer of contacts.rating).
  *   4. Run detectIntentSignals() → upsert contact_signals rows for each
  *      proposal, deduped against existing un-dismissed signals by
  *      (contact_id, signal_type, dedup_key) stored in payload.dedup_key.
@@ -70,64 +68,12 @@ async function processContact(contactId: string, now: Date): Promise<{
     payload: r.payload ?? {},
   }));
 
-  // 1. Recompute score
-  const { score, factors, computedAt } = scoreBehavior(events, { now });
-
-  // 1a. Derive rating from score bucket. Skip the write if the agent
-  // has pinned a manual rating — rating_manual_override=true signals
-  // "trust me, the model is wrong for this one". Log rating changes to
-  // contact_events so the UI can show the history of how a lead warmed
-  // (or cooled) over time.
-  const { data: contactRow } = await supabaseAdmin
-    .from("contacts")
-    .select("rating, rating_manual_override, agent_id")
-    .eq("id", contactId)
-    .maybeSingle();
-  const currentRating = (contactRow as { rating?: string | null } | null)?.rating ?? null;
-  const manualOverride = !!(contactRow as { rating_manual_override?: boolean } | null)?.rating_manual_override;
-  const nextRating = ratingForScore(score);
-
-  const update: Record<string, unknown> = {
-    engagement_score: score,
-    last_activity_at: events[0]?.createdAt ?? null,
-  };
-  if (!manualOverride && nextRating !== currentRating) {
-    update.rating = nextRating;
-  }
-
-  await supabaseAdmin
-    .from("contacts")
-    .update(update as never)
-    .eq("id", contactId);
-
-  // Log the rating transition so agents can see when + why it changed.
-  if (!manualOverride && nextRating !== currentRating) {
-    const agentIdForEvent = (contactRow as { agent_id?: unknown } | null)?.agent_id ?? null;
-    await supabaseAdmin.from("contact_events").insert({
-      contact_id: contactId,
-      agent_id: agentIdForEvent as never,
-      event_type: "rating_changed",
-      source: "cron",
-      payload: {
-        from: currentRating,
-        to: nextRating,
-        reason: "auto",
-        engagement_score: score,
-        model_version: "v1-behavior-decay-14d",
-      } as never,
-    } as never);
-  }
-
-  // Also write a contact_scores row so historical scores are queryable
-  // (used by the trends UI later).
-  await supabaseAdmin.from("contact_scores").insert({
-    contact_id: contactId,
-    score,
-    label: score >= 60 ? "hot" : score >= 30 ? "warm" : "cold",
-    factors: factors as never,
-    model_version: "v1-behavior-decay-14d",
-    computed_at: computedAt,
-  } as never);
+  // 1. Recompute the COMPOSITE lead rating — the single writer of
+  // contacts.rating (+ engagement_score + a contact_scores history row).
+  // Blends web behavior with call / SMS / open-house signals into one
+  // hot/warm/cold vocabulary, replacing the old behavior-only A/B/C/D rating
+  // that clashed with the rest of the app. Respects rating_manual_override.
+  await recomputeLeadRating(contactId);
 
   // 2. Fire intent signals. Dedup against existing un-dismissed signals
   // using the dedup_key stored in payload.
@@ -248,24 +194,4 @@ export async function GET(req: Request) {
       { status: 500 },
     );
   }
-}
-
-/**
- * Engagement-score → rating letter. Thresholds tuned for the v1
- * weight table:
- *   70+ → A   (dense recent engagement: multiple favorites, alert
- *              clicks, saved searches — the "call them this week" tier)
- *   40-69 → B (real interest: repeat views, at least one strong
- *              signal — worth nurturing)
- *   20-39 → C (passive browsing — keep in drip, don't hand-work)
- *   <20  → D (dormant or cold)
- *
- * Recalibrate once real usage data tells us the distribution. Logging
- * every change to contact_events makes that analysis straightforward.
- */
-function ratingForScore(score: number): "A" | "B" | "C" | "D" {
-  if (score >= 70) return "A";
-  if (score >= 40) return "B";
-  if (score >= 20) return "C";
-  return "D";
 }
