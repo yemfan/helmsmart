@@ -41,11 +41,16 @@ export type BehaviorScore = {
  *   - search_performed by itself is low; it indicates general browsing.
  *   - return_visit fires when a contact re-enters the site after >= 3
  *     days of absence — strong recurrence signal.
+ *   - email engagement (we sent → they acted): a reply is a strong
+ *     two-way signal, a click is a real action on our content, an open
+ *     is weak (proxy prefetch / preview panes inflate it).
  */
 export const EVENT_WEIGHTS: Record<string, number> = {
   property_favorite: 6,
+  email_reply: 6,
   report_unlocked: 5,
   listing_alert_clicked: 5,
+  email_click: 5,
   saved_search_created: 4,
   return_visit: 3,
   property_share: 3,
@@ -53,6 +58,7 @@ export const EVENT_WEIGHTS: Record<string, number> = {
   search_performed: 1,
   listing_alert_opened: 1,
   saved_search_match: 1,
+  email_open: 1,
 };
 
 /**

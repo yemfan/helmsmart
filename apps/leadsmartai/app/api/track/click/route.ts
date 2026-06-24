@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
-import { recordLeadEvent, scoreLead } from "@/lib/leadScoring";
+import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -78,14 +78,12 @@ export async function GET(req: Request) {
         }
       }
     }
-    try {
-      await recordLeadEvent({
-        contact_id: leadId as any,
-        event_type: "email_click",
-        metadata: safeTarget ? { url: safeTarget } : {},
-      });
-      await scoreLead(String(leadId), true);
-    } catch {}
+    // Feed the click into the composite lead rating (email_click is weighted
+    // in scoreBehavior → engagement). Service-role under the hood (RLS-safe).
+    await logEngagementEvent(String(leadId), "email_click", {
+      source: "email",
+      payload: safeTarget ? { url: safeTarget } : {},
+    });
   }
 
   if (!safeTarget) {

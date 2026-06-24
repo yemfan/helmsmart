@@ -82,6 +82,12 @@ export async function recomputeLeadRating(contactId: string): Promise<LeadRating
   const openHouseTimeline = openHouse?.payload?.timeline;
   const smsRepliedRecent =
     row.sms_last_inbound_at != null && now - new Date(row.sms_last_inbound_at).getTime() < 14 * DAY;
+  // An email reply is a two-way "they responded" signal — like an SMS reply,
+  // worth at least warm even though its decayed behavior weight alone wouldn't
+  // clear the warm threshold. (Clicks/opens flow through engagement above.)
+  const emailReply = evs.find((e) => e.event_type === "email_reply");
+  const emailRepliedRecent =
+    emailReply != null && now - new Date(emailReply.created_at).getTime() < 14 * DAY;
   const optedOut = row.sms_opt_in === false || row.sms_opted_out_at != null;
 
   // Blend — strongest signal wins (only upgrades).
@@ -96,6 +102,7 @@ export async function recomputeLeadRating(contactId: string): Promise<LeadRating
   // Open-house attendance: near-term timeline → hot, otherwise warm.
   if (openHouse) bump(openHouseTimeline === "now" || openHouseTimeline === "3_6_months" ? "hot" : "warm");
   if (smsRepliedRecent) bump("warm");
+  if (emailRepliedRecent) bump("warm");
   if (optedOut) rating = "cold"; // opted out → never nurture-rated
 
   // Manual override: keep the agent's pinned rating, but still refresh the
@@ -127,6 +134,7 @@ export async function recomputeLeadRating(contactId: string): Promise<LeadRating
       call: callRating,
       open_house: openHouse ? (openHouseTimeline ?? true) : false,
       sms_reply: smsRepliedRecent,
+      email_reply: emailRepliedRecent,
       opted_out: optedOut,
       behavior: factors,
     } as never,

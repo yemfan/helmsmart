@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
+import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
 
 // 1x1 transparent GIF
 const GIF_BASE64 =
@@ -18,6 +19,13 @@ export async function GET(req: Request) {
       });
 
       const debounced = Boolean((rpcRes as any)?.data?.debounced);
+
+      // Feed the open into the composite lead rating (email_open is a weak,
+      // weighted signal in scoreBehavior). Skip debounced hits so proxy
+      // prefetch / preview-pane reloads don't inflate the score.
+      if (!debounced) {
+        await logEngagementEvent(String(leadId), "email_open", { source: "email" });
+      }
 
       // If we have a specific message log id, only score when we successfully transition it.
       if (messageLogId) {
