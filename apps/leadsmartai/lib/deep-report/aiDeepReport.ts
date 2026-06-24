@@ -21,6 +21,8 @@ export type DeepReportAi = {
   /** Monthly market rent estimate (investment use); null otherwise/unknown. */
   rentEstimateMonthly: number | null;
   rentSummary: string | null;
+  /** Monthly Mello-Roos / special assessment if the property is in a CA CFD; 0 when none/not applicable. */
+  melloRoosMonthly: number | null;
   neighborhood: string;
   schools: PresentationSchool[];
   sources: { title: string; url: string }[];
@@ -41,6 +43,7 @@ export async function generateDeepReportAi(input: {
     },
     rentEstimateMonthly: null,
     rentSummary: null,
+    melloRoosMonthly: null,
     neighborhood: "",
     schools: [],
     sources: [],
@@ -61,6 +64,7 @@ export async function generateDeepReportAi(input: {
 Produce:
 - dealRating: grade A–F + score 0-100 + 2-3 sentence rationale, judging the estimated price vs the comps and local market (is it under/over-priced, condition + price considerations). Be honest.
 - neighborhood: 2-4 sentences (walkability, amenities, commute, lifestyle).
+- melloRoosMonthly: if this property is in a California Mello-Roos / Community Facilities District (CFD) with a special assessment, the approximate MONTHLY amount in dollars; use 0 when it is not in a CFD or none applies. Most established neighborhoods have none — only newer developments typically do. Do not guess a nonzero number.
 - schools: nearest assigned/notable schools with level + rating + distance ([] if none verifiable).
 ${investment ? "- rentEstimateMonthly: a realistic monthly market rent (number) from comparable rentals you find; rentSummary: 1-2 sentences on the rental comps. Use null if you cannot find rental data." : "- rentEstimateMonthly: null; rentSummary: null (not an investment analysis)."}
 
@@ -71,6 +75,7 @@ When done searching, respond with EXACTLY ONE fenced JSON block and nothing afte
   "dealRating": { "grade": "B", "score": 78, "rationale": "" },
   "rentEstimateMonthly": null,
   "rentSummary": null,
+  "melloRoosMonthly": 0,
   "neighborhood": "",
   "schools": [ { "name": "", "level": "Elementary|Middle|High", "rating": "8/10", "distance": "0.4 mi" } ],
   "sources": [ { "title": "", "url": "" } ]
@@ -159,6 +164,7 @@ When done searching, respond with EXACTLY ONE fenced JSON block and nothing afte
     },
     rentEstimateMonthly: numOrNull(parsed.rentEstimateMonthly),
     rentSummary: parsed.rentSummary == null ? null : String(parsed.rentSummary),
+    melloRoosMonthly: numOrNull(parsed.melloRoosMonthly),
     neighborhood: parsed.neighborhood == null ? "" : String(parsed.neighborhood),
     schools,
     sources,

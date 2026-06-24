@@ -20,6 +20,8 @@ export type LoanAssumptions = {
   insuranceRatePct: number;
   /** Monthly HOA dues in dollars. */
   hoaMonthly: number;
+  /** Monthly Mello-Roos / special assessment (CA CFD) in dollars. */
+  melloRoosMonthly: number;
 };
 
 export const DEFAULT_LOAN_ASSUMPTIONS: LoanAssumptions = {
@@ -29,6 +31,7 @@ export const DEFAULT_LOAN_ASSUMPTIONS: LoanAssumptions = {
   taxRatePct: 1.1,
   insuranceRatePct: 0.35,
   hoaMonthly: 0,
+  melloRoosMonthly: 0,
 };
 
 export type Affordability = {
@@ -39,7 +42,8 @@ export type Affordability = {
   taxesMonthly: number;
   insuranceMonthly: number;
   hoaMonthly: number;
-  /** Full monthly housing payment (PITI + HOA). */
+  melloRoosMonthly: number;
+  /** Full monthly housing payment (PITI + HOA + Mello-Roos). */
   totalMonthly: number;
   /** Gross monthly income needed at a 28% front-end ratio. */
   incomeNeededMonthly: number;
@@ -66,7 +70,8 @@ export function computeAffordability(price: number, partial: Partial<LoanAssumpt
   const taxesMonthly = (p * a.taxRatePct) / 100 / 12;
   const insuranceMonthly = (p * a.insuranceRatePct) / 100 / 12;
   const hoaMonthly = Math.max(0, a.hoaMonthly);
-  const totalMonthly = principalInterest + taxesMonthly + insuranceMonthly + hoaMonthly;
+  const melloRoosMonthly = Math.max(0, a.melloRoosMonthly);
+  const totalMonthly = principalInterest + taxesMonthly + insuranceMonthly + hoaMonthly + melloRoosMonthly;
   // 28% front-end ratio is the conventional qualifying guideline.
   const incomeNeededMonthly = totalMonthly / 0.28;
   return {
@@ -77,6 +82,7 @@ export function computeAffordability(price: number, partial: Partial<LoanAssumpt
     taxesMonthly,
     insuranceMonthly,
     hoaMonthly,
+    melloRoosMonthly,
     totalMonthly,
     incomeNeededMonthly,
     incomeNeededAnnual: incomeNeededMonthly * 12,
@@ -120,9 +126,14 @@ export function computeInvestmentReturns(
   const grossAnnualRent = rent * 12;
   const monthlyOperatingReserve = (rent * reservePct) / 100;
 
-  // NOI excludes debt service but includes taxes + insurance + HOA + reserve.
+  // NOI excludes debt service but includes taxes + insurance + HOA + Mello-Roos + reserve.
   const annualOperatingExpenses =
-    (affordability.taxesMonthly + affordability.insuranceMonthly + affordability.hoaMonthly + monthlyOperatingReserve) * 12;
+    (affordability.taxesMonthly +
+      affordability.insuranceMonthly +
+      affordability.hoaMonthly +
+      affordability.melloRoosMonthly +
+      monthlyOperatingReserve) *
+    12;
   const noi = grossAnnualRent - annualOperatingExpenses;
   const capRatePct = price > 0 ? (noi / price) * 100 : 0;
 

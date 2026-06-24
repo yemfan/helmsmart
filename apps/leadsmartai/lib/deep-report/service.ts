@@ -54,10 +54,11 @@ export async function generateDeepReport(
     comps: snapshot.comps.map((c) => ({ address: c.address, price: c.price, sqft: c.sqft, soldDate: c.soldDate })),
   });
 
-  // 3) Affordability (HOA from the subject feeds the PITI).
+  // 3) Affordability (HOA from the subject + Mello-Roos from the AI feed the PITI).
   const affordability = computeAffordability(price, {
     ...input.loanOverrides,
     hoaMonthly: input.loanOverrides?.hoaMonthly ?? subj.hoaMonthly ?? 0,
+    melloRoosMonthly: input.loanOverrides?.melloRoosMonthly ?? ai.melloRoosMonthly ?? 0,
   });
 
   // 4) Investment returns (only for investment use + when a rent estimate exists).

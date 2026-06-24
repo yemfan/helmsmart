@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import DeepReportView from "@/components/deep-report/DeepReportView";
@@ -224,6 +225,16 @@ export default function DeepReportClient() {
             {loading ? "Generating…" : "Generate Deep Report"}
           </button>
         </div>
+        {quota?.reached ? (
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <span>
+              You&rsquo;ve used all {quota.limit} Deep Report{quota.limit === 1 ? "" : "s"} for today. Resets at midnight UTC.
+            </span>
+            <Link href="/agent/pricing" className="shrink-0 font-semibold text-amber-900 underline hover:text-amber-950">
+              Upgrade for more →
+            </Link>
+          </div>
+        ) : null}
         {error ? <p className="mt-3 text-sm text-rose-600">{error}</p> : null}
       </section>
 
