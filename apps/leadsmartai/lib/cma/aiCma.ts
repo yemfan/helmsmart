@@ -34,7 +34,7 @@ Rules:
 
 When done searching, respond with EXACTLY ONE fenced JSON code block and nothing after it, matching this schema (numbers only, no $ or commas):
 
-For every property (subject and each comp) include beds, baths, lotSizeSqft, and hoaMonthly when you can find them; use null when unknown. Lot size is in square feet. hoaMonthly is the monthly HOA dues in dollars. Note: condos/townhomes typically have an HOA and no individual lot — set lotSizeSqft to null for condos.
+For every property (subject and each comp) include beds, baths, yearBuilt, lotSizeSqft, and hoaMonthly when you can find them; use null when unknown. Lot size is in square feet. hoaMonthly is the monthly HOA dues in dollars. Note: condos/townhomes typically have an HOA and no individual lot — set lotSizeSqft to null for condos.
 
 For the subject, also set listingUrl to the URL of the property's listing page (Redfin, Realtor.com, Zillow, or an MLS page) IF you find one during search — a real page URL you actually saw in a result, never guessed or fabricated. Prefer a Redfin or Realtor.com URL when available. Use null if you cannot find a real listing page. (We use it only to pull the home's photo.)
 
@@ -42,7 +42,7 @@ For the subject, also set listingUrl to the URL of the property's listing page (
 {
   "subject": { "address": "", "beds": 0, "baths": 0, "sqft": 0, "propertyType": null, "yearBuilt": 0, "condition": null, "lotSizeSqft": null, "hoaMonthly": null, "listingUrl": null },
   "comps": [
-    { "address": "", "price": 0, "sqft": 0, "beds": 0, "baths": 0, "distanceMiles": 0, "soldDate": "YYYY-MM-DD", "propertyType": null, "pricePerSqft": 0, "lotSizeSqft": null, "hoaMonthly": null, "sourceUrl": "" }
+    { "address": "", "price": 0, "sqft": 0, "beds": 0, "baths": 0, "distanceMiles": 0, "soldDate": "YYYY-MM-DD", "propertyType": null, "yearBuilt": null, "pricePerSqft": 0, "lotSizeSqft": null, "hoaMonthly": null, "sourceUrl": "" }
   ],
   "valuation": { "estimatedValue": 0, "low": 0, "high": 0, "avgPricePerSqft": 0, "confidenceScore": null },
   "strategies": { "aggressive": 0, "market": 0, "premium": 0, "daysOnMarket": { "aggressive": 0, "market": 0, "premium": 0 } },
@@ -210,6 +210,7 @@ function normalizeAi(raw: Record<string, unknown>, fallbackAddress: string): Cma
           distanceMiles: num(o.distanceMiles, 0),
           soldDate: str(o.soldDate, ""),
           propertyType: o.propertyType == null ? null : String(o.propertyType),
+          yearBuilt: numOrNull(o.yearBuilt),
           pricePerSqft: num(o.pricePerSqft, 0),
           lotSizeSqft: numOrNull(o.lotSizeSqft),
           hoaMonthly: numOrNull(o.hoaMonthly),
