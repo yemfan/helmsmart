@@ -87,16 +87,21 @@ Output ONLY a JSON object, no commentary, no markdown fences:
   "assignee": "receptionist|sales_assistant|marketing_assistant|transaction_assistant|accountant|realtor",
   "contact_name": "the person or company this task is about, verbatim from the instruction, or null",
   "channel": "sms or email when the task is sending a message (sms when they said text/SMS, email when they said email; default sms for lead messages, email for invoices), else null",
-  "action": "generate_cma | generate_seller_presentation | null",
-  "params": { "address": "verbatim address if given" }
-} ] }`;
+  "action": "one of the action keys listed above, or null",
+  "params": { "address": "...", "date": "YYYY-MM-DD when a date is given or derivable", "time": "e.g. 2pm", "contact_name": "..." }
+} ] }
+
+Only include the params relevant to the chosen action (e.g. open_house → address, date, time; cold_call_qualify → contact_name). Resolve relative dates ("this Saturday", "tomorrow") to YYYY-MM-DD using the current date provided below. Omit any param the Realtor didn't give — the Boss will ask for it.`;
 
 export async function parseInstruction(content: string): Promise<ParsedTask[]> {
   const client = getAnthropicClient();
+  // Give the planner today's date so it can resolve "this Saturday" → YYYY-MM-DD
+  // for date-bearing actions (open house, showings).
+  const today = new Date().toISOString().slice(0, 10);
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 1500,
-    system: SYSTEM_PROMPT,
+    system: `${SYSTEM_PROMPT}\n\nToday's date is ${today}.`,
     messages: [{ role: "user", content: `The Realtor's instructions:\n\n${content.slice(0, 4000)}` }],
   });
   const textBlock = response.content.find((b) => b.type === "text");
