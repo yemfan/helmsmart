@@ -74,11 +74,42 @@ export async function sendEmail({
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
-    throw new Error(`Resend error ${res.status}: ${errText || res.statusText}`);
+    // Keep the raw Resend payload in the server logs for debugging, but throw a
+    // human message — callers surface this straight to the agent's screen.
+    console.error("sendEmail: Resend rejected", { status: res.status, body: errText });
+    throw new Error(friendlyResendError(res.status, errText));
   }
 
   const json = (await res.json().catch(() => ({}))) as { id?: string };
   return { id: json.id };
+}
+
+/**
+ * Turn a Resend API error into a message safe to show an agent. The most
+ * common one in practice is the unverified-domain / test-mode 403 ("you can
+ * only send testing emails to your own email address"), which is a setup
+ * issue, not a per-send failure — so we point at the fix instead of dumping
+ * the raw JSON.
+ */
+function friendlyResendError(status: number, body: string): string {
+  let message = "";
+  try {
+    message = String((JSON.parse(body) as { message?: string })?.message ?? "");
+  } catch {
+    /* body wasn't JSON */
+  }
+  const haystack = `${message} ${body}`;
+
+  if (/verify a domain|only send testing emails|own email address|not verified|domain.*verif/i.test(haystack)) {
+    return "Email isn't set up to send to this recipient yet — the sending domain isn't verified in Resend. Verify leadsmart-ai.com at resend.com/domains, then try again.";
+  }
+  if (status === 401 || status === 403) {
+    return message || "Email couldn't be sent — Resend rejected the request (check the API key and verified sending domain).";
+  }
+  if (status === 429) {
+    return "Email is being rate-limited right now — wait a moment and try again.";
+  }
+  return message ? `Email send failed: ${message}` : `Email send failed (Resend ${status}).`;
 }
 
 function bufferToBase64(bytes: Uint8Array): string {
