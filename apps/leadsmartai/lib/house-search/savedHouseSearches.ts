@@ -272,6 +272,91 @@ export async function updateSavedHouseSearch(
   return mapSearch(data as Record<string, unknown>);
 }
 
+// ── Auto-run (cron) helpers — NOT agent-scoped; the cron is trusted ─────────
+
+export type DueAutoRunSearch = {
+  id: string;
+  contactId: string;
+  agentId: string;
+  name: string;
+  query: string;
+  frequency: string;
+  /** Refinements from the most recent run, re-applied on the auto-run. */
+  latestRefinements: string[];
+  /** listingUrl||address keys of the previous run, for new-listing dedup. */
+  latestListingKeys: string[];
+};
+
+/**
+ * Saved searches whose agent-requested auto-run is due (active, auto_run on,
+ * and last_auto_run_at older than the frequency interval). Bounded — each
+ * auto-run is a slow live web search, so the cron processes a few per tick and
+ * drains the rest on later ticks.
+ */
+export async function listDueAutoRunSearches(limit = 4): Promise<DueAutoRunSearch[]> {
+  const { data } = await supabaseAdmin
+    .from("contact_house_searches")
+    .select("id, contact_id, agent_id, name, query, auto_run_frequency, last_auto_run_at")
+    .eq("auto_run", true as never)
+    .eq("is_active", true as never)
+    .order("last_auto_run_at", { ascending: true, nullsFirst: true })
+    .limit(limit * 4);
+
+  const now = Date.now();
+  const DAY = 24 * 60 * 60 * 1000;
+  const due = (data ?? [])
+    .filter((r) => {
+      const row = r as { auto_run_frequency?: string | null; last_auto_run_at?: string | null };
+      const intervalDays = row.auto_run_frequency === "weekly" ? 7 : 1;
+      const last = row.last_auto_run_at ? new Date(row.last_auto_run_at).getTime() : 0;
+      // small grace so a daily job fires reliably on the next tick after 24h.
+      return now - last >= intervalDays * DAY - 60 * 60 * 1000;
+    })
+    .slice(0, limit);
+
+  const out: DueAutoRunSearch[] = [];
+  for (const r of due as Record<string, unknown>[]) {
+    const { data: runRow } = await supabaseAdmin
+      .from("contact_house_search_runs")
+      .select("refinements, result")
+      .eq("search_id", String(r.id))
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const prev = runRow as { refinements?: unknown; result?: HouseSearchResult } | null;
+    const keys = (prev?.result?.listings ?? [])
+      .map((l) => (l.listingUrl || l.address || "").toLowerCase())
+      .filter(Boolean);
+    out.push({
+      id: String(r.id),
+      contactId: String(r.contact_id),
+      agentId: String(r.agent_id),
+      name: String(r.name ?? ""),
+      query: String(r.query ?? ""),
+      frequency: (r.auto_run_frequency as string) ?? "daily",
+      latestRefinements: Array.isArray(prev?.refinements) ? (prev?.refinements as string[]) : [],
+      latestListingKeys: keys,
+    });
+  }
+  return out;
+}
+
+/** Append an 'auto' run (cron context — no ownership check). */
+export async function recordAutoRun(
+  searchId: string,
+  refinements: string[],
+  result: HouseSearchResult,
+): Promise<void> {
+  await insertRun(searchId, { refinements, result, trigger: "auto" });
+}
+
+export async function markAutoRunComplete(searchId: string): Promise<void> {
+  await supabaseAdmin
+    .from("contact_house_searches")
+    .update({ last_auto_run_at: new Date().toISOString() } as never)
+    .eq("id", searchId);
+}
+
 export async function archiveSavedHouseSearch(agentId: string, searchId: string): Promise<void> {
   await assertSearchBelongsToAgent(agentId, searchId);
   const { error } = await supabaseAdmin

@@ -33,6 +33,7 @@ export const CRON_JOBS: CronJob[] = [
   { id: "lead-followups",         label: "Lead Follow-ups",           path: "/api/cron/lead-followups",               schedule: "15 * * * *",   description: "Process queued follow-up jobs (email + SMS + push) – hourly",             category: "leads" },
   { id: "behavior-score",         label: "Behavior Score",            path: "/api/cron/behavior-score",               schedule: "0 1 * * *",    description: "Daily composite lead rating (behavior + calls/SMS/email/open-house) + intent signals", category: "leads" },
   { id: "lead-pricing-learning",  label: "Lead Pricing Learning",     path: "/api/cron/lead-pricing-learning",        schedule: "0 2 * * 3",    description: "Weekly learning loop to calibrate lead value model (Wednesdays)",         category: "leads" },
+  { id: "house-search-auto-run",  label: "House Search Auto-run",     path: "/api/cron/house-search-auto-run",        schedule: "0 */3 * * *",  description: "Re-run saved buyer house searches (daily/weekly) + email the buyer new matches", category: "leads" },
   // Emails
   { id: "send-emails",            label: "Send Emails",               path: "/api/cron/send-emails",                  schedule: "45 * * * *",   description: "Send queued outbound emails and SMS – hourly at :45",                    category: "emails" },
   // Data
