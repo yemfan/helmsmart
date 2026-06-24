@@ -59,6 +59,28 @@ export async function scheduleCallBacks(args: {
     const settings = await getOrInitSettings(args.agentId);
     if (!settings.callback_enabled) return { scheduled: false };
 
+    // Auto call-backs are for LEADS only. A known contact who's part of the
+    // sphere, an existing/past client, or a referral source (i.e. friends &
+    // family and relationships) should NOT get a relentless AI call-back
+    // ladder — the Realtor calls them back personally. Unknown callers (no
+    // contact yet) are treated as potential new leads and still get the ladder.
+    if (args.contactId) {
+      const { data: c } = await supabaseAdmin
+        .from("contacts")
+        .select("lifecycle_stage")
+        .eq("id", args.contactId)
+        .maybeSingle();
+      const stage = (c as { lifecycle_stage?: string | null } | null)?.lifecycle_stage ?? null;
+      const NON_LEAD_STAGES = new Set([
+        "active_client",
+        "past_client",
+        "sphere",
+        "referral_source",
+        "archived",
+      ]);
+      if (stage && NON_LEAD_STAGES.has(stage)) return { scheduled: false };
+    }
+
     const firstAttemptAt = new Date(
       Date.now() + settings.callback_interval_minutes * 60_000,
     ).toISOString();
