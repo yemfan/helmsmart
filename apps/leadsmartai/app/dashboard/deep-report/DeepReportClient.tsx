@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import DeepReportView from "@/components/deep-report/DeepReportView";
+import { computeAffordability, computeInvestmentReturns } from "@/lib/deep-report/finance";
 import type { DeepReport, PropertyUse } from "@/lib/deep-report/types";
 
 const USE_OPTIONS: Array<{ value: PropertyUse; label: string }> = [
@@ -40,6 +41,34 @@ export default function DeepReportClient() {
     if (typeof window === "undefined" || !reportId) return "";
     return `${window.location.origin}/deep-report/${encodeURIComponent(reportId)}`;
   }, [reportId]);
+
+  // Loan terms are pure local math — recompute affordability (and investment
+  // returns) live as the inputs change, so tweaking the loan never needs a new
+  // report and is never blocked by the daily quota. The expensive web-search/AI
+  // parts (value, comps, deal rating, schools…) stay exactly as generated.
+  const displayReport = useMemo<DeepReport | null>(() => {
+    if (!report) return null;
+    if (!showLoan) return report;
+    const d = Number(downPct);
+    const r = Number(ratePct);
+    const t = Number(termYears);
+    if (!Number.isFinite(d) || !Number.isFinite(r) || !Number.isFinite(t)) return report;
+
+    const affordability = computeAffordability(report.affordability.price, {
+      ...report.affordability.assumptions,
+      downPct: d,
+      ratePct: r,
+      termYears: t,
+    });
+    let investment = report.investment;
+    if (report.propertyUse === "investment" && report.investment) {
+      investment = {
+        ...computeInvestmentReturns(report.affordability.price, report.investment.rentMonthly, affordability),
+        rentSummary: report.investment.rentSummary,
+      };
+    }
+    return { ...report, affordability, investment };
+  }, [report, showLoan, downPct, ratePct, termYears]);
 
   useEffect(() => {
     let cancelled = false;
@@ -88,6 +117,12 @@ export default function DeepReportClient() {
       if (!res.ok || data.ok === false || !data.report) throw new Error(data.error ?? `HTTP ${res.status}`);
       setReport(data.report);
       setReportId(data.id ?? null);
+      // Seed the loan fields from the generated assumptions so opening "Loan
+      // assumptions" shows the real values and the live recompute matches.
+      const used = data.report.affordability.assumptions;
+      setDownPct(String(used.downPct));
+      setRatePct(String(used.ratePct));
+      setTermYears(String(used.termYears));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to generate report");
     } finally {
@@ -169,6 +204,11 @@ export default function DeepReportClient() {
               </label>
             </div>
           ) : null}
+          {showLoan && report ? (
+            <p className="mt-2 text-xs text-slate-400">
+              Affordability updates instantly below — no new report needed.
+            </p>
+          ) : null}
         </div>
 
         <div className="mt-4 flex items-center justify-between gap-3">
@@ -193,7 +233,7 @@ export default function DeepReportClient() {
         </div>
       ) : null}
 
-      {report && !loading ? (
+      {displayReport && !loading ? (
         <>
           {shareUrl ? (
             <div className="flex flex-wrap items-center justify-end gap-2">
@@ -214,7 +254,7 @@ export default function DeepReportClient() {
               </a>
             </div>
           ) : null}
-          <DeepReportView report={report} />
+          <DeepReportView report={displayReport} />
         </>
       ) : null}
     </div>
