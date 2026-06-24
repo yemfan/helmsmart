@@ -26,7 +26,8 @@ export type BossActionType =
   | "generate_seller_presentation"
   | "schedule_showing"
   | "cold_call_qualify"
-  | "open_house";
+  | "open_house"
+  | "coordinate_closing";
 
 export type ActionParamDef = {
   key: string;
@@ -295,6 +296,46 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
         artifactType: "open_house",
         artifactUrl: cmaUrl,
         note: `Open house arranged for ${address} on ${when} — ${cmaUrl ? "pricing CMA + " : ""}${scheduled} tasks scheduled`,
+      };
+    },
+  },
+
+  coordinate_closing: {
+    type: "coordinate_closing",
+    assignee: "transaction_assistant",
+    label: "Coordinate closing",
+    planHint:
+      "coordinate_closing — PLAYBOOK: lay out the closing timeline. Schedules the standard deadline checklist (inspection, appraisal, financing/loan, title & escrow review, final walkthrough, closing day) counting back from the closing date. Choose when asked to coordinate/manage a closing or set up a transaction timeline. params: { address, closing_date (YYYY-MM-DD) }.",
+    requiredParams: [
+      { ...ADDRESS, question: "Which property's closing should I coordinate — what's the address?" },
+      { key: "closing_date", label: "closing date", question: "What's the closing date (YYYY-MM-DD)?" },
+    ],
+    run: async ({ agentId, params }) => {
+      const { address } = params;
+      const close = params.closing_date;
+      const steps: Array<{ title: string; off: number; priority: string }> = [
+        { title: `Schedule inspection — ${address}`, off: -21, priority: "high" },
+        { title: `Order appraisal — ${address}`, off: -18, priority: "high" },
+        { title: `Confirm loan commitment / clear financing contingency — ${address}`, off: -10, priority: "urgent" },
+        { title: `Review title & escrow / clear-to-close — ${address}`, off: -7, priority: "high" },
+        { title: `Final walkthrough — ${address}`, off: -1, priority: "high" },
+        { title: `Closing day — ${address}`, off: 0, priority: "urgent" },
+      ];
+      let scheduled = 0;
+      for (const s of steps) {
+        await createPlaybookTask(agentId, {
+          title: s.title,
+          description: `Closing timeline for ${address} (closing ${close}).`,
+          dueAt: dueAtFromDate(close, s.off),
+          priority: s.priority,
+        });
+        scheduled += 1;
+      }
+      return {
+        status: "completed",
+        artifactType: "closing",
+        artifactUrl: null,
+        note: `Closing timeline arranged for ${address} — ${scheduled} milestones scheduled to ${close}`,
       };
     },
   },
