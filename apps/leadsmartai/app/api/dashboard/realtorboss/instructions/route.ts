@@ -5,9 +5,9 @@ import { processInstructionById } from "@/lib/realtorboss/instructions";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Immediate processing runs after the response (Claude parse + draft
-// calls can take ~30s on a complex instruction).
-export const maxDuration = 120;
+// Immediate processing runs after the response. Action runs (AI CMA / seller
+// presentation) do live web search across tool rounds — give them room.
+export const maxDuration = 300;
 
 /**
  * The Boss Assistant instruction channel.
