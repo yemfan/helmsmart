@@ -37,7 +37,7 @@ export default function TabsLayout() {
           },
         }}
         screenOptions={{
-          headerTitle: "LeadSmart AI",
+          headerTitle: "RealtorBoss",
           headerShadowVisible: false,
           headerStyle: {
             backgroundColor: tokens.surface,
