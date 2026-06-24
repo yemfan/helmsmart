@@ -227,10 +227,10 @@ export async function POST(req: NextRequest) {
     }
 
     // On analysis of an answered OUTBOUND AI call (e.g. a follow-up call-back):
-    // if the caller showed no interest, close them out — archive + mark
-    // not-interested — so we stop following up and the leads-only gate won't
-    // re-start a call-back ladder if they're dialed again. (The ladder itself
-    // already stopped when the call connected; this prevents re-engagement.)
+    // rate the lead from the call (so hot leads surface), and if the caller
+    // showed no interest, close them out — archive + mark not-interested — so
+    // we stop following up and the leads-only gate won't re-start a call-back
+    // ladder. (The ladder itself already stopped when the call connected.)
     if (body.event === "call_analyzed" && call.direction === "outbound" && summary && call.to_number) {
       const callId = call.call_id;
       const toNumber = call.to_number;
@@ -246,8 +246,7 @@ export async function POST(req: NextRequest) {
           if (!row?.agent_id) return;
           const agentId = String(row.agent_id);
 
-          const interest = await classifyCallInterest(summary, transcript);
-          if (interest !== "not_interested") return; // only close on a clear decline
+          const { interest, rating } = await classifyCallInterest(summary, transcript);
 
           let contactId = row.contact_id;
           if (!contactId) {
@@ -256,19 +255,30 @@ export async function POST(req: NextRequest) {
           }
           if (!contactId) return;
 
-          await markContactNotInterested(contactId);
-          await logAssistantActivity({
-            agentId,
-            assistantType: "sales_assistant",
-            activityType: "lead_closed_not_interested",
-            summary: `Closed out — caller wasn't interested${toNumber ? ` (${toNumber})` : ""}`,
-            outcome: summary.length > 180 ? `${summary.slice(0, 177)}…` : summary,
-            requiresAttention: false,
-            relatedEntityType: "contact",
-            relatedEntityId: contactId,
-          });
+          if (interest === "not_interested") {
+            await markContactNotInterested(contactId);
+            await logAssistantActivity({
+              agentId,
+              assistantType: "sales_assistant",
+              activityType: "lead_closed_not_interested",
+              summary: `Closed out — caller wasn't interested${toNumber ? ` (${toNumber})` : ""}`,
+              outcome: summary.length > 180 ? `${summary.slice(0, 177)}…` : summary,
+              requiresAttention: false,
+              relatedEntityType: "contact",
+              relatedEntityId: contactId,
+            });
+            return;
+          }
+
+          // Still in play — refresh the lead rating from this call.
+          if (rating) {
+            await supabaseAdmin
+              .from("contacts")
+              .update({ rating, updated_at: new Date().toISOString() } as never)
+              .eq("id", contactId as never);
+          }
         } catch (e) {
-          console.error("retell/call-events: disposition close failed", e);
+          console.error("retell/call-events: disposition/rating failed", e);
         }
       });
     }
