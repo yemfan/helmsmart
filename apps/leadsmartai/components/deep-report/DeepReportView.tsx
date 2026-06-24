@@ -167,7 +167,8 @@ export default function DeepReportView({ report: r, showDownload = true }: { rep
               <Row label={`P&I (${a.assumptions.ratePct}% / ${a.assumptions.termYears}yr)`} value={`${money(a.principalInterest)}/mo`} />
               <Row label="Property tax" value={`${money(a.taxesMonthly)}/mo`} />
               <Row label="Insurance" value={`${money(a.insuranceMonthly)}/mo`} />
-              {a.hoaMonthly ? <Row label="HOA" value={`${money(a.hoaMonthly)}/mo`} /> : null}
+              <Row label="HOA" value={`${money(a.hoaMonthly)}/mo`} />
+              <Row label="Mello-Roos" value={`${money(a.melloRoosMonthly)}/mo`} />
             </div>
             <div className="flex flex-col justify-center gap-3 rounded-xl bg-emerald-50 p-4">
               <div>
