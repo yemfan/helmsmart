@@ -18,12 +18,17 @@ import { hasOpenVoiceFollowUpForCall } from "@/lib/ai-call/hot-call-task";
 
 type PartyType = "buyer" | "seller" | "renter" | "other";
 
+type CallRating = "hot" | "warm" | "cold" | null;
+
 type Extracted = {
   name: string;
   partyType: PartyType;
   interest: string;
   location: string;
   timeline: string;
+  /** Lead potential from this call — drives contacts.rating so hot leads
+   *  surface at the top of the list. null when we can't judge (no OpenAI). */
+  rating: CallRating;
 };
 
 /** Pull structured lead fields from the call summary + transcript. Degrades to a
@@ -35,6 +40,7 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
     interest: summary.slice(0, 200),
     location: "",
     timeline: "",
+    rating: null,
   };
 
   const { apiKey, model } = getOpenAIConfig();
@@ -57,7 +63,10 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
               'Return ONLY a JSON object with keys: name (caller\'s full name, or "" if not given), ' +
               'party_type (one of "buyer","seller","renter","other"), interest (one short phrase, ' +
               'e.g. "buying in Alhambra, ~$1M"), location (city/area, or ""), timeline ' +
-              '(e.g. "2 months", or ""). Use "" when unknown. Never invent details.',
+              '(e.g. "2 months", or ""), rating (lead potential: "hot" = ready / near-term / ' +
+              'strong intent or pre-approved; "warm" = interested but exploring; "cold" = low or ' +
+              'no real-estate intent, wrong number, or just a question). Use "" when unknown. ' +
+              'Never invent details.',
           },
           {
             role: "user",
@@ -70,12 +79,14 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
     const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
     const parsed = JSON.parse(json.choices?.[0]?.message?.content ?? "{}") as Record<string, unknown>;
     const pt = String(parsed.party_type ?? "other").toLowerCase();
+    const rt = String(parsed.rating ?? "").toLowerCase();
     return {
       name: String(parsed.name ?? "").trim().slice(0, 120),
       partyType: (["buyer", "seller", "renter", "other"].includes(pt) ? pt : "other") as PartyType,
       interest: String(parsed.interest ?? "").trim().slice(0, 200),
       location: String(parsed.location ?? "").trim().slice(0, 120),
       timeline: String(parsed.timeline ?? "").trim().slice(0, 80),
+      rating: (["hot", "warm", "cold"].includes(rt) ? rt : null) as CallRating,
     };
   } catch {
     return fallback;
@@ -120,6 +131,7 @@ export async function captureLeadFromInboundCall(args: {
     };
     if (ex.partyType === "buyer" || ex.partyType === "seller") row.type = ex.partyType;
     if (ex.location) row.property_address = ex.location;
+    if (ex.rating) row.rating = ex.rating; // call-derived lead heat
     try {
       const { data, error } = await supabaseAdmin
         .from("contacts")
@@ -131,15 +143,21 @@ export async function captureLeadFromInboundCall(args: {
     } catch (e) {
       console.error("[lead-capture] contact insert threw:", e);
     }
-  } else if (ex.name && !(existingName && existingName.trim())) {
-    // Known caller with no name on file — backfill it.
-    try {
-      await supabaseAdmin
-        .from("contacts")
-        .update({ name: ex.name } as never)
-        .eq("id", contactId as never);
-    } catch {
-      /* best-effort */
+  } else {
+    // Known caller — refresh the lead rating from this call (so hot leads
+    // surface), and backfill the name if we don't have one on file.
+    const patch: Record<string, unknown> = {};
+    if (ex.rating) patch.rating = ex.rating;
+    if (ex.name && !(existingName && existingName.trim())) patch.name = ex.name;
+    if (Object.keys(patch).length > 0) {
+      try {
+        await supabaseAdmin
+          .from("contacts")
+          .update(patch as never)
+          .eq("id", contactId as never);
+      } catch {
+        /* best-effort */
+      }
     }
   }
 
@@ -228,19 +246,26 @@ export async function captureLeadFromInboundCall(args: {
   return { contactId, taskId, created: true };
 }
 
+export type CallOutcome = {
+  interest: "interested" | "not_interested" | "unknown";
+  /** Lead potential from this call (drives contacts.rating). */
+  rating: CallRating;
+};
+
 /**
- * Classify whether the caller showed interest, from the call summary/transcript.
- * Used to decide whether an answered AI follow-up call should keep nurturing the
- * lead or close them out. Degrades to "unknown" (don't close) when OpenAI is
- * unavailable or the read is ambiguous — we only ever close on a clear decline.
+ * Read an AI call and judge both the caller's interest (to decide whether to
+ * keep nurturing or close them out) AND their lead potential (to rate the
+ * lead). Degrades to interest="unknown"/rating=null when OpenAI is unavailable
+ * or ambiguous — we only ever close on a clear decline.
  */
 export async function classifyCallInterest(
   summary: string,
   transcript?: string,
-): Promise<"interested" | "not_interested" | "unknown"> {
-  if (!summary.trim()) return "unknown";
+): Promise<CallOutcome> {
+  const none: CallOutcome = { interest: "unknown", rating: null };
+  if (!summary.trim()) return none;
   const { apiKey, model } = getOpenAIConfig();
-  if (!apiKey) return "unknown";
+  if (!apiKey) return none;
   try {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -248,13 +273,15 @@ export async function classifyCallInterest(
       body: JSON.stringify({
         model,
         temperature: 0,
-        max_tokens: 20,
+        max_tokens: 30,
         response_format: { type: "json_object" },
         messages: [
           {
             role: "system",
             content:
-              'You read a real-estate AI phone call and judge the caller\'s interest. Return ONLY JSON {"interest":"interested"|"not_interested"|"unknown"}. Use "not_interested" ONLY on a clear signal — they declined, said stop / not interested / remove me / do not call, it was a wrong number, or they have no real-estate need. Use "interested" when they want to buy/sell/rent/tour or asked for follow-up. Use "unknown" if unclear.',
+              'You read a real-estate AI phone call and return ONLY JSON {"interest":"interested"|"not_interested"|"unknown","rating":"hot"|"warm"|"cold"}. ' +
+              'interest: "not_interested" ONLY on a clear decline — stop / not interested / remove me / do not call / wrong number / no real-estate need; "interested" when they want to buy/sell/rent/tour or asked for follow-up; "unknown" if unclear. ' +
+              'rating: "hot" = ready / near-term / strong intent or pre-approved; "warm" = interested but exploring; "cold" = low or no intent.',
           },
           {
             role: "user",
@@ -263,13 +290,20 @@ export async function classifyCallInterest(
         ],
       }),
     });
-    if (!res.ok) return "unknown";
+    if (!res.ok) return none;
     const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
-    const parsed = JSON.parse(json.choices?.[0]?.message?.content ?? "{}") as { interest?: unknown };
-    const v = String(parsed.interest ?? "").toLowerCase();
-    return v === "interested" || v === "not_interested" ? v : "unknown";
+    const parsed = JSON.parse(json.choices?.[0]?.message?.content ?? "{}") as {
+      interest?: unknown;
+      rating?: unknown;
+    };
+    const i = String(parsed.interest ?? "").toLowerCase();
+    const r = String(parsed.rating ?? "").toLowerCase();
+    return {
+      interest: i === "interested" || i === "not_interested" ? i : "unknown",
+      rating: (["hot", "warm", "cold"].includes(r) ? r : null) as CallRating,
+    };
   } catch {
-    return "unknown";
+    return none;
   }
 }
 

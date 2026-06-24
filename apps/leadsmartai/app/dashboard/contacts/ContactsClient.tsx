@@ -132,14 +132,19 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
 
 type SortKey = "name" | "email" | "rating" | "last_contacted_at" | "created_at";
 
+/** Heat order for the rating sort — hot leads first (not alphabetical). */
+const RATING_RANK: Record<string, number> = { hot: 0, warm: 1, cold: 2 };
+
 export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow[] }) {
   const { t } = useTranslation("web_contacts_client");
   const [leads, setLeads] = useState(initialLeads);
   const [stats, setStats] = useState<Stats | null>(null);
   const [search, setSearch] = useState("");
   const [ratingFilter, setRatingFilter] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<SortKey>("created_at");
-  const [sortAsc, setSortAsc] = useState(false);
+  // Default: hottest leads first (high-potential pops to the top), newest
+  // within the same heat. Users can re-sort by any column.
+  const [sortBy, setSortBy] = useState<SortKey>("rating");
+  const [sortAsc, setSortAsc] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [csvImportOpen, setCsvImportOpen] = useState(false);
   const [addMenuOpen, setAddMenuOpen] = useState(false);
@@ -278,6 +283,16 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       );
     })
     .sort((a, b) => {
+      // Rating sorts by heat (hot → warm → cold → unrated), not alphabetically,
+      // with newest-first as the tiebreaker so hot leads surface at the top.
+      if (sortBy === "rating") {
+        const ra = RATING_RANK[(a.rating ?? "").toLowerCase()] ?? 3;
+        const rb = RATING_RANK[(b.rating ?? "").toLowerCase()] ?? 3;
+        if (ra !== rb) return (sortAsc ? 1 : -1) * (ra - rb);
+        const ca = a.created_at ?? "";
+        const cb = b.created_at ?? "";
+        return ca < cb ? 1 : ca > cb ? -1 : 0;
+      }
       const dir = sortAsc ? 1 : -1;
       const av = a[sortBy] ?? "";
       const bv = b[sortBy] ?? "";
