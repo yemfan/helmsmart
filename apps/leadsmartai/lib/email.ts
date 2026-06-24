@@ -45,7 +45,7 @@ export async function sendEmail({
   const fromAddress =
     from?.trim() ||
     process.env.RESEND_FROM_EMAIL?.trim() ||
-    "LeadSmart AI <noreply@leadsmart-ai.com>";
+    "LeadSmart AI <contact@leadsmart-ai.com>";
 
   const payload: Record<string, unknown> = {
     from: fromAddress,
