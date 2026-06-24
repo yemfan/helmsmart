@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ShareReportButton } from "./ShareReportButton";
+import { useEffect, useState } from "react";
+import ShareReport from "@/components/share/ShareReport";
 
 type ReportRow = {
   id: string;
@@ -15,6 +15,8 @@ type ReportRow = {
 export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
   const [search, setSearch] = useState("");
   const [sortAsc, setSortAsc] = useState(false);
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
 
   const filtered = reports
     .filter((r) => {
@@ -71,7 +73,11 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-2">
                         <Link href={reportLink} className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">Open</Link>
-                        <ShareReportButton reportLink={reportLink} propertyAddress={r.property_address} />
+                        <ShareReport
+                          shareUrl={origin ? `${origin}${reportLink}` : null}
+                          subject={`Property Report — ${r.property_address ?? "your property"}`}
+                          resourceLabel={`the property report for ${r.property_address ?? "your property"}`}
+                        />
                       </div>
                     </td>
                   </tr>
