@@ -7,7 +7,11 @@ import {
 } from "@/lib/missed-call/service";
 import { resolveCallBacksForPhone } from "@/lib/missed-call/callbacks";
 import { resolveAgentIdByReceptionistNumber } from "@/lib/voice-receptionist/settings";
-import { captureLeadFromInboundCall } from "@/lib/voice-agent/lead-capture";
+import {
+  captureLeadFromInboundCall,
+  classifyCallInterest,
+  markContactNotInterested,
+} from "@/lib/voice-agent/lead-capture";
 import { logAssistantActivity } from "@/lib/realtorboss/activities";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -218,6 +222,53 @@ export async function POST(req: NextRequest) {
           }
         } catch (e) {
           console.error("retell/call-events: lead capture failed", e);
+        }
+      });
+    }
+
+    // On analysis of an answered OUTBOUND AI call (e.g. a follow-up call-back):
+    // if the caller showed no interest, close them out — archive + mark
+    // not-interested — so we stop following up and the leads-only gate won't
+    // re-start a call-back ladder if they're dialed again. (The ladder itself
+    // already stopped when the call connected; this prevents re-engagement.)
+    if (body.event === "call_analyzed" && call.direction === "outbound" && summary && call.to_number) {
+      const callId = call.call_id;
+      const toNumber = call.to_number;
+      const transcript = call.transcript;
+      after(async () => {
+        try {
+          const { data } = await supabaseAdmin
+            .from("call_logs")
+            .select("agent_id, contact_id")
+            .eq("twilio_call_sid", callId)
+            .maybeSingle();
+          const row = data as { agent_id: unknown; contact_id: string | null } | null;
+          if (!row?.agent_id) return;
+          const agentId = String(row.agent_id);
+
+          const interest = await classifyCallInterest(summary, transcript);
+          if (interest !== "not_interested") return; // only close on a clear decline
+
+          let contactId = row.contact_id;
+          if (!contactId) {
+            const c = await findContactByPhone(agentId, toNumber).catch(() => null);
+            contactId = c?.id ?? null;
+          }
+          if (!contactId) return;
+
+          await markContactNotInterested(contactId);
+          await logAssistantActivity({
+            agentId,
+            assistantType: "sales_assistant",
+            activityType: "lead_closed_not_interested",
+            summary: `Closed out — caller wasn't interested${toNumber ? ` (${toNumber})` : ""}`,
+            outcome: summary.length > 180 ? `${summary.slice(0, 177)}…` : summary,
+            requiresAttention: false,
+            relatedEntityType: "contact",
+            relatedEntityId: contactId,
+          });
+        } catch (e) {
+          console.error("retell/call-events: disposition close failed", e);
         }
       });
     }

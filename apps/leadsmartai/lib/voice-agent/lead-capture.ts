@@ -227,3 +227,73 @@ export async function captureLeadFromInboundCall(args: {
 
   return { contactId, taskId, created: true };
 }
+
+/**
+ * Classify whether the caller showed interest, from the call summary/transcript.
+ * Used to decide whether an answered AI follow-up call should keep nurturing the
+ * lead or close them out. Degrades to "unknown" (don't close) when OpenAI is
+ * unavailable or the read is ambiguous — we only ever close on a clear decline.
+ */
+export async function classifyCallInterest(
+  summary: string,
+  transcript?: string,
+): Promise<"interested" | "not_interested" | "unknown"> {
+  if (!summary.trim()) return "unknown";
+  const { apiKey, model } = getOpenAIConfig();
+  if (!apiKey) return "unknown";
+  try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        temperature: 0,
+        max_tokens: 20,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content:
+              'You read a real-estate AI phone call and judge the caller\'s interest. Return ONLY JSON {"interest":"interested"|"not_interested"|"unknown"}. Use "not_interested" ONLY on a clear signal — they declined, said stop / not interested / remove me / do not call, it was a wrong number, or they have no real-estate need. Use "interested" when they want to buy/sell/rent/tour or asked for follow-up. Use "unknown" if unclear.',
+          },
+          {
+            role: "user",
+            content: `Summary:\n${summary}\n\nTranscript (may be partial):\n${(transcript ?? "").slice(0, 2000)}`,
+          },
+        ],
+      }),
+    });
+    if (!res.ok) return "unknown";
+    const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+    const parsed = JSON.parse(json.choices?.[0]?.message?.content ?? "{}") as { interest?: unknown };
+    const v = String(parsed.interest ?? "").toLowerCase();
+    return v === "interested" || v === "not_interested" ? v : "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
+/**
+ * Close a contact out as not-interested: archive them + stamp lead_status, so
+ * they drop out of active follow-up AND the leads-only call-back gate
+ * (scheduleCallBacks) won't re-start a ladder if they're dialed again.
+ */
+export async function markContactNotInterested(contactId: string): Promise<void> {
+  try {
+    await supabaseAdmin
+      .from("contacts")
+      .update({
+        lead_status: "not_interested",
+        lifecycle_stage: "archived",
+        updated_at: new Date().toISOString(),
+      } as never)
+      .eq("id", contactId as never);
+    await supabaseAdmin.from("contact_events").insert({
+      contact_id: contactId,
+      event_type: "closed_not_interested",
+      metadata: { by: "ai_follow_up_call" },
+    } as never);
+  } catch (e) {
+    console.error("[lead-capture] markContactNotInterested:", e);
+  }
+}
