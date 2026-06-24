@@ -1,8 +1,15 @@
 import "server-only";
 
+import { getAnthropicClient } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { createCmaForAgent, isCreateCmaFailure } from "@/lib/cma/service";
-import { createPresentation } from "@/lib/listing-presentations/service";
+import {
+  createCmaForAgent,
+  findRecentCmaSnapshotByAddress,
+  isCreateCmaFailure,
+} from "@/lib/cma/service";
+import { generateAiCma } from "@/lib/cma/aiCma";
+import { generatePresentationAISections } from "@/lib/presentationAI";
+import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 
 /**
  * Boss Assistant ACTION REGISTRY.
@@ -27,7 +34,8 @@ export type BossActionType =
   | "schedule_showing"
   | "cold_call_qualify"
   | "open_house"
-  | "coordinate_closing";
+  | "coordinate_closing"
+  | "post_social";
 
 export type ActionParamDef = {
   key: string;
@@ -123,6 +131,19 @@ async function matchContactForCall(
   return { id: r.id, name: r.name, phone: r.phone_number ?? r.phone ?? null };
 }
 
+async function draftSocialCaption(topic: string): Promise<string> {
+  const client = getAnthropicClient();
+  const res = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 400,
+    system:
+      "You write one social post for a real estate agent — warm, professional, first person, 1-3 short paragraphs, ending with a clear call to action. Plain text. Use only the topic given; never invent prices, dates, or addresses. Output ONLY the post text.",
+    messages: [{ role: "user", content: `Topic: ${topic}\n\nWrite the post now.` }],
+  });
+  const tb = res.content.find((b) => b.type === "text");
+  return tb && tb.type === "text" ? tb.text.trim().slice(0, 1200) : "";
+}
+
 const ADDRESS: ActionParamDef = {
   key: "address",
   label: "property address",
@@ -168,17 +189,97 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
     assignee: "sales_assistant",
     label: "Seller Presentation",
     planHint:
-      "generate_seller_presentation — start a branded listing/seller presentation. Choose for a listing or seller presentation. params: { address }.",
+      "generate_seller_presentation — build a full AI seller/listing presentation (pricing, comps, market, neighborhood, schools, agent profile). Choose for a listing or seller presentation. params: { address }.",
     requiredParams: [
       { ...ADDRESS, question: "What's the property address for the seller presentation?" },
     ],
     run: async ({ agentId, params }) => {
-      await createPresentation({ agentId, propertyAddress: params.address });
+      const userId = await resolveUserId(agentId);
+      if (!userId) return { status: "assigned", note: "Couldn't resolve your account." };
+      const address = params.address;
+
+      // Reuse a recent CMA snapshot for this address if one exists (avoids a
+      // fresh web search); otherwise run the AI CMA engine for pricing + comps.
+      const existing = await findRecentCmaSnapshotByAddress(agentId, address, 30);
+      let snap = existing?.snapshot;
+      if (!snap) {
+        const cma = await generateAiCma({ address });
+        if (!cma.ok) return { status: "assigned", note: cma.error };
+        snap = cma.snapshot;
+      }
+
+      const property = {
+        address: snap.subject.address,
+        city: null as string | null,
+        state: null as string | null,
+        beds: snap.subject.beds || null,
+        baths: snap.subject.baths || null,
+        sqft: snap.subject.sqft || null,
+        propertyType: snap.subject.propertyType,
+        yearBuilt: snap.subject.yearBuilt || null,
+        lotSizeSqft: snap.subject.lotSizeSqft ?? null,
+        hoaMonthly: snap.subject.hoaMonthly ?? null,
+      };
+      const estimate = {
+        estimatedValue: snap.valuation.estimatedValue || null,
+        low: snap.valuation.low || null,
+        high: snap.valuation.high || null,
+        avgPricePerSqft: snap.valuation.avgPricePerSqft || null,
+        summary: snap.summary ?? "",
+      };
+      const comps = snap.comps.map((c) => ({
+        address: c.address,
+        price: c.price,
+        sqft: c.sqft,
+        pricePerSqft: c.pricePerSqft,
+        distanceMiles: c.distanceMiles,
+        soldDate: c.soldDate,
+        beds: c.beds,
+        baths: c.baths,
+        propertyType: c.propertyType,
+      }));
+
+      const [aiSections, agent] = await Promise.all([
+        generatePresentationAISections({
+          address: property.address,
+          estimate,
+          comps: comps.map((c) => ({
+            address: c.address,
+            price: c.price,
+            sqft: c.sqft,
+            soldDate: c.soldDate,
+            distanceMiles: c.distanceMiles,
+          })),
+        }),
+        loadPresentationAgent(agentId),
+      ]);
+
+      const data = {
+        property,
+        estimate,
+        comps,
+        pricing_strategy: aiSections.pricing_strategy,
+        market_insights: aiSections.market_insights,
+        marketing_plan: aiSections.marketing_plan,
+        neighborhood: aiSections.neighborhood,
+        schools: aiSections.schools,
+        agent,
+        sources: aiSections.sources,
+      };
+
+      const { data: inserted, error } = await supabaseAdmin
+        .from("presentations")
+        .insert({ agent_id: userId, property_address: property.address, data })
+        .select("id")
+        .single();
+      if (error || !inserted?.id) {
+        return { status: "assigned", note: error?.message ?? "Failed to save the presentation." };
+      }
       return {
         status: "completed",
         artifactType: "presentation",
-        artifactUrl: "/dashboard/presentations",
-        note: `Seller presentation started for ${params.address}`,
+        artifactUrl: `/presentation/${inserted.id}`,
+        note: `Seller presentation ready for ${address}`,
       };
     },
   },
@@ -336,6 +437,63 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
         artifactType: "closing",
         artifactUrl: null,
         note: `Closing timeline arranged for ${address} — ${scheduled} milestones scheduled to ${close}`,
+      };
+    },
+  },
+
+  post_social: {
+    type: "post_social",
+    assignee: "marketing_assistant",
+    label: "Social post",
+    planHint:
+      "post_social — draft and schedule a social media post. Choose when asked to post / share / promote / announce something on social. params: { topic } (what the post is about, e.g. a new listing or open house).",
+    requiredParams: [
+      { key: "topic", label: "what to post about", question: "What should the social post be about?" },
+    ],
+    run: async ({ agentId, params }) => {
+      const caption = await draftSocialCaption(params.topic);
+      if (!caption) return { status: "assigned", note: "Couldn't draft the post." };
+
+      // Auto-publish via the scheduler when a Meta account is connected;
+      // otherwise hand the finished draft to the agent to post.
+      const { data: acct } = await supabaseAdmin
+        .from("social_accounts")
+        .select("id")
+        .eq("agent_id", agentId)
+        .eq("platform", "meta")
+        .limit(1)
+        .maybeSingle();
+      const account = acct as { id: string } | null;
+
+      if (!account) {
+        await createPlaybookTask(agentId, {
+          title: `Post on social: ${params.topic}`,
+          description: `Drafted by your Marketing Assistant. Connect Facebook/Instagram in Marketing to auto-publish, or post this:\n\n${caption}`,
+          priority: "medium",
+        });
+        return {
+          status: "completed",
+          artifactType: "social_draft",
+          artifactUrl: null,
+          note: "Social post drafted — connect Facebook/Instagram in Marketing to auto-publish",
+        };
+      }
+
+      const scheduledFor = new Date(Date.now() + 2 * 60 * 1000).toISOString();
+      const { error } = await supabaseAdmin.from("scheduled_posts").insert({
+        agent_id: agentId,
+        social_account_id: account.id,
+        platform: "facebook",
+        caption,
+        scheduled_for: scheduledFor,
+        status: "scheduled",
+      });
+      if (error) return { status: "assigned", note: "Couldn't schedule the post." };
+      return {
+        status: "completed",
+        artifactType: "social",
+        artifactUrl: null,
+        note: `Facebook post scheduled — "${params.topic}"`,
       };
     },
   },

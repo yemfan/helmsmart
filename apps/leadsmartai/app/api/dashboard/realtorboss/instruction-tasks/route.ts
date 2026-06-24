@@ -10,8 +10,9 @@ import { executeBossAction } from "@/lib/realtorboss/actions/execute";
 import { BOSS_ACTIONS, isBossActionType, missingParams } from "@/lib/realtorboss/actions/registry";
 
 export const runtime = "nodejs";
-// An "answer" can kick off a real action (e.g. CMA web-search generation).
-export const maxDuration = 120;
+// An "answer" can kick off a real action (AI CMA / seller presentation) that
+// does live web search across tool rounds — give it room.
+export const maxDuration = 300;
 
 /**
  * PATCH /api/dashboard/realtorboss/instruction-tasks
