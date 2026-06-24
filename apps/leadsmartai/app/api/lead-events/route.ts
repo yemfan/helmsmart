@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/authFromRequest";
-import { recordLeadEvent, scoreLead } from "@/lib/leadScoring";
+import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
+import { getLeadScoreView } from "@/lib/contacts/leadScore";
 
 export const runtime = "nodejs";
 
@@ -24,12 +25,9 @@ export async function POST(req: Request) {
       );
     }
 
-    await recordLeadEvent({
-      contact_id: leadId as any,
-      event_type: eventType,
-      metadata: body.metadata ?? {},
-    });
-    const score = await scoreLead(leadId, true);
+    // Logs the event AND refreshes the composite rating, then return the view.
+    await logEngagementEvent(leadId, eventType, { source: "api", payload: body.metadata ?? {} });
+    const score = await getLeadScoreView(leadId);
     return NextResponse.json({ ok: true, score });
   } catch (e: any) {
     return NextResponse.json(

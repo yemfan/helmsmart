@@ -69,7 +69,7 @@
       "schedule": "0 */6 * * *"
     },
     {
-      "path": "/api/cron/lead-score-refresh",
+      "path": "/api/cron/behavior-score",
       "schedule": "0 1 * * *"
     },
     {

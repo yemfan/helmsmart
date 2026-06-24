@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/authFromRequest";
-import { scoreLead } from "@/lib/leadScoring";
+import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
+import { getLeadScoreView } from "@/lib/contacts/leadScore";
 
 export const runtime = "nodejs";
 
@@ -18,10 +19,12 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: "lead_id is required" }, { status: 400 });
     }
 
-    const res = await scoreLead(leadId, force);
+    if (force) await recomputeLeadRating(leadId);
+    const res = await getLeadScoreView(leadId);
     return NextResponse.json({
       ok: true,
       lead_score: res.lead_score,
+      rating: res.rating,
       intent: res.intent,
       intent_level: res.intent_level,
       timeline: res.timeline,

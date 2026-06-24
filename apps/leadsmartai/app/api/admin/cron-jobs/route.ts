@@ -31,7 +31,7 @@ export const CRON_JOBS: CronJob[] = [
   { id: "smart-automation",       label: "Smart Automation",          path: "/api/cron/smart-automation",             schedule: "0 */6 * * *",  description: "Rule-based follow-ups (report_view, engagement, inactivity) – every 6h", category: "ai" },
   // Leads
   { id: "lead-followups",         label: "Lead Follow-ups",           path: "/api/cron/lead-followups",               schedule: "15 * * * *",   description: "Process queued follow-up jobs (email + SMS + push) – hourly",             category: "leads" },
-  { id: "lead-score-refresh",     label: "Lead Score Refresh",        path: "/api/cron/lead-score-refresh",           schedule: "0 1 * * *",    description: "Daily rescore all active leads",                                          category: "leads" },
+  { id: "behavior-score",         label: "Behavior Score",            path: "/api/cron/behavior-score",               schedule: "0 1 * * *",    description: "Daily composite lead rating (behavior + calls/SMS/email/open-house) + intent signals", category: "leads" },
   { id: "lead-pricing-learning",  label: "Lead Pricing Learning",     path: "/api/cron/lead-pricing-learning",        schedule: "0 2 * * 3",    description: "Weekly learning loop to calibrate lead value model (Wednesdays)",         category: "leads" },
   // Emails
   { id: "send-emails",            label: "Send Emails",               path: "/api/cron/send-emails",                  schedule: "45 * * * *",   description: "Send queued outbound emails and SMS – hourly at :45",                    category: "emails" },
