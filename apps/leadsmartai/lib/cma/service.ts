@@ -3,7 +3,6 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 import { denormalize } from "./denormalize";
-import { generateAiCma } from "./aiCma";
 import { isSmartCmaFailure } from "./fetchSmartCma";
 import { normalizeAddress } from "./normalizeAddress";
 import { getCmaQuotaForUser, incrementCmaUsage } from "./quota";
@@ -92,6 +91,10 @@ export async function createCmaForAgent(
     };
   }
 
+  // Lazy-load the AI generation stack (Anthropic SDK + web search) so the
+  // lightweight read paths (listCmasForAgent / getCmaForAgent / getPublicCma)
+  // and the public /cma/[id] page don't pull it into their cold start.
+  const { generateAiCma } = await import("./aiCma");
   const fetched = await generateAiCma({
     address: subjectAddress,
     leadId: input.contactId ?? null,
