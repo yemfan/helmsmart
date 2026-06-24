@@ -110,17 +110,6 @@ export default function PresentationsClient({
     }
   };
 
-  const handleCopyShareLink = async () => {
-    if (!shareUrl) return;
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      alert("Share link copied!");
-    } catch {
-      // Fallback: prompt manual copy.
-      window.prompt("Copy this share link:", shareUrl);
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
@@ -162,27 +151,10 @@ export default function PresentationsClient({
 
       {presentation ? (
         <div className="space-y-4">
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <button
-              onClick={handleCopyShareLink}
-              className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-800 border border-slate-200 hover:bg-slate-50"
-            >
-              Share Link
-            </button>
-            {shareUrl ? (
-              <a
-                href={shareUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
-              >
-                Open Share Page
-              </a>
-            ) : null}
-          </div>
           <PresentationView
             data={presentation.data as unknown as Record<string, unknown>}
             propertyAddress={presentation.data?.property?.address}
+            shareUrl={shareUrl || null}
           />
         </div>
       ) : null}

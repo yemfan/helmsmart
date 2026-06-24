@@ -131,16 +131,6 @@ export default function DeepReportClient() {
     }
   }, [address, use, showLoan, downPct, ratePct, termYears]);
 
-  const onCopyLink = useCallback(async () => {
-    if (!shareUrl) return;
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      alert("Share link copied!");
-    } catch {
-      window.prompt("Copy this link:", shareUrl);
-    }
-  }, [shareUrl]);
-
   return (
     <div className="space-y-6">
       {/* Form */}
@@ -245,28 +235,7 @@ export default function DeepReportClient() {
       ) : null}
 
       {displayReport && !loading ? (
-        <>
-          {shareUrl ? (
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={onCopyLink}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-              >
-                Copy share link
-              </button>
-              <a
-                href={shareUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
-              >
-                Open share page
-              </a>
-            </div>
-          ) : null}
-          <DeepReportView report={displayReport} />
-        </>
+        <DeepReportView report={displayReport} shareUrl={shareUrl || null} />
       ) : null}
     </div>
   );

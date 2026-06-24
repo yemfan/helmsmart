@@ -3,6 +3,7 @@
 import { useCallback, useRef } from "react";
 
 import { downloadComparisonReportPdf } from "@/components/comparison-report/downloadComparisonPdf";
+import ShareReport from "@/components/share/ShareReport";
 import type { DeepReport } from "@/lib/deep-report/types";
 
 /**
@@ -50,7 +51,16 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function DeepReportView({ report: r, showDownload = true }: { report: DeepReport; showDownload?: boolean }) {
+export default function DeepReportView({
+  report: r,
+  showDownload = true,
+  shareUrl = null,
+}: {
+  report: DeepReport;
+  showDownload?: boolean;
+  /** Public share URL (dashboard only) → enables the full Share menu. */
+  shareUrl?: string | null;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const onDownload = useCallback(async () => {
     if (ref.current) await downloadComparisonReportPdf(ref.current, "property-deep-report.pdf");
@@ -71,13 +81,12 @@ export default function DeepReportView({ report: r, showDownload = true }: { rep
     <div className="space-y-4">
       {showDownload ? (
         <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={onDownload}
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-          >
-            ↓ Download PDF
-          </button>
+          <ShareReport
+            shareUrl={shareUrl}
+            onDownloadPdf={onDownload}
+            subject={`Property Deep Report — ${p.address}`}
+            resourceLabel={`the property report for ${p.address}`}
+          />
         </div>
       ) : null}
 
