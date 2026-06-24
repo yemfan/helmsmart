@@ -482,16 +482,20 @@ function TaskItem({
         </div>
       )}
 
-      {/* Completed action — link to the deliverable the team produced. */}
-      {t.status === "completed" && t.artifact_url && (
+      {/* Completed action — a result note + a link to the deliverable when
+          there is one (CMA/presentation); playbooks + queued calls show the
+          note alone. */}
+      {t.status === "completed" && (
         <div className="mt-1.5">
-          <a
-            href={t.artifact_url}
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B1F44] hover:underline"
-          >
-            View {t.artifact_type === "cma" ? "CMA" : t.artifact_type === "presentation" ? "presentation" : "result"} →
-          </a>
-          {t.execution_note && <p className="text-[11px] text-slate-400">{t.execution_note}</p>}
+          {t.execution_note && <p className="text-[11px] text-slate-500">{t.execution_note}</p>}
+          {t.artifact_url && (
+            <a
+              href={t.artifact_url}
+              className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B1F44] hover:underline"
+            >
+              View {t.artifact_type === "cma" ? "CMA" : t.artifact_type === "presentation" ? "presentation" : "result"} →
+            </a>
+          )}
         </div>
       )}
     </li>
