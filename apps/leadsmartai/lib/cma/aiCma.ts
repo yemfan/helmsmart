@@ -14,12 +14,15 @@ import type { CmaSnapshot, CmaCompRow, CmaSource } from "./types";
  * URL each), never to invent comps or prices. Every snapshot carries a
  * disclaimer + the cited sources so the agent can verify before relying on it.
  *
- * Model: claude-opus-4-8 with the server-side web_search tool. The search loop
- * runs on Anthropic's side; we drive the pause_turn continuation loop here.
+ * Model: claude-sonnet-4-6 with the server-side web_search tool. The search
+ * loop runs on Anthropic's side; we drive the pause_turn continuation loop
+ * here. Sonnet (vs Opus) is ~2-3x faster and very capable at this grounded
+ * "search real comps → extract to JSON" task, which is the dominant cost of a
+ * CMA. Search rounds are trimmed for the same reason.
  */
 
-const MODEL = "claude-opus-4-8";
-const MAX_TOOL_ROUNDS = 8;
+const MODEL = "claude-sonnet-4-6";
+const MAX_TOOL_ROUNDS = 6;
 
 export const AI_CMA_DISCLAIMER =
   "AI-generated estimate from public web data (recent comparable sales). This is an opinion of value, not an appraisal — verify the comps and pricing before relying on it.";
@@ -76,7 +79,7 @@ export async function generateAiCma(input: FetchSmartCmaInput): Promise<FetchSma
 
   // web_search_20250305 is the stable server-side tool supported across the
   // 4.x family; cast because the installed SDK's typed tool union may predate it.
-  const tools = [{ type: "web_search_20250305", name: "web_search", max_uses: 8 } as WebTool];
+  const tools = [{ type: "web_search_20250305", name: "web_search", max_uses: 5 } as WebTool];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const messages: any[] = [{ role: "user", content: userPrompt }];
