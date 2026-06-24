@@ -10,6 +10,11 @@ import {
 import { generateAiCma } from "@/lib/cma/aiCma";
 import { generatePresentationAISections } from "@/lib/presentationAI";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
+import { generateHouseSearch } from "@/lib/house-search/aiHouseSearch";
+import {
+  createSavedHouseSearch,
+  updateSavedHouseSearch,
+} from "@/lib/house-search/savedHouseSearches";
 
 /**
  * Boss Assistant ACTION REGISTRY.
@@ -35,7 +40,8 @@ export type BossActionType =
   | "cold_call_qualify"
   | "open_house"
   | "coordinate_closing"
-  | "post_social";
+  | "post_social"
+  | "buyer_home_search";
 
 export type ActionParamDef = {
   key: string;
@@ -522,6 +528,70 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
         artifactType: "social",
         artifactUrl: null,
         note: `Facebook post scheduled — "${params.topic}"`,
+      };
+    },
+  },
+
+  buyer_home_search: {
+    type: "buyer_home_search",
+    assignee: "sales_assistant",
+    label: "Buyer home search",
+    planHint:
+      'buyer_home_search — save a property search for a BUYER contact and (optionally) auto-email them new matches daily or weekly. Choose when a buyer is looking for homes by criteria (beds/baths, area, price). e.g. "Set up a search for John — 3b/2b in Alhambra $600k-$1M, send weekly". params: { contact_name (the buyer), criteria (the full brief incl. beds/baths, area, price range), frequency (daily | weekly — only when they ask to send/email on a schedule) }.',
+    requiredParams: [
+      { key: "contact_name", label: "which buyer", question: "Which buyer is this search for — what's their name?" },
+      {
+        key: "criteria",
+        label: "search criteria",
+        question: "What's the buyer looking for? Include beds/baths, area, and price range.",
+      },
+    ],
+    run: async ({ agentId, params }) => {
+      const m = await matchContactForCall(agentId, params.contact_name);
+      if (!m) {
+        return {
+          status: "assigned",
+          note: `Couldn't find a single contact matching "${params.contact_name}". Add them as a contact (or check the name) and try again.`,
+        };
+      }
+
+      const search = await generateHouseSearch(params.criteria);
+      if (!search.ok) return { status: "assigned", note: search.error };
+
+      // Auto-send only when the Realtor asked to send on a cadence.
+      const freq = (params.frequency ?? "").toLowerCase();
+      const frequency = freq.includes("week") ? "weekly" : freq.includes("dai") || freq.includes("day") ? "daily" : null;
+
+      let saved;
+      try {
+        saved = await createSavedHouseSearch(agentId, {
+          contactId: m.id,
+          name: params.criteria.slice(0, 80),
+          query: params.criteria,
+          refinements: [],
+          result: search.result,
+        });
+      } catch (e) {
+        return { status: "assigned", note: e instanceof Error ? e.message : "Couldn't save the search." };
+      }
+
+      if (frequency) {
+        try {
+          await updateSavedHouseSearch(agentId, saved.id, { autoRun: true, autoRunFrequency: frequency });
+        } catch {
+          /* search is saved; the schedule just didn't stick — surfaced in the note */
+        }
+      }
+
+      const count = search.result.listings.length;
+      const who = m.name ?? "the buyer";
+      return {
+        status: "completed",
+        artifactType: "buyer_search",
+        artifactUrl: "/dashboard/house-search",
+        note: `Saved a home search for ${who} — ${count} match${count === 1 ? "" : "es"} so far${
+          frequency ? `; emailing new ones ${frequency}` : ""
+        }.`,
       };
     },
   },
