@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import Link from "next/link";
+import ShareReport from "@/components/share/ShareReport";
 import {
   detectPlatform,
   platformLabel,
@@ -423,14 +424,18 @@ export default function ComparisonReportBuilderClient({
         {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
 
         {shareUrl ? (
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
-            <p className="font-semibold">Report created</p>
-            <p className="mt-2 break-all">
-              Share link:{" "}
-              <a href={shareUrl} className="text-[#0066b3] underline" target="_blank" rel="noreferrer">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+            <div className="min-w-0">
+              <p className="font-semibold">Report created</p>
+              <a href={shareUrl} className="mt-1 block break-all text-[#0066b3] underline" target="_blank" rel="noreferrer">
                 {shareUrl}
               </a>
-            </p>
+            </div>
+            <ShareReport
+              shareUrl={shareUrl}
+              subject={`Property Comparison Report — ${clientName.trim() || "your options"}`}
+              resourceLabel="your property comparison report"
+            />
           </div>
         ) : null}
 
