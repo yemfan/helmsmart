@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
       const { data: taskRows, error: taskErr } = await supabaseAdmin
         .from("boss_instruction_tasks")
         .select(
-          "id, instruction_id, title, details, assigned_to, status, draft_channel, draft_subject, draft_body, execution_note, created_at",
+          "id, instruction_id, title, details, assigned_to, status, draft_channel, draft_subject, draft_body, execution_note, action_type, follow_up_question, artifact_type, artifact_url, created_at",
         )
         .in("instruction_id", ids)
         .order("created_at", { ascending: true });

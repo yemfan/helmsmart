@@ -58,8 +58,10 @@ type InstructionTask = {
   status:
     | "assigned"
     | "needs_review"
+    | "needs_input"
     | "awaiting_approval"
     | "sent"
+    | "completed"
     | "done"
     | "dismissed"
     | "failed";
@@ -67,6 +69,10 @@ type InstructionTask = {
   draft_subject: string | null;
   draft_body: string | null;
   execution_note: string | null;
+  action_type: string | null;
+  follow_up_question: string | null;
+  artifact_type: string | null;
+  artifact_url: string | null;
   created_at: string;
 };
 
@@ -350,19 +356,24 @@ function TaskItem({
   task: InstructionTask;
   onChanged: () => void | Promise<void>;
 }) {
-  const [busy, setBusy] = useState<"approve" | "dismiss" | null>(null);
+  const [busy, setBusy] = useState<"approve" | "dismiss" | "answer" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [answer, setAnswer] = useState("");
 
-  async function act(action: "approve" | "dismiss") {
+  async function act(action: "approve" | "dismiss" | "answer") {
+    if (action === "answer" && !answer.trim()) return;
     setBusy(action);
     setError(null);
     try {
       const res = await fetch("/api/dashboard/realtorboss/instruction-tasks", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: t.id, action }),
+        body: JSON.stringify(
+          action === "answer" ? { id: t.id, action, answer: answer.trim() } : { id: t.id, action },
+        ),
       }).then((r) => r.json());
       if (!res?.ok) throw new Error(res?.error || "Action failed.");
+      setAnswer("");
       await onChanged();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Action failed.");
@@ -376,7 +387,9 @@ function TaskItem({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-sm text-slate-800">
-            {t.status === "sent" && <span className="mr-1 text-emerald-600">✓</span>}
+            {(t.status === "sent" || t.status === "completed") && (
+              <span className="mr-1 text-emerald-600">✓</span>
+            )}
             {t.status === "dismissed" && <span className="mr-1 text-slate-400">✕</span>}
             {t.title}
           </p>
@@ -384,14 +397,20 @@ function TaskItem({
         </div>
         <span
           className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-            t.assigned_to === "realtor"
-              ? "bg-amber-50 text-amber-800"
-              : t.status === "sent"
-                ? "bg-emerald-50 text-emerald-700"
+            t.status === "sent" || t.status === "completed"
+              ? "bg-emerald-50 text-emerald-700"
+              : t.status === "needs_input" || t.assigned_to === "realtor"
+                ? "bg-amber-50 text-amber-800"
                 : "bg-[#0B1F44]/5 text-[#0B1F44]"
           }`}
         >
-          {t.status === "sent" ? "Sent" : ASSIGNEE_LABELS[t.assigned_to]}
+          {t.status === "sent"
+            ? "Sent"
+            : t.status === "completed"
+              ? "Done"
+              : t.status === "needs_input"
+                ? "Needs info"
+                : ASSIGNEE_LABELS[t.assigned_to]}
         </span>
       </div>
 
@@ -426,6 +445,53 @@ function TaskItem({
             </button>
             {error && <span className="text-[11px] text-red-600">{error}</span>}
           </div>
+        </div>
+      )}
+
+      {/* Follow-up question — the Boss needs a missing detail (e.g. the
+          property address) before it can run the action. */}
+      {t.status === "needs_input" && (
+        <div className="mt-1.5 rounded-lg border border-amber-200 bg-amber-50/60 p-2.5">
+          <p className="text-xs text-amber-900">
+            {t.follow_up_question ?? "Your Boss Assistant needs one more detail to start this."}
+          </p>
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              type="text"
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void act("answer");
+                }
+              }}
+              placeholder="Type your answer…"
+              className="min-w-0 flex-1 rounded-lg border border-amber-200 px-2.5 py-1 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#0B1F44] focus:outline-none"
+            />
+            <button
+              type="button"
+              disabled={busy !== null || !answer.trim()}
+              onClick={() => act("answer")}
+              className="shrink-0 rounded-lg bg-[#0B1F44] px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-[#142c5c] disabled:opacity-50"
+            >
+              {busy === "answer" ? "Working…" : "Send to Boss"}
+            </button>
+          </div>
+          {error && <span className="mt-1 block text-[11px] text-red-600">{error}</span>}
+        </div>
+      )}
+
+      {/* Completed action — link to the deliverable the team produced. */}
+      {t.status === "completed" && t.artifact_url && (
+        <div className="mt-1.5">
+          <a
+            href={t.artifact_url}
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B1F44] hover:underline"
+          >
+            View {t.artifact_type === "cma" ? "CMA" : t.artifact_type === "presentation" ? "presentation" : "result"} →
+          </a>
+          {t.execution_note && <p className="text-[11px] text-slate-400">{t.execution_note}</p>}
         </div>
       )}
     </li>
