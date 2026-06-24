@@ -232,6 +232,26 @@ export async function getCmaForAgent(
   return rowToFull(data as RawCmaRow);
 }
 
+/**
+ * Public read by id (no agent scope) for the shareable /cma/[id] page.
+ * Share-by-link, same posture as the Deep Report public page.
+ */
+export async function getPublicCma(cmaId: string): Promise<CmaFullRow | null> {
+  const { data, error } = await supabaseAdmin
+    .from("cma_reports")
+    .select(
+      "id, agent_id, contact_id, subject_address, subject_json, comps_json, valuation_json, strategies_json, snapshot_json, estimated_value, low_estimate, high_estimate, confidence_score, comp_count, title, notes, created_at, updated_at",
+    )
+    .eq("id", cmaId)
+    .maybeSingle();
+  if (error) {
+    console.warn("[cma.getPublicCma] failed:", error.message);
+    return null;
+  }
+  if (!data) return null;
+  return rowToFull(data as RawCmaRow);
+}
+
 export async function deleteCmaForAgent(
   agentId: string,
   cmaId: string,
