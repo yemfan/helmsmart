@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import CmaEmailToSellerButton from "@/components/dashboard/CmaEmailToSellerButton";
+import ShareReport from "@/components/share/ShareReport";
 import {
   buildListingStrategyBands,
   formatBandTag,
@@ -69,6 +70,11 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
   const [cma, setCma] = useState<CmaFullRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    setShareUrl(`${window.location.origin}/cma/${encodeURIComponent(cmaId)}`);
+  }, [cmaId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -158,12 +164,12 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
           >
             📄 Generate Report
           </a>
-          <a
-            href={`/api/dashboard/cma/${encodeURIComponent(cma.id)}/pdf`}
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
-          >
-            ↓ Download PDF
-          </a>
+          <ShareReport
+            shareUrl={shareUrl}
+            downloadHref={`/api/dashboard/cma/${encodeURIComponent(cma.id)}/pdf`}
+            subject={`Comparative Market Analysis — ${cma.subjectAddress}`}
+            resourceLabel={`the CMA for ${cma.subjectAddress}`}
+          />
           <CmaEmailToSellerButton cmaId={cma.id} defaultRecipient={null} />
         </div>
       </div>
