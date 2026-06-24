@@ -6,6 +6,19 @@ import type { HouseListing, HouseSearchResult } from "@/lib/house-search/types";
 
 type ReachableContact = { id: string; name: string; phone: string; email: string };
 
+type SavedSearchListItem = {
+  id: string;
+  contactId: string;
+  name: string;
+  query: string;
+  runCount?: number;
+  latestRun?: { id: string; listingCount: number; createdAt: string } | null;
+  updatedAt: string;
+};
+
+/** The saved search the current results are attached to (runs append to it). */
+type TrackedSearch = { id: string; name: string; contactId: string; runCount: number };
+
 type HouseSearchQuota = {
   used: number;
   limit: number | null;
@@ -49,6 +62,11 @@ export default function HouseSearchClient() {
   // Per-listing selection for the email-to-buyer step (default: all).
   const [selected, setSelected] = useState<Set<number>>(new Set());
 
+  // Reachable contacts (for save/load by contact).
+  const [contacts, setContacts] = useState<ReachableContact[]>([]);
+  // The saved search the current result is attached to — runs append to it.
+  const [tracked, setTracked] = useState<TrackedSearch | null>(null);
+
   // Daily-quota hint on load.
   useEffect(() => {
     let cancelled = false;
@@ -59,6 +77,23 @@ export default function HouseSearchClient() {
         if (!cancelled && data.ok && data.quota) setQuota(data.quota);
       } catch {
         /* non-fatal — the pill just won't render */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Load reachable contacts once (for save/load by contact).
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch("/api/dashboard/contacts/reachable", { cache: "no-store" });
+        const data = (await res.json().catch(() => ({}))) as { contacts?: ReachableContact[] };
+        if (!cancelled) setContacts(data.contacts ?? []);
+      } catch {
+        /* save/load just won't have a picker */
       }
     })();
     return () => {
@@ -91,13 +126,26 @@ export default function HouseSearchClient() {
         setResult(data.result);
         // Select all returned listings by default.
         setSelected(new Set(data.result.listings.map((_, i) => i)));
+        // If this search is attached to a saved one, append the run (history).
+        if (tracked) {
+          try {
+            const r = await fetch(`/api/dashboard/house-search/saved/${encodeURIComponent(tracked.id)}`, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ refinements, result: data.result, trigger: "refine" }),
+            });
+            if (r.ok) setTracked((t) => (t ? { ...t, runCount: t.runCount + 1 } : t));
+          } catch {
+            /* non-fatal — the result still shows; it just wasn't appended */
+          }
+        }
       } catch (e) {
         setError(e instanceof Error ? e.message : "Search failed");
       } finally {
         setLoading(false);
       }
     },
-    [query],
+    [query, tracked],
   );
 
   const onSearch = useCallback(() => {
@@ -111,6 +159,36 @@ export default function HouseSearchClient() {
       .map((r) => r.label);
     void runSearch(labels);
   }, [result, checkedRefinements, runSearch]);
+
+  // Open a saved search: load its latest run into the view and attach to it so
+  // subsequent searches/refinements append to its history.
+  const loadSavedSearch = useCallback(async (id: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/dashboard/house-search/saved/${encodeURIComponent(id)}`, { cache: "no-store" });
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        search?: { id: string; name: string; contactId: string; query: string };
+        runs?: Array<{ result: HouseSearchResult }>;
+        error?: string;
+      };
+      if (!res.ok || data.ok === false || !data.search) throw new Error(data.error ?? `HTTP ${res.status}`);
+      const runs = data.runs ?? [];
+      const latest = runs[0]?.result ?? null;
+      setQuery(data.search.query);
+      setCheckedRefinements(new Set());
+      if (latest) {
+        setResult(latest);
+        setSelected(new Set(latest.listings.map((_, i) => i)));
+      }
+      setTracked({ id: data.search.id, name: data.search.name, contactId: data.search.contactId, runCount: runs.length });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load saved search");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -151,6 +229,9 @@ export default function HouseSearchClient() {
         ) : null}
       </section>
 
+      {/* Saved searches for a contact */}
+      <SavedSearchesPanel contacts={contacts} onLoad={loadSavedSearch} activeId={tracked?.id ?? null} />
+
       {loading ? (
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-600">
           Searching the web for matching listings… this can take up to a minute.
@@ -159,6 +240,33 @@ export default function HouseSearchClient() {
 
       {result && !loading ? (
         <>
+          {/* Save to a contact, or the tracked-search banner */}
+          {tracked ? (
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+              <span>
+                Saved as <strong>{tracked.name}</strong> · {tracked.runCount} run{tracked.runCount === 1 ? "" : "s"}.
+                New searches &amp; refinements are added to its history.
+              </span>
+              <button
+                type="button"
+                onClick={() => setTracked(null)}
+                className="shrink-0 text-xs font-semibold text-emerald-800 underline hover:text-emerald-950"
+              >
+                Detach
+              </button>
+            </div>
+          ) : (
+            <SaveToContactPanel
+              contacts={contacts}
+              query={query}
+              result={result}
+              refinements={(result.refinements ?? [])
+                .filter((r) => checkedRefinements.has(r.id))
+                .map((r) => r.label)}
+              onSaved={(t) => setTracked(t)}
+            />
+          )}
+
           {/* Interpretation + refinements */}
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-sm font-semibold text-slate-900">How I read this</h2>
@@ -305,6 +413,228 @@ function QuotaPill({ quota }: { quota: HouseSearchQuota }) {
     >
       {quota.unlimited ? "Unlimited searches" : `${quota.remaining} of ${quota.limit} left today`}
     </span>
+  );
+}
+
+// ── Saved searches by contact ──────────────────────────────────────
+
+function SavedSearchesPanel({
+  contacts,
+  onLoad,
+  activeId,
+}: {
+  contacts: ReachableContact[];
+  onLoad: (id: string) => void;
+  activeId: string | null;
+}) {
+  const [open, setOpen] = useState(false);
+  const [contactId, setContactId] = useState("");
+  const [items, setItems] = useState<SavedSearchListItem[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const load = useCallback(async (cid: string) => {
+    setContactId(cid);
+    setItems(null);
+    if (!cid) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/dashboard/house-search/saved?contactId=${encodeURIComponent(cid)}`, {
+        cache: "no-store",
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; searches?: SavedSearchListItem[] };
+      setItems(data.ok && Array.isArray(data.searches) ? data.searches : []);
+    } catch {
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+      >
+        + Saved searches by contact
+      </button>
+    );
+  }
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-slate-900">Saved searches</h2>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+        >
+          Close
+        </button>
+      </div>
+      <label className="mt-2 block">
+        <span className="text-xs font-semibold text-slate-700">Contact</span>
+        <select
+          value={contactId}
+          onChange={(e) => void load(e.target.value)}
+          className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+        >
+          <option value="">— Select a contact —</option>
+          {contacts.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      {loading ? <p className="mt-3 text-xs text-slate-500">Loading…</p> : null}
+      {items && items.length === 0 ? (
+        <p className="mt-3 text-xs text-slate-500">No saved searches for this contact yet.</p>
+      ) : null}
+      {items && items.length > 0 ? (
+        <ul className="mt-3 divide-y divide-slate-100">
+          {items.map((s) => (
+            <li key={s.id} className="flex items-center justify-between gap-3 py-2">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-slate-900">
+                  {s.name}
+                  {activeId === s.id ? " · open" : ""}
+                </p>
+                <p className="truncate text-xs text-slate-500">
+                  {s.runCount ?? 0} run{(s.runCount ?? 0) === 1 ? "" : "s"}
+                  {s.latestRun ? ` · ${s.latestRun.listingCount} listings` : ""}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onLoad(s.id)}
+                className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Open
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}
+
+// ── Save the current search to a contact ───────────────────────────
+
+function SaveToContactPanel({
+  contacts,
+  query,
+  result,
+  refinements,
+  onSaved,
+}: {
+  contacts: ReachableContact[];
+  query: string;
+  result: HouseSearchResult;
+  refinements: string[];
+  onSaved: (t: TrackedSearch) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [contactId, setContactId] = useState("");
+  const [name, setName] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const save = useCallback(async () => {
+    if (!contactId || !name.trim()) {
+      setErr("Pick a contact and a name.");
+      return;
+    }
+    setSaving(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/dashboard/house-search/saved", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ contactId, name: name.trim(), query, refinements, result }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        search?: { id: string; name: string; contactId: string };
+        error?: string;
+      };
+      if (!res.ok || data.ok === false || !data.search) throw new Error(data.error ?? `HTTP ${res.status}`);
+      onSaved({ id: data.search.id, name: data.search.name, contactId: data.search.contactId, runCount: 1 });
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  }, [contactId, name, query, refinements, result, onSaved]);
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          setOpen(true);
+          setName(query.slice(0, 80));
+        }}
+        className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50"
+      >
+        ☆ Save this search to a contact
+      </button>
+    );
+  }
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-slate-900">Save search to a contact</h2>
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+        >
+          Cancel
+        </button>
+      </div>
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="block">
+          <span className="text-xs font-semibold text-slate-700">Contact</span>
+          <select
+            value={contactId}
+            onChange={(e) => setContactId(e.target.value)}
+            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+          >
+            <option value="">— Select a contact —</option>
+            {contacts.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block">
+          <span className="text-xs font-semibold text-slate-700">Name</span>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Pasadena 3bd under $1.2M"
+            className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+          />
+        </label>
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <span className="min-h-[20px] text-xs text-rose-600">{err ?? ""}</span>
+        <button
+          type="button"
+          onClick={() => void save()}
+          disabled={saving || !contactId || !name.trim()}
+          className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {saving ? "Saving…" : "Save search"}
+        </button>
+      </div>
+    </section>
   );
 }
 
