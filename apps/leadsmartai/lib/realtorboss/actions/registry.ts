@@ -44,7 +44,14 @@ export type ActionParamDef = {
   question: string;
 };
 
-type RunCtx = { agentId: string; params: Record<string, string> };
+type RunCtx = {
+  agentId: string;
+  params: Record<string, string>;
+  /** Communication-approval policy (agent_message_settings.review_policy ===
+   *  "autosend"). When false, real outbound actions (calls, posts) prepare the
+   *  work and hand it to the Realtor instead of auto-dialing / auto-publishing. */
+  autoExecute: boolean;
+};
 
 export type RunResult =
   | { status: "completed"; artifactType: string; artifactUrl: string | null; note: string }
@@ -320,13 +327,28 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
     requiredParams: [
       { key: "contact_name", label: "who to call", question: "Who should the AI call — what's the lead's name?" },
     ],
-    run: async ({ agentId, params }) => {
+    run: async ({ agentId, params, autoExecute }) => {
       const m = await matchContactForCall(agentId, params.contact_name);
       if (!m) {
         return { status: "assigned", note: `Couldn't find a single contact matching "${params.contact_name}".` };
       }
       if (!m.phone) {
         return { status: "assigned", note: `${m.name ?? "That contact"} has no phone number on file.` };
+      }
+      // Communication approval is on → don't auto-dial; hand it to the Realtor.
+      if (!autoExecute) {
+        await createPlaybookTask(agentId, {
+          title: `Call & qualify ${m.name ?? params.contact_name}`,
+          description:
+            "Communication approval is on, so the AI didn't auto-dial. Call to qualify on budget, timeline, and motivation — or switch the messaging review policy to auto-send to let the AI place these calls.",
+          priority: "high",
+        });
+        return {
+          status: "completed",
+          artifactType: "call_pending",
+          artifactUrl: null,
+          note: `Queued for you to call ${m.name ?? "the contact"} (approval required)`,
+        };
       }
       // Queue via the same scheduler the Sales composer uses; the */15 drain
       // cron places the call. Cancellable from the scheduled-actions strip.
@@ -450,12 +472,12 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
     requiredParams: [
       { key: "topic", label: "what to post about", question: "What should the social post be about?" },
     ],
-    run: async ({ agentId, params }) => {
+    run: async ({ agentId, params, autoExecute }) => {
       const caption = await draftSocialCaption(params.topic);
       if (!caption) return { status: "assigned", note: "Couldn't draft the post." };
 
-      // Auto-publish via the scheduler when a Meta account is connected;
-      // otherwise hand the finished draft to the agent to post.
+      // Auto-publish only when communication approval is OFF (auto-send) AND a
+      // Meta account is connected; otherwise hand the finished draft over.
       const { data: acct } = await supabaseAdmin
         .from("social_accounts")
         .select("id")
@@ -465,17 +487,23 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
         .maybeSingle();
       const account = acct as { id: string } | null;
 
-      if (!account) {
+      if (!autoExecute || !account) {
         await createPlaybookTask(agentId, {
           title: `Post on social: ${params.topic}`,
-          description: `Drafted by your Marketing Assistant. Connect Facebook/Instagram in Marketing to auto-publish, or post this:\n\n${caption}`,
+          description: `${
+            !autoExecute
+              ? "Communication approval is on — review and publish this:"
+              : "Connect Facebook/Instagram in Marketing to auto-publish, or post this:"
+          }\n\n${caption}`,
           priority: "medium",
         });
         return {
           status: "completed",
           artifactType: "social_draft",
           artifactUrl: null,
-          note: "Social post drafted — connect Facebook/Instagram in Marketing to auto-publish",
+          note: !autoExecute
+            ? "Social post drafted for your review"
+            : "Social post drafted — connect Facebook/Instagram to auto-publish",
         };
       }
 

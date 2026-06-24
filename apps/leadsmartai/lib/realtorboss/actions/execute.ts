@@ -1,6 +1,7 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getAgentMessageSettings } from "@/lib/agent-messaging/settings";
 import {
   BOSS_ACTIONS,
   followUpQuestion,
@@ -45,7 +46,12 @@ export async function executeBossAction(args: {
   }
 
   try {
-    const result = await BOSS_ACTIONS[type].run({ agentId, params });
+    // Reuse the existing communication-approval flag: only auto-execute real
+    // outbound actions (calls, posts) when the agent's messaging review policy
+    // is "autosend". Read-only/reversible actions ignore this.
+    const msgSettings = await getAgentMessageSettings(agentId);
+    const autoExecute = msgSettings.reviewPolicy === "autosend";
+    const result = await BOSS_ACTIONS[type].run({ agentId, params, autoExecute });
     if (result.status === "completed") {
       await supabaseAdmin
         .from("boss_instruction_tasks")
