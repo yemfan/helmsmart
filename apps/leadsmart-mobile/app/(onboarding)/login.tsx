@@ -165,7 +165,7 @@ export default function OnboardingLoginScreen() {
           <Text style={s.title}>Welcome back</Text>
           {!showTokenFallback ? (
             <Text style={s.body}>
-              Sign in with the same email and password you use on LeadSmart AI web.
+              Sign in with the same email and password you use on RealtorBoss web.
             </Text>
           ) : (
             <Text style={s.body}>

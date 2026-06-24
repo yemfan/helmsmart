@@ -100,14 +100,14 @@ function requireConfig(): MobileApiFailure | MobileConfig {
   const base = getLeadsmartApiBaseUrl();
   const token = getLeadsmartAccessToken();
   if (!base) {
-    return { ok: false, status: 0, message: "Set EXPO_PUBLIC_LEADSMART_API_URL (LeadSmart AI API base URL)." };
+    return { ok: false, status: 0, message: "Set EXPO_PUBLIC_LEADSMART_API_URL (RealtorBoss API base URL)." };
   }
   if (!token) {
     return {
       ok: false,
       status: 0,
       message:
-        "API URL is set, but you are not signed in. Use onboarding / Login with your LeadSmart email and password (Supabase issues the JWT). Optional dev-only: EXPO_PUBLIC_LEADSMART_ACCESS_TOKEN. Setting EXPO_PUBLIC_LEADSMART_API_URL alone does not authenticate.",
+        "API URL is set, but you are not signed in. Use onboarding / Login with your RealtorBoss email and password (Supabase issues the JWT). Optional dev-only: EXPO_PUBLIC_LEADSMART_ACCESS_TOKEN. Setting EXPO_PUBLIC_LEADSMART_API_URL alone does not authenticate.",
     };
   }
   return { base, token };

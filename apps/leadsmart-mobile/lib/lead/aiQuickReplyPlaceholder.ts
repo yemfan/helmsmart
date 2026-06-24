@@ -15,7 +15,7 @@ export function presentAiQuickReplyPlaceholder(leadId: string, channel: AiQuickR
         : "SMS and email";
   Alert.alert(
     "AI quick reply",
-    `Assistant for ${scope} is not available yet. This action will open suggested replies powered by LeadSmart AI.\n\nLead: ${leadId}`,
+    `Assistant for ${scope} is not available yet. This action will open suggested replies powered by RealtorBoss.\n\nLead: ${leadId}`,
     [{ text: "OK" }],
   );
 }
