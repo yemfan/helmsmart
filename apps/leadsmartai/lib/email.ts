@@ -49,7 +49,7 @@ export async function sendEmail({
   const fromAddress =
     from?.trim() ||
     process.env.RESEND_FROM_EMAIL?.trim() ||
-    "LeadSmart AI <contact@helmsmart.ai>";
+    "RealtorBoss <contact@helmsmart.ai>";
 
   const payload: Record<string, unknown> = {
     from: fromAddress,

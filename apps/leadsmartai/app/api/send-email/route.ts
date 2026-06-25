@@ -48,10 +48,10 @@ ${reportLink}
 
 If you have any questions about this estimate or next steps, just reply to this email.
 
-— LeadSmart AI`;
+— RealtorBoss`;
 
     const { error } = await resend.emails.send({
-      from: "LeadSmart AI <noreply@helmsmart.ai>",
+      from: "RealtorBoss <noreply@helmsmart.ai>",
       to,
       subject,
       text,
