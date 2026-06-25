@@ -42,10 +42,13 @@ export async function sendEmail({
   }
 
   const recipients = Array.isArray(to) ? to : [to];
+  // Default sender must be on a Resend-VERIFIED domain. The verified domain is
+  // the `inbox.leadsmart-ai.com` subdomain (not the bare root), so send from
+  // there. Override per-env with RESEND_FROM_EMAIL when needed.
   const fromAddress =
     from?.trim() ||
     process.env.RESEND_FROM_EMAIL?.trim() ||
-    "LeadSmart AI <contact@leadsmart-ai.com>";
+    "LeadSmart AI <contact@inbox.leadsmart-ai.com>";
 
   const payload: Record<string, unknown> = {
     from: fromAddress,
