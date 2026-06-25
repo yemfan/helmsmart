@@ -52,7 +52,7 @@ If you have any questions about this estimate or next steps, just reply to this 
 — ${EMAIL_BRAND}`;
 
     const { error } = await resend.emails.send({
-      from: `${EMAIL_BRAND} <noreply@helmsmart.ai>`,
+      from: `${EMAIL_BRAND} <noreply@realtybossai.com>`,
       to,
       subject,
       text,
