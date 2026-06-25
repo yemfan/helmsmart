@@ -42,13 +42,14 @@ export async function sendEmail({
   }
 
   const recipients = Array.isArray(to) ? to : [to];
-  // Default sender must be on a Resend-VERIFIED domain. The verified domain is
-  // the `inbox.leadsmart-ai.com` subdomain (not the bare root), so send from
-  // there. Override per-env with RESEND_FROM_EMAIL when needed.
+  // Default sender must be on a Resend-VERIFIED domain. We've migrated to
+  // helmsmart.ai (leadsmart-ai.com expired). Sends only deliver once helmsmart.ai
+  // is verified at resend.com/domains. Override per-env with RESEND_FROM_EMAIL
+  // (e.g. a verified subdomain like inbox.helmsmart.ai).
   const fromAddress =
     from?.trim() ||
     process.env.RESEND_FROM_EMAIL?.trim() ||
-    "LeadSmart AI <contact@inbox.leadsmart-ai.com>";
+    "LeadSmart AI <contact@helmsmart.ai>";
 
   const payload: Record<string, unknown> = {
     from: fromAddress,
@@ -57,12 +58,11 @@ export async function sendEmail({
     text,
   };
   if (html) payload.html = html;
-  // We send FROM the verified `inbox.leadsmart-ai.com` subdomain, but replies
-  // should land in the real mailbox — default reply-to to contact@leadsmart-ai.com
-  // (env-overridable). Callers that pass their own replyTo (e.g. the agent's
-  // address) still win.
+  // Replies should land in the active mailbox — default reply-to to
+  // contact@helmsmart.ai (env-overridable). Callers that pass their own replyTo
+  // (e.g. the agent's address) still win.
   const replyToAddress =
-    replyTo?.trim() || process.env.RESEND_REPLY_TO?.trim() || "contact@leadsmart-ai.com";
+    replyTo?.trim() || process.env.RESEND_REPLY_TO?.trim() || "contact@helmsmart.ai";
   if (replyToAddress) payload.reply_to = replyToAddress;
   if (attachments && attachments.length > 0) {
     payload.attachments = attachments.map((a) => ({
@@ -110,7 +110,7 @@ function friendlyResendError(status: number, body: string): string {
   const haystack = `${message} ${body}`;
 
   if (/verify a domain|only send testing emails|own email address|not verified|domain.*verif/i.test(haystack)) {
-    return "Email isn't set up to send to this recipient yet — the sending domain isn't verified in Resend. Verify leadsmart-ai.com at resend.com/domains, then try again.";
+    return "Email isn't set up to send to this recipient yet — the sending domain isn't verified in Resend. Verify helmsmart.ai at resend.com/domains, then try again.";
   }
   if (status === 401 || status === 403) {
     return message || "Email couldn't be sent — Resend rejected the request (check the API key and verified sending domain).";
