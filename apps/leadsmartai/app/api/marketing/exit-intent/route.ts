@@ -40,7 +40,7 @@ export async function POST(req: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "LeadSmart AI <noreply@leadsmart-ai.com>",
+            from: "LeadSmart AI <noreply@inbox.leadsmart-ai.com>",
             to: [notifyTo],
             subject: "Exit popup: 3 free buyer leads request",
             text: `Someone requested the exit-popup offer (3 free buyer leads).
