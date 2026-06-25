@@ -51,7 +51,7 @@ If you have any questions about this estimate or next steps, just reply to this 
 — LeadSmart AI`;
 
     const { error } = await resend.emails.send({
-      from: "LeadSmart AI <noreply@inbox.leadsmart-ai.com>",
+      from: "LeadSmart AI <noreply@helmsmart.ai>",
       to,
       subject,
       text,
