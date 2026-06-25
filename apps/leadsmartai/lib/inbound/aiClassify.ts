@@ -29,16 +29,24 @@ import type { InboundIntent } from "./intent";
  * between catching ~80% of inbound vs ~95%.
  */
 
-const SYSTEM_PROMPT = `You classify inbound real-estate emails into one of four intents:
+const SYSTEM_PROMPT = `You classify inbound real-estate emails into one intent:
 
 - "offer_received"     — buyer or buyer's agent is presenting an offer, counter-offer, or purchase agreement to the listing agent.
 - "listing_signed"     — seller has signed a listing agreement (RLA), or the listing brokerage is confirming a new listing.
-- "showing_requested"  — a buyer or buyer's agent wants to schedule a property tour / showing / open-house viewing.
-- "unknown"            — none of the above clearly apply, or the email is something else entirely (drip-marketing, MLS market reports, social pings, etc.)
+- "showing_requested"  — a buyer or buyer's agent wants to schedule a property tour / showing / viewing.
+- "inspection"         — anything about the home/property inspection: scheduling, the inspection report, repair requests, or the inspection contingency.
+- "appraisal"          — anything about the appraisal: ordering/scheduling it, the appraisal report or value, or the appraisal contingency/gap.
+- "financing"          — buyer's loan/mortgage: pre-approval, loan approval/commitment, underwriting, "clear to close", or the financing/loan contingency.
+- "title_escrow"       — title or escrow company comms: escrow opened/instructions, preliminary title, the Closing Disclosure / settlement statement, or wire instructions.
+- "closing"            — the close itself: close-of-escrow date, signing/notary appointment, final walkthrough, possession/keys, or recording.
+- "transaction_doc"    — an executed/signed transaction document for the file that isn't one of the above: an addendum, amendment, or seller disclosure package.
+- "unknown"            — none clearly apply, or it's something else (drip-marketing, MLS market reports, social pings, etc.)
 
-Be conservative: when the email could be multiple intents OR doesn't clearly match one, return "unknown". A wrong-intent classification mis-routes the email into the wrong upload flow with a wrong-shape extractor — worse UX than "unknown" + a manual review.
+These map to a transaction's lifecycle (offer → inspection → appraisal → financing → title/escrow → closing). Pick the single stage the email is most about.
 
-Respond with ONLY the intent string. No prose, no JSON, no quotes. Just one of the four words.`;
+Be conservative: when it could be multiple OR doesn't clearly match one, return "unknown". A wrong intent mis-files the email — worse than "unknown" + a manual review.
+
+Respond with ONLY the intent string — one of the words above. No prose, no JSON, no quotes.`;
 
 const PROMPT_BODY_LIMIT = 1500;
 const PROMPT_FILENAMES_LIMIT = 200;
@@ -114,13 +122,17 @@ function coerceIntent(raw: string): InboundIntent | null {
     .toLowerCase()
     .replace(/[^a-z_]/g, "")
     .trim();
-  if (
-    cleaned === "offer_received" ||
-    cleaned === "listing_signed" ||
-    cleaned === "showing_requested" ||
-    cleaned === "unknown"
-  ) {
-    return cleaned as InboundIntent;
-  }
-  return null;
+  const KNOWN: InboundIntent[] = [
+    "offer_received",
+    "listing_signed",
+    "showing_requested",
+    "inspection",
+    "appraisal",
+    "financing",
+    "title_escrow",
+    "closing",
+    "transaction_doc",
+    "unknown",
+  ];
+  return (KNOWN as string[]).includes(cleaned) ? (cleaned as InboundIntent) : null;
 }
