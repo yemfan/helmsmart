@@ -57,7 +57,13 @@ export async function sendEmail({
     text,
   };
   if (html) payload.html = html;
-  if (replyTo) payload.reply_to = replyTo;
+  // We send FROM the verified `inbox.leadsmart-ai.com` subdomain, but replies
+  // should land in the real mailbox — default reply-to to contact@leadsmart-ai.com
+  // (env-overridable). Callers that pass their own replyTo (e.g. the agent's
+  // address) still win.
+  const replyToAddress =
+    replyTo?.trim() || process.env.RESEND_REPLY_TO?.trim() || "contact@leadsmart-ai.com";
+  if (replyToAddress) payload.reply_to = replyToAddress;
   if (attachments && attachments.length > 0) {
     payload.attachments = attachments.map((a) => ({
       filename: a.filename,
