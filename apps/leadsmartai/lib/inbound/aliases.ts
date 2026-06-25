@@ -24,9 +24,11 @@ export type AgentInboundAlias = {
   inbound_count: number;
 };
 
-/** Domain the inbound webhook listens on. Set in env once SendGrid is wired. */
+/** Domain the inbound webhook listens on (SendGrid Inbound Parse). Override
+ *  with INBOUND_EMAIL_DOMAIN; default is the live realtybossai.com subdomain
+ *  (leadsmart-ai.com expired). */
 export function getInboundDomain(): string {
-  return process.env.INBOUND_EMAIL_DOMAIN?.trim() || "inbox.leadsmart-ai.com";
+  return process.env.INBOUND_EMAIL_DOMAIN?.trim() || "inbox.realtybossai.com";
 }
 
 /** Compose the full forwarding address from an alias row. */
