@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { EMAIL_BRAND } from "@/lib/email";
 import { supabaseServer } from "@/lib/supabaseServer";
 
 export const runtime = "nodejs";
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "RealtorBoss <noreply@helmsmart.ai>",
+            from: `${EMAIL_BRAND} <noreply@helmsmart.ai>`,
             to: [notifyTo],
             subject: "Exit popup: 3 free buyer leads request",
             text: `Someone requested the exit-popup offer (3 free buyer leads).
