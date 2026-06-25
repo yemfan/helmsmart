@@ -43,7 +43,7 @@ export async function POST(req: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: `${EMAIL_BRAND} <noreply@realtybossai.com>`,
+            from: `${EMAIL_BRAND} <noreply@helmsmart.ai>`,
             to: [agentEmail],
             subject: "New Home Value Lead",
             text: `New home value lead:
