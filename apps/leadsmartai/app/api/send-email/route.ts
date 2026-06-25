@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { EMAIL_BRAND } from "@/lib/email";
 
 type SendEmailBody = {
   to: string;
@@ -48,10 +49,10 @@ ${reportLink}
 
 If you have any questions about this estimate or next steps, just reply to this email.
 
-— RealtorBoss`;
+— ${EMAIL_BRAND}`;
 
     const { error } = await resend.emails.send({
-      from: "RealtorBoss <noreply@helmsmart.ai>",
+      from: `${EMAIL_BRAND} <noreply@helmsmart.ai>`,
       to,
       subject,
       text,

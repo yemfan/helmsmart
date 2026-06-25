@@ -9,6 +9,13 @@ export type EmailAttachment = {
   content: Uint8Array;
 };
 
+/**
+ * Sender brand name shown in the "From" line + email sign-offs. Single source
+ * of truth so a rebrand is one change (or an env flip) — set EMAIL_FROM_NAME to
+ * override without touching code. Default reflects the current product brand.
+ */
+export const EMAIL_BRAND = process.env.EMAIL_FROM_NAME?.trim() || "RealtorBoss";
+
 type SendEmailParams = {
   to: string | string[];
   subject: string;
@@ -49,7 +56,7 @@ export async function sendEmail({
   const fromAddress =
     from?.trim() ||
     process.env.RESEND_FROM_EMAIL?.trim() ||
-    "RealtorBoss <contact@helmsmart.ai>";
+    `${EMAIL_BRAND} <contact@helmsmart.ai>`;
 
   const payload: Record<string, unknown> = {
     from: fromAddress,

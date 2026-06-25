@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { EMAIL_BRAND } from "@/lib/email";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { scheduleEmailSequenceForLead } from "@/lib/emailSequences";
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "RealtorBoss <noreply@helmsmart.ai>",
+            from: `${EMAIL_BRAND} <noreply@helmsmart.ai>`,
             to: [agentEmail],
             subject: "New Home Value Lead",
             text: `New home value lead:
