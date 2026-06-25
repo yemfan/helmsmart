@@ -79,8 +79,12 @@ export async function attemptExtraction(input: {
    *  callers (offer/listing only) keep compiling. */
   subject?: string | null;
   text?: string | null;
+  /** Inline PDF bytes when the provider delivers the file in-band
+   *  (SendGrid Inbound Parse) rather than as a signed URL (Resend).
+   *  When present, used directly instead of fetching content_url. */
+  pdfBytes?: Uint8Array | null;
 }): Promise<AttemptExtractionResult> {
-  const { intent, attachments, subject, text } = input;
+  const { intent, attachments, subject, text, pdfBytes } = input;
 
   // Unknown intent → no extractor. The agent reads the email body on
   // the review page and acts manually.
@@ -109,20 +113,23 @@ export async function attemptExtraction(input: {
     }
   }
 
-  // Offer/listing path: needs a PDF attachment.
-  const pdf = pickFirstPdfAttachment(attachments);
-  if (!pdf || !pdf.content_url) {
-    return { status: "skipped", reason: "no pdf attachment" };
-  }
-
+  // Offer/listing path: needs PDF bytes — inline (SendGrid) or fetched (Resend).
   let bytes: Uint8Array;
-  try {
-    bytes = await fetchAttachmentBytes(pdf.content_url);
-  } catch (e) {
-    return {
-      status: "failed",
-      error: e instanceof Error ? e.message : "PDF fetch failed",
-    };
+  if (pdfBytes && pdfBytes.byteLength > 0) {
+    bytes = pdfBytes;
+  } else {
+    const pdf = pickFirstPdfAttachment(attachments);
+    if (!pdf || !pdf.content_url) {
+      return { status: "skipped", reason: "no pdf attachment" };
+    }
+    try {
+      bytes = await fetchAttachmentBytes(pdf.content_url);
+    } catch (e) {
+      return {
+        status: "failed",
+        error: e instanceof Error ? e.message : "PDF fetch failed",
+      };
+    }
   }
 
   try {
