@@ -14,7 +14,7 @@ export type EmailAttachment = {
  * of truth so a rebrand is one change (or an env flip) — set EMAIL_FROM_NAME to
  * override without touching code. Default reflects the current product brand.
  */
-export const EMAIL_BRAND = process.env.EMAIL_FROM_NAME?.trim() || "RealtorBoss";
+export const EMAIL_BRAND = process.env.EMAIL_FROM_NAME?.trim() || "RealtyBoss";
 
 type SendEmailParams = {
   to: string | string[];
