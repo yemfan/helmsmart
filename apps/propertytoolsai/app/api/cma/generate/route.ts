@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { consumeTokensForTool } from "@/lib/consumeTokens";
-import { generateAiCma } from "@repo/valuation/server";
+import { generateAiCma, isValuationFailure } from "@repo/valuation/server";
 
 export const runtime = "nodejs";
 // Claude + web_search over real comparable sales runs ~15-40s.
@@ -20,9 +20,13 @@ export const maxDuration = 60;
 export async function POST(req: Request) {
   const gate = await consumeTokensForTool({ req, tool: "cma", requireAuth: false });
   if (!gate.ok) {
+    // ConsumeResult is a union; this app compiles with strict:false, which
+    // doesn't narrow on `!gate.ok`, so read the failure fields via a cast
+    // (same pattern as /api/smart-cma).
+    const fail = gate as { error?: string; status?: number; plan?: string; tokensRemaining?: number };
     return NextResponse.json(
-      { ok: false, error: gate.error, plan: gate.plan, tokens_remaining: gate.tokensRemaining },
-      { status: gate.status },
+      { ok: false, error: fail.error ?? "Access denied", plan: fail.plan, tokens_remaining: fail.tokensRemaining },
+      { status: fail.status ?? 402 },
     );
   }
 
@@ -47,7 +51,8 @@ export async function POST(req: Request) {
     condition: typeof body.condition === "string" ? body.condition : undefined,
   });
 
-  if (!result.ok) {
+  // Use the type-guard (not `!result.ok`) so this narrows under strict:false.
+  if (isValuationFailure(result)) {
     return NextResponse.json({ ok: false, error: result.error }, { status: result.status });
   }
   return NextResponse.json({ ok: true, snapshot: result.snapshot });
