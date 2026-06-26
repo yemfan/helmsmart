@@ -174,7 +174,7 @@ export default function HowCapRateAffectsPropertyValuePage() {
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
             Property Investment Analyzer
           </Link>{" "}
-          in RealtorBoss can help you visualize how different NOI and cap rate scenarios impact
+          in RealtyBoss can help you visualize how different NOI and cap rate scenarios impact
           value over time.
         </p>
       </section>

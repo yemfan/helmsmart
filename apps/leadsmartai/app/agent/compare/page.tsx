@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "RealtorBoss vs. the rest — feature comparison",
+  title: "RealtyBoss vs. the rest — feature comparison",
   description:
-    "How RealtorBoss compares to Follow Up Boss, kvCORE, Lofty, BoomTown, LionDesk and Sierra Interactive on AI, dialer, e-sign, team workflows, and Chinese-market support.",
+    "How RealtyBoss compares to Follow Up Boss, kvCORE, Lofty, BoomTown, LionDesk and Sierra Interactive on AI, dialer, e-sign, team workflows, and Chinese-market support.",
   keywords: [
     "real estate CRM comparison",
     "Follow Up Boss vs",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/agent/compare" },
   openGraph: {
-    title: "RealtorBoss vs. the rest — feature comparison",
+    title: "RealtyBoss vs. the rest — feature comparison",
     description:
       "Side-by-side comparison vs Follow Up Boss, kvCORE, Lofty, BoomTown, LionDesk, and Sierra Interactive — at a fraction of the price.",
     url: "/agent/compare",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "RealtorBoss vs. the rest",
+    title: "RealtyBoss vs. the rest",
     description:
       "Feature comparison vs Follow Up Boss, kvCORE, Lofty, BoomTown, LionDesk, and Sierra Interactive.",
   },
@@ -63,7 +63,7 @@ type ProductKey =
   | "sierra";
 
 const PRODUCTS: Array<{ key: ProductKey; name: string; price: string }> = [
-  { key: "leadsmart", name: "RealtorBoss", price: "$49–$99 / mo" },
+  { key: "leadsmart", name: "RealtyBoss", price: "$49–$99 / mo" },
   { key: "followup_boss", name: "Follow Up Boss", price: "$69–$1,000+ / mo" },
   { key: "kvcore", name: "kvCORE", price: "$499+ / mo" },
   { key: "lofty", name: "Lofty (Chime)", price: "$499+ / mo" },
@@ -108,6 +108,15 @@ const CATEGORIES: Category[] = [
         boomtown: "yes",
         liondesk: "partial",
         sierra: "partial",
+      }),
+      r("Import contacts from your phone at onboarding", {
+        leadsmart: "yes",
+        followup_boss: "partial",
+        kvcore: "partial",
+        lofty: "partial",
+        boomtown: "no",
+        liondesk: "partial",
+        sierra: "no",
       }),
     ],
   },
@@ -164,6 +173,33 @@ const CATEGORIES: Category[] = [
         followup_boss: "no",
         kvcore: "no",
         lofty: "no",
+        boomtown: "no",
+        liondesk: "no",
+        sierra: "no",
+      }),
+      r("AI-grounded CMA — real cited web comps, not just an AVM", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "partial",
+        boomtown: "no",
+        liondesk: "no",
+        sierra: "partial",
+      }),
+      r("Boss Assistant — one command runs the whole AI team", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "no",
+        lofty: "no",
+        boomtown: "no",
+        liondesk: "no",
+        sierra: "no",
+      }),
+      r("Saved AI house searches with scheduled buyer sends", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "partial",
         boomtown: "no",
         liondesk: "no",
         sierra: "no",
@@ -227,6 +263,24 @@ const CATEGORIES: Category[] = [
         liondesk: "yes",
         sierra: "yes",
       }),
+      r("Missed-call text-back (automatic)", {
+        leadsmart: "yes",
+        followup_boss: "partial",
+        kvcore: "yes",
+        lofty: "yes",
+        boomtown: "partial",
+        liondesk: "no",
+        sierra: "no",
+      }),
+      r("Inbound transaction-email auto-import + AI extraction", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "no",
+        lofty: "no",
+        boomtown: "no",
+        liondesk: "no",
+        sierra: "no",
+      }),
     ],
   },
   {
@@ -286,6 +340,24 @@ const CATEGORIES: Category[] = [
         liondesk: "no",
         sierra: "yes",
       }),
+      r("Deep Report — live loan recompute, HOA + Mello-Roos", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "no",
+        lofty: "no",
+        boomtown: "no",
+        liondesk: "no",
+        sierra: "no",
+      }),
+      r("Unified Share on every report (Copy / Email / SMS / PDF)", {
+        leadsmart: "yes",
+        followup_boss: "partial",
+        kvcore: "partial",
+        lofty: "partial",
+        boomtown: "no",
+        liondesk: "no",
+        sierra: "partial",
+      }),
     ],
   },
   {
@@ -332,7 +404,7 @@ const CATEGORIES: Category[] = [
   {
     title: "Differentiators",
     rows: [
-      r("RealtorBoss Coaching (Producer Track + Top Producer Track)", {
+      r("RealtyBoss Coaching (Producer Track + Top Producer Track)", {
         leadsmart: "yes",
         followup_boss: "no",
         kvcore: "no",
@@ -408,7 +480,7 @@ export default function CompareAgentPage() {
             Comparison
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-5xl">
-            RealtorBoss vs. the rest
+            RealtyBoss vs. the rest
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
             How we stack up against Follow Up Boss, kvCORE, Lofty, BoomTown,
@@ -534,7 +606,7 @@ function Highlights() {
     },
     {
       title: "Modern stack = faster shipping",
-      body: "We added 15+ gap-closing features in a month. Legacy CRMs ship features quarterly. The pace difference compounds.",
+      body: "AI-grounded CMAs with real cited comps, a one-command AI team, inbound transaction-email auto-import — shipped in weeks, not quarters. The pace difference compounds.",
     },
   ];
   return (

@@ -6,20 +6,20 @@ import { groupedGuides } from "@/lib/help/guides";
 export const metadata: Metadata = {
   title: "Help center",
   description:
-    "Every how-to guide for RealtorBoss — AI follow-up, voice AI, missed-call text-back, listings, offers, transactions, CMAs, calculators, and more. Plus FAQs and contact support.",
+    "Every how-to guide for RealtyBoss — AI follow-up, voice AI, missed-call text-back, listings, offers, transactions, CMAs, calculators, and more. Plus FAQs and contact support.",
   alternates: { canonical: "/help" },
   openGraph: {
-    title: "Help center — RealtorBoss",
+    title: "Help center — RealtyBoss",
     description:
-      "Every how-to guide for RealtorBoss — set up, communication, AI, deals, marketing, analytics, calculators, and account.",
+      "Every how-to guide for RealtyBoss — set up, communication, AI, deals, marketing, analytics, calculators, and account.",
     url: "/help",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Help center — RealtorBoss",
+    title: "Help center — RealtyBoss",
     description:
-      "Every how-to guide for RealtorBoss — set up, AI, deals, marketing, analytics, and calculators.",
+      "Every how-to guide for RealtyBoss — set up, AI, deals, marketing, analytics, and calculators.",
   },
 };
 
@@ -43,7 +43,7 @@ export default function HelpIndexPage() {
             Guides, FAQs, and how-tos.
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
-            Everything you need to get RealtorBoss running — from
+            Everything you need to get RealtyBoss running — from
             importing your first contacts to managing coaching
             enrollment to sending video email.
           </p>

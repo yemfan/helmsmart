@@ -7,7 +7,7 @@ import { consumerShouldUsePropertyToolsApp } from "@/lib/signupOriginApp";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 
 export const metadata = {
-  title: "Access denied | RealtorBoss",
+  title: "Access denied | RealtyBoss",
   robots: { index: false, follow: false },
 };
 

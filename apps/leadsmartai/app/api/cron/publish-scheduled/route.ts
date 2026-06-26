@@ -195,7 +195,7 @@ export async function POST(req: Request) {
           .eq("id", row.id);
         posted += 1;
 
-        // RealtorBoss activity feed — publishing is the Marketing
+        // RealtyBoss activity feed — publishing is the Marketing
         // Assistant's work (fire-and-forget, never fails the cron).
         void logAssistantActivity({
           agentId: String(row.agent_id),

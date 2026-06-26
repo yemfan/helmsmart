@@ -40,13 +40,13 @@ const fontMono = Geist_Mono({
 import type { Metadata } from "next";
 
 const SITE_URL = getSiteUrl().replace(/\/$/, "");
-// RealtorBoss rebrand on the same domain (realtybossai.com stays the URL).
-const SITE_NAME = "RealtorBoss";
+// RealtyBoss rebrand on the same domain (realtybossai.com stays the URL).
+const SITE_NAME = "RealtyBoss";
 const SITE_DESCRIPTION =
-  "RealtorBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.";
+  "RealtyBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.";
 
 /**
- * Tab + Apple + JSON-LD all use the RealtorBoss icons in
+ * Tab + Apple + JSON-LD all use the RealtyBoss icons in
  * `public/brand/realtorboss/` (regenerated via scripts/generate-brand-icons.mjs).
  * Explicit entries ensure correct absolute URLs with `metadataBase` on Vercel previews.
  */
@@ -92,11 +92,11 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
     // Same as openGraph.images — Next auto-picks up opengraph-image.tsx
-    // for twitter:image as well. No creator handle until a RealtorBoss
+    // for twitter:image as well. No creator handle until a RealtyBoss
     // account exists (the old @leadsmartai handle would misattribute).
   },
   icons: {
-    // RealtorBoss tiles (app/icon.png + app/apple-icon.png hold the same
+    // RealtyBoss tiles (app/icon.png + app/apple-icon.png hold the same
     // assets via Next's file conventions, which take precedence).
     icon: [{ url: "/brand/realtorboss/realtorboss-icon-64.png", sizes: "64x64", type: "image/png" }],
     shortcut: "/brand/realtorboss/realtorboss-icon-64.png",
@@ -121,7 +121,7 @@ export const metadata: Metadata = {
  *      in Google SERPs pointing at /dashboard/leads for quick agent
  *      access.
  *
- *   3. SoftwareApplication — describes RealtorBoss as a real estate
+ *   3. SoftwareApplication — describes RealtyBoss as a real estate
  *      CRM product with an offer ladder (Free / Pro / Elite / Team).
  *      AggregateRating is intentionally omitted because we don't yet
  *      have real review data — adding fake ratings gets penalized.

@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   }
 
-  // RealtorBoss activity feed — one Accountant alert per agent
+  // RealtyBoss activity feed — one Accountant alert per agent
   // (fire-and-forget; a logging failure must not fail the cron).
   const rows = (data ?? []) as { id: string; agent_id: unknown; invoice_number: string }[];
   const byAgent = new Map<string, string[]>();

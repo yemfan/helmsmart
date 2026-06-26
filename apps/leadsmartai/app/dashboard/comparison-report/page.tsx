@@ -2,7 +2,7 @@ import { getCurrentAgentContext } from "@/lib/dashboardService";
 import ComparisonReportBuilderClient from "./ComparisonReportBuilderClient";
 
 export const metadata = {
-  title: "AI Property Comparison Report | RealtorBoss",
+  title: "AI Property Comparison Report | RealtyBoss",
 };
 
 export default async function ComparisonReportDashboardPage() {

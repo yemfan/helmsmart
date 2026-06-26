@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: "Complete Your Profile",
-  description: "Finish setting up your RealtorBoss account.",
+  description: "Finish setting up your RealtyBoss account.",
   keywords: ["profile", "onboarding", "setup"],
   robots: { index: false },
 };

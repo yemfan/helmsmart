@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "HOA Fee Tracker | RealtorBoss",
+  title: "HOA Fee Tracker | RealtyBoss",
   description: "Project total HOA costs over time with annual increase estimates.",
 };
 

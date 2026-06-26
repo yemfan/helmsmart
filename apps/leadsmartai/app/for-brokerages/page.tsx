@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "RealtorBoss for Real Estate Brokerages — operate your brokerage, not just track agents",
+  title: "RealtyBoss for Real Estate Brokerages — operate your brokerage, not just track agents",
   description:
     "The brokerage operating system that makes every agent your top producer. Broker-first dashboard, agent-fitness flags, AI nurture, and per-agent pricing that undercuts kvCORE by 40-60%.",
   keywords: [
@@ -107,7 +107,7 @@ const COMPARISON_ROWS = [
   { stack: "Chime", limit: "Closest to us on intent. 5-year-old UX. AI is template-based, not LLM-generative." },
   { stack: "BoomTown", limit: "Excellent CS team. $1,500–3,500+/mo before agent seats. Pricing makes sense for $5M+ brokerages, not 100-agent independents." },
   { stack: "Spreadsheets + WhatsApp", limit: "Fast for small teams. Zero broker visibility. WhatsApp isn't TCPA-compliant for prospecting." },
-  { stack: "RealtorBoss", limit: "✓ Broker-first home screen, real LLM AI, agent-fitness flags, $24/agent at 100 — half the category cost." },
+  { stack: "RealtyBoss", limit: "✓ Broker-first home screen, real LLM AI, agent-fitness flags, $24/agent at 100 — half the category cost." },
 ];
 
 const HOW_IT_WORKS = [
@@ -170,7 +170,7 @@ export default function ForBrokeragesPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-6">
           <Link href="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-slate-900">
             <Building2 className="h-5 w-5 text-slate-700" />
-            RealtorBoss <span className="text-slate-400">·</span>{" "}
+            RealtyBoss <span className="text-slate-400">·</span>{" "}
             <span className="text-slate-600">for brokerages</span>
           </Link>
           <nav className="hidden gap-6 text-sm text-slate-600 md:flex">
@@ -526,7 +526,7 @@ export default function ForBrokeragesPage() {
       </section>
 
       <footer className="bg-slate-950 py-8 text-center text-xs text-white/60">
-        © RealtorBoss · The brokerage operating system. Pilot inquiries welcome.
+        © RealtyBoss · The brokerage operating system. Pilot inquiries welcome.
       </footer>
 
       <KeepIconsBundled />

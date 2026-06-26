@@ -23,9 +23,9 @@ import {
 import CommandChainDiagram from "@/components/marketing/CommandChainDiagram";
 
 export const metadata: Metadata = {
-  title: "Your AI Real Estate Team — RealtorBoss",
+  title: "Your AI Real Estate Team — RealtyBoss",
   description:
-    "RealtorBoss is an AI team for real estate agents — an AI receptionist that answers every call, a sales assistant that follows up, plus marketing, transaction, and accounting assistants. Never miss a call or a lead again.",
+    "RealtyBoss is an AI team for real estate agents — an AI receptionist that answers every call, a sales assistant that follows up, plus marketing, transaction, and accounting assistants. Never miss a call or a lead again.",
   keywords: [
     "AI real estate team",
     "AI receptionist real estate",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/features" },
   openGraph: {
-    title: "Your AI Real Estate Team — RealtorBoss",
+    title: "Your AI Real Estate Team — RealtyBoss",
     description:
       "An AI team that answers the phone, follows up, markets your listings, coordinates the deal, and keeps the books.",
     url: "/features",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Your AI Real Estate Team — RealtorBoss",
+    title: "Your AI Real Estate Team — RealtyBoss",
     description: "An AI team that answers the phone, follows up, and closes.",
   },
 };
@@ -255,7 +255,7 @@ export default function FeaturesPage() {
                 </span>
               </h2>
               <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-                Every other CRM stops at SMS and email drips. RealtorBoss picks up the phone —
+                Every other CRM stops at SMS and email drips. RealtyBoss picks up the phone —
                 answering inbound calls 24/7 <span className="font-semibold text-slate-800 dark:text-slate-200">and placing real outbound voice calls</span> to
                 follow up with your sphere and leads. That conversation is what wins the listing.
               </p>
@@ -286,7 +286,7 @@ export default function FeaturesPage() {
                     </div>
                     {v.outbound ? (
                       <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0072ce]">
-                        Only on RealtorBoss
+                        Only on RealtyBoss
                       </span>
                     ) : null}
                   </div>
@@ -406,7 +406,7 @@ export default function FeaturesPage() {
           <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-400 md:text-lg">
             A receptionist, an ISA, a transaction coordinator, a marketing assistant, and a
             bookkeeper would cost you tens of thousands a year — each — and you&apos;d still have
-            to hire, train, and manage them. RealtorBoss gives you all of them, trained to sell
+            to hire, train, and manage them. RealtyBoss gives you all of them, trained to sell
             like top producers, for the price of a tool.
           </p>
           <ul className="mx-auto mt-8 flex max-w-2xl flex-wrap justify-center gap-3">

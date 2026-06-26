@@ -4,7 +4,7 @@ import CoordinatorClient from "./CoordinatorClient";
 import { TransactionsViewToggle } from "../TransactionsViewToggle";
 
 export const metadata: Metadata = {
-  title: "Transaction coordinator | RealtorBoss",
+  title: "Transaction coordinator | RealtyBoss",
   robots: { index: false },
 };
 

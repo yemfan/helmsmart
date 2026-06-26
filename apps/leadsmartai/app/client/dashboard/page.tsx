@@ -107,7 +107,7 @@ export default function ClientDashboardPage() {
         <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-950">
           <p className="font-semibold">Client portal (buyer / seller)</p>
           <p className="mt-1 leading-relaxed">
-            This page only shows a deal when your login email matches a lead in RealtorBoss. Your{" "}
+            This page only shows a deal when your login email matches a lead in RealtyBoss. Your{" "}
             <span className="font-medium">agent workspace</span> (leads, pipeline, tools) is separate —{" "}
             <Link
               href={resolveRoleHomePath(meApi?.role ?? null, Boolean(meApi?.has_agent_record))}
@@ -148,7 +148,7 @@ export default function ClientDashboardPage() {
           <p className="font-semibold mb-1">No deal linked yet</p>
           <p className="leading-relaxed">
             We match your login email to a contact on a lead. Ask your agent to add this exact email to your
-            lead in RealtorBoss, then refresh. If you expected the agent CRM instead, use{" "}
+            lead in RealtyBoss, then refresh. If you expected the agent CRM instead, use{" "}
             <Link href="/dashboard/overview" className="font-semibold underline underline-offset-2">
               Dashboard overview
             </Link>

@@ -11,7 +11,7 @@ type Row = {
 };
 
 const COLUMNS = [
-  { id: "leadsmart", label: "RealtorBoss", note: "(this product)" },
+  { id: "leadsmart", label: "RealtyBoss", note: "(this product)" },
   { id: "lofty", label: "Lofty AI Assistant", note: "(formerly Chime)" },
   { id: "structurely", label: "Structurely Aisa Holmes", note: "" },
   { id: "geek", label: "Geek AI", note: "(Real Geeks bundle)" },
@@ -116,7 +116,7 @@ export default function VoiceAiComparisonTable() {
           Where it lands vs. the alternatives
         </h2>
         <p className="mt-1 text-sm text-slate-600">
-          Built from public information. Call the number above to verify any &quot;yes&quot; under RealtorBoss yourself.
+          Built from public information. Call the number above to verify any &quot;yes&quot; under RealtyBoss yourself.
         </p>
       </header>
 

@@ -35,9 +35,9 @@ export default async function AboutLeadSmartAIPage() {
         data={{
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "RealtorBoss",
+          name: "RealtyBoss",
           description:
-            "RealtorBoss helps real estate agents and financing professionals capture, qualify, and convert leads with AI — so they can spend less time chasing and more time closing. The AI growth engine for real estate professionals.",
+            "RealtyBoss helps real estate agents and financing professionals capture, qualify, and convert leads with AI — so they can spend less time chasing and more time closing. The AI growth engine for real estate professionals.",
           url: "https://realtybossai.com",
           logo: "https://realtybossai.com/logo.png",
           sameAs: [

@@ -36,7 +36,7 @@ export default function ToolsPage() {
     <div className="space-y-4">
       <div>
         <h1 className="ui-page-title text-brand-text">Tools</h1>
-        <p className="ui-page-subtitle text-brand-text/80">All RealtorBoss tools in one place.</p>
+        <p className="ui-page-subtitle text-brand-text/80">All RealtyBoss tools in one place.</p>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5">

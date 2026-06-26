@@ -171,7 +171,7 @@ export default function WhyCapRateMattersForRealEstateInvestorsPage() {
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
             Property Investment Analyzer
           </Link>{" "}
-          in RealtorBoss brings these metrics together in one place so you can see how cap rate
+          in RealtyBoss brings these metrics together in one place so you can see how cap rate
           fits into the bigger picture.
         </p>
       </section>

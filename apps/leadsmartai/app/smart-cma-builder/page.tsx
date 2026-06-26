@@ -409,7 +409,7 @@ function SmartCmaBuilderPageInner() {
                   Attach report to Lead (optional)
                 </div>
                 <div className="text-[11px] text-slate-500 mt-1">
-                  The report will be linked to this lead in RealtorBoss.
+                  The report will be linked to this lead in RealtyBoss.
                 </div>
               </div>
               <div className="flex-1 sm:max-w-[420px]">

@@ -136,7 +136,7 @@ export default function CapRateFormulaExplainedForBeginnersPage() {
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
             Cap Rate Calculator
           </Link>{" "}
-          in RealtorBoss: enter rent, expenses, and price, and it instantly computes NOI and cap
+          in RealtyBoss: enter rent, expenses, and price, and it instantly computes NOI and cap
           rate for you.
         </p>
       </section>

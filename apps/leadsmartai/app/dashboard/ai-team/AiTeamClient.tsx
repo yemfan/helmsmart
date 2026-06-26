@@ -69,7 +69,7 @@ export default function AiTeamClient() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">RealtorBoss</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">RealtyBoss</p>
         <h1 className="mt-0.5 text-xl font-semibold text-gray-900">Manage Your AI Team</h1>
         <p className="text-sm text-gray-500">
           Pause an assistant to hide its recommendations and activity from your Boss Assistant

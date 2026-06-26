@@ -16,7 +16,7 @@ const alerts = [
 ];
 
 export const metadata = {
-  title: "Agent Dashboard | RealtorBoss",
+  title: "Agent Dashboard | RealtyBoss",
   description: "Leads, pipeline, and AI actions for real estate agents.",
 };
 

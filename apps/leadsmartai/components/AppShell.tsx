@@ -6,17 +6,17 @@ import { ReactNode, useCallback, useMemo } from "react";
 import type { MobileSidebarUser } from "@repo/ui";
 import { useAuth } from "@/components/AuthProvider";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
-import { RealtorBossLogo } from "@/components/brand/RealtorBossLogo";
+import { RealtyBossLogo } from "@/components/brand/RealtyBossLogo";
 import marketingNavConfig, { leadSmartMarketingNav } from "@/marketing.nav.config";
 import { MarketingTopNav } from "@/components/marketing/MarketingTopNav";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
 import Footer from "./Footer";
 import FloatingCTA from "./FloatingCTA";
 
-// RealtorBoss repositioning: the product shells (auth, dashboard) brand
-// as RealtorBoss; the marketing chrome keeps RealtorBoss until the
+// RealtyBoss repositioning: the product shells (auth, dashboard) brand
+// as RealtyBoss; the marketing chrome keeps RealtyBoss until the
 // domain/SEO migration.
-const APP_NAME = "RealtorBoss";
+const APP_NAME = "RealtyBoss";
 
 /** Marketing-shell user card — only renders when an auth session exists. */
 function useSidebarUser() {
@@ -34,7 +34,7 @@ function useSidebarUser() {
 }
 
 /**
- * RealtorBoss — App Router shell:
+ * RealtyBoss — App Router shell:
  * - Marketing / tools: top-nav-only chrome via `MarketingTopNav` (the
  *   legacy left sidebar was removed; the mobile drawer that `MarketingTopNav`
  *   embeds uses the shared `MobileSidebar` from `@repo/ui`).
@@ -149,9 +149,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <Link
               href="/"
               className="flex min-w-0 items-center rounded-md transition hover:opacity-90"
-              aria-label="RealtorBoss home"
+              aria-label="RealtyBoss home"
             >
-              <RealtorBossLogo compact />
+              <RealtyBossLogo compact />
             </Link>
             <Link
               href="/"
@@ -182,7 +182,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </Link>
             <span aria-hidden className="hidden sm:inline">·</span>
             <span className="block w-full sm:inline sm:w-auto">
-              © {new Date().getFullYear()} RealtorBoss (formerly LeadSmart AI)
+              © {new Date().getFullYear()} RealtyBoss (formerly LeadSmart AI)
             </span>
           </div>
         </footer>

@@ -36,7 +36,7 @@ export default function HowToBuyInvestmentPropertyPage() {
       <p className="text-gray-600 mb-8 max-w-3xl">
         Buying an investment property is very different from buying a primary residence.
         This guide walks through a simple, repeatable process you can use to find,
-        analyze, and finance rental properties using the calculators in RealtorBoss.
+        analyze, and finance rental properties using the calculators in RealtyBoss.
       </p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 /**
- * Dashboard widget for RealtorBoss Coaching enrollment.
+ * Dashboard widget for RealtyBoss Coaching enrollment.
  *
  * Three states:
  *   - loading: skeleton
@@ -73,13 +73,13 @@ export function CoachingProgramsCard() {
 
   return (
     <section
-      aria-label="RealtorBoss Coaching"
+      aria-label="RealtyBoss Coaching"
       className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm"
     >
       <header className="flex items-baseline justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-            RealtorBoss Coaching
+            RealtyBoss Coaching
           </p>
           <h2 className="mt-1 text-base font-semibold text-slate-900">
             Your coaching programs
@@ -174,7 +174,7 @@ function UpgradePrompt() {
   return (
     <section className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-white p-6 shadow-sm">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-        RealtorBoss Coaching
+        RealtyBoss Coaching
       </p>
       <h2 className="mt-1 text-base font-semibold text-slate-900">
         Add coaching to your plan

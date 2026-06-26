@@ -36,7 +36,7 @@ export default function HowToCalculateCapRatePage() {
       <p className="text-gray-600 mb-8 max-w-3xl">
         Cap rate is one of the most common metrics investors use to compare rental
         properties. This guide explains what cap rate is, how to calculate it by hand,
-        and how to use the Cap Rate Calculator in RealtorBoss.
+        and how to use the Cap Rate Calculator in RealtyBoss.
       </p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">

@@ -4,7 +4,7 @@ import Link from "next/link";
 import LeadRoutingAdminClient from "./LeadRoutingAdminClient";
 
 export const metadata: Metadata = {
-  title: "Lead routing admin | RealtorBoss",
+  title: "Lead routing admin | RealtyBoss",
   robots: { index: false },
 };
 

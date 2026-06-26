@@ -85,7 +85,7 @@ export default function CapRateMistakesRealEstateInvestorsMakePage() {
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
             Cap Rate Calculator
           </Link>{" "}
-          in RealtorBoss lets you explicitly include a vacancy assumption in your analysis.
+          in RealtyBoss lets you explicitly include a vacancy assumption in your analysis.
         </p>
       </section>
 

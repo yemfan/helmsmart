@@ -228,7 +228,7 @@ export async function runOverdueNudges(opts: {
 
       result.sentEmails += 1;
 
-      // RealtorBoss activity feed — fire-and-forget, never fails the run.
+      // RealtyBoss activity feed — fire-and-forget, never fails the run.
       void logAssistantActivity({
         agentId,
         assistantType: "transaction_assistant",

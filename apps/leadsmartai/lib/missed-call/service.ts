@@ -545,7 +545,7 @@ export async function handleMissedCall(args: {
     smsSent,
   });
 
-  // RealtorBoss activity feed (fire-and-forget — never fails the flow).
+  // RealtyBoss activity feed (fire-and-forget — never fails the flow).
   void logAssistantActivity({
     agentId: args.agentId,
     assistantType: "receptionist",

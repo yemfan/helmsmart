@@ -36,7 +36,7 @@ export default function HowToAnalyzeRentalPropertyPage() {
       <p className="text-gray-600 mb-8 max-w-3xl">
         A solid rental property analysis helps you avoid bad deals and move quickly on
         great ones. This guide shows you how to evaluate income, expenses, financing,
-        and returns using the calculators in RealtorBoss.
+        and returns using the calculators in RealtyBoss.
       </p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">

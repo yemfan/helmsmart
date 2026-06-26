@@ -79,7 +79,7 @@ export default function ClientTrackerPage() {
           </div>
           <TransactionPipeline stages={data.stages} activeIndex={data.activeIndex} />
           <p className="text-xs text-slate-500 leading-relaxed">
-            Stages are estimated from your lead status in RealtorBoss. Your agent can advance milestones as your transaction
+            Stages are estimated from your lead status in RealtyBoss. Your agent can advance milestones as your transaction
             progresses.
           </p>
         </div>

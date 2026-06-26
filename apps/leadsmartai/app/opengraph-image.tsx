@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 /**
- * Root `og:image` for RealtorBoss — auto-detected by Next.js App Router.
+ * Root `og:image` for RealtyBoss — auto-detected by Next.js App Router.
  * Rendered on demand as a 1200×630 PNG from this JSX tree (Vercel OG).
  *
  * Same pattern as PropertyTools. Before this existed, `app/layout.tsx`
@@ -12,7 +12,7 @@ import { ImageResponse } from "next/og";
  */
 
 export const runtime = "edge";
-export const alt = "RealtorBoss — Your AI Real Estate Team";
+export const alt = "RealtyBoss — Your AI Real Estate Team";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

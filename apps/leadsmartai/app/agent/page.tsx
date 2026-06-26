@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function AgentPortalPage() {
   return (
     <RolePortalHub
-      eyebrow="RealtorBoss"
+      eyebrow="RealtyBoss"
       title="Agent portal"
       description="Your command center for leads, CMAs, and AI tools — jump into any workflow below."
       links={[

@@ -202,7 +202,7 @@ export default function IdxLeadCaptureModal(props: {
                   />
                   <span>
                     I agree to receive automated text messages about this property and similar
-                    homes from RealtorBoss and its agents at the number above. Msg &amp; data rates
+                    homes from RealtyBoss and its agents at the number above. Msg &amp; data rates
                     may apply; message frequency varies. Consent is not a condition of purchase.
                     Reply STOP to unsubscribe, HELP for help.
                   </span>

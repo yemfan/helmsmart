@@ -218,7 +218,7 @@ export default function HomeValueWidgetPage() {
         )}
 
         <p className="mt-4 text-[10px] text-gray-400 text-center">
-          Powered by RealtorBoss
+          Powered by RealtyBoss
         </p>
       </div>
     </div>

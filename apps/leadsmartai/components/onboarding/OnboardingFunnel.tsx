@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { BrandCheck } from "@/components/brand/BrandCheck";
-import { RealtorBossLogo } from "@/components/brand/RealtorBossLogo";
+import { RealtyBossLogo } from "@/components/brand/RealtyBossLogo";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { buildDemoLeads, randomIncomingSnippet } from "./demoLeads";
@@ -67,7 +67,7 @@ function Shell({
       <div className="relative mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8 sm:max-w-xl sm:px-6 sm:py-12">
         <header className="mb-6 flex items-center justify-between gap-3 onboarding-fade-up">
           <Link href="/" className="flex items-center opacity-90 transition hover:opacity-100">
-            <RealtorBossLogo compact tone="dark" className="max-w-[240px]" />
+            <RealtyBossLogo compact tone="dark" className="max-w-[240px]" />
           </Link>
           <Link
             href="/agent/pricing"
@@ -286,7 +286,7 @@ export default function OnboardingFunnel({
     return (
       <Shell step={1}>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur-md sm:p-8">
-          <p className="text-xs font-bold uppercase tracking-wider text-sky-300/90">RealtorBoss</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-sky-300/90">RealtyBoss</p>
           <h1 className="mt-2 font-heading text-2xl font-bold leading-tight sm:text-3xl">
             You&apos;re minutes from your first qualified leads
           </h1>
@@ -474,7 +474,7 @@ export default function OnboardingFunnel({
               Open my inbox →
             </button>
           ) : (
-            <p className="mt-6 text-xs text-slate-500">Secure handshake with RealtorBoss routing…</p>
+            <p className="mt-6 text-xs text-slate-500">Secure handshake with RealtyBoss routing…</p>
           )}
         </div>
       </Shell>

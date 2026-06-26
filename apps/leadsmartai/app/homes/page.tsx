@@ -22,7 +22,7 @@ function FiltersBarFallback() {
 }
 
 export const metadata: Metadata = {
-  title: "Homes for sale | RealtorBoss",
+  title: "Homes for sale | RealtyBoss",
   description:
     "Search homes for sale across the U.S. by city, ZIP, price, beds, and baths. Save searches, favorite homes, and get instant new-listing alerts.",
 };
