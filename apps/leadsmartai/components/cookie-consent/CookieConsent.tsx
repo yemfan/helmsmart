@@ -255,7 +255,7 @@ function CookieConsentBanner() {
               id="cookie-consent-title"
               className="text-sm font-semibold text-slate-900"
             >
-              Cookies on leadsmart-ai.com
+              Cookies on realtybossai.com
             </h2>
             <p id="cookie-consent-description" className="mt-1 text-xs leading-relaxed text-slate-600">
               We use strictly necessary cookies so the site works. Optional cookies help us

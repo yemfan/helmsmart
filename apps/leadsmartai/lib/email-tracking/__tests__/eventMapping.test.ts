@@ -23,11 +23,11 @@ describe("parseResendEvent", () => {
       created_at: "2026-04-28T10:05:00Z",
       data: {
         email_id: "abc-123",
-        click: { link: "https://leadsmart-ai.com/listing/42" },
+        click: { link: "https://realtybossai.com/listing/42" },
       },
     });
     expect(out?.eventType).toBe("clicked");
-    expect(out?.url).toBe("https://leadsmart-ai.com/listing/42");
+    expect(out?.url).toBe("https://realtybossai.com/listing/42");
   });
 
   it("returns null for unrecognized event types so the route can 200", () => {

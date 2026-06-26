@@ -37,7 +37,7 @@ if (!url || !anonKey) {
 
 const supabase = createClient(url, anonKey, { auth: { persistSession: false } });
 
-const API_BASE = process.env.LEADSMART_API_URL || "https://www.leadsmart-ai.com";
+const API_BASE = process.env.LEADSMART_API_URL || "https://www.realtybossai.com";
 
 async function callMobileApi(path, token) {
   const res = await fetch(`${API_BASE}${path}`, {

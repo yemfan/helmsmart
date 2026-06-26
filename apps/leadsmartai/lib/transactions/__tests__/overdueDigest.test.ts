@@ -187,7 +187,7 @@ describe("renderDigestEmail", () => {
       ],
     });
     const out = renderDigestEmail(digest, {
-      appBaseUrl: "https://www.leadsmart-ai.com",
+      appBaseUrl: "https://www.realtybossai.com",
     });
     expect(out.subject).toMatch(/wire verification overdue/i);
     expect(out.html).toMatch(/known phone number/i);

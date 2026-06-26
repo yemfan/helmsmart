@@ -8,7 +8,7 @@
  * specific pages surgically instead.
  *
  * Usage:
- *   curl -X POST https://www.leadsmart-ai.com/api/revalidate \
+ *   curl -X POST https://www.realtybossai.com/api/revalidate \
  *     -H 'x-revalidate-secret: <REVALIDATE_SECRET>' \
  *     -H 'content-type: application/json' \
  *     -d '{"paths":["/terms","/pricing","/about"]}'

@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowToCompareRentVsBuyPage() {
   const title = "How to Compare Renting vs Buying a Home";
-  const url = "https://leadsmart-ai.com/how-to-compare-rent-vs-buy";
+  const url = "https://realtybossai.com/how-to-compare-rent-vs-buy";
 
   return (
     <div className="container mx-auto px-4 py-10">

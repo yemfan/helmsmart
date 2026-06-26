@@ -47,7 +47,7 @@ export default function CapRateCalculator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://leadsmart-ai.com/cap-rate-calculator",
+          url: "https://realtybossai.com/cap-rate-calculator",
           description:
             "Calculate cap rate for real estate investments from net operating income and purchase price.",
         }}

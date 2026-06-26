@@ -102,7 +102,7 @@ function parseSignedRequest(signedRequest: string): Payload {
 function statusBaseUrl(): string {
   const base = (process.env.APP_BASE_URL || "").replace(/\/$/, "");
   if (base) return base;
-  return "https://www.leadsmart-ai.com";
+  return "https://www.realtybossai.com";
 }
 
 export async function POST(req: Request) {

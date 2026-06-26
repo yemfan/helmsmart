@@ -516,7 +516,7 @@ export default function ForBrokeragesPage() {
               Schedule the session <ArrowRight className="h-4 w-4" />
             </Link>
             <a
-              href="mailto:contact@leadsmart-ai.com?subject=Brokerage%20working%20session"
+              href="mailto:contact@helmsmart.ai?subject=Brokerage%20working%20session"
               className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur hover:bg-white/10"
             >
               Email instead

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getPost } from "@/lib/blog/posts";
 
 const SLUG = "liondesk-shutdown-what-agents-should-do-next";
-const SITE_URL = "https://leadsmart-ai.com";
+const SITE_URL = "https://realtybossai.com";
 const TITLE = "LionDesk Is Shutting Down: What Solo Agents Should Do Next";
 const DESCRIPTION =
   "LionDesk is winding down. Here's why a forced CRM migration is the best thing that could happen to your business — and how to pick a replacement built for speed.";

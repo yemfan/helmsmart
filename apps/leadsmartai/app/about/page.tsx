@@ -38,15 +38,15 @@ export default async function AboutLeadSmartAIPage() {
           name: "RealtorBoss",
           description:
             "RealtorBoss helps real estate agents and financing professionals capture, qualify, and convert leads with AI — so they can spend less time chasing and more time closing. The AI growth engine for real estate professionals.",
-          url: "https://leadsmart-ai.com",
-          logo: "https://leadsmart-ai.com/logo.png",
+          url: "https://realtybossai.com",
+          logo: "https://realtybossai.com/logo.png",
           sameAs: [
             "https://twitter.com/leadsmart-ai",
             "https://linkedin.com/company/leadsmart-ai",
           ],
           contactPoint: {
             "@type": "ContactPoint",
-            url: "https://leadsmart-ai.com/contact",
+            url: "https://realtybossai.com/contact",
             contactType: "Customer Service",
           },
         }}

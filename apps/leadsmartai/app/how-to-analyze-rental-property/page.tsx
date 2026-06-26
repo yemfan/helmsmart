@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowToAnalyzeRentalPropertyPage() {
   const title = "How to Analyze a Rental Property";
-  const url = "https://leadsmart-ai.com/how-to-analyze-rental-property";
+  const url = "https://realtybossai.com/how-to-analyze-rental-property";
 
   return (
     <div className="container mx-auto px-4 py-10">

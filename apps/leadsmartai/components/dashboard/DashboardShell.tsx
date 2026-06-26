@@ -12,7 +12,7 @@ import { isAgentOrBrokerProfileRole } from "@/lib/rolePortalPaths";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 
 // RealtorBoss brand — product and marketing site both carry it (the
-// domain stays leadsmart-ai.com for now).
+// domain stays realtybossai.com for now).
 const APP_NAME = "RealtorBoss";
 
 const sidebarFooter = (

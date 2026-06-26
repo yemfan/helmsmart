@@ -130,7 +130,7 @@ ${message || "(no message provided)"}`,
         {
           ok: false,
           error:
-            "We received your message but couldn't send the confirmation email right now. We'll still see it — please reach out at contact@leadsmart-ai.com if you need an immediate reply.",
+            "We received your message but couldn't send the confirmation email right now. We'll still see it — please reach out at contact@helmsmart.ai if you need an immediate reply.",
           delivered: false,
         },
         { status: 502 },

@@ -23,10 +23,10 @@ export default function ContactPage() {
           "@context": "https://schema.org",
           "@type": "ContactPoint",
           contactType: "Customer Service",
-          url: "https://leadsmart-ai.com/contact",
+          url: "https://realtybossai.com/contact",
           name: "RealtorBoss Contact",
           availableLanguage: ["en"],
-          email: "contact@leadsmart-ai.com",
+          email: "contact@helmsmart.ai",
         }}
       />
       <div className="text-center">
@@ -91,10 +91,10 @@ export default function ContactPage() {
               </div>
             </div>
             <a
-              href="mailto:contact@leadsmart-ai.com"
+              href="mailto:contact@helmsmart.ai"
               className="mt-3 block text-sm font-medium text-[#0072ce] hover:underline"
             >
-              contact@leadsmart-ai.com
+              contact@helmsmart.ai
             </a>
           </div>
 

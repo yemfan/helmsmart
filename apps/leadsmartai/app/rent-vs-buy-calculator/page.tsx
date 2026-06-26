@@ -54,7 +54,7 @@ export default function RentVsBuyCalculator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://leadsmart-ai.com/rent-vs-buy-calculator",
+          url: "https://realtybossai.com/rent-vs-buy-calculator",
           description:
             "Compare the total cost of renting versus buying a home over your planned time horizon.",
         }}

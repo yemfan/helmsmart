@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowToCalculateCapRatePage() {
   const title = "How to Calculate Cap Rate";
-  const url = "https://leadsmart-ai.com/how-to-calculate-cap-rate";
+  const url = "https://realtybossai.com/how-to-calculate-cap-rate";
 
   return (
     <div className="container mx-auto px-4 py-10">

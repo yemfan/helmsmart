@@ -14,7 +14,7 @@ import "server-only";
  *   META_APP_ID            — Facebook app id
  *   META_APP_SECRET        — Facebook app secret
  *   META_OAUTH_REDIRECT_URI — fully qualified callback URL the FB app
- *                             allows (e.g. https://leadsmart-ai.com
+ *                             allows (e.g. https://realtybossai.com
  *                             /api/social/facebook/callback)
  *
  * Without these env vars the helpers return clear "not configured"

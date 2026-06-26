@@ -113,7 +113,7 @@ export default function AdCampaignWizardClient() {
   const [campaignName, setCampaignName] = useState("");
   const [adBody, setAdBody] = useState("");
   const [adHeadline, setAdHeadline] = useState("");
-  const [landingUrl, setLandingUrl] = useState("https://www.leadsmart-ai.com/contact");
+  const [landingUrl, setLandingUrl] = useState("https://www.realtybossai.com/contact");
   const [library, setLibrary] = useState<MediaItem[]>([]);
   const [libraryLoading, setLibraryLoading] = useState(false);
   const [selectedMediaId, setSelectedMediaId] = useState<string | null>(null);

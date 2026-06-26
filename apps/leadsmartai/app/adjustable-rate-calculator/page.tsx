@@ -88,7 +88,7 @@ export default function AdjustableRateCalculator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://leadsmart-ai.com/adjustable-rate-calculator",
+          url: "https://realtybossai.com/adjustable-rate-calculator",
           description:
             "Estimate initial and adjusted monthly payments for adjustable rate mortgages based on rate caps and adjustment schedule.",
         }}

@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowToIncreaseCapRateOnRentalPropertyPage() {
   const title = "How to Increase Cap Rate on Rental Property";
-  const url = "https://leadsmart-ai.com/how-to-increase-cap-rate-on-rental-property";
+  const url = "https://realtybossai.com/how-to-increase-cap-rate-on-rental-property";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -238,7 +238,7 @@ export default function HowToIncreaseCapRateOnRentalPropertyPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at leadsmart-ai.com to quickly analyze
+          Try our free real estate investment calculator at realtybossai.com to quickly analyze
           your property deals.
         </p>
       </section>

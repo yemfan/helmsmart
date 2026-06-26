@@ -20,7 +20,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           MAXY Investment Inc., a Texas corporation, doing business as LeadSmart AI
           (&ldquo;LeadSmart,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or
-          &ldquo;our&rdquo;) operates the website leadsmart-ai.com and provides AI-assisted
+          &ldquo;our&rdquo;) operates the website realtybossai.com and provides AI-assisted
           lead management, CRM, SMS follow-up, email automation, and related services (the
           &ldquo;Service&rdquo;). This Privacy Policy explains what information we collect,
           how we use and share it, and the choices you have.
@@ -55,7 +55,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             as Zillow, Realtor.com, Follow Up Boss, kvCORE, Sierra Interactive, Facebook
             Lead Ads, Google, and any IDX site you link. If you forward emails to your
             unique LeadSmart inbound address (e.g.{" "}
-            <code>your-name@inbox.leadsmart-ai.com</code>), we process only those emails
+            <code>your-name@inbox.realtybossai.com</code>), we process only those emails
             you explicitly forward to us — see section 5 for inbound email handling. We
             receive only what each integration&rsquo;s OAuth scope permits.
           </li>
@@ -225,7 +225,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
       <>
         <p>
           LeadSmart provisions each agent a unique inbound forwarding
-          address (e.g. <code>your-name@inbox.leadsmart-ai.com</code>) on
+          address (e.g. <code>your-name@inbox.realtybossai.com</code>) on
           first dashboard visit. The address is yours alone, scoped to your
           account, and only processes emails you explicitly forward to it —
           typically via a Gmail / Outlook filter you configure yourself.
@@ -526,10 +526,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           To exercise any of these rights, email{" "}
           <a
-            href="mailto:contact@leadsmart-ai.com"
+            href="mailto:contact@helmsmart.ai"
             className="text-[#0072ce] hover:underline"
           >
-            contact@leadsmart-ai.com
+            contact@helmsmart.ai
           </a>
           . We will respond within the timeframes required by applicable law.
         </p>
@@ -542,10 +542,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           Do-Not-Sell-or-Share request anyway (it will be honored as a
           forward-looking opt-out), email{" "}
           <a
-            href="mailto:contact@leadsmart-ai.com?subject=Do%20Not%20Sell%20or%20Share%20My%20Personal%20Information"
+            href="mailto:contact@helmsmart.ai?subject=Do%20Not%20Sell%20or%20Share%20My%20Personal%20Information"
             className="text-[#0072ce] hover:underline"
           >
-            contact@leadsmart-ai.com
+            contact@helmsmart.ai
           </a>{" "}
           with the subject line &ldquo;Do Not Sell or Share My Personal
           Information.&rdquo; You may also designate an authorized agent to make
@@ -579,10 +579,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           </a>
           . You may also contact us first at{" "}
           <a
-            href="mailto:contact@leadsmart-ai.com"
+            href="mailto:contact@helmsmart.ai"
             className="text-[#0072ce] hover:underline"
           >
-            contact@leadsmart-ai.com
+            contact@helmsmart.ai
           </a>
           , and we will respond within applicable legal timeframes.
         </p>
@@ -707,10 +707,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           Questions about this Privacy Policy can be directed to{" "}
           <a
-            href="mailto:contact@leadsmart-ai.com"
+            href="mailto:contact@helmsmart.ai"
             className="text-[#0072ce] hover:underline"
           >
-            contact@leadsmart-ai.com
+            contact@helmsmart.ai
           </a>
           .
         </p>

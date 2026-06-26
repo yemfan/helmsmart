@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
 };
 
-const SITE_URL = "https://leadsmart-ai.com";
+const SITE_URL = "https://realtybossai.com";
 
 function formatDate(iso: string): string {
   const d = new Date(`${iso}T00:00:00Z`);

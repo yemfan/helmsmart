@@ -15,7 +15,7 @@ export function SendClient({ agent }: { agent: string }) {
   const [loading, setLoading] = useState(false);
 
   const baseOrigin = useMemo(() => {
-    if (typeof window === "undefined") return "https://leadsmart-ai.com";
+    if (typeof window === "undefined") return "https://realtybossai.com";
     return window.location.origin;
   }, []);
 

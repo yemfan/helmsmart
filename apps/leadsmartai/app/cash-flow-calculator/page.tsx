@@ -54,7 +54,7 @@ export default function CashFlowCalculator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://leadsmart-ai.com/cash-flow-calculator",
+          url: "https://realtybossai.com/cash-flow-calculator",
           description:
             "Estimate monthly and annual cash flow for rental properties based on income, expenses, mortgage and vacancy.",
         }}

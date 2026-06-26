@@ -85,7 +85,7 @@ function offersFor(p: (typeof PRICING_PRODUCTS)[number]) {
         priceCurrency: "USD",
         unitText: "MONTH",
       },
-      url: "https://leadsmart-ai.com/agent/pricing",
+      url: "https://realtybossai.com/agent/pricing",
     },
   ];
   if (p.annual) {
@@ -100,7 +100,7 @@ function offersFor(p: (typeof PRICING_PRODUCTS)[number]) {
         priceCurrency: "USD",
         unitText: "YEAR",
       },
-      url: "https://leadsmart-ai.com/agent/pricing",
+      url: "https://realtybossai.com/agent/pricing",
     });
   }
   return offers;

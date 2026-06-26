@@ -40,7 +40,7 @@ const fontMono = Geist_Mono({
 import type { Metadata } from "next";
 
 const SITE_URL = getSiteUrl().replace(/\/$/, "");
-// RealtorBoss rebrand on the same domain (leadsmart-ai.com stays the URL).
+// RealtorBoss rebrand on the same domain (realtybossai.com stays the URL).
 const SITE_NAME = "RealtorBoss";
 const SITE_DESCRIPTION =
   "RealtorBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.";
@@ -105,7 +105,7 @@ export const metadata: Metadata = {
   // NOTE: Do NOT set a root-level canonical here. Next.js merges root
   // layout metadata into every child page that doesn't override it,
   // which causes all subpages (e.g. /about, /pricing, /blog) to emit
-  // <link rel="canonical" href="https://www.leadsmart-ai.com/"> —
+  // <link rel="canonical" href="https://www.realtybossai.com/"> —
   // telling Google every page is a duplicate of the homepage.
   // Individual pages should set their own canonical via generateMetadata.
   alternates: {},

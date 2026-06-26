@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function WhatIsCapRateInRealEstateInvestingPage() {
   const title = "What Is Cap Rate in Real Estate Investing?";
-  const url = "https://leadsmart-ai.com/what-is-cap-rate-in-real-estate-investing";
+  const url = "https://realtybossai.com/what-is-cap-rate-in-real-estate-investing";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -334,7 +334,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at leadsmart-ai.com to quickly analyze
+          Try our free real estate investment calculator at realtybossai.com to quickly analyze
           your property deals.
         </p>
       </section>

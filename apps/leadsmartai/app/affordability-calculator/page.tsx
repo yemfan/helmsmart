@@ -51,7 +51,7 @@ export default function AffordabilityCalculator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://leadsmart-ai.com/affordability-calculator",
+          url: "https://realtybossai.com/affordability-calculator",
           description:
             "Estimate how much house you can afford based on income, debts, interest rate and loan term using a debt-to-income ratio.",
         }}

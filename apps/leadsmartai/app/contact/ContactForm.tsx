@@ -155,7 +155,7 @@ export default function ContactForm() {
       setStatus("sent");
     } catch {
       setErrorMsg(
-        "Network error. Please try again or email us at contact@leadsmart-ai.com.",
+        "Network error. Please try again or email us at contact@helmsmart.ai.",
       );
       setStatus("error");
     }

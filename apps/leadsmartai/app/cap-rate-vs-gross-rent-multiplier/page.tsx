@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function CapRateVsGrossRentMultiplierPage() {
   const title = "Cap Rate vs Gross Rent Multiplier (GRM): Which Should You Use?";
-  const url = "https://leadsmart-ai.com/cap-rate-vs-gross-rent-multiplier";
+  const url = "https://realtybossai.com/cap-rate-vs-gross-rent-multiplier";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -224,7 +224,7 @@ export default function CapRateVsGrossRentMultiplierPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at leadsmart-ai.com to quickly analyze
+          Try our free real estate investment calculator at realtybossai.com to quickly analyze
           your property deals.
         </p>
       </section>

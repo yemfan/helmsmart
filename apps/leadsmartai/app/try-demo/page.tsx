@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
 };
 
-const SITE_URL = "https://leadsmart-ai.com";
+const SITE_URL = "https://realtybossai.com";
 
 type Tour = {
   label: string;
