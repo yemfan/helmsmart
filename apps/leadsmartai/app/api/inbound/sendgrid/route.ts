@@ -79,6 +79,14 @@ export async function POST(req: Request) {
   const domain = getInboundDomain();
   const localPart = pickLocalPart(form, domain);
   if (!localPart) {
+    // Diagnostic: surface what recipient SendGrid actually delivered vs the
+    // domain we're matching against, so a misrouted test forward is obvious
+    // in the logs instead of a silent 200.
+    console.warn(
+      `[inbound/sendgrid] to-mismatch domain=${domain} envelope=${String(
+        form.get("envelope") ?? "",
+      ).slice(0, 200)} to=${String(form.get("to") ?? "").slice(0, 200)}`,
+    );
     return NextResponse.json({ ok: true, accepted: false, reason: "to-mismatch" });
   }
 
@@ -117,6 +125,12 @@ export async function POST(req: Request) {
     attachments,
     pdfBytes,
   });
+
+  // Diagnostic: log the routing outcome so a dropped delivery (unknown
+  // alias, rate-limit, insert failure) is visible without re-sending.
+  console.log(
+    `[inbound/sendgrid] localPart=${localPart} outcome=${JSON.stringify(result)}`,
+  );
 
   // Always 200 to SendGrid Parse — it doesn't retry, and a non-2xx just
   // bounces the original sender. Surface the outcome in the body for logs.
