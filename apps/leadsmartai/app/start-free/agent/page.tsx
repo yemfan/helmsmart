@@ -5,8 +5,8 @@ import { getActiveAgentEntitlement } from "@/lib/entitlements/getEntitlements";
 import StartFreeAgentClientPage from "./page.client";
 
 export const metadata = {
-  title: "Choose Your Plan | RealtorBoss",
-  description: "Pick a plan to unlock your RealtorBoss Agent workspace.",
+  title: "Choose Your Plan | RealtyBoss",
+  description: "Pick a plan to unlock your RealtyBoss Agent workspace.",
 };
 
 export default async function StartFreeAgentPage() {

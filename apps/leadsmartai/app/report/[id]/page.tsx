@@ -31,7 +31,7 @@ function parseRow(data: Record<string, unknown>): ComparisonReportRow | null {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return {
-    title: `Property Comparison Report | RealtorBoss`,
+    title: `Property Comparison Report | RealtyBoss`,
     description: `View your AI property comparison report (${id.slice(0, 8)}…).`,
     robots: { index: false, follow: false },
   };

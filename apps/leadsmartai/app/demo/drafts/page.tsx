@@ -6,7 +6,7 @@ import { DEMO_DRAFTS } from "@/lib/demo/data";
 export const metadata: Metadata = {
   title: "Demo workspace · AI Drafts",
   description:
-    "See the RealtorBoss drafts queue — every drafted reply shows the AI's reasoning, the message, and approve / edit / discard controls. This is what AI follow-up looks like with a human in the loop.",
+    "See the RealtyBoss drafts queue — every drafted reply shows the AI's reasoning, the message, and approve / edit / discard controls. This is what AI follow-up looks like with a human in the loop.",
   alternates: { canonical: "/demo/drafts" },
   robots: { index: false, follow: true },
 };

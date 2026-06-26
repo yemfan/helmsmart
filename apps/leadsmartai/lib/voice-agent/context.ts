@@ -83,7 +83,7 @@ export async function loadReceptionistContext(
       ? "Thirty-minute appointments you can book: property showings, buyer consultations, listing consultations, and general meetings. Use check_availability first, then book_appointment. Always speak durations and times as words (say \"thirty minutes\", never \"three zero\")."
       : "No online appointment booking. If the caller wants to schedule, take a message or offer a call-back.",
     knowledgeText: cfg.extraNotes || "",
-    // RealtorBoss: qualification/escalation playbook from the skills
+    // RealtyBoss: qualification/escalation playbook from the skills
     // enabled on this agent's AI Receptionist, plus voice-channel
     // compliance guardrails. Lands under "About the business" in the
     // shared system prompt.

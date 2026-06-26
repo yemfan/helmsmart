@@ -3,7 +3,7 @@ import ProfileSettingsForm from "@/components/account/ProfileSettingsForm";
 import BrandingSettingsPanel from "@/components/dashboard/BrandingSettingsPanel";
 
 export const metadata = {
-  title: "My Profile | RealtorBoss",
+  title: "My Profile | RealtyBoss",
   description: "Update your name, phone, profile photo, and branding.",
 };
 

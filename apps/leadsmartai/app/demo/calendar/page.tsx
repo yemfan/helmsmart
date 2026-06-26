@@ -5,7 +5,7 @@ import { DEMO_DEALS, DEMO_EVENTS } from "@/lib/demo/data";
 export const metadata: Metadata = {
   title: "Demo workspace · Calendar",
   description:
-    "Sample RealtorBoss calendar — tours, listing presentations, callbacks, and closing calls, with linked deals and contact context.",
+    "Sample RealtyBoss calendar — tours, listing presentations, callbacks, and closing calls, with linked deals and contact context.",
   alternates: { canonical: "/demo/calendar" },
   robots: { index: false, follow: true },
 };

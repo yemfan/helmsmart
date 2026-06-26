@@ -157,7 +157,7 @@ export async function POST(req: Request) {
         console.warn("[twilio-sms autopilot] outbound persist", e);
       }
 
-      // RealtorBoss activity feed (fire-and-forget — never fails the webhook).
+      // RealtyBoss activity feed (fire-and-forget — never fails the webhook).
       if (agentId) {
         void logAssistantActivity({
           agentId,

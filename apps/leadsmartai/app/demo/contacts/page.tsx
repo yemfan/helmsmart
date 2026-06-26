@@ -5,7 +5,7 @@ import { DEMO_CONTACTS, type DemoLeadScore } from "@/lib/demo/data";
 export const metadata: Metadata = {
   title: "Demo workspace · Contacts",
   description:
-    "Browse a sample RealtorBoss contacts list — 50 contacts with AI lead scoring, lifecycle stage, source attribution, and last-activity context.",
+    "Browse a sample RealtyBoss contacts list — 50 contacts with AI lead scoring, lifecycle stage, source attribution, and last-activity context.",
   alternates: { canonical: "/demo/contacts" },
   robots: { index: false, follow: true },
 };

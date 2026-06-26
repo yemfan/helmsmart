@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SWITCH_SOURCES } from "@/lib/marketing/switch-from";
 
 export const metadata: Metadata = {
-  title: "Switch your CRM to RealtorBoss",
+  title: "Switch your CRM to RealtyBoss",
   description:
     "Migration guides for agents leaving LionDesk, Follow Up Boss, kvCORE, and more. Free concierge migration through 2026 — we'll move your data and rebuild your sequences in under a week.",
   keywords: [
@@ -12,11 +12,11 @@ export const metadata: Metadata = {
     "Follow Up Boss alternative",
     "kvCORE alternative",
     "switch CRM",
-    "RealtorBoss migration",
+    "RealtyBoss migration",
   ],
   alternates: { canonical: "/switch-from" },
   openGraph: {
-    title: "Switch your CRM to RealtorBoss",
+    title: "Switch your CRM to RealtyBoss",
     description:
       "Migration guides for LionDesk, Follow Up Boss, kvCORE, and more — with free concierge migration through 2026.",
     url: "/switch-from",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Switch your CRM to RealtorBoss",
+    title: "Switch your CRM to RealtyBoss",
     description:
       "Migration guides + free concierge migration for agents leaving LionDesk, FUB, kvCORE, and more.",
   },
@@ -36,13 +36,13 @@ export default function SwitchFromIndex() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Switch your CRM to RealtorBoss",
+    name: "Switch your CRM to RealtyBoss",
     url: `${SITE_URL}/switch-from`,
     description:
       "Migration guides for LionDesk, Follow Up Boss, kvCORE, and more.",
     hasPart: SWITCH_SOURCES.map((s) => ({
       "@type": "WebPage",
-      name: `Switch from ${s.name} to RealtorBoss`,
+      name: `Switch from ${s.name} to RealtyBoss`,
       url: `${SITE_URL}/switch-from/${s.slug}`,
       description: s.heroSubhead,
     })),

@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "Free real estate tools — calculators, analyzers, and AI",
   description:
-    "Every free tool from RealtorBoss in one place — mortgage and ROI calculators, cap rate and cash flow analysis, AI deal analyzers, Smart CMA builder, home value estimator. No signup required.",
+    "Every free tool from RealtyBoss in one place — mortgage and ROI calculators, cap rate and cash flow analysis, AI deal analyzers, Smart CMA builder, home value estimator. No signup required.",
   keywords: [
     "free real estate calculator",
     "mortgage calculator",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/free-tools" },
   openGraph: {
-    title: "Free real estate tools — RealtorBoss",
+    title: "Free real estate tools — RealtyBoss",
     description:
       "Calculators, analyzers, and AI tools real estate agents and investors actually use. Free, no signup required.",
     url: "/free-tools",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free real estate tools — RealtorBoss",
+    title: "Free real estate tools — RealtyBoss",
     description:
       "Calculators, AI analyzers, CMA builder, and home value estimator — free, no signup.",
   },
@@ -59,7 +59,7 @@ const SECTIONS: Section[] = [
     id: "ai-tools",
     title: "AI-powered analyzers",
     blurb:
-      "Drop in an address or a Zillow link — get a full deal memo, comp set, or CMA in under a minute. The same engine that powers RealtorBoss follow-up.",
+      "Drop in an address or a Zillow link — get a full deal memo, comp set, or CMA in under a minute. The same engine that powers RealtyBoss follow-up.",
     icon: Bot,
     tools: [
       {
@@ -219,7 +219,7 @@ export default function FreeToolsPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Free Real Estate Tools — RealtorBoss",
+    name: "Free Real Estate Tools — RealtyBoss",
     url: `${SITE_URL}/free-tools`,
     description:
       "Free calculators, AI analyzers, and CMA tools for real estate agents and investors. No signup required.",
@@ -326,7 +326,7 @@ export default function FreeToolsPage() {
                 Every tool above + AI follow-up, voice AI, and missed-call recovery.
               </h2>
               <p className="mt-3 text-sm leading-6 text-slate-600 md:text-base dark:text-slate-300">
-                RealtorBoss is what these tools sit inside — your AI
+                RealtyBoss is what these tools sit inside — your AI
                 sales team, on your phone, 24/7. $49/mo starting, free
                 14-day trial, no credit card.
               </p>

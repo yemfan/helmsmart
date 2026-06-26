@@ -15,7 +15,7 @@ export default function GlobalError({
     <html lang="en">
       <body className="min-h-screen bg-slate-50 px-4 py-16 font-sans text-slate-900">
         <div className="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
-          <h1 className="text-xl font-bold">RealtorBoss — can&apos;t load this page</h1>
+          <h1 className="text-xl font-bold">RealtyBoss — can&apos;t load this page</h1>
           <p className="mt-3 text-sm text-slate-600">
             {error.message?.trim()
               ? error.message

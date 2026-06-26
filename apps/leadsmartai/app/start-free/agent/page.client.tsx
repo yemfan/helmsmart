@@ -116,14 +116,14 @@ export default function StartFreeAgentClientPage() {
       <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-100 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-900">
           <Sparkles className="h-3.5 w-3.5" aria-hidden />
-          Welcome to RealtorBoss
+          Welcome to RealtyBoss
         </div>
 
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
           Choose your plan
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
-          Pick a plan to unlock RealtorBoss — pipeline, AI tools, and coaching. Start free or go
+          Pick a plan to unlock RealtyBoss — pipeline, AI tools, and coaching. Start free or go
           straight to a paid plan with a 14-day trial (cancel anytime). Available in English and
           中文.
         </p>

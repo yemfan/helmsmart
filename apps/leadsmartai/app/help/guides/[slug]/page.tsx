@@ -17,7 +17,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const guide = getGuide(slug);
   if (!guide) {
-    return { title: "Guide not found — RealtorBoss" };
+    return { title: "Guide not found — RealtyBoss" };
   }
   return {
     title: `${guide.title} — Help`,
@@ -71,7 +71,7 @@ export default async function HelpGuidePage({
                 mainEntityOfPage: { "@type": "WebPage", "@id": url },
                 publisher: {
                   "@type": "Organization",
-                  name: "RealtorBoss",
+                  name: "RealtyBoss",
                   logo: {
                     "@type": "ImageObject",
                     url: "https://realtybossai.com/logo.png",

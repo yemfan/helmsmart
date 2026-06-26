@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import LikelySellersPanel from "@/components/dashboard/LikelySellersPanel";
 
 export const metadata: Metadata = {
-  title: "Today's likely sellers | RealtorBoss",
+  title: "Today's likely sellers | RealtyBoss",
 };
 
 /**

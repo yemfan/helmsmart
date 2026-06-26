@@ -186,7 +186,7 @@ async function processOne(
     }
     await markSent(draftId);
 
-    // RealtorBoss activity feed — sphere/nurture touches are the
+    // RealtyBoss activity feed — sphere/nurture touches are the
     // Marketing Assistant's work (fire-and-forget, never fails the send).
     void (async () => {
       const { logAssistantActivity } = await import("@/lib/realtorboss/activities");

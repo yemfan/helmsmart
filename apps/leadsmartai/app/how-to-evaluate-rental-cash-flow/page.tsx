@@ -36,7 +36,7 @@ export default function HowToEvaluateRentalCashFlowPage() {
       <p className="text-gray-600 mb-8 max-w-3xl">
         Positive, resilient cash flow is the foundation of a strong rental portfolio.
         This guide explains how to evaluate cash flow step by step using the calculators
-        in RealtorBoss.
+        in RealtyBoss.
       </p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">

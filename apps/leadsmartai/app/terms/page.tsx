@@ -222,13 +222,13 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <p>
-          This section is the consumer disclosure for the RealtorBoss text
+          This section is the consumer disclosure for the RealtyBoss text
           messaging program operated by MAXY Investment Inc. and the licensed
           real estate agents who use the Service.
         </p>
         <ul>
           <li>
-            <strong>Program:</strong> RealtorBoss (a product of MAXY Investment
+            <strong>Program:</strong> RealtyBoss (a product of MAXY Investment
             Inc.). When you provide your mobile number to an agent — by
             submitting a contact or property-inquiry form, or directly — and
             agree to be contacted, the agent may send you text messages such as

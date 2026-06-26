@@ -27,7 +27,7 @@ export async function generateMetadata({
   if (!city) return {};
   const keywords = getPageKeywords("home-value", city.slug);
   return {
-    title: `Free Home Value Estimate in ${city.city}, ${city.state} | RealtorBoss`,
+    title: `Free Home Value Estimate in ${city.city}, ${city.state} | RealtyBoss`,
     description: `Get a localized home value estimate for ${city.city}, ${city.state} with market trends, seller demand insights, and ${keywords[0]} guidance.`,
     alternates: { canonical: `/home-value/${p.city}` },
   };

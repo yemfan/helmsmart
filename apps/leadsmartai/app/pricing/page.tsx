@@ -24,7 +24,7 @@ export default async function ConsumerPricingPage() {
         data={{
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
-          name: "RealtorBoss",
+          name: "RealtyBoss",
           description:
             "AI-powered CRM and lead management platform for real estate professionals. Capture, qualify, and convert leads with intelligent automation.",
           url: "https://realtybossai.com/pricing",
@@ -172,7 +172,7 @@ export default async function ConsumerPricingPage() {
 
             <div className="rounded-2xl border-2 border-[#0072ce] bg-gradient-to-br from-[#0072ce]/5 to-transparent p-7 dark:bg-slate-900">
               <p className="text-xs font-semibold uppercase tracking-wider text-[#0072ce]">
-                Your AI team — RealtorBoss
+                Your AI team — RealtyBoss
               </p>
               <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
                 <li>All six assistants, working together</li>

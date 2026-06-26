@@ -123,7 +123,7 @@ export default function LoanBrokerPricingClientPage() {
       <div className="mx-auto max-w-5xl space-y-10">
         <div className="text-center">
           <h1 className="text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">
-            RealtorBoss for Loan Brokers
+            RealtyBoss for Loan Brokers
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-gray-600 md:text-lg">
             Upgrade to unlock a stronger borrower workflow, more powerful pipeline tools,

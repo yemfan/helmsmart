@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import CmaListClient from "./CmaListClient";
 
 export const metadata: Metadata = {
-  title: "CMA Reports | RealtorBoss",
+  title: "CMA Reports | RealtyBoss",
 };
 
 /**

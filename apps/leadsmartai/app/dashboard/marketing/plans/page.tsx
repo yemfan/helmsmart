@@ -1,7 +1,7 @@
 import MarketingPlansTabs from "./MarketingPlansTabs";
 
 export const metadata = {
-  title: "Marketing Plans | RealtorBoss",
+  title: "Marketing Plans | RealtyBoss",
   description:
     "Create, customize, and manage automated marketing plans — and monetize your sphere.",
 };

@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { tool, citySlug } = await params;
   const t = GROWTH_SEO_TOOLS.find((x) => x.slug === tool);
   const c = GROWTH_SEO_CITIES.find((x) => x.slug === citySlug);
-  const title = t && c ? `${t.name} in ${c.city}, ${c.state} | RealtorBoss` : "Tools | RealtorBoss";
+  const title = t && c ? `${t.name} in ${c.city}, ${c.state} | RealtyBoss` : "Tools | RealtyBoss";
   const description =
     t && c
       ? `Use our free ${t.name.toLowerCase()} for ${c.city}, ${c.state}. Local context, fast answers, mobile-friendly.`
@@ -48,7 +48,7 @@ export default async function GrowthSeoPage({ params }: Props) {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <article className="max-w-lg mx-auto px-4 py-8 space-y-6">
         <Link href="/" className="text-sm font-medium text-blue-700">
-          ← RealtorBoss
+          ← RealtyBoss
         </Link>
         <header>
           <p className="text-xs font-semibold uppercase text-slate-500">{t.category}</p>

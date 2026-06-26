@@ -38,7 +38,7 @@ const baseProducts: ProductCard[] = [
   },
   {
     key: "agent",
-    title: "RealtorBoss for Agents",
+    title: "RealtyBoss for Agents",
     audience: "Real estate agents",
     price: "Free to start",
     description:
@@ -48,7 +48,7 @@ const baseProducts: ProductCard[] = [
   },
   {
     key: "loan_broker",
-    title: "RealtorBoss for Loan Brokers",
+    title: "RealtyBoss for Loan Brokers",
     audience: "Loan brokers and mortgage professionals",
     price: "From $99/mo",
     description:
@@ -305,14 +305,14 @@ export default function PricingHubClientPage() {
             <div className="rounded-2xl bg-gray-50 p-5">
               <div className="text-sm font-semibold text-gray-900">Growing as an agent</div>
               <p className="mt-2 text-sm text-gray-600">
-                Start with RealtorBoss for Agents if you need lead workflow, CRM, and AI follow-up.
+                Start with RealtyBoss for Agents if you need lead workflow, CRM, and AI follow-up.
               </p>
             </div>
 
             <div className="rounded-2xl bg-gray-50 p-5">
               <div className="text-sm font-semibold text-gray-900">Managing borrowers</div>
               <p className="mt-2 text-sm text-gray-600">
-                Start with RealtorBoss for Loan Brokers if you need borrower workflow and finance
+                Start with RealtyBoss for Loan Brokers if you need borrower workflow and finance
                 tools.
               </p>
             </div>

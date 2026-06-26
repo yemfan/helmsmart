@@ -84,7 +84,7 @@ const CARD_DEFS: CardDef[] = [
     slug: "pro",
     name: "Pro",
     description: "For active agents closing deals consistently.",
-    coachingPill: "RealtorBoss Coaching: Producer Track included",
+    coachingPill: "RealtyBoss Coaching: Producer Track included",
     badge: { label: "Popular", tone: "primary" },
     features: [
       "Everything in Starter, plus:",
@@ -108,7 +108,7 @@ const CARD_DEFS: CardDef[] = [
     slug: "premium",
     name: "Premium",
     description: "For top producers running solo.",
-    coachingPill: "RealtorBoss Coaching: Top Producer Track included",
+    coachingPill: "RealtyBoss Coaching: Top Producer Track included",
     features: [
       "Everything in Pro, plus:",
       "AI Receptionist + AI Concierge — answers every call, and auto-calls for confirmations, follow-ups & surveys",
@@ -125,7 +125,7 @@ const CARD_DEFS: CardDef[] = [
     slug: "signature",
     name: "Signature",
     description: "For relationship-driven agents serving high-value clients.",
-    coachingPill: "RealtorBoss Coaching: Top Producer Track included",
+    coachingPill: "RealtyBoss Coaching: Top Producer Track included",
     badge: { label: "Bilingual & Luxury", tone: "signature" },
     signatureLook: true,
     bilingualIncludedPill: true,
@@ -149,7 +149,7 @@ const TEAM_CARD: CardDef = {
   slug: "team",
   name: "Team",
   description: "For brokerages and small teams that need shared workflows.",
-  coachingPill: "RealtorBoss Coaching: Top Producer Track for every seat",
+  coachingPill: "RealtyBoss Coaching: Top Producer Track for every seat",
   features: [
     "Everything in Premium, plus:",
     "Round-robin lead routing across the roster",
@@ -566,7 +566,7 @@ export default function AgentPricingClientPage() {
         {/* Header */}
         <div className="text-center">
           <h1 className="text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">
-            RealtorBoss for Agents
+            RealtyBoss for Agents
           </h1>
           {hasAccess && currentPlan ? (
             <>
@@ -677,10 +677,10 @@ export default function AgentPricingClientPage() {
             </div>
           </div>
 
-          {/* RealtorBoss Coaching callout */}
+          {/* RealtyBoss Coaching callout */}
           <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/60 p-5 text-sm text-slate-700">
             <p className="font-semibold text-slate-900">
-              RealtorBoss Coaching — built into the product, not an add-on
+              RealtyBoss Coaching — built into the product, not an add-on
             </p>
             <p className="mt-1.5 text-slate-700">
               Every paid plan auto-enrolls in our coaching programs:

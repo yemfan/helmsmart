@@ -28,11 +28,11 @@ export async function generateMetadata(props: {
   const adapter = getIdxAdapter();
   const result = await adapter.getListing(id);
   if (isIdxFailure(result)) {
-    return { title: "Listing | RealtorBoss", robots };
+    return { title: "Listing | RealtyBoss", robots };
   }
   const l = result.data;
   return {
-    title: `${l.formattedAddress} | RealtorBoss`,
+    title: `${l.formattedAddress} | RealtyBoss`,
     description: l.description ?? `${l.beds ?? "?"} bed ${l.baths ?? "?"} bath home for sale at ${l.formattedAddress}.`,
     robots,
   };

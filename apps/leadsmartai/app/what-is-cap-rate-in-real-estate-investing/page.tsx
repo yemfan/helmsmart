@@ -106,7 +106,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
             Cap Rate Calculator
           </Link>{" "}
-          in RealtorBoss.
+          in RealtyBoss.
         </p>
         <h3 className="text-lg font-semibold text-gray-900">1. Estimate gross rental income</h3>
         <p>
@@ -185,7 +185,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
             Property Investment Analyzer
           </Link>{" "}
-          in RealtorBoss.
+          in RealtyBoss.
         </p>
       </section>
 

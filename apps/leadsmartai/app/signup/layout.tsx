@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: "Create Your Free Account",
-  description: "Sign up for RealtorBoss and start capturing, qualifying, and converting leads with AI-powered lead management for real estate professionals.",
-  keywords: ["sign up", "create account", "register", "RealtorBoss", "free trial"],
+  description: "Sign up for RealtyBoss and start capturing, qualifying, and converting leads with AI-powered lead management for real estate professionals.",
+  keywords: ["sign up", "create account", "register", "RealtyBoss", "free trial"],
 };
 
 /** Prevents static prerender at build when Supabase public env vars are unset (e.g. Vercel without env). */

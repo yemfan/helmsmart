@@ -6,13 +6,13 @@ import ContactForm from "./ContactForm";
 import JsonLd from "@/components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Contact Us | RealtorBoss",
+  title: "Contact Us | RealtyBoss",
   description:
-    "Get in touch with the RealtorBoss team. We'd love to hear from you about lead management and CRM solutions for real estate professionals.",
+    "Get in touch with the RealtyBoss team. We'd love to hear from you about lead management and CRM solutions for real estate professionals.",
   alternates: {
     canonical: "/contact",
   },
-  keywords: ["contact", "support", "RealtorBoss", "CRM", "lead management"],
+  keywords: ["contact", "support", "RealtyBoss", "CRM", "lead management"],
 };
 
 export default function ContactPage() {
@@ -22,7 +22,7 @@ export default function ContactPage() {
         data={{
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "RealtorBoss",
+          name: "RealtyBoss",
           legalName: "MAXY Investment Inc.",
           url: "https://realtybossai.com",
           email: "contact@helmsmart.ai",
@@ -47,7 +47,7 @@ export default function ContactPage() {
           Get in touch
         </h1>
         <p className="mx-auto mt-3 max-w-2xl text-lg text-slate-600">
-          Have a question, need help, or want to learn more about RealtorBoss?
+          Have a question, need help, or want to learn more about RealtyBoss?
           We&apos;d love to hear from you.
         </p>
       </div>
@@ -128,7 +128,7 @@ export default function ContactPage() {
             <address className="mt-3 text-sm not-italic leading-relaxed text-slate-600">
               <span className="font-medium text-slate-900">MAXY Investment Inc.</span>
               <br />
-              RealtorBoss (formerly LeadSmart AI)
+              RealtyBoss (formerly LeadSmart AI)
               <br />
               6511 Parkriver Crossing
               <br />

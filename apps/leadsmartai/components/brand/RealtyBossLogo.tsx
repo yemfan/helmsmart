@@ -11,12 +11,12 @@ const TILE_BG = "#CFE5FA";
 
 type Tone = "light" | "dark";
 
-/** The RealtorBoss mark — a house built from six points: five teammates
+/** The RealtyBoss mark — a house built from six points: five teammates
  *  wired to a central Boss hub, on a light-blue badge tile. Inline SVG.
  *  Master asset: public/brand/realtorboss/realtorboss-mark.svg
  *  Self-contained (own light-blue background), so it reads on any surface;
  *  the `tone` prop is accepted for API compatibility but no longer needed. */
-export function RealtorBossMark({ className }: { className?: string; tone?: Tone }) {
+export function RealtyBossMark({ className }: { className?: string; tone?: Tone }) {
   return (
     <svg viewBox="0 0 200 200" fill="none" aria-hidden className={cn("h-8 w-8", className)}>
       <rect width="200" height="200" rx="44" fill={TILE_BG} />
@@ -68,16 +68,16 @@ type Props = {
 };
 
 /**
- * RealtorBoss horizontal lockup — mark + two-tone wordmark (+ tagline).
+ * RealtyBoss horizontal lockup — mark + two-tone wordmark (+ tagline).
  * Wordmark renders as text in the app's heading font, so it stays crisp
  * and theme-consistent. Gold is accent-only; the wordmark body is navy
  * (white on dark) for contrast (per brand review).
  */
-export function RealtorBossLogo({ className, compact, tone = "light" }: Props) {
+export function RealtyBossLogo({ className, compact, tone = "light" }: Props) {
   const body = tone === "dark" ? "#FFFFFF" : NAVY;
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
-      <RealtorBossMark tone={tone} className={compact ? "h-8 w-8" : "h-10 w-10"} />
+      <RealtyBossMark tone={tone} className={compact ? "h-8 w-8" : "h-10 w-10"} />
       <span className="flex flex-col items-center leading-none">
         <span className={cn("font-heading font-bold tracking-tight", compact ? "text-lg" : "text-2xl")}>
           <span style={{ color: body }}>Realtor</span>

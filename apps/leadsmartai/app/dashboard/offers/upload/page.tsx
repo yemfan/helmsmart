@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import { UploadOfferClient } from "./UploadOfferClient";
 
 export const metadata = {
-  title: "Upload offer | RealtorBoss",
+  title: "Upload offer | RealtyBoss",
   description:
-    "Paste an offer document — RealtorBoss extracts price, contingencies, and dates so you don't have to retype them.",
+    "Paste an offer document — RealtyBoss extracts price, contingencies, and dates so you don't have to retype them.",
 };
 
 export default function UploadOfferPage() {

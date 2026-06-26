@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: "Reset Password",
-  description: "Reset your RealtorBoss account password.",
+  description: "Reset your RealtyBoss account password.",
   keywords: ["reset password", "account recovery"],
   robots: { index: false },
 };

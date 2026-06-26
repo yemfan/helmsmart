@@ -124,7 +124,7 @@ const agentCopy: LandingCopy = {
     headline: "Turn Online Traffic into Closed Deals — Automatically",
     line1: "Stop chasing cold leads.",
     line2: "Start closing high-intent buyers and sellers with AI.",
-    line3: "RealtorBoss captures, qualifies, and follows up with your leads — instantly.",
+    line3: "RealtyBoss captures, qualifies, and follows up with your leads — instantly.",
     primaryCta: "Get My First Leads Now",
     secondaryCta: "See How It Works",
     secondaryCtaHref: "#how-it-works",
@@ -154,7 +154,7 @@ const agentCopy: LandingCopy = {
   },
   solution: {
     negations: ["This is NOT a CRM.", "This is NOT a lead generator."],
-    title: "RealtorBoss is a Deal Conversion Engine.",
+    title: "RealtyBoss is a Deal Conversion Engine.",
     punch1: "We don’t just give you leads.",
     punch2Prefix: "We turn them into ",
     punch2Emphasis: "clients",
@@ -247,7 +247,7 @@ const agentCopy: LandingCopy = {
     ],
   },
   valueStack: {
-    title: "Why Agents Choose RealtorBoss",
+    title: "Why Agents Choose RealtyBoss",
     benefits: [
       "More qualified leads",
       "Faster response time",
@@ -351,7 +351,7 @@ const brokerCopy: LandingCopy = {
   },
   solution: {
     negations: ["This is NOT a CRM.", "This is NOT a lead generator."],
-    title: "RealtorBoss is a Deal Conversion Engine.",
+    title: "RealtyBoss is a Deal Conversion Engine.",
     punch1: "We don’t just give you applications.",
     punch2Prefix: "We turn them into ",
     punch2Emphasis: "funded clients",
@@ -424,7 +424,7 @@ const brokerCopy: LandingCopy = {
     ],
   },
   valueStack: {
-    title: "Why Brokers Choose RealtorBoss",
+    title: "Why Brokers Choose RealtyBoss",
     benefits: [
       "More qualified opportunities",
       "Faster response time",

@@ -317,8 +317,8 @@ export default function HomeValueEstimatorPage() {
                         className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
                       />
                       <span className="text-[11px] leading-relaxed text-gray-600">
-                        <span className="font-semibold text-gray-900">Yes, send me marketing text messages from RealtorBoss.</span>{" "}
-                        By checking this box and providing my phone number above, I consent to receive promotional text messages from RealtorBoss about real-estate services, new listings, market updates, and special offers.
+                        <span className="font-semibold text-gray-900">Yes, send me marketing text messages from RealtyBoss.</span>{" "}
+                        By checking this box and providing my phone number above, I consent to receive promotional text messages from RealtyBoss about real-estate services, new listings, market updates, and special offers.
                       </span>
                     </label>
                     <p className="text-[10px] leading-relaxed text-gray-400">

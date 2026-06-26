@@ -8,7 +8,7 @@ export default function Sidebar() {
     <aside className="relative min-h-screen w-64 border-r bg-white p-6 shadow-sm">
       {/* Logo */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">RealtorBoss</h1>
+        <h1 className="text-2xl font-bold text-gray-900">RealtyBoss</h1>
         <p className="text-sm text-gray-500">Real Estate AI Platform</p>
       </div>
 
@@ -96,7 +96,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="absolute bottom-6 text-xs text-gray-400">© 2026 RealtorBoss</div>
+      <div className="absolute bottom-6 text-xs text-gray-400">© 2026 RealtyBoss</div>
     </aside>
   );
 }

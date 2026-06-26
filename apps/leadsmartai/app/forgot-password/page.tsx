@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
         <div className="space-y-1 text-center">
           <h1 className="text-xl font-bold text-gray-900">Reset your password</h1>
           <p className="text-xs text-gray-600">
-            Enter the email you use for RealtorBoss and we&apos;ll send you a reset link.
+            Enter the email you use for RealtyBoss and we&apos;ll send you a reset link.
           </p>
         </div>
 

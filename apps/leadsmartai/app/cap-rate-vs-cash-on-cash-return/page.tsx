@@ -174,7 +174,7 @@ export default function CapRateVsCashOnCashReturnPage() {
           <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">
             Cash Flow Calculator
           </Link>{" "}
-          in RealtorBoss to model cap rate, cash on cash return, and long-term ROI in one view.
+          in RealtyBoss to model cap rate, cash on cash return, and long-term ROI in one view.
         </p>
         <p>
           By adjusting purchase price, expenses, down payment, and interest rate, you can instantly

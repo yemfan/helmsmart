@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Reset your password | RealtorBoss",
+  title: "Reset your password | RealtyBoss",
   description:
-    "Enter your email to receive a link to reset your RealtorBoss account password.",
+    "Enter your email to receive a link to reset your RealtyBoss account password.",
   alternates: { canonical: "/forgot-password" },
   robots: { index: false, follow: false },
 };

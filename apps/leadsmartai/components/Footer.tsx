@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CookieSettingsLink } from "@/components/cookie-consent/CookieConsent";
-import { RealtorBossLogo } from "@/components/brand/RealtorBossLogo";
+import { RealtyBossLogo } from "@/components/brand/RealtyBossLogo";
 
 /**
  * Public-only product links. Removed `/dashboard`, `/client/dashboard`,
@@ -136,8 +136,8 @@ export default function Footer() {
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200/80 pt-8 sm:flex-row dark:border-slate-800">
           {/* Brand — single horizontal lockup (TOM MN-002: the previous
               monogram-box + separate wordmark read as two logos). */}
-          <Link href="/" aria-label="RealtorBoss home" className="inline-flex">
-            <RealtorBossLogo />
+          <Link href="/" aria-label="RealtyBoss home" className="inline-flex">
+            <RealtyBossLogo />
           </Link>
 
           <div className="flex flex-col items-center gap-1.5 text-xs text-slate-400 sm:items-end dark:text-slate-500">
@@ -150,7 +150,7 @@ export default function Footer() {
                 lets carriers / trust vendors verify the business-name ↔
                 realtybossai.com association from the homepage. */}
             <span className="text-center sm:text-right">
-              RealtorBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc. &middot;{" "}
+              RealtyBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc. &middot;{" "}
               6511 Parkriver Crossing, Sugar Land, TX 77479
             </span>
           </div>

@@ -20,7 +20,7 @@ export type VslSectionProps = {
 
 export default function VslSection({
   id = "vsl",
-  title = "See How RealtorBoss Works in 60 Seconds",
+  title = "See How RealtyBoss Works in 60 Seconds",
   subtitle = "Watch how agents turn online traffic into qualified leads and closed deals — automatically.",
   videoType = "youtube",
   videoIdOrUrl,
@@ -66,7 +66,7 @@ export default function VslSection({
         <iframe
           className="absolute inset-0 h-full w-full rounded-2xl"
           src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(idOrUrl)}?autoplay=1&rel=0&modestbranding=1`}
-          title="RealtorBoss demo video"
+          title="RealtyBoss demo video"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />
@@ -78,7 +78,7 @@ export default function VslSection({
         <iframe
           className="absolute inset-0 h-full w-full rounded-2xl"
           src={`https://player.vimeo.com/video/${encodeURIComponent(idOrUrl)}?autoplay=1&dnt=1`}
-          title="RealtorBoss demo video"
+          title="RealtyBoss demo video"
           allow="autoplay; fullscreen; picture-in-picture"
           allowFullScreen
         />
@@ -113,7 +113,7 @@ export default function VslSection({
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
                   <div className="mb-6 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.2em] text-white/80">
-                    RealtorBoss Demo
+                    RealtyBoss Demo
                   </div>
 
                   <h3 className="max-w-3xl font-heading text-2xl font-semibold md:text-4xl">

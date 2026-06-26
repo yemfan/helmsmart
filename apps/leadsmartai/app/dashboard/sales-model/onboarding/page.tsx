@@ -7,7 +7,7 @@ import { OnboardingClient } from "./OnboardingClient";
 export const metadata: Metadata = {
   title: "Choose Your Sales Model",
   description:
-    "Pick a sales model to personalize your RealtorBoss dashboard, scripts, tasks, and pipeline.",
+    "Pick a sales model to personalize your RealtyBoss dashboard, scripts, tasks, and pipeline.",
   robots: { index: false },
 };
 

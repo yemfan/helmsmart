@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import DealCoachPanel from "@/components/dashboard/DealCoachPanel";
 
 export const metadata: Metadata = {
-  title: "AI Deal Coach | RealtorBoss",
+  title: "AI Deal Coach | RealtyBoss",
 };
 
 /**
