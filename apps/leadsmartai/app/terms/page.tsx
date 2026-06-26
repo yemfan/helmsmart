@@ -211,6 +211,67 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     ),
   },
   {
+    // Consumer-facing SMS program disclosure required by mobile carriers /
+    // CTIA for A2P 10DLC campaign registration. Distinct from §6 (which is
+    // the B2B acceptable-use contract with agents): this section is the
+    // "Terms & Conditions URL" submitted to The Campaign Registry and must
+    // carry program name, message types, frequency, "msg & data rates may
+    // apply," and STOP/HELP in bold. Keep these elements if editing.
+    id: "sms-program",
+    title: "6A. Text messaging program (SMS)",
+    body: (
+      <>
+        <p>
+          This section is the consumer disclosure for the RealtorBoss text
+          messaging program operated by MAXY Investment Inc. and the licensed
+          real estate agents who use the Service.
+        </p>
+        <ul>
+          <li>
+            <strong>Program:</strong> RealtorBoss (a product of MAXY Investment
+            Inc.). When you provide your mobile number to an agent — by
+            submitting a contact or property-inquiry form, or directly — and
+            agree to be contacted, the agent may send you text messages such as
+            replies to your inquiry, showing and appointment confirmations,
+            listing and home-search updates, and follow-ups.
+          </li>
+          <li>
+            <strong>Message frequency</strong> varies based on your interaction
+            with the agent; it is not a fixed recurring schedule.
+          </li>
+          <li>
+            <strong>Message and data rates may apply.</strong> These are charged
+            by your mobile carrier and are your responsibility.
+          </li>
+          <li>
+            <strong>To opt out, reply STOP</strong> to any message at any time;
+            you will receive a single confirmation and no further texts.{" "}
+            <strong>For help, reply HELP</strong> or email{" "}
+            <a
+              href="mailto:contact@helmsmart.ai"
+              className="text-[#0072ce] hover:underline"
+            >
+              contact@helmsmart.ai
+            </a>
+            .
+          </li>
+          <li>
+            Carriers are not liable for delayed or undelivered messages. Your
+            consent to receive texts is not a condition of any purchase.
+          </li>
+        </ul>
+        <p>
+          How we handle the information you provide is described in our{" "}
+          <Link href="/privacy" className="text-[#0072ce] hover:underline">
+            Privacy Policy
+          </Link>
+          . Mobile information is never shared with third parties or affiliates
+          for their own marketing or promotional purposes.
+        </p>
+      </>
+    ),
+  },
+  {
     id: "your-content",
     title: "7. Your content",
     body: (
