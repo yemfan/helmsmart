@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function CapRateVsInternalRateOfReturnIRRPage() {
   const title = "Cap Rate vs Internal Rate of Return (IRR)";
-  const url = "https://leadsmart-ai.com/cap-rate-vs-internal-rate-of-return-irr";
+  const url = "https://realtybossai.com/cap-rate-vs-internal-rate-of-return-irr";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -235,7 +235,7 @@ export default function CapRateVsInternalRateOfReturnIRRPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at leadsmart-ai.com to quickly analyze
+          Try our free real estate investment calculator at realtybossai.com to quickly analyze
           your property deals.
         </p>
       </section>

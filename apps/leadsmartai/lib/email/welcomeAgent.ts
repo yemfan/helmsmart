@@ -10,7 +10,7 @@ import { sendEmail } from "@/lib/email";
  * The bundle ID is `ai.leadsmart.mobile` on both platforms
  * (defined in `apps/leadsmart-mobile/app.json`).
  */
-const DASHBOARD_URL = "https://www.leadsmart-ai.com/dashboard";
+const DASHBOARD_URL = "https://www.realtybossai.com/dashboard";
 const APP_STORE_URL =
   process.env.LEADSMART_IOS_APP_STORE_URL?.trim() || DASHBOARD_URL;
 const PLAY_STORE_URL =
@@ -86,7 +86,7 @@ export async function sendAgentWelcomeEmail(params: {
     </div>
 
     <p style="text-align:center;font-size:11px;color:#94a3b8;margin-top:24px;">
-      LeadSmart AI &middot; <a href="https://www.leadsmart-ai.com" style="color:#94a3b8;">leadsmart-ai.com</a>
+      LeadSmart AI &middot; <a href="https://www.realtybossai.com" style="color:#94a3b8;">realtybossai.com</a>
     </p>
   </div>
 </body>

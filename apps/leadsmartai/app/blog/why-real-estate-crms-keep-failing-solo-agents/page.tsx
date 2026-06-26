@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getPost } from "@/lib/blog/posts";
 
 const SLUG = "why-real-estate-crms-keep-failing-solo-agents";
-const SITE_URL = "https://leadsmart-ai.com";
+const SITE_URL = "https://realtybossai.com";
 const TITLE =
   "Why Real Estate CRMs Keep Failing Solo Agents (and What LionDesk's Shutdown Reveals)";
 const DESCRIPTION =

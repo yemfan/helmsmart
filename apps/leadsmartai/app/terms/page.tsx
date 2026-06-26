@@ -19,7 +19,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
       <>
         <p>
           These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of
-          leadsmart-ai.com and the LeadSmart AI Service (the &ldquo;Service&rdquo;)
+          realtybossai.com and the LeadSmart AI Service (the &ldquo;Service&rdquo;)
           provided by MAXY Investment Inc., a Texas corporation, doing business as
           LeadSmart AI (&ldquo;LeadSmart,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo;
           or &ldquo;our&rdquo;). By creating an account, starting a
@@ -61,10 +61,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           and to keep it up to date. You are responsible for safeguarding your credentials
           and for all activity under your account. Notify us immediately at{" "}
           <a
-            href="mailto:contact@leadsmart-ai.com"
+            href="mailto:contact@helmsmart.ai"
             className="text-[#0072ce] hover:underline"
           >
-            contact@leadsmart-ai.com
+            contact@helmsmart.ai
           </a>{" "}
           if you suspect unauthorized access.
         </p>
@@ -200,10 +200,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           campaign for a separate legal identity or higher throughput tier;
           contact{" "}
           <a
-            href="mailto:contact@leadsmart-ai.com"
+            href="mailto:contact@helmsmart.ai"
             className="text-[#0072ce] hover:underline"
           >
-            contact@leadsmart-ai.com
+            contact@helmsmart.ai
           </a>{" "}
           to discuss.
         </p>
@@ -280,7 +280,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           <strong>Inbound email forwarding (optional).</strong> LeadSmart
           provisions each agent a unique inbound forwarding address (e.g.{" "}
-          <code>your-name@inbox.leadsmart-ai.com</code>) on first dashboard
+          <code>your-name@inbox.realtybossai.com</code>) on first dashboard
           visit. If you choose to set up a Gmail / Outlook filter that
           forwards selected messages to that address, LeadSmart processes
           only the emails you explicitly forward — we have no access to your
@@ -477,10 +477,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           You may opt out of this arbitration agreement by emailing{" "}
           <a
-            href="mailto:contact@leadsmart-ai.com"
+            href="mailto:contact@helmsmart.ai"
             className="text-[#0072ce] hover:underline"
           >
-            contact@leadsmart-ai.com
+            contact@helmsmart.ai
           </a>{" "}
           within 30 days of first creating your LeadSmart account. The
           notice must include your name, the email associated with your
@@ -516,10 +516,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           <li>
             <strong>Contact.</strong> Notices to LeadSmart should be sent to{" "}
             <a
-              href="mailto:contact@leadsmart-ai.com"
+              href="mailto:contact@helmsmart.ai"
               className="text-[#0072ce] hover:underline"
             >
-              contact@leadsmart-ai.com
+              contact@helmsmart.ai
             </a>
             .
           </li>

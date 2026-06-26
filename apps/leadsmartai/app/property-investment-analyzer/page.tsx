@@ -41,7 +41,7 @@ export default function PropertyInvestmentAnalyzer() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://leadsmart-ai.com/property-investment-analyzer",
+          url: "https://realtybossai.com/property-investment-analyzer",
           description:
             "Analyze rental property performance including cash flow, net operating income, cap rate and simple ROI.",
         }}

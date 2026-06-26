@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function CapRateFormulaExplainedForBeginnersPage() {
   const title = "Cap Rate Formula Explained for Beginners";
-  const url = "https://leadsmart-ai.com/cap-rate-formula-explained-for-beginners";
+  const url = "https://realtybossai.com/cap-rate-formula-explained-for-beginners";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -251,7 +251,7 @@ export default function CapRateFormulaExplainedForBeginnersPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at leadsmart-ai.com to quickly analyze
+          Try our free real estate investment calculator at realtybossai.com to quickly analyze
           your property deals.
         </p>
       </section>

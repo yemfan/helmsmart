@@ -38,7 +38,7 @@ export default function HOAFeeTracker() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://leadsmart-ai.com/hoa-fee-tracker",
+          url: "https://realtybossai.com/hoa-fee-tracker",
           description:
             "Project long-term HOA costs with annual increases to understand the impact of homeowners association fees.",
         }}

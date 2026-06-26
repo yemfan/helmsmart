@@ -53,7 +53,7 @@ export default async function HelpGuidePage({
   const guide = getGuide(slug);
   if (!guide) notFound();
 
-  const url = `https://leadsmart-ai.com/help/guides/${guide.slug}`;
+  const url = `https://realtybossai.com/help/guides/${guide.slug}`;
 
   return (
     <div className="min-h-screen bg-white">
@@ -74,7 +74,7 @@ export default async function HelpGuidePage({
                   name: "RealtorBoss",
                   logo: {
                     "@type": "ImageObject",
-                    url: "https://leadsmart-ai.com/logo.png",
+                    url: "https://realtybossai.com/logo.png",
                   },
                 },
               },
@@ -175,7 +175,7 @@ export default async function HelpGuidePage({
             </Link>{" "}
             or{" "}
             <a
-              href="mailto:support@leadsmart-ai.com"
+              href="mailto:contact@helmsmart.ai"
               className="font-semibold text-blue-700 hover:underline"
             >
               email support

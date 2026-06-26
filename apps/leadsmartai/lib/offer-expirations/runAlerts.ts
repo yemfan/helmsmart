@@ -49,7 +49,7 @@ export async function runOfferExpirationAlerts(opts?: {
   const appBaseUrl =
     opts?.appBaseUrl ??
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ??
-    "https://www.leadsmart-ai.com";
+    "https://www.realtybossai.com";
   const result: RunExpirationAlertsResult = {
     processed: 0,
     sentEmails: 0,

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getPost } from "@/lib/blog/posts";
 
 const SLUG = "your-crm-should-call-your-sphere-not-just-text-it";
-const SITE_URL = "https://leadsmart-ai.com";
+const SITE_URL = "https://realtybossai.com";
 const TITLE = "Your CRM Should Call Your Sphere — Not Just Text It";
 const DESCRIPTION =
   "Every CRM sends SMS and email drips. None of them pick up the phone. Here's why outbound AI voice calls to your sphere — plus an AI team you command from one instruction — is the real upgrade for 2026.";

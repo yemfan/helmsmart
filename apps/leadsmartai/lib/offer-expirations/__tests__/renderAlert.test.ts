@@ -10,7 +10,7 @@ function input(overrides: Partial<AlertInput> = {}): AlertInput {
     offerPrice: 1_200_000,
     expiresAtIso: "2026-05-15T17:00:00Z",
     hoursUntilExpiration: 24,
-    appBaseUrl: "https://www.leadsmart-ai.com",
+    appBaseUrl: "https://www.realtybossai.com",
     offerUrl: "/dashboard/offers/abc",
     ...overrides,
   };
@@ -49,7 +49,7 @@ describe("renderAlertEmail", () => {
 
   it("absolutizes relative offer URLs against appBaseUrl", () => {
     const out = renderAlertEmail(input({ offerUrl: "/dashboard/offers/xyz" }));
-    expect(out.html).toContain("https://www.leadsmart-ai.com/dashboard/offers/xyz");
+    expect(out.html).toContain("https://www.realtybossai.com/dashboard/offers/xyz");
   });
 
   it("escapes HTML in property address + counterparty", () => {

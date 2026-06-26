@@ -56,7 +56,7 @@ export function ReferAFriendCard() {
   const shareUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/?ref=${summary.code}`
-      : `https://www.leadsmart-ai.com/?ref=${summary.code}`;
+      : `https://www.realtybossai.com/?ref=${summary.code}`;
 
   async function onCopy() {
     try {

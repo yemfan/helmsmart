@@ -43,7 +43,7 @@ export default function RefinanceCalculator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://leadsmart-ai.com/refinance-calculator",
+          url: "https://realtybossai.com/refinance-calculator",
           description:
             "Compare your current mortgage to a new rate and estimate monthly savings and break-even when refinancing.",
         }}

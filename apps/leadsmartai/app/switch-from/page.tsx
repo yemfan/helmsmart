@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
 };
 
-const SITE_URL = "https://leadsmart-ai.com";
+const SITE_URL = "https://realtybossai.com";
 
 export default function SwitchFromIndex() {
   const jsonLd = {

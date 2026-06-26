@@ -346,7 +346,7 @@ export async function fetchAndParseListing(
   const res = await fetch(listingUrl, {
     headers: {
       "user-agent":
-        "Mozilla/5.0 (compatible; LeadSmartAI/1.0; +https://leadsmart-ai.com)",
+        "Mozilla/5.0 (compatible; LeadSmartAI/1.0; +https://realtybossai.com)",
       "accept-language": "en-US,en;q=0.9",
     },
     redirect: "follow",

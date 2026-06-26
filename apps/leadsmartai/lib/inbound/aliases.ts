@@ -50,7 +50,7 @@ function freshLocalPart(): string {
 
 /**
  * Derive a friendly local_part from an email address. The agent who
- * logs in as `fan.yes@gmail.com` gets `fan.yes@inbox.leadsmart-ai.com`
+ * logs in as `fan.yes@gmail.com` gets `fan.yes@inbox.realtybossai.com`
  * as their forwarding address — which feels far more like "their
  * mailbox" than the opaque `agent-b9a798@…` we used to generate.
  *

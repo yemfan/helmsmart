@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowToEvaluateRentalCashFlowPage() {
   const title = "How to Evaluate Rental Property Cash Flow";
-  const url = "https://leadsmart-ai.com/how-to-evaluate-rental-cash-flow";
+  const url = "https://realtybossai.com/how-to-evaluate-rental-cash-flow";
 
   return (
     <div className="container mx-auto px-4 py-10">

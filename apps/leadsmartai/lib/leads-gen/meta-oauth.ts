@@ -65,7 +65,7 @@ export function redirectUri(): string {
   // Sensible default for production so a missing env var doesn't
   // brick the connect button. Dev / preview environments still
   // need the env var since the actual hostname differs.
-  return "https://www.leadsmart-ai.com/api/leads-gen/connect/meta/callback";
+  return "https://www.realtybossai.com/api/leads-gen/connect/meta/callback";
 }
 
 /** Build the OAuth dialog URL. `state` is opaque to Meta — they echo

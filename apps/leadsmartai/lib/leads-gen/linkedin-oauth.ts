@@ -53,7 +53,7 @@ function clientSecret(): string {
 export function redirectUri(): string {
   const v = process.env.LINKEDIN_OAUTH_REDIRECT_URI?.trim();
   if (v) return v;
-  return "https://www.leadsmart-ai.com/api/leads-gen/connect/linkedin/callback";
+  return "https://www.realtybossai.com/api/leads-gen/connect/linkedin/callback";
 }
 
 /**

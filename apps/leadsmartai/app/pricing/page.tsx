@@ -27,7 +27,7 @@ export default async function ConsumerPricingPage() {
           name: "RealtorBoss",
           description:
             "AI-powered CRM and lead management platform for real estate professionals. Capture, qualify, and convert leads with intelligent automation.",
-          url: "https://leadsmart-ai.com/pricing",
+          url: "https://realtybossai.com/pricing",
           applicationCategory: "BusinessApplication",
           offers: {
             "@type": "AggregateOffer",
@@ -41,7 +41,7 @@ export default async function ConsumerPricingPage() {
                 priceValidUntil: "2027-12-31",
                 description:
                   "Limited functions and usages. Up to 5 leads, 50 contacts.",
-                url: "https://leadsmart-ai.com/signup",
+                url: "https://realtybossai.com/signup",
               },
               {
                 "@type": "Offer",
@@ -52,7 +52,7 @@ export default async function ConsumerPricingPage() {
                 billingIncrement: "P1M",
                 description:
                   "Full CRM and AI for active agents. Producer Track coaching, bilingual English / 中文 AI.",
-                url: "https://leadsmart-ai.com/pricing",
+                url: "https://realtybossai.com/pricing",
               },
               {
                 "@type": "Offer",
@@ -62,7 +62,7 @@ export default async function ConsumerPricingPage() {
                 priceValidUntil: "2027-12-31",
                 billingIncrement: "P1Y",
                 description: "Pro tier billed annually — save 2 months vs monthly.",
-                url: "https://leadsmart-ai.com/agent/pricing",
+                url: "https://realtybossai.com/agent/pricing",
               },
               {
                 "@type": "Offer",
@@ -73,7 +73,7 @@ export default async function ConsumerPricingPage() {
                 billingIncrement: "P1M",
                 description:
                   "For top producers closing 10+ deals/month. Top Producer Track coaching, unlimited everything.",
-                url: "https://leadsmart-ai.com/pricing",
+                url: "https://realtybossai.com/pricing",
               },
               {
                 "@type": "Offer",
@@ -83,7 +83,7 @@ export default async function ConsumerPricingPage() {
                 priceValidUntil: "2027-12-31",
                 billingIncrement: "P1Y",
                 description: "Premium tier billed annually — save 2 months vs monthly.",
-                url: "https://leadsmart-ai.com/agent/pricing",
+                url: "https://realtybossai.com/agent/pricing",
               },
               {
                 "@type": "Offer",
@@ -94,7 +94,7 @@ export default async function ConsumerPricingPage() {
                 billingIncrement: "P1M",
                 description:
                   "Relationship-driven agents serving high-value clients. Sphere Intelligence Pro, white-glove onboarding, concierge support, cultural calendar automations, custom voice tuning.",
-                url: "https://leadsmart-ai.com/agent/pricing",
+                url: "https://realtybossai.com/agent/pricing",
               },
               {
                 "@type": "Offer",
@@ -104,7 +104,7 @@ export default async function ConsumerPricingPage() {
                 priceValidUntil: "2027-12-31",
                 billingIncrement: "P1Y",
                 description: "Signature tier billed annually — save 2 months vs monthly.",
-                url: "https://leadsmart-ai.com/agent/pricing",
+                url: "https://realtybossai.com/agent/pricing",
               },
               {
                 "@type": "Offer",
@@ -115,7 +115,7 @@ export default async function ConsumerPricingPage() {
                 billingIncrement: "P1M",
                 description:
                   "Brokerages and small teams. Round-robin lead routing, per-member reporting, Top Producer Track for every seat.",
-                url: "https://leadsmart-ai.com/contact",
+                url: "https://realtybossai.com/contact",
               },
               {
                 "@type": "Offer",
@@ -125,7 +125,7 @@ export default async function ConsumerPricingPage() {
                 priceValidUntil: "2027-12-31",
                 billingIncrement: "P1Y",
                 description: "Team tier billed annually — save 2 months vs monthly.",
-                url: "https://leadsmart-ai.com/contact",
+                url: "https://realtybossai.com/contact",
               },
             ],
           },

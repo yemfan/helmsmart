@@ -80,7 +80,7 @@ const bodySchema = z.object({
     .optional(),
 });
 
-const DEFAULT_PRIVACY_POLICY_URL = "https://www.leadsmart-ai.com/privacy";
+const DEFAULT_PRIVACY_POLICY_URL = "https://www.realtybossai.com/privacy";
 
 /**
  * POST /api/leads-gen/ads/create

@@ -211,7 +211,7 @@ const SECTIONS: Section[] = [
   },
 ];
 
-const SITE_URL = "https://leadsmart-ai.com";
+const SITE_URL = "https://realtybossai.com";
 
 export default function FreeToolsPage() {
   const total = SECTIONS.reduce((sum, s) => sum + s.tools.length, 0);

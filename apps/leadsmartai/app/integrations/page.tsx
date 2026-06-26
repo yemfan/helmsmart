@@ -262,7 +262,7 @@ const STATUS_STYLES: Record<
   },
 };
 
-const SITE_URL = "https://leadsmart-ai.com";
+const SITE_URL = "https://realtybossai.com";
 
 export default function IntegrationsPage() {
   const total = CATEGORIES.reduce((sum, c) => sum + c.items.length, 0);

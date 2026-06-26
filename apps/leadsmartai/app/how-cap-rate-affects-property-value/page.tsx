@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowCapRateAffectsPropertyValuePage() {
   const title = "How Cap Rate Affects Property Value in Real Estate Investing";
-  const url = "https://leadsmart-ai.com/how-cap-rate-affects-property-value";
+  const url = "https://realtybossai.com/how-cap-rate-affects-property-value";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -233,7 +233,7 @@ export default function HowCapRateAffectsPropertyValuePage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at leadsmart-ai.com to quickly analyze
+          Try our free real estate investment calculator at realtybossai.com to quickly analyze
           your property deals.
         </p>
       </section>

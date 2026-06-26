@@ -72,7 +72,7 @@ export default function CapRateRoiCalculator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://leadsmart-ai.com/cap-rate-roi-calculator",
+          url: "https://realtybossai.com/cap-rate-roi-calculator",
           description:
             "Calculate cap rate and first-year cash-on-cash ROI for leveraged real estate investments.",
         }}

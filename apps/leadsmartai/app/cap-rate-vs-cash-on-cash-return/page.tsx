@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function CapRateVsCashOnCashReturnPage() {
   const title = "Cap Rate vs Cash on Cash Return: Which Metric Should Real Estate Investors Use?";
-  const url = "https://leadsmart-ai.com/cap-rate-vs-cash-on-cash-return";
+  const url = "https://realtybossai.com/cap-rate-vs-cash-on-cash-return";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -241,7 +241,7 @@ export default function CapRateVsCashOnCashReturnPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at leadsmart-ai.com to quickly analyze
+          Try our free real estate investment calculator at realtybossai.com to quickly analyze
           your property deals.
         </p>
       </section>

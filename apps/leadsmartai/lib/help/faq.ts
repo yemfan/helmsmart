@@ -106,7 +106,7 @@ export const HELP_FAQ: ReadonlyArray<HelpFaqEntry> = [
   {
     category: "privacy",
     q: "How do I get help from a real person?",
-    a: "Open the chat bubble in your dashboard or email support@leadsmart-ai.com. Premium and Team plans include priority support with same-business-day response. We're agents-helping-agents — no offshore tier-1 script-readers.",
+    a: "Open the chat bubble in your dashboard or email contact@helmsmart.ai. Premium and Team plans include priority support with same-business-day response. We're agents-helping-agents — no offshore tier-1 script-readers.",
   },
 
   // ── AI team & voice ───────────────────────────────────────────

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { getSwitchSource, SWITCH_SOURCES } from "@/lib/marketing/switch-from";
 
-const SITE_URL = "https://leadsmart-ai.com";
+const SITE_URL = "https://realtybossai.com";
 
 type RouteParams = { slug: string };
 
