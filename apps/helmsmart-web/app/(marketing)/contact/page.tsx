@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Mail, MessageSquare, Clock } from "lucide-react";
+import { Mail, MessageSquare, Clock, Building2 } from "lucide-react";
 import ContactFormComponent from "./_components/contact-form";
 
 export const metadata: Metadata = {
@@ -102,6 +102,33 @@ export default function ContactPage() {
           </Link>
           .
         </p>
+
+        {/* Business information — names the operating legal entity +
+            registered address so carriers / trust vendors can verify the
+            HelmSmart ↔ helmsmart.ai association from a high-visibility page
+            (mirrors the footer + Privacy/Terms). */}
+        <div className="mt-10 rounded-2xl border border-gray-100 bg-slate-50 p-7">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-slate-200 text-slate-700">
+              <Building2 className="h-5 w-5" />
+            </span>
+            <div>
+              <h3 className="font-semibold text-gray-900">Business information</h3>
+              <p className="text-sm text-gray-500">Operating company &amp; mailing address</p>
+            </div>
+          </div>
+          <address className="mt-3 text-sm not-italic leading-relaxed text-gray-600">
+            <span className="font-medium text-gray-900">MAXY Investment Inc.</span>
+            <br />
+            HelmSmart is a DBA of MAXY Investment Inc.
+            <br />
+            6511 Parkriver Crossing
+            <br />
+            Sugar Land, TX 77479
+            <br />
+            United States
+          </address>
+        </div>
       </section>
     </div>
   );

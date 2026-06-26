@@ -46,7 +46,8 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
       <>
         <p>
           PropertyTools AI (&ldquo;PropertyTools,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo;
-          or &ldquo;our&rdquo;) operates the website propertytoolsai.com and provides AI-
+          or &ldquo;our&rdquo;), a service of MAXY Investment Inc., a Texas corporation,
+          operates the website propertytoolsai.com and provides AI-
           assisted home valuation, calculators, market reports, and related services (the
           &ldquo;Service&rdquo;). This Privacy Policy explains what information we collect,
           how we use and share it, and the choices you have.

@@ -55,8 +55,10 @@ export function MarketingFooter() {
               <HelmLogo />
               <span className="text-sm text-slate-400">More control, less effort</span>
             </div>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-400 sm:text-right">
               &copy; 2026 MAXY Investment Inc. HelmSmart is a DBA of MAXY Investment Inc. All rights reserved.
+              <br />
+              6511 Parkriver Crossing, Sugar Land, TX 77479
             </p>
           </div>
         </div>

@@ -39,7 +39,8 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of
           propertytoolsai.com and the PropertyTools AI Service (the &ldquo;Service&rdquo;)
-          provided by PropertyTools AI (&ldquo;PropertyTools,&rdquo; &ldquo;we,&rdquo;
+          provided by PropertyTools AI, a service of MAXY Investment Inc., a Texas
+          corporation (&ldquo;PropertyTools,&rdquo; &ldquo;we,&rdquo;
           &ldquo;us,&rdquo; or &ldquo;our&rdquo;). By creating an account, using any
           calculator or tool, or subscribing to Premium, you agree to these Terms and our{" "}
           <Link href="/privacy" className="text-[#0072ce] hover:underline">

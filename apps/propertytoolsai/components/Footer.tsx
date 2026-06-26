@@ -174,9 +174,17 @@ export default function Footer() {
             </span>
           </div>
 
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            &copy; {new Date().getFullYear()} PropertyTools AI. All rights
-            reserved.
+          {/* Legal-entity attribution. Naming the operating company +
+              registered address on every page lets carriers / trust vendors
+              verify the PropertyTools AI ↔ propertytoolsai.com association
+              from the homepage (mirrors Privacy/Terms). */}
+          <p className="text-sm text-slate-600 sm:text-right dark:text-slate-400">
+            &copy; {new Date().getFullYear()} MAXY Investment Inc. All rights reserved.
+            <br />
+            <span className="text-xs text-slate-500 dark:text-slate-500">
+              PropertyTools AI is a service of MAXY Investment Inc. &middot;{" "}
+              6511 Parkriver Crossing, Sugar Land, TX 77479
+            </span>
           </p>
         </div>
       </div>
