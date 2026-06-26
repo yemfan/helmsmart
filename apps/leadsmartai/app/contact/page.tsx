@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
-import { LifeBuoy, Mail, MessageCircle } from "lucide-react";
+import { Building2, LifeBuoy, Mail, MessageCircle } from "lucide-react";
 import ContactForm from "./ContactForm";
 import JsonLd from "@/components/JsonLd";
 
@@ -21,12 +21,25 @@ export default function ContactPage() {
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "ContactPoint",
-          contactType: "Customer Service",
-          url: "https://realtybossai.com/contact",
-          name: "RealtorBoss Contact",
-          availableLanguage: ["en"],
+          "@type": "Organization",
+          name: "RealtorBoss",
+          legalName: "MAXY Investment Inc.",
+          url: "https://realtybossai.com",
           email: "contact@helmsmart.ai",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "6511 Parkriver Crossing",
+            addressLocality: "Sugar Land",
+            addressRegion: "TX",
+            postalCode: "77479",
+            addressCountry: "US",
+          },
+          contactPoint: {
+            "@type": "ContactPoint",
+            contactType: "Customer Service",
+            email: "contact@helmsmart.ai",
+            availableLanguage: ["en"],
+          },
         }}
       />
       <div className="text-center">
@@ -96,6 +109,33 @@ export default function ContactPage() {
             >
               contact@helmsmart.ai
             </a>
+          </div>
+
+          {/* Business information — names the operating legal entity +
+              registered address so carriers / trust vendors can verify the
+              business ↔ realtybossai.com association from a high-visibility
+              page (mirrors the footer + Privacy/Terms). */}
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                <Building2 className="h-5 w-5" strokeWidth={2} />
+              </span>
+              <div>
+                <h3 className="font-semibold text-slate-900">Business information</h3>
+                <p className="text-sm text-slate-500">Operating company &amp; mailing address</p>
+              </div>
+            </div>
+            <address className="mt-3 text-sm not-italic leading-relaxed text-slate-600">
+              <span className="font-medium text-slate-900">MAXY Investment Inc.</span>
+              <br />
+              RealtorBoss (formerly LeadSmart AI)
+              <br />
+              6511 Parkriver Crossing
+              <br />
+              Sugar Land, TX 77479
+              <br />
+              United States
+            </address>
           </div>
 
           {/* Back link */}
