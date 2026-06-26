@@ -31,7 +31,16 @@ export default function ContactPage() {
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "PropertyTools AI",
+          legalName: "MAXY Investment Inc.",
           url: "https://propertytoolsai.com",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "6511 Parkriver Crossing",
+            addressLocality: "Sugar Land",
+            addressRegion: "TX",
+            postalCode: "77479",
+            addressCountry: "US",
+          },
           contactPoint: [
             {
               "@type": "ContactPoint",
@@ -73,6 +82,25 @@ export default function ContactPage() {
               <p className="mt-2 text-sm">
                 One business day during weekdays. Weekends and holidays may be slower.
               </p>
+            </section>
+            {/* Business information — names the operating legal entity +
+                registered address so carriers / trust vendors can verify the
+                PropertyTools AI ↔ propertytoolsai.com association. */}
+            <section>
+              <h2 className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
+                Business information
+              </h2>
+              <address className="mt-2 text-sm not-italic leading-relaxed text-slate-600">
+                <span className="font-medium text-slate-900">MAXY Investment Inc.</span>
+                <br />
+                PropertyTools AI is a service of MAXY Investment Inc.
+                <br />
+                6511 Parkriver Crossing
+                <br />
+                Sugar Land, TX 77479
+                <br />
+                United States
+              </address>
             </section>
             <section>
               <h2 className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
