@@ -53,6 +53,7 @@
     "@repo/growth": "workspace:*",
     "@repo/lead-marketplace": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@repo/valuation": "workspace:*",
     "@repo/voice": "workspace:*",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.99.2",

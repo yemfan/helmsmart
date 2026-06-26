@@ -25,48 +25,15 @@ type Comparable = {
   soldDate: string;
 };
 
-const SAMPLE_COMPS: Comparable[] = [
-  {
-    address: "123 Oakridge Dr",
-    beds: 3,
-    baths: 2,
-    sqft: 1850,
-    soldPrice: 815000,
-    soldDate: "2025-12-10",
-  },
-  {
-    address: "456 Pinecrest Ave",
-    beds: 4,
-    baths: 3,
-    sqft: 2100,
-    soldPrice: 842000,
-    soldDate: "2025-11-22",
-  },
-  {
-    address: "789 Maple Ln",
-    beds: 3,
-    baths: 2,
-    sqft: 1750,
-    soldPrice: 799000,
-    soldDate: "2025-11-05",
-  },
-  {
-    address: "102 Cedar Ct",
-    beds: 4,
-    baths: 3,
-    sqft: 2250,
-    soldPrice: 861000,
-    soldDate: "2025-10-18",
-  },
-  {
-    address: "305 Birch Way",
-    beds: 3,
-    baths: 2,
-    sqft: 1900,
-    soldPrice: 828000,
-    soldDate: "2025-10-01",
-  },
-];
+type AiValuation = {
+  estimatedValue: number;
+  low: number;
+  high: number;
+  avgPricePerSqft: number;
+  confidenceScore: number | null;
+};
+
+type AiSource = { title: string; url: string };
 
 export default function AiCmaAnalyzerPage() {
   return <AiCmaAnalyzerPageInner />;
@@ -83,50 +50,108 @@ function AiCmaAnalyzerPageInner() {
     propertyType: "Single-family",
   });
 
-  const [comps] = useState<Comparable[]>(SAMPLE_COMPS);
+  const [comps, setComps] = useState<Comparable[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [valuation, setValuation] = useState<AiValuation | null>(null);
+  const [aiSummaryText, setAiSummaryText] = useState<string | null>(null);
+  const [sources, setSources] = useState<AiSource[]>([]);
+  const [disclaimer, setDisclaimer] = useState<string | null>(null);
 
   const priceStats = useMemo(() => {
-    if (!comps.length) return null;
+    if (!comps.length && !valuation) return null;
 
-    const prices = comps.map((c) => c.soldPrice).sort((a, b) => a - b);
-    const avgPrice =
-      prices.reduce((sum, p) => sum + p, 0) / prices.length;
-    const medianPrice =
-      prices.length % 2 === 1
+    const prices = comps
+      .map((c) => c.soldPrice)
+      .filter((p) => p > 0)
+      .sort((a, b) => a - b);
+    const compAvg = prices.length
+      ? prices.reduce((sum, p) => sum + p, 0) / prices.length
+      : 0;
+    const avgPrice = valuation?.estimatedValue || compAvg;
+    const medianPrice = prices.length
+      ? prices.length % 2 === 1
         ? prices[(prices.length - 1) / 2]
-        : (prices[prices.length / 2 - 1] +
-            prices[prices.length / 2]) /
-          2;
+        : (prices[prices.length / 2 - 1] + prices[prices.length / 2]) / 2
+      : avgPrice;
 
     const avgPpsf =
-      comps.reduce(
-        (sum, c) => sum + c.soldPrice / Math.max(c.sqft, 1),
-        0
-      ) / comps.length;
+      valuation?.avgPricePerSqft ||
+      (comps.length
+        ? comps.reduce((sum, c) => sum + c.soldPrice / Math.max(c.sqft, 1), 0) /
+          comps.length
+        : 0);
 
-    const suggestedLow = avgPrice * 0.97;
-    const suggestedHigh = avgPrice * 1.03;
+    // Prefer the AI engine's grounded range; fall back to a ±3% band on the
+    // comp average when (rarely) the model returned comps but no range.
+    const suggestedLow = valuation?.low || avgPrice * 0.97;
+    const suggestedHigh = valuation?.high || avgPrice * 1.03;
 
-    const spread = suggestedHigh - suggestedLow;
-    const spreadRatio = spread / Math.max(avgPrice, 1);
-    const compCountFactor = Math.min(comps.length / 8, 1);
-    const rawConfidence =
-      70 * (1 - spreadRatio) + 30 * compCountFactor;
+    let confidenceScore: number;
+    if (valuation?.confidenceScore != null) {
+      confidenceScore = valuation.confidenceScore;
+    } else {
+      const spread = suggestedHigh - suggestedLow;
+      const spreadRatio = spread / Math.max(avgPrice, 1);
+      const compCountFactor = Math.min(comps.length / 8, 1);
+      confidenceScore = Math.max(
+        0,
+        Math.min(100, 70 * (1 - spreadRatio) + 30 * compCountFactor)
+      );
+    }
 
-    return {
-      avgPrice,
-      medianPrice,
-      avgPpsf,
-      suggestedLow,
-      suggestedHigh,
-      confidenceScore: Math.max(0, Math.min(100, rawConfidence)),
-    };
-  }, [comps]);
+    return { avgPrice, medianPrice, avgPpsf, suggestedLow, suggestedHigh, confidenceScore };
+  }, [comps, valuation]);
 
-  const handleAnalyzeProperty = () => {
-    alert(
-      "CMA generated using sample comparable sales. API-driven comps and market data will be added in a future update."
-    );
+  const handleAnalyzeProperty = async () => {
+    const address = inputs.address.trim();
+    if (!address) {
+      setError("Enter a property address first.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/cma/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          address,
+          beds: inputs.bedrooms,
+          baths: inputs.bathrooms,
+          sqft: inputs.squareFeet,
+          yearBuilt: inputs.yearBuilt,
+        }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json?.ok || !json?.snapshot) {
+        throw new Error(
+          json?.error ?? "Could not generate a CMA for this address. Try a more complete address."
+        );
+      }
+      const snap = json.snapshot;
+      const mapped: Comparable[] = (Array.isArray(snap.comps) ? snap.comps : []).map(
+        (c: Record<string, unknown>) => ({
+          address: String(c.address ?? ""),
+          beds: Number(c.beds ?? 0),
+          baths: Number(c.baths ?? 0),
+          sqft: Number(c.sqft ?? 0),
+          soldPrice: Number(c.price ?? 0),
+          soldDate: String(c.soldDate ?? ""),
+        })
+      );
+      setComps(mapped);
+      setValuation(snap.valuation ?? null);
+      setAiSummaryText(typeof snap.summary === "string" ? snap.summary : null);
+      setSources(Array.isArray(snap.sources) ? snap.sources : []);
+      setDisclaimer(typeof snap.disclaimer === "string" ? snap.disclaimer : null);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Could not generate a CMA.");
+      setComps([]);
+      setValuation(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleExportPdf = () => {
@@ -147,8 +172,10 @@ function AiCmaAnalyzerPageInner() {
   const confidenceScore = priceStats?.confidenceScore ?? 0;
 
   const aiSummary = useMemo(() => {
+    // Prefer the engine's own grounded summary when present.
+    if (aiSummaryText) return aiSummaryText;
     if (!priceStats) {
-      return "Once comparable sales and live market data are available, this section will summarize how the subject property fits within the local market and provide an estimated value range.";
+      return "Enter an address and click Analyze Property to generate a CMA from real, recently sold comparables found via live web search.";
     }
 
     const { avgPrice, medianPrice, suggestedLow, suggestedHigh } =
@@ -178,7 +205,7 @@ function AiCmaAnalyzerPageInner() {
       undefined,
       { maximumFractionDigits: 0 }
     )}) appears reasonable given the current set of comparables. ${statusText} As always, verify property condition, neighborhood trends, and any unique features before final pricing decisions.`;
-  }, [priceStats, marketTrends.status]);
+  }, [aiSummaryText, priceStats, marketTrends.status]);
 
   return (
     <div className="w-full max-w-6xl py-10">
@@ -241,14 +268,18 @@ function AiCmaAnalyzerPageInner() {
               <button
                 type="button"
                 onClick={handleAnalyzeProperty}
-                className="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                disabled={loading}
+                className="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Analyze Property
+                {loading ? "Analyzing…" : "Analyze Property"}
               </button>
+              {error ? (
+                <p className="text-xs font-medium text-red-600">{error}</p>
+              ) : null}
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              In a future update, this field will pull live comparable sales
-              and market data via API integrations.
+              We search the web for recent comparable sales near this address
+              and build a value range from real, cited comps (~15–40s).
             </p>
           </section>
 
@@ -350,9 +381,17 @@ function AiCmaAnalyzerPageInner() {
                 Comparable Sales
               </h2>
               <span className="text-xs text-gray-500">
-                Sample data – API integration coming soon
+                {comps.length
+                  ? `${comps.length} recent sales found via web search`
+                  : "Run an analysis to load real comps"}
               </span>
             </div>
+            {!comps.length ? (
+              <p className="text-sm text-gray-500">
+                Enter an address and click <strong>Analyze Property</strong> to
+                pull recent comparable sales.
+              </p>
+            ) : null}
             <div className="overflow-x-auto">
               <table className="min-w-full text-xs sm:text-sm border-collapse">
                 <thead>
@@ -494,6 +533,32 @@ function AiCmaAnalyzerPageInner() {
               </div>
             </div>
             <p>{aiSummary}</p>
+            {sources.length ? (
+              <div className="border-t border-gray-100 pt-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Sources
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {sources.slice(0, 8).map((s, i) => (
+                    <li key={i} className="truncate text-xs">
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {s.title || s.url}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {disclaimer ? (
+              <p className="border-t border-gray-100 pt-3 text-xs italic text-gray-500">
+                {disclaimer}
+              </p>
+            ) : null}
           </section>
         </div>
       </div>
