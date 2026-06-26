@@ -49,7 +49,7 @@ export type ProcessInboundResult =
 function getAppOrigin(): string {
   const fromEnv = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (fromEnv) return fromEnv.replace(/\/$/, "");
-  return "https://www.helmsmart.ai";
+  return "https://www.realtybossai.com";
 }
 
 export async function processInboundEmail(
