@@ -140,10 +140,18 @@ export default function Footer() {
             <RealtorBossLogo />
           </Link>
 
-          <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-500">
+          <div className="flex flex-col items-center gap-1.5 text-xs text-slate-400 sm:items-end dark:text-slate-500">
             <CookieSettingsLink className="hover:text-[#0072ce] hover:underline dark:hover:text-[#4da3e8]" />
             <span>
-              &copy; {new Date().getFullYear()} RealtorBoss (formerly LeadSmart AI). All rights reserved.
+              &copy; {new Date().getFullYear()} MAXY Investment Inc. All rights reserved.
+            </span>
+            {/* Legal-entity attribution. Surfacing the operating company +
+                registered address on every page (not just /privacy + /terms)
+                lets carriers / trust vendors verify the business-name ↔
+                realtybossai.com association from the homepage. */}
+            <span className="text-center sm:text-right">
+              RealtorBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc. &middot;{" "}
+              6511 Parkriver Crossing, Sugar Land, TX 77479
             </span>
           </div>
         </div>
