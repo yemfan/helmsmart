@@ -7,7 +7,7 @@ const monorepoRoot = path.join(__dirname, "../..");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@repo/ui", "@leadsmart/shared", "@leadsmart/api-client"],
+  transpilePackages: ["@repo/ui", "@repo/valuation", "@leadsmart/shared", "@leadsmart/api-client"],
   /** Nav-friendly URLs → existing tool routes */
   async redirects() {
     return [

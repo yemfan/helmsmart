@@ -334,6 +334,9 @@ importers:
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@repo/valuation':
+        specifier: workspace:*
+        version: link:../../packages/valuation
       '@repo/voice':
         specifier: workspace:*
         version: link:../../packages/voice
@@ -494,6 +497,9 @@ importers:
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@repo/valuation':
+        specifier: workspace:*
+        version: link:../../packages/valuation
       '@supabase/ssr':
         specifier: ^0.6.1
         version: 0.6.1(@supabase/supabase-js@2.100.1)
@@ -762,6 +768,15 @@ importers:
       typescript:
         specifier: ^5.1.6
         version: 5.9.3
+
+  packages/valuation:
+    dependencies:
+      '@anthropic-ai/sdk':
+        specifier: ^0.73.0
+        version: 0.73.0(zod@4.3.6)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
 
   packages/voice: {}
 

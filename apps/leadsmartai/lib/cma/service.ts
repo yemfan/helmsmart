@@ -97,7 +97,6 @@ export async function createCmaForAgent(
   const { generateAiCma } = await import("./aiCma");
   const fetched = await generateAiCma({
     address: subjectAddress,
-    leadId: input.contactId ?? null,
     beds: input.beds,
     baths: input.baths,
     sqft: input.sqft,
