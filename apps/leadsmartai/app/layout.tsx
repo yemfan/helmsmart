@@ -42,6 +42,12 @@ import type { Metadata } from "next";
 const SITE_URL = getSiteUrl().replace(/\/$/, "");
 // RealtyBoss rebrand on the same domain (realtybossai.com stays the URL).
 const SITE_NAME = "RealtyBoss";
+// SEO brand: lead <title>/OG/schema with the "RealtyBoss AI" variant. We own
+// the exact-match domain (realtybossai.com) for the winnable "realtyboss ai"
+// query, and it disambiguates us from realtyboss.com / realtyboss.ng. SITE_NAME
+// stays the wordmark; SITE_BRAND / SITE_TITLE drive search-facing metadata.
+const SITE_BRAND = "RealtyBoss AI";
+const SITE_TITLE = "RealtyBoss AI — AI Real Estate Team for Agents";
 const SITE_DESCRIPTION =
   "RealtyBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.";
 
@@ -53,8 +59,8 @@ const SITE_DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: SITE_NAME,
-    template: `%s | ${SITE_NAME}`,
+    default: SITE_TITLE,
+    template: `%s | ${SITE_BRAND}`,
   },
   description: SITE_DESCRIPTION,
   keywords: [
@@ -78,8 +84,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: SITE_URL,
-    siteName: SITE_NAME,
-    title: SITE_NAME,
+    siteName: SITE_BRAND,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     // `images` is intentionally omitted: Next.js App Router auto-detects
     // `app/opengraph-image.tsx` and wires it as the og:image for this
@@ -89,7 +95,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: SITE_NAME,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     // Same as openGraph.images — Next auto-picks up opengraph-image.tsx
     // for twitter:image as well. No creator handle until a RealtyBoss
@@ -134,9 +140,15 @@ const jsonLd = [
     "@context": "https://schema.org",
     "@type": "Organization",
     name: SITE_NAME,
+    // Registered alias so Google ties both "RealtyBoss" and "RealtyBoss AI"
+    // (our exact-match domain query) to this entity.
+    alternateName: SITE_BRAND,
     url: SITE_URL,
     logo: `${SITE_URL}/brand/realtorboss/realtorboss-icon-512.png`,
     description: SITE_DESCRIPTION,
+    // Populate with verified profile URLs (LinkedIn / X / Instagram /
+    // Crunchbase / G2 / Capterra) as they're created — strengthens the
+    // brand entity + knowledge panel.
     sameAs: [] as string[],
   },
   {
@@ -157,6 +169,7 @@ const jsonLd = [
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: SITE_NAME,
+    alternateName: SITE_BRAND,
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web, iOS, Android",
     description: SITE_DESCRIPTION,
