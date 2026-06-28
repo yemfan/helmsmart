@@ -7,6 +7,7 @@ import {
 } from "@/lib/realtorboss/assistants";
 import { AI_TEAM, type AssistantType } from "@/lib/realtorboss/team";
 import { SKILLS } from "@/lib/ai/prompts/realtorboss";
+import { isValidAvatarId } from "@/lib/realtorboss/avatars";
 
 export const runtime = "nodejs";
 
@@ -51,6 +52,8 @@ export async function PATCH(req: Request) {
       type?: string;
       status?: string;
       enabledSkills?: unknown;
+      name?: unknown;
+      avatarId?: unknown;
     };
 
     const type = AI_TEAM.find((d) => d.type === body.type)?.type as AssistantType | undefined;
@@ -62,12 +65,21 @@ export async function PATCH(req: Request) {
     const enabledSkills = Array.isArray(body.enabledSkills)
       ? body.enabledSkills.filter((s): s is string => typeof s === "string")
       : undefined;
-    if (!status && !enabledSkills) {
+    // Name: trim + bound to a sensible label length; reject empty.
+    const name =
+      typeof body.name === "string" && body.name.trim() ? body.name.trim().slice(0, 80) : undefined;
+    const avatarId = isValidAvatarId(body.avatarId) ? body.avatarId : undefined;
+    if (!status && !enabledSkills && name === undefined && avatarId === undefined) {
       return NextResponse.json({ ok: false, error: "Nothing to update." }, { status: 400 });
     }
 
     await ensureAssistantsForAgent(agentId);
-    const assistant = await updateAssistantForAgent(agentId, type, { status, enabledSkills });
+    const assistant = await updateAssistantForAgent(agentId, type, {
+      status,
+      enabledSkills,
+      name,
+      avatarId,
+    });
     return NextResponse.json({ ok: true, assistant });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
