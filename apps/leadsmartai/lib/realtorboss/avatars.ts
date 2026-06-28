@@ -1,16 +1,16 @@
 import type { AssistantType } from "@/lib/realtorboss/team";
 
 /**
- * Shared AI-assistant avatar set — 20 illustrated personas served as static
- * SVGs from /public/avatars (copied from the HelmSmart workforce set). A user
- * assigns one per assistant; `defaultAvatarForType` gives a stable role-fit
- * default before they pick. Server-safe (no React) so both the API/seed layer
- * and the client picker can import it.
+ * Shared AI-assistant avatar set — 10 illustrated RealtyBoss portraits served
+ * as static SVGs from /public/avatars. A user assigns one per assistant;
+ * `defaultAvatarForType` gives a stable role-fit default before they pick.
+ * Server-safe (no React) so both the API/seed layer and the client picker can
+ * import it.
  */
 
 export const AVATARS: readonly string[] = Array.from(
-  { length: 20 },
-  (_, i) => `persona-${String(i + 1).padStart(2, "0")}`,
+  { length: 10 },
+  (_, i) => `avatar-${String(i + 1).padStart(2, "0")}`,
 );
 
 export function avatarUrl(id: string): string {
@@ -28,14 +28,14 @@ export function defaultAvatarForSeed(seed: string): string {
   return AVATARS[Math.abs(h) % AVATARS.length];
 }
 
-/** Role-fit default avatar per assistant type (mirrors HelmSmart's choices). */
+/** Role-fit default avatar per assistant type (one of the 10 custom portraits). */
 export const DEFAULT_ASSISTANT_AVATARS: Record<AssistantType, string> = {
-  boss_assistant: "persona-13",
-  receptionist: "persona-02",
-  sales_assistant: "persona-05",
-  marketing_assistant: "persona-14",
-  transaction_assistant: "persona-07",
-  accountant: "persona-06",
+  boss_assistant: "avatar-01",
+  receptionist: "avatar-02",
+  sales_assistant: "avatar-03",
+  marketing_assistant: "avatar-04",
+  transaction_assistant: "avatar-05",
+  accountant: "avatar-06",
 };
 
 export function defaultAvatarForType(type: AssistantType): string {
