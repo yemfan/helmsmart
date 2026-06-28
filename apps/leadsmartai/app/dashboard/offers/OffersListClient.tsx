@@ -175,6 +175,13 @@ export function OffersListClient({
             ⬆ Upload offer
           </Link>
           <Link
+            href="/dashboard/contracts/review"
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            title="AI plain-English review of a purchase contract — key terms, deadlines, risk flags, and blank fields. Not legal advice."
+          >
+            🔍 Review contract
+          </Link>
+          <Link
             href={
               initialContactFilter
                 ? `/dashboard/offers/new?contactId=${encodeURIComponent(initialContactFilter)}`
