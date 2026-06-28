@@ -526,10 +526,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           To exercise any of these rights, email{" "}
           <a
-            href="mailto:contact@helmsmart.ai"
+            href="mailto:contact@realtybossai.com"
             className="text-[#0072ce] hover:underline"
           >
-            contact@helmsmart.ai
+            contact@realtybossai.com
           </a>
           . We will respond within the timeframes required by applicable law.
         </p>
@@ -542,10 +542,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           Do-Not-Sell-or-Share request anyway (it will be honored as a
           forward-looking opt-out), email{" "}
           <a
-            href="mailto:contact@helmsmart.ai?subject=Do%20Not%20Sell%20or%20Share%20My%20Personal%20Information"
+            href="mailto:contact@realtybossai.com?subject=Do%20Not%20Sell%20or%20Share%20My%20Personal%20Information"
             className="text-[#0072ce] hover:underline"
           >
-            contact@helmsmart.ai
+            contact@realtybossai.com
           </a>{" "}
           with the subject line &ldquo;Do Not Sell or Share My Personal
           Information.&rdquo; You may also designate an authorized agent to make
@@ -579,10 +579,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           </a>
           . You may also contact us first at{" "}
           <a
-            href="mailto:contact@helmsmart.ai"
+            href="mailto:contact@realtybossai.com"
             className="text-[#0072ce] hover:underline"
           >
-            contact@helmsmart.ai
+            contact@realtybossai.com
           </a>
           , and we will respond within applicable legal timeframes.
         </p>
@@ -707,10 +707,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           Questions about this Privacy Policy can be directed to{" "}
           <a
-            href="mailto:contact@helmsmart.ai"
+            href="mailto:contact@realtybossai.com"
             className="text-[#0072ce] hover:underline"
           >
-            contact@helmsmart.ai
+            contact@realtybossai.com
           </a>
           .
         </p>

@@ -57,8 +57,8 @@ export default function SmsOptInPage() {
             <li>
               Reply <strong>STOP</strong> to unsubscribe at any time;{" "}
               <strong>HELP</strong> for help, or email{" "}
-              <a href="mailto:contact@helmsmart.ai" className="text-[#0072ce] hover:underline">
-                contact@helmsmart.ai
+              <a href="mailto:contact@realtybossai.com" className="text-[#0072ce] hover:underline">
+                contact@realtybossai.com
               </a>
               .
             </li>

@@ -61,10 +61,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           and to keep it up to date. You are responsible for safeguarding your credentials
           and for all activity under your account. Notify us immediately at{" "}
           <a
-            href="mailto:contact@helmsmart.ai"
+            href="mailto:contact@realtybossai.com"
             className="text-[#0072ce] hover:underline"
           >
-            contact@helmsmart.ai
+            contact@realtybossai.com
           </a>{" "}
           if you suspect unauthorized access.
         </p>
@@ -200,10 +200,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           campaign for a separate legal identity or higher throughput tier;
           contact{" "}
           <a
-            href="mailto:contact@helmsmart.ai"
+            href="mailto:contact@realtybossai.com"
             className="text-[#0072ce] hover:underline"
           >
-            contact@helmsmart.ai
+            contact@realtybossai.com
           </a>{" "}
           to discuss.
         </p>
@@ -248,10 +248,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             you will receive a single confirmation and no further texts.{" "}
             <strong>For help, reply HELP</strong> or email{" "}
             <a
-              href="mailto:contact@helmsmart.ai"
+              href="mailto:contact@realtybossai.com"
               className="text-[#0072ce] hover:underline"
             >
-              contact@helmsmart.ai
+              contact@realtybossai.com
             </a>
             .
           </li>
@@ -538,10 +538,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           You may opt out of this arbitration agreement by emailing{" "}
           <a
-            href="mailto:contact@helmsmart.ai"
+            href="mailto:contact@realtybossai.com"
             className="text-[#0072ce] hover:underline"
           >
-            contact@helmsmart.ai
+            contact@realtybossai.com
           </a>{" "}
           within 30 days of first creating your LeadSmart account. The
           notice must include your name, the email associated with your
@@ -577,10 +577,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           <li>
             <strong>Contact.</strong> Notices to LeadSmart should be sent to{" "}
             <a
-              href="mailto:contact@helmsmart.ai"
+              href="mailto:contact@realtybossai.com"
               className="text-[#0072ce] hover:underline"
             >
-              contact@helmsmart.ai
+              contact@realtybossai.com
             </a>
             .
           </li>

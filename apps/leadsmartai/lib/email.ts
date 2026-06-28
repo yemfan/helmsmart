@@ -50,13 +50,14 @@ export async function sendEmail({
 
   const recipients = Array.isArray(to) ? to : [to];
   // Send from the Resend-VERIFIED domain: helmsmart.ai (the one verified domain
-  // on the plan; also a real Private Email mailbox, so it sends + receives).
-  // The brand shown is RealtyBoss (EMAIL_BRAND); the website lives at
-  // realtybossai.com but isn't a Resend sending domain. Override: RESEND_FROM_EMAIL.
+  // on the plan). The brand shown is RealtyBoss (EMAIL_BRAND); the website lives
+  // at realtybossai.com but isn't a Resend sending domain, so the FROM stays on
+  // helmsmart.ai while replies route to the on-brand contact@realtybossai.com
+  // inbox (see replyTo below). Override the FROM with RESEND_FROM_EMAIL.
   const fromAddress =
     from?.trim() ||
     process.env.RESEND_FROM_EMAIL?.trim() ||
-    `${EMAIL_BRAND} <contact@helmsmart.ai>`;
+    `${EMAIL_BRAND} <noreply@helmsmart.ai>`;
 
   const payload: Record<string, unknown> = {
     from: fromAddress,
@@ -65,11 +66,11 @@ export async function sendEmail({
     text,
   };
   if (html) payload.html = html;
-  // Replies should land in the active mailbox — default reply-to to
-  // contact@helmsmart.ai (env-overridable). Callers that pass their own replyTo
-  // (e.g. the agent's address) still win.
+  // Replies should land in the on-brand inbox — default reply-to to
+  // contact@realtybossai.com (env-overridable via RESEND_REPLY_TO). Callers that
+  // pass their own replyTo (e.g. the agent's address) still win.
   const replyToAddress =
-    replyTo?.trim() || process.env.RESEND_REPLY_TO?.trim() || "contact@helmsmart.ai";
+    replyTo?.trim() || process.env.RESEND_REPLY_TO?.trim() || "contact@realtybossai.com";
   if (replyToAddress) payload.reply_to = replyToAddress;
   if (attachments && attachments.length > 0) {
     payload.attachments = attachments.map((a) => ({
