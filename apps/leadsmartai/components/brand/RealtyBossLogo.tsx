@@ -1,60 +1,32 @@
 import { cn } from "@/lib/utils";
 
-// Official palette per docs/branding/realtorboss-theme-constitution.md:
-// Primary Navy #0B1F44 (trust, leadership), Boss Gold #D4A017 (use sparingly).
-const NAVY = "#0B1F44";
-const GOLD = "#D4A017";
-// Lighter gold for the connector lines, so the solid nodes + R coin pop.
-const GOLD_LIGHT = "#E8CC78";
-// Light-blue badge background behind the mark (reads well on white + dark).
-const TILE_BG = "#CFE5FA";
+// RealtyBoss brand palette — matches the app-icon mark:
+//   Indigo #4338CA (primary tile), Amber #F59E0B (crown accent), white "R".
+const INDIGO = "#4338CA";
+const AMBER = "#F59E0B";
 
 type Tone = "light" | "dark";
 
-/** The RealtyBoss mark — a house built from six points: five teammates
- *  wired to a central Boss hub, on a light-blue badge tile. Inline SVG.
- *  Master asset: public/brand/realtorboss/realtorboss-mark.svg
- *  Self-contained (own light-blue background), so it reads on any surface;
- *  the `tone` prop is accepted for API compatibility but no longer needed. */
+/**
+ * The RealtyBoss mark — an amber crown over a white "R" on an indigo tile.
+ * Inline SVG, self-contained (its own indigo background) so it reads on any
+ * surface; the `tone` prop is accepted for API compatibility but unused.
+ * Master asset: public/brand/realtyboss/realtyboss-icon.svg (also app/icon.svg).
+ */
 export function RealtyBossMark({ className }: { className?: string; tone?: Tone }) {
   return (
-    <svg viewBox="0 0 200 200" fill="none" aria-hidden className={cn("h-8 w-8", className)}>
-      <rect width="200" height="200" rx="44" fill={TILE_BG} />
+    <svg viewBox="0 0 256 256" fill="none" aria-hidden className={cn("h-8 w-8", className)}>
+      <rect x="44" y="78" width="168" height="160" rx="36" fill={INDIGO} />
+      <g transform="translate(128,84) scale(0.83) translate(-128,-124)">
+        <path d="M52 124 L84 66 L104 98 L128 48 L152 98 L172 66 L204 124 Z" fill={AMBER} />
+        <circle cx="84" cy="66" r="6" fill={INDIGO} />
+        <circle cx="128" cy="48" r="7" fill={INDIGO} />
+        <circle cx="172" cy="66" r="6" fill={INDIGO} />
+      </g>
       <path
-        d="M100 46 L52 90 L52 152 L148 152 L148 90 Z"
-        fill={NAVY}
-        stroke={NAVY}
-        strokeWidth={10}
-        strokeLinejoin="round"
-        strokeLinecap="round"
+        d="M138.81 210.00 L119.69 175.27 L114.30 175.27 L114.30 210.00 L91.90 210.00 L91.90 118.00 L129.52 118.00 Q140.39 118.00 148.05 121.81 Q155.72 125.60 159.51 132.23 Q163.32 138.84 163.32 146.97 Q163.32 156.15 158.14 163.35 Q152.96 170.56 142.87 173.57 L164.10 210.00 L138.81 210.00 Z M114.30 159.42 L128.20 159.42 Q134.35 159.42 137.42 156.41 Q140.51 153.38 140.51 147.87 Q140.51 142.63 137.42 139.62 Q134.35 136.61 128.20 136.61 L114.30 136.61 L114.30 159.42 Z"
+        fill="#FFFFFF"
       />
-      <g stroke={GOLD_LIGHT} strokeWidth={4} opacity={0.85}>
-        <line x1="100" y1="112" x2="100" y2="46" />
-        <line x1="100" y1="112" x2="52" y2="90" />
-        <line x1="100" y1="112" x2="148" y2="90" />
-        <line x1="100" y1="112" x2="52" y2="152" />
-        <line x1="100" y1="112" x2="148" y2="152" />
-      </g>
-      <g fill={GOLD}>
-        <circle cx="100" cy="46" r="9" />
-        <circle cx="52" cy="90" r="9" />
-        <circle cx="148" cy="90" r="9" />
-        <circle cx="52" cy="152" r="9" />
-        <circle cx="148" cy="152" r="9" />
-      </g>
-      {/* Central hub = gold "R" coin (you, the boss) */}
-      <circle cx="100" cy="112" r="23" fill={GOLD} />
-      <text
-        x="100"
-        y="123"
-        textAnchor="middle"
-        fontFamily="var(--font-heading, Arial, Helvetica, sans-serif)"
-        fontWeight={700}
-        fontSize={30}
-        fill={NAVY}
-      >
-        R
-      </text>
     </svg>
   );
 }
@@ -63,25 +35,24 @@ type Props = {
   className?: string;
   /** Smaller variant for footers / compact nav (hides the tagline). */
   compact?: boolean;
-  /** "dark" renders navy parts white for dark surfaces (e.g. onboarding). */
+  /** "dark" renders the wordmark body white for dark surfaces. */
   tone?: Tone;
 };
 
 /**
- * RealtyBoss horizontal lockup — mark + two-tone wordmark (+ tagline).
- * Wordmark renders as text in the app's heading font, so it stays crisp
- * and theme-consistent. Gold is accent-only; the wordmark body is navy
- * (white on dark) for contrast (per brand review).
+ * RealtyBoss horizontal lockup — crown+R mark + two-tone wordmark (+ tagline).
+ * The wordmark renders as text in the app's heading font so it stays crisp and
+ * theme-consistent: body indigo (white on dark), "Boss" in the amber accent.
  */
 export function RealtyBossLogo({ className, compact, tone = "light" }: Props) {
-  const body = tone === "dark" ? "#FFFFFF" : NAVY;
+  const body = tone === "dark" ? "#FFFFFF" : INDIGO;
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
       <RealtyBossMark tone={tone} className={compact ? "h-8 w-8" : "h-10 w-10"} />
       <span className="flex flex-col items-center leading-none">
         <span className={cn("font-heading font-bold tracking-tight", compact ? "text-lg" : "text-2xl")}>
-          <span style={{ color: body }}>Realtor</span>
-          <span style={{ color: GOLD }}>Boss</span>
+          <span style={{ color: body }}>Realty</span>
+          <span style={{ color: AMBER }}>Boss</span>
         </span>
         {!compact && (
           <span
