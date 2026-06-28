@@ -8,6 +8,7 @@ import {
   rankOffers,
 } from "@/lib/listing-offers/netToSeller";
 import type { ListingOfferCompareItem, ListingOfferStatus } from "@/lib/listing-offers/types";
+import type { OfferCompareSummary } from "@/lib/listing-offers/compareSummary";
 
 type TransactionSummary = {
   id: string;
@@ -56,6 +57,10 @@ export function ListingOffersCompareClient({
   const [offers, setOffers] = useState(initialOffers);
   const [showAdd, setShowAdd] = useState(false);
   const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
+  // AI summary + recommendation over the offers (reads the net-to-seller numbers).
+  const [summary, setSummary] = useState<OfferCompareSummary | null>(null);
+  const [summarizing, setSummarizing] = useState(false);
+  const [summaryErr, setSummaryErr] = useState<string | null>(null);
 
   // Net-to-seller assumptions — agent can tune them for this listing.
   const [commissionPct, setCommissionPct] = useState(
@@ -185,6 +190,46 @@ export function ListingOffersCompareClient({
     await updateStatus(offerId, "accepted", {
       rejectSiblingsOnAccept: rejectSiblings,
     });
+  }
+
+  async function summarize() {
+    setSummarizing(true);
+    setSummaryErr(null);
+    try {
+      const payload = {
+        listPrice: transaction.purchase_price,
+        offers: enriched.map((o) => ({
+          id: o.id,
+          buyerName: o.buyer_name ?? null,
+          price: o.price,
+          net: o.net,
+          financing: o.financing_type ?? null,
+          isCash: o.is_cash,
+          contingencyCount: o.contingency_count,
+          sellerConcessions: o.seller_concessions ?? null,
+          closeDate: o.closing_date_proposed ?? null,
+          status: o.status,
+        })),
+      };
+      const res = await fetch("/api/dashboard/listing-offers/summary", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        summary?: OfferCompareSummary;
+      };
+      if (!res.ok || !body.ok || !body.summary) {
+        throw new Error(body.error ?? "Could not generate the summary.");
+      }
+      setSummary(body.summary);
+    } catch (e) {
+      setSummaryErr(e instanceof Error ? e.message : "Could not generate the summary.");
+    } finally {
+      setSummarizing(false);
+    }
   }
 
   return (
@@ -442,6 +487,71 @@ export function ListingOffersCompareClient({
               </tbody>
             </table>
           </div>
+        </div>
+      ) : null}
+
+      {offers.length > 0 ? (
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-sm font-semibold text-slate-900">AI summary &amp; recommendation</h2>
+            <button
+              type="button"
+              onClick={() => void summarize()}
+              disabled={summarizing}
+              className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#005fa8] disabled:opacity-50"
+            >
+              {summarizing ? "Analyzing…" : summary ? "Refresh" : "Summarize & recommend"}
+            </button>
+          </div>
+          {summaryErr ? <p className="mt-2 text-xs text-red-600">{summaryErr}</p> : null}
+          {summary ? (
+            <div className="mt-3 space-y-3">
+              <div className="rounded-lg border border-green-200 bg-green-50 p-3">
+                {summary.recommendation.headline ? (
+                  <p className="text-sm font-semibold text-green-900">{summary.recommendation.headline}</p>
+                ) : null}
+                {summary.recommendation.rationale ? (
+                  <p className="mt-1 text-sm text-slate-700">{summary.recommendation.rationale}</p>
+                ) : null}
+                {summary.recommendation.watchOuts.length > 0 ? (
+                  <ul className="mt-2 list-disc space-y-0.5 pl-4 text-xs text-slate-600">
+                    {summary.recommendation.watchOuts.map((w, i) => (
+                      <li key={i}>{w}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+              {summary.perOffer.length > 0 ? (
+                <div className="space-y-1.5">
+                  {summary.perOffer.map((p) => {
+                    const o = enriched.find((x) => x.id === p.offerId);
+                    return (
+                      <div key={p.offerId} className="flex gap-2 text-xs">
+                        <span className="shrink-0 font-medium text-slate-900">
+                          {o?.buyer_name ?? "Offer"}:
+                        </span>
+                        <span className="text-slate-600">{p.summary}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null}
+              {summary.sellerNote ? (
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                    Note for the seller
+                  </p>
+                  <p className="mt-1 text-sm text-slate-700">{summary.sellerNote}</p>
+                </div>
+              ) : null}
+              <p className="text-[10px] italic text-slate-400">{summary.disclaimer}</p>
+            </div>
+          ) : (
+            <p className="mt-2 text-xs text-slate-500">
+              Get a plain-English read on which offer is strongest and why (net to seller, certainty
+              of close, timeline) — plus a short note you can forward to the seller.
+            </p>
+          )}
         </div>
       ) : null}
 
