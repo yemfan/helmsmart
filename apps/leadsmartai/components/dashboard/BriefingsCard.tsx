@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, Send, Sparkles } from "lucide-react";
+import { useAssistantNames } from "@/components/realtorboss/useAssistantNames";
 
 /**
  * The Boss dashboard's briefing band:
@@ -359,6 +360,7 @@ function TaskItem({
   const [busy, setBusy] = useState<"approve" | "dismiss" | "answer" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [answer, setAnswer] = useState("");
+  const assistantNames = useAssistantNames();
 
   async function act(action: "approve" | "dismiss" | "answer") {
     if (action === "answer" && !answer.trim()) return;
@@ -410,7 +412,7 @@ function TaskItem({
               ? "Done"
               : t.status === "needs_input"
                 ? "Needs info"
-                : ASSIGNEE_LABELS[t.assigned_to]}
+                : assistantNames[t.assigned_to] ?? ASSIGNEE_LABELS[t.assigned_to]}
         </span>
       </div>
 

@@ -156,6 +156,9 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [activities, setActivities] = useState<ActivityRow[]>([]);
   const [teamStatus, setTeamStatus] = useState<Record<string, "active" | "paused">>({});
+  // type → customized assistant name (set on Manage Your AI Team), so activity
+  // rows credit the assistant by the name the user gave it.
+  const [teamNames, setTeamNames] = useState<Record<string, string>>({});
   // Lead-profile drawer (constitution: leads are people — read them
   // without leaving the command center).
   const [profileLeadId, setProfileLeadId] = useState<string | null>(null);
@@ -197,10 +200,17 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     setRecommendations((recsRes?.recommendations ?? []) as Recommendation[]);
     setActivities((actsRes?.activities ?? []) as ActivityRow[]);
     const statuses: Record<string, "active" | "paused"> = {};
-    for (const a of (teamRes?.assistants ?? []) as { type: string; status: "active" | "paused" }[]) {
+    const names: Record<string, string> = {};
+    for (const a of (teamRes?.assistants ?? []) as {
+      type: string;
+      status: "active" | "paused";
+      name?: string;
+    }[]) {
       statuses[a.type] = a.status;
+      if (a.name) names[a.type] = a.name;
     }
     setTeamStatus(statuses);
+    setTeamNames(names);
     setLoading(false);
   }, []);
 
@@ -535,7 +545,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
                 <div key={a.id} className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-gray-900">
-                      {ASSISTANT_LABELS[a.assistant_type] ?? a.assistant_type} · {a.summary}
+                      {teamNames[a.assistant_type] ?? ASSISTANT_LABELS[a.assistant_type] ?? a.assistant_type} · {a.summary}
                     </p>
                     <p className="text-xs text-gray-500">
                       {a.outcome ?? a.activity_type.replace(/_/g, " ")}
