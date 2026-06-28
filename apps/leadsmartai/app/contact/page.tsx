@@ -25,7 +25,7 @@ export default function ContactPage() {
           name: "RealtyBoss",
           legalName: "MAXY Investment Inc.",
           url: "https://realtybossai.com",
-          email: "contact@helmsmart.ai",
+          email: "contact@realtybossai.com",
           address: {
             "@type": "PostalAddress",
             streetAddress: "6511 Parkriver Crossing",
@@ -37,7 +37,7 @@ export default function ContactPage() {
           contactPoint: {
             "@type": "ContactPoint",
             contactType: "Customer Service",
-            email: "contact@helmsmart.ai",
+            email: "contact@realtybossai.com",
             availableLanguage: ["en"],
           },
         }}
@@ -104,10 +104,10 @@ export default function ContactPage() {
               </div>
             </div>
             <a
-              href="mailto:contact@helmsmart.ai"
+              href="mailto:contact@realtybossai.com"
               className="mt-3 block text-sm font-medium text-[#0072ce] hover:underline"
             >
-              contact@helmsmart.ai
+              contact@realtybossai.com
             </a>
           </div>
 

@@ -110,7 +110,7 @@ export default function HelpFaqPage() {
           <p className="text-sm text-slate-600">
             Didn&apos;t find what you needed?{" "}
             <a
-              href="mailto:contact@helmsmart.ai"
+              href="mailto:contact@realtybossai.com"
               className="font-semibold text-blue-700 hover:underline"
             >
               Email support

@@ -78,10 +78,10 @@ export default async function DataDeletionStatusPage({ params }: PageProps) {
             page from Facebook, try again from your Facebook account&apos;s
             <em> Apps and Websites</em> settings, or contact us at{" "}
             <a
-              href="mailto:contact@helmsmart.ai"
+              href="mailto:contact@realtybossai.com"
               className="underline hover:text-amber-900"
             >
-              contact@helmsmart.ai
+              contact@realtybossai.com
             </a>
             .
           </p>
@@ -91,10 +91,10 @@ export default async function DataDeletionStatusPage({ params }: PageProps) {
       <p className="mt-8 text-xs text-slate-500">
         Questions? Email{" "}
         <a
-          href="mailto:contact@helmsmart.ai"
+          href="mailto:contact@realtybossai.com"
           className="underline hover:text-slate-700"
         >
-          contact@helmsmart.ai
+          contact@realtybossai.com
         </a>{" "}
         with your reference code.
       </p>

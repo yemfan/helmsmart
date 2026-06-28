@@ -51,10 +51,10 @@ export default function DeleteAccountPage() {
         <p className="text-sm text-slate-700 mb-3">
           Send an email to{" "}
           <a
-            href="mailto:contact@helmsmart.ai?subject=Account%20deletion%20request"
+            href="mailto:contact@realtybossai.com?subject=Account%20deletion%20request"
             className="text-[#0072ce] hover:underline"
           >
-            contact@helmsmart.ai
+            contact@realtybossai.com
           </a>{" "}
           from the address associated with your LeadSmart account, with the
           subject line <strong>&ldquo;Account deletion request&rdquo;</strong>.

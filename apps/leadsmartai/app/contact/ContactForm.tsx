@@ -155,7 +155,7 @@ export default function ContactForm() {
       setStatus("sent");
     } catch {
       setErrorMsg(
-        "Network error. Please try again or email us at contact@helmsmart.ai.",
+        "Network error. Please try again or email us at contact@realtybossai.com.",
       );
       setStatus("error");
     }

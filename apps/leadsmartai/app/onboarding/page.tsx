@@ -47,8 +47,8 @@ export default function OnboardingPage() {
           </div>
           <p className="mt-6 text-xs text-slate-500">
             Questions?{" "}
-            <a href="mailto:contact@helmsmart.ai" className="text-blue-700 underline">
-              contact@helmsmart.ai
+            <a href="mailto:contact@realtybossai.com" className="text-blue-700 underline">
+              contact@realtybossai.com
             </a>
           </p>
         </div>

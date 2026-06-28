@@ -175,7 +175,7 @@ export default async function HelpGuidePage({
             </Link>{" "}
             or{" "}
             <a
-              href="mailto:contact@helmsmart.ai"
+              href="mailto:contact@realtybossai.com"
               className="font-semibold text-blue-700 hover:underline"
             >
               email support
