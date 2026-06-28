@@ -2,14 +2,17 @@
 
 import { AVATARS, avatarUrl } from "@/lib/realtorboss/avatars";
 
-/** A single circular persona avatar. */
+/** A single circular avatar — a custom uploaded photo (`url`) when present,
+ *  otherwise the built-in persona for `id`. */
 export function AssistantAvatar({
   id,
+  url,
   size = 40,
   alt = "",
   className,
 }: {
   id: string;
+  url?: string | null;
   size?: number;
   alt?: string;
   className?: string;
@@ -17,7 +20,7 @@ export function AssistantAvatar({
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={avatarUrl(id)}
+      src={url || avatarUrl(id)}
       alt={alt}
       width={size}
       height={size}
