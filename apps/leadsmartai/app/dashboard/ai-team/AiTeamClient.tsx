@@ -142,10 +142,11 @@ export default function AiTeamClient() {
               .filter((a) => a.type !== "boss_assistant")
               .map((a) => {
                 const def = AI_TEAM.find((d) => d.type === a.type);
+                const custName = assistants.find((x) => x.type === a.type)?.name;
                 const max = Math.max(1, ...a.series);
                 return (
                   <div key={a.type} className="rounded-lg border border-gray-100 p-3">
-                    <p className="text-xs font-medium text-gray-900">{def?.name ?? a.type}</p>
+                    <p className="text-xs font-medium text-gray-900">{custName ?? def?.name ?? a.type}</p>
                     <p className="text-[10px] text-gray-500">
                       {a.activities} activit{a.activities === 1 ? "y" : "ies"}
                       {a.needsAttention > 0 ? ` · ${a.needsAttention} needed you` : ""}
