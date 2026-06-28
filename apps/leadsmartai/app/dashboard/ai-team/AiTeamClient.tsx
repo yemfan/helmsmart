@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { AI_TEAM, type AssistantType } from "@/lib/realtorboss/team";
+import { AssistantAvatar, AssistantAvatarPicker } from "@/components/realtorboss/AssistantAvatar";
 
 type AssistantRow = {
   id: string;
   type: AssistantType;
   name: string;
+  avatar_id: string;
   status: "active" | "paused";
   description: string | null;
   enabled_skills: string[];
@@ -29,6 +31,9 @@ export default function AiTeamClient() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Which assistant's name/avatar editor is open, + the in-progress name draft.
+  const [editing, setEditing] = useState<AssistantType | null>(null);
+  const [nameDraft, setNameDraft] = useState("");
 
   const load = useCallback(async () => {
     const [res, perfRes] = await Promise.all([
@@ -48,7 +53,10 @@ export default function AiTeamClient() {
   useEffect(() => { void load(); }, [load]);
 
   const patch = useCallback(
-    async (type: AssistantType, body: { status?: "active" | "paused"; enabledSkills?: string[] }) => {
+    async (
+      type: AssistantType,
+      body: { status?: "active" | "paused"; enabledSkills?: string[]; name?: string; avatarId?: string },
+    ) => {
       setSaving(type);
       setError(null);
       const res = await fetch("/api/dashboard/realtorboss/team", {
@@ -136,16 +144,29 @@ export default function AiTeamClient() {
             return (
               <section key={a.type} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-sm font-semibold text-gray-900">{a.name}</h2>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-gray-200 text-gray-600"}`}>
-                        {a.status}
-                      </span>
+                  <div className="flex min-w-0 items-start gap-3">
+                    <AssistantAvatar id={a.avatar_id} size={44} alt={a.name} className="mt-0.5" />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-sm font-semibold text-gray-900">{a.name}</h2>
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-gray-200 text-gray-600"}`}>
+                          {a.status}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500">{a.description ?? def?.mission ?? ""}</p>
                     </div>
-                    <p className="text-xs text-gray-500">{a.description ?? def?.mission ?? ""}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditing((cur) => (cur === a.type ? null : a.type));
+                        setNameDraft(a.name);
+                      }}
+                      className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                    >
+                      {editing === a.type ? "Close" : "Edit name & avatar"}
+                    </button>
                     {def && def.type !== "boss_assistant" && (
                       <Link href={def.href} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
                         View dashboard
@@ -161,6 +182,39 @@ export default function AiTeamClient() {
                     </button>
                   </div>
                 </div>
+
+                {editing === a.type && (
+                  <div className="mt-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+                    <label className="block text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                      Name
+                    </label>
+                    <div className="mt-1 flex items-center gap-2">
+                      <input
+                        value={nameDraft}
+                        onChange={(e) => setNameDraft(e.target.value)}
+                        maxLength={80}
+                        placeholder={def?.name ?? "Assistant name"}
+                        className="w-56 rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0072ce]"
+                      />
+                      <button
+                        type="button"
+                        disabled={saving === a.type || !nameDraft.trim() || nameDraft.trim() === a.name}
+                        onClick={() => void patch(a.type, { name: nameDraft.trim() })}
+                        className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#005fa8] disabled:opacity-50"
+                      >
+                        Save name
+                      </button>
+                    </div>
+                    <p className="mb-2 mt-3 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                      Avatar
+                    </p>
+                    <AssistantAvatarPicker
+                      value={a.avatar_id}
+                      disabled={saving === a.type}
+                      onSelect={(id) => void patch(a.type, { avatarId: id })}
+                    />
+                  </div>
+                )}
 
                 {configurable && (
                   <div className="mt-3 border-t border-gray-100 pt-3">

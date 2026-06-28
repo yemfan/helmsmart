@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { AI_TEAM, type AssistantType } from "@/lib/realtorboss/team";
+import { DEFAULT_ASSISTANT_AVATARS, defaultAvatarForType } from "@/lib/realtorboss/avatars";
 import {
   BOSS_ASSISTANT_SYSTEM_PROMPT,
   RECEPTIONIST_SYSTEM_PROMPT,
@@ -14,6 +15,7 @@ export type AiAssistantRow = {
   agent_id: string;
   type: AssistantType;
   name: string;
+  avatar_id: string;
   status: "active" | "paused";
   description: string | null;
   persona_prompt: string | null;
@@ -32,11 +34,14 @@ const DEFAULT_PROMPTS: Record<AssistantType, string> = {
 };
 
 function mapRow(r: Record<string, unknown>): AiAssistantRow {
+  const type = r.type as AssistantType;
   return {
     id: String(r.id),
     agent_id: String(r.agent_id),
-    type: r.type as AssistantType,
+    type,
     name: String(r.name ?? ""),
+    avatar_id:
+      typeof r.avatar_id === "string" && r.avatar_id ? r.avatar_id : defaultAvatarForType(type),
     status: (r.status === "paused" ? "paused" : "active") as "active" | "paused",
     description: (r.description as string | null) ?? null,
     persona_prompt: (r.persona_prompt as string | null) ?? null,
@@ -68,6 +73,7 @@ export async function ensureAssistantsForAgent(agentId: string): Promise<AiAssis
     agent_id: agentId,
     type: def.type,
     name: def.name,
+    avatar_id: DEFAULT_ASSISTANT_AVATARS[def.type],
     status: "active",
     description: `${def.role} — ${def.mission}`,
     persona_prompt: DEFAULT_PROMPTS[def.type],
@@ -93,11 +99,13 @@ function byRosterOrder(a: AiAssistantRow, b: AiAssistantRow): number {
 export async function updateAssistantForAgent(
   agentId: string,
   type: AssistantType,
-  patch: { status?: "active" | "paused"; enabledSkills?: string[] },
+  patch: { status?: "active" | "paused"; enabledSkills?: string[]; name?: string; avatarId?: string },
 ): Promise<AiAssistantRow> {
   const body: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (patch.status) body.status = patch.status;
   if (patch.enabledSkills) body.enabled_skills = patch.enabledSkills;
+  if (patch.name != null) body.name = patch.name;
+  if (patch.avatarId) body.avatar_id = patch.avatarId;
 
   const { data, error } = await supabaseAdmin
     .from("ai_assistants")
