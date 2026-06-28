@@ -39,11 +39,12 @@ export async function getAssistantVoiceSettings(
   try {
     const { data } = await supabaseAdmin
       .from("ai_assistants")
-      .select("enabled_skills, voice_name, voice_knowledge")
+      .select("name, enabled_skills, voice_name, voice_knowledge")
       .eq("agent_id", agentId)
       .eq("type", type)
       .maybeSingle();
     const row = data as {
+      name?: string | null;
       enabled_skills?: unknown;
       voice_name?: string | null;
       voice_knowledge?: string | null;
@@ -51,7 +52,10 @@ export async function getAssistantVoiceSettings(
     if (Array.isArray(row?.enabled_skills)) {
       skills = row.enabled_skills.filter((s): s is string => typeof s === "string");
     }
-    voiceName = row?.voice_name?.trim() || null;
+    // The assistant's display name (set on Manage Your AI Team) is the voice
+    // name by default — no separate setup needed. An explicit voice_name
+    // override still wins for anyone who set one.
+    voiceName = row?.voice_name?.trim() || row?.name?.trim() || null;
     voiceKnowledge = row?.voice_knowledge?.trim() || null;
   } catch (e) {
     console.warn("[realtorboss] assistant voice lookup failed, using roster defaults:", e);

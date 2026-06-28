@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import type { AssistantDef } from "@/lib/realtorboss/team";
+import { AssistantAvatar } from "@/components/realtorboss/AssistantAvatar";
+import { defaultAvatarForType } from "@/lib/realtorboss/avatars";
 
 /** Header block shared by the AI-team pages — name, mission, skills, action links. */
 type AssistantAction =
@@ -15,18 +18,55 @@ export function AssistantHeader({
   assistant: AssistantDef;
   actions?: AssistantAction[];
 }) {
+  // Overlay the agent's customized name + avatar (set on Manage Your AI Team)
+  // so every assistant page shows the same identity, not the roster default.
+  const [custom, setCustom] = useState<{
+    name: string;
+    avatar_id: string;
+    avatar_url: string | null;
+  } | null>(null);
+  useEffect(() => {
+    let active = true;
+    fetch("/api/dashboard/realtorboss/team")
+      .then((r) => r.json())
+      .then((res) => {
+        if (!active || !res?.ok) return;
+        const row = (res.assistants ?? []).find(
+          (a: { type?: string }) => a.type === assistant.type,
+        ) as { name?: string; avatar_id?: string; avatar_url?: string | null } | undefined;
+        if (row) {
+          setCustom({
+            name: row.name || assistant.name,
+            avatar_id: row.avatar_id || defaultAvatarForType(assistant.type),
+            avatar_url: row.avatar_url ?? null,
+          });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [assistant.type, assistant.name]);
+
+  const name = custom?.name || assistant.name;
+  const avatarId = custom?.avatar_id || defaultAvatarForType(assistant.type);
+  const avatarUrl = custom?.avatar_url ?? null;
+
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
-      <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">Your AI Team</p>
-        <h1 className="mt-0.5 text-xl font-semibold text-gray-900">{assistant.name}</h1>
-        <p className="text-sm text-gray-500">{assistant.role} — {assistant.mission}</p>
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {assistant.skills.map((s) => (
-            <span key={s} className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
-              {s.replace(/_/g, " ")}
-            </span>
-          ))}
+      <div className="flex items-start gap-3">
+        <AssistantAvatar id={avatarId} url={avatarUrl} size={44} alt={name} className="mt-1" />
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">Your AI Team</p>
+          <h1 className="mt-0.5 text-xl font-semibold text-gray-900">{name}</h1>
+          <p className="text-sm text-gray-500">{assistant.role} — {assistant.mission}</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {assistant.skills.map((s) => (
+              <span key={s} className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
+                {s.replace(/_/g, " ")}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
       {actions && actions.length > 0 && (
