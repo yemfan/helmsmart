@@ -70,6 +70,9 @@ export type BossAssignee =
   | "transaction_assistant"
   | "accountant";
 
+/** Outbound channel an action acts on — used to resolve per-channel autopilot. */
+export type BossChannel = "call" | "sms" | "email" | "social";
+
 export type BossActionDef = {
   type: BossActionType;
   assignee: BossAssignee;
@@ -77,6 +80,14 @@ export type BossActionDef = {
   /** Tells the planner what this action does + when to choose it. */
   planHint: string;
   requiredParams: ActionParamDef[];
+  /**
+   * The outbound channel this action sends on, when it has one. Set only for
+   * actions that actually reach a person (a call, a post). Read-only/internal
+   * actions (CMA, presentation, scheduling tasks) omit it — they ignore the
+   * autopilot policy and always run. Used to look up the per-channel autopilot
+   * mode in {@link effectiveAutopilot}.
+   */
+  channel?: BossChannel;
   run: (ctx: RunCtx) => Promise<RunResult>;
 };
 
@@ -328,6 +339,7 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
     type: "cold_call_qualify",
     assignee: "sales_assistant",
     label: "Cold call & qualify",
+    channel: "call",
     planHint:
       "cold_call_qualify — have the AI place an outbound voice call to a lead and qualify them (budget, timeline, motivation). Choose when asked to call / cold-call / qualify a specific person. params: { contact_name }.",
     requiredParams: [
@@ -473,6 +485,7 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
     type: "post_social",
     assignee: "marketing_assistant",
     label: "Social post",
+    channel: "social",
     planHint:
       "post_social — draft and schedule a social media post. Choose when asked to post / share / promote / announce something on social. params: { topic } (what the post is about, e.g. a new listing or open house).",
     requiredParams: [
