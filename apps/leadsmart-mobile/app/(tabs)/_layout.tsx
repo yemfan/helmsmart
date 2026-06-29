@@ -37,7 +37,7 @@ export default function TabsLayout() {
           },
         }}
         screenOptions={{
-          headerTitle: "RealtorBoss",
+          headerTitle: "RealtyBoss",
           headerShadowVisible: false,
           headerStyle: {
             backgroundColor: tokens.surface,

@@ -75,8 +75,18 @@ function authHeaders(token: string): Record<string, string> {
 function parseMobileFailure(
   status: number,
   body: unknown,
-  fallback: string
+  fallback: unknown
 ): MobileApiFailure {
+  // `fallback` is typed string by callers, but on a network/unreachable error
+  // the underlying client can hand back a non-string (an Error/object). Coerce
+  // so `message` is ALWAYS a readable string — otherwise it surfaces downstream
+  // (e.g. `new Error(res.message)`) as the literal "[object Object]" in the UI.
+  const fallbackStr =
+    typeof fallback === "string" && fallback.trim()
+      ? fallback
+      : fallback instanceof Error && fallback.message.trim()
+        ? fallback.message
+        : "Request failed. Check your connection and try again.";
   if (body && typeof body === "object") {
     const b = body as MobileJsonError & { details?: unknown };
     const details =
@@ -86,12 +96,12 @@ function parseMobileFailure(
     return {
       ok: false,
       status,
-      message: typeof b.error === "string" && b.error.trim() ? b.error : fallback,
+      message: typeof b.error === "string" && b.error.trim() ? b.error : fallbackStr,
       code: typeof b.code === "string" ? b.code : undefined,
       ...(details ? { details } : {}),
     };
   }
-  return { ok: false, status, message: fallback };
+  return { ok: false, status, message: fallbackStr };
 }
 
 type MobileConfig = { base: string; token: string };
@@ -100,14 +110,14 @@ function requireConfig(): MobileApiFailure | MobileConfig {
   const base = getLeadsmartApiBaseUrl();
   const token = getLeadsmartAccessToken();
   if (!base) {
-    return { ok: false, status: 0, message: "Set EXPO_PUBLIC_LEADSMART_API_URL (RealtorBoss API base URL)." };
+    return { ok: false, status: 0, message: "Set EXPO_PUBLIC_LEADSMART_API_URL (RealtyBoss API base URL)." };
   }
   if (!token) {
     return {
       ok: false,
       status: 0,
       message:
-        "API URL is set, but you are not signed in. Use onboarding / Login with your RealtorBoss email and password (Supabase issues the JWT). Optional dev-only: EXPO_PUBLIC_LEADSMART_ACCESS_TOKEN. Setting EXPO_PUBLIC_LEADSMART_API_URL alone does not authenticate.",
+        "API URL is set, but you are not signed in. Use onboarding / Login with your RealtyBoss email and password (Supabase issues the JWT). Optional dev-only: EXPO_PUBLIC_LEADSMART_ACCESS_TOKEN. Setting EXPO_PUBLIC_LEADSMART_API_URL alone does not authenticate.",
     };
   }
   return { base, token };
