@@ -62,7 +62,7 @@ export default function OnboardingValueScreen() {
         >
           {SLIDES.map((slide, idx) => (
             <View key={idx} style={{ width: SCREEN_W, paddingHorizontal: 24 }}>
-              <Text style={s.kicker}>Why RealtorBoss</Text>
+              <Text style={s.kicker}>Why RealtyBoss</Text>
               <Text style={s.title}>{slide.title}</Text>
               <Text style={s.body}>{slide.body}</Text>
             </View>

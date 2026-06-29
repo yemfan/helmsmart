@@ -34,7 +34,7 @@ export default function OnboardingNotificationsScreen() {
       }
       if (next === "granted" && Platform.OS === "android") {
         await Notifications.setNotificationChannelAsync("default", {
-          name: "RealtorBoss",
+          name: "RealtyBoss",
           importance: Notifications.AndroidImportance.HIGH,
         });
       }

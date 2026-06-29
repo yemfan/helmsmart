@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "RealtorBoss",
+    "name": "RealtyBoss",
     "slug": "leadsmart-mobile",
     "scheme": "leadsmart",
     "icon": "./assets/icon.png",
@@ -13,11 +13,11 @@
       "icon": "./assets/icon.png",
       "supportsTablet": false,
       "infoPlist": {
-        "CFBundleDisplayName": "RealtorBoss",
+        "CFBundleDisplayName": "RealtyBoss",
         "ITSAppUsesNonExemptEncryption": false,
         "LSApplicationQueriesSchemes": ["tel", "sms", "mailto"],
-        "NSPhotoLibraryUsageDescription": "RealtorBoss needs access to your photo library to attach images to Quick Post drafts.",
-        "NSCameraUsageDescription": "RealtorBoss needs access to the camera so you can snap a listing photo for a Quick Post."
+        "NSPhotoLibraryUsageDescription": "RealtyBoss needs access to your photo library to attach images to Quick Post drafts.",
+        "NSCameraUsageDescription": "RealtyBoss needs access to the camera so you can snap a listing photo for a Quick Post."
       }
     },
     "android": {
@@ -38,8 +38,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "RealtorBoss needs access to your photo library to attach images to Quick Post drafts.",
-          "cameraPermission": "RealtorBoss needs access to the camera so you can snap a listing photo for a Quick Post."
+          "photosPermission": "RealtyBoss needs access to your photo library to attach images to Quick Post drafts.",
+          "cameraPermission": "RealtyBoss needs access to the camera so you can snap a listing photo for a Quick Post."
         }
       ]
     ],

@@ -26,6 +26,23 @@ import { BackRow } from "../../components/onboarding/BackRow";
  * stays pure black regardless of theme (that's the Apple brand
  * requirement from HIG).
  */
+/**
+ * Coerce any thrown value into a clean, displayable string. Supabase
+ * AuthError, a thrown string, a `{ message }`/`{ error }` object, or a
+ * network failure whose payload isn't a string all used to render as the
+ * literal "[object Object]" — this guarantees the user sees real text.
+ */
+function toSignInError(e: unknown): string {
+  if (e instanceof Error && typeof e.message === "string" && e.message.trim()) return e.message;
+  if (typeof e === "string" && e.trim()) return e;
+  if (e && typeof e === "object") {
+    const o = e as { message?: unknown; error?: unknown };
+    if (typeof o.message === "string" && o.message.trim()) return o.message;
+    if (typeof o.error === "string" && o.error.trim()) return o.error;
+  }
+  return "Sign-in failed. Check your connection and try again.";
+}
+
 const createOAuthStyles = (theme: ThemeTokens) =>
   StyleSheet.create({
     row: {
@@ -88,7 +105,7 @@ export default function OnboardingLoginScreen() {
       await signInWithEmailPassword(email, password, rememberDevice);
       goAfterSignIn();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Sign-in failed.");
+      setError(toSignInError(e));
     } finally {
       setBusy(false);
     }
@@ -101,7 +118,7 @@ export default function OnboardingLoginScreen() {
       await signInWithToken(token, rememberDevice);
       goAfterSignIn();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Sign-in failed.");
+      setError(toSignInError(e));
     } finally {
       setBusy(false);
     }
@@ -114,7 +131,7 @@ export default function OnboardingLoginScreen() {
       await signInWithGoogleOAuth(rememberDevice);
       goAfterSignIn();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Sign-in failed.");
+      setError(toSignInError(e));
     } finally {
       setBusy(false);
     }
@@ -127,7 +144,7 @@ export default function OnboardingLoginScreen() {
       await signInWithAppleOAuth(rememberDevice);
       goAfterSignIn();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Sign-in failed.");
+      setError(toSignInError(e));
     } finally {
       setBusy(false);
     }
@@ -160,12 +177,12 @@ export default function OnboardingLoginScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-        <View style={s.centerBlock}>
+        <View style={[s.centerBlock, { flex: 0, justifyContent: "flex-start" }]}>
           <Text style={s.kicker}>Sign in</Text>
           <Text style={s.title}>Welcome back</Text>
           {!showTokenFallback ? (
             <Text style={s.body}>
-              Sign in with the same email and password you use on RealtorBoss web.
+              Sign in with the same email and password you use on RealtyBoss web.
             </Text>
           ) : (
             <Text style={s.body}>
@@ -289,7 +306,7 @@ export default function OnboardingLoginScreen() {
             </Text>
           </Pressable>
         </View>
-        <View>
+        <View style={{ marginTop: 24 }}>
           {!showTokenFallback ? (
             <Pressable
               style={[s.primaryBtn, (busy || !email.trim() || !password) && { opacity: 0.5 }]}
