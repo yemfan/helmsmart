@@ -284,7 +284,7 @@ async function processInstructionRow(
         // card and it sends. Falls back to plain "assigned" when we
         // can't execute confidently.
         const taskId = (insertedTask as { id: string } | null)?.id;
-        let executed: "awaiting_approval" | "assigned" | "needs_input" | "completed" = "assigned";
+        let executed: "awaiting_approval" | "assigned" | "needs_input" | "completed" | "sent" = "assigned";
         if (taskId && t.assignee !== "realtor") {
           if (t.action) {
             // Registry action — run it (or park needs_input when a required
@@ -300,7 +300,8 @@ async function processInstructionRow(
 
         // Visibility: the owning assistant's feed shows what the Boss put on
         // its desk — drafted, done, waiting on a detail, or just assigned.
-        if (t.assignee !== "realtor") {
+        // "sent" (autopilot) already logged its own boss_task_sent activity.
+        if (t.assignee !== "realtor" && executed !== "sent") {
           const activity =
             executed === "awaiting_approval"
               ? { type: "boss_task_drafted", summary: `Drafted for your approval: ${t.title}`, attn: true }
