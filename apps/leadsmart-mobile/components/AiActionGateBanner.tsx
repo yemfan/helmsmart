@@ -34,7 +34,7 @@ export function AiActionGateBanner({
     const base = getLeadsmartApiBaseUrl();
     const url = base
       ? `${base}/dashboard/billing`
-      : "https://leadsmart-ai.com/dashboard/billing";
+      : "https://www.realtybossai.com/dashboard/billing";
     void Linking.openURL(url);
   };
 

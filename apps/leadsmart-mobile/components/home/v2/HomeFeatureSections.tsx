@@ -16,7 +16,7 @@ import { hapticButtonPress } from "../../../lib/haptics";
  * there.
  */
 
-const WEB_DASHBOARD_URL = "https://leadsmart-ai.com/dashboard";
+const WEB_DASHBOARD_URL = "https://www.realtybossai.com/dashboard";
 
 export function HomeFeatureSections() {
   const tokens = useThemeTokens();

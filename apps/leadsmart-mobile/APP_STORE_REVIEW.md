@@ -10,7 +10,7 @@ for `apps/leadsmart-mobile` (bundle `ai.leadsmart.mobile`, version 1.5.0).
 | Area | State | Notes |
 |---|---|---|
 | Account deletion (in-app) | ✅ | Settings → Delete account → confirmation. `DELETE /api/mobile/account`. |
-| Account deletion (web) | ✅ | https://leadsmart-ai.com/delete-account — public, no install required. |
+| Account deletion (web) | ✅ | https://www.realtybossai.com/delete-account — public, no install required. |
 | Privacy policy link in-app | ✅ | Settings → Legal → Privacy policy. |
 | Terms of service link in-app | ✅ | Settings → Legal → Terms of service. |
 | `supportsTablet` | ✅ | Set to `false` — iPhone-only for v1; revisit before iPad rollout. |
@@ -102,7 +102,7 @@ and verified end-to-end by
 Apple/Google reviewers test the deletion flow. To exercise it without
 destroying the canonical demo account (`demo@leadsmart.ai` / `Demo123!`):
 
-1. Sign up a throwaway agent via web (`leadsmart-ai.com/signup`) with a
+1. Sign up a throwaway agent via web (`www.realtybossai.com/signup`) with a
    `+review` Gmail alias.
 2. Sign into the mobile app with that throwaway.
 3. Settings → Delete account → type `DELETE` → tap red button.
@@ -197,12 +197,12 @@ LeadSmart is the mobile CRM built for licensed real estate agents who need to re
 
 LeadSmart is built and supported by a small team in the United States. We listen to working agents and ship updates every few weeks based on what you tell us.
 
-Active subscription required for the AI features. Sign up at leadsmart-ai.com to start a free trial.
+Active subscription required for the AI features. Sign up at www.realtybossai.com to start a free trial.
 
-Privacy policy: https://leadsmart-ai.com/privacy
-Terms of service: https://leadsmart-ai.com/terms
-Account deletion: https://leadsmart-ai.com/delete-account
-Support: contact@leadsmart-ai.com
+Privacy policy: https://www.realtybossai.com/privacy
+Terms of service: https://www.realtybossai.com/terms
+Account deletion: https://www.realtybossai.com/delete-account
+Support: contact@realtybossai.com
 ```
 
 ### Keywords (100 chars, comma-separated, NO spaces around commas)
@@ -231,9 +231,9 @@ Reply to every lead in seconds with AI-drafted SMS and email, track every deal t
 
 ### Support URLs
 
-- **Support URL**: `https://leadsmart-ai.com/contact`
-- **Marketing URL**: `https://leadsmart-ai.com`
-- **Privacy Policy URL**: `https://leadsmart-ai.com/privacy`
+- **Support URL**: `https://www.realtybossai.com/contact`
+- **Marketing URL**: `https://www.realtybossai.com`
+- **Privacy Policy URL**: `https://www.realtybossai.com/privacy`
 
 ## Open items before first submit
 

@@ -15,7 +15,8 @@
         "EAS_NO_FROZEN_LOCKFILE": "1",
         "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/",
         "PNPM_CONFIG_CHILD_CONCURRENCY": "1",
-        "PNPM_CONFIG_NETWORK_CONCURRENCY": "4"
+        "PNPM_CONFIG_NETWORK_CONCURRENCY": "4",
+        "EXPO_PUBLIC_LEADSMART_API_URL": "https://www.realtybossai.com"
       }
     },
     "development": {
