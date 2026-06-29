@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "RealtyBoss vs. the rest — feature comparison",
   description:
-    "How RealtyBoss compares to Follow Up Boss, kvCORE, Lofty, BoomTown, LionDesk and Sierra Interactive on AI, dialer, e-sign, team workflows, and Chinese-market support.",
+    "Other real-estate CRMs remind you to do the work. RealtyBoss has an AI team that does it for you. See how we compare to Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown and Sierra Interactive.",
   keywords: [
     "real estate CRM comparison",
     "Follow Up Boss vs",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "RealtyBoss vs. the rest — feature comparison",
     description:
-      "Side-by-side comparison vs Follow Up Boss, kvCORE, Lofty, BoomTown, LionDesk, and Sierra Interactive — at a fraction of the price.",
+      "Side-by-side comparison vs Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown, and Sierra Interactive — at a fraction of the price.",
     url: "/agent/compare",
     type: "website",
   },
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "RealtyBoss vs. the rest",
     description:
-      "Feature comparison vs Follow Up Boss, kvCORE, Lofty, BoomTown, LionDesk, and Sierra Interactive.",
+      "Feature comparison vs Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown, and Sierra Interactive.",
   },
 };
 
@@ -59,16 +59,14 @@ type ProductKey =
   | "kvcore"
   | "lofty"
   | "boomtown"
-  | "liondesk"
   | "sierra";
 
 const PRODUCTS: Array<{ key: ProductKey; name: string; price: string }> = [
   { key: "leadsmart", name: "RealtyBoss", price: "$49–$99 / mo" },
   { key: "followup_boss", name: "Follow Up Boss", price: "$69–$1,000+ / mo" },
-  { key: "kvcore", name: "kvCORE", price: "$499+ / mo" },
-  { key: "lofty", name: "Lofty (Chime)", price: "$499+ / mo" },
-  { key: "boomtown", name: "BoomTown", price: "$1,500+ / mo" },
-  { key: "liondesk", name: "LionDesk", price: "$25–$83 / mo" },
+  { key: "kvcore", name: "kvCORE (now BoldTrail)", price: "$499+ / mo" },
+  { key: "lofty", name: "Lofty (Chime)", price: "$449+ / mo" },
+  { key: "boomtown", name: "BoomTown (now BoldTrail)", price: "$1,500+ / mo" },
   { key: "sierra", name: "Sierra Interactive", price: "$500+ / mo" },
 ];
 
@@ -79,6 +77,45 @@ type Category = {
 
 const CATEGORIES: Category[] = [
   {
+    title: "Who does the work?",
+    rows: [
+      // Everyone reminds you — that's the whole point of the contrast.
+      r("Reminders, tasks & 'hot lead' alerts to prompt you", { all: "yes" }),
+      r("AI drafts a reply for you to review & send", {
+        leadsmart: "yes",
+        followup_boss: "yes",
+        kvcore: "partial",
+        lofty: "yes",
+        boomtown: "partial",
+        sierra: "yes",
+      }),
+      r("AI autonomously answers & qualifies new leads — no agent in the loop", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "yes",
+        boomtown: "no",
+        sierra: "partial",
+      }),
+      r("AI runs CMAs, builds offers & reviews contracts on command", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "no",
+        lofty: "no",
+        boomtown: "no",
+        sierra: "no",
+      }),
+      r("AI keeps following up over days without you queuing each step", {
+        leadsmart: "yes",
+        followup_boss: "no",
+        kvcore: "partial",
+        lofty: "partial",
+        boomtown: "partial",
+        sierra: "no",
+      }),
+    ],
+  },
+  {
     title: "Core CRM",
     rows: [
       r("Contacts, pipeline, smart lists", { all: "yes" }),
@@ -88,7 +125,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "yes",
         sierra: "yes",
       }),
       r("Pipeline activity counts per stage", {
@@ -97,7 +133,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "partial",
         boomtown: "yes",
-        liondesk: "no",
         sierra: "partial",
       }),
       r("Native mobile app (iOS + Android)", {
@@ -106,7 +141,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "partial",
         sierra: "partial",
       }),
       r("Import contacts from your phone at onboarding", {
@@ -115,7 +149,6 @@ const CATEGORIES: Category[] = [
         kvcore: "partial",
         lofty: "partial",
         boomtown: "no",
-        liondesk: "partial",
         sierra: "no",
       }),
     ],
@@ -123,22 +156,20 @@ const CATEGORIES: Category[] = [
   {
     title: "AI capabilities",
     rows: [
-      r("AI SMS responder with intent detection", {
+      r("AI SMS responder — autonomously answers & qualifies leads", {
         leadsmart: "yes",
-        followup_boss: "no",
+        followup_boss: "partial",
         kvcore: "partial",
         lofty: "yes",
         boomtown: "partial",
-        liondesk: "yes",
-        sierra: "no",
+        sierra: "partial",
       }),
-      r("AI email responder (autonomous reply)", {
+      r("AI email responder — drafts AND sends, not just suggests", {
         leadsmart: "yes",
-        followup_boss: "no",
-        kvcore: "no",
+        followup_boss: "partial",
+        kvcore: "partial",
         lofty: "partial",
-        boomtown: "no",
-        liondesk: "no",
+        boomtown: "partial",
         sierra: "no",
       }),
       r("AI Coaching dashboard with peer benchmarks", {
@@ -147,7 +178,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Sales-Model framework (Influencer / Closer / Advisor)", {
@@ -156,7 +186,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Sphere equity prediction + auto outreach", {
@@ -165,7 +194,6 @@ const CATEGORIES: Category[] = [
         kvcore: "partial",
         lofty: "no",
         boomtown: "partial",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Deal Coach (multi-perspective offer analysis)", {
@@ -174,7 +202,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("AI-grounded CMA — real cited web comps, not just an AVM", {
@@ -183,7 +210,6 @@ const CATEGORIES: Category[] = [
         kvcore: "partial",
         lofty: "partial",
         boomtown: "no",
-        liondesk: "no",
         sierra: "partial",
       }),
       r("Boss Assistant — one command runs the whole AI team", {
@@ -192,7 +218,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Saved AI house searches with scheduled buyer sends", {
@@ -201,7 +226,6 @@ const CATEGORIES: Category[] = [
         kvcore: "partial",
         lofty: "partial",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
     ],
@@ -215,7 +239,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "yes",
         sierra: "yes",
       }),
       r("Email open / click tracking", {
@@ -224,7 +247,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "yes",
         sierra: "yes",
       }),
       r("Video email (record & send + view analytics)", {
@@ -233,7 +255,6 @@ const CATEGORIES: Category[] = [
         kvcore: "partial",
         lofty: "no",
         boomtown: "no",
-        liondesk: "yes",
         sierra: "no",
       }),
       r("Newsletter / mass-email composer", {
@@ -242,7 +263,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "yes",
         sierra: "yes",
       }),
       r("Vanity / call-tracking numbers per source", {
@@ -251,7 +271,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "no",
         sierra: "partial",
       }),
       r("Drip campaigns + sphere re-enrollment", {
@@ -260,7 +279,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "yes",
         sierra: "yes",
       }),
       r("Missed-call text-back (automatic)", {
@@ -269,7 +287,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "partial",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Inbound transaction-email auto-import + AI extraction", {
@@ -278,7 +295,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
     ],
@@ -292,7 +308,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "no",
-        liondesk: "no",
         sierra: "yes",
       }),
       r("Listing presentation builder", {
@@ -301,7 +316,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Reviews / testimonial capture (post-close)", {
@@ -310,7 +324,6 @@ const CATEGORIES: Category[] = [
         kvcore: "partial",
         lofty: "partial",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("E-signature integration (Dotloop / DocuSign)", {
@@ -319,7 +332,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "no",
         sierra: "yes",
       }),
       r("Buyer Broker Agreement (BBA) workflow", {
@@ -328,7 +340,6 @@ const CATEGORIES: Category[] = [
         kvcore: "partial",
         lofty: "partial",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Transaction coordinator + commission forecast", {
@@ -337,7 +348,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "no",
-        liondesk: "no",
         sierra: "yes",
       }),
       r("Deep Report — live loan recompute, HOA + Mello-Roos", {
@@ -346,7 +356,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Unified Share on every report (Copy / Email / SMS / PDF)", {
@@ -355,7 +364,6 @@ const CATEGORIES: Category[] = [
         kvcore: "partial",
         lofty: "partial",
         boomtown: "no",
-        liondesk: "no",
         sierra: "partial",
       }),
     ],
@@ -369,7 +377,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "partial",
         sierra: "yes",
       }),
       r("Round-robin lead routing across team", {
@@ -378,7 +385,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "partial",
         sierra: "yes",
       }),
       r("ISA workflow + qualified-handoff state machine", {
@@ -387,7 +393,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "partial",
         boomtown: "yes",
-        liondesk: "no",
         sierra: "partial",
       }),
       r("Per-member breakdown / leaderboard reporting", {
@@ -396,7 +401,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "no",
         sierra: "yes",
       }),
     ],
@@ -410,7 +414,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Auto-enrolled coaching with conv-rate + transaction targets", {
@@ -419,7 +422,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Bilingual / Chinese-market support (中文)", {
@@ -428,7 +430,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("WeChat + Xiaohongshu integration", {
@@ -437,7 +438,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Modern AI-native stack (Next.js + Supabase)", {
@@ -446,7 +446,6 @@ const CATEGORIES: Category[] = [
         kvcore: "no",
         lofty: "no",
         boomtown: "no",
-        liondesk: "no",
         sierra: "no",
       }),
       r("Branded IDX consumer site bundled", {
@@ -455,7 +454,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "no",
         sierra: "yes",
       }),
       r("Full MLS sync (RETS / RESO Web API)", {
@@ -464,7 +462,6 @@ const CATEGORIES: Category[] = [
         kvcore: "yes",
         lofty: "yes",
         boomtown: "yes",
-        liondesk: "no",
         sierra: "yes",
       }),
     ],
@@ -483,12 +480,14 @@ export default function CompareAgentPage() {
             RealtyBoss vs. the rest
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
-            How we stack up against Follow Up Boss, kvCORE, Lofty, BoomTown,
-            LionDesk and Sierra Interactive on AI, dialer, e-sign, team
+            How we stack up against Follow Up Boss, kvCORE / BoldTrail, Lofty,
+            BoomTown and Sierra Interactive on AI, dialer, e-sign, team
             workflows, and Chinese-market support — at a fraction of the
             price.
           </p>
         </header>
+
+        <WorkVsRemind />
 
         <Highlights />
 
@@ -554,12 +553,12 @@ export default function CompareAgentPage() {
 
         <section className="mt-16 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-8 text-center md:p-12">
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
-            Modern AI-native, fewer add-ons, half the price
+            Stop managing a CRM. Start running a team.
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 md:text-base">
-            Most legacy CRMs charge $500+/month and still don&apos;t ship AI
-            email replies, sphere prediction, or coaching benchmarks. We build
-            those in.
+            Most legacy CRMs charge $500+/month to hand you a longer to-do list.
+            RealtyBoss gives you an AI team that works the list for you — answering
+            leads, sending replies, and running deals — at a fraction of the price.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link
@@ -579,9 +578,13 @@ export default function CompareAgentPage() {
 
         <p className="mt-10 text-center text-xs text-slate-400">
           Comparison data reflects publicly available product pages and
-          customer reviews as of the page&apos;s last update. Competitor
-          pricing varies by team size + add-ons. We don&apos;t claim every
-          edge case; if something looks off please reach out.
+          customer reviews as of the page&apos;s last update. Inside Real
+          Estate has consolidated kvCORE and BoomTown into BoldTrail; LionDesk
+          was discontinued in September 2025, so it is no longer listed.
+          &ldquo;Partial&rdquo; on AI rows means the tool drafts or suggests
+          and the agent still reviews and sends. Competitor pricing varies by
+          team size + add-ons. We don&apos;t claim every edge case; if
+          something looks off please reach out.
         </p>
       </div>
     </div>
@@ -590,11 +593,78 @@ export default function CompareAgentPage() {
 
 // ── helpers ─────────────────────────────────────────────────────
 
+/**
+ * The one-line thesis of the whole page: legacy CRMs are reminder engines
+ * (tasks, alerts, drip) — the doing stays on the agent. RealtyBoss ships an
+ * AI team that executes the work. Everything in the table below is evidence
+ * for this contrast.
+ */
+function WorkVsRemind() {
+  return (
+    <section className="mt-12 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-6 md:p-10">
+      <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
+        The real difference
+      </p>
+      <h2 className="mx-auto mt-3 max-w-3xl text-center text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
+        Every other CRM reminds you to do the work.{" "}
+        <span className="text-blue-700">RealtyBoss does the work for you.</span>
+      </h2>
+      <p className="mx-auto mt-4 max-w-2xl text-center text-sm leading-7 text-slate-600 md:text-base">
+        Follow Up Boss, kvCORE, Lofty and the rest are brilliant at telling you
+        what to do next — a task list, a &ldquo;this lead is hot&rdquo; alert, a
+        drip that fires on schedule. But the calling, texting, emailing,
+        researching and follow-up is still on you. RealtyBoss ships an AI team
+        that actually <strong className="font-semibold text-slate-900">does it</strong> —
+        so the work happens while you&apos;re sitting with clients.
+      </p>
+
+      <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Other CRMs — a reminder engine
+          </p>
+          <ul className="mt-3 space-y-2 text-sm text-slate-600">
+            {[
+              "Creates a task: “Call this lead” — you still make the call",
+              "Alerts you a lead went cold — you write the win-back",
+              "Fires a drip on a timer — generic, not a real reply",
+              "Surfaces a CMA tool — you assemble the comps yourself",
+            ].map((t) => (
+              <li key={t} className="flex gap-2">
+                <span className="mt-0.5 text-slate-400">—</span>
+                <span>{t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">
+            RealtyBoss — an AI team that does it
+          </p>
+          <ul className="mt-3 space-y-2 text-sm text-slate-700">
+            {[
+              "Answers & qualifies new leads by text and email — autonomously",
+              "Drafts and sends the win-back reply in your voice",
+              "Runs an AI-grounded CMA with real cited comps on command",
+              "Builds the offer, reviews the contract, books the showing for you",
+            ].map((t) => (
+              <li key={t} className="flex gap-2">
+                <span className="mt-0.5 font-semibold text-emerald-600">✓</span>
+                <span>{t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Highlights() {
   const items: Array<{ title: string; body: string }> = [
     {
-      title: "AI-native, not retrofitted",
-      body: "Coaching dashboard, deal coach, equity-based outreach — built into the product, not a 'with AI' add-on. Most competitors are still on legacy stacks.",
+      title: "An AI team that does the work",
+      body: "Others remind you to call, text, and follow up. RealtyBoss's AI assistants answer leads, draft and send replies, run CMAs, and book showings on your behalf — the work gets done, not just queued.",
     },
     {
       title: "Half the price of enterprise CRMs",
@@ -701,7 +771,6 @@ function r(feature: string, cells: Partial<Record<ProductKey, Cell>> & { all?: C
     kvcore: cells.all ?? cells.kvcore ?? "no",
     lofty: cells.all ?? cells.lofty ?? "no",
     boomtown: cells.all ?? cells.boomtown ?? "no",
-    liondesk: cells.all ?? cells.liondesk ?? "no",
     sierra: cells.all ?? cells.sierra ?? "no",
   };
   return { feature, cells: full };
