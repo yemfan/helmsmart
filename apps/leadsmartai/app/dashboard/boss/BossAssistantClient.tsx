@@ -1,39 +1,43 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AI_TEAM } from "@/lib/realtorboss/team";
 import { LeadProfileDrawer } from "@/components/realtorboss/LeadProfileDrawer";
-import BriefingsCard from "@/components/dashboard/BriefingsCard";
+import { AssistantAvatar } from "@/components/realtorboss/AssistantAvatar";
 
-// ── API row shapes (subset of fields the Boss Assistant reads) ──────
+/**
+ * Boss Assistant — the conversational command center.
+ *
+ * The Boss leads with a briefing, then PROPOSES concrete actions and INITIATES
+ * them: each proposal carries a real action it can run via the instruction
+ * pipeline (POST /instructions → routed, drafted tasks → approve/answer/dismiss
+ * on /instruction-tasks). The approval moment is the control point — nothing
+ * outbound sends without it unless the matching autopilot cell is "auto".
+ *
+ * Layout = one conversation:
+ *   header (Boss identity · autopilot · settings) → context strip (clickable) →
+ *   thread (briefing · what the team did · proposals · live task replies) →
+ *   command bar → AI team → performance.
+ */
 
-type TaskItem = {
-  id: string;
-  title: string;
-  priority: string;
-  due_at: string | null;
-  lead_name: string | null;
-};
+// ── shapes ───────────────────────────────────────────────────────────
 
+type SummaryMetrics = { totalLeads: number; hotLeads: number; inactive7Days: number; messagesSent: number };
 type EventItem = { id: string; title: string; lead_name: string | null; starts_at: string };
-
 type HotLead = {
   id: string;
   name: string | null;
-  rating: string | null;
   source: string | null;
   engagement_score: number | null;
   last_activity_at: string | null;
   ai_intent: string | null;
 };
-
 type TransactionItem = {
   id: string;
   property_address: string;
   status: string;
-  contact_name: string | null;
   inspection_deadline: string | null;
   inspection_completed_at: string | null;
   appraisal_deadline: string | null;
@@ -41,29 +45,9 @@ type TransactionItem = {
   loan_contingency_deadline: string | null;
   loan_contingency_removed_at: string | null;
   closing_date: string | null;
-  task_overdue: number;
 };
-
-type CallEvent = {
-  id: string;
-  contact_name: string | null;
-  direction: "inbound" | "outbound";
-  status: string;
-  from_phone: string | null;
-  textback_sent: boolean;
-  created_at: string;
-};
-
-type SummaryMetrics = {
-  totalLeads: number;
-  hotLeads: number;
-  inactive7Days: number;
-  messagesSent: number;
-};
-
 type Recommendation = {
   id: string;
-  recommendation_type: string;
   title: string;
   summary: string | null;
   reason: string | null;
@@ -72,9 +56,7 @@ type Recommendation = {
   expected_outcome: string | null;
   related_entity_type: string | null;
   related_entity_id: string | null;
-  status: "new" | "accepted";
 };
-
 type ActivityRow = {
   id: string;
   assistant_type: string;
@@ -84,39 +66,84 @@ type ActivityRow = {
   requires_attention: boolean;
   created_at: string;
 };
+type BriefingRow = { id: string; headline: string | null; summary: string; insights: { topOpportunity?: string }; read_at: string | null };
 
-const ASSISTANT_LABELS: Record<string, string> = {
-  boss_assistant: "Boss Assistant",
-  receptionist: "AI Receptionist",
-  sales_assistant: "AI Sales Assistant",
-  marketing_assistant: "AI Marketing Assistant",
-  transaction_assistant: "AI Transaction Assistant",
-  accountant: "AI Accountant",
+type AssigneeKey =
+  | "receptionist"
+  | "sales_assistant"
+  | "marketing_assistant"
+  | "transaction_assistant"
+  | "accountant"
+  | "realtor"
+  | "boss_assistant";
+
+type InstructionRow = { id: string; content: string; status: "pending" | "processing" | "done" | "failed"; created_at: string };
+type TaskRow = {
+  id: string;
+  instruction_id: string;
+  title: string;
+  details: string | null;
+  assigned_to: AssigneeKey;
+  status: "assigned" | "needs_review" | "needs_input" | "awaiting_approval" | "sent" | "completed" | "done" | "dismissed" | "failed";
+  draft_channel: "sms" | "email" | null;
+  draft_subject: string | null;
+  draft_body: string | null;
+  execution_note: string | null;
+  follow_up_question: string | null;
+  artifact_type: string | null;
+  artifact_url: string | null;
+  created_at: string;
 };
 
-// ── Derived views ────────────────────────────────────────────────────
+type Channel = "call" | "sms" | "email" | "social";
+type AutopilotCell = { assignee: string; channel: Channel; mode: "ask" | "auto" };
+type AutopilotChannels = { assignee: string; channels: Channel[] };
 
-type DeadlineAlert = {
-  transactionId: string;
-  propertyAddress: string;
-  label: string;
-  due: Date;
-  /** overdue | ≤3 days = high; ≤7 days = medium */
-  risk: "high" | "medium";
+const ASSIGNEE_LABEL: Record<string, string> = {
+  receptionist: "Receptionist",
+  sales_assistant: "Sales Assistant",
+  marketing_assistant: "Marketing Assistant",
+  transaction_assistant: "Transaction Assistant",
+  accountant: "Accountant",
+  realtor: "For your review",
+  boss_assistant: "Boss",
 };
+const CHANNEL_LABEL: Record<Channel, string> = { call: "Call", sms: "Text", email: "Email", social: "Social" };
 
-/** Earliest open contingency/closing deadline per active transaction, within 7 days or overdue. */
+const QUICK_COMMANDS = [
+  "Text my hot leads a check-in",
+  "Draft a just-listed social post",
+  "Plan my day",
+];
+
+// ── helpers ──────────────────────────────────────────────────────────
+
+function fmtAgo(iso: string): string {
+  const mins = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
+}
+function fmtDay(d: Date): string {
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+function fmtTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
+type DeadlineAlert = { transactionId: string; propertyAddress: string; label: string; due: Date; risk: "high" | "medium" };
 function deadlineAlerts(transactions: TransactionItem[]): DeadlineAlert[] {
   const now = Date.now();
   const horizon = now + 7 * 24 * 60 * 60 * 1000;
   const alerts: DeadlineAlert[] = [];
   for (const t of transactions) {
     if (t.status !== "active" && t.status !== "pending") continue;
-    const candidates: { label: string; date: string | null; done: string | null }[] = [
+    const candidates = [
       { label: "Inspection contingency", date: t.inspection_deadline, done: t.inspection_completed_at },
       { label: "Appraisal deadline", date: t.appraisal_deadline, done: t.appraisal_completed_at },
       { label: "Loan contingency", date: t.loan_contingency_deadline, done: t.loan_contingency_removed_at },
-      { label: "Closing", date: t.closing_date, done: null },
+      { label: "Closing", date: t.closing_date, done: null as string | null },
     ];
     for (const c of candidates) {
       if (!c.date || c.done) continue;
@@ -134,87 +161,109 @@ function deadlineAlerts(transactions: TransactionItem[]): DeadlineAlert[] {
   return alerts.sort((a, b) => a.due.getTime() - b.due.getTime());
 }
 
-function fmtDay(d: Date): string {
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-function fmtAgo(iso: string): string {
-  const mins = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.round(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.round(hours / 24)}d ago`;
-}
+// ── main ─────────────────────────────────────────────────────────────
 
 export default function BossAssistantClient({ greetingName }: { greetingName: string }) {
   const [metrics, setMetrics] = useState<SummaryMetrics | null>(null);
-  const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [hotLeads, setHotLeads] = useState<HotLead[]>([]);
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
-  const [calls, setCalls] = useState<CallEvent[]>([]);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [activities, setActivities] = useState<ActivityRow[]>([]);
-  const [teamStatus, setTeamStatus] = useState<Record<string, "active" | "paused">>({});
-  // type → customized assistant name (set on Manage Your AI Team), so activity
-  // rows credit the assistant by the name the user gave it.
+  const [briefing, setBriefing] = useState<BriefingRow | null>(null);
+  const [instructions, setInstructions] = useState<InstructionRow[]>([]);
+  const [tasks, setTasks] = useState<TaskRow[]>([]);
   const [teamNames, setTeamNames] = useState<Record<string, string>>({});
-  // Lead-profile drawer (constitution: leads are people — read them
-  // without leaving the command center).
+  const [teamStatus, setTeamStatus] = useState<Record<string, "active" | "paused">>({});
+  const [teamAvatars, setTeamAvatars] = useState<Record<string, { id: string; url: string | null }>>({});
+
+  const [autopilot, setAutopilot] = useState(false);
+  const [autopilotCells, setAutopilotCells] = useState<AutopilotCell[]>([]);
+  const [autopilotChannels, setAutopilotChannels] = useState<AutopilotChannels[]>([]);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
   const [profileLeadId, setProfileLeadId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const loadConversation = useCallback(async () => {
+    const res = await fetch("/api/dashboard/realtorboss/instructions?limit=8").then((r) => r.json()).catch(() => ({}));
+    setInstructions(((res?.instructions ?? []) as InstructionRow[]).slice().reverse());
+    setTasks((res?.tasks ?? []) as TaskRow[]);
+  }, []);
 
   const loadData = useCallback(async () => {
     const today = new Date();
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
     const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59).toISOString();
 
-    const [summaryRes, tasksRes, eventsRes, hotRes, txRes, callsRes, recsRes, actsRes, teamRes] = await Promise.all([
+    const [summaryRes, eventsRes, hotRes, txRes, recsRes, actsRes, teamRes, briefRes, apRes] = await Promise.all([
       fetch("/api/dashboard/summary").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/tasks?status=open").then((r) => r.json()).catch(() => ({})),
       fetch(`/api/dashboard/calendar/events?from=${todayStart}&to=${todayEnd}`).then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/leads?filter=hot&pageSize=5").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/transactions").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/missed-call/events?limit=20").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/realtorboss/recommendations").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/realtorboss/activities?limit=40").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/realtorboss/team").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/briefings?limit=1").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/realtorboss/autopilot").then((r) => r.json()).catch(() => ({})),
     ]);
 
     const m = summaryRes?.metrics;
-    if (m) {
-      setMetrics({
-        totalLeads: m.totalLeads ?? 0,
-        hotLeads: m.hotLeads ?? 0,
-        inactive7Days: m.inactive7Days ?? 0,
-        messagesSent: m.messagesSent ?? 0,
-      });
-    }
-    setTasks(((tasksRes?.tasks ?? []) as TaskItem[]).map((t) => ({
-      id: t.id, title: t.title, priority: t.priority, due_at: t.due_at, lead_name: t.lead_name ?? null,
-    })));
-    setEvents(((eventsRes?.events ?? []) as EventItem[]).slice(0, 5));
-    setHotLeads(((hotRes?.leads ?? []) as HotLead[]).slice(0, 5));
+    if (m) setMetrics({ totalLeads: m.totalLeads ?? 0, hotLeads: m.hotLeads ?? 0, inactive7Days: m.inactive7Days ?? 0, messagesSent: m.messagesSent ?? 0 });
+    setEvents(((eventsRes?.events ?? []) as EventItem[]).slice(0, 8));
+    setHotLeads(((hotRes?.leads ?? []) as HotLead[]).slice(0, 8));
     setTransactions((txRes?.transactions ?? []) as TransactionItem[]);
-    setCalls((callsRes?.events ?? []) as CallEvent[]);
     setRecommendations((recsRes?.recommendations ?? []) as Recommendation[]);
     setActivities((actsRes?.activities ?? []) as ActivityRow[]);
-    const statuses: Record<string, "active" | "paused"> = {};
-    const names: Record<string, string> = {};
-    for (const a of (teamRes?.assistants ?? []) as {
-      type: string;
-      status: "active" | "paused";
-      name?: string;
-    }[]) {
-      statuses[a.type] = a.status;
-      if (a.name) names[a.type] = a.name;
-    }
-    setTeamStatus(statuses);
-    setTeamNames(names);
-    setLoading(false);
-  }, []);
+    const morning = (briefRes?.morning?.[0] ?? null) as BriefingRow | null;
+    setBriefing(morning && !morning.read_at ? morning : null);
 
-  /** Mark a recommendation done/dismissed — optimistic removal, server persists. */
+    const names: Record<string, string> = {};
+    const statuses: Record<string, "active" | "paused"> = {};
+    const avatars: Record<string, { id: string; url: string | null }> = {};
+    for (const a of (teamRes?.assistants ?? []) as { type: string; status: "active" | "paused"; name?: string; avatar_id?: string; avatar_url?: string | null }[]) {
+      if (a.name) names[a.type] = a.name;
+      statuses[a.type] = a.status;
+      if (a.avatar_id) avatars[a.type] = { id: a.avatar_id, url: a.avatar_url ?? null };
+    }
+    setTeamNames(names);
+    setTeamStatus(statuses);
+    setTeamAvatars(avatars);
+
+    if (apRes?.ok) {
+      setAutopilot(Boolean(apRes.global));
+      setAutopilotCells((apRes.cells ?? []) as AutopilotCell[]);
+      setAutopilotChannels((apRes.channels ?? []) as AutopilotChannels[]);
+    }
+
+    await loadConversation();
+    setLoading(false);
+  }, [loadConversation]);
+
+  useEffect(() => { void loadData(); }, [loadData]);
+
+  // Poll the conversation while an instruction is still being parsed/routed.
+  const hasPending = instructions.some((i) => i.status === "pending" || i.status === "processing");
+  useEffect(() => {
+    if (!hasPending) return;
+    const t = setInterval(() => void loadConversation(), 4000);
+    return () => clearInterval(t);
+  }, [hasPending, loadConversation]);
+
+  const submitCommand = useCallback(async (text: string) => {
+    const content = text.trim();
+    if (!content) return;
+    // Optimistic instruction bubble so the conversation reacts instantly.
+    const tempId = `temp_${Date.now()}`;
+    setInstructions((prev) => [...prev, { id: tempId, content, status: "processing", created_at: new Date().toISOString() }]);
+    await fetch("/api/dashboard/realtorboss/instructions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content }),
+    }).catch(() => {});
+    await loadConversation();
+  }, [loadConversation]);
+
   const resolveRecommendation = useCallback(async (id: string, status: "completed" | "dismissed") => {
     setRecommendations((prev) => prev.filter((r) => r.id !== id));
     await fetch(`/api/dashboard/realtorboss/recommendations/${id}`, {
@@ -224,442 +273,574 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     }).catch(() => {});
   }, []);
 
-  useEffect(() => { void loadData(); }, [loadData]);
+  const setGlobalAutopilot = useCallback(async (on: boolean) => {
+    setAutopilot(on);
+    await fetch("/api/dashboard/realtorboss/autopilot", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ global: on }),
+    }).catch(() => setAutopilot(!on));
+  }, []);
+
+  const setCell = useCallback(async (assignee: string, channel: Channel, mode: "ask" | "auto") => {
+    setAutopilotCells((prev) => {
+      const next = prev.filter((c) => !(c.assignee === assignee && c.channel === channel));
+      return [...next, { assignee, channel, mode }];
+    });
+    await fetch("/api/dashboard/realtorboss/autopilot", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ assignee, channel, mode }),
+    }).catch(() => {});
+  }, []);
 
   const now = new Date();
-  const hour = now.getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
 
-  const overdueTasks = useMemo(
-    () => tasks.filter((t) => t.due_at && new Date(t.due_at).getTime() < Date.now()),
-    [tasks],
-  );
-  const activeTransactions = useMemo(
-    () => transactions.filter((t) => t.status === "active" || t.status === "pending"),
-    [transactions],
-  );
   const alerts = useMemo(() => deadlineAlerts(transactions), [transactions]);
-  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  const callsToday = useMemo(
-    () => calls.filter((c) => new Date(c.created_at).getTime() >= todayMidnight),
-    [calls, todayMidnight],
-  );
-  // Top priorities come from the boss_recommendations engine
-  // (/api/dashboard/realtorboss/recommendations) — synced server-side
-  // from CRM signals, with accept/dismiss state that persists.
+  const activeDeals = useMemo(() => transactions.filter((t) => t.status === "active" || t.status === "pending"), [transactions]);
 
-  // "While you were out" digest — what the AI team did in the last 24h,
-  // straight from assistant_activities (no projections).
   const teamDigest = useMemo(() => {
     const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
     const recent = activities.filter((a) => new Date(a.created_at).getTime() >= dayAgo);
     if (recent.length === 0) return null;
     const by = (t: string) => recent.filter((a) => a.assistant_type === t).length;
-    const needsYou = recent.filter((a) => a.requires_attention).length;
     const parts: string[] = [];
-    const rec = by("receptionist");
-    const sales = by("sales_assistant");
-    const marketing = by("marketing_assistant");
-    const tx = by("transaction_assistant");
-    const acct = by("accountant");
+    if (by("receptionist") > 0) parts.push(`answered ${by("receptionist")} call${by("receptionist") === 1 ? "" : "s"}`);
+    if (by("sales_assistant") > 0) parts.push(`sent ${by("sales_assistant")} follow-up${by("sales_assistant") === 1 ? "" : "s"}`);
+    if (by("marketing_assistant") > 0) parts.push(`made ${by("marketing_assistant")} marketing touch${by("marketing_assistant") === 1 ? "" : "es"}`);
+    if (by("transaction_assistant") > 0) parts.push(`flagged ${by("transaction_assistant")} transaction item${by("transaction_assistant") === 1 ? "" : "s"}`);
     const booked = recent.filter((a) => a.activity_type === "appointment_booked").length;
-    if (rec > 0) parts.push(`Receptionist handled ${rec} call${rec === 1 ? "" : "s"}`);
-    if (sales > 0) parts.push(`Sales Assistant ran ${sales} follow-up${sales === 1 ? "" : "s"}`);
-    if (marketing > 0) parts.push(`Marketing Assistant made ${marketing} touch${marketing === 1 ? "" : "es"}`);
-    if (tx > 0) parts.push(`Transaction Assistant flagged ${tx} item${tx === 1 ? "" : "s"}`);
-    if (acct > 0) parts.push(`Accountant tracked ${acct} money item${acct === 1 ? "" : "s"}`);
-    if (booked > 0) parts.push(`${booked} appointment${booked === 1 ? "" : "s"} booked`);
+    if (booked > 0) parts.push(`booked ${booked} appointment${booked === 1 ? "" : "s"}`);
     if (parts.length === 0) return null;
-    // Constitution briefing voice: lead with the team's total output.
-    return { total: recent.length, line: parts.join(" · "), needsYou };
+    return { total: recent.length, line: parts.join(", "), needsYou: recent.filter((a) => a.requires_attention).length };
   }, [activities]);
 
-  // Per-assistant headline stats for the AI Team cards (today, from real logs).
-  const overdueInvoiceRecs = recommendations.filter((r) => r.recommendation_type === "invoice_overdue").length;
-  const marketingTouches24h = activities.filter(
-    (a) =>
-      a.assistant_type === "marketing_assistant" &&
-      new Date(a.created_at).getTime() >= Date.now() - 24 * 60 * 60 * 1000,
-  ).length;
-  const teamStats: Record<string, string> = {
-    receptionist: `${callsToday.filter((c) => c.direction === "inbound").length} calls today · ${callsToday.filter((c) => c.textback_sent).length} text-backs`,
-    sales_assistant: metrics
-      ? `${metrics.hotLeads} hot leads · ${metrics.inactive7Days} quiet leads to revive`
-      : "—",
-    marketing_assistant:
-      marketingTouches24h > 0
-        ? `${marketingTouches24h} marketing touch${marketingTouches24h === 1 ? "" : "es"} in 24h`
-        : "Posts, plans & sphere nurture",
-    transaction_assistant: `${activeTransactions.length} active deals · ${alerts.length} deadline${alerts.length === 1 ? "" : "s"} in 7 days`,
-    accountant:
-      overdueInvoiceRecs > 0
-        ? `${overdueInvoiceRecs} overdue receivable${overdueInvoiceRecs === 1 ? "" : "s"} flagged`
-        : "Commission pipeline & expenses",
-  };
+  const bossName = teamNames["boss_assistant"] || "Boss";
+  const bossAvatar = teamAvatars["boss_assistant"] ?? null;
 
   return (
     <div className="space-y-4">
-      {/* ── Daily briefing header ── */}
-      <div>
-        <h1 className="text-xl font-semibold text-gray-900">
-          {greeting}{greetingName ? `, ${greetingName}` : ""}.
-        </h1>
-        <p className="text-sm text-gray-500">
-          {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-          {" — here is what needs your attention today."}
-        </p>
+      {/* ── Header: Boss identity · autopilot · settings ── */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <BossAvatar avatar={bossAvatar} />
+          <div>
+            <h1 className="text-lg font-semibold leading-tight text-gray-900">{bossName}</h1>
+            <p className="text-xs text-gray-500">your AI chief of staff</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <AutopilotToggle on={autopilot} onToggle={() => void setGlobalAutopilot(!autopilot)} />
+          <button
+            type="button"
+            onClick={() => setSettingsOpen(true)}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
+            aria-label="Approval settings"
+            title="Approval settings"
+          >
+            ⚙
+          </button>
+        </div>
       </div>
 
-      {/* ── Ask your Boss Assistant — persistent prompt (theme constitution) ── */}
-      <button
-        type="button"
-        onClick={() => window.dispatchEvent(new CustomEvent("open-ai-chat"))}
-        className="flex w-full items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-left shadow-sm transition hover:border-gray-300 hover:bg-gray-50"
-      >
-        <span className="text-sm" aria-hidden>💬</span>
-        <span className="text-sm text-gray-400">
-          Ask your Boss Assistant… <span className="hidden sm:inline">&ldquo;What should I focus on today?&rdquo; · &ldquo;Any transactions at risk?&rdquo;</span>
-        </span>
-      </button>
+      {/* ── Context strip (clickable → inline detail) ── */}
+      <ContextStrip
+        metrics={metrics}
+        eventsCount={loading ? undefined : events.length}
+        dealsCount={loading ? undefined : activeDeals.length}
+        deadlinesCount={loading ? undefined : alerts.length}
+        hotLeads={hotLeads}
+        events={events}
+        deals={activeDeals}
+        alerts={alerts}
+        onOpenLead={setProfileLeadId}
+      />
 
-      {/* ── While you were out — the AI team's last 24h ── */}
-      {teamDigest && (
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50 to-white px-3 py-2">
-          <span className="text-sm" aria-hidden>⚡</span>
-          <p className="text-xs font-medium text-gray-700">
-            <span className="font-semibold text-gray-900">
-              Your AI team completed {teamDigest.total} activit{teamDigest.total === 1 ? "y" : "ies"} in the last 24h:
-            </span>{" "}
-            {teamDigest.line}
+      {/* ── Conversation thread ── */}
+      <section className="space-y-3 rounded-2xl border border-gray-200 bg-gray-50/60 p-3 sm:p-4">
+        {/* Briefing opener */}
+        <BossBubble bossName={bossName} avatar={bossAvatar}>
+          <p className="text-sm text-gray-800">
+            {greeting}{greetingName ? `, ${greetingName}` : ""}.{" "}
+            {briefing?.headline?.trim() || briefing?.summary?.split(/[.!?]\s/)[0] || "Here's where things stand — and what I'd like to do for you."}
           </p>
-          {teamDigest.needsYou > 0 && (
-            <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
-              {teamDigest.needsYou} need{teamDigest.needsYou === 1 ? "s" : ""} your attention
-            </span>
+          {briefing?.insights?.topOpportunity && (
+            <p className="mt-1.5 text-xs font-medium text-[#8a6a0e]">→ {briefing.insights.topOpportunity}</p>
           )}
-        </div>
-      )}
+          {teamDigest && (
+            <p className="mt-2 border-t border-gray-100 pt-2 text-xs text-gray-600">
+              <span className="font-semibold text-gray-800">While you were out</span>, your team {teamDigest.line}.
+              {teamDigest.needsYou > 0 && (
+                <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700">
+                  {teamDigest.needsYou} need{teamDigest.needsYou === 1 ? "s" : ""} you
+                </span>
+              )}
+            </p>
+          )}
+        </BossBubble>
 
-      {/* AI-written morning plan / evening summary (existing briefings engine). */}
-      <BriefingsCard />
+        {/* Proposals (from the recommendations engine) — propose + initiate */}
+        {recommendations.map((r) => (
+          <ProposalCard
+            key={r.id}
+            rec={r}
+            bossName={bossName}
+            avatar={bossAvatar}
+            onHandle={() => {
+              void submitCommand(r.recommended_action && r.recommended_action.length > 3 ? r.recommended_action : r.title);
+              void resolveRecommendation(r.id, "completed");
+            }}
+            onOpenLead={r.related_entity_type === "contact" && r.related_entity_id ? () => setProfileLeadId(r.related_entity_id) : null}
+            onDismiss={() => void resolveRecommendation(r.id, "dismissed")}
+          />
+        ))}
 
-      {/* ── Daily summary cards ── */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <SummaryCard label="Total Leads" value={metrics?.totalLeads} href="/dashboard/contacts" />
-        <SummaryCard label="Hot Leads" value={metrics?.hotLeads} href="/dashboard/leads?filter=hot" tone="hot" />
-        <SummaryCard label="Appointments Today" value={loading ? undefined : events.length} href="/dashboard/calendar" />
-        <SummaryCard label="Active Transactions" value={loading ? undefined : activeTransactions.length} href="/dashboard/transactions" />
-        <SummaryCard label="Overdue Tasks" value={loading ? undefined : overdueTasks.length} href="/dashboard/tasks" tone={overdueTasks.length > 0 ? "warn" : undefined} />
-        <SummaryCard label="Calls Today" value={loading ? undefined : callsToday.length} href="/dashboard/ai-receptionist" />
-      </div>
+        {/* Live conversation — instructions you sent + the team's replies */}
+        {instructions.map((ins) => (
+          <InstructionExchange
+            key={ins.id}
+            instruction={ins}
+            tasks={tasks.filter((t) => t.instruction_id === ins.id)}
+            bossName={bossName}
+            avatar={bossAvatar}
+            teamNames={teamNames}
+            onChanged={loadConversation}
+          />
+        ))}
 
-      {/* ── Top priorities (boss_recommendations engine) ── */}
-      <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-900">Top Priorities</h2>
-          <Link href="/dashboard/ai-team" className="text-xs font-medium text-blue-600 hover:text-blue-800">Manage AI team</Link>
-        </div>
-        {recommendations.length === 0 ? (
-          <p className="py-4 text-center text-sm text-gray-400">
-            {loading ? "Checking your business…" : "Nothing urgent — your AI team has things under control."}
-          </p>
-        ) : (
-          <ol className="mt-3 space-y-2">
-            {recommendations.map((p, i) => (
-              <li key={p.id} className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-gray-100 px-3 py-2">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-gray-900">{i + 1}. {p.title}</p>
-                  <p className="text-xs text-gray-500">
-                    {[p.summary, p.reason].filter(Boolean).join(" — ")}
-                  </p>
-                  {p.expected_outcome && (
-                    <p className="mt-0.5 text-xs font-medium text-[#8a6a0e]">
-                      → {p.expected_outcome}
-                    </p>
-                  )}
-                </div>
-                <div className="flex shrink-0 items-center gap-1.5">
-                  {p.related_entity_type === "contact" && p.related_entity_id ? (
-                    <button
-                      type="button"
-                      onClick={() => setProfileLeadId(p.related_entity_id)}
-                      className="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-700"
-                    >
-                      {p.recommended_action ?? "Open"}
-                    </button>
-                  ) : p.action_href ? (
-                    <Link href={p.action_href} className="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-700">
-                      {p.recommended_action ?? "Open"}
-                    </Link>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={() => void resolveRecommendation(p.id, "completed")}
-                    className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
-                    title="Mark done"
-                  >
-                    Done
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => void resolveRecommendation(p.id, "dismissed")}
-                    className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-400 hover:bg-gray-50"
-                    title="Dismiss"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ol>
+        {recommendations.length === 0 && instructions.length === 0 && !loading && (
+          <BossBubble bossName={bossName} avatar={bossAvatar}>
+            <p className="text-sm text-gray-600">Nothing urgent — your team has things under control. Tell me what you&apos;d like done.</p>
+          </BossBubble>
         )}
+
+        <CommandBar onSubmit={submitCommand} autopilot={autopilot} />
       </section>
 
-      {/* ── Your AI Team ── */}
+      {/* ── Your AI team (compact) ── */}
       <section>
-        <h2 className="mb-2 text-sm font-semibold text-gray-900">Your AI Team</h2>
-        {/* 5 members → 3+2 on xl reads better than a cramped 5-up row. */}
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <h2 className="mb-2 text-sm font-semibold text-gray-900">Your AI team</h2>
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {AI_TEAM.filter((a) => a.type !== "boss_assistant").map((a) => {
-            // Constitution: assistant cards show role, status, key
-            // metrics, and recent activity — checking on an employee.
-            const status = teamStatus[a.type] ?? "active";
             const latest = activities.find((act) => act.assistant_type === a.type);
+            const av = teamAvatars[a.type];
             return (
-              <Link key={a.type} href={a.href} className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:bg-gray-50">
-                <div className="flex min-w-0 items-center justify-between gap-2">
-                  <p className="min-w-0 truncate text-sm font-semibold text-gray-900">{a.name}</p>
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-gray-200 text-gray-600"}`}>
-                    {status}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500">{a.role} · {a.mission}</p>
-                <p className="mt-2 text-xs font-medium text-blue-700">{teamStats[a.type] ?? "—"}</p>
-                {latest && (
-                  <p className="mt-1.5 truncate border-t border-gray-100 pt-1.5 text-[11px] text-gray-500">
-                    <span className="font-medium text-gray-600">Latest:</span> {latest.summary} · {fmtAgo(latest.created_at)}
+              <Link key={a.type} href={a.href} className="flex min-w-0 items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-3 hover:bg-gray-50">
+                {av ? <AssistantAvatar id={av.id} url={av.url} size={32} /> : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-xs font-semibold text-blue-700">{(teamNames[a.type] || a.name).slice(0, 1)}</span>}
+                <div className="min-w-0">
+                  <p className="flex items-center gap-1.5 truncate text-sm font-medium text-gray-900">
+                    {teamNames[a.type] || a.name}
+                    <span className={`h-1.5 w-1.5 rounded-full ${(teamStatus[a.type] ?? "active") === "active" ? "bg-emerald-500" : "bg-gray-300"}`} />
                   </p>
-                )}
+                  <p className="truncate text-[11px] text-gray-500">{latest ? `${latest.summary} · ${fmtAgo(latest.created_at)}` : a.role}</p>
+                </div>
               </Link>
             );
           })}
         </div>
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        {/* ── Hot leads ── */}
-        <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">Hot Leads</h2>
-            <Link href="/dashboard/leads?filter=hot" className="text-xs font-medium text-blue-600 hover:text-blue-800">View all</Link>
-          </div>
-          {hotLeads.length === 0 ? (
-            <p className="py-4 text-center text-sm text-gray-400">No hot leads right now.</p>
-          ) : (
-            <div className="space-y-2">
-              {hotLeads.map((l) => (
-                <button
-                  key={l.id}
-                  type="button"
-                  onClick={() => setProfileLeadId(l.id)}
-                  className="flex w-full items-center justify-between rounded-lg border border-gray-100 px-3 py-2 text-left hover:bg-gray-50"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900">{l.name ?? "Unnamed lead"}</p>
-                    <p className="truncate text-xs text-gray-500">
-                      {[l.ai_intent, l.source, l.last_activity_at ? `active ${fmtAgo(l.last_activity_at)}` : null]
-                        .filter(Boolean)
-                        .join(" · ") || "No activity yet"}
-                    </p>
-                  </div>
-                  {typeof l.engagement_score === "number" && (
-                    <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">{l.engagement_score}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* ── Today's appointments ── */}
-        <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">Upcoming Appointments</h2>
-            <Link href="/dashboard/calendar" className="text-xs font-medium text-blue-600 hover:text-blue-800">View calendar</Link>
-          </div>
-          {events.length === 0 ? (
-            <p className="py-4 text-center text-sm text-gray-400">No appointments today.</p>
-          ) : (
-            <div className="space-y-2">
-              {events.map((e) => (
-                <div key={e.id} className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900">{e.title}</p>
-                    {e.lead_name && <p className="text-xs text-gray-500">{e.lead_name}</p>}
-                  </div>
-                  <span className="text-xs font-medium text-blue-600">
-                    {new Date(e.starts_at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        {/* ── Transaction alerts ── */}
-        <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">Transaction Alerts</h2>
-            <Link href="/dashboard/ai-transaction-assistant" className="text-xs font-medium text-blue-600 hover:text-blue-800">View all</Link>
-          </div>
-          {alerts.length === 0 ? (
-            <p className="py-4 text-center text-sm text-gray-400">No deadlines in the next 7 days.</p>
-          ) : (
-            <div className="space-y-2">
-              {alerts.slice(0, 5).map((a) => (
-                <Link key={`${a.transactionId}-${a.label}`} href={`/dashboard/transactions/${a.transactionId}`} className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2 hover:bg-gray-50">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900">{a.propertyAddress}</p>
-                    <p className="text-xs text-gray-500">{a.label}</p>
-                  </div>
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.risk === "high" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
-                    {fmtDay(a.due)}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* ── AI team activity (real call logs) ── */}
-        <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">AI Team Activity</h2>
-            <Link href="/dashboard/ai-receptionist" className="text-xs font-medium text-blue-600 hover:text-blue-800">View all</Link>
-          </div>
-          {activities.length > 0 ? (
-            <div className="space-y-2">
-              {activities.slice(0, 5).map((a) => (
-                <div key={a.id} className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900">
-                      {teamNames[a.assistant_type] ?? ASSISTANT_LABELS[a.assistant_type] ?? a.assistant_type} · {a.summary}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {a.outcome ?? a.activity_type.replace(/_/g, " ")}
-                      {a.requires_attention ? " · needs your attention" : ""}
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-xs text-gray-400">{fmtAgo(a.created_at)}</span>
-                </div>
-              ))}
-            </div>
-          ) : calls.length === 0 ? (
-            <p className="py-4 text-center text-sm text-gray-400">
-              Your AI team is ready — calls answered, texts sent, and deadline alerts will appear here as they work.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {calls.slice(0, 5).map((c) => (
-                <div key={c.id} className="flex items-center justify-between rounded-lg border border-gray-100 px-3 py-2">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-gray-900">
-                      AI Receptionist · {c.direction === "inbound" ? "inbound call" : "outbound call"}
-                      {c.contact_name ? ` with ${c.contact_name}` : c.from_phone ? ` from ${c.from_phone}` : ""}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {c.status}{c.textback_sent ? " · follow-up text sent" : ""}
-                    </p>
-                  </div>
-                  <span className="shrink-0 text-xs text-gray-400">{fmtAgo(c.created_at)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      </div>
-
-      {/* ── Business performance (absorbed the old /dashboard/performance
-          page). Collapsed by default — the constitution keeps the command
-          center calm; the deep numbers are one click away. ── */}
       <PerformanceSection />
 
       <LeadProfileDrawer leadId={profileLeadId} onClose={() => setProfileLeadId(null)} />
+      {settingsOpen && (
+        <SettingsModal
+          global={autopilot}
+          channels={autopilotChannels}
+          cells={autopilotCells}
+          onGlobal={(on) => void setGlobalAutopilot(on)}
+          onCell={(a, c, m) => void setCell(a, c, m)}
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
     </div>
   );
 }
 
-const RevenuePanel = nextDynamic(
-  () => import("@/components/dashboard/RevenuePanel").then((m) => m.RevenuePanel),
-  { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> },
-);
-const PipelineForecastPanel = nextDynamic(
-  () => import("@/components/dashboard/PipelineForecastPanel").then((m) => m.PipelineForecastPanel),
-  { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> },
-);
-const EmailEngagementPanel = nextDynamic(
-  () => import("@/components/dashboard/EmailEngagementPanel").then((m) => m.EmailEngagementPanel),
-  { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> },
-);
+// ── header bits ────────────────────────────────────────────────────────
 
-function PerformanceSection() {
-  // Panels (and their recharts payload) load only when opened.
-  const [open, setOpen] = useState(false);
+function BossAvatar({ avatar }: { avatar: { id: string; url: string | null } | null }) {
+  if (avatar) return <AssistantAvatar id={avatar.id} url={avatar.url} size={40} />;
   return (
-    <section>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
-        aria-expanded={open}
-      >
-        📈 Business performance
-        <span className="text-gray-400">{open ? "▾" : "▸"}</span>
-      </button>
-      {open && (
-        <div className="mt-3 space-y-5">
-          <div>
-            <h3 className="mb-2 text-sm font-semibold text-gray-900">Revenue &amp; commission</h3>
-            <RevenuePanel />
-          </div>
-          <div>
-            <h3 className="mb-1 text-sm font-semibold text-gray-900">Pipeline forecast</h3>
-            <p className="mb-2 text-xs text-gray-500">
-              What&apos;s on deck — active and pending deals weighted by close-date proximity.
-            </p>
-            <PipelineForecastPanel />
-          </div>
-          <div>
-            <h3 className="mb-1 text-sm font-semibold text-gray-900">Email engagement</h3>
-            <p className="mb-2 text-xs text-gray-500">
-              Opens &amp; clicks across outbound mail.
-            </p>
-            <EmailEngagementPanel />
-          </div>
-        </div>
-      )}
-    </section>
+    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-lg text-white" aria-hidden>
+      ♛
+    </span>
   );
 }
 
-function SummaryCard({
-  label,
-  value,
-  href,
-  tone,
-}: {
-  label: string;
-  value: number | undefined;
-  href: string;
-  tone?: "hot" | "warn";
-}) {
-  const valueClass = tone === "hot" ? "text-red-600" : tone === "warn" ? "text-amber-600" : "text-gray-900";
+function AutopilotToggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
   return (
-    <Link href={href} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:bg-gray-50">
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      onClick={onToggle}
+      title={on ? "Autopilot on — the Boss acts, then tells you" : "Autopilot off — the Boss asks before sending"}
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+        on ? "bg-emerald-100 text-emerald-800" : "border border-gray-200 bg-white text-gray-600"
+      }`}
+    >
+      <span aria-hidden>{on ? "🛫" : "✈️"}</span>
+      {on ? "Autopilot on" : "Autopilot off"}
+    </button>
+  );
+}
+
+// ── context strip ────────────────────────────────────────────────────
+
+function ContextStrip({
+  metrics, eventsCount, dealsCount, deadlinesCount, hotLeads, events, deals, alerts, onOpenLead,
+}: {
+  metrics: SummaryMetrics | null;
+  eventsCount: number | undefined;
+  dealsCount: number | undefined;
+  deadlinesCount: number | undefined;
+  hotLeads: HotLead[];
+  events: EventItem[];
+  deals: TransactionItem[];
+  alerts: DeadlineAlert[];
+  onOpenLead: (id: string) => void;
+}) {
+  const [open, setOpen] = useState<null | "hot" | "today" | "deals" | "dead">(null);
+  const toggle = (k: "hot" | "today" | "deals" | "dead") => setOpen((cur) => (cur === k ? null : k));
+
+  return (
+    <div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Metric label="Hot leads" value={metrics?.hotLeads} tone="hot" active={open === "hot"} onClick={() => toggle("hot")} />
+        <Metric label="Today" value={eventsCount} active={open === "today"} onClick={() => toggle("today")} />
+        <Metric label="Active deals" value={dealsCount} active={open === "deals"} onClick={() => toggle("deals")} />
+        <Metric label="Deadlines" value={deadlinesCount} tone={deadlinesCount ? "warn" : undefined} active={open === "dead"} onClick={() => toggle("dead")} />
+      </div>
+      {open && (
+        <div className="mt-2 rounded-xl border border-gray-200 bg-white p-2">
+          {open === "hot" && (hotLeads.length ? hotLeads.map((l) => (
+            <button key={l.id} type="button" onClick={() => onOpenLead(l.id)} className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-gray-50">
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-medium text-gray-900">{l.name ?? "Unnamed lead"}</span>
+                <span className="block truncate text-xs text-gray-500">{[l.ai_intent, l.source, l.last_activity_at ? `active ${fmtAgo(l.last_activity_at)}` : null].filter(Boolean).join(" · ") || "No activity yet"}</span>
+              </span>
+              {typeof l.engagement_score === "number" && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">{l.engagement_score}</span>}
+            </button>
+          )) : <Empty>No hot leads right now.</Empty>)}
+          {open === "today" && (events.length ? events.map((e) => (
+            <div key={e.id} className="flex items-center justify-between gap-2 px-2 py-1.5">
+              <span className="min-w-0"><span className="block truncate text-sm font-medium text-gray-900">{e.title}</span>{e.lead_name && <span className="block truncate text-xs text-gray-500">{e.lead_name}</span>}</span>
+              <span className="text-xs font-medium text-blue-600">{fmtTime(e.starts_at)}</span>
+            </div>
+          )) : <Empty>No appointments today.</Empty>)}
+          {open === "deals" && (deals.length ? deals.map((d) => (
+            <Link key={d.id} href={`/dashboard/transactions/${d.id}`} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-50">
+              <span className="truncate text-sm font-medium text-gray-900">{d.property_address}</span>
+              <span className="shrink-0 text-xs text-gray-500">{d.status}</span>
+            </Link>
+          )) : <Empty>No active deals.</Empty>)}
+          {open === "dead" && (alerts.length ? alerts.map((a) => (
+            <Link key={`${a.transactionId}-${a.label}`} href={`/dashboard/transactions/${a.transactionId}`} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-50">
+              <span className="min-w-0"><span className="block truncate text-sm font-medium text-gray-900">{a.propertyAddress}</span><span className="block text-xs text-gray-500">{a.label}</span></span>
+              <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.risk === "high" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{fmtDay(a.due)}</span>
+            </Link>
+          )) : <Empty>No deadlines in the next 7 days.</Empty>)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Metric({ label, value, tone, active, onClick }: { label: string; value: number | undefined; tone?: "hot" | "warn"; active: boolean; onClick: () => void }) {
+  const color = tone === "hot" ? "text-red-600" : tone === "warn" ? "text-amber-600" : "text-gray-900";
+  return (
+    <button type="button" onClick={onClick} className={`rounded-xl border bg-white p-3 text-left transition ${active ? "border-blue-300 ring-1 ring-blue-200" : "border-gray-200 hover:border-gray-300"}`}>
       <p className="text-xs text-gray-500">{label}</p>
-      <p className={`mt-1 text-2xl font-bold ${valueClass}`}>{value ?? "—"}</p>
-    </Link>
+      <p className={`mt-0.5 text-2xl font-bold ${color}`}>{value ?? "—"}</p>
+    </button>
+  );
+}
+
+function Empty({ children }: { children: React.ReactNode }) {
+  return <p className="px-2 py-3 text-center text-xs text-gray-400">{children}</p>;
+}
+
+// ── conversation bits ──────────────────────────────────────────────────
+
+function BossBubble({ bossName, avatar, children }: { bossName: string; avatar: { id: string; url: string | null } | null; children: React.ReactNode }) {
+  return (
+    <div className="flex gap-2.5">
+      <span className="shrink-0">{avatar ? <AssistantAvatar id={avatar.id} url={avatar.url} size={30} alt={bossName} /> : <span className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-blue-600 text-sm text-white" aria-hidden title={bossName}>♛</span>}</span>
+      <div className="min-w-0 flex-1 rounded-xl rounded-tl-sm border border-gray-200 bg-white p-3">{children}</div>
+    </div>
+  );
+}
+
+function ProposalCard({
+  rec, bossName, avatar, onHandle, onOpenLead, onDismiss,
+}: {
+  rec: Recommendation;
+  bossName: string;
+  avatar: { id: string; url: string | null } | null;
+  onHandle: () => void;
+  onOpenLead: (() => void) | null;
+  onDismiss: () => void;
+}) {
+  const [handled, setHandled] = useState(false);
+  return (
+    <BossBubble bossName={bossName} avatar={avatar}>
+      <span className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">Proposal</span>
+      <p className="text-sm font-medium text-gray-900">{rec.title}</p>
+      {(rec.summary || rec.reason) && <p className="mt-0.5 text-xs text-gray-500">{[rec.summary, rec.reason].filter(Boolean).join(" — ")}</p>}
+      {rec.expected_outcome && <p className="mt-0.5 text-xs font-medium text-[#8a6a0e]">→ {rec.expected_outcome}</p>}
+      {handled ? (
+        <p className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-700"><span aria-hidden>✓</span> Handed to your team — see below.</p>
+      ) : (
+        <div className="mt-2 flex flex-wrap gap-2">
+          <button type="button" onClick={() => { setHandled(true); onHandle(); }} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
+            {rec.recommended_action && rec.recommended_action.length > 3 ? rec.recommended_action : "Have Boss handle it"}
+          </button>
+          {onOpenLead && <button type="button" onClick={onOpenLead} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50">Open lead</button>}
+          <button type="button" onClick={onDismiss} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-400 hover:bg-gray-50">Not now</button>
+        </div>
+      )}
+    </BossBubble>
+  );
+}
+
+function InstructionExchange({
+  instruction, tasks, bossName, avatar, teamNames, onChanged,
+}: {
+  instruction: InstructionRow;
+  tasks: TaskRow[];
+  bossName: string;
+  avatar: { id: string; url: string | null } | null;
+  teamNames: Record<string, string>;
+  onChanged: () => void | Promise<void>;
+}) {
+  const processing = instruction.status === "pending" || instruction.status === "processing";
+  return (
+    <div className="space-y-2">
+      {/* the command you gave */}
+      <div className="flex justify-end">
+        <p className="max-w-[80%] rounded-xl rounded-tr-sm bg-blue-600 px-3 py-2 text-sm text-white">{instruction.content}</p>
+      </div>
+      {processing ? (
+        <BossBubble bossName={bossName} avatar={avatar}>
+          <p className="text-sm text-gray-500">On it — breaking this into actions…</p>
+        </BossBubble>
+      ) : instruction.status === "failed" ? (
+        <BossBubble bossName={bossName} avatar={avatar}>
+          <p className="text-sm text-gray-500">Couldn&apos;t work that one out — try rephrasing it.</p>
+        </BossBubble>
+      ) : tasks.length > 0 ? (
+        <BossBubble bossName={bossName} avatar={avatar}>
+          <div className="space-y-2">
+            {tasks.map((t) => <TaskBubble key={t.id} task={t} teamNames={teamNames} onChanged={onChanged} />)}
+          </div>
+        </BossBubble>
+      ) : null}
+    </div>
+  );
+}
+
+function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamNames: Record<string, string>; onChanged: () => void | Promise<void> }) {
+  const [busy, setBusy] = useState<"approve" | "dismiss" | "answer" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [answer, setAnswer] = useState("");
+
+  async function act(action: "approve" | "dismiss" | "answer") {
+    if (action === "answer" && !answer.trim()) return;
+    setBusy(action);
+    setError(null);
+    try {
+      const res = await fetch("/api/dashboard/realtorboss/instruction-tasks", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(action === "answer" ? { id: t.id, action, answer: answer.trim() } : { id: t.id, action }),
+      }).then((r) => r.json());
+      if (!res?.ok) throw new Error(res?.error || "Action failed.");
+      setAnswer("");
+      await onChanged();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Action failed.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const who = teamNames[t.assigned_to] ?? ASSIGNEE_LABEL[t.assigned_to] ?? t.assigned_to;
+  const done = t.status === "sent" || t.status === "completed" || t.status === "done";
+
+  return (
+    <div className="rounded-lg border border-gray-100 bg-gray-50/60 p-2.5">
+      <div className="flex items-start justify-between gap-2">
+        <p className="min-w-0 text-sm text-gray-800">
+          {done && <span className="mr-1 text-emerald-600">✓</span>}
+          {t.status === "dismissed" && <span className="mr-1 text-gray-400">✕</span>}
+          {t.title}
+        </p>
+        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${done ? "bg-emerald-50 text-emerald-700" : t.status === "needs_input" || t.assigned_to === "realtor" ? "bg-amber-50 text-amber-800" : "bg-blue-50 text-blue-700"}`}>
+          {done ? "Done" : t.status === "needs_input" ? "Needs info" : t.status === "awaiting_approval" ? "Awaiting you" : who}
+        </span>
+      </div>
+
+      {t.status === "awaiting_approval" && t.draft_body && (
+        <div className="mt-1.5 rounded-lg border border-amber-200 bg-amber-50/50 p-2.5">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8a6a0e]">
+            Draft {t.draft_channel === "sms" ? "text" : "email"}{t.execution_note && !t.execution_note.startsWith("to:") ? ` · ${t.execution_note}` : ""}
+          </p>
+          {t.draft_subject && <p className="mt-1 text-xs font-medium text-gray-800">{t.draft_subject}</p>}
+          <p className="mt-1 whitespace-pre-wrap text-xs text-gray-700">{t.draft_body}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <button type="button" disabled={busy !== null} onClick={() => act("approve")} className="rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{busy === "approve" ? "Sending…" : "Approve & send"}</button>
+            <button type="button" disabled={busy !== null} onClick={() => act("dismiss")} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50">Dismiss</button>
+            {error && <span className="text-[11px] text-red-600">{error}</span>}
+          </div>
+        </div>
+      )}
+
+      {t.status === "needs_input" && (
+        <div className="mt-1.5 rounded-lg border border-amber-200 bg-amber-50/50 p-2.5">
+          <p className="text-xs text-amber-900">{t.follow_up_question ?? "I need one more detail to start this."}</p>
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              type="text"
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void act("answer"); } }}
+              placeholder="Type your answer…"
+              className="min-w-0 flex-1 rounded-lg border border-amber-200 px-2.5 py-1 text-xs text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
+            />
+            <button type="button" disabled={busy !== null || !answer.trim()} onClick={() => act("answer")} className="shrink-0 rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{busy === "answer" ? "Working…" : "Send"}</button>
+          </div>
+          {error && <span className="mt-1 block text-[11px] text-red-600">{error}</span>}
+        </div>
+      )}
+
+      {t.status === "completed" && (t.execution_note || t.artifact_url) && (
+        <div className="mt-1">
+          {t.execution_note && <p className="text-[11px] text-gray-500">{t.execution_note}</p>}
+          {t.artifact_url && (
+            <a href={t.artifact_url} className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 hover:underline">
+              View {t.artifact_type === "cma" ? "CMA" : t.artifact_type === "presentation" ? "presentation" : "result"} →
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CommandBar({ onSubmit, autopilot }: { onSubmit: (text: string) => void; autopilot: boolean }) {
+  const [text, setText] = useState("");
+  const ref = useRef<HTMLTextAreaElement>(null);
+  const send = () => { if (text.trim()) { onSubmit(text); setText(""); if (ref.current) ref.current.style.height = "auto"; } };
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-2">
+      <div className="mb-2 flex flex-wrap gap-1.5">
+        {QUICK_COMMANDS.map((q) => (
+          <button key={q} type="button" onClick={() => onSubmit(q)} className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] text-gray-600 hover:bg-gray-100">{q}</button>
+        ))}
+      </div>
+      <div className="flex items-end gap-2">
+        <textarea
+          ref={ref}
+          value={text}
+          onChange={(e) => { setText(e.target.value); e.target.style.height = "auto"; e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`; }}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+          rows={1}
+          placeholder={autopilot ? "Tell your team what to do — they'll act and report back…" : "Tell your team what to do…"}
+          className="max-h-[120px] min-h-[38px] flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+        />
+        <button type="button" onClick={send} disabled={!text.trim()} className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" aria-label="Send">↑</button>
+      </div>
+    </div>
+  );
+}
+
+// ── settings modal (per-assistant · per-channel autopilot) ─────────────
+
+function SettingsModal({
+  global, channels, cells, onGlobal, onCell, onClose,
+}: {
+  global: boolean;
+  channels: AutopilotChannels[];
+  cells: AutopilotCell[];
+  onGlobal: (on: boolean) => void;
+  onCell: (assignee: string, channel: Channel, mode: "ask" | "auto") => void;
+  onClose: () => void;
+}) {
+  const cellMode = (assignee: string, channel: Channel): "ask" | "auto" => {
+    const c = cells.find((x) => x.assignee === assignee && x.channel === channel);
+    if (c) return c.mode;
+    return global ? "auto" : "ask";
+  };
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" onClick={onClose}>
+      <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-gray-900">Approval settings</h2>
+          <button type="button" onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-gray-700">✕</button>
+        </div>
+        <p className="mt-1 text-xs text-gray-500">Choose where the Boss acts on its own and where it asks first — per assistant, per channel.</p>
+
+        <div className="mt-4 flex items-center justify-between rounded-xl border border-gray-200 p-3">
+          <div>
+            <p className="text-sm font-medium text-gray-900">Autopilot (all channels)</p>
+            <p className="text-xs text-gray-500">The master switch. Per-channel choices below override it.</p>
+          </div>
+          <AutopilotToggle on={global} onToggle={() => onGlobal(!global)} />
+        </div>
+
+        <div className="mt-3 space-y-2">
+          {channels.map((row) => (
+            <div key={row.assignee} className="rounded-xl border border-gray-200 p-3">
+              <p className="mb-2 text-sm font-medium text-gray-900">{ASSIGNEE_LABEL[row.assignee] ?? row.assignee}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {row.channels.map((ch) => {
+                  const mode = cellMode(row.assignee, ch);
+                  return (
+                    <button
+                      key={ch}
+                      type="button"
+                      onClick={() => onCell(row.assignee, ch, mode === "auto" ? "ask" : "auto")}
+                      className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition ${mode === "auto" ? "bg-emerald-100 text-emerald-800" : "border border-gray-200 bg-white text-gray-500"}`}
+                    >
+                      {CHANNEL_LABEL[ch]}: {mode === "auto" ? "auto" : "ask"}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 flex justify-end">
+          <button type="button" onClick={onClose} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Done</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── performance (collapsible, lazy) ────────────────────────────────────
+
+const RevenuePanel = nextDynamic(() => import("@/components/dashboard/RevenuePanel").then((m) => m.RevenuePanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> });
+const PipelineForecastPanel = nextDynamic(() => import("@/components/dashboard/PipelineForecastPanel").then((m) => m.PipelineForecastPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> });
+const EmailEngagementPanel = nextDynamic(() => import("@/components/dashboard/EmailEngagementPanel").then((m) => m.EmailEngagementPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> });
+
+function PerformanceSection() {
+  const [open, setOpen] = useState(false);
+  return (
+    <section>
+      <button type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50" aria-expanded={open}>
+        📈 Business performance <span className="text-gray-400">{open ? "▾" : "▸"}</span>
+      </button>
+      {open && (
+        <div className="mt-3 space-y-5">
+          <div><h3 className="mb-2 text-sm font-semibold text-gray-900">Revenue &amp; commission</h3><RevenuePanel /></div>
+          <div><h3 className="mb-1 text-sm font-semibold text-gray-900">Pipeline forecast</h3><PipelineForecastPanel /></div>
+          <div><h3 className="mb-1 text-sm font-semibold text-gray-900">Email engagement</h3><EmailEngagementPanel /></div>
+        </div>
+      )}
+    </section>
   );
 }

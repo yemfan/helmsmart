@@ -1,7 +1,7 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { getAgentMessageSettings } from "@/lib/agent-messaging/settings";
+import { effectiveAutopilot } from "@/lib/realtorboss/autopilot";
 import {
   BOSS_ACTIONS,
   followUpQuestion,
@@ -46,12 +46,12 @@ export async function executeBossAction(args: {
   }
 
   try {
-    // Reuse the existing communication-approval flag: only auto-execute real
-    // outbound actions (calls, posts) when the agent's messaging review policy
-    // is "autosend". Read-only/reversible actions ignore this.
-    const msgSettings = await getAgentMessageSettings(agentId);
-    const autoExecute = msgSettings.reviewPolicy === "autosend";
-    const result = await BOSS_ACTIONS[type].run({ agentId, params, autoExecute });
+    // Per-channel autopilot: only auto-execute real outbound actions (calls,
+    // posts) when this assistant+channel is on autopilot (or the global policy
+    // is). Read-only/reversible actions have no channel and always run.
+    const def = BOSS_ACTIONS[type];
+    const autoExecute = await effectiveAutopilot(agentId, def.assignee, def.channel);
+    const result = await def.run({ agentId, params, autoExecute });
     if (result.status === "completed") {
       await supabaseAdmin
         .from("boss_instruction_tasks")
