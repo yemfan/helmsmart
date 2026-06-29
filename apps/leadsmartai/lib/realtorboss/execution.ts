@@ -2,6 +2,8 @@ import "server-only";
 
 import { getAnthropicClient } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { effectiveAutopilot } from "@/lib/realtorboss/autopilot";
+import { sendDraftedBossTask } from "@/lib/realtorboss/sendTaskDraft";
 import type { ParsedTask } from "@/lib/realtorboss/instructions";
 
 /**
@@ -162,7 +164,7 @@ export async function tryExecuteTask(args: {
   agentId: string;
   taskId: string;
   task: ParsedTask;
-}): Promise<"awaiting_approval" | "assigned"> {
+}): Promise<"awaiting_approval" | "assigned" | "sent"> {
   const { agentId, taskId, task } = args;
   try {
     if (task.assignee === "sales_assistant") {
@@ -183,6 +185,7 @@ export async function tryExecuteTask(args: {
         taskDetails: task.details,
         context: contact.notes,
       });
+      const executionNote = contact.name ? `To ${contact.name}` : null;
       await supabaseAdmin
         .from("boss_instruction_tasks")
         .update({
@@ -191,10 +194,31 @@ export async function tryExecuteTask(args: {
           draft_channel: channel,
           draft_subject: draft.subject,
           draft_body: draft.body,
-          execution_note: contact.name ? `To ${contact.name}` : null,
+          execution_note: executionNote,
           updated_at: new Date().toISOString(),
         })
         .eq("id", taskId);
+
+      // Autopilot: when this assistant+channel is on auto, send now instead of
+      // parking it for approval. Falls back to awaiting_approval if the send
+      // can't complete (e.g. missing phone) so it never silently disappears.
+      if (await effectiveAutopilot(agentId, "sales_assistant", channel)) {
+        const sent = await sendDraftedBossTask(
+          agentId,
+          {
+            id: taskId,
+            title: task.title,
+            assigned_to: "sales_assistant",
+            matched_contact_id: contact.id,
+            draft_channel: channel,
+            draft_subject: draft.subject,
+            draft_body: draft.body,
+            execution_note: executionNote,
+          },
+          { auto: true },
+        );
+        if (sent.ok) return "sent";
+      }
       return "awaiting_approval";
     }
 
@@ -234,19 +258,39 @@ export async function tryExecuteTask(args: {
         taskDetails: task.details,
         context: `Invoice ${inv.invoice_number} for $${Number(inv.total).toLocaleString()} is ${inv.status}${daysPast > 0 ? `, ${daysPast} days past due` : ""}.`,
       });
+      const draftSubject = draft.subject ?? `Invoice ${inv.invoice_number}`;
+      // The send path needs the recipient — invoices aren't always linked to a
+      // CRM contact, so carry the email in the execution note ("to:<email>|…").
+      const acctNote = `to:${inv.client_email}|invoice:${inv.invoice_number}`;
       await supabaseAdmin
         .from("boss_instruction_tasks")
         .update({
           status: "awaiting_approval",
           draft_channel: "email",
-          draft_subject: draft.subject ?? `Invoice ${inv.invoice_number}`,
+          draft_subject: draftSubject,
           draft_body: draft.body,
-          // The approve route needs the recipient — invoices aren't
-          // always linked to a CRM contact, so carry the email here.
-          execution_note: `to:${inv.client_email}|invoice:${inv.invoice_number}`,
+          execution_note: acctNote,
           updated_at: new Date().toISOString(),
         })
         .eq("id", taskId);
+
+      if (await effectiveAutopilot(agentId, "accountant", "email")) {
+        const sent = await sendDraftedBossTask(
+          agentId,
+          {
+            id: taskId,
+            title: task.title,
+            assigned_to: "accountant",
+            matched_contact_id: null,
+            draft_channel: "email",
+            draft_subject: draftSubject,
+            draft_body: draft.body,
+            execution_note: acctNote,
+          },
+          { auto: true },
+        );
+        if (sent.ok) return "sent";
+      }
       return "awaiting_approval";
     }
 

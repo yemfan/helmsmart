@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { logAssistantActivity } from "@/lib/realtorboss/activities";
-import type { AssistantType } from "@/lib/realtorboss/team";
-import { sendSMS } from "@/lib/twilioSms";
-import { sendEmail } from "@/lib/email";
-import { toE164 } from "@/lib/missed-call/service";
+import { sendDraftedBossTask } from "@/lib/realtorboss/sendTaskDraft";
 import { executeBossAction } from "@/lib/realtorboss/actions/execute";
 import { BOSS_ACTIONS, isBossActionType, missingParams } from "@/lib/realtorboss/actions/registry";
 
@@ -97,84 +93,16 @@ export async function PATCH(req: NextRequest) {
     }
 
     // approve — only drafts can send.
-    if (task.status !== "awaiting_approval" || !task.draft_body || !task.draft_channel) {
+    if (task.status !== "awaiting_approval") {
       return NextResponse.json(
         { ok: false, error: "This task has no draft awaiting approval." },
         { status: 400 },
       );
     }
-
-    let sentTo: string | null = null;
-    if (task.draft_channel === "sms") {
-      if (!task.matched_contact_id) {
-        return NextResponse.json({ ok: false, error: "No contact on this draft." }, { status: 400 });
-      }
-      const { data: c } = await supabaseAdmin
-        .from("contacts")
-        .select("phone, phone_number, name")
-        .eq("id", task.matched_contact_id)
-        .maybeSingle();
-      const row = c as { phone: string | null; phone_number: string | null; name: string | null } | null;
-      const e164 = toE164(row?.phone_number ?? row?.phone ?? null);
-      if (!e164) {
-        return NextResponse.json(
-          { ok: false, error: "The contact has no valid US phone number." },
-          { status: 400 },
-        );
-      }
-      await sendSMS(e164, task.draft_body, task.matched_contact_id);
-      sentTo = row?.name ?? e164;
-    } else {
-      // Email — recipient from the matched contact, or the execution
-      // note ("to:<email>|…") for invoice chasers.
-      let to: string | null = null;
-      let toName: string | null = null;
-      if (task.matched_contact_id) {
-        const { data: c } = await supabaseAdmin
-          .from("contacts")
-          .select("email, name")
-          .eq("id", task.matched_contact_id)
-          .maybeSingle();
-        to = (c as { email: string | null } | null)?.email ?? null;
-        toName = (c as { name: string | null } | null)?.name ?? null;
-      }
-      if (!to && task.execution_note?.startsWith("to:")) {
-        to = task.execution_note.slice(3).split("|")[0].trim() || null;
-      }
-      if (!to) {
-        return NextResponse.json(
-          { ok: false, error: "No email address on this draft." },
-          { status: 400 },
-        );
-      }
-      await sendEmail({
-        to,
-        subject: task.draft_subject ?? task.title,
-        text: task.draft_body,
-      });
-      sentTo = toName ?? to;
+    const sent = await sendDraftedBossTask(agentId, task, { auto: false });
+    if (!sent.ok) {
+      return NextResponse.json({ ok: false, error: sent.error }, { status: 400 });
     }
-
-    await supabaseAdmin
-      .from("boss_instruction_tasks")
-      .update({
-        status: "sent",
-        executed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id);
-
-    void logAssistantActivity({
-      agentId,
-      assistantType: task.assigned_to as AssistantType,
-      activityType: "boss_task_sent",
-      summary: `Sent the ${task.draft_channel === "sms" ? "text" : "email"} to ${sentTo} — approved by you`,
-      outcome: task.draft_body.length > 160 ? `${task.draft_body.slice(0, 157)}…` : task.draft_body,
-      requiresAttention: false,
-      relatedEntityType: task.matched_contact_id ? "contact" : null,
-      relatedEntityId: task.matched_contact_id,
-    });
-
     return NextResponse.json({ ok: true, status: "sent" });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Server error";
