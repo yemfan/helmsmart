@@ -6,7 +6,7 @@
 -- (assistant, channel); 'ask' makes it propose for approval first. When no
 -- row exists, the effective mode falls back to the global review policy.
 create table if not exists public.boss_autopilot_settings (
-  agent_id uuid not null references public.agents (id) on delete cascade,
+  agent_id bigint not null references public.agents (id) on delete cascade,
   assignee text not null,
   channel text not null check (channel in ('call', 'sms', 'email', 'social')),
   mode text not null default 'ask' check (mode in ('ask', 'auto')),
