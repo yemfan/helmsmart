@@ -21,13 +21,13 @@ const DEFAULT_EAS_PROJECT_ID = "146f9ab1-a17d-4b90-a005-e6fa6749c6ed";
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   /** Shown under the icon on iOS/Android — keep literal so EAS merges never drop it. */
-  name: "RealtorBoss",
+  name: "RealtyBoss",
   slug: config.slug ?? "leadsmart-mobile",
   ios: {
     ...config.ios,
     infoPlist: {
       ...config.ios?.infoPlist,
-      CFBundleDisplayName: "RealtorBoss",
+      CFBundleDisplayName: "RealtyBoss",
     },
   },
   extra: {
