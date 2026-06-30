@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { CallButton } from "@/components/contacts/CallButton";
+import { LeadProfileDrawer } from "@/components/realtorboss/LeadProfileDrawer";
 import { CsvImportModal } from "@/components/crm/CsvImportModal";
 import { SendPostcardModal } from "@/components/postcards/SendPostcardModal";
 import { BulkSendPostcardModal } from "@/components/postcards/BulkSendPostcardModal";
@@ -182,6 +183,8 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
   } | null>(null);
   /** Contact ids checkbox-selected for bulk actions (postcards, etc). */
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  /** Lead whose full profile drawer is open (clicking a contact name). */
+  const [profileLeadId, setProfileLeadId] = useState<string | null>(null);
   const [bulkPostcardOpen, setBulkPostcardOpen] = useState(false);
 
   const loadStats = useCallback(async () => {
@@ -634,7 +637,16 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                         }
                       />
                     </td>
-                    <td className="px-4 py-2.5 font-medium text-gray-900">{c.name ?? t("row.empty_value")}</td>
+                    <td className="px-4 py-2.5 font-medium text-gray-900">
+                      <button
+                        type="button"
+                        onClick={() => setProfileLeadId(c.id)}
+                        className="rounded text-left font-medium text-gray-900 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
+                        title={t("row.open_profile_tooltip", "Open profile")}
+                      >
+                        {c.name ?? t("row.empty_value")}
+                      </button>
+                    </td>
                     <td className="px-4 py-2.5 text-gray-600 max-w-[180px]">
                       <div className="flex items-center gap-1.5">
                         <span className="truncate">{c.email ?? t("row.empty_value")}</span>
@@ -850,6 +862,11 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
           }}
         />
       ) : null}
+
+      {/* Full lead profile — opened by clicking a contact name in the table.
+          Surfaces the rich profile (score, next-best-action, story) that was
+          previously only reachable from the Receptionist call modal. */}
+      <LeadProfileDrawer leadId={profileLeadId} onClose={() => setProfileLeadId(null)} />
     </div>
   );
 }
