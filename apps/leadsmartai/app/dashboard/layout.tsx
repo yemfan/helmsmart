@@ -103,10 +103,36 @@ export default async function DashboardLayout({
     // If profiles/status isn't available yet, don't block dashboard rendering.
   }
 
+  // Single source of truth for the user's display identity: the sidebar
+  // footer, the top-bar profile menu, and the greeting all read from here.
+  // Without this, the sidebar derived a name from the email local-part while
+  // the top bar showed user_profiles.full_name — so the same user appeared
+  // under two different names at once.
+  let fullName: string | null = null;
+  let avatarUrl: string | null = null;
+  try {
+    const { data: profileRow } = await supabaseServer
+      .from("user_profiles")
+      .select("full_name,avatar_url")
+      .eq("user_id", ctx.userId)
+      .maybeSingle();
+    const fn = (profileRow as { full_name?: string | null } | null)?.full_name;
+    fullName = typeof fn === "string" && fn.trim() ? fn.trim() : null;
+    const av = (profileRow as { avatar_url?: string | null } | null)?.avatar_url;
+    avatarUrl = typeof av === "string" && av.trim() ? av.trim() : null;
+  } catch {
+    // Non-blocking — fall back to email-derived label below.
+  }
+
   return (
     <AgentWorkspaceProviders>
       <ToastProvider>
-        <DashboardShell email={ctx?.email} appRole={appRole}>
+        <DashboardShell
+          email={ctx?.email}
+          appRole={appRole}
+          fullName={fullName}
+          avatarUrl={avatarUrl}
+        >
           <OnboardingGate />
           <ErrorBoundary>
             {children}

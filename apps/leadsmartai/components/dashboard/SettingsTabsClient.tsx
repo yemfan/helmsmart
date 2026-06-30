@@ -12,8 +12,8 @@ type Tab = {
 };
 
 const TABS: readonly Tab[] = [
-  { id: "voice", label: "Voice & Style", description: "How LeadSmart sounds." },
-  { id: "messages", label: "Messages", description: "What LeadSmart sends, and when." },
+  { id: "voice", label: "Voice & Style", description: "How RealtyBoss sounds." },
+  { id: "messages", label: "Messages", description: "What RealtyBoss sends, and when." },
   { id: "tools", label: "Data & Tools", description: "Links and imports you share with clients." },
   {
     id: "channels",
@@ -40,10 +40,15 @@ export default function SettingsTabsClient({
   // to tune a rule, not change their personality.
   const [activeTab, setActiveTab] = useState<SettingsTabId>("messages");
 
+  // Honor a deep link to a specific tab — both `?tab=channels` (used by e.g. the
+  // "Connect a Facebook Page" link on the transaction page) and the `#channels`
+  // hash this component writes. Query param wins when both are present.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const hash = window.location.hash.replace("#", "");
-    if (isTabId(hash)) setActiveTab(hash);
+    const fromQuery = new URLSearchParams(window.location.search).get("tab");
+    const fromHash = window.location.hash.replace("#", "");
+    if (fromQuery && isTabId(fromQuery)) setActiveTab(fromQuery);
+    else if (isTabId(fromHash)) setActiveTab(fromHash);
   }, []);
 
   useEffect(() => {

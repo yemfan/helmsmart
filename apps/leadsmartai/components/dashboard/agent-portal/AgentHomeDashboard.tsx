@@ -81,7 +81,7 @@ function SectionTitle({
 }
 
 /**
- * LeadSmart agent portal — Home dashboard (desktop-first, responsive grid).
+ * RealtyBoss agent portal — Home dashboard (desktop-first, responsive grid).
  */
 export function AgentHomeDashboard({
   greetingName,

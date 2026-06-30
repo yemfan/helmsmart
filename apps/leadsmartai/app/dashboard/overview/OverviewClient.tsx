@@ -60,9 +60,23 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  const now = new Date();
-  const hour = now.getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  // Time-of-day greeting + date depend on the viewer's local clock, so they
+  // must be computed on the client only. Rendering them during SSR caused a
+  // hydration mismatch (#418) whenever the server clock/timezone produced a
+  // different string than the browser. Seed with a clock-independent default
+  // so SSR and the first client render agree, then fill in after mount.
+  const [clock, setClock] = useState<{ greeting: string; dateLabel: string }>({
+    greeting: "Welcome back",
+    dateLabel: "",
+  });
+  useEffect(() => {
+    const d = new Date();
+    const h = d.getHours();
+    setClock({
+      greeting: h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening",
+      dateLabel: d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }),
+    });
+  }, []);
 
   const overdueTasks = tasks.filter((t) => t.due_at && new Date(t.due_at).getTime() < Date.now());
   const urgentTasks = tasks.filter((t) => t.priority === "urgent" || t.priority === "high");
@@ -72,8 +86,8 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
       {/* Greeting + Quick Stats */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">{greeting}{greetingName ? `, ${greetingName}` : ""}</h1>
-          <p className="text-sm text-gray-500">{now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</p>
+          <h1 className="text-xl font-semibold text-gray-900">{clock.greeting}{greetingName ? `, ${greetingName}` : ""}</h1>
+          <p className="text-sm text-gray-500">{clock.dateLabel}</p>
         </div>
       </div>
 

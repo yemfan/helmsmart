@@ -20,7 +20,7 @@ type Branding = {
   agentPhotoUrl: string;
   /**
    * Per-broker default for the Meta Lead Ad form's privacy policy URL.
-   * Empty string = use the LeadSmart bundled default. Brokerages with
+   * Empty string = use the RealtyBoss bundled default. Brokerages with
    * their own privacy policy should set this so all Lead Ads they
    * launch via Generate Leads point to their compliance page.
    */
@@ -426,7 +426,7 @@ export default function BrandingSettingsPanel() {
         <p className="text-[11px] text-gray-500">
           Default privacy policy URL for Meta Lead Ad forms launched from
           Generate Leads → Run Ads. Must be HTTPS. Leave blank to use
-          LeadSmart&apos;s bundled URL. You can also override this per-
+          RealtyBoss&apos;s bundled URL. You can also override this per-
           campaign in the ad wizard.
         </p>
       </div>
