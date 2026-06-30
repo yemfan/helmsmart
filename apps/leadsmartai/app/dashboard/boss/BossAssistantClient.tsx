@@ -294,8 +294,15 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     }).catch(() => {});
   }, []);
 
-  const now = new Date();
-  const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
+  // Time-of-day greeting depends on the viewer's local clock — compute it on
+  // the client only to avoid a hydration mismatch (#418) when the server clock
+  // produces a different bucket than the browser. Seed with a clock-independent
+  // default so SSR and the first client render agree.
+  const [greeting, setGreeting] = useState("Welcome back");
+  useEffect(() => {
+    const h = new Date().getHours();
+    setGreeting(h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
+  }, []);
 
   const alerts = useMemo(() => deadlineAlerts(transactions), [transactions]);
   const activeDeals = useMemo(() => transactions.filter((t) => t.status === "active" || t.status === "pending"), [transactions]);

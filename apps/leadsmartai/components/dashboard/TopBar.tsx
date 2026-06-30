@@ -362,9 +362,16 @@ function ProfileMenu({
 export default function TopBar({
   email,
   appRole,
+  fullName: fullNameProp,
+  avatarUrl: avatarUrlProp,
 }: {
   email: string | null | undefined;
   appRole?: string | null;
+  /** Server-provided `user_profiles.full_name` — seeds state so SSR and the
+   *  first client render agree (no name flicker, no hydration mismatch). */
+  fullName?: string | null;
+  /** Server-provided `user_profiles.avatar_url` — seeds the avatar likewise. */
+  avatarUrl?: string | null;
 }) {
   const navSections = useMemo(
     () => filterNavSectionsByRole(leadSmartNav, appRole),
@@ -375,8 +382,8 @@ export default function TopBar({
   const slimAccountBillingOnly =
     isAgentOrBrokerProfileRole(appRole) && !isAdminOrSupportRole(appRole);
   const router = useRouter();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [fullName, setFullName] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(avatarUrlProp ?? null);
+  const [fullName, setFullName] = useState<string | null>(fullNameProp ?? null);
 
   async function onLogout() {
     await signOutWithFullReload("/login");
@@ -423,10 +430,13 @@ export default function TopBar({
         });
         const json = (await res.json().catch(() => ({}))) as Record<string, unknown>;
         if (cancelled) return;
+        // Refresh from the API to pick up profile edits made elsewhere, but
+        // never overwrite the server-seeded value with an empty result (a race
+        // or transient error must not blank the user's own name/avatar).
         const av = json?.avatar_url;
-        setAvatarUrl(typeof av === "string" && av.trim() ? av.trim() : null);
+        if (typeof av === "string" && av.trim()) setAvatarUrl(av.trim());
         const fn = json?.full_name;
-        setFullName(typeof fn === "string" && fn.trim() ? fn.trim() : null);
+        if (typeof fn === "string" && fn.trim()) setFullName(fn.trim());
       } catch {
         // ignore
       }

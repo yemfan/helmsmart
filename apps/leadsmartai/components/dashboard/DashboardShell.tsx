@@ -22,22 +22,36 @@ const sidebarFooter = (
   </div>
 );
 
-/** Derive the sidebar user card from the email + role we already have on the shell. */
+/**
+ * Build the sidebar user card. Prefer the agent's `user_profiles.full_name`
+ * (the same source the top bar uses) so the sidebar and header never disagree;
+ * fall back to an email-derived label only when full_name is missing.
+ */
 function buildSidebarUser(
   email: string | null | undefined,
-  appRole: string | null | undefined
+  appRole: string | null | undefined,
+  fullName: string | null | undefined
 ) {
   if (!email) return undefined;
   const local = email.split("@")[0] ?? email;
-  const name = local
+  const emailName = local
     .replace(/[._-]+/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase())
     .trim();
-  const initials = local.replace(/[^a-zA-Z]/g, "").slice(0, 2).toUpperCase() || "A";
+  const name = (fullName?.trim() || emailName || email).trim();
+  const initials =
+    name
+      .split(/\s+/)
+      .map((p) => p[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() ||
+    local.replace(/[^a-zA-Z]/g, "").slice(0, 2).toUpperCase() ||
+    "A";
   const planLabel = appRole
     ? appRole.charAt(0).toUpperCase() + appRole.slice(1).toLowerCase()
     : undefined;
-  return { name: name || email, email, initials, planLabel };
+  return { name, email, initials, planLabel };
 }
 
 /**
@@ -48,11 +62,17 @@ function buildSidebarUser(
 export default function AppDashboardShell({
   email,
   appRole,
+  fullName,
+  avatarUrl,
   children,
   navConfigOverride,
 }: {
   email: string | null | undefined;
   appRole?: string | null;
+  /** `user_profiles.full_name` — single identity source shared with TopBar. */
+  fullName?: string | null;
+  /** `user_profiles.avatar_url` — server-provided so the avatar is SSR-stable. */
+  avatarUrl?: string | null;
   children: ReactNode;
   /** Pass "broker" to use the loan broker sidebar instead of the agent sidebar. */
   navConfigOverride?: "broker" | null;
@@ -67,7 +87,10 @@ export default function AppDashboardShell({
 
   const activeNavConfig = navConfigOverride === "broker" ? brokerNavConfig : navConfig;
   const showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole);
-  const sidebarUser = useMemo(() => buildSidebarUser(email, appRole), [email, appRole]);
+  const sidebarUser = useMemo(
+    () => buildSidebarUser(email, appRole, fullName),
+    [email, appRole, fullName]
+  );
 
   const handleLogout = useCallback(() => {
     void signOutWithFullReload("/");
@@ -95,7 +118,7 @@ export default function AppDashboardShell({
       {/* Right: header then scrollable content */}
       <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <div className="shrink-0">
-          <TopBar email={email} appRole={appRole} />
+          <TopBar email={email} appRole={appRole} fullName={fullName} avatarUrl={avatarUrl} />
         </div>
         <main
           id="agent-portal-main"
