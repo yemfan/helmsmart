@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { buildOfferRecommendation, type BuildOfferInput } from "@/lib/offers/buildOffer";
 
 export const runtime = "nodejs";
@@ -15,7 +15,7 @@ export const maxDuration = 30;
  */
 export async function POST(req: Request) {
   try {
-    await getCurrentAgentContext(); // auth gate
+    await getAgentContextFromRequest(req); // auth gate (dual: cookie + mobile bearer)
 
     const body = (await req.json().catch(() => ({}))) as Partial<BuildOfferInput>;
     const address = typeof body.address === "string" ? body.address.trim() : "";

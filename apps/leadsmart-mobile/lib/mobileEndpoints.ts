@@ -42,6 +42,9 @@ export const MOBILE_API_PATHS = {
     `/api/dashboard/realtorboss/recommendations/${encodeURIComponent(id)}`,
   bossTeam: "/api/dashboard/realtorboss/team",
   bossAutopilot: "/api/dashboard/realtorboss/autopilot",
+  // Offer desk — dual-auth (Bearer-aware) routes, called directly from mobile.
+  offerBuild: "/api/dashboard/offers/build",
+  contractReview: "/api/dashboard/contracts/review",
   cma: "/api/mobile/cma",
   coaching: "/api/mobile/coaching/me",
   briefings: "/api/mobile/briefings",
