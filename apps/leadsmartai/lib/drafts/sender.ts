@@ -8,6 +8,7 @@ import {
 } from "@/lib/signatures/compose";
 import { sendSMS } from "@/lib/twilioSms";
 import { getAgentMessageSettingsEffective } from "@/lib/agent-messaging/settings";
+import { quietHoursBlockReason } from "@/lib/agent-messaging/sendWindow";
 import type { AgentMessageSettingsEffective } from "@/lib/agent-messaging/types";
 import type { DraftChannel, MessageDraft, MessageDraftRow } from "./types";
 
@@ -140,7 +141,7 @@ async function processOne(
 
   // Timing guardrails — defer rather than fail.
   if (settings) {
-    const block = inQuietHours(now, settings);
+    const block = quietHoursBlockReason(now, settings);
     if (block) {
       await deferDraft(draftId, nextDispatchAfter(now, block, settings));
       return { draftId, reason: block };
@@ -215,48 +216,8 @@ async function processOne(
 }
 
 // ---------- guardrails ----------
-
-function inQuietHours(
-  now: Date,
-  s: AgentMessageSettingsEffective,
-): "quiet_hours" | "sunday_morning" | "chinese_new_year" | null {
-  // Sunday morning rule (§2.8): no messages Sunday before noon in agent local.
-  if (s.noSundayMorning && now.getDay() === 0 && now.getHours() < 12) {
-    return "sunday_morning";
-  }
-  if (s.pauseChineseNewYear && inChineseNewYearWindow(now)) {
-    return "chinese_new_year";
-  }
-  // Quiet hours — agent-local. Per spec the flag `use_contact_timezone` is per-contact,
-  // not used here yet (we don't have tz on contacts). Fall back to agent-local clock.
-  const [h1, m1] = s.quietHoursStart.split(":").map(Number);
-  const [h2, m2] = s.quietHoursEnd.split(":").map(Number);
-  const mins = now.getHours() * 60 + now.getMinutes();
-  const startMins = h1 * 60 + m1;
-  const endMins = h2 * 60 + m2;
-  const inWindow =
-    startMins < endMins
-      ? mins >= startMins && mins < endMins
-      : mins >= startMins || mins < endMins; // crosses midnight
-  return inWindow ? "quiet_hours" : null;
-}
-
-/** Approximate CNY detection — actual lunar date varies. Uses a hardcoded table
- *  for 2026-2030; expand as needed. TODO: pull from a lunar-calendar library. */
-function inChineseNewYearWindow(now: Date): boolean {
-  const cnyByYear: Record<number, [string, string]> = {
-    2026: ["2026-02-17", "2026-02-21"],
-    2027: ["2027-02-06", "2027-02-10"],
-    2028: ["2028-01-26", "2028-01-30"],
-    2029: ["2029-02-13", "2029-02-17"],
-    2030: ["2030-02-03", "2030-02-07"],
-  };
-  const year = now.getFullYear();
-  const range = cnyByYear[year];
-  if (!range) return false;
-  const iso = now.toISOString().slice(0, 10);
-  return iso >= range[0] && iso <= range[1];
-}
+// Quiet-hours / Sunday / CNY window logic now lives in
+// lib/agent-messaging/sendWindow.ts (shared with the Boss autopilot path).
 
 async function exceededPerContactCap(
   contactId: string,
