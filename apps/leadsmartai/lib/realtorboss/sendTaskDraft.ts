@@ -6,7 +6,7 @@ import { sendEmail } from "@/lib/email";
 import { toE164 } from "@/lib/missed-call/service";
 import { logAssistantActivity } from "@/lib/realtorboss/activities";
 import { getAgentMessageSettingsEffective } from "@/lib/agent-messaging/settings";
-import { quietHoursBlockReason } from "@/lib/agent-messaging/sendWindow";
+import { quietHoursBlockReason, nextSendOpenAfter, type SendBlockReason } from "@/lib/agent-messaging/sendWindow";
 import type { AssistantType } from "@/lib/realtorboss/team";
 
 /**
@@ -31,11 +31,15 @@ export type DraftedTask = {
   execution_note: string | null;
 };
 
+export type SendDraftedResult =
+  | { ok: true; sentTo: string }
+  | { ok: false; error: string; blocked?: SendBlockReason; sendAfter?: string };
+
 export async function sendDraftedBossTask(
   agentId: string,
   task: DraftedTask,
   opts?: { auto?: boolean },
-): Promise<{ ok: true; sentTo: string } | { ok: false; error: string }> {
+): Promise<SendDraftedResult> {
   if (!task.draft_body || !task.draft_channel) {
     return { ok: false, error: "This task has no draft awaiting approval." };
   }
@@ -44,13 +48,18 @@ export async function sendDraftedBossTask(
   // the Realtor explicitly choosing to send now, so it's never blocked. An
   // autonomous send, though, must respect the agent's quiet hours / Sunday /
   // CNY pauses — otherwise autopilot could text a client at 2am. When blocked
-  // we DON'T send; the caller leaves the task awaiting approval so it's never
-  // silently dropped (the Realtor can approve it whenever).
+  // we DON'T send; we report the block + the next open time so the caller can
+  // schedule the message to go out then instead of dropping it.
   if (opts?.auto) {
     const settings = await getAgentMessageSettingsEffective(agentId);
     const blocked = settings ? quietHoursBlockReason(new Date(), settings) : null;
-    if (blocked) {
-      return { ok: false, error: `Held (${blocked}) — left awaiting your approval.` };
+    if (blocked && settings) {
+      return {
+        ok: false,
+        error: `Held (${blocked}) — scheduled for after quiet hours.`,
+        blocked,
+        sendAfter: nextSendOpenAfter(new Date(), blocked, settings).toISOString(),
+      };
     }
   }
 

@@ -284,7 +284,7 @@ async function processInstructionRow(
         // card and it sends. Falls back to plain "assigned" when we
         // can't execute confidently.
         const taskId = (insertedTask as { id: string } | null)?.id;
-        let executed: "awaiting_approval" | "assigned" | "needs_input" | "completed" | "sent" = "assigned";
+        let executed: "awaiting_approval" | "assigned" | "needs_input" | "completed" | "sent" | "scheduled" = "assigned";
         if (taskId && t.assignee !== "realtor") {
           if (t.action) {
             // Registry action — run it (or park needs_input when a required
@@ -309,7 +309,9 @@ async function processInstructionRow(
                 ? { type: "boss_task_needs_input", summary: `Needs one detail to start: ${t.title}`, attn: true }
                 : executed === "completed"
                   ? { type: "boss_task_completed", summary: `Done: ${t.title}`, attn: false }
-                  : { type: "boss_task_assigned", summary: `Boss Assistant assigned: ${t.title}`, attn: false };
+                  : executed === "scheduled"
+                    ? { type: "boss_task_scheduled", summary: `Scheduled to send after quiet hours: ${t.title}`, attn: false }
+                    : { type: "boss_task_assigned", summary: `Boss Assistant assigned: ${t.title}`, attn: false };
           void logAssistantActivity({
             agentId,
             assistantType: t.assignee,

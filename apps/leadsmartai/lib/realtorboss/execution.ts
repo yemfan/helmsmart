@@ -4,6 +4,7 @@ import { getAnthropicClient } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { effectiveAutopilot } from "@/lib/realtorboss/autopilot";
 import { sendDraftedBossTask } from "@/lib/realtorboss/sendTaskDraft";
+import type { SendBlockReason } from "@/lib/agent-messaging/sendWindow";
 import type { ParsedTask } from "@/lib/realtorboss/instructions";
 
 /**
@@ -164,7 +165,7 @@ export async function tryExecuteTask(args: {
   agentId: string;
   taskId: string;
   task: ParsedTask;
-}): Promise<"awaiting_approval" | "assigned" | "sent"> {
+}): Promise<"awaiting_approval" | "assigned" | "sent" | "scheduled"> {
   const { agentId, taskId, task } = args;
   try {
     if (task.assignee === "sales_assistant") {
@@ -218,6 +219,21 @@ export async function tryExecuteTask(args: {
           { auto: true },
         );
         if (sent.ok) return "sent";
+        // Blocked by quiet hours / Sunday / CNY → schedule it for the next open
+        // time (drained by the outreach-scheduler cron) instead of dropping it.
+        if (sent.blocked && sent.sendAfter) {
+          await scheduleDeferredSend({
+            agentId,
+            taskId,
+            channel,
+            contactId: contact.id,
+            subject: draft.subject,
+            body: draft.body,
+            sendAfter: sent.sendAfter,
+            reason: sent.blocked,
+          });
+          return "scheduled";
+        }
       }
       return "awaiting_approval";
     }
@@ -299,4 +315,47 @@ export async function tryExecuteTask(args: {
     console.error(`[boss-execution] draft failed for task ${taskId}:`, e);
     return "assigned";
   }
+}
+
+const BLOCK_LABEL: Record<SendBlockReason, string> = {
+  quiet_hours: "quiet hours",
+  sunday_morning: "Sunday morning",
+  chinese_new_year: "the Chinese New Year pause",
+};
+
+/**
+ * Queue a quiet-hours-blocked autopilot message to send at the next open time.
+ * Reuses the scheduled_actions rail (drained every 15 min by the
+ * outreach-scheduler cron) so we don't need a new cron, and marks the Boss task
+ * `scheduled` so the card shows it's deferred (cancellable from the scheduled
+ * actions strip).
+ */
+async function scheduleDeferredSend(args: {
+  agentId: string;
+  taskId: string;
+  channel: "sms" | "email";
+  contactId: string;
+  subject: string | null;
+  body: string;
+  sendAfter: string;
+  reason: SendBlockReason;
+}): Promise<void> {
+  await supabaseAdmin.from("scheduled_actions").insert({
+    agent_id: args.agentId,
+    channel: args.channel,
+    purpose: "follow_up",
+    contact_ids: [args.contactId],
+    subject: args.subject,
+    body: args.body,
+    scheduled_for: args.sendAfter,
+    status: "scheduled",
+  });
+  await supabaseAdmin
+    .from("boss_instruction_tasks")
+    .update({
+      status: "scheduled",
+      execution_note: `Scheduled to send after ${BLOCK_LABEL[args.reason]}.`,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", args.taskId);
 }

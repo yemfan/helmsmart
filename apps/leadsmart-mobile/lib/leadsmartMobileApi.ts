@@ -1519,7 +1519,7 @@ export async function fetchMobileBriefings(): Promise<
 
 export type MobileBossTaskStatus =
   | "assigned" | "needs_review" | "needs_input" | "awaiting_approval"
-  | "sent" | "completed" | "done" | "dismissed" | "failed";
+  | "scheduled" | "sent" | "completed" | "done" | "dismissed" | "failed";
 
 export type MobileBossInstruction = {
   id: string;

@@ -418,11 +418,13 @@ function TaskRow({
   const who = teamNames[t.assigned_to] ?? ASSIGNEE_LABEL[t.assigned_to] ?? t.assigned_to;
   const badge = done
     ? { text: "Done", bg: tokens.successBg, fg: tokens.successTextDark }
-    : t.status === "needs_input"
-      ? { text: "Needs info", bg: tokens.warningBg, fg: tokens.warningText }
-      : t.status === "awaiting_approval"
-        ? { text: "Awaiting you", bg: tokens.warningBg, fg: tokens.warningText }
-        : { text: who, bg: tokens.infoBg, fg: tokens.infoText };
+    : t.status === "scheduled"
+      ? { text: "Scheduled", bg: tokens.warningBg, fg: tokens.warningText }
+      : t.status === "needs_input"
+        ? { text: "Needs info", bg: tokens.warningBg, fg: tokens.warningText }
+        : t.status === "awaiting_approval"
+          ? { text: "Awaiting you", bg: tokens.warningBg, fg: tokens.warningText }
+          : { text: who, bg: tokens.infoBg, fg: tokens.infoText };
 
   return (
     <View style={s.taskRow}>
@@ -476,7 +478,9 @@ function TaskRow({
         </View>
       ) : null}
 
-      {t.status === "completed" && t.execution_note ? <Text style={s.noteText}>{t.execution_note}</Text> : null}
+      {(t.status === "completed" || t.status === "scheduled") && t.execution_note ? (
+        <Text style={s.noteText}>{t.execution_note}</Text>
+      ) : null}
     </View>
   );
 }

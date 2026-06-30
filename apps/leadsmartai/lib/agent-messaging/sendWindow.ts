@@ -49,6 +49,34 @@ export function quietHoursBlockReason(
   return inWindow ? "quiet_hours" : null;
 }
 
+/**
+ * The next time it's OK to send, given why `now` is blocked. Used to schedule a
+ * deferred autopilot message instead of dropping it. Mirrors the sphere
+ * dispatcher's deferral: Sunday → noon today; CNY → tomorrow (cheaper than
+ * computing the lunar end); quiet hours → the next occurrence of quietHoursEnd.
+ */
+export function nextSendOpenAfter(
+  now: Date,
+  reason: SendBlockReason,
+  s: SendWindowSettings,
+): Date {
+  if (reason === "sunday_morning") {
+    const t = new Date(now);
+    t.setHours(12, 0, 0, 0);
+    return t;
+  }
+  if (reason === "chinese_new_year") {
+    const t = new Date(now);
+    t.setDate(t.getDate() + 1);
+    return t;
+  }
+  const [h, m] = s.quietHoursEnd.split(":").map(Number);
+  const t = new Date(now);
+  t.setHours(h, m, 0, 0);
+  if (t.getTime() <= now.getTime()) t.setDate(t.getDate() + 1);
+  return t;
+}
+
 /** Approximate CNY detection — actual lunar date varies. Hardcoded table for
  *  2026-2030; expand as needed. */
 export function inChineseNewYearWindow(now: Date): boolean {

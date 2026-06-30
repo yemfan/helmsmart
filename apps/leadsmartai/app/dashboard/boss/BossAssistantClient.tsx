@@ -84,7 +84,7 @@ type TaskRow = {
   title: string;
   details: string | null;
   assigned_to: AssigneeKey;
-  status: "assigned" | "needs_review" | "needs_input" | "awaiting_approval" | "sent" | "completed" | "done" | "dismissed" | "failed";
+  status: "assigned" | "needs_review" | "needs_input" | "awaiting_approval" | "scheduled" | "sent" | "completed" | "done" | "dismissed" | "failed";
   draft_channel: "sms" | "email" | null;
   draft_subject: string | null;
   draft_body: string | null;
@@ -678,7 +678,7 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
           {t.title}
         </p>
         <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${done ? "bg-emerald-50 text-emerald-700" : t.status === "needs_input" || t.assigned_to === "realtor" ? "bg-amber-50 text-amber-800" : "bg-blue-50 text-blue-700"}`}>
-          {done ? "Done" : t.status === "needs_input" ? "Needs info" : t.status === "awaiting_approval" ? "Awaiting you" : who}
+          {done ? "Done" : t.status === "scheduled" ? "Scheduled" : t.status === "needs_input" ? "Needs info" : t.status === "awaiting_approval" ? "Awaiting you" : who}
         </span>
       </div>
 
@@ -713,6 +713,10 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
           </div>
           {error && <span className="mt-1 block text-[11px] text-red-600">{error}</span>}
         </div>
+      )}
+
+      {t.status === "scheduled" && t.execution_note && (
+        <p className="mt-1 text-[11px] text-amber-700">{t.execution_note}</p>
       )}
 
       {t.status === "completed" && (t.execution_note || t.artifact_url) && (
