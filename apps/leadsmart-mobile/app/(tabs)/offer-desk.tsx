@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -15,17 +15,22 @@ import type { ThemeTokens } from "../../lib/theme";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import {
   buildMobileOffer,
+  compareListingOffers,
+  fetchCompareListings,
   reviewMobileContract,
   type MobileBuiltOffer,
+  type MobileCompareListing,
   type MobileContractReview,
+  type MobileOfferCompareSummary,
+  type MobileOfferForSummary,
 } from "../../lib/leadsmartMobileApi";
 
 /**
- * Offer desk (mobile) — two self-contained AI tools from the web offer desk:
+ * Offer desk (mobile) — three AI tools from the web offer desk:
  *   - Build offer: a form → AI-recommended buyer terms + cover letter.
  *   - Contract review: paste a contract → plain-English review + risk flags.
- * (Compare/summarize offers needs a listing's offer data, which the app doesn't
- * surface yet — that's a follow-up.) Talks to the dual-auth offer-desk routes.
+ *   - Compare offers: pick a listing → net-to-seller per offer + AI recommendation.
+ * Talks to the dual-auth offer-desk routes.
  */
 
 const FINANCING = ["cash", "conventional", "fha", "va"] as const;
@@ -39,16 +44,23 @@ function fmtMoney(n: number | null | undefined): string {
 export default function OfferDeskScreen() {
   const tokens = useThemeTokens();
   const s = useMemo(() => createStyles(tokens), [tokens]);
-  const [tab, setTab] = useState<"build" | "review">("build");
+  const [tab, setTab] = useState<"build" | "review" | "compare">("build");
 
   return (
     <SafeAreaView style={s.flex} edges={["bottom"]}>
       <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <View style={s.segment}>
-          <SegBtn label="Build offer" active={tab === "build"} onPress={() => setTab("build")} s={s} />
-          <SegBtn label="Contract review" active={tab === "review"} onPress={() => setTab("review")} s={s} />
+          <SegBtn label="Build" active={tab === "build"} onPress={() => setTab("build")} s={s} />
+          <SegBtn label="Review" active={tab === "review"} onPress={() => setTab("review")} s={s} />
+          <SegBtn label="Compare" active={tab === "compare"} onPress={() => setTab("compare")} s={s} />
         </View>
-        {tab === "build" ? <BuildOffer tokens={tokens} s={s} /> : <ContractReview tokens={tokens} s={s} />}
+        {tab === "build" ? (
+          <BuildOffer tokens={tokens} s={s} />
+        ) : tab === "review" ? (
+          <ContractReview tokens={tokens} s={s} />
+        ) : (
+          <CompareOffers tokens={tokens} s={s} />
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -306,6 +318,124 @@ function ContractReview({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
   );
 }
 
+// ── Compare offers ───────────────────────────────────────────────────
+
+function CompareOffers({ tokens, s }: { tokens: ThemeTokens; s: Styles }) {
+  const [listings, setListings] = useState<MobileCompareListing[]>([]);
+  const [loadingList, setLoadingList] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{
+    listing: { address: string | null; listPrice: number | null };
+    offers: MobileOfferForSummary[];
+    summary: MobileOfferCompareSummary;
+  } | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetchCompareListings().then((r) => {
+      if (!alive) return;
+      if (r.ok) setListings(r.listings);
+      else setError(r.message);
+      setLoadingList(false);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  async function run(listingId: string) {
+    setBusy(true);
+    setError(null);
+    setResult(null);
+    const r = await compareListingOffers(listingId);
+    setBusy(false);
+    if (r.ok === false) return setError(r.message);
+    setResult({ listing: r.listing, offers: r.offers, summary: r.summary });
+  }
+
+  if (result) {
+    const top = result.summary.recommendation.topOfferId;
+    const perOffer = (id: string) => result.summary.perOffer.find((p) => p.offerId === id)?.summary;
+    return (
+      <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
+        <Pressable onPress={() => setResult(null)}>
+          <Text style={s.backLink}>← All listings</Text>
+        </Pressable>
+        <Text style={s.compareTitle}>{result.listing.address ?? "Listing"}</Text>
+        <Text style={s.fieldLabel}>List price {fmtMoney(result.listing.listPrice)}</Text>
+
+        <View style={[s.resultCard, { borderColor: tokens.accent }]}>
+          <Text style={s.sectionLabel}>AI recommendation</Text>
+          <Text style={s.cardTitleStrong}>{result.summary.recommendation.headline}</Text>
+          <Text style={s.bodyText}>{result.summary.recommendation.rationale}</Text>
+          {result.summary.recommendation.watchOuts.map((w, i) => (
+            <Text key={i} style={s.bullet}>• {w}</Text>
+          ))}
+        </View>
+
+        {result.offers.map((o) => (
+          <View key={o.id} style={[s.offerCard, o.id === top && { borderColor: tokens.accent, borderWidth: 2 }]}>
+            <View style={s.offerHead}>
+              <Text style={s.offerName}>{o.buyerName || "Offer"}</Text>
+              {o.id === top ? (
+                <View style={[s.badge, { backgroundColor: tokens.successBg }]}>
+                  <Text style={[s.badgeText, { color: tokens.successTextDark }]}>Recommended</Text>
+                </View>
+              ) : null}
+            </View>
+            <View style={s.termGrid}>
+              <Term label="Price" value={fmtMoney(o.price)} s={s} />
+              <Term label="Net to seller" value={fmtMoney(o.net)} s={s} />
+            </View>
+            <Text style={s.metaLine}>
+              {[o.isCash ? "cash" : o.financing || "financing n/a", `${o.contingencyCount} contingenc${o.contingencyCount === 1 ? "y" : "ies"}`, o.status]
+                .filter(Boolean)
+                .join(" · ")}
+            </Text>
+            {perOffer(o.id) ? <Text style={s.bodyText}>{perOffer(o.id)}</Text> : null}
+          </View>
+        ))}
+
+        <View style={s.resultCard}>
+          <Text style={s.sectionLabel}>Note for the seller</Text>
+          <Text style={s.bodyText}>{result.summary.sellerNote}</Text>
+        </View>
+        <Text style={s.disclaimer}>{result.summary.disclaimer}</Text>
+      </ScrollView>
+    );
+  }
+
+  return (
+    <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
+      <Text style={s.fieldLabel}>Pick a listing to compare its offers</Text>
+      {loadingList ? (
+        <ActivityIndicator color={tokens.accent} style={{ marginTop: 16 }} />
+      ) : listings.length === 0 ? (
+        <Text style={s.emptyText}>
+          No listings with offers yet. Offers forwarded in by email show up here automatically once they match one of your listings.
+        </Text>
+      ) : (
+        listings.map((l) => (
+          <Pressable key={l.listingId} style={s.listingRow} disabled={busy} onPress={() => void run(l.listingId)}>
+            <View style={{ flex: 1 }}>
+              <Text style={s.offerName}>{l.address}</Text>
+              <Text style={s.metaLine}>List {fmtMoney(l.listPrice)}</Text>
+            </View>
+            <View style={[s.badge, { backgroundColor: tokens.infoBg }]}>
+              <Text style={[s.badgeText, { color: tokens.infoText }]}>
+                {l.offerCount} offer{l.offerCount === 1 ? "" : "s"}
+              </Text>
+            </View>
+          </Pressable>
+        ))
+      )}
+      {busy ? <ActivityIndicator color={tokens.accent} style={{ marginTop: 16 }} /> : null}
+      {error ? <Text style={s.errorText}>{error}</Text> : null}
+    </ScrollView>
+  );
+}
+
 function Field({ label, children, s, flex }: { label: string; children: ReactNode; s: Styles; flex?: boolean }) {
   return (
     <View style={[s.field, flex && { flex: 1 }]}>
@@ -363,4 +493,12 @@ const createStyles = (t: ThemeTokens) =>
     flagTitle: { fontSize: 13, fontWeight: "700" },
     flagDetail: { fontSize: 13, color: t.textSecondary, marginTop: 2, lineHeight: 18 },
     bullet: { fontSize: 13, color: t.textSecondary, marginTop: 3, lineHeight: 18 },
+    backLink: { fontSize: 14, color: t.accent, fontWeight: "600" },
+    compareTitle: { fontSize: 18, fontWeight: "700", color: t.text, marginTop: 2 },
+    cardTitleStrong: { fontSize: 15, fontWeight: "700", color: t.text },
+    listingRow: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: t.surface, borderWidth: 1, borderColor: t.border, borderRadius: 12, padding: 12 },
+    offerCard: { backgroundColor: t.surface, borderWidth: 1, borderColor: t.border, borderRadius: 12, padding: 12, gap: 6 },
+    offerHead: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+    offerName: { fontSize: 15, fontWeight: "600", color: t.text },
+    emptyText: { fontSize: 14, color: t.textMuted, lineHeight: 20, marginTop: 12 },
   });
