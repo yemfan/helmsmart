@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse, after } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { processInstructionById } from "@/lib/realtorboss/instructions";
 
@@ -18,7 +18,7 @@ export const maxDuration = 300;
  */
 export async function GET(req: NextRequest) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     const limitRaw = Number(req.nextUrl.searchParams.get("limit") ?? 5);
     const limit = Math.min(Math.max(Number.isFinite(limitRaw) ? limitRaw : 5, 1), 20);
 
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     const body = (await req.json().catch(() => ({}))) as { content?: unknown };
     const content = typeof body.content === "string" ? body.content.trim().slice(0, 4000) : "";
     if (!content) {

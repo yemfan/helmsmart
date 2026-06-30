@@ -1511,6 +1511,158 @@ export async function fetchMobileBriefings(): Promise<
   };
 }
 
+// ── Boss Assistant command center ──────────────────────────────────
+//
+// Hits the dual-auth /api/dashboard/realtorboss/* routes (Bearer-aware) — the
+// same endpoints the web command center uses. Shapes mirror
+// apps/leadsmartai/app/dashboard/boss/BossAssistantClient.tsx.
+
+export type MobileBossTaskStatus =
+  | "assigned" | "needs_review" | "needs_input" | "awaiting_approval"
+  | "sent" | "completed" | "done" | "dismissed" | "failed";
+
+export type MobileBossInstruction = {
+  id: string;
+  content: string;
+  status: "pending" | "processing" | "done" | "failed";
+  created_at: string;
+};
+
+export type MobileBossTask = {
+  id: string;
+  instruction_id: string;
+  title: string;
+  details: string | null;
+  assigned_to: string;
+  status: MobileBossTaskStatus;
+  draft_channel: "sms" | "email" | null;
+  draft_subject: string | null;
+  draft_body: string | null;
+  execution_note: string | null;
+  follow_up_question: string | null;
+  artifact_type: string | null;
+  artifact_url: string | null;
+  created_at: string;
+};
+
+type BossInstructionsJson = MobileJsonError & {
+  instructions?: MobileBossInstruction[];
+  tasks?: MobileBossTask[];
+};
+
+export async function fetchBossConversation(
+  limit = 8,
+): Promise<{ ok: true; instructions: MobileBossInstruction[]; tasks: MobileBossTask[] } | MobileApiFailure> {
+  const res = await mobileGet<BossInstructionsJson>(
+    `${MOBILE_API_PATHS.bossInstructions}?limit=${limit}`,
+  );
+  if (res.ok === false) return res;
+  return { ok: true, instructions: res.data.instructions ?? [], tasks: res.data.tasks ?? [] };
+}
+
+export async function postBossInstruction(content: string): Promise<{ ok: true } | MobileApiFailure> {
+  const res = await mobilePost<MobileJsonError>(MOBILE_API_PATHS.bossInstructions, { content });
+  if (res.ok === false) return res;
+  return { ok: true };
+}
+
+export async function patchBossInstructionTask(
+  id: string,
+  action: "approve" | "dismiss" | "answer",
+  answer?: string,
+): Promise<{ ok: true } | MobileApiFailure> {
+  const res = await mobilePatch<MobileJsonError>(
+    MOBILE_API_PATHS.bossInstructionTasks,
+    action === "answer" ? { id, action, answer: answer ?? "" } : { id, action },
+  );
+  if (res.ok === false) return res;
+  return { ok: true };
+}
+
+export type MobileBossRecommendation = {
+  id: string;
+  title: string;
+  summary: string | null;
+  reason: string | null;
+  recommended_action: string | null;
+  action_href: string | null;
+  expected_outcome: string | null;
+  related_entity_type: string | null;
+  related_entity_id: string | null;
+};
+
+type BossRecsJson = MobileJsonError & { recommendations?: MobileBossRecommendation[] };
+
+export async function fetchBossRecommendations(): Promise<
+  { ok: true; recommendations: MobileBossRecommendation[] } | MobileApiFailure
+> {
+  const res = await mobileGet<BossRecsJson>(MOBILE_API_PATHS.bossRecommendations);
+  if (res.ok === false) return res;
+  return { ok: true, recommendations: res.data.recommendations ?? [] };
+}
+
+export async function resolveBossRecommendation(
+  id: string,
+  status: "completed" | "dismissed",
+): Promise<{ ok: true } | MobileApiFailure> {
+  const res = await mobilePatch<MobileJsonError>(MOBILE_API_PATHS.bossRecommendation(id), { status });
+  if (res.ok === false) return res;
+  return { ok: true };
+}
+
+export type MobileBossAssistant = {
+  type: string;
+  status: "active" | "paused";
+  name?: string;
+  avatar_id?: string;
+  avatar_url?: string | null;
+};
+
+type BossTeamJson = MobileJsonError & { assistants?: MobileBossAssistant[] };
+
+export async function fetchBossTeam(): Promise<
+  { ok: true; assistants: MobileBossAssistant[] } | MobileApiFailure
+> {
+  const res = await mobileGet<BossTeamJson>(MOBILE_API_PATHS.bossTeam);
+  if (res.ok === false) return res;
+  return { ok: true, assistants: res.data.assistants ?? [] };
+}
+
+export type MobileAutopilotChannel = "call" | "sms" | "email" | "social";
+export type MobileAutopilotCell = { assignee: string; channel: MobileAutopilotChannel; mode: "ask" | "auto" };
+export type MobileAutopilotChannels = { assignee: string; channels: MobileAutopilotChannel[] };
+
+type BossAutopilotJson = MobileJsonError & {
+  global?: boolean;
+  channels?: MobileAutopilotChannels[];
+  cells?: MobileAutopilotCell[];
+};
+
+export async function fetchBossAutopilot(): Promise<
+  | { ok: true; global: boolean; channels: MobileAutopilotChannels[]; cells: MobileAutopilotCell[] }
+  | MobileApiFailure
+> {
+  const res = await mobileGet<BossAutopilotJson>(MOBILE_API_PATHS.bossAutopilot);
+  if (res.ok === false) return res;
+  return {
+    ok: true,
+    global: Boolean(res.data.global),
+    channels: res.data.channels ?? [],
+    cells: res.data.cells ?? [],
+  };
+}
+
+export async function patchBossAutopilot(
+  body: { global: boolean } | { assignee: string; channel: MobileAutopilotChannel; mode: "ask" | "auto" },
+): Promise<{ ok: true } | MobileApiFailure> {
+  const res = await mobilePatch<MobileJsonError>(
+    MOBILE_API_PATHS.bossAutopilot,
+    body as Record<string, unknown>,
+  );
+  if (res.ok === false) return res;
+  return { ok: true };
+}
+
 
 // ── Generate Leads (mobile Quick Post) ───────────────────────────
 

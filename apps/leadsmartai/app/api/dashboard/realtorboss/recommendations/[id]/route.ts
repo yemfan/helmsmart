@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { setBossRecommendationStatus } from "@/lib/realtorboss/recommendations";
 
 export const runtime = "nodejs";
@@ -13,7 +13,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     const { id } = await params;
     const body = (await req.json().catch(() => ({}))) as { status?: string };
     if (body.status !== "accepted" && body.status !== "dismissed" && body.status !== "completed") {

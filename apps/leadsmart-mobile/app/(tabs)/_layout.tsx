@@ -85,6 +85,16 @@ export default function TabsLayout() {
          * by tapping the corresponding tile inside a supercategory tab.
          * See apps/leadsmart-mobile/docs/HOME_REDESIGN_PLAN.md. */}
         <Tabs.Screen
+          name="boss"
+          options={{
+            title: "Boss",
+            tabBarLabel: "Boss",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="sparkles-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="home"
           options={{
             title: t("tabs.home"),

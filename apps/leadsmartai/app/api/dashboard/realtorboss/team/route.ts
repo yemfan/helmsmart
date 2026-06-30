@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import {
   ensureAssistantsForAgent,
@@ -16,9 +16,9 @@ export const runtime = "nodejs";
  * The agent's AI team config (rows lazily seeded from the roster) +
  * the skill catalog for the configuration UI.
  */
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     const assistants = await ensureAssistantsForAgent(agentId);
 
     // Catalog from DB; fall back to the in-code library if the seed
@@ -47,7 +47,7 @@ export async function GET() {
  */
 export async function PATCH(req: Request) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     const body = (await req.json().catch(() => ({}))) as {
       type?: string;
       status?: string;
