@@ -9,6 +9,7 @@ import {
   buildListingStrategyBands,
   formatBandTag,
 } from "@/lib/cma/listingStrategy";
+import { isCredibleCmaValuation } from "@/lib/cma/types";
 import type { CmaSnapshot } from "@/lib/cma/types";
 
 type CmaFullRow = {
@@ -135,6 +136,10 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
   }
 
   const subject = cma.snapshot.subject;
+  // Older saved CMAs (created before the generation guard) can carry a failed
+  // $0 valuation. Never expose Share / Email-to-seller / PDF on those — a $0
+  // value reaching a seller's inbox is a credibility killer.
+  const valuationOk = isCredibleCmaValuation(cma.snapshot.valuation);
 
   return (
     <div className="space-y-6">
@@ -157,22 +162,40 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
             {cma.confidenceScore != null ? ` · confidence ${cma.confidenceScore}` : ""}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <a
-            href={`/api/dashboard/cma/${encodeURIComponent(cma.id)}/report`}
-            className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800"
+        {valuationOk ? (
+          <div className="flex shrink-0 items-center gap-2">
+            <a
+              href={`/api/dashboard/cma/${encodeURIComponent(cma.id)}/report`}
+              className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800"
+            >
+              📄 Generate Report
+            </a>
+            <ShareReport
+              shareUrl={shareUrl}
+              downloadHref={`/api/dashboard/cma/${encodeURIComponent(cma.id)}/pdf`}
+              subject={`Comparative Market Analysis — ${cma.subjectAddress}`}
+              resourceLabel={`the CMA for ${cma.subjectAddress}`}
+            />
+            <CmaEmailToSellerButton cmaId={cma.id} defaultRecipient={null} />
+          </div>
+        ) : (
+          <Link
+            href="/dashboard/cma"
+            className="shrink-0 rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
           >
-            📄 Generate Report
-          </a>
-          <ShareReport
-            shareUrl={shareUrl}
-            downloadHref={`/api/dashboard/cma/${encodeURIComponent(cma.id)}/pdf`}
-            subject={`Comparative Market Analysis — ${cma.subjectAddress}`}
-            resourceLabel={`the CMA for ${cma.subjectAddress}`}
-          />
-          <CmaEmailToSellerButton cmaId={cma.id} defaultRecipient={null} />
-        </div>
+            ↻ Regenerate CMA
+          </Link>
+        )}
       </div>
+
+      {!valuationOk ? (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
+          <span className="font-semibold">Valuation unavailable.</span> This CMA
+          didn&apos;t return a reliable value, so sharing, emailing, and PDF
+          export are disabled to protect your client relationship. Regenerate it
+          with a more complete address to produce a sendable report.
+        </div>
+      ) : null}
 
       {cma.snapshot.disclaimer ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAnthropicClient, isAnthropicConfigured } from "./anthropic";
+import { isCredibleCmaValuation } from "./types";
 import type {
   ValuationInput,
   ValuationResult,
@@ -144,11 +145,15 @@ export async function generateAiCma(input: ValuationInput): Promise<ValuationRes
   }
 
   const snapshot = normalizeAi(parsed, address);
-  if (snapshot.comps.length === 0 && snapshot.valuation.estimatedValue === 0) {
+  // Never let a failed run produce a $0 / no-comp valuation: those would
+  // otherwise be saved and land one click from a "Send to seller" button.
+  // Reject unless we have at least one comp AND a credible estimate band.
+  if (snapshot.comps.length === 0 || !isCredibleCmaValuation(snapshot.valuation)) {
     return {
       ok: false,
       status: 422,
-      error: "No real comparable sales could be found for this address. Try a more complete address.",
+      error:
+        "We couldn't produce a reliable valuation for this address. Double-check the address details and try again, or enter the value manually.",
     };
   }
   return { ok: true, snapshot };

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import CmaShareView from "@/components/cma/CmaShareView";
 import { getPublicCma } from "@/lib/cma/service";
+import { isCredibleCmaValuation } from "@/lib/cma/types";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 
 export const metadata: Metadata = {
@@ -18,6 +19,24 @@ export default async function PublicCmaPage({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const cma = await getPublicCma(id);
   if (!cma) return notFound();
+
+  // A failed ($0 / no-band) valuation must never render publicly — a shared
+  // link should show an unavailable state, not a $0 home value.
+  if (!isCredibleCmaValuation(cma.snapshot.valuation)) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <div className="mx-auto max-w-2xl px-4 py-20 text-center">
+          <h1 className="text-lg font-semibold text-slate-900">
+            This report isn&apos;t available
+          </h1>
+          <p className="mt-2 text-sm text-slate-600">
+            The market analysis for this link is being updated. Please contact
+            your agent for the latest valuation.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const agent = await loadPresentationAgent(String(cma.agentId)).catch(() => null);
 

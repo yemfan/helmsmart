@@ -75,6 +75,22 @@ export type CmaValuation = {
   confidenceScore?: number | null;
 };
 
+/**
+ * A valuation is "credible" only if the estimate and the low/high band are all
+ * real positive numbers. A failed AI run can yield $0 (or null) values that
+ * must never reach a client-facing report or a "Send to seller" button.
+ * Shared so the generator, the save path, and every render/share surface agree
+ * on the exact same gate. Client-safe (no server imports).
+ */
+export function isCredibleCmaValuation(
+  v: Pick<CmaValuation, "estimatedValue" | "low" | "high"> | null | undefined,
+): boolean {
+  if (!v) return false;
+  const positive = (n: unknown): n is number =>
+    typeof n === "number" && Number.isFinite(n) && n > 0;
+  return positive(v.estimatedValue) && positive(v.low) && positive(v.high);
+}
+
 /** A cited source the AI valuation drew a comp or market fact from. */
 export type CmaSource = {
   title: string;
