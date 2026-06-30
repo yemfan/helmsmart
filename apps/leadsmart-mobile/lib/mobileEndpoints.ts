@@ -45,6 +45,7 @@ export const MOBILE_API_PATHS = {
   // Offer desk — dual-auth (Bearer-aware) routes, called directly from mobile.
   offerBuild: "/api/dashboard/offers/build",
   contractReview: "/api/dashboard/contracts/review",
+  listingOffersCompare: "/api/dashboard/listing-offers/compare",
   cma: "/api/mobile/cma",
   coaching: "/api/mobile/coaching/me",
   briefings: "/api/mobile/briefings",

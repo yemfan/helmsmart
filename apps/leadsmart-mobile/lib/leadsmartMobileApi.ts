@@ -1730,6 +1730,70 @@ export async function reviewMobileContract(
   return { ok: true, review: res.data.review };
 }
 
+// ── Compare offers ─────────────────────────────────────────────────
+//
+// Server-driven: the route loads a listing's offers, computes net-to-seller per
+// offer, and runs the AI summary in one call, so the mobile client stays thin.
+
+export type MobileCompareListing = {
+  listingId: string;
+  address: string;
+  listPrice: number | null;
+  offerCount: number;
+};
+
+export type MobileOfferForSummary = {
+  id: string;
+  buyerName: string | null;
+  price: number;
+  net: number;
+  financing: string | null;
+  isCash: boolean;
+  contingencyCount: number;
+  sellerConcessions: number | null;
+  closeDate: string | null;
+  status: string;
+};
+
+export type MobileOfferCompareSummary = {
+  recommendation: { topOfferId: string | null; headline: string; rationale: string; watchOuts: string[] };
+  perOffer: { offerId: string; summary: string }[];
+  sellerNote: string;
+  disclaimer: string;
+};
+
+type CompareListingsJson = MobileJsonError & { listings?: MobileCompareListing[] };
+type CompareResultJson = MobileJsonError & {
+  listing?: { id: string; address: string | null; listPrice: number | null };
+  offers?: MobileOfferForSummary[];
+  summary?: MobileOfferCompareSummary;
+};
+
+export async function fetchCompareListings(): Promise<
+  { ok: true; listings: MobileCompareListing[] } | MobileApiFailure
+> {
+  const res = await mobileGet<CompareListingsJson>(MOBILE_API_PATHS.listingOffersCompare);
+  if (res.ok === false) return res;
+  return { ok: true, listings: res.data.listings ?? [] };
+}
+
+export async function compareListingOffers(listingId: string): Promise<
+  | {
+      ok: true;
+      listing: { id: string; address: string | null; listPrice: number | null };
+      offers: MobileOfferForSummary[];
+      summary: MobileOfferCompareSummary;
+    }
+  | MobileApiFailure
+> {
+  const res = await mobilePost<CompareResultJson>(MOBILE_API_PATHS.listingOffersCompare, { listingId });
+  if (res.ok === false) return res;
+  if (!res.data.summary || !res.data.offers || !res.data.listing) {
+    return { ok: false, status: 200, message: "Invalid compare response." };
+  }
+  return { ok: true, listing: res.data.listing, offers: res.data.offers, summary: res.data.summary };
+}
+
 
 // ── Generate Leads (mobile Quick Post) ───────────────────────────
 
