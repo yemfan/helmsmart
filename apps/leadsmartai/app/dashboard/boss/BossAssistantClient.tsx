@@ -77,7 +77,7 @@ type AssigneeKey =
   | "realtor"
   | "boss_assistant";
 
-type InstructionRow = { id: string; content: string; status: "pending" | "processing" | "done" | "failed"; created_at: string };
+type InstructionRow = { id: string; content: string; status: "pending" | "processing" | "done" | "failed"; clarification?: string | null; created_at: string };
 type TaskRow = {
   id: string;
   instruction_id: string;
@@ -655,6 +655,12 @@ function InstructionExchange({
           <div className="space-y-2">
             {tasks.map((t) => <TaskBubble key={t.id} task={t} teamNames={teamNames} onChanged={onChanged} />)}
           </div>
+        </BossBubble>
+      ) : instruction.clarification ? (
+        // Vague/non-actionable ask → one clarifying question, no no-op task card.
+        <BossBubble bossName={bossName} avatar={avatar}>
+          <p className="text-sm text-gray-700">{instruction.clarification}</p>
+          <p className="mt-1 text-xs text-gray-400">Send a more specific instruction and I&apos;ll take it from there.</p>
         </BossBubble>
       ) : null}
     </div>
