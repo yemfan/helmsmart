@@ -49,15 +49,14 @@ export async function sendEmail({
   }
 
   const recipients = Array.isArray(to) ? to : [to];
-  // Send from the Resend-VERIFIED domain: helmsmart.ai (the one verified domain
-  // on the plan). The brand shown is RealtyBoss (EMAIL_BRAND); the website lives
-  // at realtybossai.com but isn't a Resend sending domain, so the FROM stays on
-  // helmsmart.ai while replies route to the on-brand contact@realtybossai.com
-  // inbox (see replyTo below). Override the FROM with RESEND_FROM_EMAIL.
+  // Send from the Resend-verified brand domain: realtybossai.com (DKIM
+  // resend._domainkey + the send.* SPF/return-path are configured in its DNS).
+  // From + reply-to now live on the same on-brand domain. Override the FROM
+  // with RESEND_FROM_EMAIL if you ever need a different verified sender.
   const fromAddress =
     from?.trim() ||
     process.env.RESEND_FROM_EMAIL?.trim() ||
-    `${EMAIL_BRAND} <noreply@helmsmart.ai>`;
+    `${EMAIL_BRAND} <noreply@realtybossai.com>`;
 
   const payload: Record<string, unknown> = {
     from: fromAddress,
@@ -118,7 +117,7 @@ function friendlyResendError(status: number, body: string): string {
   const haystack = `${message} ${body}`;
 
   if (/verify a domain|only send testing emails|own email address|not verified|domain.*verif/i.test(haystack)) {
-    return "Email isn't set up to send to this recipient yet — the sending domain isn't verified in Resend. Verify helmsmart.ai at resend.com/domains, then try again.";
+    return "Email isn't set up to send to this recipient yet — the sending domain isn't verified in Resend. Verify realtybossai.com at resend.com/domains, then try again.";
   }
   if (status === 401 || status === 403) {
     return message || "Email couldn't be sent — Resend rejected the request (check the API key and verified sending domain).";

@@ -41,7 +41,7 @@ export async function POST(req: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: `${EMAIL_BRAND} <noreply@helmsmart.ai>`,
+            from: `${EMAIL_BRAND} <noreply@realtybossai.com>`,
             to: [notifyTo],
             subject: "Exit popup: 3 free buyer leads request",
             text: `Someone requested the exit-popup offer (3 free buyer leads).
