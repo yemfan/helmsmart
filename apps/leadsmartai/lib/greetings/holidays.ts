@@ -12,5 +12,20 @@ export function getHolidayForDate(date: Date) {
     "12-31": { key: "new_year_eve", label: "New Year's Eve" },
   };
 
+  // Chinese New Year is lunar — a fixed MM-DD table can't catch it, so match the
+  // first day per year (sent to every contact, important for the bilingual /
+  // Chinese-market audience). Expand the table as needed.
+  const iso = date.toISOString().slice(0, 10);
+  const chineseNewYearFirstDay: Record<string, true> = {
+    "2026-02-17": true,
+    "2027-02-06": true,
+    "2028-01-26": true,
+    "2029-02-13": true,
+    "2030-02-03": true,
+  };
+  if (chineseNewYearFirstDay[iso]) {
+    return { key: "chinese_new_year", label: "Chinese New Year" };
+  }
+
   return fixed[mmdd] || null;
 }
