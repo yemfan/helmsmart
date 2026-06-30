@@ -594,10 +594,23 @@ function ProposalCard({
         <p className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-700"><span aria-hidden>✓</span> Handed to your team — see below.</p>
       ) : (
         <div className="mt-2 flex flex-wrap gap-2">
-          <button type="button" onClick={() => { setHandled(true); onHandle(); }} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
-            {rec.recommended_action && rec.recommended_action.length > 3 ? rec.recommended_action : "Have Boss handle it"}
-          </button>
-          {onOpenLead && <button type="button" onClick={onOpenLead} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50">Open lead</button>}
+          {/* Most proposals point at a page to review/act on (a transaction,
+              invoices, tasks). Honor that: open the lead drawer for contact
+              proposals, navigate to action_href otherwise, and only fall back
+              to routing it through the Boss when there's no destination. */}
+          {onOpenLead ? (
+            <button type="button" onClick={onOpenLead} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
+              {rec.recommended_action && rec.recommended_action.length > 3 ? rec.recommended_action : "Open lead"}
+            </button>
+          ) : rec.action_href ? (
+            <Link href={rec.action_href} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
+              {rec.recommended_action && rec.recommended_action.length > 3 ? rec.recommended_action : "Open"}
+            </Link>
+          ) : (
+            <button type="button" onClick={() => { setHandled(true); onHandle(); }} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
+              Have Boss handle it
+            </button>
+          )}
           <button type="button" onClick={onDismiss} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-400 hover:bg-gray-50">Not now</button>
         </div>
       )}
