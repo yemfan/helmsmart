@@ -204,7 +204,9 @@ export async function generateGreeting(params: {
           ? `Hope you're still loving your home${lead.address ? ` at ${lead.address}` : ""}! Just wanted to say happy home anniversary.`
           : event.type === "checkin"
             ? `Hi${lead.name ? ` ${lead.name}` : ""}, just checking in — hope you're doing well. If you ever need anything real estate–related, I'm here.`
-            : `Wishing you warm holiday greetings${lead.name ? `, ${lead.name}` : ""}!`;
+            : event.holidayKey === "chinese_new_year"
+              ? `新年快乐${lead.name ? `，${lead.name}` : ""}！祝您及家人身体健康、万事如意。Wishing you and your family a happy, healthy, and prosperous Lunar New Year!`
+              : `Wishing you warm holiday greetings${lead.name ? `, ${lead.name}` : ""}!`;
 
     return {
       eventType: event.type,

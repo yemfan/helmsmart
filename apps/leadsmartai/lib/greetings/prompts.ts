@@ -31,6 +31,7 @@ Rules:
 - subtle relationship nurturing is okay
 - no hard selling
 - mention the home/address only if it feels natural
+- if the holiday key is "chinese_new_year": write a warm BILINGUAL greeting — open with a Simplified Chinese line (e.g. 新年快乐！祝您及家人身体健康、万事如意) and follow with a short English line wishing a happy and prosperous Lunar New Year. Heartfelt, never salesy.
 
 Return JSON with:
 - subject: string (use empty string for SMS)
