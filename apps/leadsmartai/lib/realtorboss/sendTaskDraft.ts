@@ -5,6 +5,8 @@ import { sendSMS } from "@/lib/twilioSms";
 import { sendEmail } from "@/lib/email";
 import { toE164 } from "@/lib/missed-call/service";
 import { logAssistantActivity } from "@/lib/realtorboss/activities";
+import { getAgentMessageSettingsEffective } from "@/lib/agent-messaging/settings";
+import { quietHoursBlockReason } from "@/lib/agent-messaging/sendWindow";
 import type { AssistantType } from "@/lib/realtorboss/team";
 
 /**
@@ -36,6 +38,20 @@ export async function sendDraftedBossTask(
 ): Promise<{ ok: true; sentTo: string } | { ok: false; error: string }> {
   if (!task.draft_body || !task.draft_channel) {
     return { ok: false, error: "This task has no draft awaiting approval." };
+  }
+
+  // Quiet-hours guard — AUTOPILOT ONLY. A manual approval (opts.auto falsy) is
+  // the Realtor explicitly choosing to send now, so it's never blocked. An
+  // autonomous send, though, must respect the agent's quiet hours / Sunday /
+  // CNY pauses — otherwise autopilot could text a client at 2am. When blocked
+  // we DON'T send; the caller leaves the task awaiting approval so it's never
+  // silently dropped (the Realtor can approve it whenever).
+  if (opts?.auto) {
+    const settings = await getAgentMessageSettingsEffective(agentId);
+    const blocked = settings ? quietHoursBlockReason(new Date(), settings) : null;
+    if (blocked) {
+      return { ok: false, error: `Held (${blocked}) — left awaiting your approval.` };
+    }
   }
 
   let sentTo: string | null = null;
