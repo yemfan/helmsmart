@@ -74,7 +74,8 @@ Routing rules:
 - Anything requiring in-person presence, negotiation, signing, legal/contractual judgment, personal relationships, or anything ambiguous → assignee "realtor".
 - Split compound instructions into separate tasks. Keep titles short and imperative ("Text Jane Chen about Saturday's showing"). Put specifics (names, addresses, times, amounts) in details.
 - Never invent specifics the Realtor didn't give you.
-- 1 to 8 tasks. If the instruction is not actionable at all (a greeting, a question, venting), return one task assigned to "realtor" titled "Review note" with the content as details.
+- Up to 8 tasks. If the instruction IS actionable, return its tasks.
+- If the instruction is NOT actionable as written — it's a greeting/venting/question, OR it's too vague to route (e.g. "review that transaction", "follow up with them" with no person, address, or specific action) — do NOT invent a task. Instead return an empty "tasks" array and a single short, friendly "clarify" question naming the ONE specific detail you need ("Which transaction — what's the property address?", "Who should I follow up with?"). Never emit a placeholder "Review note" task.
 
 ACTIONS the team can run end-to-end. When a task is one of these, set "action" to its key and extract "params" from the instruction. Extract ONLY values the Realtor actually gave — NEVER invent an address, date, or amount. If a required param wasn't provided, still set the action and leave that param out; the Boss will ask the Realtor for it.
 ${actionCatalogPrompt()}
@@ -89,11 +90,17 @@ Output ONLY a JSON object, no commentary, no markdown fences:
   "channel": "sms or email when the task is sending a message (sms when they said text/SMS, email when they said email; default sms for lead messages, email for invoices), else null",
   "action": "one of the action keys listed above, or null",
   "params": { "address": "...", "date": "YYYY-MM-DD when a date is given or derivable", "time": "e.g. 2pm", "contact_name": "..." }
-} ] }
+} ], "clarify": "one short clarifying question when the instruction is not actionable as written, otherwise null" }
+
+When you return a "clarify" question, "tasks" MUST be empty. When you return tasks, "clarify" MUST be null.
 
 Only include the params relevant to the chosen action (e.g. open_house → address, date, time; cold_call_qualify → contact_name). Resolve relative dates ("this Saturday", "tomorrow") to YYYY-MM-DD using the current date provided below. Omit any param the Realtor didn't give — the Boss will ask for it.`;
 
-export async function parseInstruction(content: string): Promise<ParsedTask[]> {
+/** Parser result — either a routed task list, or (for vague/non-actionable
+ *  input) a single clarifying question with no tasks. */
+export type ParsedInstruction = { tasks: ParsedTask[]; clarify: string | null };
+
+export async function parseInstruction(content: string): Promise<ParsedInstruction> {
   const client = getAnthropicClient();
   // Give the planner today's date so it can resolve "this Saturday" → YYYY-MM-DD
   // for date-bearing actions (open house, showings).
@@ -111,7 +118,7 @@ export async function parseInstruction(content: string): Promise<ParsedTask[]> {
   const first = body.indexOf("{");
   const last = body.lastIndexOf("}");
   if (first < 0 || last <= first) throw new Error("Parser returned non-JSON");
-  const raw = JSON.parse(body.slice(first, last + 1)) as { tasks?: unknown };
+  const raw = JSON.parse(body.slice(first, last + 1)) as { tasks?: unknown; clarify?: unknown };
 
   const VALID = new Set([
     "receptionist",
@@ -151,8 +158,16 @@ export async function parseInstruction(content: string): Promise<ParsedTask[]> {
     })
     .filter((t): t is ParsedTask => t !== null)
     .slice(0, 8);
-  if (tasks.length === 0) throw new Error("Parser returned no tasks");
-  return tasks;
+  const clarify =
+    typeof raw.clarify === "string" && raw.clarify.trim()
+      ? raw.clarify.trim().slice(0, 280)
+      : null;
+  // Vague/non-actionable input → a clarifying question instead of a no-op task.
+  if (tasks.length === 0) {
+    if (clarify) return { tasks: [], clarify };
+    throw new Error("Parser returned no tasks");
+  }
+  return { tasks, clarify: null };
 }
 
 type InstructionRow = {
@@ -234,8 +249,25 @@ async function processInstructionRow(
   if (!claimed || claimed.length === 0) return null;
 
   try {
-      const tasks = await parseInstruction(row.content);
+      const parsed = await parseInstruction(row.content);
 
+      // Vague/non-actionable input: store ONE clarifying question and create NO
+      // tasks (no "Review note" card, no junk crm_task). The Boss dashboard
+      // renders the question inline; the Realtor re-sends a specific ask.
+      if (parsed.tasks.length === 0 && parsed.clarify) {
+        await supabaseAdmin
+          .from("boss_instructions")
+          .update({
+            status: "done",
+            clarification: parsed.clarify,
+            processed_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          } as Record<string, unknown>)
+          .eq("id", row.id);
+        return { ok: true, tasksCreated: 0 };
+      }
+
+      const tasks = parsed.tasks;
       const assignedToAi: ParsedTask[] = [];
       const forRealtor: ParsedTask[] = [];
       for (const t of tasks) {

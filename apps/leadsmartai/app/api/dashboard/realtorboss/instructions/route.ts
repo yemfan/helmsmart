@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
     const { data: instructions, error } = await supabaseAdmin
       .from("boss_instructions")
-      .select("id, content, status, error, processed_at, created_at")
+      .select("id, content, status, error, clarification, processed_at, created_at")
       .eq("agent_id", agentId)
       .order("created_at", { ascending: false })
       .limit(limit);
