@@ -12,8 +12,8 @@ type Tab = {
 };
 
 const TABS: readonly Tab[] = [
-  { id: "voice", label: "Voice & Style", description: "How LeadSmart sounds." },
-  { id: "messages", label: "Messages", description: "What LeadSmart sends, and when." },
+  { id: "voice", label: "Voice & Style", description: "How RealtyBoss sounds." },
+  { id: "messages", label: "Messages", description: "What RealtyBoss sends, and when." },
   { id: "tools", label: "Data & Tools", description: "Links and imports you share with clients." },
   {
     id: "channels",

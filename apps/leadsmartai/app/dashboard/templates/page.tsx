@@ -19,7 +19,7 @@ export default function TemplatesPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Message Templates</h1>
           <p className="mt-1 text-sm text-slate-600">
-            The text of every message LeadSmart sends on your behalf. Edit any template, toggle it off,
+            The text of every message RealtyBoss sends on your behalf. Edit any template, toggle it off,
             or switch between review and autosend. Changes are per-agent — base templates aren&apos;t touched.
           </p>
         </div>

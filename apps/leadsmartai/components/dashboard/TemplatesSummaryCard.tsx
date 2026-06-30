@@ -8,7 +8,7 @@ export default async function TemplatesSummaryCard({ agentId }: { agentId: strin
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <h2 className="text-sm font-semibold text-gray-900">Message Templates</h2>
       <p className="mt-0.5 text-xs text-gray-500">
-        Text of every message LeadSmart sends on your behalf. Edit any template, toggle it off, or add bilingual
+        Text of every message RealtyBoss sends on your behalf. Edit any template, toggle it off, or add bilingual
         variants.
       </p>
 

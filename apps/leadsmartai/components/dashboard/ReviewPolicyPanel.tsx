@@ -161,12 +161,12 @@ export default function ReviewPolicyPanel() {
             }
           />
           <CategoryRow
-            title="Lifecycle · from LeadSmart"
+            title="Lifecycle · from RealtyBoss"
             description="Product emails about your account — trial ending, feature updates."
             value="autosend"
             onChange={() => {}}
             locked
-            lockedReason="Lifecycle emails come from LeadSmart, not from you. They always send automatically."
+            lockedReason="Lifecycle emails come from RealtyBoss, not from you. They always send automatically."
           />
         </div>
       )}
