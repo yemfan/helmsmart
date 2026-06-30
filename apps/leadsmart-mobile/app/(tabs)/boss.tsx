@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import type { ThemeTokens } from "../../lib/theme";
 import { useThemeTokens } from "../../lib/useThemeTokens";
@@ -65,6 +66,7 @@ const QUICK_COMMANDS = [
 
 export default function BossScreen() {
   const tokens = useThemeTokens();
+  const router = useRouter();
   const s = useMemo(() => createStyles(tokens), [tokens]);
 
   const [briefingLine, setBriefingLine] = useState<string | null>(null);
@@ -316,6 +318,20 @@ export default function BossScreen() {
                   ))}
               </View>
             ) : null}
+
+            {/* Offer desk entry */}
+            <Pressable style={s.teamSection} onPress={() => router.push("/(tabs)/offer-desk")}>
+              <View style={s.teamRow}>
+                <View style={[s.teamInitial, { backgroundColor: tokens.infoBg }]}>
+                  <Ionicons name="document-text-outline" size={16} color={tokens.infoText} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.teamName}>Offer desk</Text>
+                  <Text style={s.bossSub}>Build an offer · review a contract with AI</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color={tokens.textSubtle} />
+              </View>
+            </Pressable>
           </>
         )}
       </ScrollView>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { reviewContract } from "@/lib/contracts/reviewContract";
 
 export const runtime = "nodejs";
@@ -19,7 +19,7 @@ const MAX_TEXT = 120_000;
  */
 export async function POST(req: Request) {
   try {
-    await getCurrentAgentContext(); // auth gate
+    await getAgentContextFromRequest(req); // auth gate (dual: cookie + mobile bearer)
 
     const contentType = req.headers.get("content-type") || "";
 

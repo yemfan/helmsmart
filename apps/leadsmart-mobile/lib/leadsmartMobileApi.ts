@@ -1663,6 +1663,73 @@ export async function patchBossAutopilot(
   return { ok: true };
 }
 
+// ── Offer desk ─────────────────────────────────────────────────────
+//
+// Build an AI buyer offer + AI contract review. Dual-auth routes; shapes mirror
+// apps/leadsmartai/lib/offers/buildOffer.ts + lib/contracts/reviewContract.ts.
+
+export type MobileBuildOfferInput = {
+  address: string;
+  listPrice: number;
+  estimatedValue?: number | null;
+  buyerMaxBudget?: number | null;
+  financingType?: string | null;
+  motivation?: string | null;
+  marketHeat?: "hot" | "balanced" | "cool" | null;
+  competingOffers?: number | null;
+};
+
+export type MobileBuiltOffer = {
+  strategy: "aggressive" | "market" | "conservative";
+  offerPrice: number;
+  earnestMoney: number | null;
+  downPayment: number | null;
+  financingType: string | null;
+  escalationCap: number | null;
+  closeDays: number | null;
+  contingencies: { inspection: "keep" | "waive"; appraisal: "keep" | "waive"; loan: "keep" | "waive" };
+  rationale: string;
+  coverLetter: string;
+  disclaimer: string;
+};
+
+type BuildOfferJson = MobileJsonError & { offer?: MobileBuiltOffer };
+
+export async function buildMobileOffer(
+  input: MobileBuildOfferInput,
+): Promise<{ ok: true; offer: MobileBuiltOffer } | MobileApiFailure> {
+  const res = await mobilePost<BuildOfferJson>(
+    MOBILE_API_PATHS.offerBuild,
+    input as unknown as Record<string, unknown>,
+  );
+  if (res.ok === false) return res;
+  if (!res.data.offer) return { ok: false, status: 200, message: "Invalid offer response." };
+  return { ok: true, offer: res.data.offer };
+}
+
+export type MobileContractReview = {
+  summary: string;
+  parties: string | null;
+  property: string | null;
+  keyTerms: { label: string; value: string }[];
+  deadlines: { label: string; date: string | null; note: string | null }[];
+  flags: { severity: "high" | "medium" | "low"; title: string; detail: string }[];
+  missing: string[];
+  questions: string[];
+  disclaimer: string;
+};
+
+type ContractReviewJson = MobileJsonError & { review?: MobileContractReview };
+
+export async function reviewMobileContract(
+  text: string,
+): Promise<{ ok: true; review: MobileContractReview } | MobileApiFailure> {
+  const res = await mobilePost<ContractReviewJson>(MOBILE_API_PATHS.contractReview, { text });
+  if (res.ok === false) return res;
+  if (!res.data.review) return { ok: false, status: 200, message: "Invalid review response." };
+  return { ok: true, review: res.data.review };
+}
+
 
 // ── Generate Leads (mobile Quick Post) ───────────────────────────
 
