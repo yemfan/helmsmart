@@ -1,5 +1,6 @@
 import { buildCmaReportPdf } from "@/lib/cma/buildCmaReportPdf";
 import { getCmaForAgent } from "@/lib/cma/service";
+import { isCredibleCmaValuation } from "@/lib/cma/types";
 import {
   fetchListingPhoto,
   fetchPhotoFromListingPage,
@@ -32,6 +33,14 @@ export async function GET(
     const cma = await getCmaForAgent(String(agentId), id);
     if (!cma) {
       return new Response("Not found", { status: 404 });
+    }
+
+    // Don't build a presentation report on a non-credible ($0 / no-band) value.
+    if (!isCredibleCmaValuation(cma.snapshot.valuation)) {
+      return new Response(
+        "This CMA didn't return a reliable valuation. Regenerate it before building a report.",
+        { status: 422 },
+      );
     }
 
     const subjectAddress = cma.snapshot.subject.address || cma.subjectAddress;

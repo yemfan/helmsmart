@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getCmaForAgent } from "@/lib/cma/service";
+import { isCredibleCmaValuation } from "@/lib/cma/types";
 import { isSendCmaEmailFailure, sendCmaEmail } from "@/lib/cma/sendCmaEmail";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 
@@ -46,6 +47,18 @@ export async function POST(
       return NextResponse.json(
         { ok: false, error: "CMA not found." },
         { status: 404 },
+      );
+    }
+
+    // Never email a non-credible ($0 / no-band) valuation to a seller.
+    if (!isCredibleCmaValuation(cma.snapshot.valuation)) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "This CMA didn't return a reliable valuation, so it can't be sent. Regenerate it with a more complete address first.",
+        },
+        { status: 422 },
       );
     }
 

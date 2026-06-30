@@ -1,6 +1,7 @@
 import { buildCmaPdf } from "@/lib/cma/buildCmaPdf";
 import { loadAgentIdentity } from "@/lib/cma/loadAgentIdentity";
 import { getCmaForAgent } from "@/lib/cma/service";
+import { isCredibleCmaValuation } from "@/lib/cma/types";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 
 export const runtime = "nodejs";
@@ -25,6 +26,14 @@ export async function GET(
     const cma = await getCmaForAgent(String(agentId), id);
     if (!cma) {
       return new Response("Not found", { status: 404 });
+    }
+
+    // Don't export a non-credible ($0 / no-band) valuation as a PDF.
+    if (!isCredibleCmaValuation(cma.snapshot.valuation)) {
+      return new Response(
+        "This CMA didn't return a reliable valuation. Regenerate it before exporting.",
+        { status: 422 },
+      );
     }
 
     const agent = await loadAgentIdentity(String(agentId));

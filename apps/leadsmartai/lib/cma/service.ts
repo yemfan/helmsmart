@@ -6,6 +6,7 @@ import { denormalize } from "./denormalize";
 import { isSmartCmaFailure } from "./fetchSmartCma";
 import { normalizeAddress } from "./normalizeAddress";
 import { getCmaQuotaForUser, incrementCmaUsage } from "./quota";
+import { isCredibleCmaValuation } from "./types";
 import type { CmaSnapshot, CmaCompRow, CmaSubject, CmaValuation, CmaStrategy } from "./types";
 
 /**
@@ -107,6 +108,19 @@ export async function createCmaForAgent(
     return { ok: false, status: fetched.status || 502, error: fetched.error };
   }
   const snapshot = fetched.snapshot;
+
+  // Defense in depth: never persist a non-credible ($0 / no-band) valuation,
+  // regardless of how the snapshot was produced. The generator already guards
+  // this, but a saved $0 CMA is one click from a "Send to seller" button — so
+  // re-check at the only write path too.
+  if (!isCredibleCmaValuation(snapshot.valuation)) {
+    return {
+      ok: false,
+      status: 422,
+      error:
+        "We couldn't produce a reliable valuation for this address. Double-check the address details and try again, or enter the value manually.",
+    };
+  }
 
   // Count the run only after a successful generation (don't burn quota on
   // failures). Best-effort — never fails the request.
