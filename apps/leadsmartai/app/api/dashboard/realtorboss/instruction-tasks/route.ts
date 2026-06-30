@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendDraftedBossTask } from "@/lib/realtorboss/sendTaskDraft";
 import { executeBossAction } from "@/lib/realtorboss/actions/execute";
@@ -21,7 +21,7 @@ export const maxDuration = 300;
  */
 export async function PATCH(req: NextRequest) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     const body = (await req.json().catch(() => ({}))) as {
       id?: unknown;
       action?: unknown;

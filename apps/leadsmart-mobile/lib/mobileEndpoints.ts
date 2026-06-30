@@ -33,6 +33,15 @@ export const MOBILE_API_PATHS = {
   account: "/api/mobile/account",
   leadQueue: "/api/dashboard/lead-queue",
   leadQueueClaim: "/api/dashboard/lead-queue/claim",
+  // Boss Assistant command center — these /api/dashboard/realtorboss/* routes
+  // are dual-auth (Bearer-aware), so the mobile app calls them directly.
+  bossInstructions: "/api/dashboard/realtorboss/instructions",
+  bossInstructionTasks: "/api/dashboard/realtorboss/instruction-tasks",
+  bossRecommendations: "/api/dashboard/realtorboss/recommendations",
+  bossRecommendation: (id: string) =>
+    `/api/dashboard/realtorboss/recommendations/${encodeURIComponent(id)}`,
+  bossTeam: "/api/dashboard/realtorboss/team",
+  bossAutopilot: "/api/dashboard/realtorboss/autopilot",
   cma: "/api/mobile/cma",
   coaching: "/api/mobile/coaching/me",
   briefings: "/api/mobile/briefings",

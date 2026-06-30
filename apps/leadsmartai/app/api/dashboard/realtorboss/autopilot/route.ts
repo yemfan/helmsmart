@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import {
   AUTOPILOT_CHANNELS,
   getAutopilotMatrix,
@@ -19,9 +19,9 @@ export const runtime = "nodejs";
  *   PATCH { global: boolean }                         → flip the master switch
  *   PATCH { assignee, channel, mode: "ask"|"auto" }   → set one per-channel cell
  */
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     const [global, cells] = await Promise.all([
       getGlobalAutopilot(agentId),
       getAutopilotMatrix(agentId),
@@ -41,7 +41,7 @@ const ASSIGNEES = Object.keys(AUTOPILOT_CHANNELS) as BossAssignee[];
 
 export async function PATCH(req: Request) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     const body = (await req.json().catch(() => ({}))) as {
       global?: unknown;
       assignee?: unknown;

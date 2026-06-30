@@ -1,5 +1,6 @@
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { supabaseServer } from "@/lib/supabaseServer";
+import { getUserFromRequest } from "@/lib/authFromRequest";
 import { getAgentScopeForAgent } from "@/lib/teams/scope.server";
 import {
   CONTACT_SCORES_SELECT,
@@ -90,6 +91,19 @@ export async function getCurrentAgentContext(authUser?: {
     planType: ((agent as any)?.plan_type ?? "free") as AgentRow["plan_type"],
     email: user.email ?? null,
   };
+}
+
+/**
+ * Dual-auth agent context: resolve the user from the request (Bearer-aware via
+ * getUserFromRequest, with a cookie-session fallback) and hand it to
+ * getCurrentAgentContext. Lets a single route serve both the web (cookie) and
+ * the mobile app (Authorization: Bearer <supabase-jwt>) without forking the
+ * handler. Behaviour on web is unchanged: with no Bearer header,
+ * getUserFromRequest falls back to the cookie session.
+ */
+export async function getAgentContextFromRequest(req: Request) {
+  const user = await getUserFromRequest(req);
+  return getCurrentAgentContext(user ?? undefined);
 }
 
 function applyFreePlanLimit<T>(rows: T[], planType: string, limit = 20) {

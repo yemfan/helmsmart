@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import {
   listBossRecommendations,
   syncBossRecommendations,
@@ -12,9 +12,9 @@ export const runtime = "nodejs";
  * Syncs recommendations from current CRM signals, then returns the
  * open (new/accepted) set ordered by urgency.
  */
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId } = await getAgentContextFromRequest(req);
     await syncBossRecommendations(agentId);
     const recommendations = await listBossRecommendations(agentId, 5);
     return NextResponse.json({ ok: true, recommendations });
