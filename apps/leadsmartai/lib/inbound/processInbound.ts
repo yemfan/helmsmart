@@ -122,6 +122,32 @@ export async function processInboundEmail(
     return { ok: false, error: "delivery insert failed" };
   }
 
+  // Bridge an extracted offer into the structured listing_offers table when it
+  // confidently matches one of the agent's listings — so a forwarded offer email
+  // actually populates the offers the compare/summary tools read, instead of
+  // only living on the delivery as a review item. Best-effort: never fail the
+  // delivery over it.
+  let bridgedNote: string | null = null;
+  if (
+    intent === "offer_received" &&
+    extractionResult.status === "extracted" &&
+    extractionResult.payload.kind === "offer"
+  ) {
+    try {
+      const { bridgeInboundOfferToListing } = await import("@/lib/listing-offers/fromInbound");
+      const bridged = await bridgeInboundOfferToListing({
+        agentId: alias.agent_id,
+        parsed: extractionResult.payload.data,
+        deliveryId: delivery.id,
+      });
+      if (bridged.created) {
+        bridgedNote = "📊 Saved to your listing's offers — open Offers to compare or summarize.";
+      }
+    } catch (e) {
+      console.error("[inbound] offer→listing bridge failed:", e);
+    }
+  }
+
   const senderShort = fromHeader
     ? fromHeader.replace(/<[^>]+>/, "").trim() || fromHeader
     : "an email forward";
@@ -144,7 +170,9 @@ export async function processInboundEmail(
   }
   if (extractionResult.status === "extracted") {
     bodyParts.push(`✅ AI extracted ${extractionResult.payload.kind} fields — review on the page above.`);
-  } else if (extractionResult.status === "failed") {
+  }
+  if (bridgedNote) bodyParts.push(bridgedNote);
+  if (extractionResult.status === "failed") {
     bodyParts.push(`⚠️ AI extraction failed: ${extractionResult.error.slice(0, 200)} (retry on review page)`);
   }
   if (text) {
