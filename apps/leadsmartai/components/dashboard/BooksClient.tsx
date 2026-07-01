@@ -19,6 +19,20 @@ const STATUS_TONE: Record<string, string> = {
 
 const emptyLine = (): LineDraft => ({ description: "", quantity: "1", unitPrice: "" });
 
+/** "Jun 17, 2026, 3:42 PM" in the viewer's locale/timezone, or "" if not sent. */
+function formatSentAt(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export default function BooksClient({ initialInvoices }: { initialInvoices: InvoiceRow[] }) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(initialInvoices.length === 0);
@@ -412,6 +426,11 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                 <p className="truncate text-xs text-slate-500">
                   {inv.client_name || "—"}
                   {inv.due_date ? ` · due ${inv.due_date}` : ""}
+                  {formatSentAt(inv.sent_at) && (
+                    // Locale/timezone-formatted on the client — suppress the
+                    // SSR/CSR mismatch this can cause.
+                    <span suppressHydrationWarning>{` · sent ${formatSentAt(inv.sent_at)}`}</span>
+                  )}
                 </p>
               </div>
               <span className="shrink-0 text-sm font-semibold text-slate-900">{formatMoney(Number(inv.total), inv.currency || "USD")}</span>
