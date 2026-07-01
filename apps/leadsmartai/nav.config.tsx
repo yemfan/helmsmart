@@ -403,7 +403,7 @@ const navConfig = {
     {
       label: "Settings",
       href: "/dashboard/settings",
-      match: ["/dashboard/settings", "/dashboard/notifications"],
+      match: ["/dashboard/settings"],
       icon: p(<Settings size={17} strokeWidth={STROKE} aria-hidden />),
     },
 

@@ -61,26 +61,40 @@ async function buildCandidates(agentId: string): Promise<Candidate[]> {
         { slug: "loan", label: "Loan contingency", date: t.loan_contingency_deadline, done: t.loan_contingency_removed_at },
         { slug: "closing", label: "Closing", date: t.closing_date, done: null },
       ];
+      // Is any milestone on THIS deal already overdue? A single source of truth
+      // for the deal's health so the closing card can't say "on track" while an
+      // earlier contingency has blown past (that contradiction showed the same
+      // deal as "on track" on the Boss feed and "overdue" on the Tx Assistant).
+      const dealHasOverdue = checks.some(
+        (c) => c.date && !c.done && new Date(c.date).getTime() < now,
+      );
       for (const c of checks) {
         if (!c.date || c.done) continue;
         const due = new Date(c.date);
         if (due.getTime() > now + 7 * DAY_MS) continue;
         const overdue = due.getTime() < now;
+        // The closing is only genuinely "on track" if nothing else on the deal
+        // is overdue.
+        const closingBlocked = c.slug === "closing" && dealHasOverdue;
         out.push({
           recommendation_type: "transaction_deadline",
           title: `${c.label} — ${t.property_address}`,
           summary: `${overdue ? "Passed" : "Due"} ${fmtDay(due)}${t.contact_name ? ` · ${t.contact_name}` : ""}`,
           reason: overdue
             ? "This deadline has passed and the item is still open."
-            : "Missing a contingency deadline can put the deal at risk.",
-          priority: overdue ? 10 : 20,
+            : closingBlocked
+              ? "Closing is near, but an earlier contingency on this deal is overdue — clear it first."
+              : "Missing a contingency deadline can put the deal at risk.",
+          priority: overdue ? 10 : closingBlocked ? 12 : 20,
           related_entity_type: "transaction",
           related_entity_id: t.id,
           recommended_action: "Review transaction",
           action_href: `/dashboard/transactions/${t.id}`,
           expected_outcome: overdue
             ? "Contingency handled before it can derail the closing."
-            : "Deal stays on track to close on schedule.",
+            : closingBlocked
+              ? "The overdue item is cleared so the closing isn't at risk."
+              : "Deal stays on track to close on schedule.",
           dedupe_key: `tx_deadline:${t.id}:${c.slug}`,
         });
       }

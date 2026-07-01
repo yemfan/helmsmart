@@ -253,6 +253,25 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const submitCommand = useCallback(async (text: string) => {
     const content = text.trim();
     if (!content) return;
+
+    // If the Boss is waiting on a missing detail, treat what the Realtor types
+    // in the command bar as the ANSWER to the most recent open question — not a
+    // brand-new instruction. This is what makes multi-turn slot-filling work:
+    // "set up an open house" → "what address?" → "4521 Rosewood Dr" continues
+    // the same task instead of restarting the plan from scratch each turn.
+    const pending = tasks
+      .filter((t) => t.status === "needs_input")
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+    if (pending) {
+      await fetch("/api/dashboard/realtorboss/instruction-tasks", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: pending.id, action: "answer", answer: content }),
+      }).catch(() => {});
+      await loadConversation();
+      return;
+    }
+
     // Optimistic instruction bubble so the conversation reacts instantly.
     const tempId = `temp_${Date.now()}`;
     setInstructions((prev) => [...prev, { id: tempId, content, status: "processing", created_at: new Date().toISOString() }]);
@@ -262,7 +281,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       body: JSON.stringify({ content }),
     }).catch(() => {});
     await loadConversation();
-  }, [loadConversation]);
+  }, [loadConversation, tasks]);
 
   const resolveRecommendation = useCallback(async (id: string, status: "completed" | "dismissed") => {
     setRecommendations((prev) => prev.filter((r) => r.id !== id));
@@ -303,6 +322,15 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     const h = new Date().getHours();
     setGreeting(h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
   }, []);
+
+  // The most recent question the Boss is waiting on — the command bar answers
+  // it directly (see submitCommand) and its placeholder reflects it.
+  const pendingQuestion = useMemo(() => {
+    const p = tasks
+      .filter((t) => t.status === "needs_input")
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+    return p?.follow_up_question ?? null;
+  }, [tasks]);
 
   const alerts = useMemo(() => deadlineAlerts(transactions), [transactions]);
   const activeDeals = useMemo(() => transactions.filter((t) => t.status === "active" || t.status === "pending"), [transactions]);
@@ -422,7 +450,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           </BossBubble>
         )}
 
-        <CommandBar onSubmit={submitCommand} autopilot={autopilot} />
+        <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} />
       </section>
 
       {/* ── Your AI team (compact) ── */}
@@ -516,7 +544,7 @@ function ContextStrip({
     <div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Metric label="Hot leads" value={metrics?.hotLeads} tone="hot" active={open === "hot"} onClick={() => toggle("hot")} />
-        <Metric label="Today" value={eventsCount} active={open === "today"} onClick={() => toggle("today")} />
+        <Metric label="Appts today" value={eventsCount} active={open === "today"} onClick={() => toggle("today")} />
         <Metric label="Active deals" value={dealsCount} active={open === "deals"} onClick={() => toggle("deals")} />
         <Metric label="Deadlines" value={deadlinesCount} tone={deadlinesCount ? "warn" : undefined} active={open === "dead"} onClick={() => toggle("dead")} />
       </div>
@@ -759,17 +787,23 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
   );
 }
 
-function CommandBar({ onSubmit, autopilot }: { onSubmit: (text: string) => void; autopilot: boolean }) {
+function CommandBar({ onSubmit, autopilot, pendingQuestion }: { onSubmit: (text: string) => void; autopilot: boolean; pendingQuestion?: string | null }) {
   const [text, setText] = useState("");
   const ref = useRef<HTMLTextAreaElement>(null);
   const send = () => { if (text.trim()) { onSubmit(text); setText(""); if (ref.current) ref.current.style.height = "auto"; } };
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-2">
-      <div className="mb-2 flex flex-wrap gap-1.5">
-        {QUICK_COMMANDS.map((q) => (
-          <button key={q} type="button" onClick={() => onSubmit(q)} className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] text-gray-600 hover:bg-gray-100">{q}</button>
-        ))}
-      </div>
+      {pendingQuestion ? (
+        <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50/60 px-2.5 py-1.5 text-[11px] text-amber-900">
+          Answering: <span className="font-medium">{pendingQuestion}</span>
+        </div>
+      ) : (
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          {QUICK_COMMANDS.map((q) => (
+            <button key={q} type="button" onClick={() => onSubmit(q)} className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] text-gray-600 hover:bg-gray-100">{q}</button>
+          ))}
+        </div>
+      )}
       <div className="flex items-end gap-2">
         <textarea
           ref={ref}
@@ -777,7 +811,7 @@ function CommandBar({ onSubmit, autopilot }: { onSubmit: (text: string) => void;
           onChange={(e) => { setText(e.target.value); e.target.style.height = "auto"; e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`; }}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
           rows={1}
-          placeholder={autopilot ? "Tell your team what to do — they'll act and report back…" : "Tell your team what to do…"}
+          placeholder={pendingQuestion ? "Type your answer…" : autopilot ? "Tell your team what to do — they'll act and report back…" : "Tell your team what to do…"}
           className="max-h-[120px] min-h-[38px] flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
         />
         <button type="button" onClick={send} disabled={!text.trim()} className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" aria-label="Send">↑</button>

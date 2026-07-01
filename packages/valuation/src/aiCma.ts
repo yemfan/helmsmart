@@ -139,7 +139,15 @@ export async function generateAiCma(input: ValuationInput): Promise<ValuationRes
     return { ok: false, status: 502, error: "AI valuation returned no usable result." };
   }
 
-  const parsed = extractJson(finalText);
+  // Extract the JSON answer. The model occasionally wraps it in prose, emits
+  // it unfenced, leaves a trailing comma, or (under adaptive thinking + search)
+  // narrates before the final block — so we try several strategies and, as a
+  // last resort, ask the model to reformat its own output into clean JSON
+  // rather than failing the whole valuation on a formatting hiccup.
+  let parsed = extractJson(finalText);
+  if (!parsed) {
+    parsed = await repairJsonWithModel(client, finalText);
+  }
   if (!parsed) {
     return { ok: false, status: 502, error: "Could not parse the AI valuation result." };
   }
@@ -147,30 +155,116 @@ export async function generateAiCma(input: ValuationInput): Promise<ValuationRes
   const snapshot = normalizeAi(parsed, address);
   // Never let a failed run produce a $0 / no-comp valuation: those would
   // otherwise be saved and land one click from a "Send to seller" button.
-  // Reject unless we have at least one comp AND a credible estimate band.
+  // Reject unless we have at least one comp AND a credible estimate band
+  // (isCredibleCmaValuation subsumes the simple estimatedValue > 0 check).
   if (snapshot.comps.length === 0 || !isCredibleCmaValuation(snapshot.valuation)) {
     return {
       ok: false,
       status: 422,
       error:
-        "We couldn't produce a reliable valuation for this address. Double-check the address details and try again, or enter the value manually.",
+        "Couldn't find enough real comparable sales to value this address confidently. Try a more complete address (include city, state, and ZIP).",
     };
   }
   return { ok: true, snapshot };
 }
 
-// ── parsing + normalization ──────────────────────────────────────
-
-function extractJson(text: string): Record<string, unknown> | null {
-  const fenced = text.match(/```json\s*([\s\S]*?)```/i);
-  const candidate = fenced ? fenced[1] : sliceFirstObject(text);
-  if (!candidate) return null;
+/**
+ * Last-ditch JSON repair: hand the model its own (malformed) output and ask for
+ * a single clean JSON object. No tools, low ceremony — this rescues the common
+ * case where the valuation content is all there but the wrapper is off.
+ */
+async function repairJsonWithModel(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  client: any,
+  text: string,
+): Promise<Record<string, unknown> | null> {
   try {
-    const obj = JSON.parse(candidate);
-    return obj && typeof obj === "object" ? (obj as Record<string, unknown>) : null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const res: any = await client.messages.create({
+      model: MODEL,
+      max_tokens: 8000,
+      system:
+        "You reformat content into valid JSON. Output ONLY a single JSON object — no prose, no markdown fences, no commentary.",
+      messages: [
+        {
+          role: "user",
+          content:
+            "Extract the CMA into ONE valid JSON object with keys subject, comps, valuation, strategies, summary, sources. " +
+            "Use ONLY the addresses, prices, and dates already present below — do not invent or change any value. " +
+            "Use null or 0 for anything genuinely absent.\n\n" +
+            text.slice(0, 14000),
+        },
+      ],
+    });
+    const out: unknown[] = Array.isArray(res?.content) ? res.content : [];
+    let repaired = "";
+    for (const block of out) {
+      const b = block as { type?: string; text?: string };
+      if (b.type === "text" && typeof b.text === "string") repaired += b.text;
+    }
+    return extractJson(repaired);
   } catch {
     return null;
   }
+}
+
+// ── parsing + normalization ──────────────────────────────────────
+
+function extractJson(text: string): Record<string, unknown> | null {
+  for (const candidate of jsonCandidates(text)) {
+    const obj = tryParseJson(candidate);
+    if (obj) return obj;
+  }
+  return null;
+}
+
+/**
+ * Yield JSON candidates in most-likely-final order. The model may fence the
+ * answer, emit it unfenced, narrate before it (under adaptive thinking +
+ * search), or leave prose after the closing brace — so we try, in order: the
+ * LAST fenced block (the final answer, not intermediate examples), the last
+ * balanced {...} object, then a crude first-brace/last-brace slice.
+ */
+function* jsonCandidates(text: string): Generator<string> {
+  const fences: string[] = [];
+  const fenceRe = /```(?:json)?\s*([\s\S]*?)```/gi;
+  for (let m = fenceRe.exec(text); m; m = fenceRe.exec(text)) {
+    if (m[1] && m[1].includes("{")) fences.push(m[1].trim());
+  }
+  for (let i = fences.length - 1; i >= 0; i--) yield fences[i];
+  const balanced = lastBalancedObject(text);
+  if (balanced) yield balanced;
+  const crude = sliceFirstObject(text);
+  if (crude) yield crude;
+}
+
+function tryParseJson(raw: string): Record<string, unknown> | null {
+  const cleaned = raw
+    .trim()
+    .replace(/^[^{]*/, "") // drop any prose before the first {
+    .replace(/[^}]*$/, "") // drop any prose after the last }
+    .replace(/,\s*([}\]])/g, "$1"); // strip trailing commas
+  try {
+    const obj = JSON.parse(cleaned);
+    return obj && typeof obj === "object" && !Array.isArray(obj)
+      ? (obj as Record<string, unknown>)
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Scan from the end for the last balanced {...} object (handles prose after). */
+function lastBalancedObject(text: string): string | null {
+  const end = text.lastIndexOf("}");
+  if (end < 0) return null;
+  let depth = 0;
+  for (let i = end; i >= 0; i--) {
+    const ch = text[i];
+    if (ch === "}") depth++;
+    else if (ch === "{" && --depth === 0) return text.slice(i, end + 1);
+  }
+  return null;
 }
 
 function sliceFirstObject(text: string): string | null {

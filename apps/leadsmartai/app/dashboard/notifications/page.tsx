@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Bell, Flame, PhoneMissed } from "lucide-react";
 import { supabaseServer } from "@/lib/supabaseServer";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getCurrentAgentContext, getLeads } from "@/lib/dashboardService";
 import { getMobileReminders } from "@/lib/mobile/remindersMobile";
 import type { Metadata } from "next";
@@ -44,6 +45,26 @@ function leadEmbedName(embed: MissedCallRow["leads"]): string | null {
   if (embed == null) return null;
   if (Array.isArray(embed)) return embed[0]?.name ?? null;
   return embed.name ?? null;
+}
+
+/** Raw missed-call row from `call_logs` (the same source the Receptionist
+ *  console and Boss recommendations read — the phone flows write missed calls
+ *  there, not to `lead_calls`, which is why this panel used to read empty). */
+type CallLogMissedRow = {
+  id: string;
+  contact_id: string | null;
+  status: string | null;
+  from_phone: string | null;
+  notes: string | null;
+  created_at: string;
+};
+
+/** Strip the bookkeeping prefix the voice flow writes into `notes`. */
+function cleanCallNote(notes: string | null): string | null {
+  const n = (notes ?? "").trim();
+  if (!n) return null;
+  if (n.startsWith("AI call summary:")) return n.slice("AI call summary:".length).trim();
+  return n;
 }
 
 function isSameLocalCalendarDay(a: Date, b: Date): boolean {
@@ -112,11 +133,12 @@ export default async function NotificationsPage() {
       .eq("rating", "hot")
       .order("last_activity_at", { ascending: false })
       .limit(20),
-    supabaseServer
-      .from("lead_calls")
-      .select("id,contact_id,status,created_at,summary,from_phone, leads(name)")
+    supabaseAdmin
+      .from("call_logs")
+      .select("id,contact_id,status,from_phone,notes,created_at,direction")
       .eq("agent_id", agentId)
-      .in("status", ["no_answer", "failed"])
+      .eq("direction", "inbound")
+      .in("status", ["missed", "no_answer", "failed", "busy"])
       .order("created_at", { ascending: false })
       .limit(25),
     getMobileReminders(agentId).catch((err) => {
@@ -132,7 +154,15 @@ export default async function NotificationsPage() {
   ]);
 
   const hotLeads = (hotRes.data ?? []) as HotLeadRow[];
-  const missedCalls = (missedRes.data ?? []) as unknown as MissedCallRow[];
+  const missedCalls: MissedCallRow[] = ((missedRes.data ?? []) as CallLogMissedRow[]).map((r) => ({
+    id: r.id,
+    contact_id: r.contact_id,
+    status: r.status,
+    created_at: r.created_at,
+    summary: cleanCallNote(r.notes),
+    from_phone: r.from_phone,
+    leads: r.contact_id ? { name: leadMap.get(r.contact_id)?.name ?? null } : null,
+  }));
   const notifications = (notificationsRes.data ?? []) as NotificationRow[];
 
   const propertyIds = Array.from(
