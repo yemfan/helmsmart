@@ -41,7 +41,7 @@ export type LeadProfilePayload = {
   tasks: { id: string; title: string; due_at: string | null; priority: string | null }[];
   appointments: { id: string; title: string; starts_at: string }[];
   calls: { id: string; direction: string; status: string; notes: string | null; created_at: string }[];
-  messages: { id: string; direction: string; message: string; created_at: string }[];
+  messages: { id: string; direction: string; message: string; created_at: string; assistant_type?: string | null }[];
   activities: { id: string; assistant_type: string; summary: string; outcome: string | null; created_at: string }[];
   nextBestAction: LeadNextBestAction | null;
 };
@@ -108,7 +108,12 @@ export function buildTimeline(data: LeadProfilePayload, max: number): LeadTimeli
       id: `sms-${m.id}`,
       at: m.created_at,
       icon: "💬",
-      title: m.direction === "inbound" ? "They texted" : "AI team texted",
+      title:
+        m.direction === "inbound"
+          ? "They texted"
+          : m.assistant_type
+            ? `${ASSISTANT_LABELS[m.assistant_type] ?? "AI assistant"} texted`
+            : "AI assistant texted",
       detail: m.message,
     })),
     ...data.appointments.map((e) => ({

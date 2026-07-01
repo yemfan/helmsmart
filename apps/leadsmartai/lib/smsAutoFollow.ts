@@ -72,12 +72,15 @@ export async function logSmsMessage(input: {
   agentId?: string | null;
   message: string;
   direction: "inbound" | "outbound";
+  /** Which AI assistant sent this (outbound only) — drives timeline attribution. */
+  assistantType?: string | null;
 }) {
   await supabaseServer.from("sms_messages").insert({
     contact_id: input.leadId as any,
     agent_id: input.agentId ?? null,
     message: clampMessage(input.message, 500),
     direction: input.direction,
+    assistant_type: input.assistantType ?? null,
   } as any);
 }
 

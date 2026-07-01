@@ -45,6 +45,8 @@ export async function sendOutboundSms(params: {
   agentId?: string | null;
   actorType?: "agent" | "system" | "ai";
   actorName?: string | null;
+  /** Which AI assistant sent this — persisted on sms_messages for timeline attribution. */
+  assistantType?: string | null;
 }) {
   const client = getTwilioClient();
   const rawFrom = fromNumber();
@@ -111,6 +113,7 @@ export async function sendOutboundSms(params: {
     direction: "outbound",
     external_message_id: sid || null,
     twilio_status: status,
+    assistant_type: params.assistantType ?? null,
   } as Record<string, unknown>);
 
   if (smsErr) throw smsErr;
