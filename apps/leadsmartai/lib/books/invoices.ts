@@ -34,6 +34,8 @@ export type InvoiceRow = {
   notes: string | null;
   payment_url: string | null;
   paid_at: string | null;
+  sent_at: string | null;
+  last_sent_at: string | null;
   created_at: string;
 };
 
@@ -297,9 +299,12 @@ export async function sendInvoiceEmail(id: string): Promise<{ ok: boolean; error
     return { ok: false, error: "Email isn't configured on this account yet — the invoice was not sent." };
   }
 
+  const now = new Date().toISOString();
   await supabaseAdmin
     .from("invoices")
-    .update({ status: "sent", updated_at: new Date().toISOString() } as never)
+    // Preserve the original send moment on a resend — sent_at is "when it first
+    // went out"; last_sent_at moves forward every time (drives the chase cooldown).
+    .update({ status: "sent", sent_at: invoice.sent_at ?? now, last_sent_at: now, updated_at: now } as never)
     .eq("id", id)
     .eq("agent_id", agentId as never);
 
@@ -373,6 +378,12 @@ export async function setInvoiceStatus(
   const { agentId } = await getCurrentAgentContext();
   const patch: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
   patch.paid_at = status === "paid" ? new Date().toISOString() : null;
+  // "Mark sent" (an invoice with no client email) still records a send time.
+  if (status === "sent") {
+    const nowIso = new Date().toISOString();
+    patch.sent_at = nowIso;
+    patch.last_sent_at = nowIso;
+  }
   const { data, error } = await supabaseAdmin
     .from("invoices")
     .update(patch as never)
