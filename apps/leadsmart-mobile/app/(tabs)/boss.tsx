@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -184,6 +186,9 @@ export default function BossScreen() {
 
   return (
     <SafeAreaView style={s.flex} edges={["bottom"]}>
+      {/* Lift the docked command bar above the keyboard so what you type
+          stays visible (mirrors the offer-desk tab). */}
+      <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView
         style={s.flex}
         contentContainerStyle={s.content}
@@ -356,6 +361,7 @@ export default function BossScreen() {
           <Ionicons name="arrow-up" size={20} color={tokens.textOnAccent} />
         </Pressable>
       </View>
+      </KeyboardAvoidingView>
 
       <SettingsModal
         visible={settingsOpen}
