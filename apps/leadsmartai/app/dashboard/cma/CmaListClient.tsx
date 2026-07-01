@@ -2,9 +2,41 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { Component, type ReactNode, useCallback, useEffect, useState } from "react";
 
 import AddressAutocomplete from "@/components/AddressAutocomplete";
+
+/**
+ * Contains any render error to a small inline fallback instead of letting it
+ * bubble to the route (which manifested as the quota badge tiling the screen
+ * after a failed generation). Defensive — the form itself shouldn't throw.
+ */
+class CmaErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { failed: false };
+  }
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    if (this.state.failed) {
+      return (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Something went wrong rendering this view.{" "}
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="font-semibold underline"
+          >
+            Reload
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 type CmaListRow = {
   id: string;
@@ -52,6 +84,14 @@ function formatDate(iso: string): string {
 }
 
 export default function CmaListClient() {
+  return (
+    <CmaErrorBoundary>
+      <CmaListInner />
+    </CmaErrorBoundary>
+  );
+}
+
+function CmaListInner() {
   const [rows, setRows] = useState<CmaListRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -179,7 +219,11 @@ export default function CmaListClient() {
                   <span className="text-amber-700">
                     Daily limit reached. Resets at midnight UTC.
                   </span>
-                ) : null}
+                ) : (
+                  <span className="text-slate-400">
+                    Searches recent public sales — results take up to a minute.
+                  </span>
+                )}
               </div>
               <button
                 type="button"
@@ -194,6 +238,12 @@ export default function CmaListClient() {
                 {submitting ? "Generating…" : "Generate CMA"}
               </button>
             </div>
+            {submitting ? (
+              <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
+                <span className="mr-2 inline-block h-3 w-3 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600 align-[-1px]" aria-hidden />
+                Searching the live web for recent comparable sales, then running the valuation… this can take up to a minute.
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}
