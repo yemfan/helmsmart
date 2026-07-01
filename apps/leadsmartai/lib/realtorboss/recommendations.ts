@@ -30,6 +30,9 @@ type Candidate = Omit<
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/** After a receivable is chased (re)sent, wait this long before nudging again. */
+const CHASE_COOLDOWN_MS = 4 * DAY_MS;
+
 function dayStamp(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -131,21 +134,36 @@ async function buildCandidates(agentId: string): Promise<Candidate[]> {
   if (!paused.has("accountant")) {
     const { data: overdueInv } = await supabaseAdmin
       .from("invoices")
-      .select("id,invoice_number,client_name,total,due_date,status")
+      .select("id,invoice_number,client_name,total,due_date,last_sent_at")
       .eq("agent_id", agentId)
       .or(`status.eq.overdue,and(status.eq.sent,due_date.lt.${new Date().toISOString().slice(0, 10)})`)
       .order("due_date", { ascending: true })
-      .limit(3);
-    for (const inv of (overdueInv ?? []) as {
+      .limit(10);
+    const chaseable = ((overdueInv ?? []) as {
       id: string;
       invoice_number: string;
       client_name: string | null;
       total: number | null;
       due_date: string | null;
-    }[]) {
+      last_sent_at: string | null;
+    }[])
+      // A reminder just went out — give the client the cooldown to pay before we
+      // nudge again. Suppressing the candidate lets syncBossRecommendations
+      // auto-close the open card; once the cooldown lapses (and it's still
+      // unpaid & overdue) it re-enters below under a fresh, rotated key.
+      .filter(
+        (inv) =>
+          !inv.last_sent_at || now - new Date(inv.last_sent_at).getTime() >= CHASE_COOLDOWN_MS,
+      )
+      .slice(0, 3);
+    for (const inv of chaseable) {
       const days = inv.due_date
         ? Math.max(1, Math.floor((now - new Date(inv.due_date).getTime()) / DAY_MS))
         : null;
+      // Rotate the dedupe key by the last-reminder day so each nudge cycle is a
+      // distinct card (the sync upsert ignores duplicate keys, so a stable key
+      // would never re-surface after auto-close). Base key until first reminded.
+      const remindedDay = inv.last_sent_at ? inv.last_sent_at.slice(0, 10) : null;
       out.push({
         recommendation_type: "invoice_overdue",
         title: `Chase receivable ${inv.invoice_number}${inv.client_name ? ` — ${inv.client_name}` : ""}`,
@@ -157,7 +175,9 @@ async function buildCandidates(agentId: string): Promise<Candidate[]> {
         recommended_action: "Open invoices",
         action_href: "/dashboard/books",
         expected_outcome: "Invoice paid without souring the relationship.",
-        dedupe_key: `invoice_overdue:${inv.id}`,
+        dedupe_key: remindedDay
+          ? `invoice_overdue:${inv.id}:${remindedDay}`
+          : `invoice_overdue:${inv.id}`,
       });
     }
   }
