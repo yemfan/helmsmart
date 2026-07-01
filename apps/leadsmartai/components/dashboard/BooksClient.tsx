@@ -124,6 +124,17 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
     [initialInvoices],
   );
 
+  // Outstanding = the working list you act on; Paid = the ledger an invoice
+  // moves to once payment is received (status → paid, paid_at stamped).
+  const activeInvoices = useMemo(
+    () => initialInvoices.filter((i) => i.status !== "paid" && i.status !== "void"),
+    [initialInvoices],
+  );
+  const paidInvoices = useMemo(
+    () => initialInvoices.filter((i) => i.status === "paid"),
+    [initialInvoices],
+  );
+
   function setLine(i: number, patch: Partial<LineDraft>) {
     setLines((prev) => prev.map((l, idx) => (idx === i ? { ...l, ...patch } : l)));
   }
@@ -218,6 +229,57 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
 
   const input =
     "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none";
+
+  // One row renderer shared by the Outstanding list and the Paid ledger.
+  const renderInvoiceRow = (inv: InvoiceRow) => (
+    <li key={inv.id} className="flex items-center gap-3 px-4 py-3">
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-slate-900">{inv.invoice_number}</span>
+          <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ring-1 ring-inset ${STATUS_TONE[inv.status] ?? STATUS_TONE.draft}`}>
+            {inv.status}
+          </span>
+        </div>
+        <p className="truncate text-xs text-slate-500">
+          {inv.client_name || "—"}
+          {inv.due_date ? ` · due ${inv.due_date}` : ""}
+          {/* Locale/timezone-formatted on the client — suppress the SSR/CSR
+              mismatch this can cause. Paid rows show when payment landed. */}
+          {inv.status === "paid" && formatSentAt(inv.paid_at) ? (
+            <span suppressHydrationWarning>{` · paid ${formatSentAt(inv.paid_at)}`}</span>
+          ) : formatSentAt(inv.sent_at) ? (
+            <span suppressHydrationWarning>{` · sent ${formatSentAt(inv.sent_at)}`}</span>
+          ) : null}
+        </p>
+      </div>
+      <span className="shrink-0 text-sm font-semibold text-slate-900">{formatMoney(Number(inv.total), inv.currency || "USD")}</span>
+      <div className="flex shrink-0 items-center gap-1">
+        <a
+          href={`/api/dashboard/books/invoices/pdf?id=${inv.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+        >
+          PDF
+        </a>
+        {inv.client_email && inv.status !== "paid" && inv.status !== "void" && (
+          <button type="button" onClick={() => void sendInvoice(inv.id)} disabled={busyId === inv.id} className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50">
+            {busyId === inv.id ? "…" : inv.status === "draft" ? "Send" : "Resend"}
+          </button>
+        )}
+        {inv.status === "draft" && !inv.client_email && (
+          <button type="button" onClick={() => void changeStatus(inv.id, "sent")} disabled={busyId === inv.id} className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50">
+            Mark sent
+          </button>
+        )}
+        {inv.status !== "paid" && inv.status !== "void" && (
+          <button type="button" onClick={() => void changeStatus(inv.id, "paid")} disabled={busyId === inv.id} className="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">
+            Mark paid
+          </button>
+        )}
+      </div>
+    </li>
+  );
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
@@ -413,55 +475,31 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
           <p className="text-sm text-slate-500">No invoices yet. Create your first one above.</p>
         </div>
       ) : (
-        <ul className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          {initialInvoices.map((inv) => (
-            <li key={inv.id} className="flex items-center gap-3 px-4 py-3">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-slate-900">{inv.invoice_number}</span>
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ring-1 ring-inset ${STATUS_TONE[inv.status] ?? STATUS_TONE.draft}`}>
-                    {inv.status}
-                  </span>
-                </div>
-                <p className="truncate text-xs text-slate-500">
-                  {inv.client_name || "—"}
-                  {inv.due_date ? ` · due ${inv.due_date}` : ""}
-                  {formatSentAt(inv.sent_at) && (
-                    // Locale/timezone-formatted on the client — suppress the
-                    // SSR/CSR mismatch this can cause.
-                    <span suppressHydrationWarning>{` · sent ${formatSentAt(inv.sent_at)}`}</span>
-                  )}
-                </p>
-              </div>
-              <span className="shrink-0 text-sm font-semibold text-slate-900">{formatMoney(Number(inv.total), inv.currency || "USD")}</span>
-              <div className="flex shrink-0 items-center gap-1">
-                <a
-                  href={`/api/dashboard/books/invoices/pdf?id=${inv.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
-                >
-                  PDF
-                </a>
-                {inv.client_email && inv.status !== "paid" && inv.status !== "void" && (
-                  <button type="button" onClick={() => void sendInvoice(inv.id)} disabled={busyId === inv.id} className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50">
-                    {busyId === inv.id ? "…" : inv.status === "draft" ? "Send" : "Resend"}
-                  </button>
-                )}
-                {inv.status === "draft" && !inv.client_email && (
-                  <button type="button" onClick={() => void changeStatus(inv.id, "sent")} disabled={busyId === inv.id} className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50">
-                    Mark sent
-                  </button>
-                )}
-                {inv.status !== "paid" && inv.status !== "void" && (
-                  <button type="button" onClick={() => void changeStatus(inv.id, "paid")} disabled={busyId === inv.id} className="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">
-                    Mark paid
-                  </button>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="space-y-5">
+          {/* Outstanding — the working list you act on */}
+          {activeInvoices.length > 0 ? (
+            <ul className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              {activeInvoices.map(renderInvoiceRow)}
+            </ul>
+          ) : (
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center">
+              <p className="text-sm text-slate-500">No outstanding invoices — you&apos;re all caught up.</p>
+            </div>
+          )}
+
+          {/* Paid ledger — an invoice moves here once payment is received */}
+          {paidInvoices.length > 0 && (
+            <section>
+              <h2 className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <span>Paid</span>
+                <span className="tabular-nums text-emerald-600">{formatMoney(paidTotal)}</span>
+              </h2>
+              <ul className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                {paidInvoices.map(renderInvoiceRow)}
+              </ul>
+            </section>
+          )}
+        </div>
       )}
     </div>
   );
