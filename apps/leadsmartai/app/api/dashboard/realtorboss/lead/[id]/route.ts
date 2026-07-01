@@ -68,7 +68,7 @@ export async function GET(
         .limit(lim.calls),
       supabaseAdmin
         .from("sms_messages")
-        .select("id,direction,message,created_at")
+        .select("id,direction,message,created_at,assistant_type")
         .eq("contact_id", id)
         .order("created_at", { ascending: false })
         .limit(lim.sms),

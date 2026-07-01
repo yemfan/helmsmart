@@ -583,6 +583,7 @@ export async function POST(req: Request) {
             agentId,
             message: reply,
             direction: "outbound",
+            assistantType: "sales_assistant",
           });
         } catch {}
 

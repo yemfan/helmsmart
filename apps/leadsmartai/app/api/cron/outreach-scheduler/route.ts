@@ -110,8 +110,9 @@ export async function GET(req: Request) {
             to: phone,
             body: withOptOutFooter(row.body ?? ""),
             agentId: String(row.agent_id),
-            actorType: "agent",
+            actorType: "ai",
             actorName: "Scheduled",
+            assistantType: "sales_assistant",
           });
         } else {
           const email = String(c.email ?? "").trim();
