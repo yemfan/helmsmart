@@ -12,6 +12,17 @@ function normalizeToUsPhone(phone: string): string | null {
   return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
 }
 
+// Normalize a US number to E.164 (+1XXXXXXXXXX). Twilio requires the leading
+// "+"; a value saved as bare "16268887170" / "6268887170" / with formatting
+// otherwise triggers a 20001 ("invalid parameter"). Non-US-looking input
+// (short codes, already-valid other-country E.164) is left untouched.
+function normalizeFromToE164(input: string): string {
+  const d = digitsOnly(input);
+  if (d.length === 11 && d.startsWith("1")) return `+${d}`;
+  if (d.length === 10) return `+1${d}`;
+  return input;
+}
+
 // Send an SMS via Twilio and log it in `message_logs`.
 // `leadId` is optional; if omitted we attempt to find the most recent lead by phone.
 export async function sendSMS(
@@ -39,7 +50,10 @@ export async function sendSMS(
 
   const result = await client.messages.create({
     to,
-    from: fromNumber,
+    // Normalize defensively — the reply path historically used the env value
+    // verbatim, so a from-number saved without the leading "+" broke replies
+    // while the AI-send path (which already normalizes) kept working.
+    from: normalizeFromToE164(fromNumber),
     body: message,
   });
 
