@@ -5,6 +5,10 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getAnthropicClient } from "@/lib/anthropic";
 import { BOSS_AGENT_MODEL } from "@/lib/ai/config";
 import { dispatchApprovedDrafts } from "@/lib/drafts/sender";
+import { sendOutboundSms } from "@/lib/ai-sms/outbound";
+import { sendOutboundEmail } from "@/lib/ai-email/send";
+import { getAgentMessageSettingsEffective } from "@/lib/agent-messaging/settings";
+import { quietHoursBlockReason, nextSendOpenAfter } from "@/lib/agent-messaging/sendWindow";
 import { defineTool } from "../types";
 
 /**
@@ -165,11 +169,18 @@ export const sendMessage = defineTool({
     // model can't route around a stricter autopilot cell by mislabeling).
     const { data } = await supabaseAdmin
       .from("message_drafts")
-      .select("id, channel, contact_id, status")
+      .select("id, channel, contact_id, status, subject, body")
       .eq("id", input.draft_id)
       .eq("agent_id", ctx.agentId)
       .maybeSingle();
-    const draft = data as { id: string; channel: string; contact_id: string; status: string } | null;
+    const draft = data as {
+      id: string;
+      channel: string;
+      contact_id: string;
+      status: string;
+      subject: string | null;
+      body: string;
+    } | null;
     if (!draft) return { status: "failed", error: "Draft not found for this agent." };
     if (draft.channel !== input.channel || draft.contact_id !== input.contact_id) {
       return {
@@ -187,22 +198,123 @@ export const sendMessage = defineTool({
         .update({ status: "approved", approved_at: new Date().toISOString() })
         .eq("id", draft.id);
     }
-    const result = await dispatchApprovedDrafts({ agentId: ctx.agentId, draftId: draft.id });
-    const outcome = result.outcomes[0];
-    if (!outcome) return { status: "failed", error: "Dispatcher found nothing to send." };
-    if (outcome.reason === "sent") {
-      return { status: "completed", summary: `Sent the ${input.channel} (draft ${draft.id}).` };
+
+    // The drafts dispatcher rail only serves SPHERE contacts (sphere_contacts
+    // is a lifecycle-filtered view). Leads go out on the consolidated outreach
+    // rail below instead.
+    const { data: c } = await supabaseAdmin
+      .from("contacts")
+      .select("id, name, lifecycle_stage, phone, phone_number, email")
+      .eq("id", draft.contact_id)
+      .eq("agent_id", ctx.agentId)
+      .maybeSingle();
+    const contact = c as {
+      id: string;
+      name: string | null;
+      lifecycle_stage: string | null;
+      phone: string | null;
+      phone_number: string | null;
+      email: string | null;
+    } | null;
+    if (!contact) return { status: "failed", error: "Contact not found for this agent." };
+
+    const isSphere = ["past_client", "sphere", "referral_source"].includes(
+      contact.lifecycle_stage ?? "",
+    );
+    if (isSphere) {
+      const result = await dispatchApprovedDrafts({ agentId: ctx.agentId, draftId: draft.id });
+      const outcome = result.outcomes[0];
+      if (!outcome) return { status: "failed", error: "Dispatcher found nothing to send." };
+      if (outcome.reason === "sent") {
+        return { status: "completed", summary: `Sent the ${input.channel} (draft ${draft.id}).` };
+      }
+      if (outcome.reason === "do_not_contact" || outcome.reason === "missing_address") {
+        return { status: "rejected", reason: `Send blocked: ${outcome.reason}.` };
+      }
+      if (outcome.reason === "send_failed") {
+        return { status: "failed", error: outcome.detail ?? "Send failed." };
+      }
+      // Deferred (quiet hours / caps / paused-on-reply) — dispatcher rescheduled it.
+      return {
+        status: "completed",
+        summary: `Send deferred (${outcome.reason}) — the dispatcher will send it when the window opens.`,
+      };
     }
-    if (outcome.reason === "do_not_contact" || outcome.reason === "missing_address") {
-      return { status: "rejected", reason: `Send blocked: ${outcome.reason}.` };
+
+    // ── lead send (outreach rail) ────────────────────────────────────
+    const now = ctx.now ?? new Date();
+    if (!ctx.approvedByRealtor) {
+      // Autonomous sends respect quiet hours: defer onto scheduled_actions
+      // (drained every 15 min), same as the Boss autopilot deferral path.
+      // Explicit human approvals send now — the realtor chose the moment.
+      const settings = await getAgentMessageSettingsEffective(ctx.agentId);
+      const blocked = settings ? quietHoursBlockReason(now, settings) : null;
+      if (blocked && settings) {
+        const sendAfter = nextSendOpenAfter(now, blocked, settings);
+        await supabaseAdmin.from("scheduled_actions").insert({
+          agent_id: ctx.agentId,
+          channel: input.channel,
+          purpose: "follow_up",
+          contact_ids: [contact.id],
+          subject: draft.subject,
+          body: draft.body,
+          scheduled_for: sendAfter.toISOString(),
+          status: "scheduled",
+        });
+        // Draft stays `approved` with scheduled_for as provenance; the
+        // scheduled action owns the actual send (cancellable from the strip).
+        await supabaseAdmin
+          .from("message_drafts")
+          .update({ scheduled_for: sendAfter.toISOString() })
+          .eq("id", draft.id);
+        return {
+          status: "completed",
+          summary: `Send deferred (${blocked}) — queued for ${sendAfter.toISOString()}.`,
+        };
+      }
     }
-    if (outcome.reason === "send_failed") {
-      return { status: "failed", error: outcome.detail ?? "Send failed." };
+
+    try {
+      if (input.channel === "sms") {
+        const phone = contact.phone_number ?? contact.phone;
+        if (!phone) return { status: "rejected", reason: "Contact has no phone number." };
+        await sendOutboundSms({
+          leadId: contact.id,
+          to: phone,
+          body: draft.body,
+          agentId: ctx.agentId,
+          actorType: "ai",
+          assistantType: "sales_assistant",
+        });
+      } else {
+        if (!contact.email) return { status: "rejected", reason: "Contact has no email address." };
+        await sendOutboundEmail({
+          leadId: contact.id,
+          to: contact.email,
+          subject: draft.subject ?? "Quick note",
+          body: draft.body,
+          agentId: ctx.agentId,
+          actorType: "ai",
+        });
+      }
+    } catch (e) {
+      await supabaseAdmin
+        .from("message_drafts")
+        .update({
+          status: "failed",
+          failed_at: new Date().toISOString(),
+          failure_reason: e instanceof Error ? e.message.slice(0, 300) : "send failed",
+        })
+        .eq("id", draft.id);
+      return { status: "failed", error: e instanceof Error ? e.message : "Send failed." };
     }
-    // Deferred (quiet hours / caps / paused-on-reply) — dispatcher rescheduled it.
+    await supabaseAdmin
+      .from("message_drafts")
+      .update({ status: "sent", sent_at: new Date().toISOString() })
+      .eq("id", draft.id);
     return {
       status: "completed",
-      summary: `Send deferred (${outcome.reason}) — the dispatcher will send it when the window opens.`,
+      summary: `Sent the ${input.channel} to ${contact.name ?? "the contact"}.`,
     };
   },
   propose: async (ctx, input) => {

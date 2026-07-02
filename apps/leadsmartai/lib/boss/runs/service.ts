@@ -177,7 +177,9 @@ export async function continueBossRun(runId: string): Promise<BossRunStatus> {
 /** Fire-and-forget POST to the continuation route (fresh 300s budget). */
 async function kickContinuation(runId: string): Promise<void> {
   try {
-    const base = getSiteUrl().replace(/\/$/, "");
+    // BOSS_CONTINUE_BASE_URL wins (dev runs on a non-default port); prod
+    // falls back to the canonical site URL.
+    const base = (process.env.BOSS_CONTINUE_BASE_URL?.trim() || getSiteUrl()).replace(/\/$/, "");
     await fetch(`${base}/api/boss/runs/continue`, {
       method: "POST",
       headers: {
@@ -253,7 +255,9 @@ export async function decideRunStep(args: {
   }
 
   await store.updateRun(args.runId, { messages_json: messages, status: "running" });
-  void kickContinuation(args.runId);
+  // The caller (decision route) resumes the loop in-process via after() —
+  // an HTTP self-kick here would depend on getSiteUrl matching the running
+  // origin, which isn't true in dev.
   return { ok: true, status: "running" };
 }
 
