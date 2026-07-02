@@ -2,6 +2,7 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { processInstructionById } from "@/lib/realtyboss/instructions";
+import { isBossV2Enabled, startBossRun, continueBossRun } from "@/lib/boss/runs/service";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -75,16 +76,35 @@ export async function POST(req: NextRequest) {
     // Process right away — no waiting for the 5-minute cron. Runs
     // after the response so Send returns instantly; the card polls
     // for the routed task list. The cron stays as the safety net.
+    //
+    // Boss v2 (HANDOFF_BOSS_V2 PR-3): when the agent is flagged in, a live
+    // agent run replaces cron-style parse-and-route. startBossRun marks the
+    // instruction `processing`, so the legacy cron won't double-handle it.
     const instructionId = (data as { id: string }).id;
+    const v2 = await isBossV2Enabled(String(agentId));
+    let runId: string | null = null;
+    if (v2) {
+      const started = await startBossRun({
+        agentId: String(agentId),
+        objective: content,
+        trigger: "command",
+        instructionId,
+      });
+      if ("runId" in started) runId = started.runId;
+    }
     after(async () => {
       try {
-        await processInstructionById(instructionId);
+        if (runId) {
+          await continueBossRun(runId);
+        } else {
+          await processInstructionById(instructionId);
+        }
       } catch (e) {
         console.error("[boss-instructions] immediate processing failed:", e);
       }
     });
 
-    return NextResponse.json({ ok: true, instruction: data });
+    return NextResponse.json({ ok: true, instruction: data, run_id: runId });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });

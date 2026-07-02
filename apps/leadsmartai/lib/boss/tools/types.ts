@@ -38,6 +38,12 @@ export type ToolContext = {
   runState: ToolRunState;
   /** Injectable clock (tests). Defaults to `new Date()` at execution time. */
   now?: Date;
+  /**
+   * Set ONLY by the approval decision path after the realtor explicitly
+   * approved this exact step: outbound executes without re-consulting
+   * autopilot. Consent, voice caps, and send-rail guards still apply.
+   */
+  approvedByRealtor?: boolean;
 };
 
 export type ToolOutcome =
