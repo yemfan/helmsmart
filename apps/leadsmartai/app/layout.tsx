@@ -47,13 +47,15 @@ const SITE_NAME = "RealtyBoss";
 // query, and it disambiguates us from realtyboss.com / realtyboss.ng. SITE_NAME
 // stays the wordmark; SITE_BRAND / SITE_TITLE drive search-facing metadata.
 const SITE_BRAND = "RealtyBoss AI";
-const SITE_TITLE = "RealtyBoss AI — AI Real Estate Team for Agents";
+// Homepage title per HANDOFF_BOSS_V2 PR-1. Subpages keep the `%s | RealtyBoss AI`
+// template for the exact-match "realtyboss ai" query.
+const SITE_TITLE = "RealtyBoss — Your AI Real Estate Team. Close More Deals.";
 const SITE_DESCRIPTION =
   "RealtyBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.";
 
 /**
  * Tab + Apple + JSON-LD all use the RealtyBoss icons in
- * `public/brand/realtorboss/` (regenerated via scripts/generate-brand-icons.mjs).
+ * `public/brand/realtyboss/` (regenerated via scripts/generate-brand-icons.mjs).
  * Explicit entries ensure correct absolute URLs with `metadataBase` on Vercel previews.
  */
 export const metadata: Metadata = {

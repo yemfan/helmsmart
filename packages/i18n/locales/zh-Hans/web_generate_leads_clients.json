@@ -30,7 +30,7 @@
       "empty": "尚未连接任何主页。连接一个即可开始发布。",
       "revoke_hint_prefix": "授权范围已加密存储；可随时断开连接。如需在 Facebook 端完全撤销 OAuth 授权，请访问 Facebook 账户的「",
       "revoke_hint_link": "应用与网站",
-      "revoke_hint_suffix": "」并移除 RealtorBoss。"
+      "revoke_hint_suffix": "」并移除 RealtyBoss。"
     },
     "linkedin": {
       "title": "LinkedIn",
@@ -43,7 +43,7 @@
       "empty": "尚未连接。使用 LinkedIn 登录以启用发布功能。",
       "revoke_hint_prefix": "帖子将发布到您的 LinkedIn 个人动态。公司主页发布需要 LinkedIn 的 Marketing API（受合作伙伴计划限制），暂未支持。如需在 LinkedIn 端撤销，请前往 LinkedIn 设置 → 数据隐私 → 「",
       "revoke_hint_link": "已授权的服务",
-      "revoke_hint_suffix": "」并移除 RealtorBoss。"
+      "revoke_hint_suffix": "」并移除 RealtyBoss。"
     },
     "google_ads": {
       "title": "Google 广告",

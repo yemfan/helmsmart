@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { getAssistant } from "@/lib/realtorboss/team";
-import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
+import { getAssistant } from "@/lib/realtyboss/team";
+import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
 
 type PipelineDeal = {
   id: string;

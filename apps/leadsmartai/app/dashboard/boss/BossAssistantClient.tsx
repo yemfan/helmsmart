@@ -3,9 +3,9 @@
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AI_TEAM } from "@/lib/realtorboss/team";
-import { LeadProfileDrawer } from "@/components/realtorboss/LeadProfileDrawer";
-import { AssistantAvatar } from "@/components/realtorboss/AssistantAvatar";
+import { AI_TEAM } from "@/lib/realtyboss/team";
+import { LeadProfileDrawer } from "@/components/realtyboss/LeadProfileDrawer";
+import { AssistantAvatar } from "@/components/realtyboss/AssistantAvatar";
 
 /**
  * Boss Assistant — the conversational command center.
@@ -186,7 +186,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [loading, setLoading] = useState(true);
 
   const loadConversation = useCallback(async () => {
-    const res = await fetch("/api/dashboard/realtorboss/instructions?limit=8").then((r) => r.json()).catch(() => ({}));
+    const res = await fetch("/api/dashboard/realtyboss/instructions?limit=8").then((r) => r.json()).catch(() => ({}));
     setInstructions(((res?.instructions ?? []) as InstructionRow[]).slice().reverse());
     setTasks((res?.tasks ?? []) as TaskRow[]);
   }, []);
@@ -201,11 +201,11 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       fetch(`/api/dashboard/calendar/events?from=${todayStart}&to=${todayEnd}`).then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/leads?filter=hot&pageSize=5").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/transactions").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtorboss/recommendations").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtorboss/activities?limit=40").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtorboss/team").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/realtyboss/recommendations").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/realtyboss/activities?limit=40").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/realtyboss/team").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/briefings?limit=1").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtorboss/autopilot").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/realtyboss/autopilot").then((r) => r.json()).catch(() => ({})),
     ]);
 
     const m = summaryRes?.metrics;
@@ -263,7 +263,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       .filter((t) => t.status === "needs_input")
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
     if (pending) {
-      await fetch("/api/dashboard/realtorboss/instruction-tasks", {
+      await fetch("/api/dashboard/realtyboss/instruction-tasks", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: pending.id, action: "answer", answer: content }),
@@ -275,7 +275,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     // Optimistic instruction bubble so the conversation reacts instantly.
     const tempId = `temp_${Date.now()}`;
     setInstructions((prev) => [...prev, { id: tempId, content, status: "processing", created_at: new Date().toISOString() }]);
-    await fetch("/api/dashboard/realtorboss/instructions", {
+    await fetch("/api/dashboard/realtyboss/instructions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content }),
@@ -285,7 +285,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
   const resolveRecommendation = useCallback(async (id: string, status: "completed" | "dismissed") => {
     setRecommendations((prev) => prev.filter((r) => r.id !== id));
-    await fetch(`/api/dashboard/realtorboss/recommendations/${id}`, {
+    await fetch(`/api/dashboard/realtyboss/recommendations/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
@@ -294,7 +294,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
   const setGlobalAutopilot = useCallback(async (on: boolean) => {
     setAutopilot(on);
-    await fetch("/api/dashboard/realtorboss/autopilot", {
+    await fetch("/api/dashboard/realtyboss/autopilot", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ global: on }),
@@ -306,7 +306,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       const next = prev.filter((c) => !(c.assignee === assignee && c.channel === channel));
       return [...next, { assignee, channel, mode }];
     });
-    await fetch("/api/dashboard/realtorboss/autopilot", {
+    await fetch("/api/dashboard/realtyboss/autopilot", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ assignee, channel, mode }),
@@ -705,7 +705,7 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
     setBusy(action);
     setError(null);
     try {
-      const res = await fetch("/api/dashboard/realtorboss/instruction-tasks", {
+      const res = await fetch("/api/dashboard/realtyboss/instruction-tasks", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(action === "answer" ? { id: t.id, action, answer: answer.trim() } : { id: t.id, action }),

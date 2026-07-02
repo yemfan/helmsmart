@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { publishPost } from "@/lib/leads-gen/publish";
 import { dispatchMobilePublishFailurePush } from "@/lib/mobile/pushDispatch";
-import { logAssistantActivity } from "@/lib/realtorboss/activities";
+import { logAssistantActivity } from "@/lib/realtyboss/activities";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";

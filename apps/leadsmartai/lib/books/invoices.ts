@@ -2,7 +2,7 @@ import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { logAssistantActivity } from "@/lib/realtorboss/activities";
+import { logAssistantActivity } from "@/lib/realtyboss/activities";
 import { getReceptionistConfig } from "@/lib/voice-receptionist/settings";
 import { sendEmail } from "@/lib/email";
 import { computeTotals, lineAmount, formatMoney } from "./money";

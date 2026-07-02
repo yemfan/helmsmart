@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { CallButton } from "@/components/contacts/CallButton";
-import { LeadProfileDrawer } from "@/components/realtorboss/LeadProfileDrawer";
+import { LeadProfileDrawer } from "@/components/realtyboss/LeadProfileDrawer";
 import { CsvImportModal } from "@/components/crm/CsvImportModal";
 import { SendPostcardModal } from "@/components/postcards/SendPostcardModal";
 import { BulkSendPostcardModal } from "@/components/postcards/BulkSendPostcardModal";

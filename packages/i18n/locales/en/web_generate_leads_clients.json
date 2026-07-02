@@ -30,7 +30,7 @@
       "empty": "No Pages connected yet. Connect one to start publishing.",
       "revoke_hint_prefix": "Granted scopes are stored encrypted; disconnect any time. To fully revoke the OAuth grant from Facebook's side too, visit your Facebook account's ",
       "revoke_hint_link": "Apps and Websites",
-      "revoke_hint_suffix": " and remove RealtorBoss."
+      "revoke_hint_suffix": " and remove RealtyBoss."
     },
     "linkedin": {
       "title": "LinkedIn",
@@ -43,7 +43,7 @@
       "empty": "Not connected. Sign in with LinkedIn to enable posting.",
       "revoke_hint_prefix": "Posts go to your personal LinkedIn feed. Company Page posting needs LinkedIn's Marketing API (partner-program-gated) and isn't in scope yet. To revoke from LinkedIn's side, go to your LinkedIn Settings → Data privacy → ",
       "revoke_hint_link": "Permitted services",
-      "revoke_hint_suffix": " and remove RealtorBoss."
+      "revoke_hint_suffix": " and remove RealtyBoss."
     },
     "google_ads": {
       "title": "Google Ads",

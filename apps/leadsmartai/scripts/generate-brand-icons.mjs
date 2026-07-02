@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * Rasterizes the RealtorBoss brand SVGs into the PNG icon sizes the app
+ * Rasterizes the RealtyBoss brand SVGs into the PNG icon sizes the app
  * references (favicon, apple-touch, PWA, JSON-LD, OG fallbacks).
  *
- *   realtorboss-icon.svg  → navy app-icon tile (flattened on navy, no
+ *   realtyboss-icon.svg  → navy app-icon tile (flattened on navy, no
  *                           transparent corners → safe for apple-touch/PWA)
- *   realtorboss-mark.svg  → transparent mark (keeps alpha)
+ *   realtyboss-mark.svg  → transparent mark (keeps alpha)
  *
  * Run after editing either SVG:  node scripts/generate-brand-icons.mjs
  */
@@ -16,13 +16,13 @@ import sharp from "sharp";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.resolve(here, "..");
-const brand = path.join(appRoot, "public", "brand", "realtorboss");
+const brand = path.join(appRoot, "public", "brand", "realtyboss");
 // Sibling Expo app — keep its launcher icons in sync with the web brand.
 const mobileAssets = path.resolve(appRoot, "..", "leadsmart-mobile", "assets");
 
-const iconSvg = readFileSync(path.join(brand, "realtorboss-icon.svg"));
-const markSvg = readFileSync(path.join(brand, "realtorboss-mark.svg"));
-const glyphSvg = readFileSync(path.join(brand, "realtorboss-glyph.svg"));
+const iconSvg = readFileSync(path.join(brand, "realtyboss-icon.svg"));
+const markSvg = readFileSync(path.join(brand, "realtyboss-mark.svg"));
+const glyphSvg = readFileSync(path.join(brand, "realtyboss-glyph.svg"));
 
 // Flatten color = the light-blue tile (#CFE5FA), so rounded-corner transparency
 // fills with the tile color instead of leaving navy/black corners.
@@ -40,13 +40,13 @@ async function render(svg, size, out, { flatten = false } = {}) {
 
 const tasks = [
   // App-icon tile (solid navy, no transparent corners)
-  [iconSvg, 64, path.join(brand, "realtorboss-icon-64.png"), { flatten: true }],
-  [iconSvg, 180, path.join(brand, "realtorboss-icon-180.png"), { flatten: true }],
-  [iconSvg, 512, path.join(brand, "realtorboss-icon-512.png"), { flatten: true }],
+  [iconSvg, 64, path.join(brand, "realtyboss-icon-64.png"), { flatten: true }],
+  [iconSvg, 180, path.join(brand, "realtyboss-icon-180.png"), { flatten: true }],
+  [iconSvg, 512, path.join(brand, "realtyboss-icon-512.png"), { flatten: true }],
   [iconSvg, 256, path.join(appRoot, "app", "icon.png"), { flatten: true }],
   [iconSvg, 180, path.join(appRoot, "app", "apple-icon.png"), { flatten: true }],
   // Standalone mark (transparent)
-  [markSvg, 512, path.join(brand, "realtorboss-mark-512.png")],
+  [markSvg, 512, path.join(brand, "realtyboss-mark-512.png")],
   // Expo mobile app icon (iOS/Android base) — opaque 1024 tile.
   [iconSvg, 1024, path.join(mobileAssets, "icon.png"), { flatten: true }],
 ];

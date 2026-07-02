@@ -46,7 +46,7 @@ function l(icon: ReactNode): ReactNode {
 }
 
 /**
- * RealtorBoss — agent portal sidebar.
+ * RealtyBoss — agent portal sidebar.
  *
  * Structure per the theme constitution's preferred navigation (and the
  * user's spec):
@@ -64,7 +64,7 @@ function l(icon: ReactNode): ReactNode {
  */
 const navConfig = {
   id: "leadsmart",
-  sidebarTitle: "RealtorBoss",
+  sidebarTitle: "RealtyBoss",
   sections: [
     /* ── The Boss's day ── */
     {

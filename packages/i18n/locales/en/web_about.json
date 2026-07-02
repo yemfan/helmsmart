@@ -1,8 +1,8 @@
 {
   "hero": {
-    "eyebrow": "About RealtorBoss",
+    "eyebrow": "About RealtyBoss",
     "h1": "The AI Growth Engine for Real Estate Professionals",
-    "subtitle": "RealtorBoss helps real estate agents and financing professionals capture, qualify, and convert leads with AI — so they can spend less time chasing and more time closing.",
+    "subtitle": "RealtyBoss helps real estate agents and financing professionals capture, qualify, and convert leads with AI — so they can spend less time chasing and more time closing.",
     "cta_primary": "Get Started",
     "cta_secondary": "See Demo"
   },
@@ -10,12 +10,12 @@
     "headline_top": "We don't just generate leads.",
     "headline_bottom": "We turn them into closed deals.",
     "p1": "In today's market, getting traffic is no longer the hardest part. The real challenge is converting that traffic into real conversations, qualified opportunities, and closed transactions.",
-    "p2": "RealtorBoss was built to solve that problem. We combine intelligent automation, behavioral insights, and AI-powered follow-up into one system designed specifically for real estate.",
-    "p3": "Instead of simply storing contacts in a CRM, RealtorBoss helps agents respond faster, prioritize smarter, and move every lead closer to a deal."
+    "p2": "RealtyBoss was built to solve that problem. We combine intelligent automation, behavioral insights, and AI-powered follow-up into one system designed specifically for real estate.",
+    "p3": "Instead of simply storing contacts in a CRM, RealtyBoss helps agents respond faster, prioritize smarter, and move every lead closer to a deal."
   },
   "differentiator": {
     "h2": "What makes us different",
-    "subtitle": "Traditional tools help you manage contacts. RealtorBoss helps you create outcomes.",
+    "subtitle": "Traditional tools help you manage contacts. RealtyBoss helps you create outcomes.",
     "cards": {
       "ai_qualification": {
         "eyebrow": "AI Qualification",
@@ -51,7 +51,7 @@
   },
   "solution": {
     "eyebrow": "The solution",
-    "h2": "RealtorBoss closes the gaps with intelligent automation.",
+    "h2": "RealtyBoss closes the gaps with intelligent automation.",
     "bullets": {
       "capture": "Capture high-intent leads from inbound traffic",
       "score": "Score and qualify opportunities automatically",
@@ -73,7 +73,7 @@
   },
   "audience": {
     "h2": "Built for modern real estate teams",
-    "subtitle": "RealtorBoss is designed for professionals who need speed, visibility, and a more reliable way to convert opportunities into revenue.",
+    "subtitle": "RealtyBoss is designed for professionals who need speed, visibility, and a more reliable way to convert opportunities into revenue.",
     "items": {
       "agents": "Real estate agents",
       "mortgage": "Mortgage brokers",
@@ -85,7 +85,7 @@
   },
   "cta": {
     "h2": "Ready to turn more leads into closings?",
-    "subtitle": "Join professionals who use RealtorBoss to respond faster, qualify smarter, and keep every deal moving.",
+    "subtitle": "Join professionals who use RealtyBoss to respond faster, qualify smarter, and keep every deal moving.",
     "primary": "Get Started",
     "secondary": "View pricing",
     "back_home": "← Back to home"

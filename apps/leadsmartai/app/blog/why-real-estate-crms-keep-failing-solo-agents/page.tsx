@@ -174,7 +174,7 @@ export default function CrmProblemsPost() {
       name: "RealtyBoss",
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/brand/realtorboss/realtorboss-icon-512.png`,
+        url: `${SITE_URL}/brand/realtyboss/realtyboss-icon-512.png`,
       },
     },
   };

@@ -31,6 +31,24 @@ const nextConfig = {
     staticGenerationMinPagesPerWorker: 1,
     webpackMemoryOptimizations: true,
   },
+  /**
+   * Legacy RealtorBoss → RealtyBoss compat (PR-1 rename, HANDOFF_BOSS_V2).
+   * Shipped mobile builds still call /api/dashboard/realtorboss/* and old
+   * kiosk PWA installs / emailed JSON-LD reference /brand/realtorboss/*.
+   * Rewrites (not redirects) so POSTs and installed manifests keep working.
+   */
+  async rewrites() {
+    return [
+      {
+        source: "/api/dashboard/realtorboss/:path*",
+        destination: "/api/dashboard/realtyboss/:path*",
+      },
+      {
+        source: "/brand/realtorboss/realtorboss-:file",
+        destination: "/brand/realtyboss/realtyboss-:file",
+      },
+    ];
+  },
   /** Short nav-style paths → `/dashboard/*` (app lives under dashboard) */
   async redirects() {
     const toDashboard = [

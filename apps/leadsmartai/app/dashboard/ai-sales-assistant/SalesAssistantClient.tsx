@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Mail, MessageSquare, Phone, PhoneOutgoing, X } from "lucide-react";
-import { getAssistant } from "@/lib/realtorboss/team";
-import { LeadProfileDrawer } from "@/components/realtorboss/LeadProfileDrawer";
-import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
-import { AssistantCallSettings } from "@/components/realtorboss/AssistantCallSettings";
+import { getAssistant } from "@/lib/realtyboss/team";
+import { LeadProfileDrawer } from "@/components/realtyboss/LeadProfileDrawer";
+import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
+import { AssistantCallSettings } from "@/components/realtyboss/AssistantCallSettings";
 import SalesOutreachComposer from "@/components/dashboard/SalesOutreachComposer";
 import OutreachScheduledStrip from "@/components/dashboard/OutreachScheduledStrip";
 import OutboundCallPanel from "@/components/dashboard/OutboundCallPanel";

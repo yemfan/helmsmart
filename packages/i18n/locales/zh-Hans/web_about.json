@@ -1,8 +1,8 @@
 {
   "hero": {
-    "eyebrow": "关于 RealtorBoss",
+    "eyebrow": "关于 RealtyBoss",
     "h1": "房产专业人士的 AI 成长引擎",
-    "subtitle": "RealtorBoss 帮助房产经纪人和贷款专业人士通过 AI 捕获、筛选并转化客户——让您少花时间追逐线索，多花时间成交。",
+    "subtitle": "RealtyBoss 帮助房产经纪人和贷款专业人士通过 AI 捕获、筛选并转化客户——让您少花时间追逐线索，多花时间成交。",
     "cta_primary": "立即开始",
     "cta_secondary": "查看演示"
   },
@@ -10,12 +10,12 @@
     "headline_top": "我们不只是生成客户。",
     "headline_bottom": "我们把客户变成成交订单。",
     "p1": "在当今市场，获取流量已不再是最难的部分。真正的挑战是把流量转化为真实的对话、合格的机会和成交的交易。",
-    "p2": "RealtorBoss 正是为解决这个问题而生。我们将智能自动化、行为洞察和 AI 驱动的跟进合而为一，专为房产行业打造。",
-    "p3": "RealtorBoss 不仅仅是把联系人存进 CRM——而是帮助经纪人响应更快、优先级更精准、让每一位客户离成交更近一步。"
+    "p2": "RealtyBoss 正是为解决这个问题而生。我们将智能自动化、行为洞察和 AI 驱动的跟进合而为一，专为房产行业打造。",
+    "p3": "RealtyBoss 不仅仅是把联系人存进 CRM——而是帮助经纪人响应更快、优先级更精准、让每一位客户离成交更近一步。"
   },
   "differentiator": {
     "h2": "我们的与众不同",
-    "subtitle": "传统工具帮您管理联系人。RealtorBoss 帮您创造成果。",
+    "subtitle": "传统工具帮您管理联系人。RealtyBoss 帮您创造成果。",
     "cards": {
       "ai_qualification": {
         "eyebrow": "AI 筛选",
@@ -51,7 +51,7 @@
   },
   "solution": {
     "eyebrow": "解决方案",
-    "h2": "RealtorBoss 用智能自动化补齐这些缝隙。",
+    "h2": "RealtyBoss 用智能自动化补齐这些缝隙。",
     "bullets": {
       "capture": "从入站流量中捕获高意向客户",
       "score": "自动为机会评分并筛选",
@@ -73,7 +73,7 @@
   },
   "audience": {
     "h2": "为现代房产团队而打造",
-    "subtitle": "RealtorBoss 专为需要速度、可视化和更可靠转化方式的专业人士设计。",
+    "subtitle": "RealtyBoss 专为需要速度、可视化和更可靠转化方式的专业人士设计。",
     "items": {
       "agents": "房产经纪人",
       "mortgage": "抵押贷款经纪人",
@@ -85,7 +85,7 @@
   },
   "cta": {
     "h2": "准备好把更多客户转化为成交订单了吗？",
-    "subtitle": "加入使用 RealtorBoss 响应更快、筛选更智能、推动每笔交易前进的专业人士。",
+    "subtitle": "加入使用 RealtyBoss 响应更快、筛选更智能、推动每笔交易前进的专业人士。",
     "primary": "立即开始",
     "secondary": "查看套餐",
     "back_home": "← 返回首页"

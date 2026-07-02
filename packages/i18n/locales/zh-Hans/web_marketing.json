@@ -1,26 +1,26 @@
 {
   "landing": {
-    "title": "RealtorBoss — 您的 AI 房产团队，助您成交更多",
-    "description": "RealtorBoss 是一支 AI 驱动的房产团队：接听每一通来电、跟进每一位客户、协调每一笔交易 — 无需增加人手即可成交更多。Pro 版每月 49 美元起。",
+    "title": "RealtyBoss — 您的 AI 房产团队，助您成交更多",
+    "description": "RealtyBoss 是一支 AI 驱动的房产团队：接听每一通来电、跟进每一位客户、协调每一笔交易 — 无需增加人手即可成交更多。Pro 版每月 49 美元起。",
     "og": {
-      "title": "RealtorBoss — 雇一支 AI 房产团队，成交更多",
+      "title": "RealtyBoss — 雇一支 AI 房产团队，成交更多",
       "description": "您的 AI 房产团队 — 从第一通电话到成功过户。AI 前台、AI 销售助理、AI 交易助理，全部听您指挥。14 天免费试用，可随时取消。"
     }
   },
   "about": {
-    "title": "关于 RealtorBoss — 您的 AI 房产团队",
-    "description": "RealtorBoss（前身为 LeadSmart AI）为房产经纪人提供一支 AI 团队 — AI 前台、AI 销售助理和 AI 交易助理：接听每一通来电、跟进每一位客户、协调每一笔交易。",
+    "title": "关于 RealtyBoss — 您的 AI 房产团队",
+    "description": "RealtyBoss（前身为 LeadSmart AI）为房产经纪人提供一支 AI 团队 — AI 前台、AI 销售助理和 AI 交易助理：接听每一通来电、跟进每一位客户、协调每一笔交易。",
     "og": {
-      "title": "关于 RealtorBoss",
+      "title": "关于 RealtyBoss",
       "description": "您的 AI 房产团队 — 接听每一通来电、跟进每一位客户、协调每一笔交易，助您成交更多。"
     },
     "twitter": {
-      "title": "关于 RealtorBoss",
+      "title": "关于 RealtyBoss",
       "description": "您的 AI 房产团队 — 从第一通电话到成功过户。"
     }
   },
   "pricing": {
-    "title": "套餐价格 | RealtorBoss",
+    "title": "套餐价格 | RealtyBoss",
     "description": "免费版、Pro 版（49 美元）、Elite 版（99 美元）和 Team 版（199 美元）— AI 房产团队功能全面对比：AI 前台、自动跟进与交易协调。"
   }
 }
