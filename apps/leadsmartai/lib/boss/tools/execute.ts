@@ -186,7 +186,10 @@ async function gateAndRun(
       }
     }
 
-    const auto = await deps.resolveAutopilot(ctx.agentId, tool.assignee, channel);
+    const auto =
+      ctx.approvedByRealtor === true
+        ? true // explicit human approval of this step
+        : await deps.resolveAutopilot(ctx.agentId, tool.assignee, channel);
 
     if (!auto) {
       // Ask mode: the send path is unreachable by construction.
