@@ -14,6 +14,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "boss:evals": "cross-env BOSS_EVAL_LIVE=1 vitest run lib/boss/evals",
     "test:integration": "vitest run && tsx scripts/smoke-contact-intake.ts && tsx scripts/integration-contact-intake-supabase.ts",
     "test:integration:supabase": "tsx scripts/integration-contact-intake-supabase.ts",
     "smoke:lead-score": "tsx scripts/smoke-lead-score.ts",

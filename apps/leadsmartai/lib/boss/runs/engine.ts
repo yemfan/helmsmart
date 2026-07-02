@@ -8,7 +8,7 @@ import {
   type ExecuteDeps,
   type IdempotencyStore,
 } from "../tools/execute";
-import { newRunState, type ToolContext, type ToolOutcome } from "../tools/types";
+import { newRunState, type BossTool, type ToolContext, type ToolOutcome } from "../tools/types";
 import type { BossRunRow, RunStore } from "./store";
 
 /**
@@ -50,6 +50,11 @@ export type EngineDeps = {
   model: ModelClient;
   buildSystemPrompt(run: BossRunRow): Promise<string>;
   executeDeps?: Omit<ExecuteDeps, "idempotency">;
+  /**
+   * Tool set override (eval harness): real model + real schemas, synthetic
+   * executors. Production always uses the registry.
+   */
+  getTools?: () => BossTool<never>[];
   /** Soft per-invocation deadline; the loop yields when it's this close. */
   softDeadlineMs?: number;
   now?: () => number;
@@ -68,12 +73,14 @@ const VERIFY_PROMPT =
   "about the command or verification. Lead with what was DONE (with links), then what is " +
   "DRAFTED/awaiting approval, then anything that NEEDS the realtor. Under 200 words, plain text.";
 
-export function bossToolsForModel(): Array<{
+export function bossToolsForModel(
+  toolSet: BossTool<never>[] = listBossTools() as unknown as BossTool<never>[],
+): Array<{
   name: string;
   description: string;
   input_schema: unknown;
 }> {
-  return listBossTools().map((t) => {
+  return toolSet.map((t) => {
     const schema = zodToJsonSchema(t.inputSchema, { $refStrategy: "none" }) as Record<
       string,
       unknown
@@ -106,7 +113,8 @@ export async function driveRun(runId: string, deps: EngineDeps): Promise<DriveRe
     messages.push({ role: "user", content: run.objective });
   }
 
-  const tools = bossToolsForModel();
+  const toolSet = (deps.getTools?.() ?? listBossTools()) as BossTool<never>[];
+  const tools = bossToolsForModel(toolSet);
   const system = await deps.buildSystemPrompt(run);
   let toolCalls = run.tool_calls;
   let inputTokens = run.input_tokens;
@@ -203,7 +211,7 @@ export async function driveRun(runId: string, deps: EngineDeps): Promise<DriveRe
       } else {
         const stepIndex = toolCalls;
         toolCalls += 1;
-        const tool = listBossTools().find((t) => t.name === tu.name);
+        const tool = toolSet.find((t) => t.name === tu.name);
         const { step, alreadyExisted } = await store.claimStep({
           runId,
           stepIndex,
@@ -225,6 +233,10 @@ export async function driveRun(runId: string, deps: EngineDeps): Promise<DriveRe
           const execDeps: ExecuteDeps = {
             ...(deps.executeDeps ?? defaultExecuteDeps()),
             idempotency: noopIdempotency, // durability lives in boss_run_steps
+            // Resolve from the same tool set the model was offered, so an
+            // injected eval/test tool set stays coherent end to end.
+            getTool: (name) =>
+              (toolSet.find((t) => t.name === name) as never) ?? null,
           };
           outcome = await executeTool(ctx, tu.name, tu.input, execDeps);
           await store.finishStep(runId, stepIndex, {

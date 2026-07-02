@@ -90,7 +90,20 @@ export async function POST(req: NextRequest) {
         trigger: "command",
         instructionId,
       });
-      if ("runId" in started) runId = started.runId;
+      if ("runId" in started) {
+        runId = started.runId;
+      } else if (started.code) {
+        // Quota/entitlement gate — surface the standard 402 the AI-action
+        // UI already understands; do NOT fall back to the free legacy path.
+        await supabaseAdmin
+          .from("boss_instructions")
+          .update({ status: "failed", error: started.error, updated_at: new Date().toISOString() })
+          .eq("id", instructionId);
+        return NextResponse.json(
+          { ok: false, error: started.error, code: started.code },
+          { status: 402 },
+        );
+      }
     }
     after(async () => {
       try {
