@@ -213,7 +213,7 @@ begin
     (t_birch, 'closing', 'Schedule final walkthrough', null, (now() + interval '1 day')::date, null, 3, 'final_walkthrough', 'seed');
 
   -- ── Text-back message bodies (linked from call_logs below) ───────
-  insert into public.message_logs (id, lead_id, type, status, content, created_at) values
+  insert into public.message_logs (id, contact_id, type, status, content, created_at) values
     ('0bde0003-0000-4000-8000-000000000001', 'demo-caller-3105550466', 'sms', 'sent',
      'Hey there — Michael here. Sorry I missed your call. What''s the best way I can help? Happy to text or set up a quick call back.', now() - interval '7 hours'),
     ('0bde0003-0000-4000-8000-000000000002', 'demo-caller-8185550771', 'sms', 'sent',

@@ -26,7 +26,9 @@
  * Allowlist: a few legacy column names still need the `lead_id`
  * literal because the corresponding DB columns kept their
  * pre-rename names (e.g. lead_calls.lead_id, lead_tasks.lead_id,
- * lead_events.lead_id, message_logs.lead_id, contacts.merged_into_lead_id).
+ * lead_events.lead_id, contacts.merged_into_lead_id).
+ * (message_logs.lead_id was renamed to contact_id by the
+ * 20260702221347_drip_rail_uuid_contacts migration.)
  * Files in those allowlists below are skipped by the guard.
  */
 
@@ -79,7 +81,6 @@ const LEAD_ID_TABLE_ALLOWLIST = [
   "lead_events",
   "lead_followups",
   "lead_sequences",
-  "message_logs",
 ];
 
 const FROM_LEADS_RE = /\.from\(\s*['"]leads['"]\s*\)/;

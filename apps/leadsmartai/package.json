@@ -21,6 +21,7 @@
     "smoke:client-portal": "tsx scripts/smoke-client-portal.ts",
     "smoke:growth-engine": "tsx scripts/smoke-growth-engine.ts",
     "smoke:lead-nurturing": "tsx scripts/smoke-lead-nurturing.ts",
+    "smoke:drip-enrollment": "tsx scripts/smoke-drip-enrollment.ts",
     "smoke:lead-marketplace": "tsx scripts/smoke-lead-marketplace.ts",
     "smoke:twilio-sms": "tsx scripts/smoke-twilio-sms.ts",
     "smoke:ai-sms-responder": "tsx scripts/smoke-ai-sms-responder.ts",
