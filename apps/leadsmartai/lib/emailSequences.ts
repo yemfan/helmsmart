@@ -2,6 +2,11 @@ import { supabaseServer } from "@/lib/supabaseServer";
 
 type LeadType = "seller" | "buyer";
 
+// contacts.id is a uuid since the contacts consolidation. Legacy
+// lead_sequences rows may still hold numeric ids as text, but new
+// enrollments must always key off a uuid contact id.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function inferLeadType(input: any): LeadType {
   const raw = String(input?.lead_type ?? "").toLowerCase();
   if (raw === "buyer" || raw === "refinance") return "buyer";
@@ -49,11 +54,11 @@ async function ensureTemplates(leadType: LeadType) {
   return { emailTemplateId, smsTemplateId };
 }
 
-async function upsertLeadSequence(leadIdNum: number, steps: typeof STEPS, leadType: LeadType, nextSendAt: Date) {
+async function upsertLeadSequence(contactId: string, steps: typeof STEPS, leadType: LeadType, nextSendAt: Date) {
   const { data: existingSeq, error: seqErr } = await supabaseServer
     .from("lead_sequences")
     .select("id")
-    .eq("lead_id", leadIdNum)
+    .eq("lead_id", contactId)
     .maybeSingle();
 
   if (seqErr && (seqErr as any).code !== "PGRST116") throw seqErr;
@@ -75,7 +80,7 @@ async function upsertLeadSequence(leadIdNum: number, steps: typeof STEPS, leadTy
     const { data: insSeq, error: insSeqErr } = await supabaseServer
       .from("lead_sequences")
       .insert({
-        lead_id: leadIdNum,
+        lead_id: contactId,
         status: "active",
         current_step: 0,
         next_send_at: nextSendAt.toISOString(),
@@ -106,51 +111,45 @@ async function upsertLeadSequence(leadIdNum: number, steps: typeof STEPS, leadTy
       automation_disabled: true,
       next_contact_at: nextSendAt.toISOString(),
     } as any)
-    .eq("id", leadIdNum);
+    .eq("id", contactId);
 }
 
-export async function scheduleEmailSequenceForLead(leadId: string) {
-  const leadIdNum = Number(leadId);
-  if (!Number.isFinite(leadIdNum)) return;
+async function scheduleSequence(leadId: string, steps: typeof STEPS) {
+  const contactId = String(leadId ?? "").trim();
+  if (!UUID_RE.test(contactId)) return;
 
   const now = new Date();
 
   const { data: lead, error: leadErr } = await supabaseServer
     .from("contacts")
     .select("id,lead_type,source,stage,created_at")
-    .eq("id", leadIdNum)
+    .eq("id", contactId)
     .maybeSingle();
   if (leadErr) throw leadErr;
   if (!lead) return;
 
   const leadType = inferLeadType(lead);
-  const firstStep = STEPS[0];
   const nextSendAt = new Date(now);
-  nextSendAt.setDate(now.getDate() + firstStep.dayOffset);
+  nextSendAt.setDate(now.getDate() + steps[0].dayOffset);
 
-  await upsertLeadSequence(leadIdNum, STEPS, leadType, nextSendAt);
+  await upsertLeadSequence(contactId, steps, leadType, nextSendAt);
+}
+
+export async function scheduleEmailSequenceForLead(leadId: string) {
+  // Enrollment is best-effort: it must never break the lead-capture
+  // endpoints, several of which call this without their own try/catch.
+  try {
+    await scheduleSequence(leadId, STEPS);
+  } catch (e) {
+    console.error("scheduleEmailSequenceForLead failed", { leadId }, e);
+  }
 }
 
 // Used when we already send an email immediately (so we don't duplicate "day 0").
 export async function scheduleEmailSequenceForLeadSkipDay0(leadId: string) {
-  const leadIdNum = Number(leadId);
-  if (!Number.isFinite(leadIdNum)) return;
-
-  const now = new Date();
-
-  const { data: lead, error: leadErr } = await supabaseServer
-    .from("contacts")
-    .select("id,lead_type,source,stage,created_at")
-    .eq("id", leadIdNum)
-    .maybeSingle();
-  if (leadErr) throw leadErr;
-  if (!lead) return;
-
-  const leadType = inferLeadType(lead);
-  const firstStep = STEPS_SKIP_DAY0[0];
-  const nextSendAt = new Date(now);
-  nextSendAt.setDate(now.getDate() + firstStep.dayOffset);
-
-  await upsertLeadSequence(leadIdNum, STEPS_SKIP_DAY0, leadType, nextSendAt);
+  try {
+    await scheduleSequence(leadId, STEPS_SKIP_DAY0);
+  } catch (e) {
+    console.error("scheduleEmailSequenceForLeadSkipDay0 failed", { leadId }, e);
+  }
 }
-

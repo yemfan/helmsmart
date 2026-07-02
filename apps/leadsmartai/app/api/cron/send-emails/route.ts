@@ -5,6 +5,11 @@ import { sendSMS } from "@/lib/twilioSms";
 
 export const runtime = "nodejs";
 
+// contacts.id is a uuid since the contacts consolidation. lead_sequences.lead_id
+// is text and legacy rows may hold pre-consolidation numeric ids that no longer
+// resolve to any contact.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function addDays(base: Date, days: number) {
   const d = new Date(base.toISOString());
   d.setUTCDate(d.getUTCDate() + days);
@@ -60,14 +65,21 @@ export async function GET(req: Request) {
 
     for (const seq of (sequences ?? []) as any[]) {
       const sequenceId = String(seq.id);
-      const leadIdNum = Number(seq.lead_id);
-      if (!Number.isFinite(leadIdNum)) continue;
+      const leadId = String(seq.lead_id ?? "").trim();
+      if (!UUID_RE.test(leadId)) {
+        // Pre-consolidation sequence keyed by a dropped bigint lead id (or
+        // junk). It can never resolve to a contact again; retire it so it
+        // stops being re-selected every run.
+        await supabaseServer.from("lead_sequences").update({ status: "completed" }).eq("id", sequenceId);
+        skipped++;
+        continue;
+      }
 
       // Stop automation if we've already recorded a reply for this lead.
       const { data: repliedRows } = await supabaseServer
         .from("message_logs")
         .select("id")
-        .eq("contact_id", leadIdNum)
+        .eq("contact_id", leadId)
         .eq("status", "replied")
         .limit(1);
 
@@ -76,7 +88,7 @@ export async function GET(req: Request) {
         await supabaseServer
           .from("contacts")
           .update({ automation_disabled: true } as any)
-          .eq("id", leadIdNum);
+          .eq("id", leadId);
         continue;
       }
 
@@ -84,7 +96,7 @@ export async function GET(req: Request) {
       const { count } = await supabaseServer
         .from("message_logs")
         .select("id", { count: "exact", head: true } as any)
-        .eq("contact_id", leadIdNum)
+        .eq("contact_id", leadId)
         .gte("created_at", new Date(now.getTime() - 60 * 60 * 1000).toISOString());
       const sentLastHour = Number(count ?? 0);
       if (sentLastHour >= sendingLimitPerHour) {
@@ -101,7 +113,7 @@ export async function GET(req: Request) {
         .select(
           "id,name,email,phone,phone_number,sms_opt_in,agent_id,property_address,lead_type,source,created_at,report_id"
         )
-        .eq("id", leadIdNum)
+        .eq("id", leadId)
         .maybeSingle();
       if (leadErr) throw leadErr;
       if (!lead) continue;
@@ -127,7 +139,7 @@ export async function GET(req: Request) {
         await supabaseServer
           .from("contacts")
           .update({ automation_disabled: false } as any)
-          .eq("id", leadIdNum);
+          .eq("id", leadId);
         continue;
       }
 
@@ -201,7 +213,7 @@ export async function GET(req: Request) {
           const { data: logRow, error: logErr } = await supabaseServer
             .from("message_logs")
             .insert({
-              contact_id: leadIdNum,
+              contact_id: leadId,
               type: "email",
               status: "sent",
             })
@@ -260,14 +272,14 @@ export async function GET(req: Request) {
             const { count } = await supabaseServer
               .from("message_logs")
               .select("id", { count: "exact", head: true } as any)
-              .eq("contact_id", leadIdNum)
+              .eq("contact_id", leadId)
               .eq("type", "sms")
               .in("status", ["sent", "received", "replied"])
               .gte("created_at", new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString());
 
             const sentRecently = Number(count ?? 0);
             if (sentRecently < 1) {
-              await sendSMS(toE164, rendered, leadIdNum);
+              await sendSMS(toE164, rendered, leadId);
             }
             // If frequency limit hit, we skip sending but still advance the sequence.
           }
@@ -278,7 +290,7 @@ export async function GET(req: Request) {
           await supabaseServer
             .from("contacts")
             .update({ last_contacted_at: new Date().toISOString() } as Record<string, unknown>)
-            .eq("id", leadIdNum);
+            .eq("id", leadId);
         } catch { /* best-effort */ }
 
         // Mark the step as sent and advance.
@@ -310,7 +322,7 @@ export async function GET(req: Request) {
           await supabaseServer
             .from("contacts")
             .update({ next_contact_at: nextAt.toISOString() } as any)
-            .eq("id", leadIdNum);
+            .eq("id", leadId);
         } else {
           await supabaseServer
             .from("lead_sequences")
@@ -320,7 +332,7 @@ export async function GET(req: Request) {
           await supabaseServer
             .from("contacts")
             .update({ automation_disabled: false, next_contact_at: nowIso } as any)
-            .eq("id", leadIdNum);
+            .eq("id", leadId);
         }
 
         sent++;
