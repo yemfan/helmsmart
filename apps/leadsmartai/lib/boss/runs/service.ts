@@ -12,6 +12,7 @@ import { getBossTool } from "../tools/registry";
 import { newRunState, type ToolContext } from "../tools/types";
 import { driveRun, type EngineDeps, type ModelClient, type ModelResponse } from "./engine";
 import { SupabaseRunStore, type BossRunRow, type BossRunStatus } from "./store";
+import { gateAndChargeRun, recordRunCost, alertOnFailureSpike } from "./observability";
 
 /**
  * Boss v2 run lifecycle glue: feature flag, run creation, chunked
@@ -126,7 +127,19 @@ export async function startBossRun(args: {
   trigger?: "command" | "overnight" | "retry";
   instructionId?: string | null;
   maxToolCalls?: number;
-}): Promise<{ runId: string } | { error: string }> {
+}): Promise<{ runId: string } | { error: string; code?: string }> {
+  // Monthly quota: each run consumes one ai_action (bonus wallet first),
+  // same rails as every other AI feature (HANDOFF PR-6).
+  const gate = await gateAndChargeRun(args.agentId);
+  if (!gate.allowed) {
+    return {
+      error:
+        gate.code === "ai_usage_limit_reached"
+          ? "Monthly AI-action quota reached — upgrade for more Boss runs."
+          : "No active plan covers Boss runs.",
+      code: gate.code,
+    };
+  }
   const { data, error } = await supabaseAdmin
     .from("boss_runs")
     .insert({
@@ -287,6 +300,10 @@ async function onTerminal(runId: string, status: BossRunStatus): Promise<void> {
   try {
     const run = await store.loadRun(runId);
     if (!run) return;
+
+    // Cost + failure telemetry (HANDOFF PR-6).
+    await recordRunCost(run);
+    if (status === "failed") await alertOnFailureSpike(run.agent_id);
 
     // Overnight runs feed Top Priorities: one card per parked approval,
     // additive over the deterministic CRM-signal sync (HANDOFF PR-5).
