@@ -13,6 +13,22 @@ type ThreadMessage = {
   twilio_status?: string | null;
 };
 
+/**
+ * True when two thread snapshots are equivalent for render purposes — same
+ * rows in the same order with the same delivery status. Lets the background
+ * poll skip a state write when nothing changed, so it never re-triggers the
+ * scroll-to-bottom effect and yanks the agent's scroll position.
+ */
+function sameThread(a: ThreadMessage[], b: ThreadMessage[]) {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].id !== b[i].id || a[i].twilio_status !== b[i].twilio_status) {
+      return false;
+    }
+  }
+  return true;
+}
+
 type ContactOption = {
   id: string;
   name: string | null;
@@ -361,28 +377,67 @@ export function AiChatPanel() {
   );
 
   const loadThread = useCallback(
-    async (tabId: string, contactId: string) => {
-      updateTab(tabId, { threadLoading: true });
+    async (tabId: string, contactId: string, opts?: { silent?: boolean }) => {
+      const silent = opts?.silent ?? false;
+      if (!silent) updateTab(tabId, { threadLoading: true });
       try {
         const res = await fetch(
           `/api/dashboard/sms/messages?contactId=${encodeURIComponent(contactId)}`,
         );
         const body = await res.json();
         if (body.ok) {
-          updateTab(tabId, {
-            thread: body.messages ?? [],
-            autoPilot: Boolean(body.autoPilot),
-            threadLoading: false,
-          });
-        } else {
+          const nextThread: ThreadMessage[] = body.messages ?? [];
+          const nextAutoPilot = Boolean(body.autoPilot);
+          if (silent) {
+            // Background poll: only touch state when the thread actually
+            // changed, otherwise the scroll-to-bottom effect fires every
+            // tick and fights the agent scrolling back through history.
+            setContactTabs((prev) =>
+              prev.map((t) =>
+                t.tabId === tabId &&
+                (!sameThread(t.thread, nextThread) || t.autoPilot !== nextAutoPilot)
+                  ? { ...t, thread: nextThread, autoPilot: nextAutoPilot }
+                  : t,
+              ),
+            );
+          } else {
+            updateTab(tabId, {
+              thread: nextThread,
+              autoPilot: nextAutoPilot,
+              threadLoading: false,
+            });
+          }
+        } else if (!silent) {
           updateTab(tabId, { threadLoading: false, errorMessage: body.error ?? "Could not load thread." });
         }
       } catch {
-        updateTab(tabId, { threadLoading: false, errorMessage: "Network error loading thread." });
+        // Silent polls swallow transient network errors — the visible
+        // thread stays as-is rather than flashing an error every 15s.
+        if (!silent) {
+          updateTab(tabId, { threadLoading: false, errorMessage: "Network error loading thread." });
+        }
       }
     },
     [updateTab],
   );
+
+  // Poll the focused contact tab's SMS thread so inbound replies surface on
+  // their own. The panel otherwise refreshes only on contact-pick and just
+  // after sending, so a reply that lands minutes later never appears until
+  // the tab is reopened. Silent (no loading flicker); paused while the panel
+  // is closed/minimized or the browser tab is hidden.
+  const activeContactId =
+    contactTabs.find((t) => t.tabId === activeTabId)?.contact?.id ?? null;
+  useEffect(() => {
+    if (!open || minimized || !activeContactId) return;
+    const tabId = activeTabId;
+    const contactId = activeContactId;
+    const id = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      void loadThread(tabId, contactId, { silent: true });
+    }, 15000);
+    return () => clearInterval(id);
+  }, [open, minimized, activeTabId, activeContactId, loadThread]);
 
   const onPickContact = useCallback(
     async (tabId: string, contact: ContactOption) => {
