@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { processPendingInstructions } from "@/lib/realtorboss/instructions";
+import { processPendingInstructions } from "@/lib/realtyboss/instructions";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -7,7 +7,7 @@ export const maxDuration = 120;
 /**
  * Every 5 minutes — the Boss Assistant reads pending instructions
  * from the Realtor, turns each into a routed task list (AI assistant
- * or Realtor review). See lib/realtorboss/instructions.ts.
+ * or Realtor review). See lib/realtyboss/instructions.ts.
  *
  * Auth: Vercel's x-vercel-cron-signature OR Bearer/query CRON_SECRET.
  * Manual: curl "$URL/api/cron/boss-instructions?secret=$CRON_SECRET"

@@ -113,7 +113,7 @@ export async function executeActivePlans(): Promise<ExecutionResult> {
         // RealtyBoss activity feed — running plans is the Marketing
         // Assistant's work (fire-and-forget, never fails the step).
         void (async () => {
-          const { logAssistantActivity } = await import("@/lib/realtorboss/activities");
+          const { logAssistantActivity } = await import("@/lib/realtyboss/activities");
           void logAssistantActivity({
             agentId,
             assistantType: "marketing_assistant",

@@ -12,7 +12,7 @@ import {
   classifyCallInterest,
   markContactNotInterested,
 } from "@/lib/voice-agent/lead-capture";
-import { logAssistantActivity } from "@/lib/realtorboss/activities";
+import { logAssistantActivity } from "@/lib/realtyboss/activities";
 import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 

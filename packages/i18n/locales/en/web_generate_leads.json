@@ -1,8 +1,8 @@
 {
   "landing": {
     "metadata": {
-      "title": "Generate Leads | RealtorBoss",
-      "description": "Generate social posts and run ads to bring new leads into RealtorBoss."
+      "title": "Generate Leads | RealtyBoss",
+      "description": "Generate social posts and run ads to bring new leads into RealtyBoss."
     },
     "title": "Generate Leads",
     "subtitle": "Draft social posts in seconds, then share to Facebook, Instagram, LinkedIn, or X.",
@@ -38,7 +38,7 @@
   },
   "connect": {
     "metadata": {
-      "title": "Connect Platforms | RealtorBoss",
+      "title": "Connect Platforms | RealtyBoss",
       "description": "Connect your Facebook Pages, Instagram Business accounts, and LinkedIn profile so Generate Leads can publish directly."
     },
     "title": "Connect platforms",
@@ -47,7 +47,7 @@
   },
   "scheduled": {
     "metadata": {
-      "title": "Scheduled Posts | RealtorBoss",
+      "title": "Scheduled Posts | RealtyBoss",
       "description": "Queue of social posts waiting to publish, plus recent results."
     },
     "title": "Scheduled Posts",
@@ -61,7 +61,7 @@
   },
   "recurring": {
     "metadata": {
-      "title": "Recurring Posts | RealtorBoss",
+      "title": "Recurring Posts | RealtyBoss",
       "description": "Manage your daily and weekly recurring social posts."
     },
     "title": "Recurring posts",
@@ -70,7 +70,7 @@
   },
   "ads": {
     "metadata": {
-      "title": "Lead Ad Campaigns | RealtorBoss",
+      "title": "Lead Ad Campaigns | RealtyBoss",
       "description": "Manage your Meta Lead Ad campaigns — pause / resume, refresh metrics, view captured leads."
     },
     "title": "Lead Ad Campaigns",

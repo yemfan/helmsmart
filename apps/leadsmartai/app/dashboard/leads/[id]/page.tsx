@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 /**
  * Person-first lead profile (constitution: present leads as people,
  * not database records). Full-page sibling of the LeadProfileDrawer —
- * both are fed by /api/dashboard/realtorboss/lead/[id]. The classic
+ * both are fed by /api/dashboard/realtyboss/lead/[id]. The classic
  * contacts hub remains untouched at /dashboard/contacts.
  */
 export default async function LeadProfilePage({

@@ -7,7 +7,7 @@ import {
   buildTimeline,
   fmtAgo,
   type LeadProfilePayload,
-} from "@/lib/realtorboss/leadProfile";
+} from "@/lib/realtyboss/leadProfile";
 
 /**
  * Full-page person profile. Layout answers, in order: who is this
@@ -21,7 +21,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/dashboard/realtorboss/lead/${leadId}?full=1`)
+    fetch(`/api/dashboard/realtyboss/lead/${leadId}?full=1`)
       .then((r) => r.json())
       .then((j) => {
         if (cancelled) return;

@@ -114,7 +114,7 @@ export default function CallYourSpherePost() {
         publisher: {
           "@type": "Organization",
           name: "RealtyBoss",
-          logo: { "@type": "ImageObject", url: `${SITE_URL}/brand/realtorboss/realtorboss-icon-512.png` },
+          logo: { "@type": "ImageObject", url: `${SITE_URL}/brand/realtyboss/realtyboss-icon-512.png` },
         },
       },
       {

@@ -1513,7 +1513,7 @@ export async function fetchMobileBriefings(): Promise<
 
 // ── Boss Assistant command center ──────────────────────────────────
 //
-// Hits the dual-auth /api/dashboard/realtorboss/* routes (Bearer-aware) — the
+// Hits the dual-auth /api/dashboard/realtyboss/* routes (Bearer-aware) — the
 // same endpoints the web command center uses. Shapes mirror
 // apps/leadsmartai/app/dashboard/boss/BossAssistantClient.tsx.
 

@@ -5,7 +5,7 @@
  * the single source of truth for the quiet-hours / Sunday-morning / Chinese-New-
  * Year pauses across every autosend path:
  *   - the sphere/lead-response draft dispatcher (lib/drafts/sender.ts), and
- *   - the Boss Assistant per-channel autopilot (lib/realtorboss/sendTaskDraft.ts).
+ *   - the Boss Assistant per-channel autopilot (lib/realtyboss/sendTaskDraft.ts).
  *
  * Per-contact daily caps live in their own pipeline (they count a specific
  * table) and are intentionally NOT here.

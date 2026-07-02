@@ -4,7 +4,7 @@ import {
   buildReceptionistVoiceNotes,
   getAssistantVoiceSettings,
   voiceNotesFromSkills,
-} from "@/lib/realtorboss/voicePersona";
+} from "@/lib/realtyboss/voicePersona";
 import {
   describeHours,
   defaultBusinessHours,

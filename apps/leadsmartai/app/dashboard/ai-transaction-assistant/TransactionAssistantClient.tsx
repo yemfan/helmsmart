@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getAssistant } from "@/lib/realtorboss/team";
-import { assessTransactionHealth, fmtMilestoneDay } from "@/lib/realtorboss/transactionHealth";
-import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
+import { getAssistant } from "@/lib/realtyboss/team";
+import { assessTransactionHealth, fmtMilestoneDay } from "@/lib/realtyboss/transactionHealth";
+import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
 
 type TransactionItem = {
   id: string;

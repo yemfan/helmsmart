@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { AI_TEAM, type AssistantType } from "@/lib/realtorboss/team";
-import { AssistantAvatar, AssistantAvatarPicker } from "@/components/realtorboss/AssistantAvatar";
+import { AI_TEAM, type AssistantType } from "@/lib/realtyboss/team";
+import { AssistantAvatar, AssistantAvatarPicker } from "@/components/realtyboss/AssistantAvatar";
 
 type AssistantRow = {
   id: string;
@@ -38,8 +38,8 @@ export default function AiTeamClient() {
 
   const load = useCallback(async () => {
     const [res, perfRes] = await Promise.all([
-      fetch("/api/dashboard/realtorboss/team").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtorboss/performance").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/realtyboss/team").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/realtyboss/performance").then((r) => r.json()).catch(() => ({})),
     ]);
     if (res?.ok) {
       setAssistants((res.assistants ?? []) as AssistantRow[]);
@@ -60,7 +60,7 @@ export default function AiTeamClient() {
     ) => {
       setSaving(type);
       setError(null);
-      const res = await fetch("/api/dashboard/realtorboss/team", {
+      const res = await fetch("/api/dashboard/realtyboss/team", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type, ...body }),
@@ -81,7 +81,7 @@ export default function AiTeamClient() {
     const fd = new FormData();
     fd.append("type", type);
     fd.append("file", file);
-    const res = await fetch("/api/dashboard/realtorboss/assistant-avatar", { method: "POST", body: fd })
+    const res = await fetch("/api/dashboard/realtyboss/assistant-avatar", { method: "POST", body: fd })
       .then((r) => r.json())
       .catch(() => ({}));
     if (res?.ok && res.assistant) {
@@ -95,7 +95,7 @@ export default function AiTeamClient() {
   const removeAvatar = useCallback(async (type: AssistantType) => {
     setSaving(type);
     setError(null);
-    const res = await fetch("/api/dashboard/realtorboss/assistant-avatar", {
+    const res = await fetch("/api/dashboard/realtyboss/assistant-avatar", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type }),

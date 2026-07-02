@@ -9,7 +9,7 @@ import {
   type Trigger,
 } from "@/lib/leads-gen/subjects";
 import { buildComposeInstruction } from "@/lib/leads-gen/share";
-import { getAssistantVoiceSettings } from "@/lib/realtorboss/voicePersona";
+import { getAssistantVoiceSettings } from "@/lib/realtyboss/voicePersona";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";

@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { BookOpen, ChevronDown, ChevronUp } from "lucide-react";
-import { getAssistant } from "@/lib/realtorboss/team";
-import { AssistantHeader, AssistantKpiCard } from "@/components/realtorboss/AssistantPage";
-import { AssistantCallSettings } from "@/components/realtorboss/AssistantCallSettings";
+import { getAssistant } from "@/lib/realtyboss/team";
+import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
+import { AssistantCallSettings } from "@/components/realtyboss/AssistantCallSettings";
 
 /**
  * Marketing Assistant overview — demand generation. Took over from

@@ -25,7 +25,7 @@
   },
   "app_section": {
     "title": "应用",
-    "version": "RealtorBoss · v{{version}}"
+    "version": "RealtyBoss · v{{version}}"
   },
   "sign_out_a11y": "退出登录",
   "sign_out_confirm_title": "退出登录?",

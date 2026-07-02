@@ -42,7 +42,7 @@ import {
  * (apps/leadsmartai/app/dashboard/boss/BossAssistantClient.tsx): the Boss
  * proposes + initiates actions through the instruction pipeline, asks approval
  * where the autopilot matrix says "ask", and the team's replies thread inline.
- * Talks to the dual-auth /api/dashboard/realtorboss/* routes via bearer token.
+ * Talks to the dual-auth /api/dashboard/realtyboss/* routes via bearer token.
  */
 
 const ASSIGNEE_LABEL: Record<string, string> = {

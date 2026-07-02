@@ -1,4 +1,4 @@
-# RealtorBoss demo mode
+# RealtyBoss demo mode
 
 The demo account is the sandboxed agent **michael.yes@mail.com** (works
 on prod `leadsmart-ai.com` and local dev). The seed paints a coherent
@@ -7,7 +7,7 @@ timestamps, so **re-running it before any demo makes "today" fresh**.
 
 ## Reset / refresh the demo
 
-Run `realtorboss-demo-seed.sql` against the LeadSmart Supabase project
+Run `realtyboss-demo-seed.sql` against the LeadSmart Supabase project
 (`babmbowmzwizoahkmshx`) as service role — via the Supabase MCP
 `execute_sql`, the SQL editor, or psql. It is idempotent: it clears the
 sandbox agent's CRM rows (and cached AI briefings) and reinserts the

@@ -1,8 +1,8 @@
 {
   "landing": {
     "metadata": {
-      "title": "获取客户 | RealtorBoss",
-      "description": "生成社交媒体帖子并投放广告，将新客户带入 RealtorBoss。"
+      "title": "获取客户 | RealtyBoss",
+      "description": "生成社交媒体帖子并投放广告，将新客户带入 RealtyBoss。"
     },
     "title": "获取客户",
     "subtitle": "几秒钟内即可起草社交媒体帖子，然后分享到 Facebook、Instagram、LinkedIn 或 X。",
@@ -38,7 +38,7 @@
   },
   "connect": {
     "metadata": {
-      "title": "连接平台 | RealtorBoss",
+      "title": "连接平台 | RealtyBoss",
       "description": "连接您的 Facebook 主页、Instagram 商业账户和 LinkedIn 资料，让获取客户可以直接发布内容。"
     },
     "title": "连接平台",
@@ -47,7 +47,7 @@
   },
   "scheduled": {
     "metadata": {
-      "title": "定时发布 | RealtorBoss",
+      "title": "定时发布 | RealtyBoss",
       "description": "等待发布的社交媒体帖子队列，以及最近的结果。"
     },
     "title": "定时发布",
@@ -61,7 +61,7 @@
   },
   "recurring": {
     "metadata": {
-      "title": "周期发布 | RealtorBoss",
+      "title": "周期发布 | RealtyBoss",
       "description": "管理您的每日和每周周期社交媒体帖子。"
     },
     "title": "周期发布",
@@ -70,7 +70,7 @@
   },
   "ads": {
     "metadata": {
-      "title": "Lead 广告活动 | RealtorBoss",
+      "title": "Lead 广告活动 | RealtyBoss",
       "description": "管理您的 Meta Lead 广告活动 — 暂停 / 恢复、刷新数据、查看获取的客户。"
     },
     "title": "Lead 广告活动",

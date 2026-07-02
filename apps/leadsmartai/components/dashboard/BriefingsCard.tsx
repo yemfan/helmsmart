@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, Send, Sparkles } from "lucide-react";
-import { useAssistantNames } from "@/components/realtorboss/useAssistantNames";
+import { useAssistantNames } from "@/components/realtyboss/useAssistantNames";
 
 /**
  * The Boss dashboard's briefing band:
@@ -215,7 +215,7 @@ function BossInstructionsPane() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/dashboard/realtorboss/instructions?limit=3")
+    const res = await fetch("/api/dashboard/realtyboss/instructions?limit=3")
       .then((r) => r.json())
       .catch(() => ({}));
     setInstructions((res?.instructions ?? []) as InstructionRow[]);
@@ -249,7 +249,7 @@ function BossInstructionsPane() {
     if (!text || submitting) return;
     setSubmitting(true);
     try {
-      const res = await fetch("/api/dashboard/realtorboss/instructions", {
+      const res = await fetch("/api/dashboard/realtyboss/instructions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: text }),
@@ -367,7 +367,7 @@ function TaskItem({
     setBusy(action);
     setError(null);
     try {
-      const res = await fetch("/api/dashboard/realtorboss/instruction-tasks", {
+      const res = await fetch("/api/dashboard/realtyboss/instruction-tasks", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
