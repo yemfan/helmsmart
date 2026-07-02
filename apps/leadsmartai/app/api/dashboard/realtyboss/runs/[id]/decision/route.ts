@@ -47,14 +47,17 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     });
     if (!result.ok) return NextResponse.json(result, { status: 400 });
     // Resume the loop after the response, in-process (fresh HTTP self-kicks
-    // only happen on soft-deadline chunking inside the engine).
-    after(async () => {
-      try {
-        await continueBossRun(id);
-      } catch (e) {
-        console.error("[boss-run] resume after decision failed:", e);
-      }
-    });
+    // only happen on soft-deadline chunking inside the engine). Decisions on
+    // already-finished runs (overnight inbox) don't reopen the loop.
+    if (result.status === "running") {
+      after(async () => {
+        try {
+          await continueBossRun(id);
+        } catch (e) {
+          console.error("[boss-run] resume after decision failed:", e);
+        }
+      });
+    }
     return NextResponse.json(result);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Server error";

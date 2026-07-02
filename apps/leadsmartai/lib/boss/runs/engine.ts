@@ -220,6 +220,7 @@ export async function driveRun(runId: string, deps: EngineDeps): Promise<DriveRe
             stepIndex,
             assignee: tool?.assignee ?? "sales_assistant",
             runState,
+            overnight: run.trigger === "overnight",
           };
           const execDeps: ExecuteDeps = {
             ...(deps.executeDeps ?? defaultExecuteDeps()),
@@ -240,7 +241,12 @@ export async function driveRun(runId: string, deps: EngineDeps): Promise<DriveRe
             error: outcome.status === "failed" ? outcome.error : null,
           });
         }
-        if (outcome.status === "pending_approval") pausedForApproval = true;
+        // Command runs pause at the first parked step so the realtor decides
+        // in-flow. Overnight runs keep going — they collect drafts and finish
+        // with the morning brief; approvals happen from the inbox after.
+        if (outcome.status === "pending_approval" && run.trigger !== "overnight") {
+          pausedForApproval = true;
+        }
       }
       toolResults.push({
         type: "tool_result",

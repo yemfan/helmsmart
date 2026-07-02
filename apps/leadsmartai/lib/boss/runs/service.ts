@@ -205,7 +205,10 @@ export async function decideRunStep(args: {
   if (!run || run.agent_id !== String(args.agentId)) {
     return { ok: false, error: "Run not found." };
   }
-  if (run.status !== "awaiting_approval") {
+  // Approvals normally arrive while the run is paused; overnight runs finish
+  // `completed` with parked steps, decided from the inbox afterwards.
+  const runIsLiveForDecision = run.status === "awaiting_approval";
+  if (!runIsLiveForDecision && run.status !== "completed") {
     return { ok: false, error: `Run is ${run.status}, not awaiting approval.` };
   }
   const steps = await store.loadSteps(args.runId);
@@ -254,6 +257,11 @@ export async function decideRunStep(args: {
     });
   }
 
+  if (!runIsLiveForDecision) {
+    // Run already finished (overnight inbox decision): record the outcome,
+    // don't reopen the loop.
+    return { ok: true, status: run.status };
+  }
   await store.updateRun(args.runId, { messages_json: messages, status: "running" });
   // The caller (decision route) resumes the loop in-process via after() —
   // an HTTP self-kick here would depend on getSiteUrl matching the running
@@ -279,6 +287,17 @@ async function onTerminal(runId: string, status: BossRunStatus): Promise<void> {
   try {
     const run = await store.loadRun(runId);
     if (!run) return;
+
+    // Overnight runs feed Top Priorities: one card per parked approval,
+    // additive over the deterministic CRM-signal sync (HANDOFF PR-5).
+    if (run.trigger === "overnight" && (status === "completed" || status === "budget_exceeded")) {
+      try {
+        const { syncOvernightRecommendations } = await import("./overnight");
+        await syncOvernightRecommendations({ id: runId, agent_id: run.agent_id });
+      } catch (e) {
+        console.error("[boss-run] overnight recommendation sync failed:", e);
+      }
+    }
 
     if (run.instruction_id) {
       await supabaseAdmin

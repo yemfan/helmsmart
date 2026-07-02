@@ -44,6 +44,12 @@ export type ToolContext = {
    * autopilot. Consent, voice caps, and send-rail guards still apply.
    */
   approvedByRealtor?: boolean;
+  /**
+   * Overnight runs (HANDOFF PR-5): voice calls are rejected outright and
+   * every other outbound tool is forced to propose() regardless of the
+   * autopilot matrix — mornings show drafts, never surprise sends.
+   */
+  overnight?: boolean;
 };
 
 export type ToolOutcome =
