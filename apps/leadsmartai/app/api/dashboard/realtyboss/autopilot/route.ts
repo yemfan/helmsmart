@@ -18,6 +18,7 @@ export const runtime = "nodejs";
  *   GET   → { global: boolean, channels: {assignee, channels[]}, cells: [...] }
  *   PATCH { global: boolean }                         → flip the master switch
  *   PATCH { assignee, channel, mode: "ask"|"auto" }   → set one per-channel cell
+ *   PATCH { pauseAll: true }                          → global off + every cell "ask"
  */
 export async function GET(req: Request) {
   try {
@@ -47,7 +48,20 @@ export async function PATCH(req: Request) {
       assignee?: unknown;
       channel?: unknown;
       mode?: unknown;
+      pauseAll?: unknown;
     };
+
+    // One-tap "pause all autonomy": master switch off AND every per-channel
+    // cell pinned to ask, so no stale "auto" override can keep sending.
+    if (body.pauseAll === true) {
+      await setGlobalAutopilot(agentId, false);
+      for (const a of ASSIGNEES) {
+        for (const ch of AUTOPILOT_CHANNELS[a] ?? []) {
+          await setAutopilotCell(agentId, a, ch, "ask");
+        }
+      }
+      return NextResponse.json({ ok: true, paused: true });
+    }
 
     if (typeof body.global === "boolean") {
       await setGlobalAutopilot(agentId, body.global);

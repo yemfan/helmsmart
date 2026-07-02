@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { getAgentContextFromRequest } from "@/lib/dashboardService";
-import { decideRunStep, cancelBossRun } from "@/lib/boss/runs/service";
+import { decideRunStep, cancelBossRun, continueBossRun } from "@/lib/boss/runs/service";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -46,6 +46,15 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       note: typeof body.note === "string" ? body.note.slice(0, 500) : undefined,
     });
     if (!result.ok) return NextResponse.json(result, { status: 400 });
+    // Resume the loop after the response, in-process (fresh HTTP self-kicks
+    // only happen on soft-deadline chunking inside the engine).
+    after(async () => {
+      try {
+        await continueBossRun(id);
+      } catch (e) {
+        console.error("[boss-run] resume after decision failed:", e);
+      }
+    });
     return NextResponse.json(result);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Server error";

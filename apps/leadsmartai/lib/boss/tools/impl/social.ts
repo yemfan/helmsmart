@@ -70,7 +70,7 @@ export const scheduleSocialPost = defineTool({
   description:
     "Schedule a social post for a future time on the agent's connected account. In ask mode this parks the post for approval instead.",
   inputSchema: postInput.extend({
-    publish_at: z.string().datetime({ offset: true }).describe("ISO time to publish"),
+    publish_at: z.string().datetime({ offset: true, local: true }).describe("ISO time to publish"),
   }),
   riskClass: "outbound",
   assignee: "marketing_assistant",

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AI_TEAM } from "@/lib/realtyboss/team";
 import { LeadProfileDrawer } from "@/components/realtyboss/LeadProfileDrawer";
 import { AssistantAvatar } from "@/components/realtyboss/AssistantAvatar";
+import RunCard from "@/components/realtyboss/RunCard";
 
 /**
  * Boss Assistant — the conversational command center.
@@ -99,6 +100,17 @@ type Channel = "call" | "sms" | "email" | "social";
 type AutopilotCell = { assignee: string; channel: Channel; mode: "ask" | "auto" };
 type AutopilotChannels = { assignee: string; channels: Channel[] };
 
+/** Boss v2 live run (see /api/dashboard/realtyboss/runs). */
+type RunRow = {
+  id: string;
+  instruction_id: string | null;
+  trigger: "command" | "overnight" | "retry";
+  status: "planning" | "running" | "awaiting_approval" | "completed" | "failed" | "budget_exceeded" | "cancelled";
+  objective: string;
+  started_at: string;
+};
+const LIVE_RUN_STATUSES = new Set(["planning", "running", "awaiting_approval"]);
+
 const ASSIGNEE_LABEL: Record<string, string> = {
   receptionist: "Receptionist",
   sales_assistant: "Sales Assistant",
@@ -173,6 +185,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [briefing, setBriefing] = useState<BriefingRow | null>(null);
   const [instructions, setInstructions] = useState<InstructionRow[]>([]);
   const [tasks, setTasks] = useState<TaskRow[]>([]);
+  const [runs, setRuns] = useState<RunRow[]>([]);
   const [teamNames, setTeamNames] = useState<Record<string, string>>({});
   const [teamStatus, setTeamStatus] = useState<Record<string, "active" | "paused">>({});
   const [teamAvatars, setTeamAvatars] = useState<Record<string, { id: string; url: string | null }>>({});
@@ -186,9 +199,13 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [loading, setLoading] = useState(true);
 
   const loadConversation = useCallback(async () => {
-    const res = await fetch("/api/dashboard/realtyboss/instructions?limit=8").then((r) => r.json()).catch(() => ({}));
+    const [res, runsRes] = await Promise.all([
+      fetch("/api/dashboard/realtyboss/instructions?limit=8").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/realtyboss/runs?limit=12").then((r) => r.json()).catch(() => ({})),
+    ]);
     setInstructions(((res?.instructions ?? []) as InstructionRow[]).slice().reverse());
     setTasks((res?.tasks ?? []) as TaskRow[]);
+    setRuns((runsRes?.runs ?? []) as RunRow[]);
   }, []);
 
   const loadData = useCallback(async () => {
@@ -242,8 +259,12 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
   useEffect(() => { void loadData(); }, [loadData]);
 
-  // Poll the conversation while an instruction is still being parsed/routed.
-  const hasPending = instructions.some((i) => i.status === "pending" || i.status === "processing");
+  // Poll the conversation while an instruction is still being parsed/routed
+  // or a Boss v2 run is live (RunCard self-polls its own detail; this keeps
+  // the surrounding lists fresh).
+  const hasPending =
+    instructions.some((i) => i.status === "pending" || i.status === "processing") ||
+    runs.some((r) => LIVE_RUN_STATUSES.has(r.status));
   useEffect(() => {
     if (!hasPending) return;
     const t = setInterval(() => void loadConversation(), 4000);
@@ -310,6 +331,17 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ assignee, channel, mode }),
+    }).catch(() => {});
+  }, []);
+
+  // One tap: global off + every per-channel cell to "ask" (HANDOFF PR-4).
+  const pauseAllAutonomy = useCallback(async () => {
+    setAutopilot(false);
+    setAutopilotCells((prev) => prev.map((c) => ({ ...c, mode: "ask" as const })));
+    await fetch("/api/dashboard/realtyboss/autopilot", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pauseAll: true }),
     }).catch(() => {});
   }, []);
 
@@ -431,12 +463,26 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           />
         ))}
 
+        {/* Approval inbox — runs paused for you that aren't in the visible
+            conversation (older commands, overnight runs). */}
+        {runs
+          .filter((r) => r.status === "awaiting_approval" && !instructions.some((i) => i.id === r.instruction_id))
+          .map((r) => (
+            <BossBubble key={r.id} bossName={bossName} avatar={bossAvatar}>
+              <p className="mb-1.5 text-xs text-gray-500">
+                {r.trigger === "overnight" ? "From last night's run" : "Earlier command"}: {r.objective.slice(0, 120)}
+              </p>
+              <RunCard runId={r.id} onChanged={loadConversation} />
+            </BossBubble>
+          ))}
+
         {/* Live conversation — instructions you sent + the team's replies */}
         {instructions.map((ins) => (
           <InstructionExchange
             key={ins.id}
             instruction={ins}
             tasks={tasks.filter((t) => t.instruction_id === ins.id)}
+            run={runs.find((r) => r.instruction_id === ins.id) ?? null}
             bossName={bossName}
             avatar={bossAvatar}
             teamNames={teamNames}
@@ -486,6 +532,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           cells={autopilotCells}
           onGlobal={(on) => void setGlobalAutopilot(on)}
           onCell={(a, c, m) => void setCell(a, c, m)}
+          onPauseAll={() => void pauseAllAutonomy()}
           onClose={() => setSettingsOpen(false)}
         />
       )}
@@ -654,10 +701,11 @@ function ProposalCard({
 }
 
 function InstructionExchange({
-  instruction, tasks, bossName, avatar, teamNames, onChanged,
+  instruction, tasks, run, bossName, avatar, teamNames, onChanged,
 }: {
   instruction: InstructionRow;
   tasks: TaskRow[];
+  run: RunRow | null;
   bossName: string;
   avatar: { id: string; url: string | null } | null;
   teamNames: Record<string, string>;
@@ -670,7 +718,13 @@ function InstructionExchange({
       <div className="flex justify-end">
         <p className="max-w-[80%] rounded-xl rounded-tr-sm bg-blue-600 px-3 py-2 text-sm text-white">{instruction.content}</p>
       </div>
-      {processing ? (
+      {run ? (
+        /* Boss v2: the live run replaces parse-and-route — plan, step
+           timeline, approvals, and the final report all in one card. */
+        <BossBubble bossName={bossName} avatar={avatar}>
+          <RunCard runId={run.id} onChanged={onChanged} />
+        </BossBubble>
+      ) : processing ? (
         <BossBubble bossName={bossName} avatar={avatar}>
           <p className="text-sm text-gray-500">On it — breaking this into actions…</p>
         </BossBubble>
@@ -823,13 +877,14 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion }: { onSubmit: (text:
 // ── settings modal (per-assistant · per-channel autopilot) ─────────────
 
 function SettingsModal({
-  global, channels, cells, onGlobal, onCell, onClose,
+  global, channels, cells, onGlobal, onCell, onPauseAll, onClose,
 }: {
   global: boolean;
   channels: AutopilotChannels[];
   cells: AutopilotCell[];
   onGlobal: (on: boolean) => void;
   onCell: (assignee: string, channel: Channel, mode: "ask" | "auto") => void;
+  onPauseAll: () => void;
   onClose: () => void;
 }) {
   const cellMode = (assignee: string, channel: Channel): "ask" | "auto" => {
@@ -877,7 +932,15 @@ function SettingsModal({
           ))}
         </div>
 
-        <div className="mt-4 flex justify-end">
+        <div className="mt-4 flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={onPauseAll}
+            className="rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50"
+            title="Flip everything to ask-first — nothing sends without you"
+          >
+            ⏸ Pause all autonomy
+          </button>
           <button type="button" onClick={onClose} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Done</button>
         </div>
       </div>
