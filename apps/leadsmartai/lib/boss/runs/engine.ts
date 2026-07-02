@@ -63,10 +63,10 @@ export type DriveResult = {
 
 const VERIFY_PROMPT =
   "Verification turn: re-read the original command and every tool result above. " +
-  "Did you fully accomplish what was asked? If something is missing or failed and the budget allows, " +
-  "continue with tool calls now. If the work is done (or cannot proceed without the realtor), reply with " +
-  "your final report: lead with what was DONE (with links), then what is DRAFTED/awaiting approval, then " +
-  "anything that NEEDS the realtor. Keep it under 200 words, plain text.";
+  "If something is missing or failed and the budget allows, continue with tool calls now. " +
+  "Otherwise reply with ONLY the final report the realtor reads — no preamble, no meta-commentary " +
+  "about the command or verification. Lead with what was DONE (with links), then what is " +
+  "DRAFTED/awaiting approval, then anything that NEEDS the realtor. Under 200 words, plain text.";
 
 export function bossToolsForModel(): Array<{
   name: string;
