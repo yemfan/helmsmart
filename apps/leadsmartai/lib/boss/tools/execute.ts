@@ -176,6 +176,20 @@ async function gateAndRun(
       }
     }
 
+    // Overnight rails (HANDOFF §PR-5): zero voice calls; everything else
+    // outbound lands as a draft/proposal for the morning — never a send.
+    if (ctx.overnight) {
+      if (channel === "call") {
+        return { status: "rejected", reason: "Overnight runs never place voice calls." };
+      }
+      if (tool.propose) return await tool.propose(ctx, input);
+      return {
+        status: "pending_approval",
+        summary: `${tool.name} queued for morning approval (overnight run).`,
+        proposal: { tool: tool.name, input },
+      };
+    }
+
     // Max 1 outbound voice call per contact per run — even in auto mode.
     if (channel === "call" && contactId) {
       if (ctx.runState.voiceCallContacts.has(contactId)) {

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAgentContextFromRequest } from "@/lib/dashboardService";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import {
   AUTOPILOT_CHANNELS,
   getAutopilotMatrix,
@@ -23,15 +24,23 @@ export const runtime = "nodejs";
 export async function GET(req: Request) {
   try {
     const { agentId } = await getAgentContextFromRequest(req);
-    const [global, cells] = await Promise.all([
+    const [global, cells, aiRow] = await Promise.all([
       getGlobalAutopilot(agentId),
       getAutopilotMatrix(agentId),
+      supabaseAdmin
+        .from("agent_ai_settings")
+        .select("overnight_mode")
+        .eq("agent_id", agentId)
+        .maybeSingle(),
     ]);
     const channels = Object.entries(AUTOPILOT_CHANNELS).map(([assignee, chs]) => ({
       assignee,
       channels: chs,
     }));
-    return NextResponse.json({ ok: true, global, channels, cells });
+    const overnightMode = Boolean(
+      (aiRow.data as { overnight_mode?: boolean } | null)?.overnight_mode,
+    );
+    return NextResponse.json({ ok: true, global, channels, cells, overnightMode });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
@@ -49,7 +58,22 @@ export async function PATCH(req: Request) {
       channel?: unknown;
       mode?: unknown;
       pauseAll?: unknown;
+      overnightMode?: unknown;
     };
+
+    // Boss v2 overnight mode opt-in (agent_ai_settings.overnight_mode).
+    if (typeof body.overnightMode === "boolean") {
+      const { error } = await supabaseAdmin.from("agent_ai_settings").upsert(
+        {
+          agent_id: agentId,
+          overnight_mode: body.overnightMode,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "agent_id" },
+      );
+      if (error) throw new Error(error.message);
+      return NextResponse.json({ ok: true, overnightMode: body.overnightMode });
+    }
 
     // One-tap "pause all autonomy": master switch off AND every per-channel
     // cell pinned to ask, so no stale "auto" override can keep sending.

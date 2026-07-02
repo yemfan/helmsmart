@@ -29,6 +29,10 @@
       "schedule": "*/15 * * * *"
     },
     {
+      "path": "/api/cron/boss-overnight",
+      "schedule": "*/15 * * * *"
+    },
+    {
       "path": "/api/jobs/greetings/run",
       "schedule": "0 14 * * *"
     },

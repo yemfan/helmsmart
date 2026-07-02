@@ -193,6 +193,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [autopilot, setAutopilot] = useState(false);
   const [autopilotCells, setAutopilotCells] = useState<AutopilotCell[]>([]);
   const [autopilotChannels, setAutopilotChannels] = useState<AutopilotChannels[]>([]);
+  const [overnightMode, setOvernightMode] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const [profileLeadId, setProfileLeadId] = useState<string | null>(null);
@@ -251,6 +252,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       setAutopilot(Boolean(apRes.global));
       setAutopilotCells((apRes.cells ?? []) as AutopilotCell[]);
       setAutopilotChannels((apRes.channels ?? []) as AutopilotChannels[]);
+      setOvernightMode(Boolean(apRes.overnightMode));
     }
 
     await loadConversation();
@@ -332,6 +334,15 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ assignee, channel, mode }),
     }).catch(() => {});
+  }, []);
+
+  const toggleOvernight = useCallback(async (on: boolean) => {
+    setOvernightMode(on);
+    await fetch("/api/dashboard/realtyboss/autopilot", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ overnightMode: on }),
+    }).catch(() => setOvernightMode(!on));
   }, []);
 
   // One tap: global off + every per-channel cell to "ask" (HANDOFF PR-4).
@@ -533,6 +544,8 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           onGlobal={(on) => void setGlobalAutopilot(on)}
           onCell={(a, c, m) => void setCell(a, c, m)}
           onPauseAll={() => void pauseAllAutonomy()}
+          overnightMode={overnightMode}
+          onOvernight={(on) => void toggleOvernight(on)}
           onClose={() => setSettingsOpen(false)}
         />
       )}
@@ -877,7 +890,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion }: { onSubmit: (text:
 // ── settings modal (per-assistant · per-channel autopilot) ─────────────
 
 function SettingsModal({
-  global, channels, cells, onGlobal, onCell, onPauseAll, onClose,
+  global, channels, cells, onGlobal, onCell, onPauseAll, overnightMode, onOvernight, onClose,
 }: {
   global: boolean;
   channels: AutopilotChannels[];
@@ -885,6 +898,8 @@ function SettingsModal({
   onGlobal: (on: boolean) => void;
   onCell: (assignee: string, channel: Channel, mode: "ask" | "auto") => void;
   onPauseAll: () => void;
+  overnightMode: boolean;
+  onOvernight: (on: boolean) => void;
   onClose: () => void;
 }) {
   const cellMode = (assignee: string, channel: Channel): "ask" | "auto" => {
@@ -907,6 +922,17 @@ function SettingsModal({
             <p className="text-xs text-gray-500">The master switch. Per-channel choices below override it.</p>
           </div>
           <AutopilotToggle on={global} onToggle={() => onGlobal(!global)} />
+        </div>
+
+        <div className="mt-3 flex items-center justify-between rounded-xl border border-gray-200 p-3">
+          <div>
+            <p className="text-sm font-medium text-gray-900">Overnight mode 🌙</p>
+            <p className="text-xs text-gray-500">
+              The Boss works your pipeline at ~4am: research + tasks done, outbound drafted for your
+              morning approval. Never calls, never sends overnight.
+            </p>
+          </div>
+          <AutopilotToggle on={overnightMode} onToggle={() => onOvernight(!overnightMode)} />
         </div>
 
         <div className="mt-3 space-y-2">

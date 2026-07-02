@@ -6,6 +6,45 @@ import {
 } from "@/lib/dailyBriefingAI";
 import { dispatchMobileBriefingPush } from "@/lib/mobile/pushDispatch";
 
+/**
+ * Last night's Boss v2 overnight run (finished within 14h), shaped for the
+ * morning briefing. Returns null when the agent isn't in overnight mode or
+ * the run produced nothing.
+ */
+async function latestOvernightRun(
+  agentId: string,
+): Promise<{ headline: string; block: string } | null> {
+  try {
+    const since = new Date(Date.now() - 14 * 3600_000).toISOString();
+    const { data } = await supabaseServer
+      .from("boss_runs")
+      .select("id, status, report, tool_calls")
+      .eq("agent_id", agentId)
+      .eq("trigger", "overnight")
+      .in("status", ["completed", "budget_exceeded"])
+      .gte("finished_at", since)
+      .order("finished_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const run = data as { id: string; report: string | null; tool_calls: number } | null;
+    if (!run?.report?.trim()) return null;
+
+    const { count: pendingCount } = await supabaseServer
+      .from("boss_run_steps")
+      .select("id", { count: "exact", head: true })
+      .eq("run_id", run.id)
+      .eq("approval_state", "pending");
+
+    const headline =
+      pendingCount && pendingCount > 0
+        ? `Overnight: work done + ${pendingCount} draft${pendingCount === 1 ? "" : "s"} awaiting your approval`
+        : "Overnight: your Boss already worked the pipeline";
+    return { headline, block: `While you slept:\n${run.report.trim()}` };
+  } catch {
+    return null;
+  }
+}
+
 type LeadRow = {
   id: number;
   name: string | null;
@@ -81,6 +120,18 @@ export async function createDailyBriefingForAgent(
     kind === "morning"
       ? await generateMorning(agentId)
       : await generateEvening(agentId);
+
+  // Boss v2 (HANDOFF PR-5): when an overnight run finished in the small
+  // hours, the morning briefing LEADS with its results — "Done / Drafted,
+  // approve / Needs you" — and the deterministic briefing rides below as
+  // the floor.
+  if (kind === "morning") {
+    const overnight = await latestOvernightRun(agentId);
+    if (overnight) {
+      ai.headline = overnight.headline;
+      ai.summary = `${overnight.block}\n\n—\n\n${ai.summary}`;
+    }
+  }
 
   const { data: inserted, error: insertErr } = await supabaseServer
     .from("daily_briefings")
