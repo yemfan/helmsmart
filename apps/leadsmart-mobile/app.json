@@ -21,11 +21,11 @@
       }
     },
     "android": {
-      "package": "ai.leadsmart.mobile",
+      "package": "com.realtybossai.app",
       "icon": "./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#CFE5FA"
+        "backgroundColor": "#502FE1"
       }
     },
     "plugins": [

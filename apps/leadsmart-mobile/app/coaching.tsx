@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import {
   Linking,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -232,22 +233,40 @@ function UpgradeCard({
   tokens: ThemeTokens;
   onUpgrade: () => void;
 }) {
+  // iOS: App Store Guideline 3.1.3 forbids steering users to an external
+  // purchase flow, so we show a neutral "not available" message with no
+  // pricing/upgrade CTA and no link to the web. Android keeps the upgrade link.
+  const neutral = Platform.OS === "ios";
   return (
     <View style={styles.upgradeCard}>
       <Ionicons name="ribbon-outline" size={28} color={tokens.infoText} />
-      <Text style={styles.upgradeTitle}>Coaching unlocks on Pro</Text>
-      <Text style={styles.upgradeBody}>
-        Producer Track auto-enrolls on Pro and above; Top Producer Track
-        is bundled with Premium and Team. Upgrade to start hitting
-        10–15 transactions a year with daily AI-driven plans.
-      </Text>
-      <Pressable
-        onPress={onUpgrade}
-        style={({ pressed }) => [styles.upgradeBtn, pressed && styles.upgradeBtnPressed]}
-      >
-        <Text style={styles.upgradeBtnText}>See pricing</Text>
-        <Ionicons name="open-outline" size={14} color="#ffffff" />
-      </Pressable>
+      {neutral ? (
+        <>
+          <Text style={styles.upgradeTitle}>
+            Coaching isn't available on your current plan
+          </Text>
+          <Text style={styles.upgradeBody}>
+            Coaching programs (Producer Track and Top Producer Track) aren't
+            included in your current access.
+          </Text>
+        </>
+      ) : (
+        <>
+          <Text style={styles.upgradeTitle}>Coaching unlocks on Pro</Text>
+          <Text style={styles.upgradeBody}>
+            Producer Track auto-enrolls on Pro and above; Top Producer Track
+            is bundled with Premium and Team. Upgrade to start hitting
+            10–15 transactions a year with daily AI-driven plans.
+          </Text>
+          <Pressable
+            onPress={onUpgrade}
+            style={({ pressed }) => [styles.upgradeBtn, pressed && styles.upgradeBtnPressed]}
+          >
+            <Text style={styles.upgradeBtnText}>See pricing</Text>
+            <Ionicons name="open-outline" size={14} color="#ffffff" />
+          </Pressable>
+        </>
+      )}
     </View>
   );
 }

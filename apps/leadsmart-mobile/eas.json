@@ -32,6 +32,9 @@
       "extends": "base",
       "distribution": "store",
       "developmentClient": false,
+      "android": {
+        "autoIncrement": true
+      },
       "ios": {
         "image": "sdk-55",
         "autoIncrement": true
