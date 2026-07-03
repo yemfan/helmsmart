@@ -103,9 +103,9 @@ export const metadata: Metadata = {
     // for twitter:image as well. No creator handle until a RealtyBoss
     // account exists (the old @leadsmartai handle would misattribute).
   },
-  // Favicon/app icons come from Next's file conventions: app/icon.svg (the new
-  // crown+R RealtyBoss mark — crisp at every size) and app/apple-icon.png. No
-  // explicit `icons` overrides, so the SVG is the canonical favicon.
+  // Favicon/app icons come from Next's file conventions: app/icon.png (the
+  // RealtyBoss house mascot) and app/apple-icon.png. No explicit `icons`
+  // overrides, so app/icon.png is the canonical favicon.
   // NOTE: Do NOT set a root-level canonical here. Next.js merges root
   // layout metadata into every child page that doesn't override it,
   // which causes all subpages (e.g. /about, /pricing, /blog) to emit
@@ -142,7 +142,7 @@ const jsonLd = [
     // (our exact-match domain query) to this entity.
     alternateName: SITE_BRAND,
     url: SITE_URL,
-    logo: `${SITE_URL}/brand/realtyboss/realtyboss-icon.svg`,
+    logo: `${SITE_URL}/brand/realtyboss/realtyboss-icon-512.png`,
     description: SITE_DESCRIPTION,
     // Populate with verified profile URLs (LinkedIn / X / Instagram /
     // Crunchbase / G2 / Capterra) as they're created — strengthens the
