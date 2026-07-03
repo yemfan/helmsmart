@@ -15,6 +15,9 @@ web-build/
 *.key
 *.mobileprovision
 
+# EAS local credentials (secrets)
+credentials.json
+
 # Supabase CLI (linked project metadata — may contain refs)
 .supabase/
 

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { Linking, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { getLeadsmartApiBaseUrl } from "../lib/env";
 import type { AiActionGateReason } from "../lib/aiActionGate";
 
@@ -25,8 +25,14 @@ export function AiActionGateBanner({
   const { t } = useTranslation("reply_composer");
   const isLimit = reason === "ai_usage_limit_reached";
   const variant = isLimit ? "limit" : "not_on_plan";
-  const title = t(`ai_gate.${variant}.title`);
-  const body = t(`ai_gate.${variant}.body`);
+
+  // iOS: App Store Guideline 3.1.3 forbids steering users to an external
+  // purchase flow. Entitlements are a multiplatform business subscription
+  // managed on the web; on iOS we only state the feature isn't available and
+  // never show an "upgrade" CTA or a link to billing.
+  const neutral = Platform.OS === "ios";
+  const title = t(`ai_gate.${variant}.${neutral ? "ios_title" : "title"}`);
+  const body = t(`ai_gate.${variant}.${neutral ? "ios_body" : "body"}`);
   const cta = t(`ai_gate.${variant}.cta`);
   const ctaA11y = t(`ai_gate.${variant}.cta_a11y`);
 
@@ -42,14 +48,16 @@ export function AiActionGateBanner({
     <View style={styles.wrap}>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.body}>{body}</Text>
-      <Pressable
-        style={styles.cta}
-        onPress={onUpgrade}
-        accessibilityRole="button"
-        accessibilityLabel={ctaA11y}
-      >
-        <Text style={styles.ctaText}>{cta}</Text>
-      </Pressable>
+      {!neutral && (
+        <Pressable
+          style={styles.cta}
+          onPress={onUpgrade}
+          accessibilityRole="button"
+          accessibilityLabel={ctaA11y}
+        >
+          <Text style={styles.ctaText}>{cta}</Text>
+        </Pressable>
+      )}
     </View>
   );
 }

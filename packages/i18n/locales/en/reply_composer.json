@@ -42,13 +42,17 @@
       "title": "You've hit your AI limit for this period",
       "body": "Your current plan caps how many AI drafts run each month. Upgrade for a higher limit, or wait until next period.",
       "cta": "View plans & upgrade",
-      "cta_a11y": "View plans and upgrade"
+      "cta_a11y": "View plans and upgrade",
+      "ios_title": "AI limit reached",
+      "ios_body": "You've reached the AI draft limit for this period. It resets next period."
     },
     "not_on_plan": {
       "title": "AI actions aren't on your plan yet",
       "body": "AI-drafted replies run on a paid plan. Pick a plan to turn this on for your workspace.",
       "cta": "Choose a plan",
-      "cta_a11y": "Choose a plan"
+      "cta_a11y": "Choose a plan",
+      "ios_title": "AI drafting isn't available",
+      "ios_body": "AI-drafted replies aren't included in your current access."
     }
   }
 }
