@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 /**
- * Rasterizes the RealtyBoss brand SVGs into the PNG icon sizes the app
- * references (favicon, apple-touch, PWA, JSON-LD, OG fallbacks).
+ * Rasterizes the RealtyBoss brand into the PNG icon sizes the app references
+ * (favicon, apple-touch, PWA, JSON-LD, OG fallbacks) and keeps the sibling
+ * Expo app's launcher icons in sync.
  *
- *   realtyboss-icon.svg  → navy app-icon tile (flattened on navy, no
- *                           transparent corners → safe for apple-touch/PWA)
- *   realtyboss-mark.svg  → transparent mark (keeps alpha)
+ * Source of truth is the mascot artwork (raster):
+ *   realtyboss-mascot.png       → opaque full-bleed purple tile (app icons,
+ *                                  favicon, apple-touch, PWA, mobile launcher)
+ *   realtyboss-mascot-mark.png  → the mascot on a transparent background
+ *                                  (standalone mark + Android adaptive foreground)
  *
- * Run after editing either SVG:  node scripts/generate-brand-icons.mjs
+ * Run after replacing either master:  node scripts/generate-brand-icons.mjs
  */
-import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -20,48 +22,41 @@ const brand = path.join(appRoot, "public", "brand", "realtyboss");
 // Sibling Expo app — keep its launcher icons in sync with the web brand.
 const mobileAssets = path.resolve(appRoot, "..", "leadsmart-mobile", "assets");
 
-const iconSvg = readFileSync(path.join(brand, "realtyboss-icon.svg"));
-const markSvg = readFileSync(path.join(brand, "realtyboss-mark.svg"));
-const glyphSvg = readFileSync(path.join(brand, "realtyboss-glyph.svg"));
+const tileMaster = path.join(brand, "realtyboss-mascot.png"); // opaque tile
+const markMaster = path.join(brand, "realtyboss-mascot-mark.png"); // transparent
 
-// Flatten color = the light-blue tile (#CFE5FA), so rounded-corner transparency
-// fills with the tile color instead of leaving navy/black corners.
-const TILE_BG = { r: 207, g: 229, b: 250, alpha: 1 };
-
-async function render(svg, size, out, { flatten = false } = {}) {
-  let img = sharp(svg, { density: 384 }).resize(size, size, {
-    fit: "contain",
-    background: { r: 0, g: 0, b: 0, alpha: 0 },
-  });
-  if (flatten) img = img.flatten({ background: TILE_BG });
-  await img.png().toFile(out);
+async function resizePng(src, size, out) {
+  await sharp(src)
+    .resize(size, size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png()
+    .toFile(out);
   console.log("wrote", path.relative(appRoot, out), `${size}×${size}`);
 }
 
 const tasks = [
-  // App-icon tile (solid navy, no transparent corners)
-  [iconSvg, 64, path.join(brand, "realtyboss-icon-64.png"), { flatten: true }],
-  [iconSvg, 180, path.join(brand, "realtyboss-icon-180.png"), { flatten: true }],
-  [iconSvg, 512, path.join(brand, "realtyboss-icon-512.png"), { flatten: true }],
-  [iconSvg, 256, path.join(appRoot, "app", "icon.png"), { flatten: true }],
-  [iconSvg, 180, path.join(appRoot, "app", "apple-icon.png"), { flatten: true }],
+  // Opaque app-icon tile (the mascot already has no transparent corners)
+  [tileMaster, 64, path.join(brand, "realtyboss-icon-64.png")],
+  [tileMaster, 180, path.join(brand, "realtyboss-icon-180.png")],
+  [tileMaster, 512, path.join(brand, "realtyboss-icon-512.png")],
+  [tileMaster, 256, path.join(appRoot, "app", "icon.png")], // favicon
+  [tileMaster, 180, path.join(appRoot, "app", "apple-icon.png")],
   // Standalone mark (transparent)
-  [markSvg, 512, path.join(brand, "realtyboss-mark-512.png")],
-  // Expo mobile app icon (iOS/Android base) — opaque 1024 tile.
-  [iconSvg, 1024, path.join(mobileAssets, "icon.png"), { flatten: true }],
+  [markMaster, 512, path.join(brand, "realtyboss-mark-512.png")],
+  // Expo mobile launcher icon (iOS/Android base) — opaque 1024 tile.
+  [tileMaster, 1024, path.join(mobileAssets, "icon.png")],
 ];
 
-for (const [svg, size, out, opts] of tasks) {
-  await render(svg, size, out, opts);
+for (const [src, size, out] of tasks) {
+  await resizePng(src, size, out);
 }
 
-// Android adaptive-icon foreground: transparent 1024 with the mark inset into
+// Android adaptive-icon foreground: transparent 1024 with the mascot inset into
 // the launcher safe zone (the OS masks ~25% off each edge + supplies the
-// background color from app.json → adaptiveIcon.backgroundColor: #CFE5FA).
+// background color from app.json → adaptiveIcon.backgroundColor).
 const ADAPTIVE = 1024;
 const INNER = 700;
 const PAD = Math.round((ADAPTIVE - INNER) / 2);
-await sharp(glyphSvg, { density: 384 })
+await sharp(markMaster)
   .resize(INNER, INNER, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
   .extend({ top: PAD, bottom: PAD, left: PAD, right: PAD, background: { r: 0, g: 0, b: 0, alpha: 0 } })
   .png()

@@ -8,26 +8,22 @@ const AMBER = "#F59E0B";
 type Tone = "light" | "dark";
 
 /**
- * The RealtyBoss mark — an amber crown over a white "R" on an indigo tile.
- * Inline SVG, self-contained (its own indigo background) so it reads on any
- * surface; the `tone` prop is accepted for API compatibility but unused.
- * Master asset: public/brand/realtyboss/realtyboss-icon.svg (also app/icon.svg).
+ * The RealtyBoss mark — the house mascot on a purple tile. Rendered as the
+ * generated raster icon so it matches the App Store / launcher icon exactly.
+ * Master: public/brand/realtyboss/realtyboss-mascot.png (regenerated into
+ * realtyboss-icon-512.png via scripts/generate-brand-icons.mjs). The `tone`
+ * prop is accepted for API compatibility but unused (the tile is self-contained).
  */
 export function RealtyBossMark({ className }: { className?: string; tone?: Tone }) {
   return (
-    <svg viewBox="0 0 256 256" fill="none" aria-hidden className={cn("h-8 w-8", className)}>
-      <rect x="44" y="78" width="168" height="160" rx="36" fill={INDIGO} />
-      <g transform="translate(128,84) scale(0.83) translate(-128,-124)">
-        <path d="M52 124 L84 66 L104 98 L128 48 L152 98 L172 66 L204 124 Z" fill={AMBER} />
-        <circle cx="84" cy="66" r="6" fill={INDIGO} />
-        <circle cx="128" cy="48" r="7" fill={INDIGO} />
-        <circle cx="172" cy="66" r="6" fill={INDIGO} />
-      </g>
-      <path
-        d="M138.81 210.00 L119.69 175.27 L114.30 175.27 L114.30 210.00 L91.90 210.00 L91.90 118.00 L129.52 118.00 Q140.39 118.00 148.05 121.81 Q155.72 125.60 159.51 132.23 Q163.32 138.84 163.32 146.97 Q163.32 156.15 158.14 163.35 Q152.96 170.56 142.87 173.57 L164.10 210.00 L138.81 210.00 Z M114.30 159.42 L128.20 159.42 Q134.35 159.42 137.42 156.41 Q140.51 153.38 140.51 147.87 Q140.51 142.63 137.42 139.62 Q134.35 136.61 128.20 136.61 L114.30 136.61 L114.30 159.42 Z"
-        fill="#FFFFFF"
-      />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/brand/realtyboss/realtyboss-icon-512.png"
+      alt="RealtyBoss"
+      width={40}
+      height={40}
+      className={cn("h-8 w-8 rounded-[22%]", className)}
+    />
   );
 }
 
@@ -40,7 +36,7 @@ type Props = {
 };
 
 /**
- * RealtyBoss horizontal lockup — crown+R mark + two-tone wordmark (+ tagline).
+ * RealtyBoss horizontal lockup — mascot mark + two-tone wordmark (+ tagline).
  * The wordmark renders as text in the app's heading font so it stays crisp and
  * theme-consistent: body indigo (white on dark), "Boss" in the amber accent.
  */
