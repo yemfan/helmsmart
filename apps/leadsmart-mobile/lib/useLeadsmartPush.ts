@@ -58,13 +58,16 @@ function navigateFromPushData(
     return;
   }
 
-  // Briefing pushes (morning/evening) — route home where the
-  // BriefingsCard re-fetches + shows the freshly-arrived briefing.
-  if (
-    screen === "home" ||
-    kind === "briefing_morning" ||
-    kind === "briefing_evening"
-  ) {
+  // Briefing pushes (morning/evening) — route to the briefings history
+  // page, which shows the freshly-arrived briefing. (The Home screen no
+  // longer carries an inline briefings card; the same section lives in the
+  // Boss assistant + /briefings.)
+  if (kind === "briefing_morning" || kind === "briefing_evening") {
+    router.push("/briefings" as never);
+    return;
+  }
+
+  if (screen === "home") {
     router.push("/(tabs)/home" as never);
     return;
   }
