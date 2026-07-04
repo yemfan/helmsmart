@@ -101,3 +101,25 @@ export function encryptTokenOptional(plaintext: string | null | undefined): stri
   if (!plaintext) return null;
   return encryptToken(plaintext);
 }
+
+/**
+ * Transition-safe decrypt: returns the decrypted token, or the raw value
+ * unchanged if it isn't a valid ciphertext (legacy plaintext rows written
+ * before a column was encrypted).
+ *
+ * `decryptToken` throws on anything that isn't well-formed AES-256-GCM
+ * ciphertext (wrong part count, wrong IV/tag length, failed auth), so a
+ * plaintext token — even one that happens to contain dots, like a Google
+ * `ya29.…` access token — reliably falls through to the raw branch. Once the
+ * row is rewritten (e.g. on the next token refresh) it becomes ciphertext and
+ * decrypts normally. Use only for reads of columns mid-migration to encrypted
+ * storage; new writes must always call `encryptToken`.
+ */
+export function decryptTokenLenient(value: string | null | undefined): string | null {
+  if (!value) return null;
+  try {
+    return decryptToken(value);
+  } catch {
+    return value;
+  }
+}

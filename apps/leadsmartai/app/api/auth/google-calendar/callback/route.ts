@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { getGoogleOAuthConfig } from "@/lib/google-calendar/config";
+import { encryptToken, encryptTokenOptional } from "@/lib/leads-gen/token-enc";
 
 /**
  * GET /api/auth/google-calendar/callback
@@ -57,8 +58,10 @@ export async function GET(req: Request) {
         {
           agent_id: agentId as any,
           provider: "google",
-          access_token: tokenData.access_token,
-          refresh_token: tokenData.refresh_token ?? null,
+          // Encrypt OAuth tokens at rest (AES-256-GCM) — same envelope as
+          // social_accounts. Reads go through decryptTokenLenient.
+          access_token: encryptToken(tokenData.access_token),
+          refresh_token: encryptTokenOptional(tokenData.refresh_token ?? null),
           token_type: tokenData.token_type ?? "Bearer",
           expires_at: expiresAt,
           scope: tokenData.scope ?? null,

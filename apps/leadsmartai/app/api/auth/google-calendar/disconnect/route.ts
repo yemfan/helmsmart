@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { supabaseServer } from "@/lib/supabaseServer";
+import { decryptTokenLenient } from "@/lib/leads-gen/token-enc";
 
 export async function POST() {
   try {
@@ -14,8 +15,9 @@ export async function POST() {
       .eq("provider", "google")
       .maybeSingle();
 
-    if ((tokenRow as any)?.access_token) {
-      fetch(`https://oauth2.googleapis.com/revoke?token=${(tokenRow as any).access_token}`, {
+    const accessToken = decryptTokenLenient((tokenRow as any)?.access_token);
+    if (accessToken) {
+      fetch(`https://oauth2.googleapis.com/revoke?token=${encodeURIComponent(accessToken)}`, {
         method: "POST",
       }).catch(() => {});
     }
