@@ -41,6 +41,11 @@
     "placeholder_lead_id": "客户 ID",
     "placeholder_title": "标题 (例如:看房 · 123 Main St)",
     "placeholder_notes": "备注 (可选)",
+    "label_contact": "客户",
+    "placeholder_contact_search": "按姓名或电话搜索…",
+    "contact_searching": "搜索中…",
+    "contact_no_results": "未找到匹配的客户",
+    "contact_clear_a11y": "清除已选客户",
     "label_starts_in": "开始时间",
     "offsets": {
       "1h": "1 小时",
@@ -51,6 +56,7 @@
     },
     "errors": {
       "lead_id_required": "请填写客户 ID。",
+      "contact_required": "请为此约见选择一位客户。",
       "title_required": "请填写标题。"
     }
   },

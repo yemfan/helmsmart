@@ -17,6 +17,21 @@ import type {
 
 const MAX_ALERTS = 20;
 
+/**
+ * A lead counts as "hot" on the home dashboard when it is explicitly rated
+ * `hot` (by an AI call, an agent, or the composite `recomputeLeadRating`) OR
+ * its persisted `engagement_score` clears the hot threshold. 40 mirrors the
+ * `engagement >= 40 => hot` cutoff in `recomputeLeadRating` — kept in one
+ * place so the "hot" rule stays consistent across the app.
+ *
+ * Reading the score directly (not only `rating`) is deliberate: many contacts
+ * carry an engagement score with no behavior events for the event-based
+ * rating pipeline to re-derive it from, so gating purely on `rating` showed
+ * "0 hot leads" for agents who clearly had high-engagement leads (BUG-2).
+ */
+const HOT_ENGAGEMENT_THRESHOLD = 40;
+const HOT_LEAD_OR_FILTER = `rating.eq.hot,engagement_score.gte.${HOT_ENGAGEMENT_THRESHOLD}`;
+
 const DEFAULT_QUICK_ACTIONS: MobileDashboardQuickAction[] = [
   { key: "add_task", label: "Add task" },
   { key: "create_appointment", label: "Appointment" },
@@ -104,9 +119,9 @@ function enrichAndSortPriorityAlerts(
 
 export async function getMobileDashboard(agentId: string): Promise<MobileDashboardResponse> {
   const now = new Date();
-  const { start: dayStart, end: dayEnd } = utcDayRange(now);
+  const { start: dayStart } = utcDayRange(now);
 
-  const [inbox, grouped, hotCountRes, todayEvents, nurtureRows, hotLeadRows] = await Promise.all([
+  const [inbox, grouped, hotCountRes, upcomingEvents, nurtureRows, hotLeadRows] = await Promise.all([
     getMobileInbox(agentId),
     listMobileTasksGrouped(agentId),
     supabaseAdmin
@@ -114,11 +129,16 @@ export async function getMobileDashboard(agentId: string): Promise<MobileDashboa
       .select("id", { count: "exact", head: true })
       .eq("agent_id", agentId as never)
       .is("merged_into_lead_id", null)
-      .eq("rating", "hot"),
+      .or(HOT_LEAD_OR_FILTER),
+    // Upcoming appointments, not just today's. The home summary copy reads
+    // "{appointments} appointments" (not "today"), and an empty count read as
+    // a bug to agents who had appointments booked for later this week (BUG-3).
+    // From start-of-today so an appointment earlier today still counts;
+    // `listMobileCalendarEvents` defaults the upper bound to +90d and already
+    // filters status='scheduled'.
     listMobileCalendarEvents({
       agentId,
       fromIso: dayStart.toISOString(),
-      toIso: dayEnd.toISOString(),
     }),
     supabaseAdmin
       .from("nurture_alerts")
@@ -131,7 +151,7 @@ export async function getMobileDashboard(agentId: string): Promise<MobileDashboa
       .select("id,name,last_activity_at")
       .eq("agent_id", agentId as never)
       .is("merged_into_lead_id", null)
-      .eq("rating", "hot")
+      .or(HOT_LEAD_OR_FILTER)
       .order("last_activity_at", { ascending: false, nullsFirst: false })
       .limit(5),
   ]);
@@ -141,11 +161,22 @@ export async function getMobileDashboard(agentId: string): Promise<MobileDashboa
   const hotRows = hotLeadRows.error ? [] : (hotLeadRows.data ?? []);
 
   const unreadThreads = inbox.filter((t) => t.lastDirection === "inbound");
+  // Home summary copy reads "{tasks} tasks" (not "today"), so this is the
+  // agent's actionable open-task count, not a due-today count. Bucketing on
+  // due date alone dropped tasks with no/future due dates into `upcoming`,
+  // which showed "0 tasks" for agents who clearly had open work (BUG-1).
+  // `listMobileTasksGrouped` already filters `status = 'open'`, so summing the
+  // three buckets == total open tasks. Field name kept as `tasksToday` for
+  // wire-compat with the shipped v1.6 app that reads `stats.tasksToday`.
+  const openTaskCount =
+    grouped.overdue.length + grouped.today.length + grouped.upcoming.length;
   const stats: MobileDashboardStats = {
     hotLeads: hotCountRes.count ?? 0,
     unreadMessages: unreadThreads.length,
-    tasksToday: grouped.today.length,
-    appointmentsToday: todayEvents.length,
+    tasksToday: openTaskCount,
+    // Field name kept as `appointmentsToday` for wire-compat with the shipped
+    // v1.6 app; value is now the upcoming-appointment count (see above).
+    appointmentsToday: upcomingEvents.length,
   };
 
   const priorityAlerts: MobileDashboardPriorityAlert[] = [];

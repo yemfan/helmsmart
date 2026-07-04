@@ -29,8 +29,10 @@ export async function listMobileLeads(params: {
   page: number;
   pageSize: number;
   filter?: string;
+  /** Free-text search across name / phone / email (contact picker autocomplete). */
+  search?: string;
 }): Promise<MobileLeadsListResponseDto> {
-  const { agentId, page, pageSize, filter } = params;
+  const { agentId, page, pageSize, filter, search } = params;
   const size = Math.min(Math.max(pageSize, 1), 100);
   const pageIndex = Math.max(page, 1);
   const from = (pageIndex - 1) * size;
@@ -44,6 +46,17 @@ export async function listMobileLeads(params: {
     .order("last_activity_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .range(from, to);
+
+  // Contact-picker autocomplete: match name / phone / email. Strip the
+  // characters PostgREST uses to delimit an `.or()` filter (`,` `(` `)` and
+  // the `*` wildcard) so a user typing them can't break or inject into the
+  // query; a plain substring search is all the picker needs.
+  const term = (search ?? "").trim().replace(/[,()*%]/g, "");
+  if (term) {
+    q = q.or(
+      `name.ilike.%${term}%,phone.ilike.%${term}%,phone_number.ilike.%${term}%,email.ilike.%${term}%`
+    );
+  }
 
   if (filter === "hot") q = q.eq("rating", "hot");
   else if (filter === "inactive") {

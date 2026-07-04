@@ -293,10 +293,14 @@ export default function CalendarScreen() {
                 key={task.id}
                 task={task}
                 showLeadName
-                onPress={() => {
-                  hapticRowTap();
-                  router.push(`/lead/${task.contact_id}`);
-                }}
+                onPress={
+                  task.contact_id
+                    ? () => {
+                        hapticRowTap();
+                        router.push(`/lead/${task.contact_id}`);
+                      }
+                    : undefined
+                }
                 onComplete={() => void completeTask(task.id)}
                 completing={completingTaskId === task.id}
               />

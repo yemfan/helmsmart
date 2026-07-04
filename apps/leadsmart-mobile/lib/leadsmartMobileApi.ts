@@ -399,6 +399,8 @@ export async function fetchMobileLeads(params: {
   page?: number;
   pageSize?: number;
   filter?: MobileLeadsFilter;
+  /** Free-text search across name / phone / email (contact picker). */
+  search?: string;
 }): Promise<MobileLeadsSuccess | MobileApiFailure> {
   const page = params.page ?? 1;
   const pageSize = params.pageSize ?? 30;
@@ -407,6 +409,8 @@ export async function fetchMobileLeads(params: {
     pageSize: String(pageSize),
   });
   if (params.filter) q.set("filter", params.filter);
+  const term = params.search?.trim();
+  if (term) q.set("q", term);
 
   const res = await mobileGet<LeadsJson>(`${MOBILE_API_PATHS.leads}?${q.toString()}`);
   if (res.ok === false) return res;

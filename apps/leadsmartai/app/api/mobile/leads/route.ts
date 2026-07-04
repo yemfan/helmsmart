@@ -13,6 +13,7 @@ export async function GET(req: Request) {
     const page = Number(url.searchParams.get("page") ?? "1");
     const pageSize = Number(url.searchParams.get("pageSize") ?? "30");
     const filter = (url.searchParams.get("filter") ?? "").trim();
+    const search = (url.searchParams.get("q") ?? "").trim();
 
     const result = await listMobileLeads({
       agentId: auth.ctx.agentId,
@@ -22,6 +23,7 @@ export async function GET(req: Request) {
         filter === "hot" || filter === "inactive" || filter === "high_deal_potential"
           ? filter
           : undefined,
+      search: search || undefined,
     });
 
     return NextResponse.json({
