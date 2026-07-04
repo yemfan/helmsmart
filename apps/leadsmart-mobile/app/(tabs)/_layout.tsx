@@ -87,8 +87,8 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="boss"
           options={{
-            title: "Boss",
-            tabBarLabel: "Boss",
+            title: "Bossy",
+            tabBarLabel: "Bossy",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="sparkles-outline" size={size} color={color} />
             ),
