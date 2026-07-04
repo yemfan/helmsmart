@@ -1,4 +1,5 @@
 import { supabaseServer } from "@/lib/supabaseServer";
+import { encryptToken, decryptTokenLenient } from "@/lib/leads-gen/token-enc";
 import { getGoogleOAuthConfig } from "./config";
 
 type OAuthToken = {
@@ -20,10 +21,14 @@ async function getValidToken(agentId: string): Promise<string | null> {
 
   if (!data) return null;
   const token = data as unknown as OAuthToken;
+  // Tokens are stored AES-256-GCM encrypted; lenient decrypt tolerates any
+  // legacy plaintext row until it's rewritten on the next refresh.
+  const accessToken = decryptTokenLenient(token.access_token);
+  const refreshToken = decryptTokenLenient(token.refresh_token);
 
   // Check if token is expired
   if (token.expires_at && new Date(token.expires_at).getTime() < Date.now() + 60_000) {
-    if (!token.refresh_token) return null;
+    if (!refreshToken) return null;
 
     // Refresh the token
     const { clientId, clientSecret } = getGoogleOAuthConfig();
@@ -33,7 +38,7 @@ async function getValidToken(agentId: string): Promise<string | null> {
       body: new URLSearchParams({
         client_id: clientId,
         client_secret: clientSecret,
-        refresh_token: token.refresh_token,
+        refresh_token: refreshToken,
         grant_type: "refresh_token",
       }),
     });
@@ -48,7 +53,7 @@ async function getValidToken(agentId: string): Promise<string | null> {
     await supabaseServer
       .from("agent_oauth_tokens")
       .update({
-        access_token: body.access_token,
+        access_token: encryptToken(body.access_token),
         expires_at: newExpires,
         updated_at: new Date().toISOString(),
       })
@@ -58,7 +63,7 @@ async function getValidToken(agentId: string): Promise<string | null> {
     return body.access_token;
   }
 
-  return token.access_token;
+  return accessToken;
 }
 
 /**
