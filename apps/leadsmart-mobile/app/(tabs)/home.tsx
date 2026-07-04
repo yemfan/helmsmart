@@ -17,7 +17,6 @@ import {
 } from "react-native";
 import { ErrorBanner } from "../../components/ErrorBanner";
 import { BrandRefreshControl } from "../../components/BrandRefreshControl";
-import { BriefingsCard } from "../../components/home/BriefingsCard";
 import { DailyAgendaList } from "../../components/home/DailyAgendaList";
 import { EngagementCard } from "../../components/home/EngagementCard";
 import { NextPostSuggestionCard } from "../../components/home/NextPostSuggestionCard";
@@ -348,8 +347,6 @@ export default function HomeScreen() {
           </Text>
           <Text style={styles.summaryLine}>{summaryLine}</Text>
         </View>
-
-        <BriefingsCard />
 
         <NextPostSuggestionCard />
 
