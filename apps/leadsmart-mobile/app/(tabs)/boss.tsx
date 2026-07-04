@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -37,6 +38,9 @@ import {
   type MobileBossTask,
 } from "../../lib/leadsmartMobileApi";
 
+// Bossy's profile avatar — the RealtyBoss mascot app icon.
+const BOSS_AVATAR = require("../../assets/icon.png");
+
 /**
  * Boss Assistant — the mobile command center. Mirrors the web
  * (apps/leadsmartai/app/dashboard/boss/BossAssistantClient.tsx): the Boss
@@ -52,7 +56,7 @@ const ASSIGNEE_LABEL: Record<string, string> = {
   transaction_assistant: "Transaction Assistant",
   accountant: "Accountant",
   realtor: "For your review",
-  boss_assistant: "Boss",
+  boss_assistant: "Bossy",
 };
 const CHANNEL_LABEL: Record<MobileAutopilotChannel, string> = {
   call: "Call",
@@ -89,7 +93,7 @@ export default function BossScreen() {
     for (const a of team) if (a.name) m[a.type] = a.name;
     return m;
   }, [team]);
-  const bossName = teamNames["boss_assistant"] || "Boss";
+  const bossName = teamNames["boss_assistant"] || "Bossy";
 
   const loadConversation = useCallback(async () => {
     const res = await fetchBossConversation(8);
@@ -199,7 +203,7 @@ export default function BossScreen() {
         <View style={s.headerRow}>
           <View style={s.identity}>
             <View style={s.bossAvatar}>
-              <Ionicons name="sparkles" size={18} color={tokens.textOnAccent} />
+              <Image source={BOSS_AVATAR} style={s.bossAvatarImg} resizeMode="cover" />
             </View>
             <View style={{ flexShrink: 1 }}>
               <Text style={s.bossName}>{bossName}</Text>
@@ -382,7 +386,7 @@ function BossBubble({ tokens, s, children }: { tokens: ThemeTokens; s: Styles; c
   return (
     <View style={s.bossRow}>
       <View style={s.bossDot}>
-        <Ionicons name="sparkles" size={13} color={tokens.textOnAccent} />
+        <Image source={BOSS_AVATAR} style={s.bossDotImg} resizeMode="cover" />
       </View>
       <View style={s.bossBubble}>{children}</View>
     </View>
@@ -576,7 +580,8 @@ const createStyles = (t: ThemeTokens) =>
     content: { padding: 16, paddingBottom: 24, gap: 10 },
     headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 },
     identity: { flexDirection: "row", alignItems: "center", gap: 10, flexShrink: 1 },
-    bossAvatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: t.accent, alignItems: "center", justifyContent: "center" },
+    bossAvatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: t.accent, alignItems: "center", justifyContent: "center", overflow: "hidden" },
+    bossAvatarImg: { width: 36, height: 36 },
     bossName: { fontSize: 17, fontWeight: "700", color: t.text },
     bossSub: { fontSize: 12, color: t.textMuted },
     headerActions: { flexDirection: "row", alignItems: "center", gap: 8 },
@@ -587,7 +592,8 @@ const createStyles = (t: ThemeTokens) =>
     gear: { width: 34, height: 34, borderRadius: 17, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: t.border, backgroundColor: t.surface },
     loadingBox: { paddingVertical: 40, alignItems: "center" },
     bossRow: { flexDirection: "row", gap: 8, alignItems: "flex-start" },
-    bossDot: { width: 28, height: 28, borderRadius: 14, backgroundColor: t.accent, alignItems: "center", justifyContent: "center", marginTop: 2 },
+    bossDot: { width: 28, height: 28, borderRadius: 14, backgroundColor: t.accent, alignItems: "center", justifyContent: "center", marginTop: 2, overflow: "hidden" },
+    bossDotImg: { width: 28, height: 28 },
     bossBubble: { flex: 1, backgroundColor: t.surface, borderWidth: 1, borderColor: t.border, borderRadius: 14, borderTopLeftRadius: 4, padding: 12 },
     bodyText: { fontSize: 14, color: t.text, lineHeight: 20 },
     mutedText: { fontSize: 14, color: t.textMuted },
