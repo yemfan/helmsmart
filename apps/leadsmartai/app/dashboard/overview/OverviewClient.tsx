@@ -32,11 +32,16 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
     ]);
 
     if (summaryRes.ok !== false) {
+      // `/api/dashboard/summary` nests these under `metrics` (and names the
+      // inactive count `inactive7Days`). Reading them off the top level left
+      // every stat card stuck at 0 while Plan Usage / the briefing — which
+      // read the correct shape — showed real numbers.
+      const m = summaryRes.metrics ?? {};
       setStats({
-        totalLeads: summaryRes.totalLeads ?? 0,
-        hotLeads: summaryRes.hotLeads ?? 0,
-        messagesSent: summaryRes.messagesSent ?? 0,
-        inactiveLeads: summaryRes.inactiveLeads ?? 0,
+        totalLeads: m.totalLeads ?? 0,
+        hotLeads: m.hotLeads ?? 0,
+        messagesSent: m.messagesSent ?? 0,
+        inactiveLeads: m.inactive7Days ?? 0,
       });
     }
 
