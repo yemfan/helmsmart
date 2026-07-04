@@ -5,7 +5,7 @@ import type {
 } from "@leadsmart/shared";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCachedFetch } from "../../lib/offline/useCachedFetch";
 import {
@@ -31,20 +31,8 @@ import {
   fetchMobileScheduledPosts,
 } from "../../lib/leadsmartMobileApi";
 import type { MobileApiFailure } from "../../lib/leadsmartMobileApi";
-import { getSupabaseAuthClient } from "../../lib/supabaseAuthClient";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";
-
-/**
- * Returns the i18n key under `home.greeting.*` matching the
- * current hour. Caller passes the result to `t()`.
- */
-function getGreetingKey(): "greeting.morning" | "greeting.afternoon" | "greeting.evening" {
-  const h = new Date().getHours();
-  if (h < 12) return "greeting.morning";
-  if (h < 17) return "greeting.afternoon";
-  return "greeting.evening";
-}
 
 function formatAgendaDayLabel(agendaDate: string, locale: string): string {
   try {
@@ -74,7 +62,6 @@ export default function HomeScreen() {
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
   const { t, i18n } = useTranslation(["home", "common"]);
-  const [firstName, setFirstName] = useState<string | null>(null);
   const [queueCount, setQueueCount] = useState(0);
   /** Counts for the Home chip row. `scheduledUpcoming` = posts
    *  awaiting cron pickup; `scheduledFailed` = terminal failures
@@ -134,18 +121,6 @@ export default function HomeScreen() {
   const agendaDate = agendaData?.agendaDate ?? "";
   const agendaItems = agendaData?.items ?? [];
   const initialDone = !dashLoading || dashData !== null;
-
-  useEffect(() => {
-    const sb = getSupabaseAuthClient();
-    if (!sb) return;
-    void sb.auth.getSession().then(({ data }) => {
-      const u = data.session?.user as { email?: string; user_metadata?: { full_name?: string } } | undefined;
-      const meta = u?.user_metadata;
-      const raw = meta?.full_name?.trim() || u?.email?.split("@")[0]?.trim() || "";
-      const first = raw.split(/\s+/)[0];
-      setFirstName(first || null);
-    });
-  }, []);
 
   // Queue count + scheduled-posts count stay as focus-effect
   // fetches (low-value for caching; agent expects fresh numbers
@@ -327,13 +302,6 @@ export default function HomeScreen() {
     );
   }
 
-  const displayName = firstName?.trim() || t("greeting.fallback_name");
-  const summaryLine = t("summary", {
-    hot: stats.hotLeads,
-    tasks: stats.tasksToday,
-    appointments: stats.appointmentsToday,
-  });
-
   return (
     <FadeIn style={styles.root}>
       <ScrollView
@@ -341,13 +309,6 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
         refreshControl={<BrandRefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        <View style={styles.heroBlock}>
-          <Text style={styles.greeting}>
-            {t(getGreetingKey())}, {displayName}
-          </Text>
-          <Text style={styles.summaryLine}>{summaryLine}</Text>
-        </View>
-
         <NextPostSuggestionCard />
 
         <EngagementCard />
@@ -509,14 +470,6 @@ const createStyles = (theme: ThemeTokens) => StyleSheet.create({
     justifyContent: "flex-start",
   },
   heroBlock: { paddingBottom: 4 },
-  greeting: { fontSize: 26, fontWeight: "800", color: theme.text, letterSpacing: -0.3 },
-  summaryLine: {
-    marginTop: 10,
-    fontSize: 15,
-    fontWeight: "500",
-    color: theme.textMuted,
-    lineHeight: 22,
-  },
   rule: {
     height: 1,
     backgroundColor: theme.border,
