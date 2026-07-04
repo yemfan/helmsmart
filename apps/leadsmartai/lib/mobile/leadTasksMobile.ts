@@ -64,6 +64,8 @@ function bucketForDue(due: string | null): "overdue" | "today" | "upcoming" {
 export async function listMobileTasksGrouped(agentId: string): Promise<MobileTasksGroupedResponseDto> {
   const stages: MobilePipelineStageOptionDto[] = await listMobilePipelineStages(agentId);
 
+  // Lead-name lookup for the agent's active contacts, so contact-linked tasks
+  // render the lead name. Not every task has a contact, though — see below.
   const { data: leads, error: leErr } = await supabaseAdmin
     .from("contacts")
     .select("id,name")
@@ -72,28 +74,23 @@ export async function listMobileTasksGrouped(agentId: string): Promise<MobileTas
 
   if (leErr) throw new Error(leErr.message);
   const leadRows = leads ?? [];
-  const leadIds = leadRows.map((l) => String((l as { id: unknown }).id));
   const nameById = new Map<string, string | null>();
   for (const l of leadRows) {
     const r = l as { id: unknown; name: unknown };
     nameById.set(String(r.id), r.name != null ? String(r.name) : null);
   }
 
-  const empty: MobileTasksGroupedResponseDto = {
-    stages,
-    overdue: [],
-    today: [],
-    upcoming: [],
-  };
-
-  if (!leadIds.length) return empty;
-
+  // Key the task query on `agent_id` (the canonical owner column) rather than
+  // on contact membership. The previous `.in("contact_id", leadIds)` form
+  // silently dropped every task with a NULL contact_id — e.g. automation-
+  // created open-house / inspection / review tasks — so they never appeared
+  // in the app and never counted toward the home "tasks" stat (BUG-1).
   const { data: tasks, error: tErr } = await supabaseAdmin
     .from("crm_tasks")
     .select(
       "id,contact_id,title,description,due_at,status,priority,task_type,created_at,updated_at,completed_at"
     )
-    .in("contact_id", leadIds as never)
+    .eq("agent_id", agentId as never)
     .eq("status", "open")
     .order("due_at", { ascending: true, nullsFirst: false });
 
@@ -105,8 +102,11 @@ export async function listMobileTasksGrouped(agentId: string): Promise<MobileTas
 
   for (const t of tasks ?? []) {
     const row = t as Record<string, unknown>;
-    const leadId = String(row.contact_id ?? "");
-    const dto = mapRow(row, nameById.get(leadId) ?? null);
+    // Contact-less tasks map to a null lead name; `mapRow` normalizes a
+    // missing contact_id to "" so the DTO stays string-typed and the UI can
+    // gate lead navigation on a truthy id.
+    const leadId = row.contact_id != null ? String(row.contact_id) : "";
+    const dto = mapRow(row, leadId ? nameById.get(leadId) ?? null : null);
     const b = bucketForDue(dto.due_at);
     if (b === "overdue") overdue.push(dto);
     else if (b === "today") today.push(dto);

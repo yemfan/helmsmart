@@ -13,6 +13,8 @@ export type LeadQuickActionsRowProps = {
   leadId: string;
   displayPhone: string | null | undefined;
   email: string;
+  /** Contact's display name — used to personalize the AI reply notice (never the raw id). */
+  leadName?: string | null;
   /** When true, four equal-width actions in one row (lead detail wireframe). */
   toolbar?: boolean;
 };
@@ -78,7 +80,7 @@ function callErrorDetail(
   }
 }
 
-export function LeadQuickActionsRow({ leadId, displayPhone, email, toolbar }: LeadQuickActionsRowProps) {
+export function LeadQuickActionsRow({ leadId, displayPhone, email, leadName, toolbar }: LeadQuickActionsRowProps) {
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
   const { t } = useTranslation("lead_components");
@@ -165,10 +167,10 @@ export function LeadQuickActionsRow({ leadId, displayPhone, email, toolbar }: Le
       }
       if (key === "ai") {
         hapticButtonPress();
-        presentAiQuickReplyPlaceholder(leadId, "choose");
+        presentAiQuickReplyPlaceholder(leadId, "choose", leadName);
       }
     },
-    [leadId, phone, emailTrimmed, onCall, t],
+    [leadId, phone, emailTrimmed, leadName, onCall, t],
   );
 
   const enabled = (key: ActionKey) => {

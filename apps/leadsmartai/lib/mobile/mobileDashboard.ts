@@ -141,10 +141,19 @@ export async function getMobileDashboard(agentId: string): Promise<MobileDashboa
   const hotRows = hotLeadRows.error ? [] : (hotLeadRows.data ?? []);
 
   const unreadThreads = inbox.filter((t) => t.lastDirection === "inbound");
+  // Home summary copy reads "{tasks} tasks" (not "today"), so this is the
+  // agent's actionable open-task count, not a due-today count. Bucketing on
+  // due date alone dropped tasks with no/future due dates into `upcoming`,
+  // which showed "0 tasks" for agents who clearly had open work (BUG-1).
+  // `listMobileTasksGrouped` already filters `status = 'open'`, so summing the
+  // three buckets == total open tasks. Field name kept as `tasksToday` for
+  // wire-compat with the shipped v1.6 app that reads `stats.tasksToday`.
+  const openTaskCount =
+    grouped.overdue.length + grouped.today.length + grouped.upcoming.length;
   const stats: MobileDashboardStats = {
     hotLeads: hotCountRes.count ?? 0,
     unreadMessages: unreadThreads.length,
-    tasksToday: grouped.today.length,
+    tasksToday: openTaskCount,
     appointmentsToday: todayEvents.length,
   };
 

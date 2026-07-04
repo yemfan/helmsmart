@@ -547,6 +547,7 @@ export default function LeadDetailScreen() {
           leadId={lead.id}
           displayPhone={lead.display_phone}
           email={leadField(lead, "email")}
+          leadName={leadField(lead, "name") || undefined}
         />
 
         <SectionRule />
@@ -673,6 +674,7 @@ export default function LeadDetailScreen() {
         <AppointmentComposerModal
           visible={appointmentModalOpen}
           leadIdFixed={lead.id}
+          leadNameFixed={leadField(lead, "name") || undefined}
           onClose={() => setAppointmentModalOpen(false)}
           onCreated={() => {
             void silentRefresh();

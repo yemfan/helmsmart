@@ -41,6 +41,11 @@
     "placeholder_lead_id": "Lead ID",
     "placeholder_title": "Title (e.g. Showing · 123 Main St)",
     "placeholder_notes": "Notes (optional)",
+    "label_contact": "Contact",
+    "placeholder_contact_search": "Search by name or phone…",
+    "contact_searching": "Searching…",
+    "contact_no_results": "No matching contacts",
+    "contact_clear_a11y": "Clear selected contact",
     "label_starts_in": "Starts in",
     "offsets": {
       "1h": "1h",
@@ -51,6 +56,7 @@
     },
     "errors": {
       "lead_id_required": "Lead ID is required.",
+      "contact_required": "Choose a contact for this appointment.",
       "title_required": "Add a title."
     }
   },
