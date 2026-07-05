@@ -160,14 +160,15 @@ const TEAM_CARD: CardDef = {
   ],
   footnote: "Up to 5 team seats — contact sales for more.",
   cta: "Contact sales",
-  secondaryLink: { label: "View team checkout →", href: "/contact?topic=team" },
+  secondaryLink: { label: "Talk to sales →", href: "/contact?topic=team" },
 };
 
 const PRICES: Record<PlanSlug, { monthly: number; annual: number | null }> = {
   starter: { monthly: 0, annual: null },
-  pro: { monthly: 49, annual: 490 },
-  premium: { monthly: 99, annual: 990 },
-  signature: { monthly: 249, annual: 2490 },
+  pro: { monthly: 79, annual: 790 },
+  premium: { monthly: 199, annual: 1990 },
+  signature: { monthly: 399, annual: 3990 },
+  // Team is sales-led (per-seat) — PriceBlock renders "Custom", not these.
   team: { monthly: 299, annual: 2990 },
 };
 
@@ -255,6 +256,21 @@ function PriceBlock({
           ].join(" ")}
         >
           Free
+        </span>
+      </div>
+    );
+  }
+  if (slug === "team") {
+    // Per-seat pricing is sales-led — no self-serve number on the card.
+    return (
+      <div className="flex items-baseline gap-1">
+        <span
+          className={[
+            "text-3xl font-semibold tracking-tight",
+            signatureLook ? "text-white" : "text-gray-900",
+          ].join(" ")}
+        >
+          Custom
         </span>
       </div>
     );
