@@ -82,6 +82,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
       "Reviews & testimonial capture",
       "Mobile app",
       "100 AI actions / month",
+      "15 AI voice minutes / month",
     ],
   },
   growth: {
@@ -109,6 +110,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
       "Sphere prediction + equity signals",
       "Buyer Broker Agreement (BBA) workflow",
       "5,000 AI actions / month",
+      "100 AI voice minutes / month",
     ],
   },
   elite: {
@@ -132,6 +134,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
       "E-signature workflow (Dotloop / DocuSign)",
       "Advanced AI coaching + peer benchmarks",
       "Unlimited AI actions",
+      "300 AI voice minutes / month",
       "Priority support",
     ],
   },
@@ -155,6 +158,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Premium, plus:",
+      "600 AI voice minutes / month",
       "Sphere Intelligence Pro — equity tracking, life-event signals, referral mapping",
       "White-glove onboarding — 1:1 setup with a specialist, sphere import included",
       "Concierge support — priority response, named account contact",
@@ -177,6 +181,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Premium, plus:",
+      "900 AI voice minutes / month (pooled across seats)",
       "Up to 5 team seats (contact sales for more)",
       "Round-robin lead routing across the roster",
       "Per-member breakdown reporting",

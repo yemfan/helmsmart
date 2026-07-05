@@ -4,17 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check, ArrowRight, Loader2 } from "lucide-react";
 import { PLAN_CATALOG } from "@/lib/entitlements/planCatalog";
+import { PLANS, type PlanSlug } from "@/lib/billing/plans";
 import type { AgentPlanId } from "@/lib/entitlements/types";
 import type { PlanCatalogEntry } from "@/lib/entitlements/planCatalog";
 
 const ORDER: AgentPlanId[] = ["starter", "growth", "elite"];
 
-const PLAN_CHECKOUT: Record<string, { plan: string; price: string } | null> = {
+// Entitlement slug → billing slug. The displayed price is derived from the
+// PLANS catalog (single source of truth) so it never drifts from checkout.
+const PLAN_CHECKOUT: Record<string, { plan: PlanSlug } | null> = {
   starter: null,
-  growth: { plan: "pro", price: "$49/mo" },
-  elite: { plan: "premium", price: "$99/mo" },
-  signature: { plan: "signature", price: "$249/mo" },
-  team: { plan: "team", price: "$299/mo" },
+  growth: { plan: "pro" },
+  elite: { plan: "premium" },
+  signature: { plan: "signature" },
+  team: { plan: "team" },
 };
 
 function PlanCard({
@@ -76,7 +79,7 @@ function PlanCard({
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
           ) : (
             <>
-              Upgrade to {entry.label} &mdash; {checkout.price}
+              Upgrade to {entry.label} &mdash; {`$${PLANS[checkout.plan].price}/mo`}
               <ArrowRight className="h-4 w-4" aria-hidden />
             </>
           )}

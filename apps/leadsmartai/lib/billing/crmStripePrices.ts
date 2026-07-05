@@ -5,7 +5,7 @@ import { PLANS, type BillingCadence, type PlanSlug } from "@/lib/billing/plans";
  * Backward-compat env var aliases.
  *
  * The catalog renamed slugs to align with the marketing tiers
- * (Starter Free / Pro $49 / Premium $99 / Signature $249 / Team $299).
+ * (Starter Free / Pro $79 / Premium $199 / Signature $399 / Team).
  * The old deployments wired the $99 product to STRIPE_PRICE_ID_ELITE
  * and never had a STRIPE_PRICE_ID_PREMIUM. Keep the lookup forgiving
  * so existing .env.local files keep working — preferred name wins,
