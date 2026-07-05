@@ -14,6 +14,7 @@ import {
 } from "@/lib/voice-agent/lead-capture";
 import { logAssistantActivity } from "@/lib/realtyboss/activities";
 import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
+import { recordVoiceUsageForAgent } from "@/lib/entitlements/recordVoiceUsage";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -116,6 +117,37 @@ export async function POST(req: NextRequest) {
       // Only overwrite the placement note once we have a summary (call_analyzed).
       note: summary ? `AI call summary: ${summary}` : null,
     });
+
+    // Meter AI-voice usage against the owning agent's monthly entitlement,
+    // counted in WHOLE MINUTES (rounded up). Only on call_ended so each call
+    // is billed exactly once (call_analyzed would double-count). Best-effort
+    // in after() — metering must never affect the webhook response.
+    if (body.event === "call_ended") {
+      const secs = durationSeconds(call);
+      const direction = call.direction;
+      const toNumber = call.to_number ?? null;
+      const callId = call.call_id;
+      after(async () => {
+        try {
+          let agentId: string | null = null;
+          if (direction === "inbound" && toNumber) {
+            const resolved = await resolveAgentIdByReceptionistNumber(toNumber);
+            agentId = resolved != null ? String(resolved) : null;
+          } else {
+            const { data } = await supabaseAdmin
+              .from("call_logs")
+              .select("agent_id")
+              .eq("twilio_call_sid", callId)
+              .maybeSingle();
+            const a = (data as { agent_id: unknown } | null)?.agent_id;
+            agentId = a != null ? String(a) : null;
+          }
+          if (agentId) await recordVoiceUsageForAgent(agentId, secs);
+        } catch (e) {
+          console.error("retell/call-events: voice-minute metering failed", e);
+        }
+      });
+    }
 
     // A CONNECTED call with the caller — in either direction — resolves
     // any pending missed-call call-back ladder for them: they answered

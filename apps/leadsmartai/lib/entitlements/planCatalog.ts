@@ -31,6 +31,13 @@ export type PlanCatalogEntry = {
    */
   aiActionsPerMonth: number | null;
   /**
+   * Monthly cap on AI **voice** minutes (Retell receptionist + AI
+   * sales calls). Metered per call, rounded up to whole minutes.
+   * NULL = unlimited. For `team` this is the pooled base for the
+   * minimum roster; per-seat scaling is applied at enforcement time.
+   */
+  voiceMinutesPerMonth: number | null;
+  /**
    * LeadSmart AI Coaching programs bundled with this tier. Slugs
    * match `lib/coaching-programs/programs.ts:ProgramSlug`. Empty
    * array means no coaching access — the dashboard widget hides;
@@ -53,6 +60,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamAccess: false,
     teamSeatCap: 0,
     aiActionsPerMonth: 100,
+    voiceMinutesPerMonth: 15,
     coachingPrograms: [],
     bullets: [
       "Up to 5 leads · 50 contacts",
@@ -75,6 +83,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamAccess: false,
     teamSeatCap: 0,
     aiActionsPerMonth: 5000,
+    voiceMinutesPerMonth: 100,
     coachingPrograms: ["producer_track"],
     bullets: [
       "Everything in Starter, plus:",
@@ -100,6 +109,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamAccess: true,
     teamSeatCap: 10,
     aiActionsPerMonth: null,
+    voiceMinutesPerMonth: 300,
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Pro, plus:",
@@ -127,6 +137,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamAccess: true,
     teamSeatCap: 10,
     aiActionsPerMonth: null,
+    voiceMinutesPerMonth: 600,
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Premium, plus:",
@@ -147,6 +158,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamAccess: true,
     teamSeatCap: 5,
     aiActionsPerMonth: null,
+    voiceMinutesPerMonth: 900,
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Premium, plus:",
@@ -213,6 +225,7 @@ export function planRowFromCatalog(plan: AgentPlan): {
   reports_download_level: string;
   team_access: boolean;
   ai_actions_per_month: number | null;
+  voice_minutes_per_month: number | null;
 } {
   const p = PLAN_CATALOG[plan];
   return {
@@ -224,5 +237,6 @@ export function planRowFromCatalog(plan: AgentPlan): {
     reports_download_level: p.reportsDownloadLevel,
     team_access: p.teamAccess,
     ai_actions_per_month: p.aiActionsPerMonth,
+    voice_minutes_per_month: p.voiceMinutesPerMonth,
   };
 }

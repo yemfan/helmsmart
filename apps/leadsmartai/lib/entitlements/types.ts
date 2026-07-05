@@ -31,6 +31,7 @@ export type LimitReason =
   | "team_access_not_enabled"
   | "team_seat_cap_reached"
   | "ai_usage_limit_reached"
+  | "voice_minutes_limit_reached"
   | "crm_prediction_locked"
   | "crm_automation_locked"
   | "crm_full_ai_locked";
@@ -49,6 +50,8 @@ export type AgentEntitlement = {
   team_access: boolean;
   /** Per-month AI-action cap. NULL = unlimited. */
   ai_actions_per_month: number | null;
+  /** Per-month AI voice-minute cap (metered in whole minutes). NULL = unlimited. */
+  voice_minutes_per_month: number | null;
   starts_at: string | null;
   ends_at: string | null;
   /** Optional in DB; not in canonical Agent shape but persisted */
@@ -70,6 +73,8 @@ export type AgentUsageDaily = {
   contacts_used: number;
   report_downloads_used: number;
   ai_actions_used: number;
+  /** AI voice minutes consumed (whole minutes, rounded up per call). */
+  voice_minutes_used: number;
   created_at: string;
   updated_at: string;
 };
@@ -108,4 +113,5 @@ export type LimitMetric =
   | "contact"
   | "report_download"
   | "team_invite"
-  | "ai_action";
+  | "ai_action"
+  | "voice_minute";
