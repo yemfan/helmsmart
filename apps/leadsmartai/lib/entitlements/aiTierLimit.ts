@@ -19,9 +19,9 @@ import type { AgentPlan } from "./types";
  */
 export function aiDailyLimitForPlan(plan: AgentPlan | null): number | null {
   switch (plan) {
-    case "growth":
+    case "pro":
       return 10; // "Pro"
-    case "elite":
+    case "premium":
     case "signature":
     case "team":
       return null; // unlimited

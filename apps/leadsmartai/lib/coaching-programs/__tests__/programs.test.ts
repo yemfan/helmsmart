@@ -29,16 +29,16 @@ describe("coaching-programs / registry", () => {
 describe("canPlanAccessProgram", () => {
   it("Producer Track: starter excluded; growth + elite + signature + team included", () => {
     expect(canPlanAccessProgram({ plan: "starter", program: "producer_track" })).toBe(false);
-    expect(canPlanAccessProgram({ plan: "growth", program: "producer_track" })).toBe(true);
-    expect(canPlanAccessProgram({ plan: "elite", program: "producer_track" })).toBe(true);
+    expect(canPlanAccessProgram({ plan: "pro", program: "producer_track" })).toBe(true);
+    expect(canPlanAccessProgram({ plan: "premium", program: "producer_track" })).toBe(true);
     expect(canPlanAccessProgram({ plan: "signature", program: "producer_track" })).toBe(true);
     expect(canPlanAccessProgram({ plan: "team", program: "producer_track" })).toBe(true);
   });
 
   it("Top Producer Track: Premium + Signature + Team eligible; Starter + Pro excluded", () => {
     expect(canPlanAccessProgram({ plan: "starter", program: "top_producer_track" })).toBe(false);
-    expect(canPlanAccessProgram({ plan: "growth", program: "top_producer_track" })).toBe(false);
-    expect(canPlanAccessProgram({ plan: "elite", program: "top_producer_track" })).toBe(true);
+    expect(canPlanAccessProgram({ plan: "pro", program: "top_producer_track" })).toBe(false);
+    expect(canPlanAccessProgram({ plan: "premium", program: "top_producer_track" })).toBe(true);
     expect(canPlanAccessProgram({ plan: "signature", program: "top_producer_track" })).toBe(true);
     expect(canPlanAccessProgram({ plan: "team", program: "top_producer_track" })).toBe(true);
   });
@@ -51,8 +51,8 @@ describe("canPlanAccessProgram", () => {
 
 describe("planAutoEnrollsProgram", () => {
   it("Producer Track auto-enrolls on Pro, Premium, Signature, and Team", () => {
-    expect(planAutoEnrollsProgram({ plan: "growth", program: "producer_track" })).toBe(true);
-    expect(planAutoEnrollsProgram({ plan: "elite", program: "producer_track" })).toBe(true);
+    expect(planAutoEnrollsProgram({ plan: "pro", program: "producer_track" })).toBe(true);
+    expect(planAutoEnrollsProgram({ plan: "premium", program: "producer_track" })).toBe(true);
     expect(planAutoEnrollsProgram({ plan: "signature", program: "producer_track" })).toBe(true);
     expect(planAutoEnrollsProgram({ plan: "team", program: "producer_track" })).toBe(true);
   });
@@ -62,8 +62,8 @@ describe("planAutoEnrollsProgram", () => {
   });
 
   it("Top Producer Track auto-enrolls on Premium, Signature, and Team only", () => {
-    expect(planAutoEnrollsProgram({ plan: "growth", program: "top_producer_track" })).toBe(false);
-    expect(planAutoEnrollsProgram({ plan: "elite", program: "top_producer_track" })).toBe(true);
+    expect(planAutoEnrollsProgram({ plan: "pro", program: "top_producer_track" })).toBe(false);
+    expect(planAutoEnrollsProgram({ plan: "premium", program: "top_producer_track" })).toBe(true);
     expect(planAutoEnrollsProgram({ plan: "signature", program: "top_producer_track" })).toBe(true);
     expect(planAutoEnrollsProgram({ plan: "team", program: "top_producer_track" })).toBe(true);
   });
@@ -76,12 +76,12 @@ describe("programsForPlan", () => {
   });
 
   it("growth (Pro) → Producer Track only", () => {
-    const out = programsForPlan("growth").map((p) => p.slug);
+    const out = programsForPlan("pro").map((p) => p.slug);
     expect(out).toEqual(["producer_track"]);
   });
 
   it("elite (Premium) → both programs in display order", () => {
-    const out = programsForPlan("elite").map((p) => p.slug);
+    const out = programsForPlan("premium").map((p) => p.slug);
     expect(out).toEqual(["producer_track", "top_producer_track"]);
   });
 

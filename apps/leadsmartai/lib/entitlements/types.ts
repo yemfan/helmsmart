@@ -14,7 +14,7 @@ export type ProductKey = "leadsmart_agent";
  * uses the marketing names — `subscriptionAccess.mapAgentPlanToCrmSlug`
  * bridges the two.
  */
-export type AgentPlan = "starter" | "growth" | "elite" | "signature" | "team";
+export type AgentPlan = "starter" | "pro" | "premium" | "signature" | "team";
 
 /** @deprecated Prefer `AgentPlan` — kept for existing imports */
 export type AgentPlanId = AgentPlan;

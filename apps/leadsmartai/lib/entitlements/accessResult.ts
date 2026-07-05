@@ -184,7 +184,7 @@ export async function canUseAiAction(userId: string): Promise<AccessResult> {
   }
 
   const limit = entitlement.ai_actions_per_month;
-  // NULL = unlimited (Elite, or legacy rows not yet backfilled).
+  // NULL = unlimited (Premium, or legacy rows not yet backfilled).
   if (limit == null) {
     return {
       allowed: true,

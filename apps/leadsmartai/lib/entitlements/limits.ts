@@ -10,7 +10,7 @@ import {
 import { PLAN_CATALOG } from "./planCatalog";
 import type { AgentPlan, EntitlementCheckResult, LimitReason } from "./types";
 
-/** Negative = unlimited (legacy rows); NULL = unlimited (DB convention for Elite). */
+/** Negative = unlimited (legacy rows); NULL = unlimited (DB convention for Premium). */
 export function isUnlimitedLeadOrContactCap(n: number | null | undefined): boolean {
   if (n == null) return true;
   return typeof n === "number" && n < 0;
@@ -101,7 +101,7 @@ export async function canAddLead(
     allowed,
     reason: allowed
       ? null
-      : `You’ve reached your ${formatPlanLabel(ent.plan)} lead limit (${used}/${cap}). Upgrade to Growth to manage up to 500 leads.`,
+      : `You’ve reached your ${formatPlanLabel(ent.plan)} lead limit (${used}/${cap}). Upgrade to Pro to manage up to 500 leads.`,
     reasonCode: allowed ? null : ("lead_limit_reached" satisfies LimitReason),
     plan: ent.plan,
     product: ent.product,
@@ -181,7 +181,7 @@ export async function canDownloadFullReport(
       allowed,
       reason: allowed
         ? null
-        : "You’ve reached your daily report download limit on Starter. Upgrade to Growth for full exports.",
+        : "You’ve reached your daily report download limit on Starter. Upgrade to Pro for full exports.",
       reasonCode: allowed ? null : ("download_limit_reached" satisfies LimitReason),
       plan: ent.plan,
       product: ent.product,
@@ -232,7 +232,7 @@ export async function canUseAiAction(
   const cap = ent.ai_actions_per_month;
   const used = await getAiActionsUsedThisMonth(supabase, userId);
 
-  // NULL cap = unlimited (Elite, or legacy rows before migration).
+  // NULL cap = unlimited (Premium, or legacy rows before migration).
   if (cap == null) {
     return {
       allowed: true,
@@ -250,7 +250,7 @@ export async function canUseAiAction(
     allowed,
     reason: allowed
       ? null
-      : `You've used all ${cap} AI actions for the month on ${formatPlanLabel(ent.plan)}. Upgrade to Pro for 500 per month or Elite for unlimited.`,
+      : `You've used all ${cap} AI actions for the month on ${formatPlanLabel(ent.plan)}. Upgrade to Pro for 500 per month or Premium for unlimited.`,
     reasonCode: allowed ? null : ("ai_usage_limit_reached" satisfies LimitReason),
     plan: ent.plan,
     product: ent.product,
@@ -278,7 +278,7 @@ export async function canPlaceVoiceCall(
   const cap = ent.voice_minutes_per_month;
   const used = await getVoiceMinutesUsedThisMonth(supabase, userId);
 
-  // NULL cap = unlimited (Elite / Signature / Team, or legacy rows).
+  // NULL cap = unlimited (Premium / Signature / Team, or legacy rows).
   if (cap == null) {
     return {
       allowed: true,
@@ -395,7 +395,7 @@ export async function canInviteTeam(
   const allowed = ent.team_access === true;
   return {
     allowed,
-    reason: allowed ? null : "Team access is available on Elite. Upgrade to invite collaborators.",
+    reason: allowed ? null : "Team access is available on Premium. Upgrade to invite collaborators.",
     reasonCode: allowed ? null : ("team_access_not_enabled" satisfies LimitReason),
     plan: ent.plan,
     product: ent.product,

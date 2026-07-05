@@ -7,8 +7,8 @@ export const VOICE_OVERAGE_RATE_USD = 0.25;
 /** Canonical plan ids stored in product_entitlements.plan */
 export const AGENT_PLANS = [
   "starter",
-  "growth",
-  "elite",
+  "pro",
+  "premium",
   "signature",
   "team",
 ] as const;
@@ -16,7 +16,7 @@ export const AGENT_PLANS = [
 export type PlanCatalogEntry = {
   label: string;
   cmaReportsPerDay: number;
-  /** null = unlimited (Elite); negative kept for legacy parity */
+  /** null = unlimited (Premium); negative kept for legacy parity */
   maxLeads: number | null;
   maxContacts: number | null;
   alertsLevel: "basic" | "full" | "advanced";
@@ -85,7 +85,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
       "15 AI voice minutes / month",
     ],
   },
-  growth: {
+  pro: {
     label: "Pro",
     cmaReportsPerDay: 5,
     maxLeads: 500,
@@ -113,8 +113,8 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
       "100 AI voice minutes / month",
     ],
   },
-  elite: {
-    label: "Elite",
+  premium: {
+    label: "Premium",
     cmaReportsPerDay: 10,
     maxLeads: null,
     maxContacts: null,
@@ -140,7 +140,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
   },
   signature: {
     // For relationship-driven agents serving high-value and bilingual
-    // clients. Inherits everything from Premium (`elite`) and adds the
+    // clients. Inherits everything from Premium and adds the
     // five Signature-only features. Display copy refinements + the
     // dark-navy/gold visual treatment live in the pricing-page work
     // (PR 3); this entry is the data spine.
@@ -208,14 +208,18 @@ export function voiceOverageUsd(plan: AgentPlan, minutesUsed: number): number {
  * Map a leadsmart_users.plan billing slug to the canonical AgentPlan used
  * by product_entitlements. The user row uses the marketing dialect
  * (free / pro / premium / signature / team — "free" stands in for starter);
- * entitlements use starter / growth / elite / signature / team.
+ * entitlements now use the same names (starter / pro / premium / signature /
+ * team). The old `growth` / `elite` slugs are still accepted as aliases.
  */
 export function planSlugToAgentPlan(slug: string | null | undefined): AgentPlan {
   switch ((slug ?? "").toLowerCase()) {
     case "pro":
-      return "growth";
+    // Legacy entitlement slug — kept so old rows / Stripe metadata resolve.
+    case "growth":
+      return "pro";
     case "premium":
-      return "elite";
+    case "elite":
+      return "premium";
     case "signature":
       return "signature";
     case "team":
@@ -234,9 +238,9 @@ export function planSlugToAgentPlan(slug: string | null | undefined): AgentPlan 
  */
 export function agentPlanToUserSlug(plan: AgentPlan): string {
   switch (plan) {
-    case "growth":
+    case "pro":
       return "pro";
-    case "elite":
+    case "premium":
       return "premium";
     case "signature":
       return "signature";

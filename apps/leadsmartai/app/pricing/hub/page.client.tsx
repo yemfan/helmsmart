@@ -43,7 +43,7 @@ const baseProducts: ProductCard[] = [
     price: "Free to start",
     description:
       "Lead capture, CRM, CMA workflow, follow-up tools, and AI-powered deal conversion.",
-    features: ["Starter / Growth / Elite", "CMA workflow", "Lead pipeline", "CRM + AI follow-up"],
+    features: ["Starter / Pro / Premium", "CMA workflow", "Lead pipeline", "CRM + AI follow-up"],
     href: "/pricing/agent",
   },
   {

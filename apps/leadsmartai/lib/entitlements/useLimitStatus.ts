@@ -9,7 +9,7 @@ import type { AgentLimitApiAction } from "./checkAgentLimitClient";
  *   - "ok"   — well below the cap
  *   - "near" — ≥80% of cap (warn the user it's coming)
  *   - "hit"  — at the cap (future requests will be blocked)
- *   - "unlimited" — no cap on this action (Elite, etc.)
+ *   - "unlimited" — no cap on this action (Premium, etc.)
  *   - "unknown" — still loading, or the server returned no data
  */
 export type LimitState = "ok" | "near" | "hit" | "unlimited" | "unknown";
