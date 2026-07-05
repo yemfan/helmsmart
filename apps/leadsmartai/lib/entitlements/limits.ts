@@ -291,16 +291,40 @@ export async function canPlaceVoiceCall(
     };
   }
 
-  const allowed = used < cap;
+  // Within the included allotment.
+  if (used < cap) {
+    return {
+      allowed: true,
+      reason: null,
+      reasonCode: null,
+      plan: ent.plan,
+      product: ent.product,
+      currentUsage: { voiceMinutesThisMonth: used },
+      limit: cap,
+    };
+  }
+
+  // At/over the cap. Paid tiers keep calling and bill overage
+  // (VOICE_OVERAGE_RATE_USD/min); the free Starter hard-stops.
+  const overageMinutes = used - cap;
+  if (PLAN_CATALOG[ent.plan]?.allowsVoiceOverage) {
+    return {
+      allowed: true,
+      reason: null,
+      reasonCode: null,
+      plan: ent.plan,
+      product: ent.product,
+      currentUsage: { voiceMinutesThisMonth: used, voiceOverageMinutes: overageMinutes },
+      limit: cap,
+    };
+  }
   return {
-    allowed,
-    reason: allowed
-      ? null
-      : `You've used all ${cap} AI voice minutes this month on ${formatPlanLabel(ent.plan)}. Upgrade for more minutes.`,
-    reasonCode: allowed ? null : ("voice_minutes_limit_reached" satisfies LimitReason),
+    allowed: false,
+    reason: `You've used all ${cap} AI voice minutes this month on ${formatPlanLabel(ent.plan)}. Upgrade to Pro for more minutes.`,
+    reasonCode: "voice_minutes_limit_reached" satisfies LimitReason,
     plan: ent.plan,
     product: ent.product,
-    currentUsage: { voiceMinutesThisMonth: used },
+    currentUsage: { voiceMinutesThisMonth: used, voiceOverageMinutes: overageMinutes },
     limit: cap,
   };
 }

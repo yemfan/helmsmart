@@ -1,5 +1,9 @@
 import type { AgentPlan } from "./types";
 
+/** Per-minute overage rate (USD) billed on AI voice minutes past the plan's
+ *  monthly cap, on tiers where `allowsVoiceOverage` is true. */
+export const VOICE_OVERAGE_RATE_USD = 0.25;
+
 /** Canonical plan ids stored in product_entitlements.plan */
 export const AGENT_PLANS = [
   "starter",
@@ -38,6 +42,12 @@ export type PlanCatalogEntry = {
    */
   voiceMinutesPerMonth: number | null;
   /**
+   * Whether the plan may exceed `voiceMinutesPerMonth` and bill overage
+   * (paid tiers, at `VOICE_OVERAGE_RATE_USD`/min) instead of hard-stopping
+   * at the cap (free Starter).
+   */
+  allowsVoiceOverage: boolean;
+  /**
    * LeadSmart AI Coaching programs bundled with this tier. Slugs
    * match `lib/coaching-programs/programs.ts:ProgramSlug`. Empty
    * array means no coaching access — the dashboard widget hides;
@@ -61,6 +71,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamSeatCap: 0,
     aiActionsPerMonth: 100,
     voiceMinutesPerMonth: 15,
+    allowsVoiceOverage: false,
     coachingPrograms: [],
     bullets: [
       "Up to 5 leads · 50 contacts",
@@ -84,6 +95,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamSeatCap: 0,
     aiActionsPerMonth: 5000,
     voiceMinutesPerMonth: 100,
+    allowsVoiceOverage: true,
     coachingPrograms: ["producer_track"],
     bullets: [
       "Everything in Starter, plus:",
@@ -110,6 +122,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamSeatCap: 10,
     aiActionsPerMonth: null,
     voiceMinutesPerMonth: 300,
+    allowsVoiceOverage: true,
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Pro, plus:",
@@ -138,6 +151,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamSeatCap: 10,
     aiActionsPerMonth: null,
     voiceMinutesPerMonth: 600,
+    allowsVoiceOverage: true,
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Premium, plus:",
@@ -159,6 +173,7 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamSeatCap: 5,
     aiActionsPerMonth: null,
     voiceMinutesPerMonth: 900,
+    allowsVoiceOverage: true,
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Premium, plus:",
@@ -171,6 +186,18 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     ],
   },
 };
+
+/**
+ * Dollar overage owed for a month's voice usage on a plan. Zero when the
+ * plan doesn't allow overage (Starter), has no finite cap, or usage is within
+ * the cap. Consumed by the billing job / usage UI.
+ */
+export function voiceOverageUsd(plan: AgentPlan, minutesUsed: number): number {
+  const p = PLAN_CATALOG[plan];
+  if (!p || !p.allowsVoiceOverage || p.voiceMinutesPerMonth == null) return 0;
+  const over = Math.max(0, minutesUsed - p.voiceMinutesPerMonth);
+  return Number((over * VOICE_OVERAGE_RATE_USD).toFixed(2));
+}
 
 /**
  * Map a leadsmart_users.plan billing slug to the canonical AgentPlan used
