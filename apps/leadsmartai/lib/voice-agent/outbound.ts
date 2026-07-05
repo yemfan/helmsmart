@@ -7,6 +7,7 @@ import {
   type OutboundPurpose,
 } from "@repo/voice";
 import { logOutboundCall } from "@/lib/missed-call/service";
+import { assertVoiceMinutesAvailableForAgent } from "@/lib/entitlements/voiceMinuteGate";
 
 /** Receptionist number + agent that place LeadSmart outbound AI calls. Single
  *  receptionist for now; when multiple agents/numbers exist this resolves from
@@ -29,6 +30,11 @@ export async function placeOutboundCall(args: {
   /** Extra context for the purpose, e.g. the appointment time for a reminder. */
   detail?: string;
 }): Promise<{ callId: string }> {
+  // Enforce the monthly AI voice-minute cap before dialing. Throws
+  // VoiceMinutesExceededError when exhausted (fail-open otherwise), so every
+  // caller — single, bulk, cron, callbacks, reminders — is gated in one place.
+  await assertVoiceMinutesAvailableForAgent(args.agentId);
+
   const dynamicVariables = buildOutboundDynamicVariables(args.ctx, {
     leadName: args.leadName,
     purpose: args.purpose ?? "follow_up",

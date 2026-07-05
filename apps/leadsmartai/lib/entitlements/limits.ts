@@ -259,6 +259,52 @@ export async function canUseAiAction(
   };
 }
 
+export async function canPlaceVoiceCall(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<EntitlementCheckResult> {
+  const ent = await getActiveAgentEntitlement(supabase, userId);
+  if (!ent) {
+    return {
+      allowed: false,
+      reason: "No active LeadSmart AI Agent entitlement.",
+      reasonCode: "no_agent_entitlement",
+      plan: null,
+      product: PRODUCT_LEADSMART_AGENT,
+      currentUsage: {},
+      limit: null,
+    };
+  }
+  const cap = ent.voice_minutes_per_month;
+  const used = await getVoiceMinutesUsedThisMonth(supabase, userId);
+
+  // NULL cap = unlimited (Elite / Signature / Team, or legacy rows).
+  if (cap == null) {
+    return {
+      allowed: true,
+      reason: null,
+      reasonCode: null,
+      plan: ent.plan,
+      product: ent.product,
+      currentUsage: { voiceMinutesThisMonth: used },
+      limit: null,
+    };
+  }
+
+  const allowed = used < cap;
+  return {
+    allowed,
+    reason: allowed
+      ? null
+      : `You've used all ${cap} AI voice minutes this month on ${formatPlanLabel(ent.plan)}. Upgrade for more minutes.`,
+    reasonCode: allowed ? null : ("voice_minutes_limit_reached" satisfies LimitReason),
+    plan: ent.plan,
+    product: ent.product,
+    currentUsage: { voiceMinutesThisMonth: used },
+    limit: cap,
+  };
+}
+
 /**
  * Sum ai_actions_used across the current UTC calendar month.
  * Reads the monthly rollup view added in 20260503000000_ai_action_quotas.
@@ -277,6 +323,26 @@ async function getAiActionsUsedThisMonth(
     .maybeSingle();
   const row = data as { ai_actions_used: number } | null;
   return row?.ai_actions_used ?? 0;
+}
+
+/**
+ * Sum voice_minutes_used across the current UTC calendar month, from the
+ * same monthly rollup view (extended to expose voice minutes).
+ */
+async function getVoiceMinutesUsedThisMonth(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<number> {
+  const monthStart = utcMonthStartDateString();
+  const { data } = await supabase
+    .from("entitlement_ai_usage_monthly")
+    .select("voice_minutes_used")
+    .eq("user_id", userId)
+    .eq("product", PRODUCT_LEADSMART_AGENT)
+    .eq("month_start", monthStart)
+    .maybeSingle();
+  const row = data as { voice_minutes_used: number } | null;
+  return row?.voice_minutes_used ?? 0;
 }
 
 function utcMonthStartDateString(): string {
