@@ -7,7 +7,8 @@ export type UsageCounterField =
   | "leads_used"
   | "contacts_used"
   | "report_downloads_used"
-  | "ai_actions_used";
+  | "ai_actions_used"
+  | "voice_minutes_used";
 
 /** UTC calendar date `YYYY-MM-DD` (matches `usage.ts` / DB `usage_date`). */
 function utcTodayDateString(): string {
@@ -64,12 +65,16 @@ export async function getTodayUsage(
 
 /**
  * Service-role: increment a counter for today (UTC) after ensuring the row exists.
+ * `amount` defaults to 1; pass a larger value for batched units (e.g. voice
+ * minutes, where one call consumes several whole minutes at once).
  */
 export async function incrementUsage(
   userId: string,
   field: UsageCounterField,
-  product: ProductKey | string = PRODUCT_LEADSMART_AGENT
+  product: ProductKey | string = PRODUCT_LEADSMART_AGENT,
+  amount = 1
 ): Promise<void> {
+  if (amount <= 0) return;
   const today = utcTodayDateString();
 
   await ensureDailyUsageRow(userId, product);
@@ -86,7 +91,7 @@ export async function incrementUsage(
 
   const raw = (current as Record<string, unknown> | null)?.[field];
   const prev = typeof raw === "number" ? raw : 0;
-  const nextValue = prev + 1;
+  const nextValue = prev + amount;
 
   const { error } = await supabaseAdmin
     .from("entitlement_usage_daily")

@@ -4,17 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check, ArrowRight, Loader2 } from "lucide-react";
 import { PLAN_CATALOG } from "@/lib/entitlements/planCatalog";
+import { PLANS, type PlanSlug } from "@/lib/billing/plans";
 import type { AgentPlanId } from "@/lib/entitlements/types";
 import type { PlanCatalogEntry } from "@/lib/entitlements/planCatalog";
 
-const ORDER: AgentPlanId[] = ["starter", "growth", "elite"];
+const ORDER: AgentPlanId[] = ["starter", "pro", "premium"];
 
-const PLAN_CHECKOUT: Record<string, { plan: string; price: string } | null> = {
+// Entitlement slug → billing slug. The displayed price is derived from the
+// PLANS catalog (single source of truth) so it never drifts from checkout.
+const PLAN_CHECKOUT: Record<string, { plan: PlanSlug } | null> = {
   starter: null,
-  growth: { plan: "pro", price: "$49/mo" },
-  elite: { plan: "premium", price: "$99/mo" },
-  signature: { plan: "signature", price: "$249/mo" },
-  team: { plan: "team", price: "$299/mo" },
+  pro: { plan: "pro" },
+  premium: { plan: "premium" },
+  signature: { plan: "signature" },
+  team: { plan: "team" },
 };
 
 function PlanCard({
@@ -49,8 +52,8 @@ function PlanCard({
       </div>
       <p className="mt-1 text-xs text-slate-500">
         {id === "starter" && "Entry workspace"}
-        {id === "growth" && "Scaling teams"}
-        {id === "elite" && "Unlimited scale + team"}
+        {id === "pro" && "Scaling teams"}
+        {id === "premium" && "Unlimited scale + team"}
       </p>
       <ul className="mt-4 space-y-2 text-sm text-slate-700">
         {entry.bullets.map((b) => (
@@ -76,7 +79,7 @@ function PlanCard({
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
           ) : (
             <>
-              Upgrade to {entry.label} &mdash; {checkout.price}
+              Upgrade to {entry.label} &mdash; {`$${PLANS[checkout.plan].price}/mo`}
               <ArrowRight className="h-4 w-4" aria-hidden />
             </>
           )}
@@ -90,7 +93,7 @@ function PlanCard({
       <div className="mt-4 text-xs text-slate-500">
         Upgrade path:{" "}
         <span className="font-medium text-slate-700">
-          Starter &rarr; Growth &rarr; Elite (higher caps + team)
+          Starter &rarr; Pro &rarr; Premium (higher caps + team)
         </span>
       </div>
     </div>
@@ -130,7 +133,7 @@ export function AgentPricingComparison() {
       <h2 className="text-2xl font-bold tracking-tight text-slate-900">Agent plans & limits</h2>
       <p className="mt-2 max-w-2xl text-sm text-slate-600">
         Every tier unlocks the same RealtyBoss Agent workspace — limits scale with your plan. Start on Starter, move
-        to Growth for pipeline volume, and Elite when you need automation + team seats.
+        to Pro for pipeline volume, and Premium when you need automation + team seats.
       </p>
 
       {error ? (
@@ -143,14 +146,14 @@ export function AgentPricingComparison() {
             key={id}
             id={id}
             entry={PLAN_CATALOG[id]}
-            highlight={id === "growth"}
+            highlight={id === "pro"}
             onUpgrade={handleUpgrade}
             upgrading={upgrading}
           />
         ))}
       </div>
       <p className="mt-8 text-center text-sm text-slate-600">
-        Need bilingual or luxury concierge? See <strong>Signature</strong> ($249/mo) and{" "}
+        Need bilingual or luxury concierge? See <strong>Signature</strong> ($399/mo) and{" "}
         <strong>Team</strong> ($299/mo) on the{" "}
         <Link href="/agent/pricing" className="font-semibold text-blue-700 hover:text-blue-800">
           full pricing page →

@@ -15,7 +15,7 @@ function getMessage(reason: LimitReason | null) {
     case "lead_limit_reached":
       return {
         title: "You’ve reached your lead limit",
-        body: "Upgrade to Growth to manage up to 500 leads and keep your pipeline moving.",
+        body: "Upgrade to Pro to manage up to 500 leads and keep your pipeline moving.",
       };
     case "cma_limit_reached":
       return {
@@ -25,7 +25,7 @@ function getMessage(reason: LimitReason | null) {
     case "contact_limit_reached":
       return {
         title: "Your CRM contact limit has been reached",
-        body: "Upgrade to Growth or Elite to continue adding contacts and scaling your business.",
+        body: "Upgrade to Pro or Premium to continue adding contacts and scaling your business.",
       };
     case "download_limit_reached":
       return {
@@ -35,7 +35,7 @@ function getMessage(reason: LimitReason | null) {
     case "team_access_not_enabled":
       return {
         title: "Team access is not enabled on your plan",
-        body: "Upgrade to Elite to invite teammates and collaborate inside your workspace.",
+        body: "Upgrade to Premium to invite teammates and collaborate inside your workspace.",
       };
     case "ai_usage_limit_reached":
       return {

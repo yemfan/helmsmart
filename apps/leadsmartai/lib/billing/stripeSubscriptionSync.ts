@@ -63,11 +63,11 @@ async function getProfileByCustomerEmail(email?: string | null) {
 }
 
 /**
- * Stripe `agent_starter` / `agent_pro` price IDs map to Growth / Elite limits in `product_entitlements`.
+ * Stripe `agent_starter` / `agent_pro` price IDs map to Pro / Premium limits in `product_entitlements`.
  */
 function billingPlanToAgentPlan(billingPlan: InternalPlan): AgentPlan {
-  if (billingPlan === "agent_starter") return "growth";
-  if (billingPlan === "agent_pro") return "elite";
+  if (billingPlan === "agent_starter") return "pro";
+  if (billingPlan === "agent_pro") return "premium";
   return "starter";
 }
 

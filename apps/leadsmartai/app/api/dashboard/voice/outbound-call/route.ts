@@ -3,6 +3,7 @@ import { loadReceptionistContext, loadSalesCallContext } from "@/lib/voice-agent
 import { placeOutboundCall } from "@/lib/voice-agent/outbound";
 import { normalizePhoneE164, type OutboundPurpose } from "@repo/voice";
 import { requireCrmFeature } from "@/lib/billing/guard";
+import { VoiceMinutesExceededError } from "@/lib/entitlements/voiceMinuteGate";
 
 export const runtime = "nodejs";
 
@@ -63,6 +64,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true, callId, to: r.value });
   } catch (e: unknown) {
+    if (e instanceof VoiceMinutesExceededError) {
+      return NextResponse.json(
+        { ok: false, error: e.message, code: e.code, used: e.used, limit: e.limit },
+        { status: 402 },
+      );
+    }
     const msg = e instanceof Error ? e.message : "Failed to place the call.";
     console.error("voice/outbound-call", e);
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });

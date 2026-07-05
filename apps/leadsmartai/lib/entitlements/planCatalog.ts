@@ -1,10 +1,14 @@
 import type { AgentPlan } from "./types";
 
+/** Per-minute overage rate (USD) billed on AI voice minutes past the plan's
+ *  monthly cap, on tiers where `allowsVoiceOverage` is true. */
+export const VOICE_OVERAGE_RATE_USD = 0.25;
+
 /** Canonical plan ids stored in product_entitlements.plan */
 export const AGENT_PLANS = [
   "starter",
-  "growth",
-  "elite",
+  "pro",
+  "premium",
   "signature",
   "team",
 ] as const;
@@ -12,7 +16,7 @@ export const AGENT_PLANS = [
 export type PlanCatalogEntry = {
   label: string;
   cmaReportsPerDay: number;
-  /** null = unlimited (Elite); negative kept for legacy parity */
+  /** null = unlimited (Premium); negative kept for legacy parity */
   maxLeads: number | null;
   maxContacts: number | null;
   alertsLevel: "basic" | "full" | "advanced";
@@ -30,6 +34,19 @@ export type PlanCatalogEntry = {
    * cap via `cmaReportsPerDay`.
    */
   aiActionsPerMonth: number | null;
+  /**
+   * Monthly cap on AI **voice** minutes (Retell receptionist + AI
+   * sales calls). Metered per call, rounded up to whole minutes.
+   * NULL = unlimited. For `team` this is the pooled base for the
+   * minimum roster; per-seat scaling is applied at enforcement time.
+   */
+  voiceMinutesPerMonth: number | null;
+  /**
+   * Whether the plan may exceed `voiceMinutesPerMonth` and bill overage
+   * (paid tiers, at `VOICE_OVERAGE_RATE_USD`/min) instead of hard-stopping
+   * at the cap (free Starter).
+   */
+  allowsVoiceOverage: boolean;
   /**
    * LeadSmart AI Coaching programs bundled with this tier. Slugs
    * match `lib/coaching-programs/programs.ts:ProgramSlug`. Empty
@@ -53,6 +70,8 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamAccess: false,
     teamSeatCap: 0,
     aiActionsPerMonth: 100,
+    voiceMinutesPerMonth: 15,
+    allowsVoiceOverage: false,
     coachingPrograms: [],
     bullets: [
       "Up to 5 leads · 50 contacts",
@@ -63,9 +82,10 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
       "Reviews & testimonial capture",
       "Mobile app",
       "100 AI actions / month",
+      "15 AI voice minutes / month",
     ],
   },
-  growth: {
+  pro: {
     label: "Pro",
     cmaReportsPerDay: 5,
     maxLeads: 500,
@@ -75,6 +95,8 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamAccess: false,
     teamSeatCap: 0,
     aiActionsPerMonth: 5000,
+    voiceMinutesPerMonth: 100,
+    allowsVoiceOverage: true,
     coachingPrograms: ["producer_track"],
     bullets: [
       "Everything in Starter, plus:",
@@ -88,10 +110,11 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
       "Sphere prediction + equity signals",
       "Buyer Broker Agreement (BBA) workflow",
       "5,000 AI actions / month",
+      "100 AI voice minutes / month",
     ],
   },
-  elite: {
-    label: "Elite",
+  premium: {
+    label: "Premium",
     cmaReportsPerDay: 10,
     maxLeads: null,
     maxContacts: null,
@@ -100,6 +123,8 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamAccess: true,
     teamSeatCap: 10,
     aiActionsPerMonth: null,
+    voiceMinutesPerMonth: 300,
+    allowsVoiceOverage: true,
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Pro, plus:",
@@ -109,12 +134,13 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
       "E-signature workflow (Dotloop / DocuSign)",
       "Advanced AI coaching + peer benchmarks",
       "Unlimited AI actions",
+      "300 AI voice minutes / month",
       "Priority support",
     ],
   },
   signature: {
     // For relationship-driven agents serving high-value and bilingual
-    // clients. Inherits everything from Premium (`elite`) and adds the
+    // clients. Inherits everything from Premium and adds the
     // five Signature-only features. Display copy refinements + the
     // dark-navy/gold visual treatment live in the pricing-page work
     // (PR 3); this entry is the data spine.
@@ -127,9 +153,12 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamAccess: true,
     teamSeatCap: 10,
     aiActionsPerMonth: null,
+    voiceMinutesPerMonth: 600,
+    allowsVoiceOverage: true,
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Premium, plus:",
+      "600 AI voice minutes / month",
       "Sphere Intelligence Pro — equity tracking, life-event signals, referral mapping",
       "White-glove onboarding — 1:1 setup with a specialist, sphere import included",
       "Concierge support — priority response, named account contact",
@@ -147,9 +176,12 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
     teamAccess: true,
     teamSeatCap: 5,
     aiActionsPerMonth: null,
+    voiceMinutesPerMonth: 900,
+    allowsVoiceOverage: true,
     coachingPrograms: ["producer_track", "top_producer_track"],
     bullets: [
       "Everything in Premium, plus:",
+      "900 AI voice minutes / month (pooled across seats)",
       "Up to 5 team seats (contact sales for more)",
       "Round-robin lead routing across the roster",
       "Per-member breakdown reporting",
@@ -161,17 +193,33 @@ export const PLAN_CATALOG: Record<AgentPlan, PlanCatalogEntry> = {
 };
 
 /**
+ * Dollar overage owed for a month's voice usage on a plan. Zero when the
+ * plan doesn't allow overage (Starter), has no finite cap, or usage is within
+ * the cap. Consumed by the billing job / usage UI.
+ */
+export function voiceOverageUsd(plan: AgentPlan, minutesUsed: number): number {
+  const p = PLAN_CATALOG[plan];
+  if (!p || !p.allowsVoiceOverage || p.voiceMinutesPerMonth == null) return 0;
+  const over = Math.max(0, minutesUsed - p.voiceMinutesPerMonth);
+  return Number((over * VOICE_OVERAGE_RATE_USD).toFixed(2));
+}
+
+/**
  * Map a leadsmart_users.plan billing slug to the canonical AgentPlan used
  * by product_entitlements. The user row uses the marketing dialect
  * (free / pro / premium / signature / team — "free" stands in for starter);
- * entitlements use starter / growth / elite / signature / team.
+ * entitlements now use the same names (starter / pro / premium / signature /
+ * team). The old `growth` / `elite` slugs are still accepted as aliases.
  */
 export function planSlugToAgentPlan(slug: string | null | undefined): AgentPlan {
   switch ((slug ?? "").toLowerCase()) {
     case "pro":
-      return "growth";
+    // Legacy entitlement slug — kept so old rows / Stripe metadata resolve.
+    case "growth":
+      return "pro";
     case "premium":
-      return "elite";
+    case "elite":
+      return "premium";
     case "signature":
       return "signature";
     case "team":
@@ -190,9 +238,9 @@ export function planSlugToAgentPlan(slug: string | null | undefined): AgentPlan 
  */
 export function agentPlanToUserSlug(plan: AgentPlan): string {
   switch (plan) {
-    case "growth":
+    case "pro":
       return "pro";
-    case "elite":
+    case "premium":
       return "premium";
     case "signature":
       return "signature";
@@ -213,6 +261,7 @@ export function planRowFromCatalog(plan: AgentPlan): {
   reports_download_level: string;
   team_access: boolean;
   ai_actions_per_month: number | null;
+  voice_minutes_per_month: number | null;
 } {
   const p = PLAN_CATALOG[plan];
   return {
@@ -224,5 +273,6 @@ export function planRowFromCatalog(plan: AgentPlan): {
     reports_download_level: p.reportsDownloadLevel,
     team_access: p.teamAccess,
     ai_actions_per_month: p.aiActionsPerMonth,
+    voice_minutes_per_month: p.voiceMinutesPerMonth,
   };
 }

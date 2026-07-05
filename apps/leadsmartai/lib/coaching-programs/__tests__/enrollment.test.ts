@@ -23,14 +23,14 @@ describe("resolveProgramStatuses", () => {
   });
 
   it("growth (Pro) with no enrollments → Producer Track eligible_not_enrolled, Top not_eligible", () => {
-    const out = resolveProgramStatuses({ plan: "growth", enrollments: [] });
+    const out = resolveProgramStatuses({ plan: "pro", enrollments: [] });
     expect(out[0]).toMatchObject({ programSlug: "producer_track", status: "eligible_not_enrolled" });
     expect(out[1]).toMatchObject({ programSlug: "top_producer_track", status: "not_eligible" });
   });
 
   it("elite with active Top Producer enrollment → 'enrolled'", () => {
     const out = resolveProgramStatuses({
-      plan: "elite",
+      plan: "premium",
       enrollments: [row("top_producer_track")],
     });
     expect(out[1]).toMatchObject({ programSlug: "top_producer_track", status: "enrolled" });
@@ -38,7 +38,7 @@ describe("resolveProgramStatuses", () => {
 
   it("opted_out flag carries through when the agent has left a program", () => {
     const out = resolveProgramStatuses({
-      plan: "elite",
+      plan: "premium",
       enrollments: [row("producer_track", "2026-04-01T00:00:00Z")],
     });
     expect(out[0].status).toBe("opted_out");
@@ -47,7 +47,7 @@ describe("resolveProgramStatuses", () => {
 
   it("preserves PROGRAM_ORDER regardless of enrollment-row order", () => {
     const out = resolveProgramStatuses({
-      plan: "elite",
+      plan: "premium",
       enrollments: [row("top_producer_track"), row("producer_track")],
     });
     expect(out.map((p) => p.programSlug)).toEqual([
@@ -65,7 +65,7 @@ describe("planAutoEnrollment", () => {
   });
 
   it("growth (Pro) with no enrollments → enroll Producer Track only", () => {
-    const out = planAutoEnrollment({ plan: "growth", existing: [] });
+    const out = planAutoEnrollment({ plan: "pro", existing: [] });
     expect(out.enroll).toEqual(["producer_track"]);
     expect(out.skip).toContainEqual({
       slug: "top_producer_track",
@@ -74,7 +74,7 @@ describe("planAutoEnrollment", () => {
   });
 
   it("elite (Premium) with no enrollments → enroll BOTH programs", () => {
-    const out = planAutoEnrollment({ plan: "elite", existing: [] });
+    const out = planAutoEnrollment({ plan: "premium", existing: [] });
     expect(out.enroll.sort()).toEqual(["producer_track", "top_producer_track"]);
     expect(out.skip).toEqual([]);
   });
@@ -93,7 +93,7 @@ describe("planAutoEnrollment", () => {
 
   it("idempotent: existing active enrollment skips with 'already_enrolled'", () => {
     const out = planAutoEnrollment({
-      plan: "elite",
+      plan: "premium",
       existing: [row("producer_track")],
     });
     expect(out.enroll).toEqual(["top_producer_track"]);
@@ -105,7 +105,7 @@ describe("planAutoEnrollment", () => {
 
   it("respects prior opt-out: does NOT re-enroll the agent automatically", () => {
     const out = planAutoEnrollment({
-      plan: "elite",
+      plan: "premium",
       existing: [row("producer_track", "2026-04-01T00:00:00Z")],
     });
     expect(out.enroll).toEqual(["top_producer_track"]);

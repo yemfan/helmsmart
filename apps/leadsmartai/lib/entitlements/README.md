@@ -19,7 +19,7 @@
 - **Product key:** `leadsmart_agent` (`PRODUCT_LEADSMART_AGENT`)
 - **Plans:** `starter` | `growth` | `elite` — limits defined in `planCatalog.ts` and stored denormalized on `product_entitlements`.
 - **Source:** optional `source` text on `product_entitlements` (e.g. `free_start`, `stripe`, `admin_grant`).
-- **Caps:** `max_leads` / `max_contacts` may be `NULL` for unlimited (Elite). Legacy rows may use `-1` for the same meaning in app code.
+- **Caps:** `max_leads` / `max_contacts` may be `NULL` for unlimited (Premium). Legacy rows may use `-1` for the same meaning in app code.
 - **Window:** optional `starts_at` / `ends_at` (`timestamptz`). View **`active_product_entitlements`** exposes rows with `is_active = true` and current time inside that window (NULL bounds = open-ended).
 - **RPC:** `get_active_agent_entitlement(p_user_id uuid)` returns one row (or none) from that view for `product = leadsmart_agent` (use from SQL or `supabase.rpc`; `security invoker` respects RLS).
 - **RPC:** `ensure_daily_usage_row(p_user_id, p_product)` inserts a today row into `entitlement_usage_daily` if missing (`on conflict do nothing`; `usage_date = current_date`).

@@ -24,7 +24,7 @@ const PLANS: {
 }[] = [
   { id: "starter", monthly: 0, annual: null, subtitle: "Get started instantly" },
   {
-    id: "growth",
+    id: "pro",
     checkoutSlug: "pro",
     monthly: 49,
     annual: 490,
@@ -32,7 +32,7 @@ const PLANS: {
     featured: true,
   },
   {
-    id: "elite",
+    id: "premium",
     checkoutSlug: "premium",
     monthly: 99,
     annual: 990,

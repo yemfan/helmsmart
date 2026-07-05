@@ -20,8 +20,8 @@ export type ProgramSlug = "producer_track" | "top_producer_track";
 /** Plan tiers eligible to enroll in each program. The pricing
  *  table on /agent/pricing must stay in sync with this set. */
 const PROGRAM_PLAN_ELIGIBILITY: Record<ProgramSlug, ReadonlyArray<AgentPlan>> = {
-  producer_track: ["growth", "elite", "signature", "team"],
-  top_producer_track: ["elite", "signature", "team"],
+  producer_track: ["pro", "premium", "signature", "team"],
+  top_producer_track: ["premium", "signature", "team"],
 };
 
 /**
@@ -30,8 +30,8 @@ const PROGRAM_PLAN_ELIGIBILITY: Record<ProgramSlug, ReadonlyArray<AgentPlan>> = 
  * all three tiers include it as part of the plan price.
  */
 const PROGRAM_AUTO_ENROLL: Record<ProgramSlug, ReadonlyArray<AgentPlan>> = {
-  producer_track: ["growth", "elite", "signature", "team"],
-  top_producer_track: ["elite", "signature", "team"],
+  producer_track: ["pro", "premium", "signature", "team"],
+  top_producer_track: ["premium", "signature", "team"],
 };
 
 export type CoachingProgram = {

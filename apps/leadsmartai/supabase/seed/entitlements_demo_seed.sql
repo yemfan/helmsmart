@@ -44,7 +44,7 @@
 -- ) values (
 --   'USER_UUID_HERE'::uuid,
 --   'leadsmart_agent',
---   'growth',
+--   'pro',
 --   true,
 --   5,
 --   500,
@@ -71,7 +71,7 @@
 -- ) values (
 --   'USER_UUID_HERE'::uuid,
 --   'leadsmart_agent',
---   'elite',
+--   'premium',
 --   true,
 --   10,
 --   null,

@@ -59,11 +59,11 @@ function normalizeAgentPlan(raw: string | null | undefined): AgentPlan | null {
     case "free":
       return "starter";
     case "pro":
-    case "growth":
-      return "growth";
-    case "elite":
+    case "pro":
+      return "pro";
     case "premium":
-      return "elite";
+    case "premium":
+      return "premium";
     case "team":
       return "team";
     default:

@@ -91,8 +91,8 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
     slug: "pro",
     displayName: "Pro",
     tagline: "Producer Track coaching + bilingual AI",
-    price: 49,
-    annualPrice: 490,
+    price: 79,
+    annualPrice: 790,
     features: [
       "basic_crm",
       "limited_ai",
@@ -113,8 +113,8 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
     slug: "premium",
     displayName: "Premium",
     tagline: "Top Producer Track + full AI",
-    price: 99,
-    annualPrice: 990,
+    price: 199,
+    annualPrice: 1990,
     features: [
       "basic_crm",
       "full_ai",
@@ -137,8 +137,8 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
     slug: "signature",
     displayName: "Signature",
     tagline: "Relationship-driven agents serving high-value clients",
-    price: 249,
-    annualPrice: 2490,
+    price: 399,
+    annualPrice: 3990,
     features: [
       "basic_crm",
       "full_ai",
