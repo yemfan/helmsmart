@@ -19,6 +19,8 @@ import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import type { ThemeTokens } from "../../lib/theme";
 import { useThemeTokens } from "../../lib/useThemeTokens";
+import { TodayAgenda } from "../../components/home/TodayAgenda";
+import { PriorityAlerts } from "../../components/home/PriorityAlerts";
 import {
   fetchBossAutopilot,
   fetchBossConversation,
@@ -226,6 +228,17 @@ export default function BossScreen() {
               <Ionicons name="options-outline" size={18} color={tokens.textMuted} />
             </Pressable>
           </View>
+        </View>
+
+        {/* Dashboard bits moved up from the old Home screen so nothing
+            is lost now that Boss is the home tab: today's agenda +
+            priority alerts sit atop the command center. Each owns its
+            own cached fetch (shared with the Home screen's cache keys). */}
+        <View style={s.dashboardBlock}>
+          <TodayAgenda />
+        </View>
+        <View style={s.dashboardBlock}>
+          <PriorityAlerts />
         </View>
 
         {loading ? (
@@ -591,6 +604,14 @@ const createStyles = (t: ThemeTokens) =>
     autoPillText: { fontSize: 12, fontWeight: "600" },
     gear: { width: 34, height: 34, borderRadius: 17, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: t.border, backgroundColor: t.surface },
     loadingBox: { paddingVertical: 40, alignItems: "center" },
+    dashboardBlock: {
+      backgroundColor: t.surface,
+      borderWidth: 1,
+      borderColor: t.border,
+      borderRadius: 14,
+      padding: 12,
+      marginBottom: 2,
+    },
     bossRow: { flexDirection: "row", gap: 8, alignItems: "flex-start" },
     bossDot: { width: 28, height: 28, borderRadius: 14, backgroundColor: t.accent, alignItems: "center", justifyContent: "center", marginTop: 2, overflow: "hidden" },
     bossDotImg: { width: 28, height: 28 },

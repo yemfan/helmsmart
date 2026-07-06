@@ -8,6 +8,9 @@
     "inbox": "消息",
     "leads": "客户",
     "calendar": "日历",
-    "settings": "设置"
+    "settings": "设置",
+    "boss": "老板",
+    "team": "团队",
+    "more": "更多"
   }
 }

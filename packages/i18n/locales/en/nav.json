@@ -8,6 +8,9 @@
     "inbox": "Inbox",
     "leads": "Leads",
     "calendar": "Calendar",
-    "settings": "Settings"
+    "settings": "Settings",
+    "boss": "Boss",
+    "team": "Team",
+    "more": "More"
   }
 }
