@@ -13,7 +13,8 @@ import JsonLd from "@/components/JsonLd";
  * rather than fabricated; the "On the roadmap" section tells users why.
  *
  * Things the code actually does today that this page describes:
- *   - Rentcast AVM + weighted-comp PPSF + optional trained ML (lib/homeValue/runEstimate.ts)
+ *   - Claude + live web search over recent comparable sales and public listing
+ *     data + weighted-comp PPSF + optional trained ML (lib/homeValue/runEstimate.ts)
  *   - 4-pillar confidence score → formula-derived band (lib/homeValue/confidenceEngine.ts)
  *   - Estimate-vs-sale accuracy tracking (api/admin/valuation/accuracy)
  *
@@ -23,8 +24,8 @@ import JsonLd from "@/components/JsonLd";
  *   - Per-market MAE publication (sample not yet statistically stable)
  *   - Independent third-party validation benchmark
  *
- * If the DS pipeline changes (e.g. primary model flips from Rentcast AVM
- * to a fully-trained ensemble), this page must be updated — the content
+ * If the DS pipeline changes (e.g. primary signal flips from Claude + live
+ * web search to a fully-trained ensemble), this page must be updated — the content
  * is not generic marketing copy, it's a factual disclosure.
  */
 
@@ -54,7 +55,7 @@ const FAQ = [
   },
   {
     q: "How accurate is a PropertyTools AI home value estimate?",
-    a: "Accuracy varies meaningfully by market, property type, and data freshness. The primary signal behind our estimate is a licensed professional AVM used by mortgage lenders and title insurers — accuracy is in the same ballpark as public AVMs like Zestimate and Redfin Estimate (both around 1.8–2.0% on-market MAE). Edge cases — new construction, rural markets, unique architecture, recent renovations not yet in public records — can produce larger errors. We'll publish our own per-market MAE here when the sample size makes the numbers stable, rather than posting a plausible-looking figure now.",
+    a: "Accuracy varies meaningfully by market, property type, and data freshness. The primary signal behind our estimate is Claude reasoning over live web search of recent comparable sales and public listing data — accuracy is broadly in the same ballpark as public AVMs like Zestimate and Redfin Estimate (both around 1.8–2.0% on-market MAE) when comp coverage is good. Edge cases — new construction, rural markets, unique architecture, recent renovations not yet in public records — can produce larger errors. We'll publish our own per-market MAE here when the sample size makes the numbers stable, rather than posting a plausible-looking figure now.",
   },
   {
     q: "How often is the estimate updated?",
@@ -192,10 +193,10 @@ export default function MethodologyPage() {
             </p>
             <ol className="ml-6 list-decimal space-y-3">
               <li>
-                A licensed professional AVM (Automated Valuation Model) that produces a central
-                point estimate from public records, tax assessments, and recent sales nationwide.
-                This is the dominant signal — typically 85–100% of the blended weight — when comp
-                coverage is good.
+                Claude reasoning over live web search of recent comparable sales and public
+                listing data, which produces a central point estimate grounded in real, cited
+                transactions rather than a fabricated number. This is the dominant signal —
+                typically 85–100% of the blended weight — when comp coverage is good.
               </li>
               <li>
                 A comparable-sales calculation: we pull the most similar recent sales within the

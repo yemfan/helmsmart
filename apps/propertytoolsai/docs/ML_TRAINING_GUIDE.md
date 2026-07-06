@@ -4,6 +4,11 @@ This guide covers how to train, evaluate, and deploy the XGBoost/LightGBM
 valuation model that serves as a third blending signal in the home value
 estimate pipeline.
 
+> **Note (2026):** RentCast has been removed. Where this guide says "Rentcast
+> AVM" (Signal 1, and the `api_estimate` feature), read it as the AI-grounded
+> AVM — Claude reasoning over live web search of recent comparable sales and
+> public listing data. RentCast is no longer a live or required data source.
+
 ---
 
 ## Architecture Overview

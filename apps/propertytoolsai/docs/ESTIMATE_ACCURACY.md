@@ -3,6 +3,14 @@
 This document covers all the signals, APIs, and adjustments used in the
 PropertyTools AI home value estimate pipeline.
 
+> **Note (2026):** RentCast has been removed. The primary AVM signal is now
+> AI-grounded — Claude reasoning over live web search of recent comparable
+> sales and public listing data (cited, real comps, not fabricated). RentCast
+> is no longer a required (or live) data source, and the RentCast API key env
+> var is no longer read anywhere. The blending diagram and "Rentcast AVM" labels below
+> are retained for historical context; read "Rentcast AVM" as "AI-grounded
+> AVM (Claude + web search)".
+
 ---
 
 ## Pipeline Flow
@@ -85,7 +93,7 @@ User enters address
 
 | API | Env Variable | Free Tier | Used For |
 |-----|-------------|-----------|----------|
-| Rentcast | `RENTCAST_API_KEY` | Paid | AVM, comps, property details |
+| AI-grounded AVM (Claude + web search) | `ANTHROPIC_API_KEY` | Paid | AVM, comps, property details (replaces the former RentCast integration) |
 | Mapbox or Google | `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` / `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Free tier | Geocoding |
 
 ### Optional (enhance accuracy)
