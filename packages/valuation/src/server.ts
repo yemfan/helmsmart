@@ -6,5 +6,12 @@ import "server-only";
  * in client code; import the engine from here in server code only.
  */
 export { generateAiCma, AI_CMA_DISCLAIMER } from "./aiCma";
+export {
+  aiPropertyLookup,
+  AI_PROPERTY_LOOKUP_DISCLAIMER,
+  type PropertyFacts,
+  type PropertyLookupResult,
+  type PropertyListingStatus,
+} from "./aiPropertyLookup";
 export { getAnthropicClient, isAnthropicConfigured } from "./anthropic";
 export * from "./types";
