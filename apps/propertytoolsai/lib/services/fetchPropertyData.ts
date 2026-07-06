@@ -1,26 +1,36 @@
+import "server-only";
+import { aiPropertyLookup } from "@repo/valuation/server";
 import type { PropertyCore } from "./propertyService";
 
 /**
- * Stub fallback used by getPropertyData when no real data source is wired
- * up. Previously returned hard-coded demo values (Los Angeles, 3 bed,
- * 2 bath, 1500 sqft, $800k, $3200 rent) which ended up getting cached
- * and written into the warehouse `properties` table. That poisoned every
- * downstream consumer — the home-value estimate read `sqft=1500` from
- * the polluted warehouse row, and the pipeline's Rentcast enrichment
- * step only overrides when the incoming body value is null, so the
- * stub won silently even for addresses Rentcast had real data for.
+ * Property facts fetched for an address, used by `getPropertyData` to populate
+ * the warehouse `properties` row + snapshot data blob.
  *
- * Real property data comes from the Rentcast adapter (see
- * lib/valuation/adapters/rentcast.ts), which is called directly by
- * runHomeValueEstimatePipeline. This stub exists only so the
- * getPropertyData / cache / warehouse-upsert plumbing still has a
- * shape to echo back. It MUST NOT fabricate numeric values — return
- * nulls so the warehouse stays clean and enrichment from Rentcast
- * can overwrite on every estimate run.
+ * Source: **AI (Claude + web_search)** via `aiPropertyLookup` — replaced the
+ * former RentCast `/v1/listings/sale` + `/v1/properties` warehouse ingest. Every
+ * field the AI can't verify on a real page comes back null / empty. NO fabricated
+ * values — a "not found" returns an all-null object and callers must treat that as
+ * "no data" rather than acting on bogus numbers. (Previously this stub returned
+ * hard-coded LA demo values that poisoned the warehouse; then an all-null stub
+ * that starved every consumer. This restores real facts on cache miss.)
+ *
+ * Extends PropertyCore with the extra snake_case fields `getPropertyData` reads
+ * off the result and writes to the warehouse row / snapshot: `year_built`,
+ * `lot_size`, `property_type`, `lat`, `lng`, `listing_status`.
+ *
+ * This call is slow (~15-40s) and billable, so it's wrapped by
+ * `getPropertyData` (180-day property_cache) — a cache hit never reaches here.
  */
-export async function fetchPropertyData(
-  address: string
-): Promise<PropertyCore> {
+export type PropertyFetchResult = PropertyCore & {
+  year_built: number | null;
+  lot_size: number | null;
+  property_type: string | null;
+  lat: number | null;
+  lng: number | null;
+  listing_status: string | null;
+};
+
+function emptyResult(address: string): PropertyFetchResult {
   return {
     address,
     city: "",
@@ -31,5 +41,62 @@ export async function fetchPropertyData(
     sqft: null,
     price: null,
     rent: null,
+    year_built: null,
+    lot_size: null,
+    property_type: null,
+    lat: null,
+    lng: null,
+    listing_status: null,
+  };
+}
+
+/**
+ * Fetch property facts for an address via AI (Claude + web_search).
+ *
+ * Returns:
+ *   - Real facts when the lookup finds the property.
+ *   - `emptyResult(address)` when the AI can't find it, or when the lookup is
+ *     unavailable (ANTHROPIC_API_KEY not set) — callers read this as "no data".
+ *   NEVER throws for a "not found" — an empty result is a valid outcome, and the
+ *   all-null shape keeps the warehouse upsert clean (no fabricated numbers).
+ */
+export async function fetchPropertyData(
+  address: string
+): Promise<PropertyFetchResult> {
+  const addr = (address ?? "").trim();
+  if (!addr) return emptyResult(address);
+
+  let result;
+  try {
+    result = await aiPropertyLookup(addr);
+  } catch (e) {
+    console.error("[fetchPropertyData] aiPropertyLookup threw:", e);
+    return emptyResult(address);
+  }
+
+  if (!result.ok) {
+    console.warn(`[fetchPropertyData] no data for "${addr}": ${result.error}`);
+    return emptyResult(address);
+  }
+
+  const f = result.facts;
+  return {
+    address: addr,
+    city: f.city ?? "",
+    state: f.state ?? "",
+    zip: f.zip ?? "",
+    beds: f.beds,
+    baths: f.baths,
+    sqft: f.sqft,
+    price: f.price,
+    // Rent isn't part of a facts/listing lookup — leave null (honest). Surfaces
+    // that need a rent estimate must derive it separately.
+    rent: null,
+    year_built: f.yearBuilt,
+    lot_size: f.lotSizeSqft,
+    property_type: f.propertyType,
+    lat: f.lat,
+    lng: f.lng,
+    listing_status: f.listingStatus,
   };
 }
