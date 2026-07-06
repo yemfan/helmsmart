@@ -4,7 +4,7 @@ import AgentPricingClientPage from "./page.client";
 export const metadata: Metadata = {
   title: "Agent plans & pricing — Starter, Pro, Premium, Signature, Team",
   description:
-    "RealtyBoss plans for real estate agents: Starter (free), Pro ($49/mo, Producer Track coaching), Premium ($99/mo, Top Producer Track), Signature ($249/mo, bilingual + luxury concierge), and Team ($299/mo, brokerage workflows). Annual billing saves 2 months. 14-day trial on every paid tier.",
+    "RealtyBoss plans for real estate agents: Starter (free), Pro ($79/mo, Producer Track coaching), Premium ($199/mo, Top Producer Track), Signature ($399/mo, bilingual + luxury concierge), and Team ($299/mo, brokerage workflows). Annual billing saves 2 months. 14-day trial on every paid tier.",
   keywords: [
     "real estate CRM pricing",
     "real estate AI pricing",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Agent plans & pricing | RealtyBoss",
     description:
-      "Pro from $49/mo with Producer Track coaching. Premium $99/mo with Top Producer Track. Signature $249/mo with bilingual + concierge support. Team $299/mo for brokerages. Annual saves 2 months.",
+      "Pro from $79/mo with Producer Track coaching. Premium $199/mo with Top Producer Track. Signature $399/mo with bilingual + concierge support. Team $299/mo for brokerages. Annual saves 2 months.",
     url: "/agent/pricing",
     type: "website",
   },
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Agent plans & pricing | RealtyBoss",
     description:
-      "Pro $49/mo · Premium $99/mo · Signature $249/mo · Team $299/mo. Available in English and 中文. Annual saves 2 months.",
+      "Pro $79/mo · Premium $199/mo · Signature $399/mo · Team $299/mo. Available in English and 中文. Annual saves 2 months.",
   },
 };
 
@@ -46,22 +46,22 @@ const PRICING_PRODUCTS = [
     name: "Pro",
     description:
       "For active agents closing deals consistently. Includes Producer Track coaching, video email, BBA workflow, sphere + equity signals, and bilingual English / 中文 AI.",
-    monthly: "49",
-    annual: "490",
+    monthly: "79",
+    annual: "790",
   },
   {
     name: "Premium",
     description:
       "For top producers running solo. Unlimited leads, Top Producer Track coaching, ISA workflow, and e-signature.",
-    monthly: "99",
-    annual: "990",
+    monthly: "199",
+    annual: "1990",
   },
   {
     name: "Signature",
     description:
       "For relationship-driven agents serving high-value and bilingual clients. Sphere Intelligence Pro, white-glove onboarding, concierge support, cultural calendar automations, and custom voice tuning.",
-    monthly: "249",
-    annual: "2490",
+    monthly: "399",
+    annual: "3990",
   },
   {
     name: "Team",
