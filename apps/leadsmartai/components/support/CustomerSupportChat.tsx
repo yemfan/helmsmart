@@ -1,6 +1,7 @@
 "use client";
 
-import { LifeBuoy } from "lucide-react";
+import { Headset } from "lucide-react";
+import { createPortal } from "react-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   fetchConversation,
@@ -336,35 +337,46 @@ export function SupportChatLauncher({ buttonClassName }: SupportChatLauncherProp
     buttonClassName ??
     "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200/90 bg-white text-slate-600 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40";
 
+  // The overlay is rendered into document.body via a portal. The launcher
+  // lives inside the sticky/transformed Topbar, and a `position: fixed`
+  // descendant of a transformed ancestor is positioned relative to that
+  // ancestor — which collapsed the `inset-y-0` panel to the ~81px header
+  // height and let the page bleed through below it. Portaling to <body>
+  // makes `fixed` resolve against the viewport, so the panel is full height.
+  const overlay =
+    mounted && typeof document !== "undefined"
+      ? createPortal(
+          <>
+            <button
+              type="button"
+              className="fixed inset-0 z-[80] transition-opacity duration-200"
+              style={{
+                backgroundColor: open ? "rgba(15,23,42,0.4)" : "transparent",
+                backdropFilter: open ? "blur(4px)" : "none",
+              }}
+              aria-label="Close support chat"
+              onClick={() => setOpen(false)}
+            />
+            <div
+              className="fixed inset-y-0 right-0 z-[90] flex w-full max-w-lg flex-col bg-white shadow-2xl ring-1 ring-slate-900/10 transition-transform duration-200 ease-out"
+              style={{ transform: open ? "translateX(0)" : "translateX(100%)" }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="ls-support-chat-title"
+            >
+              <CustomerSupportChat embedded onClose={() => setOpen(false)} />
+            </div>
+          </>,
+          document.body,
+        )
+      : null;
+
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className={btn} aria-label="Open support chat">
-        <LifeBuoy className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
+        <Headset className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
       </button>
-
-      {mounted && (
-        <>
-          <button
-            type="button"
-            className="fixed inset-0 z-[80] transition-opacity duration-200"
-            style={{
-              backgroundColor: open ? "rgba(15,23,42,0.4)" : "transparent",
-              backdropFilter: open ? "blur(4px)" : "none",
-            }}
-            aria-label="Close support chat"
-            onClick={() => setOpen(false)}
-          />
-          <div
-            className="fixed inset-y-0 right-0 z-[90] flex w-full max-w-lg flex-col bg-white shadow-2xl ring-1 ring-slate-900/10 transition-transform duration-200 ease-out"
-            style={{ transform: open ? "translateX(0)" : "translateX(100%)" }}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="ls-support-chat-title"
-          >
-            <CustomerSupportChat embedded onClose={() => setOpen(false)} />
-          </div>
-        </>
-      )}
+      {overlay}
     </>
   );
 }
