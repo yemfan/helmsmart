@@ -64,115 +64,6 @@ function deriveTrend(yoyPct: number): CityDataTrend {
   return "stable";
 }
 
-function num(value: any, fallback = 0) {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : fallback;
-}
-
-/** RentCast GET /v1/markets requires `zipCode` (city/state returns 400). */
-async function resolveZipForMarkets(city: string, state: string): Promise<string | null> {
-  const fromSeed = TRAFFIC_CITIES.find(
-    (c) => c.city.toLowerCase() === city.toLowerCase() && c.state === state
-  );
-  if (fromSeed?.marketZip && /^\d{5}$/.test(fromSeed.marketZip)) return fromSeed.marketZip;
-
-  try {
-    const controller = new AbortController();
-    const t = setTimeout(() => controller.abort(), 8000);
-    const q = encodeURIComponent(`${city}, ${state}, USA`);
-    const ua =
-      process.env.NOMINATIM_USER_AGENT?.trim() ||
-      "PropertyToolsCityData/1.0 (https://github.com/yemfan/propertytoolsai)";
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${q}&format=json&addressdetails=1&limit=1`,
-      {
-        headers: { "User-Agent": ua, Accept: "application/json" },
-        signal: controller.signal,
-      }
-    );
-    clearTimeout(t);
-    if (!res.ok) return null;
-    const arr = (await res.json()) as Array<{ address?: { postcode?: string } }>;
-    const pc = arr?.[0]?.address?.postcode ?? "";
-    const m = String(pc).match(/\b(\d{5})(?:-\d{4})?\b/);
-    return m ? m[1] : null;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchRentcastCityData(city: string, state: string) {
-  const apiKey = process.env.RENTCAST_API_KEY;
-  if (!apiKey) return null;
-
-  const zip = await resolveZipForMarkets(city, state);
-  if (!zip) return null;
-
-  const base = process.env.RENTCAST_BASE_URL || "https://api.rentcast.io/v1/markets";
-  const dataType = (process.env.RENTCAST_DATA_TYPE || "Sale").trim() || "Sale";
-  const qs = new URLSearchParams({ zipCode: zip, dataType });
-  const res = await fetch(`${base}?${qs.toString()}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Api-Key": apiKey,
-    },
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error(`RentCast API error (${res.status})`);
-  const json = (await res.json()) as any;
-  const row = Array.isArray(json) ? json[0] : json?.data?.[0] ?? json;
-  if (!row) return null;
-
-  const sale = row.saleData ?? row.rentalData ?? row;
-  const medianPrice = num(
-    sale.medianPrice ??
-      sale.medianSalePrice ??
-      row.medianPrice ??
-      row.median_listing_price ??
-      row.price,
-    0
-  );
-  const pricePerSqft = num(
-    sale.medianPricePerSquareFoot ??
-      sale.pricePerSqft ??
-      row.medianPricePerSquareFoot ??
-      row.price_per_sqft,
-    0
-  );
-  const daysOnMarket = Math.round(
-    num(
-      sale.medianDaysOnMarket ?? sale.daysOnMarket ?? row.medianDaysOnMarket ?? row.days_on_market,
-      0
-    )
-  );
-  const inventory = Math.round(
-    num(sale.totalListings ?? sale.inventory ?? row.activeListings ?? row.active_listings, 0)
-  );
-  const yoy = num(
-    sale.medianPriceYearOverYearChangePercent ??
-      sale.yearOverYearChangePercent ??
-      sale.medianPriceChangePercentYearOverYear ??
-      row.yoyChangePct ??
-      row.yearOverYearChange ??
-      row.yoy_change,
-    0
-  );
-  const trend = deriveTrend(yoy);
-
-  return {
-    city,
-    state,
-    median_price: medianPrice,
-    price_per_sqft: pricePerSqft,
-    trend,
-    days_on_market: daysOnMarket,
-    inventory,
-    source: "rentcast",
-    raw_payload: { ...row, _resolvedZip: zip, _dataType: dataType },
-  };
-}
-
 function buildFallbackCityData(city: string, state: string) {
   const matched = TRAFFIC_CITIES.find(
     (c) => c.city.toLowerCase() === city.toLowerCase() && c.state === state
@@ -327,13 +218,10 @@ export async function getCityData(options: {
     new Date(String((existing as any).last_fetched_at ?? 0)).toISOString() > staleBeforeIso;
   if (isFresh) return existing as CityMarketData;
 
-  let liveData: any = null;
-  try {
-    liveData = await fetchRentcastCityData(normalized.city, normalized.state);
-  } catch {
-    liveData = null;
-  }
-  const baseData = liveData ?? buildFallbackCityData(normalized.city, normalized.state);
+  // Market numbers come from curated seed data (TRAFFIC_CITIES) + deterministic
+  // fallback; the RentCast /v1/markets fetch was removed. The OpenAI market
+  // summary below is unaffected.
+  const baseData = buildFallbackCityData(normalized.city, normalized.state);
   const ai = await generateAIInsight(baseData);
 
   const upsertPayload = {

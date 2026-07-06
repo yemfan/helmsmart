@@ -64,7 +64,6 @@ jobs:
       # fallback paths the route handlers already implement.
       OPENAI_API_KEY: ""
       ANTHROPIC_API_KEY: ""
-      RENTCAST_API_KEY: ""
       RESEND_API_KEY: ""
       TWILIO_ACCOUNT_SID: ""
       TWILIO_AUTH_TOKEN: ""
