@@ -1,6 +1,14 @@
 import "server-only";
 
 import { getAnthropicClient, isAnthropicConfigured } from "./anthropic";
+import {
+  extractJson,
+  repairJsonToObject,
+  num,
+  numOrNull,
+  str,
+  httpUrl,
+} from "./jsonExtract";
 import { isCredibleCmaValuation } from "./types";
 import type {
   ValuationInput,
@@ -146,7 +154,14 @@ export async function generateAiCma(input: ValuationInput): Promise<ValuationRes
   // rather than failing the whole valuation on a formatting hiccup.
   let parsed = extractJson(finalText);
   if (!parsed) {
-    parsed = await repairJsonWithModel(client, finalText);
+    parsed = await repairJsonToObject(
+      client,
+      MODEL,
+      finalText,
+      "Extract the CMA into ONE valid JSON object with keys subject, comps, valuation, strategies, summary, sources. " +
+        "Use ONLY the addresses, prices, and dates already present below — do not invent or change any value. " +
+        "Use null or 0 for anything genuinely absent.",
+    );
   }
   if (!parsed) {
     return { ok: false, status: 502, error: "Could not parse the AI valuation result." };
@@ -168,110 +183,7 @@ export async function generateAiCma(input: ValuationInput): Promise<ValuationRes
   return { ok: true, snapshot };
 }
 
-/**
- * Last-ditch JSON repair: hand the model its own (malformed) output and ask for
- * a single clean JSON object. No tools, low ceremony — this rescues the common
- * case where the valuation content is all there but the wrapper is off.
- */
-async function repairJsonWithModel(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  client: any,
-  text: string,
-): Promise<Record<string, unknown> | null> {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const res: any = await client.messages.create({
-      model: MODEL,
-      max_tokens: 8000,
-      system:
-        "You reformat content into valid JSON. Output ONLY a single JSON object — no prose, no markdown fences, no commentary.",
-      messages: [
-        {
-          role: "user",
-          content:
-            "Extract the CMA into ONE valid JSON object with keys subject, comps, valuation, strategies, summary, sources. " +
-            "Use ONLY the addresses, prices, and dates already present below — do not invent or change any value. " +
-            "Use null or 0 for anything genuinely absent.\n\n" +
-            text.slice(0, 14000),
-        },
-      ],
-    });
-    const out: unknown[] = Array.isArray(res?.content) ? res.content : [];
-    let repaired = "";
-    for (const block of out) {
-      const b = block as { type?: string; text?: string };
-      if (b.type === "text" && typeof b.text === "string") repaired += b.text;
-    }
-    return extractJson(repaired);
-  } catch {
-    return null;
-  }
-}
-
-// ── parsing + normalization ──────────────────────────────────────
-
-function extractJson(text: string): Record<string, unknown> | null {
-  for (const candidate of jsonCandidates(text)) {
-    const obj = tryParseJson(candidate);
-    if (obj) return obj;
-  }
-  return null;
-}
-
-/**
- * Yield JSON candidates in most-likely-final order. The model may fence the
- * answer, emit it unfenced, narrate before it (under adaptive thinking +
- * search), or leave prose after the closing brace — so we try, in order: the
- * LAST fenced block (the final answer, not intermediate examples), the last
- * balanced {...} object, then a crude first-brace/last-brace slice.
- */
-function* jsonCandidates(text: string): Generator<string> {
-  const fences: string[] = [];
-  const fenceRe = /```(?:json)?\s*([\s\S]*?)```/gi;
-  for (let m = fenceRe.exec(text); m; m = fenceRe.exec(text)) {
-    if (m[1] && m[1].includes("{")) fences.push(m[1].trim());
-  }
-  for (let i = fences.length - 1; i >= 0; i--) yield fences[i];
-  const balanced = lastBalancedObject(text);
-  if (balanced) yield balanced;
-  const crude = sliceFirstObject(text);
-  if (crude) yield crude;
-}
-
-function tryParseJson(raw: string): Record<string, unknown> | null {
-  const cleaned = raw
-    .trim()
-    .replace(/^[^{]*/, "") // drop any prose before the first {
-    .replace(/[^}]*$/, "") // drop any prose after the last }
-    .replace(/,\s*([}\]])/g, "$1"); // strip trailing commas
-  try {
-    const obj = JSON.parse(cleaned);
-    return obj && typeof obj === "object" && !Array.isArray(obj)
-      ? (obj as Record<string, unknown>)
-      : null;
-  } catch {
-    return null;
-  }
-}
-
-/** Scan from the end for the last balanced {...} object (handles prose after). */
-function lastBalancedObject(text: string): string | null {
-  const end = text.lastIndexOf("}");
-  if (end < 0) return null;
-  let depth = 0;
-  for (let i = end; i >= 0; i--) {
-    const ch = text[i];
-    if (ch === "}") depth++;
-    else if (ch === "{" && --depth === 0) return text.slice(i, end + 1);
-  }
-  return null;
-}
-
-function sliceFirstObject(text: string): string | null {
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  return start >= 0 && end > start ? text.slice(start, end + 1) : null;
-}
+// ── normalization ────────────────────────────────────────────────
 
 function normalizeAi(raw: Record<string, unknown>, fallbackAddress: string): CmaSnapshot {
   const subject = (raw.subject ?? {}) as Record<string, unknown>;
@@ -364,31 +276,4 @@ function toConfidenceInt(v: unknown): number | null {
   if (!Number.isFinite(n)) return null;
   if (n > 0 && n <= 1) n = n * 100; // 0-1 confidence → percentage
   return Math.max(1, Math.min(95, Math.round(n)));
-}
-
-/** Accept only a plausible http(s) URL (the subject listing page). */
-function httpUrl(v: unknown): string | null {
-  if (typeof v !== "string") return null;
-  const url = v.trim();
-  return /^https?:\/\//i.test(url) ? url : null;
-}
-
-/** Parse a numeric field, returning null (not 0) when absent/unknown. */
-function numOrNull(v: unknown): number | null {
-  if (v == null) return null;
-  const n = num(v, NaN);
-  return Number.isFinite(n) ? n : null;
-}
-
-function num(v: unknown, fallback: number): number {
-  if (typeof v === "number" && Number.isFinite(v)) return v;
-  if (typeof v === "string") {
-    const n = Number(v.replace(/[$,]/g, ""));
-    return Number.isFinite(n) ? n : fallback;
-  }
-  return fallback;
-}
-
-function str(v: unknown, fallback: string): string {
-  return typeof v === "string" && v.trim() ? v.trim() : fallback;
 }
