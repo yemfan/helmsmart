@@ -142,3 +142,49 @@ export function isValuationFailure(
 ): r is { ok: false; status: number; error: string } {
   return r.ok === false;
 }
+
+// ── AI House Search ──────────────────────────────────────────────
+// Buyer-facing natural-language property search, grounded on Claude + live
+// web search. Real listings with cited source URLs, never fabricated.
+
+export type HouseListing = {
+  address: string;
+  price: number | null;
+  beds: number | null;
+  baths: number | null;
+  sqft: number | null;
+  propertyType: string | null;
+  lotSizeSqft: number | null;
+  hoaMonthly: number | null;
+  yearBuilt: number | null;
+  /** Listing page URL (Redfin / Realtor / Zillow / MLS) — the listing's source. */
+  listingUrl: string | null;
+  /** One-line "why this matches" the buyer's criteria. */
+  matchReason: string | null;
+};
+
+/** A suggested way to narrow the search, surfaced as a checkbox option. */
+export type SearchRefinement = {
+  id: string;
+  /** Human label, e.g. "Single-family only". */
+  label: string;
+};
+
+export type HouseSearchResult = {
+  /** Plain-English restatement of how the query was understood. */
+  interpreted: string;
+  /** Concrete criteria parsed from the query. */
+  criteria: string[];
+  listings: HouseListing[];
+  refinements: SearchRefinement[];
+  summary: string | null;
+  sources: { title: string; url: string }[];
+  disclaimer: string;
+};
+
+export type HouseSearchResponse =
+  | { ok: true; result: HouseSearchResult }
+  | { ok: false; status: number; error: string };
+
+export const HOUSE_SEARCH_DISCLAIMER =
+  "AI-generated results from public web data. Listings, prices, and availability may be out of date — verify each on its source site before sharing or relying on it.";
