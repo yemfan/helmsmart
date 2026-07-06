@@ -39,7 +39,7 @@ const plans: {
   {
     key: "pro",
     title: "Pro Agent",
-    price: "$49/mo",
+    price: "$79/mo",
     subtitle: "For active solo agents",
     features: [
       "CMA Reports: 5/day",
@@ -57,7 +57,7 @@ const plans: {
   {
     key: "premium",
     title: "Premium",
-    price: "$99/mo",
+    price: "$199/mo",
     subtitle: "For top producers running solo",
     features: [
       "CMA Reports: 10/day (expandable)",
@@ -371,7 +371,7 @@ export default function PricingModal({
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
             <p className="font-medium text-slate-900">Need more?</p>
             <p className="mt-1 text-slate-600">
-              <strong>Signature</strong> ($249/mo) adds bilingual English / 中文 AI, Sphere
+              <strong>Signature</strong> ($399/mo) adds bilingual English / 中文 AI, Sphere
               Intelligence Pro, white-glove onboarding, and concierge support.{" "}
               <strong>Team</strong> ($299/mo per team) adds round-robin routing and shared
               workflows for up to 5 agents.{" "}

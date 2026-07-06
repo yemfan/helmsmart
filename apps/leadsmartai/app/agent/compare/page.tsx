@@ -62,7 +62,7 @@ type ProductKey =
   | "sierra";
 
 const PRODUCTS: Array<{ key: ProductKey; name: string; price: string }> = [
-  { key: "leadsmart", name: "RealtyBoss", price: "$49–$99 / mo" },
+  { key: "leadsmart", name: "RealtyBoss", price: "$79–$199 / mo" },
   { key: "followup_boss", name: "Follow Up Boss", price: "$69–$1,000+ / mo" },
   { key: "kvcore", name: "kvCORE (now BoldTrail)", price: "$499+ / mo" },
   { key: "lofty", name: "Lofty (Chime)", price: "$449+ / mo" },
@@ -668,7 +668,7 @@ function Highlights() {
     },
     {
       title: "Half the price of enterprise CRMs",
-      body: "$49–$99/month covers what BoomTown, kvCORE, and Lofty charge $500–$1,500/month for. No setup fee. No mandatory IDX-website upsell.",
+      body: "$79–$199/month covers what BoomTown, kvCORE, and Lofty charge $500–$1,500/month for. No setup fee. No mandatory IDX-website upsell.",
     },
     {
       title: "Bilingual + WeChat ecosystem",

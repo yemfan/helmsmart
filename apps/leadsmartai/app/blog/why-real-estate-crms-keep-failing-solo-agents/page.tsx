@@ -486,7 +486,7 @@ export default function CrmProblemsPost() {
                 <span aria-hidden className="mt-1 text-lg">💸</span>
                 <span>
                   <span className="font-semibold text-slate-900 dark:text-white">
-                    Solo-agent pricing starting at $49/mo,
+                    Solo-agent pricing starting at $79/mo,
                   </span>{" "}
                   not $499. See the full ladder on the{" "}
                   <Link

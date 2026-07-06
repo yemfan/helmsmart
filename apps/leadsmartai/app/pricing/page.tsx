@@ -182,7 +182,7 @@ export default async function ConsumerPricingPage() {
                 <li>24/7 — no payroll, benefits, or turnover</li>
               </ul>
               <p className="mt-5 text-3xl font-extrabold text-[#0072ce]">
-                From $49<span className="text-base font-semibold text-slate-500">/mo</span>
+                From $79<span className="text-base font-semibold text-slate-500">/mo</span>
               </p>
               <p className="mt-1 text-xs text-slate-500">
                 The whole team — virtually free next to one human hire.

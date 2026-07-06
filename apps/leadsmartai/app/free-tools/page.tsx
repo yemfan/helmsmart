@@ -327,7 +327,7 @@ export default function FreeToolsPage() {
               </h2>
               <p className="mt-3 text-sm leading-6 text-slate-600 md:text-base dark:text-slate-300">
                 RealtyBoss is what these tools sit inside — your AI
-                sales team, on your phone, 24/7. $49/mo starting, free
+                sales team, on your phone, 24/7. $79/mo starting, free
                 14-day trial, no credit card.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
@@ -360,7 +360,7 @@ export default function FreeToolsPage() {
               </li>
               <li className="flex gap-2">
                 <span aria-hidden className="mt-0.5 text-base">💸</span>
-                <span>Starts at $49/mo — solo-agent pricing</span>
+                <span>Starts at $79/mo — solo-agent pricing</span>
               </li>
             </ul>
           </div>
