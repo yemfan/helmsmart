@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { Send } from "lucide-react";
 
 /**
@@ -105,6 +106,7 @@ function prefillForTopic(
 }
 
 export default function ContactForm() {
+  const { t } = useTranslation("web_contact");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const searchParams = useSearchParams();
@@ -147,16 +149,14 @@ export default function ContactForm() {
         setErrorMsg(
           typeof json.error === "string" && json.error.trim()
             ? json.error
-            : "Something went wrong. Please try again or email us directly.",
+            : t("form.error_generic"),
         );
         setStatus("error");
         return;
       }
       setStatus("sent");
     } catch {
-      setErrorMsg(
-        "Network error. Please try again or email us at contact@realtybossai.com.",
-      );
+      setErrorMsg(t("form.error_network"));
       setStatus("error");
     }
   }
@@ -167,9 +167,9 @@ export default function ContactForm() {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
           <Send className="h-5 w-5 text-emerald-600" strokeWidth={2} />
         </div>
-        <h3 className="mt-4 text-lg font-semibold text-slate-900">Message sent!</h3>
+        <h3 className="mt-4 text-lg font-semibold text-slate-900">{t("form.sent_title")}</h3>
         <p className="mt-1 text-sm text-slate-600">
-          Thanks for reaching out. We&apos;ll get back to you within 24 hours.
+          {t("form.sent_body")}
         </p>
       </div>
     );
@@ -180,27 +180,27 @@ export default function ContactForm() {
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="contact-name" className="block text-sm font-medium text-slate-700">
-            Name
+            {t("form.name_label")}
           </label>
           <input
             id="contact-name"
             name="name"
             type="text"
             required
-            placeholder="Your name"
+            placeholder={t("form.name_placeholder")}
             className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-[#0072ce] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0072ce]/20"
           />
         </div>
         <div>
           <label htmlFor="contact-email" className="block text-sm font-medium text-slate-700">
-            Email
+            {t("form.email_label")}
           </label>
           <input
             id="contact-email"
             name="email"
             type="email"
             required
-            placeholder="you@example.com"
+            placeholder={t("form.email_placeholder")}
             className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-[#0072ce] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0072ce]/20"
           />
         </div>
@@ -208,28 +208,28 @@ export default function ContactForm() {
 
       <div>
         <label htmlFor="contact-phone" className="block text-sm font-medium text-slate-700">
-          Phone <span className="font-normal text-slate-400">(optional)</span>
+          {t("form.phone_label")} <span className="font-normal text-slate-400">{t("form.phone_optional")}</span>
         </label>
         <input
           id="contact-phone"
           name="phone"
           type="tel"
           autoComplete="tel"
-          placeholder="(555) 123-4567"
+          placeholder={t("form.phone_placeholder")}
           className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-[#0072ce] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0072ce]/20"
         />
       </div>
 
       <div>
         <label htmlFor="contact-subject" className="block text-sm font-medium text-slate-700">
-          Subject
+          {t("form.subject_label")}
         </label>
         <input
           id="contact-subject"
           name="subject"
           type="text"
           required
-          placeholder="How can we help?"
+          placeholder={t("form.subject_placeholder")}
           defaultValue={prefill.subject}
           className="mt-1.5 block w-full rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-[#0072ce] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0072ce]/20"
         />
@@ -237,14 +237,14 @@ export default function ContactForm() {
 
       <div>
         <label htmlFor="contact-message" className="block text-sm font-medium text-slate-700">
-          Message
+          {t("form.message_label")}
         </label>
         <textarea
           id="contact-message"
           name="message"
           rows={5}
           required
-          placeholder="Tell us more about your question or feedback..."
+          placeholder={t("form.message_placeholder")}
           defaultValue={prefill.message}
           className="mt-1.5 block w-full resize-y rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-[#0072ce] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0072ce]/20"
         />
@@ -263,36 +263,31 @@ export default function ContactForm() {
           />
           <span className="text-sm text-slate-700">
             <span className="font-semibold text-slate-900">
-              Yes, send me marketing text messages from RealtyBoss.
+              {t("form.sms_consent_lead")}
             </span>{" "}
-            By checking this box and providing my phone number above, I consent to
-            receive promotional text messages from <strong>RealtyBoss</strong>{" "}
-            about real-estate services, new listings, market updates, and special
-            offers.
+            {t("form.sms_consent_body")}
           </span>
         </label>
         <p className="mt-3 pl-7 text-xs leading-relaxed text-slate-500">
-          Message frequency varies. Message and data rates may apply. Reply{" "}
-          <strong>STOP</strong> to opt out at any time, or <strong>HELP</strong> for
-          help. Consent is not a condition of any purchase. See our{" "}
+          {t("form.sms_disclosure_pre")}
+          <strong>{t("form.sms_disclosure_stop")}</strong>{t("form.sms_disclosure_mid")}<strong>{t("form.sms_disclosure_help")}</strong>{t("form.sms_disclosure_post")}
           <a
             href="/privacy"
             className="font-medium text-[#0072ce] hover:underline"
           >
-            Privacy Policy
-          </a>{" "}
-          and{" "}
+            {t("form.sms_disclosure_privacy")}
+          </a>
+          {t("form.sms_disclosure_and")}
           <a href="/terms" className="font-medium text-[#0072ce] hover:underline">
-            Terms of Service
-          </a>{" "}
-          for details.
+            {t("form.sms_disclosure_terms")}
+          </a>
+          {t("form.sms_disclosure_end")}
         </p>
       </div>
 
       {status === "error" && (
         <p className="text-sm font-medium text-rose-600">
-          {errorMsg ??
-            "Something went wrong. Please try again or email us directly."}
+          {errorMsg ?? t("form.error_generic")}
         </p>
       )}
 
@@ -302,7 +297,7 @@ export default function ContactForm() {
         className="inline-flex items-center gap-2 rounded-xl bg-[#0072ce] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#005ca8] disabled:opacity-60"
       >
         <Send className="h-4 w-4" strokeWidth={2} />
-        {status === "sending" ? "Sending..." : "Send message"}
+        {status === "sending" ? t("form.submitting") : t("form.submit")}
       </button>
     </form>
   );

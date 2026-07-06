@@ -21,42 +21,51 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import CommandChainDiagram from "@/components/marketing/CommandChainDiagram";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Your AI Real Estate Team — RealtyBoss",
-  description:
-    "RealtyBoss is an AI team for real estate agents — an AI receptionist that answers every call, a sales assistant that follows up, plus marketing, transaction, and accounting assistants. Never miss a call or a lead again.",
-  keywords: [
-    "AI real estate team",
-    "AI receptionist real estate",
-    "AI voice calls real estate",
-    "missed call text back",
-    "real estate AI assistant",
-    "real estate virtual assistant",
-  ],
-  alternates: { canonical: "/features" },
-  openGraph: {
-    title: "Your AI Real Estate Team — RealtyBoss",
-    description:
-      "An AI team that answers the phone, follows up, markets your listings, coordinates the deal, and keeps the books.",
-    url: "/features",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Your AI Real Estate Team — RealtyBoss",
-    description: "An AI team that answers the phone, follows up, and closes.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const tf = (key: string): string => t(key, { ns: "web_features" });
+  return {
+    title: tf("meta.title"),
+    description: tf("meta.description"),
+    keywords: [
+      "AI real estate team",
+      "AI receptionist real estate",
+      "AI voice calls real estate",
+      "missed call text back",
+      "real estate AI assistant",
+      "real estate virtual assistant",
+    ],
+    alternates: { canonical: "/features" },
+    openGraph: {
+      title: tf("meta.og_title"),
+      description: tf("meta.og_description"),
+      url: "/features",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: tf("meta.twitter_title"),
+      description: tf("meta.twitter_description"),
+    },
+  };
+}
 
 const PRIMARY_CTA_HREF = "/onboarding";
 
 const BRAND = "#0072ce";
 
+type TeamMemberKey =
+  | "receptionist"
+  | "boss"
+  | "sales"
+  | "marketing"
+  | "transaction"
+  | "accountant";
+
 type TeamMember = {
-  name: string;
-  role: string;
-  body: string;
+  key: TeamMemberKey;
   icon: LucideIcon;
   accent: string; // tailwind text + bg tones
   voice?: boolean;
@@ -64,120 +73,80 @@ type TeamMember = {
 
 const TEAM: TeamMember[] = [
   {
-    name: "AI Receptionist",
-    role: "Answers every call — 24/7",
-    body: "Picks up live calls, qualifies the caller, books showings and appointments, and texts back instantly when you can't answer. Your phone is never unattended again.",
+    key: "receptionist",
     icon: Headphones,
     accent: "bg-blue-50 text-[#0072ce] dark:bg-blue-900/30 dark:text-[#4da3e8]",
     voice: true,
   },
   {
-    name: "Boss Assistant",
-    role: "Your chief of staff",
-    body: "You're the boss — just say what you want done. Your Boss Assistant figures out who should handle it, delegates to the right teammate, and reports back. One command in; the whole team to work.",
+    key: "boss",
     icon: House,
     accent: "bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300",
   },
   {
-    name: "Sales Assistant",
-    role: "Prospects, follows up & converts",
-    body: "Cold-calls and qualifies new leads (budget, timeline, motivation — buyer or seller), follows up with a real voice call — not just an SMS — plus text and email, runs CMAs and listing presentations, and never lets a sphere touch slip.",
+    key: "sales",
     icon: TrendingUp,
     accent: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300",
   },
   {
-    name: "Marketing Assistant",
-    role: "Fills your pipeline",
-    body: "Generates leads, nurtures your sphere, and keeps you visible — campaigns, content, and outreach that bring new business while you work the ones you have.",
+    key: "marketing",
     icon: Megaphone,
     accent: "bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300",
   },
   {
-    name: "Transaction Assistant",
-    role: "Coordinates to close",
-    body: "Drives every deal from accepted offer to keys — coordinator board, offers, and a per-deal coach for pricing, risk, and negotiation.",
+    key: "transaction",
     icon: ClipboardList,
     accent: "bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-300",
   },
   {
-    name: "Accountant",
-    role: "Keeps the books",
-    body: "Invoices, expenses, and commission tracking — so you always know what's earned, what's owed, and what closed.",
+    key: "accountant",
     icon: Receipt,
     accent: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
   },
 ];
 
-const VOICE_POINTS: Array<{ icon: LucideIcon; title: string; body: string; outbound?: boolean }> = [
-  {
-    icon: PhoneOutgoing,
-    title: "Calls your sphere to follow up",
-    body: "This is the part no other CRM does: your AI places real voice calls to past clients and leads — check-ins, nurture, market updates — by phone, not just another text.",
-    outbound: true,
-  },
-  {
-    icon: PhoneOutgoing,
-    title: "Cold-calls & qualifies new leads",
-    body: "Hand it a lead list and it dials, qualifies on budget, timeline, and motivation — buyer or seller — and scores who's ready, so you spend time only on hot prospects.",
-  },
-  {
-    icon: PhoneCall,
-    title: "Answers live, in your voice",
-    body: "A natural AI voice picks up inbound calls, answers questions about a listing, and qualifies the caller — day or night.",
-  },
-  {
-    icon: Globe2,
-    title: "Talks in your client's language — automatically",
-    body: "Every assistant detects the language a client speaks and replies in it — English, 中文, and more — on calls and in texts, with no setup or toggle. Serve your whole market without hiring bilingual staff.",
-  },
-  {
-    icon: PhoneMissed,
-    title: "Missed-call text-back",
-    body: "Can't pick up? The moment a call ends unanswered, the caller gets a friendly text in seconds — before they call the next agent.",
-  },
-  {
-    icon: CalendarCheck,
-    title: "Books showings & appointments",
-    body: "Captures intent and puts the appointment on your calendar, then hands a qualified lead to the Sales Assistant.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Every call becomes a lead",
-    body: "Inbound and outbound calls are logged, transcribed, and added to your pipeline automatically — no sticky notes, no lost numbers.",
-  },
+type VoicePointKey =
+  | "sphere_followup"
+  | "cold_call"
+  | "answers_live"
+  | "language"
+  | "text_back"
+  | "books"
+  | "every_call";
+
+const VOICE_POINTS: Array<{ key: VoicePointKey; icon: LucideIcon; outbound?: boolean }> = [
+  { key: "sphere_followup", icon: PhoneOutgoing, outbound: true },
+  { key: "cold_call", icon: PhoneOutgoing },
+  { key: "answers_live", icon: PhoneCall },
+  { key: "language", icon: Globe2 },
+  { key: "text_back", icon: PhoneMissed },
+  { key: "books", icon: CalendarCheck },
+  { key: "every_call", icon: MessageCircle },
 ];
 
-const TOOLS: Array<{ icon: LucideIcon; title: string }> = [
-  { icon: BarChart3, title: "AI CMA" },
-  { icon: Sparkles, title: "Seller Presentation" },
-  { icon: BarChart3, title: "Property Deep Report" },
-  { icon: House, title: "AI House Search" },
+type ToolKey = "cma" | "seller_presentation" | "deep_report" | "house_search";
+
+const TOOLS: Array<{ key: ToolKey; icon: LucideIcon }> = [
+  { key: "cma", icon: BarChart3 },
+  { key: "seller_presentation", icon: Sparkles },
+  { key: "deep_report", icon: BarChart3 },
+  { key: "house_search", icon: House },
 ];
 
-const TRAINING_POINTS: Array<{ icon: LucideIcon; title: string; body: string }> = [
-  {
-    icon: MessageCircle,
-    title: "Proven scripts & talk tracks",
-    body: "Calls and messages use the language top producers use to build rapport and move a conversation forward — not generic chatbot filler.",
-  },
-  {
-    icon: CheckCircle2,
-    title: "Objection handling that converts",
-    body: "Knows the real answers to \"we're just looking,\" \"your commission is too high,\" and \"we'll wait for the market\" — and keeps the lead engaged.",
-  },
-  {
-    icon: CalendarCheck,
-    title: "Follow-up cadence that wins",
-    body: "Times outreach the way the best agents do — fast first touch, then a persistent, polite rhythm that earns the appointment.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Pricing & negotiation instincts",
-    body: "Frames value, anchors price, and qualifies motivation with the judgment of an experienced listing and buyer's agent.",
-  },
+type TrainingKey = "scripts" | "objections" | "cadence" | "pricing";
+
+const TRAINING_POINTS: Array<{ key: TrainingKey; icon: LucideIcon }> = [
+  { key: "scripts", icon: MessageCircle },
+  { key: "objections", icon: CheckCircle2 },
+  { key: "cadence", icon: CalendarCheck },
+  { key: "pricing", icon: TrendingUp },
 ];
 
-export default function FeaturesPage() {
+const ECON_CHIPS = ["no_payroll", "never_quits", "always_on", "trained"] as const;
+
+export default async function FeaturesPage() {
+  const t = await getServerT();
+  const tf = (key: string): string => t(key, { ns: "web_features" });
   /* AppShell owns the marketing chrome (top nav + footer); this page
    * emits only its section content. */
   return (
@@ -195,29 +164,27 @@ export default function FeaturesPage() {
         </div>
         <div className="relative mx-auto max-w-4xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0072ce]">
-            Not a CRM — a team
+            {tf("hero.eyebrow")}
           </p>
           <h1 className="mt-4 font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-gray-950 md:text-5xl lg:text-[3.25rem] dark:text-white">
-            Your{" "}
+            {tf("hero.h1_lead")}{" "}
             <span className="bg-gradient-to-r from-[#0072ce] via-[#4F46E5] to-[#7c3aed] bg-clip-text text-transparent">
-              AI real estate team
+              {tf("hero.h1_gradient")}
             </span>
-            <br className="hidden md:inline" /> that answers the phone
+            <br className="hidden md:inline" /> {tf("hero.h1_tail")}
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base text-slate-600 md:text-lg dark:text-slate-400">
-            You're the boss — give one command to your Boss Assistant and it arranges the
-            work: the receptionist answers, sales follows up, marketing fills the pipeline,
-            and transactions and accounting handle the rest. You finally own a real team.
+            {tf("hero.subtitle")}
           </p>
 
           {/* Team chips */}
           <div className="mt-7 flex flex-wrap items-center justify-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
             {TEAM.map((m) => (
               <span
-                key={m.name}
+                key={m.key}
                 className="rounded-full bg-white px-3 py-1 ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"
               >
-                {m.name}
+                {tf(`team.${m.key}.name`)}
               </span>
             ))}
           </div>
@@ -227,14 +194,14 @@ export default function FeaturesPage() {
               href={PRIMARY_CTA_HREF}
               className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0072ce] px-7 py-3 text-base font-semibold text-white shadow-lg shadow-[#0072ce]/20 transition hover:bg-[#005ba8] hover:shadow-xl"
             >
-              Hire your AI team
+              {tf("hero.cta_primary")}
               <ArrowRight size={18} aria-hidden />
             </Link>
             <Link
               href="/contact"
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-base font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              Hear it answer a call
+              {tf("hero.cta_secondary")}
             </Link>
           </div>
         </div>
@@ -246,25 +213,25 @@ export default function FeaturesPage() {
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full bg-[#0072ce]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#0072ce]">
-                <Mic size={13} aria-hidden /> Real voice — both directions
+                <Mic size={13} aria-hidden /> {tf("voice.badge")}
               </p>
               <h2 className="mt-4 font-heading text-3xl font-bold leading-tight text-slate-900 md:text-4xl dark:text-white">
-                It answers your calls — and{" "}
+                {tf("voice.h2_lead")}{" "}
                 <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
-                  calls your sphere
+                  {tf("voice.h2_gradient")}
                 </span>
               </h2>
               <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-                Every other CRM stops at SMS and email drips. RealtyBoss picks up the phone —
-                answering inbound calls 24/7 <span className="font-semibold text-slate-800 dark:text-slate-200">and placing real outbound voice calls</span> to
-                follow up with your sphere and leads. That conversation is what wins the listing.
+                {tf("voice.body_lead")}{" "}
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{tf("voice.body_bold")}</span>{" "}
+                {tf("voice.body_tail")}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href={PRIMARY_CTA_HREF}
                   className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0072ce] px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-[#005ba8]"
                 >
-                  Set up your receptionist
+                  {tf("voice.cta")}
                   <ArrowRight size={16} aria-hidden />
                 </Link>
               </div>
@@ -273,7 +240,7 @@ export default function FeaturesPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               {VOICE_POINTS.map((v) => (
                 <div
-                  key={v.title}
+                  key={v.key}
                   className={`rounded-2xl border bg-white p-5 shadow-sm dark:bg-slate-900 ${
                     v.outbound
                       ? "border-[#0072ce]/40 ring-1 ring-[#0072ce]/20 sm:col-span-2 dark:border-[#0072ce]/40"
@@ -286,15 +253,15 @@ export default function FeaturesPage() {
                     </div>
                     {v.outbound ? (
                       <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0072ce]">
-                        Only on RealtyBoss
+                        {tf("voice.only_badge")}
                       </span>
                     ) : null}
                   </div>
                   <h3 className="mt-3 font-heading text-sm font-bold text-slate-900 dark:text-white">
-                    {v.title}
+                    {tf(`voice.points.${v.key}.title`)}
                   </h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                    {v.body}
+                    {tf(`voice.points.${v.key}.body`)}
                   </p>
                 </div>
               ))}
@@ -308,22 +275,20 @@ export default function FeaturesPage() {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              You're the boss
+              {tf("meet.eyebrow")}
             </p>
             <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-              Six AI teammates. One you.
+              {tf("meet.h2")}
             </h2>
             <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-              Tell the Boss Assistant what you want done — it arranges the work and puts the
-              right teammate on it, around the clock. You finally own a real team, without the
-              payroll, so you can do the part only you can: build relationships and close.
+              {tf("meet.subtitle")}
             </p>
           </div>
 
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {TEAM.map((m) => (
               <div
-                key={m.name}
+                key={m.key}
                 className={`relative h-full rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:bg-slate-900 ${
                   m.voice
                     ? "border-[#0072ce]/40 ring-1 ring-[#0072ce]/20 dark:border-[#0072ce]/40"
@@ -332,20 +297,20 @@ export default function FeaturesPage() {
               >
                 {m.voice ? (
                   <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0072ce]">
-                    <Mic size={11} aria-hidden /> Voice
+                    <Mic size={11} aria-hidden /> {tf("meet.voice_badge")}
                   </span>
                 ) : null}
                 <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${m.accent}`}>
                   <m.icon size={22} aria-hidden />
                 </div>
                 <h3 className="mt-4 font-heading text-lg font-bold text-slate-900 dark:text-white">
-                  {m.name}
+                  {tf(`team.${m.key}.name`)}
                 </h3>
                 <p className="mt-0.5 text-sm font-semibold text-[#0072ce] dark:text-[#4da3e8]">
-                  {m.role}
+                  {tf(`team.${m.key}.role`)}
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                  {m.body}
+                  {tf(`team.${m.key}.body`)}
                 </p>
               </div>
             ))}
@@ -358,32 +323,30 @@ export default function FeaturesPage() {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              Not generic AI
+              {tf("training.eyebrow")}
             </p>
             <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-              Trained on how top agents actually sell
+              {tf("training.h2")}
             </h2>
             <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-              Your team isn&apos;t a chatbot with a real-estate coat of paint. Every script,
-              follow-up, and call is modeled on the playbooks of top-producing agents — how they
-              qualify, handle objections, price, and negotiate.
+              {tf("training.subtitle")}
             </p>
           </div>
 
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {TRAINING_POINTS.map((p) => (
               <div
-                key={p.title}
+                key={p.key}
                 className="flex h-full flex-col rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
               >
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#0072ce] dark:bg-blue-900/30 dark:text-[#4da3e8]">
                   <p.icon size={20} aria-hidden />
                 </div>
                 <h3 className="mt-4 font-heading text-sm font-bold text-slate-900 dark:text-white">
-                  {p.title}
+                  {tf(`training.points.${p.key}.title`)}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                  {p.body}
+                  {tf(`training.points.${p.key}.body`)}
                 </p>
               </div>
             ))}
@@ -395,33 +358,25 @@ export default function FeaturesPage() {
       <section className="border-y border-slate-200/80 bg-gradient-to-b from-blue-50/60 via-white to-white px-6 py-20 dark:border-slate-800 dark:from-blue-950/20 dark:via-slate-950 dark:to-slate-950 md:py-24">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-            The economics
+            {tf("economics.eyebrow")}
           </p>
           <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-            Hire a top-producing team —{" "}
+            {tf("economics.h2_lead")}{" "}
             <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
-              virtually free
+              {tf("economics.h2_gradient")}
             </span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-400 md:text-lg">
-            A receptionist, an ISA, a transaction coordinator, a marketing assistant, and a
-            bookkeeper would cost you tens of thousands a year — each — and you&apos;d still have
-            to hire, train, and manage them. RealtyBoss gives you all of them, trained to sell
-            like top producers, for the price of a tool.
+            {tf("economics.subtitle")}
           </p>
           <ul className="mx-auto mt-8 flex max-w-2xl flex-wrap justify-center gap-3">
-            {[
-              "No payroll or benefits",
-              "Never quits, never calls in sick",
-              "Works 24/7",
-              "Trained to sell like top agents",
-            ].map((v) => (
+            {ECON_CHIPS.map((chip) => (
               <li
-                key={v}
+                key={chip}
                 className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
               >
                 <CheckCircle2 size={15} className="text-emerald-500" aria-hidden />
-                {v}
+                {tf(`economics.chips.${chip}`)}
               </li>
             ))}
           </ul>
@@ -430,7 +385,7 @@ export default function FeaturesPage() {
               href={PRIMARY_CTA_HREF}
               className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0072ce] px-7 py-3 text-base font-semibold text-white shadow-lg shadow-[#0072ce]/20 transition hover:bg-[#005ba8]"
             >
-              Hire your AI team
+              {tf("economics.cta")}
               <ArrowRight size={18} aria-hidden />
             </Link>
           </div>
@@ -442,17 +397,16 @@ export default function FeaturesPage() {
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              The command chain
+              {tf("command_chain.eyebrow")}
             </p>
             <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-              You give one order. The team does the rest.
+              {tf("command_chain.h2")}
             </h2>
             <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-              Pick a command and watch it cascade — the Boss Assistant plans it and assigns the
-              right teammates, who do the research and every step for you.
+              {tf("command_chain.subtitle")}
             </p>
             <p className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-[#0072ce]/10 px-4 py-1.5 text-sm font-semibold text-[#0072ce] dark:text-[#4da3e8]">
-              👇 Click a command below to see the results
+              {tf("command_chain.hint")}
             </p>
           </div>
           <div className="mt-12">
@@ -465,23 +419,23 @@ export default function FeaturesPage() {
       <section className="px-6 py-20 md:py-24">
         <div className="mx-auto max-w-5xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-            And the deliverables clients see
+            {tf("tools.eyebrow")}
           </p>
           <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-            Reports that win listings and guide buyers
+            {tf("tools.h2")}
           </h2>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             {TOOLS.map((tool) => (
               <span
-                key={tool.title}
+                key={tool.key}
                 className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
               >
                 <tool.icon size={16} className="text-[#0072ce]" aria-hidden />
-                {tool.title}
+                {tf(`tools.items.${tool.key}`)}
               </span>
             ))}
             <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
-              + Comparison Report &amp; Net-to-Seller
+              {tf("tools.extra")}
             </span>
           </div>
         </div>
@@ -491,10 +445,10 @@ export default function FeaturesPage() {
       <section className="px-6 py-20 md:py-24">
         <div className="mx-auto max-w-4xl rounded-3xl bg-gradient-to-br from-[#0072ce] via-[#4F46E5] to-[#7c3aed] px-8 py-14 text-center text-white shadow-2xl md:px-12">
           <h2 className="font-heading text-3xl font-bold leading-tight md:text-4xl">
-            Never miss a call — or a lead — again
+            {tf("final_cta.h2")}
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-base text-white/90 md:text-lg">
-            Put an AI team to work today. They answer, follow up, and coordinate. You close.
+            {tf("final_cta.subtitle")}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
@@ -502,14 +456,14 @@ export default function FeaturesPage() {
               className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-[#0072ce] shadow-lg transition hover:bg-slate-50 md:text-base"
               style={{ color: BRAND }}
             >
-              Hire your AI team
+              {tf("final_cta.primary")}
               <ArrowRight size={18} aria-hidden />
             </Link>
             <Link
               href="/contact"
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20 md:text-base"
             >
-              Book a demo
+              {tf("final_cta.secondary")}
             </Link>
           </div>
         </div>

@@ -2,34 +2,43 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { HELP_FAQ_CATEGORIES } from "@/lib/help/faq";
 import { groupedGuides } from "@/lib/help/guides";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Help center",
-  description:
-    "Every how-to guide for RealtyBoss — AI follow-up, voice AI, missed-call text-back, listings, offers, transactions, CMAs, calculators, and more. Plus FAQs and contact support.",
-  alternates: { canonical: "/help" },
-  openGraph: {
-    title: "Help center — RealtyBoss",
-    description:
-      "Every how-to guide for RealtyBoss — set up, communication, AI, deals, marketing, analytics, calculators, and account.",
-    url: "/help",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Help center — RealtyBoss",
-    description:
-      "Every how-to guide for RealtyBoss — set up, AI, deals, marketing, analytics, and calculators.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const th = (key: string): string => t(key, { ns: "web_help" });
+  return {
+    title: th("meta.title"),
+    description: th("meta.description"),
+    alternates: { canonical: "/help" },
+    openGraph: {
+      title: th("meta.og_title"),
+      description: th("meta.og_description"),
+      url: "/help",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: th("meta.twitter_title"),
+      description: th("meta.twitter_description"),
+    },
+  };
+}
 
 /**
  * Public help center index. Aggregates the FAQ + how-to guides
  * registered in lib/help/. The page is intentionally simple —
  * deep-links into specific FAQ categories and per-guide pages
  * carry the long-tail SEO content.
+ *
+ * Category labels/descriptions + page chrome are localized via the
+ * `web_help` namespace. Individual guide titles/descriptions/bodies
+ * still render from lib/help/guides.ts in English (tracked as a
+ * follow-up localization batch).
  */
-export default function HelpIndexPage() {
+export default async function HelpIndexPage() {
+  const t = await getServerT();
+  const th = (key: string): string => t(key, { ns: "web_help" });
   const guideGroups = groupedGuides();
 
   return (
@@ -37,29 +46,27 @@ export default function HelpIndexPage() {
       <div className="mx-auto max-w-5xl px-4 py-12 md:px-6 md:py-16">
         <header className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-            Help center
+            {th("index.eyebrow")}
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-5xl">
-            Guides, FAQs, and how-tos.
+            {th("index.h1")}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
-            Everything you need to get RealtyBoss running — from
-            importing your first contacts to managing coaching
-            enrollment to sending video email.
+            {th("index.subtitle")}
           </p>
         </header>
 
         <section className="mt-12">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
-              How-to guides
+              {th("index.guides_h2")}
             </h2>
             <p className="text-sm text-slate-500">
-              Step-by-step walkthroughs.
+              {th("index.guides_note")}
             </p>
           </div>
 
-          <nav aria-label="Browse by category" className="mt-6">
+          <nav aria-label={th("index.browse_a11y")} className="mt-6">
             <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {guideGroups.map((group) => (
                 <li key={group.category}>
@@ -67,7 +74,7 @@ export default function HelpIndexPage() {
                     href={`#${group.category}`}
                     className="block rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                   >
-                    {group.label}{" "}
+                    {th(`guide_categories.${group.category}.label`)}{" "}
                     <span className="text-xs font-normal text-slate-500">
                       ({group.guides.length})
                     </span>{" "}
@@ -81,10 +88,10 @@ export default function HelpIndexPage() {
           {guideGroups.map((group) => (
             <div key={group.category} id={group.category} className="mt-10 scroll-mt-24">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-                {group.label}
+                {th(`guide_categories.${group.category}.label`)}
               </h3>
               <p className="mt-1 text-sm leading-6 text-slate-600">
-                {group.description}
+                {th(`guide_categories.${group.category}.description`)}
               </p>
               <ul className="mt-4 grid gap-3 md:grid-cols-2">
                 {group.guides.map((guide) => (
@@ -113,13 +120,13 @@ export default function HelpIndexPage() {
         <section className="mt-16">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
-              Frequently asked questions
+              {th("index.faq_h2")}
             </h2>
             <Link
               href="/help/faq"
               className="text-sm font-semibold text-blue-700 hover:underline"
             >
-              See all →
+              {th("index.faq_see_all")}
             </Link>
           </div>
           <ul className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -129,7 +136,7 @@ export default function HelpIndexPage() {
                   href={`/help/faq#${cat.id}`}
                   className="block rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                 >
-                  {cat.label} →
+                  {th(`faq_categories.${cat.id}`)} →
                 </Link>
               </li>
             ))}
@@ -138,25 +145,23 @@ export default function HelpIndexPage() {
 
         <section className="mt-16 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-8 text-center md:p-12">
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
-            Still stuck?
+            {th("index.stuck_h2")}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 md:text-base">
-            The chat bubble in your dashboard reaches a real person.
-            Premium and Team plans get same-business-day priority
-            support.
+            {th("index.stuck_body")}
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <a
               href="mailto:contact@realtybossai.com"
               className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
             >
-              Email support
+              {th("index.stuck_email")}
             </a>
             <Link
               href="/contact"
               className="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:border-slate-300"
             >
-              Contact form
+              {th("index.stuck_contact")}
             </Link>
           </div>
         </section>
