@@ -30,6 +30,7 @@ import { leadSmartNav } from "@/nav.config";
 import { RealtyBossLogo, RealtyBossMark } from "@/components/brand/RealtyBossLogo";
 import { NotificationsBell } from "@/components/dashboard/NotificationsBell";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
+import LanguageToggle from "@/components/LanguageToggle";
 import { isAdminOrSupportRole, isAgentOrBrokerProfileRole } from "@/lib/rolePortalPaths";
 
 function displayLabelFromEmail(email: string | null | undefined): string {
@@ -541,6 +542,7 @@ export default function TopBar({
             in-page CTAs.
           */}
           <div className="hidden md:flex items-center gap-2">
+            <LanguageToggle />
             <SupportChatLauncher />
             <QuickActionsDropdown />
             <NotificationsBell />
