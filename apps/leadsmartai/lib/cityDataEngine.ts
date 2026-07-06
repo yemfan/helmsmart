@@ -218,10 +218,35 @@ export async function getCityData(options: {
     new Date(String((existing as any).last_fetched_at ?? 0)).toISOString() > staleBeforeIso;
   if (isFresh) return existing as CityMarketData;
 
-  // Market numbers come from curated seed data (TRAFFIC_CITIES) + deterministic
-  // fallback; the RentCast /v1/markets fetch was removed. The OpenAI market
-  // summary below is unaffected.
-  const baseData = buildFallbackCityData(normalized.city, normalized.state);
+  // Market numbers: try a live AI web_search fetch first (replaces the seed-
+  // only numbers curated after RentCast removal), and fall back to seed data
+  // when the AI is unavailable or returns nothing. Cached 24h (city_market_data)
+  // and driven by the daily refreshAllCitiesDaily cron, so the AI cost is
+  // bounded. The OpenAI market summary below is unaffected.
+  let baseData = buildFallbackCityData(normalized.city, normalized.state);
+  try {
+    const { aiMarketStats } = await import("@repo/valuation/server");
+    const statsResult = await aiMarketStats(normalized.city, normalized.state);
+    if (
+      statsResult.ok &&
+      (statsResult.stats.medianPrice != null || statsResult.stats.pricePerSqft != null)
+    ) {
+      const stats = statsResult.stats;
+      baseData = {
+        city: normalized.city,
+        state: normalized.state,
+        median_price: stats.medianPrice ?? baseData.median_price,
+        price_per_sqft: stats.pricePerSqft ?? baseData.price_per_sqft,
+        trend: stats.trend,
+        days_on_market: stats.daysOnMarket ?? baseData.days_on_market,
+        inventory: stats.inventory ?? baseData.inventory,
+        source: "ai_web_search",
+        raw_payload: stats as unknown,
+      } as typeof baseData;
+    }
+  } catch {
+    // Any failure (not configured, network, parse) → keep the seed fallback.
+  }
   const ai = await generateAIInsight(baseData);
 
   const upsertPayload = {
