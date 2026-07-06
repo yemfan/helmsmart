@@ -1,7 +1,7 @@
 {
   "landing": {
     "title": "RealtyBoss — Your AI Real Estate Team. Close More Deals.",
-    "description": "RealtyBoss is an AI-powered real estate team that answers every call, follows up with every lead, and coordinates every transaction — so you close more deals without hiring additional staff. Pro from $49/mo.",
+    "description": "RealtyBoss is an AI-powered real estate team that answers every call, follows up with every lead, and coordinates every transaction — so you close more deals without hiring additional staff. Pro from $79/mo.",
     "og": {
       "title": "RealtyBoss — Hire an AI Real Estate Team. Close More Deals.",
       "description": "Your AI Real Estate Team — from first call to closing. AI Receptionist, Sales Assistant, and Transaction Assistant under your direction. 14-day trial, cancel anytime."
@@ -21,6 +21,6 @@
   },
   "pricing": {
     "title": "Pricing | RealtyBoss",
-    "description": "Free, Pro ($49), Elite ($99), and Team ($199) plans — full feature comparison for your AI real estate team: receptionist, follow-ups, and transaction coordination."
+    "description": "Free, Pro ($79), Premium ($199), Signature ($399), and Team plans — full feature comparison for your AI real estate team: receptionist, follow-ups, and transaction coordination."
   }
 }
