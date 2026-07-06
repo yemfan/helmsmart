@@ -4,18 +4,19 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { recommendPropertiesForContact } from "@/lib/contacts/recommendations/ai";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 /**
  * AI property recommender. On-demand: the agent clicks "Suggest
  * properties" on the contact profile and we synthesize a candidate
  * list from the contact's favorites + saved searches + recent views,
- * run a Rentcast query with derived criteria, score against the
- * contact's pattern, and (optionally) rerank + write rationale via
- * GPT-4o-mini.
+ * run the AI house-search engine (Claude + web search) with derived
+ * criteria, score against the contact's pattern, and (optionally)
+ * rerank + write rationale via GPT-4o-mini.
  *
  * Not cached server-side — the agent wants fresh candidates every time
- * they hit the button. Rentcast + LLM are both rate-limited externally.
+ * they hit the button. The Opus web-search pass takes ~30-60s, so this
+ * route runs with maxDuration = 60.
  */
 
 export async function POST(

@@ -142,7 +142,7 @@ export default function AISuggestedPropertiesPanel({
       if (!res.ok || !data.ok) throw new Error(data.error || "Send failed");
       setPicked(new Set());
       // Refresh list so "sent" ones don't reappear immediately — next
-      // call will get a fresh Rentcast query anyway.
+      // call will run a fresh AI listing search anyway.
       setState((prev) => (prev.kind === "ready" ? prev : prev));
     } catch (e) {
       alert(e instanceof Error ? e.message : "Send failed");
@@ -177,7 +177,7 @@ export default function AISuggestedPropertiesPanel({
 
       {state.kind === "loading" && (
         <div className="mt-3 text-xs text-gray-400">
-          Pulling from Rentcast and scoring against their pattern…
+          Searching live listings and scoring against their pattern…
         </div>
       )}
 
