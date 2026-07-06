@@ -19,8 +19,8 @@ import { useThemeTokens } from "../../lib/useThemeTokens";
 
 /**
  * Team roster — the "Your AI Team" tab. Lists the five assistants as
- * tappable rows that open each assistant's hub (`/assistant/<type>`),
- * plus a "Manage AI Team" row at the bottom.
+ * tappable rows that open each assistant's hub (`/assistant/<type>`).
+ * (Team management itself stays web-only — not surfaced on mobile.)
  *
  * Best-effort active/paused status is pulled from `fetchBossTeam()`
  * (the same roster the Boss screen shows). If the fetch fails the rows
@@ -56,11 +56,6 @@ export default function TeamScreen() {
     },
     [router],
   );
-
-  const openManage = useCallback(() => {
-    hapticSelectionChange();
-    router.push("/(tabs)/settings");
-  }, [router]);
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
@@ -125,19 +120,6 @@ export default function TeamScreen() {
           );
         })}
       </View>
-
-      <Pressable
-        onPress={openManage}
-        accessibilityRole="button"
-        accessibilityLabel={t("team.manage")}
-        style={({ pressed }) => [styles.manageRow, pressed && styles.rowPressed]}
-      >
-        <View style={[styles.avatar, { backgroundColor: tokens.surfaceMuted }]}>
-          <Ionicons name="settings-outline" size={20} color={tokens.textMuted} />
-        </View>
-        <Text style={styles.manageText}>{t("team.manage")}</Text>
-        <Ionicons name="chevron-forward" size={18} color={tokens.textSubtle} />
-      </Pressable>
     </ScrollView>
   );
 }
@@ -173,6 +155,7 @@ const createStyles = (theme: ThemeTokens) =>
       borderTopColor: theme.border,
     },
     rowPressed: { backgroundColor: theme.surfaceMuted },
+    // (Manage-AI-Team row removed — team management stays web-only.)
     avatar: {
       width: 40,
       height: 40,
@@ -197,18 +180,4 @@ const createStyles = (theme: ThemeTokens) =>
       color: theme.textMuted,
       lineHeight: 18,
     },
-    manageRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-      marginTop: 16,
-      paddingVertical: 14,
-      paddingHorizontal: 14,
-      backgroundColor: theme.surface,
-      borderRadius: 18,
-      borderWidth: 1,
-      borderColor: theme.border,
-      ...theme.elevation.raised,
-    },
-    manageText: { flex: 1, fontSize: 16, fontWeight: "600", color: theme.text },
   });
