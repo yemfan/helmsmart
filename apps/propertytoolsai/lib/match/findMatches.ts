@@ -1,5 +1,8 @@
-import { getListingsAdapter } from "@/lib/listings/adapters";
-import type { ListingResult } from "@/lib/listings/adapters/types";
+import { generateHouseSearch } from "@repo/valuation/server";
+import type { HouseListing } from "@repo/valuation";
+
+import { paramsToBrief } from "@/lib/listings/brief";
+import { parseAddressParts } from "@/lib/listings/aiListing";
 import { calculateMatchScore } from "@/lib/match/engine";
 import type { BuyerPreferences, MatchableListing, PropertyMatch } from "@/lib/match/types";
 
@@ -30,18 +33,27 @@ const MOCK_LISTINGS: MatchableListing[] = [
   },
 ];
 
-function listingToMatchable(row: ListingResult): MatchableListing {
+/**
+ * Map a shared-engine HouseListing onto the scoring engine's MatchableListing.
+ * `id` is the external listing URL when present (else the address) so
+ * downstream links can point at the real source; daysOnMarket/rentEstimate
+ * aren't returned by the AI engine, so they stay undefined.
+ */
+function houseListingToMatchable(
+  listing: HouseListing,
+  fallback: { city: string; state: string; zip: string },
+): MatchableListing {
+  const parts = parseAddressParts(listing.address, fallback);
   return {
-    id: row.id,
-    address: row.address,
-    city: row.city,
-    state: row.state,
-    price: row.price,
-    beds: row.beds,
-    baths: row.baths,
-    sqft: row.sqft,
-    daysOnMarket: row.daysOnMarket,
-    propertyType: row.propertyType,
+    id: (listing.listingUrl ?? listing.address).toLowerCase(),
+    address: listing.address,
+    city: parts.city,
+    state: parts.state,
+    price: listing.price ?? 0,
+    beds: listing.beds ?? undefined,
+    baths: listing.baths ?? undefined,
+    sqft: listing.sqft ?? undefined,
+    propertyType: listing.propertyType ?? undefined,
   };
 }
 
@@ -82,21 +94,32 @@ export async function findPropertyMatches(prefs: BuyerPreferences): Promise<{
   let listings: MatchableListing[] = [];
   let usedMock = false;
 
+  const state = prefs.state || "CA";
+  const fallback = { city: prefs.city ?? "", state, zip: "" };
+
   try {
-    const adapter = getListingsAdapter();
-    const results = await adapter.searchHomes({
-      city: prefs.city,
-      state: prefs.state || "CA",
-      maxPrice: Math.round(prefs.budget * 1.2),
-      minPrice: Math.round(Math.max(50_000, prefs.budget * 0.35)),
-      beds: prefs.beds,
-      baths: prefs.baths,
-      limit: 48,
-    });
-    listings = results.map(listingToMatchable);
+    // Build a natural-language brief from the buyer's saved criteria and run
+    // it through the shared AI house-search engine (Claude + web search).
+    const brief =
+      paramsToBrief({
+        city: prefs.city ?? null,
+        state,
+        priceMin: Math.round(Math.max(50_000, prefs.budget * 0.35)),
+        priceMax: Math.round(prefs.budget * 1.2),
+        bedsMin: prefs.beds ?? null,
+        bathsMin: prefs.baths ?? null,
+      }) || `Homes for sale under $${Math.round(prefs.budget * 1.2).toLocaleString()}.`;
+
+    const res = await generateHouseSearch(brief);
+    if (res.ok === true) {
+      listings = res.result.listings.map((l) => houseListingToMatchable(l, fallback));
+    } else {
+      usedMock = true;
+      console.warn("[match] AI house search failed, using mock data:", res.error);
+    }
   } catch (e) {
     usedMock = true;
-    console.warn("[match] listing provider failed, using mock data:", e);
+    console.warn("[match] AI house search threw, using mock data:", e);
   }
 
   if (!listings.length) {
