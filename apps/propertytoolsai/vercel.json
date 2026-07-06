@@ -71,6 +71,10 @@
     {
       "path": "/api/cron/lead-pricing-learning",
       "schedule": "0 2 * * 3"
+    },
+    {
+      "path": "/api/cron/gsc-import",
+      "schedule": "0 8 * * *"
     }
   ]
 }
