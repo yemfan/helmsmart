@@ -3,6 +3,7 @@ import { listClusterGuideEntriesForSitemap } from "@/lib/clusterGenerator/db";
 import { listSerpHubEntriesForSitemap } from "@/lib/serpDominator/db";
 import { getProgrammaticSeoUrlPaths } from "@/lib/programmaticSeo";
 import { getSeoSitemapEntries } from "@/lib/seo-generator/sitemap";
+import { listResearchReportsForSitemap } from "@/lib/research/db";
 import { TRAFFIC_CITIES } from "@/lib/trafficSeo";
 
 /**
@@ -24,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let clusterGuideEntries: { path: string; updatedAt: string | null }[] = [];
   let serpHubEntries: { path: string; updatedAt: string | null }[] = [];
+  let researchEntries: { path: string; updatedAt: string | null }[] = [];
   if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
     try {
       clusterGuideEntries = await listClusterGuideEntriesForSitemap();
@@ -34,6 +36,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       serpHubEntries = await listSerpHubEntriesForSitemap();
     } catch {
       serpHubEntries = [];
+    }
+    try {
+      researchEntries = (await listResearchReportsForSitemap()).map((r) => ({
+        path: `/data/reports/${r.slug}`,
+        updatedAt: r.updatedAt,
+      }));
+    } catch {
+      researchEntries = [];
     }
   }
 
@@ -48,6 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/landing/mortgage-calculator",
     "/content/video-scripts",
     "/serp-hub",
+    "/data",
     "/blog",
     "/about",
     "/contact",
@@ -111,6 +122,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dynamicEntries: MetadataRoute.Sitemap = [
     ...clusterGuideEntries,
     ...serpHubEntries,
+    ...researchEntries,
   ].map((entry) => ({
     url: `${base}${entry.path}`,
     lastModified: entry.updatedAt ? new Date(entry.updatedAt) : undefined,

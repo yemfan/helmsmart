@@ -75,6 +75,14 @@
     {
       "path": "/api/cron/gsc-import",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/research-weekly",
+      "schedule": "0 12 * * 4"
+    },
+    {
+      "path": "/api/cron/research-monthly",
+      "schedule": "0 12 1 * *"
     }
   ]
 }
