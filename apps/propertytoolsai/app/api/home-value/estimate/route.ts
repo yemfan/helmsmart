@@ -1,46 +1,106 @@
 import { NextResponse } from "next/server";
+import { generateAiCma, isValuationFailure } from "@repo/valuation/server";
 import { getUserFromRequest } from "@/lib/authFromRequest";
-import { PropertyIneligibleError } from "@/lib/homeValue/eligibility";
 import { forwardGeocodeAddress } from "@/lib/homeValue/forwardGeocodeAddress";
 import { normalizeHomeValueEstimateRequestBody } from "@/lib/homeValue/normalizeEstimateRequestBody";
-import { runHomeValueEstimatePipeline } from "@/lib/homeValue/runEstimate";
-import { getComparables } from "@/lib/propertyService";
 
-function addressLineForGeocode(address: string, city: string | null, state: string | null, zip: string | null) {
+export const runtime = "nodejs";
+// Claude + web_search over real comparable sales runs ~15-40s.
+export const maxDuration = 60;
+
+function addressLineForGeocode(
+  address: string,
+  city: string | null | undefined,
+  state: string | null | undefined,
+  zip: string | null | undefined
+) {
   return [address, city, state, zip]
     .filter((x) => x != null && String(x).trim())
     .map((x) => String(x).trim())
     .join(", ");
 }
 
-export const runtime = "nodejs";
+/** Map the AI valuation confidence score (0–95) to a coarse label. */
+function confidenceLabel(score: number): "low" | "medium" | "high" {
+  if (score >= 75) return "high";
+  if (score >= 50) return "medium";
+  return "low";
+}
 
+/** Coerce to a positive number, else undefined. */
+function posNum(v: unknown): number | undefined {
+  const n = typeof v === "number" ? v : typeof v === "string" ? Number(v) : NaN;
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+
+/** Map a free-text property type to the funnel UI enum. */
+function toUiPropertyType(
+  t: string | null | undefined
+): "single_family" | "condo" | "townhome" | "multi_family" | undefined {
+  if (!t || !String(t).trim()) return undefined;
+  const x = String(t).toLowerCase();
+  if (/condo|apartment|coop/.test(x)) return "condo";
+  if (/town|row/.test(x)) return "townhome";
+  if (/multi|duplex|triplex|fourplex/.test(x)) return "multi_family";
+  return "single_family";
+}
+
+/**
+ * POST /api/home-value/estimate — AI-grounded home value estimate.
+ *
+ * Replaces the former Rentcast + warehouse comp pipeline with the shared
+ * `@repo/valuation` engine (Claude + web_search over real comparable sales).
+ * The response envelope is unchanged so the funnel / estimate hook keep working:
+ * `{ success, sessionId, property, estimate, supportingData, adjustments,
+ *    comps, recommendations, provider }`.
+ *
+ * Subject + comp coordinates are still resolved via `forwardGeocodeAddress`
+ * (Mapbox/Google) so the map continues to render.
+ */
 export async function POST(req: Request) {
   try {
     const raw = await req.json().catch(() => ({}));
     const body = normalizeHomeValueEstimateRequestBody(raw);
-    const authUser = await getUserFromRequest(req);
-    const userId = authUser?.id ?? null;
+    // Auth is not required for a public estimate, but resolve it best-effort
+    // (parity with the previous pipeline, which threaded userId through).
+    await getUserFromRequest(req).catch(() => null);
 
-    const result = await runHomeValueEstimatePipeline(body, { userId });
-    const normalized = result.normalizedProperty;
-    let lat = normalized.lat != null ? Number(normalized.lat) : NaN;
-    let lng = normalized.lng != null ? Number(normalized.lng) : NaN;
-
-    if (!normalized.address) {
+    const address = String(body.address ?? "").trim();
+    if (!address) {
       return NextResponse.json(
         { success: false, error: "Missing property address" },
         { status: 400 }
       );
     }
 
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-      const query = addressLineForGeocode(
-        normalized.address,
-        normalized.city,
-        normalized.state,
-        normalized.zip
+    const sessionId = body.session_id ?? "";
+
+    const result = await generateAiCma({
+      address,
+      beds: posNum(body.beds),
+      baths: posNum(body.baths),
+      sqft: posNum(body.sqft),
+      yearBuilt: posNum(body.yearBuilt),
+      condition: typeof body.condition === "string" ? body.condition : undefined,
+    });
+
+    // Use the type-guard (not `!result.ok`) so this narrows under strict:false.
+    if (isValuationFailure(result)) {
+      return NextResponse.json(
+        { success: false, error: result.error },
+        { status: result.status }
       );
+    }
+
+    const snapshot = result.snapshot;
+    const subject = snapshot.subject;
+    const valuation = snapshot.valuation;
+
+    // Resolve subject lat/lng: prefer client-supplied coords, else geocode.
+    let lat = body.lat != null ? Number(body.lat) : NaN;
+    let lng = body.lng != null ? Number(body.lng) : NaN;
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      const query = addressLineForGeocode(address, body.city, body.state, body.zip);
       const geo = query ? await forwardGeocodeAddress(query) : null;
       if (geo) {
         lat = geo.lat;
@@ -48,114 +108,32 @@ export async function POST(req: Request) {
       }
     }
 
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-      return NextResponse.json(
-        {
-          success: false,
-          status: "ineligible",
-          reason: "ADDRESS_NOT_FOUND",
-          message:
-            "We couldn't locate this address. Check the spelling, or try including the city, state, and ZIP.",
-        },
-        { status: 400 }
-      );
-    }
+    // Map snapshot comps → EstimateComp shape the client consumes.
+    const compsMapped = (snapshot.comps ?? []).map((c, idx) => ({
+      id: `ai-${idx}`,
+      address: c.address,
+      soldPrice: c.price,
+      soldDate: c.soldDate,
+      pricePerSqft: c.pricePerSqft,
+      sqft: c.sqft,
+      beds: c.beds ?? undefined,
+      baths: c.baths ?? undefined,
+      distanceMiles: Number(c.distanceMiles ?? 0),
+      similarityScore: 0,
+      matchReasons: [] as string[],
+      lat: undefined as number | undefined,
+      lng: undefined as number | undefined,
+    }));
 
     /**
-     * The eligibility gate itself lives in the pipeline
-     * (runHomeValueEstimatePipeline throws PropertyIneligibleError as
-     * soon as enrichment completes, before any expensive fetches).
-     * We catch it in the outer try/catch below and map it to the
-     * ineligible response envelope.
+     * Geocode up to 10 comps so they show on the map. The AI snapshot doesn't
+     * carry coordinates, so batch-geocode with the subject's city/state/zip as
+     * context for a better hit rate.
      */
-
-    let comps: Awaited<ReturnType<typeof getComparables>>["comps"] = [];
-    try {
-      const result2 = await getComparables(normalized.address, 12);
-      comps = result2.comps;
-      console.log(
-        `[home-value-estimate] getComparables for "${normalized.address}": ` +
-        `subject=${result2.subject ? "found" : "NOT FOUND"}, ` +
-        `comps=${comps.length}`
-      );
-    } catch (compErr) {
-      console.error("[home-value-estimate] getComparables THREW:", compErr);
-    }
-    const compsMapped = (comps ?? []).map((comp) => {
-      const soldPrice = comp.sold_price != null ? Number(comp.sold_price) : 0;
-      const soldDate = comp.sold_date ? String(comp.sold_date) : "";
-      const sqft =
-        comp.comp_property?.sqft != null ? Number(comp.comp_property.sqft) : undefined;
-      const beds =
-        comp.comp_property?.beds != null ? Number(comp.comp_property.beds) : undefined;
-      const baths =
-        comp.comp_property?.baths != null ? Number(comp.comp_property.baths) : undefined;
-      const latVal =
-        comp.comp_property?.lat != null ? Number(comp.comp_property.lat) : undefined;
-      const lngVal =
-        comp.comp_property?.lng != null ? Number(comp.comp_property.lng) : undefined;
-      const ppsf = sqft && soldPrice > 0 ? soldPrice / sqft : undefined;
-
-      return {
-        id: String(comp.id),
-        address: String(comp.comp_property?.address ?? "Comparable property"),
-        soldPrice,
-        soldDate,
-        pricePerSqft: ppsf,
-        sqft,
-        beds,
-        baths,
-        distanceMiles: Number(comp.distance_miles ?? 0),
-        similarityScore: Number(comp.similarity_score ?? 0),
-        matchReasons: [],
-        lat: latVal,
-        lng: lngVal,
-      };
-    });
-
-    /**
-     * Fall back to Rentcast pipeline comps when the local warehouse
-     * returned zero comps. Rentcast comps come with lat/lng from
-     * the API so they're more map-friendly.
-     */
-    if (compsMapped.length === 0 && result.rentcastComps.length > 0) {
-      console.log(`[home-value-estimate] Warehouse returned 0 comps — falling back to ${result.rentcastComps.length} Rentcast comps`);
-      for (const rc of result.rentcastComps) {
-        compsMapped.push({
-          id: rc.id,
-          address: rc.address,
-          soldPrice: rc.soldPrice,
-          soldDate: rc.soldDate,
-          pricePerSqft: rc.pricePerSqft,
-          sqft: rc.sqft,
-          beds: rc.beds,
-          baths: rc.baths,
-          distanceMiles: rc.distanceMiles ?? 0,
-          similarityScore: 0,
-          matchReasons: [],
-          lat: rc.lat,
-          lng: rc.lng,
-        });
-      }
-    }
-
-    /**
-     * Geocode comps that lack lat/lng so they show on the map.
-     * Many warehouse property records don't have coordinates.
-     * Batch-geocode up to 10 comps in parallel (Mapbox free tier
-     * allows 100K requests/month, so this is fine).
-     */
-    const compsToGeocode = compsMapped.filter(
-      (c) => typeof c.lat !== "number" || typeof c.lng !== "number" || !Number.isFinite(c.lat) || !Number.isFinite(c.lng)
-    );
-    if (compsToGeocode.length > 0) {
-      // Build geocode queries with city/state/zip context for better hit rate
-      const subjectCity = normalized.city;
-      const subjectState = normalized.state;
-      const subjectZip = normalized.zip;
+    if (compsMapped.length > 0) {
       const geocodeResults = await Promise.allSettled(
-        compsToGeocode.slice(0, 10).map(async (comp) => {
-          const query = addressLineForGeocode(comp.address, subjectCity, subjectState, subjectZip);
+        compsMapped.slice(0, 10).map(async (comp) => {
+          const query = addressLineForGeocode(comp.address, body.city, body.state, body.zip);
           const geo = query ? await forwardGeocodeAddress(query) : null;
           if (geo) {
             comp.lat = geo.lat;
@@ -164,103 +142,61 @@ export async function POST(req: Request) {
         })
       );
       const geocoded = geocodeResults.filter((r) => r.status === "fulfilled").length;
-      console.log(`[home-value-estimate] Geocoded ${geocoded}/${compsToGeocode.length} comps (with city/state context)`);
+      console.log(`[home-value-estimate] Geocoded ${geocoded}/${Math.min(compsMapped.length, 10)} comps`);
     }
+
+    const confidenceScore =
+      valuation.confidenceScore != null && Number.isFinite(Number(valuation.confidenceScore))
+        ? Number(valuation.confidenceScore)
+        : 0;
 
     return NextResponse.json({
       success: true,
-      sessionId: result.sessionId,
+      sessionId,
       property: {
-        fullAddress: normalized.address,
-        city: normalized.city ?? undefined,
-        state: normalized.state ?? undefined,
-        zip: normalized.zip ?? undefined,
-        lat,
-        lng,
-        propertyType: normalized.propertyType ?? undefined,
-        beds: normalized.beds ?? undefined,
-        baths: normalized.baths ?? undefined,
-        sqft: normalized.sqft ?? undefined,
-        yearBuilt: normalized.yearBuilt ?? undefined,
-        lotSize: normalized.lotSqft ?? undefined,
+        fullAddress: address,
+        city: body.city ?? undefined,
+        state: body.state ?? undefined,
+        zip: body.zip ?? undefined,
+        lat: Number.isFinite(lat) ? lat : 0,
+        lng: Number.isFinite(lng) ? lng : 0,
+        propertyType:
+          toUiPropertyType(subject.propertyType) ??
+          toUiPropertyType(body.propertyType) ??
+          undefined,
+        beds: subject.beds ?? body.beds ?? undefined,
+        baths: subject.baths ?? body.baths ?? undefined,
+        sqft: subject.sqft ?? body.sqft ?? undefined,
+        yearBuilt: subject.yearBuilt ?? body.yearBuilt ?? undefined,
+        lotSize: subject.lotSizeSqft ?? body.lotSqft ?? undefined,
       },
       estimate: {
-        value: result.estimate.point,
-        rangeLow: result.estimate.low,
-        rangeHigh: result.estimate.high,
-        confidence: result.confidence.level,
-        confidenceScore: result.confidence.score,
-        summary: result.estimate.summary,
+        value: valuation.estimatedValue,
+        rangeLow: valuation.low,
+        rangeHigh: valuation.high,
+        confidence: confidenceLabel(confidenceScore),
+        confidenceScore,
+        summary: snapshot.summary ?? "",
       },
       supportingData: {
-        // `market.pricePerSqft` is a ZIP-wide median from market_snapshots
-        // that mixes ALL property types (SFR + condos + townhomes + multi-
-        // family). In mixed markets like Monterey Park / SGV that number
-        // can be half the SFR median because condos drag it down. The
-        // estimate internally uses `estimate.baselinePpsf` — the weighted
-        // median of the N comps actually returned for THIS subject, which
-        // is both more subject-specific and consistent with the displayed
-        // estimated value. Prefer baselinePpsf; fall back to the generic
-        // ZIP median only when there are no comps (baselinePpsf = 0).
-        medianPpsf:
-          result.estimate.baselinePpsf && result.estimate.baselinePpsf > 0
-            ? result.estimate.baselinePpsf
-            : result.market.pricePerSqft,
-        weightedPpsf: result.estimate.baselinePpsf,
-        compCount: result.comps.pricedCount,
+        medianPpsf: valuation.avgPricePerSqft,
+        weightedPpsf: valuation.avgPricePerSqft,
+        compCount: compsMapped.length,
       },
-      adjustments: (() => {
-        // Convert engine multiplier adjustments to dollar-value adjustments for the UI.
-        // Each multiplier is relative to 1.0 (neutral), so the dollar impact is:
-        //   (multiplier - 1) × estimateValue
-        const ev = result.estimate.point;
-        const adj: Record<string, number> = {};
-        for (const line of result.estimate.adjustments) {
-          const dollarImpact = Math.round((line.multiplier - 1) * ev);
-          if (dollarImpact !== 0) {
-            adj[line.key + "Adjustment"] = dollarImpact;
-          }
-        }
-        return adj;
-      })(),
+      adjustments: {},
       comps: compsMapped,
       recommendations: {
-        type: result.intentInference.applied,
-        actions: result.recommendations.map((x) => x.title),
+        type: "seller",
+        actions: [] as string[],
       },
       provider: {
-        source: result.market.source ?? "pipeline",
+        source: "ai_web_search",
         cached: false,
-      },
-      _debug: {
-        pipelinePricedCount: result.comps.pricedCount,
-        pipelineTotalConsidered: result.comps.totalConsidered,
-        getComparablesReturned: compsMapped.length,
-        normalizedAddress: normalized.address,
       },
     });
   } catch (e: unknown) {
-    /**
-     * Pipeline short-circuited because the address is not eligible
-     * for a valuation (non-residential, insufficient data, etc.).
-     * Map to the ineligible response envelope with a 200 status —
-     * it's not a server error, it's a deliberate outcome.
-     */
-    if (e instanceof PropertyIneligibleError) {
-      return NextResponse.json(
-        {
-          success: false,
-          status: "ineligible",
-          reason: e.reason,
-          message: e.message,
-          detail: e.detail,
-          detectedType: e.detectedType,
-        },
-        { status: 200 }
-      );
-    }
     const msg = e instanceof Error ? e.message : "Server error";
-    if (msg === "address is required") {
+    if (msg === "address is required" || msg === "Invalid JSON body") {
       return NextResponse.json({ success: false, error: msg }, { status: 400 });
     }
     console.error("home-value-estimate", e);
