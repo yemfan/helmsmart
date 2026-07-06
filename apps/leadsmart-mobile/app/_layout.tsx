@@ -35,6 +35,7 @@ function RootNavigation() {
       <Stack.Screen name="notifications" options={{ title: "Notifications" }} />
       <Stack.Screen name="delete-account" options={{ title: "Delete account" }} />
       <Stack.Screen name="lead/[id]" options={{ title: "Lead" }} />
+      <Stack.Screen name="assistant/[type]" options={{ title: "Assistant" }} />
     </Stack>
   );
 }
