@@ -21,7 +21,7 @@
     },
     "pro": {
       "name": "Pro 版",
-      "price": "$49",
+      "price": "$79",
       "period_short": "/月",
       "tagline": "为活跃经纪人提供完整 CRM 和 AI。",
       "cta": "开启免费试用",
@@ -29,8 +29,8 @@
       "trial_note": "14 天免费试用 · 无需信用卡"
     },
     "elite": {
-      "name": "Elite 版",
-      "price": "$99",
+      "name": "Premium 版",
+      "price": "$199",
       "period_short": "/月",
       "tagline": "为每月成交 10+ 单的顶尖成交者打造。",
       "cta": "开启免费试用",
@@ -38,8 +38,8 @@
     },
     "team": {
       "name": "Team 版",
-      "price": "$199",
-      "period_short": "/月",
+      "price": "定制",
+      "period_short": "",
       "tagline": "多位经纪人共享一个客户漏斗。",
       "cta": "联系销售"
     }
