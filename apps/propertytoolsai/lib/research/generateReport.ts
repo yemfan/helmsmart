@@ -36,7 +36,17 @@ import type {
  */
 
 const MODEL = "claude-sonnet-4-6";
-const MAX_TOOL_ROUNDS = 8;
+// Must exceed WEB_SEARCH_MAX_USES so the loop keeps a round for the model to
+// write its final answer AFTER the last search pauses the turn. Mirrors the
+// aiCma ratio (rounds > uses).
+const WEB_SEARCH_MAX_USES = 5;
+const MAX_TOOL_ROUNDS = 12;
+// web_search_tool_result blocks + thinking all count against output_tokens, so
+// a low ceiling gets fully consumed by search results before the model ever
+// writes the report. This task emits TWO analyses over many cited stats, so it
+// needs a large budget: ~5 search results + thinking + the final JSON. Too low
+// and the turn stops on max_tokens with zero text. Sonnet supports up to 64k.
+const MAX_OUTPUT_TOKENS = 32000;
 
 type WebTool = { type: string; name: string; max_uses?: number };
 
@@ -137,7 +147,9 @@ export async function generateResearchReport(kind: ResearchKind): Promise<Resear
   }
 
   const userPrompt = buildUserPrompt(kind, groundTruth, today);
-  const tools = [{ type: "web_search_20250305", name: "web_search", max_uses: 8 } as WebTool];
+  const tools = [
+    { type: "web_search_20250305", name: "web_search", max_uses: WEB_SEARCH_MAX_USES } as WebTool,
+  ];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const messages: any[] = [{ role: "user", content: userPrompt }];
 
@@ -145,17 +157,23 @@ export async function generateResearchReport(kind: ResearchKind): Promise<Resear
   let sawText = false;
   try {
     for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+      // Stream + await finalMessage: a large max_tokens can push the estimated
+      // request time past the SDK's 10-minute non-streaming ceiling (which
+      // throws "Streaming is required…"). finalMessage() returns the same
+      // Message shape as create(), so the rest of the loop is unchanged.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: any = await client.messages.create({
-        model: MODEL,
-        max_tokens: 12000,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        thinking: { type: "adaptive" } as any,
-        system: SYSTEM_PROMPT,
-        messages,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        tools: tools as any,
-      });
+      const res: any = await client.messages
+        .stream({
+          model: MODEL,
+          max_tokens: MAX_OUTPUT_TOKENS,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          thinking: { type: "adaptive" } as any,
+          system: SYSTEM_PROMPT,
+          messages,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          tools: tools as any,
+        })
+        .finalMessage();
 
       const content: unknown[] = Array.isArray(res?.content) ? res.content : [];
       for (const block of content) {
@@ -169,6 +187,16 @@ export async function generateResearchReport(kind: ResearchKind): Promise<Resear
       if (res?.stop_reason === "pause_turn") {
         messages.push({ role: "assistant", content: res.content });
         continue;
+      }
+      // Terminal round. A max_tokens stop with no text means the budget was
+      // consumed by thinking + search results before the model could write —
+      // surface it so a regression here is diagnosable from logs.
+      if (res?.stop_reason === "max_tokens" && !sawText) {
+        const usage = (res?.usage ?? {}) as { output_tokens?: number };
+        console.warn(
+          `[research] ${kind}: hit max_tokens before any text (out_tokens=${usage.output_tokens}); ` +
+            `raise MAX_OUTPUT_TOKENS or lower WEB_SEARCH_MAX_USES.`,
+        );
       }
       break;
     }
@@ -191,10 +219,16 @@ export async function generateResearchReport(kind: ResearchKind): Promise<Resear
       console.warn("[research] could not parse or repair the model JSON.");
       return null;
     }
-    return normalizeReport(repaired, kind);
+    const r = normalizeReport(repaired, kind);
+    if (!r) console.warn("[research] repaired JSON rejected by normalize (missing title/sections).");
+    return r;
   }
 
-  return normalizeReport(parsed, kind);
+  const report = normalizeReport(parsed, kind);
+  if (!report) {
+    console.warn("[research] normalize rejected the report (missing title or empty analysis sections).");
+  }
+  return report;
 }
 
 // ── JSON extraction (mirrors packages/valuation/jsonExtract) ────────────────
