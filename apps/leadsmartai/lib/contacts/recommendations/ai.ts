@@ -1,7 +1,7 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { findMatchingListings, type RentcastListing } from "@/lib/contacts/listings/rentcastSearch";
+import { findMatchingListings, type MatchedListing } from "@/lib/contacts/listings/listingSearch";
 import { generateAIResponse } from "@/lib/ai/aiService";
 import type {
   PropertyTypeFilter,
@@ -18,7 +18,8 @@ import type {
  *      property_view events, lifecycle_stage.
  *   2. Derive effective criteria (most-recent saved search criteria +
  *      favorite-inferred price/location bounds).
- *   3. Query Rentcast for active listings matching those criteria.
+ *   3. Run the AI house-search engine (Claude + web search) for active
+ *      listings matching those criteria.
  *   4. Score each candidate via similarity to favorites + saved
  *      searches (zip overlap, beds/baths match, price band, sqft range).
  *   5. If OPENAI_API_KEY set: pass top N to gpt-4o-mini for rationale
@@ -30,7 +31,7 @@ import type {
  */
 
 export type RecommendationCandidate = {
-  listing: RentcastListing;
+  listing: MatchedListing;
   score: number; // 0-100
   rationale: string;
   matchReasons: string[];
@@ -170,7 +171,7 @@ async function loadRecentViews(contactId: string): Promise<string[]> {
 // =============================================================================
 
 /**
- * Pick the "effective" criteria for a Rentcast query. Priority:
+ * Pick the "effective" criteria for the listing search. Priority:
  *   1. Most recently updated saved search (explicit intent).
  *   2. Synthesized from favorites: median price ± 20%, most-common
  *      city/state, min beds/baths from the typical favorite.
@@ -236,7 +237,7 @@ function median(nums: number[]): number {
 // =============================================================================
 
 function scoreCandidate(
-  listing: RentcastListing,
+  listing: MatchedListing,
   favorites: FavoriteSnapshot[],
   savedSearches: SavedSearch[],
 ): { score: number; reasons: string[] } {
@@ -305,11 +306,11 @@ function scoreCandidate(
 
 async function llmRerank(
   contactFirstName: string | null,
-  topCandidates: Array<{ listing: RentcastListing; score: number; reasons: string[] }>,
+  topCandidates: Array<{ listing: MatchedListing; score: number; reasons: string[] }>,
   favorites: FavoriteSnapshot[],
   savedSearches: SavedSearch[],
   userId: string | null,
-): Promise<Array<{ listing: RentcastListing; score: number; rationale: string; reasons: string[] }>> {
+): Promise<Array<{ listing: MatchedListing; score: number; rationale: string; reasons: string[] }>> {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) {
     return topCandidates.map((c) => ({
