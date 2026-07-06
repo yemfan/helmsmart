@@ -39,7 +39,6 @@
     "smoke:20260417-home-value:ro": "tsx scripts/smoke-20260417-home-value-sessions.ts --read-only",
     "smoke:20260316-support-chat": "tsx scripts/smoke-20260316-support-chat-supabase.ts",
     "smoke:20260316-support-chat:ro": "tsx scripts/smoke-20260316-support-chat-supabase.ts --read-only",
-    "smoke:idx": "tsx scripts/smoke-idx.ts",
     "db:migrate:remote": "node ./scripts/run-supabase-migrations.mjs",
     "db:apply-sql:remote": "node ./scripts/apply-supabase-sql-remote.mjs"
   },
