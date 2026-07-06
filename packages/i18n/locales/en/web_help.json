@@ -1,0 +1,175 @@
+{
+  "meta": {
+    "title": "Help center",
+    "description": "Every how-to guide for RealtyBoss — AI follow-up, voice AI, missed-call text-back, listings, offers, transactions, CMAs, calculators, and more. Plus FAQs and contact support.",
+    "og_title": "Help center — RealtyBoss",
+    "og_description": "Every how-to guide for RealtyBoss — set up, communication, AI, deals, marketing, analytics, calculators, and account.",
+    "twitter_title": "Help center — RealtyBoss",
+    "twitter_description": "Every how-to guide for RealtyBoss — set up, AI, deals, marketing, analytics, and calculators.",
+    "faq_title": "Frequently asked questions",
+    "faq_description": "Answers to the most common questions about RealtyBoss: AI follow-up, RealtyBoss Coaching, billing, integrations, and data privacy.",
+    "faq_og_title": "FAQ — RealtyBoss",
+    "faq_og_description": "Answers to common questions about AI follow-up, coaching, billing, integrations, and privacy.",
+    "faq_twitter_title": "FAQ — RealtyBoss",
+    "faq_twitter_description": "Common questions about RealtyBoss: follow-up, coaching, billing, integrations, privacy."
+  },
+  "index": {
+    "eyebrow": "Help center",
+    "h1": "Guides, FAQs, and how-tos.",
+    "subtitle": "Everything you need to get RealtyBoss running — from importing your first contacts to managing coaching enrollment to sending video email.",
+    "guides_h2": "How-to guides",
+    "guides_note": "Step-by-step walkthroughs.",
+    "browse_a11y": "Browse by category",
+    "faq_h2": "Frequently asked questions",
+    "faq_see_all": "See all →",
+    "stuck_h2": "Still stuck?",
+    "stuck_body": "The chat bubble in your dashboard reaches a real person. Premium and Team plans get same-business-day priority support.",
+    "stuck_email": "Email support",
+    "stuck_contact": "Contact form"
+  },
+  "faq_page": {
+    "breadcrumb_help": "Help center",
+    "breadcrumb_faq": "FAQ",
+    "h1": "Frequently asked questions",
+    "subtitle_pre": "Quick answers to the questions agents ask most. Looking for a step-by-step walkthrough instead? ",
+    "subtitle_link": "Browse the how-to guides",
+    "subtitle_post": ".",
+    "footer_pre": "Didn't find what you needed? ",
+    "footer_email": "Email support",
+    "footer_mid": " or ",
+    "footer_link": "send us a note",
+    "footer_post": "."
+  },
+  "faq_categories": {
+    "getting_started": "Getting started",
+    "ai_followup": "AI follow-up",
+    "coaching": "LeadSmart AI Coaching",
+    "billing": "Billing & plans",
+    "integrations": "Integrations",
+    "privacy": "Privacy & data"
+  },
+  "guide_categories": {
+    "setup": {
+      "label": "Getting started",
+      "description": "Set up LeadSmart in your first week — pick a follow-up policy, import data, configure phone numbers."
+    },
+    "lead-capture": {
+      "label": "Lead capture & generation",
+      "description": "Pull new leads into the CRM — IDX site forms, open houses, lead queue triage, AI-generated content."
+    },
+    "communication": {
+      "label": "Conversations & messaging",
+      "description": "Run inbox, drafts, templates, missed-call recovery, and video email day-to-day."
+    },
+    "ai-and-voice": {
+      "label": "AI & voice features",
+      "description": "AI follow-up, voice AI for inbound calls, deal coach suggestions, and the AI drafting style controls."
+    },
+    "deals": {
+      "label": "Deal workflows",
+      "description": "Buyer offers, seller listings, the transaction coordinator, and the Buyer Broker Agreement (BBA) workflow."
+    },
+    "marketing": {
+      "label": "Marketing & content",
+      "description": "Marketing plans, seller presentations, postcards, and the AI Comparison Report."
+    },
+    "analysis": {
+      "label": "Insights & analysis",
+      "description": "Performance dashboards, sphere monetization, lead-source ROI, and growth opportunities."
+    },
+    "calculators": {
+      "label": "Property tools & calculators",
+      "description": "CMA builder, investment analyzers, mortgage / cap-rate / cash-flow calculators, and the report generator."
+    },
+    "workflows": {
+      "label": "Sales model & playbooks",
+      "description": "Configure your sales model, build playbooks, and connect tasks to lifecycle stages."
+    },
+    "coaching": {
+      "label": "Coaching",
+      "description": "Enroll in Producer / Top Producer Track, opt out, and read the weekly playbooks."
+    },
+    "account": {
+      "label": "Account & settings",
+      "description": "Profile, billing, integrations, team seats, compliance settings, and data exports."
+    }
+  },
+  "faq": {
+    "set_up_first_sequence": {
+      "q": "How do I set up my first AI follow-up sequence?",
+      "a": "From your dashboard, open Settings → Messages and pick a Review Policy (auto-send vs require approval). Then open Templates and either edit one of the prebuilt sequences or create a new one. New leads start receiving the sequence within 60 seconds of capture. See the step-by-step guide at /help/guides/ai-followup-setup."
+    },
+    "import_contacts": {
+      "q": "How do I import contacts from another CRM?",
+      "a": "Go to Settings → Data & Tools → MLS Data Import (the same panel handles general contact imports via CSV). Map your CSV columns to LeadSmart fields and run the import. Imports respect duplicate detection by email + phone, so re-importing won't double up your contacts."
+    },
+    "know_its_ai": {
+      "q": "Will leads know they're talking to AI?",
+      "a": "Messages send in your name and from your number. AI is transparent about being a digital assistant when asked, but the goal is a fast, helpful first response — not deception. You decide how much AI handles before looping you in (configured in Settings → Voice & Style)."
+    },
+    "lead_replies": {
+      "q": "What happens when a lead replies to AI?",
+      "a": "AI continues the conversation, asking qualifying questions tailored to the lead's source (Zillow, Facebook, your site). When intent crosses your threshold — they ask about a tour, mention a price range, or request to talk — you're notified immediately and AI hands off the thread."
+    },
+    "what_is_coaching": {
+      "q": "What is LeadSmart AI Coaching?",
+      "a": "Coaching is a producer-development program built into the dashboard. Producer Track (Pro and above) targets 10 transactions / 3% conversion; Top Producer Track (Premium and Team) targets 15 transactions / 5% conversion. Daily plans, weekly playbooks, monthly AI deep-dives, peer benchmarks. No add-on fee."
+    },
+    "opt_out_coaching": {
+      "q": "How do I opt out of coaching, or re-enroll later?",
+      "a": "Open Settings → Coaching. Each program your plan can access has Enroll / Re-enroll / Opt out controls. Auto-enrollment runs on plan upgrades but always respects prior opt-outs — once you opt out, we won't re-enroll you without an explicit choice here."
+    },
+    "cancel_anytime": {
+      "q": "Can I cancel my subscription anytime?",
+      "a": "Yes. Cancel from Settings → Billing or directly from your Stripe Customer Portal. There's no minimum term and no cancellation fee. Your plan stays active through the end of the current billing period, then drops to Starter automatically."
+    },
+    "data_after_cancel": {
+      "q": "What happens to my data after I cancel?",
+      "a": "Your contacts, pipeline, and conversations stay in your account. You can keep using Starter (up to 5 leads / 50 contacts) or export everything via Settings → Data & Tools. We don't delete data automatically — request deletion via /contact if you want a full wipe."
+    },
+    "which_crms": {
+      "q": "Which CRMs and lead sources do you integrate with?",
+      "a": "Native and Zapier integrations with Follow Up Boss, kvCORE, Sierra Interactive, Lofty, BoomTown, and LionDesk. Lead-source connectors for Zillow Premier Agent, Facebook Lead Ads, your website lead forms, and Google Lead Form Ads. Setup typically takes under 15 minutes."
+    },
+    "video_email": {
+      "q": "How do I record and send video email?",
+      "a": "Open any contact, click Message → Video. Record in the browser (no extension needed), trim if you want, and send. The recipient sees an inline player; you get notified when they watch and how much of it. See /help/guides/video-email for a step-by-step walkthrough."
+    },
+    "data_stored": {
+      "q": "Where is my data stored?",
+      "a": "Customer data is stored in Supabase Postgres (US region) with row-level security. Audio for voice features is processed by Twilio. We never sell or share data with advertisers. Full details in our /privacy page."
+    },
+    "real_person": {
+      "q": "How do I get help from a real person?",
+      "a": "Open the chat bubble in your dashboard or email contact@realtybossai.com. Premium and Team plans include priority support with same-business-day response. We're agents-helping-agents — no offshore tier-1 script-readers."
+    },
+    "ai_team_who": {
+      "q": "What is the RealtyBoss AI team — and who does what?",
+      "a": "You're the boss. You give one command to your Boss Assistant and it delegates to the right teammate: the Receptionist answers calls, the Sales Assistant follows up, Marketing fills the pipeline, the Transaction Assistant coordinates the deal, and the Accountant keeps the books. You finally own a team — without the payroll."
+    },
+    "makes_calls": {
+      "q": "Does RealtyBoss actually make phone calls, or just send texts?",
+      "a": "Both — and that's what sets it apart. Your AI Receptionist answers inbound calls live, 24/7, and texts back the moment a call goes unanswered. Your AI also places real outbound voice calls to follow up with your sphere and leads — not just another SMS like every other CRM."
+    },
+    "different_crm": {
+      "q": "How is this different from other real estate CRMs?",
+      "a": "Most CRMs stop at SMS and email drips and leave the work to you. RealtyBoss is an AI team you command: it answers the phone, calls your sphere by real voice, and runs whole jobs — open houses, presentations, showings, closings — from a single instruction, handing you finished reports."
+    },
+    "reports": {
+      "q": "What reports can the AI generate for me?",
+      "a": "From one address it produces an AI CMA (live web comps + value range), a branded Seller Presentation, a Property Deep Report (loan affordability, deal rating, investment ROI, schools, neighborhood, location map), an AI House Search for buyers, a side-by-side Comparison Report, and a Net-to-Seller sheet — each share-ready with your branding."
+    },
+    "one_command": {
+      "q": "What can I get done with one command?",
+      "a": "Tell the Boss Assistant what you want — \"set up Saturday's open house,\" \"build a seller presentation for 123 Main St,\" or \"find and show homes to the Garcias\" — and the team does the research and every step, then hands back the finished deliverables. You review and send."
+    },
+    "cold_call": {
+      "q": "Can the AI cold-call and qualify my leads?",
+      "a": "Yes. Hand the Sales Assistant a lead list and it places outbound calls in a natural voice, qualifies each prospect on budget, timeline, and motivation — buyer or seller — then scores intent, books the hot ones, and logs notes to every contact. You work only the leads that are ready."
+    },
+    "generic_or_trained": {
+      "q": "Is this just generic AI, or is it trained for real estate?",
+      "a": "It's built for real estate. The assistants are modeled on the playbooks of top-producing agents — how they qualify buyers and sellers, handle common objections, time their follow-up, and talk pricing and negotiation. Every call and message reflects proven agent best practices, not generic chatbot answers."
+    }
+  }
+}

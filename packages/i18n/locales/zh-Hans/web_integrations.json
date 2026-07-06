@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "title": "集成",
+    "description": "RealtyBoss 内置的每一项集成——获客渠道（Zillow、Facebook、IDX）、邮件与日历（Google、Microsoft）、电话通信（Twilio）、电子签名（Dotloop、DocuSign）、计费（Stripe）等。",
+    "og_title": "集成 — RealtyBoss",
+    "og_description": "获客渠道、日历、邮件、电话通信、电子签名、计费与 AI——RealtyBoss 连接的一切。",
+    "twitter_title": "集成 — RealtyBoss",
+    "twitter_description": "RealtyBoss 内置的每一项集成——涵盖获客渠道、日历、电话通信、电子签名、计费与 AI。"
+  },
+  "status": {
+    "live": "已上线",
+    "beta": "测试版",
+    "coming_soon": "即将推出"
+  },
+  "header": {
+    "eyebrow": "集成",
+    "h1": "LeadSmart 融入您已有的工作流程。",
+    "summary": "{{live}} 项集成已上线，另有 {{rest}} 项处于测试或即将推出——涵盖获客渠道、日历、邮件、电话通信、电子签名、计费与 AI。",
+    "ask_pre": "没找到您需要的？",
+    "ask_link": "告诉我们",
+    "ask_post": "——我们以每两周一次的节奏交付用户请求的集成。",
+    "nav_a11y": "集成分类"
+  },
+  "categories": {
+    "lead_sources": {
+      "title": "获客渠道",
+      "description": "从每一个渠道汇入新客户——门户网站、社交广告、您自己的网站。所有客户都会自动进入 AI 跟进流程。",
+      "items": {
+        "zillow": { "name": "Zillow Premier Agent", "description": "连接您的 Zillow 账户，新的买家/卖家咨询会在数秒内进入客户队列并触发 AI 跟进。" },
+        "realtor": { "name": "Realtor.com", "description": "以与 Zillow 相同的分配规则同步新的 Realtor.com 客户。每位联系人都保留来源归属信息。" },
+        "facebook": { "name": "Facebook Lead Ads", "description": "投放 Meta 引流广告，并把回应直接汇入 LeadSmart。支持买家/卖家/开放日表单的自定义字段映射。" },
+        "idx": { "name": "IDX 网站 Webhook", "description": "适用于任意 IDX 网站（Sierra、kvCORE、自建 WordPress）的一行嵌入代码——新的表单提交在一秒内送达 LeadSmart。" },
+        "google_lsa": { "name": "Google 本地服务广告", "description": "将 Google LSA 咨询导入与门户客户相同的 AI 跟进流程。" },
+        "open_house_qr": { "name": "开放日二维码登记", "description": "原生开放日登记页面——访客扫描二维码即进入您的 CRM，并自动打标签和标注来源。" }
+      }
+    },
+    "calendar_email": {
+      "title": "日历与邮件",
+      "description": "与您日常使用的日历和收件箱双向同步。每一次会面、每一条发出的消息和回复，都会汇入联系人时间线。",
+      "items": {
+        "google": { "name": "Google Workspace", "description": "双向日历同步、Gmail 会话关联，基于 OAuth 发送，让您的回复来自真实邮箱地址。" },
+        "microsoft": { "name": "Microsoft 365 / Outlook", "description": "采用与 Google 相同的 OAuth 方式进行日历 + 邮件同步。您的 Outlook 事件会显示在 LeadSmart 日历中。" },
+        "apple": { "name": "Apple iCloud 日历", "description": "通过 CalDAV 进行只读同步，让您在 LeadSmart 预约旁边看到 Apple 日历事件。" }
+      }
+    },
+    "telephony": {
+      "title": "语音与短信",
+      "description": "Twilio 驱动每一通电话和短信——拨号器、未接来电回短信、AI 语音接听，以及运营商注册的短信通道。",
+      "items": {
+        "twilio_voice": { "name": "Twilio 语音", "description": "点击拨号器 + 来电 AI 语音接听。通话会被录音、转录，并在联系人记录中生成摘要。" },
+        "twilio_sms": { "name": "Twilio 短信（A2P 10DLC）", "description": "运营商注册的短信通道，日发送量高。驱动未接来电回短信、AI 跟进和模板群发。" },
+        "whatsapp": { "name": "WhatsApp Business", "description": "相同的 AI 跟进流程，经由 WhatsApp Business 送达——适合国际客户和华裔美籍买家。" },
+        "wechat": { "name": "微信公众号", "description": "面向服务华语客户的经纪人的原生微信公众号集成。平台内置中英双语模板。" }
+      }
+    },
+    "esignature": {
+      "title": "电子签名",
+      "description": "无需离开交易记录，即可发送买方经纪协议、报价和房源委托协议供签署。",
+      "items": {
+        "dotloop": { "name": "Dotloop", "description": "从任意交易中发送买方经纪协议、房源委托协议或报价供签署。收件人签署后，交易记录上的状态随之更新。" },
+        "docusign": { "name": "DocuSign", "description": "与 Dotloop 工作流相同的替代电子签名服务。在设置中选择一次，模板即可沿用。" }
+      }
+    },
+    "billing": {
+      "title": "计费",
+      "description": "Stripe 驱动结账、订阅管理和按比例计费。可自助更新支付方式并下载发票。",
+      "items": {
+        "stripe": { "name": "Stripe", "description": "支持所有套餐、按比例计费、支付方式更换和发票历史。Premium 和 Team 套餐支持 ACH。" }
+      }
+    },
+    "ai": {
+      "title": "AI 提供商",
+      "description": "AI 生成的回复、草稿和分析由前沿模型驱动。提供商组合透明且可替换。",
+      "items": {
+        "anthropic": { "name": "Anthropic Claude", "description": "用于 AI 跟进起草、AI 语音对话、交易教练推理和 AI CMA 分析器的主力模型。" },
+        "openai": { "name": "OpenAI GPT", "description": "作为备用模型，并用于图像相关任务（房源照片分析、CMA 图像）。" }
+      }
+    },
+    "automation": {
+      "title": "自动化与开发者接口",
+      "description": "通过 Webhook 或通用自动化平台，将 LeadSmart 与任意系统连接。",
+      "items": {
+        "zapier": { "name": "Zapier", "description": "标准 Zapier 应用——可由\"新客户\"\"新会话\"\"交易阶段变更\"触发，并执行\"发送模板\"\"创建任务\"\"更新联系人\"等动作。" },
+        "make": { "name": "Make.com", "description": "支持 Make.com 场景，触发器和动作与 Zapier 相同。" },
+        "webhooks": { "name": "自定义 Webhook", "description": "将 LeadSmart 的任意事件 POST 到您自己的端点，或接收入站 Webhook，从外部系统创建客户/联系人/任务。" }
+      }
+    }
+  },
+  "cta": {
+    "h2": "缺少您需要的集成？",
+    "body": "我们每隔一周就交付一项新集成，优先满足付费用户的需求。告诉我们您需要什么，我们会告知何时上线。",
+    "request": "申请一项集成",
+    "start_free": "开始免费试用"
+  }
+}

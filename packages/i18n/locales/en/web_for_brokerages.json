@@ -1,0 +1,137 @@
+{
+  "meta": {
+    "title": "RealtyBoss for Real Estate Brokerages — operate your brokerage, not just track agents",
+    "description": "The brokerage operating system that makes every agent your top producer. Broker-first dashboard, agent-fitness flags, AI nurture, and per-agent pricing that undercuts kvCORE by 40-60%."
+  },
+  "header": {
+    "brand_suffix": "for brokerages",
+    "nav_how": "How it works",
+    "nav_features": "Features",
+    "nav_why": "Why us",
+    "nav_pricing": "Pricing",
+    "book": "Book a working session"
+  },
+  "hero": {
+    "badge": "Built for independent brokerages, 30–200 agents",
+    "h1_lead": "The",
+    "h1_highlight": "operating system",
+    "h1_tail": "for running your brokerage — not another CRM your agents have to learn.",
+    "body": "Brokerages compete on two numbers: average GCI per agent and 12-month retention. Both stall when your tech treats the broker as a passive bystander. We built this with the brokerage owner as the primary user.",
+    "cta_primary": "Book a 45-min working session",
+    "cta_secondary": "See how it works",
+    "reassurance": "No deck. No pressure. We rebuild the ROI model on your actual numbers.",
+    "kpi_title": "Brokerage performance benchmarks"
+  },
+  "kpis": {
+    "speed_to_lead": { "label": "Speed-to-lead", "hint": "Brokerage-wide median, automated" },
+    "conversion": { "label": "Lead → appt conversion", "hint": "AI nurture + persistent follow-up" },
+    "under_producer": { "label": "Under-producer ratio", "hint": "Agents writing < 6 sides / yr" },
+    "retention": { "label": "12-month retention", "hint": "Top agents stay for the tools" }
+  },
+  "how": {
+    "h2": "Capture → nurture → convert → retain",
+    "subtitle": "One platform for the entire lead-to-listing cycle. Plus the recruiting layer that keeps your roster growing.",
+    "steps": {
+      "capture": { "title": "Capture", "body": "Every agent gets a personal home-value funnel + the lead programs you're already paying for (Zillow, Realtor.com) plug in." },
+      "nurture": { "title": "Nurture", "body": "AI SMS/email replies within 5 minutes, in the agent's voice, with TCPA-compliant disclosures. 80% of follow-up the agent was skipping, handled." },
+      "convert": { "title": "Convert", "body": "Calendar booking + auto-reminders. CMAs generated in 60 sec so the agent shows up to the appointment ready to present." },
+      "retain": { "title": "Retain + grow", "body": "Broker sees fitness flags before agents quit. Recruiting pipeline + onboarding checklist for the producers you're trying to poach." }
+    }
+  },
+  "broker_features": {
+    "eyebrow": "What the broker gets",
+    "h2": "The brokerage command center",
+    "subtitle": "Most real estate CRMs treat the broker as someone who reads reports. We treat the broker as the primary user. The home screen is yours.",
+    "items": {
+      "command_center": { "title": "Brokerage-wide command center", "body": "Every agent's pipeline in one view. Total pipeline, this-month closes, speed-to-lead median, retention rate — at a glance." },
+      "leaderboard": { "title": "Real-time agent leaderboard", "body": "Speed-to-lead, response rate, appts-set, closes — by agent, ranked. Visible to all agents. Top producers compete; underperformers can't hide." },
+      "fitness_flags": { "title": "Agent-fitness flags", "body": "Automatic alerts when response time slips, a hot lead goes cold for 24h+, or an agent's pipeline shrinks week-over-week. Catch retention risk before they leave." },
+      "distribution": { "title": "Lead-distribution rules you control", "body": "Round-robin, geo, top-producer-priority, or opt-in. Set policy once; system enforces. Agents can't cherry-pick or sandbag." },
+      "recruiting": { "title": "Recruiting + onboarding pipeline", "body": "Track every recruit from coffee meeting → license filed → onboarded → first sale. New-agent checklist (license verified, MLS linked, templates approved) keeps your managing broker on top of it." },
+      "compliance": { "title": "Compliance posture, brokerage-wide", "body": "TCPA opt-in audit per lead. Supervised review queue for AI-drafted outbound. Searchable archive of every message. When an FCC complaint lands, evidence in 30 seconds." }
+    }
+  },
+  "agent_features": {
+    "eyebrow": "What every agent gets — the mechanism",
+    "h2": "Tools your agents actually want to use",
+    "subtitle": "Adoption follows utility, not policy. The home-value funnel and CMA generator are the wedge — agents pick them up because they want to look professional, not because the broker told them to.",
+    "items": {
+      "nurture": { "title": "AI nurture in under 5 minutes", "body": "Every inbound lead gets an SMS or email reply in the agent's voice, with TCPA-compliant disclosures auto-appended." },
+      "cma": { "title": "AI CMA in 60 seconds", "body": "Agent enters an address, gets an agent-branded comparative market analysis ready to send to a homeowner. The agent-adoption wedge." },
+      "funnel": { "title": "Agent-branded home-value funnel", "body": "Every agent gets a personal URL — they share on social, postcards, email signature. Leads land directly in their pipeline, attributed to them, visible to the broker." },
+      "calendar": { "title": "Calendar booking + sit reminders", "body": "Prospects book directly into the agent's calendar. T-24h and T-2h reminders fire automatically. Show-rate climbs." }
+    }
+  },
+  "comparison": {
+    "h2": "What brokerages use today vs. what actually moves the metrics",
+    "subtitle": "Honest read on the category. Every other tool was built for someone other than the brokerage owner.",
+    "col_stack": "Current stack",
+    "col_limit": "Where it falls short",
+    "rows": {
+      "kvcore": { "stack": "kvCORE", "limit": "Built agent-first; broker dashboard is a reporting afterthought. AI is template substitution. $4,500–6,000/mo for 100 agents." },
+      "fub": { "stack": "Follow Up Boss", "limit": "Cleanest agent UX. Zero broker tools. Broker analytics costs $300/agent in 'FUB Custom'. $6,900/mo for 100 agents." },
+      "chime": { "stack": "Chime", "limit": "Closest to us on intent. 5-year-old UX. AI is template-based, not LLM-generative." },
+      "boomtown": { "stack": "BoomTown", "limit": "Excellent CS team. $1,500–3,500+/mo before agent seats. Pricing makes sense for $5M+ brokerages, not 100-agent independents." },
+      "spreadsheets": { "stack": "Spreadsheets + WhatsApp", "limit": "Fast for small teams. Zero broker visibility. WhatsApp isn't TCPA-compliant for prospecting." },
+      "realtyboss": { "stack": "RealtyBoss", "limit": "✓ Broker-first home screen, real LLM AI, agent-fitness flags, $24/agent at 100 — half the category cost." }
+    }
+  },
+  "pricing": {
+    "h2": "Per-agent pricing, billed annually",
+    "subtitle": "All tiers include the full platform — broker dashboard, agent CRM, AI nurture, CMA generator, home-value funnel, compliance archive. Pricing locks for year one with a 10% cap on any renewal increase.",
+    "per_agent_period": "/ agent / mo",
+    "cta": "Book working session",
+    "footnote": "A 100-agent brokerage at $24/agent is $2,880/mo — roughly half the cost of kvCORE or Follow Up Boss at the same scale. Existing CRM you replace usually covers the line item.",
+    "tiers": {
+      "pilot": { "tier": "30–99 agents", "per_agent": "$29", "note": "Pilot tier", "description": "Smaller independent brokerages testing the platform with their full roster." },
+      "popular": { "tier": "100–299 agents", "per_agent": "$24", "note": "Most popular", "description": "Mid-size independents — the sweet spot for brokerage operating-system value." },
+      "volume": { "tier": "300+ agents", "per_agent": "$19", "note": "Volume tier", "description": "Multi-office or large independents. Custom terms available." }
+    }
+  },
+  "honesty": {
+    "eyebrow": "Honest read",
+    "h2": "What we're newer at",
+    "p1": "We have 3,400+ producers on the platform today, but most are at the individual-agent or small-team tier. You'd be among our first three large-brokerage deployments.",
+    "p2": "That's a tradeoff worth naming. In exchange, the rollout gets shaped around your workflow, you have direct founder access during deployment, and the case study at month 12 becomes a moat against the brokerages who come after.",
+    "card_title": "What's de-risked vs. what's new",
+    "derisked_label": "De-risked:",
+    "derisked_body": "the platform itself — 3,400 producers in production, 99.9% uptime, millions of AI messages sent, carrier-audited compliance posture.",
+    "newer_label": "Newer at scale:",
+    "newer_body": "the broker dashboard with 100+ agents, lead-routing rules at scale, brokerage-wide leaderboard at 100+ producers.",
+    "mitigated_label": "Mitigated by:",
+    "mitigated_body": "30-day onboarding checkpoint, direct founder Slack channel, weekly check-ins for the first 90 days, contract restructuring option if cohort retention falls below 50% at day 30."
+  },
+  "faq": {
+    "h2": "Common questions from brokerage owners",
+    "items": {
+      "vs_kvcore": {
+        "q": "How is this different from kvCORE or Follow Up Boss?",
+        "a": "kvCORE was built agent-first, with broker reporting bolted on. FUB has the cleanest agent UX in the category and explicitly doesn't try to serve brokerages — broker analytics costs $300/agent on top in their Custom tier. We built the broker dashboard as the home screen and shipped real AI (not template substitution) at $24/agent at 100 — roughly half the cost."
+      },
+      "adoption": {
+        "q": "Will my agents actually adopt it?",
+        "a": "Adoption is the real game. Two structural answers: the AI does 80% of the follow-up the agent was never going to do anyway, so the friction is closer to 'check email' than 'learn Salesforce.' And the home-value funnel + CMA generator are tools agents will use because they want to look professional — adoption follows utility, not policy."
+      },
+      "migration": {
+        "q": "What about migration from our current CRM?",
+        "a": "Standard CSV import for contacts, leads, pipeline stages. Workflow mapping during onboarding. Plan for 4–6 weeks of parallel-running both systems, then deprecate the old one. We've done this."
+      },
+      "scale": {
+        "q": "Has any brokerage with 100+ agents used this?",
+        "a": "Honestly, you'd be among our first three large-brokerage deployments. 3,400+ producers run on the platform today, but most are individual agents or small teams. The tradeoff: in exchange for being a first-mover, you get the product shaped around your workflow, direct founder access during deployment, and a case study at month 12 that becomes your moat against the brokerages who come after."
+      },
+      "pricing_catch": {
+        "q": "What's the catch on the pricing?",
+        "a": "No catch. We're newer at the brokerage tier and pricing accordingly to win deployments. Pricing locks for year one with a 10% cap on any renewal increase. We can afford this because we don't have a sales-led GTM yet."
+      }
+    }
+  },
+  "final_cta": {
+    "h2": "Book a 45-minute working session",
+    "body": "You, your managing broker, and one or two of your top producers. We walk through the broker dashboard with your numbers — actual or sample at your scale. Producers stress-test the workflows. We close with concrete ROI math against your lead spend and agent count.",
+    "reassurance": "No deck. No slideware. No pressure.",
+    "schedule": "Schedule the session",
+    "email_instead": "Email instead"
+  },
+  "footer": "© RealtyBoss · The brokerage operating system. Pilot inquiries welcome."
+}

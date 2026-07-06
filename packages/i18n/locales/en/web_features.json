@@ -1,0 +1,156 @@
+{
+  "meta": {
+    "title": "Your AI Real Estate Team — RealtyBoss",
+    "description": "RealtyBoss is an AI team for real estate agents — an AI receptionist that answers every call, a sales assistant that follows up, plus marketing, transaction, and accounting assistants. Never miss a call or a lead again.",
+    "og_title": "Your AI Real Estate Team — RealtyBoss",
+    "og_description": "An AI team that answers the phone, follows up, markets your listings, coordinates the deal, and keeps the books.",
+    "twitter_title": "Your AI Real Estate Team — RealtyBoss",
+    "twitter_description": "An AI team that answers the phone, follows up, and closes."
+  },
+  "team": {
+    "receptionist": {
+      "name": "AI Receptionist",
+      "role": "Answers every call — 24/7",
+      "body": "Picks up live calls, qualifies the caller, books showings and appointments, and texts back instantly when you can't answer. Your phone is never unattended again."
+    },
+    "boss": {
+      "name": "Boss Assistant",
+      "role": "Your chief of staff",
+      "body": "You're the boss — just say what you want done. Your Boss Assistant figures out who should handle it, delegates to the right teammate, and reports back. One command in; the whole team to work."
+    },
+    "sales": {
+      "name": "Sales Assistant",
+      "role": "Prospects, follows up & converts",
+      "body": "Cold-calls and qualifies new leads (budget, timeline, motivation — buyer or seller), follows up with a real voice call — not just an SMS — plus text and email, runs CMAs and listing presentations, and never lets a sphere touch slip."
+    },
+    "marketing": {
+      "name": "Marketing Assistant",
+      "role": "Fills your pipeline",
+      "body": "Generates leads, nurtures your sphere, and keeps you visible — campaigns, content, and outreach that bring new business while you work the ones you have."
+    },
+    "transaction": {
+      "name": "Transaction Assistant",
+      "role": "Coordinates to close",
+      "body": "Drives every deal from accepted offer to keys — coordinator board, offers, and a per-deal coach for pricing, risk, and negotiation."
+    },
+    "accountant": {
+      "name": "Accountant",
+      "role": "Keeps the books",
+      "body": "Invoices, expenses, and commission tracking — so you always know what's earned, what's owed, and what closed."
+    }
+  },
+  "hero": {
+    "eyebrow": "Not a CRM — a team",
+    "h1_lead": "Your",
+    "h1_gradient": "AI real estate team",
+    "h1_tail": "that answers the phone",
+    "subtitle": "You're the boss — give one command to your Boss Assistant and it arranges the work: the receptionist answers, sales follows up, marketing fills the pipeline, and transactions and accounting handle the rest. You finally own a real team.",
+    "cta_primary": "Hire your AI team",
+    "cta_secondary": "Hear it answer a call"
+  },
+  "voice": {
+    "badge": "Real voice — both directions",
+    "h2_lead": "It answers your calls — and",
+    "h2_gradient": "calls your sphere",
+    "body_lead": "Every other CRM stops at SMS and email drips. RealtyBoss picks up the phone — answering inbound calls 24/7",
+    "body_bold": "and placing real outbound voice calls",
+    "body_tail": "to follow up with your sphere and leads. That conversation is what wins the listing.",
+    "cta": "Set up your receptionist",
+    "only_badge": "Only on RealtyBoss",
+    "points": {
+      "sphere_followup": {
+        "title": "Calls your sphere to follow up",
+        "body": "This is the part no other CRM does: your AI places real voice calls to past clients and leads — check-ins, nurture, market updates — by phone, not just another text."
+      },
+      "cold_call": {
+        "title": "Cold-calls & qualifies new leads",
+        "body": "Hand it a lead list and it dials, qualifies on budget, timeline, and motivation — buyer or seller — and scores who's ready, so you spend time only on hot prospects."
+      },
+      "answers_live": {
+        "title": "Answers live, in your voice",
+        "body": "A natural AI voice picks up inbound calls, answers questions about a listing, and qualifies the caller — day or night."
+      },
+      "language": {
+        "title": "Talks in your client's language — automatically",
+        "body": "Every assistant detects the language a client speaks and replies in it — English, 中文, and more — on calls and in texts, with no setup or toggle. Serve your whole market without hiring bilingual staff."
+      },
+      "text_back": {
+        "title": "Missed-call text-back",
+        "body": "Can't pick up? The moment a call ends unanswered, the caller gets a friendly text in seconds — before they call the next agent."
+      },
+      "books": {
+        "title": "Books showings & appointments",
+        "body": "Captures intent and puts the appointment on your calendar, then hands a qualified lead to the Sales Assistant."
+      },
+      "every_call": {
+        "title": "Every call becomes a lead",
+        "body": "Inbound and outbound calls are logged, transcribed, and added to your pipeline automatically — no sticky notes, no lost numbers."
+      }
+    }
+  },
+  "meet": {
+    "eyebrow": "You're the boss",
+    "h2": "Six AI teammates. One you.",
+    "subtitle": "Tell the Boss Assistant what you want done — it arranges the work and puts the right teammate on it, around the clock. You finally own a real team, without the payroll, so you can do the part only you can: build relationships and close.",
+    "voice_badge": "Voice"
+  },
+  "training": {
+    "eyebrow": "Not generic AI",
+    "h2": "Trained on how top agents actually sell",
+    "subtitle": "Your team isn't a chatbot with a real-estate coat of paint. Every script, follow-up, and call is modeled on the playbooks of top-producing agents — how they qualify, handle objections, price, and negotiate.",
+    "points": {
+      "scripts": {
+        "title": "Proven scripts & talk tracks",
+        "body": "Calls and messages use the language top producers use to build rapport and move a conversation forward — not generic chatbot filler."
+      },
+      "objections": {
+        "title": "Objection handling that converts",
+        "body": "Knows the real answers to \"we're just looking,\" \"your commission is too high,\" and \"we'll wait for the market\" — and keeps the lead engaged."
+      },
+      "cadence": {
+        "title": "Follow-up cadence that wins",
+        "body": "Times outreach the way the best agents do — fast first touch, then a persistent, polite rhythm that earns the appointment."
+      },
+      "pricing": {
+        "title": "Pricing & negotiation instincts",
+        "body": "Frames value, anchors price, and qualifies motivation with the judgment of an experienced listing and buyer's agent."
+      }
+    }
+  },
+  "economics": {
+    "eyebrow": "The economics",
+    "h2_lead": "Hire a top-producing team —",
+    "h2_gradient": "virtually free",
+    "subtitle": "A receptionist, an ISA, a transaction coordinator, a marketing assistant, and a bookkeeper would cost you tens of thousands a year — each — and you'd still have to hire, train, and manage them. RealtyBoss gives you all of them, trained to sell like top producers, for the price of a tool.",
+    "chips": {
+      "no_payroll": "No payroll or benefits",
+      "never_quits": "Never quits, never calls in sick",
+      "always_on": "Works 24/7",
+      "trained": "Trained to sell like top agents"
+    },
+    "cta": "Hire your AI team"
+  },
+  "command_chain": {
+    "eyebrow": "The command chain",
+    "h2": "You give one order. The team does the rest.",
+    "subtitle": "Pick a command and watch it cascade — the Boss Assistant plans it and assigns the right teammates, who do the research and every step for you.",
+    "hint": "👇 Click a command below to see the results"
+  },
+  "tools": {
+    "eyebrow": "And the deliverables clients see",
+    "h2": "Reports that win listings and guide buyers",
+    "items": {
+      "cma": "AI CMA",
+      "seller_presentation": "Seller Presentation",
+      "deep_report": "Property Deep Report",
+      "house_search": "AI House Search"
+    },
+    "extra": "+ Comparison Report & Net-to-Seller"
+  },
+  "final_cta": {
+    "h2": "Never miss a call — or a lead — again",
+    "subtitle": "Put an AI team to work today. They answer, follow up, and coordinate. You close.",
+    "primary": "Hire your AI team",
+    "secondary": "Book a demo"
+  }
+}

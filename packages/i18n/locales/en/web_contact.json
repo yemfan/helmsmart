@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "title": "Contact Us | RealtyBoss",
+    "description": "Get in touch with the RealtyBoss team. We'd love to hear from you about lead management and CRM solutions for real estate professionals."
+  },
+  "hero": {
+    "h1": "Get in touch",
+    "subtitle": "Have a question, need help, or want to learn more about RealtyBoss? We'd love to hear from you."
+  },
+  "form_card": {
+    "title": "Send us a message",
+    "subtitle": "Fill out the form below and we'll get back to you within 24 hours."
+  },
+  "sidebar": {
+    "live_chat": {
+      "title": "Live support chat",
+      "subtitle": "Chat with our team in real time",
+      "cta": "Open support chat"
+    },
+    "email": {
+      "title": "Email us directly",
+      "subtitle": "General inquiries, partnerships, and press"
+    },
+    "business": {
+      "title": "Business information",
+      "subtitle": "Operating company & mailing address",
+      "company_note": "RealtyBoss (formerly LeadSmart AI)"
+    },
+    "back_home": "← Back to Home"
+  },
+  "form": {
+    "name_label": "Name",
+    "name_placeholder": "Your name",
+    "email_label": "Email",
+    "email_placeholder": "you@example.com",
+    "phone_label": "Phone",
+    "phone_optional": "(optional)",
+    "phone_placeholder": "(555) 123-4567",
+    "subject_label": "Subject",
+    "subject_placeholder": "How can we help?",
+    "message_label": "Message",
+    "message_placeholder": "Tell us more about your question or feedback...",
+    "sms_consent_lead": "Yes, send me marketing text messages from RealtyBoss.",
+    "sms_consent_body": "By checking this box and providing my phone number above, I consent to receive promotional text messages from RealtyBoss about real-estate services, new listings, market updates, and special offers.",
+    "sms_disclosure_pre": "Message frequency varies. Message and data rates may apply. Reply ",
+    "sms_disclosure_stop": "STOP",
+    "sms_disclosure_mid": " to opt out at any time, or ",
+    "sms_disclosure_help": "HELP",
+    "sms_disclosure_post": " for help. Consent is not a condition of any purchase. See our ",
+    "sms_disclosure_privacy": "Privacy Policy",
+    "sms_disclosure_and": " and ",
+    "sms_disclosure_terms": "Terms of Service",
+    "sms_disclosure_end": " for details.",
+    "error_generic": "Something went wrong. Please try again or email us directly.",
+    "error_network": "Network error. Please try again or email us at contact@realtybossai.com.",
+    "submit": "Send message",
+    "submitting": "Sending...",
+    "sent_title": "Message sent!",
+    "sent_body": "Thanks for reaching out. We'll get back to you within 24 hours."
+  }
+}

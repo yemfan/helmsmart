@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "title": "Integrations",
+    "description": "Every integration RealtyBoss ships with — lead sources (Zillow, Facebook, IDX), email + calendar (Google, Microsoft), telephony (Twilio), e-signature (Dotloop, DocuSign), billing (Stripe), and more.",
+    "og_title": "Integrations — RealtyBoss",
+    "og_description": "Lead sources, calendar, email, telephony, e-signature, billing, and AI — everything RealtyBoss connects to.",
+    "twitter_title": "Integrations — RealtyBoss",
+    "twitter_description": "Every integration RealtyBoss ships with — across lead sources, calendar, telephony, e-signature, billing, and AI."
+  },
+  "status": {
+    "live": "Live",
+    "beta": "Beta",
+    "coming_soon": "Coming soon"
+  },
+  "header": {
+    "eyebrow": "Integrations",
+    "h1": "LeadSmart fits into the workflow you already have.",
+    "summary": "{{live}} live integrations and {{rest}} more in beta or coming soon — across lead sources, calendar, email, telephony, e-signature, billing, and AI.",
+    "ask_pre": "Don't see what you need? ",
+    "ask_link": "Ask us",
+    "ask_post": " — we ship requested integrations on a 2-week cadence.",
+    "nav_a11y": "Integration categories"
+  },
+  "categories": {
+    "lead_sources": {
+      "title": "Lead sources",
+      "description": "Pull new leads in from every channel — portals, social ads, your own website. Everything flows through AI follow-up automatically.",
+      "items": {
+        "zillow": { "name": "Zillow Premier Agent", "description": "Connect your Zillow account so new buyer / seller inquiries land in the Lead Queue within seconds and trigger AI follow-up." },
+        "realtor": { "name": "Realtor.com", "description": "Sync new Realtor.com leads with the same routing rules as Zillow. Source attribution is preserved on every contact." },
+        "facebook": { "name": "Facebook Lead Ads", "description": "Run Meta lead ads and feed responses straight into LeadSmart. Custom field mapping for buyer / seller / open-house forms." },
+        "idx": { "name": "IDX website webhook", "description": "One-line embed for any IDX site (Sierra, kvCORE, custom WordPress) — new form submissions hit LeadSmart in under a second." },
+        "google_lsa": { "name": "Google Local Service Ads", "description": "Pipe Google LSA inquiries into the same AI follow-up sequences as your portal leads." },
+        "open_house_qr": { "name": "Open-house QR signup", "description": "Native open-house signup page — visitors scan a QR code and land in your CRM with auto-tagging and source attribution." }
+      }
+    },
+    "calendar_email": {
+      "title": "Calendar & email",
+      "description": "Two-way sync with the calendar and inbox you already live in. Every appointment, sent message, and reply lands on the contact timeline.",
+      "items": {
+        "google": { "name": "Google Workspace", "description": "Two-way calendar sync, Gmail thread attachment, OAuth-based sending so your replies come from your real email address." },
+        "microsoft": { "name": "Microsoft 365 / Outlook", "description": "Calendar + email sync with the same OAuth pattern as Google. Your Outlook events appear on the LeadSmart calendar." },
+        "apple": { "name": "Apple iCloud Calendar", "description": "Read-only sync via CalDAV so you can see Apple-calendar events alongside LeadSmart bookings." }
+      }
+    },
+    "telephony": {
+      "title": "Voice & SMS",
+      "description": "Twilio powers every call and text — dialer, missed-call text-back, AI voice answering, and the carrier-registered SMS pipeline.",
+      "items": {
+        "twilio_voice": { "name": "Twilio voice", "description": "Click-to-call dialer + AI voice answering for inbound. Calls are recorded, transcribed, and summarized on the contact record." },
+        "twilio_sms": { "name": "Twilio SMS (A2P 10DLC)", "description": "Carrier-registered SMS pipeline with high daily throughput. Powers missed-call text-back, AI follow-up, and template sends." },
+        "whatsapp": { "name": "WhatsApp Business", "description": "Same AI follow-up flow, routed through WhatsApp Business — useful for international clients and Chinese-American buyers." },
+        "wechat": { "name": "WeChat Official Account", "description": "Native WeChat OA integration for agents serving Chinese-speaking clients. Bilingual templates ship with the platform." }
+      }
+    },
+    "esignature": {
+      "title": "E-signature",
+      "description": "Send Buyer Broker Agreements, offers, and listing agreements for signature without leaving the deal record.",
+      "items": {
+        "dotloop": { "name": "Dotloop", "description": "Send the Buyer Broker Agreement, listing agreement, or offer for signature from any deal. Status flips on the deal record when the recipient signs." },
+        "docusign": { "name": "DocuSign", "description": "Alternate e-signature provider with the same workflow as Dotloop. Pick once in Settings; templates port over." }
+      }
+    },
+    "billing": {
+      "title": "Billing",
+      "description": "Stripe powers checkout, subscription management, and proration. Update payment methods and download invoices self-serve.",
+      "items": {
+        "stripe": { "name": "Stripe", "description": "All plans, proration, payment-method swaps, and invoice history. ACH supported on Premium and Team plans." }
+      }
+    },
+    "ai": {
+      "title": "AI providers",
+      "description": "AI-generated replies, drafts, and analysis are powered by frontier models. The provider stack is transparent and swappable.",
+      "items": {
+        "anthropic": { "name": "Anthropic Claude", "description": "Primary model for AI follow-up drafting, voice AI conversation, deal coach reasoning, and the AI CMA analyzer." },
+        "openai": { "name": "OpenAI GPT", "description": "Secondary model used as a fallback and for image-aware tasks (listing photo analysis, CMA imagery)." }
+      }
+    },
+    "automation": {
+      "title": "Automation & developer access",
+      "description": "Connect LeadSmart to anything via webhooks or general-purpose automation platforms.",
+      "items": {
+        "zapier": { "name": "Zapier", "description": "Standard Zapier app — trigger on New lead, New conversation, Deal stage change, and act with Send template, Create task, Update contact." },
+        "make": { "name": "Make.com", "description": "Make.com scenario support with the same triggers and actions as Zapier." },
+        "webhooks": { "name": "Custom webhooks", "description": "POST any event from LeadSmart to your own endpoint, or accept inbound webhooks to create leads / contacts / tasks from external systems." }
+      }
+    }
+  },
+  "cta": {
+    "h2": "Missing an integration you need?",
+    "body": "We ship one new integration every other week, prioritized by paying-customer demand. Tell us what you need and we'll tell you when it's landing.",
+    "request": "Request an integration",
+    "start_free": "Start free trial"
+  }
+}
