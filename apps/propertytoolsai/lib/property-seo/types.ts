@@ -26,6 +26,8 @@ export type NearbyListing = {
   baths?: number;
   sqft?: number;
   photoUrl?: string;
+  /** External source URL for the listing, when available. */
+  listingUrl?: string;
 };
 
 export type PropertySeoRecord = {

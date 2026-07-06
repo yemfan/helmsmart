@@ -251,7 +251,7 @@ export function SmartMatch() {
 
       {provider ? (
         <p className="text-center text-xs text-gray-500">
-          Data: {provider === "live" ? "Live listings" : "Sample listings (configure RentCast for live)"}
+          Data: {provider === "live" ? "AI-matched live listings" : "Sample listings"}
         </p>
       ) : null}
 
@@ -278,12 +278,23 @@ export function SmartMatch() {
               {buildMatchExplanation(prefsForCopy, r)}
             </div>
 
-            <a
-              href={`/listing/${encodeURIComponent(r.id)}`}
-              className="mt-3 inline-block text-sm font-medium text-blue-600 underline"
-            >
-              View listing
-            </a>
+            {/* AI-matched listings link out to their external source. `r.id`
+                is the source URL when the engine returned one; otherwise it's
+                the address (no link available), so render plain text. */}
+            {/^https?:\/\//i.test(r.id) ? (
+              <a
+                href={r.id}
+                target="_blank"
+                rel="noopener nofollow"
+                className="mt-3 inline-block text-sm font-medium text-blue-600 underline"
+              >
+                View listing ↗
+              </a>
+            ) : (
+              <span className="mt-3 inline-block text-sm text-gray-400">
+                No listing link available
+              </span>
+            )}
           </div>
         ))}
       </div>
