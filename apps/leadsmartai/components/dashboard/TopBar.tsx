@@ -14,6 +14,7 @@ import {
   Scale,
   Search,
   Settings,
+  Sparkles,
   User,
   UserPlus,
 } from "lucide-react";
@@ -141,6 +142,15 @@ function QuickActionsDropdown() {
           : { visibility: "hidden", pointerEvents: "none" }
       }
     >
+      <Link
+        href="/dashboard/boss"
+        role="menuitem"
+        className="mb-1 flex items-center gap-3 rounded-xl bg-blue-50 px-3 py-2.5 text-sm font-semibold text-[#0072ce] ring-1 ring-blue-100 transition hover:bg-blue-100"
+        onClick={() => setOpen(false)}
+      >
+        <Sparkles className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
+        Ask Boss Assistant
+      </Link>
       <p className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
         Quick actions
       </p>
