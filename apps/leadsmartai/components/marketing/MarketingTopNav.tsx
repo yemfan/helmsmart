@@ -22,6 +22,7 @@ import {
   type NavSection,
 } from "@repo/ui";
 import HeaderAuthActions from "@/components/HeaderAuthActions";
+import LanguageToggle from "@/components/LanguageToggle";
 import { RealtyBossLogo, RealtyBossMark } from "@/components/brand/RealtyBossLogo";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
 
@@ -93,6 +94,9 @@ export function MarketingTopNav({
 
         {/* Right-side actions */}
         <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+          {/* Language toggle — hidden below sm to protect space on a 375px
+              iPhone (still reachable in the mobile drawer / Settings). */}
+          <LanguageToggle className="hidden sm:inline-flex" />
           <HeaderAuthActions />
           <Link
             href="/start-free"
