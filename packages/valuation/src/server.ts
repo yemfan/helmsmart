@@ -14,5 +14,10 @@ export {
   type PropertyListingStatus,
 } from "./aiPropertyLookup";
 export { generateHouseSearch } from "./aiHouseSearch";
+export {
+  aiMarketStats,
+  type MarketStats,
+  type MarketStatsResult,
+} from "./aiMarketStats";
 export { getAnthropicClient, isAnthropicConfigured } from "./anthropic";
 export * from "./types";

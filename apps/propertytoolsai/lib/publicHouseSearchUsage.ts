@@ -20,10 +20,12 @@ import { supabaseServer } from "@/lib/supabaseServer";
  *   3. SIGNED-IN with any paid plan        → no cap
  *
  * Paid detection: resolveUserPlanType() returns `agents.plan_type` /
- * `leadsmart_users.plan`, defaulting to "free". Any non-empty value other than
- * "free" is treated as paid → unlimited. (propertytoolsai has no dedicated
- * boolean "is-paid" helper; this is the same source resolveUserPlan uses for
- * rate limiting elsewhere.)
+ * `leadsmart_users.plan`, defaulting to "free". Only an explicit paid slug on
+ * the PAID_PLANS allowlist (pro, premium, signature, team, and the legacy
+ * growth, elite) grants unlimited access — anything else (free, starter,
+ * empty, or an unknown/garbage string) falls through to the 5/day free tier.
+ * (propertytoolsai has no dedicated boolean "is-paid" helper; this is the same
+ * source resolveUserPlan uses for rate limiting elsewhere.)
  *
  * Storage: anonymous counts reuse the per-IP `cma_daily_usage` counter
  * (namespaced "hs:anon:") so they never collide with the CMA anon counter
@@ -62,9 +64,9 @@ function anonSubjectKey(req: Request): string {
   return `hs:anon:${createHash("sha256").update(raw).digest("hex").slice(0, 24)}`;
 }
 
+const PAID_PLANS = new Set(["pro", "premium", "signature", "team", "growth", "elite"]);
 function isUnlimitedPlan(planType: string): boolean {
-  const p = planType.trim().toLowerCase();
-  return p !== "" && p !== "free";
+  return PAID_PLANS.has(planType.trim().toLowerCase());
 }
 
 function unlimitedUsage(): PublicHouseSearchUsage {

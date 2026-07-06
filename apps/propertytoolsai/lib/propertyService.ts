@@ -424,7 +424,12 @@ async function loadZipCompCandidateProperties(subject: PropertyRow): Promise<Pro
 export async function getComparables(address: string, limit = 10) {
   let subject = await getPropertyByAddress(address);
   if (!subject) {
-    return { subject: null, comps: [] as PropertyCompRow[] };
+    // AI-comps fallback: no warehouse subject row, so there are no warehouse
+    // comps either — try the shared AI CMA engine (adds a ~30-40s
+    // generateAiCma call only when the warehouse is empty).
+    const { getAiComparables } = await import("./aiComparables");
+    const aiComps = await getAiComparables(address, limit);
+    return { subject: null, comps: aiComps };
   }
 
   /**
@@ -580,6 +585,16 @@ export async function getComparables(address: string, limit = 10) {
     created_at: new Date().toISOString(),
     comp_property: c.property,
   }));
+
+  // AI-comps fallback: the warehouse yielded no priced comps for this
+  // ZIP/area, so source real, cited comps from the shared AI CMA engine
+  // (adds a ~30-40s generateAiCma call only when the warehouse is empty). If
+  // the AI also returns nothing, keep the empty warehouse result.
+  if (comps.length === 0) {
+    const { getAiComparables } = await import("./aiComparables");
+    const aiComps = await getAiComparables(address, limit);
+    if (aiComps.length > 0) return { subject, comps: aiComps };
+  }
 
   return { subject, comps };
 }
