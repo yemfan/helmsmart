@@ -583,7 +583,7 @@ function TestimonialsSection() {
     // [INVENTED] — replace before launch
     { text: "I didn\u2019t hire an ISA. I hired LeadSmart. Same work, a tenth of the cost, and it never forgets to follow up.", name: "Derek Okafor", role: "Keller Williams · Phoenix" },
     // [INVENTED] — replace before launch
-    { text: "My husband finally stopped asking why I\u2019m on my phone at dinner. Best $49 I spend every month.", name: "Priya Ramakrishnan", role: "eXp · Austin" },
+    { text: "My husband finally stopped asking why I\u2019m on my phone at dinner. Best $79 I spend every month.", name: "Priya Ramakrishnan", role: "eXp · Austin" },
   ];
   return (
     <section className="ed-testimonials">
@@ -630,7 +630,7 @@ function PricingSection() {
     },
     {
       name: "Pro",
-      price: "$49",
+      price: "$79",
       interval: "per month · billed monthly",
       desc: "Full CRM and AI for active agents.",
       features: ["500 leads / month", "SMS + email AI follow-up", "Advanced lead scoring", "Unlimited drip sequences", "Tour and offer tracking", "CRM integrations"],
@@ -642,7 +642,7 @@ function PricingSection() {
     },
     {
       name: "Elite",
-      price: "$99",
+      price: "$199",
       interval: "per month · billed monthly",
       desc: "For top producers closing 10+ deals a month.",
       features: ["Unlimited leads", "Priority AI routing", "Multi-channel automation", "Predictive lead scoring", "Custom drip campaigns", "Dedicated onboarding"],

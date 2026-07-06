@@ -193,7 +193,7 @@ export default async function SwitchFromPage({
             Where LeadSmart wins
           </h2>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            {source.name}: {source.priceRange} · RealtyBoss: $49 / mo starting · See the full table on the{" "}
+            {source.name}: {source.priceRange} · RealtyBoss: $79 / mo starting · See the full table on the{" "}
             <Link
               href="/agent/compare"
               className="font-semibold text-blue-700 hover:underline dark:text-blue-300"

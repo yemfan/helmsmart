@@ -187,7 +187,7 @@ export const SWITCH_SOURCES: ReadonlyArray<SwitchSource> = [
       {
         feature: "Solo-agent pricing",
         them: "$69–$1,000+ / mo",
-        us: "$49 / mo starting",
+        us: "$79 / mo starting",
       },
       {
         feature: "AI Coaching with peer benchmarks",
@@ -221,7 +221,7 @@ export const SWITCH_SOURCES: ReadonlyArray<SwitchSource> = [
       },
       {
         title: "Enterprise pricing, no free trial",
-        body: "Lofty explicitly does not offer a free trial — you commit blind. LeadSmart starts at $49/mo with a 14-day free trial; you can see the AI actually work before paying.",
+        body: "Lofty explicitly does not offer a free trial — you commit blind. LeadSmart starts at $79/mo with a 14-day free trial; you can see the AI actually work before paying.",
       },
     ],
     comparisonWins: [
@@ -238,7 +238,7 @@ export const SWITCH_SOURCES: ReadonlyArray<SwitchSource> = [
       {
         feature: "Solo-agent pricing",
         them: "$499+ / mo",
-        us: "$49 / mo starting",
+        us: "$79 / mo starting",
       },
       {
         feature: "Lead-source attribution",
@@ -284,7 +284,7 @@ export const SWITCH_SOURCES: ReadonlyArray<SwitchSource> = [
       {
         feature: "Solo-agent pricing",
         them: "$1,500+ / mo · $3K–$5K typical",
-        us: "$49 / mo starting · month-to-month",
+        us: "$79 / mo starting · month-to-month",
       },
       {
         feature: "Onboarding fee",
@@ -396,7 +396,7 @@ export const SWITCH_SOURCES: ReadonlyArray<SwitchSource> = [
       {
         feature: "Solo-agent pricing",
         them: "$499+ / mo (brokerage-funded)",
-        us: "$49 / mo starting",
+        us: "$79 / mo starting",
       },
       {
         feature: "AI SMS that doesn't read as spam",

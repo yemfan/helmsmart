@@ -396,7 +396,7 @@ export default function LiondeskShutdownPost() {
                   <span className="font-semibold text-slate-900 dark:text-white">
                     Solo-agent pricing.
                   </span>{" "}
-                  We start at $49/mo — not $499. See the full feature
+                  We start at $79/mo — not $499. See the full feature
                   comparison vs. Follow Up Boss, kvCORE, Lofty, and
                   others on the{" "}
                   <Link

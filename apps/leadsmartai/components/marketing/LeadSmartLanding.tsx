@@ -891,15 +891,15 @@ export default function LeadSmartLanding() {
                     <h3 className="font-heading text-base font-semibold dark:text-white">Pro</h3>
                     <div className="mt-1 flex items-baseline gap-2">
                       <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                        ${billingCycle === "annual" ? 41 : 49}{" "}
+                        ${billingCycle === "annual" ? 66 : 79}{" "}
                         <span className="text-xs font-normal text-gray-500 dark:text-slate-400">/mo</span>
                       </p>
                       {billingCycle === "annual" && (
-                        <span className="text-xs font-normal text-gray-400 line-through dark:text-slate-500">$49</span>
+                        <span className="text-xs font-normal text-gray-400 line-through dark:text-slate-500">$79</span>
                       )}
                     </div>
                     <p className="mt-1 text-[11px] text-gray-500 dark:text-slate-500">
-                      {billingCycle === "annual" ? "$490 billed yearly" : "Billed monthly"}
+                      {billingCycle === "annual" ? "$790 billed yearly" : "Billed monthly"}
                     </p>
                     <p className="mt-2 text-xs text-gray-500 dark:text-slate-400">For active agents closing deals consistently.</p>
                     <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-semibold text-[#0072ce] ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-[#4da3e8] dark:ring-blue-800">
@@ -918,7 +918,7 @@ export default function LeadSmartLanding() {
                         <li key={f} className="flex items-center gap-2"><BrandCheck tone="primary" />{f}</li>
                       ))}
                     </ul>
-                    <Button className="mt-5 w-full text-xs shadow-lg shadow-[#0072ce]/20" href={`/agent/pricing?checkout_plan=pro&cycle=${billingCycle}`} aria-label={`Start free trial — Pro plan at $${billingCycle === "annual" ? 41 : 49} per month`}>Start 14-day trial</Button>
+                    <Button className="mt-5 w-full text-xs shadow-lg shadow-[#0072ce]/20" href={`/agent/pricing?checkout_plan=pro&cycle=${billingCycle}`} aria-label={`Start free trial — Pro plan at $${billingCycle === "annual" ? 66 : 79} per month`}>Start 14-day trial</Button>
                     <p className="mt-1.5 text-center text-[11px] text-gray-400 dark:text-slate-500">Cancel anytime during the trial</p>
                   </CardContent>
                 </Card>
@@ -930,15 +930,15 @@ export default function LeadSmartLanding() {
                     <h3 className="font-heading text-base font-semibold dark:text-white">Premium</h3>
                     <div className="mt-1 flex items-baseline gap-2">
                       <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                        ${billingCycle === "annual" ? 82 : 99}{" "}
+                        ${billingCycle === "annual" ? 166 : 199}{" "}
                         <span className="text-xs font-normal text-gray-500 dark:text-slate-400">/mo</span>
                       </p>
                       {billingCycle === "annual" && (
-                        <span className="text-xs font-normal text-gray-400 line-through dark:text-slate-500">$99</span>
+                        <span className="text-xs font-normal text-gray-400 line-through dark:text-slate-500">$199</span>
                       )}
                     </div>
                     <p className="mt-1 text-[11px] text-gray-500 dark:text-slate-500">
-                      {billingCycle === "annual" ? "$990 billed yearly" : "Billed monthly"}
+                      {billingCycle === "annual" ? "$1,990 billed yearly" : "Billed monthly"}
                     </p>
                     <p className="mt-2 text-xs text-gray-500 dark:text-slate-400">For top producers running solo.</p>
                     <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-800">
@@ -956,7 +956,7 @@ export default function LeadSmartLanding() {
                         <li key={f} className="flex items-center gap-2"><BrandCheck tone="success" />{f}</li>
                       ))}
                     </ul>
-                    <Button className="mt-5 w-full text-xs" variant="outline" href={`/agent/pricing?checkout_plan=premium&cycle=${billingCycle}`} aria-label={`Start free trial — Premium plan at $${billingCycle === "annual" ? 82 : 99} per month`}>Start 14-day trial</Button>
+                    <Button className="mt-5 w-full text-xs" variant="outline" href={`/agent/pricing?checkout_plan=premium&cycle=${billingCycle}`} aria-label={`Start free trial — Premium plan at $${billingCycle === "annual" ? 166 : 199} per month`}>Start 14-day trial</Button>
                   </CardContent>
                 </Card>
               </RevealSection>
@@ -1009,7 +1009,7 @@ export default function LeadSmartLanding() {
                       Signature
                     </span>
                     <span className="ml-2 font-semibold text-slate-900 dark:text-amber-100">
-                      $249/mo
+                      $399/mo
                     </span>
                     <span className="ml-2 text-slate-700 dark:text-amber-200/80">
                       — bilingual + luxury concierge tier with Sphere Intelligence Pro, white-glove onboarding, cultural calendar automations, custom voice tuning.
@@ -1052,7 +1052,7 @@ export default function LeadSmartLanding() {
                 },
                 {
                   title: "Half the price",
-                  body: "$49–$99/mo covers what BoomTown / kvCORE / Lofty charge $500–$1,500/mo for.",
+                  body: "$79–$199/mo covers what BoomTown / kvCORE / Lofty charge $500–$1,500/mo for.",
                 },
                 {
                   title: "Bilingual + WeChat",
