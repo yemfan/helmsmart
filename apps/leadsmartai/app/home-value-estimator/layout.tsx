@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Home Value Estimator",
-  description: "Estimate your home value using comparable sales, property details, and market data. Quick home valuation calculator for real estate agents.",
-  keywords: ["home value", "home appraisal", "property value", "comparable sales", "real estate valuation"],
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const th = (key: string): string => t(key, { ns: "web_home_value_estimator" });
+  return {
+    title: th("meta.title"),
+    description: th("meta.description"),
+    keywords: ["home value", "home appraisal", "property value", "comparable sales", "real estate valuation"],
+  };
+}
 
 export default function HomeValueEstimatorLayout({
   children,

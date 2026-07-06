@@ -1,0 +1,159 @@
+{
+  "meta": {
+    "title": "房地产免费工具 — 计算器、分析器与 AI",
+    "description": "RealtyBoss 的每一款免费工具汇聚一处——按揭与 ROI 计算器、资本化率与现金流分析、AI 交易分析器、Smart CMA 生成器、房屋估值工具。无需注册。",
+    "og_title": "房地产免费工具 — RealtyBoss",
+    "og_description": "房地产经纪人与投资者真正会用的计算器、分析器与 AI 工具。免费,无需注册。",
+    "twitter_title": "房地产免费工具 — RealtyBoss",
+    "twitter_description": "计算器、AI 分析器、CMA 生成器与房屋估值工具——免费,无需注册。"
+  },
+  "header": {
+    "eyebrow": "免费工具",
+    "title": "{{total}} 款房地产经纪人真正会用的免费工具。",
+    "subtitle": "计算器、AI 分析器、CMA 生成器与房屋估值工具——与付费客户在付费套餐上使用的功能相同,却完全免费、无需注册。",
+    "note": "为独立经纪人、经纪行、投资者与认真的买家打造。多数工具在 60 秒内即可完成。"
+  },
+  "nav_aria": "工具分类",
+  "open_tool": "打开工具 →",
+  "popular": "热门",
+  "lead_magnet": {
+    "eyebrow": "免费下载 · 专为房地产经纪人打造",
+    "title": "每位房产经纪人都该借鉴的 5 条 AI 提示词",
+    "body": "复制、粘贴,成交更多——数秒内撰写房源文案、跟进线索、准备 CMA。提供英文与中文版本。",
+    "download_en": "下载（英文）",
+    "download_zh": "下载（中文）",
+    "items": [
+      {
+        "bold": "房源文案撰写器",
+        "rest": "——三个可直接发布的版本,符合公平住房规范"
+      },
+      {
+        "bold": "线索跟进序列",
+        "rest": "——横跨短信、邮件与电话的完整 5 次触达节奏"
+      },
+      {
+        "bold": "即时 CMA 叙述",
+        "rest": "——把原始可比成交转化为一份房源约谈话术"
+      },
+      {
+        "bold": "异议应对教练",
+        "rest": "——在最棘手的约谈前进行私密角色演练"
+      }
+    ]
+  },
+  "sections": {
+    "ai-tools": {
+      "title": "AI 智能分析器",
+      "blurb": "输入一个地址或一条 Zillow 链接——不到一分钟即可获得完整交易备忘、可比房源集或 CMA。与驱动 RealtyBoss 跟进的引擎同源。",
+      "tools": {
+        "deal-analyzer": {
+          "name": "AI Real Estate Deal Analyzer",
+          "description": "粘贴任意房产网址或地址——获得一页 AI 交易备忘,涵盖房况、风险、可比成交与目标价。约 30 秒。"
+        },
+        "link-analyzer": {
+          "name": "AI Zillow / Redfin Link Analyzer",
+          "description": "输入一条 Zillow 或 Redfin 链接。AI 会提取房源详情、从照片中判读房况信号、可比成交基准,以及一份价格合理性判断。"
+        },
+        "cma-analyzer": {
+          "name": "AI CMA Analyzer",
+          "description": "自动拉取可比成交,生成含完整推理的 CMA 式价格区间,可直接分享给卖家。"
+        },
+        "smart-cma": {
+          "name": "Smart CMA Builder",
+          "description": "交互式 CMA——调整可比房源权重、推荐价格区间,并导出品牌化 PDF。每份 CMA 用时不到 5 分钟。"
+        },
+        "investment-analyzer": {
+          "name": "Property Investment Analyzer",
+          "description": "3 分钟内算出任意出租房的资本化率、现金回报率、NOI 与 5 年 IRR。已保存的方案始终附于该交易。"
+        },
+        "rental-analyzer": {
+          "name": "Rental Property Analyzer",
+          "description": "并排式出租分析,含租金估算、依据本地均值预填的支出默认值,以及压力测试方案。"
+        },
+        "report-generator": {
+          "name": "Property Report Generator",
+          "description": "输入一个地址——获得一份 6 页品牌化 PDF 报告,涵盖市场背景、可比成交、估值与社区数据。"
+        }
+      }
+    },
+    "buyer-tools": {
+      "title": "买家计算器",
+      "blurb": "把一个定制、品牌化、可自由调整的计算器发给买家——让他们直观看到自己的月供、可负担能力或租买对比的真实情况。",
+      "tools": {
+        "mortgage": {
+          "name": "Mortgage Calculator",
+          "description": "含本金、利息、税费与保险,首付与利率可调。可为任意客户生成品牌化分享链接。"
+        },
+        "affordability": {
+          "name": "Affordability Calculator",
+          "description": "基于收入的价格区间,并以负债收入比设限。向买家展示他们实际能够获批的额度。"
+        },
+        "down-payment": {
+          "name": "Down Payment Calculator",
+          "description": "在任意价位下,你在成交时需准备多少——首付 + 交割费用 + 储备金。"
+        },
+        "rent-vs-buy": {
+          "name": "Rent vs Buy Calculator",
+          "description": "含升值、税收优惠与机会成本的盈亏平衡分析。30 秒击破“租房一辈子”的迷思。"
+        },
+        "closing-cost": {
+          "name": "Closing Cost Estimator",
+          "description": "按州列明的交割费用——产权、过户税、托管、预付款项。在意外发生前先行揭示。"
+        },
+        "refinance": {
+          "name": "Refinance Calculator",
+          "description": "含交割费用的再融资盈亏平衡分析。与向老客户比价触达的场景相得益彰。"
+        },
+        "arm": {
+          "name": "ARM Calculator",
+          "description": "将 5/1、7/1、10/1 浮动利率贷款与固定 30 年贷款对比。含最坏情形月供,让对话有据可依。"
+        }
+      }
+    },
+    "investor-tools": {
+      "title": "投资者计算器",
+      "blurb": "决定是否出价的收益性房产测算。资本化率、现金流、ROI——全部可编辑、可分享。",
+      "tools": {
+        "cap-rate": {
+          "name": "Cap Rate & ROI Calculator",
+          "description": "一分钟内算出任意出租房的 NOI、资本化率与 ROI。可搭配 Investment Analyzer 获得完整 DCF 模型。"
+        },
+        "cash-flow": {
+          "name": "Cash Flow Calculator",
+          "description": "含空置、维护、管理与储备金的月度与年度现金流。出价前先做压力测试。"
+        },
+        "roi": {
+          "name": "ROI Calculator",
+          "description": "含融资杠杆在内的投入资本总回报。可将多种方案并排比较。"
+        }
+      }
+    },
+    "seller-tools": {
+      "title": "卖家工具",
+      "blurb": "用即时房屋估值抓住卖家线索,再把地址转化为一份 CMA 和一份房源展示演示。",
+      "tools": {
+        "home-value": {
+          "name": "Home Value Estimator",
+          "description": "为任意美国地址提供 AI 支持的房屋估值区间。可将小工具嵌入你的 IDX 网站以抓取卖家线索。"
+        },
+        "cap-rate-by-city": {
+          "name": "Cap Rate by City",
+          "description": "美国主要市场的典型资本化率区间——在对照本地可比房源为收益性房产定价时非常有用。"
+        }
+      }
+    }
+  },
+  "cross_sell": {
+    "eyebrow": "想把它们汇入同一套 CRM?",
+    "heading": "以上全部工具 + AI 跟进、语音 AI 与未接来电挽回。",
+    "body": "RealtyBoss 正是承载这些工具的平台——你的 AI 销售团队,全天候驻守你的手机。每月 $79 起,含 14 天免费试用,无需信用卡。",
+    "start_trial": "开始 14 天试用",
+    "see_features": "查看全部功能",
+    "items": [
+      "全天候,60 秒内完成 AI 跟进",
+      "每个套餐均含未接来电自动回短信",
+      "当你无法接听时,语音 AI 替你接电话",
+      "每月 $79 起——独立经纪人定价"
+    ]
+  }
+}

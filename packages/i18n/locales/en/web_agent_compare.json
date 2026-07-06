@@ -1,0 +1,155 @@
+{
+  "meta": {
+    "title": "RealtyBoss vs. the rest — feature comparison",
+    "description": "Other real-estate CRMs remind you to do the work. RealtyBoss has an AI team that does it for you. See how we compare to Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown and Sierra Interactive.",
+    "og_title": "RealtyBoss vs. the rest — feature comparison",
+    "og_description": "Side-by-side comparison vs Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown, and Sierra Interactive — at a fraction of the price.",
+    "twitter_title": "RealtyBoss vs. the rest",
+    "twitter_description": "Feature comparison vs Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown, and Sierra Interactive."
+  },
+  "header": {
+    "eyebrow": "Comparison",
+    "title": "RealtyBoss vs. the rest",
+    "subtitle": "How we stack up against Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown and Sierra Interactive on AI, dialer, e-sign, team workflows, and Chinese-market support — at a fraction of the price."
+  },
+  "work_vs_remind": {
+    "eyebrow": "The real difference",
+    "h2_pre": "Every other CRM reminds you to do the work.",
+    "h2_highlight": "RealtyBoss does the work for you.",
+    "body_pre": "Follow Up Boss, kvCORE, Lofty and the rest are brilliant at telling you what to do next — a task list, a “this lead is hot” alert, a drip that fires on schedule. But the calling, texting, emailing, researching and follow-up is still on you. RealtyBoss ships an AI team that actually ",
+    "body_bold": "does it",
+    "body_post": " — so the work happens while you’re sitting with clients.",
+    "reminder_title": "Other CRMs — a reminder engine",
+    "reminder_items": [
+      "Creates a task: “Call this lead” — you still make the call",
+      "Alerts you a lead went cold — you write the win-back",
+      "Fires a drip on a timer — generic, not a real reply",
+      "Surfaces a CMA tool — you assemble the comps yourself"
+    ],
+    "does_title": "RealtyBoss — an AI team that does it",
+    "does_items": [
+      "Answers & qualifies new leads by text and email — autonomously",
+      "Drafts and sends the win-back reply in your voice",
+      "Runs an AI-grounded CMA with real cited comps on command",
+      "Builds the offer, reviews the contract, books the showing for you"
+    ]
+  },
+  "highlights": [
+    {
+      "title": "An AI team that does the work",
+      "body": "Others remind you to call, text, and follow up. RealtyBoss's AI assistants answer leads, draft and send replies, run CMAs, and book showings on your behalf — the work gets done, not just queued."
+    },
+    {
+      "title": "Half the price of enterprise CRMs",
+      "body": "$79–$199/month covers what BoomTown, kvCORE, and Lofty charge $500–$1,500/month for. No setup fee. No mandatory IDX-website upsell."
+    },
+    {
+      "title": "Bilingual + WeChat ecosystem",
+      "body": "Chinese-speaking agents and clients are a first-class audience: 中文 templates, WeChat + Xiaohongshu paths, Advisor sales-model. Nobody else does this."
+    },
+    {
+      "title": "Modern stack = faster shipping",
+      "body": "AI-grounded CMAs with real cited comps, a one-command AI team, inbound transaction-email auto-import — shipped in weeks, not quarters. The pace difference compounds."
+    }
+  ],
+  "table": {
+    "heading": "Feature-by-feature",
+    "legend_first_class": "first-class",
+    "legend_partial": "partial / requires add-on",
+    "legend_not_offered": "not offered",
+    "col_feature": "Feature",
+    "aria_yes": "Yes",
+    "aria_partial": "Partial",
+    "aria_no": "Not offered"
+  },
+  "categories": {
+    "work": {
+      "title": "Who does the work?",
+      "rows": [
+        "Reminders, tasks & 'hot lead' alerts to prompt you",
+        "AI drafts a reply for you to review & send",
+        "AI autonomously answers & qualifies new leads — no agent in the loop",
+        "AI runs CMAs, builds offers & reviews contracts on command",
+        "AI keeps following up over days without you queuing each step"
+      ]
+    },
+    "core_crm": {
+      "title": "Core CRM",
+      "rows": [
+        "Contacts, pipeline, smart lists",
+        "Custom fields on contacts",
+        "Pipeline activity counts per stage",
+        "Native mobile app (iOS + Android)",
+        "Import contacts from your phone at onboarding"
+      ]
+    },
+    "ai": {
+      "title": "AI capabilities",
+      "rows": [
+        "AI SMS responder — autonomously answers & qualifies leads",
+        "AI email responder — drafts AND sends, not just suggests",
+        "AI Coaching dashboard with peer benchmarks",
+        "Sales-Model framework (Influencer / Closer / Advisor)",
+        "Sphere equity prediction + auto outreach",
+        "Deal Coach (multi-perspective offer analysis)",
+        "AI-grounded CMA — real cited web comps, not just an AVM",
+        "Boss Assistant — one command runs the whole AI team",
+        "Saved AI house searches with scheduled buyer sends"
+      ]
+    },
+    "outbound": {
+      "title": "Outbound & engagement",
+      "rows": [
+        "Click-to-call dialer (phone bridge)",
+        "Email open / click tracking",
+        "Video email (record & send + view analytics)",
+        "Newsletter / mass-email composer",
+        "Vanity / call-tracking numbers per source",
+        "Drip campaigns + sphere re-enrollment",
+        "Missed-call text-back (automatic)",
+        "Inbound transaction-email auto-import + AI extraction"
+      ]
+    },
+    "listing": {
+      "title": "Listing & deal tools",
+      "rows": [
+        "CMA / comparable sales",
+        "Listing presentation builder",
+        "Reviews / testimonial capture (post-close)",
+        "E-signature integration (Dotloop / DocuSign)",
+        "Buyer Broker Agreement (BBA) workflow",
+        "Transaction coordinator + commission forecast",
+        "Deep Report — live loan recompute, HOA + Mello-Roos",
+        "Unified Share on every report (Copy / Email / SMS / PDF)"
+      ]
+    },
+    "teams": {
+      "title": "Teams & routing",
+      "rows": [
+        "Team / brokerage hierarchy with seats",
+        "Round-robin lead routing across team",
+        "ISA workflow + qualified-handoff state machine",
+        "Per-member breakdown / leaderboard reporting"
+      ]
+    },
+    "differentiators": {
+      "title": "Differentiators",
+      "rows": [
+        "RealtyBoss Coaching (Producer Track + Top Producer Track)",
+        "Auto-enrolled coaching with conv-rate + transaction targets",
+        "Bilingual / Chinese-market support (中文)",
+        "WeChat + Xiaohongshu integration",
+        "Modern AI-native stack (Next.js + Supabase)",
+        "Branded IDX consumer site bundled",
+        "Full MLS sync (RETS / RESO Web API)"
+      ]
+    }
+  },
+  "cta": {
+    "heading": "Stop managing a CRM. Start running a team.",
+    "body": "Most legacy CRMs charge $500+/month to hand you a longer to-do list. RealtyBoss gives you an AI team that works the list for you — answering leads, sending replies, and running deals — at a fraction of the price.",
+    "see_pricing": "See pricing",
+    "start_free": "Start free"
+  },
+  "footnote": "Comparison data reflects publicly available product pages and customer reviews as of the page’s last update. Inside Real Estate has consolidated kvCORE and BoomTown into BoldTrail; LionDesk was discontinued in September 2025, so it is no longer listed. “Partial” on AI rows means the tool drafts or suggests and the agent still reviews and sends. Competitor pricing varies by team size + add-ons. We don’t claim every edge case; if something looks off please reach out."
+}

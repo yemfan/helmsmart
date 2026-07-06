@@ -1,0 +1,159 @@
+{
+  "meta": {
+    "title": "Free real estate tools — calculators, analyzers, and AI",
+    "description": "Every free tool from RealtyBoss in one place — mortgage and ROI calculators, cap rate and cash flow analysis, AI deal analyzers, Smart CMA builder, home value estimator. No signup required.",
+    "og_title": "Free real estate tools — RealtyBoss",
+    "og_description": "Calculators, analyzers, and AI tools real estate agents and investors actually use. Free, no signup required.",
+    "twitter_title": "Free real estate tools — RealtyBoss",
+    "twitter_description": "Calculators, AI analyzers, CMA builder, and home value estimator — free, no signup."
+  },
+  "header": {
+    "eyebrow": "Free tools",
+    "title": "{{total}} free tools real estate agents actually use.",
+    "subtitle": "Calculators, AI analyzers, CMA builders, and home value estimators — the same surfaces our paying customers run on paid plans, free and without a signup.",
+    "note": "Built for solo agents, brokers, investors, and serious buyers. Most tools work in under 60 seconds."
+  },
+  "nav_aria": "Tool categories",
+  "open_tool": "Open tool →",
+  "popular": "Popular",
+  "lead_magnet": {
+    "eyebrow": "Free download · for real estate agents",
+    "title": "5 AI Prompts Every Realtor Should Steal",
+    "body": "Copy, paste, and close more deals — write listings, follow up with leads, and prep CMAs in seconds. Available in English and 中文.",
+    "download_en": "Download (English)",
+    "download_zh": "下载（中文）",
+    "items": [
+      {
+        "bold": "Listing Description Writer",
+        "rest": "— three ready-to-post versions, fair-housing safe"
+      },
+      {
+        "bold": "Lead Follow-Up Sequence",
+        "rest": "— a full 5-touch cadence across text, email, and calls"
+      },
+      {
+        "bold": "Instant CMA Narrative",
+        "rest": "— turn raw comps into a listing-appointment script"
+      },
+      {
+        "bold": "Objection-Handling Coach",
+        "rest": "— private role-play before your toughest appointments"
+      }
+    ]
+  },
+  "sections": {
+    "ai-tools": {
+      "title": "AI-powered analyzers",
+      "blurb": "Drop in an address or a Zillow link — get a full deal memo, comp set, or CMA in under a minute. The same engine that powers RealtyBoss follow-up.",
+      "tools": {
+        "deal-analyzer": {
+          "name": "AI Real Estate Deal Analyzer",
+          "description": "Paste any property URL or address — get a one-page AI deal memo covering condition, risks, comps, and target price. ~30 seconds."
+        },
+        "link-analyzer": {
+          "name": "AI Zillow / Redfin Link Analyzer",
+          "description": "Drop a Zillow or Redfin URL. The AI pulls listing details, condition signals from photos, comp benchmarks, and a price defensibility take."
+        },
+        "cma-analyzer": {
+          "name": "AI CMA Analyzer",
+          "description": "Auto-pull comparable sales and produce a CMA-style price range with full reasoning, ready to share with a seller."
+        },
+        "smart-cma": {
+          "name": "Smart CMA Builder",
+          "description": "Interactive CMA — adjust comp weights, recommend a price range, and export a branded PDF. Under 5 minutes per CMA."
+        },
+        "investment-analyzer": {
+          "name": "Property Investment Analyzer",
+          "description": "Cap rate, cash-on-cash, NOI, and 5-year IRR on any rental in under 3 minutes. Saved scenarios stay on the deal."
+        },
+        "rental-analyzer": {
+          "name": "Rental Property Analyzer",
+          "description": "Side-by-side rental analysis with rent estimates, expense defaults pre-filled from local averages, and stress-test scenarios."
+        },
+        "report-generator": {
+          "name": "Property Report Generator",
+          "description": "Drop an address — get a 6-page branded PDF report covering market context, comps, valuation, and neighborhood data."
+        }
+      }
+    },
+    "buyer-tools": {
+      "title": "Calculators for buyers",
+      "blurb": "Send a buyer a custom, branded calculator they can play with — see what their monthly payment, affordability, or rent-vs-buy story actually looks like.",
+      "tools": {
+        "mortgage": {
+          "name": "Mortgage Calculator",
+          "description": "Principal, interest, taxes, and insurance with adjustable down payment and rate. Branded share link for any client."
+        },
+        "affordability": {
+          "name": "Affordability Calculator",
+          "description": "Income-based price range with debt-to-income gating. Show buyers what they can actually qualify for."
+        },
+        "down-payment": {
+          "name": "Down Payment Calculator",
+          "description": "How much you need at closing — down payment + closing costs + reserves — at any price point."
+        },
+        "rent-vs-buy": {
+          "name": "Rent vs Buy Calculator",
+          "description": "Break-even analysis with appreciation, tax benefits, and opportunity cost. Drops the renting-forever myth in 30 seconds."
+        },
+        "closing-cost": {
+          "name": "Closing Cost Estimator",
+          "description": "Itemized closing costs by state — title, transfer tax, escrow, prepaids. Surfaces surprises before they happen."
+        },
+        "refinance": {
+          "name": "Refinance Calculator",
+          "description": "Break-even on a refinance with closing costs included. Pairs well with rate-shopping outreach to past clients."
+        },
+        "arm": {
+          "name": "ARM Calculator",
+          "description": "Model 5/1, 7/1, and 10/1 ARMs against a fixed 30-year. Worst-case payment included so the conversation is grounded."
+        }
+      }
+    },
+    "investor-tools": {
+      "title": "Calculators for investors",
+      "blurb": "The income-property math that decides whether to make the offer. Cap rate, cash flow, ROI — all editable, all shareable.",
+      "tools": {
+        "cap-rate": {
+          "name": "Cap Rate & ROI Calculator",
+          "description": "NOI, cap rate, and ROI for any rental in under a minute. Pair with the Investment Analyzer for the full DCF model."
+        },
+        "cash-flow": {
+          "name": "Cash Flow Calculator",
+          "description": "Monthly and annual cash flow with vacancy, maintenance, management, and reserves. Stress-test before you offer."
+        },
+        "roi": {
+          "name": "ROI Calculator",
+          "description": "Total return on invested capital including financing leverage. Compare scenarios side by side."
+        }
+      }
+    },
+    "seller-tools": {
+      "title": "Tools for sellers",
+      "blurb": "Capture seller leads with an instant home value estimate, then turn the address into a CMA and a listing presentation.",
+      "tools": {
+        "home-value": {
+          "name": "Home Value Estimator",
+          "description": "AI-backed home value range for any U.S. address. Embed the widget on your IDX site to capture seller leads."
+        },
+        "cap-rate-by-city": {
+          "name": "Cap Rate by City",
+          "description": "Typical cap rate ranges for major U.S. markets — useful when pricing income properties against local comps."
+        }
+      }
+    }
+  },
+  "cross_sell": {
+    "eyebrow": "Want them inside one CRM?",
+    "heading": "Every tool above + AI follow-up, voice AI, and missed-call recovery.",
+    "body": "RealtyBoss is what these tools sit inside — your AI sales team, on your phone, 24/7. $79/mo starting, free 14-day trial, no credit card.",
+    "start_trial": "Start 14-day trial",
+    "see_features": "See all features",
+    "items": [
+      "AI follow-up in under 60 seconds, 24/7",
+      "Missed-call text-back on every plan",
+      "Voice AI that answers your phone when you can’t",
+      "Starts at $79/mo — solo-agent pricing"
+    ]
+  }
+}

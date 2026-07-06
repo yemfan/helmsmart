@@ -1,33 +1,37 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "RealtyBoss vs. the rest — feature comparison",
-  description:
-    "Other real-estate CRMs remind you to do the work. RealtyBoss has an AI team that does it for you. See how we compare to Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown and Sierra Interactive.",
-  keywords: [
-    "real estate CRM comparison",
-    "Follow Up Boss vs",
-    "kvCORE vs",
-    "Lofty vs",
-    "BoomTown vs",
-    "real estate AI CRM",
-  ],
-  alternates: { canonical: "/agent/compare" },
-  openGraph: {
-    title: "RealtyBoss vs. the rest — feature comparison",
-    description:
-      "Side-by-side comparison vs Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown, and Sierra Interactive — at a fraction of the price.",
-    url: "/agent/compare",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "RealtyBoss vs. the rest",
-    description:
-      "Feature comparison vs Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown, and Sierra Interactive.",
-  },
-};
+type TFn = (key: string, opts?: { ns?: string; [k: string]: unknown }) => string;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const tc = (key: string): string => t(key, { ns: "web_agent_compare" });
+  return {
+    title: tc("meta.title"),
+    description: tc("meta.description"),
+    keywords: [
+      "real estate CRM comparison",
+      "Follow Up Boss vs",
+      "kvCORE vs",
+      "Lofty vs",
+      "BoomTown vs",
+      "real estate AI CRM",
+    ],
+    alternates: { canonical: "/agent/compare" },
+    openGraph: {
+      title: tc("meta.og_title"),
+      description: tc("meta.og_description"),
+      url: "/agent/compare",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: tc("meta.twitter_title"),
+      description: tc("meta.twitter_description"),
+    },
+  };
+}
 
 /**
  * Marketing comparison page — leadsmartai vs. major real-estate
@@ -71,13 +75,14 @@ const PRODUCTS: Array<{ key: ProductKey; name: string; price: string }> = [
 ];
 
 type Category = {
-  title: string;
+  /** i18n slug under `categories.<key>` in web_agent_compare. */
+  key: string;
   rows: Row[];
 };
 
 const CATEGORIES: Category[] = [
   {
-    title: "Who does the work?",
+    key: "work",
     rows: [
       // Everyone reminds you — that's the whole point of the contrast.
       r("Reminders, tasks & 'hot lead' alerts to prompt you", { all: "yes" }),
@@ -116,7 +121,7 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    title: "Core CRM",
+    key: "core_crm",
     rows: [
       r("Contacts, pipeline, smart lists", { all: "yes" }),
       r("Custom fields on contacts", {
@@ -154,7 +159,7 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    title: "AI capabilities",
+    key: "ai",
     rows: [
       r("AI SMS responder — autonomously answers & qualifies leads", {
         leadsmart: "yes",
@@ -231,7 +236,7 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    title: "Outbound & engagement",
+    key: "outbound",
     rows: [
       r("Click-to-call dialer (phone bridge)", {
         leadsmart: "yes",
@@ -300,7 +305,7 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    title: "Listing & deal tools",
+    key: "listing",
     rows: [
       r("CMA / comparable sales", {
         leadsmart: "yes",
@@ -369,7 +374,7 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    title: "Teams & routing",
+    key: "teams",
     rows: [
       r("Team / brokerage hierarchy with seats", {
         leadsmart: "yes",
@@ -406,7 +411,7 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    title: "Differentiators",
+    key: "differentiators",
     rows: [
       r("RealtyBoss Coaching (Producer Track + Top Producer Track)", {
         leadsmart: "yes",
@@ -468,45 +473,44 @@ const CATEGORIES: Category[] = [
   },
 ];
 
-export default function CompareAgentPage() {
+export default async function CompareAgentPage() {
+  const t = await getServerT();
+  const tc: TFn = (key, opts) => t(key, { ns: "web_agent_compare", ...opts });
   return (
     <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
         <header className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-            Comparison
+            {tc("header.eyebrow")}
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-5xl">
-            RealtyBoss vs. the rest
+            {tc("header.title")}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
-            How we stack up against Follow Up Boss, kvCORE / BoldTrail, Lofty,
-            BoomTown and Sierra Interactive on AI, dialer, e-sign, team
-            workflows, and Chinese-market support — at a fraction of the
-            price.
+            {tc("header.subtitle")}
           </p>
         </header>
 
-        <WorkVsRemind />
+        <WorkVsRemind tc={tc} />
 
-        <Highlights />
+        <Highlights tc={tc} />
 
         <section className="mt-12">
           <h2 className="text-2xl font-semibold text-slate-900">
-            Feature-by-feature
+            {tc("table.heading")}
           </h2>
           <p className="mt-2 text-sm text-slate-600">
             <span className="mr-3">
               <span className="mr-1 font-semibold text-emerald-700">✓</span>
-              first-class
+              {tc("table.legend_first_class")}
             </span>
             <span className="mr-3">
               <span className="mr-1 font-semibold text-amber-600">◐</span>
-              partial / requires add-on
+              {tc("table.legend_partial")}
             </span>
             <span>
               <span className="mr-1 font-semibold text-slate-400">—</span>
-              not offered
+              {tc("table.legend_not_offered")}
             </span>
           </p>
 
@@ -515,7 +519,7 @@ export default function CompareAgentPage() {
               <thead className="sticky top-0 bg-white">
                 <tr>
                   <th className="w-[28%] px-3 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    Feature
+                    {tc("table.col_feature")}
                   </th>
                   {PRODUCTS.map((p) => (
                     <th
@@ -544,7 +548,7 @@ export default function CompareAgentPage() {
               </thead>
               <tbody>
                 {CATEGORIES.map((cat) => (
-                  <CategoryRows key={cat.title} category={cat} />
+                  <CategoryRows key={cat.key} category={cat} tc={tc} />
                 ))}
               </tbody>
             </table>
@@ -553,38 +557,29 @@ export default function CompareAgentPage() {
 
         <section className="mt-16 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-8 text-center md:p-12">
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
-            Stop managing a CRM. Start running a team.
+            {tc("cta.heading")}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 md:text-base">
-            Most legacy CRMs charge $500+/month to hand you a longer to-do list.
-            RealtyBoss gives you an AI team that works the list for you — answering
-            leads, sending replies, and running deals — at a fraction of the price.
+            {tc("cta.body")}
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/agent/pricing"
               className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
             >
-              See pricing
+              {tc("cta.see_pricing")}
             </Link>
             <Link
               href="/agent/start-free"
               className="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:border-slate-300"
             >
-              Start free
+              {tc("cta.start_free")}
             </Link>
           </div>
         </section>
 
         <p className="mt-10 text-center text-xs text-slate-400">
-          Comparison data reflects publicly available product pages and
-          customer reviews as of the page&apos;s last update. Inside Real
-          Estate has consolidated kvCORE and BoomTown into BoldTrail; LionDesk
-          was discontinued in September 2025, so it is no longer listed.
-          &ldquo;Partial&rdquo; on AI rows means the tool drafts or suggests
-          and the agent still reviews and sends. Competitor pricing varies by
-          team size + add-ons. We don&apos;t claim every edge case; if
-          something looks off please reach out.
+          {tc("footnote")}
         </p>
       </div>
     </div>
@@ -599,58 +594,47 @@ export default function CompareAgentPage() {
  * AI team that executes the work. Everything in the table below is evidence
  * for this contrast.
  */
-function WorkVsRemind() {
+function WorkVsRemind({ tc }: { tc: TFn }) {
+  const reminderItems = [0, 1, 2, 3].map((i) => tc(`work_vs_remind.reminder_items.${i}`));
+  const doesItems = [0, 1, 2, 3].map((i) => tc(`work_vs_remind.does_items.${i}`));
   return (
     <section className="mt-12 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-6 md:p-10">
       <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-        The real difference
+        {tc("work_vs_remind.eyebrow")}
       </p>
       <h2 className="mx-auto mt-3 max-w-3xl text-center text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
-        Every other CRM reminds you to do the work.{" "}
-        <span className="text-blue-700">RealtyBoss does the work for you.</span>
+        {tc("work_vs_remind.h2_pre")}{" "}
+        <span className="text-blue-700">{tc("work_vs_remind.h2_highlight")}</span>
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-center text-sm leading-7 text-slate-600 md:text-base">
-        Follow Up Boss, kvCORE, Lofty and the rest are brilliant at telling you
-        what to do next — a task list, a &ldquo;this lead is hot&rdquo; alert, a
-        drip that fires on schedule. But the calling, texting, emailing,
-        researching and follow-up is still on you. RealtyBoss ships an AI team
-        that actually <strong className="font-semibold text-slate-900">does it</strong> —
-        so the work happens while you&apos;re sitting with clients.
+        {tc("work_vs_remind.body_pre")}
+        <strong className="font-semibold text-slate-900">{tc("work_vs_remind.body_bold")}</strong>
+        {tc("work_vs_remind.body_post")}
       </p>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-slate-200 bg-white p-5">
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Other CRMs — a reminder engine
+            {tc("work_vs_remind.reminder_title")}
           </p>
           <ul className="mt-3 space-y-2 text-sm text-slate-600">
-            {[
-              "Creates a task: “Call this lead” — you still make the call",
-              "Alerts you a lead went cold — you write the win-back",
-              "Fires a drip on a timer — generic, not a real reply",
-              "Surfaces a CMA tool — you assemble the comps yourself",
-            ].map((t) => (
-              <li key={t} className="flex gap-2">
+            {reminderItems.map((item, i) => (
+              <li key={i} className="flex gap-2">
                 <span className="mt-0.5 text-slate-400">—</span>
-                <span>{t}</span>
+                <span>{item}</span>
               </li>
             ))}
           </ul>
         </div>
         <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-5">
           <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">
-            RealtyBoss — an AI team that does it
+            {tc("work_vs_remind.does_title")}
           </p>
           <ul className="mt-3 space-y-2 text-sm text-slate-700">
-            {[
-              "Answers & qualifies new leads by text and email — autonomously",
-              "Drafts and sends the win-back reply in your voice",
-              "Runs an AI-grounded CMA with real cited comps on command",
-              "Builds the offer, reviews the contract, books the showing for you",
-            ].map((t) => (
-              <li key={t} className="flex gap-2">
+            {doesItems.map((item, i) => (
+              <li key={i} className="flex gap-2">
                 <span className="mt-0.5 font-semibold text-emerald-600">✓</span>
-                <span>{t}</span>
+                <span>{item}</span>
               </li>
             ))}
           </ul>
@@ -660,30 +644,16 @@ function WorkVsRemind() {
   );
 }
 
-function Highlights() {
-  const items: Array<{ title: string; body: string }> = [
-    {
-      title: "An AI team that does the work",
-      body: "Others remind you to call, text, and follow up. RealtyBoss's AI assistants answer leads, draft and send replies, run CMAs, and book showings on your behalf — the work gets done, not just queued.",
-    },
-    {
-      title: "Half the price of enterprise CRMs",
-      body: "$79–$199/month covers what BoomTown, kvCORE, and Lofty charge $500–$1,500/month for. No setup fee. No mandatory IDX-website upsell.",
-    },
-    {
-      title: "Bilingual + WeChat ecosystem",
-      body: "Chinese-speaking agents and clients are a first-class audience: 中文 templates, WeChat + Xiaohongshu paths, Advisor sales-model. Nobody else does this.",
-    },
-    {
-      title: "Modern stack = faster shipping",
-      body: "AI-grounded CMAs with real cited comps, a one-command AI team, inbound transaction-email auto-import — shipped in weeks, not quarters. The pace difference compounds.",
-    },
-  ];
+function Highlights({ tc }: { tc: TFn }) {
+  const items = [0, 1, 2, 3].map((i) => ({
+    title: tc(`highlights.${i}.title`),
+    body: tc(`highlights.${i}.body`),
+  }));
   return (
     <div className="mt-10 grid gap-4 md:grid-cols-2">
-      {items.map((it) => (
+      {items.map((it, i) => (
         <div
-          key={it.title}
+          key={i}
           className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
         >
           <h3 className="text-sm font-semibold text-slate-900">{it.title}</h3>
@@ -694,7 +664,7 @@ function Highlights() {
   );
 }
 
-function CategoryRows({ category }: { category: Category }) {
+function CategoryRows({ category, tc }: { category: Category; tc: TFn }) {
   return (
     <>
       <tr>
@@ -702,20 +672,23 @@ function CategoryRows({ category }: { category: Category }) {
           colSpan={1 + PRODUCTS.length}
           className="bg-slate-50 px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-600"
         >
-          {category.title}
+          {tc(`categories.${category.key}.title`)}
         </th>
       </tr>
       {category.rows.map((row, i) => (
         <tr
-          key={`${category.title}-${i}`}
+          key={`${category.key}-${i}`}
           className="border-t border-slate-100"
         >
-          <td className="px-3 py-2.5 text-sm text-slate-800">{row.feature}</td>
+          <td className="px-3 py-2.5 text-sm text-slate-800">
+            {tc(`categories.${category.key}.rows.${i}`)}
+          </td>
           {PRODUCTS.map((p) => (
             <CellMark
               key={p.key}
               cell={row.cells[p.key]}
               isUs={p.key === "leadsmart"}
+              tc={tc}
             />
           ))}
         </tr>
@@ -724,7 +697,7 @@ function CategoryRows({ category }: { category: Category }) {
   );
 }
 
-function CellMark({ cell, isUs }: { cell: Cell; isUs: boolean }) {
+function CellMark({ cell, isUs, tc }: { cell: Cell; isUs: boolean; tc: TFn }) {
   if (cell === "yes") {
     return (
       <td
@@ -732,7 +705,7 @@ function CellMark({ cell, isUs }: { cell: Cell; isUs: boolean }) {
           "px-3 py-2.5 text-center text-base font-semibold",
           isUs ? "bg-blue-50/60 text-emerald-700" : "text-emerald-700",
         ].join(" ")}
-        aria-label="Yes"
+        aria-label={tc("table.aria_yes")}
       >
         ✓
       </td>
@@ -745,7 +718,7 @@ function CellMark({ cell, isUs }: { cell: Cell; isUs: boolean }) {
           "px-3 py-2.5 text-center text-base font-semibold",
           isUs ? "bg-blue-50/60 text-amber-600" : "text-amber-600",
         ].join(" ")}
-        aria-label="Partial"
+        aria-label={tc("table.aria_partial")}
       >
         ◐
       </td>
@@ -757,7 +730,7 @@ function CellMark({ cell, isUs }: { cell: Cell; isUs: boolean }) {
         "px-3 py-2.5 text-center text-slate-300",
         isUs ? "bg-blue-50/60" : "",
       ].join(" ")}
-      aria-label="Not offered"
+      aria-label={tc("table.aria_no")}
     >
       —
     </td>

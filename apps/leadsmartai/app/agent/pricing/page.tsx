@@ -1,34 +1,36 @@
 import type { Metadata } from "next";
 import AgentPricingClientPage from "./page.client";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Agent plans & pricing — Starter, Pro, Premium, Signature, Team",
-  description:
-    "RealtyBoss plans for real estate agents: Starter (free), Pro ($79/mo, Producer Track coaching), Premium ($199/mo, Top Producer Track), Signature ($399/mo, bilingual + luxury concierge), and Team ($299/mo, brokerage workflows). Annual billing saves 2 months. 14-day trial on every paid tier.",
-  keywords: [
-    "real estate CRM pricing",
-    "real estate AI pricing",
-    "leadsmart pricing",
-    "real estate coaching pricing",
-    "bilingual real estate CRM",
-    "luxury real estate CRM",
-    "agent CRM cost",
-  ],
-  alternates: { canonical: "/agent/pricing" },
-  openGraph: {
-    title: "Agent plans & pricing | RealtyBoss",
-    description:
-      "Pro from $79/mo with Producer Track coaching. Premium $199/mo with Top Producer Track. Signature $399/mo with bilingual + concierge support. Team $299/mo for brokerages. Annual saves 2 months.",
-    url: "/agent/pricing",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Agent plans & pricing | RealtyBoss",
-    description:
-      "Pro $79/mo · Premium $199/mo · Signature $399/mo · Team $299/mo. Available in English and 中文. Annual saves 2 months.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const tp = (key: string): string => t(key, { ns: "web_agent_pricing" });
+  return {
+    title: tp("meta.title"),
+    description: tp("meta.description"),
+    keywords: [
+      "real estate CRM pricing",
+      "real estate AI pricing",
+      "leadsmart pricing",
+      "real estate coaching pricing",
+      "bilingual real estate CRM",
+      "luxury real estate CRM",
+      "agent CRM cost",
+    ],
+    alternates: { canonical: "/agent/pricing" },
+    openGraph: {
+      title: tp("meta.og_title"),
+      description: tp("meta.og_description"),
+      url: "/agent/pricing",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: tp("meta.twitter_title"),
+      description: tp("meta.twitter_description"),
+    },
+  };
+}
 
 /**
  * JSON-LD payload — emitted server-side as one Product per plan

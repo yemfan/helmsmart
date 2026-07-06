@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { messageFromUnknownError } from "@/lib/supabaseThrow";
 import type { BillingCadence, PlanSlug } from "@/lib/billing/plans";
+
+type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
 type EntitlementPlan = "starter" | "growth" | "elite" | "signature" | "team";
 
@@ -36,132 +39,76 @@ function entitlementToCatalogSlug(p: EntitlementPlan): PlanSlug {
 
 type CardDef = {
   slug: PlanSlug;
-  name: string;
-  description: string;
-  /** Coaching pill text — null on free + team-with-its-own-badge. */
-  coachingPill: string | null;
-  /** "Popular" / other badge text — empty when unused. */
-  badge?: { label: string; tone: "primary" | "signature" };
-  /** Feature bullets in display order. The first line is the "Everything in X, plus:" hat. */
-  features: string[];
-  /** Optional footnote shown below feature list (e.g., Team seat count). */
-  footnote?: string;
+  /** i18n key prefix under `plans.<slug>` in web_agent_pricing. */
+  i18nKey: "starter" | "pro" | "premium" | "signature" | "team";
+  /** Whether a coaching pill is shown (text comes from i18n). */
+  hasCoachingPill?: boolean;
+  /** Badge tone — label text comes from i18n. */
+  badgeTone?: "primary" | "signature";
+  /** Number of feature bullets (for i18n array indexing). */
+  featureCount: number;
+  /** Whether a footnote is shown (text comes from i18n). */
+  hasFootnote?: boolean;
   /** True for the Signature visual treatment (deep navy + gold hairline). */
   signatureLook?: boolean;
   /** "Bilingual included" pill — Signature only (bilingual is table-stakes here). */
   bilingualIncludedPill?: boolean;
-  /** Primary CTA label. */
-  cta: string;
-  /** Optional secondary link (e.g., "Talk to us first") for hybrid checkout. */
-  secondaryLink?: { label: string; href: string };
+  /** Optional secondary link href (label comes from i18n). */
+  secondaryLinkHref?: string;
 };
 
 /**
- * Per-tier display copy. Prices come from `PLANS` in
- * `lib/billing/plans.ts` so we don't drift; bullets / coaching pill
- * text / footnotes live here because they're display copy, not part
- * of the entitlement spine.
+ * Per-tier structural definition. Prices come from `PRICES` below;
+ * all display copy (name, description, coaching pill, badge label,
+ * feature bullets, footnote, CTA, secondary link) is resolved via
+ * i18n from the `web_agent_pricing` namespace keyed off `i18nKey`.
  */
 const CARD_DEFS: CardDef[] = [
   {
     slug: "starter",
-    name: "Starter",
-    description: "For new agents testing the platform.",
-    coachingPill: null,
-    features: [
-      "Up to 5 leads · 50 contacts",
-      "2 CMA reports / day",
-      "AI SMS + email responder (basic)",
-      "Click-to-call (Twilio bridge)",
-      "Custom fields on contacts",
-      "Reviews & testimonial capture",
-      "Mobile app",
-      "100 AI actions / month",
-    ],
-    cta: "Start free",
+    i18nKey: "starter",
+    featureCount: 8,
   },
   {
     slug: "pro",
-    name: "Pro",
-    description: "For active agents closing deals consistently.",
-    coachingPill: "RealtyBoss Coaching: Producer Track included",
-    badge: { label: "Popular", tone: "primary" },
-    features: [
-      "Everything in Starter, plus:",
-      "Up to 500 leads · 500 contacts",
-      "5 CMA reports / day",
-      "Bilingual English / 中文 templates & AI",
-      "Producer Track coaching (auto-enrolled)",
-      "Email open / click tracking",
-      "Video email (record & send)",
-      "Newsletter / mass-email composer",
-      "Listing presentation builder",
-      "Vanity / call-tracking numbers",
-      "Sphere prediction + equity signals",
-      "Buyer Broker Agreement (BBA) workflow",
-      "Bookkeeping — invoices, expenses & receipt capture",
-      "5,000 AI actions / month",
-    ],
-    cta: "Start 14-day trial",
+    i18nKey: "pro",
+    hasCoachingPill: true,
+    badgeTone: "primary",
+    featureCount: 14,
   },
   {
     slug: "premium",
-    name: "Premium",
-    description: "For top producers running solo.",
-    coachingPill: "RealtyBoss Coaching: Top Producer Track included",
-    features: [
-      "Everything in Pro, plus:",
-      "AI Receptionist + AI Concierge — answers every call, and auto-calls for confirmations, follow-ups & surveys",
-      "Unlimited leads & contacts",
-      "ISA workflow + qualified handoff",
-      "E-signature workflow (Dotloop / DocuSign)",
-      "Advanced AI coaching + peer benchmarks",
-      "Unlimited AI actions",
-      "Priority support",
-    ],
-    cta: "Start 14-day trial",
+    i18nKey: "premium",
+    hasCoachingPill: true,
+    featureCount: 8,
   },
   {
     slug: "signature",
-    name: "Signature",
-    description: "For relationship-driven agents serving high-value clients.",
-    coachingPill: "RealtyBoss Coaching: Top Producer Track included",
-    badge: { label: "Bilingual & Luxury", tone: "signature" },
+    i18nKey: "signature",
+    hasCoachingPill: true,
+    badgeTone: "signature",
     signatureLook: true,
     bilingualIncludedPill: true,
-    features: [
-      "Everything in Premium, plus:",
-      "Sphere Intelligence Pro — equity tracking, life-event signals, referral mapping",
-      "White-glove onboarding — 1:1 setup with a specialist, sphere import included",
-      "Concierge support — priority response, named account contact",
-      "Cultural calendar automations — CNY, Mid-Autumn, Lunar holidays auto-pause / auto-greet",
-      "Custom voice tuning — AI trained on your past conversations for tone match",
-    ],
-    cta: "Start 14-day trial",
-    secondaryLink: {
-      label: "Prefer a call? Talk to us first →",
-      href: "/contact?topic=signature",
-    },
+    featureCount: 6,
+    secondaryLinkHref: "/contact?topic=signature",
   },
 ];
 
 const TEAM_CARD: CardDef = {
   slug: "team",
-  name: "Team",
-  description: "For brokerages and small teams that need shared workflows.",
-  coachingPill: "RealtyBoss Coaching: Top Producer Track for every seat",
-  features: [
-    "Everything in Premium, plus:",
-    "Round-robin lead routing across the roster",
-    "Per-member breakdown reporting",
-    "Roster-wide dashboard rollups",
-    "Top Producer Track for every member",
-    "Team owner controls + seat invites",
-  ],
-  footnote: "Up to 5 team seats — contact sales for more.",
-  cta: "Contact sales",
-  secondaryLink: { label: "Talk to sales →", href: "/contact?topic=team" },
+  i18nKey: "team",
+  hasCoachingPill: true,
+  featureCount: 6,
+  hasFootnote: true,
+  secondaryLinkHref: "/contact?topic=team",
 };
+
+/** Pull the `features` array for a card from i18n as string[]. */
+function cardFeatures(t: TFn, card: CardDef): string[] {
+  return Array.from({ length: card.featureCount }, (_, i) =>
+    t(`plans.${card.i18nKey}.features.${i}`),
+  );
+}
 
 const PRICES: Record<PlanSlug, { monthly: number; annual: number | null }> = {
   starter: { monthly: 0, annual: null },
@@ -190,9 +137,11 @@ function formatUsd(amount: number, opts?: { hideCents?: boolean }): string {
 function BillingToggle({
   value,
   onChange,
+  t,
 }: {
   value: BillingCadence;
   onChange: (next: BillingCadence) => void;
+  t: TFn;
 }) {
   return (
     <div className="sticky top-2 z-10 mx-auto flex justify-center pt-2">
@@ -208,7 +157,7 @@ function BillingToggle({
               : "text-gray-600 hover:text-gray-900",
           ].join(" ")}
         >
-          Monthly
+          {t("billing.monthly")}
         </button>
         <button
           type="button"
@@ -221,14 +170,14 @@ function BillingToggle({
               : "text-gray-600 hover:text-gray-900",
           ].join(" ")}
         >
-          Annual
+          {t("billing.annual")}
           <span
             className={[
               "rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
               value === "annual" ? "bg-white/15 text-white" : "bg-emerald-100 text-emerald-800",
             ].join(" ")}
           >
-            Save 17%
+            {t("billing.save_badge")}
           </span>
         </button>
       </div>
@@ -240,10 +189,12 @@ function PriceBlock({
   slug,
   cadence,
   signatureLook,
+  t,
 }: {
   slug: PlanSlug;
   cadence: BillingCadence;
   signatureLook?: boolean;
+  t: TFn;
 }) {
   const p = PRICES[slug];
   if (slug === "starter") {
@@ -255,7 +206,7 @@ function PriceBlock({
             signatureLook ? "text-white" : "text-gray-900",
           ].join(" ")}
         >
-          Free
+          {t("price.free")}
         </span>
       </div>
     );
@@ -270,7 +221,7 @@ function PriceBlock({
             signatureLook ? "text-white" : "text-gray-900",
           ].join(" ")}
         >
-          Custom
+          {t("price.custom")}
         </span>
       </div>
     );
@@ -293,24 +244,24 @@ function PriceBlock({
           {headlineLabel}
         </span>
         <span className={signatureLook ? "text-xs text-slate-300" : "text-xs text-gray-500"}>
-          /mo
+          {t("price.per_month")}
         </span>
       </div>
       {showAnnual ? (
         <div className={signatureLook ? "mt-0.5 text-[11px] text-slate-300" : "mt-0.5 text-[11px] text-gray-500"}>
-          Billed {formatUsd(p.annual!, { hideCents: true })} annually
+          {t("price.billed_annually", { amount: formatUsd(p.annual!, { hideCents: true }) })}
           <span
             className={[
               "ml-1.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
               signatureLook ? "bg-amber-300/20 text-amber-200" : "bg-emerald-100 text-emerald-800",
             ].join(" ")}
           >
-            Save {formatUsd(p.monthly * 2, { hideCents: true })}
+            {t("price.save_amount", { amount: formatUsd(p.monthly * 2, { hideCents: true }) })}
           </span>
         </div>
       ) : p.annual ? (
         <div className={signatureLook ? "mt-0.5 text-[11px] text-slate-300" : "mt-0.5 text-[11px] text-gray-500"}>
-          or {formatUsd(p.annual / 12, { hideCents: false })}/mo on annual — save 2 months
+          {t("price.annual_note", { amount: formatUsd(p.annual / 12, { hideCents: false }) })}
         </div>
       ) : null}
     </div>
@@ -352,6 +303,7 @@ function PlanCard({
   loading,
   onStarter,
   onPaid,
+  t,
 }: {
   card: CardDef;
   cadence: BillingCadence;
@@ -359,8 +311,11 @@ function PlanCard({
   loading: boolean;
   onStarter: () => void;
   onPaid: (slug: PlanSlug) => void;
+  t: TFn;
 }) {
   const signatureLook = !!card.signatureLook;
+  const base = `plans.${card.i18nKey}`;
+  const features = cardFeatures(t, card);
 
   const containerCls = signatureLook
     ? "flex flex-col rounded-3xl border bg-[#0b1e3f] p-6 shadow-lg ring-1 ring-amber-300/40 text-slate-100"
@@ -371,41 +326,41 @@ function PlanCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className={signatureLook ? "text-xl font-semibold text-white" : "text-xl font-semibold text-gray-900"}>
-            {card.name}
+            {t(`${base}.name`)}
           </h2>
           <div className="mt-2">
-            <PriceBlock slug={card.slug} cadence={cadence} signatureLook={signatureLook} />
+            <PriceBlock slug={card.slug} cadence={cadence} signatureLook={signatureLook} t={t} />
           </div>
           <p className={signatureLook ? "mt-3 text-sm leading-6 text-slate-300" : "mt-3 text-sm leading-6 text-gray-600"}>
-            {card.description}
+            {t(`${base}.description`)}
           </p>
         </div>
 
-        {card.badge && (
+        {card.badgeTone && (
           <span
             className={[
               "rounded-full px-3 py-1 text-xs font-medium",
-              card.badge.tone === "signature"
+              card.badgeTone === "signature"
                 ? "bg-amber-300 text-amber-950"
                 : "bg-gray-900 text-white",
             ].join(" ")}
           >
-            {card.badge.label}
+            {t(`${base}.badge`)}
           </span>
         )}
       </div>
 
-      {card.coachingPill && <CoachingPill text={card.coachingPill} signatureLook={signatureLook} />}
+      {card.hasCoachingPill && <CoachingPill text={t(`${base}.coaching_pill`)} signatureLook={signatureLook} />}
       {card.bilingualIncludedPill && (
         <div className="mt-2 inline-flex w-fit items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-medium text-slate-200 ring-1 ring-white/20">
-          Bilingual English / 中文 included
+          {t("bilingual_pill")}
         </div>
       )}
 
       <ul className="mt-5 flex-1 space-y-2">
-        {card.features.map((f) => (
+        {features.map((f, i) => (
           <li
-            key={f}
+            key={i}
             className={[
               "rounded-lg px-3 py-2 text-xs leading-5",
               signatureLook ? "bg-white/5 text-slate-200" : "bg-gray-50 text-gray-700",
@@ -416,14 +371,14 @@ function PlanCard({
         ))}
       </ul>
 
-      {card.footnote && (
+      {card.hasFootnote && (
         <p
           className={[
             "mt-3 text-[11px] italic",
             signatureLook ? "text-slate-400" : "text-gray-500",
           ].join(" ")}
         >
-          {card.footnote}
+          {t(`${base}.footnote`)}
         </p>
       )}
 
@@ -435,14 +390,14 @@ function PlanCard({
             onClick={onStarter}
             className="w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
           >
-            {isCurrent ? "Current Plan" : loading ? "Activating..." : card.cta}
+            {isCurrent ? t("state.current") : loading ? t("state.activating") : t(`${base}.cta`)}
           </button>
         ) : card.slug === "team" ? (
           <a
             href="/contact?topic=team"
             className="block w-full rounded-2xl bg-gray-900 px-4 py-3 text-center text-sm font-medium text-white transition hover:bg-gray-800"
           >
-            {card.cta}
+            {t(`${base}.cta`)}
           </a>
         ) : (
           <button
@@ -456,19 +411,19 @@ function PlanCard({
                 : "bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300",
             ].join(" ")}
           >
-            {isCurrent ? "Current Plan" : loading ? "Redirecting..." : card.cta}
+            {isCurrent ? t("state.current") : loading ? t("state.redirecting") : t(`${base}.cta`)}
           </button>
         )}
 
-        {card.secondaryLink && (
+        {card.secondaryLinkHref && (
           <a
-            href={card.secondaryLink.href}
+            href={card.secondaryLinkHref}
             className={[
               "block text-center text-[12px] underline-offset-2 hover:underline",
               signatureLook ? "text-slate-300" : "text-gray-500",
             ].join(" ")}
           >
-            {card.secondaryLink.label}
+            {t(`${base}.secondary_link`)}
           </a>
         )}
       </div>
@@ -477,6 +432,7 @@ function PlanCard({
 }
 
 export default function AgentPricingClientPage() {
+  const { t } = useTranslation("web_agent_pricing");
   const [loadingSlug, setLoadingSlug] = useState<PlanSlug | "">("");
   const [currentPlan, setCurrentPlan] = useState<PlanSlug | null>(null);
   const [hasAccess, setHasAccess] = useState(false);
@@ -541,11 +497,11 @@ export default function AgentPricingClientPage() {
         redirectTo?: string;
       };
       if (!res.ok || json?.success === false || json?.ok === false) {
-        throw new Error(messageFromUnknownError(json?.error, "Failed to activate Starter"));
+        throw new Error(messageFromUnknownError(json?.error, t("error.activate_starter")));
       }
       window.location.href = json.redirectTo || "/agent/dashboard";
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to activate Starter");
+      setError(err instanceof Error ? err.message : t("error.activate_starter"));
     } finally {
       setLoadingSlug("");
     }
@@ -563,12 +519,12 @@ export default function AgentPricingClientPage() {
       });
       const json = (await res.json()) as { success?: boolean; error?: unknown; url?: string };
       if (!res.ok) {
-        throw new Error(messageFromUnknownError(json?.error, "Failed to create checkout session"));
+        throw new Error(messageFromUnknownError(json?.error, t("error.checkout_session")));
       }
-      if (!json.url) throw new Error("Missing checkout URL");
+      if (!json.url) throw new Error(t("error.missing_url"));
       window.location.href = json.url;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to start checkout");
+      setError(err instanceof Error ? err.message : t("error.start_checkout"));
     } finally {
       setLoadingSlug("");
     }
@@ -582,31 +538,34 @@ export default function AgentPricingClientPage() {
         {/* Header */}
         <div className="text-center">
           <h1 className="text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">
-            RealtyBoss for Agents
+            {t("header.title")}
           </h1>
           {hasAccess && currentPlan ? (
             <>
               <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-gray-600 md:text-lg">
-                You&apos;re on the <strong>{currentPlan}</strong> plan. Upgrade for more capacity,
-                deeper AI, and stronger coaching. Paid plans include a{" "}
-                <strong>14-day free trial</strong> (card required; cancel anytime).
+                {t("header.current_intro_pre")}
+                <strong>{currentPlan}</strong>
+                {t("header.current_intro_plan_suffix")}
+                <strong>{t("header.trial_bold")}</strong>
+                {t("header.current_intro_post")}
               </p>
               <div className="mt-4 inline-flex rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white">
-                Current plan: {currentPlan}
+                {t("header.current_badge", { plan: currentPlan })}
               </div>
             </>
           ) : (
             <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-gray-600 md:text-lg">
-              Choose a plan to get started. Paid plans include a <strong>14-day free trial</strong>{" "}
-              (card required; cancel anytime during the trial).
+              {t("header.choose_intro_pre")}
+              <strong>{t("header.trial_bold")}</strong>
+              {t("header.choose_intro_post")}
             </p>
           )}
           <p className="mx-auto mt-3 max-w-2xl text-sm italic text-gray-500 md:text-base">
-            From your first lead to your highest-value clients — available in English and 中文.
+            {t("header.tagline")}
           </p>
         </div>
 
-        <BillingToggle value={cadence} onChange={handleCadenceChange} />
+        <BillingToggle value={cadence} onChange={handleCadenceChange} t={t} />
 
         {error && (
           <div className="mx-auto max-w-2xl rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -625,6 +584,7 @@ export default function AgentPricingClientPage() {
               loading={loadingSlug === card.slug}
               onStarter={handleStarter}
               onPaid={handlePaid}
+              t={t}
             />
           ))}
         </div>
@@ -632,12 +592,12 @@ export default function AgentPricingClientPage() {
         {/* Team — its own row to make the brokerage positioning clear */}
         <div>
           <div className="mb-3 flex items-center justify-between gap-3 px-1">
-            <h3 className="text-lg font-semibold text-gray-900">For teams & brokerages</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t("team_section.heading")}</h3>
             <a
               href="/contact?topic=team"
               className="text-sm font-medium text-blue-700 underline-offset-2 hover:underline"
             >
-              Need more than 5 seats? Contact sales →
+              {t("team_section.contact_link")}
             </a>
           </div>
           <div className="grid grid-cols-1">
@@ -648,47 +608,44 @@ export default function AgentPricingClientPage() {
               loading={loadingSlug === "team"}
               onStarter={handleStarter}
               onPaid={handlePaid}
+              t={t}
             />
           </div>
         </div>
 
         {/* "Which plan is right for you?" comparison */}
         <div className="rounded-3xl border bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-semibold text-gray-900">Which plan is right for you?</h3>
+          <h3 className="text-xl font-semibold text-gray-900">{t("which.heading")}</h3>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <div className="rounded-2xl bg-gray-50 p-5">
-              <div className="text-sm font-semibold text-gray-900">Starter</div>
+              <div className="text-sm font-semibold text-gray-900">{t("which.starter.name")}</div>
               <p className="mt-2 text-sm text-gray-600">
-                Best for testing the workspace and getting your first leads organized.
+                {t("which.starter.body")}
               </p>
             </div>
             <div className="rounded-2xl bg-gray-50 p-5">
-              <div className="text-sm font-semibold text-gray-900">Pro</div>
+              <div className="text-sm font-semibold text-gray-900">{t("which.pro.name")}</div>
               <p className="mt-2 text-sm text-gray-600">
-                Best for solo agents actively converting leads. Includes Producer Track coaching
-                and bilingual English / 中文 support.
+                {t("which.pro.body")}
               </p>
             </div>
             <div className="rounded-2xl bg-gray-50 p-5">
-              <div className="text-sm font-semibold text-gray-900">Premium</div>
+              <div className="text-sm font-semibold text-gray-900">{t("which.premium.name")}</div>
               <p className="mt-2 text-sm text-gray-600">
-                Best for solo top producers wanting unlimited everything + Top Producer Track
-                coaching.
+                {t("which.premium.body")}
               </p>
             </div>
             <div className="rounded-2xl border border-amber-200 bg-amber-50/40 p-5">
-              <div className="text-sm font-semibold text-gray-900">Signature</div>
+              <div className="text-sm font-semibold text-gray-900">{t("which.signature.name")}</div>
               <p className="mt-2 text-sm text-gray-600">
-                Best for relationship-driven agents serving high-value and bilingual clients.
-                Sphere Intelligence Pro, white-glove onboarding, and concierge support.
+                {t("which.signature.body")}
               </p>
             </div>
             <div className="rounded-2xl bg-gray-50 p-5">
-              <div className="text-sm font-semibold text-gray-900">Team</div>
+              <div className="text-sm font-semibold text-gray-900">{t("which.team.name")}</div>
               <p className="mt-2 text-sm text-gray-600">
-                Best for brokerages with up to 5 agents sharing leads, routing, and team-wide
-                coaching.
+                {t("which.team.body")}
               </p>
             </div>
           </div>
@@ -696,14 +653,14 @@ export default function AgentPricingClientPage() {
           {/* RealtyBoss Coaching callout */}
           <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/60 p-5 text-sm text-slate-700">
             <p className="font-semibold text-slate-900">
-              RealtyBoss Coaching — built into the product, not an add-on
+              {t("coaching_callout.heading")}
             </p>
             <p className="mt-1.5 text-slate-700">
-              Every paid plan auto-enrolls in our coaching programs:
-              <strong className="ml-1">Producer Track</strong> on Pro (target: 10 transactions /
-              3% conversion) and <strong>Top Producer Track</strong> on Premium, Signature, and
-              Team (target: 15 transactions / 5% conversion). No upsell — the daily action plan,
-              peer benchmarks, and AI deep-dives are part of the price.
+              {t("coaching_callout.body_pre")}
+              <strong className="ml-1">{t("coaching_callout.producer_track")}</strong>
+              {t("coaching_callout.body_mid")}
+              <strong>{t("coaching_callout.top_producer_track")}</strong>
+              {t("coaching_callout.body_post")}
             </p>
           </div>
         </div>

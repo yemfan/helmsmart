@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "title": "Agent plans & pricing — Starter, Pro, Premium, Signature, Team",
+    "description": "RealtyBoss plans for real estate agents: Starter (free), Pro ($79/mo, Producer Track coaching), Premium ($199/mo, Top Producer Track), Signature ($399/mo, bilingual + luxury concierge), and Team ($299/mo, brokerage workflows). Annual billing saves 2 months. 14-day trial on every paid tier.",
+    "og_title": "Agent plans & pricing | RealtyBoss",
+    "og_description": "Pro from $79/mo with Producer Track coaching. Premium $199/mo with Top Producer Track. Signature $399/mo with bilingual + concierge support. Team $299/mo for brokerages. Annual saves 2 months.",
+    "twitter_title": "Agent plans & pricing | RealtyBoss",
+    "twitter_description": "Pro $79/mo · Premium $199/mo · Signature $399/mo · Team $299/mo. Available in English and 中文. Annual saves 2 months."
+  },
+  "header": {
+    "title": "RealtyBoss for Agents",
+    "current_intro_pre": "You’re on the ",
+    "current_intro_plan_suffix": " plan. Upgrade for more capacity, deeper AI, and stronger coaching. Paid plans include a ",
+    "trial_bold": "14-day free trial",
+    "current_intro_post": " (card required; cancel anytime).",
+    "current_badge": "Current plan: {{plan}}",
+    "choose_intro_pre": "Choose a plan to get started. Paid plans include a ",
+    "choose_intro_post": " (card required; cancel anytime during the trial).",
+    "tagline": "From your first lead to your highest-value clients — available in English and 中文."
+  },
+  "billing": {
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "save_badge": "Save 17%"
+  },
+  "price": {
+    "free": "Free",
+    "custom": "Custom",
+    "per_month": "/mo",
+    "billed_annually": "Billed {{amount}} annually",
+    "save_amount": "Save {{amount}}",
+    "annual_note": "or {{amount}}/mo on annual — save 2 months"
+  },
+  "state": {
+    "current": "Current Plan",
+    "activating": "Activating...",
+    "redirecting": "Redirecting..."
+  },
+  "error": {
+    "activate_starter": "Failed to activate Starter",
+    "checkout_session": "Failed to create checkout session",
+    "missing_url": "Missing checkout URL",
+    "start_checkout": "Failed to start checkout"
+  },
+  "bilingual_pill": "Bilingual English / 中文 included",
+  "plans": {
+    "starter": {
+      "name": "Starter",
+      "description": "For new agents testing the platform.",
+      "cta": "Start free",
+      "features": [
+        "Up to 5 leads · 50 contacts",
+        "2 CMA reports / day",
+        "AI SMS + email responder (basic)",
+        "Click-to-call (Twilio bridge)",
+        "Custom fields on contacts",
+        "Reviews & testimonial capture",
+        "Mobile app",
+        "100 AI actions / month"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "description": "For active agents closing deals consistently.",
+      "coaching_pill": "RealtyBoss Coaching: Producer Track included",
+      "badge": "Popular",
+      "cta": "Start 14-day trial",
+      "features": [
+        "Everything in Starter, plus:",
+        "Up to 500 leads · 500 contacts",
+        "5 CMA reports / day",
+        "Bilingual English / 中文 templates & AI",
+        "Producer Track coaching (auto-enrolled)",
+        "Email open / click tracking",
+        "Video email (record & send)",
+        "Newsletter / mass-email composer",
+        "Listing presentation builder",
+        "Vanity / call-tracking numbers",
+        "Sphere prediction + equity signals",
+        "Buyer Broker Agreement (BBA) workflow",
+        "Bookkeeping — invoices, expenses & receipt capture",
+        "5,000 AI actions / month"
+      ]
+    },
+    "premium": {
+      "name": "Premium",
+      "description": "For top producers running solo.",
+      "coaching_pill": "RealtyBoss Coaching: Top Producer Track included",
+      "cta": "Start 14-day trial",
+      "features": [
+        "Everything in Pro, plus:",
+        "AI Receptionist + AI Concierge — answers every call, and auto-calls for confirmations, follow-ups & surveys",
+        "Unlimited leads & contacts",
+        "ISA workflow + qualified handoff",
+        "E-signature workflow (Dotloop / DocuSign)",
+        "Advanced AI coaching + peer benchmarks",
+        "Unlimited AI actions",
+        "Priority support"
+      ]
+    },
+    "signature": {
+      "name": "Signature",
+      "description": "For relationship-driven agents serving high-value clients.",
+      "coaching_pill": "RealtyBoss Coaching: Top Producer Track included",
+      "badge": "Bilingual & Luxury",
+      "cta": "Start 14-day trial",
+      "secondary_link": "Prefer a call? Talk to us first →",
+      "features": [
+        "Everything in Premium, plus:",
+        "Sphere Intelligence Pro — equity tracking, life-event signals, referral mapping",
+        "White-glove onboarding — 1:1 setup with a specialist, sphere import included",
+        "Concierge support — priority response, named account contact",
+        "Cultural calendar automations — CNY, Mid-Autumn, Lunar holidays auto-pause / auto-greet",
+        "Custom voice tuning — AI trained on your past conversations for tone match"
+      ]
+    },
+    "team": {
+      "name": "Team",
+      "description": "For brokerages and small teams that need shared workflows.",
+      "coaching_pill": "RealtyBoss Coaching: Top Producer Track for every seat",
+      "footnote": "Up to 5 team seats — contact sales for more.",
+      "cta": "Contact sales",
+      "secondary_link": "Talk to sales →",
+      "features": [
+        "Everything in Premium, plus:",
+        "Round-robin lead routing across the roster",
+        "Per-member breakdown reporting",
+        "Roster-wide dashboard rollups",
+        "Top Producer Track for every member",
+        "Team owner controls + seat invites"
+      ]
+    }
+  },
+  "team_section": {
+    "heading": "For teams & brokerages",
+    "contact_link": "Need more than 5 seats? Contact sales →"
+  },
+  "which": {
+    "heading": "Which plan is right for you?",
+    "starter": {
+      "name": "Starter",
+      "body": "Best for testing the workspace and getting your first leads organized."
+    },
+    "pro": {
+      "name": "Pro",
+      "body": "Best for solo agents actively converting leads. Includes Producer Track coaching and bilingual English / 中文 support."
+    },
+    "premium": {
+      "name": "Premium",
+      "body": "Best for solo top producers wanting unlimited everything + Top Producer Track coaching."
+    },
+    "signature": {
+      "name": "Signature",
+      "body": "Best for relationship-driven agents serving high-value and bilingual clients. Sphere Intelligence Pro, white-glove onboarding, and concierge support."
+    },
+    "team": {
+      "name": "Team",
+      "body": "Best for brokerages with up to 5 agents sharing leads, routing, and team-wide coaching."
+    }
+  },
+  "coaching_callout": {
+    "heading": "RealtyBoss Coaching — built into the product, not an add-on",
+    "body_pre": "Every paid plan auto-enrolls in our coaching programs:",
+    "producer_track": "Producer Track",
+    "body_mid": " on Pro (target: 10 transactions / 3% conversion) and ",
+    "top_producer_track": "Top Producer Track",
+    "body_post": " on Premium, Signature, and Team (target: 15 transactions / 5% conversion). No upsell — the daily action plan, peer benchmarks, and AI deep-dives are part of the price."
+  }
+}

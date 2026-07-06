@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "title": "Agent Portal",
+    "description": "Your command center for leads, CMAs, and AI tools."
+  },
+  "hub": {
+    "eyebrow": "RealtyBoss",
+    "title": "Agent portal",
+    "description": "Your command center for leads, CMAs, and AI tools — jump into any workflow below."
+  },
+  "links": {
+    "dashboard": {
+      "label": "Dashboard overview",
+      "description": "Today’s pipeline snapshot"
+    },
+    "leads": {
+      "label": "Leads",
+      "description": "CRM and follow-ups"
+    },
+    "cma": {
+      "label": "Smart CMA builder",
+      "description": "Comparable analysis"
+    },
+    "tools": {
+      "label": "Tools",
+      "description": "Calculators and generators"
+    },
+    "pricing": {
+      "label": "Plans & billing",
+      "description": "Upgrade when you’re ready"
+    },
+    "portal": {
+      "label": "Stripe billing portal",
+      "description": "Manage subscription in Stripe"
+    }
+  }
+}
