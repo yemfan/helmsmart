@@ -102,7 +102,7 @@ const marketingNavConfig = {
     {
       label: "Homes for sale",
       href: "/homes",
-      match: ["/homes", "/homes/search", "/homes/[id]"],
+      match: ["/homes", "/homes/search"],
       icon: <Search size={16} strokeWidth={2} aria-hidden />,
     },
 
