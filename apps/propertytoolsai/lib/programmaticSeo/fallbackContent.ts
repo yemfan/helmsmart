@@ -44,10 +44,10 @@ export function buildFallbackPayload(tool: ProgrammaticSeoTool, loc: Programmati
       ],
     },
     {
-      heading: `California and West Coast context`,
+      heading: `${loc.city} market context`,
       paragraphs: [
-        `Many visitors from California, Arizona, Texas, and Florida use PropertyTools AI to compare moving within state or relocating. If you are evaluating ${L} specifically, stress-test for local regulation (rent control where applicable), mello-roos-style assessments, and HOA budgets on condos and townhomes.`,
-        `Coastal premiums often mean lower cap rates but stronger long-term demand; inland markets may show higher yields with different risk. Use the calculator—not headlines—to judge your deal.`,
+        `Local rules and costs move outcomes more than national headlines. If you are evaluating ${L} specifically, stress-test for anything that applies in your market—rent regulation where it exists, special assessments or bonds baked into the tax bill, and HOA budgets on condos and townhomes.`,
+        `High-demand submarkets often trade at lower cap rates but hold long-term demand; more affordable areas may show higher yields with a different risk profile. For current ${loc.state} figures—typical home value, median sale price, days on market—see our local market data for ${loc.city}. Use the calculator and real numbers, not headlines, to judge your deal.`,
       ],
     },
     {
