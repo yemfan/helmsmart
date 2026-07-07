@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { buildGuidePath } from "@/lib/clusterGenerator/slug";
 import { getClusterPage } from "@/lib/clusterGenerator/db";
 import { listPublishedClusterParams } from "@/lib/clusterGenerator/db";
+import { matchLocationToGeo } from "@/lib/programmaticSeo/marketMatch";
+import LocalMarketSnapshot from "@/components/LocalMarketSnapshot";
 
 type Props = { params: Promise<{ topicSlug: string; locationSlug: string }> };
 
@@ -46,6 +48,14 @@ export default async function ClusterGuidePage({ params }: Props) {
   const place = `${row.city}, ${row.state}`;
   const payload = row.payload;
   const links = Array.isArray(row.internal_links) ? row.internal_links : [];
+
+  // Real local-market data from the Data Center warehouse for this guide's
+  // city (metro match, state fallback). Service-role/server-only read → ISR-safe.
+  const marketGeo = await matchLocationToGeo({
+    slug: locationSlug,
+    city: row.city,
+    state: row.state,
+  });
 
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -93,6 +103,8 @@ export default async function ClusterGuidePage({ params }: Props) {
             ))}
           </ul>
         </section>
+
+        {marketGeo && <LocalMarketSnapshot geo={marketGeo} city={row.city} />}
 
         <section aria-label="Guide" className="space-y-8">
           {payload.sections.map((sec, i) => (
