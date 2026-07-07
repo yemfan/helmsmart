@@ -5,6 +5,7 @@ import {
   currentWeekOf,
   getSocialMode,
   listRecommendations,
+  recommendationImageUrl,
 } from "@/lib/social/recommend";
 import MarketingAssistantClient, { type MarketingData } from "./MarketingAssistantClient";
 import type { SocialRec } from "@/components/marketing/WeeklySocialPosts";
@@ -84,10 +85,16 @@ export default async function MarketingAssistantPage() {
   // if the tables are empty / not yet seeded, these return safe empties so the
   // page still renders (empty state prompts "Generate this week's posts").
   const weekOf = currentWeekOf();
-  const [socialRecs, socialMode] = await Promise.all([
-    listRecommendations(String(agentId), weekOf).catch(() => [] as SocialRec[]),
+  const [socialRecsRaw, socialMode] = await Promise.all([
+    listRecommendations(String(agentId), weekOf).catch(() => []),
     getSocialMode(String(agentId)).catch(() => "ask" as const),
   ]);
+  // Attach the branded-image URL for the UI (thumbnail + preview modal): the
+  // stored asset first, on-the-fly /api/social/card/[id] as a fallback.
+  const socialRecs: SocialRec[] = socialRecsRaw.map((r) => ({
+    ...r,
+    imageUrl: r.image_url ?? recommendationImageUrl(r.id),
+  })) as SocialRec[];
 
   return (
     <MarketingAssistantClient
@@ -95,7 +102,7 @@ export default async function MarketingAssistantPage() {
       social={{
         weekOf,
         mode: socialMode,
-        recs: socialRecs as SocialRec[],
+        recs: socialRecs,
       }}
     />
   );
