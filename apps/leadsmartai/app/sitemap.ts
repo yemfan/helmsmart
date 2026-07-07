@@ -5,6 +5,7 @@ import { BLOG_POSTS } from "@/lib/blog/posts";
 import { SWITCH_SOURCES } from "@/lib/marketing/switch-from";
 import { listResearchReportsForSitemap } from "@/lib/research/db";
 import { listMarketSitemapEntries } from "@/lib/research/warehouse/read";
+import { listRecentDigests } from "@/lib/newsletter/db";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
@@ -31,6 +32,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/contact",
     // Data Center hub — original, cited market-intelligence reports (agent lens).
     "/data",
+    // Weekly Regional Newsletter hub — consumer rates + housing briefing.
+    "/newsletter",
     // Note: /agent and /broker are role portals (robots: noindex) — excluded.
     // /demo/* sandbox pages are explicitly `robots: { index: false }`
     // — keep them out of the sitemap so they don't drain crawl budget.
@@ -97,6 +100,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/free-tools",
     "/try-demo",
     "/data",
+    "/newsletter",
   ]);
 
   const staticEntries = [
@@ -151,6 +155,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  return [...staticEntries, ...reportEntries, ...marketEntries];
+  // Weekly Regional Newsletter — one entry per published national issue
+  // (/newsletter/national/<week>). Guarded exactly like the report/market
+  // entries so a missing table/env can never crash the sitemap.
+  let newsletterEntries: MetadataRoute.Sitemap = [];
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+    try {
+      const digests = await listRecentDigests(52);
+      newsletterEntries = digests.map((d) => ({
+        url: `${base}/newsletter/national/${d.week_of}`,
+        lastModified: d.created_at ? new Date(d.created_at) : now,
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }));
+    } catch {
+      newsletterEntries = [];
+    }
+  }
+
+  return [
+    ...staticEntries,
+    ...reportEntries,
+    ...marketEntries,
+    ...newsletterEntries,
+  ];
 }
 
