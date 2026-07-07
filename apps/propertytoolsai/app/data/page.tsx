@@ -124,15 +124,20 @@ export default async function DataCenterPage() {
         </section>
 
         <section
-          aria-label="Coming soon"
+          aria-label="Explore local market data"
           className="rounded-2xl border border-slate-200 bg-white/60 p-6"
         >
-          <h2 className="text-lg font-bold text-slate-900">Market data by metro — coming soon</h2>
+          <h2 className="text-lg font-bold text-slate-900">Explore local market data</h2>
           <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            We&apos;re building an interactive market-data explorer with prices, inventory, and
-            days-on-market broken down by metro area. For now, our published reports cover national
-            trends and notable metro movers.
+            Browse real home values, sale prices, inventory, and days on market for all 50 states
+            and the top U.S. metro areas — refreshed monthly from authoritative public data.
           </p>
+          <Link
+            href="/data/markets"
+            className="mt-4 inline-flex items-center gap-1 rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-800"
+          >
+            Explore market data by state &amp; metro →
+          </Link>
         </section>
       </div>
     </div>
