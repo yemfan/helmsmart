@@ -11,6 +11,7 @@ import {
 import {
   CATEGORY_LABEL,
   coerceCategory,
+  coerceKeyPoint,
   coerceState,
   type DigestItem,
 } from "@/lib/newsletter/generateDigest";
@@ -90,12 +91,17 @@ export default async function NewsletterIssuePage({ params }: Props) {
   const regionState = reg.stateCode; // null for national
   const items = rawItems
     .map((it) => {
-      const state = coerceState((it as Partial<DigestItem>).state);
+      const p = it as Partial<DigestItem>;
+      const state = coerceState(p.state);
+      const rawImg = typeof p.image_url === "string" ? p.image_url.trim() : "";
       return {
         ...it,
-        category: coerceCategory((it as Partial<DigestItem>).category),
+        category: coerceCategory(p.category),
         state,
         scope: state ? ("state" as const) : ("national" as const),
+        // Defensive for legacy digests: derive key_point if absent, drop bad img.
+        key_point: coerceKeyPoint(p.key_point, p.why_it_matters, p.summary),
+        image_url: /^https?:\/\//i.test(rawImg) ? rawImg : null,
       };
     })
     .map((it, idx) => {
@@ -203,56 +209,75 @@ export default async function NewsletterIssuePage({ params }: Props) {
         </section>
 
         {/* This-week-in-housing radar items */}
-        <section aria-label="This week in housing" className="space-y-4">
+        <section aria-label="This week in housing" className="space-y-6">
           <h2 className="text-2xl font-bold text-slate-900">This week in housing</h2>
-          <div className="space-y-4">
+          <div className="divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm ring-1 ring-slate-900/[0.03]">
             {items.map((it, i) => {
               const otherState =
                 it.scope === "state" &&
                 (regionState === null || it.state !== regionState);
               return (
-              <article
-                key={i}
-                className={`rounded-2xl border border-slate-200 bg-white p-6 shadow-sm ring-1 ring-slate-900/[0.03] ${
-                  otherState ? "opacity-70" : ""
-                }`}
-              >
-                <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center rounded-full bg-[#0072ce]/10 px-2.5 py-0.5 text-xs font-semibold text-[#0072ce]">
-                    {CATEGORY_LABEL[it.category]}
-                  </span>
-                  {it.state && (
-                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">
-                      {it.state}
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-lg font-semibold leading-snug text-slate-900">
-                  {it.headline}
-                </h3>
-                {it.summary && (
-                  <p className="mt-2 text-sm leading-relaxed text-slate-700">{it.summary}</p>
-                )}
-                {it.why_it_matters && (
-                  <p className="mt-3 rounded-lg bg-[#0072ce]/5 px-4 py-3 text-sm leading-relaxed text-slate-700">
-                    <span className="font-semibold text-[#0072ce]">What it means for you: </span>
-                    {it.why_it_matters}
-                  </p>
-                )}
-                {it.source_url && (
-                  <p className="mt-3 text-xs text-slate-500">
-                    Source:{" "}
-                    <a
-                      href={it.source_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-medium text-[#0072ce] hover:underline"
-                    >
-                      {it.publisher || it.source_url}
-                    </a>
-                  </p>
-                )}
-              </article>
+                <article
+                  key={i}
+                  className={`p-6 sm:p-7 ${otherState ? "opacity-70" : ""}`}
+                >
+                  <div className="flex flex-col gap-5 sm:flex-row">
+                    {it.image_url && (
+                      <div className="sm:w-44 sm:flex-none">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={it.image_url}
+                          alt=""
+                          loading="lazy"
+                          className="h-40 w-full rounded-xl object-cover ring-1 ring-slate-900/5 sm:h-28"
+                        />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center rounded-full bg-[#0072ce]/10 px-2.5 py-0.5 text-xs font-semibold text-[#0072ce]">
+                          {CATEGORY_LABEL[it.category]}
+                        </span>
+                        {it.state && (
+                          <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">
+                            {it.state}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-lg font-bold leading-snug text-slate-900">
+                        {it.headline}
+                      </h3>
+                      {it.key_point && (
+                        <p className="mt-2 flex gap-2 text-[15px] font-semibold leading-snug text-slate-900">
+                          <span aria-hidden className="mt-[2px] text-[#0072ce]">
+                            &bull;
+                          </span>
+                          <span>{it.key_point}</span>
+                        </p>
+                      )}
+                      {it.why_it_matters && (
+                        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                          <span className="font-semibold text-slate-700">
+                            What it means for you:{" "}
+                          </span>
+                          {it.why_it_matters}
+                        </p>
+                      )}
+                      {it.source_url && (
+                        <p className="mt-3 text-xs text-slate-500">
+                          <a
+                            href={it.source_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-[#0072ce] hover:underline"
+                          >
+                            Read source →{it.publisher ? ` ${it.publisher}` : ""}
+                          </a>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </article>
               );
             })}
           </div>

@@ -1,6 +1,7 @@
 import {
   CATEGORY_LABEL,
   coerceCategory,
+  coerceKeyPoint,
   coerceState,
   type DigestItem,
 } from "./generateDigest";
@@ -136,17 +137,26 @@ function normalizeAgent(agent: IssueEmailAgent | null | undefined): NormalizedAg
   return { name, brokerage, imageUrl };
 }
 
-type NormalizedItem = DigestItem & { scope: "national" | "state" };
+type NormalizedItem = DigestItem & {
+  scope: "national" | "state";
+  key_point: string;
+  image_url: string | null;
+};
 
 function orderItems(raw: DigestItem[], regionState: string | null): NormalizedItem[] {
   return raw
     .map((it) => {
-      const state = coerceState((it as Partial<DigestItem>).state);
+      const p = it as Partial<DigestItem>;
+      const state = coerceState(p.state);
+      const rawImg = typeof p.image_url === "string" ? p.image_url.trim() : "";
       return {
         ...it,
-        category: coerceCategory((it as Partial<DigestItem>).category),
+        category: coerceCategory(p.category),
         state,
         scope: state ? ("state" as const) : ("national" as const),
+        // Defensive for legacy digests: derive key_point, only keep an http image.
+        key_point: coerceKeyPoint(p.key_point, p.why_it_matters, p.summary),
+        image_url: /^https?:\/\//i.test(rawImg) ? rawImg : null,
       };
     })
     .map((it, idx) => {
@@ -197,6 +207,7 @@ function renderText(ctx: RenderCtx): string {
     lines.push("");
     const cat = CATEGORY_LABEL[it.category];
     lines.push(`[${cat}${it.state ? ` · ${it.state}` : ""}] ${it.headline}`);
+    if (it.key_point) lines.push(`• ${it.key_point}`);
     if (it.why_it_matters) lines.push(`What it means for you: ${it.why_it_matters}`);
     if (it.source_url) lines.push(`Read source: ${it.source_url}`);
   }
@@ -237,7 +248,7 @@ function renderHtml(ctx: RenderCtx): string {
   } = ctx;
 
   const itemsHtml = items
-    .map((it) => {
+    .map((it, idx) => {
       const cat = CATEGORY_LABEL[it.category];
       const badge = `<span style="display:inline-block;background:${BRAND_BLUE};color:#ffffff;font-size:11px;font-weight:600;padding:2px 8px;border-radius:9999px;">${escapeHtml(
         cat,
@@ -247,33 +258,44 @@ function renderHtml(ctx: RenderCtx): string {
             it.state,
           )}</span>`
         : "";
+      // Only emit <img> when a public URL exists — no broken-image placeholder.
+      const image = it.image_url
+        ? `<div style="margin:0 0 12px;"><img src="${escapeAttr(
+            it.image_url,
+          )}" alt="${escapeAttr(it.headline)}" width="536" style="display:block;width:100%;max-width:536px;height:auto;border-radius:10px;border:1px solid #e2e8f0;" /></div>`
+        : "";
+      // key_point = the bold lead bullet (the scannable "so what").
+      const keyPoint = it.key_point
+        ? `<div style="margin-top:8px;font-size:15px;font-weight:700;line-height:1.4;color:#0f172a;"><span style="color:${BRAND_BLUE};">&bull;</span> ${escapeHtml(
+            it.key_point,
+          )}</div>`
+        : "";
       const why = it.why_it_matters
-        ? `<div style="margin-top:8px;background:#f1f6fc;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.5;color:#334155;"><strong style="color:${BRAND_BLUE};">What it means for you: </strong>${escapeHtml(
+        ? `<div style="margin-top:8px;font-size:13px;line-height:1.5;color:#475569;"><strong style="color:#334155;">What it means for you: </strong>${escapeHtml(
             it.why_it_matters,
           )}</div>`
         : "";
-      const summary = it.summary
-        ? `<div style="margin-top:6px;font-size:13px;line-height:1.5;color:#475569;">${escapeHtml(
-            it.summary,
-          )}</div>`
-        : "";
       const source = it.source_url
-        ? `<div style="margin-top:8px;font-size:12px;"><a href="${escapeAttr(
+        ? `<div style="margin-top:10px;font-size:12px;"><a href="${escapeAttr(
             it.source_url,
-          )}" style="color:${BRAND_BLUE};text-decoration:underline;">Read source →${
+          )}" style="color:${BRAND_BLUE};text-decoration:underline;font-weight:600;">Read source →${
             it.publisher ? ` (${escapeHtml(it.publisher)})` : ""
           }</a></div>`
         : "";
-      return `<tr><td style="padding:0 0 18px;">
-        <div style="border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;background:#ffffff;">
+      // Divider between stories (skip before the first).
+      const dividerTop =
+        idx > 0
+          ? "border-top:1px solid #e2e8f0;padding-top:20px;"
+          : "";
+      return `<tr><td style="padding:0 0 20px;${dividerTop}">
+          ${image}
           <div style="margin-bottom:6px;">${badge}${stateBadge}</div>
-          <div style="font-size:16px;font-weight:700;line-height:1.35;color:#0f172a;">${escapeHtml(
+          <div style="font-size:17px;font-weight:800;line-height:1.3;color:#0f172a;">${escapeHtml(
             it.headline,
           )}</div>
-          ${summary}
+          ${keyPoint}
           ${why}
           ${source}
-        </div>
       </td></tr>`;
     })
     .join("");
