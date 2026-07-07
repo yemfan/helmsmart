@@ -83,6 +83,10 @@
     {
       "path": "/api/cron/research-monthly",
       "schedule": "0 12 1 * *"
+    },
+    {
+      "path": "/api/cron/warehouse-ingest",
+      "schedule": "0 9 3 * *"
     }
   ]
 }
