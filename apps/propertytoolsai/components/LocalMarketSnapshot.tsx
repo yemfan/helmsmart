@@ -10,9 +10,10 @@ import {
 } from "@/lib/research/warehouse/format";
 
 /**
- * Compact, REAL local-market snapshot for a `/tool/[toolSlug]/[locationSlug]`
- * page. Reads the latest warehouse metrics for the matched geography and renders
- * up to four headline stats + a prominent Data Center cross-link.
+ * Compact, REAL local-market snapshot shared by the programmatic
+ * `/tool/[toolSlug]/[locationSlug]` and `/guides/[topicSlug]/[locationSlug]`
+ * pages. Reads the latest warehouse metrics for the matched geography and
+ * renders up to four headline stats + a prominent Data Center cross-link.
  *
  * Server component. Reads go through the service-role warehouse client (no
  * cookies/headers) so this is ISR-safe. Renders `null` when there are no metrics

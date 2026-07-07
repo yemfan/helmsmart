@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import ProgressiveLeadCapture from "@/components/growth/ProgressiveLeadCapture";
 import { getRelatedTools, loadProgrammaticSeoPage } from "@/lib/programmaticSeo";
 import { matchLocationToGeo } from "@/lib/programmaticSeo/marketMatch";
-import LocalMarketSnapshot from "./_components/LocalMarketSnapshot";
+import LocalMarketSnapshot from "@/components/LocalMarketSnapshot";
 
 type Props = { params: Promise<{ toolSlug: string; locationSlug: string }> };
 
