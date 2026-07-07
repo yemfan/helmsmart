@@ -54,6 +54,8 @@ export type SocialData = {
   weekOf: string;
   mode: "ask" | "auto";
   recs: SocialRec[];
+  /** Human-facing labels of the agent's connected social platforms (e.g. ["Facebook"]). */
+  connectedPlatforms: string[];
 };
 
 export type ClientNewsletter = {
@@ -128,6 +130,7 @@ export default function MarketingAssistantClient({
         initialRecs={social.recs}
         initialMode={social.mode}
         weekOf={social.weekOf}
+        connectedPlatforms={social.connectedPlatforms}
       />
 
       {/* Your Client Newsletter — agent-branded weekly briefing signup link */}

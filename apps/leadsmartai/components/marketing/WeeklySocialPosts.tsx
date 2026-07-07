@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, Sparkles, Loader2, ThumbsUp, X, Eye, Download } from "lucide-react";
+import Link from "next/link";
+import { Copy, Check, Sparkles, Loader2, ThumbsUp, X, Eye, Download, Send, Link2 } from "lucide-react";
+
+/** Where the agent connects Facebook / LinkedIn accounts. */
+const CONNECT_HREF = "/dashboard/leads/generate/connect";
 
 /**
  * "This week's social posts" — the Marketing Assistant's weekly social queue.
@@ -24,7 +28,7 @@ export type SocialRec = {
   hashtags: string[];
   link: string | null;
   image_prompt: string | null;
-  status: "suggested" | "approved" | "dismissed" | "copied";
+  status: "suggested" | "approved" | "dismissed" | "copied" | "scheduled";
   /** Derived URL to the auto-branded post image (/api/social/card/[id]). */
   imageUrl?: string | null;
 };
@@ -38,10 +42,13 @@ export default function WeeklySocialPosts({
   initialRecs,
   initialMode,
   weekOf,
+  connectedPlatforms = [],
 }: {
   initialRecs: SocialRec[];
   initialMode: "ask" | "auto";
   weekOf: string;
+  /** Human-facing labels of the agent's connected platforms (e.g. ["Facebook"]). */
+  connectedPlatforms?: string[];
 }) {
   const [recs, setRecs] = useState<SocialRec[]>(initialRecs);
   const [mode, setMode] = useState<"ask" | "auto">(initialMode);
@@ -50,6 +57,39 @@ export default function WeeklySocialPosts({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [schedulingId, setSchedulingId] = useState<string | null>(null);
+
+  const hasConnection = connectedPlatforms.length > 0;
+  const platformsLabel = connectedPlatforms.join(" & ");
+
+  async function schedule(rec: SocialRec) {
+    setSchedulingId(rec.id);
+    setError(null);
+    try {
+      const res = await fetch(`/api/social/recommendation/${rec.id}/schedule`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const json = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        needsConnection?: boolean;
+        error?: string;
+      };
+      if (!res.ok || !json.ok) {
+        setError(json.error || "Could not schedule the post.");
+        return;
+      }
+      // Reflect scheduled status on the card.
+      setRecs((prev) =>
+        prev.map((r) => (r.id === rec.id ? { ...r, status: "scheduled" } : r)),
+      );
+    } catch {
+      setError("Could not schedule the post.");
+    } finally {
+      setSchedulingId(null);
+    }
+  }
 
   // Hide dismissed cards from the list.
   const visible = recs.filter((r) => r.status !== "dismissed");
@@ -132,9 +172,20 @@ export default function WeeklySocialPosts({
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold text-gray-900">This week&apos;s social posts</h2>
-          <p className="text-xs text-gray-500">
-            AI-drafted for you — copy to your socials. Nothing posts automatically.
-          </p>
+          {hasConnection ? (
+            <p className="text-xs text-gray-500">
+              AI-drafted for you — schedule to{" "}
+              <span className="font-medium text-gray-700">{platformsLabel}</span>, or copy to post yourself.
+            </p>
+          ) : (
+            <p className="text-xs text-gray-500">
+              No social account connected —{" "}
+              <Link href={CONNECT_HREF} className="font-medium text-[#0072ce] underline hover:no-underline">
+                connect to auto-post
+              </Link>
+              . For now you can copy each post.
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {/* Autopilot toggle */}
@@ -205,6 +256,12 @@ export default function WeeklySocialPosts({
                 {rec.status === "copied" && (
                   <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
                     Copied
+                  </span>
+                )}
+                {rec.status === "scheduled" && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-medium text-[#0072ce]">
+                    <Check className="h-3 w-3" />
+                    Scheduled
                   </span>
                 )}
               </div>
@@ -286,7 +343,37 @@ export default function WeeklySocialPosts({
                   {copiedId === rec.id ? "Copied" : "Copy"}
                 </button>
 
-                {rec.status !== "approved" && (
+                {/* Schedule to social — the glue to the real publish engine. */}
+                {!hasConnection ? (
+                  <Link
+                    href={CONNECT_HREF}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-[#0072ce]/30 bg-[#0072ce]/5 px-2.5 py-1 text-xs font-medium text-[#0072ce] hover:bg-[#0072ce]/10"
+                  >
+                    <Link2 className="h-3.5 w-3.5" />
+                    Connect an account
+                  </Link>
+                ) : rec.status === "scheduled" ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#0072ce]/20 bg-[#0072ce]/5 px-2.5 py-1 text-xs font-medium text-[#0072ce]">
+                    <Check className="h-3.5 w-3.5" />
+                    Scheduled
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => schedule(rec)}
+                    disabled={schedulingId === rec.id}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-[#0072ce] px-2.5 py-1 text-xs font-medium text-white shadow-sm hover:bg-[#005fab] disabled:opacity-60"
+                  >
+                    {schedulingId === rec.id ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Send className="h-3.5 w-3.5" />
+                    )}
+                    {schedulingId === rec.id ? "Scheduling…" : `Schedule to ${platformsLabel}`}
+                  </button>
+                )}
+
+                {rec.status !== "approved" && rec.status !== "scheduled" && (
                   <button
                     type="button"
                     onClick={() => setStatus(rec.id, "approved")}
