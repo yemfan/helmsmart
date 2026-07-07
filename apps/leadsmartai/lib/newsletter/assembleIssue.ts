@@ -3,6 +3,7 @@ import "server-only";
 import {
   getGeographyBySlug,
   getLatestMetrics,
+  listActiveGeographies,
   type ActiveGeography,
 } from "@/lib/research/warehouse/read";
 import { geoSlug, stateSlug } from "@/lib/research/warehouse/slug";
@@ -169,6 +170,34 @@ export async function resolveRegion(
     dataHref: dataHrefFor(level, geo),
     stats,
   };
+}
+
+/**
+ * Resolve a subscription's stored (region_level, region_code) to the URL slug
+ * that assembleIssue/resolveRegion expect. Subscriptions store the raw code
+ * ('US' | a 2-letter state code | a Zillow metro RegionID), NOT a slug — this
+ * bridges the two. Returns 'national' for the national level, the state slug for
+ * a state, and (for a metro) the computed geoSlug after looking the metro up by
+ * geo_code. Returns null when a metro code can't be matched to an active geo.
+ */
+export async function regionSlugForSubscription(
+  regionLevel: string,
+  regionCode: string,
+): Promise<string | null> {
+  const level = regionLevel.trim().toLowerCase();
+  const code = regionCode.trim();
+
+  if (level === "national") return "national";
+  if (level === "state") {
+    const slug = stateSlug(code);
+    return slug || null;
+  }
+  if (level === "metro") {
+    const metros = await listActiveGeographies("metro");
+    const geo = metros.find((g) => g.geo_code === code);
+    return geo ? geoSlug(geo) : null;
+  }
+  return null;
 }
 
 /**
