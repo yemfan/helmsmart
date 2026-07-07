@@ -15,9 +15,15 @@ type Status = "idle" | "submitting" | "done" | "error";
 export default function SubscribeForm({
   regions,
   defaultSlug = "national",
+  agentToken,
+  agentName,
 }: {
   regions: RegionOption[];
   defaultSlug?: string;
+  /** Phase 3: when set, subscribers are attributed to this agent (agent_id). */
+  agentToken?: string;
+  /** Agent display name for the agent-branded success copy. */
+  agentName?: string;
 }) {
   const [email, setEmail] = useState("");
   const [slug, setSlug] = useState(defaultSlug);
@@ -50,13 +56,16 @@ export default function SubscribeForm({
           regionLevel: region.level,
           regionCode: region.code,
           regionName: region.name,
+          ...(agentToken ? { agentToken } : {}),
         }),
       });
       const data = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
         error?: string;
+        message?: string;
       };
       if (res.ok && data.ok) {
+        if (data.message) setMessage(data.message);
         setStatus("done");
       } else {
         setStatus("error");
@@ -72,11 +81,12 @@ export default function SubscribeForm({
     return (
       <div className="rounded-2xl border border-[#0072ce]/30 bg-[#0072ce]/5 p-6 text-center">
         <p className="text-lg font-semibold text-slate-900">
-          You&apos;re subscribed — first issue coming soon.
+          {message || "Check your email to confirm your subscription."}
         </p>
         <p className="mt-2 text-sm text-slate-600">
-          We&apos;ll send your weekly rates + housing briefing for the region you
-          picked. In the meantime, browse the latest issues below.
+          {agentName
+            ? `Once you confirm, ${agentName} will send you a weekly rates + housing briefing for the region you picked.`
+            : "We'll send your weekly rates + housing briefing for the region you picked. In the meantime, browse the latest issues below."}
         </p>
       </div>
     );

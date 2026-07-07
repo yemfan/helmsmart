@@ -9,6 +9,8 @@ import {
 } from "@/lib/social/recommend";
 import MarketingAssistantClient, { type MarketingData } from "./MarketingAssistantClient";
 import type { SocialRec } from "@/components/marketing/WeeklySocialPosts";
+import { getSiteUrl } from "@/lib/siteUrl";
+import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 
 export const metadata: Metadata = {
   title: "Marketing Assistant",
@@ -96,6 +98,10 @@ export default async function MarketingAssistantPage() {
     imageUrl: r.image_url ?? recommendationImageUrl(r.id),
   })) as SocialRec[];
 
+  // "Your Client Newsletter" card (Phase 3): the agent's shareable signup link
+  // + their confirmed-subscriber count. Best-effort — never break the page.
+  const newsletter = await loadClientNewsletter(agentId);
+
   return (
     <MarketingAssistantClient
       data={data}
@@ -104,6 +110,48 @@ export default async function MarketingAssistantPage() {
         mode: socialMode,
         recs: socialRecs,
       }}
+      newsletter={newsletter}
     />
   );
+}
+
+export type ClientNewsletterData = {
+  shareUrl: string;
+  subscriberCount: number;
+  agentName: string | null;
+} | null;
+
+async function loadClientNewsletter(
+  agentId: string | number,
+): Promise<ClientNewsletterData> {
+  try {
+    const [tokenRow, countRes, agent] = await Promise.all([
+      supabaseAdmin
+        .from("agents")
+        .select("newsletter_token")
+        .eq("id", agentId as never)
+        .maybeSingle(),
+      supabaseAdmin
+        .from("newsletter_subscriptions")
+        .select("id", { count: "exact", head: true })
+        .eq("agent_id", agentId as never)
+        .eq("status", "subscribed")
+        .not("confirmed_at", "is", null),
+      loadPresentationAgent(agentId).catch(() => null),
+    ]);
+
+    const token = (tokenRow.data as { newsletter_token: string | null } | null)
+      ?.newsletter_token;
+    if (!token) return null;
+
+    const base = getSiteUrl().replace(/\/$/, "");
+    return {
+      shareUrl: `${base}/newsletter/a/${token}`,
+      subscriberCount: countRes.count ?? 0,
+      agentName: agent?.name?.trim() || null,
+    };
+  } catch (e) {
+    console.warn("[marketing] client newsletter load failed", e);
+    return null;
+  }
 }

@@ -7,6 +7,7 @@ import { getAssistant } from "@/lib/realtyboss/team";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
 import { AssistantCallSettings } from "@/components/realtyboss/AssistantCallSettings";
 import WeeklySocialPosts, { type SocialRec } from "@/components/marketing/WeeklySocialPosts";
+import ClientNewsletterCard from "@/components/marketing/ClientNewsletterCard";
 
 /**
  * Marketing Assistant overview — demand generation. Took over from
@@ -55,12 +56,20 @@ export type SocialData = {
   recs: SocialRec[];
 };
 
+export type ClientNewsletter = {
+  shareUrl: string;
+  subscriberCount: number;
+  agentName: string | null;
+} | null;
+
 export default function MarketingAssistantClient({
   data,
   social,
+  newsletter,
 }: {
   data: MarketingData;
   social: SocialData;
+  newsletter?: ClientNewsletter;
 }) {
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   return (
@@ -120,6 +129,15 @@ export default function MarketingAssistantClient({
         initialMode={social.mode}
         weekOf={social.weekOf}
       />
+
+      {/* Your Client Newsletter — agent-branded weekly briefing signup link */}
+      {newsletter && (
+        <ClientNewsletterCard
+          shareUrl={newsletter.shareUrl}
+          subscriberCount={newsletter.subscriberCount}
+          agentName={newsletter.agentName}
+        />
+      )}
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Publishing calendar */}

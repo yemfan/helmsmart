@@ -20,6 +20,37 @@ export function newsletterFrom(): string {
 }
 
 /**
+ * FROM line for an AGENT-BRANDED send (Phase 3). Display-name only change —
+ * the mailbox stays on the Resend-verified realtybossai.com domain (the only
+ * DKIM/SPF-verified sender), so deliverability is unchanged. Client replies are
+ * routed to the agent via a separate reply_to (set by the caller), not the from
+ * address. The agent's name is sanitized to keep the RFC 5322 display name
+ * legal (strip characters that would need quoting/escaping).
+ *
+ * Example: `Jane Smith via RealtyBoss <newsletter@realtybossai.com>`.
+ */
+export function agentNewsletterFrom(agentName: string | null | undefined): string {
+  const base = newsletterFrom();
+  const name = typeof agentName === "string" ? agentName.trim() : "";
+  if (!name) return base;
+
+  // Pull the mailbox out of the base FROM ("<addr>" or a bare address).
+  const m = base.match(/<([^>]+)>/);
+  const mailbox = m ? m[1] : base.trim();
+
+  // Sanitize the display name: collapse whitespace, drop quotes/angle brackets
+  // and other specials so the header stays valid without quoting.
+  const safeName = name
+    .replace(/[<>"@,;:\\]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 60);
+  if (!safeName) return base;
+
+  return `${safeName} via RealtyBoss <${mailbox}>`;
+}
+
+/**
  * Physical postal address for the CAN-SPAM footer (required on commercial
  * email). Set NEWSLETTER_MAILING_ADDRESS in prod. Falls back to a CLEARLY
  * placeholder string so an unset value is obvious in a test send rather than

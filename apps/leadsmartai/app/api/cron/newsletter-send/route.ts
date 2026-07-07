@@ -9,12 +9,17 @@ import {
   getDigestForWeek,
   regionSlugForSubscription,
 } from "@/lib/newsletter/assembleIssue";
-import { renderIssueEmail } from "@/lib/newsletter/emailTemplate";
+import {
+  renderIssueEmail,
+  type IssueEmailAgent,
+} from "@/lib/newsletter/emailTemplate";
 import {
   newsletterFrom,
+  agentNewsletterFrom,
   newsletterMailingAddress,
   newsletterUnsubscribeMailto,
 } from "@/lib/newsletter/sendConfig";
+import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -51,7 +56,16 @@ type SendableSub = {
   region_name: string | null;
   unsubscribe_token: string;
   last_sent_week: string | null;
+  /** Phase 3: null = public RealtyBoss sub; bigint = agent-branded sub. */
+  agent_id: number | string | null;
 };
+
+/** Per-send agent branding + reply-to, or null when the agent has no name. */
+type AgentBrand = {
+  agent: IssueEmailAgent;
+  from: string;
+  replyTo: string | undefined;
+} | null;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
@@ -90,13 +104,13 @@ export async function GET(req: Request) {
     }
     const weekOf = digest.week_of;
 
-    // Confirmed, subscribed, PUBLIC subs not yet sent this week.
+    // Confirmed, subscribed subs — BOTH public (agent_id NULL) and agent-branded
+    // (agent_id set) — not yet sent this week (Phase 3).
     let query = supabaseServer
       .from("newsletter_subscriptions")
       .select(
-        "id, email, region_level, region_code, region_name, unsubscribe_token, last_sent_week",
+        "id, email, region_level, region_code, region_name, unsubscribe_token, last_sent_week, agent_id",
       )
-      .is("agent_id", null)
       .eq("status", "subscribed")
       .not("confirmed_at", "is", null)
       .or(`last_sent_week.is.null,last_sent_week.neq.${weekOf}`)
@@ -118,6 +132,38 @@ export async function GET(req: Request) {
     const fromAddr = newsletterFrom();
     const mailingAddress = newsletterMailingAddress();
     const unsubMailto = newsletterUnsubscribeMailto();
+
+    // Load each agent's branding ONCE per run (many subs can share one agent).
+    // A resolved-to-null entry (missing/nameless agent) is cached too, so a
+    // second sub for the same agent falls back to public branding without a
+    // repeat DB round-trip.
+    const brandCache = new Map<number, AgentBrand>();
+    async function brandFor(agentId: number): Promise<AgentBrand> {
+      const cached = brandCache.get(agentId);
+      if (cached !== undefined) return cached;
+      let brand: AgentBrand = null;
+      try {
+        const a = await loadPresentationAgent(agentId);
+        if (a.name?.trim()) {
+          brand = {
+            agent: {
+              name: a.name,
+              brokerage: a.brokerage,
+              email: a.email,
+              phone: a.phone,
+              photoUrl: a.photoUrl,
+              logoUrl: a.logoUrl,
+            },
+            from: agentNewsletterFrom(a.name),
+            replyTo: a.email?.trim() || undefined,
+          };
+        }
+      } catch (e) {
+        console.warn("[newsletter-send] agent branding load failed", { agentId, e });
+      }
+      brandCache.set(agentId, brand);
+      return brand;
+    }
 
     let sent = 0;
     let failed = 0;
@@ -146,6 +192,17 @@ export async function GET(req: Request) {
               sub.unsubscribe_token,
             )}`;
 
+            // Agent-branded when agent_id is set AND the agent resolves to a
+            // usable identity; else the public RealtyBoss send (unchanged).
+            let brand: AgentBrand = null;
+            if (sub.agent_id !== null && sub.agent_id !== undefined) {
+              const aid =
+                typeof sub.agent_id === "number"
+                  ? sub.agent_id
+                  : Number(sub.agent_id);
+              if (Number.isFinite(aid)) brand = await brandFor(aid);
+            }
+
             const rendered = renderIssueEmail({
               issue,
               subscription: {
@@ -156,11 +213,13 @@ export async function GET(req: Request) {
               unsubscribeUrl,
               mailingAddress,
               siteUrl,
+              agent: brand?.agent ?? null,
             });
 
             await sendEmail({
               to: sub.email,
-              from: fromAddr,
+              from: brand?.from ?? fromAddr,
+              replyTo: brand?.replyTo,
               subject: rendered.subject,
               text: rendered.text,
               html: rendered.html,
