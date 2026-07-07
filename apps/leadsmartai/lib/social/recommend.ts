@@ -3,6 +3,10 @@ import "server-only";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { getSiteUrl } from "@/lib/siteUrl";
 import { getLatestDigest } from "@/lib/newsletter/db";
+import {
+  DEFAULT_DIGEST_CATEGORY,
+  type DigestItem,
+} from "@/lib/newsletter/generateDigest";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import { renderCardPng } from "@/lib/social/renderCard";
 
@@ -348,6 +352,52 @@ export async function runWeeklyRecommendationsForOptedInAgents(
 
 // ── composition ───────────────────────────────────────────────────────────────
 
+/**
+ * Deterministically rotate the timely pick across the digest's categories so
+ * social isn't always mortgage rates. Picks a category by (week-derived index)
+ * % (distinct categories present), then the strongest item in that category
+ * (one with a real why_it_matters wins), and falls back to items[0] if the
+ * digest has no category tags (legacy) or nothing qualifies.
+ */
+function pickTimelyItem(items: DigestItem[], weekOf: string): DigestItem | null {
+  const usable = items.filter((it) => it && it.headline);
+  if (usable.length === 0) return null;
+
+  // Distinct categories present, in first-seen order (stable + deterministic).
+  const cats: string[] = [];
+  for (const it of usable) {
+    const c = it.category ?? DEFAULT_DIGEST_CATEGORY;
+    if (!cats.includes(c)) cats.push(c);
+  }
+  if (cats.length === 0) return usable[0];
+
+  // Week-derived rotation index: sum of the date digits keeps it cheap + stable.
+  const seed = weekOf.replace(/\D/g, "").split("").reduce((a, d) => a + Number(d), 0);
+  const chosenCat = cats[seed % cats.length];
+
+  const inCat = usable.filter(
+    (it) => (it.category ?? DEFAULT_DIGEST_CATEGORY) === chosenCat,
+  );
+  const pool = inCat.length > 0 ? inCat : usable;
+  // Prefer an item with a substantive why_it_matters; else first in the pool.
+  return pool.find((it) => (it.why_it_matters ?? "").trim().length > 0) ?? pool[0];
+}
+
+/** Category-aware hashtags so a non-rates timely pick isn't tagged #mortgagerates. */
+function hashtagsForCategory(category?: string | null): string[] {
+  const base = ["#realestate", "#housingmarket"];
+  const byCat: Record<string, string[]> = {
+    economy_rates: ["#mortgagerates", "#homebuyers"],
+    legislation_policy: ["#housingpolicy", "#realestatenews"],
+    programs_financing: ["#firsttimehomebuyer", "#homefinancing"],
+    schools_education: ["#schooldistricts", "#familyhomes"],
+    local_economy: ["#localmarket", "#relocation"],
+    market_trends: ["#markettrends", "#homebuyers"],
+    seasonal_other: ["#homeownership", "#realestatetips"],
+  };
+  return [...base, ...(byCat[category ?? "market_trends"] ?? byCat.market_trends)];
+}
+
 async function buildTimelyRow(
   agentId: string,
   weekOf: string,
@@ -356,7 +406,7 @@ async function buildTimelyRow(
   const digest = await getLatestDigest();
   if (!digest || !Array.isArray(digest.items) || digest.items.length === 0) return null;
 
-  const top = digest.items[0];
+  const top = pickTimelyItem(digest.items, weekOf);
   if (!top || !top.headline) return null;
 
   // Consumer-voice caption composed ONLY from the digest's already-cited copy —
@@ -367,7 +417,7 @@ async function buildTimelyRow(
   const caption = [top.headline.trim(), why].filter(Boolean).join("\n\n");
 
   const link = `${getSiteUrl()}/newsletter/national/${digest.week_of}`;
-  const hashtags = ["#housingmarket", "#mortgagerates", "#realestate", "#homebuyers"];
+  const hashtags = hashtagsForCategory(top.category);
 
   return {
     agent_id: agentId,
