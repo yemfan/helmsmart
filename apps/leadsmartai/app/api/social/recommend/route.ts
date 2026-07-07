@@ -5,6 +5,7 @@ import {
   currentWeekOf,
   generateWeeklyRecommendations,
   listRecommendations,
+  recommendationImageUrl,
 } from "@/lib/social/recommend";
 
 export const runtime = "nodejs";
@@ -24,7 +25,13 @@ export async function POST() {
     const { agentId } = await getCurrentAgentContext();
     const weekOf = currentWeekOf();
     const { count } = await generateWeeklyRecommendations(String(agentId), weekOf);
-    const recommendations = await listRecommendations(String(agentId), weekOf);
+    const rows = await listRecommendations(String(agentId), weekOf);
+    // Attach the branded-image URL for the UI (thumbnail + preview modal): the
+    // stored asset first, on-the-fly /api/social/card/[id] as a fallback.
+    const recommendations = rows.map((r) => ({
+      ...r,
+      imageUrl: r.image_url ?? recommendationImageUrl(r.id),
+    }));
     return NextResponse.json({ ok: true, count, weekOf, recommendations });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Server error";

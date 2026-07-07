@@ -3,6 +3,8 @@ import "server-only";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { getSiteUrl } from "@/lib/siteUrl";
 import { getLatestDigest } from "@/lib/newsletter/db";
+import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
+import { renderCardPng } from "@/lib/social/renderCard";
 
 /**
  * Weekly Marketing Assistant social recommender (Phase 1).
@@ -50,12 +52,46 @@ export type SocialRecommendation = {
   hashtags: string[];
   link: string | null;
   image_prompt: string | null;
+  /** Stored branded-card (or custom) image URL in the social-images bucket.
+   *  NULL falls back to the on-the-fly /api/social/card/[id] route. */
+  image_url: string | null;
   status: "suggested" | "approved" | "dismissed" | "copied";
   created_at: string;
 };
 
 const REC_SELECT =
-  "id, agent_id, week_of, source_type, library_id, timely_ref, caption, hashtags, link, image_prompt, status, created_at";
+  "id, agent_id, week_of, source_type, library_id, timely_ref, caption, hashtags, link, image_prompt, image_url, status, created_at";
+
+/**
+ * Service-role read of ONE recommendation by id, with the evergreen library
+ * row's category joined in (used to label the branded tip card). No agent
+ * scope: this powers the PUBLIC branded-image route (/api/social/card/[id]),
+ * whose image the agent shares with anyone — same share-by-link posture as the
+ * public market-report / CMA pages. Returns null when the row is missing.
+ */
+export async function getRecommendationForCard(
+  recId: string,
+): Promise<(SocialRecommendation & { libraryCategory: string | null }) | null> {
+  const { data, error } = await supabaseServer
+    .from("social_post_recommendations")
+    .select(REC_SELECT)
+    .eq("id", recId)
+    .maybeSingle();
+  if (error || !data) return null;
+  const rec = normalizeRec(data as SocialRecommendation);
+
+  let libraryCategory: string | null = null;
+  if (rec.source_type === "evergreen" && rec.library_id) {
+    const { data: lib } = await supabaseServer
+      .from("social_content_library")
+      .select("category")
+      .eq("id", rec.library_id)
+      .maybeSingle();
+    const cat = (lib as { category?: string } | null)?.category;
+    libraryCategory = typeof cat === "string" && cat.trim() ? cat.trim() : null;
+  }
+  return { ...rec, libraryCategory };
+}
 
 type LibraryRow = {
   id: string;
@@ -169,7 +205,7 @@ export async function generateWeeklyRecommendations(
   const { data, error } = await supabaseServer
     .from("social_post_recommendations")
     .insert(rows)
-    .select("id");
+    .select("id, source_type, caption, library_id");
   if (error) {
     console.warn(
       `[social] insert recommendations failed for agent ${agentId}:`,
@@ -177,7 +213,93 @@ export async function generateWeeklyRecommendations(
     );
     return { count: 0 };
   }
-  return { count: Array.isArray(data) ? data.length : 0 };
+
+  const inserted = (Array.isArray(data) ? data : []) as InsertedRec[];
+
+  // Render each card's branded image ONCE and store it, so preview/post uses a
+  // stable asset URL (and is the foundation for "swap in your own photo/video").
+  // Best-effort: a single failure logs + leaves image_url null (UI falls back to
+  // the on-the-fly /api/social/card/[id] route) and never aborts the run.
+  // Runs for BOTH the weekly cron and the on-demand /api/social/recommend click.
+  await persistCardImages(agentId, inserted);
+
+  return { count: inserted.length };
+}
+
+type InsertedRec = {
+  id: string;
+  source_type: "evergreen" | "timely";
+  caption: string;
+  library_id: string | null;
+};
+
+/**
+ * Render + upload each inserted rec's branded card to the social-images bucket,
+ * then save the public URL on the row. Best-effort per rec (try/catch each).
+ */
+async function persistCardImages(
+  agentId: string,
+  recs: InsertedRec[],
+): Promise<void> {
+  if (recs.length === 0) return;
+
+  // Branding once for the whole batch.
+  const agent = await loadPresentationAgent(agentId).catch(() => null);
+
+  // Resolve library categories for the evergreen cards (the "… TIP" eyebrow).
+  const libIds = Array.from(
+    new Set(
+      recs
+        .filter((r) => r.source_type === "evergreen" && r.library_id)
+        .map((r) => r.library_id as string),
+    ),
+  );
+  const categoryById = new Map<string, string | null>();
+  if (libIds.length > 0) {
+    const { data: libs } = await supabaseServer
+      .from("social_content_library")
+      .select("id, category")
+      .in("id", libIds);
+    for (const row of (libs ?? []) as { id: string; category: string | null }[]) {
+      const cat = typeof row.category === "string" && row.category.trim() ? row.category.trim() : null;
+      categoryById.set(String(row.id), cat);
+    }
+  }
+
+  for (const rec of recs) {
+    try {
+      const categoryLabel =
+        rec.source_type === "evergreen" && rec.library_id
+          ? categoryById.get(rec.library_id) ?? null
+          : null;
+
+      const png = await renderCardPng(
+        { source_type: rec.source_type, caption: rec.caption },
+        agent,
+        categoryLabel,
+      );
+
+      const path = `${agentId}/${rec.id}.png`;
+      const { error: upErr } = await supabaseServer.storage
+        .from("social-images")
+        .upload(path, png, { contentType: "image/png", upsert: true });
+      if (upErr) throw upErr;
+
+      const url = supabaseServer.storage.from("social-images").getPublicUrl(path).data.publicUrl;
+
+      const { error: updErr } = await supabaseServer
+        .from("social_post_recommendations")
+        .update({ image_url: url, image_source: "branded_card" })
+        .eq("id", rec.id);
+      if (updErr) throw updErr;
+    } catch (e) {
+      // Non-fatal: leave image_url null; the UI falls back to the on-the-fly route.
+      console.warn(
+        `[social] card image persist failed for rec ${rec.id} (agent ${agentId}):`,
+        e instanceof Error ? e.message : e,
+      );
+    }
+  }
 }
 
 /**
@@ -322,10 +444,20 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+/**
+ * FALLBACK share-safe URL for the auto-branded post image of a recommendation:
+ * the on-the-fly /api/social/card/[id] route. Prefer the stored row.image_url
+ * (rendered + uploaded at generation time); use this only when it's null.
+ */
+export function recommendationImageUrl(recId: string): string {
+  return `${getSiteUrl()}/api/social/card/${recId}`;
+}
+
 function normalizeRec(row: SocialRecommendation): SocialRecommendation {
   return {
     ...row,
     agent_id: String(row.agent_id),
     hashtags: Array.isArray(row.hashtags) ? row.hashtags : [],
+    image_url: typeof row.image_url === "string" && row.image_url.trim() ? row.image_url : null,
   };
 }
