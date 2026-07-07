@@ -8,7 +8,9 @@ import {
   type DigestItem,
 } from "@/lib/newsletter/generateDigest";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
-import { renderCardPng } from "@/lib/social/renderCard";
+import { renderCardPng, type BrandKit } from "@/lib/social/renderCard";
+import { agentHasSocialCustomization } from "@/lib/social/customization";
+import { getAgentAiSettings } from "@/lib/agent-ai/settings";
 
 /**
  * Weekly Marketing Assistant social recommender (Phase 1).
@@ -59,6 +61,8 @@ export type SocialRecommendation = {
   /** Stored branded-card (or custom) image URL in the social-images bucket.
    *  NULL falls back to the on-the-fly /api/social/card/[id] route. */
   image_url: string | null;
+  /** How image_url was produced: 'branded_card' | 'custom' | 'stock' | 'ai'. */
+  image_source: string | null;
   status: "suggested" | "approved" | "dismissed" | "copied" | "scheduled";
   created_at: string;
 };
@@ -80,7 +84,7 @@ export type ScheduleResult = {
 };
 
 const REC_SELECT =
-  "id, agent_id, week_of, source_type, library_id, timely_ref, caption, hashtags, link, image_prompt, image_url, status, created_at";
+  "id, agent_id, week_of, source_type, library_id, timely_ref, caption, hashtags, link, image_prompt, image_url, image_source, status, created_at";
 
 /**
  * Service-role read of ONE recommendation by id, with the evergreen library
@@ -416,6 +420,24 @@ async function persistCardImages(
   // Branding once for the whole batch.
   const agent = await loadPresentationAgent(agentId).catch(() => null);
 
+  // Signature brand kit (best-effort): brand_color from AI settings + the
+  // agent's logo. Only applied when the plan unlocks social_customization; a
+  // failure loading either leaves brandKit undefined → the default blue card.
+  let brandKit: BrandKit | undefined;
+  try {
+    if (await agentHasSocialCustomization(agentId)) {
+      const settings = await getAgentAiSettings(agentId).catch(() => null);
+      const color = settings?.brandColor ?? null;
+      const logoUrl = agent?.logoUrl ?? null;
+      if (color || logoUrl) brandKit = { color, logoUrl };
+    }
+  } catch (e) {
+    console.warn(
+      `[social] brand-kit load failed for agent ${agentId} (using default card):`,
+      e instanceof Error ? e.message : e,
+    );
+  }
+
   // Resolve library categories for the evergreen cards (the "… TIP" eyebrow).
   const libIds = Array.from(
     new Set(
@@ -438,6 +460,17 @@ async function persistCardImages(
 
   for (const rec of recs) {
     try {
+      // Never overwrite a rec the agent gave their own image (image_source
+      // 'custom'). Fresh inserts are always 'branded_card', but guard anyway so
+      // this function is safe to call on any rec set.
+      const { data: srcRow } = await supabaseServer
+        .from("social_post_recommendations")
+        .select("image_source")
+        .eq("id", rec.id)
+        .maybeSingle();
+      const imageSource = (srcRow as { image_source?: string } | null)?.image_source;
+      if (imageSource === "custom") continue;
+
       const categoryLabel =
         rec.source_type === "evergreen" && rec.library_id
           ? categoryById.get(rec.library_id) ?? null
@@ -447,6 +480,7 @@ async function persistCardImages(
         { source_type: rec.source_type, caption: rec.caption },
         agent,
         categoryLabel,
+        brandKit,
       );
 
       const path = `${agentId}/${rec.id}.png`;

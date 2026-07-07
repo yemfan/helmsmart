@@ -6,6 +6,7 @@ import {
   type UpsertAgentAiSettingsInput,
 } from "@/lib/agent-ai/settings";
 import type { AgentAiDefaultLanguage, AiPersonality } from "@/lib/agent-ai/types";
+import { agentHasSocialCustomization } from "@/lib/social/customization";
 
 export const runtime = "nodejs";
 
@@ -20,6 +21,18 @@ function parsePersonality(v: unknown): AiPersonality | undefined {
 function parseLanguage(v: unknown): AgentAiDefaultLanguage | undefined {
   if (typeof v !== "string") return undefined;
   return LANGUAGES.includes(v as AgentAiDefaultLanguage) ? (v as AgentAiDefaultLanguage) : undefined;
+}
+
+/** #RGB or #RRGGBB, normalized to lowercase 6-digit. Returns null for empty/invalid. */
+function parseBrandColor(v: unknown): string | null | undefined {
+  if (v === null || v === "") return null;
+  if (typeof v !== "string") return undefined;
+  const raw = v.trim();
+  const m = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.exec(raw);
+  if (!m) return undefined;
+  let hex = m[1].toLowerCase();
+  if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+  return `#${hex}`;
 }
 
 export async function GET() {
@@ -57,6 +70,21 @@ export async function PATCH(req: Request) {
         input.styleNotes = null;
       } else if (typeof body.styleNotes === "string") {
         input.styleNotes = body.styleNotes.trim().slice(0, 500);
+      }
+    }
+    // Brand color is Signature-gated (part of the brand kit). Accept it only
+    // when the plan unlocks social_customization; otherwise silently ignore so
+    // the rest of this shared settings save still succeeds.
+    if ("brandColor" in body) {
+      const parsed = parseBrandColor(body.brandColor);
+      if (parsed === undefined) {
+        return NextResponse.json(
+          { ok: false, error: "Enter a valid hex color like #0072ce." },
+          { status: 400 },
+        );
+      }
+      if (await agentHasSocialCustomization(agentId)) {
+        input.brandColor = parsed;
       }
     }
 

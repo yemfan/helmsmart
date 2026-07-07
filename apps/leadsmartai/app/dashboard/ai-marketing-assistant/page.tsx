@@ -12,6 +12,7 @@ import MarketingAssistantClient, { type MarketingData } from "./MarketingAssista
 import type { SocialRec } from "@/components/marketing/WeeklySocialPosts";
 import { getSiteUrl } from "@/lib/siteUrl";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
+import { agentHasSocialCustomization } from "@/lib/social/customization";
 
 export const metadata: Metadata = {
   title: "Marketing Assistant",
@@ -88,10 +89,11 @@ export default async function MarketingAssistantPage() {
   // if the tables are empty / not yet seeded, these return safe empties so the
   // page still renders (empty state prompts "Generate this week's posts").
   const weekOf = currentWeekOf();
-  const [socialRecsRaw, socialMode, connectedAccounts] = await Promise.all([
+  const [socialRecsRaw, socialMode, connectedAccounts, canCustomize] = await Promise.all([
     listRecommendations(String(agentId), weekOf).catch(() => []),
     getSocialMode(String(agentId)).catch(() => "ask" as const),
     getConnectedSocialAccounts(String(agentId)).catch(() => []),
+    agentHasSocialCustomization(String(agentId)).catch(() => false),
   ]);
   // Map connected accounts → the human-facing platform labels the UI shows
   // ('meta' → 'Facebook'), deduped. Empty = no account connected.
@@ -105,6 +107,7 @@ export default async function MarketingAssistantPage() {
   const socialRecs: SocialRec[] = socialRecsRaw.map((r) => ({
     ...r,
     imageUrl: r.image_url ?? recommendationImageUrl(r.id),
+    image_source: r.image_source ?? null,
   })) as SocialRec[];
 
   // "Your Client Newsletter" card (Phase 3): the agent's shareable signup link
@@ -119,6 +122,7 @@ export default async function MarketingAssistantPage() {
         mode: socialMode,
         recs: socialRecs,
         connectedPlatforms,
+        canCustomize,
       }}
       newsletter={newsletter}
     />
