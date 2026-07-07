@@ -362,7 +362,9 @@ async function buildTimelyRow(
   // Consumer-voice caption composed ONLY from the digest's already-cited copy —
   // no new numbers introduced here (anti-fabrication).
   const why = top.why_it_matters?.trim();
-  const caption = [top.headline.trim(), why].filter(Boolean).join(" ");
+  // Headline on its own line, then the "why" — reads better as a social caption
+  // and lets the card renderer isolate the headline (it takes the first line).
+  const caption = [top.headline.trim(), why].filter(Boolean).join("\n\n");
 
   const link = `${getSiteUrl()}/newsletter/national/${digest.week_of}`;
   const hashtags = ["#housingmarket", "#mortgagerates", "#realestate", "#homebuyers"];
