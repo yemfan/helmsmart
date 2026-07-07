@@ -50,6 +50,14 @@ export type PublishInput = {
   hashtags?: string[];
   /** media_library.id of an attached image. Required for Instagram; optional elsewhere. */
   mediaItemId?: string | null;
+  /**
+   * Direct public image URL to publish (e.g. a branded social-images card from
+   * the Marketing Assistant's recommendations, which do NOT live in
+   * media_library). Used ONLY when `mediaItemId` is absent — the media_library
+   * path is unchanged. Everything downstream already reads the resolved
+   * `imageUrl` variable, so this is a single additive branch.
+   */
+  imageUrl?: string | null;
   /** Attribution context — recorded on the lead_posts row. */
   trigger?: string | null;
   subjectKind?: string | null;
@@ -92,6 +100,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     caption: rawCaption,
     hashtags,
     mediaItemId,
+    imageUrl: directImageUrl,
     trigger,
     subjectKind,
     subjectRefId,
@@ -243,6 +252,31 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     if (platform === "linkedin") {
       try {
         const imgRes = await fetch(media.signedUrl);
+        if (!imgRes.ok) {
+          throw new Error(`HTTP ${imgRes.status}`);
+        }
+        const buf = await imgRes.arrayBuffer();
+        imageBytes = new Uint8Array(buf);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Image fetch failed";
+        return {
+          ok: false,
+          status: 500,
+          error: `Could not fetch image bytes for LinkedIn upload: ${msg}`,
+          retryable: true,
+        };
+      }
+    }
+  } else if (directImageUrl) {
+    // Additive path: a direct public image URL (e.g. a branded social-images
+    // recommendation card) with NO media_library row. Skip getMediaById and
+    // publish the URL as-is. Meta pulls it by URL; LinkedIn needs the bytes,
+    // so fetch them here the same way the media_library path does.
+    imageUrl = directImageUrl;
+    imageContentType = "image/png";
+    if (platform === "linkedin") {
+      try {
+        const imgRes = await fetch(directImageUrl);
         if (!imgRes.ok) {
           throw new Error(`HTTP ${imgRes.status}`);
         }

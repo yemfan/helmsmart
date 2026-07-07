@@ -59,8 +59,24 @@ export type SocialRecommendation = {
   /** Stored branded-card (or custom) image URL in the social-images bucket.
    *  NULL falls back to the on-the-fly /api/social/card/[id] route. */
   image_url: string | null;
-  status: "suggested" | "approved" | "dismissed" | "copied";
+  status: "suggested" | "approved" | "dismissed" | "copied" | "scheduled";
   created_at: string;
+};
+
+/** A connected social account, as resolved for scheduling. */
+export type ConnectedSocialAccount = {
+  id: string;
+  platform: string; // 'meta' | 'linkedin'
+  ig_business_user_id: string | null;
+};
+
+/**
+ * Result of scheduling one recommendation into scheduled_posts. `scheduledCount`
+ * is the number of scheduled_posts rows created (one per target account).
+ */
+export type ScheduleResult = {
+  scheduledCount: number;
+  scheduledFor: string;
 };
 
 const REC_SELECT =
@@ -175,6 +191,120 @@ export async function updateRecommendationStatus(
   return true;
 }
 
+// ── publish glue: recommendations → scheduled_posts ─────────────────────────
+
+/**
+ * The agent's CONNECTED social accounts (status='connected'), the minimal shape
+ * scheduling needs. Service-role read; caller is responsible for agent scoping
+ * by passing the right agentId.
+ */
+export async function getConnectedSocialAccounts(
+  agentId: string,
+): Promise<ConnectedSocialAccount[]> {
+  const { data, error } = await supabaseServer
+    .from("social_accounts")
+    .select("id, platform, ig_business_user_id")
+    .eq("agent_id", agentId)
+    .eq("status", "connected");
+  if (error || !data) return [];
+  return (data as ConnectedSocialAccount[]).map((a) => ({
+    id: String(a.id),
+    platform: String(a.platform),
+    ig_business_user_id: a.ig_business_user_id ?? null,
+  }));
+}
+
+/**
+ * Derive the scheduled_posts.platform value from a connected account. MVP rule
+ * (documented + intentionally simple):
+ *   - 'linkedin' account → 'linkedin'
+ *   - 'meta' account     → 'facebook' (Page feed post; captions + a public
+ *                           image both work on FB, and it doesn't require the
+ *                           IG-business linkage that 'instagram' does).
+ * A meta account with an IG business id COULD post to instagram too, but we keep
+ * one target per account for the MVP and pick the always-available FB feed.
+ */
+function platformForAccount(acct: ConnectedSocialAccount): PublishTargetPlatform {
+  if (acct.platform === "linkedin") return "linkedin";
+  return "facebook";
+}
+
+type PublishTargetPlatform = "facebook" | "instagram" | "linkedin";
+
+/**
+ * Queue ONE recommendation into scheduled_posts — one row per target account —
+ * carrying the rec's branded-card `image_url` directly (it lives in the
+ * social-images bucket, not media_library). Shared by the schedule endpoint and
+ * autopilot auto-scheduling so the insert logic lives in one place.
+ *
+ * Idempotent-ish: if the rec is already 'scheduled', returns 0 without inserting
+ * again (the caller checks status; this is a second guard). Best-effort marks the
+ * rec 'scheduled' after inserting.
+ *
+ * Uses the service-role client (supabaseServer) — the SAME client the existing
+ * quick-post scheduler writes scheduled_posts with — because scheduled_posts is
+ * a business table the session client can't write directly. Agent scoping is the
+ * caller's responsibility (rec + accounts must belong to `agentId`).
+ */
+export async function scheduleRecommendation(
+  agentId: string,
+  rec: Pick<SocialRecommendation, "id" | "caption" | "hashtags" | "image_url" | "status">,
+  accounts: ConnectedSocialAccount[],
+  scheduledForIso?: string,
+): Promise<ScheduleResult> {
+  const scheduledFor = scheduledForIso ?? new Date().toISOString();
+  if (accounts.length === 0) return { scheduledCount: 0, scheduledFor };
+  if (rec.status === "scheduled") return { scheduledCount: 0, scheduledFor };
+
+  // Caption = rec caption + a hashtag line (mirrors the WeeklySocialPosts copy
+  // action). publishPost also inlines hashtags for IG/LinkedIn, but building the
+  // full body here keeps FB (which is NOT inlined downstream) consistent.
+  const tags = Array.isArray(rec.hashtags) && rec.hashtags.length > 0
+    ? rec.hashtags.map((h) => `#${h.replace(/^#/, "")}`).join(" ")
+    : "";
+  const caption = [rec.caption.trim(), tags].filter(Boolean).join("\n\n");
+
+  const rows = accounts.map((acct) => ({
+    agent_id: agentId,
+    social_account_id: acct.id,
+    platform: platformForAccount(acct),
+    caption,
+    hashtags: Array.isArray(rec.hashtags) ? rec.hashtags : [],
+    media_library_id: null,
+    image_url: rec.image_url ?? null,
+    trigger_kind: "marketing_assistant_social",
+    subject_kind: "social_recommendation",
+    subject_ref_id: rec.id,
+    status: "scheduled",
+    scheduled_for: scheduledFor,
+  }));
+
+  const { data, error } = await supabaseServer
+    .from("scheduled_posts")
+    .insert(rows as Record<string, unknown>[])
+    .select("id");
+  if (error) {
+    console.warn(
+      `[social] scheduleRecommendation insert failed for rec ${rec.id} (agent ${agentId}):`,
+      error.message,
+    );
+    return { scheduledCount: 0, scheduledFor };
+  }
+
+  const scheduledCount = Array.isArray(data) ? data.length : 0;
+
+  if (scheduledCount > 0) {
+    // Mark the rec scheduled — agent-scoped so it never touches another queue.
+    await supabaseServer
+      .from("social_post_recommendations")
+      .update({ status: "scheduled" })
+      .eq("id", rec.id)
+      .eq("agent_id", agentId);
+  }
+
+  return { scheduledCount, scheduledFor };
+}
+
 /**
  * Build this agent's weekly recommendations (idempotent per (agent, week)).
  * Returns the number of rows inserted (0 when nothing to add or already done).
@@ -226,6 +356,42 @@ export async function generateWeeklyRecommendations(
   // the on-the-fly /api/social/card/[id] route) and never aborts the run.
   // Runs for BOTH the weekly cron and the on-demand /api/social/recommend click.
   await persistCardImages(agentId, inserted);
+
+  // Autopilot auto-schedule: when mode is 'auto' AND the agent has ≥1 connected
+  // social account, queue these recs straight into scheduled_posts (the real
+  // publish engine picks them up). Best-effort — a failure here never aborts the
+  // run, and if there's NO connected account the recs simply stay 'approved'
+  // drafts (autopilot without a place to post = still just a draft).
+  if (mode === "auto") {
+    try {
+      const accounts = await getConnectedSocialAccounts(agentId);
+      if (accounts.length > 0) {
+        // Re-read each inserted rec's persisted image_url (persistCardImages may
+        // have populated it after insert). Idempotent: scheduleRecommendation
+        // skips recs already 'scheduled'.
+        const { data: fresh } = await supabaseServer
+          .from("social_post_recommendations")
+          .select("id, caption, hashtags, image_url, status")
+          .in("id", inserted.map((r) => r.id));
+        for (const rec of (fresh ?? []) as Array<
+          Pick<SocialRecommendation, "id" | "caption" | "hashtags" | "image_url" | "status">
+        >) {
+          await scheduleRecommendation(agentId, rec, accounts).catch((e) => {
+            console.warn(
+              `[social] autopilot schedule failed for rec ${rec.id}:`,
+              e instanceof Error ? e.message : e,
+            );
+            return { scheduledCount: 0, scheduledFor: "" };
+          });
+        }
+      }
+    } catch (e) {
+      console.warn(
+        `[social] autopilot auto-schedule pass failed for agent ${agentId}:`,
+        e instanceof Error ? e.message : e,
+      );
+    }
+  }
 
   return { count: inserted.length };
 }

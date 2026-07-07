@@ -80,6 +80,9 @@ type DuePost = {
   caption: string;
   hashtags: string[];
   media_library_id: string | null;
+  // Direct public image URL (branded recommendation cards that aren't in
+  // media_library). publishPost uses it only when media_library_id is null.
+  image_url: string | null;
   trigger_kind: string | null;
   subject_kind: string | null;
   subject_ref_id: string | null;
@@ -107,7 +110,7 @@ async function claimDuePosts(): Promise<DuePost[]> {
     .order("scheduled_for", { ascending: true })
     .limit(BATCH_LIMIT)
     .select(
-      "id, agent_id, social_account_id, platform, caption, hashtags, media_library_id, trigger_kind, subject_kind, subject_ref_id, attempt_count",
+      "id, agent_id, social_account_id, platform, caption, hashtags, media_library_id, image_url, trigger_kind, subject_kind, subject_ref_id, attempt_count",
     );
 
   // Retry rows. Increment attempt_count atomically by reading current
@@ -122,7 +125,7 @@ async function claimDuePosts(): Promise<DuePost[]> {
     const { data: retryCandidates } = await supabaseAdmin
       .from("scheduled_posts")
       .select(
-        "id, agent_id, social_account_id, platform, caption, hashtags, media_library_id, trigger_kind, subject_kind, subject_ref_id, attempt_count",
+        "id, agent_id, social_account_id, platform, caption, hashtags, media_library_id, image_url, trigger_kind, subject_kind, subject_ref_id, attempt_count",
       )
       .eq("status", "posting")
       .lte("next_attempt_at", nowIso)
@@ -175,6 +178,7 @@ export async function POST(req: Request) {
         caption: row.caption,
         hashtags: row.hashtags,
         mediaItemId: row.media_library_id,
+        imageUrl: row.image_url,
         trigger: row.trigger_kind,
         subjectKind: row.subject_kind,
         subjectRefId: row.subject_ref_id,

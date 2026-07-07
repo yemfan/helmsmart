@@ -3,6 +3,7 @@ import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import {
   currentWeekOf,
+  getConnectedSocialAccounts,
   getSocialMode,
   listRecommendations,
   recommendationImageUrl,
@@ -87,10 +88,18 @@ export default async function MarketingAssistantPage() {
   // if the tables are empty / not yet seeded, these return safe empties so the
   // page still renders (empty state prompts "Generate this week's posts").
   const weekOf = currentWeekOf();
-  const [socialRecsRaw, socialMode] = await Promise.all([
+  const [socialRecsRaw, socialMode, connectedAccounts] = await Promise.all([
     listRecommendations(String(agentId), weekOf).catch(() => []),
     getSocialMode(String(agentId)).catch(() => "ask" as const),
+    getConnectedSocialAccounts(String(agentId)).catch(() => []),
   ]);
+  // Map connected accounts → the human-facing platform labels the UI shows
+  // ('meta' → 'Facebook'), deduped. Empty = no account connected.
+  const connectedPlatforms = Array.from(
+    new Set(
+      connectedAccounts.map((a) => (a.platform === "linkedin" ? "LinkedIn" : "Facebook")),
+    ),
+  );
   // Attach the branded-image URL for the UI (thumbnail + preview modal): the
   // stored asset first, on-the-fly /api/social/card/[id] as a fallback.
   const socialRecs: SocialRec[] = socialRecsRaw.map((r) => ({
@@ -109,6 +118,7 @@ export default async function MarketingAssistantPage() {
         weekOf,
         mode: socialMode,
         recs: socialRecs,
+        connectedPlatforms,
       }}
       newsletter={newsletter}
     />
