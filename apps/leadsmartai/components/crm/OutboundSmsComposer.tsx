@@ -5,13 +5,16 @@ import { useState } from "react";
 export function OutboundSmsComposer({
   leadId,
   to,
+  defaultBody = "",
   onSent,
 }: {
   leadId: string;
   to: string;
+  /** Optional pre-filled body (e.g. a market-report share link). */
+  defaultBody?: string;
   onSent?: () => void;
 }) {
-  const [body, setBody] = useState("");
+  const [body, setBody] = useState(defaultBody);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
