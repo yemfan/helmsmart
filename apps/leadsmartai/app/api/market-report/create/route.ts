@@ -41,5 +41,12 @@ export async function POST(req: Request) {
   }
 
   const shareUrl = `${getSiteUrl()}/market-report/share/${result.id}`;
-  return NextResponse.json({ ok: true, id: result.id, shareUrl });
+  // geoName/city reflect the geography actually matched, so the composer text
+  // names the same market the report is for.
+  return NextResponse.json({
+    ok: true,
+    id: result.id,
+    shareUrl,
+    city: result.geoName || result.subjectCity,
+  });
 }

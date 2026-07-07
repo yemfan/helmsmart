@@ -147,7 +147,7 @@ async function buildSnapshot(
 export async function createMarketReportForAgent(
   agentId: string,
   contactId: string,
-): Promise<{ id: string } | { error: string }> {
+): Promise<{ id: string; geoName: string; subjectCity: string } | { error: string }> {
   const contactIdTrim = (contactId ?? "").trim();
   if (!contactIdTrim) return { error: "A contact is required." };
 
@@ -203,7 +203,10 @@ export async function createMarketReportForAgent(
     return { error: error?.message ?? "Failed to save the market report." };
   }
 
-  return { id: (data as { id: string }).id };
+  // Return the matched geography so the caller's compose text names the SAME
+  // market as the report (the contact's city/state may differ from a search
+  // location or other display field).
+  return { id: (data as { id: string }).id, geoName: geo.geoName, subjectCity: city };
 }
 
 /**

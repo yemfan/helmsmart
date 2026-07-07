@@ -34,11 +34,16 @@ export function SendMarketReportButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [matchedCity, setMatchedCity] = useState<string | null>(null);
   const [channel, setChannel] = useState<Channel>(email ? "email" : "sms");
 
-  const cityLabel = (city ?? "").trim() || "your area";
+  // Prefer the market the server actually matched (returned by the API) so the
+  // subject/body name the SAME place as the linked report; the `city` prop is
+  // only a pre-request hint.
+  const displayCity = (matchedCity ?? city ?? "").trim();
+  const cityLabel = displayCity || "your area";
   const hi = firstName?.trim() ? `Hi ${firstName.trim()}, ` : "Hi, ";
-  const subject = `${(city ?? "").trim() || "Local"} market update`;
+  const subject = `${displayCity || "Local"} market update`;
   const body =
     shareUrl != null
       ? `${hi}here's the latest ${cityLabel} market snapshot — home values, prices, and days on market: ${shareUrl}. Happy to talk through what it means for you.`
@@ -56,12 +61,14 @@ export function SendMarketReportButton({
       const json = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
         shareUrl?: string;
+        city?: string;
         error?: string;
       };
       if (!res.ok || !json?.ok || !json.shareUrl) {
         throw new Error(json?.error || "Could not build the market report.");
       }
       setShareUrl(json.shareUrl);
+      if (json.city) setMatchedCity(json.city);
       setChannel(email ? "email" : "sms");
       setOpen(true);
     } catch (err) {
@@ -74,6 +81,7 @@ export function SendMarketReportButton({
   function close() {
     setOpen(false);
     setShareUrl(null);
+    setMatchedCity(null);
     setError(null);
   }
 
