@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProgressiveLeadCapture from "@/components/growth/ProgressiveLeadCapture";
 import { getRelatedTools, loadProgrammaticSeoPage } from "@/lib/programmaticSeo";
+import { matchLocationToGeo } from "@/lib/programmaticSeo/marketMatch";
+import LocalMarketSnapshot from "./_components/LocalMarketSnapshot";
 
 type Props = { params: Promise<{ toolSlug: string; locationSlug: string }> };
 
@@ -47,6 +49,10 @@ export default async function ProgrammaticToolLocationPage({ params }: Props) {
   const toolHref = `/${tool.slug}`;
   const related = getRelatedTools(tool.slug, 5);
   const place = `${loc.city}, ${loc.state}`;
+
+  // REAL local-market snapshot from the Data Center warehouse (ISR-safe:
+  // service-role read, no cookies/headers). Null when the geo isn't active.
+  const matchedGeo = await matchLocationToGeo(loc);
 
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -105,6 +111,9 @@ export default async function ProgrammaticToolLocationPage({ params }: Props) {
             Launch {tool.name} →
           </Link>
         </section>
+
+        {/* Real local-market snapshot (Data Center warehouse) */}
+        {matchedGeo && <LocalMarketSnapshot geo={matchedGeo} city={loc.city} />}
 
         {/* AI insights */}
         <section aria-label="Insights" className="space-y-4">
