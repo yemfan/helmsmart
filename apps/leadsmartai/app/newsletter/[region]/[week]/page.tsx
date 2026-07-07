@@ -8,6 +8,12 @@ import {
   resolveRegion,
   type NewsletterIssue,
 } from "@/lib/newsletter/assembleIssue";
+import {
+  CATEGORY_LABEL,
+  coerceCategory,
+  coerceState,
+  type DigestItem,
+} from "@/lib/newsletter/generateDigest";
 
 export const dynamic = "force-dynamic";
 
@@ -75,8 +81,32 @@ export default async function NewsletterIssuePage({ params }: Props) {
   const { digest, region: reg, weekOf } = issue;
   const base = getSiteUrl();
   const weekLabel = formatWeek(weekOf);
-  const items = Array.isArray(digest.items) ? digest.items : [];
+  const rawItems = Array.isArray(digest.items) ? digest.items : [];
   const sources = Array.isArray(digest.sources) ? digest.sources : [];
+
+  // Defensively resolve category/state per item (legacy digests lack them) and
+  // order for this region: items matching the region's state OR national items
+  // come first, other-state items last. Nothing is dropped — only reordered.
+  const regionState = reg.stateCode; // null for national
+  const items = rawItems
+    .map((it) => {
+      const state = coerceState((it as Partial<DigestItem>).state);
+      return {
+        ...it,
+        category: coerceCategory((it as Partial<DigestItem>).category),
+        state,
+        scope: state ? ("state" as const) : ("national" as const),
+      };
+    })
+    .map((it, idx) => {
+      // relevant = national item, or a state item matching this region's state.
+      const relevant =
+        it.scope === "national" || (regionState !== null && it.state === regionState);
+      return { it, idx, rank: relevant ? 0 : 1 };
+    })
+    // Stable: within the same relevance bucket keep original digest order.
+    .sort((a, b) => a.rank - b.rank || a.idx - b.idx)
+    .map((x) => x.it);
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -172,15 +202,31 @@ export default async function NewsletterIssuePage({ params }: Props) {
           )}
         </section>
 
-        {/* National digest items */}
-        <section aria-label="This week in rates and housing" className="space-y-4">
-          <h2 className="text-2xl font-bold text-slate-900">This week in rates &amp; housing</h2>
+        {/* This-week-in-housing radar items */}
+        <section aria-label="This week in housing" className="space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900">This week in housing</h2>
           <div className="space-y-4">
-            {items.map((it, i) => (
+            {items.map((it, i) => {
+              const otherState =
+                it.scope === "state" &&
+                (regionState === null || it.state !== regionState);
+              return (
               <article
                 key={i}
-                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm ring-1 ring-slate-900/[0.03]"
+                className={`rounded-2xl border border-slate-200 bg-white p-6 shadow-sm ring-1 ring-slate-900/[0.03] ${
+                  otherState ? "opacity-70" : ""
+                }`}
               >
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center rounded-full bg-[#0072ce]/10 px-2.5 py-0.5 text-xs font-semibold text-[#0072ce]">
+                    {CATEGORY_LABEL[it.category]}
+                  </span>
+                  {it.state && (
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">
+                      {it.state}
+                    </span>
+                  )}
+                </div>
                 <h3 className="text-lg font-semibold leading-snug text-slate-900">
                   {it.headline}
                 </h3>
@@ -207,7 +253,8 @@ export default async function NewsletterIssuePage({ params }: Props) {
                   </p>
                 )}
               </article>
-            ))}
+              );
+            })}
           </div>
         </section>
 

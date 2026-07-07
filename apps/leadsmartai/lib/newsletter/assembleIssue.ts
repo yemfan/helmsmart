@@ -60,6 +60,10 @@ export type IssueRegion = {
   level: GeoLevel;
   code: string;
   slug: string;
+  /** 2-letter state code this region belongs to (for a state region it's the
+   *  geo_code; for a metro it's the metro's state), else null (national). Drives
+   *  regional ordering of digest items. */
+  stateCode: string | null;
   /** Link to the region's Data Center page (deeper market data). */
   dataHref: string;
   stats: IssueStat[];
@@ -132,6 +136,7 @@ export async function resolveRegion(
       level: "national",
       code: "US",
       slug: "national",
+      stateCode: null,
       dataHref: "/data/markets",
       stats,
     };
@@ -148,11 +153,19 @@ export async function resolveRegion(
   if (!geo) return null;
 
   const stats = await buildStats(level, geo.geo_code);
+  // For a state region the geo_code IS the 2-letter code; for a metro, the
+  // geo_code is an opaque Zillow RegionID, so use the metro's `state` field.
+  const rawState = level === "state" ? geo.geo_code : geo.state;
+  const stateCode =
+    typeof rawState === "string" && /^[A-Za-z]{2}$/.test(rawState.trim())
+      ? rawState.trim().toUpperCase()
+      : null;
   return {
     name: geo.geo_name,
     level,
     code: geo.geo_code,
     slug: geoSlug(geo),
+    stateCode,
     dataHref: dataHrefFor(level, geo),
     stats,
   };
