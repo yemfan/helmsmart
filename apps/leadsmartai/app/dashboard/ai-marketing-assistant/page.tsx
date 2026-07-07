@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import {
+  currentWeekOf,
+  getSocialMode,
+  listRecommendations,
+} from "@/lib/social/recommend";
 import MarketingAssistantClient, { type MarketingData } from "./MarketingAssistantClient";
+import type { SocialRec } from "@/components/marketing/WeeklySocialPosts";
 
 export const metadata: Metadata = {
   title: "Marketing Assistant",
@@ -74,5 +80,23 @@ export default async function MarketingAssistantPage() {
     activities: ((activities.data ?? []) as MarketingData["activities"]) || [],
   };
 
-  return <MarketingAssistantClient data={data} />;
+  // This week's social queue for the Marketing Assistant section. Best-effort:
+  // if the tables are empty / not yet seeded, these return safe empties so the
+  // page still renders (empty state prompts "Generate this week's posts").
+  const weekOf = currentWeekOf();
+  const [socialRecs, socialMode] = await Promise.all([
+    listRecommendations(String(agentId), weekOf).catch(() => [] as SocialRec[]),
+    getSocialMode(String(agentId)).catch(() => "ask" as const),
+  ]);
+
+  return (
+    <MarketingAssistantClient
+      data={data}
+      social={{
+        weekOf,
+        mode: socialMode,
+        recs: socialRecs as SocialRec[],
+      }}
+    />
+  );
 }

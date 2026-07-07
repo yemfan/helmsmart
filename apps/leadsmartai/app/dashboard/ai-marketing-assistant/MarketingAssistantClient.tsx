@@ -6,6 +6,7 @@ import { BookOpen, ChevronDown, ChevronUp } from "lucide-react";
 import { getAssistant } from "@/lib/realtyboss/team";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
 import { AssistantCallSettings } from "@/components/realtyboss/AssistantCallSettings";
+import WeeklySocialPosts, { type SocialRec } from "@/components/marketing/WeeklySocialPosts";
 
 /**
  * Marketing Assistant overview — demand generation. Took over from
@@ -48,7 +49,19 @@ function fmtWhen(iso: string) {
   });
 }
 
-export default function MarketingAssistantClient({ data }: { data: MarketingData }) {
+export type SocialData = {
+  weekOf: string;
+  mode: "ask" | "auto";
+  recs: SocialRec[];
+};
+
+export default function MarketingAssistantClient({
+  data,
+  social,
+}: {
+  data: MarketingData;
+  social: SocialData;
+}) {
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   return (
     <div className="space-y-4">
@@ -100,6 +113,13 @@ export default function MarketingAssistantClient({ data }: { data: MarketingData
           />
         </section>
       )}
+
+      {/* This week's social posts — content database → weekly recommendations */}
+      <WeeklySocialPosts
+        initialRecs={social.recs}
+        initialMode={social.mode}
+        weekOf={social.weekOf}
+      />
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Publishing calendar */}
