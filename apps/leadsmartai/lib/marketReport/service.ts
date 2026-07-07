@@ -2,6 +2,7 @@ import "server-only";
 
 import { supabaseServer } from "@/lib/supabaseServer";
 import { matchCityStateToGeo } from "@/lib/research/warehouse/match";
+import { resolveContactLocation } from "@/lib/contacts/resolveLocation";
 import {
   getLatestMetrics,
   getMetricSeries,
@@ -82,6 +83,8 @@ type ContactRow = {
   id: string;
   city: string | null;
   state: string | null;
+  address: string | null;
+  search_location: string | null;
 };
 
 async function buildSnapshot(
@@ -155,7 +158,7 @@ export async function createMarketReportForAgent(
   // same posture as the CMA/contacts read paths on RLS-on business tables).
   const { data: contactData, error: contactErr } = await supabaseServer
     .from("contacts")
-    .select("id, city, state")
+    .select("id, city, state, address, search_location")
     .eq("id", contactIdTrim)
     .eq("agent_id", agentId as never)
     .maybeSingle();
@@ -167,8 +170,11 @@ export async function createMarketReportForAgent(
   const contact = contactData as ContactRow | null;
   if (!contact) return { error: "Contact not found." };
 
-  const city = (contact.city ?? "").trim();
-  const state = (contact.state ?? "").trim();
+  // Derive city/state from the address or search location when they're not set
+  // explicitly, so this works for the many contacts missing those fields.
+  const resolved = resolveContactLocation(contact);
+  const city = (resolved.city ?? "").trim();
+  const state = (resolved.state ?? "").trim();
   if (!city || !state) {
     return { error: "Contact has no city/state" };
   }
