@@ -14,7 +14,7 @@ import type { ActiveGeography } from "./read";
  */
 
 /** Map a US state's full name to its 2-letter USPS code (+ DC). */
-const STATE_NAME_TO_CODE: Record<string, string> = {
+export const STATE_NAME_TO_CODE: Record<string, string> = {
   Alabama: "AL",
   Alaska: "AK",
   Arizona: "AZ",
