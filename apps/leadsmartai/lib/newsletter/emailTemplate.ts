@@ -25,6 +25,24 @@ export type IssueEmailSubscription = {
   region_code: string;
 };
 
+/**
+ * Optional agent identity for AGENT-BRANDED sends (Phase 3). When present the
+ * email leads with the agent (name + brokerage, logo/photo image) and the
+ * footer reads "Sent by {name}, {brokerage} · powered by RealtyBoss". The
+ * platform (RealtyBoss) remains the sending infrastructure: the CAN-SPAM
+ * mailing address, per-sub unsubscribe, and List-Unsubscribe headers are
+ * unchanged. Unlike the satori social card, email clients DO load remote
+ * images, so an image URL here is fine.
+ */
+export type IssueEmailAgent = {
+  name: string | null;
+  brokerage: string | null;
+  email: string | null;
+  phone: string | null;
+  photoUrl: string | null;
+  logoUrl: string | null;
+};
+
 export type RenderIssueEmailArgs = {
   issue: NewsletterIssue;
   subscription: IssueEmailSubscription;
@@ -34,6 +52,8 @@ export type RenderIssueEmailArgs = {
   mailingAddress: string;
   /** Absolute site origin (getSiteUrl()) for the "read online" + brand links. */
   siteUrl: string;
+  /** When set, the email is branded to this agent (Phase 3). */
+  agent?: IssueEmailAgent | null;
 };
 
 export type RenderedIssueEmail = {
@@ -47,6 +67,8 @@ const BRAND_BLUE = "#0072ce";
 export function renderIssueEmail(args: RenderIssueEmailArgs): RenderedIssueEmail {
   const { issue, unsubscribeUrl, mailingAddress, siteUrl } = args;
   const { digest, region, weekOf } = issue;
+
+  const agent = normalizeAgent(args.agent);
 
   const weekLabel = formatWeek(weekOf);
   const regionName = region.name;
@@ -69,6 +91,7 @@ export function renderIssueEmail(args: RenderIssueEmailArgs): RenderedIssueEmail
     issueUrl,
     unsubscribeUrl,
     mailingAddress,
+    agent,
   });
   const html = renderHtml({
     digest,
@@ -78,9 +101,39 @@ export function renderIssueEmail(args: RenderIssueEmailArgs): RenderedIssueEmail
     issueUrl,
     unsubscribeUrl,
     mailingAddress,
+    agent,
   });
 
   return { subject, text, html };
+}
+
+/** An agent with at least a usable name; else null (→ RealtyBoss branding). */
+type NormalizedAgent = {
+  name: string;
+  brokerage: string | null;
+  imageUrl: string | null;
+};
+
+/**
+ * Reduce the raw agent object to what the template needs, or null when there's
+ * no usable identity (no name) so callers fall back to plain RealtyBoss
+ * branding. Guards against empty/whitespace image URLs.
+ */
+function normalizeAgent(agent: IssueEmailAgent | null | undefined): NormalizedAgent | null {
+  if (!agent) return null;
+  const name = typeof agent.name === "string" ? agent.name.trim() : "";
+  if (!name) return null;
+  const brokerage =
+    typeof agent.brokerage === "string" && agent.brokerage.trim()
+      ? agent.brokerage.trim()
+      : null;
+  // Prefer a logo, fall back to the headshot. Only accept an http(s) URL.
+  const rawImg =
+    (typeof agent.logoUrl === "string" && agent.logoUrl.trim()) ||
+    (typeof agent.photoUrl === "string" && agent.photoUrl.trim()) ||
+    "";
+  const imageUrl = /^https?:\/\//i.test(rawImg) ? rawImg : null;
+  return { name, brokerage, imageUrl };
 }
 
 type NormalizedItem = DigestItem & { scope: "national" | "state" };
@@ -113,13 +166,25 @@ type RenderCtx = {
   issueUrl: string;
   unsubscribeUrl: string;
   mailingAddress: string;
+  agent: NormalizedAgent | null;
 };
 
 function renderText(ctx: RenderCtx): string {
-  const { digest, region, items, weekLabel, issueUrl, unsubscribeUrl, mailingAddress } =
-    ctx;
+  const {
+    digest,
+    region,
+    items,
+    weekLabel,
+    issueUrl,
+    unsubscribeUrl,
+    mailingAddress,
+    agent,
+  } = ctx;
   const lines: string[] = [];
   lines.push(`This Week in Housing — ${region.name} · ${weekLabel}`);
+  if (agent) {
+    lines.push(`From ${agent.name}${agent.brokerage ? `, ${agent.brokerage}` : ""}`);
+  }
   lines.push("");
   if (digest.title) lines.push(digest.title);
   if (digest.intro) {
@@ -146,8 +211,13 @@ function renderText(ctx: RenderCtx): string {
   lines.push(`Read the full issue online: ${issueUrl}`);
   lines.push("");
   lines.push("—");
+  if (agent) {
+    lines.push(
+      `Sent by ${agent.name}${agent.brokerage ? `, ${agent.brokerage}` : ""} · powered by RealtyBoss`,
+    );
+  }
   lines.push(
-    "You're receiving this because you subscribed to the RealtyBoss weekly housing briefing at realtybossai.com.",
+    "You're receiving this because you subscribed to this weekly housing briefing at realtybossai.com.",
   );
   lines.push(`Unsubscribe: ${unsubscribeUrl}`);
   lines.push(mailingAddress);
@@ -155,8 +225,16 @@ function renderText(ctx: RenderCtx): string {
 }
 
 function renderHtml(ctx: RenderCtx): string {
-  const { digest, region, items, weekLabel, issueUrl, unsubscribeUrl, mailingAddress } =
-    ctx;
+  const {
+    digest,
+    region,
+    items,
+    weekLabel,
+    issueUrl,
+    unsubscribeUrl,
+    mailingAddress,
+    agent,
+  } = ctx;
 
   const itemsHtml = items
     .map((it) => {
@@ -229,18 +307,59 @@ function renderHtml(ctx: RenderCtx): string {
       )}</td></tr>`
     : "";
 
-  // Outer wrapper: centered ~600px table, light background, no remote images.
+  // Header: RealtyBoss by default; agent-led when an agent is present.
+  const headerHtml = agent
+    ? `<tr><td style="padding:8px 0 4px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr>
+            ${
+              agent.imageUrl
+                ? `<td style="width:52px;vertical-align:middle;padding-right:12px;"><img src="${escapeAttr(
+                    agent.imageUrl,
+                  )}" alt="${escapeAttr(agent.name)}" width="48" height="48" style="display:block;width:48px;height:48px;border-radius:9999px;object-fit:cover;border:1px solid #e2e8f0;" /></td>`
+                : ""
+            }
+            <td style="vertical-align:middle;">
+              <div style="font-size:16px;font-weight:800;color:#0f172a;line-height:1.2;">${escapeHtml(
+                agent.name,
+              )}</div>
+              ${
+                agent.brokerage
+                  ? `<div style="font-size:12px;color:#64748b;margin-top:1px;">${escapeHtml(
+                      agent.brokerage,
+                    )}</div>`
+                  : ""
+              }
+            </td>
+          </tr></table>
+          <div style="font-size:12px;color:#94a3b8;margin-top:8px;">This Week in Housing · ${escapeHtml(
+            region.name,
+          )} · Week of ${escapeHtml(weekLabel)}</div>
+        </td></tr>`
+    : `<tr><td style="padding:8px 0 4px;">
+          <div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${BRAND_BLUE};">RealtyBoss</div>
+          <div style="font-size:12px;color:#94a3b8;margin-top:2px;">This Week in Housing · ${escapeHtml(
+            region.name,
+          )} · Week of ${escapeHtml(weekLabel)}</div>
+        </td></tr>`;
+
+  // Footer attribution line: agent (powered by RealtyBoss) or plain RealtyBoss.
+  const footerAttribution = agent
+    ? `<strong style="color:#64748b;">Sent by ${escapeHtml(agent.name)}${
+        agent.brokerage ? `, ${escapeHtml(agent.brokerage)}` : ""
+      }</strong> · powered by RealtyBoss<br/>
+            You're receiving this because you subscribed to this weekly housing briefing.`
+    : `You're receiving this because you subscribed to the RealtyBoss weekly housing briefing at
+            <a href="${escapeAttr(
+              args_siteHref(issueUrl),
+            )}" style="color:#64748b;">realtybossai.com</a>.`;
+
+  // Outer wrapper: centered ~600px table, light background.
   return `<!-- RealtyBoss weekly housing briefing -->
 <div style="background:#f8fafc;padding:24px 0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0f172a;">
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="width:100%;max-width:600px;margin:0 auto;">
     <tr><td style="padding:0 20px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;">
-        <tr><td style="padding:8px 0 4px;">
-          <div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${BRAND_BLUE};">RealtyBoss</div>
-          <div style="font-size:12px;color:#94a3b8;margin-top:2px;">This Week in Housing · ${escapeHtml(
-            region.name,
-          )} · Week of ${escapeHtml(weekLabel)}</div>
-        </td></tr>
+        ${headerHtml}
         <tr><td style="padding:14px 0 8px;">
           <div style="font-size:22px;font-weight:800;line-height:1.25;color:#0f172a;">${escapeHtml(
             digest.title || "This Week in Housing",
@@ -256,10 +375,7 @@ function renderHtml(ctx: RenderCtx): string {
         </td></tr>
         <tr><td style="padding:24px 0 0;border-top:1px solid #e2e8f0;">
           <div style="font-size:12px;line-height:1.55;color:#94a3b8;padding-top:14px;">
-            You're receiving this because you subscribed to the RealtyBoss weekly housing briefing at
-            <a href="${escapeAttr(
-              args_siteHref(issueUrl),
-            )}" style="color:#64748b;">realtybossai.com</a>.<br/>
+            ${footerAttribution}<br/>
             <a href="${escapeAttr(
               unsubscribeUrl,
             )}" style="color:#64748b;text-decoration:underline;">Unsubscribe</a> at any time.<br/>
