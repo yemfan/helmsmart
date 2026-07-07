@@ -43,7 +43,8 @@ export type PlanFeature =
   | "cultural_calendar"
   | "custom_voice_tuning"
   | "bookkeeping"
-  | "ai_calling";
+  | "ai_calling"
+  | "social_customization";
 
 export type BillingCadence = "monthly" | "annual";
 
@@ -153,6 +154,7 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
       "custom_voice_tuning",
       "bookkeeping",
       "ai_calling",
+      "social_customization",
     ],
     stripePriceEnvVar: "STRIPE_PRICE_ID_SIGNATURE",
     stripePriceEnvVarAnnual: "STRIPE_PRICE_ID_SIGNATURE_ANNUAL",
@@ -176,6 +178,7 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
       "top_producer_track_coaching",
       "bookkeeping",
       "ai_calling",
+      "social_customization",
     ],
     stripePriceEnvVar: "STRIPE_PRICE_ID_TEAM",
     stripePriceEnvVarAnnual: "STRIPE_PRICE_ID_TEAM_ANNUAL",

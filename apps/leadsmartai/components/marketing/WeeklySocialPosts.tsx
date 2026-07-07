@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { Copy, Check, Sparkles, Loader2, ThumbsUp, X, Eye, Download, Send, Link2 } from "lucide-react";
+import { Copy, Check, Sparkles, Loader2, ThumbsUp, X, Eye, Download, Send, Link2, ImagePlus } from "lucide-react";
 
 /** Where the agent connects Facebook / LinkedIn accounts. */
 const CONNECT_HREF = "/dashboard/leads/generate/connect";
@@ -31,6 +31,8 @@ export type SocialRec = {
   status: "suggested" | "approved" | "dismissed" | "copied" | "scheduled";
   /** Derived URL to the auto-branded post image (/api/social/card/[id]). */
   imageUrl?: string | null;
+  /** How image_url was produced: 'branded_card' | 'custom' | 'stock' | 'ai'. */
+  image_source?: string | null;
 };
 
 function clipboardText(rec: SocialRec): string {
@@ -43,12 +45,15 @@ export default function WeeklySocialPosts({
   initialMode,
   weekOf,
   connectedPlatforms = [],
+  canCustomize = false,
 }: {
   initialRecs: SocialRec[];
   initialMode: "ask" | "auto";
   weekOf: string;
   /** Human-facing labels of the agent's connected platforms (e.g. ["Facebook"]). */
   connectedPlatforms?: string[];
+  /** Signature-tier: unlocks "bring your own image" + brand kit. */
+  canCustomize?: boolean;
 }) {
   const [recs, setRecs] = useState<SocialRec[]>(initialRecs);
   const [mode, setMode] = useState<"ask" | "auto">(initialMode);
@@ -58,6 +63,40 @@ export default function WeeklySocialPosts({
   const [error, setError] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [schedulingId, setSchedulingId] = useState<string | null>(null);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  async function uploadCustomImage(rec: SocialRec, file: File) {
+    setUploadingId(rec.id);
+    setError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch(`/api/social/recommendation/${rec.id}/media`, {
+        method: "POST",
+        body: fd,
+      });
+      const json = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        imageUrl?: string;
+        error?: string;
+      };
+      if (!res.ok || !json.ok || !json.imageUrl) {
+        setError(json.error || "Could not upload your image.");
+        return;
+      }
+      const imageUrl = json.imageUrl;
+      setRecs((prev) =>
+        prev.map((r) =>
+          r.id === rec.id ? { ...r, imageUrl, image_source: "custom" } : r,
+        ),
+      );
+    } catch {
+      setError("Could not upload your image.");
+    } finally {
+      setUploadingId(null);
+    }
+  }
 
   const hasConnection = connectedPlatforms.length > 0;
   const platformsLabel = connectedPlatforms.join(" & ");
@@ -462,13 +501,58 @@ export default function WeeklySocialPosts({
                 <p className="mt-2 truncate text-xs text-gray-500">{previewRec.link}</p>
               )}
 
-              <div className="mt-4 rounded-lg border border-[#0072ce]/20 bg-[#0072ce]/[0.04] px-3 py-2.5 text-[11px] leading-relaxed text-gray-600">
-                <span className="font-semibold text-[#0072ce]">Signature</span>: swap in
-                your own photo or short video and put your logo &amp; colors on every post.{" "}
-                <a href="/dashboard/billing" className="font-semibold text-[#0072ce] underline hover:no-underline">
-                  Upgrade →
-                </a>
-              </div>
+              {canCustomize ? (
+                <div className="mt-4 rounded-lg border border-[#0072ce]/20 bg-[#0072ce]/[0.04] px-3 py-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-[#0072ce]">Use your own image</p>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-gray-600">
+                        Replace the branded card with your own photo. Image now; short
+                        video coming soon.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingId === previewRec.id}
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[#0072ce] px-2.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-[#005fab] disabled:opacity-60"
+                    >
+                      {uploadingId === previewRec.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <ImagePlus className="h-3.5 w-3.5" />
+                      )}
+                      {uploadingId === previewRec.id ? "Uploading…" : "Upload image"}
+                    </button>
+                  </div>
+                  {previewRec.image_source === "custom" && (
+                    <p className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700">
+                      <Check className="h-3 w-3" />
+                      Using your uploaded image
+                    </p>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      // Reset so re-selecting the same file re-triggers onChange.
+                      e.target.value = "";
+                      if (f) void uploadCustomImage(previewRec, f);
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="mt-4 rounded-lg border border-[#0072ce]/20 bg-[#0072ce]/[0.04] px-3 py-2.5 text-[11px] leading-relaxed text-gray-600">
+                  <span className="font-semibold text-[#0072ce]">Signature</span>: swap in
+                  your own photo or short video and put your logo &amp; colors on every post.{" "}
+                  <a href="/dashboard/billing" className="font-semibold text-[#0072ce] underline hover:no-underline">
+                    Upgrade →
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Actions */}

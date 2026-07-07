@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { agentHasSocialCustomization } from "@/lib/social/customization";
 import AgentAiSettingsPanel from "@/components/dashboard/AgentAiSettingsPanel";
 import AgentVoiceSettingsPanel from "@/components/dashboard/AgentVoiceSettingsPanel";
 import VoiceReceptionistSettingsPanel from "@/components/dashboard/VoiceReceptionistSettingsPanel";
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
 export default async function SettingsPage() {
   const ctx = await getCurrentAgentContext();
   const widgetAgentKey = ctx.agentId || ctx.userId;
+  const canCustomizeBrand = await agentHasSocialCustomization(ctx.agentId).catch(() => false);
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -40,7 +42,7 @@ export default async function SettingsPage() {
             <div className="rounded-xl border border-gray-200 bg-white shadow-sm divide-y divide-gray-100">
             <div className="p-5">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">AI Assistant Style</h2>
-              <AgentAiSettingsPanel />
+              <AgentAiSettingsPanel canCustomizeBrand={canCustomizeBrand} />
             </div>
             <div className="p-5">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">Phone Voice</h2>

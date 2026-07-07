@@ -56,6 +56,8 @@ export type SocialData = {
   recs: SocialRec[];
   /** Human-facing labels of the agent's connected social platforms (e.g. ["Facebook"]). */
   connectedPlatforms: string[];
+  /** Signature-tier: unlocks "bring your own image" + brand kit. */
+  canCustomize: boolean;
 };
 
 export type ClientNewsletter = {
@@ -131,6 +133,7 @@ export default function MarketingAssistantClient({
         initialMode={social.mode}
         weekOf={social.weekOf}
         connectedPlatforms={social.connectedPlatforms}
+        canCustomize={social.canCustomize}
       />
 
       {/* Your Client Newsletter — agent-branded weekly briefing signup link */}

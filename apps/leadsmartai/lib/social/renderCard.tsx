@@ -1,3 +1,5 @@
+import type { ReactElement } from "react";
+
 import { ImageResponse } from "next/og";
 
 import type { PresentationAgent } from "@/lib/presentations/loadPresentationAgent";
@@ -23,6 +25,32 @@ const BRAND_BLUE = "#0072ce";
 const INK = "#0f172a";
 const MUTED = "#475569";
 const CARD_SIZE = 1080;
+
+/**
+ * Optional Signature brand kit: overrides the card accent color and stamps the
+ * agent's logo. When absent the card renders in the default RealtyBoss blue,
+ * exactly as before (non-Signature agents are unaffected).
+ */
+export type BrandKit = {
+  /** Hex accent color (e.g. "#0072ce"). Falls back to RealtyBoss blue if empty/invalid. */
+  color?: string | null;
+  /** Public http(s) logo URL. satori fetches it; unusable URLs are dropped gracefully. */
+  logoUrl?: string | null;
+};
+
+/** Accept a #RGB / #RRGGBB hex; otherwise fall back to RealtyBoss blue. */
+function resolveAccent(color?: string | null): string {
+  if (typeof color !== "string") return BRAND_BLUE;
+  const raw = color.trim();
+  return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(raw) ? raw : BRAND_BLUE;
+}
+
+/** Only http(s) URLs are usable as a satori remote image. */
+function usableLogoUrl(url?: string | null): string | null {
+  if (typeof url !== "string") return null;
+  const raw = url.trim();
+  return /^https?:\/\//i.test(raw) ? raw : null;
+}
 
 /** First sentence / line of the caption, clamped so it never overflows the box. */
 function headlineFromCaption(caption: string, max = 90): string {
@@ -57,6 +85,34 @@ function footerLine(name: string | null, brokerage: string | null): string {
 }
 
 /**
+ * Right-side brand mark in the card footer. Signature brand kit → the agent's
+ * logo image (satori fetches the remote URL). No usable logo → the "RealtyBoss"
+ * wordmark in the accent color (the default behavior, now color-aware).
+ *
+ * satori needs explicit dimensions on <img>; we cap the logo height and let the
+ * width auto-size. If satori can't fetch/decode the image at render time it
+ * throws — the caller wraps rendering in try/fallback so the card never crashes.
+ */
+function brandMark(logoUrl: string | null, accent: string): ReactElement {
+  if (logoUrl) {
+    return (
+      /* eslint-disable-next-line @next/next/no-img-element */
+      <img
+        src={logoUrl}
+        alt=""
+        height={56}
+        style={{ display: "flex", height: "56px", maxWidth: "260px", objectFit: "contain" }}
+      />
+    );
+  }
+  return (
+    <div style={{ display: "flex", fontSize: "26px", fontWeight: 700, color: accent }}>
+      RealtyBoss
+    </div>
+  );
+}
+
+/**
  * Build the 1080×1080 branded card ImageResponse for a recommendation.
  *
  * @param rec           the recommendation (source_type + caption drive the template/headline).
@@ -67,12 +123,17 @@ export function buildCardImageResponse(
   rec: Pick<SocialRecommendation, "source_type" | "caption">,
   agent: PresentationAgent | null,
   categoryLabel?: string | null,
+  brandKit?: BrandKit | null,
 ): ImageResponse {
   const agentName = agent?.name ?? null;
   const brokerage = agent?.brokerage ?? null;
   const footer = footerLine(agentName, brokerage);
 
   const headline = headlineFromCaption(rec.caption);
+
+  // Signature brand kit: accent color + optional logo. Absent → default blue.
+  const accent = resolveAccent(brandKit?.color ?? null);
+  const logoUrl = usableLogoUrl(brandKit?.logoUrl ?? null);
 
   const isTimely = rec.source_type === "timely";
   const eyebrow = isTimely ? "MARKET UPDATE" : tipEyebrow(categoryLabel ?? null);
@@ -100,7 +161,7 @@ export function buildCardImageResponse(
             fontSize: "30px",
             fontWeight: 700,
             letterSpacing: "0.16em",
-            color: BRAND_BLUE,
+            color: accent,
           }}
         >
           {eyebrow}
@@ -113,7 +174,7 @@ export function buildCardImageResponse(
             height: "8px",
             marginTop: "24px",
             borderRadius: "999px",
-            background: BRAND_BLUE,
+            background: accent,
           }}
         />
       </div>
@@ -163,9 +224,7 @@ export function buildCardImageResponse(
         >
           {footer}
         </div>
-        <div style={{ display: "flex", fontSize: "26px", fontWeight: 700, color: BRAND_BLUE }}>
-          RealtyBoss
-        </div>
+        {brandMark(logoUrl, accent)}
       </div>
     </div>
   ) : (
@@ -184,7 +243,7 @@ export function buildCardImageResponse(
           display: "flex",
           width: "28px",
           height: "100%",
-          background: BRAND_BLUE,
+          background: accent,
         }}
       />
       {/* Content */}
@@ -206,7 +265,7 @@ export function buildCardImageResponse(
               fontSize: "30px",
               fontWeight: 700,
               letterSpacing: "0.16em",
-              color: BRAND_BLUE,
+              color: accent,
             }}
           >
             {eyebrow}
@@ -271,9 +330,7 @@ export function buildCardImageResponse(
           >
             {footer}
           </div>
-          <div style={{ display: "flex", fontSize: "26px", fontWeight: 700, color: BRAND_BLUE }}>
-            RealtyBoss
-          </div>
+          {brandMark(logoUrl, accent)}
         </div>
       </div>
     </div>
@@ -296,7 +353,23 @@ export async function renderCardPng(
   rec: Pick<SocialRecommendation, "source_type" | "caption">,
   agent: PresentationAgent | null,
   categoryLabel?: string | null,
+  brandKit?: BrandKit | null,
 ): Promise<Uint8Array> {
+  // Signature brand-kit render (custom color + remote logo) can fail if satori
+  // can't fetch/decode the logo. Fall back to the default (blue, no-logo) card
+  // so a brand-kit problem never aborts the run.
+  if (brandKit && (brandKit.color || brandKit.logoUrl)) {
+    try {
+      const res = buildCardImageResponse(rec, agent, categoryLabel, brandKit);
+      return new Uint8Array(await res.arrayBuffer());
+    } catch (e) {
+      console.warn(
+        "[social] brand-kit card render failed, falling back to default card:",
+        e instanceof Error ? e.message : e,
+      );
+      // fall through to the default render below
+    }
+  }
   const res = buildCardImageResponse(rec, agent, categoryLabel);
   return new Uint8Array(await res.arrayBuffer());
 }
