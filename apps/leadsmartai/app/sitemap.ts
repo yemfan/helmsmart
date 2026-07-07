@@ -4,6 +4,7 @@ import { HELP_GUIDES } from "@/lib/help/guides";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import { SWITCH_SOURCES } from "@/lib/marketing/switch-from";
 import { listResearchReportsForSitemap } from "@/lib/research/db";
+import { listMarketSitemapEntries } from "@/lib/research/warehouse/read";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
@@ -131,6 +132,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  return [...staticEntries, ...reportEntries];
+  // Data Center market pages — DB-driven, one entry per active state + metro
+  // (~350 URLs) plus the markets hub. Guarded exactly like the report entries so
+  // a missing table/env (or the shared warehouse being unreachable) can never
+  // crash the sitemap; fall back to no market entries.
+  let marketEntries: MetadataRoute.Sitemap = [];
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+    try {
+      const entries = await listMarketSitemapEntries();
+      marketEntries = entries.map((e) => ({
+        url: `${base}${e.path}`,
+        lastModified: e.lastmod ? new Date(e.lastmod) : now,
+        changeFrequency: "weekly" as const,
+        priority: e.path === "/data/markets" ? 0.8 : 0.6,
+      }));
+    } catch {
+      marketEntries = [];
+    }
+  }
+
+  return [...staticEntries, ...reportEntries, ...marketEntries];
 }
 

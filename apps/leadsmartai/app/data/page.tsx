@@ -139,19 +139,29 @@ export default async function DataCenterPage() {
         )}
       </section>
 
-      {/* Coming soon */}
-      <section className="bg-slate-50/80" aria-label="Coming soon">
+      {/* Explore local market data */}
+      <section className="bg-slate-50/80" aria-label="Explore local market data">
         <div className="mx-auto max-w-7xl px-6 py-14 md:py-16">
-          <div className="max-w-3xl rounded-3xl border border-slate-200/80 bg-white p-8 shadow-sm ring-1 ring-slate-900/[0.03]">
-            <h2 className="text-lg font-semibold tracking-tight text-slate-900">
-              Market data by metro — coming soon
+          <Link
+            href="/data/markets"
+            className="group block max-w-3xl rounded-3xl border border-slate-200/80 bg-white p-8 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-[#0072ce]/40 hover:shadow-md"
+          >
+            <p className="inline-flex rounded-full bg-[#0072ce]/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-[#0072ce]">
+              Local market data
+            </p>
+            <h2 className="mt-3 text-lg font-semibold tracking-tight text-slate-900">
+              Explore local market data — by state &amp; metro
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              We&apos;re building an interactive market-data explorer with prices, inventory, and
-              days-on-market broken down by metro — the local proof points buyers and sellers ask
-              for. For now, our published reports cover national trends and notable metro movers.
+              Home values, sale prices, inventory, and days-on-market for every state and the
+              top U.S. metros — refreshed monthly from authoritative public data. The local
+              proof points buyers and sellers ask for, ready to quote in your CMA and listing
+              appointment.
             </p>
-          </div>
+            <span className="mt-4 inline-flex items-center text-sm font-semibold text-[#0072ce] group-hover:text-[#005ca8]">
+              Browse markets →
+            </span>
+          </Link>
         </div>
       </section>
     </main>
