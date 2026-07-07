@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
+import { attachItemImages } from "./itemImage";
 
 /**
  * Weekly Regional Newsletter — NATIONAL digest generator.
@@ -87,6 +88,18 @@ export type DigestItem = {
   state: string | null;
   /** 'state' when a state is set, else 'national'. */
   scope: "national" | "state";
+  /**
+   * The single scannable takeaway bullet — the punchy "so what" (≤ ~150 chars).
+   * Newer field: legacy stored items lack it, so readers fall back to a trimmed
+   * why_it_matters/summary (see coerceKeyPoint).
+   */
+  key_point?: string;
+  /**
+   * Public URL of a story image (og:image scraped from source_url, stored in the
+   * newsletter-images bucket), or null when none could be attached. Best-effort:
+   * cards render cleanly without it.
+   */
+  image_url?: string | null;
 };
 
 export type DigestSource = {
@@ -102,7 +115,15 @@ export type WeeklyDigest = {
   sources: DigestSource[];
 };
 
-const SYSTEM_PROMPT = `You are a consumer real-estate news editor compiling this week's "This Week in Housing" RADAR for a general audience of home buyers and sellers. Your job is to scan the WHOLE housing landscape and surface what is genuinely NEW and TIME-SENSITIVE this week across many categories — not just mortgage rates. Use the web_search tool to find REAL, CURRENT, PUBLISHED information — do not rely on memory for any number, law, program, or ranking.
+const SYSTEM_PROMPT = `You are the editor of "This Week in Housing," a polished weekly consumer newsletter for home buyers and sellers. Write like a professional publication: authoritative, concrete, active voice, no fluff or jargon. Your job is to scan the WHOLE housing landscape and surface what is genuinely NEW and TIME-SENSITIVE this week across many categories — not just mortgage rates. Use the web_search tool to find REAL, CURRENT, PUBLISHED information — do not rely on memory for any number, law, program, or ranking.
+
+EDITORIAL VOICE & FORMAT (this is a professional newsletter, not a blog post):
+- The issue TITLE is a clean, single-hook headline — ≤ 70 characters, ONE clear idea, title-case, NO comma-separated run-on lists. Good: "Rates Hit a 7-Week Low as Congress Passes a Housing Bill". Bad: "Mortgage rates fall, a new bill passes, schools rank, and insurance shifts this week".
+- The INTRO is a tight standfirst (dek): 1-2 crisp sentences that set up the week for buyers and sellers. Not a dense paragraph.
+- Every item is written to be SCANNED, not read as a wall of text. Give each item a "key_point" — ONE punchy bullet (≤ 150 characters) that states the takeaway / the "so what" up front. This is the lead line the reader sees.
+- "headline" is a crisp, specific, title-case line (not a sentence with a period).
+- "summary" is TIGHT: 1-2 sentences of what happened, tied to the cited fact. No padding.
+- "why_it_matters" is ONE plain-English sentence about the impact on buying or selling right now.
 
 HARD RULES (a violation makes the digest unpublishable):
 - EVERY factual claim (a mortgage rate, CPI/inflation print, jobs number, a new law or bill, a program's terms, a school-ranking result, an employer move, a price change) must come from a source you actually found via web_search. NEVER invent, round-guess, or "estimate" a number, a law, or a program detail. If you cannot verify it, omit that item — do not fabricate.
@@ -138,13 +159,14 @@ When done searching, respond with EXACTLY ONE fenced JSON code block and nothing
 
 \`\`\`json
 {
-  "title": "Specific, dated headline for the week's housing radar",
-  "intro": "2-3 sentence consumer-voice standfirst summarizing the week for buyers and sellers.",
+  "title": "Clean single-hook headline for the week (≤70 chars, no comma run-ons)",
+  "intro": "1-2 sentence standfirst (dek) summarizing the week for buyers and sellers.",
   "items": [
     {
-      "headline": "Short, specific headline for this item",
-      "summary": "2-3 sentences of what happened, tied to the cited fact.",
-      "why_it_matters": "1-2 sentences: what it means if you're buying or selling right now.",
+      "headline": "Crisp, specific, title-case line for this item",
+      "key_point": "The one punchy takeaway bullet — the 'so what' (≤150 chars).",
+      "summary": "1-2 tight sentences of what happened, tied to the cited fact.",
+      "why_it_matters": "ONE plain-English sentence: what it means if you're buying or selling now.",
       "source_url": "https://real-url-you-found",
       "publisher": "Freddie Mac",
       "category": "economy_rates",
@@ -158,7 +180,7 @@ When done searching, respond with EXACTLY ONE fenced JSON code block and nothing
 }
 \`\`\`
 
-Write 6-8 items spread across categories. Keep prose original, concrete, and tied to the cited facts.`;
+Write 6-8 items spread across categories. Every item MUST have a "key_point". Keep prose original, concrete, editorial, and tied to the cited facts. Every number stays cited; never fabricate.`;
 
 function buildUserPrompt(weekOf: string): string {
   return (
@@ -175,7 +197,10 @@ function buildUserPrompt(weekOf: string): string {
     `- seasonal / other: home-insurance & disaster-season updates, tax deadlines, seasonal shifts.\n\n` +
     `Check the calendar: given today's date, surface any recurring seasonal item that is CURRENT (e.g. fall school-ranking releases, tax-season assessment/appeal windows, hurricane/wildfire insurance news). ` +
     `Produce 6-8 items with a SPREAD across the categories, tag each with its "category", set "state"/"scope" for state-specific items, ` +
-    `cite every fact to the source you found it on, then return the JSON.`
+    `cite every fact to the source you found it on, then return the JSON.\n\n` +
+    `Write like a professional newsletter editor: a clean single-hook TITLE (≤70 chars, no comma run-ons), a tight 1-2 sentence standfirst INTRO, ` +
+    `and for each item a punchy "key_point" bullet (the scannable "so what", ≤150 chars) plus a crisp title-case headline, a tight 1-2 sentence summary, ` +
+    `and a one-sentence why_it_matters. Scannable, not walls of text.`
   );
 }
 
@@ -255,6 +280,7 @@ export async function generateWeeklyDigest(weekOf: string): Promise<WeeklyDigest
     return null;
   }
 
+  let digest: WeeklyDigest | null;
   const parsed = extractJson(finalText);
   if (!parsed) {
     // Last-ditch repair: ask the model to reformat its own output, reusing only
@@ -264,10 +290,22 @@ export async function generateWeeklyDigest(weekOf: string): Promise<WeeklyDigest
       console.warn("[newsletter] could not parse or repair the model JSON.");
       return null;
     }
-    return normalizeDigest(repaired);
+    digest = normalizeDigest(repaired);
+  } else {
+    digest = normalizeDigest(parsed);
   }
 
-  return normalizeDigest(parsed);
+  if (!digest) return null;
+
+  // Best-effort "a picture per story": attach an og:image per item (in place).
+  // Never throws; any per-item failure leaves that item's image_url null.
+  try {
+    await attachItemImages(digest.items, weekOf);
+  } catch (e) {
+    console.warn("[newsletter] image attach step failed (non-fatal):", e instanceof Error ? e.message : e);
+  }
+
+  return digest;
 }
 
 // ── JSON extraction (mirrors the research generator) ────────────────────────
@@ -336,7 +374,7 @@ async function repairJson(
           role: "user",
           content:
             "Extract the weekly housing-radar digest into ONE valid JSON object with keys: title, intro, items, sources. " +
-            "Each item has: headline, summary, why_it_matters, source_url, publisher, category, state, scope. Each source has: title, url, publisher. " +
+            "Each item has: headline, key_point, summary, why_it_matters, source_url, publisher, category, state, scope. Each source has: title, url, publisher. " +
             "Use ONLY the numbers, URLs, categories, states, and text already present below — do not invent or change any value.\n\n" +
             text.slice(0, 16000),
         },
@@ -378,6 +416,36 @@ export function coerceState(v: unknown): string | null {
   return /^[A-Z]{2}$/.test(raw) ? raw : null;
 }
 
+/** Max length for the scannable key-point bullet (soft cap, trimmed to a word). */
+const KEY_POINT_MAX = 160;
+
+/** Trim a string to <= max chars on a word boundary, appending an ellipsis. */
+function trimToLength(text: string, max: number): string {
+  const t = text.trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[\s,.;:—-]+$/, "")}…`;
+}
+
+/**
+ * Resolve the scannable key-point bullet. Uses the model's key_point when
+ * present; otherwise falls back to a trimmed why_it_matters, then summary — so
+ * legacy stored items (written before key_point existed) still render a lead
+ * bullet. Returns "" only if all three are empty.
+ */
+export function coerceKeyPoint(
+  keyPoint: unknown,
+  whyItMatters: unknown,
+  summary: unknown,
+): string {
+  const kp = typeof keyPoint === "string" ? keyPoint.trim() : "";
+  const why = typeof whyItMatters === "string" ? whyItMatters.trim() : "";
+  const sum = typeof summary === "string" ? summary.trim() : "";
+  const chosen = kp || why || sum;
+  return chosen ? trimToLength(chosen, KEY_POINT_MAX) : "";
+}
+
 function normalizeItems(raw: unknown): DigestItem[] {
   if (!Array.isArray(raw)) return [];
   return raw
@@ -394,15 +462,19 @@ function normalizeItems(raw: unknown): DigestItem[] {
       // scope follows state: 'state' when a state is set, else 'national'
       // (only trust an explicit 'state' scope when a valid state is present).
       const scope: "national" | "state" = state ? "state" : "national";
+      const why_it_matters = s(o.why_it_matters, "");
       return {
         headline,
         summary,
-        why_it_matters: s(o.why_it_matters, ""),
+        why_it_matters,
         source_url,
         publisher: s(o.publisher, ""),
         category: coerceCategory(o.category),
         state,
         scope,
+        key_point: coerceKeyPoint(o.key_point, why_it_matters, summary),
+        // image_url is attached later (best-effort) by attachItemImages().
+        image_url: null,
       };
     })
     .filter((x): x is DigestItem => x !== null);
