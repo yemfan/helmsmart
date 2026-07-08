@@ -1,6 +1,8 @@
 import "server-only";
 
 import { supabaseServer } from "@/lib/supabaseServer";
+import { CATEGORY_LABEL, DEFAULT_DIGEST_CATEGORY } from "@/lib/newsletter/generateDigest";
+import { renderFallbackCardPng } from "@/lib/newsletter/fallbackCard";
 
 /**
  * Best-effort "a picture per story" for the weekly newsletter.
@@ -24,10 +26,12 @@ const IMAGE_MAX_BYTES = 5 * 1024 * 1024; // ≤5MB image.
 const USER_AGENT =
   "Mozilla/5.0 (compatible; RealtyBossNewsletterBot/1.0; +https://www.realtybossai.com)";
 
-/** Item shape this module needs — just its source URL. */
+/** Item shape this module needs — source URL + fields for the branded fallback. */
 type ImageableItem = {
   source_url?: string | null;
   image_url?: string | null;
+  headline?: string | null;
+  category?: string | null;
 };
 
 /**
@@ -45,14 +49,42 @@ export async function attachItemImages(
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const src = typeof item?.source_url === "string" ? item.source_url : "";
-    if (!isHttpUrl(src)) continue;
+
+    // 1) Prefer the source article's own photo (og:image).
+    if (isHttpUrl(src)) {
+      try {
+        const url = await fetchStoreItemImage(src, weekOf, i);
+        if (url) {
+          item.image_url = url;
+          continue;
+        }
+      } catch {
+        // fall through to the branded fallback
+      }
+    }
+
+    // 2) No source photo → a branded fallback card so every story has a visual.
     try {
-      const url = await fetchStoreItemImage(src, weekOf, i);
+      const url = await renderStoreFallbackCard(item, weekOf, i);
       if (url) item.image_url = url;
     } catch {
       // Best-effort: swallow and leave image_url null.
     }
   }
+}
+
+/** Render the RealtyBoss fallback card for a story and store it; null on failure. */
+async function renderStoreFallbackCard(
+  item: ImageableItem,
+  weekOf: string,
+  index: number,
+): Promise<string | null> {
+  const headline = (item.headline ?? "").trim();
+  if (!headline) return null;
+  const category = (item.category ?? DEFAULT_DIGEST_CATEGORY) as keyof typeof CATEGORY_LABEL;
+  const label = CATEGORY_LABEL[category] ?? "This Week in Housing";
+  const bytes = await renderFallbackCardPng(headline, label);
+  return uploadImage(bytes, "image/png", weekOf, `${index}-card`);
 }
 
 /**
@@ -196,7 +228,7 @@ async function uploadImage(
   bytes: Uint8Array,
   contentType: string,
   weekOf: string,
-  index: number,
+  index: number | string,
 ): Promise<string | null> {
   const ext = extForContentType(contentType);
   const path = `${weekOf}/${index}.${ext}`;
