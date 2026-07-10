@@ -491,6 +491,20 @@ export async function autoStartBuyingRun(agentId: string, contactId: string): Pr
   };
 }
 
+/** Active runs whose next review is due (next_review_at <= now) — for the cron. */
+export async function listDueOptimizeRuns(limit = 20): Promise<Array<{ id: string; agent_id: string }>> {
+  const nowIso = new Date().toISOString();
+  const { data } = await supabaseAdmin
+    .from("playbook_runs")
+    .select("id, agent_id")
+    .eq("status", "active")
+    .not("next_review_at", "is", null)
+    .lte("next_review_at", nowIso)
+    .order("next_review_at", { ascending: true })
+    .limit(limit);
+  return (data ?? []) as Array<{ id: string; agent_id: string }>;
+}
+
 export async function getPlaybookRun(agentId: string, runId: string): Promise<PlaybookRunRow | null> {
   const { data } = await supabaseAdmin
     .from("playbook_runs")
@@ -522,6 +536,21 @@ export async function optimizePlaybookRun(
 
   const isSelling = run.type === "house_selling";
   const client = getAnthropicClient();
+
+  // Unattended (cron) runs have no agent note — synthesize context from the run
+  // so the review is grounded in elapsed time + progress rather than nothing.
+  const createdMs = new Date(run.created_at).getTime();
+  const daysActive = Number.isFinite(createdMs)
+    ? Math.max(0, Math.round((Date.now() - createdMs) / 86_400_000))
+    : 0;
+  const matchCount = (run.plan_json as BuyingPlan)?.matchCount;
+  const autoContext = isSelling
+    ? `Automated weekly review — ${daysActive} days into the listing. No offers/showings data provided; suggest the standard next-round adjustments for this stage.`
+    : `Automated weekly review — ${daysActive} days into the search${
+        typeof matchCount === "number" ? `; ${matchCount} matches delivered so far` : ""
+      }. Suggest the standard next-round refinements for this stage.`;
+  const note = agentNote?.trim() || autoContext;
+
   let suggestions: string[] = [];
   try {
     const res = await client.messages.create({
@@ -536,9 +565,7 @@ export async function optimizePlaybookRun(
       messages: [
         {
           role: "user",
-          content: `Playbook: ${run.title}\nCurrent plan: ${JSON.stringify(run.plan_json).slice(0, 4000)}\nAgent notes: ${
-            agentNote?.trim() || "(none provided — infer likely early-stage adjustments)"
-          }\n\nGive the optimization suggestions now.`,
+          content: `Playbook: ${run.title}\nCurrent plan: ${JSON.stringify(run.plan_json).slice(0, 4000)}\nNotes: ${note}\n\nGive the optimization suggestions now.`,
         },
       ],
     });
