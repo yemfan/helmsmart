@@ -22,5 +22,56 @@
   "pricing": {
     "title": "Pricing | RealtyBoss",
     "description": "Free, Pro ($79), Premium ($199), Signature ($399), and Team plans — full feature comparison for your AI real estate team: receptionist, follow-ups, and transaction coordination."
+  },
+  "cta": {
+    "start_free_trial": "Start free trial",
+    "schedule_demo": "Schedule a Demo",
+    "menu": "Menu"
+  },
+  "nav": {
+    "product": "Product",
+    "free_tools": "Free tools",
+    "resources": "Resources",
+    "compare": "Compare",
+    "homes": "Homes for sale",
+    "pricing": "Pricing"
+  },
+  "footer": {
+    "product": "Product",
+    "company": "Company",
+    "resources": "Resources",
+    "legal": "Legal",
+    "rights": "All rights reserved.",
+    "entity_line": "RealtyBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc."
+  },
+  "link": {
+    "features": "Features",
+    "live_demo": "Live demo",
+    "voice_ai_test_drive": "Test-drive voice AI",
+    "integrations": "Integrations",
+    "all_free_tools": "All free tools",
+    "mortgage_calculator": "Mortgage Calculator",
+    "cap_rate_calculator": "Cap Rate Calculator",
+    "cash_flow_calculator": "Cash Flow Calculator",
+    "roi_calculator": "ROI Calculator",
+    "home_value_estimator": "Home Value Estimator",
+    "ai_cma_analyzer": "AI CMA Analyzer",
+    "ai_deal_analyzer": "AI Deal Analyzer",
+    "ai_deal_assistant": "AI Deal Assistant",
+    "smart_cma_builder": "Smart CMA Builder",
+    "blog": "Blog",
+    "help_center": "Help center",
+    "faq": "FAQ",
+    "about": "About",
+    "contact": "Contact",
+    "support_chat": "Support chat",
+    "vs_other_crms": "vs. other CRMs",
+    "switch_from_crm": "Switch from your CRM",
+    "switch_your_crm": "Switch your CRM",
+    "coaching": "Coaching",
+    "home_value_leads": "Home Value Leads",
+    "pricing": "Pricing",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service"
   }
 }

@@ -307,7 +307,7 @@ export default function LeadSmartLandingV2() {
                   href="/login?next=/book"
                   className="min-h-11 px-6 text-base"
                 >
-                  Schedule a Demo
+                  {t("hero.cta_demo")}
                 </Button>
                 <Button
                   variant="outline"

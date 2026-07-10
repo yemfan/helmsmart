@@ -7,7 +7,7 @@ import { CookieConsentProvider } from "@/components/cookie-consent/CookieConsent
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { ReferralCodeCapture } from "@/components/referrals/ReferralCodeCapture";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
-import { getServerLocale } from "@/lib/i18n/server";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { getSiteUrl } from "@/lib/siteUrl";
 
 /**
@@ -188,6 +188,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // Language → English) so SSR + the first client render match
   // and we avoid a hydration flicker.
   const locale = await getServerLocale();
+  const t = await getServerT();
   // BCP-47 → HTML lang attribute. "zh-Hans" is valid HTML so we
   // pass it through unchanged.
   const htmlLang = locale === "zh-Hans" ? "zh-Hans" : "en";
@@ -226,7 +227,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[999] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[#0072ce] focus:shadow-lg focus:ring-2 focus:ring-[#0072ce]/40 dark:focus:bg-slate-900 dark:focus:text-[#4da3e8]"
         >
-          Skip to content
+          {t("skip_to_content", { ns: "common" })}
         </a>
         <I18nProvider locale={locale}>
           <AuthProvider>
