@@ -167,6 +167,10 @@
     {
       "path": "/api/cron/social-weekly",
       "schedule": "0 14 * * 1"
+    },
+    {
+      "path": "/api/cron/playbook-optimize",
+      "schedule": "0 16 * * *"
     }
   ]
 }
