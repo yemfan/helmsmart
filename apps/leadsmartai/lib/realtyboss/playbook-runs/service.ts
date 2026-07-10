@@ -39,7 +39,14 @@ async function createRunTask(
     assignee?: BossAssignee;
   },
 ): Promise<void> {
-  const meta: PlaybookTaskMeta = { from: "playbook_run", run_id: runId, phase };
+  const meta: PlaybookTaskMeta = {
+    from: "playbook_run",
+    run_id: runId,
+    phase,
+    // Executable steps go to the AI assistant; everything else is a human task
+    // that belongs to the agent.
+    owner: args.exec ? "assistant" : "agent",
+  };
   if (args.exec) {
     meta.exec = args.exec;
     meta.assignee = args.assignee;
@@ -378,6 +385,110 @@ export async function listPlaybookRuns(agentId: string): Promise<PlaybookRunRow[
     .order("updated_at", { ascending: false })
     .limit(100);
   return (data ?? []) as PlaybookRunRow[];
+}
+
+// ── Auto-start settings + idempotency ────────────────────────────────
+
+export type PlaybookAutoSettings = { autoSelling: boolean; autoBuying: boolean };
+
+export async function getPlaybookAutoSettings(agentId: string): Promise<PlaybookAutoSettings> {
+  try {
+    const { data } = await supabaseAdmin
+      .from("playbook_auto_settings")
+      .select("auto_selling, auto_buying")
+      .eq("agent_id", agentId)
+      .maybeSingle();
+    const row = data as { auto_selling?: boolean; auto_buying?: boolean } | null;
+    return { autoSelling: Boolean(row?.auto_selling), autoBuying: Boolean(row?.auto_buying) };
+  } catch {
+    return { autoSelling: false, autoBuying: false };
+  }
+}
+
+export async function setPlaybookAutoSettings(
+  agentId: string,
+  input: Partial<PlaybookAutoSettings>,
+): Promise<PlaybookAutoSettings> {
+  const current = await getPlaybookAutoSettings(agentId);
+  const next: PlaybookAutoSettings = {
+    autoSelling: input.autoSelling ?? current.autoSelling,
+    autoBuying: input.autoBuying ?? current.autoBuying,
+  };
+  await supabaseAdmin.from("playbook_auto_settings").upsert(
+    { agent_id: agentId, auto_selling: next.autoSelling, auto_buying: next.autoBuying, updated_at: new Date().toISOString() },
+    { onConflict: "agent_id" },
+  );
+  return next;
+}
+
+/** Is there already an active run of this type for the subject? (idempotency for auto-start.) */
+export async function hasActiveRun(
+  agentId: string,
+  type: PlaybookRunType,
+  subject: { address?: string | null; contactId?: string | null },
+): Promise<boolean> {
+  let q = supabaseAdmin
+    .from("playbook_runs")
+    .select("id", { count: "exact", head: true })
+    .eq("agent_id", agentId)
+    .eq("type", type)
+    .eq("status", "active");
+  if (subject.address) q = q.eq("property_address", subject.address);
+  if (subject.contactId) q = q.eq("contact_id", subject.contactId);
+  const { count } = await q;
+  return (count ?? 0) > 0;
+}
+
+/** Consultation-first buying run for auto-start (a qualified buyer, no criteria yet). */
+export async function autoStartBuyingRun(agentId: string, contactId: string): Promise<StartRunResult> {
+  const { data } = await supabaseAdmin
+    .from("contacts")
+    .select("name")
+    .eq("agent_id", agentId)
+    .eq("id", contactId)
+    .maybeSingle();
+  const who = (data as { name?: string | null } | null)?.name ?? "the buyer";
+  const nowIso = new Date().toISOString();
+
+  const { data: inserted, error } = await supabaseAdmin
+    .from("playbook_runs")
+    .insert({
+      agent_id: agentId,
+      type: "house_buying",
+      contact_id: contactId,
+      property_address: null,
+      title: `Home search for ${who}`,
+      phase: "consultation",
+      status: "active",
+      plan_json: {},
+      artifacts_json: [],
+      next_review_at: dueInDays(7),
+      updated_at: nowIso,
+    })
+    .select("id")
+    .single();
+  if (error || !inserted?.id) return { ok: false, error: error?.message ?? "Couldn't create the playbook run." };
+  const runId = inserted.id as string;
+
+  await createRunTask(agentId, runId, "consultation", {
+    title: `Buyer consultation with ${who}`,
+    description: "Confirm must-haves vs nice-to-haves, budget/pre-approval, timeline, and preferred channel. Book the meeting.",
+    dueAt: dueInDays(2),
+    priority: "high",
+  });
+  await createRunTask(agentId, runId, "search_plan", {
+    title: `Set the search criteria + start the search for ${who}`,
+    description: `Once you have criteria, tell the Boss: "start a buying playbook for ${who} — [beds/baths, area, price]" to build + save the live search.`,
+    dueAt: dueInDays(2),
+    priority: "high",
+  });
+
+  return {
+    ok: true,
+    runId,
+    note: `Buying playbook started for ${who} — consultation + criteria kickoff.`,
+    url: `/dashboard/playbook-runs/${runId}`,
+  };
 }
 
 export async function getPlaybookRun(agentId: string, runId: string): Promise<PlaybookRunRow | null> {

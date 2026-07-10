@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { listPlaybookRuns } from "@/lib/realtyboss/playbook-runs/service";
+import { getPlaybookAutoSettings, listPlaybookRuns } from "@/lib/realtyboss/playbook-runs/service";
+import { AutoSettingsCard } from "./AutoSettingsCard";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,10 @@ function fmtDate(iso: string | null): string {
  */
 export default async function PlaybookRunsPage() {
   const ctx = await getCurrentAgentContext();
-  const runs = await listPlaybookRuns(ctx.agentId);
+  const [runs, auto] = await Promise.all([
+    listPlaybookRuns(ctx.agentId),
+    getPlaybookAutoSettings(ctx.agentId),
+  ]);
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6">
@@ -30,6 +34,8 @@ export default async function PlaybookRunsPage() {
           buying playbook for John — 3b/2b in Alhambra $600k–$1M.&rdquo;
         </p>
       </div>
+
+      <AutoSettingsCard autoSelling={auto.autoSelling} autoBuying={auto.autoBuying} />
 
       {runs.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/50 p-10 text-center dark:border-slate-700 dark:bg-slate-900/40">

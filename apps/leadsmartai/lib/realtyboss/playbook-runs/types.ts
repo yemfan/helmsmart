@@ -23,6 +23,8 @@ export type PlaybookTaskMeta = {
   from?: string;
   run_id?: string;
   phase?: string;
+  /** Who does this task: the AI team ("assistant") or the human realtor ("agent"). */
+  owner?: "assistant" | "agent";
   assignee?: BossAssignee;
   exec?: PlaybookExec;
   dispatch_status?: PlaybookDispatchStatus;
