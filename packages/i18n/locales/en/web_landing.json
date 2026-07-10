@@ -245,6 +245,29 @@
     "cta_primary": "Start Closing More Deals Today",
     "cta_secondary": "Estimate Your ROI"
   },
+  "faster": {
+    "eyebrow": "Faster, with less effort",
+    "h2": "Sell faster. Buy faster. Let the AI do the work.",
+    "body": "Every deal runs on a proven playbook your AI team executes around the clock — so you move faster with far less effort.",
+    "sell": {
+      "title": "Sell a home faster, with less effort",
+      "subtitle": "Your AI listing team runs a top-producer's playbook 24/7.",
+      "items": {
+        "playbook": "A house-selling playbook built by top producers — every listing follows a proven plan, not guesswork.",
+        "ai_machine": "An AI selling machine executes it for you, 24/7 — prep, launch, and follow-up never stop.",
+        "all_tools": "We market the home with every tool at once — MLS, portals, social, email, ads, and open houses.",
+        "vigorous": "We market it vigorously — your listing gets pushed hard until it sells."
+      }
+    },
+    "buy": {
+      "title": "Find a home faster, with less effort",
+      "subtitle": "Your AI buyer's agent hunts around the clock and learns as it goes.",
+      "items": {
+        "auto_criteria": "We automatically update the search criteria from your buyer's feedback on every home.",
+        "ai_machine": "An AI house-searching machine works for you, 24/7 — new matches found and sent while you sleep."
+      }
+    }
+  },
   "final": {
     "h2": "Your next deal is already visiting your website.",
     "subtitle": "Don't let it slip away.",
