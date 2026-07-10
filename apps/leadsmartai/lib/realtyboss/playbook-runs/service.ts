@@ -4,16 +4,16 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getAnthropicClient } from "@/lib/anthropic";
 import { findRecentCmaSnapshotByAddress } from "@/lib/cma/service";
 import { generateHouseSearch } from "@/lib/house-search/aiHouseSearch";
-import {
-  createSavedHouseSearch,
-  updateSavedHouseSearch,
-} from "@/lib/house-search/savedHouseSearches";
+import { createSavedHouseSearch } from "@/lib/house-search/savedHouseSearches";
 import { generateMarketingPlan, generatePropertyAds } from "./generators";
+import type { BossAssignee } from "@/lib/realtyboss/actions/registry";
 import type {
   BuyingPlan,
   PlaybookArtifact,
+  PlaybookExec,
   PlaybookRunRow,
   PlaybookRunType,
+  PlaybookTaskMeta,
   SellingPlan,
 } from "./types";
 
@@ -29,8 +29,22 @@ async function createRunTask(
   agentId: string,
   runId: string,
   phase: string,
-  args: { title: string; description?: string | null; dueAt?: string | null; priority?: string },
+  args: {
+    title: string;
+    description?: string | null;
+    dueAt?: string | null;
+    priority?: string;
+    /** When set, the task is AI-executable: an assistant runs it (auto or on approval). */
+    exec?: PlaybookExec;
+    assignee?: BossAssignee;
+  },
 ): Promise<void> {
+  const meta: PlaybookTaskMeta = { from: "playbook_run", run_id: runId, phase };
+  if (args.exec) {
+    meta.exec = args.exec;
+    meta.assignee = args.assignee;
+    meta.dispatch_status = "pending";
+  }
   await supabaseAdmin.from("crm_tasks").insert({
     agent_id: agentId,
     title: args.title.slice(0, 200),
@@ -40,7 +54,7 @@ async function createRunTask(
     priority: args.priority ?? "medium",
     source: "automation",
     task_type: "boss_playbook",
-    metadata_json: { from: "playbook_run", run_id: runId, phase },
+    metadata_json: meta,
   });
 }
 
@@ -88,11 +102,11 @@ const SELLING_PREP: Array<{ title: string; off: number; priority: string }> = [
   { title: "Gather seller disclosures + HOA docs", off: 3, priority: "medium" },
 ];
 
-const SELLING_EXECUTE: Array<{ title: string; off: number; priority: string }> = [
-  { title: "Publish listing to MLS + portals (Zillow/Redfin/realtor.com) — verify fields", off: 5, priority: "high" },
-  { title: "Post the 3 property ads to social + boost per the plan (review before posting)", off: 5, priority: "high" },
-  { title: "Email the listing to your sphere + buyer-agent circle", off: 6, priority: "medium" },
-  { title: "Schedule + promote open house #1", off: 7, priority: "high" },
+const SELLING_EXECUTE: Array<{ key: string; title: string; off: number; priority: string }> = [
+  { key: "mls", title: "Publish listing to MLS + portals (Zillow/Redfin/realtor.com) — verify fields", off: 5, priority: "high" },
+  { key: "ads", title: "Post the property ads to social", off: 5, priority: "high" },
+  { key: "sphere", title: "Email the listing to your sphere + buyer-agent circle", off: 6, priority: "medium" },
+  { key: "open_house", title: "Schedule + promote open house #1", off: 7, priority: "high" },
 ];
 
 async function startSelling(
@@ -181,13 +195,27 @@ async function startSelling(
     .update({ plan_json: plan, phase: "execute", updated_at: new Date().toISOString() })
     .eq("id", runId);
 
-  // Phase 4 — execute (approval-gated: prepared as tasks for the agent to run).
+  // Phase 4 — execute. AI-executable steps are BOUND to the Marketing Assistant
+  // (posting the ads) and run autonomously when social autopilot is on, else the
+  // agent clicks "Approve & run". The rest are human checklist tasks.
   for (const s of SELLING_EXECUTE) {
+    const exec: PlaybookExec | undefined =
+      s.key === "ads" && plan.ads?.length
+        ? {
+            kind: "boss_action",
+            type: "post_social",
+            params: { topic: `New listing at ${address} — ${plan.ads[0].angle}. ${plan.ads[0].headline}` },
+          }
+        : undefined;
     await createRunTask(agentId, runId, "execute", {
       title: `${s.title} — ${address}`,
-      description: `House-selling playbook for ${address}. Review before it goes out.`,
+      description: exec
+        ? `House-selling playbook for ${address}. The Marketing Assistant can post this — approve to run, or it runs automatically if social autopilot is on.`
+        : `House-selling playbook for ${address}. Review before it goes out.`,
       dueAt: dueInDays(s.off),
       priority: s.priority,
+      exec,
+      assignee: exec ? "marketing_assistant" : undefined,
     });
   }
 
@@ -215,7 +243,6 @@ async function startSelling(
 async function startBuying(
   agentId: string,
   params: Record<string, string>,
-  autoExecute: boolean,
 ): Promise<StartRunResult> {
   const rawName = (params.contact_name ?? "").trim();
   const criteria = (params.criteria ?? "").trim();
@@ -286,11 +313,6 @@ async function startBuying(
         url: "/dashboard/house-search",
         createdAt: nowIso,
       });
-      // Approval-gated: only auto-run the cadence when autopilot is on; otherwise
-      // deliver via a review task so the agent approves each send.
-      if (frequency && autoExecute) {
-        await updateSavedHouseSearch(agentId, saved.id, { autoRun: true, autoRunFrequency: frequency });
-      }
     } catch {
       /* the plan is still recorded even if saving the live search failed */
     }
@@ -301,15 +323,22 @@ async function startBuying(
     .update({ plan_json: plan, phase: "execute", updated_at: new Date().toISOString() })
     .eq("id", runId);
 
-  // Phase 3 — execute (approval-gated unless autopilot handled the cadence above).
-  const autoSending = Boolean(frequency && autoExecute);
+  // Phase 3 — execute. Bound to the Sales Assistant: turning on the saved
+  // search's recurring delivery. Runs autonomously when email autopilot is on,
+  // else the agent clicks "Approve & run".
+  const cadence: "daily" | "weekly" = frequency ?? "weekly";
+  const sendExec: PlaybookExec | undefined = plan.savedSearchId
+    ? { kind: "enable_autorun", savedSearchId: plan.savedSearchId, frequency: cadence, assignee: "sales_assistant", channel: "email" }
+    : undefined;
   await createRunTask(agentId, runId, "execute", {
-    title: `Send new home matches to ${who}${frequency ? ` (${frequency})` : ""}`,
-    description: autoSending
-      ? `Autopilot is on — the saved search auto-emails ${who} ${frequency}. Keep an eye on the matches.`
-      : `Review the saved search and send fresh matches to ${who}${frequency ? ` on a ${frequency} cadence` : ""}. Approval is on, so nothing sends until you okay it.`,
+    title: `Send new home matches to ${who} (${cadence})`,
+    description: sendExec
+      ? `The Sales Assistant will deliver fresh matches to ${who} ${cadence} — approve to start, or it starts automatically if email autopilot is on.`
+      : `Review the saved search and send fresh matches to ${who} on a ${cadence} cadence.`,
     dueAt: dueInDays(1),
     priority: "high",
+    exec: sendExec,
+    assignee: sendExec ? "sales_assistant" : undefined,
   });
 
   // Phase 4 — optimize review.
@@ -325,9 +354,7 @@ async function startBuying(
   return {
     ok: true,
     runId,
-    note: `Buying playbook started for ${who}${matchNote}. Consultation, saved search${
-      autoSending ? ` (auto-emailing ${frequency})` : ""
-    }, and weekly optimize review set.`,
+    note: `Buying playbook started for ${who}${matchNote}. Consultation, saved search, ${cadence} match delivery, and weekly optimize review set.`,
     url,
   };
 }
@@ -336,10 +363,9 @@ export async function startPlaybookRun(args: {
   agentId: string;
   type: PlaybookRunType;
   params: Record<string, string>;
-  autoExecute: boolean;
 }): Promise<StartRunResult> {
   if (args.type === "house_selling") return startSelling(args.agentId, args.params);
-  return startBuying(args.agentId, args.params, args.autoExecute);
+  return startBuying(args.agentId, args.params);
 }
 
 // ── Reads ────────────────────────────────────────────────────────────
@@ -459,6 +485,6 @@ export async function getRunTasks(agentId: string, runId: string) {
     status: string;
     priority: string | null;
     due_at: string | null;
-    metadata_json: { phase?: string } | null;
+    metadata_json: PlaybookTaskMeta | null;
   }>;
 }
