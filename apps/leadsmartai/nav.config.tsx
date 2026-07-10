@@ -357,6 +357,12 @@ const navConfig = {
           match: ["/dashboard/playbooks"],
           icon: l(<ClipboardList size={14} strokeWidth={STROKE} aria-hidden />),
         },
+        {
+          label: "Playbook runs",
+          href: "/dashboard/playbook-runs",
+          match: ["/dashboard/playbook-runs"],
+          icon: l(<Rocket size={14} strokeWidth={STROKE} aria-hidden />),
+        },
         // Daily Overview removed from the nav (the Boss Assistant IS
         // the daily overview now); route stays live at /dashboard/overview.
         // Performance merged into the Boss Assistant (collapsed
