@@ -1,9 +1,93 @@
 # LeadSmart mobile — store review checklist
 
-Owner: Michael Ye. Last updated: 2026-05-26.
+Owner: Michael Ye. Last updated: 2026-07-09.
 
 This doc tracks the work needed to pass Apple App Store and Google Play review
 for `apps/leadsmart-mobile` (bundle `ai.leadsmart.mobile`, version 1.5.0).
+
+## Rejection history — build 1.6 (28), 2026-07-06
+
+Rejected on **iPad Air 11-inch (M3), iPadOS 26.5.2** for two issues.
+Submission ID `3594f255-2152-4252-a775-6ec90fa84eab`.
+
+### Guideline 4.0 — Design (Sign in button not visible) — FIXED IN CODE
+
+Root cause: `app/(onboarding)/login.tsx` spread `s.safePad` into the
+`ScrollView` `contentContainerStyle`. `safePad` carries `flex: 1`
+(→ `flexShrink: 1`, clamps content to the viewport and clips overflow
+instead of scrolling) and `justifyContent: "space-between"` (pins the
+Sign in button to the bottom edge, under the keyboard). With the
+keyboard up, the button was pinned off-screen and the ScrollView
+couldn't scroll to it. iPad's taller keyboard exposed it. Fix: replaced
+the spread with plain padding + `flexGrow: 1` so content flows top-down
+and scrolls. **Must be re-verified in the iOS Simulator / TestFlight
+with the keyboard raised before resubmitting.**
+
+### Guideline 2.1(b) — Information Needed (business model) — REPLY REQUIRED
+
+Apple paused the review to ask about the paid-features business model.
+This is a **message reply in App Store Connect**, not a code change.
+Answer: RealtyBoss is a B2B CRM for licensed real estate agents;
+subscriptions are purchased **only on the web** (realtybossai.com); there
+is no in-app purchase and nothing is sold or unlocked inside the app —
+it is a client for a multiplatform service (Guideline 3.1.3(b)). Full
+copy-paste reply is drafted below under "Guideline 2.1(b) reply".
+
+> Anti-steering check (Guideline 3.1.1): 3.1.3(b) only applies if the app
+> does NOT push users to buy outside it. Confirm no in-app screen shows a
+> "sign up on our website" / pricing / purchase CTA before resubmitting.
+
+### Guideline 2.1(b) reply — paste into the App Store Connect thread
+
+> Hello, and thank you for the questions. Here is a description of our
+> business model.
+>
+> RealtyBoss is a business productivity (CRM) app for **licensed real
+> estate agents**. It is a companion to our web service at
+> https://www.realtybossai.com. It is a business tool, not a consumer
+> content/media app — there is no music, video, books, games, or other
+> digital media.
+>
+> **1. Who are the users that will use the paid features in the app?**
+> Licensed real estate agents who are existing, paying subscribers to our
+> RealtyBoss web service. They sign in to the mobile app with the same
+> account they use on the web.
+>
+> **2. Where can users purchase the features that can be accessed in the
+> app?** Subscriptions are purchased **only on our website**
+> (https://www.realtybossai.com). There is no purchasing of any kind
+> inside the app, and the app does not offer, advertise, or link to any
+> purchase flow. Users arrive at the app already subscribed.
+>
+> **3. What specific types of previously purchased features can a user
+> access?** Business CRM tools tied to the agent's own account: viewing
+> and managing their leads/contacts, a sales pipeline, sending SMS/email
+> follow-ups to their own clients, scheduling property showings, and
+> reminders/tasks. These are professional workflow tools, not digital
+> content.
+>
+> **4. What paid content, subscriptions, or features are unlocked within
+> the app that do not use in-app purchase?** None are unlocked *within*
+> the app. The app is a client for a service the agent already pays for
+> on the web (a multiplatform service, per Guideline 3.1.3(b)). No
+> digital goods are sold or unlocked through the app.
+>
+> **5. Is the app for individual consumers, or for
+> businesses/organizations?** It is a **business-to-business** tool sold
+> to real estate professionals for use in their work.
+>
+> **6. Does the app require any purchase or subscription to use?** A user
+> must have a RealtyBoss account, created on our website. A free demo
+> account is provided in App Review Information for testing:
+> demo@leadsmart.ai / Demo123!
+>
+> We have also addressed the Guideline 4.0 sign-in layout issue in this
+> same build and will resubmit. Please let us know if any further detail
+> would help.
+
+> History: build 1.6 (28) was reviewed on iPad even though
+> `supportsTablet: false` — Apple runs iPhone-only apps in scaled
+> compatibility mode on iPad and still enforces Guideline 4.0 there.
 
 ## Status
 
