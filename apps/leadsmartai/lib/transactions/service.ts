@@ -5,6 +5,7 @@ import { persistCommissionDefaults } from "./applyCommissionDefaults";
 import { addDaysIso, applyDeadlineDefaults } from "./deadlineDefaults";
 import { applyOnCloseBackfill } from "./onCloseBackfill";
 import { seedTasksFor } from "./seedTasks";
+import { maybeAutoStartFromTransaction } from "@/lib/realtyboss/playbook-runs/auto";
 import type {
   CounterpartyRole,
   TransactionCounterpartyRow,
@@ -121,6 +122,16 @@ export async function createTransaction(input: CreateTransactionInput): Promise<
       console.error("[transactions.create] seed task insert failed:", taskError.message);
     }
   }
+
+  // Opt-in playbook auto-start: a listing_rep/dual transaction kicks off the
+  // selling playbook; a buyer_rep transaction the buying playbook. Best-effort —
+  // never blocks or fails the transaction create.
+  await maybeAutoStartFromTransaction({
+    agentId: input.agentId,
+    transactionType,
+    propertyAddress: input.propertyAddress,
+    contactId: input.contactId,
+  });
 
   return inserted as TransactionRow;
 }

@@ -206,18 +206,22 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
                 <div className="min-w-0 flex-1">
                   <span className="text-slate-800 dark:text-slate-200">{t.title}</span>
                   {t.due_at ? <span className="ml-2 text-xs text-slate-400">due {fmtDate(t.due_at)}</span> : null}
-                  {m.assignee ? (
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    {m.assignee ? (
                       <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-[11px] font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
                         {ASSIGNEE_LABEL[m.assignee] ?? m.assignee}
                       </span>
-                      {m.dispatch_status === "done" ? (
-                        <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">✓ Ran autonomously</span>
-                      ) : m.exec ? (
-                        <ApproveRunButton runId={run.id} taskId={t.id} />
-                      ) : null}
-                    </div>
-                  ) : null}
+                    ) : m.owner === "agent" ? (
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                        You
+                      </span>
+                    ) : null}
+                    {m.dispatch_status === "done" ? (
+                      <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">✓ Ran autonomously</span>
+                    ) : m.exec ? (
+                      <ApproveRunButton runId={run.id} taskId={t.id} />
+                    ) : null}
+                  </div>
                 </div>
               </li>
             );
