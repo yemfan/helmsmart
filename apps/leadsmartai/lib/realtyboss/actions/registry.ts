@@ -16,6 +16,7 @@ import {
   updateSavedHouseSearch,
 } from "@/lib/house-search/savedHouseSearches";
 import { startPlaybookRun } from "@/lib/realtyboss/playbook-runs/service";
+import { autoDispatchRunTasks } from "@/lib/realtyboss/playbook-runs/dispatch";
 
 /**
  * Boss Assistant ACTION REGISTRY.
@@ -619,10 +620,12 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
     planHint:
       'start_selling_playbook — STATEFUL PLAYBOOK: kick off the whole home-selling engagement (after the listing agreement is signed). The team lays out a prep checklist, generates an AI marketing plan + 3 custom property ads, schedules the rollout, and sets a weekly optimize review. Choose when asked to start selling / list / market a specific property end-to-end (not just one CMA or one post). params: { address }.',
     requiredParams: [{ ...ADDRESS, question: "What's the address of the home to sell?" }],
-    run: async ({ agentId, params, autoExecute }) => {
-      const res = await startPlaybookRun({ agentId, type: "house_selling", params, autoExecute });
+    run: async ({ agentId, params }) => {
+      const res = await startPlaybookRun({ agentId, type: "house_selling", params });
       if (!res.ok) return { status: "assigned", note: res.error };
-      return { status: "completed", artifactType: "playbook_run", artifactUrl: res.url, note: res.note };
+      const ran = await autoDispatchRunTasks(agentId, res.runId);
+      const note = ran > 0 ? `${res.note} The Marketing Assistant auto-ran ${ran} task${ran === 1 ? "" : "s"} (autopilot on).` : res.note;
+      return { status: "completed", artifactType: "playbook_run", artifactUrl: res.url, note };
     },
   },
 
@@ -640,10 +643,12 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
         question: "What's the buyer looking for? Include beds/baths, area, and price range.",
       },
     ],
-    run: async ({ agentId, params, autoExecute }) => {
-      const res = await startPlaybookRun({ agentId, type: "house_buying", params, autoExecute });
+    run: async ({ agentId, params }) => {
+      const res = await startPlaybookRun({ agentId, type: "house_buying", params });
       if (!res.ok) return { status: "assigned", note: res.error };
-      return { status: "completed", artifactType: "playbook_run", artifactUrl: res.url, note: res.note };
+      const ran = await autoDispatchRunTasks(agentId, res.runId);
+      const note = ran > 0 ? `${res.note} The Sales Assistant auto-ran ${ran} task${ran === 1 ? "" : "s"} (autopilot on).` : res.note;
+      return { status: "completed", artifactType: "playbook_run", artifactUrl: res.url, note };
     },
   },
 };

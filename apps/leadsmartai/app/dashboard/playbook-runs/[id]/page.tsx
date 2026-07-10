@@ -6,6 +6,15 @@ import { getPlaybookRun, getRunTasks } from "@/lib/realtyboss/playbook-runs/serv
 import { getPlaybookRunDef } from "@/lib/realtyboss/playbook-runs/definitions";
 import type { BuyingPlan, PlaybookArtifact, SellingPlan } from "@/lib/realtyboss/playbook-runs/types";
 import { OptimizePanel } from "./OptimizePanel";
+import { ApproveRunButton } from "./ApproveRunButton";
+
+const ASSIGNEE_LABEL: Record<string, string> = {
+  receptionist: "Receptionist",
+  sales_assistant: "Sales Assistant",
+  marketing_assistant: "Marketing Assistant",
+  transaction_assistant: "Transaction Assistant",
+  accountant: "Accountant",
+};
 
 export const dynamic = "force-dynamic";
 
@@ -179,24 +188,40 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
             Open task board →
           </Link>
         </div>
-        <ul className="mt-3 space-y-2">
-          {tasks.map((t) => (
-            <li key={t.id} className="flex items-start gap-3 text-sm">
-              <span
-                className={`mt-0.5 inline-flex h-5 shrink-0 items-center rounded px-1.5 text-[11px] font-medium ${
-                  t.status === "done" || t.status === "completed"
-                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
-                    : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
-                }`}
-              >
-                {PHASE_LABEL[t.metadata_json?.phase ?? ""] ?? "Task"}
-              </span>
-              <div>
-                <span className="text-slate-800 dark:text-slate-200">{t.title}</span>
-                {t.due_at ? <span className="ml-2 text-xs text-slate-400">due {fmtDate(t.due_at)}</span> : null}
-              </div>
-            </li>
-          ))}
+        <ul className="mt-3 space-y-2.5">
+          {tasks.map((t) => {
+            const m = t.metadata_json ?? {};
+            const isDone = t.status === "done" || t.status === "completed";
+            return (
+              <li key={t.id} className="flex items-start gap-3 text-sm">
+                <span
+                  className={`mt-0.5 inline-flex h-5 shrink-0 items-center rounded px-1.5 text-[11px] font-medium ${
+                    isDone
+                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                      : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                  }`}
+                >
+                  {PHASE_LABEL[m.phase ?? ""] ?? "Task"}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <span className="text-slate-800 dark:text-slate-200">{t.title}</span>
+                  {t.due_at ? <span className="ml-2 text-xs text-slate-400">due {fmtDate(t.due_at)}</span> : null}
+                  {m.assignee ? (
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-[11px] font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
+                        {ASSIGNEE_LABEL[m.assignee] ?? m.assignee}
+                      </span>
+                      {m.dispatch_status === "done" ? (
+                        <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">✓ Ran autonomously</span>
+                      ) : m.exec ? (
+                        <ApproveRunButton runId={run.id} taskId={t.id} />
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              </li>
+            );
+          })}
           {tasks.length === 0 ? <li className="text-sm text-slate-400">No tasks yet.</li> : null}
         </ul>
       </section>

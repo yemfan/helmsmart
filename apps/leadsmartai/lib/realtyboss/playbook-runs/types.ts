@@ -1,4 +1,34 @@
-import type { BossAssignee } from "@/lib/realtyboss/actions/registry";
+import type { BossActionType, BossAssignee, BossChannel } from "@/lib/realtyboss/actions/registry";
+
+/**
+ * A capability bound to a playbook EXECUTE task, so the owning AI assistant can
+ * run it — automatically when autopilot is on for its (assignee, channel), or on
+ * the agent's "Approve & run". `boss_action` dispatches a registry action;
+ * `enable_autorun` turns on a saved search's recurring delivery.
+ */
+export type PlaybookExec =
+  | { kind: "boss_action"; type: BossActionType; params: Record<string, string> }
+  | {
+      kind: "enable_autorun";
+      savedSearchId: string;
+      frequency: "daily" | "weekly";
+      assignee: BossAssignee;
+      channel: BossChannel;
+    };
+
+export type PlaybookDispatchStatus = "pending" | "done" | "failed";
+
+/** Metadata we store on a run's crm_tasks (metadata_json). */
+export type PlaybookTaskMeta = {
+  from?: string;
+  run_id?: string;
+  phase?: string;
+  assignee?: BossAssignee;
+  exec?: PlaybookExec;
+  dispatch_status?: PlaybookDispatchStatus;
+  dispatched_at?: string;
+  artifact_url?: string | null;
+};
 
 /**
  * Stateful, multi-phase AI-team engagements — see the `playbook_runs` table.
