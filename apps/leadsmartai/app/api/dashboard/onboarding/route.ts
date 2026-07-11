@@ -6,8 +6,13 @@ import {
   parseServiceAreas,
   serviceAreasToLegacyStrings,
 } from "@/lib/geo/serviceArea";
+import {
+  detectServiceAreaFromGeo,
+  ensureAgentDefaultMarket,
+  readGeoFromHeaders,
+} from "@/lib/realtyboss/market/autodetect";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const { agentId } = await getCurrentAgentContext();
     const { data, error } = await supabaseServer
@@ -28,11 +33,23 @@ export async function GET() {
       logo_url?: string | null;
     } | null;
 
+    const serviceAreasV2 = parseServiceAreas(row?.service_areas_v2);
+    // Reduce onboarding friction: when the agent has no market yet, suggest one
+    // auto-detected from their IP (AI maps the city+state to a county). The
+    // wizard pre-fills the picker with this; nothing is saved until they confirm.
+    const suggestedServiceAreas =
+      serviceAreasV2.length === 0
+        ? [await detectServiceAreaFromGeo(readGeoFromHeaders(req.headers))].filter(
+            (a): a is NonNullable<typeof a> => a !== null,
+          )
+        : [];
+
     return NextResponse.json({
       ok: true,
       onboardingCompleted: Boolean(row?.onboarding_completed),
       serviceAreas: row?.service_areas ?? [],
-      serviceAreasV2: parseServiceAreas(row?.service_areas_v2),
+      serviceAreasV2,
+      suggestedServiceAreas,
       brandName: row?.brand_name ?? null,
       logoUrl: row?.logo_url ?? null,
     });
@@ -124,6 +141,13 @@ export async function POST(req: Request) {
           .from("agent_notification_preferences")
           .insert({ agent_id: agentId as any, ...notifPatch });
       }
+    }
+
+    // Guarantee a default market: if the agent completed onboarding without
+    // picking any service area, auto-detect + assign one from their IP (AI maps
+    // city+state to county). Idempotent — no-op when they already have one.
+    if (body.onboarding_completed === true) {
+      await ensureAgentDefaultMarket(agentId as unknown as string, readGeoFromHeaders(req.headers)).catch(() => {});
     }
 
     // Send welcome email with app install link when onboarding completes
