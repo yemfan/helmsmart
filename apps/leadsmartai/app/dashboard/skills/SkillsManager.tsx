@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 
 import { setSkillOverrideAction } from "./actions";
@@ -105,6 +106,14 @@ export function SkillsManager({
                         ) : null}
                       </div>
                       <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{s.value}</p>
+                      {s.enabled ? (
+                        <Link
+                          href={`/dashboard/skills/${s.id}`}
+                          className="mt-1.5 inline-block text-xs font-medium text-blue-600 hover:underline dark:text-blue-400"
+                        >
+                          Run →
+                        </Link>
+                      ) : null}
                     </div>
                     <div className="flex shrink-0 flex-col items-end gap-2">
                       <button
