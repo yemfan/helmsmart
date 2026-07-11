@@ -140,3 +140,84 @@ export async function runSkill(
   const gate = producesPublicContent(skill) ? await runComplianceGate(output, values) : null;
   return { ok: true, output, assignee, gate };
 }
+
+// ── Boss integration: route a natural-language request → a skill + inputs ──
+
+export type SkillRoute =
+  | { skillId: string; inputs: Record<string, string> }
+  | { skillId: null; reason: string };
+
+/** AI router: pick ONE of the agent's enabled skills for a request + extract inputs. */
+export async function routeSkillRequest(agentId: string, request: string): Promise<SkillRoute> {
+  if (!isAnthropicConfigured()) return { skillId: null, reason: "AI is not configured." };
+  const enabled = (await getResolvedSkills(agentId)).filter((s) => s.enabled && !s.isValidator);
+  if (!enabled.length) return { skillId: null, reason: "No skills are enabled." };
+
+  const catalog = enabled
+    .map((s) => `- ${s.id} — ${s.title}: ${s.value} [inputs: ${skillInputKeys(s).join(", ") || "none"}]`)
+    .join("\n");
+  const system =
+    "You route a real estate agent's request to ONE of their AI skills and extract the inputs from the request. Skills:\n" +
+    catalog +
+    '\n\nReturn ONLY JSON: { "skill_id": "<id>" | null, "inputs": { "<inputKey>": "<value from the request>" } }. ' +
+    "Pick null when nothing clearly fits. Extract only values explicitly present in the request; omit inputs you can't fill.";
+  try {
+    const text = await claude(system, `Request: ${request}`, 500);
+    const m = text.match(/\{[\s\S]*\}/);
+    const parsed = m ? (JSON.parse(m[0]) as { skill_id?: unknown; inputs?: unknown }) : null;
+    const skillId = typeof parsed?.skill_id === "string" ? parsed.skill_id : null;
+    if (!skillId || !enabled.some((s) => s.id === skillId)) {
+      return { skillId: null, reason: "Couldn't match that to one of your skills." };
+    }
+    const inputs: Record<string, string> = {};
+    if (parsed?.inputs && typeof parsed.inputs === "object") {
+      for (const [k, v] of Object.entries(parsed.inputs as Record<string, unknown>)) {
+        if (typeof v === "string" && v.trim()) inputs[k] = v.trim();
+      }
+    }
+    return { skillId, inputs };
+  } catch {
+    return { skillId: null, reason: "Routing failed." };
+  }
+}
+
+export type SaveSkillRunResult =
+  | { ok: true; runId: string; assignee: SkillAssignee; gate: ComplianceGate | null }
+  | { ok: false; error: string };
+
+/** Run a skill and persist it (for the Boss card's viewable output). */
+export async function runSkillAndSave(
+  agentId: string,
+  skillId: string,
+  inputs: Record<string, string>,
+): Promise<SaveSkillRunResult> {
+  const res = await runSkill(agentId, skillId, inputs);
+  if (!res.ok) return res;
+  const { data, error } = await supabaseAdmin
+    .from("skill_runs")
+    .insert({ agent_id: agentId, skill_id: skillId, assignee: res.assignee, inputs, output: res.output, gate: res.gate })
+    .select("id")
+    .single();
+  if (error || !data?.id) return { ok: false, error: error?.message ?? "Couldn't save the skill run." };
+  return { ok: true, runId: data.id as string, assignee: res.assignee, gate: res.gate };
+}
+
+export type SkillRunRow = {
+  id: string;
+  skill_id: string;
+  assignee: string | null;
+  inputs: Record<string, string>;
+  output: string;
+  gate: ComplianceGate | null;
+  created_at: string;
+};
+
+export async function getSkillRun(agentId: string, runId: string): Promise<SkillRunRow | null> {
+  const { data } = await supabaseAdmin
+    .from("skill_runs")
+    .select("id, skill_id, assignee, inputs, output, gate, created_at")
+    .eq("agent_id", agentId)
+    .eq("id", runId)
+    .maybeSingle();
+  return (data as SkillRunRow | null) ?? null;
+}

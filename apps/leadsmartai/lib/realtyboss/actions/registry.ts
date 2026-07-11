@@ -17,6 +17,8 @@ import {
 } from "@/lib/house-search/savedHouseSearches";
 import { startPlaybookRun } from "@/lib/realtyboss/playbook-runs/service";
 import { autoDispatchRunTasks } from "@/lib/realtyboss/playbook-runs/dispatch";
+import { routeSkillRequest, runSkillAndSave } from "@/lib/realtyboss/skills/run";
+import { getSkill, ASSIGNEE_LABEL } from "@/lib/realtyboss/skills/catalog";
 
 /**
  * Boss Assistant ACTION REGISTRY.
@@ -45,7 +47,8 @@ export type BossActionType =
   | "post_social"
   | "buyer_home_search"
   | "start_selling_playbook"
-  | "start_buying_playbook";
+  | "start_buying_playbook"
+  | "run_skill";
 
 export type ActionParamDef = {
   key: string;
@@ -649,6 +652,31 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
       const ran = await autoDispatchRunTasks(agentId, res.runId);
       const note = ran > 0 ? `${res.note} The Sales Assistant auto-ran ${ran} task${ran === 1 ? "" : "s"} (autopilot on).` : res.note;
       return { status: "completed", artifactType: "playbook_run", artifactUrl: res.url, note };
+    },
+  },
+
+  run_skill: {
+    type: "run_skill",
+    assignee: "sales_assistant",
+    label: "Run a skill",
+    planHint:
+      'run_skill — run one of the agent\'s Realtor AI skills: write/generate content, scripts, or analyses (listing description, social posts, nurture/drip sequence, farm/circle prospecting, expired/FSBO scripts, objection scripts, buyer consultation packet, market report, net sheet, GCI plan, newsletter, case study, video scripts, and ~50 more). Choose for a writing/content/analysis request that is NOT one of the specific actions above (CMA, seller presentation, showing, cold call, open house, closing, single social post, buyer search, playbooks). params: { request } (the user\'s full request, verbatim).',
+    requiredParams: [
+      { key: "request", label: "the request", question: "What would you like the team to write or work on?" },
+    ],
+    run: async ({ agentId, params }) => {
+      const route = await routeSkillRequest(agentId, params.request);
+      if (route.skillId === null) return { status: "assigned", note: route.reason };
+      const res = await runSkillAndSave(agentId, route.skillId, route.inputs);
+      if (!res.ok) return { status: "assigned", note: res.error };
+      const title = getSkill(route.skillId)?.title ?? "skill";
+      const gateNote = res.gate ? (res.gate.status === "flag" ? " — compliance flagged, review before use" : " — compliance passed") : "";
+      return {
+        status: "completed",
+        artifactType: "skill_output",
+        artifactUrl: `/dashboard/skills/runs/${res.runId}`,
+        note: `${ASSIGNEE_LABEL[res.assignee]} ran "${title}"${gateNote}`,
+      };
     },
   },
 };
