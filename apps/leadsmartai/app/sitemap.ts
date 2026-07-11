@@ -28,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/agent/compare",
     "/integrations",
     "/free-tools",
+    "/skills-library",
     "/try-demo",
     "/contact",
     // Data Center hub — original, cited market-intelligence reports (agent lens).
