@@ -148,7 +148,7 @@ const jsonLd = [
     // Populate with verified profile URLs (LinkedIn / X / Instagram /
     // Crunchbase / G2 / Capterra) as they're created — strengthens the
     // brand entity + knowledge panel.
-    sameAs: [] as string[],
+    sameAs: ["https://www.linkedin.com/company/maxy-investment/"] as string[],
   },
   {
     "@context": "https://schema.org",

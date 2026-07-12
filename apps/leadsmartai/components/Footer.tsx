@@ -84,9 +84,22 @@ export default function Footer() {
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200/80 pt-8 sm:flex-row dark:border-slate-800">
           {/* Brand — single horizontal lockup (TOM MN-002: the previous
               monogram-box + separate wordmark read as two logos). */}
-          <Link href="/" aria-label="RealtyBoss home" className="inline-flex">
-            <RealtyBossLogo />
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/" aria-label="RealtyBoss home" className="inline-flex">
+              <RealtyBossLogo />
+            </Link>
+            <a
+              href="https://www.linkedin.com/company/maxy-investment/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="RealtyBoss on LinkedIn"
+              className="text-slate-400 transition-colors hover:text-[#0072ce] dark:text-slate-500 dark:hover:text-[#4da3e8]"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z" />
+              </svg>
+            </a>
+          </div>
 
           <div className="flex flex-col items-center gap-1.5 text-xs text-slate-400 sm:items-end dark:text-slate-500">
             <CookieSettingsLink className="hover:text-[#0072ce] hover:underline dark:hover:text-[#4da3e8]" />
