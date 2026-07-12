@@ -21,7 +21,9 @@ import { LINKEDIN_API_BASE } from "./linkedin-oauth";
  * post URL the agent can use to view the live post.
  */
 
-const LINKEDIN_API_VERSION = "202504"; // bump to current Y-M when stale
+// LinkedIn sunsets each YYYYMM API version ~12 months after release, returning
+// HTTP 426 NONEXISTENT_VERSION once it lapses. Keep this within the last year.
+const LINKEDIN_API_VERSION = "202506"; // bump to current Y-M when stale
 
 type PostError = {
   message?: string;
