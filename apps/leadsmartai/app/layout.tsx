@@ -173,6 +173,8 @@ const jsonLd = [
     operatingSystem: "Web, iOS, Android",
     description: SITE_DESCRIPTION,
     url: SITE_URL,
+    // LinkedIn product page — ties this product entity to its LinkedIn profile.
+    sameAs: ["https://www.linkedin.com/products/maxy-investment-realtyboss-ai/"],
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "USD",
