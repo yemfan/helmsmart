@@ -140,12 +140,28 @@ export async function GET(req: Request) {
       updated_at: nowIso,
     };
 
-    const { error: upsertErr } = await supabaseAdmin
+    // Manual upsert: the `social_accounts_linkedin_unique` index is PARTIAL
+    // (WHERE linkedin_member_urn IS NOT NULL), which supabase-js's `onConflict`
+    // can't target (it omits the predicate) — Postgres then errors "no unique
+    // constraint matching the ON CONFLICT specification". Select-then-write
+    // instead, keyed on the same (agent_id, platform, member_urn).
+    const { data: existing } = await supabaseAdmin
       .from("social_accounts")
-      .upsert(row as never, {
-        onConflict: "agent_id,platform,linkedin_member_urn",
-      });
-    if (upsertErr) throw upsertErr;
+      .select("id")
+      .eq("agent_id", agentId)
+      .eq("platform", "linkedin")
+      .eq("linkedin_member_urn", info.memberUrn)
+      .maybeSingle();
+    if ((existing as { id?: string } | null)?.id) {
+      const { error: updErr } = await supabaseAdmin
+        .from("social_accounts")
+        .update(row as never)
+        .eq("id", (existing as { id: string }).id);
+      if (updErr) throw new Error(updErr.message);
+    } else {
+      const { error: insErr } = await supabaseAdmin.from("social_accounts").insert(row as never);
+      if (insErr) throw new Error(insErr.message);
+    }
 
     // Clear the state cookie — single-use, even on success.
     const res = back({ status: "success", count: "1" });
