@@ -178,6 +178,32 @@ export default async function ForBrokeragesPage() {
         </div>
       </section>
 
+      {/* The adoption problem — the six-figures-unused-CRM story */}
+      <section className="border-b border-slate-100 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
+          <div className="grid items-center gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-600">
+                {tb("problem.eyebrow")}
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
+                {tb("problem.h2")}
+              </h2>
+              <p className="mt-4 text-base leading-7 text-slate-600">{tb("problem.body1")}</p>
+              <p className="mt-4 text-base leading-7 text-slate-600">{tb("problem.body2")}</p>
+            </div>
+            <div className="lg:col-span-5">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
+                <p className="text-4xl font-semibold tracking-tight text-slate-900 md:text-5xl">
+                  {tb("problem.stat_value")}
+                </p>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{tb("problem.stat_label")}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
       <section id="how" className="border-y border-slate-100 bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
