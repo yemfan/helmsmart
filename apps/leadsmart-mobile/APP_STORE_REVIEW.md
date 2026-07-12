@@ -1,6 +1,6 @@
 # LeadSmart mobile — store review checklist
 
-Owner: Michael Ye. Last updated: 2026-07-09.
+Owner: Michael Ye. Last updated: 2026-07-12.
 
 This doc tracks the work needed to pass Apple App Store and Google Play review
 for `apps/leadsmart-mobile` (bundle `ai.leadsmart.mobile`, version 1.5.0).
@@ -88,6 +88,58 @@ copy-paste reply is drafted below under "Guideline 2.1(b) reply".
 > History: build 1.6 (28) was reviewed on iPad even though
 > `supportsTablet: false` — Apple runs iPhone-only apps in scaled
 > compatibility mode on iPad and still enforces Guideline 4.0 there.
+
+## Guideline 2.1(b) follow-up — build 1.6 (32), 2026-07-10
+
+Apple replied to the round-1 answer with a narrower categorization
+question (Submission ID `2a59fbd7-96cf-4d3b-b7c3-b8df0a629aec`, reviewed
+iPad Air 11-inch (M3)):
+
+> Are the enterprise services in your app sold to single users,
+> consumers, or for family use?
+
+This is Apple slotting the app into a business-model bucket to decide
+whether IAP is required — **not** a new code violation. Verified before
+replying: the iOS build has **no purchase steering**. Both paid-feature
+surfaces gate on `Platform.OS === "ios"` and show a neutral
+"not on your plan" message with no pricing CTA and no billing link:
+`components/AiActionGateBanner.tsx` and the `UpgradeCard` in
+`app/coaching.tsx` (the `/agent/pricing` and `/dashboard/billing` links
+fire on Android only). Every other in-app `Linking.openURL` is
+service-access (web dashboard), legal (privacy/terms), or content
+(tel/sms/booking/published-post URLs) — none are a purchase flow.
+
+Demo sign-in re-verified green on 2026-07-10
+(`verify-app-review-demo-signin.mjs`: ✓ sign-in, ✓ Sarah Chen lead,
+✓ Sarah Chen top thread).
+
+### Round-2 reply — paste into the App Store Connect thread
+
+> Hello, and thank you for the follow-up.
+>
+> To answer directly: the services in RealtyBoss are sold to **single
+> users for their business use** — individual **licensed real estate
+> agents** (independent professionals / sole proprietors) who buy a
+> single-seat professional subscription for their real estate business.
+> We also sell to real estate **brokerages** that provide access to their
+> agents. It is **not** sold to consumers for personal use, and it is
+> **not** intended for family use.
+>
+> RealtyBoss is a business-to-business productivity tool — a CRM for
+> licensed real estate agents. It is not a consumer content or media app:
+> there is no music, video, books, games, or other digital media.
+>
+> On purchasing: there is **no in-app purchase and no purchasing of any
+> kind inside the app**. Subscriptions are bought only on our website
+> (https://www.realtybossai.com). The app does not offer, advertise, link
+> to, or steer users toward any purchase flow. A user signs in with an
+> account they already pay for on the web — the app is a client for a
+> multiplatform business service (Guideline 3.1.3(b)).
+>
+> A free demo account is provided in App Review Information for testing:
+> demo@leadsmart.ai / Demo123!
+>
+> Please let us know if any further detail would help.
 
 ## Status
 
