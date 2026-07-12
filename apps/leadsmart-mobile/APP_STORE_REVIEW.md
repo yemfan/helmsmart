@@ -109,9 +109,17 @@ fire on Android only). Every other in-app `Linking.openURL` is
 service-access (web dashboard), legal (privacy/terms), or content
 (tel/sms/booking/published-post URLs) — none are a purchase flow.
 
-Demo sign-in re-verified green on 2026-07-10
-(`verify-app-review-demo-signin.mjs`: ✓ sign-in, ✓ Sarah Chen lead,
-✓ Sarah Chen top thread).
+**Account of record for Apple is `michael.yes@mail.com` (agent 30,
+"Testers", Pro)** — the login used in the prior review, NOT the seeded
+`demo@leadsmart.ai`. Verified green 2026-07-12: ✓ sign-in,
+`/api/mobile/leads` → 13 leads (first: Jane Chen), `/api/mobile/inbox`
+→ 3 threads (top: Jane Chen — "Don't forget — Open House this
+Saturday, July 4th!"). The seeded `demo@leadsmart.ai` (agent 31)
+remains an alternate sandbox — see "Reviewer demo account" below.
+
+> ⚠️ michael.yes@mail.com is a real personal test account. If a reviewer
+> confirms the in-app **Delete account** flow on it, the account is
+> destroyed. The reviewer Notes below say NOT to confirm deletion.
 
 ### Round-2 reply — paste into the App Store Connect thread
 
@@ -136,10 +144,41 @@ Demo sign-in re-verified green on 2026-07-10
 > account they already pay for on the web — the app is a client for a
 > multiplatform business service (Guideline 3.1.3(b)).
 >
-> A free demo account is provided in App Review Information for testing:
-> demo@leadsmart.ai / Demo123!
+> The demo account provided in App Review Information
+> (michael.yes@mail.com) — the same login used in the prior review — can
+> be used for testing.
 >
 > Please let us know if any further detail would help.
+
+### Reviewer Notes for `michael.yes@mail.com` — paste into App Store Connect → App Information → App Review → App Review Information
+
+**Sign-In required: Yes**
+**Username**: `michael.yes@mail.com`
+**Password**: `Apptesting123`
+
+**Notes**:
+
+> RealtyBoss is a CRM for licensed real estate agents. Email/password
+> sign-in only — no OTP, no SMS verification.
+>
+> Suggested walk-through (bottom-tab labels: Home / Work / Engage /
+> Analyze / Manage):
+> 1. Tap **Sign in with email** on the welcome screen.
+> 2. Enter `michael.yes@mail.com` / `Apptesting123` and tap **Continue**.
+> 3. **Work** tab → **Leads** tile — 13 leads load. Tap the top lead
+>    (Jane Chen) for detail, pipeline stage, and AI-reply controls.
+> 4. **Engage** tab → **Inbox** tile — SMS conversations load, most
+>    recent first. The top thread is from Jane Chen ("Don't forget —
+>    Open House this Saturday…"). Tap it to see the message history.
+> 5. **Manage** tab → **Settings** tile — **Privacy policy** and **Terms
+>    of service** open in the browser. **Delete account** routes to a
+>    typed-confirmation screen; do NOT confirm (it permanently deletes
+>    this account).
+>
+> The app does not handle in-app purchases, child users, or sensitive
+> medical / financial data. SMS and email are sent on behalf of the
+> signed-in agent to their own contacts — no cold or unsolicited
+> outreach.
 
 ## Status
 
