@@ -35,14 +35,18 @@ describe("plans / v2.0 catalog shape", () => {
     expect(PLANS.team.annualPrice).toBe(2990);
   });
 
-  it("paid tiers expose both monthly and annual env var keys", () => {
-    const paid: PlanSlug[] = ["pro", "premium", "signature", "team"];
-    for (const slug of paid) {
+  it("self-serve paid tiers expose both monthly and annual env var keys", () => {
+    const selfServe: PlanSlug[] = ["pro", "premium", "signature"];
+    for (const slug of selfServe) {
       expect(PLANS[slug].stripePriceEnvVar).toBeTruthy();
       expect(PLANS[slug].stripePriceEnvVarAnnual).toBeTruthy();
     }
     expect(PLANS.starter.stripePriceEnvVar).toBeNull();
     expect(PLANS.starter.stripePriceEnvVarAnnual).toBeNull();
+    // Team is sales-assisted — no self-serve Stripe price IDs.
+    expect(PLANS.team.contactSales).toBe(true);
+    expect(PLANS.team.stripePriceEnvVar).toBeNull();
+    expect(PLANS.team.stripePriceEnvVarAnnual).toBeNull();
   });
 
   it("Signature has the five Signature-only features the spec promises", () => {
