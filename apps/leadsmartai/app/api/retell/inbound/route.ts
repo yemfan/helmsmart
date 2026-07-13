@@ -2,6 +2,7 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { resolveVoiceAgentId } from "@/lib/ai-call/lead-resolution";
 import { loadReceptionistContext } from "@/lib/voice-agent/context";
 import { resolveAgentIdByReceptionistNumber } from "@/lib/voice-receptionist/settings";
+import { shouldTextBackInsteadOfAnswer } from "@/lib/entitlements/voiceInboundGate";
 import { sendSMS } from "@/lib/twilioSms";
 import { buildReceptionistDynamicVariables, type ReceptionistContext } from "@repo/voice";
 
@@ -76,11 +77,38 @@ export async function POST(req: NextRequest) {
     try {
       const ctx = await loadReceptionistContext(agentId);
       if (ctx) {
+        // Voice-minutes enforcement — FULLY OPT-IN. Only active when
+        // RETELL_VOICE_LIMIT_ENFORCE=true AND RETELL_INBOUND_AGENT_ID is set
+        // (the number must have its default inbound agent removed for the
+        // decline to take effect — see .env.example). Off by default → the
+        // answer path below is byte-identical to before.
+        const enforce = process.env.RETELL_VOICE_LIMIT_ENFORCE === "true";
+        const overrideAgentId = process.env.RETELL_INBOUND_AGENT_ID?.trim() || "";
+
+        if (
+          enforce &&
+          overrideAgentId &&
+          (await shouldTextBackInsteadOfAnswer(agentId))
+        ) {
+          // Out of minutes + the agent chose text-back (or a hard-capped tier):
+          // don't answer live — send the SMS text-back and decline the call.
+          sendCallerTextBack(ctx, fromNumber);
+          return NextResponse.json({ call_inbound: {} });
+        }
+
         // Give Lucy the caller's own number so she can confirm it as the callback
         // number (and catch a mistyped/different number the caller dictates).
         ctx.callerNumber = formatCallerNumber(fromNumber);
         dynamic_variables = buildReceptionistDynamicVariables(ctx);
         sendCallerTextBack(ctx, fromNumber);
+
+        if (enforce && overrideAgentId) {
+          // With enforcement on, always name the agent so the "decline" branch
+          // above can work on numbers whose default inbound agent is removed.
+          return NextResponse.json({
+            call_inbound: { override_agent_id: overrideAgentId, dynamic_variables },
+          });
+        }
       }
     } catch (err) {
       // Never 500 on Retell — fall back to empty variables.
