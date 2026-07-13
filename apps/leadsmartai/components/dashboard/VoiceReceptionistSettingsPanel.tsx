@@ -249,6 +249,48 @@ export default function VoiceReceptionistSettingsPanel() {
         </p>
       </div>
 
+      <div>
+        <span className={LABEL}>When you run out of AI voice minutes</span>
+        <div className="space-y-1.5">
+          <label className="flex items-start gap-2 text-sm text-gray-800">
+            <input
+              type="radio"
+              name="voiceLimitBehavior"
+              checked={settings.voiceLimitBehavior === "text_back"}
+              onChange={() => update("voiceLimitBehavior", "text_back")}
+              className="mt-0.5 h-4 w-4 border-gray-300"
+            />
+            <span>
+              Text callers back{" "}
+              <span className="text-[11px] text-gray-400">
+                — the AI stops answering live and sends an SMS instead (no extra charge)
+              </span>
+            </span>
+          </label>
+          <label className="flex items-start gap-2 text-sm text-gray-800">
+            <input
+              type="radio"
+              name="voiceLimitBehavior"
+              checked={settings.voiceLimitBehavior === "overage"}
+              onChange={() => update("voiceLimitBehavior", "overage")}
+              className="mt-0.5 h-4 w-4 border-gray-300"
+            />
+            <span>
+              Keep the AI answering{" "}
+              <span className="text-[11px] text-gray-400">
+                — additional minutes billed at $0.25/min
+              </span>
+            </span>
+          </label>
+        </div>
+        <p className="mt-1 text-[11px] text-gray-400">
+          Need more included minutes?{" "}
+          <a href="/agent/pricing" className="text-brand-accent underline underline-offset-2">
+            Upgrade your plan →
+          </a>
+        </p>
+      </div>
+
       <div className="flex items-center gap-3">
         <button
           type="button"
