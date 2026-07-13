@@ -73,6 +73,16 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+    if (PLANS[body.slug].contactSales) {
+      return NextResponse.json(
+        {
+          error: "The Team plan is sales-assisted. Please contact us to get set up.",
+          contactSales: true,
+          contactUrl: "/contact?topic=team",
+        },
+        { status: 400 }
+      );
+    }
 
     const cadence: BillingCadence = isBillingCadence(body.cadence) ? body.cadence : "monthly";
     const slug: PlanSlug = body.slug;
