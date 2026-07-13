@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import Anthropic from "@anthropic-ai/sdk";
+import { publishLinkedInPost } from "@/lib/linkedin";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -209,6 +210,53 @@ export async function updateSocialPost(postId: string, data: {
   }).eq("id", postId).eq("organization_id", orgId);
 
   revalidatePath("/social");
+}
+
+// ─── Publish a post now (LinkedIn) ────────────────────────────────────────────
+
+/**
+ * Publish a saved post to its platform immediately and flip its status.
+ * LinkedIn is wired up (Share API); other platforms return a soft error until
+ * their publishers land. Scheduled posts are also published by the
+ * /api/cron/social/linkedin cron.
+ */
+export async function publishSocialPost(
+  postId: string,
+): Promise<{ ok: boolean; error?: string; url?: string | null }> {
+  const cookieStore = await cookies();
+  const orgId = cookieStore.get("helmsmart-org-id")?.value;
+  if (!orgId) throw new Error("No org");
+
+  const supabase = await createClient();
+  const { data: post } = await supabase
+    .from("social_posts")
+    .select("id, platform, content")
+    .eq("id", postId)
+    .eq("organization_id", orgId)
+    .single();
+  if (!post) return { ok: false, error: "Post not found" };
+  if (post.platform !== "linkedin") {
+    return { ok: false, error: `Publishing to ${post.platform} isn't wired up yet — LinkedIn only for now.` };
+  }
+
+  const res = await publishLinkedInPost(orgId, post.content as string);
+  await supabase
+    .from("social_posts")
+    .update(
+      res.ok
+        ? {
+            status: "published",
+            published_url: res.url ?? null,
+            published_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }
+        : { status: "failed", updated_at: new Date().toISOString() },
+    )
+    .eq("id", postId)
+    .eq("organization_id", orgId);
+
+  revalidatePath("/social");
+  return { ok: res.ok, error: res.error, url: res.url };
 }
 
 // ─── Delete post ──────────────────────────────────────────────────────────────
