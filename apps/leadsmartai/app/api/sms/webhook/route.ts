@@ -215,7 +215,7 @@ export async function POST(req: Request) {
     const leadId = String(leadRow.id);
     const agentId = leadRow.agent_id ? String(leadRow.agent_id) : null;
     let lastAssistant: SmsAssistantReply | null = null;
-    const smsOptIn =
+    let smsOptIn =
       typeof leadRow.sms_opt_in !== "undefined" ? Boolean(leadRow.sms_opt_in) : leadRow.contact_method
         ? String(leadRow.contact_method).toLowerCase() === "sms" ||
           String(leadRow.contact_method).toLowerCase() === "both"
@@ -289,6 +289,21 @@ export async function POST(req: Request) {
 
     const unsubscribe = isUnsubscribeMessage(body);
     const highIntent = isHighIntentMessage(body);
+
+    // A contact who texts us first has initiated the conversation — that's
+    // implied consent to reply. Auto opt them in (unless they're opting OUT)
+    // so the AI responder isn't silently blocked by a false sms_opt_in that was
+    // never updated. Flip the local flag too so the reply fires on THIS message,
+    // not just the next one. The STOP/unsubscribe branch below still wins.
+    if (!unsubscribe && !smsOptIn) {
+      smsOptIn = true;
+      try {
+        await supabaseServer
+          .from("contacts")
+          .update({ sms_opt_in: true } as any)
+          .eq("id", leadId);
+      } catch {}
+    }
 
     if (agentId && !unsubscribe) {
       void dispatchMobileInboundSmsPush({
