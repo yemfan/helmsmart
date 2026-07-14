@@ -11,6 +11,8 @@ const bodySchema = z.object({
   jobId: z.string().uuid(),
   mapping: z.object({
     name: z.string().nullable().optional(),
+    first_name: z.string().nullable().optional(),
+    last_name: z.string().nullable().optional(),
     email: z.string().nullable().optional(),
     phone: z.string().nullable().optional(),
     property_address: z.string().nullable().optional(),

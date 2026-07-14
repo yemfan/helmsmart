@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { autoMapHeaders } from "@/lib/contact-intake/autoMap";
 
 type ColumnMapping = {
   name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   property_address: string;
@@ -24,6 +27,8 @@ type ColumnMapping = {
 
 const emptyMapping = (): ColumnMapping => ({
   name: "",
+  first_name: "",
+  last_name: "",
   email: "",
   phone: "",
   property_address: "",
@@ -43,7 +48,9 @@ const emptyMapping = (): ColumnMapping => ({
 
 /** Fields the user can map, with friendly labels. Order = display order. */
 const MAP_FIELDS: { key: keyof ColumnMapping; label: string }[] = [
-  { key: "name", label: "Name" },
+  { key: "name", label: "Full name" },
+  { key: "first_name", label: "First name" },
+  { key: "last_name", label: "Last name" },
   { key: "email", label: "Email" },
   { key: "phone", label: "Phone" },
   { key: "source", label: "Lead source" },
@@ -107,8 +114,12 @@ export function ImportWizardClient() {
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error || "Upload failed");
       setJobId(body.jobId);
-      setHeaders(body.headers ?? []);
+      const hdrs: string[] = body.headers ?? [];
+      setHeaders(hdrs);
       setRowCount(body.rowCount ?? 0);
+      // Auto-detect the mapping from the headers (BoldTrail / Follow Up Boss /
+      // kvCORE aliases). Pre-fills the wizard; the user can still adjust.
+      setMapping((m) => ({ ...m, ...autoMapHeaders(hdrs) }));
       setStep(2);
       void loadHistory();
     } catch (e) {
@@ -231,8 +242,9 @@ export function ImportWizardClient() {
           <h2 className="text-base font-semibold text-gray-900">2. Column mapping</h2>
           <p className="mt-1 text-sm text-gray-600">{rowCount.toLocaleString()} rows · job {jobId}</p>
           <p className="mt-1 text-xs text-gray-500">
-            Map each column from your export (BoldTrail, Follow Up Boss, kvCORE, etc.).
-            Anything left as “ignore” is skipped. Only Name/Email/Phone are required.
+            We auto-detected the mapping from your headers (BoldTrail, Follow Up Boss,
+            kvCORE, etc.) — review and adjust below. Anything left as “ignore” is skipped.
+            Only a name (full, or first + last) plus email or phone is required.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {MAP_FIELDS.map(({ key, label }) => (

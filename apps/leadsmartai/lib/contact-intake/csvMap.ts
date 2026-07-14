@@ -4,6 +4,10 @@ import type { ContactFieldsInput } from "./types";
  *  Each value is the header of the column that feeds that field. */
 export type ColumnMapping = {
   name?: string | null;
+  /** For exports that split the name — combined into `name` when no full-name
+   *  column is mapped. */
+  first_name?: string | null;
+  last_name?: string | null;
   email?: string | null;
   phone?: string | null;
   property_address?: string | null;
@@ -64,8 +68,14 @@ export function rowToContactFields(raw: Record<string, string>, mapping: ColumnM
     return n == null ? null : Math.round(n);
   };
 
+  // Full-name column wins; otherwise stitch first + last together.
+  const name =
+    text(mapping.name) ||
+    [get(mapping.first_name), get(mapping.last_name)].filter(Boolean).join(" ").trim() ||
+    null;
+
   return {
-    name: text(mapping.name),
+    name,
     email: text(mapping.email),
     phone: text(mapping.phone),
     property_address: text(mapping.property_address),
