@@ -105,6 +105,10 @@
       "schedule": "0 9 * * *"
     },
     {
+      "path": "/api/cron/activation-nudge",
+      "schedule": "0 17 * * *"
+    },
+    {
       "path": "/api/cron/sphere-drafts-sender",
       "schedule": "*/15 * * * *"
     },
