@@ -3,6 +3,7 @@ import { resolveVoiceAgentId } from "@/lib/ai-call/lead-resolution";
 import { loadReceptionistContext } from "@/lib/voice-agent/context";
 import { resolveAgentIdByReceptionistNumber } from "@/lib/voice-receptionist/settings";
 import { shouldTextBackInsteadOfAnswer } from "@/lib/entitlements/voiceInboundGate";
+import { loadKnownCaller } from "@/lib/voice-agent/known-caller";
 import { sendSMS } from "@/lib/twilioSms";
 import { buildReceptionistDynamicVariables, type ReceptionistContext } from "@repo/voice";
 
@@ -99,6 +100,10 @@ export async function POST(req: NextRequest) {
         // Give Lucy the caller's own number so she can confirm it as the callback
         // number (and catch a mistyped/different number the caller dictates).
         ctx.callerNumber = formatCallerNumber(fromNumber);
+        // Recognize returning callers (matched by caller ID): greet them by name
+        // and confirm — rather than re-ask — what we already know. Best-effort;
+        // stays undefined (generic greeting) for unknown callers or on error.
+        ctx.knownCaller = (await loadKnownCaller(agentId, fromNumber)) ?? undefined;
         dynamic_variables = buildReceptionistDynamicVariables(ctx);
         sendCallerTextBack(ctx, fromNumber);
 
