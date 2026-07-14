@@ -6,6 +6,7 @@ import AppShell from "@/components/AppShell";
 import { CookieConsentProvider } from "@/components/cookie-consent/CookieConsent";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { ReferralCodeCapture } from "@/components/referrals/ReferralCodeCapture";
+import { AttributionCapture } from "@/components/attribution/AttributionCapture";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { getSiteUrl } from "@/lib/siteUrl";
@@ -236,6 +237,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <CookieConsentProvider>
               <GoogleAnalytics />
               <ReferralCodeCapture />
+              <AttributionCapture />
               <AppShell>{children}</AppShell>
             </CookieConsentProvider>
           </AuthProvider>
