@@ -36,7 +36,25 @@ import { getAgentAiSettings } from "@/lib/agent-ai/settings";
  * updateRecommendationStatus, which is agent-scoped.
  */
 
-export type SocialMode = "ask" | "auto";
+/**
+ * 'ask'    — draft only; nothing is scheduled, the agent schedules by hand.
+ * 'review' — plan + queue the week at real times, but hold every post for human
+ *            approval before it publishes.
+ * 'auto'   — plan, queue AND publish with no human gate.
+ */
+export type SocialMode = "ask" | "auto" | "review";
+
+const SOCIAL_MODES: readonly SocialMode[] = ["ask", "auto", "review"];
+
+export function isSocialMode(v: unknown): v is SocialMode {
+  return typeof v === "string" && (SOCIAL_MODES as readonly string[]).includes(v);
+}
+
+/** Queue status a mode's posts land in. Only 'scheduled' is publishable — the
+ *  cron claims that and nothing else, so 'review' needs no separate gate. */
+export function queueStatusForMode(mode: SocialMode): "scheduled" | "awaiting_approval" {
+  return mode === "auto" ? "scheduled" : "awaiting_approval";
+}
 
 /** The Monday (00:00 UTC) of the current week as YYYY-MM-DD. Matches the
  *  newsletter cron's week_of so timely links line up with a real issue. */
@@ -143,7 +161,7 @@ export async function getSocialMode(agentId: string): Promise<SocialMode> {
       .eq("channel", "social")
       .maybeSingle();
     const mode = (data as { mode?: string } | null)?.mode;
-    return mode === "auto" ? "auto" : "ask";
+    return isSocialMode(mode) ? mode : "ask";
   } catch {
     return "ask";
   }
@@ -259,6 +277,10 @@ export async function scheduleRecommendation(
   rec: Pick<SocialRecommendation, "id" | "caption" | "hashtags" | "image_url" | "status">,
   accounts: ConnectedSocialAccount[],
   scheduledForIso?: string,
+  /** 'awaiting_approval' queues the post but holds it — the publish cron only
+   *  ever claims 'scheduled'. Defaults to publishable, preserving the behaviour
+   *  of the manual "Schedule to …" button (an explicit click IS the approval). */
+  queueStatus: "scheduled" | "awaiting_approval" = "scheduled",
 ): Promise<ScheduleResult> {
   const scheduledFor = scheduledForIso ?? new Date().toISOString();
   if (accounts.length === 0) return { scheduledCount: 0, scheduledFor };
@@ -283,7 +305,7 @@ export async function scheduleRecommendation(
     trigger_kind: "marketing_assistant_social",
     subject_kind: "social_recommendation",
     subject_ref_id: rec.id,
-    status: "scheduled",
+    status: queueStatus,
     scheduled_for: scheduledFor,
   }));
 
@@ -422,12 +444,15 @@ export async function generateWeeklyRecommendations(
   // Runs for BOTH the weekly cron and the on-demand /api/social/recommend click.
   await persistCardImages(agentId, inserted);
 
-  // Autopilot auto-schedule: when mode is 'auto' AND the agent has ≥1 connected
-  // social account, queue these recs straight into scheduled_posts (the real
-  // publish engine picks them up). Best-effort — a failure here never aborts the
-  // run, and if there's NO connected account the recs simply stay 'approved'
-  // drafts (autopilot without a place to post = still just a draft).
-  if (mode === "auto") {
+  // Queue the week. 'auto' and 'review' both plan real times into
+  // scheduled_posts; they differ only in the status the rows land in —
+  // 'review' holds each post for approval (the publish cron claims only
+  // 'scheduled'). 'ask' queues nothing and stays a pure draft list.
+  //
+  // Best-effort — a failure here never aborts the run, and with NO connected
+  // account the recs simply stay drafts (a queue with nowhere to post is
+  // still just a draft).
+  if (mode === "auto" || mode === "review") {
     try {
       const accounts = await getConnectedSocialAccounts(agentId);
       if (accounts.length > 0) {
@@ -459,6 +484,7 @@ export async function generateWeeklyRecommendations(
             rec,
             accounts,
             spreadScheduleTime(weekOf, i, postsPerWeek),
+            queueStatusForMode(mode),
           ).catch((e) => {
             console.warn(
               `[social] autopilot schedule failed for rec ${rec.id}:`,

@@ -6,7 +6,11 @@ import { BookOpen, ChevronDown, ChevronUp } from "lucide-react";
 import { getAssistant } from "@/lib/realtyboss/team";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
 import { AssistantCallSettings } from "@/components/realtyboss/AssistantCallSettings";
-import WeeklySocialPosts, { type SocialRec } from "@/components/marketing/WeeklySocialPosts";
+import WeeklySocialPosts, {
+  type SocialMode,
+  type SocialRec,
+} from "@/components/marketing/WeeklySocialPosts";
+import PostQueue from "@/components/marketing/PostQueue";
 import ClientNewsletterCard from "@/components/marketing/ClientNewsletterCard";
 
 /**
@@ -52,7 +56,7 @@ function fmtWhen(iso: string) {
 
 export type SocialData = {
   weekOf: string;
-  mode: "ask" | "auto";
+  mode: SocialMode;
   recs: SocialRec[];
   /** Human-facing labels of the agent's connected social platforms (e.g. ["Facebook"]). */
   connectedPlatforms: string[];
@@ -135,6 +139,11 @@ export default function MarketingAssistantClient({
         connectedPlatforms={social.connectedPlatforms}
         canCustomize={social.canCustomize}
       />
+
+      {/* The queue: what's about to publish, and (in review mode) the gate that
+          holds it until a human approves. Reads scheduled_posts, so it also
+          covers posts queued by hand from the cards above. */}
+      <PostQueue />
 
       {/* Your Client Newsletter — agent-branded weekly briefing signup link */}
       {newsletter && (
