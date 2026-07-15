@@ -36,7 +36,7 @@ export async function GET(req: Request) {
   // Facebook returns the user to us with ?error=access_denied when they
   // dismiss the consent screen. Pass that through to the settings panel.
   if (fbError) {
-    return redirectToSettings(`fb_error=${encodeURIComponent(fbError)}`);
+    return redirectToSettings(req, `fb_error=${encodeURIComponent(fbError)}`);
   }
 
   try {
@@ -44,11 +44,11 @@ export async function GET(req: Request) {
 
     const cfg = loadFacebookOauthConfig();
     if (isFacebookOauthConfigFailure(cfg)) {
-      return redirectToSettings("fb_error=oauth_not_configured");
+      return redirectToSettings(req, "fb_error=oauth_not_configured");
     }
 
     if (!code || !state) {
-      return redirectToSettings("fb_error=missing_code_or_state");
+      return redirectToSettings(req, "fb_error=missing_code_or_state");
     }
 
     const cookieState = req.headers
@@ -59,12 +59,12 @@ export async function GET(req: Request) {
       ?.slice(STATE_COOKIE.length + 1);
 
     if (!cookieState || cookieState !== state) {
-      return redirectToSettings("fb_error=state_mismatch");
+      return redirectToSettings(req, "fb_error=state_mismatch");
     }
 
     const pages = await exchangeCodeForPages({ config: cfg.config, code });
     if (pages.length === 0) {
-      return redirectToSettings("fb_error=no_pages_returned");
+      return redirectToSettings(req, "fb_error=no_pages_returned");
     }
 
     const result = await upsertFacebookPagesForAgent({
@@ -77,18 +77,24 @@ export async function GET(req: Request) {
       inserted: String(result.inserted),
       updated: String(result.updated),
     });
-    const res = redirectToSettings(params.toString());
+    const res = redirectToSettings(req, params.toString());
     // Clear the state cookie so it can't be replayed.
     res.cookies.set(STATE_COOKIE, "", { path: "/api/social/facebook", maxAge: 0 });
     return res;
   } catch (e) {
     const msg = e instanceof Error ? e.message : "callback_failed";
     console.error("[social.facebook.callback]", e);
-    return redirectToSettings(`fb_error=${encodeURIComponent(msg)}`);
+    return redirectToSettings(req, `fb_error=${encodeURIComponent(msg)}`);
   }
 }
 
-function redirectToSettings(qs: string): NextResponse {
-  const url = `${SETTINGS_RETURN_URL}&${qs}`;
-  return NextResponse.redirect(url);
+/**
+ * NextResponse.redirect REQUIRES an absolute URL — passing the relative
+ * SETTINGS_RETURN_URL throws "URL is malformed". That made every path through
+ * this handler throw, including the catch block (which redirects too), so the
+ * error escaped as a 500 and masked the real reason. Resolve against the
+ * request's own origin.
+ */
+function redirectToSettings(req: Request, qs: string): NextResponse {
+  return NextResponse.redirect(new URL(`${SETTINGS_RETURN_URL}&${qs}`, req.url));
 }

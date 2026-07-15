@@ -1,5 +1,6 @@
 import "server-only";
 
+import { encryptToken } from "@/lib/leads-gen/token-enc";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabaseServer";
 
@@ -31,6 +32,68 @@ export type AgentSocialConnection = {
 };
 
 const FB_PROVIDER = "facebook_page";
+
+const FB_SCOPES = ["pages_show_list", "pages_manage_posts", "pages_read_engagement"];
+
+/**
+ * Mirror connected Pages into `social_accounts` — the PUBLISHER's source of
+ * truth (lib/leads-gen/publish.ts → publishPost), which backs the
+ * scheduled-publish cron, Quick Post, and the brand auto-poster.
+ *
+ * Why this exists: connecting writes `agent_social_connections`, but every
+ * publish path reads `social_accounts`. Without this mirror a Page connected
+ * here is INVISIBLE to all of them and they silently no-op ("No Facebook
+ * account connected") with no error to debug.
+ *
+ * Note the token is stored ENCRYPTED here (`page_access_token_enc`), unlike
+ * `agent_social_connections.access_token` which is still plaintext.
+ *
+ * Best-effort: a mirror failure must not fail the OAuth callback — the agent is
+ * mid-flow and the primary row already saved.
+ */
+async function mirrorPagesToSocialAccounts(
+  agentId: string,
+  pages: ReadonlyArray<FacebookPage>,
+): Promise<void> {
+  const now = new Date().toISOString();
+  for (const p of pages) {
+    try {
+      const fields = {
+        agent_id: agentId,
+        platform: "meta",
+        fb_page_id: p.id,
+        fb_page_name: p.name,
+        account_display_name: p.name,
+        page_access_token_enc: encryptToken(p.accessToken),
+        scopes: FB_SCOPES,
+        status: "connected",
+        last_error: null,
+        updated_at: now,
+      };
+
+      const { data: existing } = await supabaseAdmin
+        .from("social_accounts")
+        .select("id")
+        .eq("agent_id", agentId)
+        .eq("platform", "meta")
+        .eq("fb_page_id", p.id)
+        .maybeSingle();
+
+      if (existing) {
+        await supabaseAdmin
+          .from("social_accounts")
+          .update(fields as never)
+          .eq("id", (existing as { id: string }).id);
+      } else {
+        await supabaseAdmin
+          .from("social_accounts")
+          .insert({ ...fields, connected_at: now } as never);
+      }
+    } catch (e) {
+      console.error("[connectionsService] social_accounts mirror failed", p.id, e);
+    }
+  }
+}
 
 /**
  * Upsert one row per (agent, provider, providerAccountId). When the
@@ -80,6 +143,9 @@ export async function upsertFacebookPagesForAgent(args: {
     .from("agent_social_connections")
     .upsert(rows, { onConflict: "agent_id,provider,provider_account_id" });
   if (error) throw new Error(error.message);
+
+  // Keep the publisher's source of truth in sync, or nothing can actually post.
+  await mirrorPagesToSocialAccounts(args.agentId, args.pages);
 
   let inserted = 0;
   let updated = 0;
