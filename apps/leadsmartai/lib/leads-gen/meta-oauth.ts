@@ -20,8 +20,15 @@ import crypto from "node:crypto";
  * is required before non-developer agents can grant these.
  */
 
-export const META_GRAPH_VERSION = "v21.0";
-export const META_GRAPH_BASE = `https://graph.facebook.com/${META_GRAPH_VERSION}`;
+// Graph version lives in one place now (lib/meta/graph.ts) — re-exported here
+// so existing importers (meta-post.ts et al) keep working unchanged.
+import {
+  META_GRAPH_VERSION,
+  META_GRAPH_BASE,
+  META_OAUTH_DIALOG,
+} from "@/lib/meta/graph";
+
+export { META_GRAPH_VERSION, META_GRAPH_BASE };
 
 /**
  * Scopes requested at OAuth time. Order matters only for display in
@@ -82,7 +89,7 @@ export function generateAuthorizeUrl(state: string): string {
     // "I didn't know I gave that" support tickets.
     auth_type: "rerequest",
   });
-  return `https://www.facebook.com/${META_GRAPH_VERSION}/dialog/oauth?${params.toString()}`;
+  return `${META_OAUTH_DIALOG}?${params.toString()}`;
 }
 
 /**
