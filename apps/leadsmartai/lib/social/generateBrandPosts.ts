@@ -1,0 +1,336 @@
+import "server-only";
+
+import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
+
+/**
+ * Brand-voice social-content generator — the AGENT-OWNED half of the library.
+ *
+ * Sibling of generateEvergreen.ts, but a different audience and a different
+ * failure mode. generateEvergreen writes consumer education for an agent's
+ * CLIENTS; this writes RealtyBoss's own marketing, aimed at REALTORS, and lands
+ * in social_content_library owned by the brand agent (agent_id set, category
+ * 'brand') so it can never be recommended to a real agent.
+ *
+ * THE RISK THAT SHAPES THIS PROMPT: a model asked to write marketing copy for a
+ * product will cheerfully invent features, metrics and guarantees. The evergreen
+ * generator's hard rules are about not asserting a stale NUMBER; these are about
+ * not asserting a capability we don't ship. So the prompt carries an explicit
+ * capability inventory and forbids everything outside it. Anything the model is
+ * unsure about, it omits — a thin library is recoverable, a false product claim
+ * on the brand's own feed is not.
+ *
+ * Two voices, matching the hand-written seed set: founder first-person (the
+ * realtor who built it — outperforms brand copy on a personal feed) and brand
+ * third-person. Roughly half each.
+ */
+
+const MODEL = "claude-sonnet-4-6";
+const MAX_OUTPUT_TOKENS = 16000;
+
+export type BrandVoice = "founder" | "brand";
+
+export type BrandPostDraft = {
+  voice: BrandVoice;
+  title: string;
+  hook: string;
+  body: string;
+  hashtags: string[];
+  image_prompt: string;
+  cta: string;
+};
+
+/**
+ * The ONLY capabilities the model may reference. Keep this in sync with what
+ * actually ships — it is the difference between marketing and fiction.
+ */
+const CAPABILITIES = `
+- AI Receptionist: answers inbound calls 24/7, texts back calls it can't reach, qualifies callers, and remembers a caller's name, language, area and budget so a returning caller is greeted and asked to confirm rather than re-interrogated.
+- AI Sales Assistant: outbound real voice calls, SMS and email to leads on a cadence; a composer to send now or schedule for later; replies to inbound texts automatically.
+- AI Marketing Assistant: weekly social post drafts with auto-branded card images; market reports; a regional newsletter.
+- AI Transaction Assistant: tracks contingencies and closing milestones and flags what's due before it's late.
+- AI Accounting Assistant.
+- Boss Assistant: one plain-English command and the team executes it (CMAs, seller presentations, showings, cold-call/qualify, open houses); multi-phase playbooks for house-selling and house-buying engagements; guided setup.
+- AI CMA: a data-backed comparative market analysis built from real, cited comparable sales found on the web.
+- Net sheet: gross-to-net seller proceeds.
+- A free 59-skill Realtor AI Skills Library at realtybossai.com/skills-library — no signup.
+- Works natively in English AND Chinese (calls, texts, listings, disclosures) — localized, not machine-translated.
+- A compliance gate (Fair Housing + advertising) on everything written for the public.
+- Mobile app.
+- Imports contacts from other CRMs (CSV, with column auto-detection and presets for common CRMs).
+- Saved AI-powered house searches per client, with a history of past runs. IMPORTANT: these are run ON DEMAND and keep a record — they do NOT run themselves on a schedule, do NOT monitor the market, and do NOT alert anyone when a new match appears. Never describe them as live, automatic, watching, or real-time.
+
+EXPLICITLY NOT TRUE — never claim any of these, they do not exist:
+- Real-time market monitoring, listing alerts, or anything that "watches" for new matches.
+- A cross-assistant pipeline where work flows automatically end-to-end ("the receptionist's lead moves itself into the sales cadence", "everything is already connected"). The assistants share one platform and one contact database; they do not hand work to each other automatically.
+- MLS/IDX integration, a lockbox/showing-service integration, e-signature, or any accounting/tax filing integration.
+- Team/brokerage-wide rollups, lead routing between agents, or recruiting tools.
+`.trim();
+
+const SYSTEM_PROMPT = `You are the content strategist for RealtyBoss (realtybossai.com), an AI-powered team for real-estate agents. You write social posts that market RealtyBoss to REALTORS (the audience is agents, not home buyers or sellers).
+
+THIS IS THE PRODUCT. These are the ONLY capabilities that exist:
+${CAPABILITIES}
+
+HARD RULES — a violation makes a post unusable. Omit any post you cannot write within them:
+- NEVER invent, imply, or extrapolate a capability not in the list above. No roadmap features, no "and much more", no adjacent-sounding abilities. If you are not certain it is in the list, do not write the post.
+- NEVER upgrade a listed capability into an automatic one. This is the most common way to write something false: a feature that RUNS WHEN ASKED becomes, in a sentence or two, one that "monitors", "watches", "runs in the background", "alerts you", or works "in real time". If the list does not say it happens on its own, it does not happen on its own.
+- NEVER state a statistic, metric, percentage, count, ROI or time-saved figure about RealtyBoss or its users ("agents close 3x more", "saves 10 hours a week", "used by 500 agents"). We have no such data and inventing it is a false claim. The ONLY number you may use is the 59-skill library.
+- NEVER state or imply pricing, discounts, free trials, or plan names. Pricing is not your subject.
+- NEVER name a competitor product, CRM, brokerage or franchise (RE/MAX, Coldwell Banker, kvCORE, Follow Up Boss, etc.). Refer generically: "your CRM", "most tools", "the software you already pay for". Naming a real brand creates trademark and endorsement problems.
+- NEVER promise an outcome ("you WILL close more deals", "guaranteed more listings"). Describe what the product DOES and let the reader draw the conclusion.
+- NEVER state a mortgage rate, home price, market direction, or any current market number.
+- NEVER write anything that could read as a Fair Housing problem — no steering, no reference to the protected characteristics of buyers or neighborhoods.
+- No fabricated testimonials, quotes, or named customers.
+
+VOICE — write roughly half of each:
+- "founder": FIRST PERSON, as the realtor who built RealtyBoss because his own business needed it. Story-driven and specific: a moment, a frustration, what he did about it. Personal profiles out-reach company pages, so these carry the rotation. Never boastful; the tone is "I had this problem too".
+- "brand": THIRD PERSON about RealtyBoss. Crisp product truth. Still concrete, never corporate filler.
+
+QUALITY BAR: each post makes ONE point a working agent would recognize as true about their own week. Lead with the pain, not the feature. No "revolutionize", "game-changer", "unlock the power of", "in today's fast-paced market". If a post could be about any software company, throw it out.
+
+For EACH post return an object with:
+- "voice": "founder" or "brand"
+- "title": a short unique internal title (3-8 words), distinct from every other post and from the existing titles listed by the user
+- "hook": the scroll-stopping FIRST LINE (one punchy sentence)
+- "body": 2-5 sentences — the actual post
+- "hashtags": array of 3 hashtags, each starting with # (e.g. "#RealEstate")
+- "image_prompt": a one-line suggestion for an accompanying image
+- "cta": a short closing line, usually the site (e.g. "realtybossai.com")
+
+Return EXACTLY ONE fenced JSON code block and nothing after it:
+
+\`\`\`json
+{
+  "posts": [
+    {
+      "voice": "founder",
+      "title": "Short unique title",
+      "hook": "One punchy first line.",
+      "body": "2-5 sentences.",
+      "hashtags": ["#RealEstate", "#Realtor", "#AI"],
+      "image_prompt": "A realtor checking their phone between showings.",
+      "cta": "realtybossai.com"
+    }
+  ]
+}
+\`\`\``;
+
+function buildUserPrompt(n: number, existingTitles: string[]): string {
+  const avoid =
+    existingTitles.length > 0
+      ? `\n\nThese posts ALREADY EXIST — do not repeat their angle, and do not reuse their titles:\n${existingTitles
+          .map((t) => `- ${t}`)
+          .join("\n")}`
+      : "";
+  return (
+    `Write ${n} RealtyBoss brand social posts for an audience of real-estate agents, ` +
+    `roughly half "founder" voice and half "brand" voice. Every post must follow the hard rules — ` +
+    `no invented capabilities, no statistics about RealtyBoss, no pricing, no competitor or brokerage ` +
+    `names, no promised outcomes. Each post must make one concrete point drawn from the real ` +
+    `capability list. Return the single JSON object with the "posts" array.${avoid}`
+  );
+}
+
+/**
+ * Generate ~`n` brand posts, avoiding the angles/titles already in the library.
+ * Returns validated, deduped-by-title drafts; [] on any failure (best-effort,
+ * same contract as generateEvergreenBatch).
+ */
+export async function generateBrandBatch(
+  n = 20,
+  existingTitles: string[] = [],
+): Promise<BrandPostDraft[]> {
+  if (!isAnthropicConfigured()) {
+    console.warn("[social] ANTHROPIC_API_KEY not configured — cannot generate brand batch.");
+    return [];
+  }
+
+  const client = getAnthropicClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const messages: any[] = [
+    { role: "user", content: buildUserPrompt(n, existingTitles) },
+  ];
+
+  let finalText = "";
+  try {
+    // Stream + finalMessage: same shape as the evergreen/digest generators (a
+    // large batch under a plain create() can trip the SDK's non-streaming ceiling).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const res: any = await client.messages
+      .stream({
+        model: MODEL,
+        max_tokens: MAX_OUTPUT_TOKENS,
+        system: SYSTEM_PROMPT,
+        messages,
+      })
+      .finalMessage();
+
+    const content: unknown[] = Array.isArray(res?.content) ? res.content : [];
+    for (const block of content) {
+      const b = block as { type?: string; text?: string };
+      if (b.type === "text" && typeof b.text === "string") finalText += b.text;
+    }
+  } catch (e) {
+    console.warn("[social] brand generation failed:", e instanceof Error ? e.message : e);
+    return [];
+  }
+
+  const parsed = finalText.trim() ? extractJson(finalText) : null;
+  if (!parsed) {
+    console.warn("[social] could not parse brand generator JSON.");
+    return [];
+  }
+
+  const rawPosts = Array.isArray((parsed as { posts?: unknown }).posts)
+    ? ((parsed as { posts: unknown[] }).posts as unknown[])
+    : [];
+
+  const seen = new Set(existingTitles.map((t) => t.toLowerCase()));
+  const out: BrandPostDraft[] = [];
+  for (const item of rawPosts) {
+    const post = normalizeDraft(item);
+    if (!post) continue;
+    const key = post.title.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(post);
+  }
+  return out;
+}
+
+/**
+ * Cheap post-hoc tripwire for the claims the prompt forbids. The prompt is the
+ * real defense; this catches a drifting model before its copy reaches a feed.
+ * Returns a reason when the draft should be rejected, else null.
+ */
+export function brandClaimViolation(post: BrandPostDraft): string | null {
+  const text = `${post.hook} ${post.body} ${post.cta}`;
+
+  // Competitor / brokerage names — trademark + endorsement risk.
+  const brands =
+    /\b(re\/max|remax|coldwell|keller williams|kvcore|follow ?up ?boss|boldtrail|boomtown|compass|zillow|redfin|opendoor|century ?21|sotheby|exp realty|chime|lofty)\b/i;
+  const brandHit = brands.exec(text);
+  if (brandHit) return `names a real brand: "${brandHit[0]}"`;
+
+  // Invented performance stats. "59" is the one sanctioned number (skills library).
+  const stat = /\b(\d+(\.\d+)?)\s*(x\b|%|percent|hours?\b|hrs?\b|minutes?\b)/i.exec(text);
+  if (stat && stat[1] !== "59" && stat[1] !== "24" && stat[1] !== "5") {
+    return `asserts an unsupported metric: "${stat[0]}"`;
+  }
+
+  // Pricing.
+  if (/\$\s?\d|\bper month\b|\bfree trial\b|\bpricing\b/i.test(text)) {
+    return "references pricing";
+  }
+
+  // Outcome guarantees.
+  if (/\bguarantee|\bwill (close|earn|make|double|triple)\b/i.test(text)) {
+    return "promises an outcome";
+  }
+
+  // Autonomy inflation — the failure this screen was extended for. A real batch
+  // turned "saved house searches" into "a live search running on their behalf"
+  // that tracks matches; nothing auto-runs or monitors anything. Scoped to
+  // search/market/listing subjects so the genuinely automatic features (the
+  // receptionist answering calls, the SMS responder replying) still pass.
+  const autonomy =
+    /\b(live search|running on their behalf|watch(es|ing)? the market|monitors?|real.?time|listing alerts?|alerts? you when|notif(y|ies|ication)s? (you )?when)\b/i.exec(
+      text,
+    );
+  if (autonomy) return `claims automation we don't ship: "${autonomy[0]}"`;
+
+  // Cross-assistant integration inflation — the assistants share a platform and
+  // a contact database; they do not hand work to each other on their own.
+  const pipeline =
+    /\b(moves? (directly )?into the [a-z ]*cadence|already connected|flows? (automatically|straight) (in)?to|hands? off to)\b/i.exec(
+      text,
+    );
+  if (pipeline) return `overclaims cross-assistant integration: "${pipeline[0]}"`;
+
+  return null;
+}
+
+// ── validation ──────────────────────────────────────────────────────────────
+
+function s(v: unknown, fallback = ""): string {
+  return typeof v === "string" && v.trim() ? v.trim() : fallback;
+}
+
+/** Stored WITHOUT the leading '#', matching the hand-seeded brand rows. */
+function normalizeHashtags(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  const tags = raw
+    .map((t) => (typeof t === "string" ? t.trim().replace(/^#/, "") : ""))
+    .filter(Boolean)
+    .slice(0, 3);
+  return Array.from(new Set(tags));
+}
+
+function normalizeDraft(item: unknown): BrandPostDraft | null {
+  if (!item || typeof item !== "object") return null;
+  const o = item as Record<string, unknown>;
+  const voice = s(o.voice, "");
+  const title = s(o.title, "");
+  const hook = s(o.hook, "");
+  const body = s(o.body, "");
+  if (voice !== "founder" && voice !== "brand") return null;
+  if (!title || !hook || !body) return null;
+  return {
+    voice,
+    title,
+    hook,
+    body,
+    hashtags: normalizeHashtags(o.hashtags),
+    image_prompt: s(o.image_prompt, ""),
+    cta: s(o.cta, "realtybossai.com"),
+  };
+}
+
+// ── JSON extraction (mirrors lib/social/generateEvergreen.ts) ─────────────────
+
+function extractJson(text: string): Record<string, unknown> | null {
+  for (const candidate of jsonCandidates(text)) {
+    const obj = tryParseJson(candidate);
+    if (obj) return obj;
+  }
+  return null;
+}
+
+function* jsonCandidates(text: string): Generator<string> {
+  const fences: string[] = [];
+  const fenceRe = /```(?:json)?\s*([\s\S]*?)```/gi;
+  for (let m = fenceRe.exec(text); m; m = fenceRe.exec(text)) {
+    if (m[1] && m[1].includes("{")) fences.push(m[1].trim());
+  }
+  for (let i = fences.length - 1; i >= 0; i--) yield fences[i];
+  const end = text.lastIndexOf("}");
+  if (end >= 0) {
+    let depth = 0;
+    for (let i = end; i >= 0; i--) {
+      const ch = text[i];
+      if (ch === "}") depth++;
+      else if (ch === "{" && --depth === 0) {
+        yield text.slice(i, end + 1);
+        break;
+      }
+    }
+  }
+  const start = text.indexOf("{");
+  if (start >= 0 && end > start) yield text.slice(start, end + 1);
+}
+
+function tryParseJson(raw: string): Record<string, unknown> | null {
+  const cleaned = raw
+    .trim()
+    .replace(/^[^{]*/, "")
+    .replace(/[^}]*$/, "")
+    .replace(/,\s*([}\]])/g, "$1");
+  try {
+    const obj = JSON.parse(cleaned);
+    return obj && typeof obj === "object" && !Array.isArray(obj)
+      ? (obj as Record<string, unknown>)
+      : null;
+  } catch {
+    return null;
+  }
+}

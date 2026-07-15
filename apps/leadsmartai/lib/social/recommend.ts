@@ -313,10 +313,10 @@ export async function scheduleRecommendation(
   return { scheduledCount, scheduledFor };
 }
 
-/** Mon / Wed / Fri, as day offsets from week_of. */
-const SPREAD_DAY_OFFSETS = [0, 2, 4];
 /** 16:00 UTC = 9am PT / noon ET — inside the workday on both US coasts. */
 const SPREAD_HOUR_UTC = 16;
+/** Posts per week when the agent hasn't chosen: 1 timely + 2 evergreen. */
+export const DEFAULT_POSTS_PER_WEEK = 3;
 
 /**
  * When the i-th auto-scheduled post of a week should publish.
@@ -327,22 +327,43 @@ const SPREAD_HOUR_UTC = 16;
  * morning. It had never fired in production because no agent had autopilot on;
  * the brand is the first, so it gets fixed here rather than on a live feed.
  *
+ * Days are derived from the cadence rather than listed, so any 1-7 spreads
+ * evenly with no table to keep in sync: floor(i * 7 / n) gives Mon/Thu at 2,
+ * Mon/Wed/Fri at 3, and every day at 7.
+ *
  * Past times collapse to `now` (a mid-week manual generate, or a late cron), so
  * a post is never silently dropped for being scheduled in the past.
  */
 export function spreadScheduleTime(
   weekOf: string,
   index: number,
+  postsPerWeek: number = DEFAULT_POSTS_PER_WEEK,
   now: Date = new Date(),
 ): string {
-  const cycle = SPREAD_DAY_OFFSETS.length;
-  // Beyond the 3rd post, roll into the following week rather than piling up.
+  const n = Math.min(7, Math.max(1, Math.floor(postsPerWeek) || DEFAULT_POSTS_PER_WEEK));
+  // Past the n-th post, roll into the following week rather than piling up.
   const offset =
-    SPREAD_DAY_OFFSETS[index % cycle] + 7 * Math.floor(index / cycle);
+    Math.floor(((index % n) * 7) / n) + 7 * Math.floor(index / n);
   const when = new Date(`${weekOf}T00:00:00Z`);
   when.setUTCDate(when.getUTCDate() + offset);
   when.setUTCHours(SPREAD_HOUR_UTC, 0, 0, 0);
   return (when.getTime() < now.getTime() ? now : when).toISOString();
+}
+
+/**
+ * The agent's chosen posts-per-week for the social channel; DEFAULT when unset.
+ * Lives on the same boss_autopilot_settings row as the autopilot mode.
+ */
+export async function getSocialPostsPerWeek(agentId: string): Promise<number> {
+  const { data } = await supabaseServer
+    .from("boss_autopilot_settings")
+    .select("posts_per_week")
+    .eq("agent_id", agentId)
+    .eq("assignee", "marketing_assistant")
+    .eq("channel", "social")
+    .maybeSingle();
+  const n = (data as { posts_per_week?: number | null } | null)?.posts_per_week;
+  return typeof n === "number" && n >= 1 && n <= 7 ? n : DEFAULT_POSTS_PER_WEEK;
 }
 
 /**
@@ -363,15 +384,19 @@ export async function generateWeeklyRecommendations(
 
   const mode = await getSocialMode(agentId);
   const status: SocialRecommendation["status"] = mode === "auto" ? "approved" : "suggested";
+  const postsPerWeek = await getSocialPostsPerWeek(agentId);
 
   const rows: Record<string, unknown>[] = [];
 
-  // (a) 1 TIMELY from the latest published digest's top item.
+  // (a) 1 TIMELY from the latest published digest's top item. There's only one
+  // digest a week, so this is capped at one however high the cadence goes.
   const timely = await buildTimelyRow(agentId, weekOf, status);
   if (timely) rows.push(timely);
 
-  // (b) 2 EVERGREEN from the shared library, avoiding recent picks.
-  const evergreen = await buildEvergreenRows(agentId, weekOf, status, 2);
+  // (b) EVERGREEN fills the rest of the cadence. When there's no digest this
+  // week, evergreen covers the whole week rather than leaving a short one.
+  const evergreenCount = Math.max(0, postsPerWeek - rows.length);
+  const evergreen = await buildEvergreenRows(agentId, weekOf, status, evergreenCount);
   rows.push(...evergreen);
 
   if (rows.length === 0) return { count: 0 };
@@ -433,7 +458,7 @@ export async function generateWeeklyRecommendations(
             agentId,
             rec,
             accounts,
-            spreadScheduleTime(weekOf, i),
+            spreadScheduleTime(weekOf, i, postsPerWeek),
           ).catch((e) => {
             console.warn(
               `[social] autopilot schedule failed for rec ${rec.id}:`,
