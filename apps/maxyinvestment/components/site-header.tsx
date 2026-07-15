@@ -1,0 +1,53 @@
+import Image from "next/image";
+import { company, navLinks } from "@/lib/content";
+
+export function SiteHeader() {
+  return (
+    <header className="sticky top-0 z-20 border-b border-line bg-white/90 backdrop-blur">
+      <div className="mx-auto w-[92%] max-w-[1120px]">
+        <nav className="flex h-[76px] items-center justify-between gap-6">
+          <a href="#top" className="flex items-center gap-3">
+            <Image
+              src="/maxy-logo.png"
+              alt=""
+              width={48}
+              height={48}
+              priority
+              className="h-12 w-12 object-contain"
+            />
+            <span className="block">
+              {/* The full name needs room the 375px header doesn't have; drop to
+                  the wordmark on mobile and keep the name for screen readers. */}
+              <span className="sr-only">{company.name}</span>
+              <span
+                aria-hidden
+                className="block font-serif text-xl font-bold text-navy-800 sm:hidden"
+              >
+                MAXY
+              </span>
+              <span
+                aria-hidden
+                className="hidden font-serif text-xl font-bold text-navy-800 sm:block"
+              >
+                {company.name}
+              </span>
+              <span className="hidden text-[11px] font-extrabold tracking-wide text-brand-500 sm:block">
+                {company.tagline}
+              </span>
+            </span>
+          </a>
+
+          <ul className="flex items-center gap-4 text-xs font-bold text-navy-800 sm:gap-6 sm:text-sm">
+            {navLinks.map((link) => (
+              <li key={link.href}>
+                <a href={link.href} className="transition-colors hover:text-brand-500">
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+  );
+}
