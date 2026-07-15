@@ -19,7 +19,8 @@ const SETTINGS_RETURN_URL = "/dashboard/settings?tab=channels&social=fb";
  *   1. Verify the agent is authed.
  *   2. Verify the state cookie matches the query state (CSRF gate).
  *   3. Exchange the OAuth code for the user's pages + page tokens.
- *   4. Upsert one row per page in agent_social_connections.
+ *   4. Upsert one row per page in `social_accounts` (the single store the
+ *      publish rail reads — see lib/social/connectionsService).
  *   5. Redirect back to /dashboard/settings with a success/error flag.
  *
  * On any failure we redirect with an `error` query param so the
