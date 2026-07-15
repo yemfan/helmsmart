@@ -14,7 +14,9 @@ vi.mock("@/lib/social/customization", () => ({
 }));
 vi.mock("@/lib/agent-ai/settings", () => ({ getAgentAiSettings: vi.fn() }));
 
-const { spreadScheduleTime } = await import("../recommend");
+const { spreadScheduleTime, queueStatusForMode, isSocialMode } = await import(
+  "../recommend"
+);
 
 // A Monday. Autopilot generates on Monday 14:00 UTC.
 const WEEK = "2026-07-20";
@@ -93,6 +95,38 @@ describe("spreadScheduleTime", () => {
       expect(
         new Date(spreadScheduleTime(WEEK, i, 7, now)).getTime(),
       ).toBeGreaterThanOrEqual(now.getTime());
+    }
+  });
+});
+
+describe("queueStatusForMode", () => {
+  // The whole approval gate rests on this: publish-scheduled claims rows with
+  // `.eq("status","scheduled")` and nothing else, so any mode that must not
+  // publish unattended has to produce a status that ISN'T 'scheduled'. If this
+  // ever returns 'scheduled' for 'review', posts publish with no human review.
+  it("holds review-mode posts out of the publishable status", () => {
+    expect(queueStatusForMode("review")).toBe("awaiting_approval");
+  });
+
+  it("lets full autopilot publish", () => {
+    expect(queueStatusForMode("auto")).toBe("scheduled");
+  });
+
+  it("fails closed — only 'auto' is ever publishable", () => {
+    for (const mode of ["ask", "review"] as const) {
+      expect(queueStatusForMode(mode)).not.toBe("scheduled");
+    }
+  });
+});
+
+describe("isSocialMode", () => {
+  it("accepts the three real modes", () => {
+    expect(["ask", "review", "auto"].every(isSocialMode)).toBe(true);
+  });
+
+  it("rejects anything else, so a bad body can't widen the gate", () => {
+    for (const v of ["autopilot", "AUTO", "", null, undefined, 1, {}]) {
+      expect(isSocialMode(v)).toBe(false);
     }
   });
 });

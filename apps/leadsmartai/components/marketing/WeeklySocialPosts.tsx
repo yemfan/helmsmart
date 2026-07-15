@@ -20,6 +20,17 @@ const CONNECT_HREF = "/dashboard/leads/generate/connect";
  * border, white bg, soft shadow).
  */
 
+/** Mirrors SocialMode in lib/social/recommend (kept local: this is a client
+ *  component and that module is server-only). */
+export type SocialMode = "ask" | "review" | "auto";
+
+const MODE_HELP: Record<SocialMode, string> = {
+  ask: "Drafts only — nothing is scheduled. You schedule each post yourself.",
+  review:
+    "Your week is written and scheduled at the right times, but nothing publishes until you approve it in the post queue.",
+  auto: "Full autopilot — posts are written, scheduled AND published with no review.",
+};
+
 export type SocialRec = {
   id: string;
   week_of: string;
@@ -48,7 +59,7 @@ export default function WeeklySocialPosts({
   canCustomize = false,
 }: {
   initialRecs: SocialRec[];
-  initialMode: "ask" | "auto";
+  initialMode: SocialMode;
   weekOf: string;
   /** Human-facing labels of the agent's connected platforms (e.g. ["Facebook"]). */
   connectedPlatforms?: string[];
@@ -56,7 +67,7 @@ export default function WeeklySocialPosts({
   canCustomize?: boolean;
 }) {
   const [recs, setRecs] = useState<SocialRec[]>(initialRecs);
-  const [mode, setMode] = useState<"ask" | "auto">(initialMode);
+  const [mode, setMode] = useState<SocialMode>(initialMode);
   const [generating, setGenerating] = useState(false);
   const [savingMode, setSavingMode] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -156,8 +167,8 @@ export default function WeeklySocialPosts({
     }
   }
 
-  async function toggleMode() {
-    const next = mode === "auto" ? "ask" : "auto";
+  async function changeMode(next: SocialMode) {
+    if (next === mode) return;
     setSavingMode(true);
     setError(null);
     // Optimistic.
@@ -227,26 +238,25 @@ export default function WeeklySocialPosts({
           )}
         </div>
         <div className="flex items-center gap-2">
-          {/* Autopilot toggle */}
-          <button
-            type="button"
-            onClick={toggleMode}
+          {/* How much rope the assistant gets. 'review' is the default posture
+              worth recommending: it plans and schedules the week for you, then
+              waits — the only mode that publishes with no human ever seeing the
+              post is 'auto'. */}
+          <label className="sr-only" htmlFor="social-mode">
+            Posting mode
+          </label>
+          <select
+            id="social-mode"
+            value={mode}
+            onChange={(e) => changeMode(e.target.value as SocialMode)}
             disabled={savingMode}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:opacity-60"
-            aria-pressed={mode === "auto"}
-            title={
-              mode === "auto"
-                ? "Autopilot: new posts are auto-approved into your queue."
-                : "Approve each: new posts wait for your approval."
-            }
+            title={MODE_HELP[mode]}
+            className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:opacity-60"
           >
-            <span
-              className={`inline-block h-2 w-2 rounded-full ${
-                mode === "auto" ? "bg-emerald-500" : "bg-gray-300"
-              }`}
-            />
-            {mode === "auto" ? "Autopilot" : "Approve each"}
-          </button>
+            <option value="ask">Drafts only</option>
+            <option value="review">Schedule, I approve</option>
+            <option value="auto">Full autopilot</option>
+          </select>
 
           {/* Generate */}
           <button
