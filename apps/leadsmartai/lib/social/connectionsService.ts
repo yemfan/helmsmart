@@ -1,21 +1,30 @@
 import "server-only";
 
-import { encryptToken } from "@/lib/leads-gen/token-enc";
+import { decryptToken, encryptToken } from "@/lib/leads-gen/token-enc";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabaseServer";
 
 import type { FacebookPage } from "./facebookOauth";
 
 /**
- * Persistence for agent_social_connections.
+ * Persistence for social connections — backed by `social_accounts`.
  *
- * Reads via supabaseServer (RLS-scoped); writes that store access
- * tokens via supabaseAdmin (service role) because the RLS policy on
- * insert needs the auth context anyway, and we want strict control
- * over who can write tokens — only the OAuth callback route does.
+ * CONSOLIDATION (2026-07-15): this used to own a second table,
+ * `agent_social_connections`, while every publisher (`lib/leads-gen/publish.ts`
+ * → the scheduled-publish cron, Quick Post, the brand poster) read
+ * `social_accounts`. Two sources of truth meant a Page could connect
+ * successfully and be INVISIBLE to everything that posts — a silent no-op with
+ * no error. `social_accounts` is now the single store.
  *
- * Tokens NEVER cross the wire to the client: list endpoints project
- * away `access_token` so the settings panel sees only metadata.
+ * It also fixes a security issue for free: `agent_social_connections.access_token`
+ * was PLAINTEXT, whereas `social_accounts.page_access_token_enc` is encrypted
+ * (lib/leads-gen/token-enc). Nothing writes a plaintext token anymore.
+ *
+ * This module's exported API is deliberately unchanged so callers (the
+ * connections list/revoke routes, the settings panel, the OAuth callback, the
+ * transaction post-to-facebook path) keep working against the new store.
+ *
+ * Tokens NEVER cross the wire to the client: the list projection omits them.
  */
 
 export type AgentSocialConnection = {
@@ -25,6 +34,8 @@ export type AgentSocialConnection = {
   providerAccountId: string;
   providerAccountName: string | null;
   scopes: string[];
+  /** Always null now. Long-lived Page tokens (from a long-lived user token)
+   *  don't expire, and nothing renders this. Kept for API compatibility. */
   tokenExpiresAt: string | null;
   connectedAt: string;
   lastUsedAt: string | null;
@@ -32,73 +43,44 @@ export type AgentSocialConnection = {
 };
 
 const FB_PROVIDER = "facebook_page";
-
+/** A Facebook/Instagram connection is stored as platform "meta" — one Meta
+ *  grant covers both surfaces. See lib/leads-gen/publish.ts. */
+const META_PLATFORM = "meta";
 const FB_SCOPES = ["pages_show_list", "pages_manage_posts", "pages_read_engagement"];
 
-/**
- * Mirror connected Pages into `social_accounts` — the PUBLISHER's source of
- * truth (lib/leads-gen/publish.ts → publishPost), which backs the
- * scheduled-publish cron, Quick Post, and the brand auto-poster.
- *
- * Why this exists: connecting writes `agent_social_connections`, but every
- * publish path reads `social_accounts`. Without this mirror a Page connected
- * here is INVISIBLE to all of them and they silently no-op ("No Facebook
- * account connected") with no error to debug.
- *
- * Note the token is stored ENCRYPTED here (`page_access_token_enc`), unlike
- * `agent_social_connections.access_token` which is still plaintext.
- *
- * Best-effort: a mirror failure must not fail the OAuth callback — the agent is
- * mid-flow and the primary row already saved.
- */
-async function mirrorPagesToSocialAccounts(
-  agentId: string,
-  pages: ReadonlyArray<FacebookPage>,
-): Promise<void> {
-  const now = new Date().toISOString();
-  for (const p of pages) {
-    try {
-      const fields = {
-        agent_id: agentId,
-        platform: "meta",
-        fb_page_id: p.id,
-        fb_page_name: p.name,
-        account_display_name: p.name,
-        page_access_token_enc: encryptToken(p.accessToken),
-        scopes: FB_SCOPES,
-        status: "connected",
-        last_error: null,
-        updated_at: now,
-      };
+type SocialAccountRow = {
+  id: string;
+  agent_id: string | number;
+  fb_page_id: string | null;
+  fb_page_name: string | null;
+  scopes: string[] | null;
+  status: string;
+  connected_at: string;
+  last_used_at: string | null;
+  updated_at: string | null;
+};
 
-      const { data: existing } = await supabaseAdmin
-        .from("social_accounts")
-        .select("id")
-        .eq("agent_id", agentId)
-        .eq("platform", "meta")
-        .eq("fb_page_id", p.id)
-        .maybeSingle();
-
-      if (existing) {
-        await supabaseAdmin
-          .from("social_accounts")
-          .update(fields as never)
-          .eq("id", (existing as { id: string }).id);
-      } else {
-        await supabaseAdmin
-          .from("social_accounts")
-          .insert({ ...fields, connected_at: now } as never);
-      }
-    } catch (e) {
-      console.error("[connectionsService] social_accounts mirror failed", p.id, e);
-    }
-  }
+function toConnection(r: SocialAccountRow): AgentSocialConnection {
+  return {
+    id: r.id,
+    agentId: String(r.agent_id),
+    provider: FB_PROVIDER,
+    providerAccountId: r.fb_page_id ?? "",
+    providerAccountName: r.fb_page_name,
+    scopes: Array.isArray(r.scopes) ? r.scopes : [],
+    tokenExpiresAt: null,
+    connectedAt: r.connected_at,
+    lastUsedAt: r.last_used_at,
+    // social_accounts models revocation via `status` (the enum already allows
+    // 'revoked'), so surface updated_at as the revocation timestamp.
+    revokedAt: r.status === "revoked" ? r.updated_at : null,
+  };
 }
 
 /**
- * Upsert one row per (agent, provider, providerAccountId). When the
- * agent re-runs the OAuth flow on the same page, the access token is
- * refreshed in place — no duplicate row, revoked_at cleared.
+ * Upsert one row per (agent, Meta page). Re-running OAuth on the same page
+ * refreshes the token in place — no duplicate row, and a previously revoked
+ * connection is reactivated.
  */
 export async function upsertFacebookPagesForAgent(args: {
   agentId: string;
@@ -106,58 +88,53 @@ export async function upsertFacebookPagesForAgent(args: {
 }): Promise<{ inserted: number; updated: number }> {
   if (args.pages.length === 0) return { inserted: 0, updated: 0 };
 
-  // Determine which pages already exist so we can return inserted/
-  // updated counts (callers surface "Connected 2 new pages" copy).
-  const { data: existingRows } = await supabaseAdmin
-    .from("agent_social_connections")
-    .select("provider_account_id")
-    .eq("agent_id", args.agentId)
-    .eq("provider", FB_PROVIDER)
-    .in(
-      "provider_account_id",
-      args.pages.map((p) => p.id) as unknown as never[],
-    );
-  const existingIds = new Set(
-    ((existingRows ?? []) as Array<{ provider_account_id: string }>).map(
-      (r) => r.provider_account_id,
-    ),
-  );
-
   const now = new Date().toISOString();
-  const rows = args.pages.map((p) => ({
-    agent_id: args.agentId,
-    provider: FB_PROVIDER,
-    provider_account_id: p.id,
-    provider_account_name: p.name,
-    access_token: p.accessToken,
-    // Long-lived page tokens are nominally 60 days; we mark + 55d to
-    // leave headroom for the cron-side refresh that will land in a
-    // follow-up.
-    token_expires_at: new Date(Date.now() + 55 * 86_400_000).toISOString(),
-    scopes: ["pages_show_list", "pages_manage_posts", "pages_read_engagement"],
-    connected_at: now,
-    revoked_at: null,
-  }));
-
-  const { error } = await supabaseAdmin
-    .from("agent_social_connections")
-    .upsert(rows, { onConflict: "agent_id,provider,provider_account_id" });
-  if (error) throw new Error(error.message);
-
-  // Keep the publisher's source of truth in sync, or nothing can actually post.
-  await mirrorPagesToSocialAccounts(args.agentId, args.pages);
-
   let inserted = 0;
   let updated = 0;
+
   for (const p of args.pages) {
-    if (existingIds.has(p.id)) updated += 1;
-    else inserted += 1;
+    const fields = {
+      agent_id: args.agentId,
+      platform: META_PLATFORM,
+      fb_page_id: p.id,
+      fb_page_name: p.name,
+      account_display_name: p.name,
+      page_access_token_enc: encryptToken(p.accessToken),
+      scopes: FB_SCOPES,
+      status: "connected",
+      last_error: null,
+      updated_at: now,
+    };
+
+    const { data: existing } = await supabaseAdmin
+      .from("social_accounts")
+      .select("id")
+      .eq("agent_id", args.agentId)
+      .eq("platform", META_PLATFORM)
+      .eq("fb_page_id", p.id)
+      .maybeSingle();
+
+    if (existing) {
+      const { error } = await supabaseAdmin
+        .from("social_accounts")
+        .update(fields as never)
+        .eq("id", (existing as { id: string }).id);
+      if (error) throw new Error(error.message);
+      updated += 1;
+    } else {
+      const { error } = await supabaseAdmin
+        .from("social_accounts")
+        .insert({ ...fields, connected_at: now } as never);
+      if (error) throw new Error(error.message);
+      inserted += 1;
+    }
   }
+
   return { inserted, updated };
 }
 
 /**
- * List connections for an agent — without access tokens. Drives the
+ * List a agent's Facebook Page connections — without access tokens. Drives the
  * settings panel and the post-time picker.
  */
 export async function listConnectionsForAgent(
@@ -165,48 +142,28 @@ export async function listConnectionsForAgent(
   opts: { includeRevoked?: boolean } = {},
 ): Promise<AgentSocialConnection[]> {
   let q = supabaseServer
-    .from("agent_social_connections")
+    .from("social_accounts")
     .select(
-      "id, agent_id, provider, provider_account_id, provider_account_name, scopes, token_expires_at, connected_at, last_used_at, revoked_at",
+      "id, agent_id, fb_page_id, fb_page_name, scopes, status, connected_at, last_used_at, updated_at",
     )
     .eq("agent_id", agentId)
+    .eq("platform", META_PLATFORM)
+    .not("fb_page_id", "is", null)
     .order("connected_at", { ascending: false });
-  if (!opts.includeRevoked) q = q.is("revoked_at", null);
+  if (!opts.includeRevoked) q = q.neq("status", "revoked");
 
   const { data, error } = await q;
   if (error) {
     console.warn("[social.connections] list failed:", error.message);
     return [];
   }
-  return ((data ?? []) as Array<{
-    id: string;
-    agent_id: string | number;
-    provider: string;
-    provider_account_id: string;
-    provider_account_name: string | null;
-    scopes: string[] | null;
-    token_expires_at: string | null;
-    connected_at: string;
-    last_used_at: string | null;
-    revoked_at: string | null;
-  }>).map((r) => ({
-    id: r.id,
-    agentId: String(r.agent_id),
-    provider: r.provider as "facebook_page",
-    providerAccountId: r.provider_account_id,
-    providerAccountName: r.provider_account_name,
-    scopes: Array.isArray(r.scopes) ? r.scopes : [],
-    tokenExpiresAt: r.token_expires_at,
-    connectedAt: r.connected_at,
-    lastUsedAt: r.last_used_at,
-    revokedAt: r.revoked_at,
-  }));
+  return ((data ?? []) as SocialAccountRow[]).map(toConnection);
 }
 
 /**
- * Look up one connection's access token for a server-side post.
- * Service-role read so we can fetch the token even though it's never
- * exposed via the list endpoint.
+ * Look up one connection's access token for a server-side post. Service-role
+ * read + decrypt at the point of use; the token is never exposed via the list
+ * endpoint.
  */
 export async function getConnectionWithTokenForPost(args: {
   agentId: string;
@@ -218,41 +175,66 @@ export async function getConnectionWithTokenForPost(args: {
   accessToken: string;
 } | null> {
   const { data, error } = await supabaseAdmin
-    .from("agent_social_connections")
-    .select("id, provider_account_id, provider_account_name, access_token, revoked_at")
+    .from("social_accounts")
+    .select("id, fb_page_id, fb_page_name, page_access_token_enc, status")
     .eq("id", args.connectionId)
     .eq("agent_id", args.agentId)
-    .eq("provider", FB_PROVIDER)
+    .eq("platform", META_PLATFORM)
     .maybeSingle();
   if (error || !data) return null;
+
   const row = data as {
     id: string;
-    provider_account_id: string;
-    provider_account_name: string | null;
-    access_token: string;
-    revoked_at: string | null;
+    fb_page_id: string | null;
+    fb_page_name: string | null;
+    page_access_token_enc: string | null;
+    status: string;
   };
-  if (row.revoked_at) return null;
+  if (row.status !== "connected" || !row.fb_page_id || !row.page_access_token_enc) {
+    return null;
+  }
+
+  let accessToken: string;
+  try {
+    accessToken = decryptToken(row.page_access_token_enc);
+  } catch (e) {
+    // Usually SOCIAL_TOKEN_ENC_KEY rotated without re-encrypting rows. Mark the
+    // connection so the UI says "reconnect" instead of failing opaquely.
+    console.error("[social.connections] token decrypt failed:", e);
+    try {
+      await supabaseAdmin
+        .from("social_accounts")
+        .update({
+          status: "error",
+          last_error: "Token decryption failed",
+          updated_at: new Date().toISOString(),
+        } as never)
+        .eq("id", row.id);
+    } catch {
+      /* best-effort */
+    }
+    return null;
+  }
+
   return {
     id: row.id,
-    providerAccountId: row.provider_account_id,
-    providerAccountName: row.provider_account_name,
-    accessToken: row.access_token,
+    providerAccountId: row.fb_page_id,
+    providerAccountName: row.fb_page_name,
+    accessToken,
   };
 }
 
 /**
- * Soft-revoke — mark `revoked_at` so the audit trail (social_post_log
- * connection_id FK) still resolves. The list endpoint hides revoked
- * connections by default.
+ * Soft-revoke — flip status so the audit trail (lead_posts / social_post_log
+ * FKs) still resolves. The list endpoint hides revoked connections by default.
  */
 export async function revokeConnection(args: {
   agentId: string;
   connectionId: string;
 }): Promise<boolean> {
   const { error } = await supabaseServer
-    .from("agent_social_connections")
-    .update({ revoked_at: new Date().toISOString() })
+    .from("social_accounts")
+    .update({ status: "revoked", updated_at: new Date().toISOString() } as never)
     .eq("id", args.connectionId)
     .eq("agent_id", args.agentId);
   if (error) {
@@ -264,7 +246,7 @@ export async function revokeConnection(args: {
 
 export async function touchLastUsedAt(connectionId: string): Promise<void> {
   await supabaseAdmin
-    .from("agent_social_connections")
-    .update({ last_used_at: new Date().toISOString() })
+    .from("social_accounts")
+    .update({ last_used_at: new Date().toISOString() } as never)
     .eq("id", connectionId);
 }
