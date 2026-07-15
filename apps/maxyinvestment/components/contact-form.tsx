@@ -5,7 +5,8 @@ import { useFormStatus } from "react-dom";
 import { submitContactForm, type ContactState } from "@/lib/actions/contact";
 
 const field =
-  "w-full rounded-xl border bg-white px-4 py-3 text-navy-900 outline-none transition-colors placeholder:text-navy-300 focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20";
+  // placeholder is navy-400, not 300: 300 only manages 2.46:1 on white.
+  "w-full rounded-xl border bg-white px-4 py-3 text-navy-900 outline-none transition-colors placeholder:text-navy-400 focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -146,6 +147,12 @@ export function ContactForm({ email }: { email: string }) {
           </a>
         </p>
       </div>
+
+      {/* Accurate to what the code does: the action emails the team and stores nothing. */}
+      <p className="text-sm text-navy-400">
+        We use your details only to respond to your enquiry. Your message is emailed to our team
+        and isn&rsquo;t stored on this website.
+      </p>
     </form>
   );
 }
