@@ -45,6 +45,9 @@ export async function POST(req: Request) {
     }
 
     const rows = posts.map((p) => ({
+      // Explicitly SHARED: this endpoint seeds the common library every agent
+      // draws from. Agent-owned content (the brand's) is seeded by migration.
+      agent_id: null,
       category: p.category,
       title: p.title,
       hook: p.hook,
@@ -55,10 +58,13 @@ export async function POST(req: Request) {
       status: "active",
     }));
 
-    // Idempotent: on (title) conflict do nothing (ignoreDuplicates).
+    // Idempotent: on (agent_id, title) conflict do nothing (ignoreDuplicates).
+    // Title uniqueness became per-owner when the library gained an agent_id;
+    // the constraint is UNIQUE NULLS NOT DISTINCT, so these shared rows (NULL
+    // agent_id) still dedupe by title exactly as they did before.
     const { data, error } = await supabaseServer
       .from("social_content_library")
-      .upsert(rows, { onConflict: "title", ignoreDuplicates: true })
+      .upsert(rows, { onConflict: "agent_id,title", ignoreDuplicates: true })
       .select("id");
     if (error) throw error;
 
