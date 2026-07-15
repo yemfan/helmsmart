@@ -10,6 +10,7 @@ import {
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import { renderCardPng, type BrandKit } from "@/lib/social/renderCard";
 import { agentHasSocialCustomization } from "@/lib/social/customization";
+import { reviewOutboundPost } from "@/lib/social/reviewClaims";
 import { getAgentAiSettings } from "@/lib/agent-ai/settings";
 
 /**
@@ -37,23 +38,37 @@ import { getAgentAiSettings } from "@/lib/agent-ai/settings";
  */
 
 /**
- * 'ask'    — draft only; nothing is scheduled, the agent schedules by hand.
- * 'review' — plan + queue the week at real times, but hold every post for human
- *            approval before it publishes.
- * 'auto'   — plan, queue AND publish with no human gate.
+ * 'ask'      — draft only; nothing is scheduled, the agent schedules by hand.
+ * 'review'   — plan + queue the week at real times, hold EVERY post for a human.
+ * 'assisted' — the Boss fact-checks each post, clears what it can verify and
+ *              holds the rest for a human. Cleared posts still sit in the queue
+ *              with a cancel window before their slot.
+ * 'auto'     — plan, queue AND publish with no check at all.
  */
-export type SocialMode = "ask" | "auto" | "review";
+export type SocialMode = "ask" | "auto" | "review" | "assisted";
 
-const SOCIAL_MODES: readonly SocialMode[] = ["ask", "auto", "review"];
+const SOCIAL_MODES: readonly SocialMode[] = ["ask", "auto", "review", "assisted"];
 
 export function isSocialMode(v: unknown): v is SocialMode {
   return typeof v === "string" && (SOCIAL_MODES as readonly string[]).includes(v);
 }
 
-/** Queue status a mode's posts land in. Only 'scheduled' is publishable — the
- *  cron claims that and nothing else, so 'review' needs no separate gate. */
+/**
+ * Queue status a mode's posts land in. Only 'scheduled' is publishable — the
+ * publish cron claims that and nothing else, so every other mode needs no
+ * separate gate.
+ *
+ * 'assisted' is deliberately absent: its status depends on the Boss's verdict
+ * per post, so it is resolved at queue time, not from the mode alone. Anything
+ * unrecognised falls through to held — this function fails closed by design.
+ */
 export function queueStatusForMode(mode: SocialMode): "scheduled" | "awaiting_approval" {
   return mode === "auto" ? "scheduled" : "awaiting_approval";
+}
+
+/** Modes that plan + queue the week (as opposed to 'ask', which only drafts). */
+export function modeQueuesPosts(mode: SocialMode): boolean {
+  return mode === "auto" || mode === "review" || mode === "assisted";
 }
 
 /** The Monday (00:00 UTC) of the current week as YYYY-MM-DD. Matches the
@@ -281,6 +296,9 @@ export async function scheduleRecommendation(
    *  ever claims 'scheduled'. Defaults to publishable, preserving the behaviour
    *  of the manual "Schedule to …" button (an explicit click IS the approval). */
   queueStatus: "scheduled" | "awaiting_approval" = "scheduled",
+  /** The Boss's pre-publish fact-check, stored so the queue can show its
+   *  reasoning and a bad call is auditable later. */
+  review?: { verdict: "clean" | "flagged"; issues: unknown[] },
 ): Promise<ScheduleResult> {
   const scheduledFor = scheduledForIso ?? new Date().toISOString();
   if (accounts.length === 0) return { scheduledCount: 0, scheduledFor };
@@ -307,6 +325,9 @@ export async function scheduleRecommendation(
     subject_ref_id: rec.id,
     status: queueStatus,
     scheduled_for: scheduledFor,
+    review_verdict: review?.verdict ?? null,
+    review_issues: review?.issues ?? null,
+    reviewed_at: review ? new Date().toISOString() : null,
   }));
 
   const { data, error } = await supabaseServer
@@ -444,15 +465,14 @@ export async function generateWeeklyRecommendations(
   // Runs for BOTH the weekly cron and the on-demand /api/social/recommend click.
   await persistCardImages(agentId, inserted);
 
-  // Queue the week. 'auto' and 'review' both plan real times into
-  // scheduled_posts; they differ only in the status the rows land in —
-  // 'review' holds each post for approval (the publish cron claims only
-  // 'scheduled'). 'ask' queues nothing and stays a pure draft list.
+  // Queue the week. Every mode except 'ask' plans real times into
+  // scheduled_posts; they differ in the status the rows land in, and the
+  // publish cron claims only 'scheduled'.
   //
   // Best-effort — a failure here never aborts the run, and with NO connected
   // account the recs simply stay drafts (a queue with nowhere to post is
   // still just a draft).
-  if (mode === "auto" || mode === "review") {
+  if (modeQueuesPosts(mode)) {
     try {
       const accounts = await getConnectedSocialAccounts(agentId);
       if (accounts.length > 0) {
@@ -479,12 +499,31 @@ export async function generateWeeklyRecommendations(
           .filter((r): r is FreshRec => Boolean(r));
 
         for (const [i, rec] of ordered.entries()) {
+          // 'assisted': the Boss reads each post before it's queued. A clean
+          // verdict clears it to publish (still cancellable until its slot);
+          // anything flagged is held for the human with the reasoning attached.
+          // reviewOutboundPost fails closed, so a checker outage holds posts
+          // rather than releasing them.
+          let queueStatus = queueStatusForMode(mode);
+          let review: { verdict: "clean" | "flagged"; issues: unknown[] } | undefined;
+          if (mode === "assisted") {
+            const verdict = await reviewOutboundPost(rec.caption).catch((e) => ({
+              verdict: "flagged" as const,
+              issues: [
+                { quote: "", why: `check failed: ${e instanceof Error ? e.message : e}` },
+              ],
+            }));
+            review = { verdict: verdict.verdict, issues: verdict.issues };
+            queueStatus = verdict.verdict === "clean" ? "scheduled" : "awaiting_approval";
+          }
+
           await scheduleRecommendation(
             agentId,
             rec,
             accounts,
             spreadScheduleTime(weekOf, i, postsPerWeek),
-            queueStatusForMode(mode),
+            queueStatus,
+            review,
           ).catch((e) => {
             console.warn(
               `[social] autopilot schedule failed for rec ${rec.id}:`,

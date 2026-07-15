@@ -27,6 +27,9 @@ type QueueItem = {
   last_error: string | null;
   published_at: string | null;
   accountName: string | null;
+  /** The Boss's pre-publish fact-check (assisted mode only; null otherwise). */
+  review_verdict: "clean" | "flagged" | null;
+  review_issues: { quote: string; why: string }[] | null;
 };
 
 const PLATFORM_LABEL: Record<string, string> = {
@@ -216,6 +219,38 @@ export default function PostQueue() {
             <p className="line-clamp-3 whitespace-pre-wrap text-xs text-gray-800">
               {item.caption}
             </p>
+
+            {/* What the Boss found. A flag has to be actionable — show the exact
+                words it objected to and what the product actually does, not a
+                bare "flagged" the reader has to reverse-engineer. */}
+            {item.review_verdict === "flagged" && (
+              <div className="mt-2 rounded-md border border-amber-200 bg-amber-50 p-2">
+                <p className="text-[11px] font-semibold text-amber-900">
+                  Boss Assistant held this — it couldn&apos;t verify a claim:
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {(item.review_issues ?? []).map((iss, n) => (
+                    <li key={n} className="text-[11px] text-amber-900">
+                      {iss.quote && (
+                        <span className="italic">&ldquo;{iss.quote}&rdquo;</span>
+                      )}
+                      {iss.quote && iss.why ? " — " : ""}
+                      {iss.why}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-1 text-[10px] text-amber-700">
+                  Approve anyway only if you know the claim is true.
+                </p>
+              </div>
+            )}
+
+            {item.review_verdict === "clean" && (
+              <p className="mt-1.5 text-[11px] text-gray-500">
+                ✓ Boss Assistant fact-checked this against what we actually ship.
+                Cancel any time before it posts.
+              </p>
+            )}
 
             {item.status === "failed" && item.last_error && (
               <p className="mt-1.5 text-[11px] text-red-700">
