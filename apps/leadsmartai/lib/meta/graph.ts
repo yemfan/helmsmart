@@ -3,12 +3,10 @@
  *
  * Meta deprecates a Graph version roughly TWO YEARS after release, after which
  * calls stop behaving predictably. This constant used to be hardcoded in three
- * places and had drifted apart:
- *   - lib/leads-gen/meta-oauth.ts  → v21.0  (the live publisher)
- *   - lib/social/facebookOauth.ts  → v19.0  (the live OAuth connect flow)
- *   - lib/social/postToFacebook.ts → v19.0  (transaction "post to Facebook")
- * v19.0 shipped Jan 2024, so it is already past its 2-year window — exactly the
- * class of breakage that hit LinkedIn (stale version → HTTP 426).
+ * places and had drifted apart — the publisher was on v21.0 while the OAuth
+ * connect flow and a second (now-deleted) Facebook publisher were still pinned
+ * to v19.0. v19.0 shipped Jan 2024, so it was already past its 2-year window —
+ * exactly the class of breakage that hit LinkedIn (stale version → HTTP 426).
  *
  * Bump via the META_GRAPH_VERSION env var so a version change is a config
  * change, not a deploy. Recheck ANNUALLY:
