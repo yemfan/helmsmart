@@ -19,8 +19,10 @@ import { getAgentAiSettings } from "@/lib/agent-ai/settings";
  * small queue of social-post DRAFTS in social_post_recommendations:
  *   - 1 TIMELY post composed from the latest newsletter digest's top item,
  *     linking to that issue.
- *   - 2 EVERGREEN posts drawn from the shared social_content_library, avoiding
- *     what the agent was recommended recently.
+ *   - 2 EVERGREEN posts drawn from social_content_library, avoiding what the
+ *     agent was recommended recently. The library is shared (agent_id null) plus
+ *     whatever the agent owns; owned content is preferred, and one agent's owned
+ *     content is never offered to another.
  *
  * Captions are composed DETERMINISTICALLY from stored fields (digest headline /
  * library hook+body+cta) — no per-post AI call, so this stays cheap. The agent's
@@ -119,6 +121,8 @@ export async function getRecommendationForCard(
 
 type LibraryRow = {
   id: string;
+  /** Owner. NULL = shared library; non-null = private to that agent. */
+  agent_id: number | null;
   category: string;
   title: string;
   hook: string;
@@ -309,6 +313,38 @@ export async function scheduleRecommendation(
   return { scheduledCount, scheduledFor };
 }
 
+/** Mon / Wed / Fri, as day offsets from week_of. */
+const SPREAD_DAY_OFFSETS = [0, 2, 4];
+/** 16:00 UTC = 9am PT / noon ET — inside the workday on both US coasts. */
+const SPREAD_HOUR_UTC = 16;
+
+/**
+ * When the i-th auto-scheduled post of a week should publish.
+ *
+ * Autopilot used to hand EVERY rec `scheduled_for = now()`, so a whole week's
+ * posts drained on one publish-scheduled tick — three posts to the same feed
+ * within five minutes, which reads as spam and burns the week's content in one
+ * morning. It had never fired in production because no agent had autopilot on;
+ * the brand is the first, so it gets fixed here rather than on a live feed.
+ *
+ * Past times collapse to `now` (a mid-week manual generate, or a late cron), so
+ * a post is never silently dropped for being scheduled in the past.
+ */
+export function spreadScheduleTime(
+  weekOf: string,
+  index: number,
+  now: Date = new Date(),
+): string {
+  const cycle = SPREAD_DAY_OFFSETS.length;
+  // Beyond the 3rd post, roll into the following week rather than piling up.
+  const offset =
+    SPREAD_DAY_OFFSETS[index % cycle] + 7 * Math.floor(index / cycle);
+  const when = new Date(`${weekOf}T00:00:00Z`);
+  when.setUTCDate(when.getUTCDate() + offset);
+  when.setUTCHours(SPREAD_HOUR_UTC, 0, 0, 0);
+  return (when.getTime() < now.getTime() ? now : when).toISOString();
+}
+
 /**
  * Build this agent's weekly recommendations (idempotent per (agent, week)).
  * Returns the number of rows inserted (0 when nothing to add or already done).
@@ -377,10 +413,28 @@ export async function generateWeeklyRecommendations(
           .from("social_post_recommendations")
           .select("id, caption, hashtags, image_url, status")
           .in("id", inserted.map((r) => r.id));
-        for (const rec of (fresh ?? []) as Array<
-          Pick<SocialRecommendation, "id" | "caption" | "hashtags" | "image_url" | "status">
-        >) {
-          await scheduleRecommendation(agentId, rec, accounts).catch((e) => {
+
+        // Re-impose the INSERT order: `.in()` returns rows in whatever order it
+        // likes, and order decides the publish day below. `inserted` is ordered
+        // timely-first, so the news post lands Monday while it's still news.
+        type FreshRec = Pick<
+          SocialRecommendation,
+          "id" | "caption" | "hashtags" | "image_url" | "status"
+        >;
+        const byId = new Map(
+          ((fresh ?? []) as FreshRec[]).map((r) => [r.id, r]),
+        );
+        const ordered = inserted
+          .map((r) => byId.get(r.id))
+          .filter((r): r is FreshRec => Boolean(r));
+
+        for (const [i, rec] of ordered.entries()) {
+          await scheduleRecommendation(
+            agentId,
+            rec,
+            accounts,
+            spreadScheduleTime(weekOf, i),
+          ).catch((e) => {
             console.warn(
               `[social] autopilot schedule failed for rec ${rec.id}:`,
               e instanceof Error ? e.message : e,
@@ -653,19 +707,44 @@ async function buildEvergreenRows(
       .filter((id): id is string => Boolean(id)),
   );
 
-  // Pull a modest pool of active library rows and pick the freshest not-recent
-  // ones (with a light shuffle so two agents on the same week don't get an
-  // identical pair).
+  // Pull a modest pool of active library rows THIS agent may use: the shared
+  // library (agent_id null) plus whatever the agent owns. The owner filter is
+  // what stops one agent's private content — e.g. the brand agent's
+  // founder-voice marketing ("I built RealtyBoss") — from being recommended to
+  // every other agent, who would then post it as their own.
+  const agentIdNum = Number(agentId);
+  if (!Number.isFinite(agentIdNum)) return [];
   const { data: lib } = await supabaseServer
     .from("social_content_library")
-    .select("id, category, title, hook, body, hashtags, cta, image_prompt")
+    .select("id, agent_id, category, title, hook, body, hashtags, cta, image_prompt")
     .eq("status", "active")
+    .or(`agent_id.is.null,agent_id.eq.${agentIdNum}`)
     .limit(200);
-  const pool = ((lib ?? []) as LibraryRow[]).filter((r) => !recentIds.has(r.id));
-  // Fall back to the full active set if anti-repeat drained the pool.
-  const candidates = pool.length >= n ? pool : ((lib ?? []) as LibraryRow[]);
+  const all = (lib ?? []) as LibraryRow[];
 
-  const picked = shuffle(candidates).slice(0, n);
+  // Owned content is preferred over shared. An agent who has curated their own
+  // voice (today: the RealtyBoss brand) should post THAT — the shared library
+  // outnumbers it, so a plain shuffle would bury the brand's own copy under
+  // generic consumer-education tips. Agents owning nothing are unaffected:
+  // `owned` is empty, leaving one tier of shared rows = the previous behaviour.
+  const owned = all.filter((r) => r.agent_id !== null);
+  const tiers: LibraryRow[][] =
+    owned.length > 0 ? [owned, all.filter((r) => r.agent_id === null)] : [all];
+
+  const picked: LibraryRow[] = [];
+  for (const tier of tiers) {
+    if (picked.length >= n) break;
+    const fresh = shuffle(tier.filter((r) => !recentIds.has(r.id)));
+    picked.push(...fresh.slice(0, n - picked.length));
+  }
+  // Anti-repeat drained every tier (a small library, or a long-lived agent):
+  // fall back to the full eligible set rather than recommending nothing.
+  if (picked.length < n) {
+    const used = new Set(picked.map((r) => r.id));
+    const fill = shuffle(all.filter((r) => !used.has(r.id)));
+    picked.push(...fill.slice(0, n - picked.length));
+  }
+
   return picked.map((row) => ({
     agent_id: agentId,
     week_of: weekOf,

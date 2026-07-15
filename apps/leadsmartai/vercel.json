@@ -175,14 +175,6 @@
     {
       "path": "/api/cron/playbook-optimize",
       "schedule": "0 16 * * *"
-    },
-    {
-      "path": "/api/cron/brand-linkedin",
-      "schedule": "0 16 * * 1,4"
-    },
-    {
-      "path": "/api/cron/brand-facebook",
-      "schedule": "30 16 * * 1,4"
     }
   ]
 }

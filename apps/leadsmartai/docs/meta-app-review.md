@@ -5,16 +5,20 @@ approved for the permissions Phase 2 of **Generate Leads** needs:
 direct posting to Facebook + Instagram Business, and the Meta Lead
 Ads wizard.
 
-> **Status (2026-07-14):** Pre-submission — **App still not created.**
-> The *code* is done: Meta OAuth (`/api/social/facebook/start` →
+> **Status (2026-07-15):** App **created (ID 2768243443543435)** and the
+> RealtyBoss Page (`LeadSmart AI`) is **connected in prod** under Standard
+> access. Meta OAuth (`/api/social/facebook/start` →
 > `/api/social/facebook/callback`), Page publishing
-> (`lib/leads-gen/meta-post.ts` → `publishPost`, Graph v21.0), the
-> scheduled-publish cron (`/api/cron/publish-scheduled`, every 5 min),
-> the brand Facebook poster (`/api/cron/brand-facebook`), and the
-> data-deletion callback (`/api/meta/data-deletion`) are all shipped.
-> What's missing is entirely operational: create the app, set
-> `META_APP_ID` / `META_APP_SECRET` / `META_OAUTH_REDIRECT_URI` in
-> Vercel prod, and (for agent Pages only) pass this review.
+> (`lib/leads-gen/meta-post.ts` → `publishPost`, Graph version centralized
+> in `lib/meta/graph.ts`), the scheduled-publish cron
+> (`/api/cron/publish-scheduled`, every 5 min) and the data-deletion
+> callback (`/api/meta/data-deletion`) are all live.
+>
+> Brand posting no longer has its own cron. The brand is just **an agent
+> with autopilot on** (`boss_autopilot_settings`), so it flows through the
+> normal engine: `/api/cron/social-weekly` → `scheduled_posts` →
+> `/api/cron/publish-scheduled`. What's left is App Review, needed **only**
+> to let agent customers connect *their* Pages.
 >
 > ⚠️ **This doc was written pre-rebrand.** It has been updated from
 > LeadSmart AI / leadsmart-ai.com (a **dead domain**) to RealtyBoss /
@@ -28,7 +32,7 @@ Meta permissions have two tiers, and it changes the work dramatically:
 - **Standard access** works *only* for users with a role on the app
   (admins / developers / testers) — acting on **their own** assets.
   **No App Review required.** So auto-posting RealtyBoss's own
-  marketing to **our own Page** (the `/api/cron/brand-facebook` job)
+  marketing to **our own Page** (the brand agent's social autopilot)
   works as soon as the app exists and the owner connects the Page.
 - **Advanced access** is what lets *the general public* (our agent
   customers) grant these permissions. **This requires App Review** —
@@ -321,7 +325,12 @@ correct shape, not that data is actually deleted.
 | `META_WEBHOOK_VERIFY_TOKEN` | We choose this | Webhook subscription verification for `leads_retrieval` |
 | `META_OAUTH_REDIRECT_URI` | Same as Valid OAuth Redirect URIs setting — `https://www.realtybossai.com/api/social/facebook/callback` | OAuth callback |
 | `SOCIAL_TOKEN_ENC_KEY` | Already set | Encrypts/decrypts stored Page tokens (`lib/leads-gen/token-enc.ts`). Rotating it without re-encrypting rows breaks every connection. |
-| `BRAND_FACEBOOK_AGENT_ID` | Our owner agent id | Gates `/api/cron/brand-facebook` — the brand auto-poster no-ops until set (mirrors `BRAND_LINKEDIN_AGENT_ID`). |
+| `META_GRAPH_VERSION` | Optional override | Graph version for every Meta call (`lib/meta/graph.ts`); defaults to `v21.0`. Recheck annually — Meta deprecates a version ~2 years after release. |
+
+`BRAND_FACEBOOK_AGENT_ID` / `BRAND_LINKEDIN_AGENT_ID` are **gone**. Which
+account the brand posts from is no longer env config — it's data: the brand
+agent's `social_accounts` rows plus its `boss_autopilot_settings` opt-in.
+Both vars can be deleted from Vercel prod.
 
 All set via `vercel env add` against the production environment
 before code that uses them ships. `META_APP_ID` / `META_APP_SECRET` /
