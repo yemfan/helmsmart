@@ -14,9 +14,10 @@ vi.mock("@/lib/social/customization", () => ({
 }));
 vi.mock("@/lib/agent-ai/settings", () => ({ getAgentAiSettings: vi.fn() }));
 
-const { spreadScheduleTime, queueStatusForMode, isSocialMode } = await import(
-  "../recommend"
-);
+vi.mock("@/lib/social/reviewClaims", () => ({ reviewOutboundPost: vi.fn() }));
+
+const { spreadScheduleTime, queueStatusForMode, isSocialMode, modeQueuesPosts } =
+  await import("../recommend");
 
 // A Monday. Autopilot generates on Monday 14:00 UTC.
 const WEEK = "2026-07-20";
@@ -112,16 +113,27 @@ describe("queueStatusForMode", () => {
     expect(queueStatusForMode("auto")).toBe("scheduled");
   });
 
-  it("fails closed — only 'auto' is ever publishable", () => {
-    for (const mode of ["ask", "review"] as const) {
+  it("fails closed — only 'auto' is publishable from the mode alone", () => {
+    // 'assisted' included deliberately: its real status depends on the Boss's
+    // per-post verdict, so the mode alone must never clear a post to publish.
+    for (const mode of ["ask", "review", "assisted"] as const) {
       expect(queueStatusForMode(mode)).not.toBe("scheduled");
     }
   });
 });
 
+describe("modeQueuesPosts", () => {
+  it("plans a week for every mode except drafts-only", () => {
+    expect(modeQueuesPosts("review")).toBe(true);
+    expect(modeQueuesPosts("assisted")).toBe(true);
+    expect(modeQueuesPosts("auto")).toBe(true);
+    expect(modeQueuesPosts("ask")).toBe(false);
+  });
+});
+
 describe("isSocialMode", () => {
-  it("accepts the three real modes", () => {
-    expect(["ask", "review", "auto"].every(isSocialMode)).toBe(true);
+  it("accepts the four real modes", () => {
+    expect(["ask", "review", "assisted", "auto"].every(isSocialMode)).toBe(true);
   });
 
   it("rejects anything else, so a bad body can't widen the gate", () => {
