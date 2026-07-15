@@ -1,5 +1,6 @@
 import "server-only";
 
+import { META_GRAPH_BASE } from "@/lib/meta/graph";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 import {
@@ -22,7 +23,9 @@ import {
  * went out and what didn't.
  */
 
-const GRAPH_BASE = "https://graph.facebook.com/v19.0";
+// Shared Graph version (lib/meta/graph.ts). Was pinned to v19.0 — released
+// Jan 2024, already past Meta's ~2-year deprecation window.
+const GRAPH_BASE = META_GRAPH_BASE;
 
 export type PostToFacebookInput = {
   agentId: string;
