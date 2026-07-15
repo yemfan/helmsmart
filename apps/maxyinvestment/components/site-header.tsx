@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { company, navLinks } from "@/lib/content";
 
 export function SiteHeader() {
@@ -6,7 +7,8 @@ export function SiteHeader() {
     <header className="sticky top-0 z-20 border-b border-line bg-white/90 backdrop-blur">
       <div className="mx-auto w-[92%] max-w-[1120px]">
         <nav className="flex h-[76px] items-center justify-between gap-6">
-          <a href="#top" className="flex items-center gap-3">
+          {/* "/" not "#top" — the header renders on /contact too, where #top doesn't exist. */}
+          <Link href="/" className="flex items-center gap-3">
             <Image
               src="/maxy-logo.png"
               alt=""
@@ -35,14 +37,14 @@ export function SiteHeader() {
                 {company.tagline}
               </span>
             </span>
-          </a>
+          </Link>
 
           <ul className="flex items-center gap-4 text-xs font-bold text-navy-800 sm:gap-6 sm:text-sm">
             {navLinks.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="transition-colors hover:text-brand-500">
+                <Link href={link.href} className="transition-colors hover:text-brand-500">
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

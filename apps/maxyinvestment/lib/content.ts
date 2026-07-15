@@ -107,8 +107,10 @@ export const milestones: Milestone[] = [
   },
 ];
 
+// Root-relative, not bare fragments: these render on /contact too, where a bare
+// "#portfolio" would resolve against a page that has no such section.
 export const navLinks = [
-  { label: "Portfolio", href: "#portfolio" },
-  { label: "Our Journey", href: "#journey" },
-  { label: "Contact", href: "#contact" },
+  { label: "Portfolio", href: "/#portfolio" },
+  { label: "Our Journey", href: "/#journey" },
+  { label: "Contact", href: "/contact" },
 ] as const;
