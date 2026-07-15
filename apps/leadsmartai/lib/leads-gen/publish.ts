@@ -58,6 +58,9 @@ export type PublishInput = {
    * `imageUrl` variable, so this is a single additive branch.
    */
   imageUrl?: string | null;
+  /** Optional URL to attach. Facebook renders a link-preview card on a /feed
+   *  post (ignored when an image is attached, and not supported by IG). */
+  link?: string | null;
   /** Attribution context — recorded on the lead_posts row. */
   trigger?: string | null;
   subjectKind?: string | null;
@@ -101,6 +104,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     hashtags,
     mediaItemId,
     imageUrl: directImageUrl,
+    link,
     trigger,
     subjectKind,
     subjectRefId,
@@ -380,6 +384,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
         pageAccessToken: accessToken,
         caption,
         imageUrl,
+        link,
       });
       externalPostId = result.externalPostId;
       externalPostUrl = result.externalPostUrl;
