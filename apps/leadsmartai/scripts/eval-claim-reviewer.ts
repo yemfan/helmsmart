@@ -33,7 +33,13 @@ for (const file of [".env.local", ".env"]) {
   }
 }
 
-type Fixture = { name: string; expect: "clean" | "flagged"; caption: string };
+type Fixture = {
+  name: string;
+  expect: "clean" | "flagged";
+  caption: string;
+  /** Defaults to brand copy; 'timely' = cited market news from the digest. */
+  kind?: "brand" | "timely";
+};
 
 const FIXTURES: Fixture[] = [
   // ── REAL fabrications: both reached the prod library. Must be caught. ─────
@@ -117,6 +123,24 @@ const FIXTURES: Fixture[] = [
     caption:
       "Every buyer you're working with deserves a search you can actually re-run.\n\nRealtyBoss saves an AI-powered house search per client and keeps a history of every run, so you can pick the conversation back up months later with the whole thread intact.\n\nrealtybossai.com",
   },
+  // ── Cited market news. Real generated post: the brand rules held this for
+  //    "referencing pricing" when $30,000 is a cited government grant, not our
+  //    price. News gets judged as news, or every timely post escalates and the
+  //    reader learns to ignore flags.
+  {
+    name: "REAL timely: NY grant figure (was a false alarm under brand rules)",
+    expect: "clean",
+    kind: "timely",
+    caption:
+      "New York's DPAL Plus 2026 Opens with Up to $30,000 for Lower-Income First-Time Buyers\n\nThis is a live, limited grant window open right now for qualifying New York buyers — waiting weeks could mean the funds are gone. Rates are near 6.2% and inventory is tight, so buyers who qualify should move.",
+  },
+  {
+    name: "SYNTH timely: news that DOES overclaim the product",
+    expect: "flagged",
+    kind: "timely",
+    caption:
+      "Rates dipped to 6.1% this week — the lowest in months.\n\nRealtyBoss monitors the market in real time and alerts you the second a rate move affects one of your buyers.",
+  },
 ];
 
 async function main() {
@@ -130,7 +154,7 @@ async function main() {
   const rows: string[] = [];
 
   for (const f of FIXTURES) {
-    const review = await reviewBrandClaims(f.caption);
+    const review = await reviewBrandClaims(f.caption, f.kind ?? "brand");
     const ok = review.verdict === f.expect;
     if (!ok && f.expect === "flagged") misses++;
     if (!ok && f.expect === "clean") falseAlarms++;

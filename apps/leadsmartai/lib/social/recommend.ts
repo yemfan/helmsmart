@@ -494,9 +494,16 @@ export async function generateWeeklyRecommendations(
         const byId = new Map(
           ((fresh ?? []) as FreshRec[]).map((r) => [r.id, r]),
         );
+        // Carry source_type through: the Boss judges cited market news by
+        // different rules than marketing copy about ourselves.
         const ordered = inserted
-          .map((r) => byId.get(r.id))
-          .filter((r): r is FreshRec => Boolean(r));
+          .map((r) => {
+            const rec = byId.get(r.id);
+            return rec ? { ...rec, source_type: r.source_type } : null;
+          })
+          .filter((r): r is FreshRec & { source_type: "evergreen" | "timely" } =>
+            Boolean(r),
+          );
 
         for (const [i, rec] of ordered.entries()) {
           // 'assisted': the Boss reads each post before it's queued. A clean
@@ -507,7 +514,10 @@ export async function generateWeeklyRecommendations(
           let queueStatus = queueStatusForMode(mode);
           let review: { verdict: "clean" | "flagged"; issues: unknown[] } | undefined;
           if (mode === "assisted") {
-            const verdict = await reviewOutboundPost(rec.caption).catch((e) => ({
+            const verdict = await reviewOutboundPost(
+              rec.caption,
+              rec.source_type === "timely" ? "timely" : "brand",
+            ).catch((e) => ({
               verdict: "flagged" as const,
               issues: [
                 { quote: "", why: `check failed: ${e instanceof Error ? e.message : e}` },

@@ -81,7 +81,10 @@ Return EXACTLY ONE fenced JSON code block and nothing after it:
  * Check one post. Never throws — every failure path returns a 'flagged' verdict
  * so a broken checker holds posts rather than releasing them.
  */
-export async function reviewBrandClaims(caption: string): Promise<ClaimReview> {
+export async function reviewBrandClaims(
+  caption: string,
+  kind: PostKind = "brand",
+): Promise<ClaimReview> {
   if (!caption.trim()) {
     return { verdict: "flagged", issues: [], error: "empty caption" };
   }
@@ -100,7 +103,11 @@ export async function reviewBrandClaims(caption: string): Promise<ClaimReview> {
       messages: [
         {
           role: "user",
-          content: `Fact-check this post against the list. Return the JSON block.\n\n---\n${caption.trim()}\n---`,
+          content:
+            (kind === "timely"
+              ? `This post is CITED MARKET NEWS composed from a sourced newsletter digest — it is not marketing copy about RealtyBoss. Specific figures (grant amounts, rates, prices, programme names, dates) are the POINT of this kind of post and are NOT violations; they came from a cited source, not from you. Judge ONLY whether it claims something about RealtyBoss the product that the list doesn't support. If the post doesn't mention RealtyBoss at all, it is clean.\n\n`
+              : ``) +
+            `Fact-check this post against the list. Return the JSON block.\n\n---\n${caption.trim()}\n---`,
         },
       ],
     });
@@ -135,6 +142,9 @@ export async function reviewBrandClaims(caption: string): Promise<ClaimReview> {
   };
 }
 
+/** What kind of post is being checked — the rules differ completely. */
+export type PostKind = "brand" | "timely";
+
 /**
  * The full gate: the deterministic screen AND the Boss's read, both of which
  * must clear for a post to publish unattended.
@@ -146,23 +156,37 @@ export async function reviewBrandClaims(caption: string): Promise<ClaimReview> {
  *   - the regex catches exact string classes (competitor names, pricing,
  *     "3x more deals") and is blind to meaning.
  * Neither is a superset of the other, so both run and either can veto.
+ *
+ * `kind` matters more than it looks. The rules above are written for BRAND copy
+ * — marketing about our own product, where a dollar figure is almost always an
+ * invented claim. A TIMELY post is the opposite: it is cited market news built
+ * from the newsletter digest's own sourced copy, where specific figures are the
+ * entire point. Judging news by the brand rules flags a legitimate post nearly
+ * every week ("Up to $30,000 for first-time buyers" reads as "references
+ * pricing"), and a flag that is usually wrong is worse than no flag at all —
+ * it teaches the reader to click through warnings without reading them.
  */
-export async function reviewOutboundPost(caption: string): Promise<ClaimReview> {
-  const rule = brandClaimViolation({
-    voice: "brand",
-    title: "",
-    hook: caption,
-    body: "",
-    hashtags: [],
-    image_prompt: "",
-    cta: "",
-  });
-  if (rule) {
-    // A deterministic hit is certain — no reason to spend a model call to
-    // confirm what a regex already proved.
-    return { verdict: "flagged", issues: [{ quote: caption.slice(0, 120), why: rule }] };
+export async function reviewOutboundPost(
+  caption: string,
+  kind: PostKind = "brand",
+): Promise<ClaimReview> {
+  if (kind === "brand") {
+    const rule = brandClaimViolation({
+      voice: "brand",
+      title: "",
+      hook: caption,
+      body: "",
+      hashtags: [],
+      image_prompt: "",
+      cta: "",
+    });
+    if (rule) {
+      // A deterministic hit is certain — no reason to spend a model call to
+      // confirm what a regex already proved.
+      return { verdict: "flagged", issues: [{ quote: caption.slice(0, 120), why: rule }] };
+    }
   }
-  return reviewBrandClaims(caption);
+  return reviewBrandClaims(caption, kind);
 }
 
 function normalizeIssues(raw: unknown): ClaimIssue[] {
