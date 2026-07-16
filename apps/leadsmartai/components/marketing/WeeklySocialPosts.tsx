@@ -22,12 +22,14 @@ const CONNECT_HREF = "/dashboard/leads/generate/connect";
 
 /** Mirrors SocialMode in lib/social/recommend (kept local: this is a client
  *  component and that module is server-only). */
-export type SocialMode = "ask" | "review" | "auto";
+export type SocialMode = "ask" | "review" | "assisted" | "auto";
 
 const MODE_HELP: Record<SocialMode, string> = {
   ask: "Drafts only — nothing is scheduled. You schedule each post yourself.",
   review:
     "Your week is written and scheduled at the right times, but nothing publishes until you approve it in the post queue.",
+  assisted:
+    "The Boss fact-checks each post against what we actually ship, schedules what it can verify, and holds the rest for you. You can still cancel before it posts.",
   auto: "Full autopilot — posts are written, scheduled AND published with no review.",
 };
 
@@ -255,6 +257,7 @@ export default function WeeklySocialPosts({
           >
             <option value="ask">Drafts only</option>
             <option value="review">Schedule, I approve</option>
+            <option value="assisted">Boss Assistant approves</option>
             <option value="auto">Full autopilot</option>
           </select>
 

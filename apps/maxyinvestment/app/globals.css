@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+/*
+ * MAXY brand palette, taken from the logo: deep navy + signature red.
+ * Exposed as Tailwind theme colors so utilities like `text-navy-900`,
+ * `bg-brand-600`, and `border-line` resolve without per-file hex values.
+ */
+@theme {
+  --color-navy-50: #f2f5fa;
+  --color-navy-100: #e2e8f2;
+  --color-navy-200: #c3cee2;
+  --color-navy-300: #94a6c8;
+  --color-navy-400: #5f77a6;
+  --color-navy-500: #3d5586;
+  --color-navy-600: #24406e;
+  --color-navy-700: #163057;
+  --color-navy-800: #0b1f44;
+  --color-navy-900: #08162f;
+  --color-navy-950: #050e1f;
+
+  --color-brand-50: #fdf2f2;
+  --color-brand-100: #fbdcdc;
+  --color-brand-200: #f5b4b4;
+  --color-brand-300: #ee8585;
+  --color-brand-400: #e35555;
+  --color-brand-500: #d62828;
+  --color-brand-600: #b81f1f;
+  --color-brand-700: #941a1a;
+  --color-brand-800: #711414;
+  --color-brand-900: #4f0f0f;
+
+  --color-line: #e6eaf0;
+  --color-mist: #f7f9fc;
+}
+
+/*
+ * `inline` is required: next/font defines --font-body/--font-display on <body>,
+ * not :root, and a plain @theme drops values referencing a var it can't resolve
+ * at build time. Inlining lets the utility resolve them at the element.
+ */
+@theme inline {
+  --font-serif: var(--font-display), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-body), system-ui, -apple-system, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Anchor jumps must clear the 76px sticky header. */
+:target {
+  scroll-margin-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

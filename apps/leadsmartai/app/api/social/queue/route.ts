@@ -24,7 +24,7 @@ export const dynamic = "force-dynamic";
  */
 
 const SELECT =
-  "id, platform, caption, image_url, scheduled_for, status, attempt_count, last_error, published_at, social_account_id";
+  "id, platform, caption, image_url, scheduled_for, status, attempt_count, last_error, published_at, social_account_id, review_verdict, review_issues, reviewed_at";
 
 const PENDING_STATUSES = ["awaiting_approval", "scheduled", "posting", "failed"];
 

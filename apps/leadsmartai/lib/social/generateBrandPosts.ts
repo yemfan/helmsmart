@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
+import { PRODUCT_CAPABILITIES, PRODUCT_NOT_TRUE } from "@/lib/social/productFacts";
 
 /**
  * Brand-voice social-content generator — the AGENT-OWNED half of the library.
@@ -39,37 +40,13 @@ export type BrandPostDraft = {
   cta: string;
 };
 
-/**
- * The ONLY capabilities the model may reference. Keep this in sync with what
- * actually ships — it is the difference between marketing and fiction.
- */
-const CAPABILITIES = `
-- AI Receptionist: answers inbound calls 24/7, texts back calls it can't reach, qualifies callers, and remembers a caller's name, language, area and budget so a returning caller is greeted and asked to confirm rather than re-interrogated.
-- AI Sales Assistant: outbound real voice calls, SMS and email to leads on a cadence; a composer to send now or schedule for later; replies to inbound texts automatically.
-- AI Marketing Assistant: weekly social post drafts with auto-branded card images; market reports; a regional newsletter.
-- AI Transaction Assistant: tracks contingencies and closing milestones and flags what's due before it's late.
-- AI Accounting Assistant.
-- Boss Assistant: one plain-English command and the team executes it (CMAs, seller presentations, showings, cold-call/qualify, open houses); multi-phase playbooks for house-selling and house-buying engagements; guided setup.
-- AI CMA: a data-backed comparative market analysis built from real, cited comparable sales found on the web.
-- Net sheet: gross-to-net seller proceeds.
-- A free 59-skill Realtor AI Skills Library at realtybossai.com/skills-library — no signup.
-- Works natively in English AND Chinese (calls, texts, listings, disclosures) — localized, not machine-translated.
-- A compliance gate (Fair Housing + advertising) on everything written for the public.
-- Mobile app.
-- Imports contacts from other CRMs (CSV, with column auto-detection and presets for common CRMs).
-- Saved AI-powered house searches per client, with a history of past runs. IMPORTANT: these are run ON DEMAND and keep a record — they do NOT run themselves on a schedule, do NOT monitor the market, and do NOT alert anyone when a new match appears. Never describe them as live, automatic, watching, or real-time.
-
-EXPLICITLY NOT TRUE — never claim any of these, they do not exist:
-- Real-time market monitoring, listing alerts, or anything that "watches" for new matches.
-- A cross-assistant pipeline where work flows automatically end-to-end ("the receptionist's lead moves itself into the sales cadence", "everything is already connected"). The assistants share one platform and one contact database; they do not hand work to each other automatically.
-- MLS/IDX integration, a lockbox/showing-service integration, e-signature, or any accounting/tax filing integration.
-- Team/brokerage-wide rollups, lead routing between agents, or recruiting tools.
-`.trim();
-
 const SYSTEM_PROMPT = `You are the content strategist for RealtyBoss (realtybossai.com), an AI-powered team for real-estate agents. You write social posts that market RealtyBoss to REALTORS (the audience is agents, not home buyers or sellers).
 
 THIS IS THE PRODUCT. These are the ONLY capabilities that exist:
-${CAPABILITIES}
+${PRODUCT_CAPABILITIES}
+
+EXPLICITLY NOT TRUE — never claim any of these, they do not exist:
+${PRODUCT_NOT_TRUE}
 
 HARD RULES — a violation makes a post unusable. Omit any post you cannot write within them:
 - NEVER invent, imply, or extrapolate a capability not in the list above. No roadmap features, no "and much more", no adjacent-sounding abilities. If you are not certain it is in the list, do not write the post.
