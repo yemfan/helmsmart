@@ -23,33 +23,53 @@ export const company = {
 
 export type PortfolioCompany = {
   name: string;
+  /** One line — the homepage cards. */
   summary: string;
+  /** Fuller description — the About page. */
+  detail: string;
   sector: string;
   href?: string;
+  /**
+   * Each company's own mark. These are NOT a consistent set — HelmSmart and
+   * RealtorBoss are square app tiles, LeadSmart and VoltrixOS are horizontal
+   * lockups with the wordmark built in (normalised to one height they run 39px
+   * to 201px wide). So they're used one-per-card, where nothing sits beside
+   * them to compare against, and never in a shared logo row.
+   */
+  logo: { src: string; width: number; height: number };
 };
 
 export const portfolio: PortfolioCompany[] = [
   {
     name: "HelmSmart",
     summary: "AI-powered business operations platform.",
+    detail:
+      "An AI Business Operating Platform helping organizations automate operations and scale intelligently.",
     sector: "AI • SaaS",
     href: "https://helmsmart.ai",
+    logo: { src: "/logos/helmsmart.png", width: 512, height: 512 },
   },
   {
     name: "RealtorBoss",
     summary: "AI workforce for real estate professionals.",
+    detail: "An AI-powered workforce built specifically for real estate professionals.",
     sector: "AI • PropTech",
     href: "https://www.realtybossai.com",
+    logo: { src: "/logos/realtorboss.png", width: 512, height: 512 },
   },
   {
     name: "LeadSmart AI",
     summary: "AI lead engagement and sales automation.",
+    detail: "Intelligent lead engagement and sales automation for growing businesses.",
     sector: "AI • Sales",
+    logo: { src: "/logos/leadsmart.png", width: 540, height: 162 },
   },
   {
-    name: "Voltrixos",
+    name: "VoltrixOS",
     summary: "Smart electric mobility venture.",
+    detail: "Developing smart electric mobility solutions for the next generation.",
     sector: "Smart Mobility",
+    logo: { src: "/logos/voltrixos.png", width: 830, height: 520 },
   },
 ];
 
@@ -60,6 +80,7 @@ export type Milestone = {
   location: string;
 };
 
+/** The operating history. One list, rendered in exactly one place: /journey. */
 export const milestones: Milestone[] = [
   {
     year: "2006",
@@ -100,15 +121,77 @@ export const milestones: Milestone[] = [
     location: "Sugar Land, Texas",
   },
   {
-    year: "2025–2026",
-    name: "AI Venture Expansion",
-    summary: "Development of HelmSmart, RealtorBoss, LeadSmart AI, and Voltrixos.",
-    location: "AI • SaaS • PropTech • Smart Mobility",
+    year: "2025",
+    name: "HelmSmart",
+    summary: "AI business operating platform.",
+    location: "AI • SaaS",
+  },
+  {
+    year: "2026",
+    name: "RealtorBoss",
+    summary: "AI workforce for real estate professionals.",
+    location: "AI • PropTech",
+  },
+  {
+    year: "2026",
+    name: "LeadSmart AI",
+    summary: "Intelligent lead engagement and sales automation.",
+    location: "AI • Sales",
+  },
+  {
+    year: "2026",
+    name: "VoltrixOS",
+    summary: "Smart electric mobility for the next generation.",
+    location: "Smart Mobility",
   },
 ];
 
+export type Belief = {
+  title: string;
+  lead: string;
+  body: string;
+};
+
+export const beliefs: Belief[] = [
+  {
+    title: "Build Businesses That Matter",
+    lead: "Technology should solve real problems. Not create more complexity.",
+    body: "Every company we build must improve how people work, communicate, and make decisions.",
+  },
+  {
+    title: "Think Long Term",
+    lead: "Great companies aren’t built overnight.",
+    body: "We believe in patient innovation, continuous improvement, and sustainable growth.",
+  },
+  {
+    title: "Execution Matters",
+    lead: "Ideas are everywhere. Execution creates value.",
+    body: "Our focus is transforming ideas into real businesses that customers trust.",
+  },
+];
+
+export const leadership = {
+  name: "Michael Fan Ye",
+  role: "Founder & CEO",
+  bio: [
+    "Michael Fan Ye is an entrepreneur with nearly two decades of experience spanning residential construction, commercial real estate investment, hospitality ownership and management, and enterprise software development.",
+    "His career combines hands-on operating experience with deep technical expertise in software engineering, artificial intelligence, automation, and business systems.",
+    "Through MAXY Investment Inc., Michael is building a portfolio of intelligent businesses designed to help organizations work smarter, scale faster, and create lasting value.",
+  ],
+} as const;
+
+/**
+ * Root-relative, not bare fragments: these render on /about, /journey and
+ * /contact too, where a bare "#portfolio" would resolve against a page with no
+ * such section.
+ *
+ * The journey link is labelled "Journey", not "Our Journey" (which the page
+ * itself is titled) — the longer label wraps to two lines at 375px once there
+ * are four items.
+ */
 export const navLinks = [
-  { label: "Portfolio", href: "#portfolio" },
-  { label: "Our Journey", href: "#journey" },
-  { label: "Contact", href: "#contact" },
+  { label: "About", href: "/about" },
+  { label: "Journey", href: "/journey" },
+  { label: "Portfolio", href: "/#portfolio" },
+  { label: "Contact", href: "/contact" },
 ] as const;

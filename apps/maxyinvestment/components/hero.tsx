@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { company } from "@/lib/content";
 import { Container, Eyebrow } from "./section";
 
@@ -10,12 +11,12 @@ export function Hero() {
           Building intelligent businesses.
         </h1>
         <p className="max-w-[720px] text-lg text-navy-500 sm:text-xl">{company.description}</p>
-        <a
-          href="#journey"
+        <Link
+          href="/journey"
           className="mt-8 inline-block rounded-full bg-navy-800 px-6 py-3.5 font-bold text-white transition-colors hover:bg-navy-700"
         >
           View Our Journey
-        </a>
+        </Link>
       </Container>
     </section>
   );

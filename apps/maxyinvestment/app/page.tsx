@@ -1,8 +1,6 @@
 import { Hero } from "@/components/hero";
 import { Journey } from "@/components/journey";
 import { Portfolio } from "@/components/portfolio";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
 import { company, portfolio } from "@/lib/content";
 
 const organizationJsonLd = {
@@ -37,13 +35,11 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
-      <SiteHeader />
       <main id="main-content">
         <Hero />
         <Portfolio />
         <Journey />
       </main>
-      <SiteFooter />
     </>
   );
 }
