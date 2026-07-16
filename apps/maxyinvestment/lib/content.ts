@@ -29,6 +29,14 @@ export type PortfolioCompany = {
   detail: string;
   sector: string;
   href?: string;
+  /**
+   * Each company's own mark. These are NOT a consistent set — HelmSmart and
+   * RealtorBoss are square app tiles, LeadSmart and VoltrixOS are horizontal
+   * lockups with the wordmark built in (normalised to one height they run 39px
+   * to 201px wide). So they're used one-per-card, where nothing sits beside
+   * them to compare against, and never in a shared logo row.
+   */
+  logo: { src: string; width: number; height: number };
 };
 
 export const portfolio: PortfolioCompany[] = [
@@ -39,6 +47,7 @@ export const portfolio: PortfolioCompany[] = [
       "An AI Business Operating Platform helping organizations automate operations and scale intelligently.",
     sector: "AI • SaaS",
     href: "https://helmsmart.ai",
+    logo: { src: "/logos/helmsmart.png", width: 512, height: 512 },
   },
   {
     name: "RealtorBoss",
@@ -46,18 +55,21 @@ export const portfolio: PortfolioCompany[] = [
     detail: "An AI-powered workforce built specifically for real estate professionals.",
     sector: "AI • PropTech",
     href: "https://www.realtybossai.com",
+    logo: { src: "/logos/realtorboss.png", width: 512, height: 512 },
   },
   {
     name: "LeadSmart AI",
     summary: "AI lead engagement and sales automation.",
     detail: "Intelligent lead engagement and sales automation for growing businesses.",
     sector: "AI • Sales",
+    logo: { src: "/logos/leadsmart.png", width: 540, height: 162 },
   },
   {
-    name: "Voltrixos",
+    name: "VoltrixOS",
     summary: "Smart electric mobility venture.",
     detail: "Developing smart electric mobility solutions for the next generation.",
     sector: "Smart Mobility",
+    logo: { src: "/logos/voltrixos.png", width: 830, height: 520 },
   },
 ];
 
@@ -128,7 +140,7 @@ export const milestones: Milestone[] = [
   },
   {
     year: "2026",
-    name: "Voltrixos",
+    name: "VoltrixOS",
     summary: "Smart electric mobility for the next generation.",
     location: "Smart Mobility",
   },

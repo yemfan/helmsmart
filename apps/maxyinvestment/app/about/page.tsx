@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Container, Eyebrow, SectionHeading } from "@/components/section";
 import { beliefs, company, leadership, portfolio } from "@/lib/content";
@@ -126,6 +127,20 @@ export default function AboutPage() {
           <ul className="grid gap-6 sm:grid-cols-2">
             {portfolio.map((item) => (
               <li key={item.name} className="rounded-2xl border border-line bg-white p-6 sm:p-7">
+                {/* Fixed-height slot, left-aligned: the marks vary wildly in aspect
+                    ratio, so pin the height and let width fall where it does.
+                    h-11 not max-h-11 — with `w-auto` alone the element measures
+                    0x0 until it loads, so lazy loading never fires and it never
+                    loads. An explicit height gives it size from the attrs' ratio. */}
+                <div className="mb-5 flex h-11 items-center">
+                  <Image
+                    src={item.logo.src}
+                    alt=""
+                    width={item.logo.width}
+                    height={item.logo.height}
+                    className="h-11 w-auto object-contain object-left"
+                  />
+                </div>
                 <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-brand-500">
                   {item.sector}
                 </p>
