@@ -1,8 +1,6 @@
 "use server";
 
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
+import { sendEmail } from "@/lib/email";
 
 export interface SalesState {
   success?: boolean;
@@ -35,9 +33,8 @@ export async function submitSalesForm(
     }
 
     // Send to sales email
-    await resend.emails.send({
-      from: "noreply@helmsmart.ai",
-      to: "sales@helmsmart.ai",
+    await sendEmail({
+      to: "contact@helmsmart.ai",
       replyTo: email,
       subject: `Sales Inquiry: ${company} — from ${name}`,
       html: `
@@ -57,8 +54,7 @@ export async function submitSalesForm(
     });
 
     // Send confirmation to user
-    await resend.emails.send({
-      from: "noreply@helmsmart.ai",
+    await sendEmail({
       to: email,
       subject: "Thanks for your interest in HelmSmart!",
       html: `
@@ -74,7 +70,7 @@ export async function submitSalesForm(
     console.error("Sales form error:", error);
     return {
       error:
-        "Failed to submit inquiry. Please try again or email sales@helmsmart.ai",
+        "Failed to submit inquiry. Please try again or email contact@helmsmart.ai",
     };
   }
 }

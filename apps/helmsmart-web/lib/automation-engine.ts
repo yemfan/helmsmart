@@ -5,9 +5,7 @@
  */
 
 import { createServiceClient } from "@/lib/supabase/server";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
+import { sendEmail } from "@/lib/email";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -83,8 +81,6 @@ async function executeRule(
         ctx
       );
       const body = tpl((cfg.email_body as string | undefined) ?? "", ctx);
-      const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@smbai.app";
-
       const { data: orgRow } = await db
         .from("organizations")
         .select("name")
@@ -92,8 +88,8 @@ async function executeRule(
         .single();
       const orgName = (orgRow as { name?: string } | null)?.name ?? "HelmSmart";
 
-      await resend.emails.send({
-        from: `${orgName} <${fromEmail}>`,
+      await sendEmail({
+        fromName: orgName,
         to: ctx.clientEmail,
         subject,
         text: body,

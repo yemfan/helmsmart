@@ -4,11 +4,11 @@
  */
 
 import { createServiceClient } from "@/lib/supabase/server";
-import { Resend } from "resend";
+import { sendEmail, FROM_ADDRESS } from "@/lib/email";
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const emailEnabled = Boolean(process.env.RESEND_API_KEY);
 
-const FROM_DOMAIN = process.env.EMAIL_FROM_DOMAIN ?? "helmsmart.app";
+const FROM_DOMAIN = FROM_ADDRESS.split("@")[1];
 
 /**
  * Send an email campaign to all targeted recipients
@@ -17,7 +17,7 @@ export async function sendEmailCampaign(
   orgId: string,
   campaignId: string
 ): Promise<{ ok: boolean; sent: number; failed: number; error?: string }> {
-  if (!resend) {
+  if (!emailEnabled) {
     return { ok: false, sent: 0, failed: 0, error: "Resend not configured" };
   }
 
@@ -42,8 +42,9 @@ export async function sendEmailCampaign(
       .single();
 
     const fromName = campaign.from_name || org?.name || "HelmSmart";
-    const fromEmail = `${org?.slug ?? "noreply"}@${FROM_DOMAIN}`;
-    const replyTo = campaign.reply_to || fromEmail;
+    // Sends must come from the verified domain; a per-org address like
+    // {slug}@helmsmart.app is not authorized and Resend rejects it.
+    const replyTo = campaign.reply_to || FROM_ADDRESS;
 
     // Get targeted recipients
     const recipients = await getTargetedRecipients(orgId, campaign);
@@ -73,8 +74,10 @@ export async function sendEmailCampaign(
             orgName: fromName,
           });
 
-          const result = await resend!.emails.send({
-            from: `${fromName} <${fromEmail}>`,
+          // Throws on a rejected send, so the catch below records the
+          // recipient as failed instead of counting it as delivered.
+          const result = await sendEmail({
+            fromName,
             to: recipient.email,
             subject: campaign.subject,
             html: personalised,
@@ -92,7 +95,7 @@ export async function sendEmailCampaign(
             client_id: recipient.client_id || null,
             email: recipient.email,
             recipient_name: recipient.recipient_name,
-            resend_email_id: result.data?.id ?? null,
+            resend_email_id: result.id ?? null,
             sent_at: new Date().toISOString(),
           });
 

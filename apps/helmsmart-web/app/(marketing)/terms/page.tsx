@@ -108,7 +108,7 @@ export default function TermsPage() {
               <li><strong>Message frequency:</strong> message frequency varies based on your interactions.</li>
               <li><strong>Cost:</strong> message and data rates may apply.</li>
               <li><strong>Opt-out:</strong> reply <strong>STOP</strong> at any time to unsubscribe. You will receive a confirmation and no further messages.</li>
-              <li><strong>Help:</strong> reply <strong>HELP</strong> for assistance, or contact us at support@helmsmart.ai.</li>
+              <li><strong>Help:</strong> reply <strong>HELP</strong> for assistance, or contact us at contact@helmsmart.ai.</li>
               <li>Consent to receive text messages is not a condition of any purchase. Carriers are not liable for delayed or undelivered messages.</li>
             </ul>
             <p className="text-gray-600 leading-relaxed mt-3">

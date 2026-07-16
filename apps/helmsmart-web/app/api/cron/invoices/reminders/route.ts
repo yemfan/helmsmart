@@ -126,7 +126,17 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      const res = await sendReminderForInvoice(db, inv as ReminderInvoice);
+      // A rejected send now throws. Contain it per invoice so one bad
+      // recipient doesn't abort the rest of this org's dunning run.
+      let res: { sent: boolean };
+      try {
+        res = await sendReminderForInvoice(db, inv as ReminderInvoice);
+      } catch (e) {
+        errors.push(
+          `invoice ${inv.invoice_number}: ${e instanceof Error ? e.message : String(e)}`
+        );
+        continue;
+      }
       if (!res.sent) {
         skipped++;
         continue;

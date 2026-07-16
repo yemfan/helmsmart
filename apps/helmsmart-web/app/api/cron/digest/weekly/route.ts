@@ -11,11 +11,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClientFor, packServiceConns } from "@/lib/supabase/server";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
-
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
 
 function fmt(n: number): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
@@ -34,7 +32,6 @@ export async function GET(request: NextRequest) {
 
   const today = new Date().toISOString().slice(0, 10);
   const weekOut = new Date(Date.now() + 7 * 86_400_000).toISOString().slice(0, 10);
-  const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@smbai.app";
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
 
   let sent = 0;
@@ -139,8 +136,8 @@ export async function GET(request: NextRequest) {
 
       const text = `${org.name} — your week ahead\n\nCash on hand: ${fmt(cash)}\nOutstanding: ${fmt(outstanding)}${overdueAmt > 0 ? ` (${fmt(overdueAmt)} overdue)` : ""}\nBills to pay: ${fmt(owed)}${billsDueSoonAmt > 0 ? ` (${fmt(billsDueSoonAmt)} due this week)` : ""}\nOpen tasks: ${openTasks}${overdueTasks > 0 ? ` (${overdueTasks} overdue)` : ""}\n\nDashboard: ${appUrl}/home`;
 
-      await resend.emails.send({
-        from: `${org.name} via HelmSmart <${fromEmail}>`,
+      await sendEmail({
+        fromName: `${org.name} via HelmSmart`,
         to: emails,
         subject: `Your week at ${org.name}: ${fmt(outstanding)} outstanding`,
         html,
