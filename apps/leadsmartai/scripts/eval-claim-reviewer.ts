@@ -15,8 +15,21 @@
  * had to be deleted by hand. The CLEAN fixtures are real posts currently in the
  * library.
  *
+ * ONE RUN PER FIXTURE PROVES LESS THAN IT LOOKS. The checker is an LLM, so its
+ * verdict is a sample, not a value. An early version of this eval reported a
+ * clean 7/7 — but re-running it flagged nothing and MISSED a known false claim
+ * ("RealtyBoss answers portal leads instantly"), because at the API's default
+ * temperature that post came back clean on ~1 of 30 reads. The eval was fine;
+ * the sample size was the lie. reviewOutboundPost now runs at temperature 0 and
+ * takes any-veto across several reads.
+ *
+ * So: use --repeat when you change the prompt, productFacts, the model, or the
+ * sampling. A single pass tells you the gate is plausible; --repeat=10 tells you
+ * whether it holds.
+ *
  * Usage (from apps/leadsmartai):
  *   npx tsx --conditions=react-server scripts/eval-claim-reviewer.ts
+ *   npx tsx --conditions=react-server scripts/eval-claim-reviewer.ts --repeat=10
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -123,6 +136,24 @@ const FIXTURES: Fixture[] = [
     caption:
       "Every buyer you're working with deserves a search you can actually re-run.\n\nRealtyBoss saves an AI-powered house search per client and keeps a history of every run, so you can pick the conversation back up months later with the whole thread intact.\n\nrealtybossai.com",
   },
+  // ── brand:speed_to_lead, both sides. The ORIGINAL was HAND-WRITTEN, shipped in
+  //    the seeded library, and was queued to publish when the Boss held it on a
+  //    live week: there is no portal-lead feed (MLS/IDX is on the NOT-TRUE list;
+  //    intake is calls, SMS, Meta lead ads and CSV). Pinning both directions —
+  //    the false version must stay caught, and the fix must actually pass.
+  {
+    name: "REAL: speed_to_lead ORIGINAL — the false 'portal leads' claim",
+    expect: "flagged",
+    caption:
+      "Respond in 5 minutes and contact rates multiply. Respond in an hour and the lead's gone.\n\nRealtyBoss answers portal leads instantly — day or night — and qualifies them on the spot.\n\nrealtybossai.com",
+  },
+  {
+    // Verbatim from the prod library after the fix (PR #883), not retyped.
+    name: "REAL clean: speed_to_lead CORRECTED",
+    expect: "clean",
+    caption:
+      "Respond in 5 minutes and contact rates multiply. Respond in an hour and the lead's gone.\n\nRealtyBoss answers every inbound call 24/7 and qualifies the caller on the spot. Miss one and it texts back, then keeps calling until it connects. Inbound texts get answered too — day or night, while you're mid-showing.\n\nrealtybossai.com",
+  },
   // ── Cited market news. Real generated post: the brand rules held this for
   //    "referencing pricing" when $30,000 is a cited government grant, not our
   //    price. News gets judged as news, or every timely post escalates and the
@@ -149,27 +180,39 @@ async function main() {
   // hole (competitor names) that the regex already covers.
   const { reviewOutboundPost: reviewBrandClaims } = await import("../lib/social/reviewClaims");
 
+  const repeatArg = process.argv.find((a) => a.startsWith("--repeat="));
+  const repeat = repeatArg ? Math.max(1, Number(repeatArg.split("=")[1]) || 1) : 1;
+
   let misses = 0;
   let falseAlarms = 0;
   const rows: string[] = [];
 
   for (const f of FIXTURES) {
-    const review = await reviewBrandClaims(f.caption, f.kind ?? "brand");
-    const ok = review.verdict === f.expect;
+    // Each pass is an independent sample of a stochastic judge. With repeat > 1
+    // a fixture only PASSES if it holds EVERY time — an intermittent miss is
+    // still a miss, it just publishes less often.
+    const reviews = await Promise.all(
+      Array.from({ length: repeat }, () => reviewBrandClaims(f.caption, f.kind ?? "brand")),
+    );
+    const wrong = reviews.filter((r) => r.verdict !== f.expect).length;
+    const ok = wrong === 0;
     if (!ok && f.expect === "flagged") misses++;
     if (!ok && f.expect === "clean") falseAlarms++;
 
     const mark = ok ? "PASS" : f.expect === "flagged" ? "MISS !!" : "FALSE ALARM";
-    rows.push(`${mark.padEnd(12)} ${f.name}`);
-    if (!ok || review.issues.length) {
-      for (const i of review.issues.slice(0, 2)) {
+    const rate = repeat > 1 ? `  [${repeat - wrong}/${repeat} correct]` : "";
+    rows.push(`${mark.padEnd(12)} ${f.name}${rate}`);
+    const shown = reviews.find((r) => r.issues.length) ?? reviews[0];
+    if (!ok || shown.issues.length) {
+      for (const i of shown.issues.slice(0, 2)) {
         rows.push(`             ↳ "${truncate(i.quote, 60)}" — ${truncate(i.why, 80)}`);
       }
     }
-    if (review.error) rows.push(`             ↳ error: ${review.error}`);
+    if (shown.error) rows.push(`             ↳ error: ${shown.error}`);
   }
 
   console.log(rows.join("\n"));
+  if (repeat > 1) console.log(`\n(${repeat} independent passes per fixture)`);
 
   const fabrications = FIXTURES.filter((f) => f.expect === "flagged").length;
   const cleans = FIXTURES.filter((f) => f.expect === "clean").length;
