@@ -33,6 +33,29 @@ import { PRODUCT_CAPABILITIES, PRODUCT_NOT_TRUE } from "@/lib/social/productFact
 const MODEL = "claude-sonnet-4-6";
 const MAX_OUTPUT_TOKENS = 1200;
 
+/**
+ * A fact-check is a judgement, not a generation — we want the same post to get
+ * the same verdict every time. The API defaults to temperature 1.0, which is
+ * wrong for this: measured at the default, a KNOWN false claim ("RealtyBoss
+ * answers portal leads instantly" — there is no portal integration) came back
+ * clean on 1 of 30 runs.
+ */
+const TEMPERATURE = 0;
+
+/**
+ * How many independent reads decide a post, and how they combine: ANY flag wins.
+ *
+ * Temperature 0 narrows the distribution but does not make an LLM deterministic,
+ * and one sample of a stochastic judge is a coin flip you only roll once. The
+ * costs here are wildly asymmetric — a miss publishes a false claim about our
+ * own product to our own feed; a false alarm costs a human ten seconds in the
+ * queue — so the tie-break is always "hold it".
+ *
+ * Any-veto across 3 reads turns a ~3% per-read miss into ~0.003%, for 3 cheap
+ * calls on ~7 posts a week. That trade is not close.
+ */
+const REVIEW_SAMPLES = 3;
+
 export type ClaimIssue = {
   /** The exact words from the post that make the unsupported claim. */
   quote: string;
@@ -99,6 +122,7 @@ export async function reviewBrandClaims(
     const res: any = await client.messages.create({
       model: MODEL,
       max_tokens: MAX_OUTPUT_TOKENS,
+      temperature: TEMPERATURE,
       system: SYSTEM_PROMPT,
       messages: [
         {
@@ -186,7 +210,36 @@ export async function reviewOutboundPost(
       return { verdict: "flagged", issues: [{ quote: caption.slice(0, 120), why: rule }] };
     }
   }
-  return reviewBrandClaims(caption, kind);
+
+  // Read it REVIEW_SAMPLES times and let any one of them veto. See the constant
+  // for why: a single read of a stochastic judge missed a known-false claim on
+  // 1 of 30 runs, and the cost of a miss dwarfs the cost of a false alarm.
+  const reads = await Promise.all(
+    Array.from({ length: REVIEW_SAMPLES }, () => reviewBrandClaims(caption, kind)),
+  );
+
+  const objections = reads.filter((r) => r.verdict === "flagged");
+  if (objections.length === 0) return { verdict: "clean", issues: [] };
+
+  // Union the reasons, deduped — different reads often quote the same phrase in
+  // slightly different words, and a queue card full of near-duplicates is noise.
+  const seen = new Set<string>();
+  const issues: ClaimIssue[] = [];
+  for (const r of objections) {
+    for (const i of r.issues) {
+      const key = i.quote.slice(0, 40).toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      issues.push(i);
+    }
+  }
+  return {
+    verdict: "flagged",
+    issues: issues.slice(0, 4),
+    // Surface a checker outage (vs a genuine objection) — all reads erroring
+    // still holds the post, but the reason should say so.
+    error: objections.every((r) => r.error) ? objections[0].error : undefined,
+  };
 }
 
 function normalizeIssues(raw: unknown): ClaimIssue[] {
