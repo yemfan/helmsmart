@@ -1,8 +1,9 @@
 import type { Milestone } from "@/lib/content";
 
 /**
- * Alternating spine timeline. Shared by the homepage's "Our Journey" and the
- * About page, which render different slices of the same history.
+ * Alternating spine timeline. Rendered in exactly one place — the /journey page
+ * — where each milestone is a top-level section of the page, hence h2. Anywhere
+ * nested under a section heading this would need to drop to h3.
  */
 export function Timeline({ items }: { items: Milestone[] }) {
   return (
@@ -33,7 +34,7 @@ export function Timeline({ items }: { items: Milestone[] }) {
             />
             <div className="rounded-2xl border border-line bg-mist p-5 sm:p-[22px]">
               <p className="font-extrabold tracking-[0.12em] text-brand-500">{item.year}</p>
-              <h3 className="mt-1 mb-2 font-serif text-lg font-bold text-navy-800">{item.name}</h3>
+              <h2 className="mt-1 mb-2 font-serif text-lg font-bold text-navy-800">{item.name}</h2>
               <p className="text-navy-500">{item.summary}</p>
               <p className="mt-2 font-bold text-navy-800">{item.location}</p>
             </div>

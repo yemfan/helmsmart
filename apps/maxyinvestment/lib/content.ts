@@ -68,12 +68,8 @@ export type Milestone = {
   location: string;
 };
 
-/**
- * The operating history, shared by both timelines. The homepage collapses the AI
- * era into one summary row and the About page lists each venture — so these rows
- * are defined ONCE here rather than maintained in two places where they'd drift.
- */
-const foundingMilestones: Milestone[] = [
+/** The operating history. One list, rendered in exactly one place: /journey. */
+export const milestones: Milestone[] = [
   {
     year: "2006",
     name: "First Dream Home LLC",
@@ -112,10 +108,6 @@ const foundingMilestones: Milestone[] = [
       "Established a broader platform for investment, technology, real estate, and new ventures.",
     location: "Sugar Land, Texas",
   },
-];
-
-/** Each AI venture as its own milestone — the About page's fuller telling. */
-const ventureMilestones: Milestone[] = [
   {
     year: "2025",
     name: "HelmSmart",
@@ -141,20 +133,6 @@ const ventureMilestones: Milestone[] = [
     location: "Smart Mobility",
   },
 ];
-
-/** Homepage: the operating history, with the AI era as a single summary row. */
-export const milestones: Milestone[] = [
-  ...foundingMilestones,
-  {
-    year: "2025–2026",
-    name: "AI Venture Expansion",
-    summary: "Development of HelmSmart, RealtorBoss, LeadSmart AI, and Voltrixos.",
-    location: "AI • SaaS • PropTech • Smart Mobility",
-  },
-];
-
-/** About: the same history, with every venture called out. */
-export const detailedMilestones: Milestone[] = [...foundingMilestones, ...ventureMilestones];
 
 export type Belief = {
   title: string;
@@ -191,14 +169,17 @@ export const leadership = {
 } as const;
 
 /**
- * Root-relative, not bare fragments: these render on /about and /contact too,
- * where a bare "#portfolio" would resolve against a page with no such section.
+ * Root-relative, not bare fragments: these render on /about, /journey and
+ * /contact too, where a bare "#portfolio" would resolve against a page with no
+ * such section.
  *
- * No "Our Journey" entry — About tells that story in full and the homepage
- * still has its own section. A fourth item also wrapped to two lines at 375px.
+ * The journey link is labelled "Journey", not "Our Journey" (which the page
+ * itself is titled) — the longer label wraps to two lines at 375px once there
+ * are four items.
  */
 export const navLinks = [
   { label: "About", href: "/about" },
+  { label: "Journey", href: "/journey" },
   { label: "Portfolio", href: "/#portfolio" },
   { label: "Contact", href: "/contact" },
 ] as const;

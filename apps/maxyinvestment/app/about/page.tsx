@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Eyebrow, SectionHeading } from "@/components/section";
-import { Timeline } from "@/components/timeline";
-import { beliefs, company, detailedMilestones, leadership, portfolio } from "@/lib/content";
+import { beliefs, company, leadership, portfolio } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "About",
@@ -74,12 +73,20 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* Our Journey — the same history as the homepage, told venture by venture. */}
-      <section id="journey" className="bg-mist py-16 sm:py-[82px]">
+      {/* The milestones live on /journey — one timeline, one place. */}
+      <section className="bg-mist py-16 sm:py-[82px]">
         <Container>
           <Eyebrow>Our Journey</Eyebrow>
           <SectionHeading>Two decades, five industries.</SectionHeading>
-          <Timeline items={detailedMilestones} />
+          <p className="mb-8 max-w-[720px] text-lg text-navy-500">
+            Ten milestones from a first home-building business in 2006 to four AI ventures today.
+          </p>
+          <Link
+            href="/journey"
+            className="inline-block rounded-full bg-navy-800 px-6 py-3.5 font-bold text-white transition-colors hover:bg-navy-700"
+          >
+            See the full journey
+          </Link>
         </Container>
       </section>
 
