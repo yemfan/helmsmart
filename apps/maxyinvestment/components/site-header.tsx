@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { company, navLinks } from "@/lib/content";
+import { company } from "@/lib/content";
+import { NavLinks } from "./nav-links";
 
 export function SiteHeader() {
   return (
@@ -39,15 +40,7 @@ export function SiteHeader() {
             </span>
           </Link>
 
-          <ul className="flex items-center gap-4 text-xs font-bold text-navy-800 sm:gap-6 sm:text-sm">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className="transition-colors hover:text-brand-500">
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <NavLinks />
         </nav>
       </div>
     </header>
