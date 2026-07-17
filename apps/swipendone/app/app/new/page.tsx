@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { LOCALES, LOCALE_NAMES, scriptFontVar, type Locale } from "@/lib/locales";
 import styles from "../dashboard.module.css";
 
 const ACCEPT_IMG = ["image/jpeg", "image/png", "image/webp"];
@@ -19,10 +20,20 @@ export default function NewGuidePage() {
   const [notes, setNotes] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [manual, setManual] = useState<File | null>(null);
+  const [languages, setLanguages] = useState<Locale[]>([...LOCALES]);
   const [dragOver, setDragOver] = useState(false);
   const [phase, setPhase] = useState<Phase>("form");
   const [error, setError] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
+
+  function toggleLang(l: Locale) {
+    setLanguages((prev) => {
+      const on = prev.includes(l);
+      if (on && prev.length === 1) return prev; // keep at least one
+      const next = on ? prev.filter((x) => x !== l) : [...prev, l];
+      return LOCALES.filter((x) => next.includes(x));
+    });
+  }
 
   const previews = images.map((f) => ({ file: f, url: URL.createObjectURL(f) }));
 
@@ -81,6 +92,7 @@ export default function NewGuidePage() {
     form.set("model_no", modelNo.trim());
     form.set("notes", notes.trim());
     form.set("image_urls", JSON.stringify(image_urls));
+    form.set("languages", JSON.stringify(languages));
     if (manual) form.set("manual", manual);
 
     try {
@@ -251,6 +263,40 @@ export default function NewGuidePage() {
             onChange={(e) => setManual(e.target.files?.[0] ?? null)}
           />
         </div>
+      </div>
+
+      <div className={styles.panel}>
+        <div className={styles.panelTitle}>Languages</div>
+        <p className={styles.sub} style={{ marginBottom: 12 }}>
+          AI writes the guide natively in every language you pick. You can adjust these later.
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {LOCALES.map((l) => {
+            const on = languages.includes(l);
+            return (
+              <button
+                key={l}
+                type="button"
+                onClick={() => toggleLang(l)}
+                className={styles.iconBtn}
+                aria-pressed={on}
+                style={{
+                  fontFamily: scriptFontVar(l),
+                  background: on ? "var(--color-green-soft)" : "var(--color-card)",
+                  borderColor: on ? "var(--color-green)" : "var(--color-line)",
+                  color: on ? "var(--color-green)" : "var(--color-ink-soft)",
+                  fontWeight: on ? 600 : 500,
+                }}
+              >
+                {on ? "✓ " : ""}
+                {LOCALE_NAMES[l]}
+              </button>
+            );
+          })}
+        </div>
+        <p className={styles.sub} style={{ marginTop: 10 }}>
+          {languages.length} language{languages.length === 1 ? "" : "s"} selected
+        </p>
       </div>
 
       <button className={`${styles.btn} ${styles.btnAccent}`} onClick={onGenerate}>

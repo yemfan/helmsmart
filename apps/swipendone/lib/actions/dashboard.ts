@@ -3,26 +3,23 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { generateSlug } from "@/lib/slug";
-import type { GuideMeta, Part } from "@/lib/types";
+import type { GuideMeta, LocalizedText, Part } from "@/lib/types";
+import type { Locale } from "@/lib/locales";
 
 export interface SaveStepInput {
   position: number;
-  title_en: string;
-  title_zh: string;
-  body_en: string;
-  body_zh: string;
-  tip_en: string;
-  tip_zh: string;
+  title: LocalizedText;
+  body: LocalizedText;
+  tip: LocalizedText;
   image_url: string | null;
 }
 
 export interface SaveGuideInput {
   productId: string;
-  name_en: string;
-  name_zh: string;
+  languages: Locale[];
+  name: LocalizedText;
   model_no: string;
-  meta_en: GuideMeta;
-  meta_zh: GuideMeta;
+  meta: GuideMeta;
   parts: Part[];
   steps: SaveStepInput[];
 }
@@ -41,8 +38,7 @@ export async function saveGuide(guideId: string, input: SaveGuideInput): Promise
   const { error: pErr } = await db
     .from("products")
     .update({
-      name_en: input.name_en.trim() || "Untitled",
-      name_zh: input.name_zh.trim() || null,
+      name: input.name,
       model_no: input.model_no.trim() || null,
     })
     .eq("id", input.productId);
@@ -50,7 +46,7 @@ export async function saveGuide(guideId: string, input: SaveGuideInput): Promise
 
   const { error: gErr } = await db
     .from("guides")
-    .update({ meta_en: input.meta_en, meta_zh: input.meta_zh, parts: input.parts })
+    .update({ languages: input.languages, meta: input.meta, parts: input.parts })
     .eq("id", guideId);
   if (gErr) return { ok: false, message: "Could not save guide." };
 
@@ -59,12 +55,9 @@ export async function saveGuide(guideId: string, input: SaveGuideInput): Promise
   const rows = input.steps.map((s, i) => ({
     guide_id: guideId,
     position: i + 1,
-    title_en: s.title_en,
-    title_zh: s.title_zh,
-    body_en: s.body_en,
-    body_zh: s.body_zh,
-    tip_en: s.tip_en,
-    tip_zh: s.tip_zh,
+    title: s.title,
+    body: s.body,
+    tip: s.tip,
     image_url: s.image_url,
   }));
   if (rows.length > 0) {

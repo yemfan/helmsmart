@@ -11,7 +11,15 @@ import {
   type SaveStepInput,
 } from "@/lib/actions/dashboard";
 import type { GuideEdit, GuideAnalytics } from "@/lib/dashboard-data";
-import type { Part } from "@/lib/types";
+import type { GuideMeta, LocalizedText, MetaFields, Part } from "@/lib/types";
+import {
+  LOCALES,
+  LOCALE_LABELS,
+  LOCALE_NAMES,
+  LOCALE_SCRIPT,
+  pick,
+  type Locale,
+} from "@/lib/locales";
 import styles from "@/app/app/dashboard.module.css";
 
 interface Props {
@@ -22,46 +30,37 @@ interface Props {
   appUrl: string;
 }
 
-const emptyStep = (): SaveStepInput => ({
-  position: 0,
-  title_en: "",
-  title_zh: "",
-  body_en: "",
-  body_zh: "",
-  tip_en: "",
-  tip_zh: "",
-  image_url: null,
-});
+const emptyStep = (): SaveStepInput => ({ position: 0, title: {}, body: {}, tip: {}, image_url: null });
+
+function scriptFontFamily(locale: Locale): string {
+  const s = LOCALE_SCRIPT[locale];
+  if (s === "sc") return "var(--font-zh-body)";
+  if (s === "jp") return "var(--font-jp-body)";
+  return "var(--font-body)";
+}
 
 export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Props) {
   const router = useRouter();
 
-  const [nameEn, setNameEn] = useState(data.product.name_en);
-  const [nameZh, setNameZh] = useState(data.product.name_zh ?? "");
+  const [languages, setLanguages] = useState<Locale[]>(
+    data.guide.languages?.length ? data.guide.languages : ["en"]
+  );
+  const [activeLang, setActiveLang] = useState<Locale>(
+    data.guide.languages?.[0] ?? "en"
+  );
+
+  const [name, setName] = useState<LocalizedText>(data.product.name ?? {});
   const [modelNo, setModelNo] = useState(data.product.model_no ?? "");
   const [brand, setBrand] = useState(brandName);
 
-  const [metaEn, setMetaEn] = useState({
-    time_estimate: data.guide.meta_en?.time_estimate ?? "",
-    people: data.guide.meta_en?.people ?? "",
-    tools: data.guide.meta_en?.tools ?? "",
-  });
-  const [metaZh, setMetaZh] = useState({
-    time_estimate: data.guide.meta_zh?.time_estimate ?? "",
-    people: data.guide.meta_zh?.people ?? "",
-    tools: data.guide.meta_zh?.tools ?? "",
-  });
-
+  const [meta, setMeta] = useState<GuideMeta>(data.guide.meta ?? {});
   const [parts, setParts] = useState<Part[]>(data.guide.parts ?? []);
   const [steps, setSteps] = useState<SaveStepInput[]>(
     data.steps.map((s) => ({
       position: s.position,
-      title_en: s.title_en ?? "",
-      title_zh: s.title_zh ?? "",
-      body_en: s.body_en ?? "",
-      body_zh: s.body_zh ?? "",
-      tip_en: s.tip_en ?? "",
-      tip_zh: s.tip_zh ?? "",
+      title: s.title ?? {},
+      body: s.body ?? {},
+      tip: s.tip ?? {},
       image_url: s.image_url,
     }))
   );
@@ -74,7 +73,17 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
   const stepFileInput = useRef<HTMLInputElement>(null);
 
   const hostedUrl = slug ? `${appUrl}/g/${slug}` : "";
+  const L = activeLang;
+  const langFont = scriptFontFamily(L);
 
+  /* ---------- localized field helpers ---------- */
+  const setNameL = (v: string) => setName((m) => ({ ...m, [L]: v }));
+  const setMetaL = (field: keyof MetaFields, v: string) =>
+    setMeta((m) => ({ ...m, [L]: { ...(m[L] ?? {}), [field]: v } }));
+
+  function patchStepL(i: number, key: "title" | "body" | "tip", v: string) {
+    setSteps((prev) => prev.map((s, j) => (j === i ? { ...s, [key]: { ...s[key], [L]: v } } : s)));
+  }
   function patchStep(i: number, patch: Partial<SaveStepInput>) {
     setSteps((prev) => prev.map((s, j) => (j === i ? { ...s, ...patch } : s)));
   }
@@ -87,24 +96,34 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
       return next;
     });
   }
-  function removeStep(i: number) {
-    setSteps((prev) => prev.filter((_, j) => j !== i));
-  }
-  function addStep() {
-    setSteps((prev) => [...prev, emptyStep()]);
-  }
+  const removeStep = (i: number) => setSteps((prev) => prev.filter((_, j) => j !== i));
+  const addStep = () => setSteps((prev) => [...prev, emptyStep()]);
 
   function patchPart(i: number, patch: Partial<Part>) {
     setParts((prev) => prev.map((p, j) => (j === i ? { ...p, ...patch } : p)));
   }
-  function addPart() {
-    const nextCode = String.fromCharCode(65 + parts.length); // A, B, C…
-    setParts((prev) => [...prev, { code: nextCode, name_en: "", name_zh: "", qty: 1 }]);
+  function patchPartNameL(i: number, v: string) {
+    setParts((prev) => prev.map((p, j) => (j === i ? { ...p, name: { ...p.name, [L]: v } } : p)));
   }
-  function removePart(i: number) {
-    setParts((prev) => prev.filter((_, j) => j !== i));
+  function addPart() {
+    const nextCode = String.fromCharCode(65 + parts.length);
+    setParts((prev) => [...prev, { code: nextCode, name: {}, qty: 1 }]);
+  }
+  const removePart = (i: number) => setParts((prev) => prev.filter((_, j) => j !== i));
+
+  function toggleLanguage(l: Locale) {
+    setLanguages((prev) => {
+      const on = prev.includes(l);
+      if (on && prev.length === 1) return prev; // keep at least one
+      const next = on ? prev.filter((x) => x !== l) : [...prev, l];
+      // Keep display order consistent with LOCALES.
+      const ordered = LOCALES.filter((x) => next.includes(x));
+      if (!ordered.includes(activeLang)) setActiveLang(ordered[0]);
+      return ordered;
+    });
   }
 
+  /* ---------- image upload ---------- */
   async function onPickStepImage(i: number) {
     uploadFor.current = i;
     stepFileInput.current?.click();
@@ -134,11 +153,10 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
   function collect() {
     return {
       productId: data.product.id,
-      name_en: nameEn,
-      name_zh: nameZh,
+      languages,
+      name,
       model_no: modelNo,
-      meta_en: metaEn,
-      meta_zh: metaZh,
+      meta,
       parts,
       steps,
     };
@@ -150,8 +168,7 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
     if (brand !== brandName) await saveBrandName(brand);
     const res = await saveGuide(guideId, collect());
     setBusy("");
-    if (res.ok) setMsg({ text: "Saved.", ok: true });
-    else setMsg({ text: res.message ?? "Save failed.", ok: false });
+    setMsg(res.ok ? { text: "Saved.", ok: true } : { text: res.message ?? "Save failed.", ok: false });
     return res.ok;
   }
 
@@ -178,6 +195,14 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
     }
   }
 
+  /* completeness hint: does the active language have text everywhere it should? */
+  const missingForActive =
+    !pick(name, L) ||
+    parts.some((p) => !p.name[L]) ||
+    steps.some((s) => !s.title[L] || !s.body[L]);
+
+  const localizedInputStyle = { fontFamily: langFont } as React.CSSProperties;
+
   return (
     <main className={styles.container}>
       <input
@@ -186,8 +211,8 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
         accept="image/jpeg,image/png,image/webp"
         hidden
         onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) onStepFileChosen(f);
+          const fl = e.target.files?.[0];
+          if (fl) onStepFileChosen(fl);
           e.target.value = "";
         }}
       />
@@ -204,26 +229,14 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
           <button className={styles.btn} onClick={onSave} disabled={busy !== ""}>
             {busy === "saving" ? "Saving…" : "Save draft"}
           </button>
-          <button
-            className={`${styles.btn} ${styles.btnAccent}`}
-            onClick={onPublish}
-            disabled={busy !== ""}
-          >
+          <button className={`${styles.btn} ${styles.btnAccent}`} onClick={onPublish} disabled={busy !== ""}>
             {busy === "publishing" ? "Publishing…" : status === "published" ? "Update live guide" : "Publish"}
           </button>
         </div>
       </div>
 
       {msg && (
-        <div
-          className={styles.notice}
-          style={{
-            background: msg.ok ? "var(--color-green-soft)" : "#fff7f3",
-            borderColor: msg.ok ? "#bfe0cd" : "#f6c9b6",
-            color: msg.ok ? "var(--color-green)" : "#9a3d1a",
-          }}
-          role="status"
-        >
+        <div className={styles.notice} style={{ background: msg.ok ? "var(--color-green-soft)" : "#fff7f3", borderColor: msg.ok ? "#bfe0cd" : "#f6c9b6", color: msg.ok ? "var(--color-green)" : "#9a3d1a" }} role="status">
           {msg.text}
         </div>
       )}
@@ -238,38 +251,21 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
             <div style={{ flex: 1, minWidth: 220 }}>
               <div className={styles.linkRow} style={{ marginBottom: 12 }}>
                 <span className={styles.code}>{hostedUrl}</span>
-                <a className={styles.btn} href={hostedUrl} target="_blank" rel="noreferrer">
-                  Open
-                </a>
+                <a className={styles.btn} href={hostedUrl} target="_blank" rel="noreferrer">Open</a>
               </div>
               <div className={styles.linkRow}>
-                <a className={styles.btn} href={`/g/${slug}/qr?download=1`} download>
-                  Download QR (PNG)
-                </a>
-                <a className={styles.btn} href={`/g/${slug}/qr?f=svg&download=1`} download>
-                  QR (SVG)
-                </a>
+                <a className={styles.btn} href={`/g/${slug}/qr?download=1`} download>Download QR (PNG)</a>
+                <a className={styles.btn} href={`/g/${slug}/qr?f=svg&download=1`} download>QR (SVG)</a>
               </div>
             </div>
           </div>
 
           <div style={{ marginTop: 22 }}>
-            <div className={styles.panelTitle} style={{ fontSize: 15 }}>
-              Analytics
-            </div>
+            <div className={styles.panelTitle} style={{ fontSize: 15 }}>Analytics</div>
             <div className={styles.statRow}>
-              <div className={styles.stat}>
-                <span className={styles.statNum}>{analytics.scans}</span>
-                <span className={styles.statLabel}>Total scans</span>
-              </div>
-              <div className={styles.stat}>
-                <span className={styles.statNum}>{analytics.finished}</span>
-                <span className={styles.statLabel}>Completed</span>
-              </div>
-              <div className={styles.stat}>
-                <span className={styles.statNum}>{analytics.completionRate}%</span>
-                <span className={styles.statLabel}>Completion rate</span>
-              </div>
+              <div className={styles.stat}><span className={styles.statNum}>{analytics.scans}</span><span className={styles.statLabel}>Total scans</span></div>
+              <div className={styles.stat}><span className={styles.statNum}>{analytics.finished}</span><span className={styles.statLabel}>Completed</span></div>
+              <div className={styles.stat}><span className={styles.statNum}>{analytics.completionRate}%</span><span className={styles.statLabel}>Completion rate</span></div>
             </div>
             {analytics.perStepViews.length > 0 &&
               (() => {
@@ -279,12 +275,7 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
                     {analytics.perStepViews.map((s) => (
                       <div key={s.position} className={styles.barRow}>
                         <span className={styles.barLabel}>Step {s.position}</span>
-                        <span className={styles.barTrack}>
-                          <span
-                            className={styles.barFill}
-                            style={{ width: `${(s.views / max) * 100}%` }}
-                          />
-                        </span>
+                        <span className={styles.barTrack}><span className={styles.barFill} style={{ width: `${(s.views / max) * 100}%` }} /></span>
                         <span>{s.views}</span>
                       </div>
                     ))}
@@ -293,82 +284,112 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
               })()}
           </div>
 
-          <div style={{ marginTop: 18 }}>
-            {status === "published" ? (
-              <button className={styles.btn} onClick={() => onStatus("archived")}>
-                Unpublish (archive)
-              </button>
-            ) : null}
-          </div>
+          {status === "published" && (
+            <div style={{ marginTop: 18 }}>
+              <button className={styles.btn} onClick={() => onStatus("archived")}>Unpublish (archive)</button>
+            </div>
+          )}
         </div>
       )}
 
       {status === "archived" && (
         <div className={styles.panel}>
           <div className={styles.panelTitle}>Archived</div>
-          <p className={styles.sub} style={{ marginBottom: 12 }}>
-            This guide is not publicly visible. Republish to bring it back at the same link.
-          </p>
-          <button className={styles.btn} onClick={() => onStatus("draft")}>
-            Move to draft
-          </button>
+          <p className={styles.sub} style={{ marginBottom: 12 }}>This guide is not publicly visible. Republish to bring it back at the same link.</p>
+          <button className={styles.btn} onClick={() => onStatus("draft")}>Move to draft</button>
         </div>
       )}
 
+      {/* Languages this guide offers */}
+      <div className={styles.panel}>
+        <div className={styles.panelTitle}>Languages</div>
+        <p className={styles.sub} style={{ marginBottom: 12 }}>
+          Buyers can switch between the languages you enable here.
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {LOCALES.map((l) => {
+            const on = languages.includes(l);
+            return (
+              <button
+                key={l}
+                onClick={() => toggleLanguage(l)}
+                className={styles.iconBtn}
+                aria-pressed={on}
+                style={{
+                  fontFamily: scriptFontFamily(l),
+                  background: on ? "var(--color-green-soft)" : "var(--color-card)",
+                  borderColor: on ? "var(--color-green)" : "var(--color-line)",
+                  color: on ? "var(--color-green)" : "var(--color-ink-soft)",
+                  fontWeight: on ? 600 : 500,
+                }}
+              >
+                {on ? "✓ " : ""}
+                {LOCALE_NAMES[l]}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Language tab bar — which language you're currently editing */}
+      <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--color-paper)", padding: "8px 0", marginBottom: 4 }}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+          <span className={styles.langBadge} style={{ marginRight: 4 }}>EDITING</span>
+          {languages.map((l) => (
+            <button
+              key={l}
+              onClick={() => setActiveLang(l)}
+              className={styles.iconBtn}
+              aria-pressed={l === activeLang}
+              style={{
+                fontFamily: scriptFontFamily(l),
+                background: l === activeLang ? "var(--color-ink)" : "var(--color-card)",
+                color: l === activeLang ? "#fff" : "var(--color-ink)",
+                borderColor: l === activeLang ? "var(--color-ink)" : "var(--color-line)",
+              }}
+            >
+              {LOCALE_LABELS[l]}
+            </button>
+          ))}
+        </div>
+        {missingForActive && (
+          <p style={{ fontSize: 12.5, color: "var(--color-accent)", marginTop: 8 }}>
+            {LOCALE_NAMES[activeLang]} is missing some text — fill the empty fields below.
+          </p>
+        )}
+      </div>
+
       {/* Product + brand */}
       <div className={styles.panel}>
-        <div className={styles.panelTitle}>Product & brand</div>
+        <div className={styles.panelTitle}>Product &amp; brand</div>
         <div className={styles.field}>
           <label className={styles.label}>Brand name (shown on the guide header)</label>
           <input className={styles.input} value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="NORDHOLM" />
         </div>
-        <div className={styles.bilingualRow}>
-          <div className={styles.field}>
-            <span className={styles.langBadge}>PRODUCT NAME · EN</span>
-            <input className={styles.input} value={nameEn} onChange={(e) => setNameEn(e.target.value)} />
-          </div>
-          <div className={styles.field}>
-            <span className={styles.langBadge}>产品名称 · 中文</span>
-            <input className={styles.input} value={nameZh} onChange={(e) => setNameZh(e.target.value)} />
-          </div>
+        <div className={styles.field}>
+          <span className={styles.langBadge}>PRODUCT NAME · {LOCALE_LABELS[L]}</span>
+          <input className={styles.input} style={localizedInputStyle} value={name[L] ?? ""} onChange={(e) => setNameL(e.target.value)} />
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Model number</label>
+          <label className={styles.label}>Model number (same for all languages)</label>
           <input className={styles.input} value={modelNo} onChange={(e) => setModelNo(e.target.value)} />
         </div>
       </div>
 
       {/* Meta */}
       <div className={styles.panel}>
-        <div className={styles.panelTitle}>Overview (cover card)</div>
-        <div className={styles.bilingualRow}>
-          <div>
-            <span className={styles.langBadge}>ENGLISH</span>
-            {(["time_estimate", "people", "tools"] as const).map((k) => (
-              <div className={styles.field} key={k}>
-                <input
-                  className={styles.input}
-                  value={metaEn[k]}
-                  placeholder={k === "time_estimate" ? "About 25 minutes" : k === "people" ? "2 people recommended" : "Phillips screwdriver (hex key included)"}
-                  onChange={(e) => setMetaEn({ ...metaEn, [k]: e.target.value })}
-                />
-              </div>
-            ))}
+        <div className={styles.panelTitle}>Overview (cover card) · {LOCALE_LABELS[L]}</div>
+        {(["time_estimate", "people", "tools"] as const).map((k) => (
+          <div className={styles.field} key={k}>
+            <span className={styles.langBadge}>{k === "time_estimate" ? "TIME" : k === "people" ? "PEOPLE" : "TOOLS"}</span>
+            <input
+              className={styles.input}
+              style={localizedInputStyle}
+              value={meta[L]?.[k] ?? ""}
+              onChange={(e) => setMetaL(k, e.target.value)}
+            />
           </div>
-          <div>
-            <span className={styles.langBadge}>中文</span>
-            {(["time_estimate", "people", "tools"] as const).map((k) => (
-              <div className={styles.field} key={k}>
-                <input
-                  className={styles.input}
-                  value={metaZh[k]}
-                  placeholder={k === "time_estimate" ? "约25分钟" : k === "people" ? "建议两人安装" : "十字螺丝刀（内含六角扳手）"}
-                  onChange={(e) => setMetaZh({ ...metaZh, [k]: e.target.value })}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Parts */}
@@ -377,69 +398,28 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
         {parts.map((p, i) => (
           <div key={i} className={styles.stepEditor}>
             <div className={styles.stepEditorHead}>
-              <input
-                className={styles.input}
-                style={{ width: 60 }}
-                value={p.code}
-                onChange={(e) => patchPart(i, { code: e.target.value })}
-                aria-label="Part code"
-              />
-              <input
-                className={styles.input}
-                style={{ width: 80 }}
-                type="number"
-                min={0}
-                value={p.qty}
-                onChange={(e) => patchPart(i, { qty: Number(e.target.value) })}
-                aria-label="Quantity"
-              />
-              <button className={styles.iconBtn} onClick={() => removePart(i)} aria-label="Remove part">
-                ✕
-              </button>
+              <input className={styles.input} style={{ width: 60 }} value={p.code} onChange={(e) => patchPart(i, { code: e.target.value })} aria-label="Part code" />
+              <input className={styles.input} style={{ width: 80 }} type="number" min={0} value={p.qty} onChange={(e) => patchPart(i, { qty: Number(e.target.value) })} aria-label="Quantity" />
+              <button className={styles.iconBtn} onClick={() => removePart(i)} aria-label="Remove part">✕</button>
             </div>
-            <div className={styles.bilingualRow}>
-              <input
-                className={styles.input}
-                value={p.name_en}
-                placeholder="Side panel"
-                onChange={(e) => patchPart(i, { name_en: e.target.value })}
-              />
-              <input
-                className={styles.input}
-                value={p.name_zh ?? ""}
-                placeholder="侧板"
-                onChange={(e) => patchPart(i, { name_zh: e.target.value })}
-              />
-            </div>
+            <span className={styles.langBadge}>NAME · {LOCALE_LABELS[L]}</span>
+            <input className={styles.input} style={localizedInputStyle} value={p.name[L] ?? ""} onChange={(e) => patchPartNameL(i, e.target.value)} />
           </div>
         ))}
-        <button className={styles.btn} onClick={addPart}>
-          + Add part
-        </button>
+        <button className={styles.btn} onClick={addPart}>+ Add part</button>
       </div>
 
       {/* Steps */}
       <div className={styles.panel}>
-        <div className={styles.panelTitle}>Steps</div>
+        <div className={styles.panelTitle}>Steps · editing {LOCALE_LABELS[L]}</div>
         {steps.map((s, i) => (
           <div key={i} className={styles.stepEditor}>
             <div className={styles.stepEditorHead}>
               <span className={styles.stepNo}>{String(i + 1).padStart(2, "0")}</span>
               <div style={{ display: "flex", gap: 6 }}>
-                <button className={styles.iconBtn} onClick={() => moveStep(i, -1)} disabled={i === 0} aria-label="Move up">
-                  ↑
-                </button>
-                <button
-                  className={styles.iconBtn}
-                  onClick={() => moveStep(i, 1)}
-                  disabled={i === steps.length - 1}
-                  aria-label="Move down"
-                >
-                  ↓
-                </button>
-                <button className={styles.iconBtn} onClick={() => removeStep(i)} aria-label="Remove step">
-                  ✕
-                </button>
+                <button className={styles.iconBtn} onClick={() => moveStep(i, -1)} disabled={i === 0} aria-label="Move up">↑</button>
+                <button className={styles.iconBtn} onClick={() => moveStep(i, 1)} disabled={i === steps.length - 1} aria-label="Move down">↓</button>
+                <button className={styles.iconBtn} onClick={() => removeStep(i)} aria-label="Remove step">✕</button>
               </div>
             </div>
 
@@ -449,70 +429,37 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={s.image_url} alt={`Step ${i + 1}`} />
                 ) : (
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 11, color: "var(--color-ink-soft)" }}>
-                    No image
-                  </div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: 11, color: "var(--color-ink-soft)" }}>No image</div>
                 )}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <button className={styles.iconBtn} onClick={() => onPickStepImage(i)}>
-                  {s.image_url ? "Change image" : "Add image"}
-                </button>
-                {s.image_url && (
-                  <button className={styles.iconBtn} onClick={() => patchStep(i, { image_url: null })}>
-                    Clear image
-                  </button>
-                )}
+                <button className={styles.iconBtn} onClick={() => onPickStepImage(i)}>{s.image_url ? "Change image" : "Add image"}</button>
+                {s.image_url && <button className={styles.iconBtn} onClick={() => patchStep(i, { image_url: null })}>Clear image</button>}
+                <span style={{ fontSize: 11, color: "var(--color-ink-soft)" }}>Image is shared across languages</span>
               </div>
             </div>
 
-            <div className={styles.bilingualRow}>
-              <div>
-                <span className={styles.langBadge}>TITLE · EN</span>
-                <input className={styles.input} value={s.title_en} onChange={(e) => patchStep(i, { title_en: e.target.value })} />
-              </div>
-              <div>
-                <span className={styles.langBadge}>标题 · 中文</span>
-                <input className={styles.input} value={s.title_zh} onChange={(e) => patchStep(i, { title_zh: e.target.value })} />
-              </div>
+            <div className={styles.field}>
+              <span className={styles.langBadge}>TITLE · {LOCALE_LABELS[L]}</span>
+              <input className={styles.input} style={localizedInputStyle} value={s.title[L] ?? ""} onChange={(e) => patchStepL(i, "title", e.target.value)} />
             </div>
-            <div className={styles.bilingualRow} style={{ marginTop: 10 }}>
-              <div>
-                <span className={styles.langBadge}>BODY · EN</span>
-                <textarea className={styles.textarea} style={{ minHeight: 72 }} value={s.body_en} onChange={(e) => patchStep(i, { body_en: e.target.value })} />
-              </div>
-              <div>
-                <span className={styles.langBadge}>正文 · 中文</span>
-                <textarea className={styles.textarea} style={{ minHeight: 72 }} value={s.body_zh} onChange={(e) => patchStep(i, { body_zh: e.target.value })} />
-              </div>
+            <div className={styles.field}>
+              <span className={styles.langBadge}>BODY · {LOCALE_LABELS[L]}</span>
+              <textarea className={styles.textarea} style={{ ...localizedInputStyle, minHeight: 72 }} value={s.body[L] ?? ""} onChange={(e) => patchStepL(i, "body", e.target.value)} />
             </div>
-            <div className={styles.bilingualRow} style={{ marginTop: 10 }}>
-              <div>
-                <span className={styles.langBadge}>TIP · EN</span>
-                <input className={styles.input} value={s.tip_en} onChange={(e) => patchStep(i, { tip_en: e.target.value })} />
-              </div>
-              <div>
-                <span className={styles.langBadge}>提示 · 中文</span>
-                <input className={styles.input} value={s.tip_zh} onChange={(e) => patchStep(i, { tip_zh: e.target.value })} />
-              </div>
+            <div className={styles.field}>
+              <span className={styles.langBadge}>TIP · {LOCALE_LABELS[L]}</span>
+              <input className={styles.input} style={localizedInputStyle} value={s.tip[L] ?? ""} onChange={(e) => patchStepL(i, "tip", e.target.value)} />
             </div>
           </div>
         ))}
-        <button className={styles.btn} onClick={addStep}>
-          + Add step
-        </button>
+        <button className={styles.btn} onClick={addStep}>+ Add step</button>
       </div>
 
       <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-        <button className={styles.btn} onClick={onSave} disabled={busy !== ""}>
-          {busy === "saving" ? "Saving…" : "Save draft"}
-        </button>
-        <button className={`${styles.btn} ${styles.btnAccent}`} onClick={onPublish} disabled={busy !== ""}>
-          {status === "published" ? "Update live guide" : "Publish"}
-        </button>
-        <button className={styles.btn} onClick={() => router.push("/app")}>
-          Back to guides
-        </button>
+        <button className={styles.btn} onClick={onSave} disabled={busy !== ""}>{busy === "saving" ? "Saving…" : "Save draft"}</button>
+        <button className={`${styles.btn} ${styles.btnAccent}`} onClick={onPublish} disabled={busy !== ""}>{status === "published" ? "Update live guide" : "Publish"}</button>
+        <button className={styles.btn} onClick={() => router.push("/app")}>Back to guides</button>
       </div>
     </main>
   );

@@ -1,9 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Guide, Part, Step } from "@/lib/types";
+import type { Guide, LocalizedText, Part, Step } from "@/lib/types";
+import { LOCALES, pick, type Locale } from "@/lib/locales";
 
 export interface GuideListItem {
   id: string;
-  name_en: string;
+  name: string;
   status: string;
   slug: string | null;
   created_at: string;
@@ -12,7 +13,7 @@ export interface GuideListItem {
 
 export interface GuideEdit {
   guide: Guide;
-  product: { id: string; name_en: string; name_zh: string | null; model_no: string | null };
+  product: { id: string; name: LocalizedText; model_no: string | null };
   steps: Step[];
 }
 
@@ -30,7 +31,7 @@ export async function listGuides(): Promise<GuideListItem[]> {
 
   const { data: guides } = await db
     .from("guides")
-    .select("id, status, slug, created_at, products!inner(name_en)")
+    .select("id, status, slug, created_at, products!inner(name)")
     .order("created_at", { ascending: false });
   if (!guides) return [];
 
@@ -42,14 +43,14 @@ export async function listGuides(): Promise<GuideListItem[]> {
       .select("id", { count: "exact", head: true })
       .eq("guide_id", g.id as string)
       .gte("created_at", since);
-    const product = g.products as { name_en: string } | { name_en: string }[];
-    const name_en = Array.isArray(product) ? product[0]?.name_en : product?.name_en;
+    const product = g.products as { name: LocalizedText } | { name: LocalizedText }[];
+    const nameMap = Array.isArray(product) ? product[0]?.name : product?.name;
     items.push({
       id: g.id as string,
       status: g.status as string,
       slug: (g.slug as string) ?? null,
       created_at: g.created_at as string,
-      name_en: name_en ?? "Untitled",
+      name: pick(nameMap, "en") || "Untitled",
       scans7d: count ?? 0,
     });
   }
@@ -66,14 +67,22 @@ export async function getGuideForEdit(guideId: string): Promise<GuideEdit | null
   const g = guide as Guide;
 
   const [{ data: product }, { data: steps }] = await Promise.all([
-    db.from("products").select("id, name_en, name_zh, model_no").eq("id", g.product_id).maybeSingle(),
+    db.from("products").select("id, name, model_no").eq("id", g.product_id).maybeSingle(),
     db.from("steps").select("*").eq("guide_id", g.id).order("position", { ascending: true }),
   ]);
   if (!product) return null;
 
+  const languages = (Array.isArray(g.languages) ? g.languages : [])
+    .filter((l): l is Locale => (LOCALES as readonly string[]).includes(l));
+
   return {
-    guide: { ...g, meta_en: g.meta_en || {}, meta_zh: g.meta_zh || {}, parts: (g.parts as Part[]) || [] },
-    product,
+    guide: {
+      ...g,
+      languages: languages.length ? languages : ["en"],
+      meta: g.meta || {},
+      parts: (g.parts as Part[]) || [],
+    },
+    product: { id: product.id, name: product.name || {}, model_no: product.model_no },
     steps: (steps as Step[]) || [],
   };
 }

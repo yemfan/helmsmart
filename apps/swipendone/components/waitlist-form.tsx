@@ -4,7 +4,13 @@ import { useState } from "react";
 import { joinWaitlist } from "@/lib/actions/waitlist";
 import styles from "@/app/landing.module.css";
 
-export function WaitlistForm({ cta }: { cta: string }) {
+export interface WaitlistMessages {
+  success: string;
+  invalid: string;
+  error: string;
+}
+
+export function WaitlistForm({ cta, messages }: { cta: string; messages: WaitlistMessages }) {
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -12,10 +18,15 @@ export function WaitlistForm({ cta }: { cta: string }) {
     e.preventDefault();
     const form = e.currentTarget;
     const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setMsg({ text: messages.invalid, ok: false });
+      return;
+    }
     setPending(true);
     const res = await joinWaitlist(email);
     setPending(false);
-    setMsg({ text: res.message, ok: res.ok });
+    // Localize based on outcome (the server action's own text is English).
+    setMsg({ text: res.ok ? messages.success : messages.error, ok: res.ok });
     if (res.ok) form.reset();
   }
 

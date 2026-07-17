@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateGuide } from "@/lib/generate";
 import { extractManualText } from "@/lib/extract";
+import { isLocale, type Locale } from "@/lib/locales";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -64,6 +65,16 @@ export async function POST(req: Request) {
   if (!Array.isArray(image_urls)) image_urls = [];
   image_urls = image_urls.filter((u) => typeof u === "string").slice(0, 20);
 
+  // Target languages (default en+zh if unspecified/invalid)
+  let languages: Locale[] = [];
+  try {
+    const raw = JSON.parse(String(form.get("languages") || "[]"));
+    if (Array.isArray(raw)) languages = raw.filter(isLocale);
+  } catch {
+    languages = [];
+  }
+  if (languages.length === 0) languages = ["en", "zh"];
+
   if (!product_name) {
     return NextResponse.json({ error: "Product name is required." }, { status: 400 });
   }
@@ -85,6 +96,7 @@ export async function POST(req: Request) {
       notes: notes || undefined,
       extracted_manual_text: extracted_manual_text || undefined,
       image_urls,
+      languages,
     });
   } catch (e) {
     // Record the attempt even on failure so abuse still counts against the limit.
@@ -104,12 +116,16 @@ export async function POST(req: Request) {
     .from("sellers")
     .upsert({ id: user.id, email: user.email ?? "" }, { onConflict: "id" });
 
+  // Ensure the seller's typed name is present for the primary language even if
+  // the model didn't echo it back.
+  const productName = { ...generated.name };
+  if (!productName[languages[0]]) productName[languages[0]] = product_name;
+
   const { data: product, error: pErr } = await admin
     .from("products")
     .insert({
       seller_id: user.id,
-      name_en: product_name,
-      name_zh: null,
+      name: productName,
       model_no: model_no || null,
     })
     .select("id")
@@ -123,8 +139,8 @@ export async function POST(req: Request) {
     .insert({
       product_id: product.id,
       status: "draft",
-      meta_en: generated.meta_en,
-      meta_zh: generated.meta_zh,
+      languages,
+      meta: generated.meta,
       parts: generated.parts,
     })
     .select("id")
@@ -142,12 +158,9 @@ export async function POST(req: Request) {
     return {
       guide_id: guide.id,
       position: i + 1,
-      title_en: s.title_en,
-      title_zh: s.title_zh,
-      body_en: s.body_en,
-      body_zh: s.body_zh,
-      tip_en: s.tip_en,
-      tip_zh: s.tip_zh,
+      title: s.title,
+      body: s.body,
+      tip: s.tip,
       image_url,
     };
   });

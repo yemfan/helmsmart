@@ -46,7 +46,7 @@ export default async function GuideListPage() {
           {guides.map((g) => (
             <Link key={g.id} href={`/app/guide/${g.id}`} className={styles.card}>
               <div>
-                <div className={styles.cardName}>{g.name_en}</div>
+                <div className={styles.cardName}>{g.name}</div>
                 <div className={styles.cardMeta}>
                   <span>{fmtDate(g.created_at)}</span>
                   <span>{g.scans7d} scans (7d)</span>

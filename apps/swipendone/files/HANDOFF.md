@@ -4,6 +4,22 @@
 
 ---
 
+## ⚠️ AMENDMENT (2026-07-17) — Multi-language (supersedes "bilingual EN/中文")
+
+Product decision: guides now support **six languages** at launch — **English, 简体中文, Español, Français, Deutsch, 日本語** — extensible to more. This supersedes every "bilingual / EN+中文 / two-language" reference below.
+
+**What changed in the build:**
+- **Schema:** the per-language columns (`name_en/name_zh`, `meta_en/meta_zh`, `title_en/title_zh`, …) are replaced by **locale-keyed JSONB** — `products.name`, `guides.meta`, `steps.title/body/tip`, and each `parts[].name` are objects like `{"en":"…","zh":"…","es":"…"}`. `guides.languages text[]` lists the locales a guide offers. See migration `20260717170000_multilang.sql`.
+- **Generation (`/api/generate`):** accepts a `languages[]` list; the Claude prompt emits every requested locale (native, not literal) for the product name, meta, parts, and steps.
+- **Buyer guide:** the EN/中文 toggle is now a **language picker** over `guides.languages`, with per-script fonts (Latin / Noto Sans SC / Noto Sans JP) and English fallback.
+- **Editor:** a **language tab bar** (edit one language at a time) plus an **enabled-languages** selector; codes/qty/images/model number stay language-neutral.
+- **Wizard:** seller picks target languages before generating (defaults to all six).
+- **Adding a language** = one entry in `lib/locales.ts` + its UI strings in `lib/ui-strings.ts` + a font if it's a new script.
+
+Everything below is retained for historical context; read column/field names as their JSONB equivalents.
+
+---
+
 ## 1. Project context
 
 SwipenDone turns a seller's photos + rough notes into a hosted, swipeable, bilingual (EN/中文) instruction guide served at a QR-linked URL, with AI diagnosis planned for Phase 2. Target user: SMB manufacturers, importers, Amazon/Alibaba sellers. Positioning: **"AI instructions get them assembled. AI diagnosis keeps them from returning it."**

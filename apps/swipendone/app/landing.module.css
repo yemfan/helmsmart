@@ -491,12 +491,18 @@
 .langCard.zh h3 {
   font-family: var(--font-zh-display);
 }
+.langCard.ja h3 {
+  font-family: var(--font-jp-display);
+}
 .langCard p {
   font-size: 14px;
   color: var(--ink-soft);
 }
 .langCard.zh p {
   font-family: var(--font-zh-body);
+}
+.langCard.ja p {
+  font-family: var(--font-jp-body);
 }
 
 /* waitlist */

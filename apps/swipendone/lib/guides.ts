@@ -1,5 +1,6 @@
 import { createAdminClient, createAnonServerClient } from "@/lib/supabase/admin";
 import type { GuideBundle, Guide, Part, Step } from "@/lib/types";
+import { LOCALES, type Locale } from "@/lib/locales";
 
 /**
  * Fetch a published guide + product + brand + ordered steps for the public buyer
@@ -22,7 +23,7 @@ export async function getPublishedGuide(slug: string): Promise<GuideBundle | nul
   const g = guide as Guide;
 
   const [{ data: product }, { data: steps }] = await Promise.all([
-    db.from("products").select("name_en, name_zh, model_no, seller_id").eq("id", g.product_id).maybeSingle(),
+    db.from("products").select("name, model_no, seller_id").eq("id", g.product_id).maybeSingle(),
     db.from("steps").select("*").eq("guide_id", g.id).order("position", { ascending: true }),
   ]);
 
@@ -40,16 +41,18 @@ export async function getPublishedGuide(slug: string): Promise<GuideBundle | nul
     brand_name = seller?.brand_name ?? null;
   }
 
+  const languages = (Array.isArray(g.languages) ? g.languages : [])
+    .filter((l): l is Locale => (LOCALES as readonly string[]).includes(l));
+
   return {
     guide: {
       ...g,
-      meta_en: g.meta_en || {},
-      meta_zh: g.meta_zh || {},
+      languages: languages.length ? languages : ["en"],
+      meta: g.meta || {},
       parts: (g.parts as Part[]) || [],
     },
     product: {
-      name_en: product.name_en,
-      name_zh: product.name_zh,
+      name: product.name || {},
       model_no: product.model_no,
     },
     brand_name,

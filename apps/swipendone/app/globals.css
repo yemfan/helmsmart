@@ -27,6 +27,8 @@
   --font-mono: var(--font-plex-mono), monospace;
   --font-zh-display: var(--font-noto-sc), var(--font-archivo), sans-serif;
   --font-zh-body: var(--font-noto-sc), var(--font-inter), sans-serif;
+  --font-jp-display: var(--font-noto-jp), var(--font-archivo), sans-serif;
+  --font-jp-body: var(--font-noto-jp), var(--font-inter), sans-serif;
 }
 
 * {
