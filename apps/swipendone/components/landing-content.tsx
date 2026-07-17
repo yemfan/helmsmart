@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "@/app/landing.module.css";
 import { PhoneDemo } from "@/components/phone-demo";
 import { WaitlistForm } from "@/components/waitlist-form";
+import { Logo } from "@/components/logo";
 import { SITE, type SiteLang } from "@/lib/landing-content";
 
 export function LandingContent() {
@@ -24,9 +25,7 @@ export function LandingContent() {
     <div className={styles.page} style={pageStyle} lang={zh ? "zh" : "en"}>
       <div className={styles.wrap}>
         <nav className={styles.nav}>
-          <div className={styles.logo}>
-            swipen<span className={styles.dot}>done</span>
-          </div>
+          <Logo height={30} />
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <button
               onClick={() => setLang(zh ? "en" : "zh")}
@@ -133,9 +132,7 @@ export function LandingContent() {
         </section>
 
         <footer className={styles.footer}>
-          <div className={styles.logo}>
-            swipen<span className={styles.dot}>done</span>
-          </div>
+          <Logo height={22} />
           <div>{c.footer}</div>
         </footer>
       </div>

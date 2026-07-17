@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/logo";
 
 function LoginInner() {
   const params = useSearchParams();
@@ -54,11 +55,8 @@ function LoginInner() {
           padding: 32,
         }}
       >
-        <Link
-          href="/"
-          style={{ fontFamily: "var(--font-mono)", fontWeight: 600, fontSize: 17, textDecoration: "none" }}
-        >
-          swipen<span style={{ color: "var(--color-accent)" }}>done</span>
+        <Link href="/" style={{ textDecoration: "none", display: "inline-block" }}>
+          <Logo height={30} />
         </Link>
         <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26, margin: "20px 0 6px" }}>
           Sign in
