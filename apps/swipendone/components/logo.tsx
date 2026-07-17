@@ -24,27 +24,27 @@ export function LogoMark({
   style?: CSSProperties;
 }) {
   const inkRun = variant === "onDark" ? "#FFFFFF" : BRAND_CHARCOAL;
-  const width = (height * 128) / 104;
+  const width = (height * 128) / 106;
   return (
     <svg
       role="img"
       aria-label={title}
       width={width}
       height={height}
-      viewBox="0 0 128 104"
+      viewBox="0 0 128 106"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       style={style}
     >
       <title>{title}</title>
-      <g strokeWidth={20} strokeLinecap="round" strokeLinejoin="round" fill="none">
+      <g strokeWidth={18} strokeLinecap="round" strokeLinejoin="round" fill="none">
         {/* charcoal run: top bar → left U-turn → into the middle */}
-        <path d="M98 26 H40 A13 13 0 0 0 40 52 H64" stroke={inkRun} />
+        <path d="M98 24 H40 A16 16 0 0 0 40 56 H64" stroke={inkRun} />
         {/* orange run: middle → right U-turn → bottom bar */}
-        <path d="M60 52 H88 A13 13 0 0 1 88 78 H34" stroke={BRAND_ORANGE} />
+        <path d="M60 56 H88 A16 16 0 0 1 88 88 H34" stroke={BRAND_ORANGE} />
       </g>
       {/* forward arrow */}
-      <path d="M94 10 L94 42 L123 26 Z" fill={BRAND_ORANGE} />
+      <path d="M94 8 L94 40 L123 24 Z" fill={BRAND_ORANGE} />
     </svg>
   );
 }
