@@ -10,6 +10,8 @@ import styles from "../dashboard.module.css";
 const ACCEPT_IMG = ["image/jpeg", "image/png", "image/webp"];
 const MAX_IMG = 20;
 const MAX_BYTES = 10 * 1024 * 1024;
+const MANUAL_EXT = [".pdf", ".docx", ".txt"];
+const MANUAL_MAX_BYTES = 25 * 1024 * 1024;
 
 type Phase = "form" | "uploading" | "generating";
 
@@ -22,9 +24,25 @@ export default function NewGuidePage() {
   const [manual, setManual] = useState<File | null>(null);
   const [languages, setLanguages] = useState<Locale[]>([...LOCALES]);
   const [dragOver, setDragOver] = useState(false);
+  const [manualDrag, setManualDrag] = useState(false);
   const [phase, setPhase] = useState<Phase>("form");
   const [error, setError] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
+  const manualInput = useRef<HTMLInputElement>(null);
+
+  function setManualFile(f: File) {
+    const okExt = MANUAL_EXT.some((e) => f.name.toLowerCase().endsWith(e));
+    if (!okExt) {
+      setError("Installation guide must be a PDF, DOCX, or TXT file.");
+      return;
+    }
+    if (f.size > MANUAL_MAX_BYTES) {
+      setError("That file is over 25MB — please upload a smaller PDF.");
+      return;
+    }
+    setError("");
+    setManual(f);
+  }
 
   function toggleLang(l: Locale) {
     setLanguages((prev) => {
@@ -63,10 +81,13 @@ export default function NewGuidePage() {
       return;
     }
 
-    // 1. upload images to storage → public URLs
+    // 1. upload images + the manual PDF to storage → URLs (keeps big PDFs off the
+    //    generate request, which has a ~4.5MB body limit).
     setPhase("uploading");
     const prefix = `${user.id}/${crypto.randomUUID()}`;
     const image_urls: string[] = [];
+    let manual_url = "";
+    let manual_name = "";
     try {
       for (let i = 0; i < images.length; i++) {
         const file = images[i];
@@ -79,9 +100,19 @@ export default function NewGuidePage() {
         const { data } = supabase.storage.from("guide-images").getPublicUrl(path);
         image_urls.push(data.publicUrl);
       }
+      if (manual) {
+        const ext = manual.name.split(".").pop() || "pdf";
+        const path = `${prefix}/manual.${ext}`;
+        const { error: mErr } = await supabase.storage
+          .from("guide-images")
+          .upload(path, manual, { upsert: true, contentType: manual.type || "application/octet-stream" });
+        if (mErr) throw mErr;
+        manual_url = supabase.storage.from("guide-images").getPublicUrl(path).data.publicUrl;
+        manual_name = manual.name;
+      }
     } catch {
       setPhase("form");
-      setError("Image upload failed. Check your connection and try again.");
+      setError("Upload failed. Check your connection and try again.");
       return;
     }
 
@@ -93,7 +124,10 @@ export default function NewGuidePage() {
     form.set("notes", notes.trim());
     form.set("image_urls", JSON.stringify(image_urls));
     form.set("languages", JSON.stringify(languages));
-    if (manual) form.set("manual", manual);
+    if (manual_url) {
+      form.set("manual_url", manual_url);
+      form.set("manual_name", manual_name);
+    }
 
     try {
       const res = await fetch("/api/generate", { method: "POST", body: form });
@@ -114,11 +148,13 @@ export default function NewGuidePage() {
     return (
       <main className={styles.container}>
         <div className={styles.empty}>
-          <h2>{phase === "uploading" ? "Uploading photos…" : "AI is building your guide…"}</h2>
+          <h2>{phase === "uploading" ? "Uploading…" : "AI is building your guide…"}</h2>
           <p>
             {phase === "uploading"
-              ? `Sending ${images.length} image${images.length === 1 ? "" : "s"} to storage.`
-              : "Reading your photos and notes, sequencing steps, and writing both languages. This usually takes under a minute."}
+              ? `Sending ${manual ? "your PDF" : ""}${manual && images.length ? " and " : ""}${images.length ? `${images.length} image${images.length === 1 ? "" : "s"}` : ""} to storage.`
+              : manual
+                ? "Reading your PDF, restructuring the steps, and writing every language you picked. This usually takes under a minute."
+                : "Reading your photos and notes, sequencing steps, and writing every language you picked. This usually takes under a minute."}
           </p>
           <div
             aria-hidden
@@ -143,7 +179,7 @@ export default function NewGuidePage() {
       <div className={styles.pageHead}>
         <div>
           <h1 className={styles.h1}>New guide</h1>
-          <p className={styles.sub}>Upload photos and notes — AI drafts the bilingual steps.</p>
+          <p className={styles.sub}>Start from an existing PDF, or from photos and notes — AI drafts the steps in every language you pick.</p>
         </div>
         <Link href="/app" className={styles.btn}>
           Cancel
@@ -151,6 +187,77 @@ export default function NewGuidePage() {
       </div>
 
       {error && <div className={styles.notice}>{error}</div>}
+
+      {/* PDF-first entry point */}
+      <div
+        className={`${styles.drop} ${manual ? styles.dropActive : ""}`}
+        onClick={() => manualInput.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setManualDrag(true);
+        }}
+        onDragLeave={() => setManualDrag(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setManualDrag(false);
+          const f = e.dataTransfer.files?.[0];
+          if (f) setManualFile(f);
+        }}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && manualInput.current?.click()}
+        style={{
+          marginBottom: 16,
+          textAlign: "left",
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+          borderColor: manual || manualDrag ? "var(--color-accent)" : undefined,
+          background: manual || manualDrag ? "#fff7f3" : undefined,
+        }}
+      >
+        <div style={{ fontSize: 30, lineHeight: 1 }} aria-hidden>
+          📄
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 600, color: "var(--color-ink)" }}>
+            Already have an installation guide in PDF?
+          </div>
+          <div style={{ fontSize: 13, color: "var(--color-ink-soft)", marginTop: 2 }}>
+            {manual ? (
+              <>
+                <strong>{manual.name}</strong> attached — AI will rebuild it as a swipeable, multilingual guide.
+              </>
+            ) : (
+              <>Upload it here (PDF, DOCX, or TXT) and AI rebuilds it as a swipeable, multilingual guide. Add photos below if you have them.</>
+            )}
+          </div>
+        </div>
+        {manual ? (
+          <button
+            type="button"
+            className={styles.iconBtn}
+            aria-label="Remove file"
+            onClick={(e) => {
+              e.stopPropagation();
+              setManual(null);
+            }}
+          >
+            ✕
+          </button>
+        ) : (
+          <span className={`${styles.btn}`} style={{ pointerEvents: "none" }}>
+            Choose PDF
+          </span>
+        )}
+        <input
+          ref={manualInput}
+          type="file"
+          accept=".pdf,.docx,.txt"
+          hidden
+          onChange={(e) => e.target.files?.[0] && setManualFile(e.target.files[0])}
+        />
+      </div>
 
       <div className={styles.panel}>
         <div className={styles.panelTitle}>Product</div>
@@ -183,7 +290,7 @@ export default function NewGuidePage() {
       </div>
 
       <div className={styles.panel}>
-        <div className={styles.panelTitle}>Photos</div>
+        <div className={styles.panelTitle}>Photos {manual ? "(optional)" : ""}</div>
         <div
           className={`${styles.drop} ${dragOver ? styles.dropActive : ""}`}
           onClick={() => fileInput.current?.click()}
@@ -238,10 +345,10 @@ export default function NewGuidePage() {
       </div>
 
       <div className={styles.panel}>
-        <div className={styles.panelTitle}>Notes & existing manual</div>
+        <div className={styles.panelTitle}>Notes</div>
         <div className={styles.field}>
           <label className={styles.label} htmlFor="notes">
-            Rough notes
+            Rough notes (optional)
           </label>
           <textarea
             id="notes"
@@ -249,18 +356,6 @@ export default function NewGuidePage() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Bullet points, assembly order, gotchas — anything. AI will structure it."
-          />
-        </div>
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="manual">
-            Existing manual (optional — PDF, DOCX, or TXT)
-          </label>
-          <input
-            id="manual"
-            type="file"
-            accept=".pdf,.docx,.txt"
-            className={styles.input}
-            onChange={(e) => setManual(e.target.files?.[0] ?? null)}
           />
         </div>
       </div>

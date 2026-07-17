@@ -79,12 +79,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Product name is required." }, { status: 400 });
   }
 
-  // optional manual file → extracted text
+  // optional existing manual → extracted text. Preferred path: uploaded to
+  // Storage and passed as a URL (avoids the request body-size limit for big
+  // PDFs). Falls back to an inline file if present.
   let extracted_manual_text = "";
-  const manual = form.get("manual");
-  if (manual && manual instanceof File && manual.size > 0) {
-    const buf = Buffer.from(await manual.arrayBuffer());
-    extracted_manual_text = await extractManualText(buf, manual.name);
+  const manualUrl = String(form.get("manual_url") || "").trim();
+  const manualName = String(form.get("manual_name") || "manual.pdf").trim();
+  if (manualUrl && manualUrl.startsWith(`${process.env.NEXT_PUBLIC_SUPABASE_URL}`)) {
+    try {
+      const res = await fetch(manualUrl);
+      if (res.ok) {
+        const buf = Buffer.from(await res.arrayBuffer());
+        extracted_manual_text = await extractManualText(buf, manualName);
+      }
+    } catch {
+      // extraction is best-effort; fall through with empty text
+    }
+  } else {
+    const manual = form.get("manual");
+    if (manual && manual instanceof File && manual.size > 0) {
+      const buf = Buffer.from(await manual.arrayBuffer());
+      extracted_manual_text = await extractManualText(buf, manual.name);
+    }
   }
 
   // --- generate ---
