@@ -10,6 +10,7 @@ import {
   saveBrandName,
   type SaveStepInput,
 } from "@/lib/actions/dashboard";
+import { signUploads } from "@/lib/actions/uploads";
 import type { GuideEdit, GuideAnalytics } from "@/lib/dashboard-data";
 import type { GuideMeta, LocalizedText, MetaFields, Part } from "@/lib/types";
 import {
@@ -133,21 +134,22 @@ export function GuideEditor({ guideId, data, analytics, brandName, appUrl }: Pro
     if (i == null) return;
     const supabase = createClient();
     if (!supabase) return;
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    // Upload via a service-role-signed URL (same as the wizard).
     const ext = file.name.split(".").pop() || "jpg";
-    const path = `${user.id}/${guideId}/step-${i}-${Date.now()}.${ext}`;
+    const signed = await signUploads([{ kind: "image", ext }]);
+    if (!signed.ok || !signed.targets?.[0]) {
+      setMsg({ text: signed.message ?? "Image upload failed.", ok: false });
+      return;
+    }
+    const target = signed.targets[0];
     const { error } = await supabase.storage
       .from("guide-images")
-      .upload(path, file, { upsert: true, contentType: file.type });
+      .uploadToSignedUrl(target.path, target.token, file);
     if (error) {
       setMsg({ text: "Image upload failed.", ok: false });
       return;
     }
-    const { data: pub } = supabase.storage.from("guide-images").getPublicUrl(path);
-    patchStep(i, { image_url: pub.publicUrl });
+    patchStep(i, { image_url: target.publicUrl });
   }
 
   function collect() {

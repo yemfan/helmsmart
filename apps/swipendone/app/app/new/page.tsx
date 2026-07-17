@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { signUploads } from "@/lib/actions/uploads";
 import { LOCALES, LOCALE_NAMES, scriptFontVar, type Locale } from "@/lib/locales";
 import styles from "../dashboard.module.css";
 
@@ -81,34 +82,41 @@ export default function NewGuidePage() {
       return;
     }
 
-    // 1. upload images + the manual PDF to storage → URLs (keeps big PDFs off the
-    //    generate request, which has a ~4.5MB body limit).
+    // 1. Upload images + the manual to Storage via service-role-signed URLs.
+    //    The browser uploads directly (no ~4.5MB server body limit), and the signed
+    //    URL authorizes the write without depending on a per-user Storage policy.
     setPhase("uploading");
-    const prefix = `${user.id}/${crypto.randomUUID()}`;
+    const files: File[] = [...images];
+    if (manual) files.push(manual);
+    const manualIndex = manual ? files.length - 1 : -1;
+    const items = files.map((f, i) => ({
+      kind: (i === manualIndex ? "manual" : "image") as "image" | "manual",
+      ext: f.name.split(".").pop() || (i === manualIndex ? "pdf" : "jpg"),
+    }));
+
+    const signed = await signUploads(items);
+    if (!signed.ok || !signed.targets) {
+      setPhase("form");
+      setError(signed.message || "Upload failed. Try again.");
+      return;
+    }
+
     const image_urls: string[] = [];
     let manual_url = "";
     let manual_name = "";
     try {
-      for (let i = 0; i < images.length; i++) {
-        const file = images[i];
-        const ext = file.name.split(".").pop() || "jpg";
-        const path = `${prefix}/${i}.${ext}`;
+      for (let i = 0; i < files.length; i++) {
+        const target = signed.targets[i];
         const { error: upErr } = await supabase.storage
           .from("guide-images")
-          .upload(path, file, { upsert: true, contentType: file.type });
+          .uploadToSignedUrl(target.path, target.token, files[i]);
         if (upErr) throw upErr;
-        const { data } = supabase.storage.from("guide-images").getPublicUrl(path);
-        image_urls.push(data.publicUrl);
-      }
-      if (manual) {
-        const ext = manual.name.split(".").pop() || "pdf";
-        const path = `${prefix}/manual.${ext}`;
-        const { error: mErr } = await supabase.storage
-          .from("guide-images")
-          .upload(path, manual, { upsert: true, contentType: manual.type || "application/octet-stream" });
-        if (mErr) throw mErr;
-        manual_url = supabase.storage.from("guide-images").getPublicUrl(path).data.publicUrl;
-        manual_name = manual.name;
+        if (i === manualIndex) {
+          manual_url = target.publicUrl;
+          manual_name = files[i].name;
+        } else {
+          image_urls.push(target.publicUrl);
+        }
       }
     } catch {
       setPhase("form");
