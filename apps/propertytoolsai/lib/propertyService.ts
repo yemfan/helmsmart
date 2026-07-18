@@ -424,7 +424,12 @@ async function loadZipCompCandidateProperties(subject: PropertyRow): Promise<Pro
 export async function getComparables(address: string, limit = 10) {
   let subject = await getPropertyByAddress(address);
   if (!subject) {
-    return { subject: null, comps: [] as PropertyCompRow[] };
+    // AI-comps fallback: no warehouse subject row, so there are no warehouse
+    // comps either — try the shared AI CMA engine (adds a ~30-40s
+    // generateAiCma call only when the warehouse is empty).
+    const { getAiComparables } = await import("./aiComparables");
+    const aiComps = await getAiComparables(address, limit);
+    return { subject: null, comps: aiComps };
   }
 
   /**
@@ -495,18 +500,6 @@ export async function getComparables(address: string, limit = 10) {
   let candidateProps = await loadZipCompCandidateProperties(subject);
 
   if (candidateProps.length === 0) {
-    try {
-      const { ingestRentcastSoldCompsForPropertyRow } = await import(
-        "@/lib/comps-ingestion/rentcastWarehouseIngest"
-      );
-      await ingestRentcastSoldCompsForPropertyRow(subject, 35);
-    } catch (e) {
-      console.error("getComparables: Rentcast comp ingest failed", e);
-    }
-    candidateProps = await loadZipCompCandidateProperties(subject);
-  }
-
-  if (candidateProps.length === 0) {
     candidateProps = await loadWarehousePropertiesNearSubject(
       subject,
       5,
@@ -555,65 +548,13 @@ export async function getComparables(address: string, limit = 10) {
   }
 
   /**
-   * If the warehouse candidates existed but none had sale
-   * history, we still need to try Rentcast. The original code
-   * only triggered the ingest when `candidateProps.length === 0`
-   * (no properties at all in the zip), missing the common case
-   * where properties exist but lack sold snapshots. This second
-   * fallback catches that scenario.
+   * RentCast top-up removed (Phase 3c). Comps are now sourced ONLY from
+   * warehouse rows that already have sold snapshots (MLS imports, prior
+   * ingests). If the warehouse is sparse for this ZIP/area, `priced` may be
+   * empty — that's an acceptable outcome: valuation/CMA no longer depends on
+   * these comps (they're AI-grounded now), and every consumer here is
+   * null/empty-safe. AI-sourced comps are a separate follow-up phase.
    */
-  if (priced.length === 0) {
-    try {
-      const { ingestRentcastSoldCompsForPropertyRow } = await import(
-        "@/lib/comps-ingestion/rentcastWarehouseIngest"
-      );
-      await ingestRentcastSoldCompsForPropertyRow(subject, 35);
-    } catch (e) {
-      console.error("getComparables: Rentcast comp ingest (sold-fallback) failed", e);
-    }
-
-    // Re-scan after ingest. Use BOTH zip + proximity to catch
-    // comps regardless of whether the subject's zip_code is
-    // correct or the ingested comps landed in a different zip.
-    const freshZip = await loadZipCompCandidateProperties(subject);
-    const freshNearby = await loadWarehousePropertiesNearSubject(subject, 5, COMP_CANDIDATE_POOL);
-    // Deduplicate by property id
-    const seenIds = new Set(freshZip.map((p) => p.id));
-    const freshCandidates = [
-      ...freshZip,
-      ...freshNearby.filter((p) => !seenIds.has(p.id)),
-    ];
-    const freshOrdered = (freshCandidates as PropertyRow[])
-      .map((p) => ({ property: p, score: similarityScore(subject, p) }))
-      .sort((a, b) => b.score - a.score);
-
-    const freshCap = Math.min(freshOrdered.length, COMP_MAX_HISTORY_SCANS);
-    for (let i = 0; i < freshCap && priced.length < limit; i += COMP_HISTORY_FETCH_BATCH) {
-      const batch = freshOrdered.slice(i, Math.min(i + COMP_HISTORY_FETCH_BATCH, freshCap));
-      const resolved = await Promise.all(
-        batch.map(async (c) => {
-          const history = await getPropertyHistory(c.property.id, COMP_SNAPSHOT_HISTORY_LIMIT);
-          const { soldPrice, soldDate } = extractCompSaleFromHistory(history);
-          return { ...c, soldPrice, soldDate };
-        })
-      );
-      for (const row of resolved) {
-        const p =
-          row.soldPrice != null && Number.isFinite(Number(row.soldPrice))
-            ? Number(row.soldPrice)
-            : NaN;
-        if (!Number.isFinite(p) || p <= 0) continue;
-        priced.push({
-          property: row.property,
-          score: row.score,
-          sold_price: p,
-          sold_date: row.soldDate,
-        });
-        if (priced.length >= limit) break;
-      }
-    }
-  }
-
   const compsWithSold = priced;
 
   const upserts = compsWithSold.map((c) => ({
@@ -644,6 +585,16 @@ export async function getComparables(address: string, limit = 10) {
     created_at: new Date().toISOString(),
     comp_property: c.property,
   }));
+
+  // AI-comps fallback: the warehouse yielded no priced comps for this
+  // ZIP/area, so source real, cited comps from the shared AI CMA engine
+  // (adds a ~30-40s generateAiCma call only when the warehouse is empty). If
+  // the AI also returns nothing, keep the empty warehouse result.
+  if (comps.length === 0) {
+    const { getAiComparables } = await import("./aiComparables");
+    const aiComps = await getAiComparables(address, limit);
+    if (aiComps.length > 0) return { subject, comps: aiComps };
+  }
 
   return { subject, comps };
 }

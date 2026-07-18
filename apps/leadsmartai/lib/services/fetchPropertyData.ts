@@ -1,4 +1,5 @@
 import "server-only";
+import { aiPropertyLookup } from "@repo/valuation/server";
 import type { PropertyCore } from "./propertyService";
 
 /**
@@ -9,19 +10,14 @@ import type { PropertyCore } from "./propertyService";
  * `listingUrl`, and the listing-agent contact fields, and the
  * status banner which keys off `listing_status`.
  *
- * If Rentcast returns no row for the address (or the API key isn't
- * configured), every nullable field comes back null and required
- * strings come back empty. NO fabricated values — callers must treat
- * an empty result as "no data" and surface the appropriate empty
- * state instead of acting on bogus numbers.
+ * Source: **AI (Claude + web_search)** via `aiPropertyLookup` — replaced the
+ * former RentCast `/v1/listings/sale` + `/v1/properties` calls. Every field the
+ * AI can't verify on a real page comes back null / empty. NO fabricated values
+ * — callers must treat an empty result as "no data" and surface the appropriate
+ * empty state instead of acting on bogus numbers.
  *
- * History note: until this file was rewritten, `fetchPropertyData`
- * was a stub returning hardcoded "Los Angeles 90001 / 3 bed / 2 bath
- * / 1500 sqft / $800k / $3200 rent" for every address ever queried.
- * That poisoned the warehouse `properties` table and every snapshot
- * for a year. The 12 callers (lead capture, presentation generation,
- * flyer, property report, estimate, showings auto-fill, etc.) were
- * all silently consuming the same fake row.
+ * This call is slow (~15-40s) and billable, so it's wrapped by
+ * `getPropertyData` (180-day property_cache) — a cache hit never reaches here.
  */
 export type PropertyFetchResult = PropertyCore & {
   listing_status: string | null;
@@ -37,9 +33,6 @@ export type PropertyFetchResult = PropertyCore & {
   lat: number | null;
   lng: number | null;
 };
-
-const RENTCAST_LISTINGS_ENDPOINT = "https://api.rentcast.io/v1/listings/sale";
-const RENTCAST_PROPERTIES_ENDPOINT = "https://api.rentcast.io/v1/properties";
 
 function emptyResult(address: string): PropertyFetchResult {
   return {
@@ -67,147 +60,72 @@ function emptyResult(address: string): PropertyFetchResult {
   };
 }
 
-function asNum(v: unknown): number | null {
-  if (v == null) return null;
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
-}
-
-function asStr(v: unknown): string | null {
-  if (v == null) return null;
-  const s = String(v).trim();
-  return s ? s : null;
-}
-
 /**
- * Rentcast doesn't return a direct MLS-listing URL. For active
- * listings we fall back to a Zillow search URL — Zillow auto-redirects
- * to the homedetails page when the address has a unique match, which
- * is the common case.
- *
- * Returns null when we don't have an active listing — no point
- * sending the agent off-platform if the property isn't currently
- * for sale.
+ * Zillow search-URL fallback for on-market listings when the AI didn't surface
+ * a real listing page. Zillow auto-redirects to the homedetails page when the
+ * address has a unique match, which is the common case. Returns null when the
+ * property isn't currently for sale — no point sending the agent off-platform.
  */
 function buildZillowFallbackUrl(address: string, status: string | null): string | null {
   if (!status) return null;
-  // Only link out for on-market listings.
-  if (!/^(active|active_under_contract|coming_soon|new|pending)$/i.test(status.trim())) {
-    return null;
-  }
+  if (!/^(active|pending)$/i.test(status.trim())) return null;
   const slug = address.trim().replace(/\s+/g, "-").replace(/,/g, "");
   if (!slug) return null;
   return `https://www.zillow.com/homes/${encodeURIComponent(slug)}_rb/`;
 }
 
 /**
- * Rentcast returns either an array directly (`[{...}, ...]`) or an
- * envelope (`{ data: [...] }`) depending on plan/endpoint version.
- * Pull the first row regardless of shape.
- */
-function pickFirstRow(json: unknown): Record<string, unknown> | null {
-  if (Array.isArray(json) && json.length > 0 && json[0] && typeof json[0] === "object") {
-    return json[0] as Record<string, unknown>;
-  }
-  if (json && typeof json === "object") {
-    const data = (json as { data?: unknown }).data;
-    if (Array.isArray(data) && data.length > 0 && data[0] && typeof data[0] === "object") {
-      return data[0] as Record<string, unknown>;
-    }
-  }
-  return null;
-}
-
-/**
- * Fetches property + active listing data for an address from Rentcast.
- *
- * Strategy:
- *   1. Hit `/v1/listings/sale` (active listing — has MLS#, listing
- *      agent contact, status). Authoritative when the property is
- *      currently on-market.
- *   2. In parallel, hit `/v1/properties` (the property record — has
- *      year_built, lot_size, last sale price). Used to fill in fields
- *      the active-listing row may not return, and used standalone
- *      when the property isn't currently listed.
+ * Fetch property + listing facts for an address via AI (Claude + web_search).
  *
  * Returns:
- *   - Real data when either endpoint returns a row.
- *   - emptyResult(address) when both endpoints return zero rows OR
- *     when RENTCAST_API_KEY isn't configured. (Empty string for the
- *     required string fields and null for everything else — callers
- *     read this as "no data" and render the appropriate empty state.)
- *   - Throws on Rentcast 5xx so callers can surface the outage.
+ *   - Real data when the lookup finds the property.
+ *   - `emptyResult(address)` when the AI can't find it, or when the lookup is
+ *     unavailable (ANTHROPIC_API_KEY not set) — callers read this as "no data".
+ *   NEVER throws for a "not found" — an empty result is a valid outcome.
  */
 export async function fetchPropertyData(address: string): Promise<PropertyFetchResult> {
-  const apiKey = process.env.RENTCAST_API_KEY?.trim();
-  if (!apiKey) return emptyResult(address);
+  const addr = (address ?? "").trim();
+  if (!addr) return emptyResult(address);
 
-  const params = new URLSearchParams({ address });
-  const headers = { Accept: "application/json", "X-Api-Key": apiKey };
-
-  const [listingRes, propertyRes] = await Promise.all([
-    fetch(`${RENTCAST_LISTINGS_ENDPOINT}?${params.toString()}`, {
-      headers,
-      cache: "no-store",
-    }),
-    fetch(`${RENTCAST_PROPERTIES_ENDPOINT}?${params.toString()}`, {
-      headers,
-      cache: "no-store",
-    }),
-  ]);
-
-  if (!listingRes.ok && listingRes.status >= 500) {
-    throw new Error(`Rentcast /listings/sale returned ${listingRes.status}`);
-  }
-  if (!propertyRes.ok && propertyRes.status >= 500) {
-    throw new Error(`Rentcast /properties returned ${propertyRes.status}`);
-  }
-
-  const listingJson = listingRes.ok ? await listingRes.json().catch(() => null) : null;
-  const propertyJson = propertyRes.ok ? await propertyRes.json().catch(() => null) : null;
-
-  const listingRow = pickFirstRow(listingJson);
-  const propertyRow = pickFirstRow(propertyJson);
-
-  if (!listingRow && !propertyRow) {
+  let result;
+  try {
+    result = await aiPropertyLookup(addr);
+  } catch (e) {
+    console.error("[fetchPropertyData] aiPropertyLookup threw:", e);
     return emptyResult(address);
   }
 
-  // Active-listing row wins for shared fields (MLS#, agent, status).
-  // Property row supplements year_built / lot_size when the listing
-  // row doesn't carry them.
-  const r = listingRow ?? propertyRow ?? {};
-  const agent = (r.listingAgent ?? {}) as Record<string, unknown>;
+  if (!result.ok) {
+    console.warn(`[fetchPropertyData] no data for "${addr}": ${result.error}`);
+    return emptyResult(address);
+  }
 
-  const status = asStr(r.status);
-  const explicitUrl = asStr(r.listingUrl ?? r.url);
-
+  const f = result.facts;
   return {
-    address,
-    city: asStr(r.city) ?? asStr(propertyRow?.city) ?? "",
-    state: asStr(r.state) ?? asStr(propertyRow?.state) ?? "",
-    zip: asStr(r.zipCode ?? r.zip ?? r.postalCode) ??
-      asStr(propertyRow?.zipCode ?? propertyRow?.zip) ?? "",
-    beds: asNum(r.bedrooms) ?? asNum(propertyRow?.bedrooms),
-    baths: asNum(r.bathrooms) ?? asNum(propertyRow?.bathrooms),
-    sqft: asNum(r.squareFootage) ?? asNum(propertyRow?.squareFootage),
-    price: asNum(r.price ?? r.listPrice),
-    // Rent estimate isn't returned by /listings/sale or /properties
-    // — the Rentcast AVM endpoint owns that. Leaving null here is
-    // honest; presentation/flyer surfaces that need rent should call
-    // the AVM separately.
+    address: addr,
+    city: f.city ?? "",
+    state: f.state ?? "",
+    zip: f.zip ?? "",
+    beds: f.beds,
+    baths: f.baths,
+    sqft: f.sqft,
+    price: f.price,
+    // Rent isn't part of a listing/record lookup — leave null (honest). Surfaces
+    // that need a rent estimate should derive it separately.
     rent: null,
-    listing_status: status,
-    mlsNumber: asStr(r.mlsNumber),
-    mlsName: asStr(r.mlsName),
-    listingUrl: explicitUrl ?? buildZillowFallbackUrl(address, status),
-    listingAgentName: asStr(r.listingAgentName ?? r.agentName ?? r.listAgentName ?? agent.name),
-    listingAgentEmail: asStr(r.listingAgentEmail ?? agent.email),
-    listingAgentPhone: asStr(r.listingAgentPhone ?? agent.phone),
-    year_built: asNum(r.yearBuilt) ?? asNum(propertyRow?.yearBuilt),
-    lot_size: asNum(r.lotSize) ?? asNum(propertyRow?.lotSize),
-    property_type: asStr(r.propertyType) ?? asStr(propertyRow?.propertyType),
-    lat: asNum(r.latitude) ?? asNum(propertyRow?.latitude),
-    lng: asNum(r.longitude) ?? asNum(propertyRow?.longitude),
+    listing_status: f.listingStatus,
+    mlsNumber: f.mlsNumber,
+    mlsName: f.mlsName,
+    listingUrl: f.listingUrl ?? buildZillowFallbackUrl(addr, f.listingStatus),
+    listingAgentName: f.listingAgentName,
+    // The AI lookup does not surface agent contact details (rarely public) —
+    // null, per the no-fabrication contract.
+    listingAgentEmail: null,
+    listingAgentPhone: null,
+    year_built: f.yearBuilt,
+    lot_size: f.lotSizeSqft,
+    property_type: f.propertyType,
+    lat: f.lat,
+    lng: f.lng,
   };
 }

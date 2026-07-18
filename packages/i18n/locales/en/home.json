@@ -82,5 +82,49 @@
     "web_link": {
       "label": "Open full dashboard on the web"
     }
+  },
+  "team": {
+    "title": "Your AI Team",
+    "subtitle": "Your assistants, working the way you would.",
+    "manage": "Manage AI Team",
+    "status": {
+      "active": "Active",
+      "paused": "Paused"
+    },
+    "assistants": {
+      "receptionist": {
+        "name": "Receptionist",
+        "description": "Answers calls, captures leads, recovers missed calls"
+      },
+      "sales": {
+        "name": "Sales Assistant",
+        "description": "Follows up leads, CMAs, showings, appointments"
+      },
+      "marketing": {
+        "name": "Marketing Assistant",
+        "description": "Social posts, campaigns, sphere nurture"
+      },
+      "transaction": {
+        "name": "Transaction Assistant",
+        "description": "Manages active deals and offers"
+      },
+      "accountant": {
+        "name": "Accountant",
+        "description": "Expenses and commission tracking"
+      }
+    },
+    "tiles": {
+      "call_log": "Call Log",
+      "offer_desk": "Offer Desk"
+    }
+  },
+  "more": {
+    "title": "More",
+    "subtitle": "Everything else — schedule, insights, and account.",
+    "sections": {
+      "schedule": "Schedule",
+      "insights": "Insights",
+      "account": "Account"
+    }
   }
 }

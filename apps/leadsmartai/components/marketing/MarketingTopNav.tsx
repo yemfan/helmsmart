@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import {
   useCallback,
   useEffect,
@@ -22,6 +23,7 @@ import {
   type NavSection,
 } from "@repo/ui";
 import HeaderAuthActions from "@/components/HeaderAuthActions";
+import LanguageToggle from "@/components/LanguageToggle";
 import { RealtyBossLogo, RealtyBossMark } from "@/components/brand/RealtyBossLogo";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
 
@@ -47,6 +49,7 @@ export function MarketingTopNav({
   user: MobileSidebarUser | undefined;
   onLogout: () => void;
 }) {
+  const { t } = useTranslation("web_marketing");
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/85 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:border-slate-800 dark:bg-slate-950/85 dark:supports-[backdrop-filter]:bg-slate-950/70">
       {/* Header layout tuning:
@@ -93,12 +96,15 @@ export function MarketingTopNav({
 
         {/* Right-side actions */}
         <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+          {/* Language toggle — hidden below sm to protect space on a 375px
+              iPhone (still reachable in the mobile drawer / Settings). */}
+          <LanguageToggle className="hidden sm:inline-flex" />
           <HeaderAuthActions />
           <Link
             href="/start-free"
             className="hidden items-center justify-center rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:inline-flex sm:text-sm"
           >
-            Start free trial
+            {t("cta.start_free_trial", { defaultValue: "Start free trial" })}
           </Link>
           {/* Chat launcher hidden below sm — FloatingCTA still surfaces
               support chat as a separate floating button so we don't lose

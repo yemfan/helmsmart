@@ -12,4 +12,3 @@ export * from "./intentInference";
 export * from "./intentSignals";
 export * from "./leadCapture";
 export * from "./leadSmartRouting";
-export { runHomeValueEstimatePipeline } from "./runEstimate";

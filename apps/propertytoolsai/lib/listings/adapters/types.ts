@@ -35,6 +35,13 @@ export type ListingResult = {
   mlsNumber?: string;
   description?: string;
   provider?: string;
+  /**
+   * External source URL for the listing (Redfin / Realtor / Zillow / MLS).
+   * AI-sourced listings link out here instead of to an internal PDP. Absent
+   * on legacy rows (e.g. old RentCast-id favorites), which render as plain
+   * text rather than a broken internal link.
+   */
+  listingUrl?: string;
 };
 
 export interface ListingsAdapter {

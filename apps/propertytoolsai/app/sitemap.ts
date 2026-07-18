@@ -3,6 +3,8 @@ import { listClusterGuideEntriesForSitemap } from "@/lib/clusterGenerator/db";
 import { listSerpHubEntriesForSitemap } from "@/lib/serpDominator/db";
 import { getProgrammaticSeoUrlPaths } from "@/lib/programmaticSeo";
 import { getSeoSitemapEntries } from "@/lib/seo-generator/sitemap";
+import { listResearchReportsForSitemap } from "@/lib/research/db";
+import { listMarketSitemapEntries } from "@/lib/research/warehouse/read";
 import { TRAFFIC_CITIES } from "@/lib/trafficSeo";
 
 /**
@@ -24,6 +26,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let clusterGuideEntries: { path: string; updatedAt: string | null }[] = [];
   let serpHubEntries: { path: string; updatedAt: string | null }[] = [];
+  let researchEntries: { path: string; updatedAt: string | null }[] = [];
+  let marketEntries: { path: string; lastmod: string | null }[] = [];
   if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
     try {
       clusterGuideEntries = await listClusterGuideEntriesForSitemap();
@@ -34,6 +38,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       serpHubEntries = await listSerpHubEntriesForSitemap();
     } catch {
       serpHubEntries = [];
+    }
+    try {
+      researchEntries = (await listResearchReportsForSitemap()).map((r) => ({
+        path: `/data/reports/${r.slug}`,
+        updatedAt: r.updatedAt,
+      }));
+    } catch {
+      researchEntries = [];
+    }
+    try {
+      marketEntries = await listMarketSitemapEntries();
+    } catch {
+      marketEntries = [];
     }
   }
 
@@ -48,6 +65,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/landing/mortgage-calculator",
     "/content/video-scripts",
     "/serp-hub",
+    "/data",
     "/blog",
     "/about",
     "/contact",
@@ -111,12 +129,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dynamicEntries: MetadataRoute.Sitemap = [
     ...clusterGuideEntries,
     ...serpHubEntries,
+    ...researchEntries,
   ].map((entry) => ({
     url: `${base}${entry.path}`,
     lastModified: entry.updatedAt ? new Date(entry.updatedAt) : undefined,
     priority: 0.7,
   }));
 
-  return [...pathEntries, ...dynamicEntries, ...programmaticCitySeo];
+  // Data Center market pages (~350 URLs) with real per-geo lastmod (newest
+  // metric period). Guarded + try/caught above so this can't crash the sitemap.
+  const marketSitemapEntries: MetadataRoute.Sitemap = marketEntries.map((entry) => ({
+    url: `${base}${entry.path}`,
+    lastModified: entry.lastmod ? new Date(`${entry.lastmod}T00:00:00Z`) : undefined,
+    priority: entry.path === "/data/markets" ? 0.8 : 0.6,
+  }));
+
+  return [
+    ...pathEntries,
+    ...dynamicEntries,
+    ...marketSitemapEntries,
+    ...programmaticCitySeo,
+  ];
 }
 

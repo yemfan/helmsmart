@@ -8,11 +8,11 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/email";
 import twilio from "twilio";
 import { notifySlackFormSubmission, notifySlackNewLead } from "@/lib/integrations/slack";
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const emailEnabled = Boolean(process.env.RESEND_API_KEY);
 
 export async function POST(
   request: NextRequest,
@@ -172,13 +172,13 @@ export async function POST(
 
     // Notify via email
     const notifyEmail = form.notify_email;
-    if (notifyEmail && resend) {
+    if (notifyEmail && emailEnabled) {
       const fieldLines = fields
         .map((f: { id: string; label: string }) => `<tr><td style="padding:4px 0;font-weight:bold;">${f.label}:</td><td style="padding:4px 8px;">${body[f.id] ?? "—"}</td></tr>`)
         .join("\n");
 
-      await resend.emails.send({
-        from: "HelmSmart Forms <forms@helmsmart.app>",
+      await sendEmail({
+        fromName: "HelmSmart Forms",
         to: notifyEmail,
         subject: `New form submission: ${form.title}`,
         html: `

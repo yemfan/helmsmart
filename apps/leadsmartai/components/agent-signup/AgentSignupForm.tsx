@@ -14,6 +14,11 @@ import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { START_FREE_AS_AGENT_LABEL } from "@/lib/auth/startFreeAgentMarketing";
 import { formatUsPhoneInput, formatUsPhoneStored, isValidUsPhone } from "@/lib/usPhone";
 import { ADMIN_SUPPORT_HOME_PATH, isAdminOrSupportRole } from "@/lib/rolePortalPaths";
+import {
+  readSignupAttribution,
+  clearSignupAttribution,
+} from "@/components/attribution/AttributionCapture";
+import { consumeStashedReferralCode } from "@/components/referrals/ReferralCodeCapture";
 
 /** Matches `leadsmart_users.role` for this onboarding form. */
 type AgentSignupAccountType = "agent" | "loan_broker";
@@ -129,6 +134,11 @@ export function AgentSignupForm({
     try {
       const supabase = supabaseBrowser();
       const phoneStored = formatUsPhoneStored(phone)!;
+      // First-touch signup source (utm/referrer/landing), stamped onto the new
+      // account so we can tell where signups come from. Read (not cleared) here;
+      // cleared only after a successful account write.
+      const attribution = readSignupAttribution();
+      const attrPatch = attribution ? { signup_attribution: attribution } : {};
 
       if (hasSession) {
         const {
@@ -170,11 +180,13 @@ export function AgentSignupForm({
           {
             auth_user_id: user.id,
             plan_type: "free",
+            ...attrPatch,
           } as Record<string, unknown>,
           { onConflict: "auth_user_id" }
         );
         if (upsertAgentErr) throw upsertAgentErr;
 
+        clearSignupAttribution();
         onSuccess?.();
         const after = safeInternalRedirect(redirectParam);
         router.push(after ?? "/dashboard");
@@ -240,10 +252,30 @@ export function AgentSignupForm({
         {
           auth_user_id: userId,
           plan_type: "free",
+          ...attrPatch,
         } as Record<string, unknown>,
         { onConflict: "auth_user_id" }
       );
       if (upsertAgentErr) throw upsertAgentErr;
+
+      clearSignupAttribution();
+
+      // Redeem a stashed ?ref= referral. Until now this only happened on the
+      // OAuth complete-profile path, so email/password signups silently dropped
+      // the referrer's bonus. Best-effort — never blocks onboarding.
+      const refCode = consumeStashedReferralCode();
+      if (refCode) {
+        try {
+          await fetch("/api/referrals/redeem", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: refCode }),
+          });
+        } catch (referralErr) {
+          console.warn("referral redemption failed:", referralErr);
+        }
+      }
 
       onSuccess?.();
       const after = safeInternalRedirect(redirectParam);

@@ -210,6 +210,22 @@ const SECTIONS: Section[] = [
       },
     ],
   },
+  {
+    id: "guides-downloads",
+    title: "Guides & downloads",
+    blurb:
+      "Free, no-signup resources you can put to work today — starting with our full AI skills library for agents.",
+    icon: Download,
+    tools: [
+      {
+        name: "Realtor AI Skills Library (59 prompts)",
+        href: "/skills-library",
+        description:
+          "59 compliance-baked AI prompts across lead gen, listings, buyer rep, negotiation, and ops — each with the value it captures. Browse or download free, no signup.",
+        featured: true,
+      },
+    ],
+  },
 ];
 
 const SITE_URL = "https://realtybossai.com";

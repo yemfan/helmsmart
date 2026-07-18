@@ -105,6 +105,10 @@
       "schedule": "0 9 * * *"
     },
     {
+      "path": "/api/cron/activation-nudge",
+      "schedule": "0 17 * * *"
+    },
+    {
       "path": "/api/cron/sphere-drafts-sender",
       "schedule": "*/15 * * * *"
     },
@@ -155,6 +159,22 @@
     {
       "path": "/api/cron/annual-renewal-reminders",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/newsletter-digest",
+      "schedule": "0 13 * * 3"
+    },
+    {
+      "path": "/api/cron/newsletter-send",
+      "schedule": "0 15 * * 4"
+    },
+    {
+      "path": "/api/cron/social-weekly",
+      "schedule": "0 14 * * 1"
+    },
+    {
+      "path": "/api/cron/playbook-optimize",
+      "schedule": "0 16 * * *"
     }
   ]
 }

@@ -21,7 +21,7 @@
     },
     "pro": {
       "name": "Pro",
-      "price": "$49",
+      "price": "$79",
       "period_short": "/month",
       "tagline": "Full CRM and AI for active agents.",
       "cta": "Start free trial",
@@ -29,8 +29,8 @@
       "trial_note": "14-day free trial · No credit card required"
     },
     "elite": {
-      "name": "Elite",
-      "price": "$99",
+      "name": "Premium",
+      "price": "$199",
       "period_short": "/month",
       "tagline": "For top producers closing 10+ deals/month.",
       "cta": "Start free trial",
@@ -38,8 +38,8 @@
     },
     "team": {
       "name": "Team",
-      "price": "$199",
-      "period_short": "/month",
+      "price": "Custom",
+      "period_short": "",
       "tagline": "Multiple agents, one shared pipeline.",
       "cta": "Contact sales"
     }

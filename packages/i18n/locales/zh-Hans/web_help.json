@@ -1,0 +1,175 @@
+{
+  "meta": {
+    "title": "帮助中心",
+    "description": "RealtyBoss 的每一份操作指南——AI 跟进、语音 AI、未接来电回短信、房源、报价、交易、CMA、计算器等，另有常见问题与联系支持。",
+    "og_title": "帮助中心 — RealtyBoss",
+    "og_description": "RealtyBoss 的每一份操作指南——设置、沟通、AI、交易、营销、分析、计算器与账户。",
+    "twitter_title": "帮助中心 — RealtyBoss",
+    "twitter_description": "RealtyBoss 的每一份操作指南——设置、AI、交易、营销、分析与计算器。",
+    "faq_title": "常见问题",
+    "faq_description": "关于 RealtyBoss 最常见问题的解答：AI 跟进、RealtyBoss 教练、计费、集成和数据隐私。",
+    "faq_og_title": "常见问题 — RealtyBoss",
+    "faq_og_description": "关于 AI 跟进、教练、计费、集成和隐私的常见问题解答。",
+    "faq_twitter_title": "常见问题 — RealtyBoss",
+    "faq_twitter_description": "关于 RealtyBoss 的常见问题：跟进、教练、计费、集成、隐私。"
+  },
+  "index": {
+    "eyebrow": "帮助中心",
+    "h1": "指南、常见问题与操作教程。",
+    "subtitle": "让 RealtyBoss 顺利运行所需的一切——从导入首批联系人，到管理教练报名，再到发送视频邮件。",
+    "guides_h2": "操作指南",
+    "guides_note": "分步操作演示。",
+    "browse_a11y": "按分类浏览",
+    "faq_h2": "常见问题",
+    "faq_see_all": "查看全部 →",
+    "stuck_h2": "还是没解决？",
+    "stuck_body": "面板中的对话气泡可直达真人客服。Premium 和 Team 套餐享当日工作时段优先支持。",
+    "stuck_email": "邮件支持",
+    "stuck_contact": "联系表单"
+  },
+  "faq_page": {
+    "breadcrumb_help": "帮助中心",
+    "breadcrumb_faq": "常见问题",
+    "h1": "常见问题",
+    "subtitle_pre": "对经纪人最常问的问题给出快速解答。想要分步操作演示？",
+    "subtitle_link": "浏览操作指南",
+    "subtitle_post": "。",
+    "footer_pre": "没找到您需要的？",
+    "footer_email": "邮件支持",
+    "footer_mid": "，或",
+    "footer_link": "给我们留言",
+    "footer_post": "。"
+  },
+  "faq_categories": {
+    "getting_started": "入门上手",
+    "ai_followup": "AI 跟进",
+    "coaching": "LeadSmart AI 教练",
+    "billing": "计费与套餐",
+    "integrations": "集成",
+    "privacy": "隐私与数据"
+  },
+  "guide_categories": {
+    "setup": {
+      "label": "入门上手",
+      "description": "第一周就把 LeadSmart 设置好——选择跟进策略、导入数据、配置电话号码。"
+    },
+    "lead-capture": {
+      "label": "获客与生成",
+      "description": "把新客户汇入 CRM——IDX 网站表单、开放日、客户队列分拣、AI 生成内容。"
+    },
+    "communication": {
+      "label": "会话与消息",
+      "description": "日常运用收件箱、草稿、模板、未接来电挽回和视频邮件。"
+    },
+    "ai-and-voice": {
+      "label": "AI 与语音功能",
+      "description": "AI 跟进、来电语音 AI、交易教练建议，以及 AI 起草风格控制。"
+    },
+    "deals": {
+      "label": "交易流程",
+      "description": "买方报价、卖方房源、交易协调员，以及买方经纪协议（BBA）工作流。"
+    },
+    "marketing": {
+      "label": "营销与内容",
+      "description": "营销方案、卖方展示、明信片，以及 AI 对比报告。"
+    },
+    "analysis": {
+      "label": "洞察与分析",
+      "description": "业绩面板、人脉变现、获客渠道 ROI 和增长机会。"
+    },
+    "calculators": {
+      "label": "房产工具与计算器",
+      "description": "CMA 生成器、投资分析器、房贷/资本化率/现金流计算器，以及报告生成器。"
+    },
+    "workflows": {
+      "label": "销售模型与打法手册",
+      "description": "配置您的销售模型、构建打法手册，并将任务与生命周期阶段关联。"
+    },
+    "coaching": {
+      "label": "教练",
+      "description": "报名 Producer / Top Producer Track、退出，以及阅读每周打法手册。"
+    },
+    "account": {
+      "label": "账户与设置",
+      "description": "个人资料、计费、集成、团队席位、合规设置和数据导出。"
+    }
+  },
+  "faq": {
+    "set_up_first_sequence": {
+      "q": "如何设置我的第一个 AI 跟进序列？",
+      "a": "在面板中打开 设置 → 消息，选择一个审核策略（自动发送或需要审批）。然后打开 模板，编辑一个预置序列或新建一个。新客户会在被捕获后的 60 秒内开始收到该序列。分步指南见 /help/guides/ai-followup-setup。"
+    },
+    "import_contacts": {
+      "q": "如何从其他 CRM 导入联系人？",
+      "a": "前往 设置 → 数据与工具 → MLS 数据导入（同一面板也支持通过 CSV 导入一般联系人）。将 CSV 列映射到 LeadSmart 字段并运行导入。导入会按邮箱 + 电话进行重复检测，因此重复导入不会造成联系人重复。"
+    },
+    "know_its_ai": {
+      "q": "客户会知道自己在和 AI 对话吗？",
+      "a": "消息以您的名义、从您的号码发出。被问及时，AI 会坦诚说明自己是数字助理，但目标是快速、有帮助的首次回应——而非蒙骗。您可自行决定在需要您介入前 AI 处理多少（在 设置 → 语气与风格 中配置）。"
+    },
+    "lead_replies": {
+      "q": "客户回复 AI 后会发生什么？",
+      "a": "AI 会继续对话，根据客户来源（Zillow、Facebook、您的网站）提出有针对性的筛选问题。当意向超过您设定的阈值——他们询问看房、提到价格区间或要求通话时——您会立即收到通知，AI 随即移交该会话。"
+    },
+    "what_is_coaching": {
+      "q": "什么是 LeadSmart AI 教练？",
+      "a": "教练是内置于面板的生产者成长计划。Producer Track（Pro 及以上）以 10 单成交 / 3% 转化率为目标；Top Producer Track（Premium 和 Team）以 15 单成交 / 5% 转化率为目标。含每日计划、每周打法手册、每月 AI 深度剖析和同行对标，无需额外付费。"
+    },
+    "opt_out_coaching": {
+      "q": "如何退出教练，或稍后重新报名？",
+      "a": "打开 设置 → 教练。您套餐可访问的每个计划都设有 报名 / 重新报名 / 退出 控件。套餐升级时会自动报名，但始终尊重此前的退出选择——一旦您退出，未经您在此明确选择，我们不会再次为您报名。"
+    },
+    "cancel_anytime": {
+      "q": "我可以随时取消订阅吗？",
+      "a": "可以。在 设置 → 计费 中取消，或直接在 Stripe 客户门户中取消。没有最低期限，也没有取消费用。您的套餐会持续到当前计费周期结束，随后自动降级为 Starter。"
+    },
+    "data_after_cancel": {
+      "q": "取消后我的数据会怎样？",
+      "a": "您的联系人、漏斗和会话仍保留在账户中。您可以继续使用 Starter（最多 5 位客户 / 50 位联系人），或通过 设置 → 数据与工具 导出全部数据。我们不会自动删除数据——如需彻底清除，请通过 /contact 提出删除请求。"
+    },
+    "which_crms": {
+      "q": "你们能与哪些 CRM 和获客渠道集成？",
+      "a": "与 Follow Up Boss、kvCORE、Sierra Interactive、Lofty、BoomTown 和 LionDesk 提供原生及 Zapier 集成。获客渠道连接器支持 Zillow Premier Agent、Facebook Lead Ads、您的网站表单和 Google Lead Form Ads。设置通常不到 15 分钟。"
+    },
+    "video_email": {
+      "q": "如何录制并发送视频邮件？",
+      "a": "打开任意联系人，点击 消息 → 视频。在浏览器中录制（无需插件），如需可裁剪，然后发送。收件人看到内嵌播放器；当他们观看及观看多少时，您都会收到通知。分步演示见 /help/guides/video-email。"
+    },
+    "data_stored": {
+      "q": "我的数据存储在哪里？",
+      "a": "客户数据存储在 Supabase Postgres（美国区域），并启用行级安全。语音功能的音频由 Twilio 处理。我们绝不向广告商出售或共享数据。完整细节见我们的 /privacy 页面。"
+    },
+    "real_person": {
+      "q": "如何获得真人帮助？",
+      "a": "打开面板中的对话气泡，或发邮件至 contact@realtybossai.com。Premium 和 Team 套餐含优先支持，当日工作时段响应。我们是经纪人帮经纪人——没有照本宣科的离岸一线客服。"
+    },
+    "ai_team_who": {
+      "q": "RealtyBoss AI 团队是什么——各成员分工如何？",
+      "a": "您是老板。您向 Boss Assistant 下达一句指令，它便分派给合适的助理：Receptionist 接听电话、Sales Assistant 负责跟进、Marketing 注满客户漏斗、Transaction Assistant 协调交易、Accountant 负责记账。您终于拥有了一支团队——却无需支付薪酬。"
+    },
+    "makes_calls": {
+      "q": "RealtyBoss 真的会打电话，还是只发短信？",
+      "a": "两者都会——这正是它的与众不同之处。您的 AI Receptionist 全天候实时接听来电，并在来电无人应答的那一刻立即回短信。您的 AI 还会拨打真实的外呼语音电话，跟进您的人脉和客户——而不像其他每个 CRM 那样只发又一条短信。"
+    },
+    "different_crm": {
+      "q": "这与其他房产 CRM 有何不同？",
+      "a": "大多数 CRM 止步于短信和邮件推送，把活儿留给您。RealtyBoss 是一支听您指挥的 AI 团队：它会接电话、用真实语音致电您的人脉，并从一句指令出发完成整套工作——开放日、展示、看房、成交——再把完成的报告交给您。"
+    },
+    "reports": {
+      "q": "AI 能为我生成哪些报告？",
+      "a": "只需一个地址，它就能生成 AI CMA（实时网络可比房源 + 价值区间）、带品牌的卖方展示、房产深度报告（贷款可负担性、交易评级、投资 ROI、学校、社区、位置地图）、面向买家的 AI 房源搜索、并列对比报告，以及卖方净收益表——每一份都带您的品牌、可直接分享。"
+    },
+    "one_command": {
+      "q": "一句指令能完成什么？",
+      "a": "告诉 Boss Assistant 您想要什么——\"安排周六的开放日\"\"为 123 Main St 做一份卖方展示\"或\"为 Garcia 一家找房并带看\"——团队便会完成调研和每一个步骤，再把完成的交付成果交回给您。您审核后发送即可。"
+    },
+    "cold_call": {
+      "q": "AI 能对我的客户进行电话开发和筛选吗？",
+      "a": "可以。把客户名单交给 Sales Assistant，它便以自然语音拨打外呼电话，从预算、时间和动机（买家或卖家）逐一筛选，再对意向评分，为高意向者预约，并为每位联系人记录备注。您只需处理已准备好的客户。"
+    },
+    "generic_or_trained": {
+      "q": "这只是通用 AI，还是专为房产训练的？",
+      "a": "它专为房产打造。这些助理以顶尖经纪人的实战打法为蓝本——他们如何筛选买家和卖家、处理常见异议、把握跟进时机，以及谈论定价和谈判。每一通电话和每一条消息都体现经过验证的经纪人最佳实践，而非通用聊天机器人的答复。"
+    }
+  }
+}

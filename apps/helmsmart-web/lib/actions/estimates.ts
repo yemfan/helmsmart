@@ -10,10 +10,9 @@ import {
 } from "@helm/dna-finance";
 import { maybeTrigerEstimateWorkflow } from "@/lib/integrations/workflow-triggers";
 import { checkActionPermission } from "@/components/role-guard";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/email";
 import Anthropic from "@anthropic-ai/sdk";
 
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -203,10 +202,9 @@ export async function sendEstimate(estimateId: string) {
 
   const plainText = `Hi ${clientName},\n\nEstimate ${est.estimate_number} — $${Number(est.total).toFixed(2)}, valid until ${est.expiry_date}\n\nReview and accept: ${acceptUrl}\n\nThank you!`;
 
-  const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@smbai.app";
-
-  await resend.emails.send({
-    from: fromEmail,
+  // Throws if Resend rejects the send, so the estimate's "sent" status
+  // below is only written for mail that left.
+  await sendEmail({
     to: client.email,
     subject: `Estimate ${est.estimate_number} — $${Number(est.total).toFixed(2)}`,
     html,

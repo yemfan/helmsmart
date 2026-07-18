@@ -91,6 +91,10 @@ const CHORES_KILLED = [
   "cold_call",
 ] as const;
 
+/** "Sell faster / find faster" value props — i18n keys under `faster.sell|buy.items`. */
+const SELL_FASTER = ["playbook", "ai_machine", "all_tools", "vigorous"] as const;
+const BUY_FASTER = ["auto_criteria", "ai_machine"] as const;
+
 /* JUMP_LINKS removed — the in-page jump-link strip was deleted when
  * the marketing chrome switched from a left sidebar to a horizontal
  * top nav. Restore (with the i18n keys that still exist under
@@ -307,7 +311,7 @@ export default function LeadSmartLandingV2() {
                   href="/login?next=/book"
                   className="min-h-11 px-6 text-base"
                 >
-                  Schedule a Demo
+                  {t("hero.cta_demo")}
                 </Button>
                 <Button
                   variant="outline"
@@ -1049,6 +1053,65 @@ export default function LeadSmartLandingV2() {
                 <ArrowRight size={16} aria-hidden />
               </Link>
             </RevealSection>
+          </div>
+        </section>
+
+        {/* ── FASTER — the selling & buying playbooks as value props ─── */}
+        <section id="faster" className="border-t border-slate-200/80 px-6 py-20 dark:border-slate-800 md:py-24">
+          <div className="mx-auto max-w-6xl">
+            <RevealSection className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#0072ce] dark:text-[#4da3e8]">
+                {t("faster.eyebrow")}
+              </p>
+              <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+                {t("faster.h2")}
+              </h2>
+              <p className="mt-3 text-base text-slate-600 dark:text-slate-300">{t("faster.body")}</p>
+            </RevealSection>
+
+            <div className="mt-12 grid gap-6 lg:grid-cols-2">
+              {/* Sell faster */}
+              <RevealSection>
+                <div className="h-full rounded-2xl border border-slate-200 bg-white p-7 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#0072ce]/10 text-[#0072ce] dark:text-[#4da3e8]">
+                    <TrendingUp size={22} aria-hidden />
+                  </div>
+                  <h3 className="mt-4 font-heading text-xl font-bold text-slate-900 dark:text-white">
+                    {t("faster.sell.title")}
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t("faster.sell.subtitle")}</p>
+                  <ul className="mt-5 space-y-3">
+                    {SELL_FASTER.map((key) => (
+                      <li key={key} className="flex gap-3 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                        <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-[#0072ce] dark:text-[#4da3e8]" aria-hidden />
+                        <span>{t(`faster.sell.items.${key}`)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </RevealSection>
+
+              {/* Find faster */}
+              <RevealSection delay={80}>
+                <div className="h-full rounded-2xl border border-slate-200 bg-white p-7 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#0072ce]/10 text-[#0072ce] dark:text-[#4da3e8]">
+                    <Filter size={22} aria-hidden />
+                  </div>
+                  <h3 className="mt-4 font-heading text-xl font-bold text-slate-900 dark:text-white">
+                    {t("faster.buy.title")}
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t("faster.buy.subtitle")}</p>
+                  <ul className="mt-5 space-y-3">
+                    {BUY_FASTER.map((key) => (
+                      <li key={key} className="flex gap-3 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                        <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-[#0072ce] dark:text-[#4da3e8]" aria-hidden />
+                        <span>{t(`faster.buy.items.${key}`)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </RevealSection>
+            </div>
           </div>
         </section>
 

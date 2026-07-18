@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { publishPost } from "@/lib/leads-gen/publish";
 import { buildListingCaption } from "@/lib/social/captionBuilder";
-import { listConnectionsForAgent } from "@/lib/social/connectionsService";
 import {
-  isFacebookPostFailure,
-  postListingToFacebook,
-} from "@/lib/social/postToFacebook";
+  listConnectionsForAgent,
+  touchLastUsedAt,
+} from "@/lib/social/connectionsService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -88,30 +88,42 @@ export async function POST(
           agentBrokerage: agentMeta.brokerage,
         });
 
-    const result = await postListingToFacebook({
+    // Publish through the shared rail (lib/leads-gen/publish) — the same path
+    // the scheduled-publish cron, Quick Post and the brand poster use. This
+    // replaces a second, near-duplicate Facebook publisher; it brings proper
+    // `lead_posts` auditing and the shared retryable/permanent error taxonomy.
+    const result = await publishPost({
       agentId: String(agentId),
+      platform: "facebook",
       connectionId,
       caption: built.caption,
+      hashtags: built.hashtags,
       link: typeof body.link === "string" && body.link.trim() ? body.link.trim() : null,
-      transactionId,
+      trigger: "transaction_listing",
+      subjectKind: "transaction",
+      subjectRefId: transactionId,
     });
 
-    if (isFacebookPostFailure(result)) {
+    if (!result.ok) {
       return NextResponse.json(
         {
           ok: false,
           error: result.error,
-          logId: result.logId,
+          logId: result.leadPostId ?? null,
           caption: built.caption,
         },
         { status: 502 },
       );
     }
 
+    // Surfaces "last used <date>" on the connection in Settings.
+    await touchLastUsedAt(connectionId).catch(() => {});
+
     return NextResponse.json({
       ok: true,
-      postId: result.postId,
-      logId: result.logId,
+      postId: result.externalPostId,
+      postUrl: result.externalPostUrl,
+      logId: result.leadPostId,
       caption: built.caption,
       pageName: conn.providerAccountName,
     });

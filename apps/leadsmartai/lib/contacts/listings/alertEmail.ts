@@ -7,7 +7,7 @@ import {
   appendTextSignature,
   composeSignature,
 } from "@/lib/signatures/compose";
-import type { RentcastListing } from "./rentcastSearch";
+import type { MatchedListing } from "./listingSearch";
 
 /**
  * Composer for the "new listings match your saved search" digest email.
@@ -25,7 +25,7 @@ export type SendDigestOpts = {
   contactFirstName: string | null;
   savedSearchId: string;
   savedSearchName: string;
-  listings: RentcastListing[];
+  listings: MatchedListing[];
   publicBaseUrl: string;
   /** Owning agent — enables personalized signature on the digest email. */
   agentId?: string | number | null;
@@ -38,7 +38,7 @@ function money(n: number | null): string {
   return `$${n.toFixed(0)}`;
 }
 
-function bedsBaths(l: RentcastListing): string {
+function bedsBaths(l: MatchedListing): string {
   const parts: string[] = [];
   if (l.beds) parts.push(`${l.beds} bd`);
   if (l.baths) parts.push(`${l.baths} ba`);
@@ -46,7 +46,7 @@ function bedsBaths(l: RentcastListing): string {
   return parts.join(" · ");
 }
 
-function clickUrl(base: string, savedSearchId: string, listing: RentcastListing): string {
+function clickUrl(base: string, savedSearchId: string, listing: MatchedListing): string {
   const u = new URL(`${base.replace(/\/$/, "")}/api/alerts/click`);
   u.searchParams.set("s", savedSearchId);
   u.searchParams.set("l", listing.id);

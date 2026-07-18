@@ -8,6 +8,7 @@ import {
   fmtAgo,
   type LeadProfilePayload,
 } from "@/lib/realtyboss/leadProfile";
+import { SendMarketReportButton } from "@/components/marketReport/SendMarketReportButton";
 
 /**
  * Full-page person profile. Layout answers, in order: who is this
@@ -102,6 +103,13 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
               Email
             </a>
           )}
+          <SendMarketReportButton
+            contactId={p.id}
+            firstName={p.first_name}
+            email={p.email}
+            phone={p.phone}
+            city={p.search_location}
+          />
           <Link href="/dashboard/inbox" className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
             Conversations
           </Link>

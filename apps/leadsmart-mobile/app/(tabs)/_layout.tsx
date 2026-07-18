@@ -76,83 +76,86 @@ export default function TabsLayout() {
           tabBarLabelStyle: type.tabLabel,
         }}
       >
-        {/* v1.6 supercategory tab bar — mirrors the web PremiumSidebarV2
-         * sections (Home / Work / Engage / Analyze / Manage). The legacy
-         * inbox / leads / calendar / settings tabs are kept as routes
-         * (so deep links like router.push("/(tabs)/inbox") still resolve
-         * from push notifications + the Home alert cards) but hidden
-         * from the tab bar via href: null. Users reach those screens
-         * by tapping the corresponding tile inside a supercategory tab.
-         * See apps/leadsmart-mobile/docs/HOME_REDESIGN_PLAN.md. */}
+        {/* v2 AI-team tab bar — mirrors the web app's AI-team layout:
+         * Boss (home) · Team · Inbox · Leads · More. Boss is now the
+         * home screen (today's agenda + priority alerts fold into it),
+         * and each AI assistant gets its own hub reached from the Team
+         * roster. The legacy supercategory screens (home / work /
+         * engage / analyze / manage) are kept as routes (so any deep
+         * link still resolves) but hidden from the tab bar via
+         * href: null. */}
         <Tabs.Screen
           name="boss"
           options={{
-            title: "Bossy",
-            tabBarLabel: "Bossy",
+            title: t("tabs.boss"),
+            tabBarLabel: t("tabs.boss"),
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="sparkles-outline" size={size} color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="home"
+          name="team"
           options={{
-            title: t("tabs.home"),
-            tabBarLabel: t("tabs.home"),
+            title: t("tabs.team"),
+            tabBarLabel: t("tabs.team"),
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home-outline" size={size} color={color} />
+              <Ionicons name="people-circle-outline" size={size} color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="work"
+          name="inbox"
           options={{
-            title: t("tabs.work"),
-            tabBarLabel: t("tabs.work"),
+            title: t("tabs.inbox"),
+            tabBarLabel: t("tabs.inbox"),
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="briefcase-outline" size={size} color={color} />
+              <Ionicons name="chatbubbles-outline" size={size} color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="engage"
+          name="leads"
           options={{
-            title: t("tabs.engage"),
-            tabBarLabel: t("tabs.engage"),
+            title: t("tabs.leads"),
+            tabBarLabel: t("tabs.leads"),
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="megaphone-outline" size={size} color={color} />
+              <Ionicons name="people-outline" size={size} color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="analyze"
+          name="more"
           options={{
-            title: t("tabs.analyze"),
-            tabBarLabel: t("tabs.analyze"),
+            title: t("tabs.more"),
+            tabBarLabel: t("tabs.more"),
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="bar-chart-outline" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="manage"
-          options={{
-            title: t("tabs.manage"),
-            tabBarLabel: t("tabs.manage"),
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="settings-outline" size={size} color={color} />
+              <Ionicons name="ellipsis-horizontal" size={size} color={color} />
             ),
           }}
         />
 
-        {/* Hidden-from-tab-bar routes — still navigable via router.push */}
+        {/* Hidden-from-tab-bar routes — still navigable via router.push
+         * (deep links from push notifications + tiles still resolve). */}
         <Tabs.Screen
-          name="inbox"
-          options={{ title: t("tabs.inbox"), href: null }}
+          name="home"
+          options={{ title: t("tabs.home"), href: null }}
         />
         <Tabs.Screen
-          name="leads"
-          options={{ title: t("tabs.leads"), href: null }}
+          name="work"
+          options={{ title: t("tabs.work"), href: null }}
+        />
+        <Tabs.Screen
+          name="engage"
+          options={{ title: t("tabs.engage"), href: null }}
+        />
+        <Tabs.Screen
+          name="analyze"
+          options={{ title: t("tabs.analyze"), href: null }}
+        />
+        <Tabs.Screen
+          name="manage"
+          options={{ title: t("tabs.manage"), href: null }}
         />
         <Tabs.Screen
           name="calendar"

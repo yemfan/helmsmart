@@ -10,9 +10,22 @@ const empty: AgentAiSettings = {
   defaultLanguage: "en",
   bilingualEnabled: false,
   styleNotes: null,
+  brandColor: null,
 };
 
-export default function AgentAiSettingsPanel() {
+/** #RGB or #RRGGBB (with or without leading #). Empty is allowed (= default). */
+function isValidHex(v: string): boolean {
+  const raw = v.trim();
+  if (!raw) return true;
+  return /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(raw);
+}
+
+export default function AgentAiSettingsPanel({
+  canCustomizeBrand = false,
+}: {
+  /** Signature-tier: unlocks the brand color input (else disabled + upgrade hint). */
+  canCustomizeBrand?: boolean;
+}) {
   const [settings, setSettings] = useState<AgentAiSettings>(empty);
   const [savedSettings, setSavedSettings] = useState<AgentAiSettings>(empty);
   const [loading, setLoading] = useState(true);
@@ -24,7 +37,10 @@ export default function AgentAiSettingsPanel() {
     settings.personality !== savedSettings.personality ||
     settings.defaultLanguage !== savedSettings.defaultLanguage ||
     settings.bilingualEnabled !== savedSettings.bilingualEnabled ||
-    (settings.styleNotes ?? "") !== (savedSettings.styleNotes ?? "");
+    (settings.styleNotes ?? "") !== (savedSettings.styleNotes ?? "") ||
+    (settings.brandColor ?? "") !== (savedSettings.brandColor ?? "");
+
+  const brandColorInvalid = !isValidHex(settings.brandColor ?? "");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,6 +77,11 @@ export default function AgentAiSettingsPanel() {
           defaultLanguage: settings.defaultLanguage,
           bilingualEnabled: settings.bilingualEnabled,
           styleNotes: settings.styleNotes,
+          // Brand color is Signature-gated server-side; only include it when the
+          // plan unlocks it (the server also re-checks + silently ignores otherwise).
+          ...(canCustomizeBrand
+            ? { brandColor: settings.brandColor?.trim() ? settings.brandColor.trim() : null }
+            : {}),
         }),
       });
       const data = (await res.json()) as { ok?: boolean; settings?: AgentAiSettings; error?: string };
@@ -168,11 +189,79 @@ export default function AgentAiSettingsPanel() {
         />
       </div>
 
+      <div className="space-y-1 border-t border-gray-100 pt-4">
+        <div className="flex items-center justify-between">
+          <label className="block text-[11px] font-medium text-gray-500" htmlFor="brand-color">
+            Brand color{" "}
+            <span className="font-normal text-gray-400">(social cards)</span>
+          </label>
+          {!canCustomizeBrand && (
+            <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-medium text-[#0072ce]">
+              Signature
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            aria-label="Brand color swatch"
+            disabled={!canCustomizeBrand}
+            value={
+              settings.brandColor && isValidHex(settings.brandColor)
+                ? (settings.brandColor.startsWith("#") ? settings.brandColor : `#${settings.brandColor}`)
+                : "#0072ce"
+            }
+            onChange={(e) => setSettings((s) => ({ ...s, brandColor: e.target.value }))}
+            className="h-9 w-12 shrink-0 cursor-pointer rounded-lg border border-gray-300 bg-white p-1 disabled:cursor-not-allowed disabled:opacity-50"
+          />
+          <input
+            id="brand-color"
+            type="text"
+            inputMode="text"
+            disabled={!canCustomizeBrand}
+            placeholder="#0072ce (default)"
+            maxLength={7}
+            value={settings.brandColor ?? ""}
+            onChange={(e) =>
+              setSettings((s) => ({ ...s, brandColor: e.target.value || null }))
+            }
+            className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-400"
+          />
+          {settings.brandColor && (
+            <button
+              type="button"
+              disabled={!canCustomizeBrand}
+              onClick={() => setSettings((s) => ({ ...s, brandColor: null }))}
+              className="text-[11px] text-gray-500 underline-offset-2 hover:underline disabled:opacity-50"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+        {canCustomizeBrand ? (
+          <p className="text-[11px] text-gray-500">
+            Used as the accent color on your generated social cards. Leave blank for the
+            default RealtyBoss blue.
+          </p>
+        ) : (
+          <p className="text-[11px] text-gray-500">
+            Put your own brand color (and logo) on every generated social card with{" "}
+            <a href="/dashboard/billing" className="font-medium text-[#0072ce] underline hover:no-underline">
+              Signature
+            </a>
+            .
+          </p>
+        )}
+        {canCustomizeBrand && brandColorInvalid && (
+          <p className="text-[11px] text-red-600">Enter a valid hex color like #0072ce.</p>
+        )}
+      </div>
+
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={() => void save()}
-          disabled={saving || !isDirty}
+          disabled={saving || !isDirty || (canCustomizeBrand && brandColorInvalid)}
           className="rounded-lg bg-brand-accent text-white text-sm font-medium px-4 py-2 disabled:opacity-50"
         >
           {saving ? "Saving…" : "Save"}

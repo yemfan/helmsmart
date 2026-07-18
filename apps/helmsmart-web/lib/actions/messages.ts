@@ -3,13 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { Resend } from "resend";
+// Aliased: this module exports its own `sendEmail` server action.
+import { sendEmail as sendEmailViaResend, FROM_ADDRESS } from "@/lib/email";
 import twilio from "twilio";
 import Anthropic from "@anthropic-ai/sdk";
 import { detectLanguage, languageName, type Lang } from "@/lib/language";
 import { normalizePhoneE164 } from "@/lib/phone";
 
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 function twilioClient() {
@@ -33,17 +33,15 @@ export async function sendEmail(
 
   const supabase = await createClient();
 
-  // Get org email domain (use Resend from address)
-  const fromAddress = process.env.RESEND_FROM_EMAIL ?? "noreply@smbai.app";
+  const fromAddress = FROM_ADDRESS;
 
-  const { data: sent, error } = await resend.emails.send({
-    from: fromAddress,
+  // Throws if Resend rejects the send, so the messages row below is only
+  // written for mail that actually left.
+  const sent = await sendEmailViaResend({
     to: toEmail,
     subject,
     text: body,
   });
-
-  if (error) throw new Error(error.message);
 
   await supabase.from("messages").insert({
     organization_id: orgId,

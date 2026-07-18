@@ -245,7 +245,10 @@ export async function finalizeImportJob(params: {
         planType,
         fields: {
           ...fields,
-          source: `csv_import`,
+          // Preserve the CRM's own Lead Source when mapped; only fall back to
+          // the intake channel when the CSV didn't carry one. (intake_channel
+          // already records that this came in via CSV.)
+          source: fields.source?.trim() || "csv_import",
         },
         intakeChannel: "csv_import" as IntakeChannel,
         duplicateStrategy,

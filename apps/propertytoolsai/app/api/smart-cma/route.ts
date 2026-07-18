@@ -1,11 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  getPropertyByAddress,
-  getComparables,
-  type PropertyRow,
-} from "@/lib/propertyService";
-import { getPropertyData } from "@/lib/getPropertyData";
-import { loadValuationBundleFromRentcast } from "@/lib/valuation/adapters/rentcast";
+import { generateAiCma, isValuationFailure } from "@repo/valuation/server";
 import { consumeTokensForTool } from "@/lib/consumeTokens";
 import { getCmaUsage, incrementCmaUsage } from "@/lib/cmaUsage";
 import { getUserFromRequest } from "@/lib/authFromRequest";
@@ -13,7 +7,9 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { getMarketplaceSessionId } from "@/lib/marketplaceSessionId";
 import { recordLeadEvent, scoreLead } from "@/lib/leadScoring";
 
-type PropertyCore = PropertyRow;
+export const runtime = "nodejs";
+// Claude + web_search over real comparable sales runs ~15-40s.
+export const maxDuration = 60;
 
 type PropertyInput = {
   address: string;
@@ -25,18 +21,23 @@ type PropertyInput = {
   condition?: string;
 };
 
-type ComparableResponse = {
-  address: string;
-  price: number;
-  sqft: number;
-  beds: number | null;
-  baths: number | null;
-  distanceMiles: number;
-  soldDate: string;
-  propertyType: string | null;
-  pricePerSqft: number;
-};
+/** Coerce a body field to a positive number, else undefined (omit from input). */
+function posNum(v: unknown): number | undefined {
+  const n = typeof v === "number" ? v : typeof v === "string" ? Number(v) : NaN;
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+}
 
+/**
+ * POST /api/smart-cma — AI-grounded Comparative Market Analysis.
+ *
+ * Replaces the former Rentcast AVM + warehouse-comp pipeline with the shared
+ * `@repo/valuation` engine: Claude searches the web for recent comparable sales
+ * (each cited) and returns a `CmaSnapshot`. All non-Rentcast behavior is
+ * preserved: daily CMA usage limits, token gating, marketplace opportunity
+ * logging, and lead scoring. The response JSON shape is unchanged so the Smart
+ * CMA Builder page keeps working. The legacy `?refresh=true` param is now a
+ * no-op (there's no warehouse cache to bypass).
+ */
 export async function POST(request: Request) {
   try {
     const user = await getUserFromRequest(request);
@@ -60,20 +61,26 @@ export async function POST(request: Request) {
       requireAuth: false,
     });
     if (!gate.ok) {
+      // ConsumeResult is a union; this app compiles with strict:false, which
+      // doesn't narrow on `!gate.ok`, so read the failure fields via a cast.
+      const fail = gate as {
+        error?: string;
+        message?: string;
+        status?: number;
+        plan?: string;
+        tokensRemaining?: number;
+      };
       return NextResponse.json(
         {
-          error: (gate as any).error ?? (gate as any).message ?? "Access denied",
-          plan: gate.plan,
-          tokens_remaining: gate.tokensRemaining,
+          error: fail.error ?? fail.message ?? "Access denied",
+          plan: fail.plan,
+          tokens_remaining: fail.tokensRemaining,
         },
-        { status: (gate as any).status ?? 402 }
+        { status: fail.status ?? 402 }
       );
     }
 
     const postUsage = await incrementCmaUsage(request);
-
-    const url = new URL(request.url);
-    const forceRefresh = url.searchParams.get("refresh") === "true";
 
     const body = (await request.json().catch(() => ({}))) as PropertyInput;
     const address = body.address?.trim();
@@ -86,157 +93,58 @@ export async function POST(request: Request) {
       );
     }
 
-    /**
-     * Ensure the property exists in the warehouse. If not, hydrate
-     * it from the property data source (Rentcast). Previously the
-     * CMA returned a hard 404 when the property wasn't in the
-     * warehouse — now it creates the record on-demand.
-     */
-    try {
-      await getPropertyData(address, forceRefresh);
-    } catch {
-      /* best-effort — getPropertyByAddress below handles the miss */
+    const subjectCondition =
+      typeof body.condition === "string" && body.condition.trim()
+        ? body.condition
+        : "Average";
+
+    const result = await generateAiCma({
+      address,
+      beds: posNum(body.beds),
+      baths: posNum(body.baths),
+      sqft: posNum(body.sqft),
+      yearBuilt: posNum(body.yearBuilt),
+      condition: subjectCondition,
+    });
+
+    // Use the type-guard (not `!result.ok`) so this narrows under strict:false.
+    if (isValuationFailure(result)) {
+      return NextResponse.json(
+        { ok: false, error: result.error },
+        { status: result.status }
+      );
     }
 
-    let subject = await getPropertyByAddress(address);
+    const snapshot = result.snapshot;
+    const subject = snapshot.subject;
+    const valuation = snapshot.valuation;
 
-    /**
-     * Rentcast AVM + property enrichment. Called early so we have:
-     * 1. A professional AVM to fall back on when local comps = 0
-     * 2. Real property details (sqft, beds, baths, yearBuilt)
-     */
-    let rentcastAvm: number | null = null;
-    let rentcastDetails: Record<string, unknown> | null = null;
-    try {
-      if (process.env.RENTCAST_API_KEY?.trim()) {
-        const bundle = await loadValuationBundleFromRentcast({ address });
-        rentcastAvm = bundle.apiEstimate ?? null;
-        if (bundle.subjectDetails) {
-          rentcastDetails = bundle.subjectDetails as Record<string, unknown>;
-        }
-      }
-    } catch (e) {
-      console.error("[smart-cma] Rentcast fetch failed:", e);
-    }
+    const comps = (snapshot.comps ?? []).map((c) => ({
+      address: c.address,
+      price: c.price,
+      sqft: c.sqft,
+      beds: c.beds,
+      baths: c.baths,
+      distanceMiles: c.distanceMiles,
+      soldDate: c.soldDate,
+      propertyType: c.propertyType,
+      pricePerSqft: c.pricePerSqft,
+    }));
 
-    if (!subject) {
-      // Even without a warehouse record, we can still produce a
-      // CMA using Rentcast data. Build a minimal subject object.
-      if (rentcastAvm && rentcastAvm > 0) {
-        subject = {
-          id: "",
-          address,
-          city: null,
-          state: null,
-          zip_code: null,
-          lat: null,
-          lng: null,
-          property_type: rentcastDetails?.propertyType != null ? String(rentcastDetails.propertyType) : null,
-          beds: rentcastDetails?.beds != null ? Number(rentcastDetails.beds) : null,
-          baths: rentcastDetails?.baths != null ? Number(rentcastDetails.baths) : null,
-          sqft: rentcastDetails?.sqft != null ? Number(rentcastDetails.sqft) : null,
-          lot_size: rentcastDetails?.lotSize != null ? Number(rentcastDetails.lotSize) : null,
-          year_built: rentcastDetails?.yearBuilt != null ? Number(rentcastDetails.yearBuilt) : null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        } as PropertyRow;
-      } else {
-        return NextResponse.json(
-          { error: "Property not found. Try a different address or check the spelling." },
-          { status: 404 }
-        );
-      }
-    }
+    const estimatedValue = valuation.estimatedValue;
+    const low = valuation.low;
+    const high = valuation.high;
+    const avgPricePerSqft = valuation.avgPricePerSqft;
 
-    // Enrich subject with Rentcast details if warehouse data is sparse
-    if (rentcastDetails) {
-      if (!subject.sqft && rentcastDetails.sqft) subject = { ...subject, sqft: Number(rentcastDetails.sqft) };
-      if (!subject.beds && rentcastDetails.beds) subject = { ...subject, beds: Number(rentcastDetails.beds) };
-      if (!subject.baths && rentcastDetails.baths) subject = { ...subject, baths: Number(rentcastDetails.baths) };
-      if (!subject.year_built && rentcastDetails.yearBuilt) subject = { ...subject, year_built: Number(rentcastDetails.yearBuilt) };
-      if (!subject.property_type && rentcastDetails.propertyType) subject = { ...subject, property_type: String(rentcastDetails.propertyType) };
-    }
-
-    const compsResult = await getComparables(address, 10);
-
-    const comps: ComparableResponse[] = (compsResult.comps ?? [])
-      .filter((c) => c.sold_price != null && c.comp_property?.sqft != null && (c.comp_property?.sqft ?? 0) > 0)
-      .map((c) => {
-        const compProp = c.comp_property;
-        const price = Number(c.sold_price ?? 0);
-        const sqft = Number(compProp?.sqft ?? 0);
-        const pricePerSqft = sqft > 0 ? price / sqft : 0;
-        const soldDate = c.sold_date ? new Date(c.sold_date).toLocaleDateString() : "—";
-
-        return {
-          address: compProp?.address ?? "—",
-          price,
-          sqft,
-          beds: compProp?.beds ?? null,
-          baths: compProp?.baths ?? null,
-          distanceMiles: Number(c.distance_miles ?? 0),
-          soldDate,
-          propertyType: compProp?.property_type ?? null,
-          pricePerSqft,
-        };
-      });
-
-    const subjectSqft =
-      Number(body.sqft ?? subject.sqft ?? 1500) || 1500;
-
-    const avgPricePerSqft =
-      comps.length > 0
-        ? comps.reduce((sum, c) => sum + c.pricePerSqft, 0) / comps.length
-        : 0;
-
-    /**
-     * Estimate: use comp-based value when comps are available,
-     * Rentcast AVM when they're not. Previously returned $0 with
-     * a "not enough comparables" message when comps were missing.
-     */
-    let estimatedValue = avgPricePerSqft * subjectSqft;
-    if (estimatedValue <= 0 && rentcastAvm && rentcastAvm > 0) {
-      estimatedValue = rentcastAvm;
-    }
-    const low = estimatedValue * 0.92;
-    const high = estimatedValue * 1.08;
-
-    const now = Date.now();
-    const daysSinceSale = comps
-      .map((c) => {
-        const t = new Date(c.soldDate).getTime();
-        return Number.isFinite(t) ? Math.max(0, Math.floor((now - t) / (1000 * 60 * 60 * 24))) : null;
-      })
-      .filter((x): x is number => x != null);
-
-    const avgDom =
-      daysSinceSale.length > 0
-        ? daysSinceSale.reduce((a, b) => a + b, 0) / daysSinceSale.length
-        : 30;
-
-    const aggressiveDays = Math.max(5, Math.round(avgDom * 0.8));
-    const marketDays = Math.max(5, Math.round(avgDom));
-    const premiumDays = Math.max(5, Math.round(avgDom * 1.2));
-
-    const estimatedStrategies = {
+    // Strategies may be null when the AI couldn't produce a pricing ladder.
+    // Fall back to a simple ±spread around the estimate so the client (which
+    // always renders the strategy card) never crashes on missing fields.
+    const strategies = snapshot.strategies ?? {
       aggressive: estimatedValue * 0.95,
       market: estimatedValue,
       premium: estimatedValue * 1.03,
+      daysOnMarket: { aggressive: 24, market: 30, premium: 45 },
     };
-
-    const subjectCondition = (body as any).condition ?? "Average";
-
-    const summary = comps.length
-      ? `Based on ${comps.length} nearby comparable sold properties, the average price/sqft is about $${avgPricePerSqft.toFixed(
-          0
-        )}. Using your subject’s square footage, the estimated value is approximately $${Math.round(
-          estimatedValue
-        ).toLocaleString()} with an expected range of $${Math.round(
-          low
-        ).toLocaleString()} to $${Math.round(high).toLocaleString()}.`
-      : rentcastAvm && rentcastAvm > 0
-        ? `Estimated value of $${Math.round(estimatedValue).toLocaleString()} based on automated valuation model (range $${Math.round(low).toLocaleString()} to $${Math.round(high).toLocaleString()}). Local comparable data is limited — the estimate may improve as more nearby sales are recorded.`
-        : `We couldn’t find enough comparable sold history for this address yet. Try a different address or check the spelling.`;
 
     // Marketplace tracking: log that CMA was generated for this address.
     // Best-effort: failures must not break the tool response.
@@ -273,10 +181,10 @@ export async function POST(request: Request) {
         address: subject.address,
         beds: subject.beds ?? 0,
         baths: subject.baths ?? 0,
-        sqft: subject.sqft ?? subjectSqft,
-        propertyType: subject.property_type ?? null,
-        yearBuilt: subject.year_built ?? 0,
-        condition: subjectCondition,
+        sqft: subject.sqft ?? posNum(body.sqft) ?? 0,
+        propertyType: subject.propertyType ?? null,
+        yearBuilt: subject.yearBuilt ?? 0,
+        condition: subject.condition ?? subjectCondition,
       },
       comps,
       avgPricePerSqft,
@@ -284,24 +192,22 @@ export async function POST(request: Request) {
       low,
       high,
       strategies: {
-        aggressive: estimatedStrategies.aggressive,
-        market: estimatedStrategies.market,
-        premium: estimatedStrategies.premium,
+        aggressive: strategies.aggressive,
+        market: strategies.market,
+        premium: strategies.premium,
         daysOnMarket: {
-          aggressive: aggressiveDays,
-          market: marketDays,
-          premium: premiumDays,
+          aggressive: strategies.daysOnMarket.aggressive,
+          market: strategies.daysOnMarket.market,
+          premium: strategies.daysOnMarket.premium,
         },
       },
-      summary,
+      summary: snapshot.summary ?? "",
     });
   } catch (e: any) {
-    console.error("cma error", e);
+    console.error("smart-cma error", e);
     return NextResponse.json(
       { error: e?.message ?? "Server error" },
       { status: 500 }
     );
   }
 }
-
-

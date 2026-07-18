@@ -4,10 +4,8 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { Resend } from "resend";
+import { sendEmail } from "@/lib/email";
 import { assertCanManageTeam, assertCanModifyMember } from "@helm/dna-people";
-
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
 
 type Role = "admin" | "bookkeeper" | "viewer";
 
@@ -97,11 +95,9 @@ export async function inviteMember(email: string, role: Role) {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://helmsmart.ai";
   const acceptUrl = `${appUrl}/join/${invite.token}`;
-  const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@smbai.app";
-
   // Send invitation email
-  await resend.emails.send({
-    from: `${orgName} via HelmSmart <${fromEmail}>`,
+  await sendEmail({
+    fromName: `${orgName} via HelmSmart`,
     to: email,
     subject: `You've been invited to join ${orgName} on HelmSmart`,
     html: `<!DOCTYPE html>

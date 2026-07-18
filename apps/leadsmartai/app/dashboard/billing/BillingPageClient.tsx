@@ -457,12 +457,14 @@ export default function BillingPageClient() {
                       {displayName}
                     </p>
                     <p className="mt-1 text-3xl font-extrabold text-brand-text">
-                      {price === 0
-                        ? "Free"
-                        : price !== undefined
-                          ? `$${price}`
-                          : "—"}
-                      {price !== undefined && price > 0 && (
+                      {slug === "team"
+                        ? "Custom"
+                        : price === 0
+                          ? "Free"
+                          : price !== undefined
+                            ? `$${price}`
+                            : "—"}
+                      {slug !== "team" && price !== undefined && price > 0 && (
                         <span className="text-base font-normal text-gray-500">/mo</span>
                       )}
                     </p>
@@ -482,7 +484,16 @@ export default function BillingPageClient() {
                         as the implicit fallback when no paid sub is
                         active, and disabled otherwise. The catalog's
                         `stripePriceEnvVar: null` is the canonical signal. */}
-                    {price === 0 ? (
+                    {slug === "team" ? (
+                      /* Team is sales-assisted — no self-serve checkout. */
+                      <a
+                        href="/contact?topic=team"
+                        className="mt-6 block w-full rounded-xl py-2.5 text-center text-sm font-bold text-white shadow transition hover:opacity-90"
+                        style={{ background: BRAND }}
+                      >
+                        Contact sales
+                      </a>
+                    ) : price === 0 ? (
                       <div
                         className="mt-6 w-full rounded-xl bg-slate-100 py-2.5 text-center text-sm font-semibold text-slate-600"
                         aria-disabled

@@ -173,8 +173,27 @@ export default function OnboardingLoginScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
-          contentContainerStyle={[s.safePad, { flexGrow: 1 }]}
+          /*
+           * Do NOT spread `s.safePad` here: it carries `flex: 1`
+           * (→ flexShrink: 1, which clamps the content to the
+           * viewport and clips overflow instead of scrolling) and
+           * `justifyContent: "space-between"` (which pins the Sign
+           * in button to the bottom edge, right under the keyboard).
+           * Both are correct for the plain-View onboarding screens
+           * but broke sign-in: on iPad's taller keyboard the button
+           * was pinned off-screen and unreachable (App Store review
+           * Guideline 4.0, build 1.6 (28)). Use plain padding +
+           * flexGrow so content flows top-down and scrolls when the
+           * keyboard shrinks the viewport.
+           */
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            paddingTop: 20,
+            paddingBottom: 40,
+            flexGrow: 1,
+          }}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           showsVerticalScrollIndicator={false}
         >
         <View style={[s.centerBlock, { flex: 0, justifyContent: "flex-start" }]}>

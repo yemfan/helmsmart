@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
+import { senderFrom } from "@/lib/email";
 import { runAutomations } from "@/lib/automation-engine";
 import Anthropic from "@anthropic-ai/sdk";
 import {
@@ -105,7 +106,6 @@ export async function sendCampaign(campaignId: string) {
     .update({ status: "sending", updated_at: new Date().toISOString() })
     .eq("id", campaignId);
 
-  const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@smbai.app";
   const orgNameRes = await supabase
     .from("organizations")
     .select("name")
@@ -153,7 +153,7 @@ export async function sendCampaign(campaignId: string) {
   for (let i = 0; i < recipients.length; i += 50) {
     const batch = recipients.slice(i, i + 50);
     const emails = batch.map((c) => ({
-      from: `${orgName} <${fromEmail}>`,
+      from: senderFrom(orgName),
       to: c.email as string,
       subject: campaign.subject,
       html: buildHtml(
@@ -163,8 +163,16 @@ export async function sendCampaign(campaignId: string) {
     }));
 
     try {
-      await resend.batch.send(emails);
-      sent += batch.length;
+      // batch.send resolves with { error } instead of throwing, so an
+      // API rejection has to be checked explicitly or the batch gets
+      // counted as delivered.
+      const { error: batchError } = await resend.batch.send(emails);
+      if (batchError) {
+        console.error("sendCampaign: Resend rejected batch", batchError);
+        failed += batch.length;
+      } else {
+        sent += batch.length;
+      }
     } catch {
       failed += batch.length;
     }

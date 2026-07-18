@@ -30,7 +30,25 @@ type Extracted = {
   /** Lead potential from this call — drives contacts.rating so hot leads
    *  surface at the top of the list. null when we can't judge (no OpenAI). */
   rating: CallRating;
+  /** ISO 639-1 code of the language the caller spoke, e.g. "en" | "zh" | "es".
+   *  "" when unclear. Stored on contacts.preferred_language for future outreach. */
+  language: string;
+  /** Budget + property preferences the caller stated — persisted as durable
+   *  contact memory (search_location, price_min/max, beds, baths). null = unknown. */
+  priceMin: number | null;
+  priceMax: number | null;
+  beds: number | null;
+  baths: number | null;
 };
+
+function toNum(v: unknown): number | null {
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  if (typeof v === "string") {
+    const n = Number(v.replace(/[^0-9.]/g, ""));
+    return Number.isFinite(n) && n > 0 ? n : null;
+  }
+  return null;
+}
 
 /** Pull structured lead fields from the call summary + transcript. Degrades to a
  *  phone-only contact (no name) when OpenAI is unavailable. */
@@ -42,6 +60,11 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
     location: "",
     timeline: "",
     rating: null,
+    language: "",
+    priceMin: null,
+    priceMax: null,
+    beds: null,
+    baths: null,
   };
 
   const { apiKey, model } = getOpenAIConfig();
@@ -63,10 +86,15 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
               'Extract the caller\'s lead details from a real-estate AI receptionist phone call. ' +
               'Return ONLY a JSON object with keys: name (caller\'s full name, or "" if not given), ' +
               'party_type (one of "buyer","seller","renter","other"), interest (one short phrase, ' +
-              'e.g. "buying in Alhambra, ~$1M"), location (city/area, or ""), timeline ' +
-              '(e.g. "2 months", or ""), rating (lead potential: "hot" = ready / near-term / ' +
+              'e.g. "buying in Alhambra, ~$1M"), location (city/area they want to buy/rent, or the ' +
+              'address they\'re selling, or ""), timeline (e.g. "2 months", or ""), ' +
+              'language (ISO 639-1 code of the language the caller mainly SPOKE: "en", "zh", "es", ' +
+              '"vi", "ko", etc.; "" if unclear), ' +
+              'price_min (number in USD, or null), price_max (number in USD, or null), ' +
+              'beds (integer bedrooms wanted, or null), baths (number of bathrooms wanted, or null), ' +
+              'rating (lead potential: "hot" = ready / near-term / ' +
               'strong intent or pre-approved; "warm" = interested but exploring; "cold" = low or ' +
-              'no real-estate intent, wrong number, or just a question). Use "" when unknown. ' +
+              'no real-estate intent, wrong number, or just a question). Use "" or null when unknown. ' +
               'Never invent details.',
           },
           {
@@ -81,6 +109,8 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
     const parsed = JSON.parse(json.choices?.[0]?.message?.content ?? "{}") as Record<string, unknown>;
     const pt = String(parsed.party_type ?? "other").toLowerCase();
     const rt = String(parsed.rating ?? "").toLowerCase();
+    const lang = String(parsed.language ?? "").trim().toLowerCase().slice(0, 5);
+    const bedsN = toNum(parsed.beds);
     return {
       name: String(parsed.name ?? "").trim().slice(0, 120),
       partyType: (["buyer", "seller", "renter", "other"].includes(pt) ? pt : "other") as PartyType,
@@ -88,10 +118,38 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
       location: String(parsed.location ?? "").trim().slice(0, 120),
       timeline: String(parsed.timeline ?? "").trim().slice(0, 80),
       rating: (["hot", "warm", "cold"].includes(rt) ? rt : null) as CallRating,
+      language: /^[a-z]{2}$/.test(lang) ? lang : "",
+      priceMin: toNum(parsed.price_min),
+      priceMax: toNum(parsed.price_max),
+      beds: bedsN != null ? Math.round(bedsN) : null,
+      baths: toNum(parsed.baths),
     };
   } catch {
     return fallback;
   }
+}
+
+/** Durable contact memory from a call — only the fields the AI actually captured,
+ *  so a later call refreshes what's known without wiping prior values. For a
+ *  buyer/renter, `location` is where they want to buy (→ search_location); for a
+ *  seller it's the address they're selling (→ property_address). */
+function contactMemoryPatch(
+  ex: Extracted,
+  opts: { includeName: boolean },
+): Record<string, unknown> {
+  const p: Record<string, unknown> = {};
+  if (opts.includeName && ex.name) p.name = ex.name;
+  if (ex.language) p.preferred_language = ex.language;
+  if (ex.location) {
+    if (ex.partyType === "seller") p.property_address = ex.location;
+    else p.search_location = ex.location;
+  }
+  if (ex.priceMin != null) p.price_min = ex.priceMin;
+  if (ex.priceMax != null) p.price_max = ex.priceMax;
+  if (ex.beds != null) p.beds = ex.beds;
+  if (ex.baths != null) p.baths = ex.baths;
+  if (ex.timeline) p.timeline = ex.timeline;
+  return p;
 }
 
 export async function captureLeadFromInboundCall(args: {
@@ -129,9 +187,10 @@ export async function captureLeadFromInboundCall(args: {
       source: "ai_receptionist",
       lead_status: "new",
       notes: `AI receptionist call: ${summary}`,
+      // Durable memory captured on this call: language, area, budget, beds/baths.
+      ...contactMemoryPatch(ex, { includeName: false }),
     };
     if (ex.partyType === "buyer" || ex.partyType === "seller") row.type = ex.partyType;
-    if (ex.location) row.property_address = ex.location;
     // Note: the lead's rating is set by the composite recomputeLeadRating below
     // (off a `call_rated` event), not written directly here.
     try {
@@ -145,15 +204,23 @@ export async function captureLeadFromInboundCall(args: {
     } catch (e) {
       console.error("[lead-capture] contact insert threw:", e);
     }
-  } else if (ex.name && !(existingName && existingName.trim())) {
-    // Known caller with no name on file — backfill it (rating handled below).
-    try {
-      await supabaseAdmin
-        .from("contacts")
-        .update({ name: ex.name } as never)
-        .eq("id", contactId as never);
-    } catch {
-      /* best-effort */
+  } else {
+    // Known caller — refresh their memory with anything new from this call
+    // (name if we lacked it, language, area, budget, beds/baths, timeline).
+    // Only fields the AI captured are included, so we never wipe prior values.
+    const patch = contactMemoryPatch(ex, {
+      includeName: !(existingName && existingName.trim()),
+    });
+    if (Object.keys(patch).length > 0) {
+      patch.updated_at = new Date().toISOString();
+      try {
+        await supabaseAdmin
+          .from("contacts")
+          .update(patch as never)
+          .eq("id", contactId as never);
+      } catch {
+        /* best-effort */
+      }
     }
   }
 

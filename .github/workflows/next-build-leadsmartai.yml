@@ -10,9 +10,10 @@
 #     route handlers, the next config, or any dep boundary.
 #   - Manual dispatch for ad-hoc verification of an in-flight branch.
 #
-# Excluded: changes purely under apps/leadsmartai/lib/**/__tests__/** and
-# *.md files don't affect the production build, so they don't trigger.
-# (Glob negation handled by the path filter below.)
+# Note: `apps/leadsmartai/lib/**` matches test files too, so a test-only PR
+# still triggers a full build. Wasteful but harmless — leaving it that way
+# keeps the filter simple and avoids a rule that silently skips the build for
+# a PR that also touches product code.
 #
 # Concurrency: cancel previous runs on the same ref so a fast PR push
 # doesn't queue stale builds.
@@ -64,7 +65,6 @@ jobs:
       # fallback paths the route handlers already implement.
       OPENAI_API_KEY: ""
       ANTHROPIC_API_KEY: ""
-      RENTCAST_API_KEY: ""
       RESEND_API_KEY: ""
       TWILIO_ACCOUNT_SID: ""
       TWILIO_AUTH_TOKEN: ""

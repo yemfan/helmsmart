@@ -149,7 +149,7 @@ export default function FAQPage() {
             within one business day.
           </p>
           <a
-            href="mailto:support@helmsmart.ai"
+            href="mailto:contact@helmsmart.ai"
             className="mt-6 inline-block rounded-lg bg-gray-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-700"
           >
             Contact support

@@ -161,12 +161,24 @@ export default function FavoritesClient() {
               </div>
             )}
             <div className="mt-3">
-              <Link
-                href={`/listing/${encodeURIComponent(f.propertyId)}`}
-                className="inline-flex items-center gap-1 text-xs font-medium text-[#0066b3] hover:underline"
-              >
-                View details →
-              </Link>
+              {/* AI-sourced favorites store the external listing URL as the
+                  propertyId, so link out to it. Legacy favorites (old RentCast
+                  ids) have no working destination — the internal PDP is gone —
+                  so render plain, non-clickable text instead of a 404 link. */}
+              {/^https?:\/\//i.test(f.propertyId) ? (
+                <a
+                  href={f.propertyId}
+                  target="_blank"
+                  rel="noopener nofollow"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-[#0066b3] hover:underline"
+                >
+                  View listing ↗
+                </a>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+                  Listing link unavailable
+                </span>
+              )}
             </div>
           </div>
         </li>

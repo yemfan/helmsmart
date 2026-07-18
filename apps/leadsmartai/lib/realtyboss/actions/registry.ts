@@ -15,6 +15,10 @@ import {
   createSavedHouseSearch,
   updateSavedHouseSearch,
 } from "@/lib/house-search/savedHouseSearches";
+import { startPlaybookRun } from "@/lib/realtyboss/playbook-runs/service";
+import { autoDispatchRunTasks } from "@/lib/realtyboss/playbook-runs/dispatch";
+import { routeSkillRequest, runSkillAndSave } from "@/lib/realtyboss/skills/run";
+import { getSkill, ASSIGNEE_LABEL } from "@/lib/realtyboss/skills/catalog";
 
 /**
  * Boss Assistant ACTION REGISTRY.
@@ -41,7 +45,10 @@ export type BossActionType =
   | "open_house"
   | "coordinate_closing"
   | "post_social"
-  | "buyer_home_search";
+  | "buyer_home_search"
+  | "start_selling_playbook"
+  | "start_buying_playbook"
+  | "run_skill";
 
 export type ActionParamDef = {
   key: string;
@@ -605,6 +612,70 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
         note: `Saved a home search for ${who} — ${count} match${count === 1 ? "" : "es"} so far${
           frequency ? `; emailing new ones ${frequency}` : ""
         }.`,
+      };
+    },
+  },
+
+  start_selling_playbook: {
+    type: "start_selling_playbook",
+    assignee: "marketing_assistant",
+    label: "Selling playbook",
+    planHint:
+      'start_selling_playbook — STATEFUL PLAYBOOK: kick off the whole home-selling engagement (after the listing agreement is signed). The team lays out a prep checklist, generates an AI marketing plan + 3 custom property ads, schedules the rollout, and sets a weekly optimize review. Choose when asked to start selling / list / market a specific property end-to-end (not just one CMA or one post). params: { address }.',
+    requiredParams: [{ ...ADDRESS, question: "What's the address of the home to sell?" }],
+    run: async ({ agentId, params }) => {
+      const res = await startPlaybookRun({ agentId, type: "house_selling", params });
+      if (!res.ok) return { status: "assigned", note: res.error };
+      const ran = await autoDispatchRunTasks(agentId, res.runId);
+      const note = ran > 0 ? `${res.note} The Marketing Assistant auto-ran ${ran} task${ran === 1 ? "" : "s"} (autopilot on).` : res.note;
+      return { status: "completed", artifactType: "playbook_run", artifactUrl: res.url, note };
+    },
+  },
+
+  start_buying_playbook: {
+    type: "start_buying_playbook",
+    assignee: "sales_assistant",
+    label: "Buying playbook",
+    planHint:
+      'start_buying_playbook — STATEFUL PLAYBOOK: kick off the whole home-buying engagement (after a buyer is qualified). The team sets up the consultation, builds + saves a house-searching plan (criteria/frequency/channel), schedules delivery, and sets a weekly optimize review. Choose when asked to start a full buyer search / represent a buyer end-to-end (not just one saved search). params: { contact_name (the buyer), criteria (beds/baths, area, price), frequency (daily|weekly, optional) }.',
+    requiredParams: [
+      { key: "contact_name", label: "which buyer", question: "Which qualified buyer is this for — what's their name?" },
+      {
+        key: "criteria",
+        label: "search criteria",
+        question: "What's the buyer looking for? Include beds/baths, area, and price range.",
+      },
+    ],
+    run: async ({ agentId, params }) => {
+      const res = await startPlaybookRun({ agentId, type: "house_buying", params });
+      if (!res.ok) return { status: "assigned", note: res.error };
+      const ran = await autoDispatchRunTasks(agentId, res.runId);
+      const note = ran > 0 ? `${res.note} The Sales Assistant auto-ran ${ran} task${ran === 1 ? "" : "s"} (autopilot on).` : res.note;
+      return { status: "completed", artifactType: "playbook_run", artifactUrl: res.url, note };
+    },
+  },
+
+  run_skill: {
+    type: "run_skill",
+    assignee: "sales_assistant",
+    label: "Run a skill",
+    planHint:
+      'run_skill — run one of the agent\'s Realtor AI skills: write/generate content, scripts, or analyses (listing description, social posts, nurture/drip sequence, farm/circle prospecting, expired/FSBO scripts, objection scripts, buyer consultation packet, market report, net sheet, GCI plan, newsletter, case study, video scripts, and ~50 more). Choose for a writing/content/analysis request that is NOT one of the specific actions above (CMA, seller presentation, showing, cold call, open house, closing, single social post, buyer search, playbooks). params: { request } (the user\'s full request, verbatim).',
+    requiredParams: [
+      { key: "request", label: "the request", question: "What would you like the team to write or work on?" },
+    ],
+    run: async ({ agentId, params }) => {
+      const route = await routeSkillRequest(agentId, params.request);
+      if (route.skillId === null) return { status: "assigned", note: route.reason };
+      const res = await runSkillAndSave(agentId, route.skillId, route.inputs);
+      if (!res.ok) return { status: "assigned", note: res.error };
+      const title = getSkill(route.skillId)?.title ?? "skill";
+      const gateNote = res.gate ? (res.gate.status === "flag" ? " — compliance flagged, review before use" : " — compliance passed") : "";
+      return {
+        status: "completed",
+        artifactType: "skill_output",
+        artifactUrl: `/dashboard/skills/runs/${res.runId}`,
+        note: `${ASSIGNEE_LABEL[res.assignee]} ran "${title}"${gateNote}`,
       };
     },
   },

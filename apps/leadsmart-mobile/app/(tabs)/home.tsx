@@ -1,8 +1,4 @@
-import type {
-  DailyAgendaItem,
-  MobileDashboardPriorityAlert,
-  MobileDashboardStats,
-} from "@leadsmart/shared";
+import type { MobileDashboardStats } from "@leadsmart/shared";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
@@ -17,15 +13,14 @@ import {
 } from "react-native";
 import { ErrorBanner } from "../../components/ErrorBanner";
 import { BrandRefreshControl } from "../../components/BrandRefreshControl";
-import { DailyAgendaList } from "../../components/home/DailyAgendaList";
 import { EngagementCard } from "../../components/home/EngagementCard";
 import { NextPostSuggestionCard } from "../../components/home/NextPostSuggestionCard";
-import { PriorityAlertCard } from "../../components/home/PriorityAlertCard";
+import { TodayAgenda } from "../../components/home/TodayAgenda";
+import { PriorityAlerts } from "../../components/home/PriorityAlerts";
 import { HomeFeatureSections } from "../../components/home/v2/HomeFeatureSections";
 import { Skeleton } from "../../components/Skeleton";
 import { FadeIn } from "../../components/Reveal";
 import {
-  fetchMobileDailyAgenda,
   fetchMobileDashboard,
   fetchLeadQueue,
   fetchMobileScheduledPosts,
@@ -33,25 +28,6 @@ import {
 import type { MobileApiFailure } from "../../lib/leadsmartMobileApi";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";
-
-function formatAgendaDayLabel(agendaDate: string, locale: string): string {
-  try {
-    const parts = agendaDate.split("-").map(Number);
-    if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) return agendaDate;
-    const [y, m, d] = parts;
-    const dt = new Date(Date.UTC(y, m - 1, d));
-    // Locale-aware day label — "Monday, May 13" in English,
-    // "5月13日 星期一" in Chinese (Intl handles the rendering).
-    return dt.toLocaleDateString(locale, {
-      weekday: "long",
-      month: "short",
-      day: "numeric",
-      timeZone: "UTC",
-    });
-  } catch {
-    return agendaDate;
-  }
-}
 
 function SectionRule({ color }: { color: string }) {
   return <View style={{ height: 1, backgroundColor: color, marginVertical: 16 }} />;
@@ -61,7 +37,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const { t, i18n } = useTranslation(["home", "common"]);
+  const { t } = useTranslation(["home", "common"]);
   const [queueCount, setQueueCount] = useState(0);
   /** Counts for the Home chip row. `scheduledUpcoming` = posts
    *  awaiting cron pickup; `scheduledFailed` = terminal failures
@@ -72,10 +48,12 @@ export default function HomeScreen() {
     failed: number;
   }>({ upcoming: 0, failed: 0 });
 
-  // ── Cached fetches for dashboard + agenda ──────────────────────
+  // ── Cached fetch for dashboard (stats + weekly digest) ─────────
+  // Agenda + priority alerts now live in their own extracted
+  // components (`TodayAgenda`, `PriorityAlerts`), each owning its own
+  // cached fetch so they can be reused on the Boss screen too.
   type DashboardPayload = {
     stats: MobileDashboardStats;
-    priorityAlerts: MobileDashboardPriorityAlert[];
     weeklyDigest: {
       title: string;
       body: string;
@@ -83,22 +61,14 @@ export default function HomeScreen() {
       insights: Array<{ key: string; label: string; message: string; tone: string }>;
     } | null;
   };
-  type AgendaPayload = { agendaDate: string; items: DailyAgendaItem[] };
 
   const dashFetcher = useCallback(async (): Promise<DashboardPayload | MobileApiFailure> => {
     const res = await fetchMobileDashboard();
     if (res.ok === false) return res;
     return {
       stats: res.stats,
-      priorityAlerts: res.priorityAlerts,
       weeklyDigest: (res as any).weeklyDigest ?? null,
     };
-  }, []);
-
-  const agendaFetcher = useCallback(async (): Promise<AgendaPayload | MobileApiFailure> => {
-    const res = await fetchMobileDailyAgenda();
-    if (res.ok === false) return res;
-    return { agendaDate: res.agendaDate, items: res.items };
   }, []);
 
   const {
@@ -108,18 +78,8 @@ export default function HomeScreen() {
     refresh: dashRefresh,
   } = useCachedFetch<DashboardPayload>("home:dashboard", dashFetcher);
 
-  const {
-    data: agendaData,
-    loading: agendaLoading,
-    error: agendaError,
-    refresh: agendaRefresh,
-  } = useCachedFetch<AgendaPayload>("home:agenda", agendaFetcher);
-
   const stats = dashData?.stats ?? null;
-  const alerts = dashData?.priorityAlerts ?? [];
   const weeklyDigest = dashData?.weeklyDigest ?? null;
-  const agendaDate = agendaData?.agendaDate ?? "";
-  const agendaItems = agendaData?.items ?? [];
   const initialDone = !dashLoading || dashData !== null;
 
   // Queue count + scheduled-posts count stay as focus-effect
@@ -147,12 +107,12 @@ export default function HomeScreen() {
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     dashRefresh();
-    agendaRefresh();
     // Clear refreshing flag after a short delay — the hooks manage
     // their own loading state, but the pull-to-refresh spinner
-    // needs a boolean driven from here.
+    // needs a boolean driven from here. TodayAgenda / PriorityAlerts
+    // own their own cached fetches and refresh on focus.
     setTimeout(() => setRefreshing(false), 600);
-  }, [dashRefresh, agendaRefresh]);
+  }, [dashRefresh]);
 
   const handleFixedQuickAction = useCallback(
     (key: "lead" | "task" | "booking" | "message") => {
@@ -175,44 +135,6 @@ export default function HomeScreen() {
         default:
           break;
       }
-    },
-    [router]
-  );
-
-  const handleAlertPress = useCallback(
-    (a: MobileDashboardPriorityAlert) => {
-      if (a.leadId) {
-        router.push({ pathname: "/lead/[id]", params: { id: String(a.leadId) } });
-        return;
-      }
-      if (a.type === "unread_message") {
-        router.push("/(tabs)/inbox");
-        return;
-      }
-      if (a.type === "overdue_task") {
-        router.push("/tasks");
-        return;
-      }
-      router.push("/(tabs)/leads");
-    },
-    [router]
-  );
-
-  const handleAgendaItem = useCallback(
-    (item: DailyAgendaItem) => {
-      if (item.leadId) {
-        router.push({ pathname: "/lead/[id]", params: { id: String(item.leadId) } });
-        return;
-      }
-      if (item.type === "task") {
-        router.push("/tasks");
-        return;
-      }
-      if (item.type === "appointment") {
-        router.push("/(tabs)/calendar");
-        return;
-      }
-      router.push("/(tabs)/leads");
     },
     [router]
   );
@@ -325,45 +247,11 @@ export default function HomeScreen() {
 
         <SectionRule color={tokens.border} />
 
-        <Text style={styles.sectionHeading}>{t("sections.today")}</Text>
-        {agendaDate ? (
-          <Text style={styles.agendaHint}>
-            {t("sections.today_hint", {
-              day: formatAgendaDayLabel(agendaDate, i18n.language),
-            })}
-          </Text>
-        ) : null}
-
-        {agendaError ? (
-          <ErrorBanner
-            title={t("errors.agenda_unavailable")}
-            message={agendaError.message}
-            onRetry={agendaRefresh}
-          />
-        ) : null}
-        <DailyAgendaList items={agendaItems} onItemPress={handleAgendaItem} />
+        <TodayAgenda />
 
         <SectionRule color={tokens.border} />
 
-        <Text style={styles.sectionHeading}>{t("sections.priority_alerts")}</Text>
-        {dashboardError ? (
-          <ErrorBanner
-            title={t("errors.dashboard_update_failed")}
-            message={dashboardError.message}
-            onRetry={dashRefresh}
-          />
-        ) : null}
-        {alerts.length === 0 ? (
-          <Text style={styles.muted}>{t("sections.no_alerts")}</Text>
-        ) : (
-          alerts.map((a, i) => (
-            <PriorityAlertCard
-              key={`${a.type}-${a.leadId ?? "x"}-${a.createdAt ?? i}`}
-              alert={a}
-              onPress={() => handleAlertPress(a)}
-            />
-          ))
-        )}
+        <PriorityAlerts />
 
         <SectionRule color={tokens.border} />
 

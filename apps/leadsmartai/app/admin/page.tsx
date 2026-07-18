@@ -16,6 +16,7 @@ export default function AdminPortalPage() {
       description="Platform administration and operational tools. Open the full dashboard for day-to-day work."
       links={[
         { href: "/admin/platform-overview", label: "Platform overview", description: "Cross-product KPIs, funnel, and ops" },
+        { href: "/admin/signups", label: "Signups by source", description: "Where new agent signups come from" },
         { href: "/admin/founder", label: "Founder analytics", description: "MRR, funnel, churn, and usage events" },
         { href: "/admin/billing", label: "Subscription & billing", description: "Plans, MRR, and subscription status" },
         { href: "/admin/support", label: "Support inbox", description: "Customer conversations and replies" },

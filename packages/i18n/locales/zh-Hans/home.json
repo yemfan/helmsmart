@@ -82,5 +82,49 @@
     "web_link": {
       "label": "在网页端打开完整工作台"
     }
+  },
+  "team": {
+    "title": "您的 AI 团队",
+    "subtitle": "您的助理,按您的方式工作。",
+    "manage": "管理 AI 团队",
+    "status": {
+      "active": "已启用",
+      "paused": "已暂停"
+    },
+    "assistants": {
+      "receptionist": {
+        "name": "前台助理",
+        "description": "接听来电、捕获线索、挽回未接来电"
+      },
+      "sales": {
+        "name": "销售助理",
+        "description": "跟进线索、比较市场分析、看房与约见"
+      },
+      "marketing": {
+        "name": "营销助理",
+        "description": "社交发帖、推广活动、人脉圈培育"
+      },
+      "transaction": {
+        "name": "交易助理",
+        "description": "管理进行中的交易与报价"
+      },
+      "accountant": {
+        "name": "会计助理",
+        "description": "支出与佣金追踪"
+      }
+    },
+    "tiles": {
+      "call_log": "通话记录",
+      "offer_desk": "报价台"
+    }
+  },
+  "more": {
+    "title": "更多",
+    "subtitle": "其他功能——日程、洞察与账户。",
+    "sections": {
+      "schedule": "日程",
+      "insights": "洞察",
+      "account": "账户"
+    }
   }
 }

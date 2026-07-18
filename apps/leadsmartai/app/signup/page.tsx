@@ -9,6 +9,11 @@ import { useSignupProfilePrefill, type SignupPrefillConsumer } from "@/lib/hooks
 import { safeInternalRedirect } from "@/lib/loginUrl";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { formatUsPhoneInput, formatUsPhoneStored, isValidUsPhone } from "@/lib/usPhone";
+import {
+  readSignupAttribution,
+  clearSignupAttribution,
+} from "@/components/attribution/AttributionCapture";
+import { consumeStashedReferralCode } from "@/components/referrals/ReferralCodeCapture";
 
 // BCP-47 base ids shown on the SMS opt-in disclosure. Keep in sync with
 // the POSTs to /api/consent/sms — the `sms_consent_version` string must
@@ -62,6 +67,11 @@ function SignupForm() {
       );
     }
 
+    // First-touch signup source (utm/referrer/landing) — stamped onto the
+    // profile so consumer signups are attributable too. Cleared on success.
+    const attribution = readSignupAttribution();
+    const attrPatch = attribution ? { signup_attribution: attribution } : {};
+
     if (hasSession) {
       setLoading(true);
       try {
@@ -79,6 +89,7 @@ function SignupForm() {
             user_id: user.id,
             full_name: fullName.trim(),
             phone: phoneVal,
+            ...attrPatch,
           },
           { onConflict: "user_id" }
         );
@@ -120,6 +131,7 @@ function SignupForm() {
           }).catch(() => {});
         }
 
+        clearSignupAttribution();
         const after = safeInternalRedirect(searchParams?.get("redirect") ?? null);
         openAgentSignup({ fullName: fullName.trim(), email: email.trim() });
         router.push(after ?? "/");
@@ -160,6 +172,7 @@ function SignupForm() {
           user_id: userId,
           full_name: fullName.trim(),
           phone: phoneVal,
+          ...attrPatch,
         },
         { onConflict: "user_id" }
       );
@@ -222,6 +235,24 @@ function SignupForm() {
           // set a given user saw.
           body: JSON.stringify({ version: composeConsentVersion(CONSENT_LANGUAGES) }),
         }).catch(() => {});
+      }
+
+      clearSignupAttribution();
+
+      // Redeem a stashed ?ref= referral on the email/password path too (was
+      // previously only handled on the OAuth complete-profile flow).
+      const refCode = consumeStashedReferralCode();
+      if (refCode) {
+        try {
+          await fetch("/api/referrals/redeem", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: refCode }),
+          });
+        } catch (referralErr) {
+          console.warn("referral redemption failed:", referralErr);
+        }
       }
 
       openAgentSignup({ fullName: fullName.trim(), email: email.trim() });

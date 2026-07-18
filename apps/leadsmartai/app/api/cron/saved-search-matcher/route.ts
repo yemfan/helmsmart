@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { findMatchingListings } from "@/lib/contacts/listings/rentcastSearch";
+import { findMatchingListings } from "@/lib/contacts/listings/listingSearch";
 import { sendListingAlertDigest } from "@/lib/contacts/listings/alertEmail";
 import type {
   AlertFrequency,
@@ -12,8 +12,9 @@ export const maxDuration = 60;
 
 /**
  * Saved-search matcher cron. For each active saved_search that's due
- * for alerting, query Rentcast, diff against last_matched_listing_ids
- * to suppress repeats, and queue the digest email.
+ * for alerting, run the AI house-search engine (Claude + web search),
+ * diff against last_matched_listing_ids to suppress repeats, and queue
+ * the digest email.
  *
  * Schedule (recommended): every hour.
  *   - "instant" searches: alerted when due + 1h window
@@ -22,12 +23,11 @@ export const maxDuration = 60;
  *   - "never": skipped entirely
  *
  * Per-run budget:
- *   - Rentcast quota respect: skip the whole run if the first call
- *     returns 401/quota_exhausted to avoid burning the remaining quota
- *     on doomed calls.
- *   - Each search's Rentcast query is one call. A batch of 25 active
- *     searches hits Rentcast 25× — well under the 50/month free tier
- *     if run hourly with daily searches.
+ *   - Each due search triggers one AI house-search (~30-60s, Opus +
+ *     web search). The per-search alert_frequency + last_alerted_at
+ *     throttle bounds how often each search actually runs — a "daily"
+ *     search runs at most once per 24h regardless of how often the cron
+ *     fires — so this stays cheap without a separate cache table.
  *
  * Auth: Bearer CRON_SECRET or Vercel cron signature.
  */
@@ -117,12 +117,14 @@ export async function GET(req: Request) {
       if (skippedQuota) break;
       queriedSearches += 1;
 
-      // 1. Query Rentcast
+      // 1. Run the AI house-search for this saved search's criteria.
       const match = await findMatchingListings(search.criteria);
       if (match.ok === false) {
         const reason = match.reason;
-        if (reason === "unauthorized" || reason === "rate_limited") {
-          // Don't keep burning quota — stop the run.
+        // If the AI engine is unconfigured (e.g. ANTHROPIC_API_KEY not
+        // set), every remaining search will fail the same way — stop the
+        // run rather than grinding through them all.
+        if (/ANTHROPIC_API_KEY|unavailable/i.test(reason)) {
           skippedQuota = true;
           errors.push({ searchId: search.id, msg: reason });
           break;

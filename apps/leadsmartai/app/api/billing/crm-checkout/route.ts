@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getCurrentUserWithRole } from "@/lib/auth/getCurrentUser";
 import { recordUpgradeCheckoutStarted } from "@/lib/funnel/funnelAnalytics";
 import { getCrmStripePriceId, internalPlanForCrmSlug } from "@/lib/billing/crmStripePrices";
-import type { PlanSlug } from "@/lib/billing/plans";
+import { PLANS, type PlanSlug } from "@/lib/billing/plans";
 import { stripe } from "@/lib/stripe/server";
 
 /**
@@ -46,6 +46,17 @@ export async function POST(req: Request) {
     }
 
     const plan = parsed.data.plan as PlanSlug;
+    if (PLANS[plan].contactSales) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "The Team plan is sales-assisted. Please contact us to get set up.",
+          contactSales: true,
+          contactUrl: "/contact?topic=team",
+        },
+        { status: 400 }
+      );
+    }
     const priceId = getCrmStripePriceId(plan);
     const internalPlan = internalPlanForCrmSlug(plan);
     const origin = siteOrigin(req);

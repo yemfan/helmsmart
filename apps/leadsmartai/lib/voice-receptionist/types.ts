@@ -20,6 +20,13 @@ export type ReceptionistConfig = {
   timezone: string;
   /** Free-text the receptionist should know: hours, services, pricing, FAQs. */
   extraNotes: string;
+  /**
+   * What to do when the monthly AI voice-minutes allotment runs out:
+   *   'text_back' = fall back to the SMS missed-call text-back (default)
+   *   'overage'   = keep the AI answering, billed per minute
+   * (Upgrading is a CTA, not a stored behavior.)
+   */
+  voiceLimitBehavior: "text_back" | "overage";
 };
 
 /** Raw row shape from `voice_receptionist_settings` (snake_case, nullable). */
@@ -33,6 +40,7 @@ export type ReceptionistConfigRow = {
   greeting: string | null;
   timezone: string | null;
   extra_notes: string | null;
+  voice_limit_behavior?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -46,4 +54,5 @@ export const DEFAULT_RECEPTIONIST_CONFIG: ReceptionistConfig = {
   greeting: "",
   timezone: "America/New_York",
   extraNotes: "",
+  voiceLimitBehavior: "text_back",
 };
