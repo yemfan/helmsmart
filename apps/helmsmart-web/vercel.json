@@ -33,7 +33,7 @@
       "schedule": "0 13 * * 1"
     },
     {
-      "path": "/api/cron/social/linkedin",
+      "path": "/api/cron/social/publish",
       "schedule": "*/15 * * * *"
     }
   ]

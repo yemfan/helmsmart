@@ -3,6 +3,7 @@
 import { useState, useTransition, type ReactNode } from "react";
 import { Sparkles, Send, Calendar, Copy, Check, Trash2, ExternalLink, Clock } from "lucide-react";
 import { generateSocialPost, generateSocialVariants, refineSocialPost, createSocialPost, updateSocialPost, deleteSocialPost, type SocialRefineMode } from "@/lib/actions/social";
+import { canPublish } from "@/lib/social-platforms";
 
 type Platform = "x" | "linkedin" | "facebook" | "instagram";
 type Tone = "professional" | "casual" | "witty" | "promotional" | "educational";
@@ -20,6 +21,8 @@ interface Post {
   ai_prompt: string | null;
   tone: Tone;
   created_at: string;
+  /** Why the last publish attempt failed, shown on the queue card. */
+  last_error?: string | null;
 }
 
 interface Props {
@@ -196,6 +199,7 @@ export function SocialComposer({ posts: initialPosts, orgName, owner }: Props) {
             <button
               key={p}
               onClick={() => setActivePlatform(p)}
+              title={canPublish(p) ? undefined : "Manual posting only — auto-publishing isn't connected"}
               className={`flex items-center gap-2 px-4 py-3.5 text-sm font-medium border-b-2 transition-colors ${
                 activePlatform === p
                   ? "border-indigo-600 text-indigo-600"
@@ -206,6 +210,12 @@ export function SocialComposer({ posts: initialPosts, orgName, owner }: Props) {
                 {meta.icon}
               </span>
               {meta.label}
+              {/* Mark the platforms we can't auto-publish to, right on the tab.
+                  This used to be invisible until a scheduled post silently
+                  never went out. */}
+              {!canPublish(p) && (
+                <span className="text-[10px] font-normal text-slate-400">manual</span>
+              )}
               {count > 0 && (
                 <span className="text-xs bg-slate-100 text-slate-500 rounded-full px-1.5 py-0.5">{count}</span>
               )}
@@ -214,6 +224,20 @@ export function SocialComposer({ posts: initialPosts, orgName, owner }: Props) {
         })}
         {owner ? <div className="ml-auto shrink-0 pl-4">{owner}</div> : null}
       </div>
+
+      {/* Say it plainly before anyone writes a post they can't send. Scheduling
+          is still allowed — the content is useful to write and copy — but the
+          promise being made is explicit. */}
+      {!canPublish(activePlatform) && (
+        <div className="border-b border-amber-200 bg-amber-50 px-6 py-2.5 text-xs text-amber-900">
+          <strong className="font-semibold">{PLATFORM_META[activePlatform].label} posts won&apos;t send
+          automatically.</strong>{" "}
+          Auto-publishing is only connected for LinkedIn today. You can still
+          write, generate and save drafts here — then copy the text and post it
+          yourself. Anything scheduled here will be marked failed rather than
+          published.
+        </div>
+      )}
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Compose */}
@@ -398,7 +422,14 @@ export function SocialComposer({ posts: initialPosts, orgName, owner }: Props) {
                         </div>
                       </div>
                       <p className="text-sm text-slate-700 line-clamp-4">{post.content}</p>
-                      {post.scheduled_at && (
+                      {/* Why it failed. A red "Failed" chip with no reason is
+                          barely better than the silent stall it replaced. */}
+                      {post.status === "failed" && post.last_error && (
+                        <p className="text-xs text-rose-700 bg-rose-50 rounded px-2 py-1.5">
+                          {post.last_error}
+                        </p>
+                      )}
+                      {post.scheduled_at && post.status !== "failed" && (
                         <p className="text-xs text-blue-600 flex items-center gap-1">
                           <Calendar className="w-3 h-3" /> {timeLabel(post.scheduled_at)}
                         </p>

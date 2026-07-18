@@ -5,10 +5,13 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import Anthropic from "@anthropic-ai/sdk";
 import { publishLinkedInPost } from "@/lib/linkedin";
+import { canPublish, patchSocialPost, unsupportedReason } from "@/lib/social-platforms";
+// NOTE: import types only — never RE-EXPORT a type from a "use server" file.
+// It becomes a runtime value export and throws ReferenceError on every action
+// in the module.
+import type { Platform } from "@/lib/social-platforms";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-type Platform = "x" | "linkedin" | "facebook" | "instagram";
 type Tone = "professional" | "casual" | "witty" | "promotional" | "educational";
 
 const CHAR_LIMITS: Record<Platform, number> = {
@@ -216,9 +219,13 @@ export async function updateSocialPost(postId: string, data: {
 
 /**
  * Publish a saved post to its platform immediately and flip its status.
- * LinkedIn is wired up (Share API); other platforms return a soft error until
- * their publishers land. Scheduled posts are also published by the
- * /api/cron/social/linkedin cron.
+ *
+ * LinkedIn is wired up (Share API). An unsupported platform now marks the post
+ * FAILED with a reason rather than returning a soft error and leaving the row
+ * untouched — the old behaviour left it sitting at 'scheduled' looking queued,
+ * which is the same silent trap the cron had. See lib/social-platforms.ts.
+ *
+ * Scheduled posts are published by the /api/cron/social/publish cron.
  */
 export async function publishSocialPost(
   postId: string,
@@ -235,25 +242,38 @@ export async function publishSocialPost(
     .eq("organization_id", orgId)
     .single();
   if (!post) return { ok: false, error: "Post not found" };
-  if (post.platform !== "linkedin") {
-    return { ok: false, error: `Publishing to ${post.platform} isn't wired up yet — LinkedIn only for now.` };
+
+  const nowIso = new Date().toISOString();
+
+  if (!canPublish(post.platform as string)) {
+    const error = unsupportedReason(post.platform as string);
+    await patchSocialPost(supabase, postId, {
+      status: "failed",
+      last_error: error,
+      updated_at: nowIso,
+    });
+    revalidatePath("/social");
+    return { ok: false, error };
   }
 
   const res = await publishLinkedInPost(orgId, post.content as string);
-  await supabase
-    .from("social_posts")
-    .update(
-      res.ok
-        ? {
-            status: "published",
-            published_url: res.url ?? null,
-            published_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          }
-        : { status: "failed", updated_at: new Date().toISOString() },
-    )
-    .eq("id", postId)
-    .eq("organization_id", orgId);
+  await patchSocialPost(
+    supabase,
+    postId,
+    res.ok
+      ? {
+          status: "published",
+          published_url: res.url ?? null,
+          published_at: nowIso,
+          last_error: null,
+          updated_at: nowIso,
+        }
+      : {
+          status: "failed",
+          last_error: res.error ?? "Publishing failed.",
+          updated_at: nowIso,
+        },
+  );
 
   revalidatePath("/social");
   return { ok: res.ok, error: res.error, url: res.url };
