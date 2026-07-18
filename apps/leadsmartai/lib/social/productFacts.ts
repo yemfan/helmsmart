@@ -13,6 +13,25 @@
  * NOT_TRUE until the day it works. A line here is a promise.
  */
 
+/**
+ * Real-estate CRMs, portals and franchises. Naming one in our marketing creates
+ * trademark and implied-endorsement problems, so the claim screen rejects any
+ * copy containing them.
+ *
+ * This is VERTICAL config, not a universal rule — which brands exist depends
+ * entirely on the industry — so it lives here beside the other facts about our
+ * market, and the shared screen in @helm/dna-marketing takes it as a parameter.
+ */
+export const BRAND_FORBIDDEN_NAMES =
+  /\b(re\/max|remax|coldwell|keller williams|kvcore|follow ?up ?boss|boldtrail|boomtown|compass|zillow|redfin|opendoor|century ?21|sotheby|exp realty|chime|lofty)\b/i;
+
+/**
+ * Numbers that are legitimately ours. 59 = the real skills-library count;
+ * 24 and 5 appear in "24/7" and "respond in 5 minutes". Everything else that
+ * looks like a performance metric is treated as invented, because it is.
+ */
+export const BRAND_SANCTIONED_NUMBERS = ["59", "24", "5"];
+
 export const PRODUCT_CAPABILITIES = `
 - AI Receptionist: answers inbound calls 24/7, texts back calls it can't reach, qualifies callers, and remembers a caller's name, language, area and budget so a returning caller is greeted and asked to confirm rather than re-interrogated.
 - Missed-call callbacks: when a call is missed, the AI calls the person back and KEEPS RETRYING on a schedule until it connects or the ladder is exhausted (a configurable number of attempts per day, over a configurable number of days — see lib/missed-call/callbacks.ts). "It keeps calling until it connects" is fair; "it calls forever" is not.

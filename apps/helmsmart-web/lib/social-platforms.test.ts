@@ -4,6 +4,7 @@ import {
   PLATFORMS,
   PUBLISHABLE_PLATFORMS,
   canPublish,
+  outcomeForDuePost,
   patchSocialPost,
   unsupportedReason,
 } from "./social-platforms";
@@ -100,14 +101,21 @@ describe("the scheduled-post decision", () => {
   // 'scheduled' state. Publishable ones get published; the rest get failed with
   // a reason. Nothing is allowed to stay queued and silent.
   it("resolves every platform to a terminal outcome", () => {
-    const outcomes = PLATFORMS.map((p) => (canPublish(p) ? "attempt" : "fail-loudly"));
-    expect(outcomes).not.toContain("stay-scheduled");
-    expect(outcomes.filter((o) => o === "attempt")).toHaveLength(
+    const actions = PLATFORMS.map((p) => outcomeForDuePost(p).action);
+    expect(actions).not.toContain("stay-scheduled");
+    expect(actions.filter((a) => a === "attempt")).toHaveLength(
       PUBLISHABLE_PLATFORMS.length,
     );
-    expect(outcomes.filter((o) => o === "fail-loudly")).toHaveLength(
+    expect(actions.filter((a) => a === "fail")).toHaveLength(
       PLATFORMS.length - PUBLISHABLE_PLATFORMS.length,
     );
+  });
+
+  it("every failure carries a reason the author can act on", () => {
+    for (const p of PLATFORMS) {
+      const outcome = outcomeForDuePost(p);
+      if (outcome.action === "fail") expect(outcome.reason.length).toBeGreaterThan(20);
+    }
   });
 });
 

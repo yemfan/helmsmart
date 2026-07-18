@@ -1,7 +1,14 @@
 import "server-only";
 
+import { screenClaims } from "@helm/dna-marketing";
+
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
-import { PRODUCT_CAPABILITIES, PRODUCT_NOT_TRUE } from "@/lib/social/productFacts";
+import {
+  BRAND_FORBIDDEN_NAMES,
+  BRAND_SANCTIONED_NUMBERS,
+  PRODUCT_CAPABILITIES,
+  PRODUCT_NOT_TRUE,
+} from "@/lib/social/productFacts";
 
 /**
  * Brand-voice social-content generator — the AGENT-OWNED half of the library.
@@ -181,50 +188,13 @@ export async function generateBrandBatch(
  * Returns a reason when the draft should be rejected, else null.
  */
 export function brandClaimViolation(post: BrandPostDraft): string | null {
-  const text = `${post.hook} ${post.body} ${post.cta}`;
-
-  // Competitor / brokerage names — trademark + endorsement risk.
-  const brands =
-    /\b(re\/max|remax|coldwell|keller williams|kvcore|follow ?up ?boss|boldtrail|boomtown|compass|zillow|redfin|opendoor|century ?21|sotheby|exp realty|chime|lofty)\b/i;
-  const brandHit = brands.exec(text);
-  if (brandHit) return `names a real brand: "${brandHit[0]}"`;
-
-  // Invented performance stats. "59" is the one sanctioned number (skills library).
-  const stat = /\b(\d+(\.\d+)?)\s*(x\b|%|percent|hours?\b|hrs?\b|minutes?\b)/i.exec(text);
-  if (stat && stat[1] !== "59" && stat[1] !== "24" && stat[1] !== "5") {
-    return `asserts an unsupported metric: "${stat[0]}"`;
-  }
-
-  // Pricing.
-  if (/\$\s?\d|\bper month\b|\bfree trial\b|\bpricing\b/i.test(text)) {
-    return "references pricing";
-  }
-
-  // Outcome guarantees.
-  if (/\bguarantee|\bwill (close|earn|make|double|triple)\b/i.test(text)) {
-    return "promises an outcome";
-  }
-
-  // Autonomy inflation — the failure this screen was extended for. A real batch
-  // turned "saved house searches" into "a live search running on their behalf"
-  // that tracks matches; nothing auto-runs or monitors anything. Scoped to
-  // search/market/listing subjects so the genuinely automatic features (the
-  // receptionist answering calls, the SMS responder replying) still pass.
-  const autonomy =
-    /\b(live search|running on their behalf|watch(es|ing)? the market|monitors?|real.?time|listing alerts?|alerts? you when|notif(y|ies|ication)s? (you )?when)\b/i.exec(
-      text,
-    );
-  if (autonomy) return `claims automation we don't ship: "${autonomy[0]}"`;
-
-  // Cross-assistant integration inflation — the assistants share a platform and
-  // a contact database; they do not hand work to each other on their own.
-  const pipeline =
-    /\b(moves? (directly )?into the [a-z ]*cadence|already connected|flows? (automatically|straight) (in)?to|hands? off to)\b/i.exec(
-      text,
-    );
-  if (pipeline) return `overclaims cross-assistant integration: "${pipeline[0]}"`;
-
-  return null;
+  // Delegates to the shared screen so there is exactly ONE implementation of
+  // these rules — this used to be a second copy, and a second copy of a safety
+  // check is a copy that will eventually disagree with the first.
+  return screenClaims(`${post.hook} ${post.body} ${post.cta}`, {
+    forbiddenNames: BRAND_FORBIDDEN_NAMES,
+    sanctionedNumbers: BRAND_SANCTIONED_NUMBERS,
+  });
 }
 
 // ── validation ──────────────────────────────────────────────────────────────
