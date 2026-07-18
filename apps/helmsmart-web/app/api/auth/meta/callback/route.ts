@@ -9,7 +9,7 @@
  * doesn't make obvious.
  */
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import {
   exchangeMetaCode,
@@ -20,7 +20,11 @@ import {
 } from "@/lib/meta";
 
 export async function GET(req: Request) {
-  const { baseUrl } = getMetaConfig();
+  // Same host the flow started on — the redirect_uri sent to the token exchange
+  // must match the authorize call EXACTLY, and staying on-host is also what
+  // keeps the user inside their own vertical.
+  const host = (await headers()).get("host");
+  const { baseUrl } = getMetaConfig(host);
   const back = (q: string) => NextResponse.redirect(`${baseUrl}/social?${q}`);
 
   try {
@@ -42,7 +46,7 @@ export async function GET(req: Request) {
     if (!code || !orgId || !user) return back("meta_error=missing_context");
     if (!state || !stateCookie || state !== stateCookie) return back("meta_error=bad_state");
 
-    const userToken = await exchangeMetaCode(code);
+    const userToken = await exchangeMetaCode(code, host);
     if (!userToken) return back("meta_error=token_exchange_failed");
 
     // Extend BEFORE reading pages: Page tokens derived from a long-lived user

@@ -48,10 +48,31 @@ export const META_SCOPES = [
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION?.trim() || META_GRAPH_VERSION;
 const GRAPH = metaGraphBase(GRAPH_VERSION);
 
-export function getMetaConfig() {
+/**
+ * @param requestHost the Host header of the CURRENT request, when available.
+ *
+ * The host matters because verticals are host-routed (www.helmsmart.ai,
+ * doctor.helmsmart.ai — see lib/pack-host.ts). A fixed redirect URI breaks OAuth
+ * on every pack subdomain in a way that looks like a CSRF failure rather than a
+ * config problem: the state cookie is set on doctor.*, Meta returns the user to
+ * www.*, that host never sees the cookie, and the callback reports bad_state.
+ *
+ * So the redirect is derived from the host the user is actually on. Meta
+ * requires the redirect_uri to match EXACTLY between the authorize call and the
+ * token exchange, which is why both paths must resolve it the same way — hence
+ * one function rather than two constants.
+ *
+ * META_OAUTH_REDIRECT_URI still wins when set, as a single-domain escape hatch.
+ */
+export function getMetaConfig(requestHost?: string | null) {
   const appId = process.env.META_APP_ID;
   const appSecret = process.env.META_APP_SECRET;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3002";
+
+  const envBase = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3002";
+  const baseUrl = requestHost
+    ? `${requestHost.startsWith("localhost") ? "http" : "https"}://${requestHost}`
+    : envBase;
+
   const redirectUri =
     process.env.META_OAUTH_REDIRECT_URI || `${baseUrl}/api/auth/meta/callback`;
   return { appId, appSecret, baseUrl, redirectUri };
@@ -62,8 +83,8 @@ export function isMetaConfigured(): boolean {
   return !!(appId && appSecret);
 }
 
-export function metaAuthUrl(state: string): string {
-  const { appId, redirectUri } = getMetaConfig();
+export function metaAuthUrl(state: string, requestHost?: string | null): string {
+  const { appId, redirectUri } = getMetaConfig(requestHost);
   const q = new URLSearchParams({
     client_id: appId ?? "",
     redirect_uri: redirectUri,
@@ -76,9 +97,17 @@ export function metaAuthUrl(state: string): string {
 
 // ─── OAuth ─────────────────────────────────────────────────────────────────────
 
-/** Exchange the OAuth code for a short-lived USER token. */
-export async function exchangeMetaCode(code: string): Promise<string | null> {
-  const { appId, appSecret, redirectUri } = getMetaConfig();
+/**
+ * Exchange the OAuth code for a short-lived USER token.
+ *
+ * `requestHost` must produce the SAME redirect_uri the authorize call used —
+ * Meta compares them exactly and rejects a mismatch.
+ */
+export async function exchangeMetaCode(
+  code: string,
+  requestHost?: string | null,
+): Promise<string | null> {
+  const { appId, appSecret, redirectUri } = getMetaConfig(requestHost);
   const q = new URLSearchParams({
     client_id: appId ?? "",
     client_secret: appSecret ?? "",
