@@ -1,7 +1,7 @@
 # maxyinvestment
 
 Corporate site for **MAXY Investment Inc.** (maxyinvestment.com) — the innovation holding company
-behind HelmSmart, RealtorBoss, LeadSmart AI, and VoltrixOS.
+behind HelmSmart, RealtorBoss, LeadSmart AI, VoltrixOS, and SwipenDone.
 
 Standalone Next.js app: no Supabase, no auth, no workspace dependencies. All copy lives in
 [`lib/content.ts`](lib/content.ts) — adding a portfolio company or a timeline milestone is an edit
