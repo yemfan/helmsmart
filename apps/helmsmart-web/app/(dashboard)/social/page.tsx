@@ -17,12 +17,29 @@ export default async function SocialPage({
   const supabase = await createClient();
   const sp = await searchParams;
 
-  const [{ data: posts }, { data: org }, { data: linkedinToken }] = await Promise.all([
-    supabase
+  // `last_error` arrives in migration 00078. HelmSmart migrations are applied by
+  // hand while Vercel deploys on merge, so there's a window where this code is
+  // live and the column isn't — and PostgREST fails the WHOLE select on an
+  // unknown column, which would blank the page rather than degrade. Ask for it,
+  // fall back to the base columns if it isn't there yet.
+  const BASE_COLS =
+    "id, platform, content, status, scheduled_at, published_at, published_url, generated_by_ai, ai_prompt, tone, created_at";
+  const postsQuery = async () => {
+    const withError = await supabase
       .from("social_posts")
-      .select("id, platform, content, status, scheduled_at, published_at, published_url, generated_by_ai, ai_prompt, tone, created_at")
+      .select(`${BASE_COLS}, last_error`)
       .eq("organization_id", orgId)
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false });
+    if (!withError.error) return withError;
+    return supabase
+      .from("social_posts")
+      .select(BASE_COLS)
+      .eq("organization_id", orgId)
+      .order("created_at", { ascending: false });
+  };
+
+  const [{ data: posts }, { data: org }, { data: linkedinToken }] = await Promise.all([
+    postsQuery(),
     supabase
       .from("organizations")
       .select("name")
