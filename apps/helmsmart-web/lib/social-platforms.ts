@@ -1,42 +1,44 @@
 /**
- * Which social platforms can actually publish — one fact, one place.
+ * HelmSmart's social platform config + the one DB helper that needs to know
+ * about it. The RULES live in @helm/dna-marketing; this file supplies the two
+ * things that are genuinely ours: which platforms we've wired up, and how our
+ * `social_posts` table is written.
  *
- * This exists because that knowledge used to be implicit in three places that
- * disagreed with each other:
- *   - `publishSocialPost` had an `if (platform !== "linkedin") return softError`
- *   - the publish cron filtered `.eq("platform", "linkedin")`
- *   - the composer UI offered all four platforms as equal tabs
- *
- * The result was a silent trap: you could write and schedule an X, Facebook or
- * Instagram post, and it would sit at status='scheduled' FOREVER — never
- * published, never failed, no error anywhere. The UI showed it queued. Nothing
- * ever told anyone otherwise.
- *
- * A capability gap is fine. A capability gap that looks like success is not.
- * Everything that needs to know "can this platform publish?" now asks here, so
- * the UI warns before you write and the cron fails loudly instead of stalling.
+ * The rule being enforced is that a platform we can't publish to must be
+ * visible as such everywhere. It used to be implicit in three places that
+ * disagreed, and a scheduled X / Facebook / Instagram post sat at
+ * status='scheduled' FOREVER — never published, never failed, no error, still
+ * showing as queued.
  */
+import {
+  canPublish as canPublishOn,
+  outcomeForDuePost as outcomeFor,
+  unsupportedPlatformReason,
+  type SocialPlatform,
+} from "@helm/dna-marketing";
 
-export type Platform = "x" | "linkedin" | "facebook" | "instagram";
+export type Platform = SocialPlatform;
 
-export const PLATFORMS: Platform[] = ["x", "linkedin", "facebook", "instagram"];
+export { PLATFORM_LABEL, SOCIAL_PLATFORMS as PLATFORMS } from "@helm/dna-marketing";
 
 /**
- * Platforms with a real publisher wired up end to end.
- *
- * Add a platform here ONLY when its publish path actually works — this list is
- * what the UI promises the user and what the cron will attempt.
+ * Platforms with a real publisher wired up end to end — HelmSmart's answer,
+ * not a universal one. Add a platform here ONLY when its publish path actually
+ * works: this list is what the UI promises and what the cron will attempt.
  */
-export const PUBLISHABLE_PLATFORMS: readonly Platform[] = ["linkedin"];
+export const PUBLISHABLE_PLATFORMS: readonly SocialPlatform[] = ["linkedin"];
 
-/**
- * Deliberately NOT a type predicate (`platform is Platform`). Callers pass a
- * value that is already `Platform`, so a predicate narrows the ELSE branch to
- * `never` and any property access on it fails to compile — the exact opposite
- * of what the check is for. A plain boolean is what every call site needs.
- */
 export function canPublish(platform: string): boolean {
-  return (PUBLISHABLE_PLATFORMS as readonly string[]).includes(platform);
+  return canPublishOn(platform, PUBLISHABLE_PLATFORMS);
+}
+
+export function unsupportedReason(platform: string): string {
+  return unsupportedPlatformReason(platform, PUBLISHABLE_PLATFORMS);
+}
+
+/** What a due post on this platform should become. Never "stay scheduled". */
+export function outcomeForDuePost(platform: string) {
+  return outcomeFor(platform, PUBLISHABLE_PLATFORMS);
 }
 
 /**
@@ -49,6 +51,8 @@ export function canPublish(platform: string): boolean {
  * column and the post stays 'scheduled' — reintroducing the exact silent stall
  * this change exists to remove. The fallback drops only the reason, never the
  * status transition, and stops firing the moment the migration lands.
+ *
+ * App-specific by nature: it knows our table name and our column.
  */
 export async function patchSocialPost(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,20 +69,4 @@ export async function patchSocialPost(
   const { last_error: _dropped, ...rest } = patch;
   void _dropped;
   await db.from("social_posts").update(rest).eq("id", postId);
-}
-
-export const PLATFORM_LABEL: Record<Platform, string> = {
-  x: "X",
-  linkedin: "LinkedIn",
-  facebook: "Facebook",
-  instagram: "Instagram",
-};
-
-/**
- * Why a platform can't publish, in words meant for the person who wrote the
- * post — it says what to do instead, rather than just refusing.
- */
-export function unsupportedReason(platform: string): string {
-  const label = PLATFORM_LABEL[platform as Platform] ?? platform;
-  return `${label} publishing isn't connected yet, so this post can't go out automatically. Copy the text and post it manually, or connect LinkedIn to schedule there.`;
 }

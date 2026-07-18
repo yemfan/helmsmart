@@ -1,5 +1,14 @@
 import "server-only";
 
+import {
+  DEFAULT_POSTS_PER_PERIOD,
+  modeQueuesPosts as coreModeQueuesPosts,
+  normalizePostsPerPeriod,
+  queueStatusForMode as coreQueueStatus,
+  spreadPublishTime,
+  type PublishMode,
+} from "@helm/dna-marketing";
+
 import { supabaseServer } from "@/lib/supabaseServer";
 import { getSiteUrl } from "@/lib/siteUrl";
 import { getLatestDigest } from "@/lib/newsletter/db";
@@ -54,6 +63,16 @@ export function isSocialMode(v: unknown): v is SocialMode {
 }
 
 /**
+ * RealtyBoss stores 'ask' for what the shared vocabulary calls 'draft'; the rest
+ * match. Translating at the boundary keeps the DB value stable (it's written in
+ * `boss_autopilot_settings` and in a CHECK constraint) while the DECISION comes
+ * from core.
+ */
+function toPublishMode(mode: SocialMode): PublishMode {
+  return mode === "ask" ? "draft" : mode;
+}
+
+/**
  * Queue status a mode's posts land in. Only 'scheduled' is publishable — the
  * publish cron claims that and nothing else, so every other mode needs no
  * separate gate.
@@ -63,12 +82,15 @@ export function isSocialMode(v: unknown): v is SocialMode {
  * unrecognised falls through to held — this function fails closed by design.
  */
 export function queueStatusForMode(mode: SocialMode): "scheduled" | "awaiting_approval" {
-  return mode === "auto" ? "scheduled" : "awaiting_approval";
+  // 'publishable' is core's name for it; ours is the scheduled_posts status.
+  return coreQueueStatus(toPublishMode(mode)) === "publishable"
+    ? "scheduled"
+    : "awaiting_approval";
 }
 
 /** Modes that plan + queue the week (as opposed to 'ask', which only drafts). */
 export function modeQueuesPosts(mode: SocialMode): boolean {
-  return mode === "auto" || mode === "review" || mode === "assisted";
+  return coreModeQueuesPosts(toPublishMode(mode));
 }
 
 /** The Monday (00:00 UTC) of the current week as YYYY-MM-DD. Matches the
@@ -356,26 +378,17 @@ export async function scheduleRecommendation(
   return { scheduledCount, scheduledFor };
 }
 
-/** 16:00 UTC = 9am PT / noon ET — inside the workday on both US coasts. */
-const SPREAD_HOUR_UTC = 16;
 /** Posts per week when the agent hasn't chosen: 1 timely + 2 evergreen. */
-export const DEFAULT_POSTS_PER_WEEK = 3;
+export const DEFAULT_POSTS_PER_WEEK = DEFAULT_POSTS_PER_PERIOD;
 
 /**
  * When the i-th auto-scheduled post of a week should publish.
  *
- * Autopilot used to hand EVERY rec `scheduled_for = now()`, so a whole week's
- * posts drained on one publish-scheduled tick — three posts to the same feed
- * within five minutes, which reads as spam and burns the week's content in one
- * morning. It had never fired in production because no agent had autopilot on;
- * the brand is the first, so it gets fixed here rather than on a live feed.
- *
- * Days are derived from the cadence rather than listed, so any 1-7 spreads
- * evenly with no table to keep in sync: floor(i * 7 / n) gives Mon/Thu at 2,
- * Mon/Wed/Fri at 3, and every day at 7.
- *
- * Past times collapse to `now` (a mid-week manual generate, or a late cron), so
- * a post is never silently dropped for being scheduled in the past.
+ * Thin wrapper over the shared spreader in @helm/dna-marketing, kept so the
+ * ~dozen call sites and tests here don't all have to change shape. The date
+ * math — and the reason it exists (autopilot once handed EVERY post
+ * `scheduled_for = now()`, draining a week on one tick) — now lives in core
+ * where HelmSmart inherits it.
  */
 export function spreadScheduleTime(
   weekOf: string,
@@ -383,14 +396,7 @@ export function spreadScheduleTime(
   postsPerWeek: number = DEFAULT_POSTS_PER_WEEK,
   now: Date = new Date(),
 ): string {
-  const n = Math.min(7, Math.max(1, Math.floor(postsPerWeek) || DEFAULT_POSTS_PER_WEEK));
-  // Past the n-th post, roll into the following week rather than piling up.
-  const offset =
-    Math.floor(((index % n) * 7) / n) + 7 * Math.floor(index / n);
-  const when = new Date(`${weekOf}T00:00:00Z`);
-  when.setUTCDate(when.getUTCDate() + offset);
-  when.setUTCHours(SPREAD_HOUR_UTC, 0, 0, 0);
-  return (when.getTime() < now.getTime() ? now : when).toISOString();
+  return spreadPublishTime(weekOf, index, { postsPerPeriod: postsPerWeek, now });
 }
 
 /**
@@ -405,8 +411,9 @@ export async function getSocialPostsPerWeek(agentId: string): Promise<number> {
     .eq("assignee", "marketing_assistant")
     .eq("channel", "social")
     .maybeSingle();
-  const n = (data as { posts_per_week?: number | null } | null)?.posts_per_week;
-  return typeof n === "number" && n >= 1 && n <= 7 ? n : DEFAULT_POSTS_PER_WEEK;
+  return normalizePostsPerPeriod(
+    (data as { posts_per_week?: number | null } | null)?.posts_per_week,
+  );
 }
 
 /**
