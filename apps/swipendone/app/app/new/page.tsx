@@ -93,29 +93,65 @@ export default function NewGuidePage() {
     // UI can report real progress.
     const base: Locale = languages.includes("en") ? "en" : languages[0];
     const others = languages.filter((l) => l !== base);
+    const isPdf = !!manual && /\.pdf$/i.test(manual.name);
 
-    const uploadLabel = manual
-      ? `Uploading ${manual.name}${images.length ? ` + ${images.length} photo${images.length === 1 ? "" : "s"}` : ""}`
-      : `Uploading ${images.length} photo${images.length === 1 ? "" : "s"}`;
-    setProgress([
-      { label: uploadLabel, status: "pending" },
-      { label: `Drafting the guide in ${LOCALE_NAMES[base]}`, status: "pending" },
-      ...others.map((l) => ({ label: `Adding ${LOCALE_NAMES[l]}`, status: "pending" as StepStatus })),
-    ]);
+    const initial: ProgressStep[] = [];
+    const IDX_PAGES = isPdf
+      ? initial.push({ label: `Reading pages from ${manual!.name}`, status: "pending" }) - 1
+      : -1;
+    const IDX_UPLOAD = initial.push({ label: "Uploading files", status: "pending" }) - 1;
+    const IDX_DRAFT =
+      initial.push({ label: `Drafting the guide in ${LOCALE_NAMES[base]}`, status: "pending" }) - 1;
+    const IDX_TRANS = initial.length;
+    others.forEach((l) =>
+      initial.push({ label: `Adding ${LOCALE_NAMES[l]}`, status: "pending" as StepStatus })
+    );
+    setProgress(initial);
     setPhase("running");
 
     const mark = (i: number, status: StepStatus) =>
       setProgress((prev) => prev.map((s, j) => (j === i ? { ...s, status } : s)));
+    const relabel = (i: number, label: string, status: StepStatus) =>
+      setProgress((prev) => prev.map((s, j) => (j === i ? { label, status } : s)));
     const fail = (i: number, msg: string) => {
       mark(i, "error");
       setPhase("form");
       setError(msg);
     };
 
+    // 0. Pull the pictures out of the PDF in the browser: tightly-cropped
+    //    embedded figures when the manual has them, otherwise whole-page
+    //    renders. Non-fatal — we still generate from the extracted text.
+    let pdfPages: File[] = [];
+    if (isPdf && manual) {
+      mark(IDX_PAGES, "active");
+      try {
+        const { extractPdfVisuals } = await import("@/lib/pdf-pages");
+        const { files, mode } = await extractPdfVisuals(manual, {
+          maxImages: Math.max(1, MAX_IMG - images.length),
+        });
+        pdfPages = files;
+        relabel(
+          IDX_PAGES,
+          mode === "none" || files.length === 0
+            ? "No pictures found in the PDF — using its text only"
+            : `Extracted ${files.length} ${mode === "figures" ? "diagram" : "page"}${files.length === 1 ? "" : "s"} from ${manual.name}`,
+          mode === "none" || files.length === 0 ? "error" : "done"
+        );
+      } catch {
+        relabel(IDX_PAGES, "Couldn't read the PDF's pictures — using its text only", "error");
+      }
+    }
+
     // 1. Upload via service-role-signed URLs (no ~4.5MB server body limit, and
     //    the signed URL authorizes the write without a per-user Storage policy).
-    mark(0, "active");
-    const files: File[] = [...images];
+    const allImages = [...images, ...pdfPages].slice(0, MAX_IMG);
+    relabel(
+      IDX_UPLOAD,
+      `Uploading ${allImages.length} image${allImages.length === 1 ? "" : "s"}${manual ? " + your PDF" : ""}`,
+      "active"
+    );
+    const files: File[] = [...allImages];
     if (manual) files.push(manual);
     const manualIndex = manual ? files.length - 1 : -1;
     const items = files.map((f, i) => ({
@@ -129,7 +165,7 @@ export default function NewGuidePage() {
     if (items.length > 0) {
       const signed = await signUploads(items);
       if (!signed.ok || !signed.targets) {
-        fail(0, signed.message || "Upload failed. Try again.");
+        fail(IDX_UPLOAD, signed.message || "Upload failed. Try again.");
         return;
       }
       try {
@@ -147,14 +183,14 @@ export default function NewGuidePage() {
           }
         }
       } catch {
-        fail(0, "Upload failed. Check your connection and try again.");
+        fail(IDX_UPLOAD, "Upload failed. Check your connection and try again.");
         return;
       }
     }
-    mark(0, "done");
+    mark(IDX_UPLOAD, "done");
 
     // 2. Draft the base-language guide.
-    mark(1, "active");
+    mark(IDX_DRAFT, "active");
     const form = new FormData();
     form.set("product_name", name.trim());
     form.set("model_no", modelNo.trim());
@@ -177,7 +213,7 @@ export default function NewGuidePage() {
       }
       if (!res.ok) {
         fail(
-          1,
+          IDX_DRAFT,
           res.status === 504
             ? "Drafting timed out. Try a shorter PDF or fewer photos."
             : json.error || `Generation failed (${res.status}) — try again.`
@@ -185,20 +221,20 @@ export default function NewGuidePage() {
         return;
       }
       if (!json.guideId) {
-        fail(1, "Generation didn't return a guide — try again.");
+        fail(IDX_DRAFT, "Generation didn't return a guide — try again.");
         return;
       }
       guideId = json.guideId;
     } catch {
-      fail(1, "Network error — try again.");
+      fail(IDX_DRAFT, "Network error — try again.");
       return;
     }
-    mark(1, "done");
+    mark(IDX_DRAFT, "done");
 
     // 3. Add each remaining language. A failure here is non-fatal — the guide
     //    already exists, so we keep going and land the seller in the editor.
     for (let k = 0; k < others.length; k++) {
-      const idx = 2 + k;
+      const idx = IDX_TRANS + k;
       mark(idx, "active");
       try {
         const res = await fetch("/api/translate", {
