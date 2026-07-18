@@ -1,0 +1,59 @@
+# Vitest unit suite for the leadsmartai app.
+#
+# Why this exists: until this workflow, the ~1376-test suite never ran in CI.
+# Nothing called `pnpm --filter leadsmartai test`, and `next build` compiles
+# the app without executing a single test file. PR #783 raised the agent tier
+# prices and left plans.test.ts asserting the old ones; the 4 failures sat on
+# main for ten days with every check green (fixed in #876). This closes that
+# hole.
+#
+# Triggers: EVERY pull request, deliberately unfiltered by path. This job is a
+# required status check on main, and GitHub leaves a required check that never
+# fires stuck "Expected — Waiting for status" forever, which would block any PR
+# outside the filter. The suite runs in ~3s, so the install is the only real
+# cost and pnpm/action-setup caches it. Don't add a `paths:` filter here
+# without first dropping it from the required-checks list.
+#
+# Concurrency: cancel superseded runs on the same ref.
+
+name: leadsmartai · vitest
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: vitest-leadsmartai-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vitest:
+    name: pnpm --filter leadsmartai run test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install deps (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      # The suite is pure — node environment, no setup file, no env reads.
+      # Live Boss evals stay opt-in behind BOSS_EVAL_LIVE=1 (see the
+      # `boss:evals` script) and self-skip here, so no API keys are needed.
+      - name: Run vitest
+        run: pnpm --filter leadsmartai run test
