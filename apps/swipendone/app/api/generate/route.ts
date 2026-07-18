@@ -6,7 +6,9 @@ import { extractManualText } from "@/lib/extract";
 import { isLocale, type Locale } from "@/lib/locales";
 
 export const runtime = "nodejs";
-export const maxDuration = 120;
+// Generating a full guide in up to 6 languages (plus a validation retry) can take
+// well over 2 minutes; 120s was timing out with a 504.
+export const maxDuration = 300;
 
 const RATE_LIMIT = 10; // generations per hour per seller (handoff §6)
 

@@ -139,10 +139,25 @@ export default function NewGuidePage() {
 
     try {
       const res = await fetch("/api/generate", { method: "POST", body: form });
-      const json = await res.json();
+      // A gateway timeout returns HTML, so guard the JSON parse.
+      let json: { guideId?: string; error?: string } = {};
+      try {
+        json = await res.json();
+      } catch {
+        /* non-JSON response */
+      }
       if (!res.ok) {
         setPhase("form");
-        setError(json.error || "Generation failed — try again.");
+        setError(
+          res.status === 504
+            ? "Generation timed out. Try selecting fewer languages, or a shorter PDF."
+            : json.error || `Generation failed (${res.status}) — try again.`
+        );
+        return;
+      }
+      if (!json.guideId) {
+        setPhase("form");
+        setError("Generation didn't return a guide — try again.");
         return;
       }
       router.push(`/app/guide/${json.guideId}`);
