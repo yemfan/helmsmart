@@ -39,7 +39,9 @@ export function Portfolio() {
       <Container>
         <Eyebrow>Portfolio</Eyebrow>
         <SectionHeading>A growing ecosystem of businesses.</SectionHeading>
-        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Five across at lg — 4 columns would strand the fifth card alone on a
+            second row. Revisit the column count when a sixth company lands. */}
+        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
           {portfolio.map((item) => (
             <li key={item.name}>
               <Card item={item} />
