@@ -16,6 +16,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { sendEmail, FROM_ADDRESS } from "@/lib/email";
 import { createServiceClient } from "@/lib/supabase/server";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { analyzeInbound, translateToEnglish, localizeOutbound, intentLabel, type Lang } from "@/lib/language";
@@ -217,10 +218,13 @@ export async function POST(request: NextRequest) {
         org.auto_reply_msg?.trim() ||
         "Thanks for reaching out! We got your message and will get back to you shortly.";
       const ackBody = await localizeOutbound(ackEnglish, lang, assist);
-      const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@smbai.app";
+      const fromEmail = FROM_ADDRESS;
       const ackSubject = data.subject ? `Re: ${data.subject}` : "We received your message";
       try {
-        await resend.emails.send({ from: fromEmail, to: senderEmail, subject: ackSubject, text: ackBody });
+        // Throws if Resend rejects the ack, so the outbound row below isn't
+        // written for mail that never left — a phantom row would also
+        // suppress retries via the 4h rate-limit check above.
+        await sendEmail({ to: senderEmail, subject: ackSubject, text: ackBody });
         await supabase.from("messages").insert({
           organization_id: org.id,
           client_id: client?.id ?? null,

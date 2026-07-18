@@ -6,6 +6,12 @@ import { BookOpen, ChevronDown, ChevronUp } from "lucide-react";
 import { getAssistant } from "@/lib/realtyboss/team";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
 import { AssistantCallSettings } from "@/components/realtyboss/AssistantCallSettings";
+import WeeklySocialPosts, {
+  type SocialMode,
+  type SocialRec,
+} from "@/components/marketing/WeeklySocialPosts";
+import PostQueue from "@/components/marketing/PostQueue";
+import ClientNewsletterCard from "@/components/marketing/ClientNewsletterCard";
 
 /**
  * Marketing Assistant overview — demand generation. Took over from
@@ -48,7 +54,31 @@ function fmtWhen(iso: string) {
   });
 }
 
-export default function MarketingAssistantClient({ data }: { data: MarketingData }) {
+export type SocialData = {
+  weekOf: string;
+  mode: SocialMode;
+  recs: SocialRec[];
+  /** Human-facing labels of the agent's connected social platforms (e.g. ["Facebook"]). */
+  connectedPlatforms: string[];
+  /** Signature-tier: unlocks "bring your own image" + brand kit. */
+  canCustomize: boolean;
+};
+
+export type ClientNewsletter = {
+  shareUrl: string;
+  subscriberCount: number;
+  agentName: string | null;
+} | null;
+
+export default function MarketingAssistantClient({
+  data,
+  social,
+  newsletter,
+}: {
+  data: MarketingData;
+  social: SocialData;
+  newsletter?: ClientNewsletter;
+}) {
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   return (
     <div className="space-y-4">
@@ -99,6 +129,29 @@ export default function MarketingAssistantClient({ data }: { data: MarketingData
             knowledgeHint="Facts your Marketing Assistant may use in post and nurture copy. It only uses what's relevant per post and never invents beyond it."
           />
         </section>
+      )}
+
+      {/* This week's social posts — content database → weekly recommendations */}
+      <WeeklySocialPosts
+        initialRecs={social.recs}
+        initialMode={social.mode}
+        weekOf={social.weekOf}
+        connectedPlatforms={social.connectedPlatforms}
+        canCustomize={social.canCustomize}
+      />
+
+      {/* The queue: what's about to publish, and (in review mode) the gate that
+          holds it until a human approves. Reads scheduled_posts, so it also
+          covers posts queued by hand from the cards above. */}
+      <PostQueue />
+
+      {/* Your Client Newsletter — agent-branded weekly briefing signup link */}
+      {newsletter && (
+        <ClientNewsletterCard
+          shareUrl={newsletter.shareUrl}
+          subscriberCount={newsletter.subscriberCount}
+          agentName={newsletter.agentName}
+        />
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">

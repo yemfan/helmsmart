@@ -22,6 +22,14 @@
     "reassurance": "No deck. No pressure. We rebuild the ROI model on your actual numbers.",
     "kpi_title": "Brokerage performance benchmarks"
   },
+  "problem": {
+    "eyebrow": "The adoption problem",
+    "h2": "You already bought the CRM. Your agents just don't use it.",
+    "body1": "Most brokerages spend six figures a year on a CRM — and most of the seats sit empty. It isn't a training problem. A CRM gives already-overwhelmed agents more to do: more logging, more reminders, more tabs. So it goes unused, and the spend returns almost nothing.",
+    "body2": "RealtyBoss flips that. It's not another tool to log into — it's an AI team that does the work: answers the calls, follows up with every lead, coordinates the deals, and keeps it compliant. Adoption isn't a battle when there's nothing to learn.",
+    "stat_value": "Six figures / year",
+    "stat_label": "the real cost of a CRM your agents never open"
+  },
   "kpis": {
     "speed_to_lead": { "label": "Speed-to-lead", "hint": "Brokerage-wide median, automated" },
     "conversion": { "label": "Lead → appt conversion", "hint": "AI nurture + persistent follow-up" },

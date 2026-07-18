@@ -10,7 +10,7 @@ export { DEFAULT_RECEPTIONIST_CONFIG };
 export type { ReceptionistConfig };
 
 const SELECT_COLS =
-  "agent_id, enabled, phone_number, business_name, business_name_zh, agent_name, greeting, timezone, extra_notes";
+  "agent_id, enabled, phone_number, business_name, business_name_zh, agent_name, greeting, timezone, extra_notes, voice_limit_behavior";
 
 function mapRow(row: ReceptionistConfigRow): ReceptionistConfig {
   return {
@@ -22,6 +22,7 @@ function mapRow(row: ReceptionistConfigRow): ReceptionistConfig {
     greeting: row.greeting ?? "",
     timezone: row.timezone || "America/New_York",
     extraNotes: row.extra_notes ?? "",
+    voiceLimitBehavior: row.voice_limit_behavior === "overage" ? "overage" : "text_back",
   };
 }
 
@@ -177,6 +178,7 @@ export async function upsertReceptionistConfig(
     greeting: input.greeting ?? current.greeting,
     timezone: input.timezone || current.timezone,
     extraNotes: input.extraNotes ?? current.extraNotes,
+    voiceLimitBehavior: input.voiceLimitBehavior ?? current.voiceLimitBehavior,
   };
 
   const { error } = await supabaseAdmin.from("voice_receptionist_settings").upsert(
@@ -190,6 +192,7 @@ export async function upsertReceptionistConfig(
       greeting: next.greeting || null,
       timezone: next.timezone,
       extra_notes: next.extraNotes || null,
+      voice_limit_behavior: next.voiceLimitBehavior,
       updated_at: new Date().toISOString(),
     } as never,
     { onConflict: "agent_id" },

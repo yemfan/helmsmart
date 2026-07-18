@@ -1,9 +1,184 @@
 # LeadSmart mobile — store review checklist
 
-Owner: Michael Ye. Last updated: 2026-05-26.
+Owner: Michael Ye. Last updated: 2026-07-12.
 
 This doc tracks the work needed to pass Apple App Store and Google Play review
 for `apps/leadsmart-mobile` (bundle `ai.leadsmart.mobile`, version 1.5.0).
+
+## Rejection history — build 1.6 (28), 2026-07-06
+
+Rejected on **iPad Air 11-inch (M3), iPadOS 26.5.2** for two issues.
+Submission ID `3594f255-2152-4252-a775-6ec90fa84eab`.
+
+### Guideline 4.0 — Design (Sign in button not visible) — FIXED IN CODE
+
+Root cause: `app/(onboarding)/login.tsx` spread `s.safePad` into the
+`ScrollView` `contentContainerStyle`. `safePad` carries `flex: 1`
+(→ `flexShrink: 1`, clamps content to the viewport and clips overflow
+instead of scrolling) and `justifyContent: "space-between"` (pins the
+Sign in button to the bottom edge, under the keyboard). With the
+keyboard up, the button was pinned off-screen and the ScrollView
+couldn't scroll to it. iPad's taller keyboard exposed it. Fix: replaced
+the spread with plain padding + `flexGrow: 1` so content flows top-down
+and scrolls. **Must be re-verified in the iOS Simulator / TestFlight
+with the keyboard raised before resubmitting.**
+
+### Guideline 2.1(b) — Information Needed (business model) — REPLY REQUIRED
+
+Apple paused the review to ask about the paid-features business model.
+This is a **message reply in App Store Connect**, not a code change.
+Answer: RealtyBoss is a B2B CRM for licensed real estate agents;
+subscriptions are purchased **only on the web** (realtybossai.com); there
+is no in-app purchase and nothing is sold or unlocked inside the app —
+it is a client for a multiplatform service (Guideline 3.1.3(b)). Full
+copy-paste reply is drafted below under "Guideline 2.1(b) reply".
+
+> Anti-steering check (Guideline 3.1.1): 3.1.3(b) only applies if the app
+> does NOT push users to buy outside it. Confirm no in-app screen shows a
+> "sign up on our website" / pricing / purchase CTA before resubmitting.
+
+### Guideline 2.1(b) reply — paste into the App Store Connect thread
+
+> Hello, and thank you for the questions. Here is a description of our
+> business model.
+>
+> RealtyBoss is a business productivity (CRM) app for **licensed real
+> estate agents**. It is a companion to our web service at
+> https://www.realtybossai.com. It is a business tool, not a consumer
+> content/media app — there is no music, video, books, games, or other
+> digital media.
+>
+> **1. Who are the users that will use the paid features in the app?**
+> Licensed real estate agents who are existing, paying subscribers to our
+> RealtyBoss web service. They sign in to the mobile app with the same
+> account they use on the web.
+>
+> **2. Where can users purchase the features that can be accessed in the
+> app?** Subscriptions are purchased **only on our website**
+> (https://www.realtybossai.com). There is no purchasing of any kind
+> inside the app, and the app does not offer, advertise, or link to any
+> purchase flow. Users arrive at the app already subscribed.
+>
+> **3. What specific types of previously purchased features can a user
+> access?** Business CRM tools tied to the agent's own account: viewing
+> and managing their leads/contacts, a sales pipeline, sending SMS/email
+> follow-ups to their own clients, scheduling property showings, and
+> reminders/tasks. These are professional workflow tools, not digital
+> content.
+>
+> **4. What paid content, subscriptions, or features are unlocked within
+> the app that do not use in-app purchase?** None are unlocked *within*
+> the app. The app is a client for a service the agent already pays for
+> on the web (a multiplatform service, per Guideline 3.1.3(b)). No
+> digital goods are sold or unlocked through the app.
+>
+> **5. Is the app for individual consumers, or for
+> businesses/organizations?** It is a **business-to-business** tool sold
+> to real estate professionals for use in their work.
+>
+> **6. Does the app require any purchase or subscription to use?** A user
+> must have a RealtyBoss account, created on our website. A free demo
+> account is provided in App Review Information for testing:
+> demo@leadsmart.ai / Demo123!
+>
+> We have also addressed the Guideline 4.0 sign-in layout issue in this
+> same build and will resubmit. Please let us know if any further detail
+> would help.
+
+> History: build 1.6 (28) was reviewed on iPad even though
+> `supportsTablet: false` — Apple runs iPhone-only apps in scaled
+> compatibility mode on iPad and still enforces Guideline 4.0 there.
+
+## Guideline 2.1(b) follow-up — build 1.6 (32), 2026-07-10
+
+Apple replied to the round-1 answer with a narrower categorization
+question (Submission ID `2a59fbd7-96cf-4d3b-b7c3-b8df0a629aec`, reviewed
+iPad Air 11-inch (M3)):
+
+> Are the enterprise services in your app sold to single users,
+> consumers, or for family use?
+
+This is Apple slotting the app into a business-model bucket to decide
+whether IAP is required — **not** a new code violation. Verified before
+replying: the iOS build has **no purchase steering**. Both paid-feature
+surfaces gate on `Platform.OS === "ios"` and show a neutral
+"not on your plan" message with no pricing CTA and no billing link:
+`components/AiActionGateBanner.tsx` and the `UpgradeCard` in
+`app/coaching.tsx` (the `/agent/pricing` and `/dashboard/billing` links
+fire on Android only). Every other in-app `Linking.openURL` is
+service-access (web dashboard), legal (privacy/terms), or content
+(tel/sms/booking/published-post URLs) — none are a purchase flow.
+
+**Account of record for Apple is `michael.yes@mail.com` (agent 30,
+"Testers", Pro)** — the login used in the prior review, NOT the seeded
+`demo@leadsmart.ai`. Verified green 2026-07-12: ✓ sign-in,
+`/api/mobile/leads` → 13 leads (first: Jane Chen), `/api/mobile/inbox`
+→ 3 threads (top: Jane Chen — "Don't forget — Open House this
+Saturday, July 4th!"). The seeded `demo@leadsmart.ai` (agent 31)
+remains an alternate sandbox — see "Reviewer demo account" below.
+
+> ⚠️ michael.yes@mail.com is a real personal test account. If a reviewer
+> confirms the in-app **Delete account** flow on it, the account is
+> destroyed. The reviewer Notes below say NOT to confirm deletion.
+
+### Round-2 reply — paste into the App Store Connect thread
+
+> Hello, and thank you for the follow-up.
+>
+> To answer directly: the services in RealtyBoss are sold to **single
+> users for their business use** — individual **licensed real estate
+> agents** (independent professionals / sole proprietors) who buy a
+> single-seat professional subscription for their real estate business.
+> We also sell to real estate **brokerages** that provide access to their
+> agents. It is **not** sold to consumers for personal use, and it is
+> **not** intended for family use.
+>
+> RealtyBoss is a business-to-business productivity tool — a CRM for
+> licensed real estate agents. It is not a consumer content or media app:
+> there is no music, video, books, games, or other digital media.
+>
+> On purchasing: there is **no in-app purchase and no purchasing of any
+> kind inside the app**. Subscriptions are bought only on our website
+> (https://www.realtybossai.com). The app does not offer, advertise, link
+> to, or steer users toward any purchase flow. A user signs in with an
+> account they already pay for on the web — the app is a client for a
+> multiplatform business service (Guideline 3.1.3(b)).
+>
+> The demo account provided in App Review Information
+> (michael.yes@mail.com) — the same login used in the prior review — can
+> be used for testing.
+>
+> Please let us know if any further detail would help.
+
+### Reviewer Notes for `michael.yes@mail.com` — paste into App Store Connect → App Information → App Review → App Review Information
+
+**Sign-In required: Yes**
+**Username**: `michael.yes@mail.com`
+**Password**: `Apptesting123`
+
+**Notes**:
+
+> RealtyBoss is a CRM for licensed real estate agents. Email/password
+> sign-in only — no OTP, no SMS verification.
+>
+> Suggested walk-through (bottom-tab labels: Home / Work / Engage /
+> Analyze / Manage):
+> 1. Tap **Sign in with email** on the welcome screen.
+> 2. Enter `michael.yes@mail.com` / `Apptesting123` and tap **Continue**.
+> 3. **Work** tab → **Leads** tile — 13 leads load. Tap the top lead
+>    (Jane Chen) for detail, pipeline stage, and AI-reply controls.
+> 4. **Engage** tab → **Inbox** tile — SMS conversations load, most
+>    recent first. The top thread is from Jane Chen ("Don't forget —
+>    Open House this Saturday…"). Tap it to see the message history.
+> 5. **Manage** tab → **Settings** tile — **Privacy policy** and **Terms
+>    of service** open in the browser. **Delete account** routes to a
+>    typed-confirmation screen; do NOT confirm (it permanently deletes
+>    this account).
+>
+> The app does not handle in-app purchases, child users, or sensitive
+> medical / financial data. SMS and email are sent on behalf of the
+> signed-in agent to their own contacts — no cold or unsolicited
+> outreach.
 
 ## Status
 

@@ -21,28 +21,32 @@ describe("plans / v2.0 catalog shape", () => {
 
   it("prices match the v2.0 spec", () => {
     expect(PLANS.starter.price).toBe(0);
-    expect(PLANS.pro.price).toBe(49);
-    expect(PLANS.premium.price).toBe(99);
-    expect(PLANS.signature.price).toBe(249);
+    expect(PLANS.pro.price).toBe(79);
+    expect(PLANS.premium.price).toBe(199);
+    expect(PLANS.signature.price).toBe(399);
     expect(PLANS.team.price).toBe(299);
   });
 
   it("annual prices reflect 2-months-free framing", () => {
     expect(PLANS.starter.annualPrice).toBeNull();
-    expect(PLANS.pro.annualPrice).toBe(490);
-    expect(PLANS.premium.annualPrice).toBe(990);
-    expect(PLANS.signature.annualPrice).toBe(2490);
+    expect(PLANS.pro.annualPrice).toBe(790);
+    expect(PLANS.premium.annualPrice).toBe(1990);
+    expect(PLANS.signature.annualPrice).toBe(3990);
     expect(PLANS.team.annualPrice).toBe(2990);
   });
 
-  it("paid tiers expose both monthly and annual env var keys", () => {
-    const paid: PlanSlug[] = ["pro", "premium", "signature", "team"];
-    for (const slug of paid) {
+  it("self-serve paid tiers expose both monthly and annual env var keys", () => {
+    const selfServe: PlanSlug[] = ["pro", "premium", "signature"];
+    for (const slug of selfServe) {
       expect(PLANS[slug].stripePriceEnvVar).toBeTruthy();
       expect(PLANS[slug].stripePriceEnvVarAnnual).toBeTruthy();
     }
     expect(PLANS.starter.stripePriceEnvVar).toBeNull();
     expect(PLANS.starter.stripePriceEnvVarAnnual).toBeNull();
+    // Team is sales-assisted — no self-serve Stripe price IDs.
+    expect(PLANS.team.contactSales).toBe(true);
+    expect(PLANS.team.stripePriceEnvVar).toBeNull();
+    expect(PLANS.team.stripePriceEnvVarAnnual).toBeNull();
   });
 
   it("Signature has the five Signature-only features the spec promises", () => {
@@ -97,14 +101,14 @@ describe("hasFeature", () => {
 
 describe("effectiveMonthlyPrice", () => {
   it("monthly cadence returns the monthly price unchanged", () => {
-    expect(effectiveMonthlyPrice("pro", "monthly")).toBe(49);
-    expect(effectiveMonthlyPrice("signature", "monthly")).toBe(249);
+    expect(effectiveMonthlyPrice("pro", "monthly")).toBe(79);
+    expect(effectiveMonthlyPrice("signature", "monthly")).toBe(399);
   });
 
   it("annual cadence returns the per-month equivalent of the annual headline", () => {
-    expect(effectiveMonthlyPrice("pro", "annual")).toBeCloseTo(40.83, 2);
-    expect(effectiveMonthlyPrice("premium", "annual")).toBeCloseTo(82.5, 2);
-    expect(effectiveMonthlyPrice("signature", "annual")).toBeCloseTo(207.5, 2);
+    expect(effectiveMonthlyPrice("pro", "annual")).toBeCloseTo(65.83, 2);
+    expect(effectiveMonthlyPrice("premium", "annual")).toBeCloseTo(165.83, 2);
+    expect(effectiveMonthlyPrice("signature", "annual")).toBeCloseTo(332.5, 2);
     expect(effectiveMonthlyPrice("team", "annual")).toBeCloseTo(249.17, 2);
   });
 

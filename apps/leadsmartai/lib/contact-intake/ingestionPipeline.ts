@@ -20,6 +20,42 @@ import type { ContactFieldsInput, DuplicateStrategy, IngestResult, IntakeChannel
 
 export type { ContactFieldsInput, DuplicateStrategy, IngestResult, IntakeChannel };
 
+/**
+ * The richer CRM-export fields → their `contacts` columns, including only the
+ * ones actually present so we never null out a column on merge. `lead_type`
+ * lands in `lead_type` and tags in `lead_tags_json` (the real columns).
+ */
+function contactExtraColumns(fields: ContactFieldsInput): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (fields.lead_type) out.lead_type = fields.lead_type;
+  if (fields.search_location) out.search_location = fields.search_location;
+  if (fields.city) out.city = fields.city;
+  if (fields.state) out.state = fields.state;
+  if (fields.timeline) out.timeline = fields.timeline;
+  if (fields.price_min != null) out.price_min = fields.price_min;
+  if (fields.price_max != null) out.price_max = fields.price_max;
+  if (fields.beds != null) out.beds = fields.beds;
+  if (fields.baths != null) out.baths = fields.baths;
+  if (fields.tags && fields.tags.length > 0) out.lead_tags_json = fields.tags;
+  return out;
+}
+
+/** Keep only the extra columns the primary row hasn't already filled — so a
+ *  merge enriches (adds missing area/budget/etc.) without clobbering existing
+ *  data. */
+function fillMissingColumns(
+  primary: Record<string, unknown>,
+  extras: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(extras)) {
+    const cur = primary[k];
+    const empty = cur == null || cur === "" || (Array.isArray(cur) && cur.length === 0);
+    if (empty) out[k] = v;
+  }
+  return out;
+}
+
 export async function assertLeadQuota(agentId: string, planType: string): Promise<void> {
   const pt = planType.toLowerCase();
   if (pt === "free") {
@@ -107,6 +143,9 @@ export async function runContactIngestion(params: {
       .from("contacts")
       .update({
         ...merged,
+        // Enrich the existing contact with any richer fields it's missing —
+        // never overwrite what's already there.
+        ...fillMissingColumns(primaryRow as Record<string, unknown>, contactExtraColumns(fields)),
         updated_at: new Date().toISOString(),
         intake_channel: intakeChannel,
         import_job_id: importJobId ?? null,
@@ -171,6 +210,8 @@ export async function runContactIngestion(params: {
     contact_method: "email",
     sms_opt_in: false,
     next_contact_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    // Richer captured fields (lead_type, area, budget, beds/baths, timeline, tags).
+    ...contactExtraColumns(fields),
   };
 
   const { data: inserted, error: insErr } = await supabaseAdmin

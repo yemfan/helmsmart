@@ -82,7 +82,21 @@ export async function getCurrentAgentContext(authUser?: {
 
   const agentIdRaw = (agent as any)?.id;
   if (agentIdRaw == null || agentIdRaw === "") {
-    throw new Error(ERROR_DASHBOARD_NO_AGENT_ROW);
+    // Auto-provision instead of locking out. The apps share one auth.users, so
+    // an authenticated user from a sibling app (PropertyTools/mobile) has no
+    // RealtyBoss account yet — give them a free one + membership on first access.
+    // Falls back to the original error only if provisioning itself fails.
+    const { ensureFreeLeadsmartAccount } = await import("@/lib/auth/ensureAppAccess");
+    const provisionedId = await ensureFreeLeadsmartAccount(user.id);
+    if (!provisionedId) {
+      throw new Error(ERROR_DASHBOARD_NO_AGENT_ROW);
+    }
+    return {
+      userId: user.id,
+      agentId: provisionedId,
+      planType: "free" as AgentRow["plan_type"],
+      email: user.email ?? null,
+    };
   }
 
   return {

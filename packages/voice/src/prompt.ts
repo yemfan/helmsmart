@@ -27,7 +27,30 @@ export type ReceptionistContext = {
   /** Inbound only: the caller's own phone number (caller ID), formatted for
    *  speech. When set, the receptionist confirms it as the callback number. */
   callerNumber?: string;
+  /** Inbound only: what we already know about this caller, matched by their
+   *  phone number. When set, the receptionist greets them by name and CONFIRMS
+   *  what's on file (rather than re-asking). Omitted for unknown callers. */
+  knownCaller?: KnownCaller;
 };
+
+/** What we already know about a recognized inbound caller (matched by caller ID).
+ *  The app builds this from its own contact record; the prompt core just phrases
+ *  it. All fields optional — include only what's actually known. */
+export type KnownCaller = {
+  /** Full name on file, e.g. "Michael Ye". */
+  name?: string;
+  /** ISO 639-1 language preference, e.g. "zh" — used to greet in their language. */
+  language?: string;
+  /** One-line, human-readable summary of their known preferences, app-built,
+   *  e.g. "buyer, interested in Alhambra, budget $800k–$1M, 3 bed / 2 bath,
+   *  timeline 2 months". Empty when we only know their name. */
+  summary?: string;
+};
+
+/** First name only, for a natural "is this Michael?" confirmation. */
+function firstName(name: string | undefined): string {
+  return (name || "").trim().split(/\s+/)[0] || "";
+}
 
 /** Resolve {{agent_name}} / {{business_name}} placeholders a business may use in
  *  their greeting or business-context text. Done server-side because Retell does
@@ -50,7 +73,7 @@ function fillPlaceholders(text: string, ctx: ReceptionistContext): string {
  */
 export function buildSystemPrompt(ctx: ReceptionistContext): string {
   return `## Languages
-Your opening greeting has ALREADY been played to the caller automatically. Do NOT greet again, do NOT re-introduce yourself, and do NOT repeat the business name — just respond to what the caller says. Speak in whichever language the caller uses, and switch the moment they switch. Never ask which language they prefer.${ctx.orgNameZh !== ctx.orgName ? ` When you speak Chinese, call the business "${ctx.orgNameZh}"; in English call it "${ctx.orgName}".` : ""}
+Your opening greeting has ALREADY been played to the caller automatically. Do NOT greet again, do NOT re-introduce yourself, and do NOT repeat the business name — just respond to what the caller says. Speak in whichever language the caller uses, and switch the moment they switch. Never ask which language they prefer. CRITICAL — this rule overrides everything else and applies on EVERY single turn, INCLUDING the turn right after you use a tool: reply in the language the caller last spoke. check_availability and book_appointment return English text for the system's use only — that English must NOT change the language you speak. If the caller has been speaking Chinese, keep speaking Chinese after checking the calendar (translate the times, e.g. "6月2号星期一上午11点"). Never switch to English unless the caller switches first.${ctx.orgNameZh !== ctx.orgName ? ` When you speak Chinese, call the business "${ctx.orgNameZh}"; in English call it "${ctx.orgName}".` : ""}
 
 You are ${ctx.agentName ? `${ctx.agentName}, ` : ""}the AI phone receptionist for ${ctx.orgName}. This is a LIVE phone call — speak naturally, keep every reply to 1–3 short sentences, no lists or markdown, and ask only one question at a time.${ctx.agentName ? ` If the caller asks your name, you're ${ctx.agentName}.` : ""}
 
@@ -67,7 +90,7 @@ ${ctx.knowledgeText || "(no knowledge base yet — if you don't know the answer,
 
 About the business:
 ${fillPlaceholders(ctx.extraNotes, ctx) || "(none)"}
-${ctx.callerNumber ? `\nCallback number — ALWAYS confirm it: this caller is phoning from ${ctx.callerNumber}. Before you take a message or end the call, confirm how to reach them: ask "Is ${ctx.callerNumber} the best number to call you back, or is there a better one?" If they want a different number, read it back digit by digit and get a clear "yes" before you save it. Never record a callback number you haven't read back and confirmed out loud.\n` : ""}
+${ctx.callerNumber ? `\nCallback number — ALWAYS confirm it: this caller is phoning from ${ctx.callerNumber}. Before you take a message or end the call, confirm how to reach them: ask "Is ${ctx.callerNumber} the best number to call you back, or is there a better one?" If they want a different number, read it back digit by digit and get a clear "yes" before you save it. Never record a callback number you haven't read back and confirmed out loud.\n` : ""}${ctx.knownCaller ? `\nReturning caller — you RECOGNIZE this phone number, so treat them as someone you already know${ctx.knownCaller.name ? `; our records show this is ${ctx.knownCaller.name}` : ""}. Your opening line already asked them to confirm who they are — do NOT act like it's a brand-new caller and do NOT introduce yourself again.${ctx.knownCaller.summary ? ` Here's what we already have on file for them: ${ctx.knownCaller.summary}. Treat every one of these as already known — do NOT ask for them again from scratch. Instead, briefly CONFIRM and ask only what has changed, e.g. "Last time you were looking in <area> around <budget> — is that still what you're after, or has anything changed?" Only collect details that are missing or that they tell you are different.` : ` Ask only what this call needs — don't re-collect basics you would normally gather on a first call.`}\n` : ""}
 How to behave:
 - If the caller has an EMERGENCY: do not book an appointment. Take their name and phone number, tell them "I'll have someone call you right back," and use create_callback noting that it is an emergency.
 - To book: call check_availability first, offer the real open times, confirm the time AND the caller's name, then call book_appointment. Always pass the date as YYYY-MM-DD and the time in Western digits (e.g. 11:00 AM), even when the conversation is in another language. Never invent times.
@@ -84,6 +107,21 @@ export function buildVoiceSystemPrompt(ctx: ReceptionistContext): string {
 
 // ─── Inbound dynamic variables (Retell) ───────────────────────────────────────────
 
+/** Spoken opening line for a recognized caller — confirms their name (so we don't
+ *  re-ask) in their known language. Falls back to a warm "welcome back" when we
+ *  have the number but no name. Chinese when language==="zh", else English. */
+function buildKnownCallerGreeting(ctx: ReceptionistContext): string {
+  const first = firstName(ctx.knownCaller?.name);
+  if (ctx.knownCaller?.language === "zh") {
+    return first
+      ? `${ctx.orgNameZh}，您好！我看到您用这个号码来电，请问是${first}吗？`
+      : `${ctx.orgNameZh}，您好！很高兴再次接到您的来电。`;
+  }
+  return first
+    ? `${ctx.orgName}. Hi! I see you're calling from this number — is this ${first}?`
+    : `${ctx.orgName}. Hi, welcome back! How can I help you today?`;
+}
+
 /**
  * Per-call dynamic variables for the Retell agent. Retell requires string→string;
  * keys are referenced as {{key}} in RETELL_AGENT_PROMPT_TEMPLATE. `org_id` lets the
@@ -99,7 +137,14 @@ export function buildReceptionistDynamicVariables(ctx: ReceptionistContext): Rec
   const g = fillPlaceholders(ctx.greeting || "Hello! Thank you for calling. How can I help you today?", ctx)
     .replace(/[ \t]{2,}/g, " ")
     .trim();
-  const greeting = g.includes(ctx.orgName) ? g : `${ctx.orgName}. ${g}`;
+  // Returning caller (matched by caller ID): open by confirming who they are
+  // instead of the generic org greeting — "I see you're calling from this number,
+  // is this Michael?". Greet in their known language when we have it (zh today).
+  const greeting = ctx.knownCaller
+    ? buildKnownCallerGreeting(ctx)
+    : g.includes(ctx.orgName)
+      ? g
+      : `${ctx.orgName}. ${g}`;
 
   return {
     org_id: ctx.orgId,

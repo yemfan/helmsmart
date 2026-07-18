@@ -2,10 +2,7 @@
  * Review request email template and sending via Resend
  */
 
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
-const REVIEW_REQUEST_FROM = process.env.REVIEW_REQUEST_FROM || "noreply@helmsmart.app";
+import { sendEmail } from "@/lib/email";
 
 interface ReviewRequestParams {
   clientName: string;
@@ -62,8 +59,9 @@ export async function sendReviewRequest({
 </html>
     `;
 
-    const result = await resend.emails.send({
-      from: REVIEW_REQUEST_FROM,
+    // Throws on a rejected send; the catch below turns it into { ok: false }.
+    await sendEmail({
+      fromName: businessName,
       to: clientEmail,
       subject: `Share Your Experience with ${businessName}`,
       html,
@@ -71,11 +69,6 @@ export async function sendReviewRequest({
         "X-Entity-Ref-ID": `review-request-${Date.now()}`,
       },
     });
-
-    if (result.error) {
-      console.error("[review-request-email] send error:", result.error);
-      return { ok: false, error: result.error.message };
-    }
 
     return { ok: true };
   } catch (err) {

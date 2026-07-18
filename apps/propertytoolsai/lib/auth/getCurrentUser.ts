@@ -2,6 +2,7 @@ import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { fullNameFromUserMetadata } from "@/lib/auth/canonicalUserContact";
+import { ensureFreePropertytoolsAccount } from "@/lib/auth/ensureAppAccess";
 import { mapLegacyUserProfileRoleToRbac } from "./mapLegacyRole";
 import type { ProfileRow } from "./profileTypes";
 import type { UserRole } from "./roles";
@@ -90,11 +91,20 @@ export async function getCurrentUserWithProfile(): Promise<SessionUserWithProfil
       .propertytools_users;
     const pt = ptRaw == null ? null : Array.isArray(ptRaw) ? ptRaw[0] : ptRaw;
     const tier = pt?.tier ?? null;
+    // Cross-app auto-provision: an authenticated user (e.g. a RealtyBoss agent)
+    // with no PropertyTools account yet gets a free `basic` account + membership
+    // registered, so the shared source of truth reflects that they use this app.
+    if (!tier) {
+      await ensureFreePropertytoolsAccount(user.id);
+    }
     return {
       user,
       profile: normalizeProfileRow(profileRow as Record<string, unknown>, user, tier),
     };
   }
+
+  // No user_profiles row at all — still an authenticated user opening the app.
+  await ensureFreePropertytoolsAccount(user.id);
 
   const meta = user.user_metadata as Record<string, unknown> | undefined;
   const fullName = fullNameFromUserMetadata(meta);

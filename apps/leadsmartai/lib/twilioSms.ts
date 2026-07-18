@@ -34,12 +34,17 @@ export async function sendSMS(
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   // Your app historically used `TWILIO_FROM_NUMBER`; the spec uses `TWILIO_PHONE_NUMBER`.
   const fromNumber = process.env.TWILIO_PHONE_NUMBER || process.env.TWILIO_FROM_NUMBER;
+  // Prefer the A2P 10DLC Messaging Service when configured — it's the compliant
+  // path and sends from a registered number in its pool, so messages don't fail
+  // carrier error 30034 (a raw toll-free `from` typically can't send SMS).
+  const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID?.trim();
 
-  if (!accountSid || !authToken || !fromNumber) {
+  if (!accountSid || !authToken || (!messagingServiceSid && !fromNumber)) {
     const missing: string[] = [];
     if (!accountSid) missing.push("TWILIO_ACCOUNT_SID");
     if (!authToken) missing.push("TWILIO_AUTH_TOKEN");
-    if (!fromNumber) missing.push("TWILIO_PHONE_NUMBER/TWILIO_FROM_NUMBER");
+    if (!messagingServiceSid && !fromNumber)
+      missing.push("TWILIO_MESSAGING_SERVICE_SID or TWILIO_PHONE_NUMBER/TWILIO_FROM_NUMBER");
 
     throw new Error(
       `Twilio SMS is not configured (missing: ${missing.join(", ")}).`
@@ -50,11 +55,13 @@ export async function sendSMS(
 
   const result = await client.messages.create({
     to,
-    // Normalize defensively — the reply path historically used the env value
-    // verbatim, so a from-number saved without the leading "+" broke replies
-    // while the AI-send path (which already normalizes) kept working.
-    from: normalizeFromToE164(fromNumber),
     body: message,
+    // Messaging Service (A2P-registered) when available; otherwise the raw
+    // from-number, normalized defensively — a value saved without the leading
+    // "+" historically broke the reply path.
+    ...(messagingServiceSid
+      ? { messagingServiceSid }
+      : { from: normalizeFromToE164(fromNumber as string) }),
   });
 
   // Only log to message_logs when a lead_id is provided.

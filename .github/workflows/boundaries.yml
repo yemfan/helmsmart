@@ -1,0 +1,48 @@
+# HelmSmart dependency-law gate.
+#
+# The law (apps -> packs -> core) is what keeps the DNA architecture honest:
+# core packages stay industry-agnostic because they CANNOT import a vertical,
+# and a feature with no @helm/* home cannot compile. That turns the
+# Constitution's "no orphans" rule from a convention into a build error.
+#
+# `scripts/check-boundaries.mjs` has existed for a while carrying the comment
+# "Wire-up: `pnpm boundaries`. Add to CI before merge." — it was never wired,
+# so the law was advisory. An architectural rule nobody enforces is a rule that
+# has already been broken somewhere you haven't looked yet. This is the wiring.
+#
+# Cheap by design: no install, no build. Node reads the source and exits.
+
+name: boundaries
+
+on:
+  pull_request:
+    paths:
+      - "packages/**"
+      - "industry-packs/**"
+      - "apps/**"
+      - "scripts/check-boundaries.mjs"
+      - ".github/workflows/boundaries.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: boundaries-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  boundaries:
+    name: apps -> packs -> core
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # Zero-dependency script — deliberately no `pnpm install`, so this gate
+      # stays fast enough that nobody is tempted to skip it.
+      - name: Check dependency law
+        run: node scripts/check-boundaries.mjs

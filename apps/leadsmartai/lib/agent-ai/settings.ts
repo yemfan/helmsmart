@@ -11,6 +11,7 @@ export const DEFAULT_AGENT_AI_SETTINGS: AgentAiSettings = {
   defaultLanguage: "en",
   bilingualEnabled: false,
   styleNotes: null,
+  brandColor: null,
 };
 
 function mapRow(row: AgentAiSettingsRow): AgentAiSettings {
@@ -19,6 +20,10 @@ function mapRow(row: AgentAiSettingsRow): AgentAiSettings {
     defaultLanguage: row.default_language,
     bilingualEnabled: Boolean(row.bilingual_enabled),
     styleNotes: row.style_notes,
+    brandColor:
+      typeof row.brand_color === "string" && row.brand_color.trim()
+        ? row.brand_color
+        : null,
   };
 }
 
@@ -45,7 +50,7 @@ export async function getAgentAiSettingsWithMeta(agentId: string | null | undefi
     const { data, error } = await supabaseAdmin
       .from("agent_ai_settings")
       .select(
-        "id, agent_id, personality, default_language, bilingual_enabled, style_notes, created_at, updated_at"
+        "id, agent_id, personality, default_language, bilingual_enabled, style_notes, brand_color, created_at, updated_at"
       )
       .eq("agent_id", agentId as never)
       .maybeSingle();
@@ -65,6 +70,7 @@ export type UpsertAgentAiSettingsInput = {
   defaultLanguage?: AgentAiDefaultLanguage;
   bilingualEnabled?: boolean;
   styleNotes?: string | null;
+  brandColor?: string | null;
 };
 
 export async function upsertAgentAiSettings(
@@ -77,6 +83,7 @@ export async function upsertAgentAiSettings(
     defaultLanguage: input.defaultLanguage ?? current.defaultLanguage,
     bilingualEnabled: input.bilingualEnabled ?? current.bilingualEnabled,
     styleNotes: input.styleNotes !== undefined ? input.styleNotes : current.styleNotes,
+    brandColor: input.brandColor !== undefined ? input.brandColor : current.brandColor,
   };
 
   const now = new Date().toISOString();
@@ -87,6 +94,7 @@ export async function upsertAgentAiSettings(
       default_language: next.defaultLanguage,
       bilingual_enabled: next.bilingualEnabled,
       style_notes: next.styleNotes,
+      brand_color: next.brandColor,
       updated_at: now,
     } as never,
     { onConflict: "agent_id" }

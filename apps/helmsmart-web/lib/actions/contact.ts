@@ -1,8 +1,6 @@
 "use server";
 
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
+import { sendEmail } from "@/lib/email";
 
 export interface ContactState {
   success?: boolean;
@@ -28,9 +26,8 @@ export async function submitContactForm(
     }
 
     // Send to support email
-    await resend.emails.send({
-      from: "noreply@helmsmart.ai",
-      to: "support@helmsmart.ai",
+    await sendEmail({
+      to: "contact@helmsmart.ai",
       replyTo: email,
       subject: `HelmSmart Contact: ${subject} — from ${name}`,
       html: `
@@ -43,8 +40,7 @@ export async function submitContactForm(
     });
 
     // Send confirmation to user
-    await resend.emails.send({
-      from: "noreply@helmsmart.ai",
+    await sendEmail({
       to: email,
       subject: "We received your message — HelmSmart",
       html: `
@@ -62,7 +58,7 @@ export async function submitContactForm(
     console.error("Contact form error:", error);
     return {
       error:
-        "Failed to send message. Please try again or email support@helmsmart.ai",
+        "Failed to send message. Please try again or email contact@helmsmart.ai",
     };
   }
 }

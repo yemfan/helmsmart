@@ -17,6 +17,33 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
 
   // Step 1: Service areas — structured picks via state/county/city cascade.
   const [areas, setAreas] = useState<AgentServiceArea[]>([]);
+  const [autoSuggested, setAutoSuggested] = useState(false);
+
+  // Pre-fill the market: load existing areas, or an AI suggestion auto-detected
+  // from the agent's location — so they confirm instead of typing from scratch.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/dashboard/onboarding");
+        const data = await res.json();
+        if (cancelled || !data?.ok) return;
+        const existing: AgentServiceArea[] = Array.isArray(data.serviceAreasV2) ? data.serviceAreasV2 : [];
+        const suggested: AgentServiceArea[] = Array.isArray(data.suggestedServiceAreas) ? data.suggestedServiceAreas : [];
+        if (existing.length > 0) {
+          setAreas(existing);
+        } else if (suggested.length > 0) {
+          setAreas(suggested);
+          setAutoSuggested(true);
+        }
+      } catch {
+        /* ignore — the agent can pick manually */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Step 2: Branding
   const [brandName, setBrandName] = useState("");
@@ -119,7 +146,14 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
 
           {/* Step 1: Service Areas */}
           {step === 0 && (
-            <ServiceAreasPicker value={areas} onChange={setAreas} disabled={saving} />
+            <>
+              {autoSuggested ? (
+                <p className="mb-2 rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">
+                  We pre-filled your market from your location — edit it if it&rsquo;s not right.
+                </p>
+              ) : null}
+              <ServiceAreasPicker value={areas} onChange={setAreas} disabled={saving} />
+            </>
           )}
 
           {/* Step 2: Branding */}

@@ -9,7 +9,8 @@
 //   PACK   = @helm/pack-*                                                   (industry-packs/*)
 //            -> may import CORE. NOT other packs, NOT apps/*.
 //
-// Wire-up: `pnpm boundaries` (root package.json). Add to CI before merge.
+// Wire-up: `pnpm boundaries` (root package.json), and enforced on every PR by
+// .github/workflows/boundaries.yml.
 // It scans import/export/require specifiers in each package's src and fails on a violation.
 
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';

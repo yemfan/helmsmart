@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import type { MobileSidebarUser } from "@repo/ui";
 import { useAuth } from "@/components/AuthProvider";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 import { RealtyBossLogo } from "@/components/brand/RealtyBossLogo";
-import marketingNavConfig, { leadSmartMarketingNav } from "@/marketing.nav.config";
+import { getMarketingNavSections } from "@/marketing.nav.config";
 import { MarketingTopNav } from "@/components/marketing/MarketingTopNav";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
 import Footer from "./Footer";
@@ -200,6 +201,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
 function MarketingChrome({ children }: { children: ReactNode }) {
   const sidebarUser = useSidebarUser();
+  const { t } = useTranslation("web_marketing");
+  const sections = useMemo(() => getMarketingNavSections(t), [t]);
   const handleLogout = useCallback(() => {
     void signOutWithFullReload("/");
   }, []);
@@ -207,8 +210,8 @@ function MarketingChrome({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden bg-gradient-to-br from-slate-50 via-white to-emerald-50/20 text-slate-900 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950 dark:text-slate-100">
       <MarketingTopNav
-        sections={leadSmartMarketingNav}
-        workspaceLabel={marketingNavConfig.sidebarTitle ?? "Menu"}
+        sections={sections}
+        workspaceLabel={t("cta.menu", { defaultValue: "Menu" })}
         user={sidebarUser}
         onLogout={handleLogout}
       />

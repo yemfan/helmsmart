@@ -43,7 +43,8 @@ export type PlanFeature =
   | "cultural_calendar"
   | "custom_voice_tuning"
   | "bookkeeping"
-  | "ai_calling";
+  | "ai_calling"
+  | "social_customization";
 
 export type BillingCadence = "monthly" | "annual";
 
@@ -69,6 +70,12 @@ export type PlanDefinition = {
   coachingTier?: "Producer Track" | "Top Producer Track";
   /** Highlight this card as "Most popular". */
   popular?: boolean;
+  /**
+   * Sales-assisted tier — no self-serve Stripe checkout. The pricing UI shows
+   * a "Contact us" CTA and the checkout endpoints reject it. `stripePriceEnvVar`
+   * is null for these so no `STRIPE_PRICE_ID_*` is required.
+   */
+  contactSales?: boolean;
 };
 
 /**
@@ -153,6 +160,7 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
       "custom_voice_tuning",
       "bookkeeping",
       "ai_calling",
+      "social_customization",
     ],
     stripePriceEnvVar: "STRIPE_PRICE_ID_SIGNATURE",
     stripePriceEnvVarAnnual: "STRIPE_PRICE_ID_SIGNATURE_ANNUAL",
@@ -176,11 +184,16 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
       "top_producer_track_coaching",
       "bookkeeping",
       "ai_calling",
+      "social_customization",
     ],
-    stripePriceEnvVar: "STRIPE_PRICE_ID_TEAM",
-    stripePriceEnvVarAnnual: "STRIPE_PRICE_ID_TEAM_ANNUAL",
+    // Team is sales-assisted (per-seat, brokerage terms) — no self-serve
+    // checkout, so no STRIPE_PRICE_ID_TEAM* env vars are needed. The pricing UI
+    // shows "Contact us" and the checkout endpoints reject the team slug.
+    stripePriceEnvVar: null,
+    stripePriceEnvVarAnnual: null,
     internalPlan: "crm_team",
     coachingTier: "Top Producer Track",
+    contactSales: true,
   },
 };
 

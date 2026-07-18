@@ -204,7 +204,11 @@ export async function listConversations(params?: {
     .order("created_at", { ascending: false })
     .limit(params?.limit ?? 50);
 
-  if (params?.status) query = query.eq("status", params.status);
+  // `status` is a Postgres enum — the dashboard's "All" tab sends the sentinel
+  // "all", which is NOT a valid enum value; passing it to .eq() throws 22P02
+  // ("invalid input value for enum") and 500s the whole list. Treat "all"
+  // (and empty) as "no status filter".
+  if (params?.status && params.status !== "all") query = query.eq("status", params.status);
   if (params?.assignedAgentId) query = query.eq("assigned_agent_id", params.assignedAgentId);
   if (params?.customerEmail) query = query.eq("customer_email", params.customerEmail);
 

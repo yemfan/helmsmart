@@ -1,5 +1,7 @@
 import "server-only";
 
+import { META_GRAPH_BASE, META_OAUTH_DIALOG } from "@/lib/meta/graph";
+
 /**
  * Facebook OAuth flow for the Auto-post-to-social feature.
  *
@@ -31,8 +33,11 @@ const REQUIRED_SCOPES = [
   "pages_read_engagement",
 ];
 
-const GRAPH_BASE = "https://graph.facebook.com/v19.0";
-const FB_DIALOG = "https://www.facebook.com/v19.0/dialog/oauth";
+// Graph version comes from the shared source of truth (lib/meta/graph.ts).
+// This file used to pin v19.0 — released Jan 2024, so already past Meta's
+// ~2-year deprecation window, while the publisher had moved on to v21.0.
+const GRAPH_BASE = META_GRAPH_BASE;
+const FB_DIALOG = META_OAUTH_DIALOG;
 
 export type FacebookOauthConfig = {
   appId: string;

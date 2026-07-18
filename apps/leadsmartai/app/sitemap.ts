@@ -3,8 +3,11 @@ import { getKeywordPagesForCity, TRAFFIC_CITIES } from "@/lib/trafficSeo";
 import { HELP_GUIDES } from "@/lib/help/guides";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import { SWITCH_SOURCES } from "@/lib/marketing/switch-from";
+import { listResearchReportsForSitemap } from "@/lib/research/db";
+import { listMarketSitemapEntries } from "@/lib/research/warehouse/read";
+import { listRecentDigests } from "@/lib/newsletter/db";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
   const now = new Date();
 
@@ -25,8 +28,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/agent/compare",
     "/integrations",
     "/free-tools",
+    "/skills-library",
     "/try-demo",
     "/contact",
+    // Data Center hub — original, cited market-intelligence reports (agent lens).
+    "/data",
+    // Weekly Regional Newsletter hub — consumer rates + housing briefing.
+    "/newsletter",
     // Note: /agent and /broker are role portals (robots: noindex) — excluded.
     // /demo/* sandbox pages are explicitly `robots: { index: false }`
     // — keep them out of the sitemap so they don't drain crawl budget.
@@ -92,9 +100,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/integrations",
     "/free-tools",
     "/try-demo",
+    "/data",
+    "/newsletter",
   ]);
 
-  return [
+  const staticEntries = [
     ...staticRoutes,
     ...calculatorRoutes,
     ...helpRoutes,
@@ -105,8 +115,70 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ].map((path) => ({
     url: `${base}${path}`,
     lastModified: now,
-    changeFrequency: "weekly",
+    changeFrequency: "weekly" as const,
     priority: path === "/" ? 1 : HIGH_PRIORITY.has(path) ? 0.9 : 0.7,
   }));
+
+  // Data Center research reports — DB-driven, one entry per published report.
+  // Guarded so a missing table/env (or the shared research_reports being
+  // unreachable) can never crash the sitemap; fall back to no report entries.
+  let reportEntries: MetadataRoute.Sitemap = [];
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+    try {
+      const reports = await listResearchReportsForSitemap();
+      reportEntries = reports.map((r) => ({
+        url: `${base}/data/reports/${r.slug}`,
+        lastModified: r.updatedAt ? new Date(r.updatedAt) : now,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }));
+    } catch {
+      reportEntries = [];
+    }
+  }
+
+  // Data Center market pages — DB-driven, one entry per active state + metro
+  // (~350 URLs) plus the markets hub. Guarded exactly like the report entries so
+  // a missing table/env (or the shared warehouse being unreachable) can never
+  // crash the sitemap; fall back to no market entries.
+  let marketEntries: MetadataRoute.Sitemap = [];
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+    try {
+      const entries = await listMarketSitemapEntries();
+      marketEntries = entries.map((e) => ({
+        url: `${base}${e.path}`,
+        lastModified: e.lastmod ? new Date(e.lastmod) : now,
+        changeFrequency: "weekly" as const,
+        priority: e.path === "/data/markets" ? 0.8 : 0.6,
+      }));
+    } catch {
+      marketEntries = [];
+    }
+  }
+
+  // Weekly Regional Newsletter — one entry per published national issue
+  // (/newsletter/national/<week>). Guarded exactly like the report/market
+  // entries so a missing table/env can never crash the sitemap.
+  let newsletterEntries: MetadataRoute.Sitemap = [];
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
+    try {
+      const digests = await listRecentDigests(52);
+      newsletterEntries = digests.map((d) => ({
+        url: `${base}/newsletter/national/${d.week_of}`,
+        lastModified: d.created_at ? new Date(d.created_at) : now,
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }));
+    } catch {
+      newsletterEntries = [];
+    }
+  }
+
+  return [
+    ...staticEntries,
+    ...reportEntries,
+    ...marketEntries,
+    ...newsletterEntries,
+  ];
 }
 

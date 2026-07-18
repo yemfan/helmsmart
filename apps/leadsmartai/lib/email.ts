@@ -31,6 +31,10 @@ type SendEmailParams = {
   /** Optional binary attachments. Resend requires base64-encoded
    *  content; this helper handles the encoding internally. */
   attachments?: EmailAttachment[];
+  /** Optional custom SMTP-style headers passed straight through to Resend's
+   *  `headers` field (e.g. List-Unsubscribe / List-Unsubscribe-Post for
+   *  RFC 8058 one-click unsubscribe on bulk newsletter sends). */
+  headers?: Record<string, string>;
 };
 
 export async function sendEmail({
@@ -41,6 +45,7 @@ export async function sendEmail({
   from,
   replyTo,
   attachments,
+  headers,
 }: SendEmailParams): Promise<{ id?: string } | undefined> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -77,6 +82,12 @@ export async function sendEmail({
       content: bufferToBase64(a.content),
       content_type: a.contentType,
     }));
+  }
+  // Custom headers (e.g. List-Unsubscribe / List-Unsubscribe-Post) pass straight
+  // through to Resend's `headers` field. Skip empty objects so ordinary sends
+  // are unchanged.
+  if (headers && Object.keys(headers).length > 0) {
+    payload.headers = headers;
   }
 
   const res = await fetch("https://api.resend.com/emails", {

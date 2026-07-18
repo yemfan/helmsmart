@@ -71,6 +71,10 @@ export async function PATCH(req: Request) {
     const extraNotes = str(body.extraNotes, 4000);
     if (extraNotes !== undefined) input.extraNotes = extraNotes;
 
+    if (body.voiceLimitBehavior === "text_back" || body.voiceLimitBehavior === "overage") {
+      input.voiceLimitBehavior = body.voiceLimitBehavior;
+    }
+
     const settings = await upsertReceptionistConfig(agentId, input);
 
     // Office hours live in their own jsonb column; save best-effort so the rest

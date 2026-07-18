@@ -13,6 +13,19 @@ export type ContactFieldsInput = {
   property_address?: string | null;
   notes?: string | null;
   source?: string | null;
+  // Richer CRM-export fields (smart import). Text unless noted.
+  /** buyer | seller | renter — normalized from the source CRM's value. */
+  lead_type?: string | null;
+  /** Area of interest (city/neighborhood they're buying/renting in). */
+  search_location?: string | null;
+  city?: string | null;
+  state?: string | null;
+  timeline?: string | null;
+  price_min?: number | null;
+  price_max?: number | null;
+  beds?: number | null;
+  baths?: number | null;
+  tags?: string[] | null;
 };
 
 export type IngestResult =

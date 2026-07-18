@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Mail, MessageSquare, Clock, Building2 } from "lucide-react";
+import { Mail, Clock, Building2 } from "lucide-react";
 import ContactFormComponent from "./_components/contact-form";
 
 export const metadata: Metadata = {
@@ -12,18 +12,11 @@ const channels = [
   {
     icon: Mail,
     title: "Email us",
-    description: "For general questions, billing, or anything else.",
-    contact: "hello@helmsmart.ai",
-    href: "mailto:hello@helmsmart.ai",
+    description:
+      "General questions, billing, or help with your account — all reach the same inbox.",
+    contact: "contact@helmsmart.ai",
+    href: "mailto:contact@helmsmart.ai",
     color: "text-indigo-600 bg-indigo-50",
-  },
-  {
-    icon: MessageSquare,
-    title: "Support",
-    description: "Need help with your account or a technical issue?",
-    contact: "support@helmsmart.ai",
-    href: "mailto:support@helmsmart.ai",
-    color: "text-emerald-600 bg-emerald-50",
   },
   {
     icon: Clock,
@@ -53,7 +46,7 @@ export default function ContactPage() {
 
       {/* Contact channels */}
       <section className="mx-auto max-w-4xl px-6 py-16">
-        <div className="grid gap-6 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2">
           {channels.map((channel) => {
             const Icon = channel.icon;
             const inner = (

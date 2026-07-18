@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { agentHasSocialCustomization } from "@/lib/social/customization";
 import AgentAiSettingsPanel from "@/components/dashboard/AgentAiSettingsPanel";
 import AgentVoiceSettingsPanel from "@/components/dashboard/AgentVoiceSettingsPanel";
 import VoiceReceptionistSettingsPanel from "@/components/dashboard/VoiceReceptionistSettingsPanel";
@@ -14,6 +15,7 @@ import LanguagePanel from "@/components/dashboard/LanguagePanel";
 import LeadRoutingSettingsPanel from "@/components/dashboard/LeadRoutingSettingsPanel";
 import ReviewPolicyPanel from "@/components/dashboard/ReviewPolicyPanel";
 import SettingsTabsClient from "@/components/dashboard/SettingsTabsClient";
+import SocialApprovalPanel from "@/components/dashboard/SocialApprovalPanel";
 import SocialConnectionsPanel from "@/components/dashboard/SocialConnectionsPanel";
 import SphereDripSettingsPanel from "@/components/dashboard/SphereDripSettingsPanel";
 import TemplatesSummaryCard from "@/components/dashboard/TemplatesSummaryCard";
@@ -30,6 +32,7 @@ export const metadata: Metadata = {
 export default async function SettingsPage() {
   const ctx = await getCurrentAgentContext();
   const widgetAgentKey = ctx.agentId || ctx.userId;
+  const canCustomizeBrand = await agentHasSocialCustomization(ctx.agentId).catch(() => false);
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -40,7 +43,7 @@ export default async function SettingsPage() {
             <div className="rounded-xl border border-gray-200 bg-white shadow-sm divide-y divide-gray-100">
             <div className="p-5">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">AI Assistant Style</h2>
-              <AgentAiSettingsPanel />
+              <AgentAiSettingsPanel canCustomizeBrand={canCustomizeBrand} />
             </div>
             <div className="p-5">
               <h2 className="text-sm font-semibold text-gray-900 mb-3">Phone Voice</h2>
@@ -123,6 +126,12 @@ export default async function SettingsPage() {
           <>
             <ChannelsCard agentId={ctx.agentId} />
             <SocialConnectionsPanel />
+            <Card
+              title="Who approves social posts"
+              description="Your AI team writes posts for your feed. This decides who signs off before one publishes."
+            >
+              <SocialApprovalPanel />
+            </Card>
             <LeadRoutingSettingsPanel />
             <Card
               title="Transaction Coordinator notifications"

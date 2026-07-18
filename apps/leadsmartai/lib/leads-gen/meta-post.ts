@@ -62,8 +62,12 @@ export async function publishFacebookPagePost(params: {
   pageAccessToken: string;
   caption: string;
   imageUrl: string | null;
+  /** Optional URL to attach — Facebook renders a link preview card. Only
+   *  meaningful on a /feed post; an image post is already the attachment, so
+   *  Graph ignores `link` on /photos. */
+  link?: string | null;
 }): Promise<PublishResult> {
-  const { pageId, pageAccessToken, caption, imageUrl } = params;
+  const { pageId, pageAccessToken, caption, imageUrl, link } = params;
 
   let endpoint: string;
   const form = new URLSearchParams();
@@ -79,6 +83,7 @@ export async function publishFacebookPagePost(params: {
   } else {
     endpoint = `${META_GRAPH_BASE}/${pageId}/feed`;
     form.set("message", caption);
+    if (link && link.trim()) form.set("link", link.trim());
   }
 
   const res = await fetch(endpoint, {

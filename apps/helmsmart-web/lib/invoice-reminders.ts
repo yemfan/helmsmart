@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+import { sendEmail, FROM_ADDRESS } from "@/lib/email";
 import twilio from "twilio";
 import { localizeOutbound, type Lang } from "@/lib/language";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -6,8 +6,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // Plain server module (NOT "use server") so it can take a Supabase client
 // argument and be shared by both the manual server action (cookie client) and
 // the dunning cron (service client).
-
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
 
 export type ReminderInvoice = {
   id: string;
@@ -92,7 +90,7 @@ export async function sendReminderForInvoice(
   </td></tr></table>
 </body></html>`;
 
-  const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@smbai.app";
+  const fromEmail = FROM_ADDRESS;
 
   // Org context (Twilio sender + owner English-assist) and the client's language.
   const { data: orgRow } = await db
@@ -108,9 +106,9 @@ export async function sendReminderForInvoice(
   const emailText = lang === "en" ? text : await localizeOutbound(text, lang, assist);
   const emailSubject = lang === "en" ? subject : await localizeOutbound(subject, lang, false);
   if (lang === "en") {
-    await resend.emails.send({ from: fromEmail, to: client.email, subject, html, text });
+    await sendEmail({ to: client.email, subject, html, text });
   } else {
-    await resend.emails.send({ from: fromEmail, to: client.email, subject: emailSubject, text: emailText });
+    await sendEmail({ to: client.email, subject: emailSubject, text: emailText });
   }
 
   await db.from("messages").insert({

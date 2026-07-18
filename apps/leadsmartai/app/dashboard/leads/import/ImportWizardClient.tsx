@@ -2,22 +2,71 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { autoMapHeaders, IMPORT_PRESETS, presetExtra } from "@/lib/contact-intake/autoMap";
 
 type ColumnMapping = {
   name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   property_address: string;
   notes: string;
+  source: string;
+  lead_type: string;
+  search_location: string;
+  city: string;
+  state: string;
+  timeline: string;
+  price_min: string;
+  price_max: string;
+  beds: string;
+  baths: string;
+  tags: string;
 };
 
 const emptyMapping = (): ColumnMapping => ({
   name: "",
+  first_name: "",
+  last_name: "",
   email: "",
   phone: "",
   property_address: "",
   notes: "",
+  source: "",
+  lead_type: "",
+  search_location: "",
+  city: "",
+  state: "",
+  timeline: "",
+  price_min: "",
+  price_max: "",
+  beds: "",
+  baths: "",
+  tags: "",
 });
+
+/** Fields the user can map, with friendly labels. Order = display order. */
+const MAP_FIELDS: { key: keyof ColumnMapping; label: string }[] = [
+  { key: "name", label: "Full name" },
+  { key: "first_name", label: "First name" },
+  { key: "last_name", label: "Last name" },
+  { key: "email", label: "Email" },
+  { key: "phone", label: "Phone" },
+  { key: "source", label: "Lead source" },
+  { key: "lead_type", label: "Type (buyer/seller/renter)" },
+  { key: "search_location", label: "Area of interest" },
+  { key: "city", label: "City" },
+  { key: "state", label: "State" },
+  { key: "price_min", label: "Budget min" },
+  { key: "price_max", label: "Budget max" },
+  { key: "beds", label: "Beds" },
+  { key: "baths", label: "Baths" },
+  { key: "timeline", label: "Timeline" },
+  { key: "property_address", label: "Property address" },
+  { key: "tags", label: "Tags" },
+  { key: "notes", label: "Notes" },
+];
 
 export function ImportWizardClient() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -25,6 +74,7 @@ export function ImportWizardClient() {
   const [jobId, setJobId] = useState<string | null>(null);
   const [rowCount, setRowCount] = useState(0);
   const [mapping, setMapping] = useState<ColumnMapping>(emptyMapping());
+  const [preset, setPreset] = useState<string>("auto");
   const [dupStrategy, setDupStrategy] = useState<"skip" | "merge" | "create_anyway">("skip");
   const [preview, setPreview] = useState<
     Array<{
@@ -65,8 +115,12 @@ export function ImportWizardClient() {
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error || "Upload failed");
       setJobId(body.jobId);
-      setHeaders(body.headers ?? []);
+      const hdrs: string[] = body.headers ?? [];
+      setHeaders(hdrs);
       setRowCount(body.rowCount ?? 0);
+      // Auto-detect the mapping from the headers (BoldTrail / Follow Up Boss /
+      // kvCORE aliases). Pre-fills the wizard; the user can still adjust.
+      setMapping({ ...emptyMapping(), ...autoMapHeaders(hdrs, presetExtra(preset)) });
       setStep(2);
       void loadHistory();
     } catch (e) {
@@ -86,13 +140,9 @@ export function ImportWizardClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           jobId,
-          mapping: {
-            name: mapping.name || null,
-            email: mapping.email || null,
-            phone: mapping.phone || null,
-            property_address: mapping.property_address || null,
-            notes: mapping.notes || null,
-          },
+          mapping: Object.fromEntries(
+            (Object.keys(mapping) as (keyof ColumnMapping)[]).map((k) => [k, mapping[k] || null]),
+          ),
           duplicateStrategy: dupStrategy,
         }),
       });
@@ -192,14 +242,38 @@ export function ImportWizardClient() {
         <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-base font-semibold text-gray-900">2. Column mapping</h2>
           <p className="mt-1 text-sm text-gray-600">{rowCount.toLocaleString()} rows · job {jobId}</p>
+          <label className="mt-3 block text-sm">
+            <span className="font-medium text-gray-700">Importing from</span>
+            <select
+              className="mt-1 w-full rounded-lg border border-gray-300 px-2 py-2 text-sm sm:w-64"
+              value={preset}
+              onChange={(e) => {
+                const key = e.target.value;
+                setPreset(key);
+                // Re-run auto-map tuned to the chosen CRM; user edits still overridable.
+                setMapping({ ...emptyMapping(), ...autoMapHeaders(headers, presetExtra(key)) });
+              }}
+            >
+              {IMPORT_PRESETS.map((p) => (
+                <option key={p.key} value={p.key}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="mt-2 text-xs text-gray-500">
+            We auto-detected the mapping from your headers — review and adjust below.
+            Anything left as “ignore” is skipped. Only a name (full, or first + last)
+            plus email or phone is required.
+          </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {(["name", "email", "phone", "property_address", "notes"] as const).map((field) => (
-              <label key={field} className="block text-sm">
-                <span className="font-medium text-gray-700">{field.replace("_", " ")}</span>
+            {MAP_FIELDS.map(({ key, label }) => (
+              <label key={key} className="block text-sm">
+                <span className="font-medium text-gray-700">{label}</span>
                 <select
                   className="mt-1 w-full rounded-lg border border-gray-300 px-2 py-2 text-sm"
-                  value={mapping[field]}
-                  onChange={(e) => setMapping((m) => ({ ...m, [field]: e.target.value }))}
+                  value={mapping[key]}
+                  onChange={(e) => setMapping((m) => ({ ...m, [key]: e.target.value }))}
                 >
                   <option value="">— ignore —</option>
                   {headers.map((h) => (

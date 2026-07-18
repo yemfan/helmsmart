@@ -5,13 +5,11 @@ import { createClient } from "@/lib/supabase/server";
 import { insertInvoiceWithLines } from "@helm/dna-finance";
 import { revalidatePath } from "next/cache";
 import { checkActionPermission } from "@/components/role-guard";
-import { Resend } from "resend";
+import { sendEmail, FROM_ADDRESS } from "@/lib/email";
 import { createNotification } from "@/lib/actions/notifications";
 import { refreshClientLifetimeValue } from "@/lib/actions/clients";
 import { runAutomations } from "@/lib/automation-engine";
 import { sendReminderForInvoice, type ReminderInvoice } from "@/lib/invoice-reminders";
-
-const resend = new Resend(process.env.RESEND_API_KEY ?? "");
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -201,10 +199,11 @@ export async function sendInvoice(invoiceId: string) {
   </table>
 </body></html>`;
 
-  const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@smbai.app";
+  const fromEmail = FROM_ADDRESS;
 
-  await resend.emails.send({
-    from: fromEmail,
+  // Throws if Resend rejects the send, so the messages row and the
+  // invoice's "sent" status below are only written for mail that left.
+  await sendEmail({
     to: clientArr.email,
     subject: `Invoice ${inv.invoice_number} — $${Number(inv.total).toFixed(2)} due ${inv.due_date}`,
     html,

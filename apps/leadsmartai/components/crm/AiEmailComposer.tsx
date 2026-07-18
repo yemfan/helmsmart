@@ -6,15 +6,18 @@ export function AiEmailComposer({
   leadId,
   to,
   defaultSubject = "",
+  defaultBody = "",
   onSent,
 }: {
   leadId: string;
   to: string;
   defaultSubject?: string;
+  /** Optional pre-filled body (e.g. a market-report share link). */
+  defaultBody?: string;
   onSent?: () => void;
 }) {
   const [subject, setSubject] = useState(defaultSubject);
-  const [body, setBody] = useState("");
+  const [body, setBody] = useState(defaultBody);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
