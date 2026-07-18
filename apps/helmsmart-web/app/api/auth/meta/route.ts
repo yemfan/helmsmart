@@ -6,12 +6,16 @@
  * route.
  */
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getMetaConfig, isMetaConfigured, metaAuthUrl } from "@/lib/meta";
 
 export async function GET() {
-  const { baseUrl } = getMetaConfig();
+  // Verticals are host-routed, so everything here must stay on the host the
+  // user is actually on — otherwise the state cookie is set on one domain and
+  // read on another, which surfaces as a confusing bad_state.
+  const host = (await headers()).get("host");
+  const { baseUrl } = getMetaConfig(host);
 
   if (!isMetaConfigured()) {
     return NextResponse.redirect(`${baseUrl}/social?meta_error=not_configured`);
@@ -28,7 +32,7 @@ export async function GET() {
   }
 
   const nonce = crypto.randomUUID();
-  const res = NextResponse.redirect(metaAuthUrl(nonce));
+  const res = NextResponse.redirect(metaAuthUrl(nonce, host));
   res.cookies.set("meta_oauth_state", nonce, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
