@@ -14,7 +14,12 @@ const MAX_BYTES = 10 * 1024 * 1024;
 const MANUAL_EXT = [".pdf", ".docx", ".txt"];
 const MANUAL_MAX_BYTES = 25 * 1024 * 1024;
 
-type Phase = "form" | "uploading" | "generating";
+type Phase = "form" | "running";
+type StepStatus = "pending" | "active" | "done" | "error";
+interface ProgressStep {
+  label: string;
+  status: StepStatus;
+}
 
 export default function NewGuidePage() {
   const router = useRouter();
@@ -27,6 +32,7 @@ export default function NewGuidePage() {
   const [dragOver, setDragOver] = useState(false);
   const [manualDrag, setManualDrag] = useState(false);
   const [phase, setPhase] = useState<Phase>("form");
+  const [progress, setProgress] = useState<ProgressStep[]>([]);
   const [error, setError] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
   const manualInput = useRef<HTMLInputElement>(null);
@@ -82,10 +88,33 @@ export default function NewGuidePage() {
       return;
     }
 
-    // 1. Upload images + the manual to Storage via service-role-signed URLs.
-    //    The browser uploads directly (no ~4.5MB server body limit), and the signed
-    //    URL authorizes the write without depending on a per-user Storage policy.
-    setPhase("uploading");
+    // Draft in one base language first, then add the rest one at a time. Each
+    // request stays short (a single 6-language call hit Vercel's 504) and the
+    // UI can report real progress.
+    const base: Locale = languages.includes("en") ? "en" : languages[0];
+    const others = languages.filter((l) => l !== base);
+
+    const uploadLabel = manual
+      ? `Uploading ${manual.name}${images.length ? ` + ${images.length} photo${images.length === 1 ? "" : "s"}` : ""}`
+      : `Uploading ${images.length} photo${images.length === 1 ? "" : "s"}`;
+    setProgress([
+      { label: uploadLabel, status: "pending" },
+      { label: `Drafting the guide in ${LOCALE_NAMES[base]}`, status: "pending" },
+      ...others.map((l) => ({ label: `Adding ${LOCALE_NAMES[l]}`, status: "pending" as StepStatus })),
+    ]);
+    setPhase("running");
+
+    const mark = (i: number, status: StepStatus) =>
+      setProgress((prev) => prev.map((s, j) => (j === i ? { ...s, status } : s)));
+    const fail = (i: number, msg: string) => {
+      mark(i, "error");
+      setPhase("form");
+      setError(msg);
+    };
+
+    // 1. Upload via service-role-signed URLs (no ~4.5MB server body limit, and
+    //    the signed URL authorizes the write without a per-user Storage policy).
+    mark(0, "active");
     const files: File[] = [...images];
     if (manual) files.push(manual);
     const manualIndex = manual ? files.length - 1 : -1;
@@ -94,105 +123,168 @@ export default function NewGuidePage() {
       ext: f.name.split(".").pop() || (i === manualIndex ? "pdf" : "jpg"),
     }));
 
-    const signed = await signUploads(items);
-    if (!signed.ok || !signed.targets) {
-      setPhase("form");
-      setError(signed.message || "Upload failed. Try again.");
-      return;
-    }
-
     const image_urls: string[] = [];
     let manual_url = "";
     let manual_name = "";
-    try {
-      for (let i = 0; i < files.length; i++) {
-        const target = signed.targets[i];
-        const { error: upErr } = await supabase.storage
-          .from("guide-images")
-          .uploadToSignedUrl(target.path, target.token, files[i]);
-        if (upErr) throw upErr;
-        if (i === manualIndex) {
-          manual_url = target.publicUrl;
-          manual_name = files[i].name;
-        } else {
-          image_urls.push(target.publicUrl);
-        }
+    if (items.length > 0) {
+      const signed = await signUploads(items);
+      if (!signed.ok || !signed.targets) {
+        fail(0, signed.message || "Upload failed. Try again.");
+        return;
       }
-    } catch {
-      setPhase("form");
-      setError("Upload failed. Check your connection and try again.");
-      return;
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const target = signed.targets[i];
+          const { error: upErr } = await supabase.storage
+            .from("guide-images")
+            .uploadToSignedUrl(target.path, target.token, files[i]);
+          if (upErr) throw upErr;
+          if (i === manualIndex) {
+            manual_url = target.publicUrl;
+            manual_name = files[i].name;
+          } else {
+            image_urls.push(target.publicUrl);
+          }
+        }
+      } catch {
+        fail(0, "Upload failed. Check your connection and try again.");
+        return;
+      }
     }
+    mark(0, "done");
 
-    // 2. call generate
-    setPhase("generating");
+    // 2. Draft the base-language guide.
+    mark(1, "active");
     const form = new FormData();
     form.set("product_name", name.trim());
     form.set("model_no", modelNo.trim());
     form.set("notes", notes.trim());
     form.set("image_urls", JSON.stringify(image_urls));
-    form.set("languages", JSON.stringify(languages));
+    form.set("languages", JSON.stringify([base]));
     if (manual_url) {
       form.set("manual_url", manual_url);
       form.set("manual_name", manual_name);
     }
 
+    let guideId = "";
     try {
       const res = await fetch("/api/generate", { method: "POST", body: form });
-      // A gateway timeout returns HTML, so guard the JSON parse.
       let json: { guideId?: string; error?: string } = {};
       try {
         json = await res.json();
       } catch {
-        /* non-JSON response */
+        /* a gateway timeout returns HTML, not JSON */
       }
       if (!res.ok) {
-        setPhase("form");
-        setError(
+        fail(
+          1,
           res.status === 504
-            ? "Generation timed out. Try selecting fewer languages, or a shorter PDF."
+            ? "Drafting timed out. Try a shorter PDF or fewer photos."
             : json.error || `Generation failed (${res.status}) — try again.`
         );
         return;
       }
       if (!json.guideId) {
-        setPhase("form");
-        setError("Generation didn't return a guide — try again.");
+        fail(1, "Generation didn't return a guide — try again.");
         return;
       }
-      router.push(`/app/guide/${json.guideId}`);
+      guideId = json.guideId;
     } catch {
-      setPhase("form");
-      setError("Network error — try again.");
+      fail(1, "Network error — try again.");
+      return;
     }
+    mark(1, "done");
+
+    // 3. Add each remaining language. A failure here is non-fatal — the guide
+    //    already exists, so we keep going and land the seller in the editor.
+    for (let k = 0; k < others.length; k++) {
+      const idx = 2 + k;
+      mark(idx, "active");
+      try {
+        const res = await fetch("/api/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ guideId, locale: others[k] }),
+        });
+        mark(idx, res.ok ? "done" : "error");
+      } catch {
+        mark(idx, "error");
+      }
+    }
+
+    router.push(`/app/guide/${guideId}`);
   }
 
-  if (phase !== "form") {
+  if (phase === "running") {
+    const done = progress.filter((s) => s.status === "done").length;
     return (
       <main className={styles.container}>
-        <div className={styles.empty}>
-          <h2>{phase === "uploading" ? "Uploading…" : "AI is building your guide…"}</h2>
-          <p>
-            {phase === "uploading"
-              ? `Sending ${manual ? "your PDF" : ""}${manual && images.length ? " and " : ""}${images.length ? `${images.length} image${images.length === 1 ? "" : "s"}` : ""} to storage.`
-              : manual
-                ? "Reading your PDF, restructuring the steps, and writing every language you picked. This usually takes under a minute."
-                : "Reading your photos and notes, sequencing steps, and writing every language you picked. This usually takes under a minute."}
-          </p>
-          <div
-            aria-hidden
-            style={{
-              width: 40,
-              height: 40,
-              margin: "8px auto 0",
-              border: "3px solid var(--color-line)",
-              borderTopColor: "var(--color-accent)",
-              borderRadius: "50%",
-              animation: "sdspin 0.8s linear infinite",
-            }}
-          />
+        <div className={styles.pageHead}>
+          <div>
+            <h1 className={styles.h1}>Building your guide…</h1>
+            <p className={styles.sub}>
+              {done} of {progress.length} done · you&apos;ll land in the editor automatically.
+            </p>
+          </div>
+        </div>
+
+        <div className={styles.panel}>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 14 }}>
+            {progress.map((s, i) => (
+              <li key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span
+                  aria-hidden
+                  style={{
+                    width: 22,
+                    height: 22,
+                    flexShrink: 0,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: s.status === "done" ? "#fff" : s.status === "error" ? "#fff" : "var(--color-ink-soft)",
+                    background:
+                      s.status === "done"
+                        ? "var(--color-green)"
+                        : s.status === "error"
+                          ? "var(--color-accent)"
+                          : "transparent",
+                    border:
+                      s.status === "done" || s.status === "error"
+                        ? "none"
+                        : s.status === "active"
+                          ? "2.5px solid var(--color-accent)"
+                          : "2px solid var(--color-line)",
+                    borderTopColor: s.status === "active" ? "transparent" : undefined,
+                    animation: s.status === "active" ? "sdspin 0.8s linear infinite" : undefined,
+                  }}
+                >
+                  {s.status === "done" ? "✓" : s.status === "error" ? "!" : ""}
+                </span>
+                <span
+                  style={{
+                    fontSize: 15,
+                    fontWeight: s.status === "active" ? 600 : 500,
+                    color:
+                      s.status === "pending"
+                        ? "var(--color-ink-soft)"
+                        : s.status === "error"
+                          ? "var(--color-accent)"
+                          : "var(--color-ink)",
+                  }}
+                >
+                  {s.label}
+                  {s.status === "error" && " — skipped, you can add it later"}
+                </span>
+              </li>
+            ))}
+          </ul>
           <style>{`@keyframes sdspin{to{transform:rotate(360deg)}}`}</style>
         </div>
+
+        {error && <div className={styles.notice}>{error}</div>}
       </main>
     );
   }

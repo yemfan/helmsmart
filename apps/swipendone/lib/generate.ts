@@ -173,3 +173,80 @@ export async function generateGuide(input: GenerateInput): Promise<GeneratedGuid
 
   throw new Error(`Generation failed to produce valid JSON: ${lastErr}`);
 }
+
+/* ---------------------------------------------------------------------------
+ * Translation — used to add one language at a time to an existing guide, so
+ * each request stays short (a single 6-language generation hit the 504 limit)
+ * and the UI can report per-language progress.
+ * ------------------------------------------------------------------------- */
+
+export interface TranslatableGuide {
+  name: string;
+  meta: { time_estimate: string; people: string; tools: string };
+  parts: { code: string; name: string }[];
+  steps: { title: string; body: string; tip: string }[];
+}
+
+const translatableSchema = z.object({
+  name: z.string(),
+  meta: z.object({
+    time_estimate: z.string().default(""),
+    people: z.string().default(""),
+    tools: z.string().default(""),
+  }),
+  parts: z.array(z.object({ code: z.string(), name: z.string() })),
+  steps: z.array(z.object({ title: z.string(), body: z.string(), tip: z.string() })),
+});
+
+/** Translate one guide's text into `target`, preserving structure and part codes. */
+export async function translateGuide(
+  base: TranslatableGuide,
+  target: Locale
+): Promise<TranslatableGuide> {
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not configured");
+  const client = new Anthropic({ apiKey });
+
+  const system = `You localize consumer-product assembly instructions into ${LOCALE_ENGLISH_NAMES[target]}.
+
+RULES:
+- Respond with STRICT JSON ONLY — no markdown, no code fences, no commentary.
+- Return exactly the same JSON shape you receive, with every text value rewritten in ${LOCALE_ENGLISH_NAMES[target]}.
+- Keep the same number of parts and steps, in the same order.
+- Keep each part's "code" EXACTLY as given (A, B, C…) — never translate codes.
+- Keep brand names and model numbers unchanged; localize only descriptive text.
+- Write natural, fluent ${LOCALE_ENGLISH_NAMES[target]} as a native technical writer would — NOT a literal word-for-word translation. Adapt idiom and units.`;
+
+  let lastErr = "";
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const userText =
+      attempt === 0
+        ? JSON.stringify(base)
+        : `${JSON.stringify(base)}\n\nYour previous response failed validation: ${lastErr}\nReturn corrected STRICT JSON only.`;
+
+    const message = await client.messages.create({
+      model: MODEL,
+      max_tokens: 4096,
+      system,
+      messages: [{ role: "user", content: [{ type: "text", text: userText }] }],
+    });
+
+    const text = message.content
+      .filter((b): b is Anthropic.TextBlock => b.type === "text")
+      .map((b) => b.text)
+      .join("");
+
+    try {
+      const parsed = JSON.parse(stripFences(text));
+      const result = translatableSchema.parse(parsed);
+      // Structure must line up with the source so the merge stays aligned.
+      if (result.parts.length !== base.parts.length || result.steps.length !== base.steps.length) {
+        throw new Error("translated structure does not match the source");
+      }
+      return result as TranslatableGuide;
+    } catch (e) {
+      lastErr = e instanceof Error ? e.message : String(e);
+    }
+  }
+  throw new Error(`Translation failed: ${lastErr}`);
+}
