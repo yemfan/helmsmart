@@ -16,7 +16,7 @@
  */
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
-import { publishLinkedInPost } from "@/lib/linkedin";
+import { publishToPlatform } from "@/lib/social-publish";
 import { canPublish, patchSocialPost, unsupportedReason } from "@/lib/social-platforms";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +26,8 @@ type DuePost = {
   organization_id: string;
   content: string;
   platform: string;
+  /** Instagram REQUIRES one; Facebook uses it to choose /photos over /feed. */
+  media_url: string | null;
 };
 
 export async function GET(request: Request) {
@@ -41,7 +43,7 @@ export async function GET(request: Request) {
   // No platform filter — every due post gets resolved one way or the other.
   const { data: due } = await db
     .from("social_posts")
-    .select("id, organization_id, content, platform")
+    .select("id, organization_id, content, platform, media_url")
     .eq("status", "scheduled")
     .lte("scheduled_at", nowIso)
     .order("scheduled_at", { ascending: true })
@@ -68,7 +70,13 @@ export async function GET(request: Request) {
       continue;
     }
 
-    const res = await publishLinkedInPost(row.organization_id, row.content);
+    const res = await publishToPlatform({
+      orgId: row.organization_id,
+      platform: row.platform,
+      content: row.content,
+      imageUrl: row.media_url,
+    });
+
     await patchSocialPost(
       db,
       row.id,

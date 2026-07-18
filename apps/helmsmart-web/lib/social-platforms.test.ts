@@ -6,6 +6,7 @@ import {
   canPublish,
   outcomeForDuePost,
   patchSocialPost,
+  providerFor,
   unsupportedReason,
 } from "./social-platforms";
 
@@ -13,20 +14,31 @@ describe("publishable platforms", () => {
   it("only claims platforms we have a real publisher for", () => {
     // If a platform is added here, its publish path must actually work — this
     // list is what the UI promises and what the cron will attempt.
-    expect([...PUBLISHABLE_PLATFORMS]).toEqual(["linkedin"]);
+    expect([...PUBLISHABLE_PLATFORMS].sort()).toEqual(
+      ["facebook", "instagram", "linkedin"].sort(),
+    );
   });
 
   it("never claims a platform outside the schema's allowed set", () => {
     for (const p of PUBLISHABLE_PLATFORMS) expect(PLATFORMS).toContain(p);
   });
 
-  it("says no for the three platforms that silently stalled", () => {
-    // THE REGRESSION: these were selectable in the UI, scheduled fine, and then
-    // sat at status='scheduled' forever because the cron filtered them out.
-    for (const p of ["x", "facebook", "instagram"]) {
-      expect(canPublish(p)).toBe(false);
+  it("still says no for X, which has no publisher", () => {
+    // Facebook + Instagram graduated when their publishers landed. X did not,
+    // so it stays honestly marked rather than silently accepting posts.
+    expect(canPublish("x")).toBe(false);
+    for (const p of ["linkedin", "facebook", "instagram"]) {
+      expect(canPublish(p)).toBe(true);
     }
-    expect(canPublish("linkedin")).toBe(true);
+  });
+
+  it("routes each platform to the OAuth provider that actually owns it", () => {
+    // One Meta grant covers Facebook AND Instagram — connecting a Page enables
+    // both, which is why they can't each have their own provider.
+    expect(providerFor("facebook")).toBe("meta");
+    expect(providerFor("instagram")).toBe("meta");
+    expect(providerFor("linkedin")).toBe("linkedin");
+    expect(providerFor("x")).toBeNull();
   });
 
   it("rejects unknown platforms rather than assuming they work", () => {

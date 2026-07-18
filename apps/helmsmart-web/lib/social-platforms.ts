@@ -25,8 +25,36 @@ export { PLATFORM_LABEL, SOCIAL_PLATFORMS as PLATFORMS } from "@helm/dna-marketi
  * Platforms with a real publisher wired up end to end — HelmSmart's answer,
  * not a universal one. Add a platform here ONLY when its publish path actually
  * works: this list is what the UI promises and what the cron will attempt.
+ *
+ * X remains absent: there is no publisher for it, so it stays honestly marked
+ * "manual" rather than silently accepting posts it can never send.
  */
-export const PUBLISHABLE_PLATFORMS: readonly SocialPlatform[] = ["linkedin"];
+export const PUBLISHABLE_PLATFORMS: readonly SocialPlatform[] = [
+  "linkedin",
+  "facebook",
+  "instagram",
+];
+
+/**
+ * Which OAuth connection a platform publishes through. Facebook and Instagram
+ * share ONE Meta grant — connecting a Page connects both, and Instagram
+ * additionally needs an IG Business account linked to that Page.
+ */
+export const PLATFORM_PROVIDER: Record<SocialPlatform, "linkedin" | "meta" | null> = {
+  linkedin: "linkedin",
+  facebook: "meta",
+  instagram: "meta",
+  x: null,
+};
+
+/**
+ * "Supported" (a publisher exists) is NOT the same as "ready" (this org has
+ * connected the account). Keeping them separate is what lets the UI say
+ * "connect Facebook" instead of the much less useful "Facebook doesn't work".
+ */
+export function providerFor(platform: string): "linkedin" | "meta" | null {
+  return PLATFORM_PROVIDER[platform as SocialPlatform] ?? null;
+}
 
 export function canPublish(platform: string): boolean {
   return canPublishOn(platform, PUBLISHABLE_PLATFORMS);
