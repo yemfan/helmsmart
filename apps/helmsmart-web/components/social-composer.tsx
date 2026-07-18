@@ -3,7 +3,7 @@
 import { useState, useTransition, type ReactNode } from "react";
 import { Sparkles, Send, Calendar, Copy, Check, Trash2, ExternalLink, Clock } from "lucide-react";
 import { generateSocialPost, generateSocialVariants, refineSocialPost, createSocialPost, updateSocialPost, deleteSocialPost, type SocialRefineMode } from "@/lib/actions/social";
-import { canPublish } from "@/lib/social-platforms";
+import { canPublish, providerFor } from "@/lib/social-platforms";
 
 type Platform = "x" | "linkedin" | "facebook" | "instagram";
 type Tone = "professional" | "casual" | "witty" | "promotional" | "educational";
@@ -30,6 +30,13 @@ interface Props {
   orgName: string;
   /** Optional "handled by" badge rendered in the platform-tabs bar (server-supplied). */
   owner?: ReactNode;
+  /** OAuth providers this org has linked, e.g. ["linkedin","meta"]. */
+  connectedProviders?: string[];
+}
+
+/** Facebook and Instagram share one Meta grant, so they connect together. */
+function providerLabel(platform: Platform): string {
+  return providerFor(platform) === "meta" ? "Facebook" : "LinkedIn";
 }
 
 const PLATFORM_META: Record<Platform, { label: string; icon: string; limit: number; color: string }> = {
@@ -67,7 +74,18 @@ function timeLabel(iso: string | null) {
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
-export function SocialComposer({ posts: initialPosts, orgName, owner }: Props) {
+export function SocialComposer({
+  posts: initialPosts,
+  orgName,
+  owner,
+  connectedProviders = [],
+}: Props) {
+  /** Is this platform's OAuth provider linked for this org? */
+  const isConnected = (platform: Platform): boolean => {
+    const provider = providerFor(platform);
+    return provider ? connectedProviders.includes(provider) : false;
+  };
+
   const [posts, setPosts] = useState(initialPosts);
   const [activePlatform, setActivePlatform] = useState<Platform>("linkedin");
   const [tone, setTone]   = useState<Tone>("professional");
@@ -210,12 +228,15 @@ export function SocialComposer({ posts: initialPosts, orgName, owner }: Props) {
                 {meta.icon}
               </span>
               {meta.label}
-              {/* Mark the platforms we can't auto-publish to, right on the tab.
-                  This used to be invisible until a scheduled post silently
-                  never went out. */}
-              {!canPublish(p) && (
+              {/* Three states, and the difference matters: we can publish here
+                  (nothing shown) · we could, once you connect · we never can.
+                  Collapsing the middle one into "manual" would hide a feature
+                  that's one click away. */}
+              {!canPublish(p) ? (
                 <span className="text-[10px] font-normal text-slate-400">manual</span>
-              )}
+              ) : !isConnected(p) ? (
+                <span className="text-[10px] font-normal text-amber-600">connect</span>
+              ) : null}
               {count > 0 && (
                 <span className="text-xs bg-slate-100 text-slate-500 rounded-full px-1.5 py-0.5">{count}</span>
               )}
@@ -225,19 +246,35 @@ export function SocialComposer({ posts: initialPosts, orgName, owner }: Props) {
         {owner ? <div className="ml-auto shrink-0 pl-4">{owner}</div> : null}
       </div>
 
-      {/* Say it plainly before anyone writes a post they can't send. Scheduling
-          is still allowed — the content is useful to write and copy — but the
-          promise being made is explicit. */}
-      {!canPublish(activePlatform) && (
+      {/* Say it plainly BEFORE anyone writes a post they can't send. */}
+      {!canPublish(activePlatform) ? (
         <div className="border-b border-amber-200 bg-amber-50 px-6 py-2.5 text-xs text-amber-900">
-          <strong className="font-semibold">{PLATFORM_META[activePlatform].label} posts won&apos;t send
-          automatically.</strong>{" "}
-          Auto-publishing is only connected for LinkedIn today. You can still
-          write, generate and save drafts here — then copy the text and post it
-          yourself. Anything scheduled here will be marked failed rather than
+          <strong className="font-semibold">
+            {PLATFORM_META[activePlatform].label} posts won&apos;t send automatically.
+          </strong>{" "}
+          There&apos;s no {PLATFORM_META[activePlatform].label} publisher yet. You can
+          still write, generate and save drafts here — then copy the text and post
+          it yourself. Anything scheduled will be marked failed rather than
           published.
         </div>
-      )}
+      ) : !isConnected(activePlatform) ? (
+        <div className="border-b border-amber-200 bg-amber-50 px-6 py-2.5 text-xs text-amber-900">
+          <strong className="font-semibold">
+            Connect {providerLabel(activePlatform)} to publish automatically.
+          </strong>{" "}
+          {PLATFORM_META[activePlatform].label} posting is supported — this account
+          just isn&apos;t linked yet, so anything scheduled now will fail. Use the
+          connect button above.
+          {activePlatform === "instagram" && (
+            <> Instagram also needs an image on every post, and an Instagram
+            Business account linked to your Facebook Page.</>
+          )}
+        </div>
+      ) : activePlatform === "instagram" ? (
+        <div className="border-b border-slate-200 bg-slate-50 px-6 py-2 text-xs text-slate-600">
+          Instagram requires an image on every post — text-only posts will fail.
+        </div>
+      ) : null}
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Compose */}

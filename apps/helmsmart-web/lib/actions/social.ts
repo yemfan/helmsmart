@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import Anthropic from "@anthropic-ai/sdk";
-import { publishLinkedInPost } from "@/lib/linkedin";
+import { publishToPlatform } from "@/lib/social-publish";
 import { canPublish, patchSocialPost, unsupportedReason } from "@/lib/social-platforms";
 // NOTE: import types only — never RE-EXPORT a type from a "use server" file.
 // It becomes a runtime value export and throws ReferenceError on every action
@@ -237,7 +237,7 @@ export async function publishSocialPost(
   const supabase = await createClient();
   const { data: post } = await supabase
     .from("social_posts")
-    .select("id, platform, content")
+    .select("id, platform, content, media_url")
     .eq("id", postId)
     .eq("organization_id", orgId)
     .single();
@@ -256,7 +256,12 @@ export async function publishSocialPost(
     return { ok: false, error };
   }
 
-  const res = await publishLinkedInPost(orgId, post.content as string);
+  const res = await publishToPlatform({
+    orgId,
+    platform: post.platform as string,
+    content: post.content as string,
+    imageUrl: (post.media_url as string | null) ?? null,
+  });
   await patchSocialPost(
     supabase,
     postId,

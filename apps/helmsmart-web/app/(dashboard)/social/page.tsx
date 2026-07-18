@@ -10,7 +10,14 @@ export const metadata: Metadata = { title: "Social" };
 export default async function SocialPage({
   searchParams,
 }: {
-  searchParams: Promise<{ linkedin?: string; linkedin_error?: string }>;
+  searchParams: Promise<{
+    linkedin?: string;
+    linkedin_error?: string;
+    meta?: string;
+    meta_error?: string;
+    page?: string;
+    ig?: string;
+  }>;
 }) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value ?? "";
@@ -38,22 +45,26 @@ export default async function SocialPage({
       .order("created_at", { ascending: false });
   };
 
-  const [{ data: posts }, { data: org }, { data: linkedinToken }] = await Promise.all([
+  const [{ data: posts }, { data: org }, { data: tokens }] = await Promise.all([
     postsQuery(),
     supabase
       .from("organizations")
       .select("name")
       .eq("id", orgId)
       .single(),
+    // One read for every provider — a second .eq() query per platform would
+    // grow with each integration.
     supabase
       .from("org_oauth_tokens")
-      .select("connected_at")
-      .eq("organization_id", orgId)
-      .eq("provider", "linkedin")
-      .maybeSingle(),
+      .select("provider")
+      .eq("organization_id", orgId),
   ]);
 
-  const linkedinConnected = !!linkedinToken;
+  const connected = new Set(
+    ((tokens ?? []) as { provider: string }[]).map((t) => t.provider),
+  );
+  const linkedinConnected = connected.has("linkedin");
+  const metaConnected = connected.has("meta");
 
   return (
     <div className="flex flex-col h-full">
@@ -65,6 +76,33 @@ export default async function SocialPage({
       {sp.linkedin_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
           Couldn&apos;t connect LinkedIn ({sp.linkedin_error.replace(/_/g, " ")}). Please try again.
+        </div>
+      )}
+      {sp.meta === "connected" && (
+        <div className="mx-4 mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
+          {/* Naming the Page matters: connecting the wrong one and finding out
+              when a post appears on it is a genuinely bad surprise. */}
+          Connected to <strong>{sp.page || "your Facebook Page"}</strong>. Scheduled
+          Facebook posts will now publish automatically.
+          {sp.ig === "unlinked" && (
+            <>
+              {" "}
+              Instagram isn&apos;t available yet — no Instagram Business account is
+              linked to that Page. Link one in Meta Business Suite, then reconnect.
+            </>
+          )}
+        </div>
+      )}
+      {sp.meta_error && (
+        <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
+          {sp.meta_error === "no_pages_granted" ? (
+            <>
+              No Facebook Page was shared with the app. Reconnect and tick the Page
+              you want to post to on Meta&apos;s permissions screen.
+            </>
+          ) : (
+            <>Couldn&apos;t connect Facebook ({sp.meta_error.replace(/_/g, " ")}). Please try again.</>
+          )}
         </div>
       )}
       <SocialComposer
@@ -87,8 +125,23 @@ export default async function SocialPage({
                 Connect LinkedIn
               </a>
             )}
+            {/* One Meta grant covers both Facebook and Instagram. */}
+            {metaConnected ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Facebook connected
+              </span>
+            ) : (
+              <a
+                href="/api/auth/meta"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#1877f2] bg-[#1877f2] px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+              >
+                Connect Facebook
+              </a>
+            )}
           </div>
         }
+        connectedProviders={[...connected]}
       />
     </div>
   );
