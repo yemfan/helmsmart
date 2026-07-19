@@ -30,11 +30,12 @@ export type PortfolioCompany = {
   sector: string;
   href?: string;
   /**
-   * Each company's own mark. These are NOT a consistent set — HelmSmart and
-   * RealtorBoss are square app tiles, LeadSmart and VoltrixOS are horizontal
-   * lockups with the wordmark built in (normalised to one height they run 39px
-   * to 201px wide). So they're used one-per-card, where nothing sits beside
-   * them to compare against, and never in a shared logo row.
+   * Each company's own mark. These are NOT a consistent set — HelmSmart,
+   * RealtorBoss and SwipenDone are square app tiles, LeadSmart and VoltrixOS
+   * are horizontal lockups with the wordmark built in (normalised to one
+   * height they run 39px to 201px wide). So they're used one-per-card, where
+   * nothing sits beside them to compare against, and never in a shared logo
+   * row.
    */
   logo: { src: string; width: number; height: number };
 };
@@ -70,6 +71,15 @@ export const portfolio: PortfolioCompany[] = [
     detail: "Developing smart electric mobility solutions for the next generation.",
     sector: "Smart Mobility",
     logo: { src: "/logos/voltrixos.png", width: 830, height: 520 },
+  },
+  {
+    name: "SwipenDone",
+    summary: "AI product guides, delivered by QR code.",
+    detail:
+      "Turns a seller’s photos and rough notes into a swipeable, bilingual (EN/中文) product-instruction guide served at a QR-linked URL — so buyers get it assembled instead of returning it.",
+    sector: "AI • E-commerce",
+    href: "https://swipendone.com",
+    logo: { src: "/logos/swipendone.png", width: 512, height: 512 },
   },
 ];
 
@@ -143,6 +153,12 @@ export const milestones: Milestone[] = [
     name: "VoltrixOS",
     summary: "Smart electric mobility for the next generation.",
     location: "Smart Mobility",
+  },
+  {
+    year: "2026",
+    name: "SwipenDone",
+    summary: "AI-generated bilingual product guides, delivered by QR code.",
+    location: "AI • E-commerce",
   },
 ];
 

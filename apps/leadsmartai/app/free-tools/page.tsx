@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Bot,
@@ -10,6 +10,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { getServerT } from "@/lib/i18n/server";
+import PromptsLeadMagnet from "./PromptsLeadMagnet";
 
 type TFn = (key: string, opts?: { ns?: string; [k: string]: unknown }) => string;
 
@@ -320,75 +321,7 @@ export default async function FreeToolsPage() {
           </ul>
         </nav>
 
-        <section
-          aria-labelledby="lead-magnet-title"
-          className="mt-10 overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-6 md:p-10 dark:border-blue-900/40 dark:from-blue-950/30 dark:via-slate-950 dark:to-slate-950"
-        >
-          <div className="grid items-center gap-8 md:grid-cols-[1.3fr_1fr]">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">
-                {tf("lead_magnet.eyebrow")}
-              </p>
-              <h2
-                id="lead-magnet-title"
-                className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl dark:text-white"
-              >
-                {tf("lead_magnet.title")}
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600 md:text-base dark:text-slate-300">
-                {tf("lead_magnet.body")}
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <a
-                  href="/downloads/RealtyBoss_5_AI_Prompts.pdf"
-                  download
-                  className="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-                >
-                  <Download className="h-4 w-4" aria-hidden />
-                  {tf("lead_magnet.download_en")}
-                </a>
-                <a
-                  href="/downloads/RealtyBoss_5_AI_Prompts_ZH.pdf"
-                  download
-                  className="inline-flex items-center justify-center gap-2 rounded-md border border-blue-200 bg-white px-5 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 dark:border-blue-900/50 dark:bg-slate-900 dark:text-blue-300 dark:hover:bg-slate-900/70"
-                >
-                  <Download className="h-4 w-4" aria-hidden />
-                  {tf("lead_magnet.download_zh")}
-                </a>
-              </div>
-            </div>
-            <ul className="space-y-3 text-sm leading-6 text-slate-700 dark:text-slate-200">
-              <li className="flex gap-2">
-                <span aria-hidden className="mt-0.5 text-base">✍️</span>
-                <span>
-                  <strong className="font-semibold">{tf("lead_magnet.items.0.bold")}</strong>{" "}
-                  {tf("lead_magnet.items.0.rest")}
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <span aria-hidden className="mt-0.5 text-base">📲</span>
-                <span>
-                  <strong className="font-semibold">{tf("lead_magnet.items.1.bold")}</strong>{" "}
-                  {tf("lead_magnet.items.1.rest")}
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <span aria-hidden className="mt-0.5 text-base">📊</span>
-                <span>
-                  <strong className="font-semibold">{tf("lead_magnet.items.2.bold")}</strong>{" "}
-                  {tf("lead_magnet.items.2.rest")}
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <span aria-hidden className="mt-0.5 text-base">🎯</span>
-                <span>
-                  <strong className="font-semibold">{tf("lead_magnet.items.3.bold")}</strong>{" "}
-                  {tf("lead_magnet.items.3.rest")}
-                </span>
-              </li>
-            </ul>
-          </div>
-        </section>
+        <PromptsLeadMagnet />
 
         <div className="mt-12 space-y-14">
           {SECTIONS.map((section) => (

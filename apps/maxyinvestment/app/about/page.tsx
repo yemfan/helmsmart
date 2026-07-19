@@ -2,7 +2,36 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Container, Eyebrow, SectionHeading } from "@/components/section";
-import { beliefs, company, leadership, portfolio } from "@/lib/content";
+import { beliefs, company, leadership, milestones, portfolio } from "@/lib/content";
+
+const WORDS = [
+  "zero",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve",
+];
+
+/**
+ * Counts in prose, spelled out. Derived rather than written by hand so adding a
+ * company or a milestone can't leave this sentence quietly claiming the old
+ * number — which it did, until SwipenDone made "four ventures" wrong.
+ *
+ * Lowercase by default; `Spell` capitalises for sentence-initial use.
+ */
+const spell = (n: number) => WORDS[n] ?? String(n);
+const Spell = (n: number) => {
+  const w = spell(n);
+  return w.charAt(0).toUpperCase() + w.slice(1);
+};
 
 export const metadata: Metadata = {
   title: "About",
@@ -80,7 +109,8 @@ export default function AboutPage() {
           <Eyebrow>Our Journey</Eyebrow>
           <SectionHeading>Two decades, five industries.</SectionHeading>
           <p className="mb-8 max-w-[720px] text-lg text-navy-500">
-            Ten milestones from a first home-building business in 2006 to four AI ventures today.
+            {Spell(milestones.length)} milestones from a first home-building business in 2006 to{" "}
+            {spell(portfolio.length)} ventures today.
           </p>
           <Link
             href="/journey"
