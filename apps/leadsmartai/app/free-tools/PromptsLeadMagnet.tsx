@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, Download, Loader2 } from "lucide-react";
 
-const INSIDE = [
-  { icon: "✍️", title: "Listing Description Writer", body: "three ready-to-post versions, fair-housing safe" },
-  { icon: "📲", title: "Lead Follow-Up Sequence", body: "a full 5-touch cadence across text, email, and calls" },
-  { icon: "📊", title: "Instant CMA Narrative", body: "turn raw comps into a listing-appointment script" },
-  { icon: "🎯", title: "Objection-Handling Coach", body: "private role-play before your toughest appointments" },
-];
+/**
+ * Icons for the "what's inside" list. The copy itself lives in
+ * `web_free_tools.json` under `lead_magnet.items[]` ({ bold, rest }) —
+ * only the emoji stays here, since it doesn't translate.
+ */
+const INSIDE_ICONS = ["✍️", "📲", "📊", "🎯"];
 
 type Status = "idle" | "loading" | "done" | "error";
 
 export default function PromptsLeadMagnet() {
+  const { t } = useTranslation("web_free_tools");
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [lang, setLang] = useState<"en" | "zh">("en");
@@ -34,10 +36,12 @@ export default function PromptsLeadMagnet() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ firstName: firstName.trim(), email: email.trim(), lang, website }),
       });
-      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; download?: string; error?: string };
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; download?: string };
       if (!res.ok || !data.ok) {
         setStatus("error");
-        setError(data.error || "Something went wrong. Please try again.");
+        // The route's own `error` strings are English-only and carry no detail
+        // beyond "it failed", so show the localized generic message instead.
+        setError(t("lead_magnet.form.error_generic"));
         return;
       }
       setDownloadUrl(
@@ -49,7 +53,7 @@ export default function PromptsLeadMagnet() {
       setStatus("done");
     } catch {
       setStatus("error");
-      setError("Network error. Please try again.");
+      setError(t("lead_magnet.form.error_network"));
     }
   }
 
@@ -61,27 +65,26 @@ export default function PromptsLeadMagnet() {
       <div className="grid items-center gap-8 md:grid-cols-[1.3fr_1fr]">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">
-            Free download · for real estate agents
+            {t("lead_magnet.eyebrow")}
           </p>
           <h2
             id="lead-magnet-title"
             className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl dark:text-white"
           >
-            5 AI Prompts Every Realtor Should Steal
+            {t("lead_magnet.title")}
           </h2>
           <p className="mt-3 text-sm leading-6 text-slate-600 md:text-base dark:text-slate-300">
-            Copy, paste, and close more deals — write listings, follow up with
-            leads, and prep CMAs in seconds. Available in English and 中文.
+            {t("lead_magnet.body")}
           </p>
 
           {status === "done" ? (
             <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 dark:border-emerald-900/50 dark:bg-emerald-950/30">
               <p className="flex items-center gap-2 text-sm font-semibold text-emerald-800 dark:text-emerald-300">
                 <CheckCircle2 className="h-5 w-5 shrink-0" aria-hidden />
-                Check your inbox — we just emailed your prompts.
+                {t("lead_magnet.success.heading")}
               </p>
               <p className="mt-1 text-sm text-emerald-700/90 dark:text-emerald-300/80">
-                Or grab them right now:
+                {t("lead_magnet.success.body")}
               </p>
               <a
                 href={downloadUrl}
@@ -89,7 +92,7 @@ export default function PromptsLeadMagnet() {
                 className="mt-3 inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
               >
                 <Download className="h-4 w-4" aria-hidden />
-                Download the PDF
+                {t("lead_magnet.success.download")}
               </a>
             </div>
           ) : (
@@ -108,7 +111,7 @@ export default function PromptsLeadMagnet() {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <input
                   type="text"
-                  placeholder="First name"
+                  placeholder={t("lead_magnet.form.first_name_placeholder")}
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   autoComplete="given-name"
@@ -117,7 +120,7 @@ export default function PromptsLeadMagnet() {
                 <input
                   type="email"
                   required
-                  placeholder="Email"
+                  placeholder={t("lead_magnet.form.email_placeholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
@@ -126,7 +129,9 @@ export default function PromptsLeadMagnet() {
               </div>
 
               <div className="mt-3 flex items-center gap-4 text-sm text-slate-600 dark:text-slate-300">
-                <span className="font-medium">Language:</span>
+                <span className="font-medium">{t("lead_magnet.form.language_label")}</span>
+                {/* Endonyms — a language picker names each language in its own
+                    language, so these stay literal in every locale. */}
                 <label className="inline-flex cursor-pointer items-center gap-1.5">
                   <input
                     type="radio"
@@ -159,14 +164,14 @@ export default function PromptsLeadMagnet() {
                 ) : (
                   <Download className="h-4 w-4" aria-hidden />
                 )}
-                Email me the prompts
+                {t("lead_magnet.form.submit")}
               </button>
 
               {status === "error" ? (
                 <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>
               ) : (
                 <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                  No spam — just the prompts, straight to your inbox.
+                  {t("lead_magnet.form.privacy_note")}
                 </p>
               )}
             </form>
@@ -174,11 +179,12 @@ export default function PromptsLeadMagnet() {
         </div>
 
         <ul className="space-y-3 text-sm leading-6 text-slate-700 dark:text-slate-200">
-          {INSIDE.map((item) => (
-            <li key={item.title} className="flex gap-2">
-              <span aria-hidden className="mt-0.5 text-base">{item.icon}</span>
+          {INSIDE_ICONS.map((icon, i) => (
+            <li key={i} className="flex gap-2">
+              <span aria-hidden className="mt-0.5 text-base">{icon}</span>
               <span>
-                <strong className="font-semibold">{item.title}</strong> — {item.body}
+                <strong className="font-semibold">{t(`lead_magnet.items.${i}.bold`)}</strong>{" "}
+                {t(`lead_magnet.items.${i}.rest`)}
               </span>
             </li>
           ))}

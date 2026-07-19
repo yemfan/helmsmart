@@ -20,8 +20,20 @@
     "eyebrow": "Free download · for real estate agents",
     "title": "5 AI Prompts Every Realtor Should Steal",
     "body": "Copy, paste, and close more deals — write listings, follow up with leads, and prep CMAs in seconds. Available in English and 中文.",
-    "download_en": "Download (English)",
-    "download_zh": "下载（中文）",
+    "form": {
+      "first_name_placeholder": "First name",
+      "email_placeholder": "Email",
+      "language_label": "Language:",
+      "submit": "Email me the prompts",
+      "privacy_note": "No spam — just the prompts, straight to your inbox.",
+      "error_generic": "Something went wrong. Please try again.",
+      "error_network": "Network error. Please try again."
+    },
+    "success": {
+      "heading": "Check your inbox — we just emailed your prompts.",
+      "body": "Or grab them right now:",
+      "download": "Download the PDF"
+    },
     "items": [
       {
         "bold": "Listing Description Writer",

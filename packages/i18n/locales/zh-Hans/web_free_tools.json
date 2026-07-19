@@ -20,8 +20,20 @@
     "eyebrow": "免费下载 · 专为房地产经纪人打造",
     "title": "每位房产经纪人都该借鉴的 5 条 AI 提示词",
     "body": "复制、粘贴,成交更多——数秒内撰写房源文案、跟进线索、准备 CMA。提供英文与中文版本。",
-    "download_en": "下载（英文）",
-    "download_zh": "下载（中文）",
+    "form": {
+      "first_name_placeholder": "名字",
+      "email_placeholder": "邮箱",
+      "language_label": "语言：",
+      "submit": "把提示词发到我邮箱",
+      "privacy_note": "绝不发垃圾邮件——只把提示词直接送到你的收件箱。",
+      "error_generic": "出了点问题,请重试。",
+      "error_network": "网络错误,请重试。"
+    },
+    "success": {
+      "heading": "请查收邮箱——我们刚刚把提示词发给你了。",
+      "body": "或者现在就直接下载：",
+      "download": "下载 PDF"
+    },
     "items": [
       {
         "bold": "房源文案撰写器",
