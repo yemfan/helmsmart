@@ -1,0 +1,49 @@
+# Turbo env-allowlist gate.
+#
+# Turbo 2 strips any environment variable not declared in turbo.json. The app
+# then reads `undefined` with NO error — the feature simply behaves as though it
+# was never configured. Turbo prints a warning on every Vercel build; it scrolled
+# past for weeks while seven variables were dead in production (PR #897),
+# including TWILIO_MESSAGING_SERVICE_SID, which had been recorded as the fix for
+# an SMS carrier error and was never actually reaching the app.
+#
+# Vercel's own warning needs Vercel's project env list, so it can only appear in
+# its build logs. This checks the same law from the repo side — every env var the
+# CODE reads must be declared — which needs no credentials and fails the PR
+# instead of a production feature.
+#
+# Cheap by design: no install, no build. Node reads the source and exits.
+
+name: env allowlist
+
+on:
+  pull_request:
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "industry-packs/**"
+      - "turbo.json"
+      - "scripts/check-env-allowlist.mjs"
+      - ".github/workflows/env-allowlist.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: env-allowlist-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  env-allowlist:
+    name: env vars declared in turbo.json
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check env allowlist
+        run: node scripts/check-env-allowlist.mjs

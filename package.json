@@ -27,6 +27,7 @@
     "build:smbai": "cross-env NODE_OPTIONS=--max-old-space-size=12288 pnpm --filter helmsmart run build",
     "lint": "turbo lint",
     "boundaries": "node scripts/check-boundaries.mjs",
+    "env:check": "node scripts/check-env-allowlist.mjs",
     "smoke:db:all": "node scripts/smoke-db-all.mjs",
     "test:integration:leadsmart": "pnpm --filter leadsmartai run test:integration",
     "db:generate": "prisma generate",
