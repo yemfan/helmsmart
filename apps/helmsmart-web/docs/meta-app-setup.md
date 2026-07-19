@@ -1,11 +1,35 @@
 # HelmSmart Meta app — setup
 
-Facebook + Instagram publishing is **code-complete and inert**. `isMetaConfigured()`
-returns false without credentials, so the Connect button reports `not_configured`
-rather than half-working. This is the operational checklist to switch it on.
+Facebook + Instagram publishing is **code-complete**. `isMetaConfigured()` returns
+false without credentials, so the Connect button reports `not_configured` rather
+than half-working. This is the operational checklist to switch it on.
 
-> **Status:** app not yet created. Everything below is a one-time setup on
-> developers.facebook.com; no code changes are needed after it.
+> **Status (2026-07-19): app CREATED — App ID `1740306877169005`.**
+> Use cases, OAuth settings and all three redirect URIs are configured and
+> verified. **Remaining: put `META_APP_ID` + `META_APP_SECRET` into Vercel
+> (project `helmsmart`, Production) and redeploy.** Nothing else is outstanding.
+
+## ⚠️ The business portfolio can't claim apps
+
+Attaching the **LeadSmart AI** portfolio during creation fails hard:
+
+> **Business is not allowed to claim App** — *Your business is prohibited from
+> advertising, including claiming apps.*
+
+So the app was created with **no business portfolio**, which is also why the
+RealtyBoss app shows `Type: None`. This is an account-level restriction on the
+portfolio, not something the app setup can route around.
+
+**Consequences:**
+- **Standard Access is unaffected** — publishing to a Page you have a role on
+  works today. That's the whole near-term path.
+- **App Review / Advanced Access is blocked** until the restriction is lifted,
+  because review requires a verified business portfolio. Customer Pages
+  therefore can't be connected yet, regardless of code.
+
+Resolving it is a Meta account matter (appeal the advertising restriction, then
+complete Business Verification) — worth starting early, since it gates the
+multi-tenant story for both products.
 
 ## Why a separate app (not RealtyBoss's)
 
@@ -21,26 +45,46 @@ its **own**, for two reasons:
    harder to defend, and one rejection would take down *both* products'
    publishing.
 
-## 1. Create the app
+## 1. Create the app — DONE
 
 <https://developers.facebook.com/apps> → **Create App**
 
 | Field | Value |
 |---|---|
-| Type | **Business** |
 | Name | **HelmSmart** — this is what customers see on the consent screen |
-| Contact email | your admin address |
-| Business account | link the existing **MAXY Investment Inc** verification (same EIN — no re-verification) |
+| Contact email | fan.yes@gmail.com |
+| Business portfolio | **none** — see the restriction above |
 
-## 2. Add products
+Meta's current flow asks for **use cases** rather than raw products/permissions.
+The two that grant what the code needs (`pages_manage_posts`,
+`pages_read_engagement`, `instagram_basic`, `instagram_content_publish`):
 
-- **Facebook Login**
-- **Instagram Graph API**
+- **Manage everything on your Page**
+- **Manage messaging & content on Instagram**
 
-## 3. Valid OAuth Redirect URIs
+Creating the app requires a password re-entry, and agreeing to the Meta Platform
+Terms + Developer Policies.
 
-Facebook Login → Settings → **Valid OAuth Redirect URIs**. Add all three,
-exactly — `https`, no trailing slash:
+## 2. Client OAuth settings — DONE (defaults were already correct)
+
+Under **Facebook Login for Business → Settings**. Note the product is *Login for
+Business*, not classic Facebook Login — but the classic scope-based OAuth flow
+the code uses still applies, because:
+
+| Setting | Value |
+|---|---|
+| Client OAuth login | Yes |
+| Web OAuth login | Yes |
+| Enforce HTTPS | Yes |
+| Use Strict Mode for redirect URIs | Yes |
+| Force Web OAuth reauthentication | No |
+
+Strict Mode is why the redirect URIs below must match **exactly**.
+
+## 3. Valid OAuth Redirect URIs — DONE
+
+Facebook Login for Business → Settings → **Valid OAuth Redirect URIs**. All
+three, exactly — `https`, no trailing slash:
 
 ```
 https://www.helmsmart.ai/api/auth/meta/callback
@@ -55,12 +99,12 @@ Omitting `doctor.*` breaks Connect for the medical pack, and it fails as
 
 Add a row for every future vertical subdomain at the same time you add the domain.
 
-## 4. Vercel env — project `helmsmart`, Production
+## 4. Vercel env — project `helmsmart`, Production — **OUTSTANDING**
 
-| Var | Where |
+| Var | Value |
 |---|---|
-| `META_APP_ID` | App Settings → Basic |
-| `META_APP_SECRET` | App Settings → Basic → Show |
+| `META_APP_ID` | `1740306877169005` |
+| `META_APP_SECRET` | App Settings → Basic → **Show** (copy it yourself — it's a secret) |
 
 Then **redeploy** — env changes don't apply to existing deployments.
 
