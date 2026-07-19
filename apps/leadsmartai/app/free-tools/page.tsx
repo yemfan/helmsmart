@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Bot,
+  Download,
   Home,
   Sparkles,
   Sprout,
