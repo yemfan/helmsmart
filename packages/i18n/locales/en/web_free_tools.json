@@ -141,6 +141,16 @@
           "description": "Typical cap rate ranges for major U.S. markets — useful when pricing income properties against local comps."
         }
       }
+    },
+    "guides-downloads": {
+      "title": "Guides & downloads",
+      "blurb": "Free, no-signup resources you can put to work today — starting with our full AI skills library for agents.",
+      "tools": {
+        "skills-library": {
+          "name": "Realtor AI Skills Library (59 prompts)",
+          "description": "59 compliance-baked AI prompts across lead gen, listings, buyer rep, negotiation, and ops — each with the value it captures. Browse or download free, no signup."
+        }
+      }
     }
   },
   "cross_sell": {

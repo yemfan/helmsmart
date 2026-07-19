@@ -141,6 +141,16 @@
           "description": "美国主要市场的典型资本化率区间——在对照本地可比房源为收益性房产定价时非常有用。"
         }
       }
+    },
+    "guides-downloads": {
+      "title": "指南与下载",
+      "blurb": "无需注册、今天就能用起来的免费资源——从面向经纪人的完整 AI 技能库开始。",
+      "tools": {
+        "skills-library": {
+          "name": "Realtor AI Skills Library (59 prompts)",
+          "description": "59 条内置合规审查的 AI 提示词,涵盖获客、房源、买方代理、谈判与运营——每条都标注了它能带来的价值。免费浏览或下载,无需注册。"
+        }
+      }
     }
   },
   "cross_sell": {

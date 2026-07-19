@@ -231,12 +231,13 @@ const SECTIONS: Section[] = [
   },
   {
     id: "guides-downloads",
+    // Section blurb + tool copy now come from web_free_tools.json; the English
+    // strings kept here are the canonical ones used for JSON-LD (SEO stability).
     title: "Guides & downloads",
-    blurb:
-      "Free, no-signup resources you can put to work today — starting with our full AI skills library for agents.",
     icon: Download,
     tools: [
       {
+        key: "skills-library",
         name: "Realtor AI Skills Library (59 prompts)",
         href: "/skills-library",
         description:
