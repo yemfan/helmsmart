@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "title": "经纪人门户",
+    "description": "管理线索、CMA 报告与 AI 工具的一站式控制中心。"
+  },
+  "hub": {
+    "eyebrow": "RealtyBoss",
+    "title": "经纪人门户",
+    "description": "管理线索、CMA 报告与 AI 工具的控制中心——从下方直接进入任意工作流程。"
+  },
+  "links": {
+    "dashboard": {
+      "label": "仪表盘总览",
+      "description": "今日业务管线速览"
+    },
+    "leads": {
+      "label": "线索",
+      "description": "客户关系管理与跟进"
+    },
+    "cma": {
+      "label": "Smart CMA 生成器",
+      "description": "可比房源分析"
+    },
+    "tools": {
+      "label": "工具",
+      "description": "计算器与内容生成工具"
+    },
+    "pricing": {
+      "label": "套餐与账单",
+      "description": "准备好后随时升级"
+    },
+    "portal": {
+      "label": "Stripe 账单门户",
+      "description": "在 Stripe 中管理订阅"
+    }
+  }
+}

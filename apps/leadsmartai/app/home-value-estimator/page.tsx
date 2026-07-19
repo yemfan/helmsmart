@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Comparable = {
   address: string;
@@ -36,6 +37,7 @@ type ApiResponse = {
 };
 
 export default function HomeValueEstimatorPage() {
+  const { t } = useTranslation("web_home_value_estimator");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -48,7 +50,7 @@ export default function HomeValueEstimatorPage() {
 
   const handleEstimate = async () => {
     if (!address.trim()) {
-      setError("Please enter a property address.");
+      setError(t("error_no_address"));
       return;
     }
     setError(null);
@@ -69,7 +71,7 @@ export default function HomeValueEstimatorPage() {
 
       const json = await res.json().catch(() => ({}));
       if (!res.ok || json?.ok === false) {
-        throw new Error(json?.error ?? "Failed to estimate home value.");
+        throw new Error(json?.error ?? t("error_failed"));
       }
 
       const property = json?.property as any;
@@ -98,10 +100,7 @@ export default function HomeValueEstimatorPage() {
         est.estimatedValue != null ? Number(est.estimatedValue) : null;
       const low = est.low != null ? Number(est.low) : null;
       const high = est.high != null ? Number(est.high) : null;
-      const summary = String(
-        est.summary ??
-          "We couldn’t find enough comparable sold data yet. Import MLS CSV sold history first."
-      );
+      const summary = String(est.summary ?? t("summary_fallback"));
 
       const subjectSqft = Number(property?.sqft ?? 0) || comps[0]?.sqft || 1500;
 
@@ -131,7 +130,7 @@ export default function HomeValueEstimatorPage() {
 
       setResult(data);
     } catch (err: any) {
-      setError(err.message || "Unexpected error");
+      setError(err.message || t("error_unexpected"));
     } finally {
       setLoading(false);
     }
@@ -152,13 +151,13 @@ export default function HomeValueEstimatorPage() {
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-        Back to Home
+        {t("back_home")}
       </Link>
 
       <div>
-        <h1 className="ui-page-title text-brand-text">Home Value Estimator</h1>
+        <h1 className="ui-page-title text-brand-text">{t("title")}</h1>
         <p className="ui-page-subtitle mt-1 max-w-2xl text-brand-text/80">
-          Enter a property address to estimate its current market value based on recent comparable sales.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -168,7 +167,7 @@ export default function HomeValueEstimatorPage() {
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="123 Main St, City, State"
+            placeholder={t("address_placeholder")}
             className={`flex-1 ${inputClass}`}
           />
           <button
@@ -180,7 +179,7 @@ export default function HomeValueEstimatorPage() {
             {loading ? (
               <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
             ) : null}
-            {loading ? "Estimating..." : "Estimate value"}
+            {loading ? t("estimating") : t("estimate_button")}
           </button>
         </div>
         {error ? <p className="mt-3 text-xs font-medium text-red-600">{error}</p> : null}
@@ -190,59 +189,65 @@ export default function HomeValueEstimatorPage() {
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <p className="ui-card-subtitle text-brand-text/60">Estimated home value</p>
+              <p className="ui-card-subtitle text-brand-text/60">{t("result.estimated_value")}</p>
               <p className="mt-1 text-2xl font-bold text-brand-primary">{formatCurrency(result.estimatedValue)}</p>
               {result.avgPricePerSqft ? (
                 <p className="ui-meta mt-2 text-brand-text/55">
-                  Avg. price/sqft: ${result.avgPricePerSqft.toFixed(0).toLocaleString()}
+                  {t("result.avg_price_per_sqft", { value: result.avgPricePerSqft.toFixed(0).toLocaleString() })}
                 </p>
               ) : null}
             </div>
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <p className="ui-card-subtitle text-brand-text/60">Estimated range</p>
+              <p className="ui-card-subtitle text-brand-text/60">{t("result.estimated_range")}</p>
               <p className="ui-card-title mt-1 text-brand-text">
                 {formatCurrency(result.low)} – {formatCurrency(result.high)}
               </p>
-              <p className="ui-meta mt-2 text-brand-text/55">Range reflects model confidence — not a formal appraisal.</p>
+              <p className="ui-meta mt-2 text-brand-text/55">{t("result.range_note")}</p>
               {result.confidence ? (
                 <p className="ui-meta mt-2 text-brand-text/70">
-                  Confidence:{" "}
+                  {t("result.confidence_label")}{" "}
                   <span className="font-semibold capitalize">{result.confidence}</span>
                   {result.confidenceScore != null ? ` (${result.confidenceScore}/100)` : null}
                 </p>
               ) : null}
             </div>
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <p className="ui-card-subtitle text-brand-text/60">Property snapshot</p>
+              <p className="ui-card-subtitle text-brand-text/60">{t("result.property_snapshot")}</p>
               <p className="ui-card-title mt-1 text-brand-text">{result.property.address}</p>
               <p className="ui-meta mt-2 text-brand-text/70">
-                {result.property.beds} beds • {result.property.baths} baths • {result.property.sqft.toLocaleString()}{" "}
-                sqft
+                {t("result.beds_baths_sqft", {
+                  beds: result.property.beds,
+                  baths: result.property.baths,
+                  sqft: result.property.sqft.toLocaleString(),
+                })}
               </p>
               <p className="ui-meta text-brand-text/70">
-                {result.property.propertyType} • Built {result.property.yearBuilt}
+                {t("result.type_built", {
+                  type: result.property.propertyType,
+                  year: result.property.yearBuilt,
+                })}
               </p>
             </div>
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="ui-card-title text-brand-text">Comparable sales (last 6 months, ≤ 0.5 mi)</h2>
-              <span className="ui-meta text-brand-text/55">{result.comps.length} comps used</span>
+              <h2 className="ui-card-title text-brand-text">{t("result.comps_heading")}</h2>
+              <span className="ui-meta text-brand-text/55">{t("result.comps_used", { count: result.comps.length })}</span>
             </div>
             {result.comps.length === 0 ? (
-              <p className="ui-table-cell text-brand-text/80">No comparable sales matched the current filters.</p>
+              <p className="ui-table-cell text-brand-text/80">{t("result.no_comps")}</p>
             ) : (
               <div className="overflow-x-auto rounded-lg border border-gray-100">
                 <table className="min-w-full border-collapse">
                   <thead>
                     <tr className="border-b border-gray-200 bg-brand-surface text-left">
-                      <th className="ui-table-header px-3 py-2 text-brand-text/80">Address</th>
-                      <th className="ui-table-header px-3 py-2 text-brand-text/80">Sale price</th>
-                      <th className="ui-table-header px-3 py-2 text-brand-text/80">Sqft</th>
-                      <th className="ui-table-header px-3 py-2 text-brand-text/80">Price/sqft</th>
-                      <th className="ui-table-header px-3 py-2 text-brand-text/80">Distance</th>
-                      <th className="ui-table-header px-3 py-2 text-brand-text/80">Sold date</th>
+                      <th className="ui-table-header px-3 py-2 text-brand-text/80">{t("result.col_address")}</th>
+                      <th className="ui-table-header px-3 py-2 text-brand-text/80">{t("result.col_sale_price")}</th>
+                      <th className="ui-table-header px-3 py-2 text-brand-text/80">{t("result.col_sqft")}</th>
+                      <th className="ui-table-header px-3 py-2 text-brand-text/80">{t("result.col_price_sqft")}</th>
+                      <th className="ui-table-header px-3 py-2 text-brand-text/80">{t("result.col_distance")}</th>
+                      <th className="ui-table-header px-3 py-2 text-brand-text/80">{t("result.col_sold_date")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -252,7 +257,7 @@ export default function HomeValueEstimatorPage() {
                         <td className="ui-table-cell px-3 py-2 text-brand-text">${c.salePrice.toLocaleString()}</td>
                         <td className="ui-table-cell px-3 py-2 text-brand-text">{c.sqft.toLocaleString()}</td>
                         <td className="ui-table-cell px-3 py-2 text-brand-text">${c.pricePerSqft.toFixed(0)}</td>
-                        <td className="ui-table-cell px-3 py-2 text-brand-text">{c.distanceMiles.toFixed(2)} mi</td>
+                        <td className="ui-table-cell px-3 py-2 text-brand-text">{c.distanceMiles.toFixed(2)} {t("result.distance_unit")}</td>
                         <td className="ui-table-cell px-3 py-2 text-brand-text">{c.soldDate}</td>
                       </tr>
                     ))}
@@ -264,7 +269,7 @@ export default function HomeValueEstimatorPage() {
 
           {result.recommendations && result.recommendations.length > 0 ? (
             <div className="rounded-xl border border-amber-200/80 bg-amber-50/90 p-5 text-sm text-amber-950 shadow-sm">
-              <h2 className="ui-card-title text-amber-950">Suggested next steps</h2>
+              <h2 className="ui-card-title text-amber-950">{t("result.next_steps")}</h2>
               <ul className="mt-2 list-inside list-disc space-y-1 text-xs">
                 {result.recommendations.map((r, i) => (
                   <li key={i}>{r}</li>
@@ -275,36 +280,36 @@ export default function HomeValueEstimatorPage() {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="rounded-xl border border-brand-primary/20 bg-brand-surface p-5 md:col-span-2 shadow-sm">
-              <h2 className="ui-card-title text-brand-text">Estimate summary</h2>
+              <h2 className="ui-card-title text-brand-text">{t("result.estimate_summary")}</h2>
               <p className="ui-table-cell mt-2 text-brand-text/90">{result.summary}</p>
               <p className="ui-meta mt-3 text-brand-text/65">
-                This is an automated estimate for planning purposes only, not an appraisal.
+                {t("result.estimate_disclaimer")}
               </p>
             </div>
             <div className="rounded-xl border border-gray-200 bg-white p-5 text-sm shadow-sm">
-              <h2 className="ui-card-title text-brand-text">Get a personalized review</h2>
+              <h2 className="ui-card-title text-brand-text">{t("review.heading")}</h2>
               {reviewStatus === "sent" ? (
                 <p className="ui-meta mt-2 text-emerald-700">
-                  Thanks! A local real estate professional will follow up with a detailed valuation.
+                  {t("review.sent")}
                 </p>
               ) : (
                 <>
                   <p className="ui-meta mt-1 text-brand-text/70">
-                    Share your contact info and a local real estate professional can provide a more detailed valuation.
+                    {t("review.prompt")}
                   </p>
                   <div className="mt-3 space-y-2">
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email"
+                      placeholder={t("review.email_placeholder")}
                       className={inputClass}
                     />
                     <input
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="Phone (optional)"
+                      placeholder={t("review.phone_placeholder")}
                       className={inputClass}
                     />
                     {/* SMS opt-in — identical disclosure to /contact + /open-house-signup. */}
@@ -317,14 +322,14 @@ export default function HomeValueEstimatorPage() {
                         className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300"
                       />
                       <span className="text-[11px] leading-relaxed text-gray-600">
-                        <span className="font-semibold text-gray-900">Yes, send me marketing text messages from RealtyBoss.</span>{" "}
-                        By checking this box and providing my phone number above, I consent to receive promotional text messages from RealtyBoss about real-estate services, new listings, market updates, and special offers.
+                        <span className="font-semibold text-gray-900">{t("review.sms_consent_bold")}</span>{" "}
+                        {t("review.sms_consent_body")}
                       </span>
                     </label>
                     <p className="text-[10px] leading-relaxed text-gray-400">
-                      Message frequency varies. Message and data rates may apply. Reply STOP to opt out at any time, or HELP for help. Consent is not a condition of any purchase. See our{" "}
-                      <Link href="/privacy" className="underline">Privacy Policy</Link> and{" "}
-                      <Link href="/terms" className="underline">Terms of Service</Link> for details.
+                      {t("review.disclosure_pre")}{" "}
+                      <Link href="/privacy" className="underline">{t("review.privacy")}</Link> {t("review.and")}{" "}
+                      <Link href="/terms" className="underline">{t("review.terms")}</Link> {t("review.disclosure_post")}
                     </p>
                     {reviewError ? (
                       <p className="text-[11px] font-medium text-rose-600">{reviewError}</p>
@@ -336,11 +341,11 @@ export default function HomeValueEstimatorPage() {
                         setReviewError(null);
                         const e = email.trim();
                         if (!e) {
-                          setReviewError("Please enter your email.");
+                          setReviewError(t("review.error_email"));
                           return;
                         }
                         if (smsConsent && !phone.trim()) {
-                          setReviewError("Add a phone number to receive SMS, or untick the box.");
+                          setReviewError(t("review.error_phone"));
                           return;
                         }
                         setReviewStatus("sending");
@@ -357,16 +362,16 @@ export default function HomeValueEstimatorPage() {
                             }),
                           });
                           const j = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
-                          if (!res.ok || j.ok === false) throw new Error(j.error || "Failed to submit.");
+                          if (!res.ok || j.ok === false) throw new Error(j.error || t("review.error_submit"));
                           setReviewStatus("sent");
                         } catch (err) {
-                          setReviewError(err instanceof Error ? err.message : "Failed to submit.");
+                          setReviewError(err instanceof Error ? err.message : t("review.error_submit"));
                           setReviewStatus("error");
                         }
                       }}
                       className="w-full rounded-lg bg-brand-primary py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-60"
                     >
-                      {reviewStatus === "sending" ? "Sending…" : "Request expert valuation"}
+                      {reviewStatus === "sending" ? t("review.sending") : t("review.submit")}
                     </button>
                   </div>
                 </>

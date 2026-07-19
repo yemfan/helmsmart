@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "title": "RealtyBoss 教练 — Producer Track + Top Producer Track",
+    "description": "内建于 RealtyBoss 的 AI 驱动教练。Producer Track（Pro 及以上）目标为 3% 转化率 / 10 笔成交;Top Producer Track（Premium + Team）目标为 5% 转化率 / 15 笔成交。无附加组件、无额外加价——已包含在套餐价格中。",
+    "og_title": "RealtyBoss 教练 — Producer Track + Top Producer Track",
+    "og_description": "内建于 RealtyBoss 的 AI 驱动教练。Producer Track（10 笔成交 / 3% 转化）与 Top Producer Track（15 笔成交 / 5% 转化）——已含在套餐中,无附加费用。",
+    "twitter_title": "RealtyBoss 教练",
+    "twitter_description": "Producer Track + Top Producer Track——内建于 RealtyBoss、面向房地产经纪人的 AI 教练。"
+  },
+  "header": {
+    "eyebrow": "RealtyBoss 教练",
+    "title_line1": "教练内建其中,",
+    "title_line2": "而非事后拼接。",
+    "subtitle": "多数 CRM 只是把“AI”当作一个功能标签。我们则围绕一层 AI 教练来打造产品——每日行动计划、每周实战手册、同行对标,以及真正推动关键数据的 AI 深度分析。两套项目,覆盖从新手到顶尖业绩的每一位经纪人。"
+  },
+  "pillars": [
+    {
+      "title": "AI 驱动的每日计划",
+      "body": "每天清晨,仪表盘都会依据你的销售模型、交易阶段与实时信号,展示接下来的 5 项行动——而非一份一成不变的清单。"
+    },
+    {
+      "title": "每周实战手册推送",
+      "body": "AI 生成的实战手册会随你业务管线的实际情况而调整。卡在验房异议上?下周的演练就围绕它展开。"
+    },
+    {
+      "title": "同行对标",
+      "body": "你的响应时长、转化率与业务管线健康度,会与全平台前四分之一以及你自己的移动平均值进行排名对比。"
+    },
+    {
+      "title": "AI 深度分析（Top Producer Track）",
+      "body": "每月一次:线索来源 ROI 热力图、流失分析、对你最近 10 笔成交的 Deal Coach 复盘。发现任何人都难以察觉的规律。"
+    }
+  ],
+  "program_card": {
+    "badge_top": "Premium + Team",
+    "badge_pro": "Pro+",
+    "stat_transactions": "年度成交量",
+    "stat_conversion": "线索至成交目标"
+  },
+  "methodology": {
+    "eyebrow": "方法论",
+    "heading": "项目每周如何运转",
+    "monday_label": "周一",
+    "monday_body": "依据你的实时业务管线与近期指标推送每周实战手册。列出本周 5 项优先行动。",
+    "daily_label": "每日",
+    "daily_body": "与你销售模型挂钩的今日行动计划。已完成 / 已跳过均被追踪。实时同行对标。",
+    "friday_label": "周五",
+    "friday_body": "自评总结:哪些成交了、哪些停滞了、下一步该演练什么。AI 从本周数据中提炼规律。"
+  },
+  "faq": {
+    "heading": "常见问题",
+    "items": [
+      {
+        "q": "这是一项需要另行付费的项目吗?",
+        "a": "不是。教练已含在套餐价格中。Producer Track 随 Pro 及以上套餐提供;Top Producer Track 随 Premium 与 Team 提供。没有额外加价,也没有附加费用。"
+      },
+      {
+        "q": "Producer Track 和 Top Producer Track 有什么区别?",
+        "a": "Producer Track 提供每日计划、每周实战手册、每月复盘与基础同行对标——目标为 10 笔成交、3% 转化率。Top Producer Track 在此基础上,新增由你的实时交易生成的定制实战手册、每月 AI 深度分析、前 10% 同行对标,以及新 AI 功能的优先体验——目标为 15 笔成交、5% 转化率。"
+      },
+      {
+        "q": "我会被自动加入吗?",
+        "a": "会——当你升级到包含某项目的套餐后,下次登录时便会自动加入。你可在设置中选择退出;此后我们不会再自动为你重新加入。"
+      },
+      {
+        "q": "使用 Starter 套餐的经纪人怎么办?",
+        "a": "Starter 不含教练服务。升级到 Pro 即可启用 Producer Track,或升级到 Premium 启用 Top Producer Track。"
+      },
+      {
+        "q": "转化率目标如何衡量?",
+        "a": "线索至成交——在 RealtyBoss 中创建的联系人（不限来源）最终达成成交的比例。可在你的业绩仪表盘上查看,采用滚动 12 个月窗口。"
+      }
+    ]
+  },
+  "cta": {
+    "heading": "每个付费套餐都含教练",
+    "body": "Producer Track 随 Pro 及以上套餐自动加入。Top Producer Track 随 Premium 与 Team 附赠。永不收取教练附加费。",
+    "see_pricing": "查看定价",
+    "compare": "看看我们的对比"
+  }
+}

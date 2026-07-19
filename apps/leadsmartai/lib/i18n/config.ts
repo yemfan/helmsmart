@@ -27,6 +27,12 @@ import enWebMarketing from "@leadsmart/i18n/locale/en/web_marketing";
 import enWebPosts from "@leadsmart/i18n/locale/en/web_posts";
 import enWebPricing from "@leadsmart/i18n/locale/en/web_pricing";
 import enWebQuickPost from "@leadsmart/i18n/locale/en/web_quick_post";
+import enWebAgent from "@leadsmart/i18n/locale/en/web_agent";
+import enWebAgentPricing from "@leadsmart/i18n/locale/en/web_agent_pricing";
+import enWebAgentCompare from "@leadsmart/i18n/locale/en/web_agent_compare";
+import enWebAgentCoaching from "@leadsmart/i18n/locale/en/web_agent_coaching";
+import enWebHomeValueEstimator from "@leadsmart/i18n/locale/en/web_home_value_estimator";
+import enWebFreeTools from "@leadsmart/i18n/locale/en/web_free_tools";
 import zhCommon from "@leadsmart/i18n/locale/zh-Hans/common";
 import zhSettings from "@leadsmart/i18n/locale/zh-Hans/settings";
 import zhWebAbout from "@leadsmart/i18n/locale/zh-Hans/web_about";
@@ -44,6 +50,12 @@ import zhWebMarketing from "@leadsmart/i18n/locale/zh-Hans/web_marketing";
 import zhWebPosts from "@leadsmart/i18n/locale/zh-Hans/web_posts";
 import zhWebPricing from "@leadsmart/i18n/locale/zh-Hans/web_pricing";
 import zhWebQuickPost from "@leadsmart/i18n/locale/zh-Hans/web_quick_post";
+import zhWebAgent from "@leadsmart/i18n/locale/zh-Hans/web_agent";
+import zhWebAgentPricing from "@leadsmart/i18n/locale/zh-Hans/web_agent_pricing";
+import zhWebAgentCompare from "@leadsmart/i18n/locale/zh-Hans/web_agent_compare";
+import zhWebAgentCoaching from "@leadsmart/i18n/locale/zh-Hans/web_agent_coaching";
+import zhWebHomeValueEstimator from "@leadsmart/i18n/locale/zh-Hans/web_home_value_estimator";
+import zhWebFreeTools from "@leadsmart/i18n/locale/zh-Hans/web_free_tools";
 
 export const I18N_COOKIE_NAME = "leadsmart_locale";
 
@@ -68,6 +80,12 @@ export const namespaces = [
   "web_integrations",
   "web_pricing",
   "web_quick_post",
+  "web_agent",
+  "web_agent_pricing",
+  "web_agent_compare",
+  "web_agent_coaching",
+  "web_home_value_estimator",
+  "web_free_tools",
 ] as const;
 export type WebNamespace = (typeof namespaces)[number];
 
@@ -93,6 +111,12 @@ export const resources: Record<
     web_integrations: enWebIntegrations,
     web_pricing: enWebPricing,
     web_quick_post: enWebQuickPost,
+    web_agent: enWebAgent,
+    web_agent_pricing: enWebAgentPricing,
+    web_agent_compare: enWebAgentCompare,
+    web_agent_coaching: enWebAgentCoaching,
+    web_home_value_estimator: enWebHomeValueEstimator,
+    web_free_tools: enWebFreeTools,
   },
   "zh-Hans": {
     common: zhCommon,
@@ -112,6 +136,12 @@ export const resources: Record<
     web_integrations: zhWebIntegrations,
     web_pricing: zhWebPricing,
     web_quick_post: zhWebQuickPost,
+    web_agent: zhWebAgent,
+    web_agent_pricing: zhWebAgentPricing,
+    web_agent_compare: zhWebAgentCompare,
+    web_agent_coaching: zhWebAgentCoaching,
+    web_home_value_estimator: zhWebHomeValueEstimator,
+    web_free_tools: zhWebFreeTools,
   },
 };
 

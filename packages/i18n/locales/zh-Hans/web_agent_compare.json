@@ -1,0 +1,155 @@
+{
+  "meta": {
+    "title": "RealtyBoss 对比其他产品 — 功能对照",
+    "description": "其他房地产 CRM 只是提醒你去做事，而 RealtyBoss 有一支 AI 团队替你把事做完。看看我们与 Follow Up Boss、kvCORE / BoldTrail、Lofty、BoomTown 和 Sierra Interactive 的对比。",
+    "og_title": "RealtyBoss 对比其他产品 — 功能对照",
+    "og_description": "与 Follow Up Boss、kvCORE / BoldTrail、Lofty、BoomTown 和 Sierra Interactive 的逐项对比——价格却只是零头。",
+    "twitter_title": "RealtyBoss 对比其他产品",
+    "twitter_description": "与 Follow Up Boss、kvCORE / BoldTrail、Lofty、BoomTown 和 Sierra Interactive 的功能对照。"
+  },
+  "header": {
+    "eyebrow": "对比",
+    "title": "RealtyBoss 对比其他产品",
+    "subtitle": "在 AI、拨号器、电子签名、团队工作流以及中文市场支持等方面，我们如何胜过 Follow Up Boss、kvCORE / BoldTrail、Lofty、BoomTown 和 Sierra Interactive——而价格只是零头。"
+  },
+  "work_vs_remind": {
+    "eyebrow": "真正的差别",
+    "h2_pre": "其他每一款 CRM 都在提醒你去做事。",
+    "h2_highlight": "RealtyBoss 替你把事做完。",
+    "body_pre": "Follow Up Boss、kvCORE、Lofty 及其他产品都很擅长告诉你下一步该做什么——一份任务清单、一条“这条线索很热”的提醒、一个按时触发的滴灌邮件。但打电话、发短信、写邮件、做调研和跟进,依然全靠你自己。RealtyBoss 交付一支真正 ",
+    "body_bold": "动手去做",
+    "body_post": " 的 AI 团队——于是当你正陪着客户时,工作也在同步完成。",
+    "reminder_title": "其他 CRM——一台提醒机器",
+    "reminder_items": [
+      "创建一条任务:“给这条线索打电话”——电话还得你自己打",
+      "提醒你某条线索变冷了——挽回话术还得你自己写",
+      "按时触发一封滴灌邮件——千篇一律,而非真正的回复",
+      "提供一个 CMA 工具——可比房源还得你自己拼凑"
+    ],
+    "does_title": "RealtyBoss——一支真正动手的 AI 团队",
+    "does_items": [
+      "自动通过短信和邮件应答并甄别新线索",
+      "以你的口吻起草并发送挽回回复",
+      "一声令下,运行基于 AI、引用真实成交的 CMA",
+      "替你拟定报价、审阅合同、预约看房"
+    ]
+  },
+  "highlights": [
+    {
+      "title": "一支真正动手的 AI 团队",
+      "body": "别家只是提醒你打电话、发短信、去跟进。RealtyBoss 的 AI 助理替你应答线索、起草并发送回复、运行 CMA、预约看房——工作真正被完成,而不只是排进队列。"
+    },
+    {
+      "title": "价格只是企业级 CRM 的一半",
+      "body": "每月 $79–$199,即可覆盖 BoomTown、kvCORE 和 Lofty 每月收取 $500–$1,500 的功能。无开通费。无强制搭售 IDX 网站。"
+    },
+    {
+      "title": "双语 + 微信生态",
+      "body": "讲中文的经纪人和客户是我们的核心受众:中文模板、微信 + 小红书路径、Advisor 销售模型。这一点无人能及。"
+    },
+    {
+      "title": "现代技术栈 = 更快迭代",
+      "body": "基于 AI、引用真实成交的 CMA,一声令下的 AI 团队,交易邮件自动导入——以周为单位交付,而非以季度。这种速度差距会不断累积放大。"
+    }
+  ],
+  "table": {
+    "heading": "逐项功能对照",
+    "legend_first_class": "一流支持",
+    "legend_partial": "部分支持 / 需附加组件",
+    "legend_not_offered": "不提供",
+    "col_feature": "功能",
+    "aria_yes": "支持",
+    "aria_partial": "部分支持",
+    "aria_no": "不提供"
+  },
+  "categories": {
+    "work": {
+      "title": "由谁来做事?",
+      "rows": [
+        "提醒、任务与“热门线索”提示来督促你",
+        "AI 起草回复供你审阅后发送",
+        "AI 自动应答并甄别新线索——全程无需经纪人介入",
+        "AI 一声令下即运行 CMA、拟定报价并审阅合同",
+        "AI 连日持续跟进,无需你逐步排队"
+      ]
+    },
+    "core_crm": {
+      "title": "核心 CRM",
+      "rows": [
+        "联系人、业务管线、智能列表",
+        "联系人自定义字段",
+        "各阶段业务管线活动计数",
+        "原生移动应用（iOS + Android）",
+        "入驻时从手机导入联系人"
+      ]
+    },
+    "ai": {
+      "title": "AI 能力",
+      "rows": [
+        "AI 短信应答——自动应答并甄别线索",
+        "AI 邮件应答——起草并发送,而非仅提供建议",
+        "含同行对标的 AI 教练仪表盘",
+        "销售模型框架（Influencer / Closer / Advisor）",
+        "人脉圈净值预测 + 自动触达",
+        "Deal Coach（多视角报价分析）",
+        "基于 AI 的 CMA——引用真实网络成交,而非仅凭 AVM",
+        "Boss Assistant——一声令下,调动整支 AI 团队",
+        "已保存的 AI 找房搜索,并定时推送给买家"
+      ]
+    },
+    "outbound": {
+      "title": "外呼与互动",
+      "rows": [
+        "一键拨号器（电话桥接）",
+        "邮件打开 / 点击追踪",
+        "视频邮件（录制并发送 + 查看数据）",
+        "群发邮件 / 简报编辑器",
+        "按来源分配的专属 / 通话追踪号码",
+        "滴灌营销 + 人脉圈再触达",
+        "未接来电自动回短信",
+        "交易邮件自动导入 + AI 提取"
+      ]
+    },
+    "listing": {
+      "title": "房源与交易工具",
+      "rows": [
+        "CMA / 可比成交",
+        "房源展示演示生成器",
+        "评价 / 客户推荐采集（成交后）",
+        "电子签名集成（Dotloop / DocuSign）",
+        "买方经纪协议（BBA）工作流",
+        "交易协调 + 佣金预测",
+        "Deep Report——实时贷款重算、HOA + Mello-Roos",
+        "每份报告统一分享（复制 / 邮件 / 短信 / PDF）"
+      ]
+    },
+    "teams": {
+      "title": "团队与分配",
+      "rows": [
+        "含席位的团队 / 经纪行层级",
+        "全团队轮流分配线索",
+        "ISA 工作流 + 合格线索交接状态机",
+        "按成员拆分 / 排行榜报表"
+      ]
+    },
+    "differentiators": {
+      "title": "差异化优势",
+      "rows": [
+        "RealtyBoss 教练（Producer Track + Top Producer Track）",
+        "自动加入教练,含转化率 + 成交量目标",
+        "双语 / 中文市场支持（中文）",
+        "微信 + 小红书集成",
+        "现代 AI 原生技术栈（Next.js + Supabase）",
+        "内置品牌化 IDX 消费者网站",
+        "完整 MLS 同步（RETS / RESO Web API）"
+      ]
+    }
+  },
+  "cta": {
+    "heading": "别再管理 CRM,开始管理一支团队。",
+    "body": "多数老牌 CRM 每月收取 $500 以上,却只是递给你一份更长的待办清单。RealtyBoss 给你一支替你处理清单的 AI 团队——应答线索、发送回复、推进交易——而价格只是零头。",
+    "see_pricing": "查看定价",
+    "start_free": "免费开始"
+  },
+  "footnote": "对比数据基于本页最后更新时公开可得的产品页面与客户评价。Inside Real Estate 已将 kvCORE 与 BoomTown 整合为 BoldTrail;LionDesk 已于 2025 年 9 月停止服务,故不再列出。AI 相关行的“部分支持”指该工具能起草或建议,但仍需经纪人审阅后发送。竞品定价因团队规模与附加组件而异。我们不宣称涵盖每一种边缘情况;若发现有误,欢迎与我们联系。"
+}

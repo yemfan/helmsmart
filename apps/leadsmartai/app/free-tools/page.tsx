@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Bot,
@@ -9,40 +9,48 @@ import {
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
+import { getServerT } from "@/lib/i18n/server";
 import PromptsLeadMagnet from "./PromptsLeadMagnet";
 
-export const metadata: Metadata = {
-  title: "Free real estate tools — calculators, analyzers, and AI",
-  description:
-    "Every free tool from RealtyBoss in one place — mortgage and ROI calculators, cap rate and cash flow analysis, AI deal analyzers, Smart CMA builder, home value estimator. No signup required.",
-  keywords: [
-    "free real estate calculator",
-    "mortgage calculator",
-    "cap rate calculator",
-    "AI CMA",
-    "investment property analyzer",
-    "rent vs buy calculator",
-    "home value estimator",
-  ],
-  alternates: { canonical: "/free-tools" },
-  openGraph: {
-    title: "Free real estate tools — RealtyBoss",
-    description:
-      "Calculators, analyzers, and AI tools real estate agents and investors actually use. Free, no signup required.",
-    url: "/free-tools",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Free real estate tools — RealtyBoss",
-    description:
-      "Calculators, AI analyzers, CMA builder, and home value estimator — free, no signup.",
-  },
-};
+type TFn = (key: string, opts?: { ns?: string; [k: string]: unknown }) => string;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const tf = (key: string): string => t(key, { ns: "web_free_tools" });
+  return {
+    title: tf("meta.title"),
+    description: tf("meta.description"),
+    keywords: [
+      "free real estate calculator",
+      "mortgage calculator",
+      "cap rate calculator",
+      "AI CMA",
+      "investment property analyzer",
+      "rent vs buy calculator",
+      "home value estimator",
+    ],
+    alternates: { canonical: "/free-tools" },
+    openGraph: {
+      title: tf("meta.og_title"),
+      description: tf("meta.og_description"),
+      url: "/free-tools",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: tf("meta.twitter_title"),
+      description: tf("meta.twitter_description"),
+    },
+  };
+}
 
 type Tool = {
+  /** i18n key under `sections.<sectionId>.tools.<toolKey>`. */
+  key: string;
+  /** Canonical English name — used for JSON-LD (SEO stability). */
   name: string;
   href: string;
+  /** Canonical English description — used for JSON-LD. */
   description: string;
   /** Mark hero tools so the index highlights them. */
   featured?: boolean;
@@ -50,8 +58,8 @@ type Tool = {
 
 type Section = {
   id: string;
+  /** Canonical English title — used for JSON-LD applicationCategory. */
   title: string;
-  blurb: string;
   icon: LucideIcon;
   tools: Tool[];
 };
@@ -60,11 +68,10 @@ const SECTIONS: Section[] = [
   {
     id: "ai-tools",
     title: "AI-powered analyzers",
-    blurb:
-      "Drop in an address or a Zillow link — get a full deal memo, comp set, or CMA in under a minute. The same engine that powers RealtyBoss follow-up.",
     icon: Bot,
     tools: [
       {
+        key: "deal-analyzer",
         name: "AI Real Estate Deal Analyzer",
         href: "/ai-real-estate-deal-analyzer",
         description:
@@ -72,36 +79,42 @@ const SECTIONS: Section[] = [
         featured: true,
       },
       {
+        key: "link-analyzer",
         name: "AI Zillow / Redfin Link Analyzer",
         href: "/ai-zillow-redfin-link-analyzer",
         description:
           "Drop a Zillow or Redfin URL. The AI pulls listing details, condition signals from photos, comp benchmarks, and a price defensibility take.",
       },
       {
+        key: "cma-analyzer",
         name: "AI CMA Analyzer",
         href: "/ai-cma-analyzer",
         description:
           "Auto-pull comparable sales and produce a CMA-style price range with full reasoning, ready to share with a seller.",
       },
       {
+        key: "smart-cma",
         name: "Smart CMA Builder",
         href: "/smart-cma-builder",
         description:
           "Interactive CMA — adjust comp weights, recommend a price range, and export a branded PDF. Under 5 minutes per CMA.",
       },
       {
+        key: "investment-analyzer",
         name: "Property Investment Analyzer",
         href: "/property-investment-analyzer",
         description:
           "Cap rate, cash-on-cash, NOI, and 5-year IRR on any rental in under 3 minutes. Saved scenarios stay on the deal.",
       },
       {
+        key: "rental-analyzer",
         name: "Rental Property Analyzer",
         href: "/rental-property-analyzer",
         description:
           "Side-by-side rental analysis with rent estimates, expense defaults pre-filled from local averages, and stress-test scenarios.",
       },
       {
+        key: "report-generator",
         name: "Property Report Generator",
         href: "/property-report",
         description:
@@ -112,11 +125,10 @@ const SECTIONS: Section[] = [
   {
     id: "buyer-tools",
     title: "Calculators for buyers",
-    blurb:
-      "Send a buyer a custom, branded calculator they can play with — see what their monthly payment, affordability, or rent-vs-buy story actually looks like.",
     icon: Home,
     tools: [
       {
+        key: "mortgage",
         name: "Mortgage Calculator",
         href: "/mortgage-calculator",
         description:
@@ -124,36 +136,42 @@ const SECTIONS: Section[] = [
         featured: true,
       },
       {
+        key: "affordability",
         name: "Affordability Calculator",
         href: "/affordability-calculator",
         description:
           "Income-based price range with debt-to-income gating. Show buyers what they can actually qualify for.",
       },
       {
+        key: "down-payment",
         name: "Down Payment Calculator",
         href: "/down-payment-calculator",
         description:
           "How much you need at closing — down payment + closing costs + reserves — at any price point.",
       },
       {
+        key: "rent-vs-buy",
         name: "Rent vs Buy Calculator",
         href: "/rent-vs-buy-calculator",
         description:
           "Break-even analysis with appreciation, tax benefits, and opportunity cost. Drops the renting-forever myth in 30 seconds.",
       },
       {
+        key: "closing-cost",
         name: "Closing Cost Estimator",
         href: "/closing-cost-estimator",
         description:
           "Itemized closing costs by state — title, transfer tax, escrow, prepaids. Surfaces surprises before they happen.",
       },
       {
+        key: "refinance",
         name: "Refinance Calculator",
         href: "/refinance-calculator",
         description:
           "Break-even on a refinance with closing costs included. Pairs well with rate-shopping outreach to past clients.",
       },
       {
+        key: "arm",
         name: "ARM Calculator",
         href: "/adjustable-rate-calculator",
         description:
@@ -164,11 +182,10 @@ const SECTIONS: Section[] = [
   {
     id: "investor-tools",
     title: "Calculators for investors",
-    blurb:
-      "The income-property math that decides whether to make the offer. Cap rate, cash flow, ROI — all editable, all shareable.",
     icon: TrendingUp,
     tools: [
       {
+        key: "cap-rate",
         name: "Cap Rate & ROI Calculator",
         href: "/cap-rate-calculator",
         description:
@@ -176,12 +193,14 @@ const SECTIONS: Section[] = [
         featured: true,
       },
       {
+        key: "cash-flow",
         name: "Cash Flow Calculator",
         href: "/cash-flow-calculator",
         description:
           "Monthly and annual cash flow with vacancy, maintenance, management, and reserves. Stress-test before you offer.",
       },
       {
+        key: "roi",
         name: "ROI Calculator",
         href: "/roi-calculator",
         description:
@@ -192,11 +211,10 @@ const SECTIONS: Section[] = [
   {
     id: "seller-tools",
     title: "Tools for sellers",
-    blurb:
-      "Capture seller leads with an instant home value estimate, then turn the address into a CMA and a listing presentation.",
     icon: Sprout,
     tools: [
       {
+        key: "home-value",
         name: "Home Value Estimator",
         href: "/home-value-estimator",
         description:
@@ -204,6 +222,7 @@ const SECTIONS: Section[] = [
         featured: true,
       },
       {
+        key: "cap-rate-by-city",
         name: "Cap Rate by City",
         href: "/cap-rate-by-city-in-the-united-states",
         description:
@@ -213,12 +232,13 @@ const SECTIONS: Section[] = [
   },
   {
     id: "guides-downloads",
+    // Section blurb + tool copy now come from web_free_tools.json; the English
+    // strings kept here are the canonical ones used for JSON-LD (SEO stability).
     title: "Guides & downloads",
-    blurb:
-      "Free, no-signup resources you can put to work today — starting with our full AI skills library for agents.",
     icon: Download,
     tools: [
       {
+        key: "skills-library",
         name: "Realtor AI Skills Library (59 prompts)",
         href: "/skills-library",
         description:
@@ -231,7 +251,9 @@ const SECTIONS: Section[] = [
 
 const SITE_URL = "https://realtybossai.com";
 
-export default function FreeToolsPage() {
+export default async function FreeToolsPage() {
+  const t = await getServerT();
+  const tf: TFn = (key, opts) => t(key, { ns: "web_free_tools", ...opts });
   const total = SECTIONS.reduce((sum, s) => sum + s.tools.length, 0);
 
   const jsonLd = {
@@ -268,23 +290,20 @@ export default function FreeToolsPage() {
       <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
         <header className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">
-            Free tools
+            {tf("header.eyebrow")}
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-5xl dark:text-white">
-            {total} free tools real estate agents actually use.
+            {tf("header.title", { total })}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg dark:text-slate-300">
-            Calculators, AI analyzers, CMA builders, and home value
-            estimators — the same surfaces our paying customers run on
-            paid plans, free and without a signup.
+            {tf("header.subtitle")}
           </p>
           <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-            Built for solo agents, brokers, investors, and serious
-            buyers. Most tools work in under 60 seconds.
+            {tf("header.note")}
           </p>
         </header>
 
-        <nav aria-label="Tool categories" className="mt-10">
+        <nav aria-label={tf("nav_aria")} className="mt-10">
           <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {SECTIONS.map((s) => (
               <li key={s.id}>
@@ -292,7 +311,7 @@ export default function FreeToolsPage() {
                   href={`#${s.id}`}
                   className="block rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-blue-900/50 dark:hover:bg-slate-900/60"
                 >
-                  {s.title}{" "}
+                  {tf(`sections.${s.id}.title`)}{" "}
                   <span className="text-xs font-normal text-slate-500">
                     ({s.tools.length})
                   </span>
@@ -317,10 +336,10 @@ export default function FreeToolsPage() {
                 </span>
                 <div className="flex-1">
                   <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">
-                    {section.title}
+                    {tf(`sections.${section.id}.title`)}
                   </h2>
                   <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                    {section.blurb}
+                    {tf(`sections.${section.id}.blurb`)}
                   </p>
                 </div>
               </div>
@@ -328,7 +347,7 @@ export default function FreeToolsPage() {
               <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {section.tools.map((tool) => (
                   <li key={tool.href}>
-                    <ToolCard tool={tool} sectionIcon={section.icon} />
+                    <ToolCard tool={tool} sectionId={section.id} sectionIcon={section.icon} tf={tf} />
                   </li>
                 ))}
               </ul>
@@ -340,47 +359,45 @@ export default function FreeToolsPage() {
           <div className="grid items-center gap-8 md:grid-cols-[1.4fr_1fr]">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">
-                Want them inside one CRM?
+                {tf("cross_sell.eyebrow")}
               </p>
               <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl dark:text-white">
-                Every tool above + AI follow-up, voice AI, and missed-call recovery.
+                {tf("cross_sell.heading")}
               </h2>
               <p className="mt-3 text-sm leading-6 text-slate-600 md:text-base dark:text-slate-300">
-                RealtyBoss is what these tools sit inside — your AI
-                sales team, on your phone, 24/7. $79/mo starting, free
-                14-day trial, no credit card.
+                {tf("cross_sell.body")}
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <Link
                   href="/start-free"
                   className="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
                 >
-                  Start 14-day trial
+                  {tf("cross_sell.start_trial")}
                 </Link>
                 <Link
                   href="/features"
                   className="inline-flex items-center justify-center rounded-md border border-blue-200 bg-white px-5 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 dark:border-blue-900/50 dark:bg-slate-900 dark:text-blue-300 dark:hover:bg-slate-900/70"
                 >
-                  See all features
+                  {tf("cross_sell.see_features")}
                 </Link>
               </div>
             </div>
             <ul className="space-y-3 text-sm leading-6 text-slate-700 dark:text-slate-200">
               <li className="flex gap-2">
                 <span aria-hidden className="mt-0.5 text-base">⚡</span>
-                <span>AI follow-up in under 60 seconds, 24/7</span>
+                <span>{tf("cross_sell.items.0")}</span>
               </li>
               <li className="flex gap-2">
                 <span aria-hidden className="mt-0.5 text-base">📞</span>
-                <span>Missed-call text-back on every plan</span>
+                <span>{tf("cross_sell.items.1")}</span>
               </li>
               <li className="flex gap-2">
                 <span aria-hidden className="mt-0.5 text-base">🎙️</span>
-                <span>Voice AI that answers your phone when you can&apos;t</span>
+                <span>{tf("cross_sell.items.2")}</span>
               </li>
               <li className="flex gap-2">
                 <span aria-hidden className="mt-0.5 text-base">💸</span>
-                <span>Starts at $79/mo — solo-agent pricing</span>
+                <span>{tf("cross_sell.items.3")}</span>
               </li>
             </ul>
           </div>
@@ -392,11 +409,16 @@ export default function FreeToolsPage() {
 
 function ToolCard({
   tool,
+  sectionId,
   sectionIcon: Icon,
+  tf,
 }: {
   tool: Tool;
+  sectionId: string;
   sectionIcon: LucideIcon;
+  tf: TFn;
 }) {
+  const base = `sections.${sectionId}.tools.${tool.key}`;
   return (
     <Link
       href={tool.href}
@@ -409,18 +431,18 @@ function ToolCard({
         {tool.featured ? (
           <span className="inline-flex items-center rounded-full bg-blue-600/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
             <Sparkles className="mr-1 h-3 w-3" aria-hidden />
-            Popular
+            {tf("popular")}
           </span>
         ) : null}
       </div>
       <h3 className="mt-3 text-base font-semibold text-slate-900 group-hover:text-blue-700 dark:text-white dark:group-hover:text-blue-300">
-        {tool.name}
+        {tf(`${base}.name`)}
       </h3>
       <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-        {tool.description}
+        {tf(`${base}.description`)}
       </p>
       <span className="mt-auto pt-4 text-xs font-semibold text-blue-700 dark:text-blue-300">
-        Open tool →
+        {tf("open_tool")}
       </span>
     </Link>
   );

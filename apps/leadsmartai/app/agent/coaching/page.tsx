@@ -5,34 +5,38 @@ import {
   PROGRAM_ORDER,
   type CoachingProgram,
 } from "@/lib/coaching-programs/programs";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "RealtyBoss Coaching — Producer Track + Top Producer Track",
-  description:
-    "AI-driven coaching built into RealtyBoss. Producer Track (Pro+) targets 3% conversion / 10 transactions; Top Producer Track (Premium + Team) targets 5% conversion / 15 transactions. No add-on, no upsell — included in the plan price.",
-  keywords: [
-    "real estate coaching",
-    "real estate AI coaching",
-    "producer track",
-    "top producer track",
-    "real estate agent training",
-    "leadsmart coaching",
-  ],
-  alternates: { canonical: "/agent/coaching" },
-  openGraph: {
-    title: "RealtyBoss Coaching — Producer Track + Top Producer Track",
-    description:
-      "AI-driven coaching built into RealtyBoss. Producer Track (10 deals / 3% conv) and Top Producer Track (15 deals / 5% conv) — included in your plan, no add-on fee.",
-    url: "/agent/coaching",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "RealtyBoss Coaching",
-    description:
-      "Producer Track + Top Producer Track — AI coaching built into RealtyBoss for real estate agents.",
-  },
-};
+type TFn = (key: string, opts?: { ns?: string; [k: string]: unknown }) => string;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const tc = (key: string): string => t(key, { ns: "web_agent_coaching" });
+  return {
+    title: tc("meta.title"),
+    description: tc("meta.description"),
+    keywords: [
+      "real estate coaching",
+      "real estate AI coaching",
+      "producer track",
+      "top producer track",
+      "real estate agent training",
+      "leadsmart coaching",
+    ],
+    alternates: { canonical: "/agent/coaching" },
+    openGraph: {
+      title: tc("meta.og_title"),
+      description: tc("meta.og_description"),
+      url: "/agent/coaching",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: tc("meta.twitter_title"),
+      description: tc("meta.twitter_description"),
+    },
+  };
+}
 
 /**
  * Canonical FAQ list — single source of truth for both the
@@ -71,7 +75,9 @@ const COACHING_FAQ: ReadonlyArray<{ q: string; a: string }> = [
  * Public surface: gated only by the proxy.ts + agent layout
  * allowlist additions for /agent/coaching. No auth needed.
  */
-export default function AgentCoachingPage() {
+export default async function AgentCoachingPage() {
+  const t = await getServerT();
+  const tc: TFn = (key, opts) => t(key, { ns: "web_agent_coaching", ...opts });
   const programs = PROGRAM_ORDER.map((slug) => COACHING_PROGRAMS[slug]);
   return (
     <div className="min-h-screen bg-white">
@@ -93,53 +99,48 @@ export default function AgentCoachingPage() {
       <div className="mx-auto max-w-5xl px-4 py-12 md:px-6 md:py-16">
         <header className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-            RealtyBoss Coaching
+            {tc("header.eyebrow")}
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-5xl">
-            Coaching that&apos;s built in,
-            <br className="hidden md:block" /> not bolted on.
+            {tc("header.title_line1")}
+            <br className="hidden md:block" /> {tc("header.title_line2")}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
-            Most CRMs add &ldquo;AI&rdquo; as a feature label. We built our
-            product around an AI coaching layer — daily action plans, weekly
-            playbooks, peer benchmarks, and AI deep-dives that move the
-            numbers that matter. Two programs cover everyone from new agents
-            to top producers.
+            {tc("header.subtitle")}
           </p>
         </header>
 
-        <Pillars />
+        <Pillars tc={tc} />
 
         <section className="mt-12 grid gap-5 md:grid-cols-2">
           {programs.map((p) => (
-            <ProgramCard key={p.slug} program={p} />
+            <ProgramCard key={p.slug} program={p} tc={tc} />
           ))}
         </section>
 
-        <Methodology />
+        <Methodology tc={tc} />
 
-        <FAQ />
+        <FAQ tc={tc} />
 
         <section className="mt-16 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-8 text-center md:p-12">
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl">
-            Coaching is in every paid plan
+            {tc("cta.heading")}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-slate-600 md:text-base">
-            Producer Track auto-enrolls on Pro and above. Top Producer Track
-            is bundled with Premium and Team. No coaching add-on fee, ever.
+            {tc("cta.body")}
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/agent/pricing"
               className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
             >
-              See pricing
+              {tc("cta.see_pricing")}
             </Link>
             <Link
               href="/agent/compare"
               className="rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:border-slate-300"
             >
-              How we compare
+              {tc("cta.compare")}
             </Link>
           </div>
         </section>
@@ -150,30 +151,16 @@ export default function AgentCoachingPage() {
 
 // ── pillars (above the program cards) ──────────────────────────
 
-function Pillars() {
-  const pillars: Array<{ title: string; body: string }> = [
-    {
-      title: "AI-driven daily plans",
-      body: "Every morning the dashboard shows the next 5 actions tailored to your sales model, deal stage, and live signals — not a static checklist.",
-    },
-    {
-      title: "Weekly playbook drops",
-      body: "AI-generated playbooks adapt to what's actually happening in your pipeline. Stuck on inspection objections? Next week's drill is built around that.",
-    },
-    {
-      title: "Peer benchmarks",
-      body: "Your response time, conversion, and pipeline health stack-ranked against the platform-wide top quartile and your own moving average.",
-    },
-    {
-      title: "AI deep-dives (Top Producer Track)",
-      body: "Monthly: lead-source ROI heatmap, drop-off analysis, deal-coach reviews of your last 10 closings. Identifies patterns no human will spot.",
-    },
-  ];
+function Pillars({ tc }: { tc: TFn }) {
+  const pillars = [0, 1, 2, 3].map((i) => ({
+    title: tc(`pillars.${i}.title`),
+    body: tc(`pillars.${i}.body`),
+  }));
   return (
     <div className="mt-10 grid gap-4 md:grid-cols-2">
-      {pillars.map((p) => (
+      {pillars.map((p, i) => (
         <div
-          key={p.title}
+          key={i}
           className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
         >
           <h3 className="text-sm font-semibold text-slate-900">{p.title}</h3>
@@ -186,7 +173,7 @@ function Pillars() {
 
 // ── per-program card ───────────────────────────────────────────
 
-function ProgramCard({ program }: { program: CoachingProgram }) {
+function ProgramCard({ program, tc }: { program: CoachingProgram; tc: TFn }) {
   const isTop = program.slug === "top_producer_track";
   return (
     <div
@@ -206,23 +193,23 @@ function ProgramCard({ program }: { program: CoachingProgram }) {
         </div>
         {isTop ? (
           <span className="rounded-full bg-blue-600 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
-            Premium + Team
+            {tc("program_card.badge_top")}
           </span>
         ) : (
           <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-700">
-            Pro+
+            {tc("program_card.badge_pro")}
           </span>
         )}
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
         <Stat
-          label="Annual transactions"
+          label={tc("program_card.stat_transactions")}
           value={String(program.annualTransactionTarget)}
           tone={isTop ? "primary" : "default"}
         />
         <Stat
-          label="Lead-to-close target"
+          label={tc("program_card.stat_conversion")}
           value={`${program.conversionRateTargetPct}%`}
           tone={isTop ? "primary" : "default"}
         />
@@ -269,35 +256,32 @@ function Stat({
 
 // ── methodology section ────────────────────────────────────────
 
-function Methodology() {
+function Methodology({ tc }: { tc: TFn }) {
   return (
     <section className="mt-16 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-        Methodology
+        {tc("methodology.eyebrow")}
       </p>
       <h2 className="mt-2 text-xl font-semibold text-slate-900 md:text-2xl">
-        How the program runs every week
+        {tc("methodology.heading")}
       </h2>
       <div className="mt-5 grid gap-5 md:grid-cols-3">
         <div>
-          <p className="text-sm font-semibold text-slate-900">Monday</p>
+          <p className="text-sm font-semibold text-slate-900">{tc("methodology.monday_label")}</p>
           <p className="mt-1 text-sm leading-6 text-slate-600">
-            Weekly playbook drops based on your live pipeline + recent
-            metrics. 5 priority actions for the week.
+            {tc("methodology.monday_body")}
           </p>
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-900">Daily</p>
+          <p className="text-sm font-semibold text-slate-900">{tc("methodology.daily_label")}</p>
           <p className="mt-1 text-sm leading-6 text-slate-600">
-            Today&apos;s Action Plan tied to your sales model. Done /
-            skipped tracked. Real-time peer benchmarks.
+            {tc("methodology.daily_body")}
           </p>
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-900">Friday</p>
+          <p className="text-sm font-semibold text-slate-900">{tc("methodology.friday_label")}</p>
           <p className="mt-1 text-sm leading-6 text-slate-600">
-            Self-review summary: what closed, what stalled, what to drill
-            next. AI surfaces patterns from the week&apos;s data.
+            {tc("methodology.friday_body")}
           </p>
         </div>
       </div>
@@ -307,17 +291,20 @@ function Methodology() {
 
 // ── FAQ ────────────────────────────────────────────────────────
 
-function FAQ() {
-  const faqs = COACHING_FAQ;
+function FAQ({ tc }: { tc: TFn }) {
+  const faqs = COACHING_FAQ.map((_, i) => ({
+    q: tc(`faq.items.${i}.q`),
+    a: tc(`faq.items.${i}.a`),
+  }));
   return (
     <section className="mt-16">
       <h2 className="text-center text-xl font-semibold text-slate-900 md:text-2xl">
-        Common questions
+        {tc("faq.heading")}
       </h2>
       <div className="mt-6 space-y-3">
-        {faqs.map((f) => (
+        {faqs.map((f, i) => (
           <details
-            key={f.q}
+            key={i}
             className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
           >
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-900">

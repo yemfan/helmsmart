@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "title": "RealtyBoss Coaching — Producer Track + Top Producer Track",
+    "description": "AI-driven coaching built into RealtyBoss. Producer Track (Pro+) targets 3% conversion / 10 transactions; Top Producer Track (Premium + Team) targets 5% conversion / 15 transactions. No add-on, no upsell — included in the plan price.",
+    "og_title": "RealtyBoss Coaching — Producer Track + Top Producer Track",
+    "og_description": "AI-driven coaching built into RealtyBoss. Producer Track (10 deals / 3% conv) and Top Producer Track (15 deals / 5% conv) — included in your plan, no add-on fee.",
+    "twitter_title": "RealtyBoss Coaching",
+    "twitter_description": "Producer Track + Top Producer Track — AI coaching built into RealtyBoss for real estate agents."
+  },
+  "header": {
+    "eyebrow": "RealtyBoss Coaching",
+    "title_line1": "Coaching that’s built in,",
+    "title_line2": "not bolted on.",
+    "subtitle": "Most CRMs add “AI” as a feature label. We built our product around an AI coaching layer — daily action plans, weekly playbooks, peer benchmarks, and AI deep-dives that move the numbers that matter. Two programs cover everyone from new agents to top producers."
+  },
+  "pillars": [
+    {
+      "title": "AI-driven daily plans",
+      "body": "Every morning the dashboard shows the next 5 actions tailored to your sales model, deal stage, and live signals — not a static checklist."
+    },
+    {
+      "title": "Weekly playbook drops",
+      "body": "AI-generated playbooks adapt to what's actually happening in your pipeline. Stuck on inspection objections? Next week's drill is built around that."
+    },
+    {
+      "title": "Peer benchmarks",
+      "body": "Your response time, conversion, and pipeline health stack-ranked against the platform-wide top quartile and your own moving average."
+    },
+    {
+      "title": "AI deep-dives (Top Producer Track)",
+      "body": "Monthly: lead-source ROI heatmap, drop-off analysis, deal-coach reviews of your last 10 closings. Identifies patterns no human will spot."
+    }
+  ],
+  "program_card": {
+    "badge_top": "Premium + Team",
+    "badge_pro": "Pro+",
+    "stat_transactions": "Annual transactions",
+    "stat_conversion": "Lead-to-close target"
+  },
+  "methodology": {
+    "eyebrow": "Methodology",
+    "heading": "How the program runs every week",
+    "monday_label": "Monday",
+    "monday_body": "Weekly playbook drops based on your live pipeline + recent metrics. 5 priority actions for the week.",
+    "daily_label": "Daily",
+    "daily_body": "Today’s Action Plan tied to your sales model. Done / skipped tracked. Real-time peer benchmarks.",
+    "friday_label": "Friday",
+    "friday_body": "Self-review summary: what closed, what stalled, what to drill next. AI surfaces patterns from the week’s data."
+  },
+  "faq": {
+    "heading": "Common questions",
+    "items": [
+      {
+        "q": "Is this a separate paid program?",
+        "a": "No. Coaching is built into the plan price. Producer Track is included with Pro and above; Top Producer Track is included with Premium and Team. No upsell, no add-on fee."
+      },
+      {
+        "q": "What's the difference between Producer Track and Top Producer Track?",
+        "a": "Producer Track gives you the daily plan, weekly playbooks, monthly review, and basic peer benchmarks — targeting 10 transactions and 3% conversion. Top Producer Track adds custom playbooks generated from YOUR live deals, monthly AI deep-dives, top-10% peer benchmarks, and priority access to new AI features — targeting 15 transactions and 5% conversion."
+      },
+      {
+        "q": "Will I be auto-enrolled?",
+        "a": "Yes — when you upgrade to a plan that includes a program, you're auto-enrolled the next time you sign in. You can opt out in settings; we won't re-enroll you automatically after that."
+      },
+      {
+        "q": "What about agents on the Starter plan?",
+        "a": "Starter doesn't include coaching. Upgrade to Pro to start Producer Track, or Premium for Top Producer Track."
+      },
+      {
+        "q": "How do you measure the conversion-rate target?",
+        "a": "Lead-to-close — the percentage of contacts created in RealtyBoss (any source) that result in a closed transaction. Visible on your performance dashboard with a moving 12-month window."
+      }
+    ]
+  },
+  "cta": {
+    "heading": "Coaching is in every paid plan",
+    "body": "Producer Track auto-enrolls on Pro and above. Top Producer Track is bundled with Premium and Team. No coaching add-on fee, ever.",
+    "see_pricing": "See pricing",
+    "compare": "How we compare"
+  }
+}

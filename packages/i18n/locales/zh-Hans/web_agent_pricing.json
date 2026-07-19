@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "title": "经纪人套餐与定价 — Starter、Pro、Premium、Signature、Team",
+    "description": "面向房地产经纪人的 RealtyBoss 套餐：Starter（免费）、Pro（$79/月，含 Producer Track 教练）、Premium（$199/月，Top Producer Track）、Signature（$399/月，双语 + 高端专属礼宾）以及 Team（$299/月，经纪行团队工作流）。年付立省两个月。每个付费档均含 14 天试用。",
+    "og_title": "经纪人套餐与定价 | RealtyBoss",
+    "og_description": "Pro 每月 $79 起，含 Producer Track 教练。Premium 每月 $199，含 Top Producer Track。Signature 每月 $399，含双语 + 礼宾支持。Team 每月 $299，面向经纪行。年付立省两个月。",
+    "twitter_title": "经纪人套餐与定价 | RealtyBoss",
+    "twitter_description": "Pro $79/月 · Premium $199/月 · Signature $399/月 · Team $299/月。支持英文与中文。年付立省两个月。"
+  },
+  "header": {
+    "title": "RealtyBoss 经纪人版",
+    "current_intro_pre": "您当前使用的是 ",
+    "current_intro_plan_suffix": " 套餐。升级可获得更大容量、更强 AI 与更深入的教练服务。付费套餐均含 ",
+    "trial_bold": "14 天免费试用",
+    "current_intro_post": "（需绑定银行卡；可随时取消）。",
+    "current_badge": "当前套餐：{{plan}}",
+    "choose_intro_pre": "选择一个套餐即可开始。付费套餐均含 ",
+    "choose_intro_post": "（需绑定银行卡；试用期内可随时取消）。",
+    "tagline": "从第一条线索到最高价值的客户——支持英文与中文。"
+  },
+  "billing": {
+    "monthly": "按月",
+    "annual": "按年",
+    "save_badge": "立省 17%"
+  },
+  "price": {
+    "free": "免费",
+    "custom": "定制",
+    "per_month": "/月",
+    "billed_annually": "按年收取 {{amount}}",
+    "save_amount": "立省 {{amount}}",
+    "annual_note": "年付折合每月 {{amount}}——立省两个月"
+  },
+  "state": {
+    "current": "当前套餐",
+    "activating": "正在开通...",
+    "redirecting": "正在跳转..."
+  },
+  "error": {
+    "activate_starter": "开通 Starter 失败",
+    "checkout_session": "创建结账会话失败",
+    "missing_url": "缺少结账链接",
+    "start_checkout": "无法开始结账"
+  },
+  "bilingual_pill": "含英文 / 中文双语",
+  "plans": {
+    "starter": {
+      "name": "Starter",
+      "description": "适合体验平台的新手经纪人。",
+      "cta": "免费开始",
+      "features": [
+        "最多 5 条线索 · 50 位联系人",
+        "每天 2 份 CMA 报告",
+        "AI 短信 + 邮件应答（基础版）",
+        "一键拨号（Twilio 桥接）",
+        "联系人自定义字段",
+        "评价与客户推荐采集",
+        "移动应用",
+        "每月 100 次 AI 操作"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "description": "适合持续成交的活跃经纪人。",
+      "coaching_pill": "RealtyBoss 教练：含 Producer Track",
+      "badge": "热门",
+      "cta": "开始 14 天试用",
+      "features": [
+        "涵盖 Starter 全部功能，另加：",
+        "最多 500 条线索 · 500 位联系人",
+        "每天 5 份 CMA 报告",
+        "英文 / 中文双语模板与 AI",
+        "Producer Track 教练（自动加入）",
+        "邮件打开 / 点击追踪",
+        "视频邮件（录制并发送）",
+        "群发邮件 / 简报编辑器",
+        "房源展示演示生成器",
+        "专属号码 / 通话来源追踪号码",
+        "人脉圈预测 + 房产净值信号",
+        "买方经纪协议（BBA）工作流",
+        "记账——发票、支出与收据采集",
+        "每月 5,000 次 AI 操作"
+      ]
+    },
+    "premium": {
+      "name": "Premium",
+      "description": "适合独立作战的顶尖业绩经纪人。",
+      "coaching_pill": "RealtyBoss 教练：含 Top Producer Track",
+      "cta": "开始 14 天试用",
+      "features": [
+        "涵盖 Pro 全部功能，另加：",
+        "AI 前台 + AI 礼宾——接听每一通来电，并自动去电确认、跟进与回访",
+        "线索与联系人不限量",
+        "ISA 工作流 + 合格线索交接",
+        "电子签名工作流（Dotloop / DocuSign）",
+        "高级 AI 教练 + 同行对标",
+        "AI 操作不限量",
+        "优先支持"
+      ]
+    },
+    "signature": {
+      "name": "Signature",
+      "description": "适合服务高价值与双语客户、注重关系经营的经纪人。",
+      "coaching_pill": "RealtyBoss 教练：含 Top Producer Track",
+      "badge": "双语 & 高端",
+      "cta": "开始 14 天试用",
+      "secondary_link": "想先通个电话？先联系我们 →",
+      "features": [
+        "涵盖 Premium 全部功能，另加：",
+        "Sphere Intelligence Pro——房产净值追踪、人生大事信号与转介绍图谱",
+        "白手套式入驻——专属顾问一对一设置，含人脉圈导入",
+        "礼宾支持——优先响应，专属客户经理",
+        "文化日历自动化——春节、中秋、农历节日自动暂停 / 自动问候",
+        "定制语音调校——AI 依据您以往的对话进行语气匹配训练"
+      ]
+    },
+    "team": {
+      "name": "Team",
+      "description": "适合需要共享工作流的经纪行与小型团队。",
+      "coaching_pill": "RealtyBoss 教练：每个席位均含 Top Producer Track",
+      "footnote": "最多 5 个团队席位——如需更多请联系销售。",
+      "cta": "联系销售",
+      "secondary_link": "联系销售 →",
+      "features": [
+        "涵盖 Premium 全部功能，另加：",
+        "全团队轮流分配线索",
+        "按成员拆分报表",
+        "全团队仪表盘汇总",
+        "每位成员均含 Top Producer Track",
+        "团队所有者权限 + 席位邀请"
+      ]
+    }
+  },
+  "team_section": {
+    "heading": "面向团队与经纪行",
+    "contact_link": "需要超过 5 个席位？联系销售 →"
+  },
+  "which": {
+    "heading": "哪个套餐最适合您？",
+    "starter": {
+      "name": "Starter",
+      "body": "最适合体验工作台并把您的第一批线索整理成型。"
+    },
+    "pro": {
+      "name": "Pro",
+      "body": "最适合正在积极转化线索的独立经纪人。含 Producer Track 教练与英文 / 中文双语支持。"
+    },
+    "premium": {
+      "name": "Premium",
+      "body": "最适合希望一切不限量并搭配 Top Producer Track 教练的独立顶尖经纪人。"
+    },
+    "signature": {
+      "name": "Signature",
+      "body": "最适合服务高价值与双语客户、注重关系经营的经纪人。含 Sphere Intelligence Pro、白手套式入驻与礼宾支持。"
+    },
+    "team": {
+      "name": "Team",
+      "body": "最适合最多 5 位经纪人共享线索、分配与全团队教练的经纪行。"
+    }
+  },
+  "coaching_callout": {
+    "heading": "RealtyBoss 教练——内建于产品之中，而非附加服务",
+    "body_pre": "每个付费套餐都会自动加入我们的教练项目：",
+    "producer_track": "Producer Track",
+    "body_mid": " 面向 Pro（目标：10 笔成交 / 3% 转化率），而 ",
+    "top_producer_track": "Top Producer Track",
+    "body_post": " 面向 Premium、Signature 与 Team（目标：15 笔成交 / 5% 转化率）。没有额外加价——每日行动计划、同行对标与 AI 深度分析都已包含在价格之内。"
+  }
+}
