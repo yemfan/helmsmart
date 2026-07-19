@@ -9,6 +9,7 @@ import {
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
+import PromptsLeadMagnet from "./PromptsLeadMagnet";
 
 export const metadata: Metadata = {
   title: "Free real estate tools — calculators, analyzers, and AI",
@@ -301,77 +302,7 @@ export default function FreeToolsPage() {
           </ul>
         </nav>
 
-        <section
-          aria-labelledby="lead-magnet-title"
-          className="mt-10 overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-white p-6 md:p-10 dark:border-blue-900/40 dark:from-blue-950/30 dark:via-slate-950 dark:to-slate-950"
-        >
-          <div className="grid items-center gap-8 md:grid-cols-[1.3fr_1fr]">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">
-                Free download · for real estate agents
-              </p>
-              <h2
-                id="lead-magnet-title"
-                className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl dark:text-white"
-              >
-                5 AI Prompts Every Realtor Should Steal
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600 md:text-base dark:text-slate-300">
-                Copy, paste, and close more deals — write listings, follow up
-                with leads, and prep CMAs in seconds. Available in English and
-                中文.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <a
-                  href="/downloads/RealtyBoss_5_AI_Prompts.pdf"
-                  download
-                  className="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-                >
-                  <Download className="h-4 w-4" aria-hidden />
-                  Download (English)
-                </a>
-                <a
-                  href="/downloads/RealtyBoss_5_AI_Prompts_ZH.pdf"
-                  download
-                  className="inline-flex items-center justify-center gap-2 rounded-md border border-blue-200 bg-white px-5 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 dark:border-blue-900/50 dark:bg-slate-900 dark:text-blue-300 dark:hover:bg-slate-900/70"
-                >
-                  <Download className="h-4 w-4" aria-hidden />
-                  下载（中文）
-                </a>
-              </div>
-            </div>
-            <ul className="space-y-3 text-sm leading-6 text-slate-700 dark:text-slate-200">
-              <li className="flex gap-2">
-                <span aria-hidden className="mt-0.5 text-base">✍️</span>
-                <span>
-                  <strong className="font-semibold">Listing Description Writer</strong>{" "}
-                  — three ready-to-post versions, fair-housing safe
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <span aria-hidden className="mt-0.5 text-base">📲</span>
-                <span>
-                  <strong className="font-semibold">Lead Follow-Up Sequence</strong>{" "}
-                  — a full 5-touch cadence across text, email, and calls
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <span aria-hidden className="mt-0.5 text-base">📊</span>
-                <span>
-                  <strong className="font-semibold">Instant CMA Narrative</strong>{" "}
-                  — turn raw comps into a listing-appointment script
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <span aria-hidden className="mt-0.5 text-base">🎯</span>
-                <span>
-                  <strong className="font-semibold">Objection-Handling Coach</strong>{" "}
-                  — private role-play before your toughest appointments
-                </span>
-              </li>
-            </ul>
-          </div>
-        </section>
+        <PromptsLeadMagnet />
 
         <div className="mt-12 space-y-14">
           {SECTIONS.map((section) => (
