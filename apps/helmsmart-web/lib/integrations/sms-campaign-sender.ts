@@ -5,19 +5,28 @@
 
 import { createServiceClient } from "@/lib/supabase/server";
 import twilio from "twilio";
+import { normalizePhoneE164 } from "@/lib/phone";
 import { logSMSCommunication } from "./communication-auto-logger";
 
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
+// Match lib/actions/messages.ts: prefer the Messaging Service (REQUIRED for US A2P
+// 10DLC — a bare `from` number is filtered as error 30034 even inside a registered
+// campaign), fall back to the outbound number. The var is TWILIO_FROM_NUMBER — the
+// old TWILIO_PHONE_NUMBER was never set anywhere, so every campaign run logged
+// "Twilio not configured" and no campaign SMS ever sent.
+const TWILIO_MESSAGING_SERVICE_SID = process.env.TWILIO_MESSAGING_SERVICE_SID;
+const TWILIO_FROM_NUMBER = process.env.TWILIO_FROM_NUMBER;
 
-if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
+const hasSender = Boolean(TWILIO_MESSAGING_SERVICE_SID || TWILIO_FROM_NUMBER);
+if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !hasSender) {
   console.warn("[sms-campaign-sender] Twilio not configured");
 }
 
-const twilioClient = TWILIO_ACCOUNT_SID
-  ? twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-  : null;
+const twilioClient =
+  TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN && hasSender
+    ? twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    : null;
 
 /**
  * Send an SMS campaign to targeted recipients
@@ -58,13 +67,33 @@ export async function sendSMSCampaign(
     let failed = 0;
     const recipientIds: string[] = [];
 
+    // Absolute https callback lets Twilio report delivery outcome; skip on
+    // non-https so Twilio doesn't reject a callback it can't reach.
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+    const statusCallback = appUrl.startsWith("https://")
+      ? `${appUrl}/api/twilio/sms/status`
+      : undefined;
+
     for (const recipient of recipients) {
       try {
-        // Send via Twilio
+        // Twilio only reliably delivers to E.164 — a bare number returns a SID
+        // (looks "sent") but never arrives. Normalize and skip the ones that can't.
+        const normalized = normalizePhoneE164(recipient.phone_number);
+        if (!normalized.ok) {
+          console.error("[sms-campaign-sender] bad phone, skipping:", normalized.error);
+          failed++;
+          continue;
+        }
+        const to = normalized.value;
+
+        // Send via Twilio — Messaging Service when set (A2P 10DLC), else the number.
         const message = await twilioClient.messages.create({
-          from: TWILIO_PHONE_NUMBER!,
-          to: recipient.phone_number,
+          ...(TWILIO_MESSAGING_SERVICE_SID
+            ? { messagingServiceSid: TWILIO_MESSAGING_SERVICE_SID }
+            : { from: TWILIO_FROM_NUMBER! }),
+          to,
           body: campaign.message_text,
+          ...(statusCallback ? { statusCallback } : {}),
         });
 
         // Record in database
@@ -74,7 +103,7 @@ export async function sendSMSCampaign(
             campaign_id: campaignId,
             organization_id: orgId,
             client_id: recipient.client_id,
-            phone_number: recipient.phone_number,
+            phone_number: to,
             recipient_name: recipient.recipient_name,
             recipient_email: recipient.recipient_email,
             twilio_sid: message.sid,
@@ -90,7 +119,7 @@ export async function sendSMSCampaign(
           // Auto-log the communication
           await logSMSCommunication({
             clientId: recipient.client_id,
-            phoneNumber: recipient.phone_number,
+            phoneNumber: to,
             messageText: campaign.message_text,
             twilioSid: message.sid,
             campaignId: campaignId,
