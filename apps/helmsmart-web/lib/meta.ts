@@ -65,8 +65,11 @@ const GRAPH = metaGraphBase(GRAPH_VERSION);
  * META_OAUTH_REDIRECT_URI still wins when set, as a single-domain escape hatch.
  */
 export function getMetaConfig(requestHost?: string | null) {
-  const appId = process.env.META_APP_ID;
-  const appSecret = process.env.META_APP_SECRET;
+  // Trim: a secret pasted into the Vercel dashboard with a trailing space or
+  // newline still passes the presence check in isMetaConfigured(), then fails
+  // the token exchange with an opaque OAuthException — an afternoon to diagnose.
+  const appId = process.env.META_APP_ID?.trim();
+  const appSecret = process.env.META_APP_SECRET?.trim();
 
   const envBase = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3002";
   const baseUrl = requestHost
@@ -115,8 +118,16 @@ export async function exchangeMetaCode(
     code,
   });
   const res = await fetch(`${GRAPH}/oauth/access_token?${q.toString()}`);
-  const json = (await res.json().catch(() => ({}))) as { access_token?: string };
-  return res.ok && json.access_token ? json.access_token : null;
+  const json = (await res.json().catch(() => ({}))) as {
+    access_token?: string;
+    error?: { message?: string; type?: string; code?: number };
+  };
+  if (res.ok && json.access_token) return json.access_token;
+  // Log the Graph error itself — the callback only knows "it failed", and a bad
+  // secret vs a redirect_uri mismatch vs an expired code all look identical from
+  // there. Never logs the code or secret, only Meta's error envelope.
+  console.error("[meta] token exchange failed:", res.status, json.error ?? json);
+  return null;
 }
 
 export type MetaPage = {
