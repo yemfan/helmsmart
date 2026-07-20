@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition, type ReactNode } from "react";
-import { Sparkles, Send, Calendar, Copy, Check, Trash2, ExternalLink, Clock } from "lucide-react";
+import { useRef, useState, useTransition, type ChangeEvent, type ReactNode } from "react";
+import { Sparkles, Send, Calendar, Copy, Check, Trash2, ExternalLink, Clock, ImagePlus, X } from "lucide-react";
 import { generateSocialPost, generateSocialVariants, refineSocialPost, createSocialPost, updateSocialPost, deleteSocialPost, type SocialRefineMode } from "@/lib/actions/social";
+import { uploadSocialImage } from "@/lib/actions/social-media";
 import { canPublish, providerFor } from "@/lib/social-platforms";
 
 type Platform = "x" | "linkedin" | "facebook" | "instagram";
@@ -23,6 +24,8 @@ interface Post {
   created_at: string;
   /** Why the last publish attempt failed, shown on the queue card. */
   last_error?: string | null;
+  /** Public URL of the attached image, if any (required for Instagram). */
+  media_url?: string | null;
 }
 
 interface Props {
@@ -100,9 +103,34 @@ export function SocialComposer({
   const [variantsLoading, setVariantsLoading] = useState(false);
   const [refineLoading, setRefineLoading] = useState(false);
   const [refineMode, setRefineMode] = useState<SocialRefineMode | null>(null);
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const limit = PLATFORM_META[activePlatform].limit;
   const isOverLimit = content.length > limit;
+  // Instagram has no text-only post; block submission until an image is attached.
+  const needsImage = activePlatform === "instagram" && !mediaUrl;
+
+  function handlePickImage(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-picking the same file after a remove
+    if (!file) return;
+    setUploadError(null);
+    setUploading(true);
+    start(async () => {
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await uploadSocialImage(fd);
+        if ("error" in res) setUploadError(res.error);
+        else setMediaUrl(res.url);
+      } finally {
+        setUploading(false);
+      }
+    });
+  }
 
   async function handleGenerate() {
     if (!topic.trim()) return;
@@ -161,10 +189,14 @@ export function SocialComposer({
         scheduledAt: status === "scheduled" && scheduleDate ? new Date(scheduleDate).toISOString() : null,
         aiPrompt: topic || null,
         generatedByAi: !!topic,
+        mediaUrl,
       });
+      const savedMedia = mediaUrl;
       setContent("");
       setTopic("");
       setScheduleDate("");
+      setMediaUrl(null);
+      setUploadError(null);
       setTab("queue");
       // Optimistically add to list
       const newPost: Post = {
@@ -179,6 +211,7 @@ export function SocialComposer({
         ai_prompt: topic || null,
         tone,
         created_at: new Date().toISOString(),
+        media_url: savedMedia,
       };
       setPosts((p) => [newPost, ...p]);
     });
@@ -401,6 +434,46 @@ export function SocialComposer({
                 )}
               </div>
 
+              {/* Image */}
+              <div>
+                <label className="block text-xs font-medium text-slate-500 mb-1.5">
+                  <ImagePlus className="w-3.5 h-3.5 inline mr-1" />
+                  Image {activePlatform === "instagram" ? <span className="text-rose-500">(required)</span> : "(optional)"}
+                </label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg"
+                  onChange={handlePickImage}
+                  className="hidden"
+                />
+                {mediaUrl ? (
+                  <div className="relative inline-block">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={mediaUrl} alt="Attached" className="max-h-40 rounded-lg border border-slate-200" />
+                    <button
+                      type="button"
+                      onClick={() => setMediaUrl(null)}
+                      className="absolute -top-2 -right-2 bg-white border border-slate-200 rounded-full p-1 text-slate-500 hover:text-rose-600 shadow-sm"
+                      aria-label="Remove image"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading || isPending}
+                    className="w-full py-2.5 border border-dashed border-slate-300 text-slate-500 text-sm rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <ImagePlus className="w-4 h-4" />
+                    {uploading ? "Uploading…" : "Add a JPG image"}
+                  </button>
+                )}
+                {uploadError && <p className="text-xs text-rose-600 mt-1">{uploadError}</p>}
+              </div>
+
               {/* Schedule */}
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1.5">
@@ -419,14 +492,15 @@ export function SocialComposer({
               <div className="flex gap-2 pt-1">
                 <button
                   onClick={() => handleSave("draft")}
-                  disabled={isPending || !content.trim() || isOverLimit}
+                  disabled={isPending || uploading || !content.trim() || isOverLimit || needsImage}
                   className="flex-1 py-2.5 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 disabled:opacity-50 transition-colors"
                 >
                   Save draft
                 </button>
                 <button
                   onClick={() => handleSave(scheduleDate ? "scheduled" : "draft")}
-                  disabled={isPending || !content.trim() || isOverLimit}
+                  disabled={isPending || uploading || !content.trim() || isOverLimit || needsImage}
+                  title={needsImage ? "Instagram posts need an image" : undefined}
                   className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                 >
                   {scheduleDate ? <><Calendar className="w-3.5 h-3.5" /> Schedule</> : <><Send className="w-3.5 h-3.5" /> Add to queue</>}
@@ -506,6 +580,10 @@ export function SocialComposer({
                 </div>
               </div>
               <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed">{content}</p>
+              {mediaUrl && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={mediaUrl} alt="Attached" className="mt-3 w-full rounded-lg border border-slate-100" />
+              )}
               <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-100">
                 {["💬", "🔁", "❤️", "📊"].map((em) => (
                   <span key={em} className="text-xs text-slate-400 cursor-default">{em} —</span>

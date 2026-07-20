@@ -30,7 +30,7 @@ export default async function SocialPage({
   // unknown column, which would blank the page rather than degrade. Ask for it,
   // fall back to the base columns if it isn't there yet.
   const BASE_COLS =
-    "id, platform, content, status, scheduled_at, published_at, published_url, generated_by_ai, ai_prompt, tone, created_at";
+    "id, platform, content, status, scheduled_at, published_at, published_url, generated_by_ai, ai_prompt, tone, created_at, media_url";
   const postsQuery = async () => {
     const withError = await supabase
       .from("social_posts")
