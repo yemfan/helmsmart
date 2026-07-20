@@ -36,6 +36,13 @@ import { encrypt, decrypt } from "@/lib/crypto";
  * Access (App Review) to work for OTHER people's Pages — but Standard Access is
  * enough for Pages owned by someone with a role on the app, which is how the
  * first org (ours) can publish before review completes.
+ *
+ * business_management is here for a specific failure we hit live: the moment a
+ * Page is pulled into a Business portfolio (which happens automatically when you
+ * link an Instagram account to it), it STOPS appearing in /me/accounts, so
+ * fetchMetaPages returns zero pages and the connect dies with "no_pages_granted"
+ * — confirmed via `[meta] fetchMetaPages: pages=0`. business_management lets the
+ * token enumerate business-owned assets, so the portfolio Page is visible again.
  */
 export const META_SCOPES = [
   "pages_show_list",
@@ -43,6 +50,7 @@ export const META_SCOPES = [
   "pages_read_engagement",
   "instagram_basic",
   "instagram_content_publish",
+  "business_management",
 ].join(",");
 
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION?.trim() || META_GRAPH_VERSION;
