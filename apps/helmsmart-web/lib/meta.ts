@@ -146,45 +146,17 @@ export type MetaPage = {
   igUserId: string | null;
 };
 
-/**
- * List the Pages this user administers, each with its own Page token and any
- * linked Instagram Business account.
- *
- * We ask for the IG link here rather than later because it is only reachable
- * through the Page, and discovering at publish time that IG was never linked is
- * a bad moment to find out.
- */
-export async function fetchMetaPages(userAccessToken: string): Promise<MetaPage[]> {
-  const q = new URLSearchParams({
-    fields: "id,name,access_token,instagram_business_account{id}",
-    access_token: userAccessToken,
-  });
-  const res = await fetch(`${GRAPH}/me/accounts?${q.toString()}`);
-  const json = (await res.json().catch(() => ({}))) as {
-    data?: Array<{
-      id?: string;
-      name?: string;
-      access_token?: string;
-      instagram_business_account?: { id?: string };
-    }>;
-    error?: { message?: string; type?: string; code?: number };
-  };
-  if (!res.ok || !Array.isArray(json.data)) {
-    // A page moved into a Business portfolio can vanish from /me/accounts, and an
-    // empty list here surfaces to the user as an opaque "no_pages_granted". Log
-    // the shape (never tokens) so that case is distinguishable from a real error.
-    console.error("[meta] fetchMetaPages: no usable pages", res.status, json.error ?? `data=${Array.isArray(json.data) ? json.data.length : "none"}`);
-    return [];
-  }
-  // How many pages came back, and how many actually carried a token — a
-  // business-owned page can appear with NO access_token, which the filter drops.
-  console.error(
-    "[meta] fetchMetaPages:",
-    `pages=${json.data.length}`,
-    `withToken=${json.data.filter((p) => p.access_token).length}`,
-    `names=${json.data.map((p) => p.name).join("|")}`,
-  );
-  return json.data
+type RawPage = {
+  id?: string;
+  name?: string;
+  access_token?: string;
+  instagram_business_account?: { id?: string };
+};
+
+const PAGE_FIELDS = "id,name,access_token,instagram_business_account{id}";
+
+function mapPageRows(rows: RawPage[]): MetaPage[] {
+  return rows
     .filter((p) => p.id && p.access_token)
     .map((p) => ({
       pageId: p.id!,
@@ -192,6 +164,97 @@ export async function fetchMetaPages(userAccessToken: string): Promise<MetaPage[
       pageAccessToken: p.access_token!,
       igUserId: p.instagram_business_account?.id ?? null,
     }));
+}
+
+/**
+ * Pages a Business portfolio owns. These do NOT come back from /me/accounts —
+ * the moment a Page joins a portfolio (which linking an Instagram account does
+ * automatically) it can only be reached through the business's owned_pages edge,
+ * and only with business_management granted. This is the whole reason a working
+ * connection breaks with "no_pages_granted" right after someone links Instagram.
+ */
+async function fetchBusinessOwnedPages(userAccessToken: string): Promise<MetaPage[]> {
+  const bizRes = await fetch(
+    `${GRAPH}/me/businesses?fields=id,name&access_token=${encodeURIComponent(userAccessToken)}`,
+  );
+  const bizJson = (await bizRes.json().catch(() => ({}))) as {
+    data?: Array<{ id?: string; name?: string }>;
+    error?: { message?: string; code?: number };
+  };
+  if (!bizRes.ok || !Array.isArray(bizJson.data)) {
+    console.error("[meta] fetchBusinessOwnedPages: /me/businesses failed", bizRes.status, bizJson.error ?? "no data");
+    return [];
+  }
+  console.error("[meta] businesses:", bizJson.data.map((b) => b.name).join("|") || "(none)");
+
+  const out: MetaPage[] = [];
+  for (const biz of bizJson.data) {
+    if (!biz.id) continue;
+    // owned_pages lists them; client_pages covers Pages the business was merely
+    // granted access to — checking both means we don't miss a Page depending on
+    // exactly how it landed in the portfolio.
+    for (const edge of ["owned_pages", "client_pages"]) {
+      const q = new URLSearchParams({ fields: PAGE_FIELDS, access_token: userAccessToken });
+      const res = await fetch(`${GRAPH}/${biz.id}/${edge}?${q.toString()}`);
+      const json = (await res.json().catch(() => ({}))) as {
+        data?: RawPage[];
+        error?: { message?: string; code?: number };
+      };
+      if (!res.ok || !Array.isArray(json.data)) {
+        console.error(`[meta] ${edge} failed for ${biz.id}`, res.status, json.error ?? "no data");
+        continue;
+      }
+      console.error(
+        `[meta] ${edge}:`,
+        `pages=${json.data.length}`,
+        `withToken=${json.data.filter((p) => p.access_token).length}`,
+        `names=${json.data.map((p) => p.name).join("|")}`,
+      );
+      out.push(...mapPageRows(json.data));
+    }
+  }
+  // A Page can appear in both owned and client edges; keep one per id.
+  return Array.from(new Map(out.map((p) => [p.pageId, p])).values());
+}
+
+/**
+ * List the Pages this user administers, each with its own Page token and any
+ * linked Instagram Business account.
+ *
+ * We ask for the IG link here rather than later because it is only reachable
+ * through the Page, and discovering at publish time that IG was never linked is
+ * a bad moment to find out.
+ *
+ * Two sources, in order: /me/accounts (standalone Pages), then the business
+ * owned_pages edge (portfolio Pages, which /me/accounts silently omits). The
+ * fallback is what keeps the connection working after a Page is pulled into a
+ * portfolio by an Instagram link.
+ */
+export async function fetchMetaPages(userAccessToken: string): Promise<MetaPage[]> {
+  const q = new URLSearchParams({ fields: PAGE_FIELDS, access_token: userAccessToken });
+  const res = await fetch(`${GRAPH}/me/accounts?${q.toString()}`);
+  const json = (await res.json().catch(() => ({}))) as {
+    data?: RawPage[];
+    error?: { message?: string; type?: string; code?: number };
+  };
+
+  if (res.ok && Array.isArray(json.data)) {
+    console.error(
+      "[meta] fetchMetaPages /me/accounts:",
+      `pages=${json.data.length}`,
+      `withToken=${json.data.filter((p) => p.access_token).length}`,
+      `names=${json.data.map((p) => p.name).join("|")}`,
+    );
+    const direct = mapPageRows(json.data);
+    if (direct.length > 0) return direct;
+  } else {
+    console.error("[meta] fetchMetaPages /me/accounts failed", res.status, json.error ?? "no data");
+  }
+
+  // /me/accounts came back empty — the Page is almost certainly in a Business
+  // portfolio now. Reach it through the business edge instead.
+  console.error("[meta] fetchMetaPages: /me/accounts empty, trying business-owned pages");
+  return fetchBusinessOwnedPages(userAccessToken);
 }
 
 /**
