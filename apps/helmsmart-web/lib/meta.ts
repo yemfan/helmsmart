@@ -159,8 +159,23 @@ export async function fetchMetaPages(userAccessToken: string): Promise<MetaPage[
       access_token?: string;
       instagram_business_account?: { id?: string };
     }>;
+    error?: { message?: string; type?: string; code?: number };
   };
-  if (!res.ok || !Array.isArray(json.data)) return [];
+  if (!res.ok || !Array.isArray(json.data)) {
+    // A page moved into a Business portfolio can vanish from /me/accounts, and an
+    // empty list here surfaces to the user as an opaque "no_pages_granted". Log
+    // the shape (never tokens) so that case is distinguishable from a real error.
+    console.error("[meta] fetchMetaPages: no usable pages", res.status, json.error ?? `data=${Array.isArray(json.data) ? json.data.length : "none"}`);
+    return [];
+  }
+  // How many pages came back, and how many actually carried a token — a
+  // business-owned page can appear with NO access_token, which the filter drops.
+  console.error(
+    "[meta] fetchMetaPages:",
+    `pages=${json.data.length}`,
+    `withToken=${json.data.filter((p) => p.access_token).length}`,
+    `names=${json.data.map((p) => p.name).join("|")}`,
+  );
   return json.data
     .filter((p) => p.id && p.access_token)
     .map((p) => ({
