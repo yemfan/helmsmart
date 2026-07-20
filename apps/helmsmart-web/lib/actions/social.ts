@@ -170,10 +170,18 @@ export async function createSocialPost(data: {
   scheduledAt?: string | null;
   aiPrompt?: string | null;
   generatedByAi: boolean;
+  /** Public image URL (from uploadSocialImage). Required for Instagram. */
+  mediaUrl?: string | null;
 }) {
   const cookieStore = await cookies();
   const orgId = cookieStore.get("helmsmart-org-id")?.value;
   if (!orgId) throw new Error("No org");
+
+  // Instagram has no text-only post — refuse here rather than let it sit queued and
+  // fail later in the cron, which is the silent-stall trap this whole feature avoids.
+  if (data.platform === "instagram" && !data.mediaUrl) {
+    throw new Error("Instagram posts need an image.");
+  }
 
   const supabase = await createClient();
 
@@ -186,6 +194,7 @@ export async function createSocialPost(data: {
     scheduled_at: data.scheduledAt ?? null,
     generated_by_ai: data.generatedByAi,
     ai_prompt: data.aiPrompt ?? null,
+    media_url: data.mediaUrl ?? null,
   });
 
   revalidatePath("/social");
