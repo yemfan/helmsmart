@@ -96,7 +96,7 @@ export async function POST(req: Request) {
      * persisted above — even if Resend is down, the inbound is
      * recorded for compliance. */
     const recipient =
-      process.env.CONTACT_FORM_TO?.trim() || "fan.yes@gmail.com";
+      process.env.CONTACT_FORM_TO?.trim() || "contact@closebossai.com";
     const trimmedSubject = subject?.trim();
     const emailSubject = trimmedSubject
       ? `[LeadSmart Contact] ${trimmedSubject}`
