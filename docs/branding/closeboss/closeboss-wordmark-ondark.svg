@@ -2,20 +2,11 @@
   <radialGradient id="gold" cx="42%" cy="38%" r="66%"><stop offset="0%" stop-color="#ffe58a"/><stop offset="42%" stop-color="#ffc23d"/><stop offset="78%" stop-color="#f49a12"/><stop offset="100%" stop-color="#d97a06"/></radialGradient>
   <radialGradient id="navyD" cx="38%" cy="30%" r="80%"><stop offset="0%" stop-color="#2c3f66"/><stop offset="100%" stop-color="#152238"/></radialGradient>
   <radialGradient id="navyL" cx="38%" cy="30%" r="82%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#c9d5ea"/></radialGradient>
-  <radialGradient id="glow" cx="50%" cy="48%" r="60%"><stop offset="0%" stop-color="#f4f8ff"/><stop offset="55%" stop-color="#cfe0f8"/><stop offset="100%" stop-color="#a7c6ef"/></radialGradient>
-  <filter id="soft" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0b1220" flood-opacity="0.22"/></filter>
-  <filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"/></filter>
+  <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0b1220" flood-opacity="0.2"/></filter>
 </defs>
-  <rect width="1040" height="300" rx="0" fill="#0f1a2e"/>
-  <g transform="translate(150 150) scale(0.62)">
-    <g transform="translate(-210 -210)">
-      
-      <g filter="url(#soft)"><g fill="url(#navyL)"><circle cx="210.0" cy="63.4" r="11.5"/><path d="M 190.2 96.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyL)"><circle cx="322.6" cy="128.4" r="11.5"/><path d="M 302.7 161.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyL)"><circle cx="322.6" cy="258.4" r="11.5"/><path d="M 302.7 291.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyL)"><circle cx="210.0" cy="323.4" r="11.5"/><path d="M 190.2 356.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyL)"><circle cx="97.4" cy="258.4" r="11.5"/><path d="M 77.6 291.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyL)"><circle cx="97.4" cy="128.4" r="11.5"/><path d="M 77.6 161.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g></g>
-      <circle cx="210" cy="213" r="46" fill="#000" opacity="0.10"/>
-      <circle cx="210" cy="210" r="46" fill="url(#gold)"/>
-    </g>
-  </g>
-  <text x="330" y="150" font-family="Arial, sans-serif" font-size="86" font-weight="700" letter-spacing="1"><tspan fill="#f0f4fb">CLOSE</tspan><tspan fill="#f39100">BOSS</tspan></text>
-  <text x="332" y="196" font-family="Arial, sans-serif" font-size="27" fill="#c4cee0">Your AI Real Estate Team.</text>
-  <text x="332" y="230" font-family="Arial, sans-serif" font-size="27" fill="#c4cee0">Never Stops <tspan fill="#f39100">Closing.</tspan></text>
+  <rect width="1040" height="300" fill="#0f1a2e"/>
+  <g transform="translate(150 150) scale(0.62)"><g transform="translate(-210 -210)"><g filter="url(#soft)"><g fill="url(#navyL)"><circle cx="210.0" cy="63.4" r="11.5"/><path d="M 190.2 96.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyL)"><circle cx="322.6" cy="128.4" r="11.5"/><path d="M 302.7 161.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyL)"><circle cx="322.6" cy="258.4" r="11.5"/><path d="M 302.7 291.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyL)"><circle cx="210.0" cy="323.4" r="11.5"/><path d="M 190.2 356.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyL)"><circle cx="97.4" cy="258.4" r="11.5"/><path d="M 77.6 291.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyL)"><circle cx="97.4" cy="128.4" r="11.5"/><path d="M 77.6 161.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g></g><circle cx="210" cy="213" r="46" fill="#000" opacity="0.10"/><circle cx="210" cy="210" r="46" fill="url(#gold)"/></g></g>
+  <text x="330" y="150" font-family="Geist, 'Geist Sans', 'Segoe UI', Arial, sans-serif" font-size="86" font-weight="700" letter-spacing="1"><tspan fill="#f0f4fb">CLOSE</tspan><tspan fill="#f39100">BOSS</tspan></text>
+  <text x="332" y="196" font-family="Geist, 'Geist Sans', 'Segoe UI', Arial, sans-serif" font-size="27" fill="#c4cee0">Your AI Real Estate Team.</text>
+  <text x="332" y="230" font-family="Geist, 'Geist Sans', 'Segoe UI', Arial, sans-serif" font-size="27" fill="#c4cee0">Never Stops <tspan fill="#f39100">Closing.</tspan></text>
 </svg>
