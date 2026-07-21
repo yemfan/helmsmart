@@ -17,11 +17,11 @@ export function CloseBossMark({ className }: { className?: string; tone?: Tone }
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/brand/realtyboss/realtyboss-icon-512.png"
+      src="/brand/realtyboss/realtyboss-mark-512.png"
       alt="CloseBoss"
       width={40}
       height={40}
-      className={cn("h-8 w-8 rounded-[22%]", className)}
+      className={cn("h-8 w-8", className)}
     />
   );
 }
