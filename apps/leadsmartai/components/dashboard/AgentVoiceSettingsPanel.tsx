@@ -113,7 +113,7 @@ export default function AgentVoiceSettingsPanel() {
   return (
     <div className="space-y-4">
       <p className="text-xs text-gray-600">
-        Choose the voice for your RealtyBoss phone assistant. Calls use Twilio speech today; OpenAI and
+        Choose the voice for your CloseBoss phone assistant. Calls use Twilio speech today; OpenAI and
         ElevenLabs presets map to Amazon Polly voices until native TTS is connected. Assistant disclosure
         scripts are unchanged.
       </p>

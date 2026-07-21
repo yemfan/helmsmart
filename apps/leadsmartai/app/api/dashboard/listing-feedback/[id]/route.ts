@@ -35,7 +35,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     const { agentId } = await getCurrentAgentContext();
     const { id } = await ctx.params;
     const appBaseUrl =
-      process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "https://www.realtybossai.com";
+      process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "https://www.closebossai.com";
     const result = await sendFeedbackRequest(String(agentId), id, appBaseUrl);
     if (!result.sent) {
       return NextResponse.json({ ok: false, error: result.reason }, { status: 400 });

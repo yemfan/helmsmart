@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function CapRateVsRoiPage() {
   const title = "Cap Rate vs ROI: What’s the Difference for Real Estate Investors?";
-  const url = "https://realtybossai.com/cap-rate-vs-roi";
+  const url = "https://closebossai.com/cap-rate-vs-roi";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -278,7 +278,7 @@ export default function CapRateVsRoiPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

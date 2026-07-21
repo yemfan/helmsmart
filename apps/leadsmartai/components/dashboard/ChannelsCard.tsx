@@ -131,7 +131,7 @@ export default async function ChannelsCard({ agentId: _agentId }: { agentId: str
       </div>
 
       <p className="mt-4 text-[11px] text-gray-400">
-        Read-only. Sender verification is managed by RealtyBoss — contact support to change a verified number or
+        Read-only. Sender verification is managed by CloseBoss — contact support to change a verified number or
         address.
       </p>
     </div>

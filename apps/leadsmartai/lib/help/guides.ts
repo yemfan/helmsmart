@@ -925,7 +925,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "4 min",
     category: "ai-and-voice",
     body: [
-      "Unlike SMS-only CRMs, RealtyBoss can pick up the phone and call your sphere for you — check-ins, just-listed/just-sold updates, price-drop alerts, and lead follow-up — in a natural AI voice from your number.",
+      "Unlike SMS-only CRMs, CloseBoss can pick up the phone and call your sphere for you — check-ins, just-listed/just-sold updates, price-drop alerts, and lead follow-up — in a natural AI voice from your number.",
       "You stay in control: pick the contacts, the intent, and whether calls go out automatically or wait for your approval.",
     ],
     steps: [
@@ -936,7 +936,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       "After each call the transcript and outcome are logged to the contact and your pipeline automatically.",
     ],
     related: [
-      { label: "Does RealtyBoss make phone calls? (FAQ)", href: "/help/faq#ai_followup" },
+      { label: "Does CloseBoss make phone calls? (FAQ)", href: "/help/faq#ai_followup" },
       { label: "Configure voice AI for inbound calls", href: "/help/guides/voice-ai-inbound" },
       { label: "Set up missed-call text-back", href: "/help/guides/missed-call-text-back" },
     ],

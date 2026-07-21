@@ -4,10 +4,10 @@ import type { ReactNode } from "react";
 import { PremiumSidebar, PremiumTopbar } from "@repo/ui";
 import navConfig, { leadSmartNav } from "@/nav.config";
 
-const APP_NAME = "RealtyBoss";
+const APP_NAME = "CloseBoss";
 
 /**
- * RealtyBoss layout using `PremiumSidebar` + `PremiumTopbar` from `@repo/ui`.
+ * CloseBoss layout using `PremiumSidebar` + `PremiumTopbar` from `@repo/ui`.
  * For production dashboard chrome (tokens, notifications, real auth menu), use `DashboardShell` instead.
  */
 export default function LeadSmartShell({ children }: { children: ReactNode }) {

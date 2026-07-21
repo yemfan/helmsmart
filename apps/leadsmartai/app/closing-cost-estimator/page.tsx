@@ -49,7 +49,7 @@ export default function ClosingCostEstimator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://realtybossai.com/closing-cost-estimator",
+          url: "https://closebossai.com/closing-cost-estimator",
           description:
             "Estimate real estate closing costs including origination, title, appraisal, inspection and other fees.",
         }}

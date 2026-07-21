@@ -10,7 +10,7 @@
 //   - table names, ID shapes, tokens, publishers       -> the app owns its data
 //   - model wiring                                     -> the app calls the LLM
 //
-// That line is the whole point: RealtyBoss and HelmSmart have entirely
+// That line is the whole point: CloseBoss and HelmSmart have entirely
 // different data layers (agents/contacts/scheduled_posts vs
 // organizations/clients/social_posts, in separate databases), so the shareable
 // asset is the JUDGEMENT, not the plumbing.

@@ -12,7 +12,7 @@
   "count_one": "{{count}} lead",
   "count_other": "{{count}} leads",
   "count_partial": "{{count}} of {{total}} leads",
-  "demo_label": "Sample lead — add real leads in RealtyBoss",
+  "demo_label": "Sample lead — add real leads in CloseBoss",
   "booking_hint": "Pick a lead below, open their profile, then use booking links or calendar tools to share scheduling.",
   "errors": {
     "load_failed": "Could not load leads"

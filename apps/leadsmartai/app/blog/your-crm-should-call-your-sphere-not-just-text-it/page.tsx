@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getPost } from "@/lib/blog/posts";
 
 const SLUG = "your-crm-should-call-your-sphere-not-just-text-it";
-const SITE_URL = "https://realtybossai.com";
+const SITE_URL = "https://closebossai.com";
 const TITLE = "Your CRM Should Call Your Sphere — Not Just Text It";
 const DESCRIPTION =
   "Every CRM sends SMS and email drips. None of them pick up the phone. Here's why outbound AI voice calls to your sphere — plus an AI team you command from one instruction — is the real upgrade for 2026.";
@@ -57,7 +57,7 @@ const SECTIONS: Array<{ heading: string; body: ReactNode }> = [
     heading: "So your AI picks up the phone — both ways",
     body: (
       <>
-        RealtyBoss is the CRM that actually calls. Inbound, your{" "}
+        CloseBoss is the CRM that actually calls. Inbound, your{" "}
         <strong>AI Receptionist</strong> answers every call live, 24/7,
         qualifies the caller, books the appointment, and texts back the second a
         call goes unanswered. Outbound — and this is the part no other CRM does
@@ -113,7 +113,7 @@ export default function CallYourSpherePost() {
         author: { "@type": "Person", name: post?.author ?? "Michael Ye" },
         publisher: {
           "@type": "Organization",
-          name: "RealtyBoss",
+          name: "CloseBoss",
           logo: { "@type": "ImageObject", url: `${SITE_URL}/brand/realtyboss/realtyboss-icon-512.png` },
         },
       },
@@ -122,7 +122,7 @@ export default function CallYourSpherePost() {
         mainEntity: [
           {
             "@type": "Question",
-            name: "Does RealtyBoss actually make phone calls, or just send texts?",
+            name: "Does CloseBoss actually make phone calls, or just send texts?",
             acceptedAnswer: {
               "@type": "Answer",
               text: "Both. The AI Receptionist answers inbound calls live 24/7 and texts back missed calls, and the AI places real outbound voice calls to follow up with your sphere and leads — not just SMS like other CRMs.",
@@ -130,15 +130,15 @@ export default function CallYourSpherePost() {
           },
           {
             "@type": "Question",
-            name: "How is RealtyBoss different from other real estate CRMs?",
+            name: "How is CloseBoss different from other real estate CRMs?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Most CRMs stop at SMS and email drips and leave the work to you. RealtyBoss is an AI team you command: it answers the phone, calls your sphere by real voice, and runs whole jobs — open houses, presentations, showings, closings — from one instruction, handing back finished reports.",
+              text: "Most CRMs stop at SMS and email drips and leave the work to you. CloseBoss is an AI team you command: it answers the phone, calls your sphere by real voice, and runs whole jobs — open houses, presentations, showings, closings — from one instruction, handing back finished reports.",
             },
           },
           {
             "@type": "Question",
-            name: "What is the RealtyBoss AI team?",
+            name: "What is the CloseBoss AI team?",
             acceptedAnswer: {
               "@type": "Answer",
               text: "You give one command to the Boss Assistant, which delegates to the team: an AI Receptionist (calls), Sales Assistant (follow-up), Marketing Assistant (pipeline), Transaction Assistant (coordination), and Accountant (books).",

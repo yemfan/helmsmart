@@ -116,7 +116,7 @@ export default function SidebarPreviewPage() {
       <div className="mx-auto hidden max-w-[1480px] grid-cols-1 gap-6 px-6 py-6 lg:grid lg:grid-cols-2">
         <PreviewFrame title="Current" tone="current">
           <PremiumSidebar
-            appName="RealtyBoss"
+            appName="CloseBoss"
             sections={leadSmartNav}
             workspaceLabel="Agent portal"
             height="stretch"
@@ -126,7 +126,7 @@ export default function SidebarPreviewPage() {
 
         <PreviewFrame title="Proposed" tone="proposed">
           <PremiumSidebarV2
-            appName="RealtyBoss"
+            appName="CloseBoss"
             sections={leadSmartNav}
             workspaceLabel="Agent portal · Pacific"
             onSearchClick={() => {

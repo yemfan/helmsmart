@@ -16,7 +16,7 @@ export type AgentAiSettings = {
   bilingualEnabled: boolean;
   /** Optional agent-written hints; capped in API/UI (tone/vocabulary only). */
   styleNotes: string | null;
-  /** Signature brand-kit accent color (hex, e.g. "#0072ce). NULL = default RealtyBoss blue. */
+  /** Signature brand-kit accent color (hex, e.g. "#0072ce). NULL = default CloseBoss blue. */
   brandColor: string | null;
 };
 

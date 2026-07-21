@@ -15,7 +15,7 @@ import type { SocialRecommendation } from "@/lib/social/recommend";
  *   - evergreen → a friendly tip card (library category → a "… TIP" eyebrow).
  *
  * 1080×1080, pure next/og / satori — no external image/AI API. Branding
- * degrades gracefully to "RealtyBoss AI" when the agent has none.
+ * degrades gracefully to "CloseBoss AI" when the agent has none.
  *
  * NOTE: ImageResponse is edge/node-agnostic to construct, but callers that
  * feed it agent branding via the service-role client must run on nodejs.
@@ -28,17 +28,17 @@ const CARD_SIZE = 1080;
 
 /**
  * Optional Signature brand kit: overrides the card accent color and stamps the
- * agent's logo. When absent the card renders in the default RealtyBoss blue,
+ * agent's logo. When absent the card renders in the default CloseBoss blue,
  * exactly as before (non-Signature agents are unaffected).
  */
 export type BrandKit = {
-  /** Hex accent color (e.g. "#0072ce"). Falls back to RealtyBoss blue if empty/invalid. */
+  /** Hex accent color (e.g. "#0072ce"). Falls back to CloseBoss blue if empty/invalid. */
   color?: string | null;
   /** Public http(s) logo URL. satori fetches it; unusable URLs are dropped gracefully. */
   logoUrl?: string | null;
 };
 
-/** Accept a #RGB / #RRGGBB hex; otherwise fall back to RealtyBoss blue. */
+/** Accept a #RGB / #RRGGBB hex; otherwise fall back to CloseBoss blue. */
 function resolveAccent(color?: string | null): string {
   if (typeof color !== "string") return BRAND_BLUE;
   const raw = color.trim();
@@ -81,12 +81,12 @@ function tipEyebrow(category: string | null): string {
 
 function footerLine(name: string | null, brokerage: string | null): string {
   const who = [name?.trim(), brokerage?.trim()].filter(Boolean).join(" · ");
-  return who || "RealtyBoss AI";
+  return who || "CloseBoss AI";
 }
 
 /**
  * Right-side brand mark in the card footer. Signature brand kit → the agent's
- * logo image (satori fetches the remote URL). No usable logo → the "RealtyBoss"
+ * logo image (satori fetches the remote URL). No usable logo → the "CloseBoss"
  * wordmark in the accent color (the default behavior, now color-aware).
  *
  * satori needs explicit dimensions on <img>; we cap the logo height and let the
@@ -107,7 +107,7 @@ function brandMark(logoUrl: string | null, accent: string): ReactElement {
   }
   return (
     <div style={{ display: "flex", fontSize: "26px", fontWeight: 700, color: accent }}>
-      RealtyBoss
+      CloseBoss
     </div>
   );
 }
@@ -116,7 +116,7 @@ function brandMark(logoUrl: string | null, accent: string): ReactElement {
  * Build the 1080×1080 branded card ImageResponse for a recommendation.
  *
  * @param rec           the recommendation (source_type + caption drive the template/headline).
- * @param agent         branding (name + brokerage); null-tolerant → "RealtyBoss AI".
+ * @param agent         branding (name + brokerage); null-tolerant → "CloseBoss AI".
  * @param categoryLabel raw library category for evergreen cards (→ "… TIP" eyebrow); ignored for timely.
  */
 export function buildCardImageResponse(

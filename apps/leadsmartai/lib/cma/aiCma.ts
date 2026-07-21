@@ -1,6 +1,6 @@
 /**
  * AI-grounded CMA producer — now sourced from the shared `@repo/valuation`
- * package so leadsmartai (RealtyBoss) and propertytoolsai share ONE valuation
+ * package so leadsmartai (CloseBoss) and propertytoolsai share ONE valuation
  * engine (Claude + live web search). Re-exported here to keep existing
  * `@/lib/cma/aiCma` imports stable.
  *

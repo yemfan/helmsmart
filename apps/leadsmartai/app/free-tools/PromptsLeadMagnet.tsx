@@ -47,8 +47,8 @@ export default function PromptsLeadMagnet() {
       setDownloadUrl(
         data.download ||
           (lang === "zh"
-            ? "/downloads/RealtyBoss_5_AI_Prompts_ZH.pdf"
-            : "/downloads/RealtyBoss_5_AI_Prompts.pdf"),
+            ? "/downloads/CloseBoss_5_AI_Prompts_ZH.pdf"
+            : "/downloads/CloseBoss_5_AI_Prompts.pdf"),
       );
       setStatus("done");
     } catch {

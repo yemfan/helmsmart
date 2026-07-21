@@ -58,7 +58,7 @@ export default async function AgentNewsletterSignupPage({ params }: Props) {
     <main className="bg-white text-slate-900">
       <section className="border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white">
         <div className="mx-auto max-w-3xl px-6 py-16 md:py-20">
-          {/* Agent is the headline identity; RealtyBoss is the quiet platform. */}
+          {/* Agent is the headline identity; CloseBoss is the quiet platform. */}
           <div className="flex items-center gap-4">
             {showImg ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -105,7 +105,7 @@ export default async function AgentNewsletterSignupPage({ params }: Props) {
             Delivered by {agentName}
             {brokerage ? `, ${brokerage}` : ""} · powered by{" "}
             <Link href="/" className="text-slate-500 hover:text-[#0072ce]">
-              RealtyBoss
+              CloseBoss
             </Link>
             .
           </p>

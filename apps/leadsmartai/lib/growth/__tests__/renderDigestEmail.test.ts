@@ -48,7 +48,7 @@ describe("renderGrowthDigestEmail", () => {
   it("includes the agent first name in the greeting", () => {
     const out = renderGrowthDigestEmail({
       opportunities: [opp()],
-      appBaseUrl: "https://www.realtybossai.com",
+      appBaseUrl: "https://www.closebossai.com",
       agentFirstName: "Michael",
     });
     expect(out.html).toContain("Hi Michael,");
@@ -99,10 +99,10 @@ describe("renderGrowthDigestEmail", () => {
   it("absolutizes relative action URLs against appBaseUrl", () => {
     const out = renderGrowthDigestEmail({
       opportunities: [opp({ actionUrl: "/dashboard/offers/abc" })],
-      appBaseUrl: "https://www.realtybossai.com",
+      appBaseUrl: "https://www.closebossai.com",
     });
-    expect(out.html).toContain("https://www.realtybossai.com/dashboard/offers/abc");
-    expect(out.text).toContain("https://www.realtybossai.com/dashboard/offers/abc");
+    expect(out.html).toContain("https://www.closebossai.com/dashboard/offers/abc");
+    expect(out.text).toContain("https://www.closebossai.com/dashboard/offers/abc");
   });
 
   it("leaves absolute URLs alone", () => {
@@ -138,8 +138,8 @@ describe("renderGrowthDigestEmail", () => {
   it("footer always points to /dashboard/growth", () => {
     const out = renderGrowthDigestEmail({
       opportunities: [opp()],
-      appBaseUrl: "https://www.realtybossai.com",
+      appBaseUrl: "https://www.closebossai.com",
     });
-    expect(out.html).toContain("https://www.realtybossai.com/dashboard/growth");
+    expect(out.html).toContain("https://www.closebossai.com/dashboard/growth");
   });
 });

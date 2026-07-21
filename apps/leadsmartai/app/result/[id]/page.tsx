@@ -13,9 +13,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Per-user shared calculator results — thin, one-off, no SEO value. Keep them
   // out of the index so they don't pile up as "crawled, not indexed" in GSC.
   const robots = { index: false, follow: false } as const;
-  if (!row) return { title: "Result | RealtyBoss", robots };
+  if (!row) return { title: "Result | CloseBoss", robots };
   return {
-    title: `${row.title} | RealtyBoss`,
+    title: `${row.title} | CloseBoss`,
     description: row.summary ?? "Shared calculator result",
     robots,
     openGraph: { title: row.title, description: row.summary ?? undefined },
@@ -34,7 +34,7 @@ export default async function SharedResultPage({ params }: Props) {
       <ResultViewBeacon id={id} />
       <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
         <Link href="/" className="text-sm font-medium text-blue-700">
-          ← RealtyBoss
+          ← CloseBoss
         </Link>
         <header>
           <p className="text-xs font-semibold uppercase text-slate-500">{row.tool_slug.replace(/-/g, " ")}</p>

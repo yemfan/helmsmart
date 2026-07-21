@@ -87,7 +87,7 @@ function offersFor(p: (typeof PRICING_PRODUCTS)[number]) {
         priceCurrency: "USD",
         unitText: "MONTH",
       },
-      url: "https://realtybossai.com/agent/pricing",
+      url: "https://closebossai.com/agent/pricing",
     },
   ];
   if (p.annual) {
@@ -102,7 +102,7 @@ function offersFor(p: (typeof PRICING_PRODUCTS)[number]) {
         priceCurrency: "USD",
         unitText: "YEAR",
       },
-      url: "https://realtybossai.com/agent/pricing",
+      url: "https://closebossai.com/agent/pricing",
     });
   }
   return offers;
@@ -124,9 +124,9 @@ export default function AgentPricingPage() {
             "@context": "https://schema.org",
             "@graph": PRICING_PRODUCTS.map((p) => ({
               "@type": "Product",
-              name: `RealtyBoss ${p.name}`,
+              name: `CloseBoss ${p.name}`,
               description: p.description,
-              brand: { "@type": "Brand", name: "RealtyBoss" },
+              brand: { "@type": "Brand", name: "CloseBoss" },
               category: "Real estate CRM",
               offers: offersFor(p),
             })),

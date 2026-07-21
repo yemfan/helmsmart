@@ -30,7 +30,7 @@ export async function startClickToCall(args: {
   agentPhoneRaw: string | null;
   contactPhoneRaw: string | null;
   whisper?: string | null;
-  /** App base URL like "https://realtybossai.com". The bridge URL
+  /** App base URL like "https://closebossai.com". The bridge URL
    *  is derived from this. */
   appBaseUrl: string;
 }): Promise<{ callId: string; twilioCallSid: string }> {

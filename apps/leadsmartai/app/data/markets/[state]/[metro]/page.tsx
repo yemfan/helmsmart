@@ -58,10 +58,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state, metro } = await params;
   const resolved = await resolveMetro(state, metro);
   const base = getSiteUrl();
-  if (!resolved) return { title: "Metro housing market for agents | RealtyBoss Data Center" };
+  if (!resolved) return { title: "Metro housing market for agents | CloseBoss Data Center" };
 
   const { metro: m } = resolved;
-  const title = `${m.geo_name} Housing Market Data for Agents — Prices, Inventory & Talking Points | RealtyBoss`;
+  const title = `${m.geo_name} Housing Market Data for Agents — Prices, Inventory & Talking Points | CloseBoss`;
   const description = `The ${m.geo_name} numbers to quote in your CMA and listing appointment: typical home value, median sale price, inventory, and days on market — with month-over-month and year-over-year trends and how ${m.geo_name} compares to its state and the U.S.`;
   return {
     title,
@@ -163,8 +163,8 @@ export default async function MetroPage({ params }: Props) {
     name: `${metroGeo.geo_name} housing market data`,
     description: `Monthly housing-market metrics for the ${metroGeo.geo_name} metro area: typical home value, median sale price, inventory, and days on market.`,
     url: `${base}/data/markets/${geoSlug(stateGeo)}/${geoSlug(metroGeo)}`,
-    creator: { "@type": "Organization", name: "RealtyBoss" },
-    publisher: { "@type": "Organization", name: "RealtyBoss" },
+    creator: { "@type": "Organization", name: "CloseBoss" },
+    publisher: { "@type": "Organization", name: "CloseBoss" },
     spatialCoverage: metroGeo.geo_name,
     temporalCoverage: zhvi?.period ?? undefined,
     variableMeasured: metrics
@@ -185,7 +185,7 @@ export default async function MetroPage({ params }: Props) {
       <div className="mx-auto max-w-4xl px-4 py-12 space-y-12">
         <nav className="text-sm">
           <Link href="/" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            RealtyBoss
+            CloseBoss
           </Link>
           <span className="text-slate-400 mx-2">/</span>
           <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">

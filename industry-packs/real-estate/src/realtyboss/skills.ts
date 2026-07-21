@@ -1,5 +1,5 @@
 /**
- * RealtyBoss skill library — modular skills attachable to assistants.
+ * CloseBoss skill library — modular skills attachable to assistants.
  *
  * Keys are stable identifiers: they're seeded into the `ai_skills`
  * table and stored in `ai_assistants.enabled_skills`, so renaming a

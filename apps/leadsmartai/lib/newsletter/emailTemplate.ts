@@ -29,8 +29,8 @@ export type IssueEmailSubscription = {
 /**
  * Optional agent identity for AGENT-BRANDED sends (Phase 3). When present the
  * email leads with the agent (name + brokerage, logo/photo image) and the
- * footer reads "Sent by {name}, {brokerage} · powered by RealtyBoss". The
- * platform (RealtyBoss) remains the sending infrastructure: the CAN-SPAM
+ * footer reads "Sent by {name}, {brokerage} · powered by CloseBoss". The
+ * platform (CloseBoss) remains the sending infrastructure: the CAN-SPAM
  * mailing address, per-sub unsubscribe, and List-Unsubscribe headers are
  * unchanged. Unlike the satori social card, email clients DO load remote
  * images, so an image URL here is fine.
@@ -108,7 +108,7 @@ export function renderIssueEmail(args: RenderIssueEmailArgs): RenderedIssueEmail
   return { subject, text, html };
 }
 
-/** An agent with at least a usable name; else null (→ RealtyBoss branding). */
+/** An agent with at least a usable name; else null (→ CloseBoss branding). */
 type NormalizedAgent = {
   name: string;
   brokerage: string | null;
@@ -117,7 +117,7 @@ type NormalizedAgent = {
 
 /**
  * Reduce the raw agent object to what the template needs, or null when there's
- * no usable identity (no name) so callers fall back to plain RealtyBoss
+ * no usable identity (no name) so callers fall back to plain CloseBoss
  * branding. Guards against empty/whitespace image URLs.
  */
 function normalizeAgent(agent: IssueEmailAgent | null | undefined): NormalizedAgent | null {
@@ -224,11 +224,11 @@ function renderText(ctx: RenderCtx): string {
   lines.push("—");
   if (agent) {
     lines.push(
-      `Sent by ${agent.name}${agent.brokerage ? `, ${agent.brokerage}` : ""} · powered by RealtyBoss`,
+      `Sent by ${agent.name}${agent.brokerage ? `, ${agent.brokerage}` : ""} · powered by CloseBoss`,
     );
   }
   lines.push(
-    "You're receiving this because you subscribed to this weekly housing briefing at realtybossai.com.",
+    "You're receiving this because you subscribed to this weekly housing briefing at closebossai.com.",
   );
   lines.push(`Unsubscribe: ${unsubscribeUrl}`);
   lines.push(mailingAddress);
@@ -329,7 +329,7 @@ function renderHtml(ctx: RenderCtx): string {
       )}</td></tr>`
     : "";
 
-  // Header: RealtyBoss by default; agent-led when an agent is present.
+  // Header: CloseBoss by default; agent-led when an agent is present.
   const headerHtml = agent
     ? `<tr><td style="padding:8px 0 4px;">
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr>
@@ -358,25 +358,25 @@ function renderHtml(ctx: RenderCtx): string {
           )} · Week of ${escapeHtml(weekLabel)}</div>
         </td></tr>`
     : `<tr><td style="padding:8px 0 4px;">
-          <div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${BRAND_BLUE};">RealtyBoss</div>
+          <div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${BRAND_BLUE};">CloseBoss</div>
           <div style="font-size:12px;color:#94a3b8;margin-top:2px;">This Week in Housing · ${escapeHtml(
             region.name,
           )} · Week of ${escapeHtml(weekLabel)}</div>
         </td></tr>`;
 
-  // Footer attribution line: agent (powered by RealtyBoss) or plain RealtyBoss.
+  // Footer attribution line: agent (powered by CloseBoss) or plain CloseBoss.
   const footerAttribution = agent
     ? `<strong style="color:#64748b;">Sent by ${escapeHtml(agent.name)}${
         agent.brokerage ? `, ${escapeHtml(agent.brokerage)}` : ""
-      }</strong> · powered by RealtyBoss<br/>
+      }</strong> · powered by CloseBoss<br/>
             You're receiving this because you subscribed to this weekly housing briefing.`
-    : `You're receiving this because you subscribed to the RealtyBoss weekly housing briefing at
+    : `You're receiving this because you subscribed to the CloseBoss weekly housing briefing at
             <a href="${escapeAttr(
               args_siteHref(issueUrl),
-            )}" style="color:#64748b;">realtybossai.com</a>.`;
+            )}" style="color:#64748b;">closebossai.com</a>.`;
 
   // Outer wrapper: centered ~600px table, light background.
-  return `<!-- RealtyBoss weekly housing briefing -->
+  return `<!-- CloseBoss weekly housing briefing -->
 <div style="background:#f8fafc;padding:24px 0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0f172a;">
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="width:100%;max-width:600px;margin:0 auto;">
     <tr><td style="padding:0 20px;">
@@ -415,7 +415,7 @@ function args_siteHref(issueUrl: string): string {
   try {
     return new URL(issueUrl).origin;
   } catch {
-    return "https://www.realtybossai.com";
+    return "https://www.closebossai.com";
   }
 }
 

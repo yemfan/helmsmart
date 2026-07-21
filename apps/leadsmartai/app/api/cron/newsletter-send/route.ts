@@ -56,7 +56,7 @@ type SendableSub = {
   region_name: string | null;
   unsubscribe_token: string;
   last_sent_week: string | null;
-  /** Phase 3: null = public RealtyBoss sub; bigint = agent-branded sub. */
+  /** Phase 3: null = public CloseBoss sub; bigint = agent-branded sub. */
   agent_id: number | string | null;
 };
 
@@ -193,7 +193,7 @@ export async function GET(req: Request) {
             )}`;
 
             // Agent-branded when agent_id is set AND the agent resolves to a
-            // usable identity; else the public RealtyBoss send (unchanged).
+            // usable identity; else the public CloseBoss send (unchanged).
             let brand: AgentBrand = null;
             if (sub.agent_id !== null && sub.agent_id !== undefined) {
               const aid =

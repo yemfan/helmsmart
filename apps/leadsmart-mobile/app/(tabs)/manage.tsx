@@ -8,7 +8,7 @@ import { useThemeTokens } from "../../lib/useThemeTokens";
 import type { ThemeTokens } from "../../lib/theme";
 import { hapticButtonPress } from "../../lib/haptics";
 
-const WEB_DASHBOARD_URL = "https://www.realtybossai.com/dashboard";
+const WEB_DASHBOARD_URL = "https://www.closebossai.com/dashboard";
 
 /**
  * Manage tab — mirrors the web `Manage` supercategory (Account).

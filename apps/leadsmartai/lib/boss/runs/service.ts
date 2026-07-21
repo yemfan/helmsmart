@@ -99,7 +99,7 @@ async function buildSystemPrompt(run: BossRunRow): Promise<string> {
       ? matrix.map((c) => `  - ${c.assignee}/${c.channel}: ${c.mode}`).join("\n")
       : "  (no per-channel overrides)";
 
-  return `You are the Boss Assistant of an AI real estate team (RealtyBoss), acting for ${agent?.brand_name ?? "the realtor"}${agent?.city ? ` in ${agent.city}${agent?.state ? `, ${agent.state}` : ""}` : ""}.
+  return `You are the Boss Assistant of an AI real estate team (CloseBoss), acting for ${agent?.brand_name ?? "the realtor"}${agent?.city ? ` in ${agent.city}${agent?.state ? `, ${agent.state}` : ""}` : ""}.
 Today is ${new Date().toISOString().slice(0, 10)}.
 
 You execute the realtor's command by calling tools. Rules:

@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function CapRateVsCashOnCashReturnPage() {
   const title = "Cap Rate vs Cash on Cash Return: Which Metric Should Real Estate Investors Use?";
-  const url = "https://realtybossai.com/cap-rate-vs-cash-on-cash-return";
+  const url = "https://closebossai.com/cap-rate-vs-cash-on-cash-return";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -174,7 +174,7 @@ export default function CapRateVsCashOnCashReturnPage() {
           <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">
             Cash Flow Calculator
           </Link>{" "}
-          in RealtyBoss to model cap rate, cash on cash return, and long-term ROI in one view.
+          in CloseBoss to model cap rate, cash on cash return, and long-term ROI in one view.
         </p>
         <p>
           By adjusting purchase price, expenses, down payment, and interest rate, you can instantly
@@ -241,7 +241,7 @@ export default function CapRateVsCashOnCashReturnPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

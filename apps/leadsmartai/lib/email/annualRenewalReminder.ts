@@ -1,7 +1,7 @@
 import { sendEmail } from "@/lib/email";
 import { PLANS, type PlanSlug } from "@/lib/billing/plans";
 
-const DASHBOARD_BILLING_URL = "https://www.realtybossai.com/dashboard/billing";
+const DASHBOARD_BILLING_URL = "https://www.closebossai.com/dashboard/billing";
 
 function formatRenewalDate(iso: string): string {
   const d = new Date(iso);
@@ -106,7 +106,7 @@ export async function sendAnnualRenewalReminderEmail(params: {
 
     <p style="text-align:center;font-size:11px;color:#94a3b8;margin-top:24px;line-height:1.5;">
       You received this required reminder because you have an annual auto-renewing subscription.
-      <br>LeadSmart AI &middot; <a href="https://www.realtybossai.com" style="color:#94a3b8;">realtybossai.com</a>
+      <br>LeadSmart AI &middot; <a href="https://www.closebossai.com" style="color:#94a3b8;">closebossai.com</a>
     </p>
   </div>
 </body>

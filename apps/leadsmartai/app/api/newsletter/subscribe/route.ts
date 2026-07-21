@@ -12,7 +12,7 @@ export const runtime = "nodejs";
  * Weekly Regional Newsletter — subscribe capture + double opt-in (Phase 2).
  *
  * Captures the subscriber to newsletter_subscriptions via the service-role
- * client (RLS-deny). agent_id is null (public RealtyBoss subscription).
+ * client (RLS-deny). agent_id is null (public CloseBoss subscription).
  *
  * DOUBLE OPT-IN: after insert (or on an existing UNCONFIRMED row) we email a
  * confirmation link (/newsletter/confirm?token=confirm_token). No issue is sent
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     : null;
 
   try {
-    // agent_id null = public RealtyBoss subscription; a bigint = an agent-branded
+    // agent_id null = public CloseBoss subscription; a bigint = an agent-branded
     // subscription. The dedupe index is on an EXPRESSION (lower(email),
     // region_code, coalesce(agent_id::text,'')), which PostgREST's upsert
     // onConflict can't target by a column list — so we plain insert and treat a
@@ -142,7 +142,7 @@ export async function POST(req: Request) {
 
     // Not yet confirmed → send the confirmation email (best-effort). When an
     // agent is attached, the confirmation is AGENT-BRANDED: from-name = the
-    // agent (via RealtyBoss), reply-to = the agent's email, and the copy names
+    // agent (via CloseBoss), reply-to = the agent's email, and the copy names
     // the agent. Loaded here (once) via loadPresentationAgent; never throws.
     if (row?.confirm_token) {
       const siteUrl = getSiteUrl().replace(/\/$/, "");
@@ -183,7 +183,7 @@ export async function POST(req: Request) {
               "",
               "If you didn't request this, you can ignore this email — no issues will be sent.",
               "",
-              "Powered by RealtyBoss.",
+              "Powered by CloseBoss.",
             ].join("\n"),
             html: confirmEmailHtml(confirmUrl, { name: who, brokerage: brand.brokerage }),
           });
@@ -191,9 +191,9 @@ export async function POST(req: Request) {
           await sendEmail({
             to: email,
             from: newsletterFrom(),
-            subject: "Confirm your RealtyBoss weekly housing briefing",
+            subject: "Confirm your CloseBoss weekly housing briefing",
             text: [
-              "Thanks for subscribing to the RealtyBoss weekly housing briefing.",
+              "Thanks for subscribing to the CloseBoss weekly housing briefing.",
               "",
               "Please confirm your subscription by opening this link:",
               confirmUrl,
@@ -243,16 +243,16 @@ function confirmEmailHtml(
           ? `<div style="font-size:12px;color:#64748b;margin-top:1px;">${esc(agent.brokerage)}</div>`
           : ""
       }`
-    : `<div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0072ce;">RealtyBoss</div>`;
+    : `<div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0072ce;">CloseBoss</div>`;
 
   const intro = agent
     ? `Thanks for subscribing to ${esc(agent.name)}'s weekly housing briefing — plain-English mortgage rates and housing news, paired with your region's market snapshot. Confirm below to start receiving it.`
-    : `Thanks for subscribing to the RealtyBoss weekly housing briefing — plain-English mortgage rates and housing news, paired with your region's market snapshot. Confirm below to start receiving it.`;
+    : `Thanks for subscribing to the CloseBoss weekly housing briefing — plain-English mortgage rates and housing news, paired with your region's market snapshot. Confirm below to start receiving it.`;
 
   const footer = agent
     ? `<p style="font-size:12px;line-height:1.55;color:#94a3b8;margin:16px 0 0;">Sent by ${esc(
         agent.name,
-      )}${agent.brokerage ? `, ${esc(agent.brokerage)}` : ""} · powered by RealtyBoss. If you didn't request this, ignore this email — no issues will be sent.</p>`
+      )}${agent.brokerage ? `, ${esc(agent.brokerage)}` : ""} · powered by CloseBoss. If you didn't request this, ignore this email — no issues will be sent.</p>`
     : `<p style="font-size:12px;line-height:1.55;color:#94a3b8;margin:16px 0 0;">If you didn't request this, ignore this email — no issues will be sent.</p>`;
 
   return `<div style="background:#f8fafc;padding:24px 0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0f172a;">

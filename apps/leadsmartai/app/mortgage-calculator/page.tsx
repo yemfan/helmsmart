@@ -44,7 +44,7 @@ export default function MortgageCalculator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://realtybossai.com/mortgage-calculator",
+          url: "https://closebossai.com/mortgage-calculator",
           description:
             "Calculate monthly mortgage payments including principal, interest, taxes and insurance for real estate purchases.",
         }}

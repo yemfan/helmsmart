@@ -42,21 +42,21 @@ const fontMono = Geist_Mono({
 import type { Metadata } from "next";
 
 const SITE_URL = getSiteUrl().replace(/\/$/, "");
-// RealtyBoss rebrand on the same domain (realtybossai.com stays the URL).
-const SITE_NAME = "RealtyBoss";
-// SEO brand: lead <title>/OG/schema with the "RealtyBoss AI" variant. We own
-// the exact-match domain (realtybossai.com) for the winnable "realtyboss ai"
+// CloseBoss rebrand on the same domain (closebossai.com stays the URL).
+const SITE_NAME = "CloseBoss";
+// SEO brand: lead <title>/OG/schema with the "CloseBoss AI" variant. We own
+// the exact-match domain (closebossai.com) for the winnable "realtyboss ai"
 // query, and it disambiguates us from realtyboss.com / realtyboss.ng. SITE_NAME
 // stays the wordmark; SITE_BRAND / SITE_TITLE drive search-facing metadata.
-const SITE_BRAND = "RealtyBoss AI";
-// Homepage title per HANDOFF_BOSS_V2 PR-1. Subpages keep the `%s | RealtyBoss AI`
+const SITE_BRAND = "CloseBoss AI";
+// Homepage title per HANDOFF_BOSS_V2 PR-1. Subpages keep the `%s | CloseBoss AI`
 // template for the exact-match "realtyboss ai" query.
-const SITE_TITLE = "RealtyBoss — Your AI Real Estate Team. Close More Deals.";
+const SITE_TITLE = "CloseBoss — Your AI Real Estate Team. Close More Deals.";
 const SITE_DESCRIPTION =
-  "RealtyBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.";
+  "CloseBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.";
 
 /**
- * Tab + Apple + JSON-LD all use the RealtyBoss icons in
+ * Tab + Apple + JSON-LD all use the CloseBoss icons in
  * `public/brand/realtyboss/` (regenerated via scripts/generate-brand-icons.mjs).
  * Explicit entries ensure correct absolute URLs with `metadataBase` on Vercel previews.
  */
@@ -102,16 +102,16 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
     // Same as openGraph.images — Next auto-picks up opengraph-image.tsx
-    // for twitter:image as well. No creator handle until a RealtyBoss
+    // for twitter:image as well. No creator handle until a CloseBoss
     // account exists (the old @leadsmartai handle would misattribute).
   },
   // Favicon/app icons come from Next's file conventions: app/icon.png (the
-  // RealtyBoss house mascot) and app/apple-icon.png. No explicit `icons`
+  // CloseBoss house mascot) and app/apple-icon.png. No explicit `icons`
   // overrides, so app/icon.png is the canonical favicon.
   // NOTE: Do NOT set a root-level canonical here. Next.js merges root
   // layout metadata into every child page that doesn't override it,
   // which causes all subpages (e.g. /about, /pricing, /blog) to emit
-  // <link rel="canonical" href="https://www.realtybossai.com/"> —
+  // <link rel="canonical" href="https://www.closebossai.com/"> —
   // telling Google every page is a duplicate of the homepage.
   // Individual pages should set their own canonical via generateMetadata.
   alternates: {},
@@ -127,7 +127,7 @@ export const metadata: Metadata = {
  *      in Google SERPs pointing at /dashboard/leads for quick agent
  *      access.
  *
- *   3. SoftwareApplication — describes RealtyBoss as a real estate
+ *   3. SoftwareApplication — describes CloseBoss as a real estate
  *      CRM product with an offer ladder (Free / Pro / Elite / Team).
  *      AggregateRating is intentionally omitted because we don't yet
  *      have real review data — adding fake ratings gets penalized.
@@ -140,7 +140,7 @@ const jsonLd = [
     "@context": "https://schema.org",
     "@type": "Organization",
     name: SITE_NAME,
-    // Registered alias so Google ties both "RealtyBoss" and "RealtyBoss AI"
+    // Registered alias so Google ties both "CloseBoss" and "CloseBoss AI"
     // (our exact-match domain query) to this entity.
     alternateName: SITE_BRAND,
     url: SITE_URL,

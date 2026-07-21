@@ -8,7 +8,7 @@ import { canPlaceVoiceCall } from "./limits";
 const NOTIFY_THRESHOLD = 0.8;
 
 function siteBase(): string {
-  return (process.env.NEXT_PUBLIC_SITE_URL || "https://www.realtybossai.com").replace(/\/$/, "");
+  return (process.env.NEXT_PUBLIC_SITE_URL || "https://www.closebossai.com").replace(/\/$/, "");
 }
 
 /**

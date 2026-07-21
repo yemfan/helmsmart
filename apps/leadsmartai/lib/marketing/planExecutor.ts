@@ -110,7 +110,7 @@ export async function executeActivePlans(): Promise<ExecutionResult> {
           } as Record<string, unknown>);
         }
 
-        // RealtyBoss activity feed — running plans is the Marketing
+        // CloseBoss activity feed — running plans is the Marketing
         // Assistant's work (fire-and-forget, never fails the step).
         void (async () => {
           const { logAssistantActivity } = await import("@/lib/realtyboss/activities");

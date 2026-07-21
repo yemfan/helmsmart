@@ -240,7 +240,7 @@ export default function BillingPageClient() {
             Billing &amp; Subscription
           </h1>
           <p className="mt-1 text-sm text-brand-text/60">
-            Manage your RealtyBoss plan, payment method, and view invoice history.
+            Manage your CloseBoss plan, payment method, and view invoice history.
           </p>
         </div>
         <button

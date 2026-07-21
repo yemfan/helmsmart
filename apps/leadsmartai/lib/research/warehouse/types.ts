@@ -3,7 +3,7 @@
  *
  * The warehouse (`market_geographies` + `market_metrics`) is populated by the
  * apps/propertytoolsai ingestion pipeline in the SHARED Supabase project.
- * RealtyBoss reads it read-only and renders the AGENT framing.
+ * CloseBoss reads it read-only and renders the AGENT framing.
  */
 
 export type GeoLevel = "national" | "state" | "metro";

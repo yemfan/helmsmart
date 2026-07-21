@@ -1,6 +1,6 @@
 /**
  * CMA (Comparative Market Analysis) types — re-exported from the shared
- * `@repo/valuation` package so leadsmartai (RealtyBoss) and propertytoolsai
+ * `@repo/valuation` package so leadsmartai (CloseBoss) and propertytoolsai
  * share ONE source of truth. Kept at `@/lib/cma/types` so existing imports
  * (CmaSnapshot, CmaCompRow, CmaSubject, CmaStrategy, CmaValuation, CmaSource)
  * stay stable.

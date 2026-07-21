@@ -1,22 +1,22 @@
 {
   "meta": {
     "title": "帮助中心",
-    "description": "RealtyBoss 的每一份操作指南——AI 跟进、语音 AI、未接来电回短信、房源、报价、交易、CMA、计算器等，另有常见问题与联系支持。",
-    "og_title": "帮助中心 — RealtyBoss",
-    "og_description": "RealtyBoss 的每一份操作指南——设置、沟通、AI、交易、营销、分析、计算器与账户。",
-    "twitter_title": "帮助中心 — RealtyBoss",
-    "twitter_description": "RealtyBoss 的每一份操作指南——设置、AI、交易、营销、分析与计算器。",
+    "description": "CloseBoss 的每一份操作指南——AI 跟进、语音 AI、未接来电回短信、房源、报价、交易、CMA、计算器等，另有常见问题与联系支持。",
+    "og_title": "帮助中心 — CloseBoss",
+    "og_description": "CloseBoss 的每一份操作指南——设置、沟通、AI、交易、营销、分析、计算器与账户。",
+    "twitter_title": "帮助中心 — CloseBoss",
+    "twitter_description": "CloseBoss 的每一份操作指南——设置、AI、交易、营销、分析与计算器。",
     "faq_title": "常见问题",
-    "faq_description": "关于 RealtyBoss 最常见问题的解答：AI 跟进、RealtyBoss 教练、计费、集成和数据隐私。",
-    "faq_og_title": "常见问题 — RealtyBoss",
+    "faq_description": "关于 CloseBoss 最常见问题的解答：AI 跟进、CloseBoss 教练、计费、集成和数据隐私。",
+    "faq_og_title": "常见问题 — CloseBoss",
     "faq_og_description": "关于 AI 跟进、教练、计费、集成和隐私的常见问题解答。",
-    "faq_twitter_title": "常见问题 — RealtyBoss",
-    "faq_twitter_description": "关于 RealtyBoss 的常见问题：跟进、教练、计费、集成、隐私。"
+    "faq_twitter_title": "常见问题 — CloseBoss",
+    "faq_twitter_description": "关于 CloseBoss 的常见问题：跟进、教练、计费、集成、隐私。"
   },
   "index": {
     "eyebrow": "帮助中心",
     "h1": "指南、常见问题与操作教程。",
-    "subtitle": "让 RealtyBoss 顺利运行所需的一切——从导入首批联系人，到管理教练报名，再到发送视频邮件。",
+    "subtitle": "让 CloseBoss 顺利运行所需的一切——从导入首批联系人，到管理教练报名，再到发送视频邮件。",
     "guides_h2": "操作指南",
     "guides_note": "分步操作演示。",
     "browse_a11y": "按分类浏览",
@@ -141,19 +141,19 @@
     },
     "real_person": {
       "q": "如何获得真人帮助？",
-      "a": "打开面板中的对话气泡，或发邮件至 contact@realtybossai.com。Premium 和 Team 套餐含优先支持，当日工作时段响应。我们是经纪人帮经纪人——没有照本宣科的离岸一线客服。"
+      "a": "打开面板中的对话气泡，或发邮件至 contact@closebossai.com。Premium 和 Team 套餐含优先支持，当日工作时段响应。我们是经纪人帮经纪人——没有照本宣科的离岸一线客服。"
     },
     "ai_team_who": {
-      "q": "RealtyBoss AI 团队是什么——各成员分工如何？",
+      "q": "CloseBoss AI 团队是什么——各成员分工如何？",
       "a": "您是老板。您向 Boss Assistant 下达一句指令，它便分派给合适的助理：Receptionist 接听电话、Sales Assistant 负责跟进、Marketing 注满客户漏斗、Transaction Assistant 协调交易、Accountant 负责记账。您终于拥有了一支团队——却无需支付薪酬。"
     },
     "makes_calls": {
-      "q": "RealtyBoss 真的会打电话，还是只发短信？",
+      "q": "CloseBoss 真的会打电话，还是只发短信？",
       "a": "两者都会——这正是它的与众不同之处。您的 AI Receptionist 全天候实时接听来电，并在来电无人应答的那一刻立即回短信。您的 AI 还会拨打真实的外呼语音电话，跟进您的人脉和客户——而不像其他每个 CRM 那样只发又一条短信。"
     },
     "different_crm": {
       "q": "这与其他房产 CRM 有何不同？",
-      "a": "大多数 CRM 止步于短信和邮件推送，把活儿留给您。RealtyBoss 是一支听您指挥的 AI 团队：它会接电话、用真实语音致电您的人脉，并从一句指令出发完成整套工作——开放日、展示、看房、成交——再把完成的报告交给您。"
+      "a": "大多数 CRM 止步于短信和邮件推送，把活儿留给您。CloseBoss 是一支听您指挥的 AI 团队：它会接电话、用真实语音致电您的人脉，并从一句指令出发完成整套工作——开放日、展示、看房、成交——再把完成的报告交给您。"
     },
     "reports": {
       "q": "AI 能为我生成哪些报告？",

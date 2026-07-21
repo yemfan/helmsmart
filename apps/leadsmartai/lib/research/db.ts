@@ -4,7 +4,7 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import type { ResearchReportRow } from "./types";
 
 /**
- * Read-only data-access layer for the SHARED `research_reports` table. RealtyBoss
+ * Read-only data-access layer for the SHARED `research_reports` table. CloseBoss
  * renders the AGENT framing over rows written by the apps/propertytoolsai
  * generator. All access is via the service-role client (`supabaseServer`) because
  * `research_reports` has RLS on with no policies — a session-scoped client would

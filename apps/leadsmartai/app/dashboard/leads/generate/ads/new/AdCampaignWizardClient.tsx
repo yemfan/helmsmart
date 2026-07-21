@@ -113,7 +113,7 @@ export default function AdCampaignWizardClient() {
   const [campaignName, setCampaignName] = useState("");
   const [adBody, setAdBody] = useState("");
   const [adHeadline, setAdHeadline] = useState("");
-  const [landingUrl, setLandingUrl] = useState("https://www.realtybossai.com/contact");
+  const [landingUrl, setLandingUrl] = useState("https://www.closebossai.com/contact");
   const [library, setLibrary] = useState<MediaItem[]>([]);
   const [libraryLoading, setLibraryLoading] = useState(false);
   const [selectedMediaId, setSelectedMediaId] = useState<string | null>(null);
@@ -351,7 +351,7 @@ export default function AdCampaignWizardClient() {
 
   // Load the agent's stored default privacy URL so the wizard
   // pre-fills it. Empty default is fine — /ads/create falls back
-  // to RealtyBoss's bundled URL if both wizard + agent column are
+  // to CloseBoss's bundled URL if both wizard + agent column are
   // empty.
   useEffect(() => {
     let cancelled = false;
@@ -846,7 +846,7 @@ export default function AdCampaignWizardClient() {
               <label className="block text-xs font-medium text-gray-700">
                 Privacy policy URL{" "}
                 <span className="text-gray-400">
-                  (Meta requires one — leave blank to use RealtyBoss&apos;s default)
+                  (Meta requires one — leave blank to use CloseBoss&apos;s default)
                 </span>
               </label>
               <input
@@ -869,7 +869,7 @@ export default function AdCampaignWizardClient() {
                 .
                 {privacyDefaultLoaded &&
                   !privacyPolicyUrl.trim() &&
-                  " Using RealtyBoss's bundled URL."}
+                  " Using CloseBoss's bundled URL."}
               </p>
             </div>
 
@@ -996,7 +996,7 @@ export default function AdCampaignWizardClient() {
                 </span>
               </div>
               <p className="mt-0.5 text-xs text-gray-500">
-                Meta bills you directly. RealtyBoss never touches your ad spend.
+                Meta bills you directly. CloseBoss never touches your ad spend.
               </p>
             </div>
 

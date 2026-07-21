@@ -49,7 +49,7 @@ export async function runWeeklyGrowthDigest(opts: {
   const appBaseUrl =
     opts.appBaseUrl ??
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ??
-    "https://www.realtybossai.com";
+    "https://www.closebossai.com";
 
   const result: RunWeeklyDigestResult = {
     processedAgents: 0,

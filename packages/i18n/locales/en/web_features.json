@@ -1,10 +1,10 @@
 {
   "meta": {
-    "title": "Your AI Real Estate Team — RealtyBoss",
-    "description": "RealtyBoss is an AI team for real estate agents — an AI receptionist that answers every call, a sales assistant that follows up, plus marketing, transaction, and accounting assistants. Never miss a call or a lead again.",
-    "og_title": "Your AI Real Estate Team — RealtyBoss",
+    "title": "Your AI Real Estate Team — CloseBoss",
+    "description": "CloseBoss is an AI team for real estate agents — an AI receptionist that answers every call, a sales assistant that follows up, plus marketing, transaction, and accounting assistants. Never miss a call or a lead again.",
+    "og_title": "Your AI Real Estate Team — CloseBoss",
     "og_description": "An AI team that answers the phone, follows up, markets your listings, coordinates the deal, and keeps the books.",
-    "twitter_title": "Your AI Real Estate Team — RealtyBoss",
+    "twitter_title": "Your AI Real Estate Team — CloseBoss",
     "twitter_description": "An AI team that answers the phone, follows up, and closes."
   },
   "team": {
@@ -52,11 +52,11 @@
     "badge": "Real voice — both directions",
     "h2_lead": "It answers your calls — and",
     "h2_gradient": "calls your sphere",
-    "body_lead": "Every other CRM stops at SMS and email drips. RealtyBoss picks up the phone — answering inbound calls 24/7",
+    "body_lead": "Every other CRM stops at SMS and email drips. CloseBoss picks up the phone — answering inbound calls 24/7",
     "body_bold": "and placing real outbound voice calls",
     "body_tail": "to follow up with your sphere and leads. That conversation is what wins the listing.",
     "cta": "Set up your receptionist",
-    "only_badge": "Only on RealtyBoss",
+    "only_badge": "Only on CloseBoss",
     "points": {
       "sphere_followup": {
         "title": "Calls your sphere to follow up",
@@ -121,7 +121,7 @@
     "eyebrow": "The economics",
     "h2_lead": "Hire a top-producing team —",
     "h2_gradient": "virtually free",
-    "subtitle": "A receptionist, an ISA, a transaction coordinator, a marketing assistant, and a bookkeeper would cost you tens of thousands a year — each — and you'd still have to hire, train, and manage them. RealtyBoss gives you all of them, trained to sell like top producers, for the price of a tool.",
+    "subtitle": "A receptionist, an ISA, a transaction coordinator, a marketing assistant, and a bookkeeper would cost you tens of thousands a year — each — and you'd still have to hire, train, and manage them. CloseBoss gives you all of them, trained to sell like top producers, for the price of a tool.",
     "chips": {
       "no_payroll": "No payroll or benefits",
       "never_quits": "Never quits, never calls in sick",

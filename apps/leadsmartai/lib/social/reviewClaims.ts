@@ -20,7 +20,7 @@ import {
 } from "@/lib/social/productFacts";
 
 /**
- * RealtyBoss's adapter over the shared claim-check engine.
+ * CloseBoss's adapter over the shared claim-check engine.
  *
  * The JUDGEMENT lives in @helm/dna-marketing — prompt, parsing, the any-veto
  * combine, and the settings that were derived by measurement rather than taste.

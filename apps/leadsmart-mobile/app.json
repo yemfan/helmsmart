@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "RealtyBoss",
+    "name": "CloseBoss",
     "slug": "leadsmart-mobile",
     "scheme": "leadsmart",
     "icon": "./assets/icon.png",
@@ -13,15 +13,15 @@
       "icon": "./assets/icon.png",
       "supportsTablet": false,
       "infoPlist": {
-        "CFBundleDisplayName": "RealtyBoss",
+        "CFBundleDisplayName": "CloseBoss",
         "ITSAppUsesNonExemptEncryption": false,
         "LSApplicationQueriesSchemes": ["tel", "sms", "mailto"],
-        "NSPhotoLibraryUsageDescription": "RealtyBoss needs access to your photo library to attach images to Quick Post drafts.",
-        "NSCameraUsageDescription": "RealtyBoss needs access to the camera so you can snap a listing photo for a Quick Post."
+        "NSPhotoLibraryUsageDescription": "CloseBoss needs access to your photo library to attach images to Quick Post drafts.",
+        "NSCameraUsageDescription": "CloseBoss needs access to the camera so you can snap a listing photo for a Quick Post."
       }
     },
     "android": {
-      "package": "com.realtybossai.app",
+      "package": "com.closebossai.app",
       "icon": "./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -38,8 +38,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "RealtyBoss needs access to your photo library to attach images to Quick Post drafts.",
-          "cameraPermission": "RealtyBoss needs access to the camera so you can snap a listing photo for a Quick Post."
+          "photosPermission": "CloseBoss needs access to your photo library to attach images to Quick Post drafts.",
+          "cameraPermission": "CloseBoss needs access to the camera so you can snap a listing photo for a Quick Post."
         }
       ]
     ],

@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowToAnalyzeRentalPropertyPage() {
   const title = "How to Analyze a Rental Property";
-  const url = "https://realtybossai.com/how-to-analyze-rental-property";
+  const url = "https://closebossai.com/how-to-analyze-rental-property";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -36,7 +36,7 @@ export default function HowToAnalyzeRentalPropertyPage() {
       <p className="text-gray-600 mb-8 max-w-3xl">
         A solid rental property analysis helps you avoid bad deals and move quickly on
         great ones. This guide shows you how to evaluate income, expenses, financing,
-        and returns using the calculators in RealtyBoss.
+        and returns using the calculators in CloseBoss.
       </p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">

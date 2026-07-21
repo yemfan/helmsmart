@@ -1,11 +1,11 @@
 {
   "meta": {
-    "title": "联系我们 | RealtyBoss",
-    "description": "与 RealtyBoss 团队取得联系。欢迎就面向房产专业人士的客户管理与 CRM 解决方案与我们交流。"
+    "title": "联系我们 | CloseBoss",
+    "description": "与 CloseBoss 团队取得联系。欢迎就面向房产专业人士的客户管理与 CRM 解决方案与我们交流。"
   },
   "hero": {
     "h1": "联系我们",
-    "subtitle": "有疑问、需要帮助，或想进一步了解 RealtyBoss？我们很乐意听到您的声音。"
+    "subtitle": "有疑问、需要帮助，或想进一步了解 CloseBoss？我们很乐意听到您的声音。"
   },
   "form_card": {
     "title": "给我们留言",
@@ -24,7 +24,7 @@
     "business": {
       "title": "企业信息",
       "subtitle": "运营公司与通讯地址",
-      "company_note": "RealtyBoss（原 LeadSmart AI）"
+      "company_note": "CloseBoss（原 LeadSmart AI）"
     },
     "back_home": "← 返回首页"
   },
@@ -40,8 +40,8 @@
     "subject_placeholder": "我们能帮您什么？",
     "message_label": "留言",
     "message_placeholder": "请详细描述您的问题或反馈……",
-    "sms_consent_lead": "是的，请向我发送 RealtyBoss 的营销短信。",
-    "sms_consent_body": "勾选此项并在上方提供我的电话号码，即表示我同意接收 RealtyBoss 关于房产服务、新房源、市场动态和特别优惠的推广短信。",
+    "sms_consent_lead": "是的，请向我发送 CloseBoss 的营销短信。",
+    "sms_consent_body": "勾选此项并在上方提供我的电话号码，即表示我同意接收 CloseBoss 关于房产服务、新房源、市场动态和特别优惠的推广短信。",
     "sms_disclosure_pre": "短信频率不定。可能产生短信和数据费用。可随时回复 ",
     "sms_disclosure_stop": "STOP",
     "sms_disclosure_mid": " 退订，或回复 ",
@@ -52,7 +52,7 @@
     "sms_disclosure_terms": "服务条款",
     "sms_disclosure_end": "。",
     "error_generic": "出错了。请重试，或直接发邮件给我们。",
-    "error_network": "网络错误。请重试，或发邮件至 contact@realtybossai.com。",
+    "error_network": "网络错误。请重试，或发邮件至 contact@closebossai.com。",
     "submit": "发送留言",
     "submitting": "发送中……",
     "sent_title": "留言已发送！",

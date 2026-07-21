@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import HouseSearchClient from "./HouseSearchClient";
 
 export const metadata: Metadata = {
-  title: "AI House Search | RealtyBoss",
+  title: "AI House Search | CloseBoss",
 };
 
 /**

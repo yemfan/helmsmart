@@ -308,7 +308,7 @@ export async function sendInvoiceEmail(id: string): Promise<{ ok: boolean; error
     .eq("id", id)
     .eq("agent_id", agentId as never);
 
-  // RealtyBoss activity feed (fire-and-forget — never fails the send).
+  // CloseBoss activity feed (fire-and-forget — never fails the send).
   void logAssistantActivity({
     agentId: String(agentId),
     assistantType: "accountant",
@@ -396,7 +396,7 @@ export async function setInvoiceStatus(
     return { ok: false, error: error.message };
   }
 
-  // RealtyBoss activity feed — a payment landing is the Accountant's
+  // CloseBoss activity feed — a payment landing is the Accountant's
   // win condition; log it (fire-and-forget).
   if (status === "paid" && data) {
     const row = data as { invoice_number: string; client_name: string | null; total: number | null };

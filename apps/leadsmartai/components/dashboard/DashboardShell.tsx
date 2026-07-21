@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ReactNode, useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { RealtyBossLogo } from "@/components/brand/RealtyBossLogo";
+import { CloseBossLogo } from "@/components/brand/CloseBossLogo";
 import { PremiumSidebarV2, filterNavSectionsByRole } from "@repo/ui";
 import navConfig, { leadSmartNav } from "@/nav.config";
 import brokerNavConfig from "@/brokerNav.config";
@@ -11,9 +11,9 @@ import TopBar from "@/components/dashboard/TopBar";
 import { isAgentOrBrokerProfileRole } from "@/lib/rolePortalPaths";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 
-// RealtyBoss brand — product and marketing site both carry it (the
-// domain stays realtybossai.com for now).
-const APP_NAME = "RealtyBoss";
+// CloseBoss brand — product and marketing site both carry it (the
+// domain stays closebossai.com for now).
+const APP_NAME = "CloseBoss";
 
 const sidebarFooter = (
   <div className="rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-3 py-2.5 text-sm leading-snug text-white shadow-lg shadow-slate-900/25 ring-1 ring-white/10">
@@ -106,8 +106,8 @@ export default function AppDashboardShell({
         // Brand lockup replaces the workspace switcher; the search row
         // is omitted (⌘K / the top-bar search cover it).
         brandHeader={
-          <Link href="/dashboard" aria-label="RealtyBoss home" className="flex items-center">
-            <RealtyBossLogo compact />
+          <Link href="/dashboard" aria-label="CloseBoss home" className="flex items-center">
+            <CloseBossLogo compact />
           </Link>
         }
         height="stretch"

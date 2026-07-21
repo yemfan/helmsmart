@@ -1,26 +1,26 @@
 {
   "landing": {
-    "title": "RealtyBoss — Your AI Real Estate Team. Close More Deals.",
-    "description": "RealtyBoss is an AI-powered real estate team that answers every call, follows up with every lead, and coordinates every transaction — so you close more deals without hiring additional staff. Pro from $79/mo.",
+    "title": "CloseBoss — Your AI Real Estate Team. Close More Deals.",
+    "description": "CloseBoss is an AI-powered real estate team that answers every call, follows up with every lead, and coordinates every transaction — so you close more deals without hiring additional staff. Pro from $79/mo.",
     "og": {
-      "title": "RealtyBoss — Hire an AI Real Estate Team. Close More Deals.",
+      "title": "CloseBoss — Hire an AI Real Estate Team. Close More Deals.",
       "description": "Your AI Real Estate Team — from first call to closing. AI Receptionist, Sales Assistant, and Transaction Assistant under your direction. 14-day trial, cancel anytime."
     }
   },
   "about": {
-    "title": "About RealtyBoss — Your AI Real Estate Team",
-    "description": "RealtyBoss (formerly LeadSmart AI) gives real estate agents an AI team — a Receptionist, Sales Assistant, and Transaction Assistant — that answers every call, follows up with every lead, and coordinates every transaction.",
+    "title": "About CloseBoss — Your AI Real Estate Team",
+    "description": "CloseBoss (formerly LeadSmart AI) gives real estate agents an AI team — a Receptionist, Sales Assistant, and Transaction Assistant — that answers every call, follows up with every lead, and coordinates every transaction.",
     "og": {
-      "title": "About RealtyBoss",
+      "title": "About CloseBoss",
       "description": "Your AI Real Estate Team — answer every call, follow up with every lead, coordinate every transaction, and close more deals."
     },
     "twitter": {
-      "title": "About RealtyBoss",
+      "title": "About CloseBoss",
       "description": "Your AI Real Estate Team — from first call to closing."
     }
   },
   "pricing": {
-    "title": "Pricing | RealtyBoss",
+    "title": "Pricing | CloseBoss",
     "description": "Free, Pro ($79), Premium ($199), Signature ($399), and Team plans — full feature comparison for your AI real estate team: receptionist, follow-ups, and transaction coordination."
   },
   "cta": {
@@ -42,7 +42,7 @@
     "resources": "Resources",
     "legal": "Legal",
     "rights": "All rights reserved.",
-    "entity_line": "RealtyBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc."
+    "entity_line": "CloseBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc."
   },
   "link": {
     "features": "Features",

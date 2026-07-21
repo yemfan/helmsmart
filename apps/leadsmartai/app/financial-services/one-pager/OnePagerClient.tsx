@@ -321,7 +321,7 @@ export default function OnePagerClient() {
               <p className="font-semibold text-slate-900">
                 [Your name], LeadSmart AI
               </p>
-              <p>[Your contact email] · realtybossai.com</p>
+              <p>[Your contact email] · closebossai.com</p>
             </div>
             <p className="text-right text-[7.5pt] text-slate-400">
               Confidential — prepared exclusively for {partnerLabel}{" "}

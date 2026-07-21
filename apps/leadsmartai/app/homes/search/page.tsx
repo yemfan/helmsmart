@@ -5,7 +5,7 @@ import type { HomeSearchParams } from "@/lib/house-search/brief";
 import HomesSearchClient from "./HomesSearchClient";
 
 export const metadata: Metadata = {
-  title: "AI home search | RealtyBoss",
+  title: "AI home search | CloseBoss",
   description:
     "Describe the home you want in plain English and get real, current listings — powered by AI and live web search.",
 };

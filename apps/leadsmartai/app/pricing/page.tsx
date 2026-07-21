@@ -24,10 +24,10 @@ export default async function ConsumerPricingPage() {
         data={{
           "@context": "https://schema.org",
           "@type": "SoftwareApplication",
-          name: "RealtyBoss",
+          name: "CloseBoss",
           description:
             "AI-powered CRM and lead management platform for real estate professionals. Capture, qualify, and convert leads with intelligent automation.",
-          url: "https://realtybossai.com/pricing",
+          url: "https://closebossai.com/pricing",
           applicationCategory: "BusinessApplication",
           offers: {
             "@type": "AggregateOffer",
@@ -41,7 +41,7 @@ export default async function ConsumerPricingPage() {
                 priceValidUntil: "2027-12-31",
                 description:
                   "Limited functions and usages. Up to 5 leads, 50 contacts.",
-                url: "https://realtybossai.com/signup",
+                url: "https://closebossai.com/signup",
               },
               {
                 "@type": "Offer",
@@ -52,7 +52,7 @@ export default async function ConsumerPricingPage() {
                 billingIncrement: "P1M",
                 description:
                   "Full CRM and AI for active agents. Producer Track coaching, bilingual English / 中文 AI.",
-                url: "https://realtybossai.com/pricing",
+                url: "https://closebossai.com/pricing",
               },
               {
                 "@type": "Offer",
@@ -62,7 +62,7 @@ export default async function ConsumerPricingPage() {
                 priceValidUntil: "2027-12-31",
                 billingIncrement: "P1Y",
                 description: "Pro tier billed annually — save 2 months vs monthly.",
-                url: "https://realtybossai.com/agent/pricing",
+                url: "https://closebossai.com/agent/pricing",
               },
               {
                 "@type": "Offer",
@@ -73,7 +73,7 @@ export default async function ConsumerPricingPage() {
                 billingIncrement: "P1M",
                 description:
                   "For top producers closing 10+ deals/month. Top Producer Track coaching, unlimited everything.",
-                url: "https://realtybossai.com/pricing",
+                url: "https://closebossai.com/pricing",
               },
               {
                 "@type": "Offer",
@@ -83,7 +83,7 @@ export default async function ConsumerPricingPage() {
                 priceValidUntil: "2027-12-31",
                 billingIncrement: "P1Y",
                 description: "Premium tier billed annually — save 2 months vs monthly.",
-                url: "https://realtybossai.com/agent/pricing",
+                url: "https://closebossai.com/agent/pricing",
               },
               {
                 "@type": "Offer",
@@ -94,7 +94,7 @@ export default async function ConsumerPricingPage() {
                 billingIncrement: "P1M",
                 description:
                   "Relationship-driven agents serving high-value clients. Sphere Intelligence Pro, white-glove onboarding, concierge support, cultural calendar automations, custom voice tuning.",
-                url: "https://realtybossai.com/agent/pricing",
+                url: "https://closebossai.com/agent/pricing",
               },
               {
                 "@type": "Offer",
@@ -104,7 +104,7 @@ export default async function ConsumerPricingPage() {
                 priceValidUntil: "2027-12-31",
                 billingIncrement: "P1Y",
                 description: "Signature tier billed annually — save 2 months vs monthly.",
-                url: "https://realtybossai.com/agent/pricing",
+                url: "https://closebossai.com/agent/pricing",
               },
               {
                 "@type": "Offer",
@@ -115,7 +115,7 @@ export default async function ConsumerPricingPage() {
                 billingIncrement: "P1M",
                 description:
                   "Brokerages and small teams. Round-robin lead routing, per-member reporting, Top Producer Track for every seat.",
-                url: "https://realtybossai.com/contact",
+                url: "https://closebossai.com/contact",
               },
               {
                 "@type": "Offer",
@@ -125,7 +125,7 @@ export default async function ConsumerPricingPage() {
                 priceValidUntil: "2027-12-31",
                 billingIncrement: "P1Y",
                 description: "Team tier billed annually — save 2 months vs monthly.",
-                url: "https://realtybossai.com/contact",
+                url: "https://closebossai.com/contact",
               },
             ],
           },
@@ -172,7 +172,7 @@ export default async function ConsumerPricingPage() {
 
             <div className="rounded-2xl border-2 border-[#0072ce] bg-gradient-to-br from-[#0072ce]/5 to-transparent p-7 dark:bg-slate-900">
               <p className="text-xs font-semibold uppercase tracking-wider text-[#0072ce]">
-                Your AI team — RealtyBoss
+                Your AI team — CloseBoss
               </p>
               <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
                 <li>All six assistants, working together</li>

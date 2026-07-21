@@ -16,7 +16,7 @@
         "NPM_CONFIG_REGISTRY": "https://registry.npmjs.org/",
         "PNPM_CONFIG_CHILD_CONCURRENCY": "1",
         "PNPM_CONFIG_NETWORK_CONCURRENCY": "4",
-        "EXPO_PUBLIC_LEADSMART_API_URL": "https://www.realtybossai.com"
+        "EXPO_PUBLIC_LEADSMART_API_URL": "https://www.closebossai.com"
       }
     },
     "development": {

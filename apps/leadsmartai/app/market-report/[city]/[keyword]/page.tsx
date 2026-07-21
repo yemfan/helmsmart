@@ -36,7 +36,7 @@ export async function generateMetadata({
   if (!city || !isValidKeywordSlugForCity("market-report", p.city, p.keyword)) return {};
   const keyword = resolveKeyword(p.city, p.keyword);
   return {
-    title: `${keyword} | ${city.city}, ${city.state} | RealtyBoss`,
+    title: `${keyword} | ${city.city}, ${city.state} | CloseBoss`,
     description: `Track ${keyword} with local pricing and trend data for ${city.city}, ${city.state}.`,
     alternates: { canonical: `/market-report/${p.city}/${p.keyword}` },
   };

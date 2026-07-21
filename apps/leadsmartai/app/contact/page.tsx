@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: "/contact",
     },
-    keywords: ["contact", "support", "RealtyBoss", "CRM", "lead management"],
+    keywords: ["contact", "support", "CloseBoss", "CRM", "lead management"],
   };
 }
 
@@ -28,10 +28,10 @@ export default async function ContactPage() {
         data={{
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "RealtyBoss",
+          name: "CloseBoss",
           legalName: "MAXY Investment Inc.",
-          url: "https://realtybossai.com",
-          email: "contact@realtybossai.com",
+          url: "https://closebossai.com",
+          email: "contact@closebossai.com",
           address: {
             "@type": "PostalAddress",
             streetAddress: "6511 Parkriver Crossing",
@@ -43,7 +43,7 @@ export default async function ContactPage() {
           contactPoint: {
             "@type": "ContactPoint",
             contactType: "Customer Service",
-            email: "contact@realtybossai.com",
+            email: "contact@closebossai.com",
             availableLanguage: ["en"],
           },
         }}
@@ -109,16 +109,16 @@ export default async function ContactPage() {
               </div>
             </div>
             <a
-              href="mailto:contact@realtybossai.com"
+              href="mailto:contact@closebossai.com"
               className="mt-3 block text-sm font-medium text-[#0072ce] hover:underline"
             >
-              contact@realtybossai.com
+              contact@closebossai.com
             </a>
           </div>
 
           {/* Business information — names the operating legal entity +
               registered address so carriers / trust vendors can verify the
-              business ↔ realtybossai.com association from a high-visibility
+              business ↔ closebossai.com association from a high-visibility
               page (mirrors the footer + Privacy/Terms). */}
           <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3">

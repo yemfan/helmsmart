@@ -1,5 +1,5 @@
 /**
- * RealtyBoss — shared guardrails appended to every assistant system
+ * CloseBoss — shared guardrails appended to every assistant system
  * prompt. Compliance-sensitive: legal/tax/lending advice and outcome
  * promises are off-limits for an unlicensed AI assistant, so changes
  * here should be reviewed with the same care as the legal pages.

@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Integrations",
-    "description": "Every integration RealtyBoss ships with — lead sources (Zillow, Facebook, IDX), email + calendar (Google, Microsoft), telephony (Twilio), e-signature (Dotloop, DocuSign), billing (Stripe), and more.",
-    "og_title": "Integrations — RealtyBoss",
-    "og_description": "Lead sources, calendar, email, telephony, e-signature, billing, and AI — everything RealtyBoss connects to.",
-    "twitter_title": "Integrations — RealtyBoss",
-    "twitter_description": "Every integration RealtyBoss ships with — across lead sources, calendar, telephony, e-signature, billing, and AI."
+    "description": "Every integration CloseBoss ships with — lead sources (Zillow, Facebook, IDX), email + calendar (Google, Microsoft), telephony (Twilio), e-signature (Dotloop, DocuSign), billing (Stripe), and more.",
+    "og_title": "Integrations — CloseBoss",
+    "og_description": "Lead sources, calendar, email, telephony, e-signature, billing, and AI — everything CloseBoss connects to.",
+    "twitter_title": "Integrations — CloseBoss",
+    "twitter_description": "Every integration CloseBoss ships with — across lead sources, calendar, telephony, e-signature, billing, and AI."
   },
   "status": {
     "live": "Live",

@@ -1,14 +1,14 @@
 {
   "meta": {
-    "title": "RealtyBoss 教练 — Producer Track + Top Producer Track",
-    "description": "内建于 RealtyBoss 的 AI 驱动教练。Producer Track（Pro 及以上）目标为 3% 转化率 / 10 笔成交;Top Producer Track（Premium + Team）目标为 5% 转化率 / 15 笔成交。无附加组件、无额外加价——已包含在套餐价格中。",
-    "og_title": "RealtyBoss 教练 — Producer Track + Top Producer Track",
-    "og_description": "内建于 RealtyBoss 的 AI 驱动教练。Producer Track（10 笔成交 / 3% 转化）与 Top Producer Track（15 笔成交 / 5% 转化）——已含在套餐中,无附加费用。",
-    "twitter_title": "RealtyBoss 教练",
-    "twitter_description": "Producer Track + Top Producer Track——内建于 RealtyBoss、面向房地产经纪人的 AI 教练。"
+    "title": "CloseBoss 教练 — Producer Track + Top Producer Track",
+    "description": "内建于 CloseBoss 的 AI 驱动教练。Producer Track（Pro 及以上）目标为 3% 转化率 / 10 笔成交;Top Producer Track（Premium + Team）目标为 5% 转化率 / 15 笔成交。无附加组件、无额外加价——已包含在套餐价格中。",
+    "og_title": "CloseBoss 教练 — Producer Track + Top Producer Track",
+    "og_description": "内建于 CloseBoss 的 AI 驱动教练。Producer Track（10 笔成交 / 3% 转化）与 Top Producer Track（15 笔成交 / 5% 转化）——已含在套餐中,无附加费用。",
+    "twitter_title": "CloseBoss 教练",
+    "twitter_description": "Producer Track + Top Producer Track——内建于 CloseBoss、面向房地产经纪人的 AI 教练。"
   },
   "header": {
-    "eyebrow": "RealtyBoss 教练",
+    "eyebrow": "CloseBoss 教练",
     "title_line1": "教练内建其中,",
     "title_line2": "而非事后拼接。",
     "subtitle": "多数 CRM 只是把“AI”当作一个功能标签。我们则围绕一层 AI 教练来打造产品——每日行动计划、每周实战手册、同行对标,以及真正推动关键数据的 AI 深度分析。两套项目,覆盖从新手到顶尖业绩的每一位经纪人。"
@@ -68,7 +68,7 @@
       },
       {
         "q": "转化率目标如何衡量?",
-        "a": "线索至成交——在 RealtyBoss 中创建的联系人（不限来源）最终达成成交的比例。可在你的业绩仪表盘上查看,采用滚动 12 个月窗口。"
+        "a": "线索至成交——在 CloseBoss 中创建的联系人（不限来源）最终达成成交的比例。可在你的业绩仪表盘上查看,采用滚动 12 个月窗口。"
       }
     ]
   },

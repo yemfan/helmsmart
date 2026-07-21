@@ -10,7 +10,7 @@ const { brandClaimViolation } = await import("../generateBrandPosts");
 
 type Draft = Parameters<typeof brandClaimViolation>[0];
 
-const draft = (hook: string, body = "", cta = "realtybossai.com"): Draft => ({
+const draft = (hook: string, body = "", cta = "closebossai.com"): Draft => ({
   voice: "brand",
   title: "t",
   hook,
@@ -26,7 +26,7 @@ describe("brandClaimViolation", () => {
       brandClaimViolation(
         draft(
           "A missed call is a missed commission.",
-          "RealtyBoss's AI Receptionist answers every call 24/7 — and the ones it can't, it texts back.",
+          "CloseBoss's AI Receptionist answers every call 24/7 — and the ones it can't, it texts back.",
         ),
       ),
     ).toBeNull();
@@ -46,7 +46,7 @@ describe("brandClaimViolation", () => {
     const why = brandClaimViolation(
       draft(
         "A buyer search only creates value if someone is watching it when a match hits.",
-        "RealtyBoss stores AI-powered house searches per client, so every buyer you're working with has a live search running on their behalf. When something relevant appears, it's tracked.",
+        "CloseBoss stores AI-powered house searches per client, so every buyer you're working with has a live search running on their behalf. When something relevant appears, it's tracked.",
       ),
     );
     expect(why).toMatch(/automation/i);

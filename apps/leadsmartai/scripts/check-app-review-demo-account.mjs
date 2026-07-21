@@ -6,7 +6,7 @@
  * (`demo@leadsmart.ai` / `Demo123!`). This script answers, without modifying
  * anything:
  *
- *   - Does that email exist in auth.users? (Also checks `demo@realtybossai.com`
+ *   - Does that email exist in auth.users? (Also checks `demo@closebossai.com`
  *     in case the domain was a typo.)
  *   - Is the email confirmed? Unconfirmed → reviewer would hit "verify your
  *     email" before sign-in succeeds.
@@ -58,7 +58,7 @@ if (!url || !key) {
 
 const supabase = createClient(url, key, { auth: { persistSession: false } });
 
-const CANDIDATE_EMAILS = ["demo@leadsmart.ai", "demo@realtybossai.com"];
+const CANDIDATE_EMAILS = ["demo@leadsmart.ai", "demo@closebossai.com"];
 
 async function lookupAuthUser(email) {
   const target = email.toLowerCase();

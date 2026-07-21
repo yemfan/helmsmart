@@ -7,9 +7,9 @@ import type { ResearchReportRow } from "@/lib/research/types";
 
 export const dynamic = "force-dynamic";
 
-const TITLE = "Data Center — Market Intelligence for Real Estate Pros | RealtyBoss";
+const TITLE = "Data Center — Market Intelligence for Real Estate Pros | CloseBoss";
 const DESCRIPTION =
-  "The data behind your listing and pricing conversations. RealtyBoss publishes dated, cited mortgage-rate and housing-market reports — hard numbers you can quote to sellers and buyers, every figure linked to its source.";
+  "The data behind your listing and pricing conversations. CloseBoss publishes dated, cited mortgage-rate and housing-market reports — hard numbers you can quote to sellers and buyers, every figure linked to its source.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const base = getSiteUrl();
@@ -55,7 +55,7 @@ export default async function DataCenterPage() {
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "RealtyBoss Data Center",
+    name: "CloseBoss Data Center",
     description: DESCRIPTION,
     url: `${base}/data`,
     hasPart: reports.map((r) => ({
@@ -75,7 +75,7 @@ export default async function DataCenterPage() {
         <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
           <nav className="mb-6 text-sm">
             <Link href="/" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-              RealtyBoss
+              CloseBoss
             </Link>
             <span className="mx-2 text-slate-400">/</span>
             <span className="text-slate-600">Data Center</span>

@@ -48,8 +48,8 @@ export async function postNextBrandLinkedIn(): Promise<BrandPostResult> {
     return { status: "skipped", reason: "No LinkedIn account connected" };
   }
 
-  // Because brand_social_log is shared with RealtyBoss, `done` will include
-  // RealtyBoss's keys too — harmless, since all keys here are `ptai-`-prefixed
+  // Because brand_social_log is shared with CloseBoss, `done` will include
+  // CloseBoss's keys too — harmless, since all keys here are `ptai-`-prefixed
   // and can't match, so BRAND_POSTS.find always resolves to our own next post.
   const done = await postedKeys("linkedin");
   const next = BRAND_POSTS.find((p) => !done.has(p.key));

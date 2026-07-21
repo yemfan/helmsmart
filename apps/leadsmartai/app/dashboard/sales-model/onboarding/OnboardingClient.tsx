@@ -47,7 +47,7 @@ export function OnboardingClient() {
           Choose Your Sales Model
         </h1>
         <p className="mt-3 text-base leading-relaxed text-slate-600">
-          RealtyBoss will personalize your dashboard, scripts, tasks, and
+          CloseBoss will personalize your dashboard, scripts, tasks, and
           sales process based on how you want to win clients. You can change
           your model anytime.
         </p>

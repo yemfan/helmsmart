@@ -37,14 +37,14 @@ describe("getGoogleOAuthConfig", () => {
     expect(config.redirectUri).toContain("/api/auth/google-calendar/callback");
   });
 
-  it("defaults baseUrl to realtybossai.com", () => {
+  it("defaults baseUrl to closebossai.com", () => {
     const origApp = process.env.NEXT_PUBLIC_APP_URL;
     const origBase = process.env.APP_BASE_URL;
     delete process.env.NEXT_PUBLIC_APP_URL;
     delete process.env.APP_BASE_URL;
 
     const config = getGoogleOAuthConfig();
-    expect(config.baseUrl).toBe("https://www.realtybossai.com");
+    expect(config.baseUrl).toBe("https://www.closebossai.com");
 
     if (origApp !== undefined) process.env.NEXT_PUBLIC_APP_URL = origApp;
     if (origBase !== undefined) process.env.APP_BASE_URL = origBase;

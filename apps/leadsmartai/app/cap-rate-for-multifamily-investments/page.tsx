@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function CapRateForMultifamilyInvestmentsPage() {
   const title = "Cap Rate for Multifamily Investments";
-  const url = "https://realtybossai.com/cap-rate-for-multifamily-investments";
+  const url = "https://closebossai.com/cap-rate-for-multifamily-investments";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -226,7 +226,7 @@ export default function CapRateForMultifamilyInvestmentsPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

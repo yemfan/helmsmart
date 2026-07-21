@@ -1,5 +1,5 @@
 /**
- * RealtyBoss AI team roster — the four-member AI real estate team.
+ * CloseBoss AI team roster — the four-member AI real estate team.
  * Mirrors the HelmSmart `CORE_ROSTER` blueprint shape; apps seed their
  * per-tenant `ai_assistants` rows from this.
  */

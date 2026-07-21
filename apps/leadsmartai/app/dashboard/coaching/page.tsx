@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import CoachingClient from "./CoachingClient";
 
 export const metadata: Metadata = {
-  title: "Coaching | RealtyBoss",
+  title: "Coaching | CloseBoss",
   robots: { index: false },
 };
 
@@ -16,7 +16,7 @@ export default function CoachingPage() {
         </h1>
         <p className="mt-2 text-sm text-slate-600">
           Where your week needs your attention. Each card is pulled live
-          from data already in RealtyBoss — no extra setup.
+          from data already in CloseBoss — no extra setup.
         </p>
       </header>
 

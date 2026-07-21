@@ -1,5 +1,5 @@
 /**
- * RealtyBoss prompt library — re-exported from the real-estate
+ * CloseBoss prompt library — re-exported from the real-estate
  * industry pack (`@helm/pack-real-estate`), where the AI team's
  * personas, skills, and guardrails are defined as pack config
  * (HelmSmart tenet: packs = config, core stays industry-agnostic).

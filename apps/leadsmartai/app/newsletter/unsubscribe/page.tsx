@@ -37,13 +37,13 @@ export default async function NewsletterUnsubscribePage({ searchParams }: Props)
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <div className="mx-auto flex max-w-lg flex-col items-center px-4 py-24 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">
-          RealtyBoss
+          CloseBoss
         </p>
         <h1 className="mt-4 text-3xl font-bold text-slate-900">
           You've been unsubscribed
         </h1>
         <p className="mt-3 text-lg leading-relaxed text-slate-600">
-          You won't receive any more RealtyBoss weekly housing briefings. If this
+          You won't receive any more CloseBoss weekly housing briefings. If this
           was a mistake, you can subscribe again anytime.
         </p>
         <Link

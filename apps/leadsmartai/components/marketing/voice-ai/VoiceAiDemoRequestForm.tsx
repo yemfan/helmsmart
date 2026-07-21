@@ -216,7 +216,7 @@ export default function VoiceAiDemoRequestForm() {
             className="mt-0.5"
           />
           <span>
-            I agree to receive calls and texts from RealtyBoss at the number provided,
+            I agree to receive calls and texts from CloseBoss at the number provided,
             including via automated systems, for the purpose of demoing the voice AI.
             Consent is not a condition of any purchase. Reply STOP to unsubscribe.
           </span>

@@ -5,7 +5,7 @@
  * in `@repo/valuation/server`.
  *
  * One source of truth shared by both apps:
- *   - apps/leadsmartai  (RealtyBoss CRM — agent CMAs)
+ *   - apps/leadsmartai  (CloseBoss CRM — agent CMAs)
  *   - apps/propertytoolsai (consumer home-value + AI CMA)
  *
  * Versioning: if the shape changes, add `CmaSnapshotV2` rather than mutating

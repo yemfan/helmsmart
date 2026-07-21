@@ -1,15 +1,15 @@
 /**
  * Canonical site origin for metadata (`metadataBase`) so favicons and Open Graph URLs match the deployment host.
  *
- * **Production:** Set `NEXT_PUBLIC_SITE_URL` in Vercel (e.g. `https://www.realtybossai.com`).
+ * **Production:** Set `NEXT_PUBLIC_SITE_URL` in Vercel (e.g. `https://www.closebossai.com`).
  * **Preview:** Uses `VERCEL_URL` when unset so icons load from the preview origin, not production.
  *
- * Values without a scheme (e.g. `realtybossai.com`) are normalized to `https://…` so `new URL()` never throws.
+ * Values without a scheme (e.g. `closebossai.com`) are normalized to `https://…` so `new URL()` never throws.
  *
- * NOTE: leadsmart-ai.com expired — the app domain is now realtybossai.com. This
+ * NOTE: leadsmart-ai.com expired — the app domain is now closebossai.com. This
  * fallback only fires when NEXT_PUBLIC_SITE_URL + VERCEL_URL are both unset.
  */
-const DEFAULT_ORIGIN = "https://www.realtybossai.com";
+const DEFAULT_ORIGIN = "https://www.closebossai.com";
 
 function normalizeOrigin(raw: string, fallback: string): string {
   const trimmed = raw.trim().replace(/\/$/, "");

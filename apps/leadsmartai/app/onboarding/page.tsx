@@ -3,7 +3,7 @@ import Link from "next/link";
 import OnboardingFunnel from "@/components/onboarding/OnboardingFunnel";
 
 export const metadata: Metadata = {
-  title: "Get started — RealtyBoss",
+  title: "Get started — CloseBoss",
   description:
     "Interactive onboarding: personalize your market, preview AI leads, then unlock full CRM and automation.",
   robots: { index: false, follow: true },
@@ -26,7 +26,7 @@ export default function OnboardingPage() {
       {/* Noscript fallback — fully static, no JS required. */}
       <noscript>
         <div className="mx-auto max-w-2xl px-4 py-16">
-          <h1 className="text-3xl font-bold text-slate-900 mb-4">Get started with RealtyBoss</h1>
+          <h1 className="text-3xl font-bold text-slate-900 mb-4">Get started with CloseBoss</h1>
           <p className="text-slate-700 leading-relaxed mb-4">
             Our interactive onboarding tour requires JavaScript. To continue without JavaScript,
             you can create an account directly and skip the preview.
@@ -47,8 +47,8 @@ export default function OnboardingPage() {
           </div>
           <p className="mt-6 text-xs text-slate-500">
             Questions?{" "}
-            <a href="mailto:contact@realtybossai.com" className="text-blue-700 underline">
-              contact@realtybossai.com
+            <a href="mailto:contact@closebossai.com" className="text-blue-700 underline">
+              contact@closebossai.com
             </a>
           </p>
         </div>

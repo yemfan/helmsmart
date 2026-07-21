@@ -152,7 +152,7 @@ export default async function HelpIndexPage() {
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <a
-              href="mailto:contact@realtybossai.com"
+              href="mailto:contact@closebossai.com"
               className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
             >
               {th("index.stuck_email")}

@@ -159,7 +159,7 @@ export async function runWireFraudAlerts(opts: {
 
       result.sentSms += 1;
 
-      // RealtyBoss activity feed — fire-and-forget, never fails the run.
+      // CloseBoss activity feed — fire-and-forget, never fails the run.
       void logAssistantActivity({
         agentId: String(tx.agent_id),
         assistantType: "transaction_assistant",

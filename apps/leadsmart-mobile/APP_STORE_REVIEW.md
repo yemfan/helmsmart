@@ -27,8 +27,8 @@ with the keyboard raised before resubmitting.**
 
 Apple paused the review to ask about the paid-features business model.
 This is a **message reply in App Store Connect**, not a code change.
-Answer: RealtyBoss is a B2B CRM for licensed real estate agents;
-subscriptions are purchased **only on the web** (realtybossai.com); there
+Answer: CloseBoss is a B2B CRM for licensed real estate agents;
+subscriptions are purchased **only on the web** (closebossai.com); there
 is no in-app purchase and nothing is sold or unlocked inside the app —
 it is a client for a multiplatform service (Guideline 3.1.3(b)). Full
 copy-paste reply is drafted below under "Guideline 2.1(b) reply".
@@ -42,20 +42,20 @@ copy-paste reply is drafted below under "Guideline 2.1(b) reply".
 > Hello, and thank you for the questions. Here is a description of our
 > business model.
 >
-> RealtyBoss is a business productivity (CRM) app for **licensed real
+> CloseBoss is a business productivity (CRM) app for **licensed real
 > estate agents**. It is a companion to our web service at
-> https://www.realtybossai.com. It is a business tool, not a consumer
+> https://www.closebossai.com. It is a business tool, not a consumer
 > content/media app — there is no music, video, books, games, or other
 > digital media.
 >
 > **1. Who are the users that will use the paid features in the app?**
 > Licensed real estate agents who are existing, paying subscribers to our
-> RealtyBoss web service. They sign in to the mobile app with the same
+> CloseBoss web service. They sign in to the mobile app with the same
 > account they use on the web.
 >
 > **2. Where can users purchase the features that can be accessed in the
 > app?** Subscriptions are purchased **only on our website**
-> (https://www.realtybossai.com). There is no purchasing of any kind
+> (https://www.closebossai.com). There is no purchasing of any kind
 > inside the app, and the app does not offer, advertise, or link to any
 > purchase flow. Users arrive at the app already subscribed.
 >
@@ -77,7 +77,7 @@ copy-paste reply is drafted below under "Guideline 2.1(b) reply".
 > to real estate professionals for use in their work.
 >
 > **6. Does the app require any purchase or subscription to use?** A user
-> must have a RealtyBoss account, created on our website. A free demo
+> must have a CloseBoss account, created on our website. A free demo
 > account is provided in App Review Information for testing:
 > demo@leadsmart.ai / Demo123!
 >
@@ -125,7 +125,7 @@ remains an alternate sandbox — see "Reviewer demo account" below.
 
 > Hello, and thank you for the follow-up.
 >
-> To answer directly: the services in RealtyBoss are sold to **single
+> To answer directly: the services in CloseBoss are sold to **single
 > users for their business use** — individual **licensed real estate
 > agents** (independent professionals / sole proprietors) who buy a
 > single-seat professional subscription for their real estate business.
@@ -133,13 +133,13 @@ remains an alternate sandbox — see "Reviewer demo account" below.
 > agents. It is **not** sold to consumers for personal use, and it is
 > **not** intended for family use.
 >
-> RealtyBoss is a business-to-business productivity tool — a CRM for
+> CloseBoss is a business-to-business productivity tool — a CRM for
 > licensed real estate agents. It is not a consumer content or media app:
 > there is no music, video, books, games, or other digital media.
 >
 > On purchasing: there is **no in-app purchase and no purchasing of any
 > kind inside the app**. Subscriptions are bought only on our website
-> (https://www.realtybossai.com). The app does not offer, advertise, link
+> (https://www.closebossai.com). The app does not offer, advertise, link
 > to, or steer users toward any purchase flow. A user signs in with an
 > account they already pay for on the web — the app is a client for a
 > multiplatform business service (Guideline 3.1.3(b)).
@@ -158,7 +158,7 @@ remains an alternate sandbox — see "Reviewer demo account" below.
 
 **Notes**:
 
-> RealtyBoss is a CRM for licensed real estate agents. Email/password
+> CloseBoss is a CRM for licensed real estate agents. Email/password
 > sign-in only — no OTP, no SMS verification.
 >
 > Suggested walk-through (bottom-tab labels: Home / Work / Engage /
@@ -185,7 +185,7 @@ remains an alternate sandbox — see "Reviewer demo account" below.
 | Area | State | Notes |
 |---|---|---|
 | Account deletion (in-app) | ✅ | Settings → Delete account → confirmation. `DELETE /api/mobile/account`. |
-| Account deletion (web) | ✅ | https://www.realtybossai.com/delete-account — public, no install required. |
+| Account deletion (web) | ✅ | https://www.closebossai.com/delete-account — public, no install required. |
 | Privacy policy link in-app | ✅ | Settings → Legal → Privacy policy. |
 | Terms of service link in-app | ✅ | Settings → Legal → Terms of service. |
 | `supportsTablet` | ✅ | Set to `false` — iPhone-only for v1; revisit before iPad rollout. |
@@ -277,7 +277,7 @@ and verified end-to-end by
 Apple/Google reviewers test the deletion flow. To exercise it without
 destroying the canonical demo account (`demo@leadsmart.ai` / `Demo123!`):
 
-1. Sign up a throwaway agent via web (`www.realtybossai.com/signup`) with a
+1. Sign up a throwaway agent via web (`www.closebossai.com/signup`) with a
    `+review` Gmail alias.
 2. Sign into the mobile app with that throwaway.
 3. Settings → Delete account → type `DELETE` → tap red button.
@@ -372,12 +372,12 @@ LeadSmart is the mobile CRM built for licensed real estate agents who need to re
 
 LeadSmart is built and supported by a small team in the United States. We listen to working agents and ship updates every few weeks based on what you tell us.
 
-Active subscription required for the AI features. Sign up at www.realtybossai.com to start a free trial.
+Active subscription required for the AI features. Sign up at www.closebossai.com to start a free trial.
 
-Privacy policy: https://www.realtybossai.com/privacy
-Terms of service: https://www.realtybossai.com/terms
-Account deletion: https://www.realtybossai.com/delete-account
-Support: contact@realtybossai.com
+Privacy policy: https://www.closebossai.com/privacy
+Terms of service: https://www.closebossai.com/terms
+Account deletion: https://www.closebossai.com/delete-account
+Support: contact@closebossai.com
 ```
 
 ### Keywords (100 chars, comma-separated, NO spaces around commas)
@@ -406,9 +406,9 @@ Reply to every lead in seconds with AI-drafted SMS and email, track every deal t
 
 ### Support URLs
 
-- **Support URL**: `https://www.realtybossai.com/contact`
-- **Marketing URL**: `https://www.realtybossai.com`
-- **Privacy Policy URL**: `https://www.realtybossai.com/privacy`
+- **Support URL**: `https://www.closebossai.com/contact`
+- **Marketing URL**: `https://www.closebossai.com`
+- **Privacy Policy URL**: `https://www.closebossai.com/privacy`
 
 ## Open items before first submit
 

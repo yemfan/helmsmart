@@ -25,7 +25,7 @@ export function presentAiQuickReplyPlaceholder(
   const who = leadName?.trim() ? ` for ${leadName.trim()}` : "";
   Alert.alert(
     "AI quick reply",
-    `Suggested ${scope} replies${who} are coming soon. This action will draft messages for you, powered by RealtyBoss.`,
+    `Suggested ${scope} replies${who} are coming soon. This action will draft messages for you, powered by CloseBoss.`,
     [{ text: "OK" }],
   );
 }

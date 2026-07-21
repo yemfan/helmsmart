@@ -1,10 +1,10 @@
 {
   "meta": {
     "title": "Free real estate tools — calculators, analyzers, and AI",
-    "description": "Every free tool from RealtyBoss in one place — mortgage and ROI calculators, cap rate and cash flow analysis, AI deal analyzers, Smart CMA builder, home value estimator. No signup required.",
-    "og_title": "Free real estate tools — RealtyBoss",
+    "description": "Every free tool from CloseBoss in one place — mortgage and ROI calculators, cap rate and cash flow analysis, AI deal analyzers, Smart CMA builder, home value estimator. No signup required.",
+    "og_title": "Free real estate tools — CloseBoss",
     "og_description": "Calculators, analyzers, and AI tools real estate agents and investors actually use. Free, no signup required.",
-    "twitter_title": "Free real estate tools — RealtyBoss",
+    "twitter_title": "Free real estate tools — CloseBoss",
     "twitter_description": "Calculators, AI analyzers, CMA builder, and home value estimator — free, no signup."
   },
   "header": {
@@ -56,7 +56,7 @@
   "sections": {
     "ai-tools": {
       "title": "AI-powered analyzers",
-      "blurb": "Drop in an address or a Zillow link — get a full deal memo, comp set, or CMA in under a minute. The same engine that powers RealtyBoss follow-up.",
+      "blurb": "Drop in an address or a Zillow link — get a full deal memo, comp set, or CMA in under a minute. The same engine that powers CloseBoss follow-up.",
       "tools": {
         "deal-analyzer": {
           "name": "AI Real Estate Deal Analyzer",
@@ -168,7 +168,7 @@
   "cross_sell": {
     "eyebrow": "Want them inside one CRM?",
     "heading": "Every tool above + AI follow-up, voice AI, and missed-call recovery.",
-    "body": "RealtyBoss is what these tools sit inside — your AI sales team, on your phone, 24/7. $79/mo starting, free 14-day trial, no credit card.",
+    "body": "CloseBoss is what these tools sit inside — your AI sales team, on your phone, 24/7. $79/mo starting, free 14-day trial, no credit card.",
     "start_trial": "Start 14-day trial",
     "see_features": "See all features",
     "items": [

@@ -66,7 +66,7 @@ export function buildComposeInstruction(
       // FB Sharer dialog accepts `u` (required) + `quote` (caption).
       // We pass the share URL OR a sensible fallback; the agent can
       // remove the link card inside FB if they don't want it.
-      const u = shareUrl ?? "https://www.realtybossai.com";
+      const u = shareUrl ?? "https://www.closebossai.com";
       const composeUrl =
         "https://www.facebook.com/sharer/sharer.php?" +
         `u=${encodeURIComponent(u)}` +
@@ -107,7 +107,7 @@ export function buildComposeInstruction(
       // agent has to paste the caption from the Copy button. Be
       // explicit about this in the UI (`prefillsBody: false`) so
       // the agent isn't confused when their post body is empty.
-      const u = shareUrl ?? "https://www.realtybossai.com";
+      const u = shareUrl ?? "https://www.closebossai.com";
       const composeUrl =
         "https://www.linkedin.com/sharing/share-offsite/?" +
         `url=${encodeURIComponent(u)}`;

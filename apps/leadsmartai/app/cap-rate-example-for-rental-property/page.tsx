@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function CapRateExampleForRentalPropertyPage() {
   const title = "Cap Rate Example for Rental Property";
-  const url = "https://realtybossai.com/cap-rate-example-for-rental-property";
+  const url = "https://closebossai.com/cap-rate-example-for-rental-property";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -260,7 +260,7 @@ export default function CapRateExampleForRentalPropertyPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

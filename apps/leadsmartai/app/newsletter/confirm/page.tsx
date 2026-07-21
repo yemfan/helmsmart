@@ -81,7 +81,7 @@ export default async function NewsletterConfirmPage({ searchParams }: Props) {
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <div className="mx-auto flex max-w-lg flex-col items-center px-4 py-24 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">
-          RealtyBoss
+          CloseBoss
         </p>
         {result.status === "confirmed" ? (
           <>
@@ -89,7 +89,7 @@ export default async function NewsletterConfirmPage({ searchParams }: Props) {
             <p className="mt-3 text-lg leading-relaxed text-slate-600">
               {result.agentName
                 ? `Thanks for confirming — you'll hear from ${result.agentName} each week with a plain-English housing briefing for your region.`
-                : "Thanks for confirming your subscription to the RealtyBoss weekly housing briefing. Your first issue is on its way."}
+                : "Thanks for confirming your subscription to the CloseBoss weekly housing briefing. Your first issue is on its way."}
             </p>
           </>
         ) : (

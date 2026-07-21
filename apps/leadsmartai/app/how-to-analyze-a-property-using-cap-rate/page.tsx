@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowToAnalyzeAPropertyUsingCapRatePage() {
   const title = "How to Analyze a Property Using Cap Rate";
-  const url = "https://realtybossai.com/how-to-analyze-a-property-using-cap-rate";
+  const url = "https://closebossai.com/how-to-analyze-a-property-using-cap-rate";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -255,7 +255,7 @@ export default function HowToAnalyzeAPropertyUsingCapRatePage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

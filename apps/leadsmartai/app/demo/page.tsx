@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "Demo workspace · Overview",
   description:
-    "Live read-only demo of the RealtyBoss workspace — see the morning briefings, KPIs, AI follow-up activity, and today's calendar without signing up.",
+    "Live read-only demo of the CloseBoss workspace — see the morning briefings, KPIs, AI follow-up activity, and today's calendar without signing up.",
   alternates: { canonical: "/demo" },
   robots: { index: false, follow: true },
 };

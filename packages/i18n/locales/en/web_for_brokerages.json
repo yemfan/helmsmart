@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "RealtyBoss for Real Estate Brokerages — operate your brokerage, not just track agents",
+    "title": "CloseBoss for Real Estate Brokerages — operate your brokerage, not just track agents",
     "description": "The brokerage operating system that makes every agent your top producer. Broker-first dashboard, agent-fitness flags, AI nurture, and per-agent pricing that undercuts kvCORE by 40-60%."
   },
   "header": {
@@ -26,7 +26,7 @@
     "eyebrow": "The adoption problem",
     "h2": "You already bought the CRM. Your agents just don't use it.",
     "body1": "Most brokerages spend six figures a year on a CRM — and most of the seats sit empty. It isn't a training problem. A CRM gives already-overwhelmed agents more to do: more logging, more reminders, more tabs. So it goes unused, and the spend returns almost nothing.",
-    "body2": "RealtyBoss flips that. It's not another tool to log into — it's an AI team that does the work: answers the calls, follows up with every lead, coordinates the deals, and keeps it compliant. Adoption isn't a battle when there's nothing to learn.",
+    "body2": "CloseBoss flips that. It's not another tool to log into — it's an AI team that does the work: answers the calls, follows up with every lead, coordinates the deals, and keeps it compliant. Adoption isn't a battle when there's nothing to learn.",
     "stat_value": "Six figures / year",
     "stat_label": "the real cost of a CRM your agents never open"
   },
@@ -81,7 +81,7 @@
       "chime": { "stack": "Chime", "limit": "Closest to us on intent. 5-year-old UX. AI is template-based, not LLM-generative." },
       "boomtown": { "stack": "BoomTown", "limit": "Excellent CS team. $1,500–3,500+/mo before agent seats. Pricing makes sense for $5M+ brokerages, not 100-agent independents." },
       "spreadsheets": { "stack": "Spreadsheets + WhatsApp", "limit": "Fast for small teams. Zero broker visibility. WhatsApp isn't TCPA-compliant for prospecting." },
-      "realtyboss": { "stack": "RealtyBoss", "limit": "✓ Broker-first home screen, real LLM AI, agent-fitness flags, $24/agent at 100 — half the category cost." }
+      "realtyboss": { "stack": "CloseBoss", "limit": "✓ Broker-first home screen, real LLM AI, agent-fitness flags, $24/agent at 100 — half the category cost." }
     }
   },
   "pricing": {
@@ -141,5 +141,5 @@
     "schedule": "Schedule the session",
     "email_instead": "Email instead"
   },
-  "footer": "© RealtyBoss · The brokerage operating system. Pilot inquiries welcome."
+  "footer": "© CloseBoss · The brokerage operating system. Pilot inquiries welcome."
 }

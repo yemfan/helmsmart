@@ -315,7 +315,7 @@ export default function CarrierIntegrationClient() {
           <div className="flex items-end justify-between gap-3">
             <div>
               <p className="font-semibold text-slate-900">LeadSmart AI</p>
-              <p>realtybossai.com · pilot inquiries welcome</p>
+              <p>closebossai.com · pilot inquiries welcome</p>
             </div>
             <p className="text-right text-[7.5pt] text-slate-400">
               Confidential — prepared for {partnerLabel} leadership.

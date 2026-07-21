@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Rasterizes the RealtyBoss brand into the PNG icon sizes the app references
+ * Rasterizes the CloseBoss brand into the PNG icon sizes the app references
  * (favicon, apple-touch, PWA, JSON-LD, OG fallbacks) and keeps the sibling
  * Expo app's launcher icons in sync.
  *

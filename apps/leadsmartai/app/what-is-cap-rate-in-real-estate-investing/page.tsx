@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function WhatIsCapRateInRealEstateInvestingPage() {
   const title = "What Is Cap Rate in Real Estate Investing?";
-  const url = "https://realtybossai.com/what-is-cap-rate-in-real-estate-investing";
+  const url = "https://closebossai.com/what-is-cap-rate-in-real-estate-investing";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -106,7 +106,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
             Cap Rate Calculator
           </Link>{" "}
-          in RealtyBoss.
+          in CloseBoss.
         </p>
         <h3 className="text-lg font-semibold text-gray-900">1. Estimate gross rental income</h3>
         <p>
@@ -185,7 +185,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
             Property Investment Analyzer
           </Link>{" "}
-          in RealtyBoss.
+          in CloseBoss.
         </p>
       </section>
 
@@ -334,7 +334,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

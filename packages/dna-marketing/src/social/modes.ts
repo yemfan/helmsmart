@@ -1,6 +1,6 @@
 // Who signs off before AI-written content publishes.
 //
-// Pure decision logic, no I/O. Extracted from RealtyBoss so HelmSmart (and any
+// Pure decision logic, no I/O. Extracted from CloseBoss so HelmSmart (and any
 // future vertical) inherits the gate rather than re-deriving it — the version
 // that shipped there was wrong twice before it was right, and neither mistake
 // is obvious from the outside.

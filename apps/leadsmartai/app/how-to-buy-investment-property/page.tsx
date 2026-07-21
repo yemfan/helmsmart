@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowToBuyInvestmentPropertyPage() {
   const title = "How to Buy an Investment Property";
-  const url = "https://realtybossai.com/how-to-buy-investment-property";
+  const url = "https://closebossai.com/how-to-buy-investment-property";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -36,7 +36,7 @@ export default function HowToBuyInvestmentPropertyPage() {
       <p className="text-gray-600 mb-8 max-w-3xl">
         Buying an investment property is very different from buying a primary residence.
         This guide walks through a simple, repeatable process you can use to find,
-        analyze, and finance rental properties using the calculators in RealtyBoss.
+        analyze, and finance rental properties using the calculators in CloseBoss.
       </p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">

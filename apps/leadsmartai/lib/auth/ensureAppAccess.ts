@@ -4,11 +4,11 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { isAdminOrSupportRole } from "@/lib/rolePortalPaths";
 
 /**
- * Auto-provision free RealtyBoss (leadsmart) access for an authenticated user
+ * Auto-provision free CloseBoss (leadsmart) access for an authenticated user
  * who has no account here yet.
  *
  * The apps share one auth.users, so a user of a sibling app (PropertyTools,
- * mobile) arrives already authenticated but without a RealtyBoss account. The
+ * mobile) arrives already authenticated but without a CloseBoss account. The
  * chosen cross-app behavior is AUTO-PROVISION: rather than lock them out, give
  * them a free account + membership so they land straight in.
  *
@@ -37,7 +37,7 @@ export async function ensureFreeLeadsmartAccount(
     return null;
   }
 
-  // 1. Free agent account (RealtyBoss's free tier). Create only if missing;
+  // 1. Free agent account (CloseBoss's free tier). Create only if missing;
   //    tolerate a concurrent create via a re-select.
   let agentId: string | null = null;
   try {

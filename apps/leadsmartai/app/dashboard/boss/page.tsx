@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * RealtyBoss command center — the default home for agents. The Boss
+ * CloseBoss command center — the default home for agents. The Boss
  * Assistant aggregates leads, tasks, calendar, transactions, and AI
  * team activity into a single "what needs my attention today" view.
  */

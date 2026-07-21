@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ClientPortalShell from "@/components/client/ClientPortalShell";
 
 export const metadata: Metadata = {
-  title: "My deal | RealtyBoss",
+  title: "My deal | CloseBoss",
   description: "Track your transaction, documents, and messages with your agent.",
   viewport: {
     width: "device-width",

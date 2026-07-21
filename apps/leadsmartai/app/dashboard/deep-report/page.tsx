@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import DeepReportClient from "./DeepReportClient";
 
 export const metadata: Metadata = {
-  title: "Property Deep Report | RealtyBoss",
+  title: "Property Deep Report | CloseBoss",
 };
 
 /**

@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function WhyCapRateMattersForRealEstateInvestorsPage() {
   const title = "Why Cap Rate Matters for Real Estate Investors";
-  const url = "https://realtybossai.com/why-cap-rate-matters-for-real-estate-investors";
+  const url = "https://closebossai.com/why-cap-rate-matters-for-real-estate-investors";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -171,7 +171,7 @@ export default function WhyCapRateMattersForRealEstateInvestorsPage() {
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
             Property Investment Analyzer
           </Link>{" "}
-          in RealtyBoss brings these metrics together in one place so you can see how cap rate
+          in CloseBoss brings these metrics together in one place so you can see how cap rate
           fits into the bigger picture.
         </p>
       </section>
@@ -232,7 +232,7 @@ export default function WhyCapRateMattersForRealEstateInvestorsPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

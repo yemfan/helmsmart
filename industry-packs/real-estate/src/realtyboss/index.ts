@@ -1,5 +1,5 @@
 /**
- * RealtyBoss — the real-estate AI team definition (roster, skills,
+ * CloseBoss — the real-estate AI team definition (roster, skills,
  * personas, guardrails). Lives in the pack so the team is config the
  * core consumes, not app code (build once, configure many).
  */

@@ -6,7 +6,7 @@ import { ImageResponse } from "next/og";
  * Branded fallback "news card" for a newsletter story that has no source photo
  * (e.g. FRED / government-data items with no og:image). Rendered at a 1200×630
  * banner aspect so it sits naturally alongside real source photos in the issue.
- * RealtyBoss-branded (the weekly digest is shared across all recipients).
+ * CloseBoss-branded (the weekly digest is shared across all recipients).
  */
 
 const BRAND = "#0072ce";
@@ -75,7 +75,7 @@ export async function renderFallbackCardPng(
             paddingTop: "24px",
           }}
         >
-          <div style={{ display: "flex", fontSize: "28px", fontWeight: 800, color: BRAND }}>RealtyBoss</div>
+          <div style={{ display: "flex", fontSize: "28px", fontWeight: 800, color: BRAND }}>CloseBoss</div>
           <div style={{ display: "flex", fontSize: "24px", color: MUTE }}>This Week in Housing</div>
         </div>
       </div>

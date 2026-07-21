@@ -98,7 +98,7 @@ export default function LeadAiAssistantPanel({ lead }: { lead: CrmLeadRow }) {
     <div className="bg-gradient-to-br from-slate-50 to-blue-50/40 border border-slate-200 rounded-xl p-4 space-y-3">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <div className="text-xs font-semibold text-slate-800">RealtyBoss assistant</div>
+          <div className="text-xs font-semibold text-slate-800">CloseBoss assistant</div>
           <p className="text-[11px] text-slate-500 mt-0.5">
             Suggested replies from your lead context. Auto follow-ups (1h / 24h / 3d) run only in{" "}
             <span className="font-medium">auto</span> mode when Twilio/email are configured.

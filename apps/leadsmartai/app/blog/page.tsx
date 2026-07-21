@@ -5,10 +5,10 @@ import { BLOG_POSTS, categoryLabel, sortedPosts, type BlogPost } from "@/lib/blo
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Real estate technology, lead conversion playbooks, and investing fundamentals from the RealtyBoss team — written for solo agents and small teams who win on speed.",
+    "Real estate technology, lead conversion playbooks, and investing fundamentals from the CloseBoss team — written for solo agents and small teams who win on speed.",
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "RealtyBoss Blog",
+    title: "CloseBoss Blog",
     description:
       "Real estate technology, lead conversion playbooks, and investing fundamentals — written for solo agents and small teams.",
     url: "/blog",
@@ -16,13 +16,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "RealtyBoss Blog",
+    title: "CloseBoss Blog",
     description:
       "Real estate technology, lead conversion playbooks, and investing fundamentals.",
   },
 };
 
-const SITE_URL = "https://realtybossai.com";
+const SITE_URL = "https://closebossai.com";
 
 function formatDate(iso: string): string {
   const d = new Date(`${iso}T00:00:00Z`);
@@ -42,7 +42,7 @@ export default function BlogIndexPage() {
   const blogJsonLd = {
     "@context": "https://schema.org",
     "@type": "Blog",
-    name: "RealtyBoss Blog",
+    name: "CloseBoss Blog",
     url: `${SITE_URL}/blog`,
     description:
       "Real estate technology, lead conversion playbooks, and investing fundamentals.",
@@ -67,7 +67,7 @@ export default function BlogIndexPage() {
       <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
         <header className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">
-            RealtyBoss Blog
+            CloseBoss Blog
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-5xl dark:text-white">
             Win on speed. Sell on substance.
@@ -101,7 +101,7 @@ export default function BlogIndexPage() {
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300">
             We send a short note when a new piece goes live — usually
             once or twice a month, no filler. Or skip ahead and try
-            RealtyBoss free for 14 days.
+            CloseBoss free for 14 days.
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             <Link

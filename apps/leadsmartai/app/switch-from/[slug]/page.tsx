@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { getSwitchSource, SWITCH_SOURCES } from "@/lib/marketing/switch-from";
 
-const SITE_URL = "https://realtybossai.com";
+const SITE_URL = "https://closebossai.com";
 
 type RouteParams = { slug: string };
 
@@ -27,9 +27,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const source = getSwitchSource(slug);
   if (!source) {
-    return { title: "Page not found — RealtyBoss" };
+    return { title: "Page not found — CloseBoss" };
   }
-  const title = `Switch from ${source.name} to RealtyBoss`;
+  const title = `Switch from ${source.name} to CloseBoss`;
   return {
     title,
     description: source.heroSubhead,
@@ -38,7 +38,7 @@ export async function generateMetadata({
       `${source.name} replacement`,
       `switch from ${source.name}`,
       "real estate CRM migration",
-      "RealtyBoss",
+      "CloseBoss",
     ],
     alternates: { canonical: `/switch-from/${source.slug}` },
     openGraph: {
@@ -71,14 +71,14 @@ export default async function SwitchFromPage({
     "@graph": [
       {
         "@type": "WebPage",
-        name: `Switch from ${source.name} to RealtyBoss`,
+        name: `Switch from ${source.name} to CloseBoss`,
         url,
         description: source.heroSubhead,
       },
       {
         "@type": "HowTo",
-        name: `How to migrate from ${source.name} to RealtyBoss`,
-        description: `Step-by-step migration from ${source.name} to RealtyBoss — export contacts, import to LeadSmart, optionally use concierge migration.`,
+        name: `How to migrate from ${source.name} to CloseBoss`,
+        description: `Step-by-step migration from ${source.name} to CloseBoss — export contacts, import to LeadSmart, optionally use concierge migration.`,
         totalTime: "PT30M",
         step: source.migrationSteps.map((text, i) => ({
           "@type": "HowToStep",
@@ -132,7 +132,7 @@ export default async function SwitchFromPage({
 
         <header>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">
-            CRM Migration · {source.name} → RealtyBoss
+            CRM Migration · {source.name} → CloseBoss
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl dark:text-white">
             {source.heroHeadline}
@@ -193,7 +193,7 @@ export default async function SwitchFromPage({
             Where LeadSmart wins
           </h2>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            {source.name}: {source.priceRange} · RealtyBoss: $79 / mo starting · See the full table on the{" "}
+            {source.name}: {source.priceRange} · CloseBoss: $79 / mo starting · See the full table on the{" "}
             <Link
               href="/agent/compare"
               className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
@@ -208,7 +208,7 @@ export default async function SwitchFromPage({
                 <tr>
                   <th className="px-4 py-3">Feature</th>
                   <th className="px-4 py-3">{source.name}</th>
-                  <th className="px-4 py-3 text-blue-700 dark:text-blue-300">RealtyBoss</th>
+                  <th className="px-4 py-3 text-blue-700 dark:text-blue-300">CloseBoss</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-950">

@@ -9,25 +9,25 @@
 
 /**
  * FROM line for newsletter sends. Defaults to a newsletter@ address on the
- * Resend-verified realtybossai.com domain (same domain lib/email.ts sends from).
+ * Resend-verified closebossai.com domain (same domain lib/email.ts sends from).
  * Override with NEWSLETTER_FROM. NOTE: the domain here MUST stay on
- * realtybossai.com — that's the only DKIM/SPF-verified Resend domain.
+ * closebossai.com — that's the only DKIM/SPF-verified Resend domain.
  */
 export function newsletterFrom(): string {
   const fromEnv = process.env.NEWSLETTER_FROM?.trim();
   if (fromEnv) return fromEnv;
-  return "RealtyBoss <newsletter@realtybossai.com>";
+  return "CloseBoss <newsletter@closebossai.com>";
 }
 
 /**
  * FROM line for an AGENT-BRANDED send (Phase 3). Display-name only change —
- * the mailbox stays on the Resend-verified realtybossai.com domain (the only
+ * the mailbox stays on the Resend-verified closebossai.com domain (the only
  * DKIM/SPF-verified sender), so deliverability is unchanged. Client replies are
  * routed to the agent via a separate reply_to (set by the caller), not the from
  * address. The agent's name is sanitized to keep the RFC 5322 display name
  * legal (strip characters that would need quoting/escaping).
  *
- * Example: `Jane Smith via RealtyBoss <newsletter@realtybossai.com>`.
+ * Example: `Jane Smith via CloseBoss <newsletter@closebossai.com>`.
  */
 export function agentNewsletterFrom(agentName: string | null | undefined): string {
   const base = newsletterFrom();
@@ -47,7 +47,7 @@ export function agentNewsletterFrom(agentName: string | null | undefined): strin
     .slice(0, 60);
   if (!safeName) return base;
 
-  return `${safeName} via RealtyBoss <${mailbox}>`;
+  return `${safeName} via CloseBoss <${mailbox}>`;
 }
 
 /**
@@ -59,7 +59,7 @@ export function agentNewsletterFrom(agentName: string | null | undefined): strin
 export function newsletterMailingAddress(): string {
   const addr = process.env.NEWSLETTER_MAILING_ADDRESS?.trim();
   if (addr) return addr;
-  return "RealtyBoss — [set NEWSLETTER_MAILING_ADDRESS to your physical postal address]";
+  return "CloseBoss — [set NEWSLETTER_MAILING_ADDRESS to your physical postal address]";
 }
 
 /** mailto target for the List-Unsubscribe header's mailto arm. */
@@ -67,6 +67,6 @@ export function newsletterUnsubscribeMailto(): string {
   const addr =
     process.env.NEWSLETTER_UNSUBSCRIBE_MAILTO?.trim() ||
     process.env.RESEND_REPLY_TO?.trim() ||
-    "unsubscribe@realtybossai.com";
+    "unsubscribe@closebossai.com";
   return addr;
 }

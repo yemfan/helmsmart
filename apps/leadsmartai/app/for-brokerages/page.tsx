@@ -103,7 +103,7 @@ export default async function ForBrokeragesPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-6">
           <Link href="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-slate-900">
             <Building2 className="h-5 w-5 text-slate-700" />
-            RealtyBoss <span className="text-slate-400">·</span>{" "}
+            CloseBoss <span className="text-slate-400">·</span>{" "}
             <span className="text-slate-600">{tb("header.brand_suffix")}</span>
           </Link>
           <nav className="hidden gap-6 text-sm text-slate-600 md:flex">
@@ -455,7 +455,7 @@ export default async function ForBrokeragesPage() {
               {tb("final_cta.schedule")} <ArrowRight className="h-4 w-4" />
             </Link>
             <a
-              href="mailto:contact@realtybossai.com?subject=Brokerage%20working%20session"
+              href="mailto:contact@closebossai.com?subject=Brokerage%20working%20session"
               className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur hover:bg-white/10"
             >
               {tb("final_cta.email_instead")}

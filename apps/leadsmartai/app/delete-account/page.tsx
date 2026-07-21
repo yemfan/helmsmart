@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Delete your LeadSmart account",
   description:
-    "How to permanently delete your RealtyBoss account and the personal data we hold about you. Required disclosure under Apple App Store and Google Play account-deletion policies.",
+    "How to permanently delete your CloseBoss account and the personal data we hold about you. Required disclosure under Apple App Store and Google Play account-deletion policies.",
   alternates: { canonical: "/delete-account" },
   robots: { index: true, follow: true },
 };
@@ -16,7 +16,7 @@ export default function DeleteAccountPage() {
         Delete your LeadSmart account
       </h1>
       <p className="text-sm text-slate-500 mb-8">
-        This page explains how to permanently delete your RealtyBoss account and
+        This page explains how to permanently delete your CloseBoss account and
         the personal data associated with it. You can request deletion from inside
         the mobile app or from this page — both paths reach the same workflow.
       </p>
@@ -51,10 +51,10 @@ export default function DeleteAccountPage() {
         <p className="text-sm text-slate-700 mb-3">
           Send an email to{" "}
           <a
-            href="mailto:contact@realtybossai.com?subject=Account%20deletion%20request"
+            href="mailto:contact@closebossai.com?subject=Account%20deletion%20request"
             className="text-[#0072ce] hover:underline"
           >
-            contact@realtybossai.com
+            contact@closebossai.com
           </a>{" "}
           from the address associated with your LeadSmart account, with the
           subject line <strong>&ldquo;Account deletion request&rdquo;</strong>.

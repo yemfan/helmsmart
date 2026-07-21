@@ -63,7 +63,7 @@ export function isSocialMode(v: unknown): v is SocialMode {
 }
 
 /**
- * RealtyBoss stores 'ask' for what the shared vocabulary calls 'draft'; the rest
+ * CloseBoss stores 'ask' for what the shared vocabulary calls 'draft'; the rest
  * match. Translating at the boundary keeps the DB value stable (it's written in
  * `boss_autopilot_settings` and in a CHECK constraint) while the DECISION comes
  * from core.
@@ -817,7 +817,7 @@ async function buildEvergreenRows(
   // Pull a modest pool of active library rows THIS agent may use: the shared
   // library (agent_id null) plus whatever the agent owns. The owner filter is
   // what stops one agent's private content — e.g. the brand agent's
-  // founder-voice marketing ("I built RealtyBoss") — from being recommended to
+  // founder-voice marketing ("I built CloseBoss") — from being recommended to
   // every other agent, who would then post it as their own.
   const agentIdNum = Number(agentId);
   if (!Number.isFinite(agentIdNum)) return [];
@@ -830,7 +830,7 @@ async function buildEvergreenRows(
   const all = (lib ?? []) as LibraryRow[];
 
   // Owned content is preferred over shared. An agent who has curated their own
-  // voice (today: the RealtyBoss brand) should post THAT — the shared library
+  // voice (today: the CloseBoss brand) should post THAT — the shared library
   // outnumbers it, so a plain shuffle would bury the brand's own copy under
   // generic consumer-education tips. Agents owning nothing are unaffected:
   // `owned` is empty, leaving one tier of shared rows = the previous behaviour.

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { HOUSE_SEARCH_DISCLAIMER } from "@/lib/house-search/types";
 
 export const metadata: Metadata = {
-  title: "Homes for sale | RealtyBoss",
+  title: "Homes for sale | CloseBoss",
   description:
     "Describe your ideal home in plain English and get real, current listings — powered by AI and live web search. Then connect with a local agent.",
 };

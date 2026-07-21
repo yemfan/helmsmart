@@ -17,7 +17,7 @@ const FULL_ENV: OutboundCallEnv = {
   TWILIO_ACCOUNT_SID: "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   TWILIO_AUTH_TOKEN: "deadbeefdeadbeefdeadbeefdeadbeef",
   TWILIO_PHONE_NUMBER: "+14155550100",
-  APP_BASE_URL: "https://app.realtybossai.com",
+  APP_BASE_URL: "https://app.closebossai.com",
 };
 
 describe("validateOutboundCallEnv", () => {
@@ -25,7 +25,7 @@ describe("validateOutboundCallEnv", () => {
     const out = validateOutboundCallEnv(FULL_ENV);
     expect(out.ok).toBe(true);
     if (out.ok) {
-      expect(out.env.appBaseUrl).toBe("https://app.realtybossai.com");
+      expect(out.env.appBaseUrl).toBe("https://app.closebossai.com");
     }
   });
 
@@ -82,10 +82,10 @@ describe("validateOutboundCallEnv", () => {
   it("strips trailing slash from APP_BASE_URL", () => {
     const out = validateOutboundCallEnv({
       ...FULL_ENV,
-      APP_BASE_URL: "https://app.realtybossai.com/",
+      APP_BASE_URL: "https://app.closebossai.com/",
     });
     expect(out.ok).toBe(true);
-    if (out.ok) expect(out.env.appBaseUrl).toBe("https://app.realtybossai.com");
+    if (out.ok) expect(out.env.appBaseUrl).toBe("https://app.closebossai.com");
   });
 });
 
@@ -122,14 +122,14 @@ describe("normalizeTargetPhone", () => {
 
 describe("buildOutboundDemoTwimlUrl", () => {
   it("appends the route path to the base URL", () => {
-    expect(buildOutboundDemoTwimlUrl("https://app.realtybossai.com")).toBe(
-      "https://app.realtybossai.com/api/twilio/voice/outbound-demo",
+    expect(buildOutboundDemoTwimlUrl("https://app.closebossai.com")).toBe(
+      "https://app.closebossai.com/api/twilio/voice/outbound-demo",
     );
   });
 
   it("does not double-slash when the base URL has a trailing /", () => {
-    expect(buildOutboundDemoTwimlUrl("https://app.realtybossai.com/")).toBe(
-      "https://app.realtybossai.com/api/twilio/voice/outbound-demo",
+    expect(buildOutboundDemoTwimlUrl("https://app.closebossai.com/")).toBe(
+      "https://app.closebossai.com/api/twilio/voice/outbound-demo",
     );
   });
 });

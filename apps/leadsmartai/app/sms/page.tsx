@@ -3,9 +3,9 @@ import Link from "next/link";
 import SmsOptInForm from "./SmsOptInForm";
 
 export const metadata: Metadata = {
-  title: "Text Message Updates | RealtyBoss",
+  title: "Text Message Updates | CloseBoss",
   description:
-    "Sign up to receive text message updates from RealtyBoss and your real estate agent — property updates, showing confirmations, and follow-ups. Msg & data rates may apply.",
+    "Sign up to receive text message updates from CloseBoss and your real estate agent — property updates, showing confirmations, and follow-ups. Msg & data rates may apply.",
   alternates: { canonical: "/sms" },
   // Publicly indexable so carrier reviewers can reach the opt-in flow directly.
   robots: { index: true, follow: true },
@@ -22,10 +22,10 @@ export default function SmsOptInPage() {
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Get text updates from RealtyBoss
+          Get text updates from CloseBoss
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-base text-slate-600">
-          Enter your number to receive text messages from RealtyBoss and your
+          Enter your number to receive text messages from CloseBoss and your
           real estate agent.
         </p>
       </div>
@@ -38,7 +38,7 @@ export default function SmsOptInPage() {
               About this program
             </h2>
             <p className="mt-2">
-              <strong>RealtyBoss</strong> (a product of MAXY Investment Inc.)
+              <strong>CloseBoss</strong> (a product of MAXY Investment Inc.)
               sends conversational and transactional text messages on behalf of
               your real estate agent: replies to your inquiry, showing and
               appointment confirmations, listing and home-search updates, and
@@ -57,8 +57,8 @@ export default function SmsOptInPage() {
             <li>
               Reply <strong>STOP</strong> to unsubscribe at any time;{" "}
               <strong>HELP</strong> for help, or email{" "}
-              <a href="mailto:contact@realtybossai.com" className="text-[#0072ce] hover:underline">
-                contact@realtybossai.com
+              <a href="mailto:contact@closebossai.com" className="text-[#0072ce] hover:underline">
+                contact@closebossai.com
               </a>
               .
             </li>

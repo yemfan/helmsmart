@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowCapRateChangesInDifferentMarketsPage() {
   const title = "How Cap Rate Changes in Different Markets";
-  const url = "https://realtybossai.com/how-cap-rate-changes-in-different-markets";
+  const url = "https://closebossai.com/how-cap-rate-changes-in-different-markets";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -246,7 +246,7 @@ export default function HowCapRateChangesInDifferentMarketsPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

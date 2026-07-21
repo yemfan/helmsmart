@@ -115,7 +115,7 @@ export default async function HelpFaqPage() {
           <p className="text-sm text-slate-600">
             {th("faq_page.footer_pre")}
             <a
-              href="mailto:contact@realtybossai.com"
+              href="mailto:contact@closebossai.com"
               className="font-semibold text-blue-700 hover:underline"
             >
               {th("faq_page.footer_email")}

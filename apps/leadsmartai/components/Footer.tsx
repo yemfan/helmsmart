@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 import { CookieSettingsLink } from "@/components/cookie-consent/CookieConsent";
-import { RealtyBossLogo } from "@/components/brand/RealtyBossLogo";
+import { CloseBossLogo } from "@/components/brand/CloseBossLogo";
 
 /**
  * Public-only product links. Removed `/dashboard`, `/client/dashboard`,
@@ -85,14 +85,14 @@ export default function Footer() {
           {/* Brand — single horizontal lockup (TOM MN-002: the previous
               monogram-box + separate wordmark read as two logos). */}
           <div className="flex items-center gap-4">
-            <Link href="/" aria-label="RealtyBoss home" className="inline-flex">
-              <RealtyBossLogo />
+            <Link href="/" aria-label="CloseBoss home" className="inline-flex">
+              <CloseBossLogo />
             </Link>
             <a
               href="https://www.linkedin.com/company/maxy-investment/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="RealtyBoss on LinkedIn"
+              aria-label="CloseBoss on LinkedIn"
               className="text-slate-400 transition-colors hover:text-[#0072ce] dark:text-slate-500 dark:hover:text-[#4da3e8]"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -110,10 +110,10 @@ export default function Footer() {
             {/* Legal-entity attribution. Surfacing the operating company +
                 registered address on every page (not just /privacy + /terms)
                 lets carriers / trust vendors verify the business-name ↔
-                realtybossai.com association from the homepage. */}
+                closebossai.com association from the homepage. */}
             <span className="text-center sm:text-right">
               {t("footer.entity_line", {
-                defaultValue: "RealtyBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc.",
+                defaultValue: "CloseBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc.",
               })}{" "}
               &middot; 6511 Parkriver Crossing, Sugar Land, TX 77479
             </span>

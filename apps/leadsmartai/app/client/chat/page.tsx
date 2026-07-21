@@ -80,7 +80,7 @@ export default function ClientChatPage() {
     <div className="flex flex-col h-[calc(100dvh-8.5rem)]">
       <div className="mb-3">
         <h1 className="text-xl font-bold text-slate-900">Chat</h1>
-        <p className="text-sm text-slate-600">Message your agent — they see this on RealtyBoss.</p>
+        <p className="text-sm text-slate-600">Message your agent — they see this on CloseBoss.</p>
       </div>
 
       {leads.length > 1 && (
@@ -135,7 +135,7 @@ export default function ClientChatPage() {
             </button>
           </form>
           <p className="text-[10px] text-slate-400 mt-2 text-center">
-            Updates every few seconds. Your agent replies from RealtyBoss (coming soon) or in person.
+            Updates every few seconds. Your agent replies from CloseBoss (coming soon) or in person.
           </p>
         </>
       )}

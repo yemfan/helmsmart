@@ -1,0 +1,12 @@
+<svg width="1040" height="300" viewBox="0 0 1040 300" xmlns="http://www.w3.org/2000/svg"><defs>
+  <radialGradient id="gold" cx="42%" cy="38%" r="66%"><stop offset="0%" stop-color="#ffe58a"/><stop offset="42%" stop-color="#ffc23d"/><stop offset="78%" stop-color="#f49a12"/><stop offset="100%" stop-color="#d97a06"/></radialGradient>
+  <radialGradient id="navyD" cx="38%" cy="30%" r="80%"><stop offset="0%" stop-color="#2c3f66"/><stop offset="100%" stop-color="#152238"/></radialGradient>
+  <radialGradient id="navyL" cx="38%" cy="30%" r="82%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#c9d5ea"/></radialGradient>
+  <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0b1220" flood-opacity="0.2"/></filter>
+</defs>
+  
+  <g transform="translate(150 150) scale(0.62)"><g transform="translate(-210 -210)"><path d="M210.0 80.0 L322.6 145.0 L322.6 275.0 L210.0 340.0 L97.4 275.0 L97.4 145.0 Z" fill="none" stroke="#22314f" stroke-width="6" stroke-linejoin="round" opacity="0.28"/><g filter="url(#soft)"><g fill="url(#navyD)"><circle cx="210.0" cy="63.4" r="11.5"/><path d="M 190.2 96.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyD)"><circle cx="322.6" cy="128.4" r="11.5"/><path d="M 302.7 161.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyD)"><circle cx="322.6" cy="258.4" r="11.5"/><path d="M 302.7 291.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyD)"><circle cx="210.0" cy="323.4" r="11.5"/><path d="M 190.2 356.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyD)"><circle cx="97.4" cy="258.4" r="11.5"/><path d="M 77.6 291.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g><g fill="url(#navyD)"><circle cx="97.4" cy="128.4" r="11.5"/><path d="M 77.6 161.0 a 19.8 19.8 0 0 1 39.7 0 z"/></g></g><circle cx="210" cy="213" r="46" fill="#000" opacity="0.10"/><circle cx="210" cy="210" r="46" fill="url(#gold)"/></g></g>
+  <text x="330" y="150" font-family="Geist, 'Geist Sans', 'Segoe UI', Arial, sans-serif" font-size="86" font-weight="700" letter-spacing="1"><tspan fill="#1c2b48">CLOSE</tspan><tspan fill="#f39100">BOSS</tspan></text>
+  <text x="332" y="196" font-family="Geist, 'Geist Sans', 'Segoe UI', Arial, sans-serif" font-size="27" fill="#4a5573">Your AI Real Estate Team.</text>
+  <text x="332" y="230" font-family="Geist, 'Geist Sans', 'Segoe UI', Arial, sans-serif" font-size="27" fill="#4a5573">Never Stops <tspan fill="#f39100">Closing.</tspan></text>
+</svg>

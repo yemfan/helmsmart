@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import LeadSourceRoiPanel from "@/components/dashboard/LeadSourceRoiPanel";
 
 export const metadata: Metadata = {
-  title: "Lead-source ROI | RealtyBoss",
+  title: "Lead-source ROI | CloseBoss",
 };
 
 /**

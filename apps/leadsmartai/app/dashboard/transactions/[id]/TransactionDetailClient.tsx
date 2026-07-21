@@ -269,7 +269,7 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
         </div>
       ) : null}
 
-      {/* RealtyBoss: lead with health, not data — what's happening,
+      {/* CloseBoss: lead with health, not data — what's happening,
           what's next, what's missing, what's at risk. */}
       <TransactionHealthBanner
         input={{

@@ -50,7 +50,7 @@
     }
   },
   "mock": {
-    "live_label": "RealtyBoss — Live",
+    "live_label": "CloseBoss — Live",
     "auto_replying": "Auto-replying",
     "stats": {
       "new_leads": "New leads",
@@ -198,15 +198,15 @@
   "missed_call_hook": {
     "section_a11y": "Missed call hook",
     "h3": "Missed a call? You may have missed a deal.",
-    "body": "RealtyBoss responds instantly when you can't — and turns missed calls into real opportunities.",
+    "body": "CloseBoss responds instantly when you can't — and turns missed calls into real opportunities.",
     "cta": "See How It Works"
   },
   "why": {
-    "eyebrow": "Why RealtyBoss",
+    "eyebrow": "Why CloseBoss",
     "h2_prefix": "Not just another CRM — ",
     "h2_highlight": "a complete AI closing system",
     "col_traditional": "Traditional Tools",
-    "col_us": "RealtyBoss",
+    "col_us": "CloseBoss",
     "rows": {
       "manual_followup": {
         "left": "Manual follow-up",
@@ -241,7 +241,7 @@
       "broken_sequences": "Follow-up sequences breaking after the second message",
       "equity_threshold": "Sphere contacts crossing equity thresholds without a nudge"
     },
-    "fix_line": "RealtyBoss fixes that — automatically.",
+    "fix_line": "CloseBoss fixes that — automatically.",
     "cta_primary": "Start Closing More Deals Today",
     "cta_secondary": "Estimate Your ROI"
   },
@@ -280,7 +280,7 @@
     "h2": "We killed the CRM. We replaced it with a team.",
     "body": "A CRM is a filing cabinet that makes you do the work — enter the data, log the calls, chase the follow-up. Agents quit them for a reason. Your AI team does the opposite: you give one command, it does the job.",
     "col_old": "The old CRM",
-    "col_us": "RealtyBoss",
+    "col_us": "CloseBoss",
     "rows": {
       "acts": { "old": "Waits for you to feed it data", "now": "Acts on its own — answers calls, calls your sphere, follows up" },
       "one_command": { "old": "Needs an admin or ISA to run it", "now": "You give one command; the AI team runs it" },

@@ -1,22 +1,22 @@
 {
   "meta": {
-    "title": "RealtyBoss vs. the rest — feature comparison",
-    "description": "Other real-estate CRMs remind you to do the work. RealtyBoss has an AI team that does it for you. See how we compare to Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown and Sierra Interactive.",
-    "og_title": "RealtyBoss vs. the rest — feature comparison",
+    "title": "CloseBoss vs. the rest — feature comparison",
+    "description": "Other real-estate CRMs remind you to do the work. CloseBoss has an AI team that does it for you. See how we compare to Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown and Sierra Interactive.",
+    "og_title": "CloseBoss vs. the rest — feature comparison",
     "og_description": "Side-by-side comparison vs Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown, and Sierra Interactive — at a fraction of the price.",
-    "twitter_title": "RealtyBoss vs. the rest",
+    "twitter_title": "CloseBoss vs. the rest",
     "twitter_description": "Feature comparison vs Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown, and Sierra Interactive."
   },
   "header": {
     "eyebrow": "Comparison",
-    "title": "RealtyBoss vs. the rest",
+    "title": "CloseBoss vs. the rest",
     "subtitle": "How we stack up against Follow Up Boss, kvCORE / BoldTrail, Lofty, BoomTown and Sierra Interactive on AI, dialer, e-sign, team workflows, and Chinese-market support — at a fraction of the price."
   },
   "work_vs_remind": {
     "eyebrow": "The real difference",
     "h2_pre": "Every other CRM reminds you to do the work.",
-    "h2_highlight": "RealtyBoss does the work for you.",
-    "body_pre": "Follow Up Boss, kvCORE, Lofty and the rest are brilliant at telling you what to do next — a task list, a “this lead is hot” alert, a drip that fires on schedule. But the calling, texting, emailing, researching and follow-up is still on you. RealtyBoss ships an AI team that actually ",
+    "h2_highlight": "CloseBoss does the work for you.",
+    "body_pre": "Follow Up Boss, kvCORE, Lofty and the rest are brilliant at telling you what to do next — a task list, a “this lead is hot” alert, a drip that fires on schedule. But the calling, texting, emailing, researching and follow-up is still on you. CloseBoss ships an AI team that actually ",
     "body_bold": "does it",
     "body_post": " — so the work happens while you’re sitting with clients.",
     "reminder_title": "Other CRMs — a reminder engine",
@@ -26,7 +26,7 @@
       "Fires a drip on a timer — generic, not a real reply",
       "Surfaces a CMA tool — you assemble the comps yourself"
     ],
-    "does_title": "RealtyBoss — an AI team that does it",
+    "does_title": "CloseBoss — an AI team that does it",
     "does_items": [
       "Answers & qualifies new leads by text and email — autonomously",
       "Drafts and sends the win-back reply in your voice",
@@ -37,7 +37,7 @@
   "highlights": [
     {
       "title": "An AI team that does the work",
-      "body": "Others remind you to call, text, and follow up. RealtyBoss's AI assistants answer leads, draft and send replies, run CMAs, and book showings on your behalf — the work gets done, not just queued."
+      "body": "Others remind you to call, text, and follow up. CloseBoss's AI assistants answer leads, draft and send replies, run CMAs, and book showings on your behalf — the work gets done, not just queued."
     },
     {
       "title": "Half the price of enterprise CRMs",
@@ -135,7 +135,7 @@
     "differentiators": {
       "title": "Differentiators",
       "rows": [
-        "RealtyBoss Coaching (Producer Track + Top Producer Track)",
+        "CloseBoss Coaching (Producer Track + Top Producer Track)",
         "Auto-enrolled coaching with conv-rate + transaction targets",
         "Bilingual / Chinese-market support (中文)",
         "WeChat + Xiaohongshu integration",
@@ -147,7 +147,7 @@
   },
   "cta": {
     "heading": "Stop managing a CRM. Start running a team.",
-    "body": "Most legacy CRMs charge $500+/month to hand you a longer to-do list. RealtyBoss gives you an AI team that works the list for you — answering leads, sending replies, and running deals — at a fraction of the price.",
+    "body": "Most legacy CRMs charge $500+/month to hand you a longer to-do list. CloseBoss gives you an AI team that works the list for you — answering leads, sending replies, and running deals — at a fraction of the price.",
     "see_pricing": "See pricing",
     "start_free": "Start free"
   },

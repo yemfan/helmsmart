@@ -1,5 +1,5 @@
 /**
- * Rasterize the RealtyBoss brand mark into the PNG icon set.
+ * Rasterize the CloseBoss brand mark into the PNG icon set.
  *
  * Reads  public/brand/realtyboss/realtyboss-mark.svg
  * Writes public/brand/realtyboss/realtyboss-icon-{64,180,512}.png

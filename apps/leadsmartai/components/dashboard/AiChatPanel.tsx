@@ -563,7 +563,7 @@ export function AiChatPanel() {
       <button
         onClick={() => setOpen(true)}
         className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-blue-100 transition-transform hover:scale-105 hover:ring-blue-200"
-        aria-label="Open RealtyBoss"
+        aria-label="Open CloseBoss"
       >
         <img
           src="/ai-assistant-mascot.png"
@@ -607,7 +607,7 @@ export function AiChatPanel() {
             <img src="/ai-assistant-mascot.png" alt="" aria-hidden className="h-8 w-8 object-contain" />
           </span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold">RealtyBoss</p>
+            <p className="truncate text-sm font-bold">CloseBoss</p>
             <p className="truncate text-[11px] opacity-80">Guide + per-contact SMS drafting</p>
           </div>
         </div>
@@ -615,7 +615,7 @@ export function AiChatPanel() {
           <button
             onClick={() => setMinimized((v) => !v)}
             className="inline-flex h-7 w-7 items-center justify-center rounded text-white/80 hover:bg-white/10 hover:text-white"
-            aria-label={minimized ? "Expand RealtyBoss" : "Minimize RealtyBoss"}
+            aria-label={minimized ? "Expand CloseBoss" : "Minimize CloseBoss"}
             title={minimized ? "Expand" : "Minimize"}
           >
             {/* Render an em-dash for minimize, a small square outline for expand. */}
@@ -628,7 +628,7 @@ export function AiChatPanel() {
           <button
             onClick={() => setOpen(false)}
             className="inline-flex h-7 w-7 items-center justify-center rounded text-xl leading-none text-white/80 hover:bg-white/10 hover:text-white"
-            aria-label="Close RealtyBoss"
+            aria-label="Close CloseBoss"
           >
             &times;
           </button>
@@ -846,7 +846,7 @@ function GuideTabBody({
               send(input);
             }
           }}
-          placeholder="Ask RealtyBoss..."
+          placeholder="Ask CloseBoss..."
           className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
           disabled={loading}
         />

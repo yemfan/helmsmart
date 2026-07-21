@@ -57,7 +57,7 @@ export default function DownPaymentCalculator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://realtybossai.com/down-payment-calculator",
+          url: "https://closebossai.com/down-payment-calculator",
           description:
             "Calculate required down payment, resulting loan amount, and estimated monthly payment for a home purchase.",
         }}

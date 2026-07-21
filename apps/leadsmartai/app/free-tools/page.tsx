@@ -249,7 +249,7 @@ const SECTIONS: Section[] = [
   },
 ];
 
-const SITE_URL = "https://realtybossai.com";
+const SITE_URL = "https://closebossai.com";
 
 export default async function FreeToolsPage() {
   const t = await getServerT();
@@ -259,7 +259,7 @@ export default async function FreeToolsPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Free Real Estate Tools — RealtyBoss",
+    name: "Free Real Estate Tools — CloseBoss",
     url: `${SITE_URL}/free-tools`,
     description:
       "Free calculators, AI analyzers, and CMA tools for real estate agents and investors. No signup required.",
