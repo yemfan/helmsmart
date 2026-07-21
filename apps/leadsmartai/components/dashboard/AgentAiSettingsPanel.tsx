@@ -109,7 +109,7 @@ export default function AgentAiSettingsPanel({
   return (
     <div className="space-y-4">
       <p className="text-xs text-gray-600">
-        Choose how RealtyBoss sounds for SMS, email, call summaries, and automated greetings. This adjusts
+        Choose how CloseBoss sounds for SMS, email, call summaries, and automated greetings. This adjusts
         tone and wording only — compliance and safety rules are unchanged.
       </p>
 
@@ -241,7 +241,7 @@ export default function AgentAiSettingsPanel({
         {canCustomizeBrand ? (
           <p className="text-[11px] text-gray-500">
             Used as the accent color on your generated social cards. Leave blank for the
-            default RealtyBoss blue.
+            default CloseBoss blue.
           </p>
         ) : (
           <p className="text-[11px] text-gray-500">

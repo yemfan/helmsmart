@@ -359,7 +359,7 @@ function HomePageInner() {
       <div className="sticky top-0 z-50 bg-slate-50/90 backdrop-blur border-b border-slate-200">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-slate-900 truncate">RealtyBoss</div>
+            <div className="text-sm font-semibold text-slate-900 truncate">CloseBoss</div>
             <div className="text-xs text-slate-500 truncate">
               {isAuthed && userRole ? `Signed in as ${userRole}` : "Home value funnels + CRM"}
             </div>
@@ -489,13 +489,13 @@ function HomePageInner() {
           <div className="space-y-6">
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
-                RealtyBoss for Agents
+                CloseBoss for Agents
               </p>
               <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
                 Turn home value checks into real listing appointments.
               </h1>
               <p className="text-sm sm:text-base text-slate-600">
-                RealtyBoss gives real estate agents a modern home value funnel, automated
+                CloseBoss gives real estate agents a modern home value funnel, automated
                 email follow-up, and a simple CRM so you can focus on conversations, not data entry.
               </p>
             </div>
@@ -689,11 +689,11 @@ function HomePageInner() {
                       />
                       <span className="text-xs text-slate-700">
                         <span className="font-semibold text-slate-900">
-                          Yes, send me marketing text messages from RealtyBoss.
+                          Yes, send me marketing text messages from CloseBoss.
                         </span>{" "}
                         By checking this box and providing my phone number above, I
                         consent to receive promotional text messages from{" "}
-                        <strong>RealtyBoss</strong> about real-estate services,
+                        <strong>CloseBoss</strong> about real-estate services,
                         new listings, market updates, and special offers.
                       </span>
                     </label>
@@ -745,7 +745,7 @@ function HomePageInner() {
                 Built for modern listing agents
               </h3>
               <p>
-                RealtyBoss gives you a shareable home value funnel, automated follow-up, and
+                CloseBoss gives you a shareable home value funnel, automated follow-up, and
                 a lightweight CRM so you can track every homeowner from first click to signed
                 listing agreement.
               </p>

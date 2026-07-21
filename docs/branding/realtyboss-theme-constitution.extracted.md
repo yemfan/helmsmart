@@ -1,4 +1,4 @@
-# RealtyBoss Theme & Experience Constitution
+# CloseBoss Theme & Experience Constitution
 
 > Plain-markdown extraction of `realtyboss-theme-constitution.md`
 > (the original file is a Word .docx renamed to .md, which GitHub
@@ -10,25 +10,25 @@ Version 1.0
 
 ## Purpose
 
-This document defines the visual identity, user experience philosophy, design language, terminology, and interaction principles for RealtyBoss. All future design and engineering decisions must align with this document. When conflicts arise between traditional CRM patterns and this constitution, RealtyBoss principles should prevail.
+This document defines the visual identity, user experience philosophy, design language, terminology, and interaction principles for CloseBoss. All future design and engineering decisions must align with this document. When conflicts arise between traditional CRM patterns and this constitution, CloseBoss principles should prevail.
 
 ## Brand Identity
 
-- **Product name:** RealtyBoss
+- **Product name:** CloseBoss
 - **Tagline:** Your AI Real Estate Team
 - **Hero message:** Hire an AI Real Estate Team. Close More Deals.
-- **Elevator pitch:** RealtyBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.
+- **Elevator pitch:** CloseBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.
 
 ## Core Philosophy
 
-RealtyBoss is NOT a CRM, NOT a marketing automation platform, NOT a lead management system. Those capabilities exist underneath the product. To the user, RealtyBoss should feel like **managing a high-performing real estate team**.
+CloseBoss is NOT a CRM, NOT a marketing automation platform, NOT a lead management system. Those capabilities exist underneath the product. To the user, CloseBoss should feel like **managing a high-performing real estate team**.
 
 Focus on: Team · Priorities · Recommendations · Opportunities · Accountability · Outcomes.
 NOT: Databases · Records · Pipelines · Configuration screens · Technical workflows.
 
 ## User Mental Model
 
-Traditional CRM: user manages software. RealtyBoss: **user manages a team.**
+Traditional CRM: user manages software. CloseBoss: **user manages a team.**
 
 ```
 Boss
@@ -130,7 +130,7 @@ The Boss Assistant should be available everywhere. Persistent prompt: **"Ask you
 
 ## Future Product Direction
 
-The experience evolves toward: BossOS · Boss Assistant · AI Workforce · industry-specific teams. The architecture should support RealtyBoss, ServiceBoss, DoctorBoss, FinanceBoss without changing core design principles.
+The experience evolves toward: BossOS · Boss Assistant · AI Workforce · industry-specific teams. The architecture should support CloseBoss, ServiceBoss, DoctorBoss, FinanceBoss without changing core design principles.
 
 ## Final Rule
 

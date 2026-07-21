@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowToCalculateCapRatePage() {
   const title = "How to Calculate Cap Rate";
-  const url = "https://realtybossai.com/how-to-calculate-cap-rate";
+  const url = "https://closebossai.com/how-to-calculate-cap-rate";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -36,7 +36,7 @@ export default function HowToCalculateCapRatePage() {
       <p className="text-gray-600 mb-8 max-w-3xl">
         Cap rate is one of the most common metrics investors use to compare rental
         properties. This guide explains what cap rate is, how to calculate it by hand,
-        and how to use the Cap Rate Calculator in RealtyBoss.
+        and how to use the Cap Rate Calculator in CloseBoss.
       </p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">

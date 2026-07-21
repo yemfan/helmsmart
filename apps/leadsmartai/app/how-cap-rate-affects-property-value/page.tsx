@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowCapRateAffectsPropertyValuePage() {
   const title = "How Cap Rate Affects Property Value in Real Estate Investing";
-  const url = "https://realtybossai.com/how-cap-rate-affects-property-value";
+  const url = "https://closebossai.com/how-cap-rate-affects-property-value";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -174,7 +174,7 @@ export default function HowCapRateAffectsPropertyValuePage() {
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
             Property Investment Analyzer
           </Link>{" "}
-          in RealtyBoss can help you visualize how different NOI and cap rate scenarios impact
+          in CloseBoss can help you visualize how different NOI and cap rate scenarios impact
           value over time.
         </p>
       </section>
@@ -233,7 +233,7 @@ export default function HowCapRateAffectsPropertyValuePage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

@@ -1,4 +1,4 @@
-# Meta App Review — submission package for RealtyBoss
+# Meta App Review — submission package for CloseBoss
 
 This doc is the operational checklist for getting our Facebook App
 approved for the permissions Phase 2 of **Generate Leads** needs:
@@ -6,7 +6,7 @@ direct posting to Facebook + Instagram Business, and the Meta Lead
 Ads wizard.
 
 > **Status (2026-07-15):** App **created (ID 2768243443543435)** and the
-> RealtyBoss Page (`LeadSmart AI`) is **connected in prod** under Standard
+> CloseBoss Page (`LeadSmart AI`) is **connected in prod** under Standard
 > access. Meta OAuth (`/api/social/facebook/start` →
 > `/api/social/facebook/callback`), Page publishing
 > (`lib/leads-gen/meta-post.ts` → `publishPost`, Graph version centralized
@@ -21,8 +21,8 @@ Ads wizard.
 > to let agent customers connect *their* Pages.
 >
 > ⚠️ **This doc was written pre-rebrand.** It has been updated from
-> LeadSmart AI / leadsmart-ai.com (a **dead domain**) to RealtyBoss /
-> realtybossai.com. Do not register the app with the old domain — the
+> LeadSmart AI / leadsmart-ai.com (a **dead domain**) to CloseBoss /
+> closebossai.com. Do not register the app with the old domain — the
 > OAuth redirect and Meta's data-deletion URL test would both fail.
 
 ## Standard vs Advanced access — read this first
@@ -31,7 +31,7 @@ Meta permissions have two tiers, and it changes the work dramatically:
 
 - **Standard access** works *only* for users with a role on the app
   (admins / developers / testers) — acting on **their own** assets.
-  **No App Review required.** So auto-posting RealtyBoss's own
+  **No App Review required.** So auto-posting CloseBoss's own
   marketing to **our own Page** (the brand agent's social autopilot)
   works as soon as the app exists and the owner connects the Page.
 - **Advanced access** is what lets *the general public* (our agent
@@ -60,7 +60,7 @@ Done out-of-band before code is even ready to demo.
 - [ ] Go to <https://developers.facebook.com/apps/>
 - [ ] Click **Create App**
 - [ ] App type: **Business**
-- [ ] App name: `RealtyBoss`
+- [ ] App name: `CloseBoss`
 - [ ] App contact email: **TBD — must be a real, monitored mailbox.**
       Meta emails permission/deprecation notices here. The old
       `contact@leadsmart-ai.com` is dead (inbound forwarding on that
@@ -70,11 +70,11 @@ Done out-of-band before code is even ready to demo.
       already verified for our Twilio A2P 10DLC campaign — same
       brand, same EIN, no duplicate verification needed
 - [ ] App icon: 1024×1024 PNG (use the LeadSmart logo)
-- [ ] Privacy Policy URL: `https://www.realtybossai.com/privacy`
-- [ ] Terms of Service URL: `https://www.realtybossai.com/terms`
-- [ ] Data Deletion Callback URL: `https://www.realtybossai.com/api/meta/data-deletion`
+- [ ] Privacy Policy URL: `https://www.closebossai.com/privacy`
+- [ ] Terms of Service URL: `https://www.closebossai.com/terms`
+- [ ] Data Deletion Callback URL: `https://www.closebossai.com/api/meta/data-deletion`
 - [ ] Category: `Business and Pages`
-- [ ] App Domains: `realtybossai.com`
+- [ ] App Domains: `closebossai.com`
 
 ### 1.2 Business Verification
 
@@ -99,7 +99,7 @@ MAXY Investment Inc verification we already have for A2P 10DLC.
       (we don't restrict by IP)
 - [ ] Settings → Advanced → set "Native or desktop app" to **No**
 - [ ] Facebook Login → Settings:
-  - Valid OAuth Redirect URIs: `https://www.realtybossai.com/api/social/facebook/callback`
+  - Valid OAuth Redirect URIs: `https://www.closebossai.com/api/social/facebook/callback`
     (**must match the real route** — `app/api/social/facebook/callback/route.ts` —
     and the `META_OAUTH_REDIRECT_URI` env var exactly, or OAuth fails)
   - Client OAuth Login: **Yes**
@@ -152,7 +152,7 @@ The reviewer evaluates each independently.
 
 | Permission | Access tier | Use case |
 |---|---|---|
-| `ads_management` | Advanced | Create + manage Lead Ad campaigns on behalf of the agent — the **Run Ads** wizard inside RealtyBoss. |
+| `ads_management` | Advanced | Create + manage Lead Ad campaigns on behalf of the agent — the **Run Ads** wizard inside CloseBoss. |
 | `ads_read` | Advanced | Read campaign performance (impressions / clicks / leads / spend) for the dashboard's Performance tab. |
 | `leads_retrieval` | Advanced | Pull form submissions from Meta Lead Ads via webhook + REST so the leads land in our CRM tagged `intake_channel='ad_meta'`. |
 | `business_management` | Advanced | Required by Meta for any `ads_*` permission to operate against an agent's business assets. |
@@ -165,8 +165,8 @@ permission's review row.
 
 #### `pages_show_list`
 
-> RealtyBoss is a CRM for real-estate agents. After an agent
-> signs in to RealtyBoss and clicks "Connect Facebook" in the
+> CloseBoss is a CRM for real-estate agents. After an agent
+> signs in to CloseBoss and clicks "Connect Facebook" in the
 > Settings → Integrations panel, our app needs to display the
 > list of Pages they manage so the agent can pick which Page
 > posts should publish to. This is the standard "select a Page"
@@ -176,7 +176,7 @@ permission's review row.
 
 #### `pages_manage_posts`
 
-> Inside RealtyBoss's Generate Leads → Quick Post wizard, the
+> Inside CloseBoss's Generate Leads → Quick Post wizard, the
 > agent drafts a post about a real-estate listing using our
 > AI-assisted composer, then clicks "Publish to Facebook."
 > Our backend uses `pages_manage_posts` against the Page the
@@ -208,14 +208,14 @@ permission's review row.
 
 #### `ads_management`
 
-> Inside RealtyBoss's Generate Leads → Run Ads wizard, the
+> Inside CloseBoss's Generate Leads → Run Ads wizard, the
 > agent picks a real-estate listing, audience parameters (zip
 > codes, age range, interests), a daily budget, and a campaign
 > duration. Our backend creates an objective=`LEAD_GENERATION`
 > campaign with an ad set targeting the agent's parameters, and
 > a Lead Ad creative whose form fields are configured to match
 > our CRM contact schema (name + email + phone). The agent pays
-> Meta directly — RealtyBoss never touches ad spend; we only
+> Meta directly — CloseBoss never touches ad spend; we only
 > orchestrate the campaign API calls.
 
 #### `ads_read`
@@ -238,7 +238,7 @@ permission's review row.
 
 > Required by Meta's policy for `ads_*` permissions to operate
 > against an agent's Business Manager-owned ad account and
-> Pages. RealtyBoss does not modify business-level settings;
+> Pages. CloseBoss does not modify business-level settings;
 > we only need `business_management` so the API access tokens
 > we obtain via `ads_management` can read/write against assets
 > owned by an agent's Business Manager (their Page, their ad
@@ -253,15 +253,15 @@ in sequence:
 
 | Time | Step | Permissions exercised |
 |---|---|---|
-| 0:00 - 0:30 | Sign in to RealtyBoss as the test user. Land on /dashboard. | none |
-| 0:30 - 1:00 | Navigate to **Settings → Integrations** → click **Connect Facebook**. Meta OAuth dialog opens. Grant requested permissions. Return to RealtyBoss. | OAuth grant |
+| 0:00 - 0:30 | Sign in to CloseBoss as the test user. Land on /dashboard. | none |
+| 0:30 - 1:00 | Navigate to **Settings → Integrations** → click **Connect Facebook**. Meta OAuth dialog opens. Grant requested permissions. Return to CloseBoss. | OAuth grant |
 | 1:00 - 1:30 | Show the **Connected Page** picker (all of test user's Pages listed) → pick one → show the linked Instagram Business is auto-detected. | `pages_show_list`, `instagram_basic` |
 | 1:30 - 2:30 | Navigate to **Generate Leads → Quick Post** → trigger "New listing" → pick a listing → AI drafts the caption → click **Publish to Facebook**. **Show the post appearing on the test user's Facebook Page.** | `pages_manage_posts` |
 | 2:30 - 3:00 | Click **Publish to Instagram** on the same draft. **Show the post appearing on the test user's Instagram profile.** | `instagram_content_publish` |
 | 3:00 - 3:30 | Return to **Generate Leads** → open the Performance tab → show the published post with like/comment counts. | `pages_read_engagement` |
 | 3:30 - 4:30 | Navigate to **Generate Leads → Run Ads** → walk the wizard (subject pick, audience, budget, creative review) → click **Launch campaign**. **Show the campaign appearing in Meta Ads Manager.** | `ads_management`, `business_management` |
-| 4:30 - 5:00 | Return to RealtyBoss's campaign dashboard → show impressions / clicks / spend pulled from Meta (use a test campaign that's been running ~24h so there's real data). | `ads_read` |
-| 5:00 - 6:00 | Trigger a test lead submission against the Lead Ad form → show the lead appearing in RealtyBoss's Contacts page with `source = "Meta Lead Ad"` and the campaign id stamped. | `leads_retrieval` |
+| 4:30 - 5:00 | Return to CloseBoss's campaign dashboard → show impressions / clicks / spend pulled from Meta (use a test campaign that's been running ~24h so there's real data). | `ads_read` |
+| 5:00 - 6:00 | Trigger a test lead submission against the Lead Ad form → show the lead appearing in CloseBoss's Contacts page with `source = "Meta Lead Ad"` and the campaign id stamped. | `leads_retrieval` |
 
 Recording tooling: **OBS Studio**, 1080p, no system audio (record
 voiceover separately + overlay if needed). Upload to YouTube as
@@ -293,7 +293,7 @@ Response (JSON, 200):
 
 ```json
 {
-  "url": "https://www.realtybossai.com/data-deletion-status/<code>",
+  "url": "https://www.closebossai.com/data-deletion-status/<code>",
   "confirmation_code": "<code>"
 }
 ```
@@ -323,7 +323,7 @@ correct shape, not that data is actually deleted.
 | `META_APP_ID` | App Dashboard → Settings → Basic | OAuth + Marketing API client init |
 | `META_APP_SECRET` | App Dashboard → Settings → Basic | HMAC validation in `/api/meta/data-deletion`, OAuth flow |
 | `META_WEBHOOK_VERIFY_TOKEN` | We choose this | Webhook subscription verification for `leads_retrieval` |
-| `META_OAUTH_REDIRECT_URI` | Same as Valid OAuth Redirect URIs setting — `https://www.realtybossai.com/api/social/facebook/callback` | OAuth callback |
+| `META_OAUTH_REDIRECT_URI` | Same as Valid OAuth Redirect URIs setting — `https://www.closebossai.com/api/social/facebook/callback` | OAuth callback |
 | `SOCIAL_TOKEN_ENC_KEY` | Already set | Encrypts/decrypts stored Page tokens (`lib/leads-gen/token-enc.ts`). Rotating it without re-encrypting rows breaks every connection. |
 | `META_GRAPH_VERSION` | Optional override | Graph version for every Meta call (`lib/meta/graph.ts`); defaults to `v21.0`. Recheck annually — Meta deprecates a version ~2 years after release. |
 
@@ -350,7 +350,7 @@ Drop after the existing **"How we share information"** section:
 
 > **Connected platforms.** When you choose to connect a third-party
 > platform (Facebook, Instagram, Google, LinkedIn, etc.) to your
-> RealtyBoss account, we receive only the data necessary to
+> CloseBoss account, we receive only the data necessary to
 > perform the actions you authorize — for example, the names of
 > the Facebook Pages you manage (so you can pick which Page posts
 > publish to), engagement counts on posts you published through us,
@@ -359,7 +359,7 @@ Drop after the existing **"How we share information"** section:
 > personal photos, or any data outside the scope of the permissions
 > you grant. You can revoke a connection at any time in
 > **Settings → Integrations**, or by visiting your Facebook account
-> settings → Apps and Websites and removing RealtyBoss. When you
+> settings → Apps and Websites and removing CloseBoss. When you
 > disconnect, the access tokens we hold are deleted and we stop
 > receiving new data from that platform.
 
@@ -367,11 +367,11 @@ Drop after the existing **"How we share information"** section:
 
 In the **"Your rights"** section, add a bullet:
 
-> Facebook users may request deletion of their RealtyBoss-held
-> Facebook-linked data by removing the RealtyBoss app from their
+> Facebook users may request deletion of their CloseBoss-held
+> Facebook-linked data by removing the CloseBoss app from their
 > Facebook account; Meta automatically notifies us via our
 > deletion callback at
-> `https://www.realtybossai.com/api/meta/data-deletion` and we
+> `https://www.closebossai.com/api/meta/data-deletion` and we
 > remove the associated tokens and lead records within 30 days.
 
 Both of these are non-controversial and self-evidently honest about
@@ -403,7 +403,7 @@ Before clicking **Submit for Review**:
       for permissions exercised in the same recording)
 - [ ] Test-user credentials pasted into the Submission Notes field,
       with explicit reproduction steps:
-      > "1. Sign in at https://www.realtybossai.com/login with
+      > "1. Sign in at https://www.closebossai.com/login with
       >  email=… password=…  2. Click Generate Leads in the
       >  sidebar  3. ..."
 
@@ -461,7 +461,7 @@ These are intentionally deferred:
 ## 9. Owner + dates
 
 - **Doc owner:** TBD (assign before submitting)
-- **App owner inside Meta:** the RealtyBoss Facebook account that
+- **App owner inside Meta:** the CloseBoss Facebook account that
   creates the app
 - **Initial submission target:** after Phase 2 code merges to prod
 - **Re-submission rule:** if rejected, file ONE re-submission within

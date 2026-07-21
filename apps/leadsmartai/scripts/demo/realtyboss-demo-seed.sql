@@ -1,4 +1,4 @@
--- RealtyBoss demo seed — paints the sandboxed demo account
+-- CloseBoss demo seed — paints the sandboxed demo account
 -- (michael.yes@mail.com) as a working Realtor with an active AI team.
 --
 -- Idempotent: RESETS all CRM rows for that agent, then inserts a
@@ -263,7 +263,7 @@ begin
     (v_agent, c_jane, 'Hi Jane! Yes, 312 Alder St is active. Saturday works — would 11am or 2pm suit you better? I''ll also pull two similar homes nearby worth seeing the same trip.', 'outbound', 'delivered', now() - interval '1 day 1 hour' + interval '2 minutes'),
     (v_agent, c_jane, '11am is perfect. Can you send the other two addresses?', 'inbound', null, now() - interval '4 hours'),
     (v_agent, c_jane, 'Booked for 11am Saturday! The other two: 415 Heliotrope Ave and 28 Greenfield Ct — both in the Madison Elementary zone. Michael will confirm the full route at your consultation today.', 'outbound', 'delivered', now() - interval '4 hours' + interval '90 seconds'),
-    (v_agent, c_kevin, 'Hi Kevin, it''s Michael''s assistant at RealtyBoss. We spoke in May about homes around Glendale — are you still thinking about a move this year? No rush either way, happy to send what $600k buys right now.', 'outbound', 'delivered', now() - interval '3 days');
+    (v_agent, c_kevin, 'Hi Kevin, it''s Michael''s assistant at CloseBoss. We spoke in May about homes around Glendale — are you still thinking about a move this year? No rush either way, happy to send what $600k buys right now.', 'outbound', 'delivered', now() - interval '3 days');
 
   -- ── A week of AI-team activity ───────────────────────────────────
   insert into public.assistant_activities (agent_id, assistant_type, activity_type, summary, outcome, priority, requires_attention, related_entity_type, related_entity_id, created_at) values
@@ -332,5 +332,5 @@ begin
     (v_agent, 'hot_lead', 'high', 'Hot lead — Grace Liu', 'Relocating from Seattle, ~$750k cash. Asked for downtown condo tours next week.', '{"deep_link":{"screen":"lead","contact_id":"0bde0001-0000-4000-8000-000000000012"}}'::jsonb, false, now(), now() - interval '3 hours'),
     (v_agent, 'missed_call', 'medium', 'Personal call from Tony Russo', 'Tony Russo called and didn''t reach you. This looks personal — give him a call back when you have a minute.', '{"deep_link":{"screen":"call_log","contact_id":"0bde0001-0000-4000-8000-000000000013"}}'::jsonb, false, now(), now() - interval '2 hours');
 
-  raise notice 'RealtyBoss demo seeded for agent %', v_agent;
+  raise notice 'CloseBoss demo seeded for agent %', v_agent;
 end $$;

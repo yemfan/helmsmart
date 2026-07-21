@@ -9,7 +9,7 @@ const EXAMPLES: Record<
   friendly: {
     sms: "Hi Jamie — thanks for texting about Maple Ave. Are you hoping to tour soon, or would you like the listing link first?",
     email:
-      "Hi Jamie,\n\nThanks for your note on Maple Ave. I’m happy to help — would you like a quick tour window this week, or more photos/details first?\n\nBest,\nRealtyBoss",
+      "Hi Jamie,\n\nThanks for your note on Maple Ave. I’m happy to help — would you like a quick tour window this week, or more photos/details first?\n\nBest,\nCloseBoss",
     call:
       "Summary: Caller asked about Maple Ave; wants a showing this weekend and prefers afternoon slots. Intent: buyer listing inquiry.",
     greeting: "Happy birthday, Jamie — hope you’re having a great day. Thinking of you and here if you need anything.",
@@ -17,7 +17,7 @@ const EXAMPLES: Record<
   professional: {
     sms: "Thank you for your message regarding Maple Ave. Please confirm whether you would like to schedule a showing or receive the listing details.",
     email:
-      "Hello Jamie,\n\nThank you for your inquiry regarding Maple Ave. Please let me know whether you would prefer to schedule a showing or receive additional property details.\n\nRegards,\nRealtyBoss",
+      "Hello Jamie,\n\nThank you for your inquiry regarding Maple Ave. Please let me know whether you would prefer to schedule a showing or receive additional property details.\n\nRegards,\nCloseBoss",
     call:
       "Summary: Caller inquired about Maple Ave; requested weekend availability for a showing. Intent: buyer listing inquiry.",
     greeting:
@@ -26,7 +26,7 @@ const EXAMPLES: Record<
   luxury: {
     sms: "Good afternoon — thank you for your interest in Maple Ave. May I arrange a private viewing at your convenience?",
     email:
-      "Dear Jamie,\n\nThank you for your thoughtful note on Maple Ave. Whenever you are ready, I would be pleased to coordinate a private viewing or share curated details at your discretion.\n\nWarm regards,\nRealtyBoss",
+      "Dear Jamie,\n\nThank you for your thoughtful note on Maple Ave. Whenever you are ready, I would be pleased to coordinate a private viewing or share curated details at your discretion.\n\nWarm regards,\nCloseBoss",
     call:
       "Summary: Caller expressed interest in Maple Ave; seeking a discreet weekend viewing. Intent: buyer listing inquiry.",
     greeting:

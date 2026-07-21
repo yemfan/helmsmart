@@ -23,7 +23,7 @@ import type {
  *
  * Two framings per report:
  *   - analysis_consumer: for PropertyTools.ai (buyers / sellers / investors)
- *   - analysis_agent:     for RealtyBoss / leadsmartai (listing + buyer agents)
+ *   - analysis_agent:     for CloseBoss / leadsmartai (listing + buyer agents)
  * The underlying data/numbers are IDENTICAL across framings; only the narrative
  * lens differs. This lets the same report render on two domains without
  * duplicate-content risk.

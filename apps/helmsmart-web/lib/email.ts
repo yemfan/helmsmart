@@ -21,13 +21,13 @@ function resendClient(): Resend {
 export const EMAIL_BRAND = process.env.EMAIL_FROM_NAME?.trim() || "HelmSmart";
 
 /**
- * The only Resend-verified sending domain on this account is realtybossai.com,
+ * The only Resend-verified sending domain on this account is closebossai.com,
  * so it is the default sender for every app in the monorepo. helmsmart.ai and
  * helmsmart.app are NOT verified — sending from them returns a 403 and the mail
  * never leaves. If helmsmart.ai is verified in Resend later, point
  * RESEND_FROM_EMAIL at it; no code change needed.
  */
-const DEFAULT_FROM_ADDRESS = "noreply@realtybossai.com";
+const DEFAULT_FROM_ADDRESS = "noreply@closebossai.com";
 
 /**
  * Pull the bare address out of a sender that may be either "a@b.com" or

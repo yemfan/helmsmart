@@ -189,7 +189,7 @@ function ConfirmationPage({ outcome }: { outcome: ExtendOutcome }) {
           href={outcome.offerUrl}
           className="block rounded-lg border border-slate-200 bg-white px-3 py-3 text-center text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
-          Open offer in RealtyBoss →
+          Open offer in CloseBoss →
         </a>
       </div>
     );

@@ -16,10 +16,10 @@ type Body = {
 
 /** Public URL base for the downloadable assets + email links. Must be www
  *  (the apex 308-redirects and some mail clients won't follow it). */
-const BASE_URL = (process.env.APP_BASE_URL || "https://www.realtybossai.com").replace(/\/$/, "");
+const BASE_URL = (process.env.APP_BASE_URL || "https://www.closebossai.com").replace(/\/$/, "");
 
-/** RealtyBoss "house" account that owns inbound product/marketing leads, so
- *  they're managed inside RealtyBoss's own CRM rather than floating unowned.
+/** CloseBoss "house" account that owns inbound product/marketing leads, so
+ *  they're managed inside CloseBoss's own CRM rather than floating unowned.
  *  Defaults to the owner account (agents.id = 26); override per-env. */
 function realtybossLeadsAgentId(): number {
   const n = Number(process.env.REALTYBOSS_LEADS_AGENT_ID);
@@ -29,7 +29,7 @@ function realtybossLeadsAgentId(): number {
 const ASSETS = {
   en: {
     source: "lead_magnet_5prompts",
-    pdf: `${BASE_URL}/downloads/RealtyBoss_5_AI_Prompts.pdf`,
+    pdf: `${BASE_URL}/downloads/CloseBoss_5_AI_Prompts.pdf`,
     subject: "Your 5 AI prompts are here 📥",
     heading: "Your 5 AI prompts every realtor should steal",
     body: (name: string, url: string) =>
@@ -41,16 +41,16 @@ Download the prompts (PDF): ${url}
 
 Quick tip: start with Prompt #2, the Lead Follow-Up Sequence. It's the one most agents tell us saved them a deal the same week. Paste it into any AI tool, swap in your lead's details, and you'll have a full multi-channel follow-up cadence in about 30 seconds.
 
-One thing worth saying: these prompts write great drafts — but they can't hit "send" for you at 9pm, or call back the lead you missed during a showing. That's what RealtyBoss is for — your AI real estate team. See it free at ${BASE_URL}/start-free.
+One thing worth saying: these prompts write great drafts — but they can't hit "send" for you at 9pm, or call back the lead you missed during a showing. That's what CloseBoss is for — your AI real estate team. See it free at ${BASE_URL}/start-free.
 
 For now — go steal Prompt #2.
 
 — The ${EMAIL_BRAND} team
-Your AI real estate team · realtybossai.com`,
+Your AI real estate team · closebossai.com`,
   },
   zh: {
     source: "lead_magnet_5prompts_zh",
-    pdf: `${BASE_URL}/downloads/RealtyBoss_5_AI_Prompts_ZH.pdf`,
+    pdf: `${BASE_URL}/downloads/CloseBoss_5_AI_Prompts_ZH.pdf`,
     subject: "您的 5 个 AI 提示词到了 📥",
     heading: "每位地产经纪都该收藏的 5 个 AI 提示词",
     body: (name: string, url: string) =>
@@ -62,12 +62,12 @@ Your AI real estate team · realtybossai.com`,
 
 小技巧：先从第 2 个提示词「客户跟进序列」开始。很多经纪告诉我们，就是这个在当周帮他们保住了一单。把它粘贴到任何 AI 工具里，换上您客户的信息，大约 30 秒就能得到一整套多渠道的跟进节奏。
 
-有句实话值得说：这些提示词能写出很棒的草稿 —— 但它没法替您在晚上 9 点点「发送」，也没法回拨您看房时错过的来电。那正是 RealtyBoss 的用途 —— 您的 AI 房地产团队。免费体验：${BASE_URL}/start-free。
+有句实话值得说：这些提示词能写出很棒的草稿 —— 但它没法替您在晚上 9 点点「发送」，也没法回拨您看房时错过的来电。那正是 CloseBoss 的用途 —— 您的 AI 房地产团队。免费体验：${BASE_URL}/start-free。
 
 现在 —— 先把第 2 个提示词拿去用吧。
 
 —— ${EMAIL_BRAND} 团队
-您的 AI 房地产团队 · realtybossai.com`,
+您的 AI 房地产团队 · closebossai.com`,
   },
 } as const;
 
@@ -105,8 +105,8 @@ export async function POST(req: Request) {
 
     const name = firstName || email.split("@")[0];
 
-    // Record the capture as a RealtyBoss product lead, owned by the RealtyBoss
-    // house account so it's managed inside RealtyBoss's own CRM (same contacts
+    // Record the capture as a CloseBoss product lead, owned by the CloseBoss
+    // house account so it's managed inside CloseBoss's own CRM (same contacts
     // table, lifecycle_stage='lead'). The `source` tag is what the growth
     // funnel measures: download -> free signup -> paid.
     try {

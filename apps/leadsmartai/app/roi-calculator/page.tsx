@@ -73,7 +73,7 @@ export default function ROICalculator() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://realtybossai.com/roi-calculator",
+          url: "https://closebossai.com/roi-calculator",
           description:
             "Model long-term real estate return on investment using rent, expenses, financing and property appreciation.",
         }}

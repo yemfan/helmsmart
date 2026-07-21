@@ -1,11 +1,11 @@
 {
   "meta": {
-    "title": "Contact Us | RealtyBoss",
-    "description": "Get in touch with the RealtyBoss team. We'd love to hear from you about lead management and CRM solutions for real estate professionals."
+    "title": "Contact Us | CloseBoss",
+    "description": "Get in touch with the CloseBoss team. We'd love to hear from you about lead management and CRM solutions for real estate professionals."
   },
   "hero": {
     "h1": "Get in touch",
-    "subtitle": "Have a question, need help, or want to learn more about RealtyBoss? We'd love to hear from you."
+    "subtitle": "Have a question, need help, or want to learn more about CloseBoss? We'd love to hear from you."
   },
   "form_card": {
     "title": "Send us a message",
@@ -24,7 +24,7 @@
     "business": {
       "title": "Business information",
       "subtitle": "Operating company & mailing address",
-      "company_note": "RealtyBoss (formerly LeadSmart AI)"
+      "company_note": "CloseBoss (formerly LeadSmart AI)"
     },
     "back_home": "← Back to Home"
   },
@@ -40,8 +40,8 @@
     "subject_placeholder": "How can we help?",
     "message_label": "Message",
     "message_placeholder": "Tell us more about your question or feedback...",
-    "sms_consent_lead": "Yes, send me marketing text messages from RealtyBoss.",
-    "sms_consent_body": "By checking this box and providing my phone number above, I consent to receive promotional text messages from RealtyBoss about real-estate services, new listings, market updates, and special offers.",
+    "sms_consent_lead": "Yes, send me marketing text messages from CloseBoss.",
+    "sms_consent_body": "By checking this box and providing my phone number above, I consent to receive promotional text messages from CloseBoss about real-estate services, new listings, market updates, and special offers.",
     "sms_disclosure_pre": "Message frequency varies. Message and data rates may apply. Reply ",
     "sms_disclosure_stop": "STOP",
     "sms_disclosure_mid": " to opt out at any time, or ",
@@ -52,7 +52,7 @@
     "sms_disclosure_terms": "Terms of Service",
     "sms_disclosure_end": " for details.",
     "error_generic": "Something went wrong. Please try again or email us directly.",
-    "error_network": "Network error. Please try again or email us at contact@realtybossai.com.",
+    "error_network": "Network error. Please try again or email us at contact@closebossai.com.",
     "submit": "Send message",
     "submitting": "Sending...",
     "sent_title": "Message sent!",

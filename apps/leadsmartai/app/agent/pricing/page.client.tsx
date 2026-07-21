@@ -650,7 +650,7 @@ export default function AgentPricingClientPage() {
             </div>
           </div>
 
-          {/* RealtyBoss Coaching callout */}
+          {/* CloseBoss Coaching callout */}
           <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/60 p-5 text-sm text-slate-700">
             <p className="font-semibold text-slate-900">
               {t("coaching_callout.heading")}

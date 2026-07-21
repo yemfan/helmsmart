@@ -3,9 +3,9 @@
  * publishes to LinkedIn on a schedule, in order. Single source of truth.
  *
  * IMPORTANT: PropertyTools AI shares the `brand_social_log` table with
- * RealtyBoss (same Supabase project), and that table's uniqueness is
+ * CloseBoss (same Supabase project), and that table's uniqueness is
  * `(platform, post_key)` with no app discriminator. All keys here are
- * prefixed `ptai-` so they can never collide with RealtyBoss's post keys.
+ * prefixed `ptai-` so they can never collide with CloseBoss's post keys.
  *
  * `caption` is the post body (plain text). `hashtags` are inlined by the
  * publisher (LinkedIn renders them clickable).

@@ -1,10 +1,10 @@
 {
   "meta": {
-    "title": "您的 AI 房产团队 — RealtyBoss",
-    "description": "RealtyBoss 是为房产经纪人打造的 AI 团队——AI 前台接听每一通来电，销售助理主动跟进，还有营销、交易和会计助理。再也不错过任何一通电话或一位客户。",
-    "og_title": "您的 AI 房产团队 — RealtyBoss",
+    "title": "您的 AI 房产团队 — CloseBoss",
+    "description": "CloseBoss 是为房产经纪人打造的 AI 团队——AI 前台接听每一通来电，销售助理主动跟进，还有营销、交易和会计助理。再也不错过任何一通电话或一位客户。",
+    "og_title": "您的 AI 房产团队 — CloseBoss",
     "og_description": "一支会接电话、主动跟进、推广房源、协调交易并记账的 AI 团队。",
-    "twitter_title": "您的 AI 房产团队 — RealtyBoss",
+    "twitter_title": "您的 AI 房产团队 — CloseBoss",
     "twitter_description": "一支会接电话、主动跟进、帮您成交的 AI 团队。"
   },
   "team": {
@@ -52,11 +52,11 @@
     "badge": "真实语音——双向沟通",
     "h2_lead": "它替您接来电——还会",
     "h2_gradient": "主动致电您的人脉",
-    "body_lead": "其他 CRM 都止步于短信和邮件推送。RealtyBoss 会拿起电话——全天候接听来电，",
+    "body_lead": "其他 CRM 都止步于短信和邮件推送。CloseBoss 会拿起电话——全天候接听来电，",
     "body_bold": "并主动拨打真实外呼语音电话",
     "body_tail": "去跟进您的人脉和客户。正是这样的对话赢得房源委托。",
     "cta": "设置您的前台",
-    "only_badge": "仅 RealtyBoss 独有",
+    "only_badge": "仅 CloseBoss 独有",
     "points": {
       "sphere_followup": {
         "title": "主动致电人脉进行跟进",
@@ -121,7 +121,7 @@
     "eyebrow": "成本账",
     "h2_lead": "组建一支顶尖团队——",
     "h2_gradient": "几乎免费",
-    "subtitle": "一位前台、一位 ISA、一位交易协调员、一位营销助理和一位记账员，每一位每年都要花去您数万美元——而且您还得亲自招聘、培训和管理。RealtyBoss 让您拥有全部这些角色，以顶尖经纪人的方式受训销售，价格只是一件工具的费用。",
+    "subtitle": "一位前台、一位 ISA、一位交易协调员、一位营销助理和一位记账员，每一位每年都要花去您数万美元——而且您还得亲自招聘、培训和管理。CloseBoss 让您拥有全部这些角色，以顶尖经纪人的方式受训销售，价格只是一件工具的费用。",
     "chips": {
       "no_payroll": "无需薪酬或福利",
       "never_quits": "从不离职，从不请病假",

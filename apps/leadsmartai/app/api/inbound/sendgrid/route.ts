@@ -16,7 +16,7 @@ export const maxDuration = 60;
  * the payload and hands it to the shared processInboundEmail pipeline.
  *
  * Setup: point SendGrid Inbound Parse for the inbound subdomain (e.g.
- * inbox.realtybossai.com, MX → mx.sendgrid.net) at this URL with ?k=<secret>.
+ * inbox.closebossai.com, MX → mx.sendgrid.net) at this URL with ?k=<secret>.
  */
 
 /** Extract the alias local_part from a recipient address for our inbound domain. */

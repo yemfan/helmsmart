@@ -2,9 +2,9 @@ import PricingHubClientPage from "./page.client";
 import { redirectAdminSupportAwayFromCommercialPricing } from "@/lib/auth/redirectStaffFromCommercialPricing";
 
 export const metadata = {
-  title: "Choose a plan | RealtyBoss",
+  title: "Choose a plan | CloseBoss",
   description:
-    "Compare PropertyToolsAI consumer pricing, RealtyBoss for agents, and loan broker plans.",
+    "Compare PropertyToolsAI consumer pricing, CloseBoss for agents, and loan broker plans.",
 };
 
 export default async function PricingHubPage() {

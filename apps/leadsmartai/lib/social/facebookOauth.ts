@@ -16,7 +16,7 @@ import { META_GRAPH_BASE, META_OAUTH_DIALOG } from "@/lib/meta/graph";
  *   META_APP_ID            — Facebook app id
  *   META_APP_SECRET        — Facebook app secret
  *   META_OAUTH_REDIRECT_URI — fully qualified callback URL the FB app
- *                             allows (e.g. https://realtybossai.com
+ *                             allows (e.g. https://closebossai.com
  *                             /api/social/facebook/callback)
  *
  * Without these env vars the helpers return clear "not configured"

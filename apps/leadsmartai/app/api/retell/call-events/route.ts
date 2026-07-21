@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // RealtyBoss activity feed — outbound AI calls belong to the Sales
+    // CloseBoss activity feed — outbound AI calls belong to the Sales
     // Assistant. Logged once, on call_ended (call_analyzed would double
     // up). Runs after the response; a failure can't affect the webhook.
     if (body.event === "call_ended" && call.direction === "outbound") {
@@ -242,7 +242,7 @@ export async function POST(req: NextRequest) {
             } else {
               await captureLeadFromInboundCall({ agentId, fromPhone, summary, transcript, providerCallId });
             }
-            // RealtyBoss activity feed — the Receptionist answered and
+            // CloseBoss activity feed — the Receptionist answered and
             // summarized this inbound call. Logged here (call_analyzed)
             // so the activity carries the AI summary.
             await logAssistantActivity({

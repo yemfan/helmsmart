@@ -14,7 +14,7 @@ export type EmailAttachment = {
  * of truth so a rebrand is one change (or an env flip) — set EMAIL_FROM_NAME to
  * override without touching code. Default reflects the current product brand.
  */
-export const EMAIL_BRAND = process.env.EMAIL_FROM_NAME?.trim() || "RealtyBoss";
+export const EMAIL_BRAND = process.env.EMAIL_FROM_NAME?.trim() || "CloseBoss";
 
 type SendEmailParams = {
   to: string | string[];
@@ -54,14 +54,14 @@ export async function sendEmail({
   }
 
   const recipients = Array.isArray(to) ? to : [to];
-  // Send from the Resend-verified brand domain: realtybossai.com (DKIM
+  // Send from the Resend-verified brand domain: closebossai.com (DKIM
   // resend._domainkey + the send.* SPF/return-path are configured in its DNS).
   // From + reply-to now live on the same on-brand domain. Override the FROM
   // with RESEND_FROM_EMAIL if you ever need a different verified sender.
   const fromAddress =
     from?.trim() ||
     process.env.RESEND_FROM_EMAIL?.trim() ||
-    `${EMAIL_BRAND} <noreply@realtybossai.com>`;
+    `${EMAIL_BRAND} <noreply@closebossai.com>`;
 
   const payload: Record<string, unknown> = {
     from: fromAddress,
@@ -71,10 +71,10 @@ export async function sendEmail({
   };
   if (html) payload.html = html;
   // Replies should land in the on-brand inbox — default reply-to to
-  // contact@realtybossai.com (env-overridable via RESEND_REPLY_TO). Callers that
+  // contact@closebossai.com (env-overridable via RESEND_REPLY_TO). Callers that
   // pass their own replyTo (e.g. the agent's address) still win.
   const replyToAddress =
-    replyTo?.trim() || process.env.RESEND_REPLY_TO?.trim() || "contact@realtybossai.com";
+    replyTo?.trim() || process.env.RESEND_REPLY_TO?.trim() || "contact@closebossai.com";
   if (replyToAddress) payload.reply_to = replyToAddress;
   if (attachments && attachments.length > 0) {
     payload.attachments = attachments.map((a) => ({
@@ -128,7 +128,7 @@ function friendlyResendError(status: number, body: string): string {
   const haystack = `${message} ${body}`;
 
   if (/verify a domain|only send testing emails|own email address|not verified|domain.*verif/i.test(haystack)) {
-    return "Email isn't set up to send to this recipient yet — the sending domain isn't verified in Resend. Verify realtybossai.com at resend.com/domains, then try again.";
+    return "Email isn't set up to send to this recipient yet — the sending domain isn't verified in Resend. Verify closebossai.com at resend.com/domains, then try again.";
   }
   if (status === 401 || status === 403) {
     return message || "Email couldn't be sent — Resend rejected the request (check the API key and verified sending domain).";

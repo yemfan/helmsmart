@@ -262,7 +262,7 @@ export default function SettingsScreen() {
         <Pressable
           onPress={() => {
             hapticButtonPress();
-            void Linking.openURL("https://www.realtybossai.com/privacy");
+            void Linking.openURL("https://www.closebossai.com/privacy");
           }}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkRowPressed]}
           accessibilityRole="link"
@@ -274,7 +274,7 @@ export default function SettingsScreen() {
         <Pressable
           onPress={() => {
             hapticButtonPress();
-            void Linking.openURL("https://www.realtybossai.com/terms");
+            void Linking.openURL("https://www.closebossai.com/terms");
           }}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkRowPressed]}
           accessibilityRole="link"

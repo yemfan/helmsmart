@@ -1,14 +1,14 @@
 {
   "meta": {
-    "title": "RealtyBoss Coaching — Producer Track + Top Producer Track",
-    "description": "AI-driven coaching built into RealtyBoss. Producer Track (Pro+) targets 3% conversion / 10 transactions; Top Producer Track (Premium + Team) targets 5% conversion / 15 transactions. No add-on, no upsell — included in the plan price.",
-    "og_title": "RealtyBoss Coaching — Producer Track + Top Producer Track",
-    "og_description": "AI-driven coaching built into RealtyBoss. Producer Track (10 deals / 3% conv) and Top Producer Track (15 deals / 5% conv) — included in your plan, no add-on fee.",
-    "twitter_title": "RealtyBoss Coaching",
-    "twitter_description": "Producer Track + Top Producer Track — AI coaching built into RealtyBoss for real estate agents."
+    "title": "CloseBoss Coaching — Producer Track + Top Producer Track",
+    "description": "AI-driven coaching built into CloseBoss. Producer Track (Pro+) targets 3% conversion / 10 transactions; Top Producer Track (Premium + Team) targets 5% conversion / 15 transactions. No add-on, no upsell — included in the plan price.",
+    "og_title": "CloseBoss Coaching — Producer Track + Top Producer Track",
+    "og_description": "AI-driven coaching built into CloseBoss. Producer Track (10 deals / 3% conv) and Top Producer Track (15 deals / 5% conv) — included in your plan, no add-on fee.",
+    "twitter_title": "CloseBoss Coaching",
+    "twitter_description": "Producer Track + Top Producer Track — AI coaching built into CloseBoss for real estate agents."
   },
   "header": {
-    "eyebrow": "RealtyBoss Coaching",
+    "eyebrow": "CloseBoss Coaching",
     "title_line1": "Coaching that’s built in,",
     "title_line2": "not bolted on.",
     "subtitle": "Most CRMs add “AI” as a feature label. We built our product around an AI coaching layer — daily action plans, weekly playbooks, peer benchmarks, and AI deep-dives that move the numbers that matter. Two programs cover everyone from new agents to top producers."
@@ -68,7 +68,7 @@
       },
       {
         "q": "How do you measure the conversion-rate target?",
-        "a": "Lead-to-close — the percentage of contacts created in RealtyBoss (any source) that result in a closed transaction. Visible on your performance dashboard with a moving 12-month window."
+        "a": "Lead-to-close — the percentage of contacts created in CloseBoss (any source) that result in a closed transaction. Visible on your performance dashboard with a moving 12-month window."
       }
     ]
   },

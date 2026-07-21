@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function WhatIsAGoodCapRateForRentalPropertyPage() {
   const title = "What Is a Good Cap Rate for Rental Property?";
-  const url = "https://realtybossai.com/what-is-a-good-cap-rate-for-rental-property";
+  const url = "https://closebossai.com/what-is-a-good-cap-rate-for-rental-property";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -211,7 +211,7 @@ export default function WhatIsAGoodCapRateForRentalPropertyPage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

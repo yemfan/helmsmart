@@ -379,7 +379,7 @@ export default function FlyerBuilderClient({
       doc.rect(0, h - 10, w, 10, "F");
       doc.setFontSize(8);
       doc.setTextColor(255, 255, 255);
-      doc.text("Powered by RealtyBoss", w / 2, h - 3, { align: "center" });
+      doc.text("Powered by CloseBoss", w / 2, h - 3, { align: "center" });
 
       doc.save(`open-house-${property.address.replace(/[^a-zA-Z0-9]/g, "-").slice(0, 30)}.pdf`);
     } catch (e) {

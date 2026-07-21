@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
   const weekLabel = WEEK_RE.test(week) ? formatWeek(week) : week;
-  const title = `${regionName} Housing & Rates — Week of ${weekLabel} | RealtyBoss`;
+  const title = `${regionName} Housing & Rates — Week of ${weekLabel} | CloseBoss`;
   const description = `The week of ${weekLabel} in mortgage rates and the housing market, in plain English — paired with the latest ${regionName} market snapshot. Every figure linked to its source.`;
 
   return {
@@ -118,7 +118,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "RealtyBoss", item: `${base}/` },
+      { "@type": "ListItem", position: 1, name: "CloseBoss", item: `${base}/` },
       { "@type": "ListItem", position: 2, name: "Weekly Newsletter", item: `${base}/newsletter` },
       {
         "@type": "ListItem",
@@ -136,8 +136,8 @@ export default async function NewsletterIssuePage({ params }: Props) {
     description: digest.intro ?? undefined,
     datePublished: weekOf,
     url: `${base}/newsletter/${region}/${weekOf}`,
-    author: { "@type": "Organization", name: "RealtyBoss" },
-    publisher: { "@type": "Organization", name: "RealtyBoss" },
+    author: { "@type": "Organization", name: "CloseBoss" },
+    publisher: { "@type": "Organization", name: "CloseBoss" },
     isBasedOn: sources.map((sc) => sc.url),
   };
 
@@ -149,7 +149,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
       <div className="mx-auto max-w-3xl px-4 py-12 space-y-10">
         <nav className="text-sm">
           <Link href="/" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            RealtyBoss
+            CloseBoss
           </Link>
           <span className="mx-2 text-slate-400">/</span>
           <Link href="/newsletter" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
@@ -307,8 +307,8 @@ export default async function NewsletterIssuePage({ params }: Props) {
         )}
 
         <footer className="border-t border-slate-200 pt-6 text-sm text-slate-500">
-          RealtyBoss publishes this briefing weekly. Numbers are pulled from the
-          cited public sources; the {reg.name} snapshot comes from the RealtyBoss
+          CloseBoss publishes this briefing weekly. Numbers are pulled from the
+          cited public sources; the {reg.name} snapshot comes from the CloseBoss
           Data Center.{" "}
           <Link href="/newsletter" className="font-medium text-[#0072ce] hover:underline">
             Subscribe or browse past issues →

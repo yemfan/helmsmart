@@ -66,7 +66,7 @@ type ProductKey =
   | "sierra";
 
 const PRODUCTS: Array<{ key: ProductKey; name: string; price: string }> = [
-  { key: "leadsmart", name: "RealtyBoss", price: "$79–$199 / mo" },
+  { key: "leadsmart", name: "CloseBoss", price: "$79–$199 / mo" },
   { key: "followup_boss", name: "Follow Up Boss", price: "$69–$1,000+ / mo" },
   { key: "kvcore", name: "kvCORE (now BoldTrail)", price: "$499+ / mo" },
   { key: "lofty", name: "Lofty (Chime)", price: "$449+ / mo" },
@@ -413,7 +413,7 @@ const CATEGORIES: Category[] = [
   {
     key: "differentiators",
     rows: [
-      r("RealtyBoss Coaching (Producer Track + Top Producer Track)", {
+      r("CloseBoss Coaching (Producer Track + Top Producer Track)", {
         leadsmart: "yes",
         followup_boss: "no",
         kvcore: "no",
@@ -590,7 +590,7 @@ export default async function CompareAgentPage() {
 
 /**
  * The one-line thesis of the whole page: legacy CRMs are reminder engines
- * (tasks, alerts, drip) — the doing stays on the agent. RealtyBoss ships an
+ * (tasks, alerts, drip) — the doing stays on the agent. CloseBoss ships an
  * AI team that executes the work. Everything in the table below is evidence
  * for this contrast.
  */

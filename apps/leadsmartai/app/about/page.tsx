@@ -35,18 +35,18 @@ export default async function AboutLeadSmartAIPage() {
         data={{
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "RealtyBoss",
+          name: "CloseBoss",
           description:
-            "RealtyBoss helps real estate agents and financing professionals capture, qualify, and convert leads with AI — so they can spend less time chasing and more time closing. The AI growth engine for real estate professionals.",
-          url: "https://realtybossai.com",
-          logo: "https://realtybossai.com/logo.png",
+            "CloseBoss helps real estate agents and financing professionals capture, qualify, and convert leads with AI — so they can spend less time chasing and more time closing. The AI growth engine for real estate professionals.",
+          url: "https://closebossai.com",
+          logo: "https://closebossai.com/logo.png",
           sameAs: [
             "https://twitter.com/leadsmart-ai",
             "https://linkedin.com/company/leadsmart-ai",
           ],
           contactPoint: {
             "@type": "ContactPoint",
-            url: "https://realtybossai.com/contact",
+            url: "https://closebossai.com/contact",
             contactType: "Customer Service",
           },
         }}

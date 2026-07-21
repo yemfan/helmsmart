@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "集成",
-    "description": "RealtyBoss 内置的每一项集成——获客渠道（Zillow、Facebook、IDX）、邮件与日历（Google、Microsoft）、电话通信（Twilio）、电子签名（Dotloop、DocuSign）、计费（Stripe）等。",
-    "og_title": "集成 — RealtyBoss",
-    "og_description": "获客渠道、日历、邮件、电话通信、电子签名、计费与 AI——RealtyBoss 连接的一切。",
-    "twitter_title": "集成 — RealtyBoss",
-    "twitter_description": "RealtyBoss 内置的每一项集成——涵盖获客渠道、日历、电话通信、电子签名、计费与 AI。"
+    "description": "CloseBoss 内置的每一项集成——获客渠道（Zillow、Facebook、IDX）、邮件与日历（Google、Microsoft）、电话通信（Twilio）、电子签名（Dotloop、DocuSign）、计费（Stripe）等。",
+    "og_title": "集成 — CloseBoss",
+    "og_description": "获客渠道、日历、邮件、电话通信、电子签名、计费与 AI——CloseBoss 连接的一切。",
+    "twitter_title": "集成 — CloseBoss",
+    "twitter_description": "CloseBoss 内置的每一项集成——涵盖获客渠道、日历、电话通信、电子签名、计费与 AI。"
   },
   "status": {
     "live": "已上线",

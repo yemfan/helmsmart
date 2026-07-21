@@ -9,9 +9,9 @@ import { listRecentDigests, type NewsletterDigestRow } from "@/lib/newsletter/db
 export const dynamic = "force-dynamic";
 
 const TITLE =
-  "Weekly Housing & Rates Newsletter — By Region | RealtyBoss";
+  "Weekly Housing & Rates Newsletter — By Region | CloseBoss";
 const DESCRIPTION =
-  "Your weekly rates + housing briefing, by region. RealtyBoss sends a plain-English digest of mortgage rates and the national housing market, paired with a local market snapshot for your state or metro — every figure linked to its source.";
+  "Your weekly rates + housing briefing, by region. CloseBoss sends a plain-English digest of mortgage rates and the national housing market, paired with a local market snapshot for your state or metro — every figure linked to its source.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const base = getSiteUrl();
@@ -41,7 +41,7 @@ export default async function NewsletterHubPage() {
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "RealtyBoss Weekly Housing & Rates Newsletter",
+    name: "CloseBoss Weekly Housing & Rates Newsletter",
     description: DESCRIPTION,
     url: `${base}/newsletter`,
     hasPart: digests.map((d) => ({
@@ -61,7 +61,7 @@ export default async function NewsletterHubPage() {
         <div className="mx-auto max-w-5xl px-6 py-16 md:py-20">
           <nav className="mb-6 text-sm">
             <Link href="/" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-              RealtyBoss
+              CloseBoss
             </Link>
             <span className="mx-2 text-slate-400">/</span>
             <span className="text-slate-600">Weekly Newsletter</span>

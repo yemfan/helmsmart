@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function HowToEvaluateRentalCashFlowPage() {
   const title = "How to Evaluate Rental Property Cash Flow";
-  const url = "https://realtybossai.com/how-to-evaluate-rental-cash-flow";
+  const url = "https://closebossai.com/how-to-evaluate-rental-cash-flow";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -36,7 +36,7 @@ export default function HowToEvaluateRentalCashFlowPage() {
       <p className="text-gray-600 mb-8 max-w-3xl">
         Positive, resilient cash flow is the foundation of a strong rental portfolio.
         This guide explains how to evaluate cash flow step by step using the calculators
-        in RealtyBoss.
+        in CloseBoss.
       </p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">

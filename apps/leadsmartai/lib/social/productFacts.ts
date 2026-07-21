@@ -1,5 +1,5 @@
 /**
- * What RealtyBoss actually does — the ground truth for anything we say publicly.
+ * What CloseBoss actually does — the ground truth for anything we say publicly.
  *
  * ONE source of truth, deliberately. The brand-post GENERATOR writes against
  * this list, and the claim REVIEWER checks against the same list. If they held
@@ -42,7 +42,7 @@ export const PRODUCT_CAPABILITIES = `
 - Boss Assistant: one plain-English command and the team executes it (CMAs, seller presentations, showings, cold-call/qualify, open houses); multi-phase playbooks for house-selling and house-buying engagements; guided setup.
 - AI CMA: a data-backed comparative market analysis built from real, cited comparable sales found on the web.
 - Net sheet: gross-to-net seller proceeds.
-- A free 59-skill Realtor AI Skills Library at realtybossai.com/skills-library — no signup.
+- A free 59-skill Realtor AI Skills Library at closebossai.com/skills-library — no signup.
 - Works natively in English AND Chinese (calls, texts, listings, disclosures) — localized, not machine-translated.
 - A compliance gate (Fair Housing + advertising) on everything written for the public.
 - Mobile app.
@@ -60,7 +60,7 @@ export const PRODUCT_NOT_TRUE = `
 - A cross-assistant pipeline where work flows automatically end-to-end ("the receptionist's lead moves itself into the sales cadence", "everything is already connected"). The assistants share one platform and one contact database; they do not hand work to each other automatically.
 - MLS/IDX integration, a lockbox/showing-service integration, e-signature, or any accounting/tax filing integration.
 - Team/brokerage-wide rollups, lead routing between agents, or recruiting tools.
-- Any statistic about RealtyBoss or its users (adoption counts, time saved, conversion lift). No such data exists. The only sanctioned number is the 59-skill library.
+- Any statistic about CloseBoss or its users (adoption counts, time saved, conversion lift). No such data exists. The only sanctioned number is the 59-skill library.
 - Pricing, discounts, free trials, or plan names.
 - Guaranteed outcomes ("you will close more deals").
 `.trim();

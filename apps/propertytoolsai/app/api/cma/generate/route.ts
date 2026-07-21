@@ -12,7 +12,7 @@ export const maxDuration = 60;
  * Replaces the page's sample comps with a real CMA: Claude searches the web
  * for recent comparable sales (each cited with a source URL), derives a value
  * range, and returns a `CmaSnapshot`. Shared engine — `@repo/valuation` — also
- * powers the RealtyBoss agent CMA, so both apps stay in lockstep.
+ * powers the CloseBoss agent CMA, so both apps stay in lockstep.
  *
  * Gating: token flow (`cma` = 5 tokens) for signed-in users; guests allowed
  * (matches the existing /api/smart-cma behavior).

@@ -24,7 +24,7 @@ const HTML_MAX_BYTES = 2 * 1024 * 1024; // ~2MB of HTML is plenty for <head> met
 const IMAGE_TIMEOUT_MS = 8000;
 const IMAGE_MAX_BYTES = 5 * 1024 * 1024; // ≤5MB image.
 const USER_AGENT =
-  "Mozilla/5.0 (compatible; RealtyBossNewsletterBot/1.0; +https://www.realtybossai.com)";
+  "Mozilla/5.0 (compatible; CloseBossNewsletterBot/1.0; +https://www.closebossai.com)";
 
 /** Item shape this module needs — source URL + fields for the branded fallback. */
 type ImageableItem = {
@@ -73,7 +73,7 @@ export async function attachItemImages(
   }
 }
 
-/** Render the RealtyBoss fallback card for a story and store it; null on failure. */
+/** Render the CloseBoss fallback card for a story and store it; null on failure. */
 async function renderStoreFallbackCard(
   item: ImageableItem,
   weekOf: string,

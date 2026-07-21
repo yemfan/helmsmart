@@ -33,17 +33,17 @@ afterEach(() => {
 describe("FROM_ADDRESS", () => {
   it("falls back to the verified domain when RESEND_FROM_EMAIL is an empty string", async () => {
     const { FROM_ADDRESS } = await loadEmailModule({ RESEND_FROM_EMAIL: "" });
-    expect(FROM_ADDRESS).toBe("noreply@realtybossai.com");
+    expect(FROM_ADDRESS).toBe("noreply@closebossai.com");
   });
 
   it("falls back when RESEND_FROM_EMAIL is unset", async () => {
     const { FROM_ADDRESS } = await loadEmailModule({ RESEND_FROM_EMAIL: undefined });
-    expect(FROM_ADDRESS).toBe("noreply@realtybossai.com");
+    expect(FROM_ADDRESS).toBe("noreply@closebossai.com");
   });
 
   it("falls back when RESEND_FROM_EMAIL is only whitespace", async () => {
     const { FROM_ADDRESS } = await loadEmailModule({ RESEND_FROM_EMAIL: "   " });
-    expect(FROM_ADDRESS).toBe("noreply@realtybossai.com");
+    expect(FROM_ADDRESS).toBe("noreply@closebossai.com");
   });
 
   it("honors a bare RESEND_FROM_EMAIL override", async () => {
@@ -65,7 +65,7 @@ describe("senderFrom", () => {
   it("composes a caller's display name onto the verified address", async () => {
     const { senderFrom } = await loadEmailModule({ RESEND_FROM_EMAIL: "" });
     expect(senderFrom("Acme Plumbing")).toBe(
-      "Acme Plumbing <noreply@realtybossai.com>"
+      "Acme Plumbing <noreply@closebossai.com>"
     );
   });
 
@@ -74,14 +74,14 @@ describe("senderFrom", () => {
       RESEND_FROM_EMAIL: "",
       EMAIL_FROM_NAME: undefined,
     });
-    expect(senderFrom()).toBe("HelmSmart <noreply@realtybossai.com>");
+    expect(senderFrom()).toBe("HelmSmart <noreply@closebossai.com>");
   });
 
   it("never emits a display name onto an unverified domain", async () => {
     // Even when a caller brands the email, the address stays on the
     // verified domain — this is what the old per-org senders got wrong.
     const { senderFrom } = await loadEmailModule({ RESEND_FROM_EMAIL: "" });
-    expect(senderFrom("Acme")).toContain("@realtybossai.com");
+    expect(senderFrom("Acme")).toContain("@closebossai.com");
     expect(senderFrom("Acme")).not.toContain("helmsmart.app");
   });
 });

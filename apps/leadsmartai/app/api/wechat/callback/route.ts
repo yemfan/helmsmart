@@ -4,7 +4,7 @@
  * Configured in the Tencent admin console as the target URL for the
  * JV-owned Service Account:
  *
- *   https://www.realtybossai.com/api/wechat/callback
+ *   https://www.closebossai.com/api/wechat/callback
  *
  * Two verbs:
  *

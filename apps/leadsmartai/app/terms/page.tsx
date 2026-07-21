@@ -19,7 +19,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
       <>
         <p>
           These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of
-          realtybossai.com and the LeadSmart AI Service (the &ldquo;Service&rdquo;)
+          closebossai.com and the LeadSmart AI Service (the &ldquo;Service&rdquo;)
           provided by MAXY Investment Inc., a Texas corporation, doing business as
           LeadSmart AI (&ldquo;LeadSmart,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo;
           or &ldquo;our&rdquo;). By creating an account, starting a
@@ -61,10 +61,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           and to keep it up to date. You are responsible for safeguarding your credentials
           and for all activity under your account. Notify us immediately at{" "}
           <a
-            href="mailto:contact@realtybossai.com"
+            href="mailto:contact@closebossai.com"
             className="text-[#0072ce] hover:underline"
           >
-            contact@realtybossai.com
+            contact@closebossai.com
           </a>{" "}
           if you suspect unauthorized access.
         </p>
@@ -200,10 +200,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           campaign for a separate legal identity or higher throughput tier;
           contact{" "}
           <a
-            href="mailto:contact@realtybossai.com"
+            href="mailto:contact@closebossai.com"
             className="text-[#0072ce] hover:underline"
           >
-            contact@realtybossai.com
+            contact@closebossai.com
           </a>{" "}
           to discuss.
         </p>
@@ -222,13 +222,13 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <p>
-          This section is the consumer disclosure for the RealtyBoss text
+          This section is the consumer disclosure for the CloseBoss text
           messaging program operated by MAXY Investment Inc. and the licensed
           real estate agents who use the Service.
         </p>
         <ul>
           <li>
-            <strong>Program:</strong> RealtyBoss (a product of MAXY Investment
+            <strong>Program:</strong> CloseBoss (a product of MAXY Investment
             Inc.). When you provide your mobile number to an agent — by
             submitting a contact or property-inquiry form, or directly — and
             agree to be contacted, the agent may send you text messages such as
@@ -248,10 +248,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             you will receive a single confirmation and no further texts.{" "}
             <strong>For help, reply HELP</strong> or email{" "}
             <a
-              href="mailto:contact@realtybossai.com"
+              href="mailto:contact@closebossai.com"
               className="text-[#0072ce] hover:underline"
             >
-              contact@realtybossai.com
+              contact@closebossai.com
             </a>
             .
           </li>
@@ -341,7 +341,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           <strong>Inbound email forwarding (optional).</strong> LeadSmart
           provisions each agent a unique inbound forwarding address (e.g.{" "}
-          <code>your-name@inbox.realtybossai.com</code>) on first dashboard
+          <code>your-name@inbox.closebossai.com</code>) on first dashboard
           visit. If you choose to set up a Gmail / Outlook filter that
           forwards selected messages to that address, LeadSmart processes
           only the emails you explicitly forward — we have no access to your
@@ -538,10 +538,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           You may opt out of this arbitration agreement by emailing{" "}
           <a
-            href="mailto:contact@realtybossai.com"
+            href="mailto:contact@closebossai.com"
             className="text-[#0072ce] hover:underline"
           >
-            contact@realtybossai.com
+            contact@closebossai.com
           </a>{" "}
           within 30 days of first creating your LeadSmart account. The
           notice must include your name, the email associated with your
@@ -577,10 +577,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           <li>
             <strong>Contact.</strong> Notices to LeadSmart should be sent to{" "}
             <a
-              href="mailto:contact@realtybossai.com"
+              href="mailto:contact@closebossai.com"
               className="text-[#0072ce] hover:underline"
             >
-              contact@realtybossai.com
+              contact@closebossai.com
             </a>
             .
           </li>

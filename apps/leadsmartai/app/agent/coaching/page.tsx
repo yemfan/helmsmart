@@ -62,12 +62,12 @@ const COACHING_FAQ: ReadonlyArray<{ q: string; a: string }> = [
   },
   {
     q: "How do you measure the conversion-rate target?",
-    a: "Lead-to-close — the percentage of contacts created in RealtyBoss (any source) that result in a closed transaction. Visible on your performance dashboard with a moving 12-month window.",
+    a: "Lead-to-close — the percentage of contacts created in CloseBoss (any source) that result in a closed transaction. Visible on your performance dashboard with a moving 12-month window.",
   },
 ];
 
 /**
- * Public marketing landing for RealtyBoss Coaching. Reads the
+ * Public marketing landing for CloseBoss Coaching. Reads the
  * canonical program registry from `lib/coaching-programs/programs.ts`
  * so targets + bullets stay in sync with the code that enforces
  * enrollment.

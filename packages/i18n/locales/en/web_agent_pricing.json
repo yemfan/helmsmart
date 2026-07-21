@@ -1,14 +1,14 @@
 {
   "meta": {
     "title": "Agent plans & pricing — Starter, Pro, Premium, Signature, Team",
-    "description": "RealtyBoss plans for real estate agents: Starter (free), Pro ($79/mo, Producer Track coaching), Premium ($199/mo, Top Producer Track), Signature ($399/mo, bilingual + luxury concierge), and Team ($299/mo, brokerage workflows). Annual billing saves 2 months. 14-day trial on every paid tier.",
-    "og_title": "Agent plans & pricing | RealtyBoss",
+    "description": "CloseBoss plans for real estate agents: Starter (free), Pro ($79/mo, Producer Track coaching), Premium ($199/mo, Top Producer Track), Signature ($399/mo, bilingual + luxury concierge), and Team ($299/mo, brokerage workflows). Annual billing saves 2 months. 14-day trial on every paid tier.",
+    "og_title": "Agent plans & pricing | CloseBoss",
     "og_description": "Pro from $79/mo with Producer Track coaching. Premium $199/mo with Top Producer Track. Signature $399/mo with bilingual + concierge support. Team $299/mo for brokerages. Annual saves 2 months.",
-    "twitter_title": "Agent plans & pricing | RealtyBoss",
+    "twitter_title": "Agent plans & pricing | CloseBoss",
     "twitter_description": "Pro $79/mo · Premium $199/mo · Signature $399/mo · Team $299/mo. Available in English and 中文. Annual saves 2 months."
   },
   "header": {
-    "title": "RealtyBoss for Agents",
+    "title": "CloseBoss for Agents",
     "current_intro_pre": "You’re on the ",
     "current_intro_plan_suffix": " plan. Upgrade for more capacity, deeper AI, and stronger coaching. Paid plans include a ",
     "trial_bold": "14-day free trial",
@@ -62,7 +62,7 @@
     "pro": {
       "name": "Pro",
       "description": "For active agents closing deals consistently.",
-      "coaching_pill": "RealtyBoss Coaching: Producer Track included",
+      "coaching_pill": "CloseBoss Coaching: Producer Track included",
       "badge": "Popular",
       "cta": "Start 14-day trial",
       "features": [
@@ -85,7 +85,7 @@
     "premium": {
       "name": "Premium",
       "description": "For top producers running solo.",
-      "coaching_pill": "RealtyBoss Coaching: Top Producer Track included",
+      "coaching_pill": "CloseBoss Coaching: Top Producer Track included",
       "cta": "Start 14-day trial",
       "features": [
         "Everything in Pro, plus:",
@@ -101,7 +101,7 @@
     "signature": {
       "name": "Signature",
       "description": "For relationship-driven agents serving high-value clients.",
-      "coaching_pill": "RealtyBoss Coaching: Top Producer Track included",
+      "coaching_pill": "CloseBoss Coaching: Top Producer Track included",
       "badge": "Bilingual & Luxury",
       "cta": "Start 14-day trial",
       "secondary_link": "Prefer a call? Talk to us first →",
@@ -117,7 +117,7 @@
     "team": {
       "name": "Team",
       "description": "For brokerages and small teams that need shared workflows.",
-      "coaching_pill": "RealtyBoss Coaching: Top Producer Track for every seat",
+      "coaching_pill": "CloseBoss Coaching: Top Producer Track for every seat",
       "footnote": "Up to 5 team seats — contact sales for more.",
       "cta": "Contact sales",
       "secondary_link": "Talk to sales →",
@@ -159,7 +159,7 @@
     }
   },
   "coaching_callout": {
-    "heading": "RealtyBoss Coaching — built into the product, not an add-on",
+    "heading": "CloseBoss Coaching — built into the product, not an add-on",
     "body_pre": "Every paid plan auto-enrolls in our coaching programs:",
     "producer_track": "Producer Track",
     "body_mid": " on Pro (target: 10 transactions / 3% conversion) and ",

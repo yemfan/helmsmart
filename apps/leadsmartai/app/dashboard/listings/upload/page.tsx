@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import { UploadListingClient } from "./UploadListingClient";
 
 export const metadata = {
-  title: "Upload listing agreement | RealtyBoss",
+  title: "Upload listing agreement | CloseBoss",
   description:
-    "Drop in a signed RLA — RealtyBoss extracts list price, listing dates, sellers, and commission so you don't have to retype them.",
+    "Drop in a signed RLA — CloseBoss extracts list price, listing dates, sellers, and commission so you don't have to retype them.",
 };
 
 export default function UploadListingPage() {

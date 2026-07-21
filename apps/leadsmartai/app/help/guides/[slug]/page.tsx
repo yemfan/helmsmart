@@ -17,7 +17,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const guide = getGuide(slug);
   if (!guide) {
-    return { title: "Guide not found — RealtyBoss" };
+    return { title: "Guide not found — CloseBoss" };
   }
   return {
     title: `${guide.title} — Help`,
@@ -53,7 +53,7 @@ export default async function HelpGuidePage({
   const guide = getGuide(slug);
   if (!guide) notFound();
 
-  const url = `https://realtybossai.com/help/guides/${guide.slug}`;
+  const url = `https://closebossai.com/help/guides/${guide.slug}`;
 
   return (
     <div className="min-h-screen bg-white">
@@ -71,10 +71,10 @@ export default async function HelpGuidePage({
                 mainEntityOfPage: { "@type": "WebPage", "@id": url },
                 publisher: {
                   "@type": "Organization",
-                  name: "RealtyBoss",
+                  name: "CloseBoss",
                   logo: {
                     "@type": "ImageObject",
-                    url: "https://realtybossai.com/logo.png",
+                    url: "https://closebossai.com/logo.png",
                   },
                 },
               },
@@ -175,7 +175,7 @@ export default async function HelpGuidePage({
             </Link>{" "}
             or{" "}
             <a
-              href="mailto:contact@realtybossai.com"
+              href="mailto:contact@closebossai.com"
               className="font-semibold text-blue-700 hover:underline"
             >
               email support

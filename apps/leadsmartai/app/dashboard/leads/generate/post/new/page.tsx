@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import QuickPostClient from "./QuickPostClient";
 
 export const metadata: Metadata = {
-  title: "Quick Post | RealtyBoss",
+  title: "Quick Post | CloseBoss",
   description: "Draft an AI-written social post about a listing or open house.",
   robots: { index: false },
 };

@@ -139,7 +139,7 @@ export function useLeadsmartPush() {
 
       if (Platform.OS === "android") {
         await Notifications.setNotificationChannelAsync("default", {
-          name: "RealtyBoss",
+          name: "CloseBoss",
           importance: Notifications.AndroidImportance.HIGH,
         });
       }

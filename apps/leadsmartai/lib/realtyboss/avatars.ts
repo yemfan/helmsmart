@@ -1,7 +1,7 @@
 import type { AssistantType } from "@/lib/realtyboss/team";
 
 /**
- * Shared AI-assistant avatar set — 10 illustrated RealtyBoss portraits served
+ * Shared AI-assistant avatar set — 10 illustrated CloseBoss portraits served
  * as static SVGs from /public/avatars. A user assigns one per assistant;
  * `defaultAvatarForType` gives a stable role-fit default before they pick.
  * Server-safe (no React) so both the API/seed layer and the client picker can

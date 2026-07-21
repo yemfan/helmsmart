@@ -24,7 +24,7 @@ import {
 } from "@repo/ui";
 import HeaderAuthActions from "@/components/HeaderAuthActions";
 import LanguageToggle from "@/components/LanguageToggle";
-import { RealtyBossLogo, RealtyBossMark } from "@/components/brand/RealtyBossLogo";
+import { CloseBossLogo, CloseBossMark } from "@/components/brand/CloseBossLogo";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
 
 /**
@@ -65,7 +65,7 @@ export function MarketingTopNav({
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
           <div className="lg:hidden">
             <MobileSidebar
-              appName="RealtyBoss"
+              appName="CloseBoss"
               workspaceLabel={workspaceLabel}
               sections={sections}
               user={user}
@@ -74,13 +74,13 @@ export function MarketingTopNav({
           </div>
           <Link
             href="/"
-            aria-label="RealtyBoss home"
+            aria-label="CloseBoss home"
             className="flex min-w-0 items-center"
           >
             {/* Mark-only below sm (375px iPhone SE leaves ~150px for the
              *  right-side actions after the hamburger + padding). */}
-            <span className="sm:hidden"><RealtyBossMark className="h-7 w-7" /></span>
-            <span className="hidden sm:block"><RealtyBossLogo /></span>
+            <span className="sm:hidden"><CloseBossMark className="h-7 w-7" /></span>
+            <span className="hidden sm:block"><CloseBossLogo /></span>
           </Link>
         </div>
 

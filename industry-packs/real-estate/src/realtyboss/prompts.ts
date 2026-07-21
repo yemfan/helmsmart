@@ -1,7 +1,7 @@
 import { withGuardrails } from "./guardrails";
 
 /**
- * RealtyBoss assistant system prompts — the four-member AI real
+ * CloseBoss assistant system prompts — the four-member AI real
  * estate team. Pure text builders (no DB, no app imports) so any app
  * consuming the real-estate pack gets identical personas.
  */

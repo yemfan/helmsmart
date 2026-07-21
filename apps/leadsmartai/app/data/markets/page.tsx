@@ -15,7 +15,7 @@ import DataSources from "../_components/DataSources";
 export const dynamic = "force-dynamic";
 
 const TITLE =
-  "Local Market Data for Real Estate Agents — By State & Metro | RealtyBoss";
+  "Local Market Data for Real Estate Agents — By State & Metro | CloseBoss";
 const DESCRIPTION =
   "The local housing numbers to quote in your CMA and listing appointment — home values, sale prices, inventory, and days on market for every state and the top U.S. metros, refreshed monthly from authoritative public sources. Talking points your buyers and sellers will trust.";
 
@@ -67,7 +67,7 @@ export default async function MarketsIndexPage() {
     name: "Local Market Data for Real Estate Agents",
     description: DESCRIPTION,
     url: `${base}/data/markets`,
-    publisher: { "@type": "Organization", name: "RealtyBoss" },
+    publisher: { "@type": "Organization", name: "CloseBoss" },
     mainEntity: {
       "@type": "ItemList",
       itemListElement: [
@@ -93,7 +93,7 @@ export default async function MarketsIndexPage() {
       <div className="mx-auto max-w-5xl px-4 py-12 space-y-12">
         <nav className="text-sm">
           <Link href="/" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            RealtyBoss
+            CloseBoss
           </Link>
           <span className="text-slate-400 mx-2">/</span>
           <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">

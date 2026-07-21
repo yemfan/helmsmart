@@ -55,7 +55,7 @@ export const portfolio: PortfolioCompany[] = [
     summary: "AI workforce for real estate professionals.",
     detail: "An AI-powered workforce built specifically for real estate professionals.",
     sector: "AI • PropTech",
-    href: "https://www.realtybossai.com",
+    href: "https://www.closebossai.com",
     logo: { src: "/logos/realtorboss.png", width: 512, height: 512 },
   },
   {

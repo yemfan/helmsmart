@@ -14,7 +14,7 @@ import type {
  * AI House Search — Claude + live web search turns a buyer's natural-language
  * brief into real, currently-listed homes with cited source URLs, plus
  * suggested refinements. Same pattern as aiCma / aiPropertyLookup. Shared by
- * both apps (RealtyBoss public /homes and PropertyTools /search).
+ * both apps (CloseBoss public /homes and PropertyTools /search).
  *
  * IMPORTANT — Claude is instructed to only report listings it actually finds
  * via search (each with a source URL), never to invent an address, price, or

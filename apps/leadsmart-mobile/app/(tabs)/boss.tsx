@@ -40,7 +40,7 @@ import {
   type MobileBossTask,
 } from "../../lib/leadsmartMobileApi";
 
-// Bossy's profile avatar — the RealtyBoss mascot app icon.
+// Bossy's profile avatar — the CloseBoss mascot app icon.
 const BOSS_AVATAR = require("../../assets/icon.png");
 
 /**

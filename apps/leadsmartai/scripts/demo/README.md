@@ -1,4 +1,4 @@
-# RealtyBoss demo mode
+# CloseBoss demo mode
 
 The demo account is the sandboxed agent **michael.yes@mail.com** (works
 on prod `leadsmart-ai.com` and local dev). The seed paints a coherent

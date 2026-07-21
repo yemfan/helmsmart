@@ -132,7 +132,7 @@ export function AgentPricingComparison() {
     <section id="plans" className="scroll-mt-24">
       <h2 className="text-2xl font-bold tracking-tight text-slate-900">Agent plans & limits</h2>
       <p className="mt-2 max-w-2xl text-sm text-slate-600">
-        Every tier unlocks the same RealtyBoss Agent workspace — limits scale with your plan. Start on Starter, move
+        Every tier unlocks the same CloseBoss Agent workspace — limits scale with your plan. Start on Starter, move
         to Pro for pipeline volume, and Premium when you need automation + team seats.
       </p>
 

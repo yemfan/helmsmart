@@ -17,7 +17,7 @@ Attaching the **LeadSmart AI** portfolio during creation fails hard:
 > advertising, including claiming apps.*
 
 So the app was created with **no business portfolio**, which is also why the
-RealtyBoss app shows `Type: None`. This is an account-level restriction on the
+CloseBoss app shows `Type: None`. This is an account-level restriction on the
 portfolio, not something the app setup can route around.
 
 **Consequences:**
@@ -31,16 +31,16 @@ Resolving it is a Meta account matter (appeal the advertising restriction, then
 complete Business Verification) — worth starting early, since it gates the
 multi-tenant story for both products.
 
-## Why a separate app (not RealtyBoss's)
+## Why a separate app (not CloseBoss's)
 
-RealtyBoss already has Meta app `2768243443543435`. HelmSmart deliberately gets
+CloseBoss already has Meta app `2768243443543435`. HelmSmart deliberately gets
 its **own**, for two reasons:
 
-1. **The consent screen shows the app name.** Riding on RealtyBoss's app means a
+1. **The consent screen shows the app name.** Riding on CloseBoss's app means a
    HelmSmart — or DoctorSmart — customer clicks "Connect Facebook" and reads
-   *"RealtyBoss wants to manage your Page."* Confusing at best, and it erodes
+   *"CloseBoss wants to manage your Page."* Confusing at best, and it erodes
    trust at exactly the moment you're asking for Page permissions.
-2. **App Review is per-app, per-use-case.** RealtyBoss's submission is scoped to
+2. **App Review is per-app, per-use-case.** CloseBoss's submission is scoped to
    real estate. Pushing a medical vertical's traffic through it makes that
    harder to defend, and one rejection would take down *both* products'
    publishing.
@@ -124,7 +124,7 @@ enough to prove the whole path with your own Page.
 **Customer** Pages need **Advanced Access** on `pages_manage_posts`,
 `pages_read_engagement`, `instagram_basic`, `instagram_content_publish`, which
 means App Review (2-4 weeks, and rejections are usually paperwork). Ship
-Standard first, submit review after — same sequence that worked for RealtyBoss.
+Standard first, submit review after — same sequence that worked for CloseBoss.
 
 ## 6. Connecting
 

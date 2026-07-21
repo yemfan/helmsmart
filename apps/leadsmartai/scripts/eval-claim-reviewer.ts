@@ -18,7 +18,7 @@
  * ONE RUN PER FIXTURE PROVES LESS THAN IT LOOKS. The checker is an LLM, so its
  * verdict is a sample, not a value. An early version of this eval reported a
  * clean 7/7 — but re-running it flagged nothing and MISSED a known false claim
- * ("RealtyBoss answers portal leads instantly"), because at the API's default
+ * ("CloseBoss answers portal leads instantly"), because at the API's default
  * temperature that post came back clean on ~1 of 30 reads. The eval was fine;
  * the sample size was the lie. reviewOutboundPost now runs at temperature 0 and
  * takes any-veto across several reads.
@@ -60,81 +60,81 @@ const FIXTURES: Fixture[] = [
     name: "REAL: saved searches 'live search running on their behalf'",
     expect: "flagged",
     caption:
-      "A buyer search only creates value if someone is watching it when a match hits.\n\nRealtyBoss stores AI-powered house searches per client, so every buyer you're working with has a live search running on their behalf. When something relevant appears, it's tracked — not buried in someone's inbox and forgotten. Staying relevant to a buyer over a long search window is how you stay their agent when they're finally ready.\n\nrealtybossai.com",
+      "A buyer search only creates value if someone is watching it when a match hits.\n\nCloseBoss stores AI-powered house searches per client, so every buyer you're working with has a live search running on their behalf. When something relevant appears, it's tracked — not buried in someone's inbox and forgotten. Staying relevant to a buyer over a long search window is how you stay their agent when they're finally ready.\n\nclosebossai.com",
   },
   {
     name: "REAL: 'everything is already connected' cross-assistant pipeline",
     expect: "flagged",
     caption:
-      "The problem with assembling five separate tools is that none of them talk to each other.\n\nRealtyBoss is a single platform where the AI Receptionist, AI Sales Assistant, AI Marketing Assistant, AI Transaction Assistant, AI Accounting Assistant, and Boss Assistant all operate together. A lead captured by the receptionist moves directly into the sales cadence. A transaction flagged by the assistant sits next to the accounting. Everything is already connected because it was built that way from the start.\n\nrealtybossai.com",
+      "The problem with assembling five separate tools is that none of them talk to each other.\n\nCloseBoss is a single platform where the AI Receptionist, AI Sales Assistant, AI Marketing Assistant, AI Transaction Assistant, AI Accounting Assistant, and Boss Assistant all operate together. A lead captured by the receptionist moves directly into the sales cadence. A transaction flagged by the assistant sits next to the accounting. Everything is already connected because it was built that way from the start.\n\nclosebossai.com",
   },
   // ── Synthetic fabrications of the same species. Must be caught. ───────────
   {
     name: "SYNTH: MLS integration",
     expect: "flagged",
     caption:
-      "Your listings, everywhere.\n\nRealtyBoss syncs directly with your MLS so every new listing flows into your CRM automatically. No double entry.\n\nrealtybossai.com",
+      "Your listings, everywhere.\n\nCloseBoss syncs directly with your MLS so every new listing flows into your CRM automatically. No double entry.\n\nclosebossai.com",
   },
   {
     name: "SYNTH: invented adoption stat",
     expect: "flagged",
     caption:
-      "Over 500 agents already run their business on RealtyBoss, and they close 3x more deals on average.\n\nJoin them.\n\nrealtybossai.com",
+      "Over 500 agents already run their business on CloseBoss, and they close 3x more deals on average.\n\nJoin them.\n\nclosebossai.com",
   },
   {
     name: "SYNTH: competitor name",
     expect: "flagged",
     caption:
-      "Switching from Follow Up Boss?\n\nRealtyBoss imports your contacts in minutes, so nothing gets left behind.\n\nrealtybossai.com",
+      "Switching from Follow Up Boss?\n\nCloseBoss imports your contacts in minutes, so nothing gets left behind.\n\nclosebossai.com",
   },
   {
     name: "SYNTH: listing alerts that notify",
     expect: "flagged",
     caption:
-      "Never miss a match.\n\nRealtyBoss alerts you the moment a home matching your buyer's criteria hits the market, day or night.\n\nrealtybossai.com",
+      "Never miss a match.\n\nCloseBoss alerts you the moment a home matching your buyer's criteria hits the market, day or night.\n\nclosebossai.com",
   },
   // ── REAL clean posts from the library. Must NOT be flagged. ───────────────
   {
     name: "REAL clean: missed call",
     expect: "clean",
     caption:
-      "📞 A missed call is a missed commission.\n\nRealtyBoss's AI Receptionist answers every call 24/7 — and the ones it can't, it texts back and keeps calling until it connects. You never lose a lead to voicemail again.\n\nSee it → realtybossai.com",
+      "📞 A missed call is a missed commission.\n\nCloseBoss's AI Receptionist answers every call 24/7 — and the ones it can't, it texts back and keeps calling until it connects. You never lose a lead to voicemail again.\n\nSee it → closebossai.com",
   },
   {
     name: "REAL clean: crm dead",
     expect: "clean",
     caption:
-      "Your CRM reminds you to follow up. RealtyBoss actually does it.\n\nReal calls. Real texts. Every lead. That's the difference between a database and a team.\n\nrealtybossai.com",
+      "Your CRM reminds you to follow up. CloseBoss actually does it.\n\nReal calls. Real texts. Every lead. That's the difference between a database and a team.\n\nclosebossai.com",
   },
   {
     name: "REAL clean: cma",
     expect: "clean",
     caption:
-      "Winning the listing starts with the price conversation.\n\nRealtyBoss builds a data-backed CMA with real comps — a defensible value range that makes you the expert before you walk in the door.\n\nrealtybossai.com",
+      "Winning the listing starts with the price conversation.\n\nCloseBoss builds a data-backed CMA with real comps — a defensible value range that makes you the expert before you walk in the door.\n\nclosebossai.com",
   },
   {
     name: "REAL clean: founder origin story",
     expect: "clean",
     caption:
-      "I'm a realtor. Before RealtyBoss, I tried everything to automate my business.\n\nChatGPT, Claude, DeepSeek, Grok. I even built my own AI agent.\n\nAnd it still broke. Automations failed silently. I'd miss a call in the middle of a showing. I was hand-translating messages between my English- and Chinese-speaking clients.\n\nSo I built the thing I wished existed. An AI team that just works, made for real estate.\n\nrealtybossai.com",
+      "I'm a realtor. Before CloseBoss, I tried everything to automate my business.\n\nChatGPT, Claude, DeepSeek, Grok. I even built my own AI agent.\n\nAnd it still broke. Automations failed silently. I'd miss a call in the middle of a showing. I was hand-translating messages between my English- and Chinese-speaking clients.\n\nSo I built the thing I wished existed. An AI team that just works, made for real estate.\n\nclosebossai.com",
   },
   {
     name: "REAL clean: skills library (the sanctioned 59)",
     expect: "clean",
     caption:
-      "We made our entire 59-skill Realtor AI Skills Library free. 🎁\n\nListing descriptions, CMAs, farm campaigns, objection scripts, buyer consults — each with a Fair-Housing-safe prompt built in. No signup.\n\nGrab it → realtybossai.com/skills-library",
+      "We made our entire 59-skill Realtor AI Skills Library free. 🎁\n\nListing descriptions, CMAs, farm campaigns, objection scripts, buyer consults — each with a Fair-Housing-safe prompt built in. No signup.\n\nGrab it → closebossai.com/skills-library",
   },
   {
     name: "REAL clean: bilingual",
     expect: "clean",
     caption:
-      "Serving Chinese-speaking buyers and sellers?\n\nRealtyBoss works in English AND Chinese — calls, texts, listings, and disclosures, localized (not just translated). A moat most tools can't match.\n\nrealtybossai.com",
+      "Serving Chinese-speaking buyers and sellers?\n\nCloseBoss works in English AND Chinese — calls, texts, listings, and disclosures, localized (not just translated). A moat most tools can't match.\n\nclosebossai.com",
   },
   {
     name: "REAL clean: saved searches described HONESTLY",
     expect: "clean",
     caption:
-      "Every buyer you're working with deserves a search you can actually re-run.\n\nRealtyBoss saves an AI-powered house search per client and keeps a history of every run, so you can pick the conversation back up months later with the whole thread intact.\n\nrealtybossai.com",
+      "Every buyer you're working with deserves a search you can actually re-run.\n\nCloseBoss saves an AI-powered house search per client and keeps a history of every run, so you can pick the conversation back up months later with the whole thread intact.\n\nclosebossai.com",
   },
   // ── brand:speed_to_lead, both sides. The ORIGINAL was HAND-WRITTEN, shipped in
   //    the seeded library, and was queued to publish when the Boss held it on a
@@ -145,14 +145,14 @@ const FIXTURES: Fixture[] = [
     name: "REAL: speed_to_lead ORIGINAL — the false 'portal leads' claim",
     expect: "flagged",
     caption:
-      "Respond in 5 minutes and contact rates multiply. Respond in an hour and the lead's gone.\n\nRealtyBoss answers portal leads instantly — day or night — and qualifies them on the spot.\n\nrealtybossai.com",
+      "Respond in 5 minutes and contact rates multiply. Respond in an hour and the lead's gone.\n\nCloseBoss answers portal leads instantly — day or night — and qualifies them on the spot.\n\nclosebossai.com",
   },
   {
     // Verbatim from the prod library after the fix (PR #883), not retyped.
     name: "REAL clean: speed_to_lead CORRECTED",
     expect: "clean",
     caption:
-      "Respond in 5 minutes and contact rates multiply. Respond in an hour and the lead's gone.\n\nRealtyBoss answers every inbound call 24/7 and qualifies the caller on the spot. Miss one and it texts back, then keeps calling until it connects. Inbound texts get answered too — day or night, while you're mid-showing.\n\nrealtybossai.com",
+      "Respond in 5 minutes and contact rates multiply. Respond in an hour and the lead's gone.\n\nCloseBoss answers every inbound call 24/7 and qualifies the caller on the spot. Miss one and it texts back, then keeps calling until it connects. Inbound texts get answered too — day or night, while you're mid-showing.\n\nclosebossai.com",
   },
   // ── Cited market news. Real generated post: the brand rules held this for
   //    "referencing pricing" when $30,000 is a cited government grant, not our
@@ -170,7 +170,7 @@ const FIXTURES: Fixture[] = [
     expect: "flagged",
     kind: "timely",
     caption:
-      "Rates dipped to 6.1% this week — the lowest in months.\n\nRealtyBoss monitors the market in real time and alerts you the second a rate move affects one of your buyers.",
+      "Rates dipped to 6.1% this week — the lowest in months.\n\nCloseBoss monitors the market in real time and alerts you the second a rate move affects one of your buyers.",
   },
 ];
 

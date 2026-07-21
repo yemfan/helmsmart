@@ -15,7 +15,7 @@ import { buildCardImageResponse } from "@/lib/social/renderCard";
  * Posture: no auth. The agent shares this image URL with clients/followers, so
  * it must be fetchable by anyone — mirrors the public market-report / CMA share
  * pages, which service-role read their row by id. Branding degrades gracefully
- * to "RealtyBoss AI" when the agent has none.
+ * to "CloseBoss AI" when the agent has none.
  *
  * Runtime is nodejs because the read + branding lookups use the service-role
  * Supabase client (edge-incompatible).

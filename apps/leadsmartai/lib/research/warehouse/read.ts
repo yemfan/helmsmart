@@ -6,7 +6,7 @@ import { geoSlug, stateSlug } from "./slug";
 
 /**
  * Read helpers for the Data Center market warehouse. These are the clean entry
- * points RealtyBoss's metro/state data pages consume. All reads go through the
+ * points CloseBoss's metro/state data pages consume. All reads go through the
  * service-role client (`@/lib/supabaseServer`) because the shared warehouse
  * tables are RLS-deny with no policies — a session client would read nothing.
  * The tables are populated by the apps/propertytoolsai pipeline; read-only here.

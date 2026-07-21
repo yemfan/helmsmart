@@ -15,7 +15,7 @@ import type { PostcardSendRow, PublicPostcardView } from "./types";
  * clarity.
  */
 
-const DEFAULT_APP_BASE_URL = "https://www.realtybossai.com";
+const DEFAULT_APP_BASE_URL = "https://www.closebossai.com";
 
 export type Channel = "email" | "sms" | "wechat";
 

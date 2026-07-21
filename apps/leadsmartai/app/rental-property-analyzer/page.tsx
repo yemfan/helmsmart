@@ -496,7 +496,7 @@ function RentalPropertyAnalyzerPageInner() {
           applicationCategory: "FinanceApplication",
           operatingSystem: "All",
           browserRequirements: "Requires JavaScript",
-          url: "https://realtybossai.com/rental-property-analyzer",
+          url: "https://closebossai.com/rental-property-analyzer",
           description:
             "Analyze rental property cash flow, cap rate, cash-on-cash return, and ROI from an address.",
         }}

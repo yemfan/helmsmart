@@ -6,7 +6,7 @@ import { BROKER_PORTAL_ROLES } from "@/lib/rolePortalPaths";
 
 export const metadata: Metadata = {
   title: "Boss Assistant",
-  description: "Your RealtyBoss command center — priorities, leads, transactions, and your AI team.",
+  description: "Your CloseBoss command center — priorities, leads, transactions, and your AI team.",
   robots: { index: false },
 };
 

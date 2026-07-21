@@ -244,7 +244,7 @@ function CompleteProfileInner() {
             {cancelling ? "Signing out…" : "Cancel"}
           </button>
         </div>
-        <h1 className="text-xl font-bold text-slate-900">Complete your RealtyBoss profile</h1>
+        <h1 className="text-xl font-bold text-slate-900">Complete your CloseBoss profile</h1>
         <p className="mt-2 text-sm text-slate-600">
           You signed in with Google or Apple. Confirm your name, choose whether you&apos;re a{" "}
           <span className="font-medium text-slate-800">consumer</span> (default) or a professional role, and add a phone

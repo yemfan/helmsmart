@@ -1,10 +1,10 @@
 {
   "meta": {
     "title": "房地产免费工具 — 计算器、分析器与 AI",
-    "description": "RealtyBoss 的每一款免费工具汇聚一处——按揭与 ROI 计算器、资本化率与现金流分析、AI 交易分析器、Smart CMA 生成器、房屋估值工具。无需注册。",
-    "og_title": "房地产免费工具 — RealtyBoss",
+    "description": "CloseBoss 的每一款免费工具汇聚一处——按揭与 ROI 计算器、资本化率与现金流分析、AI 交易分析器、Smart CMA 生成器、房屋估值工具。无需注册。",
+    "og_title": "房地产免费工具 — CloseBoss",
     "og_description": "房地产经纪人与投资者真正会用的计算器、分析器与 AI 工具。免费,无需注册。",
-    "twitter_title": "房地产免费工具 — RealtyBoss",
+    "twitter_title": "房地产免费工具 — CloseBoss",
     "twitter_description": "计算器、AI 分析器、CMA 生成器与房屋估值工具——免费,无需注册。"
   },
   "header": {
@@ -56,7 +56,7 @@
   "sections": {
     "ai-tools": {
       "title": "AI 智能分析器",
-      "blurb": "输入一个地址或一条 Zillow 链接——不到一分钟即可获得完整交易备忘、可比房源集或 CMA。与驱动 RealtyBoss 跟进的引擎同源。",
+      "blurb": "输入一个地址或一条 Zillow 链接——不到一分钟即可获得完整交易备忘、可比房源集或 CMA。与驱动 CloseBoss 跟进的引擎同源。",
       "tools": {
         "deal-analyzer": {
           "name": "AI Real Estate Deal Analyzer",
@@ -168,7 +168,7 @@
   "cross_sell": {
     "eyebrow": "想把它们汇入同一套 CRM?",
     "heading": "以上全部工具 + AI 跟进、语音 AI 与未接来电挽回。",
-    "body": "RealtyBoss 正是承载这些工具的平台——你的 AI 销售团队,全天候驻守你的手机。每月 $79 起,含 14 天免费试用,无需信用卡。",
+    "body": "CloseBoss 正是承载这些工具的平台——你的 AI 销售团队,全天候驻守你的手机。每月 $79 起,含 14 天免费试用,无需信用卡。",
     "start_trial": "开始 14 天试用",
     "see_features": "查看全部功能",
     "items": [

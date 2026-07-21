@@ -135,7 +135,7 @@ const STATUS_CLASS: Record<Status, string> = {
     "bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
 };
 
-const SITE_URL = "https://realtybossai.com";
+const SITE_URL = "https://closebossai.com";
 
 export default async function IntegrationsPage() {
   const t = await getServerT();
@@ -151,10 +151,10 @@ export default async function IntegrationsPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "RealtyBoss Integrations",
+    name: "CloseBoss Integrations",
     url: `${SITE_URL}/integrations`,
     description:
-      "Every integration RealtyBoss ships with — lead sources, calendar, email, telephony, e-signature, billing, and AI.",
+      "Every integration CloseBoss ships with — lead sources, calendar, email, telephony, e-signature, billing, and AI.",
     hasPart: CATEGORIES.flatMap((c) =>
       c.items.map((i) => ({
         "@type": "SoftwareApplication",

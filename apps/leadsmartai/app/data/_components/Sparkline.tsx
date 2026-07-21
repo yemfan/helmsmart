@@ -65,7 +65,7 @@ export default function Sparkline({ series, unit, label, title }: Props) {
     ` L ${xFor(first.i).toFixed(1)} ${(H - PAD_BOTTOM).toFixed(1)} Z`;
 
   const rising = last.value >= first.value;
-  const stroke = rising ? "#0072ce" : "#dc2626"; // RealtyBoss brand blue / red-600
+  const stroke = rising ? "#0072ce" : "#dc2626"; // CloseBoss brand blue / red-600
   const fill = rising ? "rgba(0,114,206,0.08)" : "rgba(220,38,38,0.08)";
 
   const endX = xFor(last.i);

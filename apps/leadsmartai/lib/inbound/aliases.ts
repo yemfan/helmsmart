@@ -25,10 +25,10 @@ export type AgentInboundAlias = {
 };
 
 /** Domain the inbound webhook listens on (SendGrid Inbound Parse). Override
- *  with INBOUND_EMAIL_DOMAIN; default is the live realtybossai.com subdomain
+ *  with INBOUND_EMAIL_DOMAIN; default is the live closebossai.com subdomain
  *  (leadsmart-ai.com expired). */
 export function getInboundDomain(): string {
-  return process.env.INBOUND_EMAIL_DOMAIN?.trim() || "inbox.realtybossai.com";
+  return process.env.INBOUND_EMAIL_DOMAIN?.trim() || "inbox.closebossai.com";
 }
 
 /** Compose the full forwarding address from an alias row. */
@@ -50,7 +50,7 @@ function freshLocalPart(): string {
 
 /**
  * Derive a friendly local_part from an email address. The agent who
- * logs in as `fan.yes@gmail.com` gets `fan.yes@inbox.realtybossai.com`
+ * logs in as `fan.yes@gmail.com` gets `fan.yes@inbox.closebossai.com`
  * as their forwarding address — which feels far more like "their
  * mailbox" than the opaque `agent-b9a798@…` we used to generate.
  *

@@ -1,7 +1,7 @@
 /**
  * Types for the Data Center research engine. These mirror the JSON shape stored
  * in the SHARED `research_reports` table (Supabase project babmbowmzwizoahkmshx).
- * The generator + migration live in apps/propertytoolsai; RealtyBoss is a
+ * The generator + migration live in apps/propertytoolsai; CloseBoss is a
  * read-only render surface over the SAME rows, using the AGENT analysis framing.
  *
  * Kept framework-free (no server-only import) so RSC render code can consume them.

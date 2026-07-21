@@ -26,7 +26,7 @@ export async function generateMetadata({
   if (!city) return {};
   const keywords = getPageKeywords("market-report", city.slug);
   return {
-    title: `${city.city}, ${city.state} Market Report | RealtyBoss`,
+    title: `${city.city}, ${city.state} Market Report | CloseBoss`,
     description: `Current housing trends, demand, and pricing movement in ${city.city}, ${city.state}, including ${keywords[0]} analysis.`,
     alternates: { canonical: `/market-report/${p.city}` },
   };

@@ -91,7 +91,7 @@ export async function getCurrentUserWithProfile(): Promise<SessionUserWithProfil
       .propertytools_users;
     const pt = ptRaw == null ? null : Array.isArray(ptRaw) ? ptRaw[0] : ptRaw;
     const tier = pt?.tier ?? null;
-    // Cross-app auto-provision: an authenticated user (e.g. a RealtyBoss agent)
+    // Cross-app auto-provision: an authenticated user (e.g. a CloseBoss agent)
     // with no PropertyTools account yet gets a free `basic` account + membership
     // registered, so the shared source of truth reflects that they use this app.
     if (!tier) {

@@ -125,27 +125,27 @@ export const HELP_FAQ: ReadonlyArray<HelpFaqEntry> = [
     category: "privacy",
     key: "real_person",
     q: "How do I get help from a real person?",
-    a: "Open the chat bubble in your dashboard or email contact@realtybossai.com. Premium and Team plans include priority support with same-business-day response. We're agents-helping-agents — no offshore tier-1 script-readers.",
+    a: "Open the chat bubble in your dashboard or email contact@closebossai.com. Premium and Team plans include priority support with same-business-day response. We're agents-helping-agents — no offshore tier-1 script-readers.",
   },
 
   // ── AI team & voice ───────────────────────────────────────────
   {
     category: "ai_followup",
     key: "ai_team_who",
-    q: "What is the RealtyBoss AI team — and who does what?",
+    q: "What is the CloseBoss AI team — and who does what?",
     a: "You're the boss. You give one command to your Boss Assistant and it delegates to the right teammate: the Receptionist answers calls, the Sales Assistant follows up, Marketing fills the pipeline, the Transaction Assistant coordinates the deal, and the Accountant keeps the books. You finally own a team — without the payroll.",
   },
   {
     category: "ai_followup",
     key: "makes_calls",
-    q: "Does RealtyBoss actually make phone calls, or just send texts?",
+    q: "Does CloseBoss actually make phone calls, or just send texts?",
     a: "Both — and that's what sets it apart. Your AI Receptionist answers inbound calls live, 24/7, and texts back the moment a call goes unanswered. Your AI also places real outbound voice calls to follow up with your sphere and leads — not just another SMS like every other CRM.",
   },
   {
     category: "ai_followup",
     key: "different_crm",
     q: "How is this different from other real estate CRMs?",
-    a: "Most CRMs stop at SMS and email drips and leave the work to you. RealtyBoss is an AI team you command: it answers the phone, calls your sphere by real voice, and runs whole jobs — open houses, presentations, showings, closings — from a single instruction, handing you finished reports.",
+    a: "Most CRMs stop at SMS and email drips and leave the work to you. CloseBoss is an AI team you command: it answers the phone, calls your sphere by real voice, and runs whole jobs — open houses, presentations, showings, closings — from a single instruction, handing you finished reports.",
   },
   {
     category: "ai_followup",

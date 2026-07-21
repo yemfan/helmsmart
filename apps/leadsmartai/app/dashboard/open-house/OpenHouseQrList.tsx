@@ -102,7 +102,7 @@ export default function OpenHouseQrList({
 
               <div className="text-[11px] text-slate-500">
                 Visitors can sign up using this QR code. Their details will be saved to
-                RealtyBoss as a new lead.
+                CloseBoss as a new lead.
               </div>
             </div>
           );

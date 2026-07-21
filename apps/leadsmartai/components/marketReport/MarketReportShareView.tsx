@@ -7,7 +7,7 @@ import { formatPeriod } from "@/lib/research/warehouse/format";
  * component, agent-branded, CLIENT voice (plain-English labels + "what this
  * means", not the agent-facing "quote this in your CMA" wording).
  *
- * Mirrors CmaShareView's layout + RealtyBoss brand blue (#0072ce).
+ * Mirrors CmaShareView's layout + CloseBoss brand blue (#0072ce).
  */
 
 export type MarketReportShareAgent = {

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * RealtyBoss — editorial rebuild (prototype route: /landing-v3).
+ * CloseBoss — editorial rebuild (prototype route: /landing-v3).
  *
  * Spec refs: hero + demo follow §1.2–§1.9 verbatim. Spec §1.10 fixes applied:
  *   - "90-second demo" (not 60).
@@ -88,7 +88,7 @@ function Hero() {
           <span className="ed-headline-flourish">—</span>
         </h1>
         <p className="ed-subheadline">
-          RealtyBoss texts and emails every new buyer and seller inquiry in under 60 seconds — in
+          CloseBoss texts and emails every new buyer and seller inquiry in under 60 seconds — in
           your voice, on your number — then hands the warm ones back to you ready to tour.
         </p>
         <div className="ed-cta-row">
@@ -838,7 +838,7 @@ function Footer() {
           />
         </div>
         <div className="ed-footer-bottom">
-          <span>© 2026 RealtyBoss · All rights reserved</span>
+          <span>© 2026 CloseBoss · All rights reserved</span>
           <span>Made for agents who close</span>
         </div>
       </div>

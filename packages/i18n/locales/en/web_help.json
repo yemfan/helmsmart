@@ -1,22 +1,22 @@
 {
   "meta": {
     "title": "Help center",
-    "description": "Every how-to guide for RealtyBoss — AI follow-up, voice AI, missed-call text-back, listings, offers, transactions, CMAs, calculators, and more. Plus FAQs and contact support.",
-    "og_title": "Help center — RealtyBoss",
-    "og_description": "Every how-to guide for RealtyBoss — set up, communication, AI, deals, marketing, analytics, calculators, and account.",
-    "twitter_title": "Help center — RealtyBoss",
-    "twitter_description": "Every how-to guide for RealtyBoss — set up, AI, deals, marketing, analytics, and calculators.",
+    "description": "Every how-to guide for CloseBoss — AI follow-up, voice AI, missed-call text-back, listings, offers, transactions, CMAs, calculators, and more. Plus FAQs and contact support.",
+    "og_title": "Help center — CloseBoss",
+    "og_description": "Every how-to guide for CloseBoss — set up, communication, AI, deals, marketing, analytics, calculators, and account.",
+    "twitter_title": "Help center — CloseBoss",
+    "twitter_description": "Every how-to guide for CloseBoss — set up, AI, deals, marketing, analytics, and calculators.",
     "faq_title": "Frequently asked questions",
-    "faq_description": "Answers to the most common questions about RealtyBoss: AI follow-up, RealtyBoss Coaching, billing, integrations, and data privacy.",
-    "faq_og_title": "FAQ — RealtyBoss",
+    "faq_description": "Answers to the most common questions about CloseBoss: AI follow-up, CloseBoss Coaching, billing, integrations, and data privacy.",
+    "faq_og_title": "FAQ — CloseBoss",
     "faq_og_description": "Answers to common questions about AI follow-up, coaching, billing, integrations, and privacy.",
-    "faq_twitter_title": "FAQ — RealtyBoss",
-    "faq_twitter_description": "Common questions about RealtyBoss: follow-up, coaching, billing, integrations, privacy."
+    "faq_twitter_title": "FAQ — CloseBoss",
+    "faq_twitter_description": "Common questions about CloseBoss: follow-up, coaching, billing, integrations, privacy."
   },
   "index": {
     "eyebrow": "Help center",
     "h1": "Guides, FAQs, and how-tos.",
-    "subtitle": "Everything you need to get RealtyBoss running — from importing your first contacts to managing coaching enrollment to sending video email.",
+    "subtitle": "Everything you need to get CloseBoss running — from importing your first contacts to managing coaching enrollment to sending video email.",
     "guides_h2": "How-to guides",
     "guides_note": "Step-by-step walkthroughs.",
     "browse_a11y": "Browse by category",
@@ -141,19 +141,19 @@
     },
     "real_person": {
       "q": "How do I get help from a real person?",
-      "a": "Open the chat bubble in your dashboard or email contact@realtybossai.com. Premium and Team plans include priority support with same-business-day response. We're agents-helping-agents — no offshore tier-1 script-readers."
+      "a": "Open the chat bubble in your dashboard or email contact@closebossai.com. Premium and Team plans include priority support with same-business-day response. We're agents-helping-agents — no offshore tier-1 script-readers."
     },
     "ai_team_who": {
-      "q": "What is the RealtyBoss AI team — and who does what?",
+      "q": "What is the CloseBoss AI team — and who does what?",
       "a": "You're the boss. You give one command to your Boss Assistant and it delegates to the right teammate: the Receptionist answers calls, the Sales Assistant follows up, Marketing fills the pipeline, the Transaction Assistant coordinates the deal, and the Accountant keeps the books. You finally own a team — without the payroll."
     },
     "makes_calls": {
-      "q": "Does RealtyBoss actually make phone calls, or just send texts?",
+      "q": "Does CloseBoss actually make phone calls, or just send texts?",
       "a": "Both — and that's what sets it apart. Your AI Receptionist answers inbound calls live, 24/7, and texts back the moment a call goes unanswered. Your AI also places real outbound voice calls to follow up with your sphere and leads — not just another SMS like every other CRM."
     },
     "different_crm": {
       "q": "How is this different from other real estate CRMs?",
-      "a": "Most CRMs stop at SMS and email drips and leave the work to you. RealtyBoss is an AI team you command: it answers the phone, calls your sphere by real voice, and runs whole jobs — open houses, presentations, showings, closings — from a single instruction, handing you finished reports."
+      "a": "Most CRMs stop at SMS and email drips and leave the work to you. CloseBoss is an AI team you command: it answers the phone, calls your sphere by real voice, and runs whole jobs — open houses, presentations, showings, closings — from a single instruction, handing you finished reports."
     },
     "reports": {
       "q": "What reports can the AI generate for me?",

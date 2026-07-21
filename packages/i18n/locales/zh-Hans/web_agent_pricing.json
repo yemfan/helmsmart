@@ -1,14 +1,14 @@
 {
   "meta": {
     "title": "经纪人套餐与定价 — Starter、Pro、Premium、Signature、Team",
-    "description": "面向房地产经纪人的 RealtyBoss 套餐：Starter（免费）、Pro（$79/月，含 Producer Track 教练）、Premium（$199/月，Top Producer Track）、Signature（$399/月，双语 + 高端专属礼宾）以及 Team（$299/月，经纪行团队工作流）。年付立省两个月。每个付费档均含 14 天试用。",
-    "og_title": "经纪人套餐与定价 | RealtyBoss",
+    "description": "面向房地产经纪人的 CloseBoss 套餐：Starter（免费）、Pro（$79/月，含 Producer Track 教练）、Premium（$199/月，Top Producer Track）、Signature（$399/月，双语 + 高端专属礼宾）以及 Team（$299/月，经纪行团队工作流）。年付立省两个月。每个付费档均含 14 天试用。",
+    "og_title": "经纪人套餐与定价 | CloseBoss",
     "og_description": "Pro 每月 $79 起，含 Producer Track 教练。Premium 每月 $199，含 Top Producer Track。Signature 每月 $399，含双语 + 礼宾支持。Team 每月 $299，面向经纪行。年付立省两个月。",
-    "twitter_title": "经纪人套餐与定价 | RealtyBoss",
+    "twitter_title": "经纪人套餐与定价 | CloseBoss",
     "twitter_description": "Pro $79/月 · Premium $199/月 · Signature $399/月 · Team $299/月。支持英文与中文。年付立省两个月。"
   },
   "header": {
-    "title": "RealtyBoss 经纪人版",
+    "title": "CloseBoss 经纪人版",
     "current_intro_pre": "您当前使用的是 ",
     "current_intro_plan_suffix": " 套餐。升级可获得更大容量、更强 AI 与更深入的教练服务。付费套餐均含 ",
     "trial_bold": "14 天免费试用",
@@ -62,7 +62,7 @@
     "pro": {
       "name": "Pro",
       "description": "适合持续成交的活跃经纪人。",
-      "coaching_pill": "RealtyBoss 教练：含 Producer Track",
+      "coaching_pill": "CloseBoss 教练：含 Producer Track",
       "badge": "热门",
       "cta": "开始 14 天试用",
       "features": [
@@ -85,7 +85,7 @@
     "premium": {
       "name": "Premium",
       "description": "适合独立作战的顶尖业绩经纪人。",
-      "coaching_pill": "RealtyBoss 教练：含 Top Producer Track",
+      "coaching_pill": "CloseBoss 教练：含 Top Producer Track",
       "cta": "开始 14 天试用",
       "features": [
         "涵盖 Pro 全部功能，另加：",
@@ -101,7 +101,7 @@
     "signature": {
       "name": "Signature",
       "description": "适合服务高价值与双语客户、注重关系经营的经纪人。",
-      "coaching_pill": "RealtyBoss 教练：含 Top Producer Track",
+      "coaching_pill": "CloseBoss 教练：含 Top Producer Track",
       "badge": "双语 & 高端",
       "cta": "开始 14 天试用",
       "secondary_link": "想先通个电话？先联系我们 →",
@@ -117,7 +117,7 @@
     "team": {
       "name": "Team",
       "description": "适合需要共享工作流的经纪行与小型团队。",
-      "coaching_pill": "RealtyBoss 教练：每个席位均含 Top Producer Track",
+      "coaching_pill": "CloseBoss 教练：每个席位均含 Top Producer Track",
       "footnote": "最多 5 个团队席位——如需更多请联系销售。",
       "cta": "联系销售",
       "secondary_link": "联系销售 →",
@@ -159,7 +159,7 @@
     }
   },
   "coaching_callout": {
-    "heading": "RealtyBoss 教练——内建于产品之中，而非附加服务",
+    "heading": "CloseBoss 教练——内建于产品之中，而非附加服务",
     "body_pre": "每个付费套餐都会自动加入我们的教练项目：",
     "producer_track": "Producer Track",
     "body_mid": " 面向 Pro（目标：10 笔成交 / 3% 转化率），而 ",

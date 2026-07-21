@@ -42,7 +42,7 @@ function clearSupabaseAuthCookies() {
   if (typeof document === "undefined" || typeof window === "undefined") return;
   const past = "Thu, 01 Jan 1970 00:00:00 GMT";
   const host = window.location.hostname;
-  // e.g. "www.realtybossai.com" -> also try the registrable base ".realtybossai.com"
+  // e.g. "www.closebossai.com" -> also try the registrable base ".closebossai.com"
   const parts = host.split(".");
   const baseDomain = parts.length > 2 ? "." + parts.slice(-2).join(".") : host;
 

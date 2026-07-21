@@ -5,7 +5,7 @@ import JsonLd from "../../components/JsonLd";
 
 export default function CapRateMistakesRealEstateInvestorsMakePage() {
   const title = "Cap Rate Mistakes Real Estate Investors Make";
-  const url = "https://realtybossai.com/cap-rate-mistakes-real-estate-investors-make";
+  const url = "https://closebossai.com/cap-rate-mistakes-real-estate-investors-make";
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -85,7 +85,7 @@ export default function CapRateMistakesRealEstateInvestorsMakePage() {
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
             Cap Rate Calculator
           </Link>{" "}
-          in RealtyBoss lets you explicitly include a vacancy assumption in your analysis.
+          in CloseBoss lets you explicitly include a vacancy assumption in your analysis.
         </p>
       </section>
 
@@ -232,7 +232,7 @@ export default function CapRateMistakesRealEstateInvestorsMakePage() {
           </Link>
         </div>
         <p className="font-semibold">
-          Try our free real estate investment calculator at realtybossai.com to quickly analyze
+          Try our free real estate investment calculator at closebossai.com to quickly analyze
           your property deals.
         </p>
       </section>

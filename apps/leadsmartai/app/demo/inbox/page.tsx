@@ -6,7 +6,7 @@ import { DEMO_CONVERSATIONS } from "@/lib/demo/data";
 export const metadata: Metadata = {
   title: "Demo workspace · Inbox",
   description:
-    "See RealtyBoss's inbox in action — sub-minute AI follow-up, escalation rules, and voice-AI call summaries in one feed.",
+    "See CloseBoss's inbox in action — sub-minute AI follow-up, escalation rules, and voice-AI call summaries in one feed.",
   alternates: { canonical: "/demo/inbox" },
   robots: { index: false, follow: true },
 };

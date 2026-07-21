@@ -50,7 +50,7 @@
     }
   },
   "mock": {
-    "live_label": "RealtyBoss — 实时",
+    "live_label": "CloseBoss — 实时",
     "auto_replying": "自动回复中",
     "stats": {
       "new_leads": "新客户",
@@ -198,15 +198,15 @@
   "missed_call_hook": {
     "section_a11y": "未接来电提醒",
     "h3": "未接来电？您可能错过了一笔交易。",
-    "body": "当您无法接听时，RealtyBoss 会立即回应 — 将未接来电转化为真实机会。",
+    "body": "当您无法接听时，CloseBoss 会立即回应 — 将未接来电转化为真实机会。",
     "cta": "了解工作原理"
   },
   "why": {
-    "eyebrow": "为什么选择 RealtyBoss",
+    "eyebrow": "为什么选择 CloseBoss",
     "h2_prefix": "不只是另一款 CRM — ",
     "h2_highlight": "完整的 AI 成交系统",
     "col_traditional": "传统工具",
-    "col_us": "RealtyBoss",
+    "col_us": "CloseBoss",
     "rows": {
       "manual_followup": {
         "left": "人工跟进",
@@ -241,7 +241,7 @@
       "broken_sequences": "跟进流程在第二条消息后中断",
       "equity_threshold": "客户圈成员跨过房产升值阈值却无人提醒"
     },
-    "fix_line": "RealtyBoss 自动为您解决这些问题。",
+    "fix_line": "CloseBoss 自动为您解决这些问题。",
     "cta_primary": "今天就开始成交更多订单",
     "cta_secondary": "测算您的 ROI"
   },
@@ -280,7 +280,7 @@
     "h2": "我们干掉了 CRM，用一支团队取而代之。",
     "body": "CRM 不过是一个让你亲自动手的文件柜——录入数据、记录通话、追着跟进。经纪人弃用它们不是没有原因的。您的 AI 团队恰恰相反：您下达一条指令，它就把活干完。",
     "col_old": "老式 CRM",
-    "col_us": "RealtyBoss",
+    "col_us": "CloseBoss",
     "rows": {
       "acts": { "old": "等着你喂数据", "now": "主动行动——接听来电、给人脉圈打电话、持续跟进" },
       "one_command": { "old": "需要专人或 ISA 来操作", "now": "您下一条指令，AI 团队负责运转" },

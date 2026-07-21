@@ -7,17 +7,17 @@ import { useTranslation } from "react-i18next";
 import type { MobileSidebarUser } from "@repo/ui";
 import { useAuth } from "@/components/AuthProvider";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
-import { RealtyBossLogo } from "@/components/brand/RealtyBossLogo";
+import { CloseBossLogo } from "@/components/brand/CloseBossLogo";
 import { getMarketingNavSections } from "@/marketing.nav.config";
 import { MarketingTopNav } from "@/components/marketing/MarketingTopNav";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
 import Footer from "./Footer";
 import FloatingCTA from "./FloatingCTA";
 
-// RealtyBoss repositioning: the product shells (auth, dashboard) brand
-// as RealtyBoss; the marketing chrome keeps RealtyBoss until the
+// CloseBoss repositioning: the product shells (auth, dashboard) brand
+// as CloseBoss; the marketing chrome keeps CloseBoss until the
 // domain/SEO migration.
-const APP_NAME = "RealtyBoss";
+const APP_NAME = "CloseBoss";
 
 /** Marketing-shell user card — only renders when an auth session exists. */
 function useSidebarUser() {
@@ -35,7 +35,7 @@ function useSidebarUser() {
 }
 
 /**
- * RealtyBoss — App Router shell:
+ * CloseBoss — App Router shell:
  * - Marketing / tools: top-nav-only chrome via `MarketingTopNav` (the
  *   legacy left sidebar was removed; the mobile drawer that `MarketingTopNav`
  *   embeds uses the shared `MobileSidebar` from `@repo/ui`).
@@ -150,9 +150,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <Link
               href="/"
               className="flex min-w-0 items-center rounded-md transition hover:opacity-90"
-              aria-label="RealtyBoss home"
+              aria-label="CloseBoss home"
             >
-              <RealtyBossLogo compact />
+              <CloseBossLogo compact />
             </Link>
             <Link
               href="/"
@@ -183,7 +183,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </Link>
             <span aria-hidden className="hidden sm:inline">·</span>
             <span className="block w-full sm:inline sm:w-auto">
-              © {new Date().getFullYear()} RealtyBoss (formerly LeadSmart AI)
+              © {new Date().getFullYear()} CloseBoss (formerly LeadSmart AI)
             </span>
           </div>
         </footer>

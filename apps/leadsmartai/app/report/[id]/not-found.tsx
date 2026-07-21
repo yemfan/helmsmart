@@ -11,7 +11,7 @@ export default function ReportNotFound() {
         href="/"
         className="mt-8 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700"
       >
-        RealtyBoss home
+        CloseBoss home
       </Link>
     </div>
   );

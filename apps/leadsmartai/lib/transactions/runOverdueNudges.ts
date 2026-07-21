@@ -53,7 +53,7 @@ export async function runOverdueNudges(opts: {
   const appBaseUrl =
     opts.appBaseUrl ??
     process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ??
-    "https://www.realtybossai.com";
+    "https://www.closebossai.com";
 
   const result: RunOverdueNudgesResult = {
     processedAgents: 0,
@@ -228,7 +228,7 @@ export async function runOverdueNudges(opts: {
 
       result.sentEmails += 1;
 
-      // RealtyBoss activity feed — fire-and-forget, never fails the run.
+      // CloseBoss activity feed — fire-and-forget, never fails the run.
       void logAssistantActivity({
         agentId,
         assistantType: "transaction_assistant",

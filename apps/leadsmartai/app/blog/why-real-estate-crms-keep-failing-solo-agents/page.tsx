@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getPost } from "@/lib/blog/posts";
 
 const SLUG = "why-real-estate-crms-keep-failing-solo-agents";
-const SITE_URL = "https://realtybossai.com";
+const SITE_URL = "https://closebossai.com";
 const TITLE =
   "Why Real Estate CRMs Keep Failing Solo Agents (and What LionDesk's Shutdown Reveals)";
 const DESCRIPTION =
@@ -171,7 +171,7 @@ export default function CrmProblemsPost() {
     author: { "@type": "Person", name: post?.author ?? "Michael Ye" },
     publisher: {
       "@type": "Organization",
-      name: "RealtyBoss",
+      name: "CloseBoss",
       logo: {
         "@type": "ImageObject",
         url: `${SITE_URL}/brand/realtyboss/realtyboss-icon-512.png`,
@@ -309,7 +309,7 @@ export default function CrmProblemsPost() {
           </div>
           <p className="mt-6 text-sm leading-6 text-slate-600 dark:text-slate-300">
             For a side-by-side feature comparison across all of these
-            (including RealtyBoss), see the full{" "}
+            (including CloseBoss), see the full{" "}
             <Link
               href="/agent/compare"
               className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
@@ -436,7 +436,7 @@ export default function CrmProblemsPost() {
 
         <section className="mt-12">
           <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">
-            Where RealtyBoss fits
+            Where CloseBoss fits
           </h2>
           <div className="mt-4 space-y-5 text-base leading-7 text-slate-700 dark:text-slate-200">
             <p>
@@ -445,7 +445,7 @@ export default function CrmProblemsPost() {
                 href="/"
                 className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
               >
-                RealtyBoss
+                CloseBoss
               </Link>{" "}
               to close. We start with the five pillars above and add
               only what genuinely earns its place.
@@ -545,7 +545,7 @@ export default function CrmProblemsPost() {
             Don&apos;t take my word for it — try it
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-            Send a test lead through RealtyBoss and clock the
+            Send a test lead through CloseBoss and clock the
             response. If sub-minute AI follow-up + missed-call
             text-back doesn&apos;t feel meaningfully better than your
             current setup, move on with a clear conscience.
@@ -585,7 +585,7 @@ export default function CrmProblemsPost() {
                 href="/agent/compare"
                 className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
               >
-                RealtyBoss vs. the rest — full feature comparison →
+                CloseBoss vs. the rest — full feature comparison →
               </Link>
             </li>
             <li>
@@ -593,7 +593,7 @@ export default function CrmProblemsPost() {
                 href="/help"
                 className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
               >
-                Help center — every how-to guide for RealtyBoss →
+                Help center — every how-to guide for CloseBoss →
               </Link>
             </li>
           </ul>

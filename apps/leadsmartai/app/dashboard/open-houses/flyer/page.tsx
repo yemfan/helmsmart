@@ -4,7 +4,7 @@ import { getOpenHouseWithVisitors } from "@/lib/open-houses/service";
 import FlyerBuilderClient, { type OpenHousePrefill } from "./FlyerBuilderClient";
 
 export const metadata = {
-  title: "Open House Flyer Builder | RealtyBoss",
+  title: "Open House Flyer Builder | CloseBoss",
   description: "Create a professional open house flyer with property details, photos, and QR code.",
 };
 

@@ -145,7 +145,7 @@ export function LeadsmartSessionProvider({ children }: { children: ReactNode }) 
     async (token: string, rememberDevice = true) => {
       const t = token.trim();
       if (!t) {
-        throw new Error("Paste your access token from RealtyBoss web, or sign in with email and password.");
+        throw new Error("Paste your access token from CloseBoss web, or sign in with email and password.");
       }
 
       setCachedAccessToken(t);

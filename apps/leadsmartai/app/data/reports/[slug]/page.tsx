@@ -20,13 +20,13 @@ function formatDate(d: string): string {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const report = await getResearchReport(slug);
-  if (!report) return { title: "Report | RealtyBoss Data Center" };
+  if (!report) return { title: "Report | CloseBoss Data Center" };
 
   const base = getSiteUrl();
   const description =
-    report.dek ?? `${report.title} — dated, cited market intelligence for real estate professionals from RealtyBoss.`;
+    report.dek ?? `${report.title} — dated, cited market intelligence for real estate professionals from CloseBoss.`;
   return {
-    title: `${report.title} | RealtyBoss`,
+    title: `${report.title} | CloseBoss`,
     description,
     alternates: { canonical: `${base}/data/reports/${report.slug}` },
     openGraph: {
@@ -53,7 +53,7 @@ export default async function ResearchReportPage({ params }: Props) {
   if (!report) notFound();
 
   const base = getSiteUrl();
-  // RealtyBoss renders the AGENT framing of the shared numbers.
+  // CloseBoss renders the AGENT framing of the shared numbers.
   const analysis = report.analysis_agent;
   const sections = analysis?.sections ?? [];
   const faqs = analysis?.faqs ?? [];
@@ -68,8 +68,8 @@ export default async function ResearchReportPage({ params }: Props) {
     description: report.dek ?? undefined,
     datePublished: report.published_date,
     dateModified: report.updated_at,
-    author: { "@type": "Organization", name: "RealtyBoss" },
-    publisher: { "@type": "Organization", name: "RealtyBoss" },
+    author: { "@type": "Organization", name: "CloseBoss" },
+    publisher: { "@type": "Organization", name: "CloseBoss" },
     mainEntityOfPage: `${base}/data/reports/${report.slug}`,
   };
 
@@ -94,7 +94,7 @@ export default async function ResearchReportPage({ params }: Props) {
       <article className="mx-auto max-w-3xl px-6 py-12 space-y-10">
         <nav className="text-sm">
           <Link href="/" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            RealtyBoss
+            CloseBoss
           </Link>
           <span className="mx-2 text-slate-400">/</span>
           <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">

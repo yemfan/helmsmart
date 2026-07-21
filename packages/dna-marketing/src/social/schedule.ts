@@ -1,6 +1,6 @@
 // Spreading a period's posts across real times. Pure date math, no I/O.
 //
-// Extracted from RealtyBoss, where the original bug is worth stating because it
+// Extracted from CloseBoss, where the original bug is worth stating because it
 // is invisible until it fires: autopilot handed EVERY generated post
 // `scheduled_for = now()`, so a whole week drained on a single publish tick —
 // several posts to the same feed within minutes. It had never fired in

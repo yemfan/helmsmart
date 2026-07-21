@@ -18,7 +18,7 @@ import { Send } from "lucide-react";
  * The disclosure block below the checkbox includes the four elements
  * Twilio + the FCC TCPA expect to see at the point of opt-in:
  *
- *   1. WHO is sending — "RealtyBoss"
+ *   1. WHO is sending — "CloseBoss"
  *   2. WHAT kinds of messages — "customer care + marketing"
  *   3. FREQUENCY — "message frequency varies"
  *   4. OPT-OUT + COST — "Reply STOP to opt out, message and data rates may apply"

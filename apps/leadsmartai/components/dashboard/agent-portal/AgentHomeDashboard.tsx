@@ -81,7 +81,7 @@ function SectionTitle({
 }
 
 /**
- * RealtyBoss agent portal — Home dashboard (desktop-first, responsive grid).
+ * CloseBoss agent portal — Home dashboard (desktop-first, responsive grid).
  */
 export function AgentHomeDashboard({
   greetingName,

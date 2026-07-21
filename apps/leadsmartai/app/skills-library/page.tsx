@@ -106,7 +106,7 @@ export default function SkillsLibraryPage() {
       <div className="mt-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 p-8 text-center text-white">
         <h2 className="font-heading text-2xl font-bold">Don&rsquo;t just prompt — deploy the team.</h2>
         <p className="mx-auto mt-2 max-w-xl text-sm text-white/90">
-          RealtyBoss runs this whole library for you — assigned to your AI Receptionist, Sales, Marketing, Transaction,
+          CloseBoss runs this whole library for you — assigned to your AI Receptionist, Sales, Marketing, Transaction,
           and Accounting assistants, with a Boss Assistant running the compliance gate on every output.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">

@@ -14,10 +14,10 @@ import {
 export const metadata: Metadata = {
   title: "Try the live demo",
   description:
-    "Click through a real RealtyBoss workspace — 50 sample contacts, an AI-powered inbox, the drafts queue, calendar, and deal pipeline. No signup, no credit card.",
+    "Click through a real CloseBoss workspace — 50 sample contacts, an AI-powered inbox, the drafts queue, calendar, and deal pipeline. No signup, no credit card.",
   alternates: { canonical: "/try-demo" },
   openGraph: {
-    title: "Try the live RealtyBoss demo",
+    title: "Try the live CloseBoss demo",
     description:
       "A real read-only sandbox of the LeadSmart workspace — inbox, drafts, contacts, calendar. No signup required.",
     url: "/try-demo",
@@ -25,13 +25,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Try the live RealtyBoss demo",
+    title: "Try the live CloseBoss demo",
     description:
       "Read-only sandbox of the workspace — inbox, drafts, contacts, calendar. No signup.",
   },
 };
 
-const SITE_URL = "https://realtybossai.com";
+const SITE_URL = "https://closebossai.com";
 
 type Tour = {
   label: string;
@@ -80,7 +80,7 @@ export default function TryDemoPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Try the live RealtyBoss demo",
+    name: "Try the live CloseBoss demo",
     url: `${SITE_URL}/try-demo`,
     description:
       "Read-only sandbox of the LeadSmart workspace — inbox, drafts, contacts, calendar.",

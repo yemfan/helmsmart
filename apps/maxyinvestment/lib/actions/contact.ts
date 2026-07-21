@@ -11,13 +11,13 @@ export type ContactState = {
 };
 
 /**
- * realtybossai.com is the ONLY verified sending domain on the Resend account —
+ * closebossai.com is the ONLY verified sending domain on the Resend account —
  * helmsmart.ai and maxyinvestment.com both 403 as unverified. So mail leaves
  * from there while replyTo carries the enquirer's address. Only the MAXY team
  * ever sees this sender, since they're the recipient. To send from the brand's
  * own domain: verify maxyinvestment.com in Resend, then set RESEND_FROM_EMAIL.
  */
-const FROM = process.env.RESEND_FROM_EMAIL?.trim() || "noreply@realtybossai.com";
+const FROM = process.env.RESEND_FROM_EMAIL?.trim() || "noreply@closebossai.com";
 const TO = company.email;
 
 const MAX = { name: 100, email: 200, subject: 150, message: 5000 } as const;

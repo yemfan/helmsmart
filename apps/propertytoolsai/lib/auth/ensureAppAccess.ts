@@ -6,10 +6,10 @@ import { isSupabaseServiceConfigured, supabaseAdmin } from "@/lib/supabase/admin
  * Register free PropertyTools access + membership for an authenticated user who
  * doesn't have a PropertyTools account yet.
  *
- * The apps share one auth.users, so a user of a sibling app (RealtyBoss, mobile)
+ * The apps share one auth.users, so a user of a sibling app (CloseBoss, mobile)
  * arrives already authenticated. PropertyTools never locks anyone out — a
  * logged-in user is at least the `free` tier regardless — so this is the mirror
- * of the RealtyBoss auto-provision: it materializes the `propertytools_users`
+ * of the CloseBoss auto-provision: it materializes the `propertytools_users`
  * row + `app_memberships` entry so the shared source of truth reflects that they
  * now use PropertyTools.
  *

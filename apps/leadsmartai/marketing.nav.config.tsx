@@ -46,7 +46,7 @@ type LabelResolver = (key: string, english: string) => string;
 
 function buildSections(tr: LabelResolver): NavSection[] {
   return [
-    /* ── Product ── what RealtyBoss actually is ── */
+    /* ── Product ── what CloseBoss actually is ── */
     {
       label: tr("nav.product", "Product"),
       icon: <Sparkles size={16} strokeWidth={2} aria-hidden />,
