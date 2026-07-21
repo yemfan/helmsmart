@@ -77,7 +77,7 @@ jobs:
       IDX_ROUND_ROBIN_AGENT_IDS: ""
       CRON_SECRET: "stub-cron-secret"
       # Public site URL — used by some marketing pages for canonical hrefs.
-      NEXT_PUBLIC_SITE_URL: "https://leadsmart-ai.com"
+      NEXT_PUBLIC_SITE_URL: "https://closebossai.com"
 
     steps:
       - name: Checkout
