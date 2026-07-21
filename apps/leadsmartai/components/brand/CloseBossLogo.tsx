@@ -51,7 +51,7 @@ export function CloseBossLogo({ className, compact, tone = "light" }: Props) {
         </span>
         {!compact && (
           <span
-            className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.02em]"
+            className="mt-0.5 text-[9px] font-semibold uppercase tracking-[0.02em]"
             style={{ color: body }}
           >
             Your AI Real Estate Team
