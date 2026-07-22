@@ -35,7 +35,7 @@ export async function GET() {
     const { data, error } = await supabaseAdmin
       .from("social_accounts")
       .select(
-        "id, platform, fb_page_id, fb_page_name, ig_business_user_id, ig_business_username, linkedin_member_urn, linkedin_member_email, account_display_name, account_picture_url, status",
+        "id, platform, fb_page_id, fb_page_name, ig_business_user_id, ig_business_username, linkedin_member_urn, linkedin_member_email, threads_user_id, threads_username, account_display_name, account_picture_url, status",
       )
       .eq("agent_id", auth.agentId)
       .eq("status", "connected")
@@ -52,6 +52,8 @@ export async function GET() {
       ig_business_username: string | null;
       linkedin_member_urn: string | null;
       linkedin_member_email: string | null;
+      threads_user_id: string | null;
+      threads_username: string | null;
       account_display_name: string | null;
       account_picture_url: string | null;
       status: string;
@@ -66,6 +68,8 @@ export async function GET() {
       igBusinessUsername: r.ig_business_username,
       linkedinMemberUrn: r.linkedin_member_urn,
       linkedinMemberEmail: r.linkedin_member_email,
+      threadsUserId: r.threads_user_id,
+      threadsUsername: r.threads_username,
       displayName: r.account_display_name,
       pictureUrl: r.account_picture_url,
       // Per-platform availability for the wizard. A Meta connection
@@ -77,6 +81,9 @@ export async function GET() {
       canPublishInstagram: r.platform === "meta" && !!r.ig_business_user_id,
       canPublishLinkedIn:
         r.platform === "linkedin" && !!r.linkedin_member_urn,
+      // A Threads connection supports posting as soon as the OAuth grant
+      // succeeds (we captured the Threads user id at connect time).
+      canPublishThreads: r.platform === "threads" && !!r.threads_user_id,
     }));
 
     return NextResponse.json({ ok: true, connections });

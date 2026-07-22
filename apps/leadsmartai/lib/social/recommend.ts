@@ -289,10 +289,11 @@ export async function getConnectedSocialAccounts(
  */
 function platformForAccount(acct: ConnectedSocialAccount): PublishTargetPlatform {
   if (acct.platform === "linkedin") return "linkedin";
+  if (acct.platform === "threads") return "threads";
   return "facebook";
 }
 
-type PublishTargetPlatform = "facebook" | "instagram" | "linkedin";
+type PublishTargetPlatform = "facebook" | "instagram" | "linkedin" | "threads";
 
 /**
  * Queue ONE recommendation into scheduled_posts — one row per target account —

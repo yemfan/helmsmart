@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const bodySchema = z.object({
-  platform: z.enum(["facebook", "instagram", "linkedin"]),
+  platform: z.enum(["facebook", "instagram", "linkedin", "threads"]),
   connectionId: z.string().uuid(),
   // LinkedIn's hard cap is 3000 chars; Meta is far higher. 5000 fits
   // both. LinkedIn truncates with a "…see more" past ~150 chars in

@@ -136,5 +136,25 @@ export function buildComposeInstruction(
         prefillsBody: false,
       };
     }
+
+    case "threads": {
+      // Threads' web compose intent honors `text` (the body is prefilled).
+      // We inline a couple of hashtags (Threads favors few) and append the
+      // share URL on its own line since the intent has no separate url param.
+      const inlineTags = hashtags.slice(0, 3).map((tg) => `#${tg}`).join(" ");
+      const composedText = inlineTags ? `${caption} ${inlineTags}` : caption;
+      const withUrl = shareUrl ? `${composedText}\n${shareUrl}` : composedText;
+      const composeUrl =
+        "https://www.threads.net/intent/post?" +
+        `text=${encodeURIComponent(withUrl)}`;
+      return {
+        platform,
+        composeUrl,
+        caption: composedText,
+        hashtags,
+        shareUrl,
+        prefillsBody: true,
+      };
+    }
   }
 }

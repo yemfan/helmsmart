@@ -18,7 +18,7 @@ export const runtime = "nodejs";
 // first-token-latency on a cold model doesn't trip us up.
 export const maxDuration = 60;
 
-const platformSchema = z.enum(["facebook", "instagram", "linkedin", "x"]);
+const platformSchema = z.enum(["facebook", "instagram", "linkedin", "threads", "x"]);
 
 const bodySchema = z.object({
   trigger: z.string().min(1),

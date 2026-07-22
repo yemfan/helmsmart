@@ -21,7 +21,7 @@ import type { Trigger, SubjectDetail } from "./subjects";
  * rewrite four times.
  */
 
-export type Platform = "facebook" | "instagram" | "linkedin" | "x";
+export type Platform = "facebook" | "instagram" | "linkedin" | "threads" | "x";
 
 const PLATFORM_GUIDANCE: Record<Platform, string> = {
   facebook:
@@ -30,6 +30,8 @@ const PLATFORM_GUIDANCE: Record<Platform, string> = {
     "Instagram: short hook in the first line (Instagram truncates after ~125 chars), 1-2 follow-on lines, then 8-12 discovery hashtags at the end on a separate line.",
   linkedin:
     "LinkedIn: professional tone, 3-6 short lines with line breaks, frame as expertise sharing or market insight, 2-4 hashtags max at end.",
+  threads:
+    "Threads: casual, authentic, conversational — like talking to a friend, not a billboard. Hard 500-character limit total. Lead with a hook, keep it punchy, 0-3 hashtags max (Threads favors a single well-chosen tag over hashtag walls).",
   x:
     "X (Twitter): under 280 characters total INCLUDING any hashtags. One sentence + 1-2 tasteful hashtags. Punchy.",
 };
