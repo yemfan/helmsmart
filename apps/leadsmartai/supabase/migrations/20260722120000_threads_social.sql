@@ -56,9 +56,15 @@ alter table public.scheduled_posts
   add constraint scheduled_posts_platform_check
     check (platform in ('facebook', 'instagram', 'linkedin', 'threads'));
 
-alter table public.recurring_posts
-  drop constraint if exists recurring_posts_platform_check;
-
-alter table public.recurring_posts
-  add constraint recurring_posts_platform_check
-    check (platform in ('facebook', 'instagram', 'linkedin', 'threads'));
+-- recurring_posts is guarded: its own migration (20260630000000) never reached
+-- some environments, so widen the check only when the table actually exists.
+do $$
+begin
+  if to_regclass('public.recurring_posts') is not null then
+    alter table public.recurring_posts
+      drop constraint if exists recurring_posts_platform_check;
+    alter table public.recurring_posts
+      add constraint recurring_posts_platform_check
+        check (platform in ('facebook', 'instagram', 'linkedin', 'threads'));
+  end if;
+end $$;
