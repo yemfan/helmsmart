@@ -389,7 +389,7 @@ export async function dispatchMobileMissedCallPush(params: {
 export async function dispatchMobilePublishFailurePush(params: {
   agentId: string;
   scheduledPostId: string;
-  platform: "facebook" | "instagram" | "linkedin";
+  platform: "facebook" | "instagram" | "linkedin" | "threads";
   errorMessage: string;
 }): Promise<boolean> {
   if (mobilePushGloballyDisabled()) return false;
@@ -399,7 +399,9 @@ export async function dispatchMobilePublishFailurePush(params: {
       ? "LinkedIn"
       : params.platform === "instagram"
         ? "Instagram"
-        : "Facebook";
+        : params.platform === "threads"
+          ? "Threads"
+          : "Facebook";
   const title = `⚠️ ${platformLabel} post failed`;
   const body =
     params.errorMessage.slice(0, 140) ||
@@ -591,7 +593,7 @@ export async function dispatchMobilePostMilestonePush(params: {
   agentId: string;
   leadPostId: string;
   threshold: number;
-  platform: "facebook" | "instagram" | "linkedin";
+  platform: "facebook" | "instagram" | "linkedin" | "threads";
   caption: string;
 }): Promise<boolean> {
   if (mobilePushGloballyDisabled()) return false;
@@ -604,7 +606,9 @@ export async function dispatchMobilePostMilestonePush(params: {
       ? "LinkedIn"
       : params.platform === "instagram"
         ? "Instagram"
-        : "Facebook";
+        : params.platform === "threads"
+          ? "Threads"
+          : "Facebook";
   // First-engagement push reads differently from the bigger ones —
   // "someone engaged" is the celebration moment; the milestones
   // beyond that are progress-tracking.

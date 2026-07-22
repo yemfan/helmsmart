@@ -8,7 +8,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 export const runtime = "nodejs";
 
 const bodySchema = z.object({
-  platform: z.enum(["facebook", "instagram", "linkedin"]),
+  platform: z.enum(["facebook", "instagram", "linkedin", "threads"]),
   connectionId: z.string().uuid(),
   caption: z.string().min(1).max(5_000),
   hashtags: z.array(z.string()).max(40).optional(),

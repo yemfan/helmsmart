@@ -52,7 +52,7 @@ type RecurrenceRow = {
   id: string;
   agent_id: string;
   social_account_id: string;
-  platform: "facebook" | "instagram" | "linkedin";
+  platform: "facebook" | "instagram" | "linkedin" | "threads";
   caption: string;
   hashtags: string[];
   media_library_id: string | null;

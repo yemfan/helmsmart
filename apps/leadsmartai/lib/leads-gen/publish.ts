@@ -6,6 +6,7 @@ import {
   publishFacebookPagePost,
   publishInstagramBusinessPost,
 } from "./meta-post";
+import { publishThreadsPost } from "./threads-post";
 import { decryptToken } from "./token-enc";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -21,6 +22,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
  *   - 'facebook'  → Page feed post via Graph API
  *   - 'instagram' → IG Business two-step publish (requires image)
  *   - 'linkedin'  → LinkedIn personal feed via Share API
+ *   - 'threads'   → Threads two-step publish (text-only or image)
  *
  * Flow:
  *   1. Load + ownership-check the social_accounts row
@@ -37,7 +39,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
  * dispatching here.
  */
 
-export type PublishPlatform = "facebook" | "instagram" | "linkedin";
+export type PublishPlatform = "facebook" | "instagram" | "linkedin" | "threads";
 
 export type PublishInput = {
   agentId: string;
@@ -115,7 +117,10 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   // expects them in the caption). FB keeps hashtags separate so
   // they're rendered as plain text (no benefit to inlining).
   let caption = rawCaption.trim();
-  const inlineHashtags = platform === "instagram" || platform === "linkedin";
+  const inlineHashtags =
+    platform === "instagram" ||
+    platform === "linkedin" ||
+    platform === "threads";
   if (
     inlineHashtags &&
     hashtags &&
@@ -133,7 +138,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   const { data: connRow, error: connErr } = await supabaseAdmin
     .from("social_accounts")
     .select(
-      "id, agent_id, platform, fb_page_id, ig_business_user_id, page_access_token_enc, user_access_token_enc, linkedin_member_urn, status",
+      "id, agent_id, platform, fb_page_id, ig_business_user_id, page_access_token_enc, user_access_token_enc, linkedin_member_urn, threads_user_id, status",
     )
     .eq("id", connectionId)
     .eq("agent_id", agentId)
@@ -163,6 +168,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     page_access_token_enc: string | null;
     user_access_token_enc: string | null;
     linkedin_member_urn: string | null;
+    threads_user_id: string | null;
     status: string;
   };
 
@@ -181,6 +187,14 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       ok: false,
       status: 422,
       error: "Connection platform is not LinkedIn.",
+      retryable: false,
+    };
+  }
+  if (platform === "threads" && conn.platform !== "threads") {
+    return {
+      ok: false,
+      status: 422,
+      error: "Connection platform is not Threads.",
       retryable: false,
     };
   }
@@ -219,6 +233,17 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       ok: false,
       status: 422,
       error: "Connection is missing LinkedIn credentials. Reconnect to refresh.",
+      retryable: false,
+    };
+  }
+  if (
+    platform === "threads" &&
+    (!conn.threads_user_id || !conn.user_access_token_enc)
+  ) {
+    return {
+      ok: false,
+      status: 422,
+      error: "Connection is missing Threads credentials. Reconnect to refresh.",
       retryable: false,
     };
   }
@@ -312,7 +337,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   let accessToken: string;
   try {
     const encrypted =
-      platform === "linkedin"
+      platform === "linkedin" || platform === "threads"
         ? conn.user_access_token_enc!
         : conn.page_access_token_enc!;
     accessToken = decryptToken(encrypted);
@@ -335,7 +360,12 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     }
     const msg = e instanceof Error ? e.message : "Token decryption failed";
     console.error("[leads-gen/publish] token decrypt failed:", msg);
-    const platformLabel = platform === "linkedin" ? "LinkedIn" : "Facebook";
+    const platformLabel =
+      platform === "linkedin"
+        ? "LinkedIn"
+        : platform === "threads"
+          ? "Threads"
+          : "Facebook";
     return {
       ok: false,
       status: 422,
@@ -394,6 +424,15 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
         pageAccessToken: accessToken,
         caption,
         imageUrl: imageUrl!,
+      });
+      externalPostId = result.externalPostId;
+      externalPostUrl = result.externalPostUrl;
+    } else if (platform === "threads") {
+      const result = await publishThreadsPost({
+        userId: conn.threads_user_id!,
+        accessToken,
+        text: caption,
+        imageUrl,
       });
       externalPostId = result.externalPostId;
       externalPostUrl = result.externalPostUrl;

@@ -5,6 +5,8 @@
       "success_facebook_title": "Facebook 已连接",
       "success_linkedin_title": "LinkedIn 已连接",
       "success_linkedin_body": "您的 LinkedIn 个人资料已绑定。现在可以直接通过快速发布向导发布内容。",
+      "success_threads_title": "Threads 已连接",
+      "success_threads_body": "您的 Threads 账户已绑定。现在可以自动或通过快速发布向导向 Threads 发布内容。",
       "success_meta_body_one": "已连接 {{count}} 个主页。现在可以直接通过快速发布向导发布内容。",
       "success_meta_body_other": "已连接 {{count}} 个主页。现在可以直接通过快速发布向导发布内容。",
       "cancelled_title": "已取消连接",
@@ -44,6 +46,17 @@
       "revoke_hint_prefix": "帖子将发布到您的 LinkedIn 个人动态。公司主页发布需要 LinkedIn 的 Marketing API（受合作伙伴计划限制），暂未支持。如需在 LinkedIn 端撤销，请前往 LinkedIn 设置 → 数据隐私 → 「",
       "revoke_hint_link": "已授权的服务",
       "revoke_hint_suffix": "」并移除 CloseBoss。"
+    },
+    "threads": {
+      "title": "Threads",
+      "body": "自动将营销内容发布到 Threads。此平台上轻松、口语化的帖子表现最佳——即时观点、市场观察和幕后花絮。",
+      "cta_connect": "连接 Threads",
+      "cta_reconnect": "重新连接",
+      "member_fallback": "Threads 账户",
+      "handle": "@{{user}}",
+      "your_threads_fallback": "您的 Threads",
+      "empty": "尚未连接。使用 Threads 登录以启用发布功能。",
+      "revoke_hint": "帖子将发布到已连接的 Threads 账户。如需在 Threads 端撤销，请前往 Threads → 设置 → 账户 → 网站权限，并移除 CloseBoss。"
     },
     "google_ads": {
       "title": "Google 广告",

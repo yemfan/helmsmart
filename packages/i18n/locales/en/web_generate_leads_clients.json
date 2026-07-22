@@ -5,6 +5,8 @@
       "success_facebook_title": "Facebook connected",
       "success_linkedin_title": "LinkedIn connected",
       "success_linkedin_body": "Your LinkedIn profile is linked. You can now publish posts directly from the Quick Post wizard.",
+      "success_threads_title": "Threads connected",
+      "success_threads_body": "Your Threads account is linked. Posts can now publish to Threads automatically or from the Quick Post wizard.",
       "success_meta_body_one": "Linked {{count}} Page. You can now publish posts directly from the Quick Post wizard.",
       "success_meta_body_other": "Linked {{count}} Pages. You can now publish posts directly from the Quick Post wizard.",
       "cancelled_title": "Connection cancelled",
@@ -44,6 +46,17 @@
       "revoke_hint_prefix": "Posts go to your personal LinkedIn feed. Company Page posting needs LinkedIn's Marketing API (partner-program-gated) and isn't in scope yet. To revoke from LinkedIn's side, go to your LinkedIn Settings → Data privacy → ",
       "revoke_hint_link": "Permitted services",
       "revoke_hint_suffix": " and remove CloseBoss."
+    },
+    "threads": {
+      "title": "Threads",
+      "body": "Auto-post your marketing to Threads. Casual, conversational posts perform best here — quick takes, market observations, and behind-the-scenes wins.",
+      "cta_connect": "Connect Threads",
+      "cta_reconnect": "Reconnect",
+      "member_fallback": "Threads account",
+      "handle": "@{{user}}",
+      "your_threads_fallback": "your Threads",
+      "empty": "Not connected. Sign in with Threads to enable posting.",
+      "revoke_hint": "Posts publish to the connected Threads account. To revoke from Threads' side, open Threads → Settings → Account → Website permissions and remove CloseBoss."
     },
     "google_ads": {
       "title": "Google Ads",
