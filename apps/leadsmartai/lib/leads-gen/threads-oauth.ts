@@ -191,6 +191,41 @@ export async function exchangeForLongLivedToken(
   };
 }
 
+// ── signed_request (deauthorize / data-deletion callbacks) ───────────────────
+
+/**
+ * Parse + verify a Meta `signed_request` (the payload Meta POSTs to the
+ * deauthorize + data-deletion callbacks when a user removes the app or asks
+ * for their data to be deleted). Format is `<base64url-sig>.<base64url-payload>`
+ * where sig = HMAC-SHA256(payload, appSecret). Returns the decoded payload
+ * (with `user_id`) or null if the signature doesn't verify.
+ */
+export function parseSignedRequest(
+  signed: string,
+): { user_id?: string; [k: string]: unknown } | null {
+  const parts = signed.split(".");
+  if (parts.length !== 2) return null;
+  const [encodedSig, payload] = parts as [string, string];
+  const expected = crypto
+    .createHmac("sha256", clientSecret())
+    .update(payload)
+    .digest();
+  let actual: Buffer;
+  try {
+    actual = Buffer.from(encodedSig, "base64url");
+  } catch {
+    return null;
+  }
+  if (actual.length !== expected.length || !crypto.timingSafeEqual(actual, expected)) {
+    return null;
+  }
+  try {
+    return JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+  } catch {
+    return null;
+  }
+}
+
 // ── Profile ──────────────────────────────────────────────────────────────────
 
 export type ThreadsProfile = {
