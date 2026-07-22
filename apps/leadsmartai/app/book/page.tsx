@@ -14,7 +14,9 @@ export const metadata: Metadata = {
  * Until that's set, we fall back to the working contact form rather than the old
  * mock flow (which showed fake leads + past dates and booked nothing).
  */
-const BOOKING_URL = process.env.NEXT_PUBLIC_DEMO_BOOKING_URL?.trim();
+const BOOKING_URL =
+  process.env.NEXT_PUBLIC_DEMO_BOOKING_URL?.trim() ||
+  "https://cal.com/closeboss/closeboss-demo";
 
 export default function BookingPage() {
   return (
