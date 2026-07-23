@@ -60,7 +60,7 @@ type Subject = {
   refId: string | null;
 };
 
-type Platform = "facebook" | "instagram" | "linkedin" | "x";
+type Platform = "facebook" | "instagram" | "linkedin" | "threads" | "x";
 
 type DraftResponse = {
   ok: boolean;
@@ -154,6 +154,7 @@ const PLATFORM_TABS: { id: Platform; label: string }[] = [
   { id: "facebook", label: "Facebook" },
   { id: "instagram", label: "Instagram" },
   { id: "linkedin", label: "LinkedIn" },
+  { id: "threads", label: "Threads" },
   { id: "x", label: "X" },
 ];
 
@@ -189,18 +190,21 @@ type MediaItem = {
  */
 type Connection = {
   id: string;
-  platform: "meta" | "linkedin";
+  platform: "meta" | "linkedin" | "threads";
   fbPageId: string | null;
   fbPageName: string | null;
   igBusinessUserId: string | null;
   igBusinessUsername: string | null;
   linkedinMemberUrn: string | null;
   linkedinMemberEmail: string | null;
+  threadsUserId: string | null;
+  threadsUsername: string | null;
   displayName: string | null;
   pictureUrl: string | null;
   canPublishFacebook: boolean;
   canPublishInstagram: boolean;
   canPublishLinkedIn: boolean;
+  canPublishThreads: boolean;
 };
 
 export default function QuickPostClient() {
@@ -339,6 +343,9 @@ export default function QuickPostClient() {
     }
     if (platform === "linkedin") {
       return connections.filter((c) => c.canPublishLinkedIn);
+    }
+    if (platform === "threads") {
+      return connections.filter((c) => c.canPublishThreads);
     }
     return [];
   }, [connections, platform]);
@@ -548,7 +555,8 @@ export default function QuickPostClient() {
     if (
       platform !== "facebook" &&
       platform !== "instagram" &&
-      platform !== "linkedin"
+      platform !== "linkedin" &&
+      platform !== "threads"
     )
       return;
     setPublishResult(null);
@@ -616,7 +624,8 @@ export default function QuickPostClient() {
     if (
       platform !== "facebook" &&
       platform !== "instagram" &&
-      platform !== "linkedin"
+      platform !== "linkedin" &&
+      platform !== "threads"
     )
       return;
     setScheduleResult(null);
@@ -1201,9 +1210,13 @@ export default function QuickPostClient() {
                         <option key={c.id} value={c.id}>
                           {platform === "instagram" && c.igBusinessUsername
                             ? `@${c.igBusinessUsername}`
-                            : platform === "linkedin"
-                              ? c.displayName ?? t("step3.linkedin_member_fallback")
-                              : c.fbPageName ?? t("step3.page_fallback")}
+                            : platform === "threads"
+                              ? c.threadsUsername
+                                ? `@${c.threadsUsername}`
+                                : c.displayName ?? t("step3.threads_account_fallback")
+                              : platform === "linkedin"
+                                ? c.displayName ?? t("step3.linkedin_member_fallback")
+                                : c.fbPageName ?? t("step3.page_fallback")}
                         </option>
                       ))}
                     </select>
@@ -1250,7 +1263,8 @@ export default function QuickPostClient() {
                   {activeConnection &&
                   (platform === "facebook" ||
                     platform === "instagram" ||
-                    platform === "linkedin") ? (
+                    platform === "linkedin" ||
+                    platform === "threads") ? (
                     recurringMode ? (
                       <button
                         type="button"
@@ -1322,7 +1336,8 @@ export default function QuickPostClient() {
                 {activeConnection &&
                   (platform === "facebook" ||
                     platform === "instagram" ||
-                    platform === "linkedin") &&
+                    platform === "linkedin" ||
+                    platform === "threads") &&
                   !recurringMode && (
                     <div className="rounded-xl border border-gray-200 bg-gray-50/60 px-3 py-2.5 text-sm">
                       {!scheduleMode ? (
@@ -1393,7 +1408,8 @@ export default function QuickPostClient() {
                 {activeConnection &&
                   (platform === "facebook" ||
                     platform === "instagram" ||
-                    platform === "linkedin") &&
+                    platform === "linkedin" ||
+                    platform === "threads") &&
                   recurringMode && (
                     <div className="rounded-xl border border-purple-200 bg-purple-50/60 px-3 py-2.5 text-sm space-y-3">
                       <div className="flex items-center justify-between">
@@ -1638,6 +1654,20 @@ export default function QuickPostClient() {
                       {t("connect_nudge.linkedin_link")}
                     </a>
                     {t("connect_nudge.linkedin_suffix")}
+                  </p>
+                )}
+                {!activeConnection && platform === "threads" && (
+                  <p className="text-xs text-gray-500">
+                    {t("connect_nudge.threads_prefix")}
+                    <a
+                      href="/dashboard/leads/generate/connect"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-gray-900 hover:underline"
+                    >
+                      {t("connect_nudge.threads_link")}
+                    </a>
+                    {t("connect_nudge.threads_suffix")}
                   </p>
                 )}
 

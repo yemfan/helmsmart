@@ -127,6 +127,7 @@
     "save_image": "Save image",
     "post_to": "Post to:",
     "linkedin_member_fallback": "LinkedIn member",
+    "threads_account_fallback": "Threads account",
     "page_fallback": "Connected Page"
   },
   "actions": {
@@ -187,7 +188,10 @@
     "meta_suffix": " and we'll publish directly.",
     "linkedin_prefix": "Want one-click publish? ",
     "linkedin_link": "Connect LinkedIn",
-    "linkedin_suffix": " and we'll post to your personal feed directly."
+    "linkedin_suffix": " and we'll post to your personal feed directly.",
+    "threads_prefix": "Want one-click publish? ",
+    "threads_link": "Connect Threads",
+    "threads_suffix": " and we'll post to your Threads feed directly."
   },
   "compose_hint": {
     "linkedin": "LinkedIn's share dialog only honors the link — the body won't pre-fill. Tap Copy caption first, then paste into the LinkedIn compose.",
