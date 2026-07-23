@@ -16,7 +16,6 @@ import LeadRoutingSettingsPanel from "@/components/dashboard/LeadRoutingSettings
 import ReviewPolicyPanel from "@/components/dashboard/ReviewPolicyPanel";
 import SettingsTabsClient from "@/components/dashboard/SettingsTabsClient";
 import SocialAutopilotController from "@/components/dashboard/SocialAutopilotController";
-import SocialConnectionsPanel from "@/components/dashboard/SocialConnectionsPanel";
 import SphereDripSettingsPanel from "@/components/dashboard/SphereDripSettingsPanel";
 import TemplatesSummaryCard from "@/components/dashboard/TemplatesSummaryCard";
 import TimingPanel from "@/components/dashboard/TimingPanel";
@@ -125,7 +124,23 @@ export default async function SettingsPage() {
         channels={
           <>
             <ChannelsCard agentId={ctx.agentId} />
-            <SocialConnectionsPanel />
+            {/* Connections live on ONE page. This used to be a second, older
+                connect panel that read a narrower projection (so it could show
+                "no Pages" while the connect page showed the Page), pointed at a
+                legacy OAuth route that failed with state_mismatch, and never
+                captured the linked Instagram account. Replaced with a pointer
+                to the real thing. */}
+            <Card
+              title="Connected social accounts"
+              description="Facebook, Instagram, LinkedIn and Threads are connected in one place."
+            >
+              <a
+                href="/dashboard/leads/generate/connect"
+                className="inline-flex rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ba6]"
+              >
+                Manage connected accounts
+              </a>
+            </Card>
             <Card
               title="Social auto-posting"
               description="Your AI team writes and publishes posts for your feed. This decides what goes out, where, how often — and who signs off."
