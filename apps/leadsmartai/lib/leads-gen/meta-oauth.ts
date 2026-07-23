@@ -249,61 +249,149 @@ type MetaIgUserResponse = {
   error?: { message?: string };
 };
 
+const PAGE_FIELDS =
+  "id,name,access_token,picture{url},instagram_business_account";
+
+type MetaPageRow = {
+  id?: string;
+  name?: string;
+  access_token?: string;
+  picture?: { data?: { url?: string } };
+  instagram_business_account?: { id?: string };
+};
+
 /**
- * List the Pages a user manages, each with its Page access token
- * + linked IG Business account (if any).
+ * Map one raw Page row (from /me/accounts OR a business edge) to a
+ * ConnectedPage, resolving the linked IG Business account's @handle
+ * best-effort so the UI can show it next to the Page name.
+ */
+async function mapPageRow(row: MetaPageRow): Promise<ConnectedPage | null> {
+  if (!row.id || !row.access_token) return null;
+  const igId = row.instagram_business_account?.id ?? null;
+  let igUsername: string | null = null;
+  if (igId) {
+    try {
+      const igRes = await fetch(
+        `${META_GRAPH_BASE}/${igId}?fields=username&access_token=${encodeURIComponent(row.access_token)}`,
+      );
+      const igBody = (await igRes.json().catch(() => ({}))) as MetaIgUserResponse;
+      if (igRes.ok && igBody.username) igUsername = igBody.username;
+    } catch {
+      // ignore — a missing handle is cosmetic
+    }
+  }
+  return {
+    pageId: row.id,
+    pageName: row.name ?? row.id,
+    pageAccessToken: row.access_token,
+    picture: row.picture?.data?.url ?? null,
+    igBusinessUserId: igId,
+    igBusinessUsername: igUsername,
+  };
+}
+
+/**
+ * Pages a Business portfolio owns. These do NOT come back from
+ * /me/accounts — the moment a Page joins a portfolio (which linking an
+ * Instagram account does automatically) it's only reachable through the
+ * business's owned_pages / client_pages edges, and only with
+ * `business_management` granted. Without this, a Page that just had an IG
+ * account linked (pulling it into a portfolio) loses its IG link — or
+ * disappears entirely — on the next reconnect. (Same fix HelmSmart needed.)
+ */
+async function fetchBusinessOwnedPages(
+  userAccessToken: string,
+): Promise<ConnectedPage[]> {
+  const bizRes = await fetch(
+    `${META_GRAPH_BASE}/me/businesses?fields=id,name&access_token=${encodeURIComponent(userAccessToken)}`,
+  );
+  const bizBody = (await bizRes.json().catch(() => ({}))) as {
+    data?: Array<{ id?: string }>;
+    error?: { message?: string };
+  };
+  if (!bizRes.ok || !Array.isArray(bizBody.data)) return [];
+
+  const out: ConnectedPage[] = [];
+  for (const biz of bizBody.data) {
+    if (!biz.id) continue;
+    // owned_pages = Pages the business owns; client_pages = Pages it was
+    // granted access to. Checking both means we don't miss a Page depending
+    // on exactly how it landed in the portfolio.
+    for (const edge of ["owned_pages", "client_pages"] as const) {
+      const res = await fetch(
+        `${META_GRAPH_BASE}/${biz.id}/${edge}?fields=${PAGE_FIELDS}&access_token=${encodeURIComponent(userAccessToken)}`,
+      );
+      const body = (await res.json().catch(() => ({}))) as {
+        data?: MetaPageRow[];
+        error?: { message?: string };
+      };
+      if (!res.ok || !Array.isArray(body.data)) continue;
+      for (const row of body.data) {
+        const p = await mapPageRow(row);
+        if (p) out.push(p);
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * List the Pages a user manages, each with its Page access token +
+ * linked IG Business account (if any).
  *
- * Pages with no IG Business linked get `igBusinessUserId: null` —
- * caller decides whether to skip them or store as Page-only.
- *
- * Paginates client-side — most agents have ≤ 5 Pages but a real
- * brokerage account can have dozens. We follow `paging.next`
- * until empty.
+ * Two sources, MERGED: /me/accounts (standalone Pages) AND the business
+ * owned_pages / client_pages edges (portfolio Pages, which /me/accounts
+ * silently omits — and which carry the IG link after a Page is pulled into
+ * a portfolio by an Instagram link). Deduped by Page id, preferring whichever
+ * source reported an IG Business account so IG publishing survives the
+ * portfolio move.
  */
 export async function fetchPagesForUser(
   userAccessToken: string,
 ): Promise<ConnectedPage[]> {
-  const pages: ConnectedPage[] = [];
-  let url:
-    | string
-    | undefined = `${META_GRAPH_BASE}/me/accounts?fields=id,name,access_token,picture{url},instagram_business_account&access_token=${encodeURIComponent(userAccessToken)}`;
+  const byId = new Map<string, ConnectedPage>();
+  const add = (p: ConnectedPage) => {
+    const existing = byId.get(p.pageId);
+    // Prefer the entry that actually has an IG link — the portfolio edge
+    // often reports it when /me/accounts doesn't.
+    if (!existing || (!existing.igBusinessUserId && p.igBusinessUserId)) {
+      byId.set(p.pageId, p);
+    }
+  };
+
+  // Source 1: /me/accounts, paginated. Don't hard-fail on error — the
+  // business edge below may still surface the Page.
+  let url: string | undefined =
+    `${META_GRAPH_BASE}/me/accounts?fields=${PAGE_FIELDS}&access_token=${encodeURIComponent(userAccessToken)}`;
   while (url) {
     const res = await fetch(url);
     const body = (await res.json().catch(() => ({}))) as MetaMeAccountsResponse & {
       error?: { message?: string };
     };
     if (!res.ok) {
-      const msg = body.error?.message || `HTTP ${res.status}`;
-      throw new Error(`Meta /me/accounts failed: ${msg}`);
+      console.warn(
+        "[meta-oauth] /me/accounts failed:",
+        body.error?.message || `HTTP ${res.status}`,
+      );
+      break;
     }
     for (const row of body.data ?? []) {
-      if (!row.id || !row.access_token) continue;
-      const igId = row.instagram_business_account?.id ?? null;
-      let igUsername: string | null = null;
-      if (igId) {
-        // Best-effort: fetch the IG username so the UI can show
-        // "@somehandle" next to the Page name. Failure (e.g. token
-        // missing IG scope) just leaves the username blank.
-        try {
-          const igRes = await fetch(
-            `${META_GRAPH_BASE}/${igId}?fields=username&access_token=${encodeURIComponent(row.access_token)}`,
-          );
-          const igBody = (await igRes.json().catch(() => ({}))) as MetaIgUserResponse;
-          if (igRes.ok && igBody.username) igUsername = igBody.username;
-        } catch {
-          // ignore
-        }
-      }
-      pages.push({
-        pageId: row.id,
-        pageName: row.name ?? row.id,
-        pageAccessToken: row.access_token,
-        picture: row.picture?.data?.url ?? null,
-        igBusinessUserId: igId,
-        igBusinessUsername: igUsername,
-      });
+      const p = await mapPageRow(row as MetaPageRow);
+      if (p) add(p);
     }
     url = body.paging?.next;
   }
-  return pages;
+
+  // Source 2: business-owned / client Pages (portfolio). Best-effort — a
+  // token without business_management just yields nothing here.
+  try {
+    for (const p of await fetchBusinessOwnedPages(userAccessToken)) add(p);
+  } catch (e) {
+    console.warn(
+      "[meta-oauth] business-owned pages lookup failed:",
+      e instanceof Error ? e.message : e,
+    );
+  }
+
+  return Array.from(byId.values());
 }
