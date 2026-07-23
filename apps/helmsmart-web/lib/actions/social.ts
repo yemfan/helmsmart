@@ -19,6 +19,7 @@ const CHAR_LIMITS: Record<Platform, number> = {
   linkedin: 3000,
   facebook: 63206,
   instagram: 2200,
+  threads: 500,
 };
 
 const TONE_DESC: Record<Tone, string> = {

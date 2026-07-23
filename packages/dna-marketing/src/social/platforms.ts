@@ -10,13 +10,19 @@
 // places each held their own private answer to "can this publish?" and none of
 // them told the user.
 
-export type SocialPlatform = "x" | "linkedin" | "facebook" | "instagram";
+export type SocialPlatform =
+  | "x"
+  | "linkedin"
+  | "facebook"
+  | "instagram"
+  | "threads";
 
 export const SOCIAL_PLATFORMS: readonly SocialPlatform[] = [
   "x",
   "linkedin",
   "facebook",
   "instagram",
+  "threads",
 ];
 
 export const PLATFORM_LABEL: Record<SocialPlatform, string> = {
@@ -24,6 +30,7 @@ export const PLATFORM_LABEL: Record<SocialPlatform, string> = {
   linkedin: "LinkedIn",
   facebook: "Facebook",
   instagram: "Instagram",
+  threads: "Threads",
 };
 
 /**

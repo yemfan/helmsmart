@@ -45,6 +45,10 @@ export const PLATFORM_PROVIDER: Record<SocialPlatform, "linkedin" | "meta" | nul
   facebook: "meta",
   instagram: "meta",
   x: null,
+  // Threads is a known platform in the shared core, but HelmSmart hasn't wired
+  // its publisher/OAuth yet (that's a later phase), so it stays provider-less
+  // and out of PUBLISHABLE_PLATFORMS — honestly "manual" like X for now.
+  threads: null,
 };
 
 /**
