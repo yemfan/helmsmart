@@ -127,6 +127,7 @@
     "save_image": "保存图片",
     "post_to": "发布到：",
     "linkedin_member_fallback": "LinkedIn 用户",
+    "threads_account_fallback": "Threads 账户",
     "page_fallback": "已连接的主页"
   },
   "actions": {
@@ -187,7 +188,10 @@
     "meta_suffix": "，我们将直接发布。",
     "linkedin_prefix": "想要一键发布？",
     "linkedin_link": "连接 LinkedIn",
-    "linkedin_suffix": "，我们将直接发布到您的个人动态。"
+    "linkedin_suffix": "，我们将直接发布到您的个人动态。",
+    "threads_prefix": "想要一键发布？",
+    "threads_link": "连接 Threads",
+    "threads_suffix": "，我们将直接发布到您的 Threads 动态。"
   },
   "compose_hint": {
     "linkedin": "LinkedIn 分享对话框只识别链接 — 正文不会自动填入。请先点击「复制文案」，再粘贴到 LinkedIn 发布器中。",
