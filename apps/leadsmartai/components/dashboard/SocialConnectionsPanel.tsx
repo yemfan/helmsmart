@@ -197,8 +197,14 @@ export default function SocialConnectionsPanel() {
           <p className="text-xs text-slate-500">
             New connection authorizes the app to read your Pages list and post on your behalf.
           </p>
+          {/* Route through the IG-aware Meta flow (/api/leads-gen/connect/meta),
+              NOT the legacy /api/social/facebook one — the legacy flow throws
+              `state_mismatch` and never captures the linked Instagram Business
+              account. This flow reads Pages via /me/accounts + the business
+              portfolio edge and stores ig_business_user_id, so one grant lights
+              up both Facebook and Instagram. It redirects to the connect page. */}
           <a
-            href="/api/social/facebook/start"
+            href="/api/leads-gen/connect/meta/start"
             className="shrink-0 rounded-lg bg-[#1877F2] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#155FC4]"
           >
             Connect Facebook Page
