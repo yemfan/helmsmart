@@ -4,11 +4,18 @@ import {
   DEFAULT_POSTS_PER_PERIOD,
   modeQueuesPosts as coreModeQueuesPosts,
   normalizePostsPerPeriod,
+  planPublishTimes,
   queueStatusForMode as coreQueueStatus,
   spreadPublishTime,
   type PublishMode,
 } from "@helm/dna-marketing";
 
+import {
+  getSocialAutopilotConfig,
+  type ContentCategory,
+  type SocialAutopilotConfig,
+} from "@/lib/social/autopilotConfig";
+import { planAutopilotPeriod } from "@/lib/social/planAutopilot";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { getSiteUrl } from "@/lib/siteUrl";
 import { getLatestDigest } from "@/lib/newsletter/db";
@@ -418,6 +425,37 @@ export async function getSocialPostsPerWeek(agentId: string): Promise<number> {
 }
 
 /**
+ * Publish slots for a period.
+ *
+ * The controller (explicit days / posts-per-day / hour) takes over only when
+ * the owner has actually set one of them; otherwise we keep `spreadPublishTime`'s
+ * derived even spread so nobody's existing cadence shifts under them.
+ */
+function planPeriodSlots(
+  weekOf: string,
+  count: number,
+  config: SocialAutopilotConfig,
+): string[] {
+  const controllerDrivesSchedule =
+    config.postDays !== null ||
+    config.postsPerDay !== null ||
+    config.postHourUtc !== null;
+
+  if (!controllerDrivesSchedule) {
+    return Array.from({ length: count }, (_, i) =>
+      spreadScheduleTime(weekOf, i, config.postsPerWeek),
+    );
+  }
+
+  return planPublishTimes(weekOf, {
+    count,
+    days: config.postDays ?? undefined,
+    maxPerDay: config.postsPerDay ?? undefined,
+    hourUtc: config.postHourUtc ?? undefined,
+  });
+}
+
+/**
  * Build this agent's weekly recommendations (idempotent per (agent, week)).
  * Returns the number of rows inserted (0 when nothing to add or already done).
  */
@@ -433,21 +471,47 @@ export async function generateWeeklyRecommendations(
     .eq("week_of", weekOf);
   if ((existing ?? 0) > 0) return { count: 0 };
 
-  const mode = await getSocialMode(agentId);
+  // The auto-post controller: what to post, where, how often, when, and who
+  // approves. Everything unset means "no preference" and keeps the historical
+  // behaviour, so an agent who never opens the control sees no change.
+  const baseConfig = await getSocialAutopilotConfig(agentId);
+  let config = baseConfig;
+  if (baseConfig.aiManaged) {
+    // Full AI automation: let the AI choose the plan from what's connected.
+    // Fails soft — a planner outage returns the configured plan untouched.
+    const connected = await getConnectedSocialAccounts(agentId);
+    config = await planAutopilotPeriod({
+      config: baseConfig,
+      connectedPlatforms: [...new Set(connected.map(platformForAccount))],
+      weekOf,
+    });
+  }
+
+  const mode = config.mode;
   const status: SocialRecommendation["status"] = mode === "auto" ? "approved" : "suggested";
-  const postsPerWeek = await getSocialPostsPerWeek(agentId);
+  const postsPerWeek = config.postsPerWeek;
 
   const rows: Record<string, unknown>[] = [];
 
   // (a) 1 TIMELY from the latest published digest's top item. There's only one
   // digest a week, so this is capped at one however high the cadence goes.
-  const timely = await buildTimelyRow(agentId, weekOf, status);
-  if (timely) rows.push(timely);
+  // Skipped entirely when the owner has turned news posts off.
+  if (config.includeTimely) {
+    const timely = await buildTimelyRow(agentId, weekOf, status);
+    if (timely) rows.push(timely);
+  }
 
-  // (b) EVERGREEN fills the rest of the cadence. When there's no digest this
-  // week, evergreen covers the whole week rather than leaving a short one.
+  // (b) EVERGREEN fills the rest of the cadence, drawn from the chosen
+  // categories (or any category when none are chosen). When there's no digest
+  // this week, evergreen covers the whole week rather than leaving a short one.
   const evergreenCount = Math.max(0, postsPerWeek - rows.length);
-  const evergreen = await buildEvergreenRows(agentId, weekOf, status, evergreenCount);
+  const evergreen = await buildEvergreenRows(
+    agentId,
+    weekOf,
+    status,
+    evergreenCount,
+    config.contentCategories,
+  );
   rows.push(...evergreen);
 
   if (rows.length === 0) return { count: 0 };
@@ -482,7 +546,16 @@ export async function generateWeeklyRecommendations(
   // still just a draft).
   if (modeQueuesPosts(mode)) {
     try {
-      const accounts = await getConnectedSocialAccounts(agentId);
+      const allAccounts = await getConnectedSocialAccounts(agentId);
+      // Narrow to the chosen platforms. If the choice matches nothing (the
+      // agent picked Threads and has since disconnected it), we queue NOTHING
+      // rather than falling back to every account — posting somewhere they
+      // deselected would be worse than not posting.
+      const accounts = config.platforms
+        ? allAccounts.filter((a) =>
+            (config.platforms as string[]).includes(platformForAccount(a)),
+          )
+        : allAccounts;
       if (accounts.length > 0) {
         // Re-read each inserted rec's persisted image_url (persistCardImages may
         // have populated it after insert). Idempotent: scheduleRecommendation
@@ -513,6 +586,11 @@ export async function generateWeeklyRecommendations(
             Boolean(r),
           );
 
+        // Lay out the publish slots for the whole period up front. When the
+        // owner has set days / posts-per-day / hour we honour them exactly;
+        // otherwise we keep the derived even spread.
+        const slots = planPeriodSlots(weekOf, ordered.length, config);
+
         for (const [i, rec] of ordered.entries()) {
           // 'assisted': the Boss reads each post before it's queued. A clean
           // verdict clears it to publish (still cancellable until its slot);
@@ -539,7 +617,7 @@ export async function generateWeeklyRecommendations(
             agentId,
             rec,
             accounts,
-            spreadScheduleTime(weekOf, i, postsPerWeek),
+            slots[i] ?? spreadScheduleTime(weekOf, i, postsPerWeek),
             queueStatus,
             review,
           ).catch((e) => {
@@ -800,6 +878,8 @@ async function buildEvergreenRows(
   weekOf: string,
   status: SocialRecommendation["status"],
   n: number,
+  /** Owner-chosen content categories; null/empty = draw from any category. */
+  categories: ContentCategory[] | null = null,
 ): Promise<Record<string, unknown>[]> {
   // Anti-repeat: exclude library rows used in the agent's last ~8 recs.
   const { data: recent } = await supabaseServer
@@ -828,7 +908,22 @@ async function buildEvergreenRows(
     .eq("status", "active")
     .or(`agent_id.is.null,agent_id.eq.${agentIdNum}`)
     .limit(200);
-  const all = (lib ?? []) as LibraryRow[];
+  const fetched = (lib ?? []) as LibraryRow[];
+
+  // Honour the owner's chosen categories, STRICTLY: posting a topic they
+  // deliberately deselected is a worse failure than posting less. So the
+  // fallback below draws from this filtered pool too, never the full library.
+  // An empty match is logged rather than silently widened.
+  const all =
+    categories && categories.length > 0
+      ? fetched.filter((r) => (categories as string[]).includes(r.category))
+      : fetched;
+  if (categories && categories.length > 0 && all.length === 0) {
+    console.warn(
+      `[social] no library content matches the selected categories for agent ${agentId}:`,
+      categories.join(","),
+    );
+  }
 
   // Owned content is preferred over shared. An agent who has curated their own
   // voice (today: the CloseBoss brand) should post THAT — the shared library
