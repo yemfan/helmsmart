@@ -15,7 +15,7 @@ import LanguagePanel from "@/components/dashboard/LanguagePanel";
 import LeadRoutingSettingsPanel from "@/components/dashboard/LeadRoutingSettingsPanel";
 import ReviewPolicyPanel from "@/components/dashboard/ReviewPolicyPanel";
 import SettingsTabsClient from "@/components/dashboard/SettingsTabsClient";
-import SocialApprovalPanel from "@/components/dashboard/SocialApprovalPanel";
+import SocialAutopilotController from "@/components/dashboard/SocialAutopilotController";
 import SocialConnectionsPanel from "@/components/dashboard/SocialConnectionsPanel";
 import SphereDripSettingsPanel from "@/components/dashboard/SphereDripSettingsPanel";
 import TemplatesSummaryCard from "@/components/dashboard/TemplatesSummaryCard";
@@ -127,10 +127,10 @@ export default async function SettingsPage() {
             <ChannelsCard agentId={ctx.agentId} />
             <SocialConnectionsPanel />
             <Card
-              title="Who approves social posts"
-              description="Your AI team writes posts for your feed. This decides who signs off before one publishes."
+              title="Social auto-posting"
+              description="Your AI team writes and publishes posts for your feed. This decides what goes out, where, how often — and who signs off."
             >
-              <SocialApprovalPanel />
+              <SocialAutopilotController />
             </Card>
             <LeadRoutingSettingsPanel />
             <Card
