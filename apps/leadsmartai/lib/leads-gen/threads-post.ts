@@ -43,6 +43,55 @@ function tagError(err: Error, ge: GraphError | undefined): Error {
 }
 
 /**
+ * Poll a Threads media container until it's ready to publish.
+ *
+ * After you create a container, Threads processes it asynchronously; calling
+ * publish too early fails with "media … cannot be found". We GET the
+ * container's `status` until it reads FINISHED (text is usually ready on the
+ * first check; images can take a few seconds). ERROR/EXPIRED are terminal and
+ * surface the reason; a timeout throws a retryable-sounding message.
+ */
+async function waitForThreadsContainer(
+  containerId: string,
+  accessToken: string,
+): Promise<void> {
+  const MAX_ATTEMPTS = 11; // ~25s worst case (first check is immediate)
+  const DELAY_MS = 2500;
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    const res = await fetch(
+      `${THREADS_GRAPH_BASE}/${containerId}?fields=status,error_message&access_token=${encodeURIComponent(
+        accessToken,
+      )}`,
+    );
+    const body = (await res.json().catch(() => ({}))) as {
+      status?: string;
+      error_message?: string;
+      error?: GraphError;
+    };
+    const status = body.status;
+    if (status === "FINISHED") return;
+    if (status === "ERROR" || status === "EXPIRED") {
+      throw tagError(
+        new Error(
+          `Threads container ${status.toLowerCase()}: ${
+            body.error_message || "processing failed"
+          }`,
+        ),
+        body.error,
+      );
+    }
+    // IN_PROGRESS, an unknown status, or a transient GET failure — wait and
+    // retry (but not after the final attempt).
+    if (attempt < MAX_ATTEMPTS - 1) {
+      await new Promise((r) => setTimeout(r, DELAY_MS));
+    }
+  }
+  throw new Error(
+    "Threads is still processing this post. Please try publishing again in a moment.",
+  );
+}
+
+/**
  * Publish a post to Threads.
  *
  * Two-step process per the Threads Publishing docs:
@@ -93,6 +142,12 @@ export async function publishThreadsPost(params: {
     );
   }
   const containerId = containerBody.id;
+
+  // Threads processes the container asynchronously. Publishing before it's
+  // FINISHED returns "The media with id … cannot be found" — even for a
+  // text-only post. Poll the container status until it's ready (usually
+  // near-instant for text, a few seconds for an image) before publishing.
+  await waitForThreadsContainer(containerId, accessToken);
 
   // Step 2: publish the container.
   const publishForm = new URLSearchParams();
