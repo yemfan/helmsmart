@@ -1,5 +1,14 @@
 import "server-only";
 
+import {
+  buildFacebookPostRequest,
+  buildInstagramContainerRequest,
+  buildInstagramPublishRequest,
+  parseFacebookPostResponse,
+  parseInstagramContainerResponse,
+  parseInstagramPublishResponse,
+} from "@helm/dna-marketing";
+
 import { META_GRAPH_BASE } from "./meta-oauth";
 
 /**
@@ -27,6 +36,18 @@ type GraphError = {
   error_user_msg?: string;
   fbtrace_id?: string;
 };
+
+/**
+ * Adapt a shared-core failure outcome into the tagged Error `publish.ts`
+ * expects. The core already folded Meta's human-facing `error_user_msg` into
+ * `error`, so the message is the useful one; `metaCode` drives the
+ * retryable-vs-permanent classification downstream.
+ */
+function tagOutcomeError(message: string, code?: number | null): Error {
+  const err = new Error(message);
+  Object.assign(err, { metaCode: code ?? null });
+  return err;
+}
 
 function tagError(err: Error, ge: GraphError | undefined): Error {
   if (ge) {
@@ -69,63 +90,25 @@ export async function publishFacebookPagePost(params: {
 }): Promise<PublishResult> {
   const { pageId, pageAccessToken, caption, imageUrl, link } = params;
 
-  let endpoint: string;
-  const form = new URLSearchParams();
-  form.set("access_token", pageAccessToken);
-
-  if (imageUrl) {
-    endpoint = `${META_GRAPH_BASE}/${pageId}/photos`;
-    form.set("url", imageUrl);
-    form.set("caption", caption);
-    // Always publish (vs upload-then-publish-later). Phase 2 doesn't
-    // schedule; that's a separate UX surface.
-    form.set("published", "true");
-  } else {
-    endpoint = `${META_GRAPH_BASE}/${pageId}/feed`;
-    form.set("message", caption);
-    if (link && link.trim()) form.set("link", link.trim());
-  }
-
-  const res = await fetch(endpoint, {
-    method: "POST",
-    body: form,
+  // Endpoint choice (/photos vs /feed), field names, and the
+  // {page-id}_{post-id} → URL shape all live in @helm/dna-marketing.
+  const req = buildFacebookPostRequest({
+    pageId,
+    pageAccessToken,
+    caption,
+    imageUrl,
+    link,
+    graphBase: META_GRAPH_BASE,
   });
-  type Resp = { id?: string; post_id?: string; error?: GraphError };
-  const body = (await res.json().catch(() => ({}))) as Resp;
+  const res = await fetch(req.url, { method: "POST", body: req.body });
+  const json = await res.json().catch(() => ({}));
 
-  if (!res.ok || (!body.id && !body.post_id)) {
-    const msg = body.error?.message || `HTTP ${res.status}`;
-    throw tagError(
-      new Error(`Facebook publish failed: ${msg}`),
-      body.error,
-    );
-  }
-
-  // /feed returns { id: "<page-id>_<post-id>" } — that's the
-  // post id directly. /photos returns { id: <photo-id>,
-  // post_id: "<page-id>_<post-id>" }; we prefer post_id when
-  // both are present so the URL points at the timeline post
-  // (with the photo) rather than the standalone photo viewer.
-  const externalPostId = body.post_id || body.id!;
+  const outcome = parseFacebookPostResponse(res.status, json);
+  if (!outcome.ok) throw tagOutcomeError(outcome.error, outcome.code);
   return {
-    externalPostId,
-    externalPostUrl: facebookPostUrl(externalPostId),
+    externalPostId: outcome.postId,
+    externalPostUrl: outcome.postUrl,
   };
-}
-
-/**
- * Build a viewable Facebook post URL from the Graph `post_id`.
- * Format: {page-id}_{post-id} → https://www.facebook.com/{page-id}/posts/{post-id}
- *
- * Returns null if the id doesn't have the expected underscore
- * format — defensive against future API quirks.
- */
-function facebookPostUrl(externalPostId: string): string | null {
-  const underscore = externalPostId.indexOf("_");
-  if (underscore <= 0) return null;
-  const pageId = externalPostId.slice(0, underscore);
-  const postId = externalPostId.slice(underscore + 1);
-  return `https://www.facebook.com/${pageId}/posts/${postId}`;
 }
 
 // ── Instagram Business post ──────────────────────────────────────────
@@ -160,54 +143,47 @@ export async function publishInstagramBusinessPost(params: {
 }): Promise<PublishResult> {
   const { igUserId, pageAccessToken, caption, imageUrl } = params;
 
-  // Step 1: create the media container.
-  const containerForm = new URLSearchParams();
-  containerForm.set("image_url", imageUrl);
-  containerForm.set("caption", caption);
-  containerForm.set("access_token", pageAccessToken);
-
-  const containerRes = await fetch(
-    `${META_GRAPH_BASE}/${igUserId}/media`,
-    { method: "POST", body: containerForm },
+  // Step 1: create the media container. Meta downloads the image during this
+  // call, so `imageUrl` must be publicly reachable right now.
+  const containerReq = buildInstagramContainerRequest({
+    igUserId,
+    pageAccessToken,
+    caption,
+    imageUrl,
+    graphBase: META_GRAPH_BASE,
+  });
+  const containerRes = await fetch(containerReq.url, {
+    method: "POST",
+    body: containerReq.body,
+  });
+  const containerJson = await containerRes.json().catch(() => ({}));
+  const container = parseInstagramContainerResponse(
+    containerRes.status,
+    containerJson,
   );
-  type ContainerResp = { id?: string; error?: GraphError };
-  const containerBody = (await containerRes.json().catch(() => ({}))) as ContainerResp;
-  if (!containerRes.ok || !containerBody.id) {
-    const msg = containerBody.error?.message || `HTTP ${containerRes.status}`;
-    throw tagError(
-      new Error(`Instagram media container creation failed: ${msg}`),
-      containerBody.error,
-    );
-  }
-  const containerId = containerBody.id;
+  if (!container.ok) throw tagOutcomeError(container.error);
 
-  // Step 2: publish the container.
-  const publishForm = new URLSearchParams();
-  publishForm.set("creation_id", containerId);
-  publishForm.set("access_token", pageAccessToken);
+  // Step 2: promote the container to a real post.
+  const publishReq = buildInstagramPublishRequest({
+    igUserId,
+    pageAccessToken,
+    containerId: container.containerId,
+    graphBase: META_GRAPH_BASE,
+  });
+  const publishRes = await fetch(publishReq.url, {
+    method: "POST",
+    body: publishReq.body,
+  });
+  const publishJson = await publishRes.json().catch(() => ({}));
+  const outcome = parseInstagramPublishResponse(publishRes.status, publishJson);
+  if (!outcome.ok) throw tagOutcomeError(outcome.error, outcome.code);
 
-  const publishRes = await fetch(
-    `${META_GRAPH_BASE}/${igUserId}/media_publish`,
-    { method: "POST", body: publishForm },
-  );
-  type PublishResp = { id?: string; error?: GraphError };
-  const publishBody = (await publishRes.json().catch(() => ({}))) as PublishResp;
-  if (!publishRes.ok || !publishBody.id) {
-    const msg = publishBody.error?.message || `HTTP ${publishRes.status}`;
-    throw tagError(
-      new Error(`Instagram publish failed: ${msg}`),
-      publishBody.error,
-    );
-  }
-
-  // Resolve the public IG URL via /{media-id}?fields=permalink so
-  // the agent can click through to view the post. Best-effort —
-  // failure here doesn't fail the publish since the post is already
-  // live by this point.
+  // Resolve the public IG URL via /{media-id}?fields=permalink so the agent
+  // can click through. Best-effort — the post is already live by this point.
   let externalPostUrl: string | null = null;
   try {
     const permalinkRes = await fetch(
-      `${META_GRAPH_BASE}/${publishBody.id}?fields=permalink&access_token=${encodeURIComponent(
+      `${META_GRAPH_BASE}/${outcome.postId}?fields=permalink&access_token=${encodeURIComponent(
         pageAccessToken,
       )}`,
     );
@@ -222,7 +198,7 @@ export async function publishInstagramBusinessPost(params: {
   }
 
   return {
-    externalPostId: publishBody.id,
+    externalPostId: outcome.postId,
     externalPostUrl,
   };
 }

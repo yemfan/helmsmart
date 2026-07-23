@@ -225,6 +225,64 @@ export function parseThreadsPublishResponse(
   };
 }
 
+/**
+ * Between creating a container and publishing it, Threads processes the
+ * container ASYNCHRONOUSLY. Publishing too early fails with "The media with id
+ * … cannot be found" — and this bites even for TEXT-only posts, which is
+ * surprising enough that it cost us a live debugging round. Poll this until
+ * the state is "ready", then publish.
+ */
+export function buildThreadsContainerStatusUrl(params: {
+  containerId: string;
+  accessToken: string;
+  graphBase?: string;
+}): string {
+  const base = params.graphBase ?? threadsGraphBase();
+  return `${base}/${params.containerId}?fields=status,error_message&access_token=${encodeURIComponent(
+    params.accessToken,
+  )}`;
+}
+
+export type ThreadsContainerState =
+  | { state: "ready" }
+  | { state: "processing" }
+  | { state: "failed"; error: string };
+
+/**
+ * Interpret a container status reply.
+ *
+ * A non-2xx or an unrecognized status is treated as "processing" rather than a
+ * failure: the container was created successfully, so a transient read error
+ * should keep us polling instead of throwing away a post that is about to be
+ * publishable. Only ERROR/EXPIRED are terminal.
+ */
+export function parseThreadsContainerStatusResponse(
+  status: number,
+  json: unknown,
+): ThreadsContainerState {
+  const b = (json ?? {}) as {
+    status?: string;
+    error_message?: string;
+    error?: GraphError;
+  };
+  if (status < 200 || status >= 300) return { state: "processing" };
+  switch (b.status) {
+    case "FINISHED":
+    case "PUBLISHED":
+      return { state: "ready" };
+    case "ERROR":
+    case "EXPIRED":
+      return {
+        state: "failed",
+        error: `Threads container ${b.status.toLowerCase()}: ${
+          b.error_message || "processing failed"
+        }`,
+      };
+    default:
+      return { state: "processing" };
+  }
+}
+
 /** Best-effort permalink lookup URL: GET /{media-id}?fields=permalink. */
 export function buildThreadsPermalinkUrl(params: {
   mediaId: string;
