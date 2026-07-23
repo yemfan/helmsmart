@@ -126,10 +126,15 @@ export async function GET(req: Request) {
     // 4. Enumerate Pages + linked IG accounts.
     const pages = await fetchPagesForUser(longLived.accessToken);
     if (pages.length === 0) {
+      // Logged, not just redirected: this path used to leave NOTHING behind in
+      // the logs, so a failed connect was undiagnosable after the fact.
+      console.warn(
+        `[meta/callback] agent ${agentId}: grant returned zero Pages — check that the app has pages_show_list + business_management and that a Page was selected during the grant`,
+      );
       return back({
         status: "error",
         reason:
-          "No Facebook Pages found on this account. Create or get added to a Page, then try again.",
+          "No Facebook Pages found on this account. If you have a Page, remove CloseBoss from Facebook → Settings → Apps and Websites, then connect again and tick the Page when asked.",
       });
     }
 

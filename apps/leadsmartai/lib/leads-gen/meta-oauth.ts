@@ -309,7 +309,16 @@ async function fetchBusinessOwnedPages(
     data?: Array<{ id?: string }>;
     error?: { message?: string };
   };
-  if (!bizRes.ok || !Array.isArray(bizBody.data)) return [];
+  if (!bizRes.ok || !Array.isArray(bizBody.data)) {
+    // Almost always a missing `business_management` grant. Without this log a
+    // portfolio-owned Page just vanishes with no explanation anywhere.
+    console.warn(
+      "[meta-oauth] /me/businesses failed (business_management not granted?):",
+      bizBody.error?.message || `HTTP ${bizRes.status}`,
+    );
+    return [];
+  }
+  console.info(`[meta-oauth] businesses visible: ${bizBody.data.length}`);
 
   const out: ConnectedPage[] = [];
   for (const biz of bizBody.data) {
@@ -375,12 +384,19 @@ export async function fetchPagesForUser(
       );
       break;
     }
-    for (const row of body.data ?? []) {
+    const rows = body.data ?? [];
+    console.info(
+      `[meta-oauth] /me/accounts returned ${rows.length} page(s), ${
+        rows.filter((r) => r.access_token).length
+      } with a token`,
+    );
+    for (const row of rows) {
       const p = await mapPageRow(row as MetaPageRow);
       if (p) add(p);
     }
     url = body.paging?.next;
   }
+  const fromAccounts = byId.size;
 
   // Source 2: business-owned / client Pages (portfolio). Best-effort — a
   // token without business_management just yields nothing here.
@@ -393,5 +409,13 @@ export async function fetchPagesForUser(
     );
   }
 
-  return Array.from(byId.values());
+  const pages = Array.from(byId.values());
+  // One line that answers "why did the connect find nothing?" — which source
+  // produced Pages, and how many carry the Instagram link.
+  console.info(
+    `[meta-oauth] resolved ${pages.length} page(s): ${fromAccounts} from /me/accounts, ` +
+      `${pages.length - fromAccounts} additional from business portfolio; ` +
+      `${pages.filter((p) => p.igBusinessUserId).length} with an Instagram account`,
+  );
+  return pages;
 }
