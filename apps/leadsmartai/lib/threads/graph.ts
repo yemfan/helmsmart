@@ -11,8 +11,12 @@
  * same pattern as lib/meta/graph.ts. Recheck ANNUALLY:
  * https://developers.facebook.com/docs/threads/changelog
  */
+import { THREADS_GRAPH_VERSION as CORE_THREADS_GRAPH_VERSION } from "@helm/dna-marketing";
+
+/** Env override wins; otherwise inherit the shared core's pinned version so
+ *  CloseBoss and HelmSmart can't silently drift onto different versions. */
 export const THREADS_GRAPH_VERSION =
-  process.env.THREADS_GRAPH_VERSION?.trim() || "v1.0";
+  process.env.THREADS_GRAPH_VERSION?.trim() || CORE_THREADS_GRAPH_VERSION;
 
 /** REST base, e.g. https://graph.threads.net/v1.0 */
 export const THREADS_GRAPH_BASE = `https://graph.threads.net/${THREADS_GRAPH_VERSION}`;

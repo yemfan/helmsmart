@@ -12,7 +12,14 @@
  * change, not a deploy. Recheck ANNUALLY:
  * https://developers.facebook.com/docs/graph-api/changelog
  */
-export const META_GRAPH_VERSION = process.env.META_GRAPH_VERSION?.trim() || "v21.0";
+import { META_GRAPH_VERSION as CORE_META_GRAPH_VERSION } from "@helm/dna-marketing";
+
+/** Env override wins; otherwise inherit the shared core's pinned version so
+ *  CloseBoss and HelmSmart can't silently drift onto different versions
+ *  (which already happened once — a publisher on v21.0 beside an OAuth flow
+ *  still pinned to v19.0). */
+export const META_GRAPH_VERSION =
+  process.env.META_GRAPH_VERSION?.trim() || CORE_META_GRAPH_VERSION;
 
 /** REST base, e.g. https://graph.facebook.com/v21.0 */
 export const META_GRAPH_BASE = `https://graph.facebook.com/${META_GRAPH_VERSION}`;

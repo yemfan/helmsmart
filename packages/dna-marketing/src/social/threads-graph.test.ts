@@ -3,11 +3,13 @@ import { describe, expect, it } from "vitest";
 import {
   buildThreadsAuthorizeUrl,
   buildThreadsContainerRequest,
+  buildThreadsContainerStatusUrl,
   buildThreadsLongLivedTokenUrl,
   buildThreadsPermalinkUrl,
   buildThreadsPublishRequest,
   buildThreadsTokenExchangeRequest,
   parseThreadsContainerResponse,
+  parseThreadsContainerStatusResponse,
   parseThreadsLongLivedTokenResponse,
   parseThreadsPublishResponse,
   parseThreadsTokenExchangeResponse,
@@ -133,6 +135,45 @@ describe("threads publish (two-step)", () => {
     const c = parseThreadsContainerResponse(400, { error: { code: 4 } });
     expect(c.ok).toBe(false);
     if (!c.ok) expect(c.retryable).toBe(true);
+  });
+});
+
+describe("threads container status", () => {
+  it("asks for status + error_message on the container", () => {
+    const url = buildThreadsContainerStatusUrl({
+      containerId: "cont-9",
+      accessToken: TOKEN,
+    });
+    expect(url).toContain("/cont-9?fields=status,error_message");
+  });
+
+  it("treats FINISHED (and PUBLISHED) as ready to publish", () => {
+    expect(parseThreadsContainerStatusResponse(200, { status: "FINISHED" })).toEqual({
+      state: "ready",
+    });
+    expect(parseThreadsContainerStatusResponse(200, { status: "PUBLISHED" })).toEqual({
+      state: "ready",
+    });
+  });
+
+  it("keeps polling while IN_PROGRESS", () => {
+    expect(parseThreadsContainerStatusResponse(200, { status: "IN_PROGRESS" })).toEqual({
+      state: "processing",
+    });
+  });
+
+  it("keeps polling on a transient read failure rather than discarding the post", () => {
+    // The container exists — a flaky status read must not fail the publish.
+    expect(parseThreadsContainerStatusResponse(500, {})).toEqual({ state: "processing" });
+  });
+
+  it("fails terminally on ERROR/EXPIRED and surfaces the reason", () => {
+    const r = parseThreadsContainerStatusResponse(200, {
+      status: "ERROR",
+      error_message: "image unreachable",
+    });
+    expect(r.state).toBe("failed");
+    if (r.state === "failed") expect(r.error).toContain("image unreachable");
   });
 });
 
