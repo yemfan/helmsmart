@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildFacebookPostRequest,
   buildInstagramContainerRequest,
+  buildInstagramContainerStatusUrl,
   buildInstagramPublishRequest,
   facebookPostUrl,
   graphErrorMessage,
@@ -12,10 +13,47 @@ import {
   metaOAuthDialog,
   parseFacebookPostResponse,
   parseInstagramContainerResponse,
+  parseInstagramContainerStatusResponse,
   parseInstagramPublishResponse,
 } from "./meta-graph";
 
 const TOKEN = "page-token";
+
+describe("instagram container status", () => {
+  it("asks for status_code on the container (IG's field, not `status`)", () => {
+    const url = buildInstagramContainerStatusUrl({
+      containerId: "cont-1",
+      accessToken: TOKEN,
+    });
+    expect(url).toContain("/cont-1?fields=status_code");
+    expect(url).toContain("access_token=page-token");
+  });
+
+  it("treats FINISHED/PUBLISHED as ready", () => {
+    expect(parseInstagramContainerStatusResponse(200, { status_code: "FINISHED" })).toEqual({
+      state: "ready",
+    });
+    expect(parseInstagramContainerStatusResponse(200, { status_code: "PUBLISHED" })).toEqual({
+      state: "ready",
+    });
+  });
+
+  it("keeps polling while IN_PROGRESS", () => {
+    expect(parseInstagramContainerStatusResponse(200, { status_code: "IN_PROGRESS" })).toEqual({
+      state: "processing",
+    });
+  });
+
+  it("keeps polling on a transient read failure instead of discarding the post", () => {
+    expect(parseInstagramContainerStatusResponse(500, {})).toEqual({ state: "processing" });
+  });
+
+  it("fails terminally on ERROR/EXPIRED", () => {
+    const r = parseInstagramContainerStatusResponse(200, { status_code: "ERROR" });
+    expect(r.state).toBe("failed");
+    if (r.state === "failed") expect(r.error).toContain("error");
+  });
+});
 
 describe("facebook request", () => {
   it("uses /feed for text and puts the copy in `message`", () => {

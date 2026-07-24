@@ -187,6 +187,56 @@ export function parseInstagramPublishResponse(
   return graphFailure(status, body.error, "Instagram");
 }
 
+/**
+ * Between creating a container and publishing it, Instagram processes the image
+ * ASYNCHRONOUSLY. Publishing too early fails with "The media is not ready for
+ * publishing, please wait for a moment". Poll this until it's ready, then
+ * publish. (IG reports `status_code`; Threads reports `status` — same idea,
+ * different field, hence a separate helper.)
+ */
+export function buildInstagramContainerStatusUrl(params: {
+  containerId: string;
+  accessToken: string;
+  graphBase?: string;
+}): string {
+  const base = params.graphBase ?? metaGraphBase();
+  return `${base}/${params.containerId}?fields=status_code&access_token=${encodeURIComponent(
+    params.accessToken,
+  )}`;
+}
+
+export type MediaContainerState =
+  | { state: "ready" }
+  | { state: "processing" }
+  | { state: "failed"; error: string };
+
+/**
+ * A non-2xx or an unrecognised status_code is treated as "processing", not a
+ * failure: the container was created, so a transient read error should keep us
+ * polling rather than discard a post that's about to be publishable. Only
+ * ERROR/EXPIRED are terminal.
+ */
+export function parseInstagramContainerStatusResponse(
+  status: number,
+  json: unknown,
+): MediaContainerState {
+  const b = (json ?? {}) as { status_code?: string; error?: GraphError };
+  if (status < 200 || status >= 300) return { state: "processing" };
+  switch (b.status_code) {
+    case "FINISHED":
+    case "PUBLISHED":
+      return { state: "ready" };
+    case "ERROR":
+    case "EXPIRED":
+      return {
+        state: "failed",
+        error: `Instagram media container ${b.status_code.toLowerCase()}`,
+      };
+    default:
+      return { state: "processing" };
+  }
+}
+
 // ─── Errors ────────────────────────────────────────────────────────────────────
 
 /**

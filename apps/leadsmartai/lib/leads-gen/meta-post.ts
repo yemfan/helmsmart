@@ -3,9 +3,11 @@ import "server-only";
 import {
   buildFacebookPostRequest,
   buildInstagramContainerRequest,
+  buildInstagramContainerStatusUrl,
   buildInstagramPublishRequest,
   parseFacebookPostResponse,
   parseInstagramContainerResponse,
+  parseInstagramContainerStatusResponse,
   parseInstagramPublishResponse,
 } from "@helm/dna-marketing";
 
@@ -135,6 +137,40 @@ export async function publishFacebookPagePost(params: {
  * getting here — by the time control reaches this helper we
  * assume `imageUrl` is set.
  */
+/**
+ * Poll an Instagram media container until it's ready to publish.
+ *
+ * Mirrors the Threads container poll. IG reports readiness via `status_code`;
+ * publishing before FINISHED returns "media is not ready". A JPG is usually
+ * ready in a couple of seconds; ERROR/EXPIRED are terminal.
+ */
+async function waitForInstagramContainer(
+  containerId: string,
+  pageAccessToken: string,
+): Promise<void> {
+  const MAX_ATTEMPTS = 11; // ~25s worst case (first check is immediate)
+  const DELAY_MS = 2500;
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    const res = await fetch(
+      buildInstagramContainerStatusUrl({
+        containerId,
+        accessToken: pageAccessToken,
+        graphBase: META_GRAPH_BASE,
+      }),
+    );
+    const json = await res.json().catch(() => ({}));
+    const state = parseInstagramContainerStatusResponse(res.status, json);
+    if (state.state === "ready") return;
+    if (state.state === "failed") throw tagOutcomeError(state.error);
+    if (attempt < MAX_ATTEMPTS - 1) {
+      await new Promise((r) => setTimeout(r, DELAY_MS));
+    }
+  }
+  throw tagOutcomeError(
+    "Instagram is still processing the image. Please try publishing again in a moment.",
+  );
+}
+
 export async function publishInstagramBusinessPost(params: {
   igUserId: string;
   pageAccessToken: string;
@@ -162,6 +198,11 @@ export async function publishInstagramBusinessPost(params: {
     containerJson,
   );
   if (!container.ok) throw tagOutcomeError(container.error);
+
+  // Instagram processes the container asynchronously — publishing before it's
+  // FINISHED fails with "The media is not ready for publishing, please wait for
+  // a moment". Poll until ready (a JPG is usually ready within a few seconds).
+  await waitForInstagramContainer(container.containerId, pageAccessToken);
 
   // Step 2: promote the container to a real post.
   const publishReq = buildInstagramPublishRequest({
