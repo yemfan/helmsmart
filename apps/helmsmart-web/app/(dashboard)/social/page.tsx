@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { SocialComposer } from "@/components/social-composer";
 import { ResponsibleEmployee } from "@/components/responsible-employee";
 import { EmilyDraftButton } from "@/components/emily-draft-button";
+import { SocialAutopilotPanel } from "@/components/social-autopilot-panel";
 
 export const metadata: Metadata = { title: "Social" };
 
@@ -118,6 +119,7 @@ export default async function SocialPage({
           Couldn&apos;t connect Threads ({sp.threads_error.replace(/_/g, " ")}). Please try again.
         </div>
       )}
+      <SocialAutopilotPanel />
       <SocialComposer
         posts={(posts ?? []) as Parameters<typeof SocialComposer>[0]["posts"]}
         orgName={org?.name ?? "My Business"}
