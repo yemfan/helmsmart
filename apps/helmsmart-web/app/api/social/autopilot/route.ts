@@ -1,5 +1,5 @@
 /**
- * GET/PUT /api/social/autopilot — the org's social autopilot settings.
+ * GET/PUT /api/social/autopilot - the org's social autopilot settings.
  *
  * Cookie-derived org + RLS client, matching the other /api routes (e.g.
  * sms/auto-pilot). PUT patches only the keys sent, so one control can be saved
@@ -15,6 +15,9 @@ import {
   normalizeSettings,
 } from "@/lib/social-autopilot";
 
+const SELECT_COLUMNS =
+  "enabled, mode, posts_per_week, posts_per_day, platforms, post_days, post_hour_utc, tone, day_topics";
+
 const patchSchema = z
   .object({
     enabled: z.boolean(),
@@ -25,10 +28,12 @@ const patchSchema = z
     postDays: z.array(z.number().int().min(0).max(6)).nullable(),
     postHourUtc: z.number().int().min(0).max(23).nullable(),
     tone: z.enum(["professional", "casual", "witty", "promotional", "educational"]),
+    // weekday ("0".."6") -> topic string. Values trimmed + capped server-side.
+    dayTopics: z.record(z.string(), z.string().max(120)),
   })
   .partial();
 
-// camelCase (API) → snake_case (column).
+// camelCase (API) -> snake_case (column).
 const COLUMN: Record<string, string> = {
   enabled: "enabled",
   mode: "mode",
@@ -38,7 +43,20 @@ const COLUMN: Record<string, string> = {
   postDays: "post_days",
   postHourUtc: "post_hour_utc",
   tone: "tone",
+  dayTopics: "day_topics",
 };
+
+/** Keep only valid weekday keys with non-empty, capped topic values. */
+function sanitizeDayTopics(v: Record<string, string>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, val] of Object.entries(v)) {
+    const dow = Number(k);
+    if (!Number.isInteger(dow) || dow < 0 || dow > 6) continue;
+    const s = (val ?? "").trim().slice(0, 120);
+    if (s) out[String(dow)] = s;
+  }
+  return out;
+}
 
 async function getOrgId(): Promise<string | null> {
   const cookieStore = await cookies();
@@ -52,9 +70,7 @@ export async function GET() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("org_social_autopilot")
-    .select(
-      "enabled, mode, posts_per_week, posts_per_day, platforms, post_days, post_hour_utc, tone",
-    )
+    .select(SELECT_COLUMNS)
     .eq("organization_id", orgId)
     .maybeSingle();
 
@@ -87,7 +103,10 @@ export async function PUT(req: Request) {
     updated_at: new Date().toISOString(),
   };
   for (const [key, value] of Object.entries(parsed.data)) {
-    row[COLUMN[key]] = value;
+    row[COLUMN[key]] =
+      key === "dayTopics"
+        ? sanitizeDayTopics(value as Record<string, string>)
+        : value;
   }
 
   const supabase = await createClient();
@@ -100,9 +119,7 @@ export async function PUT(req: Request) {
 
   const { data } = await supabase
     .from("org_social_autopilot")
-    .select(
-      "enabled, mode, posts_per_week, posts_per_day, platforms, post_days, post_hour_utc, tone",
-    )
+    .select(SELECT_COLUMNS)
     .eq("organization_id", orgId)
     .maybeSingle();
 
