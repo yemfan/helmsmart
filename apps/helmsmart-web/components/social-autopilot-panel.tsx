@@ -21,7 +21,11 @@ type Settings = {
   postDays: number[] | null;
   postHourUtc: number | null;
   tone: string;
+  dayTopics: Record<string, string>;
 };
+
+const PREDEFINED_TOPICS = ["service", "product", "customers", "economy", "local market"];
+const DEFAULT_DAY_TOPIC = "service";
 
 const PLATFORM_LABELS: Record<string, string> = {
   facebook: "Facebook",
@@ -113,11 +117,6 @@ export function SocialAutopilotPanel() {
   const toggleIn = (list: string[] | null, v: string): string[] | null => {
     const cur = list ?? [];
     const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v];
-    return next.length > 0 ? next : null;
-  };
-  const toggleDay = (list: number[] | null, v: number): number[] | null => {
-    const cur = list ?? [];
-    const next = cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v].sort((a, b) => a - b);
     return next.length > 0 ? next : null;
   };
 
@@ -262,32 +261,67 @@ export function SocialAutopilotPanel() {
             </label>
           </div>
 
-          {/* Days + time (auto mode only) */}
+          {/* Per-day schedule: pick days, give each a topic. */}
           <div>
-            <p className="text-xs font-semibold text-slate-700">
-              Days &amp; time{" "}
-              <span className="font-normal text-slate-400">
-                {s.mode === "review" ? "(applies in full autopilot)" : s.postDays === null ? "(spread automatically)" : ""}
-              </span>
+            <p className="text-xs font-semibold text-slate-700">Posting schedule</p>
+            <p className="mt-0.5 text-[11px] text-slate-500">
+              Tick the days to post and choose a topic for each — pick one or type your own.
             </p>
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
+            <datalist id="autopilot-topics">
+              {PREDEFINED_TOPICS.map((t) => (
+                <option key={t} value={t} />
+              ))}
+            </datalist>
+            <div className="mt-2 space-y-1.5">
               {DAYS.map((d) => {
-                const explicit = s.postDays !== null && s.postDays.includes(d.value);
+                const key = String(d.value);
+                const checked = key in s.dayTopics;
                 return (
-                  <button
-                    key={d.value}
-                    type="button"
-                    disabled={saving}
-                    onClick={() => save({ postDays: toggleDay(s.postDays, d.value) })}
-                    className={`w-11 rounded-md border px-1 py-1 text-xs font-medium ${
-                      explicit ? "border-emerald-500 bg-emerald-500 text-white" : "border-slate-200 text-slate-600"
-                    }`}
-                  >
-                    {d.label}
-                  </button>
+                  <div key={d.value} className="flex items-center gap-2">
+                    <label className="flex w-14 shrink-0 cursor-pointer items-center gap-1.5 text-xs font-medium text-slate-700">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        disabled={saving}
+                        onChange={() => {
+                          const next = { ...s.dayTopics };
+                          if (checked) delete next[key];
+                          else next[key] = DEFAULT_DAY_TOPIC;
+                          void save({ dayTopics: next });
+                        }}
+                      />
+                      {d.label}
+                    </label>
+                    <input
+                      list="autopilot-topics"
+                      value={s.dayTopics[key] ?? ""}
+                      disabled={saving || !checked}
+                      placeholder={checked ? "Topic (or type your own)" : "—"}
+                      onChange={(e) =>
+                        setSettings((prev) =>
+                          prev
+                            ? { ...prev, dayTopics: { ...prev.dayTopics, [key]: e.target.value } }
+                            : prev,
+                        )
+                      }
+                      onBlur={() => {
+                        // Persist on blur so we don't PUT on every keystroke; drop
+                        // an emptied topic (server also sanitises).
+                        const next = { ...s.dayTopics };
+                        if (!(next[key] ?? "").trim()) delete next[key];
+                        void save({ dayTopics: next });
+                      }}
+                      className="flex-1 rounded-md border border-slate-300 px-2 py-1 text-xs disabled:bg-slate-50 disabled:text-slate-400"
+                    />
+                  </div>
                 );
               })}
             </div>
+            <p className="mt-1.5 text-[11px] text-slate-400">
+              When no days are ticked, posting falls back to {s.postsPerWeek}× a week spread
+              automatically.
+            </p>
+
             <label className="mt-2 block max-w-[220px] text-xs">
               <span className="font-semibold text-slate-700">Time of day</span>
               <select
@@ -303,6 +337,9 @@ export function SocialAutopilotPanel() {
                   <option key={h} value={h}>{formatHour(h)} your time</option>
                 ))}
               </select>
+              <span className="mt-0.5 block text-[11px] text-slate-400">
+                Applies in full autopilot mode.
+              </span>
             </label>
           </div>
 

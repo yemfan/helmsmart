@@ -48,6 +48,8 @@ export type AutopilotSettings = {
   postDays: number[] | null;
   postHourUtc: number | null;
   tone: AutopilotTone;
+  /** weekday (0=Sun..6=Sat, as string) -> topic. Non-empty drives the schedule. */
+  dayTopics: Record<string, string>;
 };
 
 export const DEFAULT_AUTOPILOT_SETTINGS: AutopilotSettings = {
@@ -59,7 +61,20 @@ export const DEFAULT_AUTOPILOT_SETTINGS: AutopilotSettings = {
   postDays: null,
   postHourUtc: null,
   tone: "professional",
+  dayTopics: {},
 };
+
+/** Predefined topics offered in the UI combo (the owner can also type anything). */
+export const PREDEFINED_TOPICS = [
+  "service",
+  "product",
+  "customers",
+  "economy",
+  "local market",
+] as const;
+
+/** The topic a day defaults to when it's first ticked. */
+export const DEFAULT_DAY_TOPIC = "service";
 
 type SettingsRow = {
   enabled?: boolean | null;
@@ -70,6 +85,7 @@ type SettingsRow = {
   post_days?: unknown;
   post_hour_utc?: number | null;
   tone?: string | null;
+  day_topics?: unknown;
   last_generated_week?: string | null;
 };
 
@@ -97,6 +113,18 @@ function coerceDays(v: unknown): number[] | null {
   return out.length > 0 ? out : null;
 }
 
+function coerceDayTopics(v: unknown): Record<string, string> {
+  if (!v || typeof v !== "object" || Array.isArray(v)) return {};
+  const out: Record<string, string> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    const dow = Number(k);
+    if (!Number.isInteger(dow) || dow < 0 || dow > 6) continue;
+    const s = typeof val === "string" ? val.trim().slice(0, 120) : "";
+    if (s) out[String(dow)] = s;
+  }
+  return out;
+}
+
 export function normalizeSettings(row: SettingsRow | null): AutopilotSettings {
   if (!row) return { ...DEFAULT_AUTOPILOT_SETTINGS };
   return {
@@ -114,11 +142,12 @@ export function normalizeSettings(row: SettingsRow | null): AutopilotSettings {
         ? row.post_hour_utc
         : null,
     tone: TONES.includes(row.tone as AutopilotTone) ? (row.tone as AutopilotTone) : "professional",
+    dayTopics: coerceDayTopics(row.day_topics),
   };
 }
 
 const SELECT_COLUMNS =
-  "enabled, mode, posts_per_week, posts_per_day, platforms, post_days, post_hour_utc, tone, last_generated_week";
+  "enabled, mode, posts_per_week, posts_per_day, platforms, post_days, post_hour_utc, tone, day_topics, last_generated_week";
 
 /** Read an org's autopilot settings (service-role, cron-safe). Never throws. */
 export async function getAutopilotSettings(orgId: string): Promise<AutopilotSettings> {
@@ -150,6 +179,35 @@ const ANGLES: readonly string[] = [
   "Share a short, human behind-the-scenes note about the work.",
   "Warmly invite people to get in touch or book — no hard sell.",
 ];
+
+/** Turn a per-day topic (predefined or free text) into a generation instruction. */
+const TOPIC_HINTS: Record<string, string> = {
+  service: "Highlight one of the business's services and who it's the perfect fit for.",
+  product: "Highlight one of the business's products and the concrete benefit it delivers.",
+  customers:
+    "Share a warm, customer-focused message — a helpful tip, genuine appreciation, or a common question answered.",
+  economy:
+    "Share a brief, useful, non-alarmist take on the wider economy that's relevant to the business's customers.",
+  "local market": "Share a genuine, specific insight about the local market the business serves.",
+};
+
+function topicInstruction(value: string): string {
+  const key = value.trim().toLowerCase();
+  return TOPIC_HINTS[key] ?? `Write an engaging, on-brand post about: ${value.trim()}.`;
+}
+
+/**
+ * The publish time for a specific weekday within the week. Past times collapse
+ * to `now` (a mid-week run must never drop a day's post for being in the past).
+ */
+function slotForWeekday(weekOf: string, dow: number, hourUtc: number, now: Date): string {
+  const base = new Date(`${weekOf}T00:00:00Z`); // Monday (getUTCDay() === 1)
+  const offset = (dow - base.getUTCDay() + 7) % 7;
+  const d = new Date(base);
+  d.setUTCDate(base.getUTCDate() + offset);
+  d.setUTCHours(hourUtc, 0, 0, 0);
+  return (d.getTime() < now.getTime() ? now : d).toISOString();
+}
 
 /** Assemble an on-brand context string from the org's own data. */
 async function buildBusinessContext(db: Db, orgId: string, orgName: string): Promise<string> {
@@ -252,23 +310,50 @@ export async function generateWeekForOrg(
   // Generate against the TIGHTEST target so the text fits every platform.
   const tightest = targets.reduce((a, b) => (CHAR_LIMIT[a] <= CHAR_LIMIT[b] ? a : b));
 
-  const slots =
-    settings.mode === "auto"
+  const now = new Date();
+  const hour = settings.postHourUtc ?? DEFAULT_PUBLISH_HOUR_UTC;
+  const auto = settings.mode === "auto";
+
+  // Build the list of posts to make. Two modes:
+  //   - Per-day topics set → one post per selected weekday, on that day, with
+  //     that day's topic. This is what the day picker drives.
+  //   - Otherwise → the older N-per-week spread with rotating angles.
+  type Job = { instruction: string; scheduledAt: string | null };
+  const jobs: Job[] = [];
+  const selectedDays = Object.keys(settings.dayTopics)
+    .map(Number)
+    .filter((d) => d >= 0 && d <= 6)
+    .sort((a, b) => a - b);
+
+  if (selectedDays.length > 0) {
+    for (const dow of selectedDays) {
+      jobs.push({
+        instruction: topicInstruction(settings.dayTopics[String(dow)]),
+        scheduledAt: auto ? slotForWeekday(weekOf, dow, hour, now) : null,
+      });
+    }
+  } else {
+    const slots = auto
       ? planPublishTimes(weekOf, {
           count: settings.postsPerWeek,
           days: settings.postDays ?? undefined,
           maxPerDay: settings.postsPerDay ?? undefined,
-          hourUtc: settings.postHourUtc ?? DEFAULT_PUBLISH_HOUR_UTC,
+          hourUtc: hour,
         })
       : [];
+    for (let i = 0; i < settings.postsPerWeek; i++) {
+      jobs.push({
+        instruction: ANGLES[i % ANGLES.length],
+        scheduledAt: auto ? (slots[i] ?? null) : null,
+      });
+    }
+  }
 
   const context = await buildBusinessContext(db, orgId, orgName);
-  const nowIso = new Date().toISOString();
   const rows: Record<string, unknown>[] = [];
 
-  for (let i = 0; i < settings.postsPerWeek; i++) {
-    const angle = ANGLES[i % ANGLES.length];
-    const topic = `${angle}\n\nContext about the business you are posting as:\n${context}`;
+  for (const job of jobs) {
+    const topic = `${job.instruction}\n\nContext about the business you are posting as:\n${context}`;
     let content: string;
     try {
       content = await generateSocialPost(tightest, settings.tone, topic, orgName);
@@ -280,17 +365,16 @@ export async function generateWeekForOrg(
 
     // One row per target platform, same copy. Auto → scheduled at the slot;
     // review → a plain draft for the human to schedule.
-    const scheduledAt = settings.mode === "auto" ? (slots[i] ?? null) : null;
     for (const platform of targets) {
       rows.push({
         organization_id: orgId,
         platform,
         content,
         tone: settings.tone,
-        status: settings.mode === "auto" && scheduledAt ? "scheduled" : "draft",
-        scheduled_at: settings.mode === "auto" ? scheduledAt : null,
+        status: auto && job.scheduledAt ? "scheduled" : "draft",
+        scheduled_at: auto ? job.scheduledAt : null,
         generated_by_ai: true,
-        ai_prompt: angle,
+        ai_prompt: job.instruction.slice(0, 200),
       });
     }
   }
