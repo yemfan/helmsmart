@@ -63,6 +63,15 @@ export function PlatformOverviewClient() {
 
   const maxFunnel = Math.max(0, ...data.funnel.map((item) => item.value));
 
+  // Period-over-period % change. Null when there's no comparable baseline
+  // (previous window was 0) so the card hides the badge rather than showing ∞.
+  const deltaPct = (cur: number, prev: number): number | null => {
+    if (!Number.isFinite(prev) || prev === 0) return null;
+    return ((cur - prev) / prev) * 100;
+  };
+  const prev = data.kpisPrevious;
+  const trends = data.kpiTrends;
+
   return (
     <DashboardShell
       title="Platform Overview"
@@ -70,12 +79,40 @@ export function PlatformOverviewClient() {
       kpiGridClassName="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
       kpis={
         <>
-          <KpiCard label="Total Visitors" value={String(data.kpis.visitors)} />
-          <KpiCard label="Tool Usage" value={String(data.kpis.toolUsage)} />
-          <KpiCard label="Leads Captured" value={String(data.kpis.leadsCaptured)} />
-          <KpiCard label="Qualified Leads" value={String(data.kpis.qualifiedLeads)} />
-          <KpiCard label="Paying Agents" value={String(data.kpis.payingAgents)} />
-          <KpiCard label="Revenue" value={`$${data.kpis.revenue.toLocaleString()}`} />
+          <KpiCard
+            label="Total Visitors"
+            value={String(data.kpis.visitors)}
+            deltaPct={deltaPct(data.kpis.visitors, prev.visitors)}
+            spark={trends.visitors}
+          />
+          <KpiCard
+            label="Tool Usage"
+            value={String(data.kpis.toolUsage)}
+            deltaPct={deltaPct(data.kpis.toolUsage, prev.toolUsage)}
+            spark={trends.toolUsage}
+          />
+          <KpiCard
+            label="Leads Captured"
+            value={String(data.kpis.leadsCaptured)}
+            deltaPct={deltaPct(data.kpis.leadsCaptured, prev.leadsCaptured)}
+            spark={trends.leadsCaptured}
+          />
+          <KpiCard
+            label="Qualified Leads"
+            value={String(data.kpis.qualifiedLeads)}
+            deltaPct={deltaPct(data.kpis.qualifiedLeads, prev.qualifiedLeads)}
+            spark={trends.qualifiedLeads}
+          />
+          <KpiCard
+            label="Paying Agents"
+            value={String(data.kpis.payingAgents)}
+            deltaPct={deltaPct(data.kpis.payingAgents, prev.payingAgents)}
+          />
+          <KpiCard
+            label="Revenue"
+            value={`$${data.kpis.revenue.toLocaleString()}`}
+            deltaPct={deltaPct(data.kpis.revenue, prev.revenue)}
+          />
         </>
       }
     >
@@ -173,11 +210,11 @@ export function PlatformOverviewClient() {
                     <div>
                       <div className="font-medium text-gray-900">{tool.name}</div>
                       <div className="text-sm text-gray-500">
-                        {tool.users.toLocaleString()} users
+                        {tool.users.toLocaleString()} {tool.users === 1 ? "user" : "users"}
                       </div>
                     </div>
                     <div className="text-sm font-medium text-gray-700">
-                      {tool.conversion}%
+                      {tool.usageShare}% of visitors
                     </div>
                   </div>
                 ))}
@@ -254,7 +291,7 @@ export function PlatformOverviewClient() {
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <SectionCard title="Support / Operations">
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-xl bg-gray-50 p-4">
               <div className="text-sm text-gray-500">Open Tickets</div>
               <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
@@ -265,12 +302,6 @@ export function PlatformOverviewClient() {
               <div className="text-sm text-gray-500">Urgent Tickets</div>
               <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                 {data.support.urgentTickets}
-              </div>
-            </div>
-            <div className="rounded-xl bg-gray-50 p-4">
-              <div className="text-sm text-gray-500">Avg Response</div>
-              <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
-                {data.support.avgResponseMinutes}m
               </div>
             </div>
           </div>

@@ -69,6 +69,15 @@ export function PlatformOverviewClient() {
 
   const maxFunnel = Math.max(0, ...data.funnel.map((item) => item.value));
 
+  // Period-over-period % change. Null when there's no comparable baseline
+  // (previous window was 0) so the card hides the badge rather than showing ∞.
+  const deltaPct = (cur: number, prev: number): number | null => {
+    if (!Number.isFinite(prev) || prev === 0) return null;
+    return ((cur - prev) / prev) * 100;
+  };
+  const prev = data.kpisPrevious;
+  const trends = data.kpiTrends;
+
   return (
     <DashboardShell
       className="min-h-0 bg-transparent p-0"
@@ -77,12 +86,40 @@ export function PlatformOverviewClient() {
       kpiGridClassName="md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
       kpis={
         <>
-          <KpiCard label="Total Visitors" value={data.kpis.visitors.toLocaleString()} />
-          <KpiCard label="Tool Usage" value={data.kpis.toolUsage.toLocaleString()} />
-          <KpiCard label="Leads Captured" value={data.kpis.leadsCaptured.toLocaleString()} />
-          <KpiCard label="Qualified Leads" value={data.kpis.qualifiedLeads.toLocaleString()} />
-          <KpiCard label="Paying Agents" value={String(data.kpis.payingAgents)} />
-          <KpiCard label="Revenue" value={`$${data.kpis.revenue.toLocaleString()}`} />
+          <KpiCard
+            label="Total Visitors"
+            value={data.kpis.visitors.toLocaleString()}
+            deltaPct={deltaPct(data.kpis.visitors, prev.visitors)}
+            spark={trends.visitors}
+          />
+          <KpiCard
+            label="Tool Usage"
+            value={data.kpis.toolUsage.toLocaleString()}
+            deltaPct={deltaPct(data.kpis.toolUsage, prev.toolUsage)}
+            spark={trends.toolUsage}
+          />
+          <KpiCard
+            label="Leads Captured"
+            value={data.kpis.leadsCaptured.toLocaleString()}
+            deltaPct={deltaPct(data.kpis.leadsCaptured, prev.leadsCaptured)}
+            spark={trends.leadsCaptured}
+          />
+          <KpiCard
+            label="Qualified Leads"
+            value={data.kpis.qualifiedLeads.toLocaleString()}
+            deltaPct={deltaPct(data.kpis.qualifiedLeads, prev.qualifiedLeads)}
+            spark={trends.qualifiedLeads}
+          />
+          <KpiCard
+            label="Paying Agents"
+            value={String(data.kpis.payingAgents)}
+            deltaPct={deltaPct(data.kpis.payingAgents, prev.payingAgents)}
+          />
+          <KpiCard
+            label="Revenue"
+            value={`$${data.kpis.revenue.toLocaleString()}`}
+            deltaPct={deltaPct(data.kpis.revenue, prev.revenue)}
+          />
         </>
       }
     >
@@ -135,9 +172,11 @@ export function PlatformOverviewClient() {
                   <div key={tool.name} className="flex items-center justify-between rounded-xl border p-4">
                     <div>
                       <div className="font-medium text-gray-900">{tool.name}</div>
-                      <div className="text-sm text-gray-500">{tool.users.toLocaleString()} users</div>
+                      <div className="text-sm text-gray-500">
+                        {tool.users.toLocaleString()} {tool.users === 1 ? "user" : "users"}
+                      </div>
                     </div>
-                    <div className="text-sm font-medium text-gray-700">{tool.conversion}% conversion</div>
+                    <div className="text-sm font-medium text-gray-700">{tool.usageShare}% of visitors</div>
                   </div>
                 ))}
               </div>
