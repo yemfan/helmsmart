@@ -28,6 +28,12 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: true, results });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Server error";
+    // Surface the real cause in Vercel logs. A recurring failure here is
+    // almost always `invalid_grant` — the GSC_OAUTH_REFRESH_TOKEN expired
+    // (Google expires refresh tokens after 7 days while the OAuth app is in
+    // "Testing" publishing status). Publish the app + re-mint the token
+    // (scripts/mint-gsc-refresh-token.mjs).
+    console.error("[gsc-import] ingest failed:", message);
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
