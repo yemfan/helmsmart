@@ -6,7 +6,7 @@ import { generateSocialPost, generateSocialVariants, refineSocialPost, createSoc
 import { uploadSocialImage } from "@/lib/actions/social-media";
 import { canPublish, providerFor } from "@/lib/social-platforms";
 
-type Platform = "x" | "linkedin" | "facebook" | "instagram";
+type Platform = "x" | "linkedin" | "facebook" | "instagram" | "threads";
 type Tone = "professional" | "casual" | "witty" | "promotional" | "educational";
 type PostStatus = "draft" | "scheduled" | "published" | "failed";
 
@@ -47,6 +47,7 @@ const PLATFORM_META: Record<Platform, { label: string; icon: string; limit: numb
   linkedin:  { label: "LinkedIn",    icon: "in", limit: 3000,  color: "bg-blue-700" },
   facebook:  { label: "Facebook",    icon: "f",  limit: 63206, color: "bg-blue-600" },
   instagram: { label: "Instagram",   icon: "IG", limit: 2200,  color: "bg-gradient-to-br from-purple-600 to-pink-500" },
+  threads:   { label: "Threads",     icon: "@",  limit: 500,   color: "bg-black" },
 };
 
 const TONES: { value: Tone; label: string }[] = [

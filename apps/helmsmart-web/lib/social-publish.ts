@@ -8,6 +8,7 @@
  */
 import { publishLinkedInPost } from "@/lib/linkedin";
 import { publishFacebookPost, publishInstagramPost } from "@/lib/meta";
+import { publishThreadsPost } from "@/lib/threads";
 import { canPublish, unsupportedReason } from "@/lib/social-platforms";
 
 export type PublishOutcome = {
@@ -44,6 +45,8 @@ export async function publishToPlatform(params: {
       return publishFacebookPost(orgId, content, imageUrl);
     case "instagram":
       return publishInstagramPost(orgId, content, imageUrl);
+    case "threads":
+      return publishThreadsPost(orgId, content, imageUrl);
     default:
       return { ok: false, error: unsupportedReason(platform), retryable: false };
   }
