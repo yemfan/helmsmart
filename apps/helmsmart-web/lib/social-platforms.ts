@@ -33,6 +33,7 @@ export const PUBLISHABLE_PLATFORMS: readonly SocialPlatform[] = [
   "linkedin",
   "facebook",
   "instagram",
+  "threads",
 ];
 
 /**
@@ -40,15 +41,17 @@ export const PUBLISHABLE_PLATFORMS: readonly SocialPlatform[] = [
  * share ONE Meta grant — connecting a Page connects both, and Instagram
  * additionally needs an IG Business account linked to that Page.
  */
-export const PLATFORM_PROVIDER: Record<SocialPlatform, "linkedin" | "meta" | null> = {
+export const PLATFORM_PROVIDER: Record<
+  SocialPlatform,
+  "linkedin" | "meta" | "threads" | null
+> = {
   linkedin: "linkedin",
   facebook: "meta",
   instagram: "meta",
   x: null,
-  // Threads is a known platform in the shared core, but HelmSmart hasn't wired
-  // its publisher/OAuth yet (that's a later phase), so it stays provider-less
-  // and out of PUBLISHABLE_PLATFORMS — honestly "manual" like X for now.
-  threads: null,
+  // Threads authorizes on its OWN grant (not the Meta one), so it's its own
+  // provider in org_oauth_tokens.
+  threads: "threads",
 };
 
 /**
@@ -56,7 +59,9 @@ export const PLATFORM_PROVIDER: Record<SocialPlatform, "linkedin" | "meta" | nul
  * connected the account). Keeping them separate is what lets the UI say
  * "connect Facebook" instead of the much less useful "Facebook doesn't work".
  */
-export function providerFor(platform: string): "linkedin" | "meta" | null {
+export function providerFor(
+  platform: string,
+): "linkedin" | "meta" | "threads" | null {
   return PLATFORM_PROVIDER[platform as SocialPlatform] ?? null;
 }
 

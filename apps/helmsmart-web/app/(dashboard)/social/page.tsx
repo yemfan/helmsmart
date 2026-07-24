@@ -17,6 +17,8 @@ export default async function SocialPage({
     meta_error?: string;
     page?: string;
     ig?: string;
+    threads?: string;
+    threads_error?: string;
   }>;
 }) {
   const cookieStore = await cookies();
@@ -65,6 +67,7 @@ export default async function SocialPage({
   );
   const linkedinConnected = connected.has("linkedin");
   const metaConnected = connected.has("meta");
+  const threadsConnected = connected.has("threads");
 
   return (
     <div className="flex flex-col h-full">
@@ -105,6 +108,16 @@ export default async function SocialPage({
           )}
         </div>
       )}
+      {sp.threads === "connected" && (
+        <div className="mx-4 mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
+          Threads connected. Scheduled Threads posts will now publish automatically.
+        </div>
+      )}
+      {sp.threads_error && (
+        <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
+          Couldn&apos;t connect Threads ({sp.threads_error.replace(/_/g, " ")}). Please try again.
+        </div>
+      )}
       <SocialComposer
         posts={(posts ?? []) as Parameters<typeof SocialComposer>[0]["posts"]}
         orgName={org?.name ?? "My Business"}
@@ -137,6 +150,19 @@ export default async function SocialPage({
                 className="inline-flex items-center gap-1.5 rounded-full border border-[#1877f2] bg-[#1877f2] px-3 py-1 text-xs font-medium text-white hover:opacity-90"
               >
                 Connect Facebook
+              </a>
+            )}
+            {threadsConnected ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Threads connected
+              </span>
+            ) : (
+              <a
+                href="/api/auth/threads"
+                className="inline-flex items-center gap-1.5 rounded-full border border-black bg-black px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+              >
+                Connect Threads
               </a>
             )}
           </div>
