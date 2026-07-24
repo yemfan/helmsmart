@@ -8,7 +8,9 @@
  * starts 500ing weekly. Publish the app to stop the expiry, then run this
  * once to get a replacement token.
  *
- * Usage (from apps/propertytoolsai):
+ * Usage (from apps/propertytoolsai) — either pass the downloaded
+ * "Desktop app" client_secret_*.json, or supply the id/secret via env:
+ *   node scripts/mint-gsc-refresh-token.mjs /path/to/client_secret_*.json
  *   GSC_OAUTH_CLIENT_ID=xxx GSC_OAUTH_CLIENT_SECRET=yyy node scripts/mint-gsc-refresh-token.mjs
  *
  * It opens a localhost callback, prints a consent URL to paste in your
@@ -16,24 +18,39 @@
  * propertytoolsai Vercel project's GSC_OAUTH_REFRESH_TOKEN env var (all
  * environments) and redeploy.
  *
- * Requires the OAuth client to be a "Desktop app" client (localhost redirect
- * is auto-allowed). `prompt=consent` forces Google to return a fresh
- * refresh_token even if one was issued before.
+ * Requires the OAuth client to be a "Desktop app" client (loopback redirect
+ * is auto-allowed; Google ignores the port). `prompt=consent` forces Google
+ * to return a fresh refresh_token even if one was issued before.
  */
 
 import http from "node:http";
+import { readFileSync } from "node:fs";
 
-const CLIENT_ID = process.env.GSC_OAUTH_CLIENT_ID?.trim();
-const CLIENT_SECRET = process.env.GSC_OAUTH_CLIENT_SECRET?.trim();
+function loadCredentials() {
+  const fileArg = process.argv[2];
+  if (fileArg) {
+    const raw = JSON.parse(readFileSync(fileArg, "utf8"));
+    const c = raw.installed || raw.web || raw;
+    return { clientId: c.client_id?.trim(), clientSecret: c.client_secret?.trim() };
+  }
+  return {
+    clientId: process.env.GSC_OAUTH_CLIENT_ID?.trim(),
+    clientSecret: process.env.GSC_OAUTH_CLIENT_SECRET?.trim(),
+  };
+}
+
+const { clientId: CLIENT_ID, clientSecret: CLIENT_SECRET } = loadCredentials();
 const PORT = Number(process.env.MINT_PORT || 5388);
-const REDIRECT_URI = `http://localhost:${PORT}/callback`;
+// Bare loopback (no path) matches the Desktop client's registered
+// "http://localhost"; Google ignores the port for installed-app clients.
+const REDIRECT_URI = `http://localhost:${PORT}`;
 const SCOPE = "https://www.googleapis.com/auth/webmasters.readonly";
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error(
-    "Missing GSC_OAUTH_CLIENT_ID / GSC_OAUTH_CLIENT_SECRET.\n" +
-      "Grab them from the propertytoolsai Vercel env (or Google Cloud → Credentials) and re-run:\n" +
-      "  GSC_OAUTH_CLIENT_ID=xxx GSC_OAUTH_CLIENT_SECRET=yyy node scripts/mint-gsc-refresh-token.mjs"
+    "Missing client id/secret.\n" +
+      "Pass the downloaded client_secret_*.json as the first argument, or set\n" +
+      "GSC_OAUTH_CLIENT_ID / GSC_OAUTH_CLIENT_SECRET, then re-run."
   );
   process.exit(1);
 }
@@ -75,12 +92,13 @@ async function exchange(code) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
-  if (url.pathname !== "/callback") {
-    res.writeHead(404).end();
-    return;
-  }
   const code = url.searchParams.get("code");
   const err = url.searchParams.get("error");
+  // Ignore incidental hits (favicon, etc.) that carry neither a code nor error.
+  if (!code && !err) {
+    res.writeHead(204).end();
+    return;
+  }
   if (err || !code) {
     res.writeHead(400, { "Content-Type": "text/plain" }).end(`OAuth error: ${err || "no code"}`);
     console.error(`\n✗ OAuth error: ${err || "no code returned"}`);
