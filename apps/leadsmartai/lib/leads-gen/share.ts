@@ -82,11 +82,28 @@ export function buildComposeInstruction(
     }
 
     case "x": {
-      // X compose intent honors both `text` and `url`. We append the
-      // most relevant hashtags inline (X is 280 chars total, so we
-      // can't dump 8-12 like Instagram).
+      // X compose intent honors both `text` and `url`. X's hard limit is 280,
+      // and a caption written for another platform (Facebook, LinkedIn) blows
+      // straight past it — X then disables the Post button, so the share is a
+      // dead end. Fit the tweet to 280: keep the hashtags + link, trim the
+      // caption body to whatever room is left. X counts ANY url as 23 chars
+      // (t.co wrapping) regardless of its real length, so budget for that.
       const inlineTags = hashtags.slice(0, 2).map((t) => `#${t}`).join(" ");
-      const composedText = inlineTags ? `${caption} ${inlineTags}` : caption;
+      const tagSuffix = inlineTags ? ` ${inlineTags}` : "";
+      const urlCost = shareUrl ? 24 : 0; // 23 for t.co + 1 space
+      const bodyBudget = 280 - urlCost - tagSuffix.length;
+
+      let body = caption.trim();
+      if (body.length > bodyBudget) {
+        // Trim to the budget (minus the ellipsis), on a word boundary if we can.
+        const room = Math.max(0, bodyBudget - 1);
+        let cut = body.slice(0, room);
+        const lastSpace = cut.lastIndexOf(" ");
+        if (lastSpace > room * 0.6) cut = cut.slice(0, lastSpace);
+        body = `${cut.trimEnd()}…`;
+      }
+      const composedText = `${body}${tagSuffix}`;
+
       const composeUrl =
         "https://x.com/intent/tweet?" +
         `text=${encodeURIComponent(composedText)}` +
