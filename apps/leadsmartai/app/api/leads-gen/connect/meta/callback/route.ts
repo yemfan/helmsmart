@@ -138,37 +138,60 @@ export async function GET(req: Request) {
       });
     }
 
-    // 5. Upsert one row per Page. Re-connecting an existing Page
-    //    updates the existing row (fresh tokens, refreshed scopes,
-    //    last_refreshed_at stamped) — keeps `social_accounts_meta_unique`
-    //    honest.
+    // 5. Upsert one row per Page. Re-connecting an existing Page updates the
+    //    existing row (fresh tokens, refreshed scopes, last_refreshed_at
+    //    stamped).
+    //
+    //    Manual select-then-write, NOT `.upsert({onConflict})`: the prod
+    //    social_accounts table has no unique constraint on
+    //    (agent_id, platform, fb_page_id) to target, so onConflict failed with
+    //    42P10 — which then surfaced as a generic "OAuth callback failed"
+    //    because a PostgrestError isn't an Error instance. This mirrors what
+    //    connectionsService + the LinkedIn callback already do, and it throws a
+    //    real Error so any future failure shows its actual message.
     const nowIso = new Date().toISOString();
     const userTokenEnc = encryptToken(longLived.accessToken);
-    const rows = pages.map((p) => ({
-      agent_id: agentId,
-      platform: "meta",
-      account_display_name: p.pageName,
-      account_picture_url: p.picture,
-      fb_page_id: p.pageId,
-      fb_page_name: p.pageName,
-      ig_business_user_id: p.igBusinessUserId,
-      ig_business_username: p.igBusinessUsername,
-      page_access_token_enc: encryptToken(p.pageAccessToken),
-      user_access_token_enc: userTokenEnc,
-      user_token_expires_at: userTokenExpiresAt,
-      scopes: META_OAUTH_SCOPES as unknown as string[],
-      status: "connected",
-      last_error: null,
-      last_refreshed_at: nowIso,
-      updated_at: nowIso,
-    }));
+    for (const p of pages) {
+      const fields = {
+        agent_id: agentId,
+        platform: "meta",
+        account_display_name: p.pageName,
+        account_picture_url: p.picture,
+        fb_page_id: p.pageId,
+        fb_page_name: p.pageName,
+        ig_business_user_id: p.igBusinessUserId,
+        ig_business_username: p.igBusinessUsername,
+        page_access_token_enc: encryptToken(p.pageAccessToken),
+        user_access_token_enc: userTokenEnc,
+        user_token_expires_at: userTokenExpiresAt,
+        scopes: META_OAUTH_SCOPES as unknown as string[],
+        status: "connected",
+        last_error: null,
+        last_refreshed_at: nowIso,
+        updated_at: nowIso,
+      };
 
-    const { error: upsertErr } = await supabaseAdmin
-      .from("social_accounts")
-      .upsert(rows as never, {
-        onConflict: "agent_id,platform,fb_page_id",
-      });
-    if (upsertErr) throw upsertErr;
+      const { data: existing } = await supabaseAdmin
+        .from("social_accounts")
+        .select("id")
+        .eq("agent_id", agentId)
+        .eq("platform", "meta")
+        .eq("fb_page_id", p.pageId)
+        .maybeSingle();
+
+      if ((existing as { id?: string } | null)?.id) {
+        const { error } = await supabaseAdmin
+          .from("social_accounts")
+          .update(fields as never)
+          .eq("id", (existing as { id: string }).id);
+        if (error) throw new Error(error.message);
+      } else {
+        const { error } = await supabaseAdmin
+          .from("social_accounts")
+          .insert({ ...fields, connected_at: nowIso } as never);
+        if (error) throw new Error(error.message);
+      }
+    }
 
     // Clear the state cookie — single-use, even on success.
     const res = back({
