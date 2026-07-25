@@ -106,7 +106,6 @@ export async function updateAssistantForAgent(
   patch: {
     status?: "active" | "paused";
     enabledSkills?: string[];
-    name?: string;
     avatarId?: string;
     /** string = set custom photo URL; null = remove it (revert to persona). */
     avatarUrl?: string | null;
@@ -115,7 +114,6 @@ export async function updateAssistantForAgent(
   const body: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (patch.status) body.status = patch.status;
   if (patch.enabledSkills) body.enabled_skills = patch.enabledSkills;
-  if (patch.name != null) body.name = patch.name;
   if (patch.avatarId) {
     // Choosing a built-in persona clears any custom uploaded photo.
     body.avatar_id = patch.avatarId;

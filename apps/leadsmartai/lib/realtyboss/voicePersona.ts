@@ -34,17 +34,17 @@ export async function getAssistantVoiceSettings(
   type: AssistantType,
 ): Promise<AssistantVoiceSettings> {
   let skills: readonly string[] = getAssistant(type).skills;
-  let voiceName: string | null = null;
+  // Default to the roster persona name so a missing row / DB error still speaks a name.
+  let voiceName: string | null = getAssistant(type).displayName;
   let voiceKnowledge: string | null = null;
   try {
     const { data } = await supabaseAdmin
       .from("ai_assistants")
-      .select("name, enabled_skills, voice_name, voice_knowledge")
+      .select("enabled_skills, voice_name, voice_knowledge")
       .eq("agent_id", agentId)
       .eq("type", type)
       .maybeSingle();
     const row = data as {
-      name?: string | null;
       enabled_skills?: unknown;
       voice_name?: string | null;
       voice_knowledge?: string | null;
@@ -52,10 +52,9 @@ export async function getAssistantVoiceSettings(
     if (Array.isArray(row?.enabled_skills)) {
       skills = row.enabled_skills.filter((s): s is string => typeof s === "string");
     }
-    // The assistant's display name (set on Manage Your AI Team) is the voice
-    // name by default — no separate setup needed. An explicit voice_name
-    // override still wins for anyone who set one.
-    voiceName = row?.voice_name?.trim() || row?.name?.trim() || null;
+    // The persona name from the roster (Emma, Jake, …) is the voice name. An
+    // explicit voice_name override still wins for anyone who set one.
+    voiceName = row?.voice_name?.trim() || getAssistant(type).displayName;
     voiceKnowledge = row?.voice_knowledge?.trim() || null;
   } catch (e) {
     console.warn("[realtyboss] assistant voice lookup failed, using roster defaults:", e);

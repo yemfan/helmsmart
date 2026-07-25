@@ -32,9 +32,8 @@ export default function AiTeamClient() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // Which assistant's name/avatar editor is open, + the in-progress name draft.
+  // Which assistant's avatar editor is open.
   const [editing, setEditing] = useState<AssistantType | null>(null);
-  const [nameDraft, setNameDraft] = useState("");
 
   const load = useCallback(async () => {
     const [res, perfRes] = await Promise.all([
@@ -56,7 +55,7 @@ export default function AiTeamClient() {
   const patch = useCallback(
     async (
       type: AssistantType,
-      body: { status?: "active" | "paused"; enabledSkills?: string[]; name?: string; avatarId?: string },
+      body: { status?: "active" | "paused"; enabledSkills?: string[]; avatarId?: string },
     ) => {
       setSaving(type);
       setError(null);
@@ -142,11 +141,10 @@ export default function AiTeamClient() {
               .filter((a) => a.type !== "boss_assistant")
               .map((a) => {
                 const def = AI_TEAM.find((d) => d.type === a.type);
-                const custName = assistants.find((x) => x.type === a.type)?.name;
                 const max = Math.max(1, ...a.series);
                 return (
                   <div key={a.type} className="rounded-lg border border-gray-100 p-3">
-                    <p className="text-xs font-medium text-gray-900">{custName ?? def?.displayName ?? a.type}</p>
+                    <p className="text-xs font-medium text-gray-900">{def?.displayName ?? a.type}</p>
                     <p className="text-[10px] text-gray-500">
                       {a.activities} activit{a.activities === 1 ? "y" : "ies"}
                       {a.needsAttention > 0 ? ` · ${a.needsAttention} needed you` : ""}
@@ -185,7 +183,7 @@ export default function AiTeamClient() {
                     <AssistantAvatar id={a.avatar_id} url={a.avatar_url} size={44} alt={a.name} className="mt-0.5" />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <h2 className="text-sm font-semibold text-gray-900">{a.name}</h2>
+                        <h2 className="text-sm font-semibold text-gray-900">{def?.displayName ?? a.name}</h2>
                         <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-gray-200 text-gray-600"}`}>
                           {a.status}
                         </span>
@@ -197,13 +195,10 @@ export default function AiTeamClient() {
                   <div className="flex shrink-0 items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => {
-                        setEditing((cur) => (cur === a.type ? null : a.type));
-                        setNameDraft(a.name);
-                      }}
+                      onClick={() => setEditing((cur) => (cur === a.type ? null : a.type))}
                       className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
                     >
-                      {editing === a.type ? "Close" : "Edit name & avatar"}
+                      {editing === a.type ? "Close" : "Edit avatar"}
                     </button>
                     {def && def.type !== "boss_assistant" && (
                       <Link href={def.href} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
@@ -223,27 +218,7 @@ export default function AiTeamClient() {
 
                 {editing === a.type && (
                   <div className="mt-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
-                    <label className="block text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                      Name
-                    </label>
-                    <div className="mt-1 flex items-center gap-2">
-                      <input
-                        value={nameDraft}
-                        onChange={(e) => setNameDraft(e.target.value)}
-                        maxLength={80}
-                        placeholder={def?.displayName ?? "Assistant name"}
-                        className="w-56 rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0072ce]"
-                      />
-                      <button
-                        type="button"
-                        disabled={saving === a.type || !nameDraft.trim() || nameDraft.trim() === a.name}
-                        onClick={() => void patch(a.type, { name: nameDraft.trim() })}
-                        className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#005fa8] disabled:opacity-50"
-                      >
-                        Save name
-                      </button>
-                    </div>
-                    <p className="mb-2 mt-3 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
                       Avatar
                     </p>
                     <div className="mb-3 flex items-center gap-2">

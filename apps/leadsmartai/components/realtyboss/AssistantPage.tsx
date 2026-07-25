@@ -48,7 +48,7 @@ export function AssistantHeader({
     };
   }, [assistant.type, assistant.name]);
 
-  const name = custom?.name || assistant.displayName;
+  const name = assistant.displayName;
   const avatarId = custom?.avatar_id || defaultAvatarForType(assistant.type);
   const avatarUrl = custom?.avatar_url ?? null;
 
