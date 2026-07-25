@@ -40,7 +40,10 @@ function loadCredentials() {
 }
 
 const { clientId: CLIENT_ID, clientSecret: CLIENT_SECRET } = loadCredentials();
-const PORT = Number(process.env.MINT_PORT || 5388);
+// Fixed loopback port (Google ignores the port for Desktop clients anyway).
+// Not read from env on purpose: the repo's env-allowlist gate scans apps/** and
+// would (rightly) flag an undeclared MINT_PORT for this dev-only utility.
+const PORT = 5388;
 // Bare loopback (no path) matches the Desktop client's registered
 // "http://localhost"; Google ignores the port for installed-app clients.
 const REDIRECT_URI = `http://localhost:${PORT}`;
