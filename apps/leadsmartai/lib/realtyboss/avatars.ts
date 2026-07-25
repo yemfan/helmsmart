@@ -15,7 +15,7 @@ import type { AssistantType } from "@/lib/realtyboss/team";
 export const PERSONA_AVATARS = [
   "max",
   "emma",
-  "jake",
+  "chris",
   "ruby",
   "grace",
   "oliver",
@@ -53,7 +53,7 @@ export function defaultAvatarForSeed(seed: string): string {
 export const DEFAULT_ASSISTANT_AVATARS: Record<AssistantType, string> = {
   boss_assistant: "max", // purple — growth chart
   receptionist: "emma", // pink — headset
-  sales_assistant: "jake", // blue — target
+  sales_assistant: "chris", // blue — target
   marketing_assistant: "ruby", // orange — megaphone
   transaction_assistant: "grace", // teal — checklist
   accountant: "oliver", // navy — calculator
