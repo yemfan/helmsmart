@@ -93,6 +93,12 @@ export function voiceNotesFromSkills(enabledSkills: readonly string[]): string {
  */
 export async function buildReceptionistVoiceNotes(agentId: string): Promise<string> {
   const { enabledSkills } = await getAssistantVoiceSettings(agentId, "receptionist");
+  return receptionistVoiceNotesFromSkills(enabledSkills);
+}
+
+/** Receptionist playbook block from an already-loaded skill list (adds the
+ *  always-on message-taking rule that outbound assistants don't get). */
+export function receptionistVoiceNotesFromSkills(enabledSkills: readonly string[]): string {
   const playbook = buildVoicePlaybook(enabledSkills);
   return [playbook, RECEPTIONIST_MESSAGE_PLAYBOOK, `## Compliance\n${VOICE_GUARDRAILS}`]
     .filter(Boolean)
