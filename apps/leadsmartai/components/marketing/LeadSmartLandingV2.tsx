@@ -95,6 +95,20 @@ const CHORES_KILLED = [
 const SELL_FASTER = ["playbook", "ai_machine", "all_tools", "vigorous"] as const;
 const BUY_FASTER = ["auto_criteria", "ai_machine"] as const;
 
+/**
+ * The CloseBoss AI team — the six branded assistants, introduced at the top of
+ * the page. Names + portraits match the in-app roster (lib/realtyboss/team.ts,
+ * /avatars/personas). Copy is brand content, kept inline (not i18n) for now.
+ */
+const AI_TEAM_MEMBERS = [
+  { id: "max", name: "Max", role: "Boss Assistant", color: "#6C5BD0", line: "Runs the team and keeps you focused on what matters most today." },
+  { id: "emma", name: "Emma", role: "AI Receptionist", color: "#E86FA6", line: "Answers every call and text — instantly, day or night." },
+  { id: "jake", name: "Jake", role: "AI Sales Assistant", color: "#2F6FE0", line: "Follows up relentlessly and turns leads into booked appointments." },
+  { id: "ruby", name: "Ruby", role: "AI Marketing Assistant", color: "#E68A2E", line: "Creates content and campaigns that keep your pipeline full." },
+  { id: "grace", name: "Grace", role: "AI Transaction Coordinator", color: "#2E9E6B", line: "Tracks every deadline so deals move smoothly to the closing table." },
+  { id: "oliver", name: "Oliver", role: "AI Accountant", color: "#3A6E8F", line: "Watches every dollar and keeps your commissions and books straight." },
+] as const;
+
 /* JUMP_LINKS removed — the in-page jump-link strip was deleted when
  * the marketing chrome switched from a left sidebar to a horizontal
  * top nav. Restore (with the i18n keys that still exist under
@@ -393,6 +407,86 @@ export default function LeadSmartLandingV2() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* ── MEET YOUR AI TEAM ─── introduced first, right under the hero */}
+        <section
+          id="team"
+          className="border-b border-slate-200/80 bg-white px-6 py-20 dark:border-slate-800 dark:bg-slate-950 md:py-24"
+        >
+          <div className="mx-auto max-w-6xl">
+            <RevealSection className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
+                Meet your AI team
+              </p>
+              <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+                Six specialists.{" "}
+                <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
+                  One AI team.
+                </span>
+              </h2>
+              <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
+                A specialist for every step of the deal — from the first call to the closing
+                table. They work together, around the clock, so you can focus on your clients.
+              </p>
+            </RevealSection>
+
+            {/* The team lineup */}
+            <RevealSection delay={100} className="mt-10">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/brand/realtyboss/ai-team.jpg"
+                alt="The CloseBoss AI team — six house-mascot assistants standing together"
+                loading="lazy"
+                className="mx-auto w-full max-w-4xl rounded-2xl border border-slate-200 shadow-xl dark:border-slate-800"
+              />
+            </RevealSection>
+
+            {/* Profile cards */}
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {AI_TEAM_MEMBERS.map((m, i) => (
+                <RevealSection key={m.id} delay={(i % 3) * 80}>
+                  <div className="flex h-full items-start gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/avatars/personas/${m.id}.png`}
+                      alt={m.name}
+                      loading="lazy"
+                      className="h-16 w-16 shrink-0 rounded-full border-2 object-cover"
+                      style={{ borderColor: m.color, backgroundColor: "#0b1424" }}
+                    />
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="font-heading text-base font-bold text-slate-900 dark:text-white">
+                          {m.name}
+                        </h3>
+                        <span
+                          className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                          style={{ backgroundColor: `${m.color}1A`, color: m.color }}
+                        >
+                          {m.role}
+                        </span>
+                      </div>
+                      <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                        {m.line}
+                      </p>
+                    </div>
+                  </div>
+                </RevealSection>
+              ))}
+            </div>
+
+            <RevealSection delay={200} className="mt-10 text-center">
+              <MagneticButton>
+                <Button
+                  href={PRIMARY_CTA_HREF}
+                  className="min-h-[48px] px-7 text-base shadow-floating hover:shadow-overlay"
+                >
+                  Hire your AI team
+                </Button>
+              </MagneticButton>
+            </RevealSection>
           </div>
         </section>
 
