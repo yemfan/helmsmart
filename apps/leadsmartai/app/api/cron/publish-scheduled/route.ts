@@ -42,6 +42,10 @@ export const maxDuration = 60;
 
 const BATCH_LIMIT = 25;
 
+/** Columns publishPost + the cron's bookkeeping need from a claimed row. */
+const DUE_POST_COLS =
+  "id, agent_id, social_account_id, platform, caption, hashtags, media_library_id, image_url, trigger_kind, subject_kind, subject_ref_id, attempt_count";
+
 /**
  * Exponential backoff schedule. attempt_count is incremented BEFORE
  * the publish, so:
@@ -97,36 +101,42 @@ async function claimDuePosts(): Promise<DuePost[]> {
   //   2. 'posting' rows whose next_attempt_at <= now() (retries)
   // We claim both in one go.
 
-  // First-time-due rows.
-  const { data: firstTime } = await supabaseAdmin
+  // First-time-due rows. PostgREST does NOT support ORDER BY / LIMIT on an
+  // UPDATE, so select the due ids first (SELECT does), then claim them by id.
+  // The previous version did update-with-limit AND ignored the returned error,
+  // so a failing claim was invisible: the cron returned 200 and drained nothing
+  // (which is exactly what happened — nothing ever published). Surface errors.
+  const { data: dueRows, error: selErr } = await supabaseAdmin
     .from("scheduled_posts")
-    .update({
-      status: "posting",
-      attempt_count: 1,
-      updated_at: nowIso,
-    } as Record<string, unknown>)
+    .select("id")
     .eq("status", "scheduled")
     .lte("scheduled_for", nowIso)
     .order("scheduled_for", { ascending: true })
-    .limit(BATCH_LIMIT)
-    .select(
-      "id, agent_id, social_account_id, platform, caption, hashtags, media_library_id, image_url, trigger_kind, subject_kind, subject_ref_id, attempt_count",
-    );
+    .limit(BATCH_LIMIT);
+  if (selErr) console.error("[cron/publish-scheduled] due-select failed:", selErr.message);
+  const dueIds = ((dueRows as { id: string }[] | null) ?? []).map((r) => r.id);
 
-  // Retry rows. Increment attempt_count atomically by reading current
-  // then writing current+1 — single update-where with `attempt_count`
-  // in the SET clause referencing the current value isn't supported
-  // in supabase-js's update API, so we do read + per-row update inside
-  // the same conditional batch.
-  const claimed: DuePost[] = ((firstTime as DuePost[] | null) ?? []);
+  const claimed: DuePost[] = [];
+  if (dueIds.length > 0) {
+    // Claim only rows still 'scheduled' — guards against a parallel cron.
+    const { data: firstTime, error: claimErr } = await supabaseAdmin
+      .from("scheduled_posts")
+      .update({ status: "posting", attempt_count: 1, updated_at: nowIso } as Record<string, unknown>)
+      .in("id", dueIds)
+      .eq("status", "scheduled")
+      .select(DUE_POST_COLS);
+    if (claimErr) console.error("[cron/publish-scheduled] claim failed:", claimErr.message);
+    claimed.push(...(((firstTime as DuePost[] | null) ?? [])));
+  }
+
+  // Retry rows: 'posting' rows whose next_attempt_at <= now(), re-claimed with a
+  // conditional per-row update (bumps attempt_count) below.
   const remainingSlots = BATCH_LIMIT - claimed.length;
 
   if (remainingSlots > 0) {
     const { data: retryCandidates } = await supabaseAdmin
       .from("scheduled_posts")
-      .select(
-        "id, agent_id, social_account_id, platform, caption, hashtags, media_library_id, image_url, trigger_kind, subject_kind, subject_ref_id, attempt_count",
-      )
+      .select(DUE_POST_COLS)
       .eq("status", "posting")
       .lte("next_attempt_at", nowIso)
       .order("next_attempt_at", { ascending: true })
