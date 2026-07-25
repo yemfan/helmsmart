@@ -69,7 +69,7 @@ export const AI_TEAM: readonly AssistantDef[] = [
   },
   {
     type: "sales_assistant",
-    displayName: "Jake",
+    displayName: "Chris",
     name: "AI Sales Assistant",
     personality: "Confident, persuasive, follows up relentlessly.",
     role: "Outbound lead conversion",
