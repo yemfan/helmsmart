@@ -36,7 +36,7 @@ export function AssistantHeader({
         ) as { name?: string; avatar_id?: string; avatar_url?: string | null } | undefined;
         if (row) {
           setCustom({
-            name: row.name || assistant.name,
+            name: row.name || assistant.displayName,
             avatar_id: row.avatar_id || defaultAvatarForType(assistant.type),
             avatar_url: row.avatar_url ?? null,
           });
@@ -48,7 +48,7 @@ export function AssistantHeader({
     };
   }, [assistant.type, assistant.name]);
 
-  const name = custom?.name || assistant.name;
+  const name = assistant.displayName;
   const avatarId = custom?.avatar_id || defaultAvatarForType(assistant.type);
   const avatarUrl = custom?.avatar_url ?? null;
 
@@ -59,7 +59,8 @@ export function AssistantHeader({
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">Your AI Team</p>
           <h1 className="mt-0.5 text-xl font-semibold text-gray-900">{name}</h1>
-          <p className="text-sm text-gray-500">{assistant.role} — {assistant.mission}</p>
+          <p className="text-sm font-medium text-gray-600">{assistant.name}</p>
+          <p className="text-xs text-gray-400">{assistant.personality}</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {assistant.skills.map((s) => (
               <span key={s} className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">

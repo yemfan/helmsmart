@@ -75,7 +75,8 @@ export async function ensureAssistantsForAgent(agentId: string): Promise<AiAssis
   const inserts = missing.map((def) => ({
     agent_id: agentId,
     type: def.type,
-    name: def.name,
+    // Seed the persona name (Max, Emma, …); `def.name` is the role label.
+    name: def.displayName,
     avatar_id: DEFAULT_ASSISTANT_AVATARS[def.type],
     status: "active",
     description: `${def.role} — ${def.mission}`,
@@ -105,7 +106,6 @@ export async function updateAssistantForAgent(
   patch: {
     status?: "active" | "paused";
     enabledSkills?: string[];
-    name?: string;
     avatarId?: string;
     /** string = set custom photo URL; null = remove it (revert to persona). */
     avatarUrl?: string | null;
@@ -114,7 +114,6 @@ export async function updateAssistantForAgent(
   const body: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (patch.status) body.status = patch.status;
   if (patch.enabledSkills) body.enabled_skills = patch.enabledSkills;
-  if (patch.name != null) body.name = patch.name;
   if (patch.avatarId) {
     // Choosing a built-in persona clears any custom uploaded photo.
     body.avatar_id = patch.avatarId;

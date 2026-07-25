@@ -236,11 +236,11 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     const morning = (briefRes?.morning?.[0] ?? null) as BriefingRow | null;
     setBriefing(morning && !morning.read_at ? morning : null);
 
-    const names: Record<string, string> = {};
+    // Names always come from the roster persona (the profile) — not a per-tenant override.
+    const names: Record<string, string> = Object.fromEntries(AI_TEAM.map((d) => [d.type, d.displayName]));
     const statuses: Record<string, "active" | "paused"> = {};
     const avatars: Record<string, { id: string; url: string | null }> = {};
-    for (const a of (teamRes?.assistants ?? []) as { type: string; status: "active" | "paused"; name?: string; avatar_id?: string; avatar_url?: string | null }[]) {
-      if (a.name) names[a.type] = a.name;
+    for (const a of (teamRes?.assistants ?? []) as { type: string; status: "active" | "paused"; avatar_id?: string; avatar_url?: string | null }[]) {
       statuses[a.type] = a.status;
       if (a.avatar_id) avatars[a.type] = { id: a.avatar_id, url: a.avatar_url ?? null };
     }

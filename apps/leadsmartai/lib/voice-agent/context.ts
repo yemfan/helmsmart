@@ -1,8 +1,8 @@
 import { getAgentDisplayName } from "@/lib/ai-call/lead-resolution";
 import { getReceptionistConfig, getBookingSettings } from "@/lib/voice-receptionist/settings";
 import {
-  buildReceptionistVoiceNotes,
   getAssistantVoiceSettings,
+  receptionistVoiceNotesFromSkills,
   voiceNotesFromSkills,
 } from "@/lib/realtyboss/voicePersona";
 import {
@@ -44,6 +44,10 @@ export async function loadReceptionistContext(
   const cfg = await getReceptionistConfig(agentId);
   if (!cfg.enabled) return null;
 
+  // The AI Receptionist's persona (Emma, by default) — her name + skill
+  // playbook. Loaded once and used for both the on-call name and the notes.
+  const receptionistVoice = await getAssistantVoiceSettings(agentId, "receptionist");
+
   // Booking on/off + per-agent office hours (one query). Booking off by default;
   // hours fall back to the engine default (Mon–Fri 9–5) when unset.
   const { enabled: bookingEnabled, hours: configuredHours } = await getBookingSettings(agentId);
@@ -70,7 +74,9 @@ export async function loadReceptionistContext(
     orgId: agentId,
     orgName,
     orgNameZh: cfg.businessNameZh || orgName,
-    agentName: cfg.agentName || "",
+    // Her configured receptionist name wins; otherwise she introduces herself
+    // by her persona name (Emma) so callers hear a real name, not silence.
+    agentName: cfg.agentName || receptionistVoice.voiceName || "",
     twilioNumber: null,
     timezone,
     todayISO,
@@ -87,7 +93,7 @@ export async function loadReceptionistContext(
     // enabled on this agent's AI Receptionist, plus voice-channel
     // compliance guardrails. Lands under "About the business" in the
     // shared system prompt.
-    extraNotes: await buildReceptionistVoiceNotes(agentId),
+    extraNotes: receptionistVoiceNotesFromSkills(receptionistVoice.enabledSkills),
     greeting: cfg.greeting || "",
   };
 }

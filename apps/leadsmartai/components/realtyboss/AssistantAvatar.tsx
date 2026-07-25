@@ -1,6 +1,6 @@
 "use client";
 
-import { AVATARS, avatarUrl } from "@/lib/realtyboss/avatars";
+import { PICKABLE_AVATARS, avatarUrl } from "@/lib/realtyboss/avatars";
 
 /** A single circular avatar — a custom uploaded photo (`url`) when present,
  *  otherwise the built-in persona for `id`. */
@@ -39,7 +39,7 @@ export function AssistantAvatar({
   );
 }
 
-/** A grid of all 20 avatars; highlights the selected one. */
+/** A grid of every pickable avatar (mascots first, then illustrated); highlights the selected one. */
 export function AssistantAvatarPicker({
   value,
   onSelect,
@@ -58,7 +58,7 @@ export function AssistantAvatarPicker({
       className="grid gap-2"
       style={{ gridTemplateColumns: `repeat(5, ${size}px)` }}
     >
-      {AVATARS.map((id) => {
+      {PICKABLE_AVATARS.map((id) => {
         const selected = id === value;
         return (
           <button
