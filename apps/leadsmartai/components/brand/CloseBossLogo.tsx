@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 
-// CloseBoss brand palette — navy team + gold "Boss" core (see the brand mark:
-// six AI employees in a hexagon around the gold BOSS sphere).
-const NAVY = "#1B2A4A";
-const GOLD = "#F59E0B";
+// CloseBoss v2 brand palette — navy team + gold "Boss" core (see the brand mark:
+// six AI employees ringed around the gold BOSS sphere in a glowing AI field).
+const NAVY = "#0B1F44";
+const GOLD = "#DAA017";
 
 type Tone = "light" | "dark";
 
