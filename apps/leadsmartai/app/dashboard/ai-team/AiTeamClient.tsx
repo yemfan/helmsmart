@@ -146,7 +146,7 @@ export default function AiTeamClient() {
                 const max = Math.max(1, ...a.series);
                 return (
                   <div key={a.type} className="rounded-lg border border-gray-100 p-3">
-                    <p className="text-xs font-medium text-gray-900">{custName ?? def?.name ?? a.type}</p>
+                    <p className="text-xs font-medium text-gray-900">{custName ?? def?.displayName ?? a.type}</p>
                     <p className="text-[10px] text-gray-500">
                       {a.activities} activit{a.activities === 1 ? "y" : "ies"}
                       {a.needsAttention > 0 ? ` · ${a.needsAttention} needed you` : ""}
@@ -190,7 +190,8 @@ export default function AiTeamClient() {
                           {a.status}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500">{a.description ?? def?.mission ?? ""}</p>
+                      <p className="text-xs font-medium text-gray-600">{def?.name}</p>
+                      <p className="text-[11px] text-gray-400">{def?.personality ?? def?.mission ?? ""}</p>
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
@@ -230,7 +231,7 @@ export default function AiTeamClient() {
                         value={nameDraft}
                         onChange={(e) => setNameDraft(e.target.value)}
                         maxLength={80}
-                        placeholder={def?.name ?? "Assistant name"}
+                        placeholder={def?.displayName ?? "Assistant name"}
                         className="w-56 rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0072ce]"
                       />
                       <button

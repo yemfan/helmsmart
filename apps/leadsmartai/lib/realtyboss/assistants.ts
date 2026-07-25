@@ -75,7 +75,8 @@ export async function ensureAssistantsForAgent(agentId: string): Promise<AiAssis
   const inserts = missing.map((def) => ({
     agent_id: agentId,
     type: def.type,
-    name: def.name,
+    // Seed the persona name (Max, Emma, …); `def.name` is the role label.
+    name: def.displayName,
     avatar_id: DEFAULT_ASSISTANT_AVATARS[def.type],
     status: "active",
     description: `${def.role} — ${def.mission}`,

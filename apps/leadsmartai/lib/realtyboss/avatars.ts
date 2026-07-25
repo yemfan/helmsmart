@@ -9,7 +9,7 @@ import type { AssistantType } from "@/lib/realtyboss/team";
  */
 
 export const AVATARS: readonly string[] = Array.from(
-  { length: 10 },
+  { length: 14 },
   (_, i) => `avatar-${String(i + 1).padStart(2, "0")}`,
 );
 
@@ -30,12 +30,12 @@ export function defaultAvatarForSeed(seed: string): string {
 
 /** Role-fit default avatar per assistant type (one of the 10 custom portraits). */
 export const DEFAULT_ASSISTANT_AVATARS: Record<AssistantType, string> = {
-  boss_assistant: "avatar-01",
-  receptionist: "avatar-02",
-  sales_assistant: "avatar-03",
-  marketing_assistant: "avatar-04",
-  transaction_assistant: "avatar-05",
-  accountant: "avatar-06",
+  boss_assistant: "avatar-13", // Max — purple
+  receptionist: "avatar-09", // Emma — pink
+  sales_assistant: "avatar-14", // Jake — blue
+  marketing_assistant: "avatar-03", // Ruby — orange (recolored)
+  transaction_assistant: "avatar-05", // Grace — green
+  accountant: "avatar-04", // Oliver — blue
 };
 
 export function defaultAvatarForType(type: AssistantType): string {
