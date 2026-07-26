@@ -23,7 +23,7 @@ import { LINKEDIN_API_BASE } from "./linkedin-oauth";
 
 // LinkedIn sunsets each YYYYMM API version ~12 months after release, returning
 // HTTP 426 NONEXISTENT_VERSION once it lapses. Keep this within the last year.
-const LINKEDIN_API_VERSION = "202506"; // bump to current Y-M when stale
+const LINKEDIN_API_VERSION = "202606"; // bump to current Y-M when stale (202506 sunset -> HTTP 426)
 
 type PostError = {
   message?: string;
