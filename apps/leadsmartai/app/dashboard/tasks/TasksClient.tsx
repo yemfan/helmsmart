@@ -5,15 +5,16 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { Check, X, CalendarClock, Pencil, ExternalLink } from "lucide-react";
 
 /**
- * Pull the first http(s) URL out of a task description so the row UI
- * can render it as a clickable link instead of dumping it as plain
- * text. Used by inbound-email tasks (which embed the review-page link
- * via /dashboard/inbound/[id]) and by anything else that puts a link
- * in the body — keeps the affordance generic.
+ * Pull the first link out of a task description so the row UI can render
+ * it as a clickable anchor instead of dumping it as plain text. Matches
+ * either an absolute http(s) URL (older tasks, external links) OR a
+ * relative in-app path (inbound-email review pages now embed
+ * `/dashboard/inbound/[id]` so a domain change can't dead-link them).
+ * A relative href resolves against the current origin in the browser.
  */
 function firstUrlFromDescription(desc: string | null | undefined): string | null {
   if (!desc) return null;
-  const match = desc.match(/https?:\/\/[^\s)\]]+/);
+  const match = desc.match(/https?:\/\/[^\s)\]]+|\/dashboard\/[^\s)\]]+/);
   return match ? match[0] : null;
 }
 

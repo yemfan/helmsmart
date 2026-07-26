@@ -46,12 +46,6 @@ export type ProcessInboundResult =
   | { ok: true; accepted: false; reason: string }
   | { ok: false; error: string };
 
-function getAppOrigin(): string {
-  const fromEnv = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (fromEnv) return fromEnv.replace(/\/$/, "");
-  return "https://www.closebossai.com";
-}
-
 export async function processInboundEmail(
   input: ProcessInboundInput,
 ): Promise<ProcessInboundResult> {
@@ -155,7 +149,11 @@ export async function processInboundEmail(
     extractionResult.status === "extracted" ? summarizeExtraction(extractionResult.payload) : null;
   const titleSuffix = extractionSummary ?? subject?.slice(0, 80) ?? `from ${senderShort.slice(0, 60)}`;
   const title = `Review forwarded ${intentText.toLowerCase()}: ${titleSuffix}`;
-  const reviewUrl = `${getAppOrigin()}/dashboard/inbound/${delivery.id}`;
+  // Relative path — resolves against whatever host the agent is on, so a
+  // domain change (leadsmart-ai.com → closebossai.com) can never dead-link it.
+  // This link is only ever rendered in-app (the task row); it is never sent
+  // to an external channel, so it doesn't need an absolute origin.
+  const reviewUrl = `/dashboard/inbound/${delivery.id}`;
 
   const bodyParts: string[] = [`📥 Open the review page: ${reviewUrl}`, ""];
   if (fromHeader) bodyParts.push(`From: ${fromHeader}`);
