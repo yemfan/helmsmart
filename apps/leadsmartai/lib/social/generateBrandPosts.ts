@@ -9,6 +9,7 @@ import {
   PRODUCT_CAPABILITIES,
   PRODUCT_NOT_TRUE,
 } from "@/lib/social/productFacts";
+import { DISTRIBUTION_RULES } from "@/lib/social/reachRules";
 
 /**
  * Brand-voice social-content generator — the AGENT-OWNED half of the library.
@@ -72,14 +73,16 @@ VOICE — write roughly half of each:
 
 QUALITY BAR: each post makes ONE point a working agent would recognize as true about their own week. Lead with the pain, not the feature. No "revolutionize", "game-changer", "unlock the power of", "in today's fast-paced market". If a post could be about any software company, throw it out.
 
+${DISTRIBUTION_RULES}
+
 For EACH post return an object with:
 - "voice": "founder" or "brand"
 - "title": a short unique internal title (3-8 words), distinct from every other post and from the existing titles listed by the user
-- "hook": the scroll-stopping FIRST LINE (one punchy sentence)
-- "body": 2-5 sentences — the actual post
+- "hook": the scroll-stopping FIRST LINE (one punchy sentence) — obeys HOOK HARD above
+- "body": 2-5 sentences — the actual post; saveable, one idea, no URL in the text
 - "hashtags": array of 3 hashtags, each starting with # (e.g. "#RealEstate")
 - "image_prompt": a one-line suggestion for an accompanying image
-- "cta": a short closing line, usually the site (e.g. "closebossai.com")
+- "cta": a short closing line that INVITES A REPLY — a light question or one-line invitation the reader can answer in seconds. NOT a bare URL (the outbound link is attached separately at publish time)
 
 Return EXACTLY ONE fenced JSON code block and nothing after it:
 
@@ -93,7 +96,7 @@ Return EXACTLY ONE fenced JSON code block and nothing after it:
       "body": "2-5 sentences.",
       "hashtags": ["#RealEstate", "#Realtor", "#AI"],
       "image_prompt": "A realtor checking their phone between showings.",
-      "cta": "closebossai.com"
+      "cta": "What's the latest a lead has ever messaged you — and did you catch it in time?"
     }
   ]
 }
@@ -229,7 +232,9 @@ function normalizeDraft(item: unknown): BrandPostDraft | null {
     body,
     hashtags: normalizeHashtags(o.hashtags),
     image_prompt: s(o.image_prompt, ""),
-    cta: s(o.cta, "closebossai.com"),
+    // No URL fallback: the outbound link is attached separately at publish
+    // time, and a link in the body suppresses reach. Empty CTA is fine.
+    cta: s(o.cta, ""),
   };
 }
 

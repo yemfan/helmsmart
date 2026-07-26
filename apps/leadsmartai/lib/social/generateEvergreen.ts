@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
+import { DISTRIBUTION_RULES } from "@/lib/social/reachRules";
 
 /**
  * Evergreen social-content generator for the shared social_content_library.
@@ -70,14 +71,16 @@ Spread the posts across ALL of these categories (roughly even; every category re
 - staging: making a home show its best
 - negotiation: negotiating offers, repairs, and terms
 
+${DISTRIBUTION_RULES}
+
 For EACH post return an object with:
 - "category": exactly one of the category keys above
 - "title": a short unique internal title (3-8 words), distinct from every other post
-- "hook": the scroll-stopping FIRST LINE of the post (one punchy sentence)
-- "body": 2-4 sentences of the actual post (the practical advice)
+- "hook": the scroll-stopping FIRST LINE of the post (one punchy sentence) — obeys HOOK HARD above
+- "body": 2-4 sentences of the actual post (the practical advice); saveable, one idea, no URL in the text
 - "hashtags": array of 3-5 relevant hashtags, each starting with # (e.g. "#homebuying")
 - "image_prompt": a one-line suggestion for an accompanying image the agent could generate
-- "cta": a short call-to-action line (e.g. "Thinking of buying? Let's talk.")
+- "cta": a short closing line that INVITES A REPLY — a light question or soft invitation (e.g. "Thinking of buying? What's the one thing holding you back?"). Not a bare URL.
 
 Return EXACTLY ONE fenced JSON code block and nothing after it, an object with a "posts" array:
 
