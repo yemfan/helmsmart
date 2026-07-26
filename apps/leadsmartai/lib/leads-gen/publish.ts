@@ -7,6 +7,7 @@ import {
   publishInstagramBusinessPost,
 } from "./meta-post";
 import { publishThreadsPost } from "./threads-post";
+import { publishPinterestPin } from "./pinterest-post";
 import { decryptToken } from "./token-enc";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -39,7 +40,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
  * dispatching here.
  */
 
-export type PublishPlatform = "facebook" | "instagram" | "linkedin" | "threads";
+export type PublishPlatform = "facebook" | "instagram" | "linkedin" | "threads" | "pinterest";
 
 export type PublishInput = {
   agentId: string;
@@ -120,7 +121,8 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   const inlineHashtags =
     platform === "instagram" ||
     platform === "linkedin" ||
-    platform === "threads";
+    platform === "threads" ||
+    platform === "pinterest";
   if (
     inlineHashtags &&
     hashtags &&
@@ -138,7 +140,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   const { data: connRow, error: connErr } = await supabaseAdmin
     .from("social_accounts")
     .select(
-      "id, agent_id, platform, fb_page_id, ig_business_user_id, page_access_token_enc, user_access_token_enc, linkedin_member_urn, threads_user_id, status",
+      "id, agent_id, platform, fb_page_id, ig_business_user_id, page_access_token_enc, user_access_token_enc, linkedin_member_urn, threads_user_id, pinterest_board_id, status",
     )
     .eq("id", connectionId)
     .eq("agent_id", agentId)
@@ -169,6 +171,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     user_access_token_enc: string | null;
     linkedin_member_urn: string | null;
     threads_user_id: string | null;
+    pinterest_board_id: string | null;
     status: string;
   };
 
@@ -195,6 +198,14 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       ok: false,
       status: 422,
       error: "Connection platform is not Threads.",
+      retryable: false,
+    };
+  }
+  if (platform === "pinterest" && conn.platform !== "pinterest") {
+    return {
+      ok: false,
+      status: 422,
+      error: "Connection platform is not Pinterest.",
       retryable: false,
     };
   }
@@ -244,6 +255,17 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       ok: false,
       status: 422,
       error: "Connection is missing Threads credentials. Reconnect to refresh.",
+      retryable: false,
+    };
+  }
+  if (
+    platform === "pinterest" &&
+    (!conn.pinterest_board_id || !conn.user_access_token_enc)
+  ) {
+    return {
+      ok: false,
+      status: 422,
+      error: "Connection is missing a Pinterest board or credentials. Reconnect to refresh.",
       retryable: false,
     };
   }
@@ -322,12 +344,14 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       }
     }
   }
-  if (platform === "instagram" && !imageUrl) {
+  if ((platform === "instagram" || platform === "pinterest") && !imageUrl) {
     return {
       ok: false,
       status: 422,
       error:
-        "Instagram posts require an image. Attach one in the wizard, or post to Facebook only.",
+        platform === "pinterest"
+          ? "Pinterest Pins require an image. Attach one before publishing."
+          : "Instagram posts require an image. Attach one in the wizard, or post to Facebook only.",
       retryable: false,
     };
   }
@@ -337,7 +361,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   let accessToken: string;
   try {
     const encrypted =
-      platform === "linkedin" || platform === "threads"
+      platform === "linkedin" || platform === "threads" || platform === "pinterest"
         ? conn.user_access_token_enc!
         : conn.page_access_token_enc!;
     accessToken = decryptToken(encrypted);
@@ -365,7 +389,9 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
         ? "LinkedIn"
         : platform === "threads"
           ? "Threads"
-          : "Facebook";
+          : platform === "pinterest"
+            ? "Pinterest"
+            : "Facebook";
     return {
       ok: false,
       status: 422,
@@ -436,6 +462,20 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       });
       externalPostId = result.externalPostId;
       externalPostUrl = result.externalPostUrl;
+    } else if (platform === "pinterest") {
+      // Pin title = first line of the caption (Pinterest caps it at 100);
+      // the full caption is the description; `link` is the outbound URL.
+      const title = caption.split("\n")[0]?.trim() || "CloseBoss";
+      const result = await publishPinterestPin({
+        accessToken,
+        boardId: conn.pinterest_board_id!,
+        title,
+        description: caption,
+        link: link ?? null,
+        imageUrl: imageUrl!,
+      });
+      externalPostId = result.externalPostId;
+      externalPostUrl = result.externalPostUrl;
     } else {
       // linkedin
       const result = await publishLinkedInPost({
@@ -480,6 +520,8 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       linkedinCode?: string | null;
       linkedinServiceErrorCode?: number | null;
       linkedinMessage?: string | null;
+      // Pinterest-tagged error field (HTTP status)
+      pinterestStatus?: number | null;
     } | null;
 
     await supabaseAdmin
@@ -528,6 +570,11 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       ) {
         retryable = false;
       }
+    } else if (platform === "pinterest") {
+      // 400 bad request / 401 unauthorized / 403 forbidden = permanent;
+      // 429 rate-limit + 5xx are transient and worth retrying.
+      const s = tagged?.pinterestStatus ?? null;
+      retryable = !(s === 400 || s === 401 || s === 403);
     } else {
       const PERMANENT_META_CODES = new Set([100, 190, 200, 803, 506]);
       retryable = tagged?.metaCode
