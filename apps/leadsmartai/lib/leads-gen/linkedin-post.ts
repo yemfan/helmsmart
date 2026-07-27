@@ -148,6 +148,76 @@ function postUrlFromUrn(urn: string): string | null {
   return `https://www.linkedin.com/feed/update/urn:li:ugcPost:${id}/`;
 }
 
+/**
+ * Publish a multi-image (carousel) post to the agent's personal LinkedIn feed.
+ *
+ * LinkedIn's v3 `content.multiImage` takes 2-20 already-uploaded image URNs, so
+ * we upload each slide via the same register→upload flow as a single image,
+ * then attach them all. Visibility PUBLIC, reshares on — same as the single-post
+ * path. Returns the share URN + a viewable URL.
+ */
+export async function publishLinkedInCarousel(params: {
+  memberUrn: string;
+  accessToken: string;
+  caption: string;
+  images: { bytes: Uint8Array; contentType: string }[];
+}): Promise<LinkedInPublishResult> {
+  const { memberUrn, accessToken, caption, images } = params;
+  if (images.length < 2) {
+    throw new Error("A LinkedIn carousel needs at least 2 images.");
+  }
+
+  const imageUrns: string[] = [];
+  for (const img of images) {
+    const urn = await uploadImage({
+      memberUrn,
+      accessToken,
+      imageBytes: img.bytes,
+      imageContentType: img.contentType,
+    });
+    imageUrns.push(urn);
+  }
+
+  const post: Record<string, unknown> = {
+    author: memberUrn,
+    commentary: caption,
+    visibility: "PUBLIC",
+    distribution: {
+      feedDistribution: "MAIN_FEED",
+      targetEntities: [],
+      thirdPartyDistributionChannels: [],
+    },
+    content: {
+      multiImage: {
+        images: imageUrns.map((id, i) => ({ id, altText: `Slide ${i + 1}` })),
+      },
+    },
+    lifecycleState: "PUBLISHED",
+    isReshareDisabledByAuthor: false,
+  };
+
+  const res = await fetch(`${LINKEDIN_API_BASE}/rest/posts`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      "linkedin-version": LINKEDIN_API_VERSION,
+      "x-restli-protocol-version": "2.0.0",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(post),
+  });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: PostError };
+    const msg = body.error?.message || `HTTP ${res.status}`;
+    throw tagError(new Error(`LinkedIn carousel publish failed: ${msg}`), body);
+  }
+  const postUrn = res.headers.get("x-restli-id") ?? "";
+  if (!postUrn) {
+    throw new Error("LinkedIn carousel publish succeeded but returned no x-restli-id");
+  }
+  return { externalPostId: postUrn, externalPostUrl: postUrlFromUrn(postUrn) };
+}
+
 // ── Image upload (two-step) ──────────────────────────────────────────
 
 type InitializeUploadResponse = {
