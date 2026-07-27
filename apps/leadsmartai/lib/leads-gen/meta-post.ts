@@ -244,6 +244,134 @@ export async function publishInstagramBusinessPost(params: {
   };
 }
 
+// ── Carousels (multi-image) ──────────────────────────────────────────
+
+function graphErr(json: { error?: GraphError }, status: number, what: string): Error {
+  const e = json.error;
+  return tagOutcomeError(
+    e?.error_user_msg || e?.message || `${what} (HTTP ${status})`,
+    e?.code ?? null,
+  );
+}
+
+/**
+ * Publish a multi-photo (carousel) post to a Facebook Page.
+ *
+ * Two steps per Meta's docs:
+ *   1. Upload each slide as an UNPUBLISHED photo (POST /{page-id}/photos with
+ *      published=false + url) → a media_fbid per image.
+ *   2. Create the feed post referencing them all via attached_media[i].
+ *
+ * `imageUrls` must be publicly fetchable (our on-the-fly slide route is).
+ * Returns the {page-id}_{post-id} + a viewable URL.
+ */
+export async function publishFacebookCarousel(params: {
+  pageId: string;
+  pageAccessToken: string;
+  caption: string;
+  imageUrls: string[];
+}): Promise<PublishResult> {
+  const { pageId, pageAccessToken, caption, imageUrls } = params;
+  if (imageUrls.length < 2) {
+    throw tagOutcomeError("A Facebook carousel needs at least 2 images.");
+  }
+
+  const mediaFbids: string[] = [];
+  for (const url of imageUrls) {
+    const body = new URLSearchParams({ url, published: "false", access_token: pageAccessToken });
+    const res = await fetch(`${META_GRAPH_BASE}/${pageId}/photos`, { method: "POST", body });
+    const json = (await res.json().catch(() => ({}))) as { id?: string; error?: GraphError };
+    if (!res.ok || !json.id) throw graphErr(json, res.status, "Facebook photo upload failed");
+    mediaFbids.push(json.id);
+  }
+
+  const feedBody = new URLSearchParams({ message: caption, access_token: pageAccessToken });
+  mediaFbids.forEach((fbid, i) => {
+    feedBody.append(`attached_media[${i}]`, JSON.stringify({ media_fbid: fbid }));
+  });
+  const feedRes = await fetch(`${META_GRAPH_BASE}/${pageId}/feed`, { method: "POST", body: feedBody });
+  const feedJson = (await feedRes.json().catch(() => ({}))) as { id?: string; error?: GraphError };
+  if (!feedRes.ok || !feedJson.id) throw graphErr(feedJson, feedRes.status, "Facebook carousel post failed");
+
+  return {
+    externalPostId: feedJson.id,
+    externalPostUrl: `https://www.facebook.com/${feedJson.id}`,
+  };
+}
+
+/**
+ * Publish a carousel to an Instagram Business account.
+ *
+ * Four steps per Meta's IG carousel docs:
+ *   1. Create a child media container per image (is_carousel_item=true).
+ *   2. Wait for each child to finish processing.
+ *   3. Create the parent CAROUSEL container (children + caption).
+ *   4. Wait for it, then media_publish.
+ *
+ * IG carousels allow 2-10 images.
+ */
+export async function publishInstagramCarousel(params: {
+  igUserId: string;
+  pageAccessToken: string;
+  caption: string;
+  imageUrls: string[];
+}): Promise<PublishResult> {
+  const { igUserId, pageAccessToken, caption, imageUrls } = params;
+  if (imageUrls.length < 2 || imageUrls.length > 10) {
+    throw tagOutcomeError("Instagram carousels need between 2 and 10 images.");
+  }
+
+  // 1. Child container per image.
+  const childIds: string[] = [];
+  for (const url of imageUrls) {
+    const body = new URLSearchParams({
+      image_url: url,
+      is_carousel_item: "true",
+      access_token: pageAccessToken,
+    });
+    const res = await fetch(`${META_GRAPH_BASE}/${igUserId}/media`, { method: "POST", body });
+    const json = (await res.json().catch(() => ({}))) as { id?: string; error?: GraphError };
+    if (!res.ok || !json.id) throw graphErr(json, res.status, "Instagram child container failed");
+    childIds.push(json.id);
+  }
+
+  // 2. Each child must finish processing before it can join the carousel.
+  for (const id of childIds) {
+    await waitForInstagramContainer(id, pageAccessToken);
+  }
+
+  // 3. Parent carousel container.
+  const carBody = new URLSearchParams({
+    media_type: "CAROUSEL",
+    children: childIds.join(","),
+    caption,
+    access_token: pageAccessToken,
+  });
+  const carRes = await fetch(`${META_GRAPH_BASE}/${igUserId}/media`, { method: "POST", body: carBody });
+  const carJson = (await carRes.json().catch(() => ({}))) as { id?: string; error?: GraphError };
+  if (!carRes.ok || !carJson.id) throw graphErr(carJson, carRes.status, "Instagram carousel container failed");
+
+  // 4. Wait, then publish.
+  await waitForInstagramContainer(carJson.id, pageAccessToken);
+  const pubBody = new URLSearchParams({ creation_id: carJson.id, access_token: pageAccessToken });
+  const pubRes = await fetch(`${META_GRAPH_BASE}/${igUserId}/media_publish`, { method: "POST", body: pubBody });
+  const pubJson = (await pubRes.json().catch(() => ({}))) as { id?: string; error?: GraphError };
+  if (!pubRes.ok || !pubJson.id) throw graphErr(pubJson, pubRes.status, "Instagram carousel publish failed");
+
+  let externalPostUrl: string | null = null;
+  try {
+    const pl = await fetch(
+      `${META_GRAPH_BASE}/${pubJson.id}?fields=permalink&access_token=${encodeURIComponent(pageAccessToken)}`,
+    );
+    const plJson = (await pl.json().catch(() => ({}))) as { permalink?: string };
+    if (pl.ok && plJson.permalink) externalPostUrl = plJson.permalink;
+  } catch {
+    // ignore — the post is already live
+  }
+
+  return { externalPostId: pubJson.id, externalPostUrl };
+}
+
 // ── Per-post insights ────────────────────────────────────────────────
 
 /**
