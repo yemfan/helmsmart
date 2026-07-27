@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { publishCarouselPost } from "@/lib/leads-gen/carousel-post";
 import { publishPost } from "@/lib/leads-gen/publish";
 import { dispatchMobilePublishFailurePush } from "@/lib/mobile/pushDispatch";
 import { logAssistantActivity } from "@/lib/realtyboss/activities";
@@ -44,7 +45,7 @@ const BATCH_LIMIT = 25;
 
 /** Columns publishPost + the cron's bookkeeping need from a claimed row. */
 const DUE_POST_COLS =
-  "id, agent_id, social_account_id, platform, caption, hashtags, media_library_id, image_url, trigger_kind, subject_kind, subject_ref_id, attempt_count";
+  "id, agent_id, social_account_id, platform, caption, hashtags, media_library_id, image_url, trigger_kind, subject_kind, subject_ref_id, attempt_count, carousel_id";
 
 /**
  * Exponential backoff schedule. attempt_count is incremented BEFORE
@@ -91,6 +92,9 @@ type DuePost = {
   subject_kind: string | null;
   subject_ref_id: string | null;
   attempt_count: number;
+  // When set, this row is a carousel — the cron multi-image-publishes it via
+  // publishCarouselPost instead of the single-image publishPost.
+  carousel_id: string | null;
 };
 
 async function claimDuePosts(): Promise<DuePost[]> {
@@ -181,18 +185,35 @@ export async function POST(req: Request) {
     let permanentlyFailed = 0;
 
     for (const row of due) {
-      const result = await publishPost({
-        agentId: row.agent_id,
-        platform: row.platform,
-        connectionId: row.social_account_id,
-        caption: row.caption,
-        hashtags: row.hashtags,
-        mediaItemId: row.media_library_id,
-        imageUrl: row.image_url,
-        trigger: row.trigger_kind,
-        subjectKind: row.subject_kind,
-        subjectRefId: row.subject_ref_id,
-      });
+      // A carousel row (carousel_id set + a carousel-capable platform) goes
+      // through the multi-image path; everything else is a single-image post.
+      // Both return the same ok/retryable/error shape.
+      const isCarousel =
+        !!row.carousel_id &&
+        (row.platform === "facebook" ||
+          row.platform === "instagram" ||
+          row.platform === "linkedin");
+      const result = isCarousel
+        ? await publishCarouselPost({
+            agentId: row.agent_id,
+            connectionId: row.social_account_id,
+            platform: row.platform as "facebook" | "instagram" | "linkedin",
+            carouselId: row.carousel_id!,
+            caption: row.caption,
+            hashtags: row.hashtags,
+          })
+        : await publishPost({
+            agentId: row.agent_id,
+            platform: row.platform,
+            connectionId: row.social_account_id,
+            caption: row.caption,
+            hashtags: row.hashtags,
+            mediaItemId: row.media_library_id,
+            imageUrl: row.image_url,
+            trigger: row.trigger_kind,
+            subjectKind: row.subject_kind,
+            subjectRefId: row.subject_ref_id,
+          });
 
       const nowIso = new Date().toISOString();
 
