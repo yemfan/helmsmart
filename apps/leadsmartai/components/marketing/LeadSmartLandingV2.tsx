@@ -1209,6 +1209,9 @@ export default function LeadSmartLandingV2() {
           </div>
         </section>
 
+        {/* ── WHAT IS CLOSEBOSS AI (entity FAQ for SEO / AI Overview) ─── */}
+        <FaqSection />
+
         {/* ── FINAL CTA ─── */}
         <section className="px-6 py-20 md:py-24">
           <div className="mx-auto max-w-4xl rounded-3xl bg-gradient-to-br from-[#0072ce] via-[#4F46E5] to-[#7c3aed] px-8 py-14 text-center text-white shadow-2xl md:px-12">
@@ -1248,6 +1251,73 @@ export default function LeadSmartLandingV2() {
 
       <ExitIntentPopup role="agent" />
     </>
+  );
+}
+
+/**
+ * Homepage entity FAQ. Google's AI Overview currently confuses "CloseBoss AI"
+ * with the similarly-named "CloseBot", so this section gives first-party,
+ * domain-anchored definition text (visible on the page) mirrored by FAQPage
+ * JSON-LD — the clearest signal we can send that closebossai.com is a distinct
+ * real-estate product. Kept in English (the SEO-target locale) on purpose; the
+ * visible copy MUST match the schema per Google's structured-data rules.
+ */
+const HOME_FAQ: { q: string; a: string }[] = [
+  {
+    q: "What is CloseBoss AI?",
+    a: "CloseBoss AI (closebossai.com) is an AI-powered real estate team built for real estate agents. It answers every inbound call with an AI receptionist, follows up with every lead by phone and text, coordinates transactions, and runs your social media marketing — the work of a full team, alongside a single agent. It is a distinct product built specifically for real estate professionals.",
+  },
+  {
+    q: "Who is CloseBoss AI for?",
+    a: "CloseBoss AI is for real estate agents and teams who want to answer every call, follow up with every lead, and stay on top of every transaction without hiring more staff.",
+  },
+  {
+    q: "What does CloseBoss AI do?",
+    a: "CloseBoss AI gives an agent a team of AI assistants: an AI receptionist that answers calls 24/7, a sales assistant that calls and texts every lead, a transaction coordinator that keeps deals on track, and a marketing assistant that publishes social content — all managed from one dashboard at closebossai.com.",
+  },
+  {
+    q: "How is CloseBoss AI different from a chatbot?",
+    a: "CloseBoss AI is not a single chatbot. It is a coordinated AI real estate team: instead of one bot answering questions, it handles calls, lead follow-up, transaction coordination, and marketing together, purpose-built for how real estate agents actually work.",
+  },
+];
+
+function FaqSection() {
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: HOME_FAQ.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+  return (
+    <section id="faq" className="px-6 py-16 md:py-20">
+      <div className="mx-auto max-w-3xl">
+        <h2 className="font-heading text-2xl font-bold text-slate-900 dark:text-white md:text-3xl">
+          What is CloseBoss AI?
+        </h2>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          Common questions about CloseBoss AI — the AI real estate team at closebossai.com.
+        </p>
+        <dl className="mt-8 space-y-4">
+          {HOME_FAQ.map((f) => (
+            <div
+              key={f.q}
+              className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900/40"
+            >
+              <dt className="text-base font-semibold text-slate-900 dark:text-white">{f.q}</dt>
+              <dd className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{f.a}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+    </section>
   );
 }
 

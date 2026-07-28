@@ -146,10 +146,14 @@ const jsonLd = [
     url: SITE_URL,
     logo: `${SITE_URL}/brand/realtyboss/realtyboss-icon-512.png`,
     description: SITE_DESCRIPTION,
-    // Populate with verified profile URLs (LinkedIn / X / Instagram /
-    // Crunchbase / G2 / Capterra) as they're created — strengthens the
-    // brand entity + knowledge panel.
-    sameAs: ["https://www.linkedin.com/company/maxy-investment/"] as string[],
+    // sameAs is how Google ties the "CloseBoss AI" ENTITY to its official web
+    // presence — critical because Google currently confuses us with the
+    // similarly-named "CloseBot". Only list profiles actually BRANDED CloseBoss
+    // AI (a LinkedIn company page, Crunchbase, X/Instagram/YouTube named
+    // "CloseBoss AI"). The old maxy-investment / realtyboss links were removed:
+    // linking to a differently-named entity dilutes recognition instead of
+    // building it. Add each CloseBoss-branded profile URL here as it's created.
+    sameAs: [] as string[],
   },
   {
     "@context": "https://schema.org",
@@ -174,8 +178,11 @@ const jsonLd = [
     operatingSystem: "Web, iOS, Android",
     description: SITE_DESCRIPTION,
     url: SITE_URL,
-    // LinkedIn product page — ties this product entity to its LinkedIn profile.
-    sameAs: ["https://www.linkedin.com/products/maxy-investment-realtyboss-ai/"],
+    // Add a CloseBoss-branded product/profile URL here once one exists (a
+    // LinkedIn product page, G2/Capterra listing, etc.). The old
+    // maxy-investment-realtyboss-ai link was removed — it named a different
+    // product and worked against CloseBoss entity recognition.
+    sameAs: [] as string[],
     offers: {
       "@type": "AggregateOffer",
       priceCurrency: "USD",
