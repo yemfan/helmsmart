@@ -22,6 +22,15 @@ import {
 } from "lucide-react";
 import CommandChainDiagram from "@/components/marketing/CommandChainDiagram";
 import { getServerT } from "@/lib/i18n/server";
+import { FEATURE_PAGES } from "@/lib/marketing/features";
+
+const FEATURE_ICONS: Record<string, LucideIcon> = {
+  receptionist: Headphones,
+  sales: TrendingUp,
+  marketing: Megaphone,
+  transaction: ClipboardList,
+  cma: BarChart3,
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
@@ -314,6 +323,46 @@ export default async function FeaturesPage() {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── EXPLORE EACH FEATURE (internal links to /features/{slug}) ── */}
+      <section className="border-t border-slate-200/80 bg-slate-50/70 px-6 py-20 dark:border-slate-800 dark:bg-slate-900/30 md:py-24">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
+              Explore the team
+            </p>
+            <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+              A closer look at what each one does
+            </h2>
+          </div>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURE_PAGES.map((f) => {
+              const FIcon = FEATURE_ICONS[f.icon] ?? Sparkles;
+              return (
+                <Link
+                  key={f.slug}
+                  href={`/features/${f.slug}`}
+                  className="group flex h-full flex-col rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-[#0072ce] dark:bg-blue-900/30 dark:text-[#4da3e8]">
+                    <FIcon size={22} aria-hidden />
+                  </div>
+                  <h3 className="mt-4 font-heading text-lg font-bold text-slate-900 dark:text-white">
+                    {f.name}
+                  </h3>
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                    {f.eyebrow}.
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#0072ce] dark:text-[#4da3e8]">
+                    Learn more
+                    <ArrowRight size={14} className="transition group-hover:translate-x-0.5" aria-hidden />
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

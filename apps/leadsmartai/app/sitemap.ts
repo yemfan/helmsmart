@@ -6,6 +6,7 @@ import { SWITCH_SOURCES } from "@/lib/marketing/switch-from";
 import { listResearchReportsForSitemap } from "@/lib/research/db";
 import { listMarketSitemapEntries } from "@/lib/research/warehouse/read";
 import { listRecentDigests } from "@/lib/newsletter/db";
+import { FEATURE_PAGES } from "@/lib/marketing/features";
 import { getSiteUrl } from "@/lib/siteUrl";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -110,8 +111,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/newsletter",
   ]);
 
+  // Per-feature marketing landing pages (/features/{slug}) — one indexable page
+  // per product pillar, the primary organic surface for high-intent feature
+  // queries. HIGH_PRIORITY so they're weighted alongside the marketing hub.
+  const featureRoutes = FEATURE_PAGES.map((f) => `/features/${f.slug}`);
+  featureRoutes.forEach((r) => HIGH_PRIORITY.add(r));
+
   const staticEntries = [
     ...staticRoutes,
+    ...featureRoutes,
     ...calculatorRoutes,
     ...helpRoutes,
     ...blogRoutes,
