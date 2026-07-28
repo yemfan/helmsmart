@@ -2,7 +2,7 @@ import "server-only";
 
 import { getLatestMetrics } from "@/lib/research/warehouse/read";
 import { getMetroBySlug, getMetroSnapshot } from "@/lib/trafficMetros";
-import type { AdFormat, AdInput } from "./renderAd";
+import { pickThemeForIndex, type AdFormat, type AdInput, type AdTheme } from "./renderAd";
 
 /**
  * Preset ad builders — turn a recurring content TYPE into a filled AdInput using
@@ -31,7 +31,10 @@ function pct(n: number | null | undefined): string | null {
 }
 
 /** National mortgage-rate snapshot → stat card. */
-export async function buildInterestRateAd(format: AdFormat = "square"): Promise<AdInput> {
+export async function buildInterestRateAd(
+  format: AdFormat = "square",
+  theme?: AdTheme,
+): Promise<AdInput> {
   const latest = await getLatestMetrics("national", "US");
   const by = new Map(latest.map((m) => [m.metric, m]));
   const r30 = by.get("mortgage_30yr")?.value ?? null;
@@ -52,6 +55,7 @@ export async function buildInterestRateAd(format: AdFormat = "square"): Promise<
     statValue: pct(r30) ?? "—",
     statLabel: `30-YEAR FIXED MORTGAGE${when ? ` · ${when.toUpperCase()}` : ""}`,
     statContext: `${context}${context ? ". " : ""}Know your buyer's real budget before you show.`,
+    theme,
     format,
   };
 }
@@ -60,6 +64,7 @@ export async function buildInterestRateAd(format: AdFormat = "square"): Promise<
 export async function buildMarketUpdateAd(
   citySlug: string,
   format: AdFormat = "square",
+  theme?: AdTheme,
 ): Promise<AdInput | null> {
   const metro = await getMetroBySlug(citySlug);
   if (!metro) return null;
@@ -69,7 +74,7 @@ export async function buildMarketUpdateAd(
     snap.typicalValue != null ? `$${Math.round(snap.typicalValue / 1000).toLocaleString()}K` : "—";
   const bits = [
     snap.yoyChangePct != null
-      ? `${snap.yoyChangePct >= 0 ? "▲" : "▼"} ${Math.abs(snap.yoyChangePct)}% YoY`
+      ? `${snap.yoyChangePct >= 0 ? "↑" : "↓"} ${Math.abs(snap.yoyChangePct)}% YoY`
       : null,
     snap.medianDaysOnMarket != null ? `${Math.round(snap.medianDaysOnMarket)} days on market` : null,
     snap.inventory != null ? `${Math.round(snap.inventory).toLocaleString()} homes for sale` : null,
@@ -82,6 +87,7 @@ export async function buildMarketUpdateAd(
     statValue: value,
     statLabel: `${metro.city.toUpperCase()}, ${metro.state} · TYPICAL HOME VALUE${when ? ` · ${when.toUpperCase()}` : ""}`,
     statContext: bits.join("   ·   ") || "Ask me for a full local report.",
+    theme,
     format,
   };
 }
@@ -105,20 +111,25 @@ const PROMOS: Array<Pick<AdInput, "headline" | "subhead" | "ctaText">> = [
   },
 ];
 
-export function buildPromoAd(index = 0, format: AdFormat = "square"): AdInput {
+export function buildPromoAd(index = 0, format: AdFormat = "square", theme?: AdTheme): AdInput {
   const p = PROMOS[((index % PROMOS.length) + PROMOS.length) % PROMOS.length];
-  return { template: "bold", ...p, format };
+  return { template: "bold", ...p, theme, format };
 }
 
-/** Dispatch a preset name to its builder. Returns null if data is unavailable. */
+/**
+ * Dispatch a preset name to its builder. Theme rotates by index when not given,
+ * so consecutive scheduled posts vary their look. Returns null if data is
+ * unavailable (e.g. market-update with no city).
+ */
 export async function buildPresetAd(
   preset: AdPreset,
-  opts: { city?: string; index?: number; format?: AdFormat } = {},
+  opts: { city?: string; index?: number; theme?: AdTheme; format?: AdFormat } = {},
 ): Promise<AdInput | null> {
   const format = opts.format ?? "square";
-  if (preset === "interest-rate") return buildInterestRateAd(format);
+  const theme = opts.theme ?? pickThemeForIndex(opts.index ?? 0);
+  if (preset === "interest-rate") return buildInterestRateAd(format, theme);
   if (preset === "market-update") {
-    return opts.city ? buildMarketUpdateAd(opts.city, format) : null;
+    return opts.city ? buildMarketUpdateAd(opts.city, format, theme) : null;
   }
-  return buildPromoAd(opts.index ?? 0, format);
+  return buildPromoAd(opts.index ?? 0, format, theme);
 }

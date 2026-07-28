@@ -1,4 +1,4 @@
-import { buildAdImageResponse, type AdFormat, type AdTemplate } from "@/lib/social/renderAd";
+import { buildAdImageResponse, type AdFormat, type AdTemplate, type AdTheme } from "@/lib/social/renderAd";
 import { buildPresetAd, type AdPreset } from "@/lib/social/adPresets";
 
 /**
@@ -13,6 +13,7 @@ export const runtime = "nodejs";
 
 const TEMPLATES: AdTemplate[] = ["bold", "photo", "stat"];
 const FORMATS: AdFormat[] = ["square", "portrait", "landscape"];
+const THEMES: AdTheme[] = ["navy", "midnight", "azure", "light"];
 
 // CloseBoss hexagon mark (served from public/brand/realtyboss/). Absolute URL is
 // built from the request origin so satori can fetch it in dev and prod alike.
@@ -23,6 +24,8 @@ export async function GET(req: Request) {
   const q = url.searchParams;
   const template = (q.get("template") as AdTemplate) || "bold";
   const format = (q.get("format") as AdFormat) || "square";
+  const themeParam = q.get("theme") as AdTheme | null;
+  const theme = themeParam && THEMES.includes(themeParam) ? themeParam : undefined;
   // Default to the CloseBoss mark; allow an override (e.g. an agent's logo).
   const logoUrl = q.get("logoUrl") || `${url.origin}${BRAND_LOGO_PATH}`;
 
@@ -32,6 +35,7 @@ export async function GET(req: Request) {
     const filled = await buildPresetAd(preset, {
       city: q.get("city") || undefined,
       index: q.get("index") ? Number(q.get("index")) : undefined,
+      theme,
       format: FORMATS.includes(format) ? format : "square",
     });
     if (filled) return buildAdImageResponse({ ...filled, logoUrl });
@@ -41,6 +45,7 @@ export async function GET(req: Request) {
   return buildAdImageResponse({
     template: TEMPLATES.includes(template) ? template : "bold",
     format: FORMATS.includes(format) ? format : "square",
+    theme,
     headline: q.get("headline") || "Missed calls cost you deals.",
     subhead: q.get("subhead") || undefined,
     ctaText: q.get("cta") || undefined,
