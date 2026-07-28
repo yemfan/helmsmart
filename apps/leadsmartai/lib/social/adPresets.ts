@@ -118,6 +118,7 @@ export function buildPromoAd(index = 0, format: AdFormat = "square", theme?: AdT
 
 /** Aspirational headlines for the photo layout (lifestyle photo + overlay). */
 const PHOTO_HEADLINES = [
+  { headline: "Hire an AI real estate team.", subhead: "And enjoy your life. Your team answers, follows up, and coordinates — 24/7." },
   { headline: "More time for what you love.", subhead: "Your AI team handles reception, follow-up, and coordination — around the clock." },
   { headline: "Your AI team never stops closing.", subhead: "So you can focus on clients, and on life." },
   { headline: "Work fewer nights. Close more deals.", subhead: "One AI team runs the busywork while you run your business." },
