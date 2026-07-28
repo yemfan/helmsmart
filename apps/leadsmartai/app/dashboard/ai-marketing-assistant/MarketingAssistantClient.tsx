@@ -12,6 +12,7 @@ import WeeklySocialPosts, {
 } from "@/components/marketing/WeeklySocialPosts";
 import PostQueue from "@/components/marketing/PostQueue";
 import ClientNewsletterCard from "@/components/marketing/ClientNewsletterCard";
+import AdPhotoPanel from "@/components/marketing/AdPhotoPanel";
 
 /**
  * Marketing Assistant overview — demand generation. Took over from
@@ -139,6 +140,9 @@ export default function MarketingAssistantClient({
         connectedPlatforms={social.connectedPlatforms}
         canCustomize={social.canCustomize}
       />
+
+      {/* Brand photo pool → the Marketing Assistant rotates uploads into photo ads */}
+      <AdPhotoPanel canCustomize={social.canCustomize} />
 
       {/* The queue: what's about to publish, and (in review mode) the gate that
           holds it until a human approves. Reads scheduled_posts, so it also
