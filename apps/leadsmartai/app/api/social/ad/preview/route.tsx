@@ -34,6 +34,7 @@ export async function GET(req: Request) {
   if (preset) {
     const filled = await buildPresetAd(preset, {
       city: q.get("city") || undefined,
+      photoUrl: q.get("photoUrl") || undefined,
       index: q.get("index") ? Number(q.get("index")) : undefined,
       theme,
       format: FORMATS.includes(format) ? format : "square",
