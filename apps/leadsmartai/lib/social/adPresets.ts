@@ -16,7 +16,7 @@ import { pickThemeForIndex, type AdFormat, type AdInput, type AdTheme } from "./
  * Video presets are handled separately via the Remotion reel composition.
  */
 
-export type AdPreset = "interest-rate" | "market-update" | "promo";
+export type AdPreset = "interest-rate" | "market-update" | "promo" | "photo";
 
 /** "2026-07-02" -> "July 2026". */
 function monthYear(period: string | null | undefined): string | null {
@@ -116,6 +116,28 @@ export function buildPromoAd(index = 0, format: AdFormat = "square", theme?: AdT
   return { template: "bold", ...p, theme, format };
 }
 
+/** Aspirational headlines for the photo layout (lifestyle photo + overlay). */
+const PHOTO_HEADLINES = [
+  { headline: "More time for what you love.", subhead: "Your AI team handles reception, follow-up, and coordination — around the clock." },
+  { headline: "Your AI team never stops closing.", subhead: "So you can focus on clients, and on life." },
+  { headline: "Work fewer nights. Close more deals.", subhead: "One AI team runs the busywork while you run your business." },
+  { headline: "Built for agents who want it all.", subhead: "The listings, the lifestyle, and an AI team that keeps it running." },
+];
+
+/**
+ * Photo hero ad — a lifestyle/brand photo with the logo, a headline, and a CTA
+ * overlaid. `photoUrl` must be a public image URL (satori + the platform fetch it).
+ */
+export function buildPhotoAd(
+  photoUrl: string,
+  index = 0,
+  format: AdFormat = "square",
+  theme?: AdTheme,
+): AdInput {
+  const h = PHOTO_HEADLINES[((index % PHOTO_HEADLINES.length) + PHOTO_HEADLINES.length) % PHOTO_HEADLINES.length];
+  return { template: "photo", photoUrl, headline: h.headline, subhead: h.subhead, ctaText: "Meet your AI team", theme, format };
+}
+
 /**
  * Dispatch a preset name to its builder. Theme rotates by index when not given,
  * so consecutive scheduled posts vary their look. Returns null if data is
@@ -123,13 +145,17 @@ export function buildPromoAd(index = 0, format: AdFormat = "square", theme?: AdT
  */
 export async function buildPresetAd(
   preset: AdPreset,
-  opts: { city?: string; index?: number; theme?: AdTheme; format?: AdFormat } = {},
+  opts: { city?: string; photoUrl?: string; index?: number; theme?: AdTheme; format?: AdFormat } = {},
 ): Promise<AdInput | null> {
   const format = opts.format ?? "square";
-  const theme = opts.theme ?? pickThemeForIndex(opts.index ?? 0);
+  const index = opts.index ?? 0;
+  const theme = opts.theme ?? pickThemeForIndex(index);
   if (preset === "interest-rate") return buildInterestRateAd(format, theme);
   if (preset === "market-update") {
     return opts.city ? buildMarketUpdateAd(opts.city, format, theme) : null;
   }
-  return buildPromoAd(opts.index ?? 0, format, theme);
+  if (preset === "photo") {
+    return opts.photoUrl ? buildPhotoAd(opts.photoUrl, index, format, theme) : null;
+  }
+  return buildPromoAd(index, format, theme);
 }

@@ -2,7 +2,8 @@ import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { loadDraftAds, persistAdDrafts, type AdDraft } from "@/lib/social/ads";
-import { buildInterestRateAd, buildPromoAd } from "@/lib/social/adPresets";
+import { buildInterestRateAd, buildPhotoAd, buildPromoAd } from "@/lib/social/adPresets";
+import { pickAgentAdPhoto } from "@/lib/social/adPhotos";
 import { pickThemeForIndex } from "@/lib/social/renderAd";
 import { scheduleAd } from "@/lib/social/scheduleAd";
 
@@ -26,12 +27,17 @@ const AD_HASHTAGS = ["realestate", "realtor", "aiforrealestate", "closebossai"];
 
 export type WeeklyAdResult = { brandAgents: number; generated: number; scheduled: number };
 
-/** Build a rotating batch of data-driven ad drafts (interest-rate + promos). */
-async function buildAdBatch(count: number): Promise<AdDraft[]> {
+/**
+ * Build a rotating batch of ad drafts for an agent: interest-rate (data),
+ * photo (agent's uploaded lifestyle photos, when any), and promo statements —
+ * cycling so the pool stays varied.
+ */
+async function buildAdBatch(agentStr: string, count: number): Promise<AdDraft[]> {
   const out: AdDraft[] = [];
   for (let i = 0; i < count; i += 1) {
     const theme = pickThemeForIndex(i);
-    if (i % 2 === 0) {
+    const slot = i % 3;
+    if (slot === 0) {
       const input = await buildInterestRateAd("square", theme);
       out.push({
         input,
@@ -39,6 +45,21 @@ async function buildAdBatch(count: number): Promise<AdDraft[]> {
         caption: `Mortgage rate check — 30-year fixed at ${input.statValue}. Know your buyer's real budget before you show a single home.`,
         hashtags: ["mortgagerates", "homebuying", ...AD_HASHTAGS],
       });
+    } else if (slot === 1) {
+      const photo = await pickAgentAdPhoto(agentStr, i);
+      if (photo) {
+        const input = buildPhotoAd(photo.url, i, "square", theme);
+        out.push({
+          input,
+          preset: "photo",
+          caption: input.subhead ? `${input.headline} ${input.subhead}` : input.headline,
+          hashtags: AD_HASHTAGS,
+        });
+        continue;
+      }
+      // no photos yet → fall through to a promo
+      const input = buildPromoAd(i, "square", theme);
+      out.push({ input, preset: "promo", caption: input.subhead ?? input.headline, hashtags: AD_HASHTAGS });
     } else {
       const input = buildPromoAd(i, "square", theme);
       out.push({
@@ -87,7 +108,7 @@ export async function runWeeklyAds(): Promise<WeeklyAdResult> {
 
       let drafts = await loadDraftAds(agentStr);
       if (drafts.length < TOPUP_MIN) {
-        const batch = await buildAdBatch(TOPUP_BATCH);
+        const batch = await buildAdBatch(agentStr, TOPUP_BATCH);
         if (batch.length > 0) {
           await persistAdDrafts(agentId, batch);
           generated += batch.length;
