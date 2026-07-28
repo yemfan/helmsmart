@@ -4,3 +4,7 @@
 # its own .gitignore (see android/.gitignore for build artifacts), but
 # the wrapper itself is regenerated locally and not committed.
 android/
+
+# Remotion render output + browser cache
+out/
+.remotion/
