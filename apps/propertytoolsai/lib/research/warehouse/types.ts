@@ -6,14 +6,14 @@
  * `market_geographies`.
  */
 
-export type GeoLevel = "national" | "state" | "metro";
+export type GeoLevel = "national" | "state" | "metro" | "county";
 
-/** A single geography dimension row (national / state / metro). */
+/** A single geography dimension row (national / state / metro / county). */
 export type GeoRow = {
   geo_level: GeoLevel;
   geo_code: string; // 'US' | 2-letter state | Zillow RegionID
   geo_name: string;
-  state: string | null; // 2-letter state code for metros
+  state: string | null; // 2-letter state code for metros/counties
   size_rank: number | null; // Zillow SizeRank (0 = national)
 };
 

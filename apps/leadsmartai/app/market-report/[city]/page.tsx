@@ -50,7 +50,7 @@ export default async function MarketReportCityPage({
   const p = await params;
   const city = await getMetroBySlug(p.city);
   if (!city) return notFound();
-  const market = await getMetroSnapshot(city.geoCode);
+  const market = await getMetroSnapshot(city.geoLevel, city.geoCode);
   const nearbyCities = await getNearbyMetros(city.slug, 4);
   const relatedPages = getRelatedMetroLinks(city.slug).filter(
     (page) => !page.href.endsWith(`/market-report/${city.slug}`),

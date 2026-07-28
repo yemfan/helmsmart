@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { listTrafficMetros, getKeywordPagesForMetro } from "@/lib/trafficMetros";
+import { listTrafficMetros, listTrafficPlaces, getKeywordPagesForMetro } from "@/lib/trafficMetros";
 import { HELP_GUIDES } from "@/lib/help/guides";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import { SWITCH_SOURCES } from "@/lib/marketing/switch-from";
@@ -85,17 +85,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...SWITCH_SOURCES.map((s) => `/switch-from/${s.slug}`),
   ];
 
-  // Programmatic city pages are driven by the Data Center warehouse (~305 active
-  // metros, real figures). Never throws — listTrafficMetros() falls back to the
-  // curated seed list if the warehouse is unreachable.
-  const metros = await listTrafficMetros();
-  const seoRoutes = metros.flatMap((m) => [
+  // Programmatic city pages are driven by the Data Center warehouse: ~305 active
+  // metros + ~1,000 counties, each with real figures. Never throws — the provider
+  // falls back to the curated seed list if the warehouse is unreachable.
+  const places = await listTrafficPlaces();
+  const seoRoutes = places.flatMap((m) => [
     `/home-value/${m.slug}`,
     `/sell-house/${m.slug}`,
     `/market-report/${m.slug}`,
   ]);
-  // Long-tail keyword URLs only for the largest metros — going to all ~305 would
-  // emit tens of thousands of thin, near-duplicate pages (doorway-page risk).
+  // Long-tail keyword URLs only for the largest metros — emitting them for every
+  // place would produce tens of thousands of thin, near-duplicate pages
+  // (doorway-page risk). Counties get their 3 core pages, not keyword variants.
+  const metros = await listTrafficMetros();
   const KEYWORD_METRO_LIMIT = 40;
   const keywordRoutes = metros.slice(0, KEYWORD_METRO_LIMIT).flatMap((m) => [
     ...getKeywordPagesForMetro("home-value", m).map((k) => `/home-value/${m.slug}/${k.keywordSlug}`),

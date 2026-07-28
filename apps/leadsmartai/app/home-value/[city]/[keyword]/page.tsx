@@ -45,7 +45,7 @@ export default async function HomeValueKeywordPage({
   const city = await getMetroBySlug(p.city);
   if (!city || !isValidKeywordSlugForMetro("home-value", city, p.keyword)) return notFound();
   const keyword = resolveMetroKeyword("home-value", city, p.keyword);
-  const market = await getMetroSnapshot(city.geoCode);
+  const market = await getMetroSnapshot(city.geoLevel, city.geoCode);
   const nearby = await getNearbyMetros(city.slug, 4);
 
   return (
