@@ -6,9 +6,15 @@ import { SWITCH_SOURCES } from "@/lib/marketing/switch-from";
 import { listResearchReportsForSitemap } from "@/lib/research/db";
 import { listMarketSitemapEntries } from "@/lib/research/warehouse/read";
 import { listRecentDigests } from "@/lib/newsletter/db";
+import { getSiteUrl } from "@/lib/siteUrl";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+  // Use the same resolver as robots.ts. The old
+  // `NEXT_PUBLIC_SITE_URL || "http://localhost:3000"` fallback silently emitted
+  // a sitemap full of localhost URLs (which Google discards) whenever that env
+  // var was missing on the deployment — a total, invisible indexing failure.
+  // getSiteUrl() falls back to the real production host instead.
+  const base = getSiteUrl().replace(/\/$/, "");
   const now = new Date();
 
   const staticRoutes = [
