@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useRef, type MouseEvent, type ReactNode } from "react";
 import {
@@ -434,12 +435,13 @@ export default function LeadSmartLandingV2() {
 
             {/* The team lineup */}
             <RevealSection delay={100} className="mt-10">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src="/brand/realtyboss/ai-team.jpg"
                 alt="The CloseBoss AI team — six house-mascot assistants standing together"
-                loading="lazy"
-                className="mx-auto w-full max-w-4xl rounded-2xl border border-slate-200 shadow-xl dark:border-slate-800"
+                width={1536}
+                height={1024}
+                sizes="(max-width: 896px) 100vw, 896px"
+                className="mx-auto h-auto w-full max-w-4xl rounded-2xl border border-slate-200 shadow-xl dark:border-slate-800"
               />
             </RevealSection>
 
@@ -448,11 +450,11 @@ export default function LeadSmartLandingV2() {
               {AI_TEAM_MEMBERS.map((m, i) => (
                 <RevealSection key={m.id} delay={(i % 3) * 80}>
                   <div className="flex h-full items-start gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={`/avatars/personas/${m.id}.png`}
                       alt={m.name}
-                      loading="lazy"
+                      width={64}
+                      height={64}
                       className="h-16 w-16 shrink-0 rounded-full border-2 object-cover"
                       style={{ borderColor: m.color, backgroundColor: "#0b1424" }}
                     />
