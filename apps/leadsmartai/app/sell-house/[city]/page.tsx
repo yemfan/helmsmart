@@ -2,17 +2,21 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import LocalSeoLeadForm from "@/components/LocalSeoLeadForm";
 import TrafficTracker from "@/components/TrafficTracker";
+import { getPageKeywords } from "@/lib/trafficSeo";
 import {
-  getCityBySlug,
-  getMarketSnapshot,
-  getNearbyCities,
-  getPageKeywords,
-  getRelatedPageLinks,
-  TRAFFIC_CITIES,
-} from "@/lib/trafficSeo";
+  getMetroBySlug,
+  getMetroSnapshot,
+  getNearbyMetros,
+  getRelatedMetroLinks,
+  listTrafficMetros,
+} from "@/lib/trafficMetros";
 
-export function generateStaticParams() {
-  return TRAFFIC_CITIES.map((c) => ({ city: c.slug }));
+// Render dynamically (root layout reads cookies() -> dynamic tree; `revalidate`
+// here would throw DYNAMIC_SERVER_USAGE / 500 in prod). generateStaticParams only
+// supplies known slugs for the largest metros; the long tail resolves on request.
+export async function generateStaticParams() {
+  const metros = await listTrafficMetros();
+  return metros.slice(0, 60).map((m) => ({ city: m.slug }));
 }
 
 export async function generateMetadata({
@@ -21,14 +25,21 @@ export async function generateMetadata({
   params: Promise<{ city: string }>;
 }): Promise<Metadata> {
   const p = await params;
-  const city = getCityBySlug(p.city);
+  const city = await getMetroBySlug(p.city);
   if (!city) return {};
   const keywords = getPageKeywords("sell-house", city.slug);
   return {
     title: `Sell Your House Fast in ${city.city}, ${city.state} | CloseBoss`,
-    description: `Localized strategy to sell your house in ${city.city}, ${city.state} with demand and timing insights for ${keywords[0]}.`,
+    description: `Localized strategy to sell your house in ${city.city}, ${city.state} with current demand, days on market, and timing insights for ${keywords[0]}.`,
     alternates: { canonical: `/sell-house/${p.city}` },
   };
+}
+
+function fmtDate(period: string | null): string | null {
+  if (!period) return null;
+  const d = new Date(period);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
 export default async function SellHouseCityPage({
@@ -37,12 +48,17 @@ export default async function SellHouseCityPage({
   params: Promise<{ city: string }>;
 }) {
   const p = await params;
-  const city = getCityBySlug(p.city);
+  const city = await getMetroBySlug(p.city);
   if (!city) return notFound();
-  const market = getMarketSnapshot(p.city);
-  const nearbyCities = getNearbyCities(city.slug, 4);
-  const relatedPages = getRelatedPageLinks(city.slug).filter((page) => !page.href.endsWith(`/sell-house/${city.slug}`));
+  const market = await getMetroSnapshot(city.geoCode);
+  const nearbyCities = await getNearbyMetros(city.slug, 4);
+  const relatedPages = getRelatedMetroLinks(city.slug).filter(
+    (page) => !page.href.endsWith(`/sell-house/${city.slug}`),
+  );
   const keywords = getPageKeywords("sell-house", city.slug);
+  const asOf = fmtDate(market.period);
+  const domText =
+    market.medianDaysOnMarket !== null ? `${Math.round(market.medianDaysOnMarket)} days` : "varies";
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
@@ -51,20 +67,33 @@ export default async function SellHouseCityPage({
         Sell Your House in {city.city}, {city.state}
       </h1>
       <p className="mt-2 text-slate-700">
-        Localized intro: Build your plan to {keywords[0]} in {city.city} with market timing, pricing, and prep guidance.
+        Build your plan to {keywords[0]} in {city.city} with market timing, pricing, and prep guidance.
       </p>
+      {asOf ? <p className="mt-1 text-xs text-slate-500">Market data as of {asOf}.</p> : null}
 
       <section className="mt-8 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-2xl border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold text-slate-900">Local seller insights</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-700">
-            <li>Demand score: {market.sellerDemandScore}/100</li>
-            <li>Typical time on market: {market.medianDaysOnMarket} days</li>
-            <li>Current trend: {market.yoyChangePct}% YoY change</li>
-            <li>Median local price: ${Math.round(market.avgHomeValue).toLocaleString()}</li>
+            {market.medianDaysOnMarket !== null && (
+              <li>Typical time on market: {Math.round(market.medianDaysOnMarket)} days</li>
+            )}
+            {market.yoyChangePct !== null && (
+              <li>
+                1-year value change: {market.yoyChangePct > 0 ? "+" : ""}
+                {market.yoyChangePct}%
+              </li>
+            )}
+            {market.typicalValue !== null && (
+              <li>Typical home value: ${Math.round(market.typicalValue).toLocaleString()}</li>
+            )}
+            {market.inventory !== null && (
+              <li>Homes currently for sale: {Math.round(market.inventory).toLocaleString()}</li>
+            )}
           </ul>
           <p className="mt-3 text-sm text-slate-700">
-            Seller insight: homes that launch with pricing tied to current inventory windows typically generate stronger early offer activity.
+            Homes that launch with pricing tied to current inventory windows typically generate stronger
+            early offer activity.
           </p>
           <h3 className="mt-5 text-sm font-semibold uppercase tracking-wide text-slate-800">Keyword coverage</h3>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -79,7 +108,7 @@ export default async function SellHouseCityPage({
             <div>
               <dt className="font-semibold text-slate-900">How fast can I sell in {city.city}?</dt>
               <dd className="mt-1 ml-0 text-slate-700">
-                Median timelines are currently about {market.medianDaysOnMarket} days, depending on condition and price.
+                Median timelines are currently about {domText}, depending on condition and price.
               </dd>
             </div>
             <div>
@@ -117,4 +146,3 @@ export default async function SellHouseCityPage({
     </main>
   );
 }
-

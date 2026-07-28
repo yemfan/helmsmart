@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getKeywordPagesForCity, TRAFFIC_CITIES } from "@/lib/trafficSeo";
+import { listTrafficMetros, getKeywordPagesForMetro } from "@/lib/trafficMetros";
 import { HELP_GUIDES } from "@/lib/help/guides";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import { SWITCH_SOURCES } from "@/lib/marketing/switch-from";
@@ -85,15 +85,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...SWITCH_SOURCES.map((s) => `/switch-from/${s.slug}`),
   ];
 
-  const seoRoutes = TRAFFIC_CITIES.flatMap((c) => [
-    `/home-value/${c.slug}`,
-    `/sell-house/${c.slug}`,
-    `/market-report/${c.slug}`,
+  // Programmatic city pages are driven by the Data Center warehouse (~305 active
+  // metros, real figures). Never throws — listTrafficMetros() falls back to the
+  // curated seed list if the warehouse is unreachable.
+  const metros = await listTrafficMetros();
+  const seoRoutes = metros.flatMap((m) => [
+    `/home-value/${m.slug}`,
+    `/sell-house/${m.slug}`,
+    `/market-report/${m.slug}`,
   ]);
-  const keywordRoutes = TRAFFIC_CITIES.flatMap((c) => [
-    ...getKeywordPagesForCity("home-value", c.slug).map((k) => `/home-value/${c.slug}/${k.keywordSlug}`),
-    ...getKeywordPagesForCity("sell-house", c.slug).map((k) => `/sell-house/${c.slug}/${k.keywordSlug}`),
-    ...getKeywordPagesForCity("market-report", c.slug).map((k) => `/market-report/${c.slug}/${k.keywordSlug}`),
+  // Long-tail keyword URLs only for the largest metros — going to all ~305 would
+  // emit tens of thousands of thin, near-duplicate pages (doorway-page risk).
+  const KEYWORD_METRO_LIMIT = 40;
+  const keywordRoutes = metros.slice(0, KEYWORD_METRO_LIMIT).flatMap((m) => [
+    ...getKeywordPagesForMetro("home-value", m).map((k) => `/home-value/${m.slug}/${k.keywordSlug}`),
+    ...getKeywordPagesForMetro("sell-house", m).map((k) => `/sell-house/${m.slug}/${k.keywordSlug}`),
+    ...getKeywordPagesForMetro("market-report", m).map((k) => `/market-report/${m.slug}/${k.keywordSlug}`),
   ]);
 
   const HIGH_PRIORITY = new Set([
