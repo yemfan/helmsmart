@@ -6,7 +6,7 @@
  * `market_geographies`.
  */
 
-export type GeoLevel = "national" | "state" | "metro" | "county";
+export type GeoLevel = "national" | "state" | "metro" | "county" | "zip";
 
 /** A single geography dimension row (national / state / metro / county). */
 export type GeoRow = {
