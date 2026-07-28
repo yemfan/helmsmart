@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { verifyCronRequest } from "@/lib/cronAuth";
 import { runWeeklyCarousels } from "@/lib/social/enqueueCarousels";
+import { runWeeklyAds } from "@/lib/social/enqueueAds";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,7 +32,14 @@ export async function GET(req: NextRequest) {
 
   try {
     const result = await runWeeklyCarousels();
-    return NextResponse.json({ ok: true, ...result });
+    // Promo ads ride the same weekly tick (best-effort — never fails the cron).
+    let ads: Awaited<ReturnType<typeof runWeeklyAds>> | { error: string };
+    try {
+      ads = await runWeeklyAds();
+    } catch (e) {
+      ads = { error: e instanceof Error ? e.message : "runWeeklyAds failed" };
+    }
+    return NextResponse.json({ ok: true, carousels: result, ads });
   } catch (e) {
     console.error("[social-carousel-weekly]", e);
     return NextResponse.json(
