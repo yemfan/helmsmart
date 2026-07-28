@@ -5,7 +5,8 @@ import { getProgrammaticSeoUrlPaths } from "@/lib/programmaticSeo";
 import { getSeoSitemapEntries } from "@/lib/seo-generator/sitemap";
 import { listResearchReportsForSitemap } from "@/lib/research/db";
 import { listMarketSitemapEntries } from "@/lib/research/warehouse/read";
-import { TRAFFIC_CITIES } from "@/lib/trafficSeo";
+import { listTrafficPlaces } from "@/lib/trafficMetros";
+import { getSiteUrl } from "@/lib/siteUrl";
 
 /**
  * `lastModified` and `changeFrequency` are intentionally omitted for routes
@@ -20,7 +21,11 @@ import { TRAFFIC_CITIES } from "@/lib/trafficSeo";
  * `getSeoSitemapEntries`) continue to emit a real lastModified.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001").replace(/\/$/, "");
+  // Use the same resolver as robots.ts. The old
+  // `NEXT_PUBLIC_SITE_URL || "http://localhost:3001"` fallback silently emitted a
+  // sitemap full of localhost URLs (which Google discards) whenever that env var
+  // was missing on the deployment — a total, invisible indexing failure.
+  const base = getSiteUrl().replace(/\/$/, "");
 
   const programmaticToolLocationRoutes = getProgrammaticSeoUrlPaths();
 
@@ -97,10 +102,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/blog/how-banks-use-cap-rate-to-value-property",
   ];
 
-  const seoRoutes = TRAFFIC_CITIES.flatMap((c) => [
-    `/home-value/${c.slug}`,
-    `/sell-house/${c.slug}`,
-    `/market-report/${c.slug}`,
+  // Traffic-SEO city pages are now warehouse-driven (~305 metros + ~1,000
+  // counties + ~3,000 ZIPs, real figures). Never throws — the provider falls back
+  // to the curated seed list if the warehouse is unreachable.
+  const places = await listTrafficPlaces();
+  const seoRoutes = places.flatMap((m) => [
+    `/home-value/${m.slug}`,
+    `/sell-house/${m.slug}`,
+    `/market-report/${m.slug}`,
   ]);
   // Keyword-variant routes (home-value/[city]/[keyword], etc.) are now
   // noindex-crawlable — they canonicalize to their parent /{tool}/{city}

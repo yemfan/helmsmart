@@ -132,21 +132,33 @@ export function slugToKeyword(slug: string) {
   return slug.replace(/-/g, " ").trim();
 }
 
-export function getLongTailKeywordSet(pageType: PageType, citySlug: string) {
-  const city = getCityBySlug(citySlug);
-  if (!city) return [];
+/**
+ * Pure long-tail keyword builder, parameterized by city + state so it works for
+ * warehouse-driven metros/counties/ZIPs (see lib/trafficMetros) as well as seeds.
+ */
+export function buildLongTailKeywordSet(
+  pageType: PageType,
+  cityName: string,
+  stateCode: string,
+) {
   const baseKeywords = KEYWORD_VARIATIONS[pageType] ?? [];
-  const cityText = `${city.city} ${city.state}`;
+  const cityText = `${cityName} ${stateCode}`;
   const set = new Set<string>();
 
   for (const base of baseKeywords) {
     set.add(`${base} ${cityText}`);
-    set.add(`${base} in ${city.city}`);
+    set.add(`${base} in ${cityName}`);
     for (const year of YEAR_MODIFIERS) set.add(`${base} ${cityText} ${year}`);
     for (const local of LOCAL_SEO_TERMS) set.add(`${base} ${cityText} ${local}`);
   }
 
   return Array.from(set);
+}
+
+export function getLongTailKeywordSet(pageType: PageType, citySlug: string) {
+  const city = getCityBySlug(citySlug);
+  if (!city) return [];
+  return buildLongTailKeywordSet(pageType, city.city, city.state);
 }
 
 export function getKeywordPagesForCity(pageType: PageType, citySlug: string, limit = 20) {
