@@ -5,13 +5,12 @@ import TrafficTracker from "@/components/TrafficTracker";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { getSiteUrl } from "@/lib/siteUrl";
 import {
-  estimateKeywordRouteCount,
-  getCityBySlug,
-  getKeywordPagesForCity,
-  getMarketSnapshot,
-  getNearbyCities,
-  isValidKeywordSlugForCity,
-} from "@/lib/trafficSeo";
+  getMetroBySlug,
+  getMetroSnapshot,
+  getNearbyMetros,
+  isValidKeywordSlugForMetro,
+  resolveMetroKeyword,
+} from "@/lib/trafficMetros";
 
 /** Empty at build: large keyword matrix — bulk SSG OOMs Vercel. On demand + ISR. */
 export const revalidate = 86400;
@@ -20,25 +19,19 @@ export function generateStaticParams() {
   return [];
 }
 
-function resolveKeyword(citySlug: string, keywordSlug: string) {
-  return getKeywordPagesForCity("sell-house", citySlug).find((k) => k.keywordSlug === keywordSlug)?.keyword ?? "";
-}
-
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ city: string; keyword: string }>;
 }): Promise<Metadata> {
   const p = await params;
-  const city = getCityBySlug(p.city);
-  if (!city || !isValidKeywordSlugForCity("sell-house", p.city, p.keyword)) return {};
-  const keyword = resolveKeyword(p.city, p.keyword);
+  const city = await getMetroBySlug(p.city);
+  if (!city || !isValidKeywordSlugForMetro("sell-house", city, p.keyword)) return {};
+  const keyword = resolveMetroKeyword("sell-house", city, p.keyword);
   return {
     title: `${keyword} | ${city.city}, ${city.state} Seller Guide | PropertyTools AI`,
     description: `Localized selling strategy for ${keyword} in ${city.city}, ${city.state}.`,
     // Consolidate to parent city hub; keyword variants are noindex-crawlable.
-    // Validation report SEO-03 — thin keyword variations trigger scaled-
-    // content-abuse classifiers when stamped identically across 400+ routes.
     alternates: { canonical: `/sell-house/${p.city}` },
     robots: { index: false, follow: true },
   };
@@ -50,11 +43,11 @@ export default async function SellHouseKeywordPage({
   params: Promise<{ city: string; keyword: string }>;
 }) {
   const p = await params;
-  const city = getCityBySlug(p.city);
-  if (!city || !isValidKeywordSlugForCity("sell-house", p.city, p.keyword)) return notFound();
-  const keyword = resolveKeyword(p.city, p.keyword);
-  const market = getMarketSnapshot(p.city);
-  const nearby = getNearbyCities(p.city, 4);
+  const city = await getMetroBySlug(p.city);
+  if (!city || !isValidKeywordSlugForMetro("sell-house", city, p.keyword)) return notFound();
+  const keyword = resolveMetroKeyword("sell-house", city, p.keyword);
+  const market = await getMetroSnapshot(city.geoLevel, city.geoCode);
+  const nearby = await getNearbyMetros(city.slug, 4);
 
   const siteUrl = getSiteUrl().replace(/\/$/, "");
   const pageUrl = `${siteUrl}/sell-house/${city.slug}/${p.keyword}`;
@@ -84,15 +77,24 @@ export default async function SellHouseKeywordPage({
       <p className="mt-2 text-slate-700">
         Seller-focused local page for {city.city}. Get timing, pricing, and demand insights built for this market.
       </p>
-      <p className="mt-1 text-xs text-slate-500">Programmatic keyword routes: {estimateKeywordRouteCount().toLocaleString()}+</p>
 
       <section className="mt-8 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-2xl border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold text-slate-900">Market snapshot</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-700">
-            <li>Demand score: {market.sellerDemandScore}/100</li>
-            <li>Median time on market: {market.medianDaysOnMarket} days</li>
-            <li>Trend: {market.yoyChangePct}% YoY</li>
+            {market.medianDaysOnMarket !== null && (
+              <li>Median time on market: {Math.round(market.medianDaysOnMarket)} days</li>
+            )}
+            {market.yoyChangePct !== null && (
+              <li>
+                1-year value trend: {market.yoyChangePct > 0 ? "+" : ""}
+                {market.yoyChangePct}%
+              </li>
+            )}
+            {market.typicalValue !== null && (
+              <li>Typical home value: ${Math.round(market.typicalValue).toLocaleString()}</li>
+            )}
+            <li>Current direction: {market.trend}</li>
           </ul>
           <h3 className="mt-4 text-base font-semibold text-slate-900">Nearby city links</h3>
           <div className="mt-2 flex flex-wrap gap-3 text-sm">
