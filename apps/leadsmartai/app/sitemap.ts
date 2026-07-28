@@ -85,9 +85,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...SWITCH_SOURCES.map((s) => `/switch-from/${s.slug}`),
   ];
 
-  // Programmatic city pages are driven by the Data Center warehouse: ~305 active
-  // metros + ~1,000 counties, each with real figures. Never throws — the provider
-  // falls back to the curated seed list if the warehouse is unreachable.
+  // Programmatic city pages are driven by the Data Center warehouse: ~305 metros
+  // + ~1,000 counties + ~3,000 ZIPs, each with real figures. Never throws — the
+  // provider falls back to the curated seed list if the warehouse is unreachable.
   const places = await listTrafficPlaces();
   const seoRoutes = places.flatMap((m) => [
     `/home-value/${m.slug}`,

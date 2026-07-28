@@ -35,7 +35,7 @@ import {
  * render nothing rather than crashing.
  */
 
-export type PlaceLevel = "metro" | "county";
+export type PlaceLevel = "metro" | "county" | "zip";
 
 export type TrafficMetro = {
   /** URL slug — metros "los-angeles-ca"; counties "los-angeles-county-ca". */
@@ -146,10 +146,43 @@ export const listTrafficCounties = cache(async (): Promise<TrafficMetro[]> => {
   return out;
 });
 
-/** Metros + counties, cached — the full "place" universe the routes resolve. */
+/**
+ * All active ZIPs, largest-first. In the warehouse, ZIP geo_code IS the ZIP
+ * ("77494") and geo_name is its City ("Katy"), so slug = the ZIP and the display
+ * name reads "77494 (Katy)". ZIP slugs are numeric, so they never collide with
+ * metro/county slugs. Empty if the warehouse has no ZIP rows yet.
+ */
+export const listTrafficZips = cache(async (): Promise<TrafficMetro[]> => {
+  const geos = await listActiveGeographies("zip");
+  const out: TrafficMetro[] = [];
+  const seen = new Set<string>();
+  for (const g of geos) {
+    const zip = g.geo_code.trim();
+    const slug = slugify(zip);
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    const cityName = g.geo_name && g.geo_name !== zip ? `${zip} (${g.geo_name})` : zip;
+    out.push({
+      slug,
+      city: cityName,
+      state: g.state ?? "",
+      stateName: g.state ? stateName(g.state) : "",
+      geoCode: g.geo_code,
+      geoLevel: "zip",
+      sizeRank: g.size_rank,
+    });
+  }
+  return out;
+});
+
+/** Metros + counties + ZIPs, cached — the full "place" universe the routes resolve. */
 export const listTrafficPlaces = cache(async (): Promise<TrafficMetro[]> => {
-  const [metros, counties] = await Promise.all([listTrafficMetros(), listTrafficCounties()]);
-  return [...metros, ...counties];
+  const [metros, counties, zips] = await Promise.all([
+    listTrafficMetros(),
+    listTrafficCounties(),
+    listTrafficZips(),
+  ]);
+  return [...metros, ...counties, ...zips];
 });
 
 export async function getMetroBySlug(slug: string): Promise<TrafficMetro | null> {

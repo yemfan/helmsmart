@@ -54,7 +54,19 @@ const ZILLOW_URLS = {
     "https://files.zillowstatic.com/research/public_csvs/invt_fs/County_invt_fs_uc_sfrcondo_sm_month.csv",
   domCounty:
     "https://files.zillowstatic.com/research/public_csvs/med_doz_pending/County_med_doz_pending_uc_sfrcondo_sm_month.csv",
+  // ZIP files: 9 meta cols — RegionID, SizeRank, RegionName(=ZIP), RegionType(=zip),
+  // StateName, State, City, Metro, CountyName. We key ZIP geographies by the ZIP
+  // itself (RegionName) and store the City (col 6) as geo_name for readable pages.
+  zhviZip:
+    "https://files.zillowstatic.com/research/public_csvs/zhvi/Zip_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv",
+  inventoryZip:
+    "https://files.zillowstatic.com/research/public_csvs/invt_fs/Zip_invt_fs_uc_sfrcondo_sm_month.csv",
+  domZip:
+    "https://files.zillowstatic.com/research/public_csvs/med_doz_pending/Zip_med_doz_pending_uc_sfrcondo_sm_month.csv",
 } as const;
+
+// Column index of the City name in ZIP files (0-based). ZIP-only.
+const ZIP_CITY_COL = 6;
 
 // The number of leading meta columns before the date columns VARIES by file:
 // metro/state = 5, county = 9. Detected per-file in parseWideCsv by finding the
@@ -70,6 +82,7 @@ type ParsedWide = {
     regionName: string;
     regionType: string;
     stateName: string;
+    meta: string[]; // all leading meta columns (for extra fields like ZIP City)
     values: string[]; // aligned to dateCols
   }[];
 };
@@ -98,6 +111,7 @@ function parseWideCsv(text: string): ParsedWide {
       regionName: cells[2],
       regionType: cells[3],
       stateName: cells[4],
+      meta: cells.slice(0, metaCols),
       values: cells.slice(metaCols),
     });
   }
@@ -149,6 +163,8 @@ function emitMetricRows(
  * counties); `level` is the warehouse geo_level to store. Metro files carry a
  * national ("country") row we always emit; county files don't have one.
  */
+type ParsedRow = ParsedWide["rows"][number];
+
 function processRegionFile(
   parsed: ParsedWide,
   opts: {
@@ -158,9 +174,15 @@ function processRegionFile(
     cap: number;
     regionType: string;
     level: GeoLevel;
+    /** geo_code source (default: opaque Zillow RegionID). */
+    geoCode?: (r: ParsedRow) => string;
+    /** geo_name source (default: RegionName). */
+    geoName?: (r: ParsedRow) => string;
   },
 ): { metrics: MetricRow[]; geographies: GeoRow[] } {
   const { metric, unit, months, cap, regionType, level } = opts;
+  const geoCodeOf = opts.geoCode ?? ((r) => r.regionId);
+  const geoNameOf = opts.geoName ?? ((r) => r.regionName);
   const metrics: MetricRow[] = [];
   const geographies: GeoRow[] = [];
 
@@ -169,7 +191,7 @@ function processRegionFile(
     .sort((a, b) => (a.sizeRank ?? 1e9) - (b.sizeRank ?? 1e9))
     .slice(0, cap);
 
-  // Metro files include a national ("country") row; county files do not.
+  // Metro files include a national ("country") row; county/zip files do not.
   const national = parsed.rows.find((r) => r.regionType === "country");
   if (national) {
     metrics.push(
@@ -178,13 +200,15 @@ function processRegionFile(
   }
 
   for (const r of regions) {
+    const code = geoCodeOf(r);
+    if (!code) continue;
     metrics.push(
-      ...emitMetricRows(level, r.regionId, metric, unit, parsed.dateCols, r.values, months),
+      ...emitMetricRows(level, code, metric, unit, parsed.dateCols, r.values, months),
     );
     geographies.push({
       geo_level: level,
-      geo_code: r.regionId,
-      geo_name: r.regionName,
+      geo_code: code,
+      geo_name: geoNameOf(r),
       state: r.stateName || null,
       size_rank: r.sizeRank,
     });
@@ -201,11 +225,13 @@ function processRegionFile(
  * @param months    trailing date columns to keep per region (default 13)
  * @param metroCap  top-N metros by SizeRank (default 300)
  * @param countyCap top-N counties by SizeRank (default 1000; ~90%+ of population)
+ * @param zipCap    top-N ZIPs by SizeRank (default 3000; the most-searched ZIPs)
  */
 export async function ingestZillow(
   months = 13,
   metroCap = 300,
   countyCap = 1000,
+  zipCap = 3000,
 ): Promise<ConnectorResult> {
   const metrics: MetricRow[] = [];
   const geoByKey = new Map<string, GeoRow>(); // dedupe metros across files
@@ -342,6 +368,69 @@ export async function ingestZillow(
     g.forEach(addGeo);
   } catch (e) {
     errors.push(`domCounty: ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // ZIP geographies are keyed by the ZIP itself (RegionName), and named by their
+  // City (col 6) so pages read "77494 (Katy, TX)". Metrics are keyed by the same
+  // ZIP string. Capped to the top `zipCap` most-populous ZIPs.
+  const zipGeoCode = (r: ParsedRow) => r.regionName;
+  const zipGeoName = (r: ParsedRow) => r.meta[ZIP_CITY_COL] || r.regionName;
+
+  // --- ZHVI ZIP ---
+  try {
+    const parsed = parseWideCsv(await fetchText(ZILLOW_URLS.zhviZip));
+    const { metrics: m, geographies: g } = processRegionFile(parsed, {
+      metric: "zhvi",
+      unit: "index",
+      months,
+      cap: zipCap,
+      regionType: "zip",
+      level: "zip",
+      geoCode: zipGeoCode,
+      geoName: zipGeoName,
+    });
+    metrics.push(...m);
+    g.forEach(addGeo);
+  } catch (e) {
+    errors.push(`zhviZip: ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- Inventory ZIP ---
+  try {
+    const parsed = parseWideCsv(await fetchText(ZILLOW_URLS.inventoryZip));
+    const { metrics: m, geographies: g } = processRegionFile(parsed, {
+      metric: "inventory",
+      unit: "count",
+      months,
+      cap: zipCap,
+      regionType: "zip",
+      level: "zip",
+      geoCode: zipGeoCode,
+      geoName: zipGeoName,
+    });
+    metrics.push(...m);
+    g.forEach(addGeo);
+  } catch (e) {
+    errors.push(`inventoryZip: ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- Median days-to-pending ZIP ---
+  try {
+    const parsed = parseWideCsv(await fetchText(ZILLOW_URLS.domZip));
+    const { metrics: m, geographies: g } = processRegionFile(parsed, {
+      metric: "median_dom",
+      unit: "days",
+      months,
+      cap: zipCap,
+      regionType: "zip",
+      level: "zip",
+      geoCode: zipGeoCode,
+      geoName: zipGeoName,
+    });
+    metrics.push(...m);
+    g.forEach(addGeo);
+  } catch (e) {
+    errors.push(`domZip: ${e instanceof Error ? e.message : String(e)}`);
   }
 
   return {
