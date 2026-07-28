@@ -35,10 +35,12 @@ import {
  * render nothing rather than crashing.
  */
 
+export type PlaceLevel = "metro" | "county";
+
 export type TrafficMetro = {
-  /** URL slug, e.g. "los-angeles-ca". */
+  /** URL slug — metros "los-angeles-ca"; counties "los-angeles-county-ca". */
   slug: string;
-  /** Display city/metro name, e.g. "Los Angeles". */
+  /** Display name, e.g. "Los Angeles" or "Los Angeles County". */
   city: string;
   /** 2-letter state code, e.g. "CA". */
   state: string;
@@ -46,6 +48,8 @@ export type TrafficMetro = {
   stateName: string;
   /** Opaque Zillow RegionID (warehouse geo_code). */
   geoCode: string;
+  /** Warehouse geo_level this place reads from. */
+  geoLevel: PlaceLevel;
   /** Zillow SizeRank — lower is larger. */
   sizeRank: number | null;
 };
@@ -87,6 +91,7 @@ export const listTrafficMetros = cache(async (): Promise<TrafficMetro[]> => {
       state: c.state,
       stateName: stateName(c.state),
       geoCode: "", // no warehouse code -> empty snapshot, graceful render
+      geoLevel: "metro" as const,
       sizeRank: null,
     }));
   }
@@ -104,17 +109,54 @@ export const listTrafficMetros = cache(async (): Promise<TrafficMetro[]> => {
       state: g.state ?? "",
       stateName: g.state ? stateName(g.state) : "",
       geoCode: g.geo_code,
+      geoLevel: "metro",
       sizeRank: g.size_rank,
     });
   }
   return out;
 });
 
+/**
+ * All active counties, largest-first. County names collide across states
+ * ("Washington County" is in ~30 states), so the slug is
+ * slugify(geo_name)+"-"+state -> "los-angeles-county-ca". Distinct from every
+ * metro slug (which has no "-county-" segment), so metros and counties coexist
+ * safely in the same route space. Empty if the warehouse has no county rows yet.
+ */
+export const listTrafficCounties = cache(async (): Promise<TrafficMetro[]> => {
+  const geos = await listActiveGeographies("county");
+  const out: TrafficMetro[] = [];
+  const seen = new Set<string>();
+  for (const g of geos) {
+    const st = (g.state ?? "").toLowerCase();
+    const base = slugify(g.geo_name);
+    const slug = st ? `${base}-${st}` : base;
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    out.push({
+      slug,
+      city: g.geo_name, // "Los Angeles County" reads correctly as-is
+      state: g.state ?? "",
+      stateName: g.state ? stateName(g.state) : "",
+      geoCode: g.geo_code,
+      geoLevel: "county",
+      sizeRank: g.size_rank,
+    });
+  }
+  return out;
+});
+
+/** Metros + counties, cached — the full "place" universe the routes resolve. */
+export const listTrafficPlaces = cache(async (): Promise<TrafficMetro[]> => {
+  const [metros, counties] = await Promise.all([listTrafficMetros(), listTrafficCounties()]);
+  return [...metros, ...counties];
+});
+
 export async function getMetroBySlug(slug: string): Promise<TrafficMetro | null> {
   const target = slug.trim().toLowerCase();
   if (!target) return null;
-  const metros = await listTrafficMetros();
-  return metros.find((m) => m.slug === target) ?? null;
+  const places = await listTrafficPlaces();
+  return places.find((m) => m.slug === target) ?? null;
 }
 
 function trendFromYoy(yoy: number | null): Trend {
@@ -134,7 +176,10 @@ function trendFromYoy(yoy: number | null): Trend {
  * Returns an all-null snapshot (trend "stable") when the metro has no data, so
  * callers can render gracefully without fabricating anything.
  */
-export async function getMetroSnapshot(geoCode: string): Promise<MetroSnapshot> {
+export async function getMetroSnapshot(
+  geoLevel: PlaceLevel,
+  geoCode: string,
+): Promise<MetroSnapshot> {
   const empty: MetroSnapshot = {
     typicalValue: null,
     yoyChangePct: null,
@@ -146,8 +191,8 @@ export async function getMetroSnapshot(geoCode: string): Promise<MetroSnapshot> 
   if (!geoCode) return empty;
 
   const [latest, zhviSeries] = await Promise.all([
-    getLatestMetrics("metro", geoCode),
-    getMetricSeries("metro", geoCode, "zhvi", 13),
+    getLatestMetrics(geoLevel, geoCode),
+    getMetricSeries(geoLevel, geoCode, "zhvi", 13),
   ]);
 
   const byMetric = new Map(latest.map((m) => [m.metric, m]));
@@ -180,16 +225,20 @@ export async function getMetroSnapshot(geoCode: string): Promise<MetroSnapshot> 
   };
 }
 
-/** Same-state metros nearest in size, for internal linking. */
+/**
+ * Same-state, same-tier places nearest in size, for internal linking. A metro
+ * links to nearby metros and a county to nearby counties (keeps the link set
+ * coherent and the anchor text consistent).
+ */
 export async function getNearbyMetros(
   slug: string,
   limit = 4,
 ): Promise<TrafficMetro[]> {
-  const metros = await listTrafficMetros();
-  const base = metros.find((m) => m.slug === slug);
+  const places = await listTrafficPlaces();
+  const base = places.find((m) => m.slug === slug);
   if (!base || !base.state) return [];
-  return metros
-    .filter((m) => m.slug !== slug && m.state === base.state)
+  return places
+    .filter((m) => m.slug !== slug && m.state === base.state && m.geoLevel === base.geoLevel)
     .sort((a, b) => (a.sizeRank ?? 1e9) - (b.sizeRank ?? 1e9))
     .slice(0, limit);
 }

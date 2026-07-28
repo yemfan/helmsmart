@@ -6,7 +6,7 @@
  * CloseBoss reads it read-only and renders the AGENT framing.
  */
 
-export type GeoLevel = "national" | "state" | "metro";
+export type GeoLevel = "national" | "state" | "metro" | "county";
 
 /** A single geography dimension row (national / state / metro). */
 export type GeoRow = {

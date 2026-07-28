@@ -45,7 +45,7 @@ export default async function MarketReportKeywordPage({
   const city = await getMetroBySlug(p.city);
   if (!city || !isValidKeywordSlugForMetro("market-report", city, p.keyword)) return notFound();
   const keyword = resolveMetroKeyword("market-report", city, p.keyword);
-  const market = await getMetroSnapshot(city.geoCode);
+  const market = await getMetroSnapshot(city.geoLevel, city.geoCode);
   const nearby = await getNearbyMetros(city.slug, 4);
 
   return (
