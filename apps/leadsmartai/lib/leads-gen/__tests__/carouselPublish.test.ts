@@ -2,9 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-const fbSpy = vi.fn(async () => ({ externalPostId: "fb_1", externalPostUrl: "u" }));
-const igSpy = vi.fn(async () => ({ externalPostId: "ig_1", externalPostUrl: "u" }));
-const liSpy = vi.fn(async () => ({ externalPostId: "urn:li:share:1", externalPostUrl: "u" }));
+const fbSpy = vi.fn(async (..._a: unknown[]) => ({ externalPostId: "fb_1", externalPostUrl: "u" }));
+const igSpy = vi.fn(async (..._a: unknown[]) => ({ externalPostId: "ig_1", externalPostUrl: "u" }));
+const liSpy = vi.fn(async (..._a: unknown[]) => ({ externalPostId: "urn:li:share:1", externalPostUrl: "u" }));
 
 vi.mock("../meta-post", () => ({
   publishFacebookCarousel: (...a: unknown[]) => fbSpy(...a),
