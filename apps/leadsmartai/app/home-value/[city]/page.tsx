@@ -2,19 +2,22 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import LocalSeoLeadForm from "@/components/LocalSeoLeadForm";
 import TrafficTracker from "@/components/TrafficTracker";
+import { formatCurrency, getPageKeywords } from "@/lib/trafficSeo";
 import {
-  estimateProgrammaticPageCount,
-  formatCurrency,
-  getCityBySlug,
-  getMarketSnapshot,
-  getNearbyCities,
-  getPageKeywords,
-  getRelatedPageLinks,
-  TRAFFIC_CITIES,
-} from "@/lib/trafficSeo";
+  getMetroBySlug,
+  getMetroSnapshot,
+  getNearbyMetros,
+  getRelatedMetroLinks,
+  listTrafficMetros,
+} from "@/lib/trafficMetros";
 
-export function generateStaticParams() {
-  return TRAFFIC_CITIES.map((c) => ({ city: c.slug }));
+// These render dynamically: the root layout reads cookies() (locale), so the
+// tree is dynamic and adding `revalidate` would throw DYNAMIC_SERVER_USAGE (500)
+// in production. generateStaticParams just supplies known slugs (largest metros)
+// for build-time param hints; the long tail resolves dynamically on request.
+export async function generateStaticParams() {
+  const metros = await listTrafficMetros();
+  return metros.slice(0, 60).map((m) => ({ city: m.slug }));
 }
 
 export async function generateMetadata({
@@ -23,14 +26,21 @@ export async function generateMetadata({
   params: Promise<{ city: string }>;
 }): Promise<Metadata> {
   const p = await params;
-  const city = getCityBySlug(p.city);
+  const city = await getMetroBySlug(p.city);
   if (!city) return {};
   const keywords = getPageKeywords("home-value", city.slug);
   return {
     title: `Free Home Value Estimate in ${city.city}, ${city.state} | CloseBoss`,
-    description: `Get a localized home value estimate for ${city.city}, ${city.state} with market trends, seller demand insights, and ${keywords[0]} guidance.`,
+    description: `Get a localized home value estimate for ${city.city}, ${city.state} with current market trends, days on market, and ${keywords[0]} guidance.`,
     alternates: { canonical: `/home-value/${p.city}` },
   };
+}
+
+function fmtDate(period: string | null): string | null {
+  if (!period) return null;
+  const d = new Date(period);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
 export default async function HomeValueCityPage({
@@ -39,14 +49,16 @@ export default async function HomeValueCityPage({
   params: Promise<{ city: string }>;
 }) {
   const p = await params;
-  const city = getCityBySlug(p.city);
+  const city = await getMetroBySlug(p.city);
   if (!city) return notFound();
 
-  const market = getMarketSnapshot(p.city);
-  const nearbyCities = getNearbyCities(city.slug, 4);
-  const relatedPages = getRelatedPageLinks(city.slug).filter((page) => !page.href.endsWith(`/home-value/${city.slug}`));
+  const market = await getMetroSnapshot(city.geoCode);
+  const nearbyCities = await getNearbyMetros(city.slug, 4);
+  const relatedPages = getRelatedMetroLinks(city.slug).filter(
+    (page) => !page.href.endsWith(`/home-value/${city.slug}`),
+  );
   const keywords = getPageKeywords("home-value", city.slug);
-  const estimatedPages = estimateProgrammaticPageCount();
+  const asOf = fmtDate(market.period);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
@@ -55,29 +67,54 @@ export default async function HomeValueCityPage({
         Free Home Value Estimate in {city.city}, {city.state}
       </h1>
       <p className="mt-2 text-slate-700">
-        Localized intro: Use this page to get a {keywords[0]} for {city.city}, compare hyper-local pricing, and decide the best time to sell.
+        Use this page to get a {keywords[0]} for {city.city}, compare hyper-local pricing, and decide the
+        best time to sell.
       </p>
-      <p className="mt-1 text-xs text-slate-500">
-        Programmatic SEO coverage: {estimatedPages.toLocaleString()}+ intent-targeted page variants across city and keyword combinations.
-      </p>
+      {asOf ? <p className="mt-1 text-xs text-slate-500">Market data as of {asOf}.</p> : null}
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <Metric label="Avg Home Value" value={formatCurrency(market.avgHomeValue)} />
-        <Metric label="YoY Change" value={`${market.yoyChangePct}%`} />
-        <Metric label="Price Per Sqft" value={formatCurrency(market.pricePerSqft)} />
-      </div>
+      {(market.typicalValue !== null ||
+        market.yoyChangePct !== null ||
+        market.medianDaysOnMarket !== null ||
+        market.inventory !== null) && (
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {market.typicalValue !== null && (
+            <Metric label="Typical Home Value" value={formatCurrency(market.typicalValue)} />
+          )}
+          {market.yoyChangePct !== null && (
+            <Metric
+              label="1-Year Change"
+              value={`${market.yoyChangePct > 0 ? "+" : ""}${market.yoyChangePct}%`}
+            />
+          )}
+          {market.medianDaysOnMarket !== null && (
+            <Metric label="Median Days on Market" value={`${Math.round(market.medianDaysOnMarket)} days`} />
+          )}
+          {market.inventory !== null && (
+            <Metric label="Homes for Sale" value={Math.round(market.inventory).toLocaleString()} />
+          )}
+        </div>
+      )}
 
       <section className="mt-8 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-2xl border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold text-slate-900">Seller insight for {city.city}</h2>
           <p className="mt-2 text-sm text-slate-700">
-            Sellers in {city.city} are seeing{" "}
-            <span className="font-semibold">{market.sellerDemandScore}/100 demand</span>. The best-performing
-            listings are priced against fresh local comps and marketed with a clear timeline.
+            The best-performing listings in {city.city} are priced against fresh local comps and marketed
+            with a clear timeline.
+            {market.medianDaysOnMarket !== null
+              ? ` Homes here are currently selling in a median of about ${Math.round(
+                  market.medianDaysOnMarket,
+                )} days.`
+              : ""}
           </p>
           <p className="mt-2 text-sm text-slate-700">
-            Market trend is currently <span className="font-semibold">{market.trend}</span>, with a median listing pace of{" "}
-            <span className="font-semibold">{market.medianDaysOnMarket} days</span>.
+            The {city.city} market trend is currently <span className="font-semibold">{market.trend}</span>
+            {market.yoyChangePct !== null
+              ? `, with typical values ${market.yoyChangePct >= 0 ? "up" : "down"} ${Math.abs(
+                  market.yoyChangePct,
+                )}% over the past year`
+              : ""}
+            .
           </p>
           <h3 className="mt-5 text-sm font-semibold uppercase tracking-wide text-slate-800">Keyword coverage</h3>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -98,7 +135,11 @@ export default async function HomeValueCityPage({
             <div>
               <dt className="font-semibold text-slate-900">Is now a good time to sell in {city.city}?</dt>
               <dd className="mt-1 ml-0 text-slate-700">
-                Demand is {market.sellerDemandScore >= 70 ? "strong" : "moderate"} based on current velocity and pricing pressure.
+                {market.trend === "up"
+                  ? "Values are rising, which tends to favor sellers who price to the current market."
+                  : market.trend === "down"
+                    ? "Values have softened, so pricing precision and presentation matter more than ever."
+                    : "The market is steady, so strategy, timing, and presentation drive your result."}
               </dd>
             </div>
             <div>
@@ -143,4 +184,3 @@ function Metric({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-

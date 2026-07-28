@@ -2,29 +2,23 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import LocalSeoLeadForm from "@/components/LocalSeoLeadForm";
 import TrafficTracker from "@/components/TrafficTracker";
+import { formatCurrency } from "@/lib/trafficSeo";
 import {
-  estimateKeywordRouteCount,
-  formatCurrency,
-  getCityBySlug,
-  getKeywordPagesForCity,
-  getMarketSnapshot,
-  getNearbyCities,
-  isValidKeywordSlugForCity,
-} from "@/lib/trafficSeo";
+  getMetroBySlug,
+  getMetroSnapshot,
+  getNearbyMetros,
+  isValidKeywordSlugForMetro,
+  resolveMetroKeyword,
+} from "@/lib/trafficMetros";
 
 /**
  * Render on demand at request time — NOT static/ISR. The root layout calls
  * cookies()/headers() (locale detection), which makes the whole tree dynamic.
  * Opting these pages into static generation (revalidate + generateStaticParams)
  * collided with that and threw DYNAMIC_SERVER_USAGE → 500 on every keyword URL
- * in production (the base /[city] pages have no revalidate, so they render
- * dynamically and are fine). force-dynamic mirrors that working behavior.
+ * in production. force-dynamic mirrors the working behavior.
  */
 export const dynamic = "force-dynamic";
-
-function resolveKeyword(citySlug: string, keywordSlug: string) {
-  return getKeywordPagesForCity("home-value", citySlug).find((k) => k.keywordSlug === keywordSlug)?.keyword ?? "";
-}
 
 export async function generateMetadata({
   params,
@@ -32,9 +26,9 @@ export async function generateMetadata({
   params: Promise<{ city: string; keyword: string }>;
 }): Promise<Metadata> {
   const p = await params;
-  const city = getCityBySlug(p.city);
-  if (!city || !isValidKeywordSlugForCity("home-value", p.city, p.keyword)) return {};
-  const keyword = resolveKeyword(p.city, p.keyword);
+  const city = await getMetroBySlug(p.city);
+  if (!city || !isValidKeywordSlugForMetro("home-value", city, p.keyword)) return {};
+  const keyword = resolveMetroKeyword("home-value", city, p.keyword);
   return {
     title: `${keyword} | ${city.city}, ${city.state} | CloseBoss`,
     description: `Get ${keyword} insights, local pricing, and seller strategy for ${city.city}, ${city.state}.`,
@@ -48,32 +42,49 @@ export default async function HomeValueKeywordPage({
   params: Promise<{ city: string; keyword: string }>;
 }) {
   const p = await params;
-  const city = getCityBySlug(p.city);
-  if (!city || !isValidKeywordSlugForCity("home-value", p.city, p.keyword)) return notFound();
-  const keyword = resolveKeyword(p.city, p.keyword);
-  const market = getMarketSnapshot(p.city);
-  const nearby = getNearbyCities(p.city, 4);
+  const city = await getMetroBySlug(p.city);
+  if (!city || !isValidKeywordSlugForMetro("home-value", city, p.keyword)) return notFound();
+  const keyword = resolveMetroKeyword("home-value", city, p.keyword);
+  const market = await getMetroSnapshot(city.geoCode);
+  const nearby = await getNearbyMetros(city.slug, 4);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
       <TrafficTracker pagePath={`/home-value/${city.slug}/${p.keyword}`} city={city.city} source="seo_home_value_keyword" />
       <h1 className="text-3xl font-bold text-slate-900">{keyword}</h1>
       <p className="mt-2 text-slate-700">
-        Local SEO page for {city.city}, {city.state}. Review current home value signals and build a seller-ready pricing strategy.
+        Local SEO page for {city.city}, {city.state}. Review current home value signals and build a
+        seller-ready pricing strategy.
       </p>
-      <p className="mt-1 text-xs text-slate-500">Programmatic keyword routes: {estimateKeywordRouteCount().toLocaleString()}+</p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <Metric label="Median Price" value={formatCurrency(market.avgHomeValue)} />
-        <Metric label="Price Per Sqft" value={formatCurrency(market.pricePerSqft)} />
-        <Metric label="YoY Trend" value={`${market.yoyChangePct}%`} />
-      </div>
+      {(market.typicalValue !== null ||
+        market.yoyChangePct !== null ||
+        market.medianDaysOnMarket !== null) && (
+        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+          {market.typicalValue !== null && (
+            <Metric label="Typical Value" value={formatCurrency(market.typicalValue)} />
+          )}
+          {market.yoyChangePct !== null && (
+            <Metric
+              label="1-Year Trend"
+              value={`${market.yoyChangePct > 0 ? "+" : ""}${market.yoyChangePct}%`}
+            />
+          )}
+          {market.medianDaysOnMarket !== null && (
+            <Metric label="Days on Market" value={`${Math.round(market.medianDaysOnMarket)}`} />
+          )}
+        </div>
+      )}
 
       <section className="mt-8 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-2xl border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold text-slate-900">Seller insight</h2>
           <p className="mt-2 text-sm text-slate-700">
-            Demand score is {market.sellerDemandScore}/100 and median market time is {market.medianDaysOnMarket} days in {city.city}.
+            The {city.city} market is currently <span className="font-semibold">{market.trend}</span>
+            {market.medianDaysOnMarket !== null
+              ? `, with a median market time of about ${Math.round(market.medianDaysOnMarket)} days`
+              : ""}
+            .
           </p>
           <h3 className="mt-4 text-base font-semibold text-slate-900">Nearby city links</h3>
           <div className="mt-2 flex flex-wrap gap-3 text-sm">

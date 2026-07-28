@@ -4,6 +4,19 @@ import { getSiteUrl } from "@/lib/siteUrl";
 export default function robots(): MetadataRoute.Robots {
   const base = getSiteUrl().replace(/\/$/, "");
 
+  // Public marketing pages that live UNDER a disallowed prefix. `/agent/` is
+  // blocked below (the role portal + its authed subroutes), but these three are
+  // indexable, canonical, HIGH_PRIORITY sitemap entries. A more-specific Allow
+  // overrides the broader Disallow in Google/Bing's longest-match rule, so these
+  // get crawled while the rest of /agent/ stays blocked. Without this they were
+  // in the sitemap yet uncrawlable — a self-inflicted indexing block.
+  const allowedPaths = [
+    "/",
+    "/agent/pricing",
+    "/agent/coaching",
+    "/agent/compare",
+  ];
+
   const restrictedPaths = [
     // Auth & account management
     "/auth/",
@@ -31,7 +44,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        allow: allowedPaths,
         disallow: restrictedPaths,
       },
       // Allow AI search crawlers with same restrictions
