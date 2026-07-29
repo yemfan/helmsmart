@@ -18,6 +18,15 @@ export const maxDuration = 300;
 const MAX_BYTES = 20 * 1024 * 1024; // 20 MB cap — covers most rosters
 const MAX_CONTACTS = 100; // sanity cap to bound DB writes downstream
 
+/** Minimal File surface the extractor needs — a real File or a Storage blob. */
+type FileLike = {
+  name: string;
+  type: string;
+  size: number;
+  arrayBuffer: () => Promise<ArrayBuffer>;
+  text: () => Promise<string>;
+};
+
 type ExtractedRow = ContactDraft & {
   /** Stable client-side row id. Lets the preview UI track edits / removals. */
   rowKey: string;
@@ -53,27 +62,63 @@ export async function POST(req: Request) {
       );
     }
 
+    // Two intake shapes:
+    //   - JSON { storagePath } → the browser uploaded straight to Storage
+    //     (bypasses Vercel's ~4.5 MB serverless body cap); we read it back here.
+    //   - multipart file → legacy/small-file path, still supported.
     const ct = req.headers.get("content-type") ?? "";
-    if (!ct.includes("multipart/form-data")) {
+    let file: FileLike;
+    let storageCleanupPath: string | null = null;
+
+    if (ct.includes("application/json")) {
+      const body = (await req.json().catch(() => ({}))) as {
+        storagePath?: unknown;
+        fileName?: unknown;
+        mime?: unknown;
+      };
+      const storagePath = typeof body.storagePath === "string" ? body.storagePath : "";
+      if (!storagePath) {
+        return NextResponse.json({ ok: false, error: "Missing storagePath" }, { status: 400 });
+      }
+      // Scope guard: an agent can only extract from its own uploaded object.
+      if (!storagePath.startsWith(`imports/${auth.agentId}/`)) {
+        return NextResponse.json({ ok: false, error: "Invalid storage path" }, { status: 403 });
+      }
+      const { data: blob, error: dlErr } = await supabaseAdmin.storage
+        .from("lead-media")
+        .download(storagePath);
+      if (dlErr || !blob) {
+        return NextResponse.json(
+          { ok: false, error: "Uploaded file could not be read. Try again." },
+          { status: 400 },
+        );
+      }
+      storageCleanupPath = storagePath;
+      const name = typeof body.fileName === "string" ? body.fileName : "upload";
+      const mime = typeof body.mime === "string" && body.mime ? body.mime : blob.type || "";
+      file = {
+        name,
+        type: mime,
+        size: blob.size,
+        arrayBuffer: () => blob.arrayBuffer(),
+        text: () => blob.text(),
+      };
+    } else if (ct.includes("multipart/form-data")) {
+      const form = await req.formData();
+      const f = form.get("file");
+      if (!f || !(f instanceof File)) {
+        return NextResponse.json({ ok: false, error: "Missing file field" }, { status: 400 });
+      }
+      file = f;
+    } else {
       return NextResponse.json(
-        { ok: false, error: "Expected multipart form upload" },
+        { ok: false, error: "Expected a multipart file or a JSON storage reference" },
         { status: 400 },
       );
     }
 
-    const form = await req.formData();
-    const file = form.get("file");
-    if (!file || !(file instanceof File)) {
-      return NextResponse.json(
-        { ok: false, error: "Missing file field" },
-        { status: 400 },
-      );
-    }
     if (file.size === 0) {
-      return NextResponse.json(
-        { ok: false, error: "File is empty" },
-        { status: 400 },
-      );
+      return NextResponse.json({ ok: false, error: "File is empty" }, { status: 400 });
     }
     if (file.size > MAX_BYTES) {
       return NextResponse.json(
@@ -126,6 +171,15 @@ export async function POST(req: Request) {
         },
         { status: 400 },
       );
+    }
+
+    // Bytes are consumed — drop the temp upload (best-effort; a leftover object
+    // just ages out, it never blocks the response).
+    if (storageCleanupPath) {
+      await supabaseAdmin.storage
+        .from("lead-media")
+        .remove([storageCleanupPath])
+        .catch(() => {});
     }
 
     if (contacts.length === 0) {
