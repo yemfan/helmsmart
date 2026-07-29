@@ -56,6 +56,10 @@ export async function triggerReelRender(
     privacy: "public",
     downloadBehavior: { type: "play-in-browser" },
     maxRetries: 1,
+    // One slide (120 frames) per lambda → ~5 concurrent invocations for a
+    // 5-slide reel, well under a fresh account's low Lambda concurrency quota
+    // (the default ~30-chunk split trips "Rate Exceeded" on new accounts).
+    framesPerLambda: 120,
   });
   return { renderId, bucketName };
 }
