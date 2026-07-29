@@ -13,6 +13,7 @@ import WeeklySocialPosts, {
 import PostQueue from "@/components/marketing/PostQueue";
 import ClientNewsletterCard from "@/components/marketing/ClientNewsletterCard";
 import AdPhotoPanel from "@/components/marketing/AdPhotoPanel";
+import ReelTestPanel from "@/components/marketing/ReelTestPanel";
 
 /**
  * Marketing Assistant overview — demand generation. Took over from
@@ -143,6 +144,9 @@ export default function MarketingAssistantClient({
 
       {/* Brand photo pool → the Marketing Assistant rotates uploads into photo ads */}
       <AdPhotoPanel canCustomize={social.canCustomize} />
+
+      {/* Manual video-reel smoke test — render, preview, then publish on demand */}
+      <ReelTestPanel canCustomize={social.canCustomize} />
 
       {/* The queue: what's about to publish, and (in review mode) the gate that
           holds it until a human approves. Reads scheduled_posts, so it also
