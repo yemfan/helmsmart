@@ -5,16 +5,17 @@ import { Building2, LifeBuoy, Mail, MessageCircle } from "lucide-react";
 import ContactForm from "./ContactForm";
 import JsonLd from "@/components/JsonLd";
 import { getServerT } from "@/lib/i18n/server";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
   const tc = (key: string): string => t(key, { ns: "web_contact" });
   return {
-    title: tc("meta.title"),
-    description: tc("meta.description"),
-    alternates: {
-      canonical: "/contact",
-    },
+    ...pageMetadata({
+      title: tc("meta.title"),
+      description: tc("meta.description"),
+      path: "/contact",
+    }),
     keywords: ["contact", "support", "CloseBoss", "CRM", "lead management"],
   };
 }

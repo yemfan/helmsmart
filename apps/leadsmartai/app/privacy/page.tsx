@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
 
 const LAST_UPDATED = "April 24, 2026";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description:
-    "How LeadSmart AI collects, uses, shares, and protects your personal and business information, including SMS, email, and AI processing disclosures.",
-  alternates: { canonical: "/privacy" },
+  ...pageMetadata({
+    title: "Privacy Policy",
+    description:
+      "How CloseBoss collects, uses, shares, and protects your personal and business information, including SMS, email, and AI processing disclosures.",
+    path: "/privacy",
+  }),
   keywords: ["privacy policy", "data protection", "GDPR", "CCPA", "TCPA", "SMS consent"],
 };
 

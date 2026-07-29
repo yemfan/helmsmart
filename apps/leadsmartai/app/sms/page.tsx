@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import SmsOptInForm from "./SmsOptInForm";
+import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Text Message Updates | CloseBoss",
-  description:
-    "Sign up to receive text message updates from CloseBoss and your real estate agent — property updates, showing confirmations, and follow-ups. Msg & data rates may apply.",
-  alternates: { canonical: "/sms" },
+  ...pageMetadata({
+    title: "Text Message Updates | CloseBoss",
+    description:
+      "Sign up to receive text message updates from CloseBoss and your real estate agent — property updates, showing confirmations, and follow-ups. Msg & data rates may apply.",
+    path: "/sms",
+  }),
   // Publicly indexable so carrier reviewers can reach the opt-in flow directly.
   robots: { index: true, follow: true },
 };
