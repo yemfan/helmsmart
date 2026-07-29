@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import LocalSeoLeadForm from "@/components/LocalSeoLeadForm";
 import TrafficTracker from "@/components/TrafficTracker";
 import { formatCurrency, getPageKeywords } from "@/lib/trafficSeo";
@@ -28,11 +29,11 @@ export async function generateMetadata({
   const city = await getMetroBySlug(p.city);
   if (!city) return {};
   const keywords = getPageKeywords("market-report", city.slug);
-  return {
+  return pageMetadata({
     title: `${city.city}, ${city.state} Market Report | CloseBoss`,
     description: `Current housing trends, days on market, and price movement in ${city.city}, ${city.state}, including ${keywords[0]} analysis.`,
-    alternates: { canonical: `/market-report/${p.city}` },
-  };
+    path: `/market-report/${p.city}`,
+  });
 }
 
 function fmtDate(period: string | null): string | null {

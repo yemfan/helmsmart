@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/authFromRequest";
 import { supabaseServer } from "@/lib/supabaseServer";
+import { getActiveAgentEntitlement } from "@/lib/entitlements/getEntitlements";
 
 export async function GET(req: Request) {
   try {
@@ -29,11 +30,19 @@ export async function GET(req: Request) {
       .eq("auth_user_id", user.id)
       .maybeSingle();
 
+    // Source of truth for the plan is the entitlement system (same as Billing /
+    // /api/entitlements/me), not the legacy leadsmart_users.plan column — which
+    // drifts (a Pro account was reporting `free` here). Fall back to the legacy
+    // column only when there is no active entitlement so legacy-only paid
+    // accounts are never downgraded.
+    const entitlement = await getActiveAgentEntitlement(supabaseServer, user.id).catch(() => null);
+    const plan = entitlement?.plan ?? (ls?.plan as string | undefined) ?? "free";
+
     const profileEmail = (data as { email?: string | null } | null)?.email?.trim() || null;
 
     return NextResponse.json({
       email: profileEmail || user.email || null,
-      plan: (ls?.plan as string | undefined) ?? "free",
+      plan,
       role: (ls?.role as string | undefined) ?? "user",
       has_agent_record: !!agentRow,
       subscription_status: (ls?.subscription_status as string | null | undefined) ?? null,

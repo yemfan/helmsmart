@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import LocalSeoLeadForm from "@/components/LocalSeoLeadForm";
 import TrafficTracker from "@/components/TrafficTracker";
@@ -29,11 +30,11 @@ export async function generateMetadata({
   const city = await getMetroBySlug(p.city);
   if (!city || !isValidKeywordSlugForMetro("market-report", city, p.keyword)) return {};
   const keyword = resolveMetroKeyword("market-report", city, p.keyword);
-  return {
+  return pageMetadata({
     title: `${keyword} | ${city.city}, ${city.state} | CloseBoss`,
     description: `Track ${keyword} with local pricing and trend data for ${city.city}, ${city.state}.`,
-    alternates: { canonical: `/market-report/${p.city}/${p.keyword}` },
-  };
+    path: `/market-report/${p.city}/${p.keyword}`,
+  });
 }
 
 export default async function MarketReportKeywordPage({

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
@@ -5,6 +6,12 @@ import { getPlaybookAutoSettings, listPlaybookRuns } from "@/lib/realtyboss/play
 import { AutoSettingsCard } from "./AutoSettingsCard";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Playbook Runs",
+  description: "Your stateful selling and buying engagements — each driven from prep to close by the AI team.",
+  robots: { index: false },
+};
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
