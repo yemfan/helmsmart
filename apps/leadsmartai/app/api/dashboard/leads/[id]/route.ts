@@ -15,6 +15,43 @@ import { updateLeadPipelineStage } from "@/lib/crm/pipeline/leadStage";
 import { isSupportedLocale } from "@/lib/locales/registry";
 import { supabaseServer } from "@/lib/supabaseServer";
 
+/**
+ * Delete a contact and everything hanging off it. Every FK that references
+ * `contacts` is ON DELETE CASCADE / SET NULL, so this cleanly removes the
+ * contact's messages, tasks, notes, reports, etc. Scoped to the caller's
+ * `agent_id` so one agent can never delete another's contact. Irreversible —
+ * the UI gates it behind an explicit confirm.
+ */
+export async function DELETE(
+  _req: Request,
+  ctx: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await ctx.params;
+    if (!id) {
+      return NextResponse.json({ error: "id is required" }, { status: 400 });
+    }
+    const { agentId } = await getCurrentAgentContext();
+    const { error, count } = await supabaseServer
+      .from("contacts")
+      .delete({ count: "exact" })
+      .eq("id", id)
+      .eq("agent_id", agentId);
+    if (error) throw error;
+    if (!count) {
+      // Not found under this agent — either already gone or not theirs.
+      return NextResponse.json({ error: "Contact not found" }, { status: 404 });
+    }
+    return NextResponse.json({ ok: true });
+  } catch (e: any) {
+    console.error("dashboard lead delete error", e);
+    return NextResponse.json(
+      { error: e?.message ?? "Server error" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PATCH(
   req: Request,
   ctx: { params: Promise<{ id: string }> }

@@ -186,6 +186,9 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
   /** Lead whose full profile drawer is open (clicking a contact name). */
   const [profileLeadId, setProfileLeadId] = useState<string | null>(null);
   const [bulkPostcardOpen, setBulkPostcardOpen] = useState(false);
+  /** Confirm gate for the (irreversible) bulk delete. */
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadStats = useCallback(async () => {
     try {
@@ -253,6 +256,37 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
       loadStats();
     } catch (e) { setActionMsg(e instanceof Error ? e.message : t("messages.default_error")); }
     finally { setActionLoading(false); }
+  }
+
+  async function deleteSelected() {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    setDeleting(true); setActionMsg(null);
+    try {
+      const results = await Promise.all(
+        ids.map((id) =>
+          fetch(`/api/dashboard/leads/${id}`, { method: "DELETE" })
+            .then((r) => ({ id, ok: r.ok }))
+            .catch(() => ({ id, ok: false })),
+        ),
+      );
+      const deletedSet = new Set(results.filter((r) => r.ok).map((r) => r.id));
+      if (deletedSet.size > 0) {
+        setLeads((prev) => prev.filter((l) => !deletedSet.has(l.id)));
+        setSelectedIds(new Set());
+        loadStats();
+      }
+      setActionMsg(
+        deletedSet.size < ids.length
+          ? t("messages.delete_failed")
+          : t("messages.deleted", { count: deletedSet.size }),
+      );
+    } catch {
+      setActionMsg(t("messages.delete_failed"));
+    } finally {
+      setDeleting(false);
+      setDeleteConfirmOpen(false);
+    }
   }
 
   function startEdit(lead: LeadRow) {
@@ -514,6 +548,13 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
               className="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
             >
               {t("bulk_bar.send_postcards", { count: selectedIds.size })}
+            </button>
+            <button
+              type="button"
+              onClick={() => setDeleteConfirmOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
+            >
+              {t("bulk_bar.delete", { count: selectedIds.size })}
             </button>
           </div>
         </div>
@@ -861,6 +902,39 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
             setSelectedIds(new Set());
           }}
         />
+      ) : null}
+
+      {deleteConfirmOpen ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-slate-900">
+              {t("delete_dialog.title", { count: selectedIds.size })}
+            </h3>
+            <p className="mt-2 text-sm text-slate-600">{t("delete_dialog.body")}</p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmOpen(false)}
+                disabled={deleting}
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-60"
+              >
+                {t("delete_dialog.cancel")}
+              </button>
+              <button
+                type="button"
+                onClick={deleteSelected}
+                disabled={deleting}
+                className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
+              >
+                {deleting ? t("delete_dialog.deleting") : t("delete_dialog.confirm")}
+              </button>
+            </div>
+          </div>
+        </div>
       ) : null}
 
       {/* Full lead profile — opened by clicking a contact name in the table.
