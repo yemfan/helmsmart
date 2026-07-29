@@ -90,7 +90,14 @@ export async function PATCH(
       }
     }
     if (Object.keys(directPatch).length > 0) {
-      await supabaseServer.from("contacts").update(directPatch).eq("id", id);
+      // Scope to the caller's agent so one agent can't edit another's contact
+      // by guessing its UUID (supabaseServer is service-role and bypasses RLS).
+      const { agentId } = await getCurrentAgentContext();
+      await supabaseServer
+        .from("contacts")
+        .update(directPatch)
+        .eq("id", id)
+        .eq("agent_id", agentId);
     }
 
     return NextResponse.json({ ok: true });
