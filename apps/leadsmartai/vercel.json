@@ -69,6 +69,10 @@
       "schedule": "*/5 * * * *"
     },
     {
+      "path": "/api/cron/boss-reap",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/smart-automation",
       "schedule": "0 */6 * * *"
     },

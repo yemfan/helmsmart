@@ -360,3 +360,173 @@ async function onTerminal(runId: string, status: BossRunStatus): Promise<void> {
     console.error("[boss-run] report-back failed:", e);
   }
 }
+
+// ── stall reaper (safety net) ────────────────────────────────────────
+
+const TERMINAL_STATUSES: readonly BossRunStatus[] = [
+  "completed",
+  "failed",
+  "budget_exceeded",
+  "cancelled",
+];
+
+/** A run untouched this long is treated as stalled and re-driven. */
+const REAP_RESUME_AFTER_MS = 3 * 60_000;
+/** A run that has made no progress for this long is failed rather than retried forever. */
+const REAP_GIVEUP_AFTER_MS = 20 * 60_000;
+
+export type ReapAction = "skip" | "reconcile" | "resume" | "giveup";
+
+/**
+ * Pure decision for what to do with a `processing` instruction, given its most
+ * recent run. Extracted so the thresholds and status handling are unit-testable
+ * without mocking Supabase or the engine.
+ *
+ *  - no run, long orphaned            → giveup (fail the instruction)
+ *  - run terminal                     → reconcile (match instruction to it)
+ *  - run awaiting_approval            → skip (waiting on the realtor, not stalled)
+ *  - run idle < resume window         → skip (fast path still owns it)
+ *  - run idle > give-up window        → giveup (fail; retried too long)
+ *  - otherwise                        → resume (re-drive it)
+ */
+export function classifyStalledRun(args: {
+  runStatus: BossRunStatus | null;
+  runUpdatedAt: string | null;
+  instructionCreatedAt: string;
+  nowMs: number;
+}): ReapAction {
+  const { runStatus, runUpdatedAt, instructionCreatedAt, nowMs } = args;
+  if (runStatus == null) {
+    return nowMs - Date.parse(instructionCreatedAt) > REAP_GIVEUP_AFTER_MS ? "giveup" : "skip";
+  }
+  if (TERMINAL_STATUSES.includes(runStatus)) return "reconcile";
+  if (runStatus === "awaiting_approval") return "skip";
+  const idleMs = nowMs - Date.parse(runUpdatedAt ?? instructionCreatedAt);
+  if (idleMs < REAP_RESUME_AFTER_MS) return "skip";
+  if (idleMs > REAP_GIVEUP_AFTER_MS) return "giveup";
+  return "resume";
+}
+
+export type ReapResult = {
+  checked: number;
+  reconciled: number;
+  resumed: number;
+  failed: number;
+};
+
+/**
+ * Safety net for Boss v2 runs (fixes instructions stranded in `processing`).
+ *
+ * The happy path continues a chunked run via a fire-and-forget HTTP hop
+ * ({@link continueBossRun} → `/api/boss/runs/continue`). If that hop is dropped
+ * (the serverless function freezes before the fetch flushes) or a run reaches a
+ * terminal state through a path that skipped {@link onTerminal}, the linked
+ * `boss_instructions` row is left in `processing` forever. This cron-driven pass
+ * reconciles and re-drives those runs. `awaiting_approval` runs are left alone —
+ * they are legitimately waiting on the realtor, not stalled.
+ *
+ * Idempotent by design: the engine resumes any run from its persisted transcript
+ * and tool execution is idempotency-keyed, so re-driving is safe.
+ */
+export async function reapStalledBossRuns(opts?: {
+  now?: () => number;
+  limit?: number;
+}): Promise<ReapResult> {
+  const nowMs = (opts?.now ?? Date.now)();
+  const limit = opts?.limit ?? 50;
+  const nowIso = () => new Date(nowMs).toISOString();
+
+  // Instructions sitting in `processing` past the fast-path window (give the
+  // immediate continuation a minute before the reaper takes an interest).
+  const { data: instrs, error } = await supabaseAdmin
+    .from("boss_instructions")
+    .select("id, created_at")
+    .eq("status", "processing")
+    .lt("created_at", new Date(nowMs - 60_000).toISOString())
+    .order("created_at", { ascending: true })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  if (!instrs?.length) return { checked: 0, reconciled: 0, resumed: 0, failed: 0 };
+
+  const instrIds = instrs.map((i) => (i as { id: string }).id);
+  const { data: runs, error: runErr } = await supabaseAdmin
+    .from("boss_runs")
+    .select("id, instruction_id, status, updated_at")
+    .in("instruction_id", instrIds);
+  if (runErr) throw new Error(runErr.message);
+
+  // Most recent run per instruction.
+  const runByInstr = new Map<
+    string,
+    { id: string; status: BossRunStatus; updated_at: string | null }
+  >();
+  for (const r of (runs ?? []) as Array<{
+    id: string;
+    instruction_id: string;
+    status: BossRunStatus;
+    updated_at: string | null;
+  }>) {
+    const prev = runByInstr.get(r.instruction_id);
+    if (!prev || (r.updated_at ?? "") > (prev.updated_at ?? "")) {
+      runByInstr.set(r.instruction_id, { id: r.id, status: r.status, updated_at: r.updated_at });
+    }
+  }
+
+  const result: ReapResult = { checked: instrs.length, reconciled: 0, resumed: 0, failed: 0 };
+
+  for (const instr of instrs as Array<{ id: string; created_at: string }>) {
+    const run = runByInstr.get(instr.id);
+    const action = classifyStalledRun({
+      runStatus: run?.status ?? null,
+      runUpdatedAt: run?.updated_at ?? null,
+      instructionCreatedAt: instr.created_at,
+      nowMs,
+    });
+
+    if (action === "skip") continue;
+
+    if (action === "reconcile" && run) {
+      // Run already terminal but the instruction never caught up → match it.
+      await supabaseAdmin
+        .from("boss_instructions")
+        .update({
+          status: run.status === "completed" ? "done" : "failed",
+          error: run.status === "completed" ? null : run.status,
+          processed_at: nowIso(),
+          updated_at: nowIso(),
+        })
+        .eq("id", instr.id)
+        .eq("status", "processing");
+      result.reconciled += 1;
+      continue;
+    }
+
+    if (action === "giveup") {
+      if (run) {
+        // No progress for a long time despite prior resume attempts → give up.
+        await store.updateRun(run.id, { status: "failed", finished_at: nowIso(), error: "stalled" });
+        await onTerminal(run.id, "failed");
+      } else {
+        // No run backing the instruction at all → just resolve the card.
+        await supabaseAdmin
+          .from("boss_instructions")
+          .update({ status: "failed", error: "orphaned", processed_at: nowIso(), updated_at: nowIso() })
+          .eq("id", instr.id)
+          .eq("status", "processing");
+      }
+      result.failed += 1;
+      continue;
+    }
+
+    if (action === "resume" && run) {
+      try {
+        await continueBossRun(run.id);
+        result.resumed += 1;
+      } catch (e) {
+        console.error("[boss-reap] resume failed for run", run.id, e);
+      }
+    }
+  }
+
+  return result;
+}
