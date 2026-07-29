@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
@@ -6,6 +7,12 @@ import { ASSIGNEE_LABEL, PILLAR_LABEL } from "@/lib/realtyboss/skills/catalog";
 import { SkillsManager, type SkillRow } from "./SkillsManager";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Skills Library",
+  description: "The Realtor AI skills library — assign skills to each assistant with state-aware compliance built in.",
+  robots: { index: false },
+};
 
 /**
  * Skills — the Realtor AI skills library, assigned to each AI assistant and

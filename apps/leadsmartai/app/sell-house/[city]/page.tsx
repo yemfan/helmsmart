@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import LocalSeoLeadForm from "@/components/LocalSeoLeadForm";
 import TrafficTracker from "@/components/TrafficTracker";
 import { getPageKeywords } from "@/lib/trafficSeo";
+import { pageMetadata } from "@/lib/seo";
 import {
   getMetroBySlug,
   getMetroSnapshot,
@@ -28,11 +29,11 @@ export async function generateMetadata({
   const city = await getMetroBySlug(p.city);
   if (!city) return {};
   const keywords = getPageKeywords("sell-house", city.slug);
-  return {
+  return pageMetadata({
     title: `Sell Your House Fast in ${city.city}, ${city.state} | CloseBoss`,
     description: `Localized strategy to sell your house in ${city.city}, ${city.state} with current demand, days on market, and timing insights for ${keywords[0]}.`,
-    alternates: { canonical: `/sell-house/${p.city}` },
-  };
+    path: `/sell-house/${p.city}`,
+  });
 }
 
 function fmtDate(period: string | null): string | null {

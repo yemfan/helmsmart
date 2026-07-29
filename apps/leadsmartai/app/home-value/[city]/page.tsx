@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import LocalSeoLeadForm from "@/components/LocalSeoLeadForm";
 import TrafficTracker from "@/components/TrafficTracker";
 import { formatCurrency, getPageKeywords } from "@/lib/trafficSeo";
@@ -29,11 +30,11 @@ export async function generateMetadata({
   const city = await getMetroBySlug(p.city);
   if (!city) return {};
   const keywords = getPageKeywords("home-value", city.slug);
-  return {
+  return pageMetadata({
     title: `Free Home Value Estimate in ${city.city}, ${city.state} | CloseBoss`,
     description: `Get a localized home value estimate for ${city.city}, ${city.state} with current market trends, days on market, and ${keywords[0]} guidance.`,
-    alternates: { canonical: `/home-value/${p.city}` },
-  };
+    path: `/home-value/${p.city}`,
+  });
 }
 
 function fmtDate(period: string | null): string | null {
