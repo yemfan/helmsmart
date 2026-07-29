@@ -19,7 +19,10 @@
     "postcards_sent_other": "Sent {{count}} postcards ✓",
     "default_error": "Error",
     "add_failed": "Failed",
-    "update_failed": "Update failed"
+    "update_failed": "Update failed",
+    "deleted_one": "Deleted {{count}} contact.",
+    "deleted_other": "Deleted {{count}} contacts.",
+    "delete_failed": "Couldn't delete. Please try again."
   },
   "add_menu": {
     "button": "Add…",
@@ -54,7 +57,9 @@
     "selected_other": "{{count}} selected",
     "clear": "Clear",
     "send_postcards_one": "💌 Send postcard to {{count}}",
-    "send_postcards_other": "💌 Send postcard to {{count}}"
+    "send_postcards_other": "💌 Send postcard to {{count}}",
+    "delete_one": "🗑 Delete {{count}}",
+    "delete_other": "🗑 Delete {{count}}"
   },
   "columns": {
     "name": "Name",
@@ -72,8 +77,17 @@
     "months": "{{count}}mo ago",
     "years": "{{count}}y ago"
   },
+  "delete_dialog": {
+    "title_one": "Delete {{count}} contact?",
+    "title_other": "Delete {{count}} contacts?",
+    "body": "This permanently removes the contact and all their history — messages, tasks, notes, and reports. This can't be undone.",
+    "confirm": "Delete permanently",
+    "cancel": "Cancel",
+    "deleting": "Deleting…"
+  },
   "row": {
     "empty_value": "—",
+    "delete_label": "Delete contact",
     "language_default": "Lang: default",
     "email_tooltip": "Email {{email}}",
     "email_a11y": "Email contact",

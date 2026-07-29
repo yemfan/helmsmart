@@ -19,7 +19,10 @@
     "postcards_sent_other": "已发送 {{count}} 张明信片 ✓",
     "default_error": "出错",
     "add_failed": "失败",
-    "update_failed": "更新失败"
+    "update_failed": "更新失败",
+    "deleted_one": "已删除 {{count}} 位联系人。",
+    "deleted_other": "已删除 {{count}} 位联系人。",
+    "delete_failed": "删除失败，请重试。"
   },
   "add_menu": {
     "button": "添加……",
@@ -54,7 +57,9 @@
     "selected_other": "已选 {{count}} 位",
     "clear": "清空",
     "send_postcards_one": "💌 向 {{count}} 位发送明信片",
-    "send_postcards_other": "💌 向 {{count}} 位发送明信片"
+    "send_postcards_other": "💌 向 {{count}} 位发送明信片",
+    "delete_one": "🗑 删除 {{count}} 位",
+    "delete_other": "🗑 删除 {{count}} 位"
   },
   "columns": {
     "name": "姓名",
@@ -72,8 +77,17 @@
     "months": "{{count}} 个月前",
     "years": "{{count}} 年前"
   },
+  "delete_dialog": {
+    "title_one": "删除 {{count}} 位联系人？",
+    "title_other": "删除 {{count}} 位联系人？",
+    "body": "这将永久删除该联系人及其所有历史记录——短信、任务、备注和报告。此操作无法撤销。",
+    "confirm": "永久删除",
+    "cancel": "取消",
+    "deleting": "正在删除…"
+  },
   "row": {
     "empty_value": "—",
+    "delete_label": "删除联系人",
     "language_default": "语言：默认",
     "email_tooltip": "发邮件给 {{email}}",
     "email_a11y": "发送邮件",
