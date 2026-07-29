@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Schedule a Demo — CloseBoss",
   description: "Book a live demo of your AI real estate team.",
-  alternates: { canonical: "/book" },
-};
+  path: "/book",
+});
 
 /**
  * Real demo scheduler. The booking page (Cal.com / Calendly / any embeddable

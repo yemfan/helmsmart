@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Delete your LeadSmart account",
-  description:
-    "How to permanently delete your CloseBoss account and the personal data we hold about you. Required disclosure under Apple App Store and Google Play account-deletion policies.",
-  alternates: { canonical: "/delete-account" },
+  ...pageMetadata({
+    title: "Delete your CloseBoss account",
+    description:
+      "How to permanently delete your CloseBoss account and the personal data we hold about you. Required disclosure under Apple App Store and Google Play account-deletion policies.",
+    path: "/delete-account",
+  }),
   robots: { index: true, follow: true },
 };
 

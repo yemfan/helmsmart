@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/seo";
 
 const LAST_UPDATED = "April 24, 2026";
 
 export const metadata: Metadata = {
-  title: "Terms of Service",
-  description:
-    "Terms governing use of the LeadSmart AI lead management, CRM, and automation service — subscription, acceptable use, SMS/email compliance, intellectual property, liability, and disputes.",
-  alternates: { canonical: "/terms" },
+  ...pageMetadata({
+    title: "Terms of Service",
+    description:
+      "Terms governing use of the CloseBoss lead management, CRM, and automation service — subscription, acceptable use, SMS/email compliance, intellectual property, liability, and disputes.",
+    path: "/terms",
+  }),
   keywords: ["terms of service", "terms of use", "subscription terms", "acceptable use"],
 };
 

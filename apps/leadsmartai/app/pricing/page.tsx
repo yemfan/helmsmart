@@ -4,16 +4,15 @@ import ConsumerPricingClientPage from "./page.client";
 import { redirectAdminSupportAwayFromCommercialPricing } from "@/lib/auth/redirectStaffFromCommercialPricing";
 import JsonLd from "@/components/JsonLd";
 import { getServerT } from "@/lib/i18n/server";
+import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
-  return {
+  return pageMetadata({
     title: t("pricing.title", { ns: "web_marketing" }),
     description: t("pricing.description", { ns: "web_marketing" }),
-    alternates: {
-      canonical: "/pricing",
-    },
-  };
+    path: "/pricing",
+  });
 }
 
 export default async function ConsumerPricingPage() {
