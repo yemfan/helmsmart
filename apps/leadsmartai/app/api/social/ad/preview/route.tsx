@@ -11,7 +11,7 @@ import { buildPresetAd, type AdPreset } from "@/lib/social/adPresets";
  */
 export const runtime = "nodejs";
 
-const TEMPLATES: AdTemplate[] = ["bold", "photo", "stat"];
+const TEMPLATES: AdTemplate[] = ["bold", "photo", "stat", "spotlight", "feature"];
 const FORMATS: AdFormat[] = ["square", "portrait", "landscape"];
 const THEMES: AdTheme[] = ["navy", "midnight", "azure", "light"];
 
@@ -48,6 +48,8 @@ export async function GET(req: Request) {
     format: FORMATS.includes(format) ? format : "square",
     theme,
     headline: q.get("headline") || "Missed calls cost you deals.",
+    headlineAccent: q.get("headlineAccent") || undefined,
+    badge: q.get("badge") || undefined,
     subhead: q.get("subhead") || undefined,
     ctaText: q.get("cta") || undefined,
     statValue: q.get("statValue") || undefined,

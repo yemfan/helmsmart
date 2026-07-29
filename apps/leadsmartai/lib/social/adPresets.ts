@@ -16,7 +16,13 @@ import { pickThemeForIndex, type AdFormat, type AdInput, type AdTheme } from "./
  * Video presets are handled separately via the Remotion reel composition.
  */
 
-export type AdPreset = "interest-rate" | "market-update" | "promo" | "photo";
+export type AdPreset = "interest-rate" | "market-update" | "promo" | "photo" | "spotlight" | "feature";
+
+/** Dark themes only — the spotlight/feature designs are built for a dark hero. */
+const DARK_THEMES: AdTheme[] = ["navy", "midnight", "azure"];
+function darkTheme(index: number): AdTheme {
+  return DARK_THEMES[((index % DARK_THEMES.length) + DARK_THEMES.length) % DARK_THEMES.length];
+}
 
 /** "2026-07-02" -> "July 2026". */
 function monthYear(period: string | null | undefined): string | null {
@@ -139,6 +145,91 @@ export function buildPhotoAd(
   return { template: "photo", photoUrl, headline: h.headline, subhead: h.subhead, ctaText: "Meet your AI team", theme, format };
 }
 
+/** Spotlight direct-response copy sets (badge → two-tone headline → promise). */
+const SPOTLIGHT_COPY: Array<
+  Pick<AdInput, "badge" | "headline" | "headlineAccent" | "subhead" | "statLabel" | "ctaText">
+> = [
+  {
+    badge: "REALTORS",
+    headline: "You don't have a lead problem.",
+    headlineAccent: "You have a follow-up gap.",
+    subhead: "CloseBoss answers, texts back, and nurtures every lead — 24/7.",
+    statLabel: "Every call answered. Every lead worked.",
+    ctaText: "See how it works",
+  },
+  {
+    badge: "BUSY AGENTS",
+    headline: "Stop losing deals",
+    headlineAccent: "to slow follow-up.",
+    subhead: "Your AI team responds in seconds and never drops a lead.",
+    statLabel: "Instant response. Relentless follow-up.",
+    ctaText: "Meet your AI team",
+  },
+  {
+    badge: "TOP PRODUCERS",
+    headline: "Work fewer nights.",
+    headlineAccent: "Close more deals.",
+    subhead: "CloseBoss runs the busywork so you can run your business.",
+    statLabel: "Your AI team never clocks out.",
+    ctaText: "Start free",
+  },
+];
+
+/** Spotlight ad — dark direct-response layout. Photo is optional (a scene photo
+ *  blends best with the fade); falls back to the chart motif alone. */
+export function buildSpotlightAd(
+  index = 0,
+  format: AdFormat = "portrait",
+  theme?: AdTheme,
+  photoUrl?: string,
+): AdInput {
+  const c = SPOTLIGHT_COPY[((index % SPOTLIGHT_COPY.length) + SPOTLIGHT_COPY.length) % SPOTLIGHT_COPY.length];
+  return { template: "spotlight", ...c, photoUrl, theme: theme ?? darkTheme(index), format };
+}
+
+/** Feature poster hero rotations (the rest of the poster is fixed brand content). */
+const FEATURE_COPY: Array<{ headline: string; headlineAccent: string; subhead?: string; statLabel: string }> = [
+  {
+    headline: "Get your",
+    headlineAccent: "life back.",
+    subhead: "CloseBoss AI handles the busywork so you can focus on what matters and close more deals.",
+    statLabel: "Hours back every week",
+  },
+  {
+    headline: "Run your business,",
+    headlineAccent: "not the busywork.",
+    subhead: "Reception, follow-up, marketing, and coordination — handled by your AI team.",
+    statLabel: "Your AI team, 24/7",
+  },
+  {
+    headline: "Your AI team",
+    headlineAccent: "never stops closing.",
+    subhead: "So you can focus on your clients — and on your life.",
+    statLabel: "Always on. Always closing.",
+  },
+];
+
+/** Feature capability poster — self-contained brand content + a rotating hero. */
+export function buildFeatureAd(
+  index = 0,
+  format: AdFormat = "portrait",
+  theme?: AdTheme,
+  photoUrl?: string,
+): AdInput {
+  const c = FEATURE_COPY[((index % FEATURE_COPY.length) + FEATURE_COPY.length) % FEATURE_COPY.length];
+  return {
+    template: "feature",
+    headline: c.headline,
+    headlineAccent: c.headlineAccent,
+    subhead: c.subhead,
+    statLabel: c.statLabel,
+    ctaText: "Book a demo",
+    photoUrl,
+    theme: theme ?? darkTheme(index),
+    format,
+  };
+}
+
 /**
  * Dispatch a preset name to its builder. Theme rotates by index when not given,
  * so consecutive scheduled posts vary their look. Returns null if data is
@@ -158,5 +249,7 @@ export async function buildPresetAd(
   if (preset === "photo") {
     return opts.photoUrl ? buildPhotoAd(opts.photoUrl, index, format, theme) : null;
   }
+  if (preset === "spotlight") return buildSpotlightAd(index, format, theme, opts.photoUrl);
+  if (preset === "feature") return buildFeatureAd(index, format, theme, opts.photoUrl);
   return buildPromoAd(index, format, theme);
 }

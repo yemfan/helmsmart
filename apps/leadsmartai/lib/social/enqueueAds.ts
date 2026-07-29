@@ -2,7 +2,7 @@ import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { loadDraftAds, persistAdDrafts, type AdDraft } from "@/lib/social/ads";
-import { buildInterestRateAd, buildPhotoAd, buildPromoAd } from "@/lib/social/adPresets";
+import { buildFeatureAd, buildInterestRateAd, buildPhotoAd, buildPromoAd, buildSpotlightAd } from "@/lib/social/adPresets";
 import { pickAgentAdPhoto } from "@/lib/social/adPhotos";
 import { pickThemeForIndex } from "@/lib/social/renderAd";
 import { scheduleAd } from "@/lib/social/scheduleAd";
@@ -36,7 +36,7 @@ async function buildAdBatch(agentStr: string, count: number): Promise<AdDraft[]>
   const out: AdDraft[] = [];
   for (let i = 0; i < count; i += 1) {
     const theme = pickThemeForIndex(i);
-    const slot = i % 3;
+    const slot = i % 5;
     if (slot === 0) {
       const input = await buildInterestRateAd("square", theme);
       out.push({
@@ -60,6 +60,26 @@ async function buildAdBatch(agentStr: string, count: number): Promise<AdDraft[]>
       // no photos yet → fall through to a promo
       const input = buildPromoAd(i, "square", theme);
       out.push({ input, preset: "promo", caption: input.subhead ?? input.headline, hashtags: AD_HASHTAGS });
+    } else if (slot === 2) {
+      // Spotlight direct-response ad — uses an uploaded scene photo when available.
+      const photo = await pickAgentAdPhoto(agentStr, i);
+      const input = buildSpotlightAd(i, "portrait", undefined, photo?.url);
+      out.push({
+        input,
+        preset: "spotlight",
+        caption: [input.headline, input.headlineAccent, input.subhead].filter(Boolean).join(" "),
+        hashtags: AD_HASHTAGS,
+      });
+    } else if (slot === 3) {
+      // Feature capability poster — self-contained brand content (photo optional).
+      const photo = await pickAgentAdPhoto(agentStr, i);
+      const input = buildFeatureAd(i, "portrait", undefined, photo?.url);
+      out.push({
+        input,
+        preset: "feature",
+        caption: `${input.headline} ${input.headlineAccent} ${input.subhead ?? ""}`.trim(),
+        hashtags: AD_HASHTAGS,
+      });
     } else {
       const input = buildPromoAd(i, "square", theme);
       out.push({
