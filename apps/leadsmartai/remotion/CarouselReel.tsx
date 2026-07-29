@@ -1,3 +1,8 @@
+// @ts-nocheck — Remotion composition source. Built ONLY by the Remotion CLI /
+// Lambda bundler (its own toolchain), never part of the Next app bundle or its
+// type contract. The Next 16 build's TS pass scans this folder despite the
+// tsconfig `exclude`, and `remotion`'s root types don't resolve here under the
+// pnpm layout — so opt this file out of that check.
 import {
   AbsoluteFill,
   interpolate,
