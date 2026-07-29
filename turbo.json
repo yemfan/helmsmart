@@ -31,6 +31,8 @@
         "PINTEREST_*",
         "WECHAT_*",
         "SOCIAL_*",
+        "REMOTION_*",
+        "AWS_*",
         "BRAND_*",
         "TWILIO_*",
         "RETELL_*",

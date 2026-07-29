@@ -55,6 +55,7 @@
     "@leadsmart/shared": "workspace:*",
     "@radix-ui/react-dialog": "^1.1.15",
     "@remotion/cli": "4",
+    "@remotion/lambda": "4.0.500",
     "@repo/growth": "workspace:*",
     "@repo/lead-marketplace": "workspace:*",
     "@repo/ui": "workspace:*",
