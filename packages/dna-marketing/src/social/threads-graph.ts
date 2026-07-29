@@ -155,6 +155,25 @@ export function parseThreadsLongLivedTokenResponse(
  *
  * `text` is required — Threads rejects an empty container.
  */
+/** Threads' hard limit on the `text` param. */
+export const THREADS_TEXT_MAX = 500;
+
+/**
+ * Cap post text to Threads' 500-character limit. Counts Unicode code points
+ * (so emoji don't overshoot), trims at a word boundary when one is close, and
+ * appends an ellipsis when it truncates. Threads rejects longer text outright
+ * ("Param text must be at most 500 characters long").
+ */
+export function capThreadsText(text: string): string {
+  const t = (text ?? "").trim();
+  const chars = Array.from(t);
+  if (chars.length <= THREADS_TEXT_MAX) return t;
+  const slice = chars.slice(0, THREADS_TEXT_MAX - 1).join("");
+  const lastSpace = slice.lastIndexOf(" ");
+  const body = lastSpace >= THREADS_TEXT_MAX - 80 ? slice.slice(0, lastSpace) : slice;
+  return `${body.trimEnd()}…`;
+}
+
 export function buildThreadsContainerRequest(params: {
   userId: string;
   accessToken: string;
@@ -165,7 +184,7 @@ export function buildThreadsContainerRequest(params: {
   const base = params.graphBase ?? threadsGraphBase();
   const body = new URLSearchParams();
   body.set("access_token", params.accessToken);
-  body.set("text", params.text);
+  body.set("text", capThreadsText(params.text));
   if (params.imageUrl) {
     body.set("media_type", "IMAGE");
     body.set("image_url", params.imageUrl);

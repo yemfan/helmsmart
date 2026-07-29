@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   buildThreadsAuthorizeUrl,
   buildThreadsContainerRequest,
+  capThreadsText,
+  THREADS_TEXT_MAX,
   buildThreadsContainerStatusUrl,
   buildThreadsLongLivedTokenUrl,
   buildThreadsPermalinkUrl,
@@ -115,6 +117,18 @@ describe("threads publish (two-step)", () => {
     expect(req.body.get("creation_id")).toBe("cont-9");
   });
 
+  it("caps container text to Threads' 500-char limit", () => {
+    const longText = "word ".repeat(200).trim(); // ~1000 chars
+    const req = buildThreadsContainerRequest({
+      userId: "u1",
+      accessToken: TOKEN,
+      text: longText,
+    });
+    const sent = req.body.get("text") ?? "";
+    expect(Array.from(sent).length).toBeLessThanOrEqual(THREADS_TEXT_MAX);
+    expect(sent.endsWith("…")).toBe(true);
+  });
+
   it("parses the container id, then the published media id", () => {
     const c = parseThreadsContainerResponse(200, { id: "cont-9" });
     expect(c).toEqual({ ok: true, containerId: "cont-9" });
@@ -135,6 +149,24 @@ describe("threads publish (two-step)", () => {
     const c = parseThreadsContainerResponse(400, { error: { code: 4 } });
     expect(c.ok).toBe(false);
     if (!c.ok) expect(c.retryable).toBe(true);
+  });
+});
+
+describe("capThreadsText", () => {
+  it("leaves short text untouched", () => {
+    expect(capThreadsText("hello")).toBe("hello");
+  });
+
+  it("truncates over-long text with an ellipsis, staying within the limit", () => {
+    const out = capThreadsText("a".repeat(600));
+    expect(Array.from(out).length).toBeLessThanOrEqual(THREADS_TEXT_MAX);
+    expect(out.endsWith("…")).toBe(true);
+  });
+
+  it("counts emoji as single characters (code points)", () => {
+    // 300 two-code-unit emoji = 300 code points, under the 500 limit → untouched.
+    const emoji = "😀".repeat(300);
+    expect(capThreadsText(emoji)).toBe(emoji);
   });
 });
 
