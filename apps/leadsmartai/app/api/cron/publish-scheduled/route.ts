@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { publishCarouselPost } from "@/lib/leads-gen/carousel-post";
 import { publishPost } from "@/lib/leads-gen/publish";
+import { runReelRenderTick } from "@/lib/social/enqueueReels";
 import { dispatchMobilePublishFailurePush } from "@/lib/mobile/pushDispatch";
 import { logAssistantActivity } from "@/lib/realtyboss/activities";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -175,9 +176,20 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Reel render tick: poll in-flight Lambda renders → mark rendered/failed +
+    // schedule finished ones, and trigger the next draft render (serialized).
+    // Best-effort — a render-side hiccup must never block the post drain.
+    let reelTick: Awaited<ReturnType<typeof runReelRenderTick>> | { error: string } | null = null;
+    try {
+      reelTick = await runReelRenderTick();
+    } catch (e) {
+      reelTick = { error: e instanceof Error ? e.message : "reel tick failed" };
+      console.warn("[cron/publish-scheduled] reel tick failed:", reelTick.error);
+    }
+
     const due = await claimDuePosts();
     if (due.length === 0) {
-      return NextResponse.json({ ok: true, processed: 0, summary: "nothing due" });
+      return NextResponse.json({ ok: true, processed: 0, summary: "nothing due", reelTick });
     }
 
     let posted = 0;
@@ -210,6 +222,8 @@ export async function POST(req: Request) {
             hashtags: row.hashtags,
             mediaItemId: row.media_library_id,
             imageUrl: row.image_url,
+            // Reel rows carry a rendered MP4 in image_url — publish as video.
+            mediaKind: row.subject_kind === "social_reel" ? "video" : "image",
             trigger: row.trigger_kind,
             subjectKind: row.subject_kind,
             subjectRefId: row.subject_ref_id,
@@ -295,6 +309,7 @@ export async function POST(req: Request) {
       posted,
       retried,
       permanentlyFailed,
+      reelTick,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Cron failed";

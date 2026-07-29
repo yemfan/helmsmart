@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyCronRequest } from "@/lib/cronAuth";
 import { runWeeklyCarousels } from "@/lib/social/enqueueCarousels";
 import { runWeeklyAds } from "@/lib/social/enqueueAds";
+import { runWeeklyReels } from "@/lib/social/enqueueReels";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,7 +40,15 @@ export async function GET(req: NextRequest) {
     } catch (e) {
       ads = { error: e instanceof Error ? e.message : "runWeeklyAds failed" };
     }
-    return NextResponse.json({ ok: true, carousels: result, ads });
+    // Video reels ride the same weekly tick (best-effort). Generation only;
+    // the actual render is triggered + drained by the publish-scheduled cron.
+    let reels: Awaited<ReturnType<typeof runWeeklyReels>> | { error: string };
+    try {
+      reels = await runWeeklyReels();
+    } catch (e) {
+      reels = { error: e instanceof Error ? e.message : "runWeeklyReels failed" };
+    }
+    return NextResponse.json({ ok: true, carousels: result, ads, reels });
   } catch (e) {
     console.error("[social-carousel-weekly]", e);
     return NextResponse.json(
