@@ -29,6 +29,8 @@ export async function persistAdDrafts(
     preset: d.preset ?? null,
     format: d.input.format ?? "square",
     headline: d.input.headline ?? null,
+    headline_accent: d.input.headlineAccent ?? null,
+    badge: d.input.badge ?? null,
     subhead: d.input.subhead ?? null,
     cta_text: d.input.ctaText ?? null,
     stat_value: d.input.statValue ?? null,
@@ -54,7 +56,7 @@ export async function persistAdDrafts(
 export async function getAdForRender(id: string): Promise<AdInput | null> {
   const { data, error } = await supabaseAdmin
     .from("social_ads")
-    .select("template, format, headline, subhead, cta_text, stat_value, stat_label, stat_context, photo_url")
+    .select("template, format, headline, headline_accent, badge, subhead, cta_text, stat_value, stat_label, stat_context, photo_url")
     .eq("id", id)
     .maybeSingle();
   if (error || !data) return null;
@@ -62,6 +64,8 @@ export async function getAdForRender(id: string): Promise<AdInput | null> {
     template?: string;
     format?: string;
     headline?: string | null;
+    headline_accent?: string | null;
+    badge?: string | null;
     subhead?: string | null;
     cta_text?: string | null;
     stat_value?: string | null;
@@ -73,6 +77,8 @@ export async function getAdForRender(id: string): Promise<AdInput | null> {
     template: (r.template as AdInput["template"]) ?? "bold",
     format: (r.format as AdInput["format"]) ?? "square",
     headline: r.headline ?? "",
+    headlineAccent: r.headline_accent ?? undefined,
+    badge: r.badge ?? undefined,
     subhead: r.subhead ?? undefined,
     ctaText: r.cta_text ?? undefined,
     statValue: r.stat_value ?? undefined,
