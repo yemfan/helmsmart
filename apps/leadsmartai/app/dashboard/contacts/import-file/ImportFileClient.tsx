@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
 
+import { createClient } from "@/lib/supabase/client";
+
 /**
  * AI file-extract intake — three-step flow:
  *
@@ -109,13 +111,42 @@ export default function ImportFileClient() {
     setStep("extracting");
 
     try {
-      const form = new FormData();
-      form.append("file", file);
+      let res: Response;
+      const supa = createClient();
+      if (supa) {
+        // Upload the file straight to Storage first, then extract from there.
+        // This bypasses Vercel's ~4.5 MB serverless request-body cap, which was
+        // silently 413-ing larger PDFs/images on the old multipart path.
+        const signRes = await fetch("/api/dashboard/contacts/import-file/sign", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ fileName: file.name }),
+        });
+        const sign = await signRes.json().catch(() => ({}));
+        if (!signRes.ok || !sign.ok) throw new Error(sign.error ?? "Upload failed");
 
-      const res = await fetch("/api/dashboard/contacts/import-file/extract", {
-        method: "POST",
-        body: form,
-      });
+        const up = await supa.storage
+          .from(sign.bucket)
+          .uploadToSignedUrl(sign.path, sign.token, file, {
+            contentType: file.type || undefined,
+          });
+        if (up.error) throw new Error(up.error.message || "Upload failed");
+
+        res = await fetch("/api/dashboard/contacts/import-file/extract", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ storagePath: sign.path, fileName: file.name, mime: file.type }),
+        });
+      } else {
+        // Fallback (no public Supabase env): multipart, subject to the 4.5 MB cap.
+        const form = new FormData();
+        form.append("file", file);
+        res = await fetch("/api/dashboard/contacts/import-file/extract", {
+          method: "POST",
+          body: form,
+        });
+      }
+
       const body = await res.json().catch(() => ({}));
       if (!res.ok || !body.ok) throw new Error(body.error ?? "Extraction failed");
 
