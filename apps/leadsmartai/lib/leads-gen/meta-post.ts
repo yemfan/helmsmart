@@ -147,9 +147,11 @@ export async function publishFacebookPagePost(params: {
 async function waitForInstagramContainer(
   containerId: string,
   pageAccessToken: string,
+  maxAttempts = 11, // ~25s worst case (first check is immediate); images
+  delayMs = 2500,
 ): Promise<void> {
-  const MAX_ATTEMPTS = 11; // ~25s worst case (first check is immediate)
-  const DELAY_MS = 2500;
+  const MAX_ATTEMPTS = maxAttempts;
+  const DELAY_MS = delayMs;
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     const res = await fetch(
       buildInstagramContainerStatusUrl({
@@ -369,6 +371,79 @@ export async function publishInstagramCarousel(params: {
     // ignore — the post is already live
   }
 
+  return { externalPostId: pubJson.id, externalPostUrl };
+}
+
+// ── Video (Reels) ────────────────────────────────────────────────────
+
+/**
+ * Publish a video to a Facebook Page via POST /{page-id}/videos with a public
+ * `file_url` (Meta fetches + transcodes it). Returns the video id + a watch URL.
+ * Token must be a Page Access Token.
+ */
+export async function publishFacebookPageVideo(params: {
+  pageId: string;
+  pageAccessToken: string;
+  caption: string;
+  videoUrl: string;
+}): Promise<PublishResult> {
+  const { pageId, pageAccessToken, caption, videoUrl } = params;
+  const body = new URLSearchParams({
+    file_url: videoUrl,
+    description: caption,
+    access_token: pageAccessToken,
+  });
+  const res = await fetch(`${META_GRAPH_BASE}/${pageId}/videos`, { method: "POST", body });
+  const json = (await res.json().catch(() => ({}))) as { id?: string; error?: GraphError };
+  if (!res.ok || !json.id) throw graphErr(json, res.status, "Facebook video post failed");
+  return {
+    externalPostId: json.id,
+    externalPostUrl: `https://www.facebook.com/${json.id}`,
+  };
+}
+
+/**
+ * Publish an Instagram Reel. Same 2-step container→publish flow as an image,
+ * but the container is `media_type=REELS` with a public `video_url`. Reels
+ * transcode far slower than a JPG, so the readiness poll gets a longer budget.
+ */
+export async function publishInstagramReel(params: {
+  igUserId: string;
+  pageAccessToken: string;
+  caption: string;
+  videoUrl: string;
+}): Promise<PublishResult> {
+  const { igUserId, pageAccessToken, caption, videoUrl } = params;
+
+  // 1. Reel container.
+  const body = new URLSearchParams({
+    media_type: "REELS",
+    video_url: videoUrl,
+    caption,
+    share_to_feed: "true",
+    access_token: pageAccessToken,
+  });
+  const res = await fetch(`${META_GRAPH_BASE}/${igUserId}/media`, { method: "POST", body });
+  const json = (await res.json().catch(() => ({}))) as { id?: string; error?: GraphError };
+  if (!res.ok || !json.id) throw graphErr(json, res.status, "Instagram Reel container failed");
+
+  // 2. Wait for transcode (up to ~2min), then publish.
+  await waitForInstagramContainer(json.id, pageAccessToken, 40, 3000);
+  const pubBody = new URLSearchParams({ creation_id: json.id, access_token: pageAccessToken });
+  const pubRes = await fetch(`${META_GRAPH_BASE}/${igUserId}/media_publish`, { method: "POST", body: pubBody });
+  const pubJson = (await pubRes.json().catch(() => ({}))) as { id?: string; error?: GraphError };
+  if (!pubRes.ok || !pubJson.id) throw graphErr(pubJson, pubRes.status, "Instagram Reel publish failed");
+
+  let externalPostUrl: string | null = null;
+  try {
+    const pl = await fetch(
+      `${META_GRAPH_BASE}/${pubJson.id}?fields=permalink&access_token=${encodeURIComponent(pageAccessToken)}`,
+    );
+    const plJson = (await pl.json().catch(() => ({}))) as { permalink?: string };
+    if (pl.ok && plJson.permalink) externalPostUrl = plJson.permalink;
+  } catch {
+    // ignore — the Reel is already live
+  }
   return { externalPostId: pubJson.id, externalPostUrl };
 }
 

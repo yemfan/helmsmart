@@ -1,10 +1,12 @@
 import "server-only";
 
-import { publishLinkedInPost } from "./linkedin-post";
+import { publishLinkedInPost, publishLinkedInVideo } from "./linkedin-post";
 import { getMediaById } from "./media";
 import {
   publishFacebookPagePost,
+  publishFacebookPageVideo,
   publishInstagramBusinessPost,
+  publishInstagramReel,
 } from "./meta-post";
 import { publishThreadsPost } from "./threads-post";
 import { publishPinterestPin } from "./pinterest-post";
@@ -61,6 +63,12 @@ export type PublishInput = {
    * `imageUrl` variable, so this is a single additive branch.
    */
   imageUrl?: string | null;
+  /**
+   * "video" routes to the reel/video publishers (FB video, IG Reel, LinkedIn
+   * video) instead of the image ones. `imageUrl` then carries the public MP4
+   * URL. Only facebook / instagram / linkedin support video. Default "image".
+   */
+  mediaKind?: "image" | "video";
   /** Optional URL to attach. Facebook renders a link-preview card on a /feed
    *  post (ignored when an image is attached, and not supported by IG). */
   link?: string | null;
@@ -107,11 +115,14 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     hashtags,
     mediaItemId,
     imageUrl: directImageUrl,
+    mediaKind,
     link,
     trigger,
     subjectKind,
     subjectRefId,
   } = input;
+  // Video reels reuse this whole path but route to the reel/video publishers.
+  const isVideo = mediaKind === "video";
 
   // Caption assembly. For IG + LinkedIn, hashtags are part of the
   // post body (LinkedIn supports clickable hashtags inline; IG
@@ -324,7 +335,9 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     // publish the URL as-is. Meta pulls it by URL; LinkedIn needs the bytes,
     // so fetch them here the same way the media_library path does.
     imageUrl = directImageUrl;
-    imageContentType = "image/png";
+    imageContentType = isVideo ? "video/mp4" : "image/png";
+    // LinkedIn needs the raw bytes (image OR video) PUT to its upload
+    // endpoint — Meta pulls the MP4 by URL, LinkedIn does not.
     if (platform === "linkedin") {
       try {
         const imgRes = await fetch(directImageUrl);
@@ -334,11 +347,11 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
         const buf = await imgRes.arrayBuffer();
         imageBytes = new Uint8Array(buf);
       } catch (e) {
-        const msg = e instanceof Error ? e.message : "Image fetch failed";
+        const msg = e instanceof Error ? e.message : "Media fetch failed";
         return {
           ok: false,
           status: 500,
-          error: `Could not fetch image bytes for LinkedIn upload: ${msg}`,
+          error: `Could not fetch ${isVideo ? "video" : "image"} bytes for LinkedIn upload: ${msg}`,
           retryable: true,
         };
       }
@@ -354,6 +367,25 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
           : "Instagram posts require an image. Attach one in the wizard, or post to Facebook only.",
       retryable: false,
     };
+  }
+
+  if (isVideo) {
+    if (!imageUrl) {
+      return {
+        ok: false,
+        status: 422,
+        error: "A rendered video URL is required to publish a reel.",
+        retryable: false,
+      };
+    }
+    if (platform !== "facebook" && platform !== "instagram" && platform !== "linkedin") {
+      return {
+        ok: false,
+        status: 422,
+        error: `Video reels are only supported on Facebook, Instagram, and LinkedIn — not ${platform}.`,
+        retryable: false,
+      };
+    }
   }
 
   // 3. Decrypt access token at the point of use. Each platform
@@ -434,7 +466,40 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   try {
     let externalPostId: string;
     let externalPostUrl: string | null;
-    if (platform === "facebook") {
+    if (isVideo) {
+      // Video reels: the MP4 lives at `imageUrl`; LinkedIn also has the
+      // bytes in `imageBytes`. Routed to platform-specific video publishers.
+      if (platform === "facebook") {
+        const result = await publishFacebookPageVideo({
+          pageId: conn.fb_page_id!,
+          pageAccessToken: accessToken,
+          caption,
+          videoUrl: imageUrl!,
+        });
+        externalPostId = result.externalPostId;
+        externalPostUrl = result.externalPostUrl;
+      } else if (platform === "instagram") {
+        const result = await publishInstagramReel({
+          igUserId: conn.ig_business_user_id!,
+          pageAccessToken: accessToken,
+          caption,
+          videoUrl: imageUrl!,
+        });
+        externalPostId = result.externalPostId;
+        externalPostUrl = result.externalPostUrl;
+      } else {
+        // linkedin (guarded above to fb/ig/linkedin only)
+        const result = await publishLinkedInVideo({
+          memberUrn: conn.linkedin_member_urn!,
+          accessToken,
+          caption,
+          videoBytes: imageBytes!,
+          videoContentType: imageContentType ?? "video/mp4",
+        });
+        externalPostId = result.externalPostId;
+        externalPostUrl = result.externalPostUrl;
+      }
+    } else if (platform === "facebook") {
       const result = await publishFacebookPagePost({
         pageId: conn.fb_page_id!,
         pageAccessToken: accessToken,

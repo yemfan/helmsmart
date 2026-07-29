@@ -287,3 +287,125 @@ async function uploadImage(params: {
 
   return imageUrn;
 }
+
+// ── Video ────────────────────────────────────────────────────────────
+
+type VideoInitResponse = {
+  value?: {
+    video?: string;
+    uploadToken?: string;
+    uploadInstructions?: { uploadUrl: string; firstByte: number; lastByte: number }[];
+  };
+  error?: PostError;
+};
+
+/**
+ * Upload a video via the modern /rest/videos flow:
+ *   1. POST /rest/videos?action=initializeUpload → video URN + one or more
+ *      part upload instructions + an upload token.
+ *   2. PUT each byte range; collect the ETag returned per part.
+ *   3. POST /rest/videos?action=finalizeUpload with the part ETags.
+ * Returns the video URN to attach to a post via content.media.
+ */
+async function uploadVideo(params: {
+  memberUrn: string;
+  accessToken: string;
+  videoBytes: Uint8Array;
+  videoContentType: string;
+}): Promise<string> {
+  const headers = {
+    authorization: `Bearer ${params.accessToken}`,
+    "linkedin-version": LINKEDIN_API_VERSION,
+    "x-restli-protocol-version": "2.0.0",
+    "content-type": "application/json",
+  };
+
+  const initRes = await fetch(`${LINKEDIN_API_BASE}/rest/videos?action=initializeUpload`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      initializeUploadRequest: {
+        owner: params.memberUrn,
+        fileSizeBytes: params.videoBytes.byteLength,
+        uploadCaptions: false,
+        uploadThumbnail: false,
+      },
+    }),
+  });
+  const initBody = (await initRes.json().catch(() => ({}))) as VideoInitResponse;
+  const video = initBody.value?.video;
+  const instructions = initBody.value?.uploadInstructions ?? [];
+  const uploadToken = initBody.value?.uploadToken ?? "";
+  if (!initRes.ok || !video || instructions.length === 0) {
+    const msg = initBody.error?.message || `HTTP ${initRes.status}`;
+    throw tagError(new Error(`LinkedIn video initializeUpload failed: ${msg}`), initBody);
+  }
+
+  // PUT each part (a short reel is usually one part); collect ETags.
+  const partIds: string[] = [];
+  for (const ins of instructions) {
+    const chunk = params.videoBytes.subarray(ins.firstByte, ins.lastByte + 1);
+    const putRes = await fetch(ins.uploadUrl, {
+      method: "PUT",
+      headers: { authorization: `Bearer ${params.accessToken}`, "content-type": params.videoContentType },
+      body: chunk as BodyInit,
+    });
+    if (!putRes.ok) throw new Error(`LinkedIn video byte upload failed: HTTP ${putRes.status}`);
+    const etag = putRes.headers.get("etag");
+    if (etag) partIds.push(etag);
+  }
+
+  const finRes = await fetch(`${LINKEDIN_API_BASE}/rest/videos?action=finalizeUpload`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ finalizeUploadRequest: { video, uploadToken, uploadedPartIds: partIds } }),
+  });
+  if (!finRes.ok) {
+    const body = (await finRes.json().catch(() => ({}))) as { error?: PostError };
+    const msg = body.error?.message || `HTTP ${finRes.status}`;
+    throw tagError(new Error(`LinkedIn video finalizeUpload failed: ${msg}`), body);
+  }
+  return video;
+}
+
+/**
+ * Publish a video post to the agent's personal LinkedIn feed — upload the bytes
+ * then create the post with the video URN. Same PUBLIC visibility + /rest/posts
+ * schema as the image path.
+ */
+export async function publishLinkedInVideo(params: {
+  memberUrn: string;
+  accessToken: string;
+  caption: string;
+  videoBytes: Uint8Array;
+  videoContentType: string;
+}): Promise<LinkedInPublishResult> {
+  const videoUrn = await uploadVideo(params);
+  const post = {
+    author: params.memberUrn,
+    commentary: params.caption,
+    visibility: "PUBLIC",
+    distribution: { feedDistribution: "MAIN_FEED", targetEntities: [], thirdPartyDistributionChannels: [] },
+    lifecycleState: "PUBLISHED",
+    isReshareDisabledByAuthor: false,
+    content: { media: { id: videoUrn } },
+  };
+  const res = await fetch(`${LINKEDIN_API_BASE}/rest/posts`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${params.accessToken}`,
+      "linkedin-version": LINKEDIN_API_VERSION,
+      "x-restli-protocol-version": "2.0.0",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(post),
+  });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: PostError };
+    const msg = body.error?.message || `HTTP ${res.status}`;
+    throw tagError(new Error(`LinkedIn video publish failed: ${msg}`), body);
+  }
+  const postUrn = res.headers.get("x-restli-id") ?? "";
+  if (!postUrn) throw new Error("LinkedIn video publish succeeded but returned no x-restli-id");
+  return { externalPostId: postUrn, externalPostUrl: postUrlFromUrn(postUrn) };
+}
