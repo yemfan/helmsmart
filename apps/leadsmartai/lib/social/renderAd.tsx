@@ -451,16 +451,16 @@ export function buildAdImageResponse(input: AdInput): ImageResponse {
             <circle cx="590" cy="50" r="10" fill={t.gold} />
           </svg>
         </div>
-        {input.photoUrl ? (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={input.photoUrl} alt="" width={photoW} height={h} style={{ position: "absolute", top: 0, right: 0, width: `${photoW}px`, height: `${h}px`, objectFit: "cover" }} />
-            {/* left fade → blends the photo's inner edge into the dark bg */}
-            <div style={{ position: "absolute", top: 0, right: 0, width: `${photoW + 40}px`, height: `${h}px`, display: "flex", background: `linear-gradient(90deg, ${t.solid} 0%, ${t.solid}dd 22%, ${t.solid}00 60%)` }} />
-            {/* bottom fade → seats the model on the base */}
-            <div style={{ position: "absolute", bottom: 0, right: 0, width: `${photoW}px`, height: `${Math.round(h * 0.3)}px`, display: "flex", background: `linear-gradient(0deg, ${t.solid} 0%, ${t.solid}00 100%)` }} />
-          </>
-        ) : null}
+        {input.photoUrl
+          ? [
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key="ph" src={input.photoUrl} alt="" width={photoW} height={h} style={{ position: "absolute", top: 0, right: 0, width: `${photoW}px`, height: `${h}px`, objectFit: "cover" }} />,
+              // left fade → blends the photo's inner edge into the dark bg
+              <div key="fl" style={{ position: "absolute", top: 0, right: 0, width: `${photoW + 40}px`, height: `${h}px`, display: "flex", background: `linear-gradient(90deg, ${t.solid} 0%, ${t.solid}dd 22%, ${t.solid}00 60%)` }} />,
+              // bottom fade → seats the model on the base
+              <div key="fb" style={{ position: "absolute", bottom: 0, right: 0, width: `${photoW}px`, height: `${Math.round(h * 0.3)}px`, display: "flex", background: `linear-gradient(0deg, ${t.solid} 0%, ${t.solid}00 100%)` }} />,
+            ]
+          : null}
         {/* foreground column */}
         <div style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "space-between", width: "100%", height: "100%", padding: `${pad}px` }}>
           <Wordmark t={t} logoUrl={logoUrl} />
