@@ -294,13 +294,25 @@ export async function getConnectedSocialAccounts(
  * A meta account with an IG business id COULD post to instagram too, but we keep
  * one target per account for the MVP and pick the always-available FB feed.
  */
-function platformForAccount(acct: ConnectedSocialAccount): PublishTargetPlatform {
-  if (acct.platform === "linkedin") return "linkedin";
-  if (acct.platform === "threads") return "threads";
-  return "facebook";
+function platformForAccount(acct: ConnectedSocialAccount): PublishTargetPlatform | null {
+  switch (acct.platform) {
+    case "meta":
+      return "facebook";
+    case "linkedin":
+      return "linkedin";
+    case "threads":
+      return "threads";
+    case "pinterest":
+      return "pinterest";
+    default:
+      // Unknown/unsupported connection type — skip rather than defaulting to
+      // facebook, which would enqueue a facebook row against a non-Meta account
+      // and fail publish with "Connection platform is not Meta."
+      return null;
+  }
 }
 
-type PublishTargetPlatform = "facebook" | "instagram" | "linkedin" | "threads";
+type PublishTargetPlatform = "facebook" | "instagram" | "linkedin" | "threads" | "pinterest";
 
 /**
  * Queue ONE recommendation into scheduled_posts — one row per target account —
@@ -342,23 +354,31 @@ export async function scheduleRecommendation(
     : "";
   const caption = [rec.caption.trim(), tags].filter(Boolean).join("\n\n");
 
-  const rows = accounts.map((acct) => ({
-    agent_id: agentId,
-    social_account_id: acct.id,
-    platform: platformForAccount(acct),
-    caption,
-    hashtags: Array.isArray(rec.hashtags) ? rec.hashtags : [],
-    media_library_id: null,
-    image_url: rec.image_url ?? null,
-    trigger_kind: "marketing_assistant_social",
-    subject_kind: "social_recommendation",
-    subject_ref_id: rec.id,
-    status: queueStatus,
-    scheduled_for: scheduledFor,
-    review_verdict: review?.verdict ?? null,
-    review_issues: review?.issues ?? null,
-    reviewed_at: review ? new Date().toISOString() : null,
-  }));
+  const rows = accounts
+    .map((acct) => {
+      const platform = platformForAccount(acct);
+      if (!platform) return null; // unsupported connection type — skip
+      return {
+        agent_id: agentId,
+        social_account_id: acct.id,
+        platform,
+        caption,
+        hashtags: Array.isArray(rec.hashtags) ? rec.hashtags : [],
+        media_library_id: null,
+        image_url: rec.image_url ?? null,
+        trigger_kind: "marketing_assistant_social",
+        subject_kind: "social_recommendation",
+        subject_ref_id: rec.id,
+        status: queueStatus,
+        scheduled_for: scheduledFor,
+        review_verdict: review?.verdict ?? null,
+        review_issues: review?.issues ?? null,
+        reviewed_at: review ? new Date().toISOString() : null,
+      };
+    })
+    .filter((r): r is NonNullable<typeof r> => r !== null);
+
+  if (rows.length === 0) return { scheduledCount: 0, scheduledFor };
 
   const { data, error } = await supabaseServer
     .from("scheduled_posts")
@@ -482,7 +502,9 @@ export async function generateWeeklyRecommendations(
     const connected = await getConnectedSocialAccounts(agentId);
     config = await planAutopilotPeriod({
       config: baseConfig,
-      connectedPlatforms: [...new Set(connected.map(platformForAccount))],
+      connectedPlatforms: [
+        ...new Set(connected.map(platformForAccount).filter((p): p is PublishTargetPlatform => p !== null)),
+      ],
       weekOf,
     });
   }
@@ -552,9 +574,10 @@ export async function generateWeeklyRecommendations(
       // rather than falling back to every account — posting somewhere they
       // deselected would be worse than not posting.
       const accounts = config.platforms
-        ? allAccounts.filter((a) =>
-            (config.platforms as string[]).includes(platformForAccount(a)),
-          )
+        ? allAccounts.filter((a) => {
+            const p = platformForAccount(a);
+            return p !== null && (config.platforms as string[]).includes(p);
+          })
         : allAccounts;
       if (accounts.length > 0) {
         // Re-read each inserted rec's persisted image_url (persistCardImages may
