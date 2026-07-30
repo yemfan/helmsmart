@@ -28,6 +28,7 @@ export async function persistAdDrafts(
     template: d.input.template,
     preset: d.preset ?? null,
     format: d.input.format ?? "square",
+    theme: d.input.theme ?? null,
     headline: d.input.headline ?? null,
     headline_accent: d.input.headlineAccent ?? null,
     badge: d.input.badge ?? null,
@@ -56,13 +57,14 @@ export async function persistAdDrafts(
 export async function getAdForRender(id: string): Promise<AdInput | null> {
   const { data, error } = await supabaseAdmin
     .from("social_ads")
-    .select("template, format, headline, headline_accent, badge, subhead, cta_text, stat_value, stat_label, stat_context, photo_url")
+    .select("template, format, theme, headline, headline_accent, badge, subhead, cta_text, stat_value, stat_label, stat_context, photo_url")
     .eq("id", id)
     .maybeSingle();
   if (error || !data) return null;
   const r = data as {
     template?: string;
     format?: string;
+    theme?: string | null;
     headline?: string | null;
     headline_accent?: string | null;
     badge?: string | null;
@@ -76,6 +78,7 @@ export async function getAdForRender(id: string): Promise<AdInput | null> {
   return {
     template: (r.template as AdInput["template"]) ?? "bold",
     format: (r.format as AdInput["format"]) ?? "square",
+    theme: (r.theme as AdInput["theme"]) ?? undefined,
     headline: r.headline ?? "",
     headlineAccent: r.headline_accent ?? undefined,
     badge: r.badge ?? undefined,
