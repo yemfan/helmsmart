@@ -61,11 +61,29 @@ export async function GET(req: Request) {
       return back("meta_error=no_pages_granted");
     }
 
-    // Meta's own consent dialog is where a Page is chosen, so we take what was
-    // granted. Surfacing the name lets someone spot a wrong pick immediately —
-    // connecting the wrong Page and finding out when a post appears on it is a
-    // genuinely bad surprise.
-    const page = pages[0];
+    // Meta lets the user grant several Pages at once, and the first one returned
+    // is NOT necessarily the one THIS org is for — an established Page (e.g. a
+    // sibling brand) sorts ahead of a freshly-created one, so `pages[0]` silently
+    // connects the wrong Page and you only find out when a post lands on it.
+    // Prefer the Page whose name matches this org's name; fall back to the first
+    // only when nothing matches.
+    let page = pages[0];
+    if (pages.length > 1) {
+      const { data: org } = await supabase
+        .from("organizations")
+        .select("name")
+        .eq("id", orgId)
+        .single();
+      const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const orgName = norm(org?.name ?? "");
+      if (orgName.length >= 3) {
+        const match = pages.find((p) => {
+          const pn = norm(p.pageName);
+          return pn.includes(orgName) || orgName.includes(pn);
+        });
+        if (match) page = match;
+      }
+    }
     await saveMetaConnection(orgId, page);
 
     const q = new URLSearchParams({ meta: "connected", page: page.pageName });
