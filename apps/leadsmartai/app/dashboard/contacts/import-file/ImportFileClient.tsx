@@ -464,9 +464,9 @@ function ReviewTable(props: {
         </div>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-x-auto">
+      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-auto max-h-[60vh]">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <thead className="sticky top-0 z-10 bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]">
             <tr>
               <th className="px-3 py-2.5 w-10">
                 <input
