@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { createClient } from "@/lib/supabase/client";
+
 /**
  * Ad photo pool manager — upload brand/lifestyle photos that the Marketing
  * Assistant rotates into branded photo ads (logo + headline + CTA overlaid).
@@ -51,14 +53,45 @@ export default function AdPhotoPanel({ canCustomize }: { canCustomize: boolean }
       setError(null);
       setBusy(true);
       try {
+        const supa = createClient();
         for (const file of list) {
           if (file.size > MAX_BYTES) {
             setError(`"${file.name}" is over 8MB — skipped.`);
             continue;
           }
-          const form = new FormData();
-          form.append("file", file);
-          const res = await fetch("/api/social/ad/photos", { method: "POST", body: form });
+          let res: Response;
+          if (supa) {
+            // Upload straight to Storage (bypasses Vercel's ~4.5 MB body cap),
+            // then index the stored image.
+            const signRes = await fetch("/api/dashboard/uploads/sign", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ kind: "ad_photo", fileName: file.name }),
+            });
+            const sign = await signRes.json().catch(() => ({}));
+            if (!signRes.ok || !sign.ok) {
+              setError(sign.error || "Upload failed.");
+              continue;
+            }
+            const up = await supa.storage
+              .from(sign.bucket)
+              .uploadToSignedUrl(sign.path, sign.token, file, {
+                contentType: file.type || undefined,
+              });
+            if (up.error) {
+              setError(up.error.message || "Upload failed.");
+              continue;
+            }
+            res = await fetch("/api/social/ad/photos", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ storagePath: sign.path }),
+            });
+          } else {
+            const form = new FormData();
+            form.append("file", file);
+            res = await fetch("/api/social/ad/photos", { method: "POST", body: form });
+          }
           const json = await res.json().catch(() => ({}));
           if (!res.ok) {
             setError(json.error || "Upload failed.");
