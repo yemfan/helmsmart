@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ContactPicker, { type ContactPickerValue } from "@/components/crm/ContactPicker";
 import type { FinancingType } from "@/lib/offers/types";
+import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 
 /**
  * Mirror of the parse API's response shape — keep in sync with
@@ -185,11 +186,11 @@ export function UploadOfferClient() {
     setPdfName(file.name);
     setParsing(true);
     try {
-      const form = new FormData();
-      form.append("file", file);
+      const storagePath = await uploadViaStorage(file, "offer_pdf");
       const res = await fetch("/api/dashboard/offers/parse-pdf", {
         method: "POST",
-        body: form,
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ storagePath, fileName: file.name, mime: file.type }),
       });
       const body = (await res.json().catch(() => ({}))) as {
         ok?: boolean;

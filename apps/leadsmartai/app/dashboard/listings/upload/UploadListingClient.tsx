@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ContactPicker, { type ContactPickerValue } from "@/components/crm/ContactPicker";
+import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 
 /**
  * Listing-agreement (RLA) upload page — Phase 2B-4.
@@ -199,11 +200,11 @@ export function UploadListingClient() {
     setPdfName(file.name);
     setParsing(true);
     try {
-      const form = new FormData();
-      form.append("file", file);
+      const storagePath = await uploadViaStorage(file, "listing_pdf");
       const res = await fetch("/api/dashboard/listings/parse-pdf", {
         method: "POST",
-        body: form,
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ storagePath, fileName: file.name, mime: file.type }),
       });
       const body = (await res.json().catch(() => ({}))) as {
         ok?: boolean;

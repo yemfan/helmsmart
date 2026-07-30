@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { extractOfferFromPdf } from "@/lib/offers/extractOfferFromPdf";
 import { isAnthropicConfigured } from "@/lib/anthropic";
+import { resolveUpload } from "@/lib/uploads/storageUpload";
 
 export const runtime = "nodejs";
 // Claude PDF extraction can take 15-40s on dense purchase agreements.
@@ -27,7 +28,7 @@ const MAX_BYTES = 5 * 1024 * 1024;
  */
 export async function POST(req: Request) {
   try {
-    await getCurrentAgentContext(); // auth check — throws on 401
+    const { agentId } = await getCurrentAgentContext(); // auth check — throws on 401
 
     if (!isAnthropicConfigured()) {
       return NextResponse.json(
@@ -36,38 +37,30 @@ export async function POST(req: Request) {
       );
     }
 
-    const ct = req.headers.get("content-type") ?? "";
-    if (!ct.includes("multipart/form-data")) {
-      return NextResponse.json(
-        { ok: false, error: "Expected multipart form upload." },
-        { status: 400 },
-      );
+    const src = await resolveUpload(req, `offers/${agentId}/`);
+    if (!src.ok) {
+      return NextResponse.json({ ok: false, error: src.error }, { status: src.status });
     }
 
-    const form = await req.formData();
-    const file = form.get("file");
-    if (!file || !(file instanceof File)) {
-      return NextResponse.json({ ok: false, error: "Missing file field." }, { status: 400 });
-    }
-
-    if (file.size > MAX_BYTES) {
+    if (src.size > MAX_BYTES) {
+      await src.cleanup();
       return NextResponse.json(
         { ok: false, error: "PDF too large (max 5 MB). Trim to the offer + contingency pages." },
         { status: 400 },
       );
     }
 
-    const looksLikePdf =
-      file.type.includes("pdf") || file.name.toLowerCase().endsWith(".pdf");
+    const looksLikePdf = src.mime.includes("pdf") || src.name.toLowerCase().endsWith(".pdf");
     if (!looksLikePdf) {
+      await src.cleanup();
       return NextResponse.json(
         { ok: false, error: "Only PDF files are supported. For other formats, paste the text instead." },
         { status: 400 },
       );
     }
 
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const parsed = await extractOfferFromPdf(bytes);
+    const parsed = await extractOfferFromPdf(src.bytes);
+    await src.cleanup();
 
     return NextResponse.json({ ok: true, parsed });
   } catch (err) {
