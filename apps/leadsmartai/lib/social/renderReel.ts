@@ -64,6 +64,40 @@ export async function triggerReelRender(
   return { renderId, bucketName };
 }
 
+/**
+ * Kick off a BrandedClip render — wraps an agent's UPLOADED video (public URL,
+ * reachable during the render) into a branded vertical reel. Same Lambda config
+ * as the slide reels, different composition. Poll with getReelRenderStatus.
+ */
+export async function triggerBrandedClipRender(input: {
+  videoUrl: string;
+  videoDurationInFrames: number;
+  hook: string;
+  cta: string;
+}): Promise<{ renderId: string; bucketName: string } | null> {
+  if (!reelConfigured()) return null;
+  if (!input.videoUrl) return null;
+
+  const { renderId, bucketName } = await renderMediaOnLambda({
+    region: REGION!,
+    functionName: FUNCTION_NAME!,
+    serveUrl: SERVE_URL!,
+    composition: "BrandedClip",
+    inputProps: {
+      videoUrl: input.videoUrl,
+      videoDurationInFrames: Math.max(1, Math.round(input.videoDurationInFrames || 150)),
+      hook: input.hook || "Watch this →",
+      cta: input.cta || "Your AI real estate team.",
+    },
+    codec: "h264",
+    privacy: "public",
+    downloadBehavior: { type: "play-in-browser" },
+    maxRetries: 1,
+    framesPerLambda: 120,
+  });
+  return { renderId, bucketName };
+}
+
 export type ReelRenderStatus =
   | { done: false; progress: number }
   | { done: true; url: string; progress: 1 }
