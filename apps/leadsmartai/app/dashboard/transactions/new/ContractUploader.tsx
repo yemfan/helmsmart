@@ -2,6 +2,8 @@
 
 import { useRef, useState } from "react";
 
+import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
+
 export type RpaUploadResult = {
   propertyAddress: string | null;
   city: string | null;
@@ -77,12 +79,11 @@ export function ContractUploader(props: Props) {
     setError(null);
     setLoading(true);
     try {
-      const form = new FormData();
-      form.append("file", file);
-      form.append("kind", kind);
+      const storagePath = await uploadViaStorage(file, "contract_pdf");
       const res = await fetch("/api/dashboard/transactions/extract-contract", {
         method: "POST",
-        body: form,
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ storagePath, fileName: file.name, mime: file.type, kind }),
       });
       const body = (await res.json().catch(() => ({}))) as {
         ok?: boolean;

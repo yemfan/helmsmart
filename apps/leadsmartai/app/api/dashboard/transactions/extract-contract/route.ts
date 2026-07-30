@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { extractContract, extractListingAgreement } from "@/lib/transactions/extractContract";
 import { isAnthropicConfigured } from "@/lib/anthropic";
+import { resolveUpload } from "@/lib/uploads/storageUpload";
 
 export const runtime = "nodejs";
 // PDF extraction can take 15-40s for complex contracts. Default 10s timeout
@@ -28,7 +29,7 @@ const MAX_BYTES = 5 * 1024 * 1024;
  */
 export async function POST(req: Request) {
   try {
-    await getCurrentAgentContext(); // auth check — result unused, call throws on 401
+    const { agentId } = await getCurrentAgentContext(); // auth check — throws on 401
     if (!isAnthropicConfigured()) {
       return NextResponse.json(
         { ok: false, error: "AI extraction isn't enabled on this environment." },
@@ -36,47 +37,33 @@ export async function POST(req: Request) {
       );
     }
 
-    const ct = req.headers.get("content-type") ?? "";
-    if (!ct.includes("multipart/form-data")) {
-      return NextResponse.json(
-        { ok: false, error: "Expected multipart form upload." },
-        { status: 400 },
-      );
+    const src = await resolveUpload(req, `contracts/${agentId}/`);
+    if (!src.ok) {
+      return NextResponse.json({ ok: false, error: src.error }, { status: src.status });
     }
 
-    const form = await req.formData();
-    const file = form.get("file");
-    if (!file || !(file instanceof File)) {
-      return NextResponse.json({ ok: false, error: "Missing file field." }, { status: 400 });
-    }
-
-    if (file.size > MAX_BYTES) {
-      return NextResponse.json(
-        { ok: false, error: "PDF too large (max 5 MB)." },
-        { status: 400 },
-      );
+    if (src.size > MAX_BYTES) {
+      await src.cleanup();
+      return NextResponse.json({ ok: false, error: "PDF too large (max 5 MB)." }, { status: 400 });
     }
 
     // Content-type check is advisory — some browsers send generic
     // application/octet-stream. File extension is also checked as a
     // secondary signal, but the extractor will surface a confidence-low
     // warning if the doc isn't actually an RPA.
-    const looksLikePdf =
-      file.type.includes("pdf") || file.name.toLowerCase().endsWith(".pdf");
+    const looksLikePdf = src.mime.includes("pdf") || src.name.toLowerCase().endsWith(".pdf");
     if (!looksLikePdf) {
-      return NextResponse.json(
-        { ok: false, error: "Only PDF files are supported." },
-        { status: 400 },
-      );
+      await src.cleanup();
+      return NextResponse.json({ ok: false, error: "Only PDF files are supported." }, { status: 400 });
     }
 
-    const bytes = new Uint8Array(await file.arrayBuffer());
     // `kind=listing` → RLA extractor, anything else → RPA (default).
-    const kind = (form.get("kind") as string | null) === "listing" ? "listing" : "purchase";
+    const kind = src.field("kind") === "listing" ? "listing" : "purchase";
     const extraction =
       kind === "listing"
-        ? await extractListingAgreement(bytes)
-        : await extractContract(bytes);
+        ? await extractListingAgreement(src.bytes)
+        : await extractContract(src.bytes);
+    await src.cleanup();
 
     return NextResponse.json({ ok: true, kind, extraction });
   } catch (err) {
