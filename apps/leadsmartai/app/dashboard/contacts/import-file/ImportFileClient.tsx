@@ -66,11 +66,33 @@ export default function ImportFileClient() {
     useState<DuplicateStrategy>("skip");
   const [error, setError] = useState<string | null>(null);
   const [saveResult, setSaveResult] = useState<SaveResult | null>(null);
+  // Which rows are checked for saving (rowKey set). Everything is checked by
+  // default; unchecking a row excludes it from the import without deleting it.
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const duplicateCount = useMemo(
     () => rows.filter((r) => r.duplicateContactId).length,
     [rows],
   );
+  const selectedCount = useMemo(
+    () => rows.filter((r) => selected.has(r.rowKey)).length,
+    [rows, selected],
+  );
+
+  const toggleSelect = useCallback((rowKey: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(rowKey)) next.delete(rowKey);
+      else next.add(rowKey);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelected((prev) =>
+      prev.size >= rows.length ? new Set() : new Set(rows.map((r) => r.rowKey)),
+    );
+  }, [rows]);
 
   const updateField = useCallback(
     (rowKey: string, field: keyof ExtractedRow, value: string) => {
@@ -85,13 +107,19 @@ export default function ImportFileClient() {
 
   const removeRow = useCallback((rowKey: string) => {
     setRows((prev) => prev.filter((r) => r.rowKey !== rowKey));
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.delete(rowKey);
+      return next;
+    });
   }, []);
 
   const addBlankRow = useCallback(() => {
+    const rowKey = `new-${Date.now()}`;
     setRows((prev) => [
       ...prev,
       {
-        rowKey: `new-${Date.now()}-${prev.length}`,
+        rowKey,
         name: null,
         email: null,
         phone: null,
@@ -103,6 +131,7 @@ export default function ImportFileClient() {
         duplicateScore: null,
       },
     ]);
+    setSelected((prev) => new Set(prev).add(rowKey)); // new rows start checked
   }, []);
 
   async function handleFile(file: File) {
@@ -152,7 +181,9 @@ export default function ImportFileClient() {
 
       setJobId(body.jobId ?? null);
       setSourceKind(body.sourceKind ?? null);
-      setRows(body.contacts ?? []);
+      const extracted: ExtractedRow[] = body.contacts ?? [];
+      setRows(extracted);
+      setSelected(new Set(extracted.map((c) => c.rowKey))); // all checked by default
       setTruncated(Boolean(body.truncated));
       setTotalExtracted(Number(body.totalExtracted ?? body.contacts?.length ?? 0));
       setStep("review");
@@ -163,8 +194,9 @@ export default function ImportFileClient() {
   }
 
   async function handleSave() {
-    if (rows.length === 0) {
-      setError("Nothing to save");
+    const chosen = rows.filter((r) => selected.has(r.rowKey));
+    if (chosen.length === 0) {
+      setError("Select at least one contact to save.");
       return;
     }
     setError(null);
@@ -176,7 +208,7 @@ export default function ImportFileClient() {
         body: JSON.stringify({
           jobId,
           duplicateStrategy,
-          contacts: rows.map(({ rowKey: _k, duplicateContactId: _d, duplicateScore: _s, ...rest }) => {
+          contacts: chosen.map(({ rowKey: _k, duplicateContactId: _d, duplicateScore: _s, ...rest }) => {
             void _k; void _d; void _s;
             return rest;
           }),
@@ -262,6 +294,10 @@ export default function ImportFileClient() {
       {step === "review" && (
         <ReviewTable
           rows={rows}
+          selected={selected}
+          selectedCount={selectedCount}
+          toggleSelect={toggleSelect}
+          toggleSelectAll={toggleSelectAll}
           fileName={fileName}
           sourceKind={sourceKind}
           duplicateCount={duplicateCount}
@@ -282,7 +318,7 @@ export default function ImportFileClient() {
           <div className="mx-auto flex items-center justify-center gap-3">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
             <span className="text-sm text-gray-700">
-              Saving {rows.length} contact{rows.length === 1 ? "" : "s"}...
+              Saving {selectedCount} contact{selectedCount === 1 ? "" : "s"}...
             </span>
           </div>
         </div>
@@ -364,6 +400,10 @@ function DropZone({
 
 function ReviewTable(props: {
   rows: ExtractedRow[];
+  selected: Set<string>;
+  selectedCount: number;
+  toggleSelect: (rowKey: string) => void;
+  toggleSelectAll: () => void;
   fileName: string | null;
   sourceKind: "pdf" | "image" | "text" | null;
   duplicateCount: number;
@@ -379,6 +419,10 @@ function ReviewTable(props: {
 }) {
   const {
     rows,
+    selected,
+    selectedCount,
+    toggleSelect,
+    toggleSelectAll,
     fileName,
     sourceKind,
     duplicateCount,
@@ -392,14 +436,15 @@ function ReviewTable(props: {
     onSave,
     onCancel,
   } = props;
+  const allChecked = rows.length > 0 && selectedCount === rows.length;
 
   return (
     <div className="space-y-4">
       <div className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 shadow-sm">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
           <span>
-            <span className="font-medium text-gray-900">{rows.length}</span>{" "}
-            contact{rows.length === 1 ? "" : "s"} ready
+            <span className="font-medium text-gray-900">{selectedCount}</span> of{" "}
+            {rows.length} contact{rows.length === 1 ? "" : "s"} selected
           </span>
           <span className="text-gray-500">
             from {sourceKind?.toUpperCase() ?? "file"} ·{" "}
@@ -423,6 +468,18 @@ function ReviewTable(props: {
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
             <tr>
+              <th className="px-3 py-2.5 w-10">
+                <input
+                  type="checkbox"
+                  aria-label="Select all"
+                  className="h-4 w-4 cursor-pointer"
+                  checked={allChecked}
+                  ref={(el) => {
+                    if (el) el.indeterminate = selectedCount > 0 && !allChecked;
+                  }}
+                  onChange={toggleSelectAll}
+                />
+              </th>
               <th className="px-3 py-2.5">Name</th>
               <th className="px-3 py-2.5">Email</th>
               <th className="px-3 py-2.5">Phone</th>
@@ -437,8 +494,19 @@ function ReviewTable(props: {
             {rows.map((r) => (
               <tr
                 key={r.rowKey}
-                className={r.duplicateContactId ? "bg-yellow-50/40" : ""}
+                className={`${r.duplicateContactId ? "bg-yellow-50/40" : ""} ${
+                  selected.has(r.rowKey) ? "" : "opacity-45"
+                }`}
               >
+                <td className="px-3 py-1.5 align-top">
+                  <input
+                    type="checkbox"
+                    aria-label="Include this contact"
+                    className="mt-1 h-4 w-4 cursor-pointer"
+                    checked={selected.has(r.rowKey)}
+                    onChange={() => toggleSelect(r.rowKey)}
+                  />
+                </td>
                 <td className="px-2 py-1.5 align-top">
                   <div className="flex flex-col gap-1">
                     <Cell
@@ -565,10 +633,10 @@ function ReviewTable(props: {
         <button
           type="button"
           onClick={onSave}
-          disabled={rows.length === 0}
+          disabled={selectedCount === 0}
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
         >
-          Save {rows.length} contact{rows.length === 1 ? "" : "s"}
+          Save {selectedCount} contact{selectedCount === 1 ? "" : "s"}
         </button>
       </div>
     </div>
