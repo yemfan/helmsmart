@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireCrmFeature } from "@/lib/billing/guard";
+import { captionCues, generateClipCopy, transcribeClip } from "@/lib/social/clipAi";
 import { SOCIAL_CUSTOMIZATION_FEATURE } from "@/lib/social/customization";
 import { reelConfigured, triggerBrandedClipRender } from "@/lib/social/renderReel";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -18,6 +19,8 @@ import { supabaseServer } from "@/lib/supabaseServer";
  * Signature/Team gated (same tier as reels + the ad composer).
  */
 export const runtime = "nodejs";
+// Transcription (captions / AI copy) can take a while on a 90s clip.
+export const maxDuration = 120;
 
 const CLIP_FPS = 30;
 const MAX_CLIP_SECONDS = 90; // bound Lambda render cost/time
@@ -41,6 +44,8 @@ export async function POST(req: Request) {
     cta?: unknown;
     caption?: unknown;
     hashtags?: unknown;
+    captions?: unknown;
+    aiCopy?: unknown;
   };
 
   const videoPath = typeof body.videoPath === "string" ? body.videoPath : "";
@@ -53,18 +58,44 @@ export async function POST(req: Request) {
   }
   const videoDurationInFrames = Math.round(Math.min(durationSec, MAX_CLIP_SECONDS) * CLIP_FPS);
 
-  const hook = (typeof body.hook === "string" ? body.hook : "").trim() || "Watch this →";
-  const cta = (typeof body.cta === "string" ? body.cta : "").trim() || "See how it works";
-  const caption = (typeof body.caption === "string" ? body.caption : "").trim() || hook;
+  const videoUrl = supabaseServer.storage.from("social-images").getPublicUrl(videoPath).data.publicUrl;
+
+  // Raw agent-entered copy (may be blank when AI is writing it).
+  let hook = (typeof body.hook === "string" ? body.hook : "").trim();
+  let cta = (typeof body.cta === "string" ? body.cta : "").trim();
+  let caption = (typeof body.caption === "string" ? body.caption : "").trim();
   const hashtags = Array.isArray(body.hashtags)
     ? (body.hashtags as unknown[]).map((h) => String(h).replace(/^#/, "").trim()).filter(Boolean).slice(0, 30)
     : ["realestate", "realtor", "closebossai"];
 
-  const videoUrl = supabaseServer.storage.from("social-images").getPublicUrl(videoPath).data.publicUrl;
+  const wantCaptions = body.captions !== false; // default on
+  const wantAiCopy = body.aiCopy === true;
+
+  // AI layer — one transcript powers both captions and AI-written copy. Both
+  // fail soft (a missing key / big file just skips that layer).
+  let cues: { text: string; from: number; to: number }[] = [];
+  if (wantCaptions || wantAiCopy) {
+    const tr = await transcribeClip(videoUrl);
+    if (tr) {
+      if (wantCaptions) cues = captionCues(tr.words, CLIP_FPS);
+      if (wantAiCopy) {
+        const ai = await generateClipCopy(tr.text);
+        if (ai) {
+          if (!hook) hook = ai.hook;
+          if (!cta) cta = ai.cta;
+          if (!caption) caption = ai.caption;
+        }
+      }
+    }
+  }
+
+  hook = hook || "Watch this →";
+  cta = cta || "See how it works";
+  caption = caption || hook;
 
   let render: { renderId: string; bucketName: string } | null;
   try {
-    render = await triggerBrandedClipRender({ videoUrl, videoDurationInFrames, hook, cta });
+    render = await triggerBrandedClipRender({ videoUrl, videoDurationInFrames, hook, cta, captions: cues });
   } catch (e) {
     return NextResponse.json(
       { ok: false, error: e instanceof Error ? e.message : "Render could not be started." },

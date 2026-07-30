@@ -40,6 +40,8 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
   const [hook, setHook] = useState("New listing just dropped");
   const [cta, setCta] = useState("See how it works");
   const [caption, setCaption] = useState("");
+  const [captionsOn, setCaptionsOn] = useState(true);
+  const [aiCopy, setAiCopy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -75,9 +77,12 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
         body: JSON.stringify({
           videoPath,
           videoDurationSeconds: duration,
-          hook,
-          cta,
-          caption: caption || hook,
+          // When AI is writing, send blanks so it fills them from the transcript.
+          hook: aiCopy ? "" : hook,
+          cta: aiCopy ? "" : cta,
+          caption: aiCopy ? "" : caption || hook,
+          captions: captionsOn,
+          aiCopy,
         }),
       });
       const j = await res.json().catch(() => ({}));
@@ -94,7 +99,7 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
     } finally {
       setBusy(false);
     }
-  }, [file, duration, hook, cta, caption]);
+  }, [file, duration, hook, cta, caption, captionsOn, aiCopy]);
 
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -125,18 +130,35 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
             </p>
           ) : null}
 
-          <label className="block">
-            <span className="mb-1 block text-xs font-medium text-gray-600">Intro hook</span>
-            <input type="text" value={hook} onChange={(e) => setHook(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]" />
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-xs font-medium text-gray-600">CTA (outro)</span>
-            <input type="text" value={cta} onChange={(e) => setCta(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]" />
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-xs font-medium text-gray-600">Post caption (optional)</span>
-            <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={2} placeholder="Defaults to the hook." className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]" />
-          </label>
+          <div className="flex flex-col gap-2 rounded-lg bg-gray-50 px-3 py-2.5">
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input type="checkbox" checked={captionsOn} onChange={(e) => setCaptionsOn(e.target.checked)} className="h-4 w-4" />
+              Auto‑captions (burn subtitles into the video)
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input type="checkbox" checked={aiCopy} onChange={(e) => setAiCopy(e.target.checked)} className="h-4 w-4" />
+              Let AI write the hook &amp; caption from the video
+            </label>
+          </div>
+
+          {aiCopy ? (
+            <p className="text-xs text-gray-500">AI will watch the clip and write the intro hook, caption, and CTA for you.</p>
+          ) : (
+            <>
+              <label className="block">
+                <span className="mb-1 block text-xs font-medium text-gray-600">Intro hook</span>
+                <input type="text" value={hook} onChange={(e) => setHook(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]" />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-xs font-medium text-gray-600">CTA (outro)</span>
+                <input type="text" value={cta} onChange={(e) => setCta(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]" />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-xs font-medium text-gray-600">Post caption (optional)</span>
+                <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={2} placeholder="Defaults to the hook." className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]" />
+              </label>
+            </>
+          )}
 
           {msg ? (
             <div className={`rounded-lg px-4 py-2.5 text-sm ${msg.kind === "ok" ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-700"}`}>{msg.text}</div>

@@ -20,6 +20,7 @@ import {
  * extra props to this same composition.
  */
 
+export type CaptionCue = { text: string; from: number; to: number };
 export type BrandedClipProps = {
   videoUrl: string;
   /** Length of the uploaded clip in frames (computed client-side from the file's
@@ -27,6 +28,8 @@ export type BrandedClipProps = {
   videoDurationInFrames: number;
   hook: string; // intro card text
   cta: string; // outro card text
+  /** Burned-in captions, in frames relative to the clip start. */
+  captions?: CaptionCue[];
 };
 
 const NAVY = "#0B1F44";
@@ -41,7 +44,7 @@ export const CLIP_HEIGHT = 1920;
 export const INTRO_FRAMES = 60; // 2s
 export const OUTRO_FRAMES = 60; // 2s
 
-export function BrandedClip({ videoUrl, videoDurationInFrames, hook, cta }: BrandedClipProps) {
+export function BrandedClip({ videoUrl, videoDurationInFrames, hook, cta, captions }: BrandedClipProps) {
   const vid = Math.max(1, Math.round(videoDurationInFrames || CLIP_FPS * 5));
   return (
     <AbsoluteFill style={{ background: NAVY, fontFamily: FONT }}>
@@ -50,7 +53,7 @@ export function BrandedClip({ videoUrl, videoDurationInFrames, hook, cta }: Bran
           <Card kind="intro" text={hook || "Watch this →"} />
         </Series.Sequence>
         <Series.Sequence durationInFrames={vid}>
-          <VideoScene src={videoUrl} />
+          <VideoScene src={videoUrl} captions={Array.isArray(captions) ? captions : []} />
         </Series.Sequence>
         <Series.Sequence durationInFrames={OUTRO_FRAMES}>
           <Card kind="outro" text={cta || "Your AI real estate team."} />
@@ -69,7 +72,9 @@ function Lockup({ size = 40 }: { size?: number }) {
   );
 }
 
-function VideoScene({ src }: { src: string }) {
+function VideoScene({ src, captions }: { src: string; captions: CaptionCue[] }) {
+  const frame = useCurrentFrame();
+  const cue = captions.find((c) => frame >= c.from && frame <= c.to);
   return (
     <AbsoluteFill style={{ background: "#000000" }}>
       <OffthreadVideo src={src} style={{ width: CLIP_WIDTH, height: CLIP_HEIGHT, objectFit: "cover" }} />
@@ -78,6 +83,14 @@ function VideoScene({ src }: { src: string }) {
       <div style={{ position: "absolute", top: 56, left: 56, display: "flex" }}>
         <Lockup size={34} />
       </div>
+      {/* burned-in captions, centered in the lower third above the watermark */}
+      {cue ? (
+        <div style={{ position: "absolute", bottom: 220, left: 80, right: 80, display: "flex", justifyContent: "center" }}>
+          <div style={{ display: "flex", textAlign: "center", fontSize: 58, fontWeight: 800, color: "#ffffff", lineHeight: 1.15, background: "rgba(0,0,0,0.55)", padding: "16px 28px", borderRadius: 18 }}>
+            {cue.text}
+          </div>
+        </div>
+      ) : null}
       <div style={{ position: "absolute", bottom: 64, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
         <Lockup size={40} />
       </div>

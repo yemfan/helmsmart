@@ -74,6 +74,8 @@ export async function triggerBrandedClipRender(input: {
   videoDurationInFrames: number;
   hook: string;
   cta: string;
+  /** Optional burned-in caption cues, in frames relative to the clip start. */
+  captions?: { text: string; from: number; to: number }[];
 }): Promise<{ renderId: string; bucketName: string } | null> {
   if (!reelConfigured()) return null;
   if (!input.videoUrl) return null;
@@ -88,6 +90,7 @@ export async function triggerBrandedClipRender(input: {
       videoDurationInFrames: Math.max(1, Math.round(input.videoDurationInFrames || 150)),
       hook: input.hook || "Watch this →",
       cta: input.cta || "See how it works",
+      captions: Array.isArray(input.captions) ? input.captions : [],
     },
     codec: "h264",
     privacy: "public",
