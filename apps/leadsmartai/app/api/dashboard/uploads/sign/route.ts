@@ -19,6 +19,9 @@ type KindSpec = { bucket: string; prefix: (agentId: string) => string };
 const KINDS: Record<string, KindSpec> = {
   // Public bucket — the final home for brand ad photos (served by URL).
   ad_photo: { bucket: "social-images", prefix: (a) => `${a}/ad-photo` },
+  // Public bucket — uploaded video for the branded-clip editor. Must be publicly
+  // fetchable while Remotion Lambda downloads it during the render.
+  video_upload: { bucket: "social-images", prefix: (a) => `videos/${a}/clip` },
   // Private bucket — transient docs read back + deleted server-side.
   contact_import: { bucket: "lead-media", prefix: (a) => `imports/${a}` },
   listing_pdf: { bucket: "lead-media", prefix: (a) => `listings/${a}` },
