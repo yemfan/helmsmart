@@ -48,6 +48,26 @@ export async function POST(req: Request) {
   const agentId = String(gate.ctx.agentId);
 
   try {
+    const ct = req.headers.get("content-type") ?? "";
+
+    // Direct-to-Storage path: the browser already uploaded the image to
+    // social-images (via /api/dashboard/uploads/sign), bypassing Vercel's
+    // ~4.5 MB body cap. We just index the public URL here.
+    if (ct.includes("application/json")) {
+      const body = (await req.json().catch(() => ({}))) as {
+        storagePath?: unknown;
+        label?: unknown;
+      };
+      const storagePath = typeof body.storagePath === "string" ? body.storagePath : "";
+      if (!storagePath || !storagePath.startsWith(`${agentId}/`)) {
+        return NextResponse.json({ ok: false, error: "Invalid storage path" }, { status: 400 });
+      }
+      const label = typeof body.label === "string" ? body.label : null;
+      const url = supabaseServer.storage.from("social-images").getPublicUrl(storagePath).data.publicUrl;
+      const id = await addAdPhoto(agentId, url, label);
+      return NextResponse.json({ ok: true, id, url });
+    }
+
     let form: FormData;
     try {
       form = await req.formData();
