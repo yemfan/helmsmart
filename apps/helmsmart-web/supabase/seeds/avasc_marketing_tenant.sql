@@ -67,10 +67,13 @@ begin
 
   -- ---- 2. Autopilot: REVIEW mode (drafts only) ----------------------------
   -- day_topics keys are 0=Sun..6=Sat; Mon–Fri each carry one program's theme.
+  -- ad_template='scam_decision_tree' → each post is a branded "Could this be a
+  -- scam?" decision-tree image + its caption (see lib/social/renderAd.tsx),
+  -- rotating scam types. Requires migration 00084_autopilot_ad_template.
   insert into org_social_autopilot
-    (organization_id, enabled, mode, posts_per_week, tone, day_topics)
+    (organization_id, enabled, mode, posts_per_week, tone, ad_template, day_topics)
   values
-    (org, true, 'review', 5, 'educational',
+    (org, true, 'review', 5, 'educational', 'scam_decision_tree',
      jsonb_build_object(
        '1', 'Real-time scam alert: one current scam and the concrete red flags that give it away, so people can spot and stop it.',
        '2', 'Education: one practical, easy habit that makes readers more scam-resistant this week.',
@@ -83,6 +86,7 @@ begin
      mode           = excluded.mode,
      posts_per_week = excluded.posts_per_week,
      tone           = excluded.tone,
+     ad_template    = excluded.ad_template,
      day_topics     = excluded.day_topics,
      updated_at     = now();
 

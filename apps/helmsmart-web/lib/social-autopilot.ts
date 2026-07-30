@@ -17,6 +17,8 @@ import {
 } from "@helm/dna-marketing";
 
 import { generateSocialPost } from "@/lib/actions/social";
+import { renderAndUploadScamAd } from "@/lib/social/adStorage";
+import { pickScamTree } from "@/lib/social/scamTrees";
 import { createServiceClient } from "@/lib/supabase/server";
 
 type Db = Awaited<ReturnType<typeof createServiceClient>>;
@@ -50,6 +52,8 @@ export type AutopilotSettings = {
   tone: AutopilotTone;
   /** weekday (0=Sun..6=Sat, as string) -> topic. Non-empty drives the schedule. */
   dayTopics: Record<string, string>;
+  /** Optional image-ad template (e.g. "scam_decision_tree"). null = text posts. */
+  adTemplate: string | null;
 };
 
 export const DEFAULT_AUTOPILOT_SETTINGS: AutopilotSettings = {
@@ -62,6 +66,7 @@ export const DEFAULT_AUTOPILOT_SETTINGS: AutopilotSettings = {
   postHourUtc: null,
   tone: "professional",
   dayTopics: {},
+  adTemplate: null,
 };
 
 /** Predefined topics offered in the UI combo (the owner can also type anything). */
@@ -86,6 +91,7 @@ type SettingsRow = {
   post_hour_utc?: number | null;
   tone?: string | null;
   day_topics?: unknown;
+  ad_template?: string | null;
   last_generated_week?: string | null;
 };
 
@@ -143,19 +149,23 @@ export function normalizeSettings(row: SettingsRow | null): AutopilotSettings {
         : null,
     tone: TONES.includes(row.tone as AutopilotTone) ? (row.tone as AutopilotTone) : "professional",
     dayTopics: coerceDayTopics(row.day_topics),
+    adTemplate:
+      typeof row.ad_template === "string" && row.ad_template.trim() ? row.ad_template.trim() : null,
   };
 }
-
-const SELECT_COLUMNS =
-  "enabled, mode, posts_per_week, posts_per_day, platforms, post_days, post_hour_utc, tone, day_topics, last_generated_week";
 
 /** Read an org's autopilot settings (service-role, cron-safe). Never throws. */
 export async function getAutopilotSettings(orgId: string): Promise<AutopilotSettings> {
   try {
     const db = await createServiceClient();
+    // select("*") is deliberately tolerant of a not-yet-applied column (e.g.
+    // ad_template before migration 00084 lands): a missing column reads back as
+    // undefined, rather than the whole query erroring — which would fall into the
+    // catch below and silently disable autopilot for EVERY org until the migration
+    // runs. Deploy-order safety for the code-before-migration window.
     const { data } = await db
       .from("org_social_autopilot")
-      .select(SELECT_COLUMNS)
+      .select("*")
       .eq("organization_id", orgId)
       .maybeSingle();
     return normalizeSettings((data as SettingsRow | null) ?? null);
@@ -349,19 +359,38 @@ export async function generateWeekForOrg(
     }
   }
 
-  const context = await buildBusinessContext(db, orgId, orgName);
+  // Image-ad mode (e.g. AVASC's scam decision trees): each post is a branded
+  // image + its own caption, rotating templates, instead of the text drafter.
+  const adMode = settings.adTemplate === "scam_decision_tree";
+  const context = adMode ? "" : await buildBusinessContext(db, orgId, orgName);
+  const weekSeed = Number.parseInt(weekOf.replace(/-/g, ""), 10) || 0;
   const rows: Record<string, unknown>[] = [];
 
-  for (const job of jobs) {
-    const topic = `${job.instruction}\n\nContext about the business you are posting as:\n${context}`;
+  for (let j = 0; j < jobs.length; j++) {
+    const job = jobs[j];
     let content: string;
-    try {
-      content = await generateSocialPost(tightest, settings.tone, topic, orgName);
-    } catch (e) {
-      console.warn(`[social-autopilot] generation failed for org ${orgId}:`, e instanceof Error ? e.message : e);
-      continue;
+    let mediaUrl: string | null = null;
+
+    if (adMode) {
+      // Rotate through the scam types so a week isn't five of the same card.
+      const tree = pickScamTree(weekSeed + j);
+      content = tree.caption;
+      try {
+        mediaUrl = await renderAndUploadScamAd(db, orgId, tree, weekOf);
+      } catch (e) {
+        console.warn(`[social-autopilot] ad render failed for org ${orgId}:`, e instanceof Error ? e.message : e);
+        // Fall through: still post the caption as text rather than nothing.
+      }
+    } else {
+      const topic = `${job.instruction}\n\nContext about the business you are posting as:\n${context}`;
+      try {
+        content = await generateSocialPost(tightest, settings.tone, topic, orgName);
+      } catch (e) {
+        console.warn(`[social-autopilot] generation failed for org ${orgId}:`, e instanceof Error ? e.message : e);
+        continue;
+      }
+      if (!content.trim()) continue;
     }
-    if (!content.trim()) continue;
 
     // One row per target platform, same copy. Auto → scheduled at the slot;
     // review → a plain draft for the human to schedule.
@@ -374,7 +403,8 @@ export async function generateWeekForOrg(
         status: auto && job.scheduledAt ? "scheduled" : "draft",
         scheduled_at: auto ? job.scheduledAt : null,
         generated_by_ai: true,
-        ai_prompt: job.instruction.slice(0, 200),
+        ai_prompt: adMode ? "scam decision-tree ad" : job.instruction.slice(0, 200),
+        media_url: mediaUrl,
       });
     }
   }
