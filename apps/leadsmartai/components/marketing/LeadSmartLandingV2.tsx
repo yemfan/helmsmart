@@ -234,8 +234,8 @@ export default function LeadSmartLandingV2() {
             removed when the marketing chrome moved from a left
             sidebar to a horizontal top nav — the strip now read as
             a duplicate nav bar stacked under the real one. In-page
-            anchors (#how, #results, #why) still resolve because
-            the sections below set those `id`s. If we want a softer
+            anchors (#how, #why) still resolve because the sections
+            below set those `id`s. If we want a softer
             in-page TOC again in the future, render it inline within
             the hero (not as a top-bar) so it doesn't compete with
             the global top nav. */}
@@ -921,51 +921,6 @@ export default function LeadSmartLandingV2() {
           </div>
         </section>
 
-        {/* ── RESULTS ─── */}
-        <section
-          id="results"
-          className="px-6 py-20 md:py-24"
-        >
-          <div className="mx-auto max-w-6xl">
-            <RevealSection className="mx-auto max-w-3xl text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-                {t("results.eyebrow")}
-              </p>
-              <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-                {t("results.h2_prefix")}
-                <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
-                  {t("results.h2_highlight")}
-                </span>
-              </h2>
-            </RevealSection>
-
-            <div className="mt-12 grid gap-5 md:grid-cols-3">
-              {RESULTS.map((r, i) => (
-                <RevealSection key={r.key} delay={i * 100}>
-                  <div className="flex h-full flex-col rounded-2xl border-2 border-slate-200/80 bg-white p-7 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
-                    <span aria-hidden className="text-3xl">
-                      {r.emoji}
-                    </span>
-                    <p className="mt-3 font-heading text-4xl font-extrabold text-[#0072ce] md:text-5xl">
-                      {t(`results.${r.key}.value`)}
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                      {t(`results.${r.key}.label`)}
-                    </p>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                      {t(`results.${r.key}.body`)}
-                    </p>
-                  </div>
-                </RevealSection>
-              ))}
-            </div>
-
-            <RevealSection delay={400} className="mt-8 text-center text-xs text-slate-400 dark:text-slate-500">
-              <p>{t("results.disclaimer")}</p>
-            </RevealSection>
-          </div>
-        </section>
-
         {/* ── WHY US (comparison table) ─── */}
         <section
           id="why"
@@ -1500,14 +1455,6 @@ const SALES_STYLES: Array<{
     emoji: "💬",
     chip: { bg: "bg-emerald-50 dark:bg-emerald-900/30", text: "text-emerald-600 dark:text-emerald-300" },
   },
-];
-
-type ResultKey = "appointments" | "speed" | "conversion";
-
-const RESULTS: Array<{ key: ResultKey; emoji: string }> = [
-  { key: "appointments", emoji: "📈" },
-  { key: "speed", emoji: "⚡" },
-  { key: "conversion", emoji: "💰" },
 ];
 
 const COMPARISON_KEYS = [
