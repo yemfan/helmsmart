@@ -250,7 +250,7 @@ function ChoiceItem({
         <span className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-semibold text-gray-900">{label}</span>
           {recommended && (
-            <span className="inline-flex items-center rounded-full border border-brand-accent/40 bg-brand-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-accent">
+            <span className="inline-flex items-center rounded-full border border-brand-accent/40 bg-brand-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-accent-text">
               Recommended
             </span>
           )}
