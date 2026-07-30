@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { requireCrmFeature } from "@/lib/billing/guard";
-import { captionCues, generateClipCopy, transcribeClip } from "@/lib/social/clipAi";
+import { generateClipCopy, planClip, transcribeClip, type ClipWord } from "@/lib/social/clipAi";
 import { SOCIAL_CUSTOMIZATION_FEATURE } from "@/lib/social/customization";
 import { reelConfigured, triggerBrandedClipRender } from "@/lib/social/renderReel";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -46,6 +46,7 @@ export async function POST(req: Request) {
     hashtags?: unknown;
     captions?: unknown;
     aiCopy?: unknown;
+    silenceCut?: unknown;
   };
 
   const videoPath = typeof body.videoPath === "string" ? body.videoPath : "";
@@ -56,7 +57,7 @@ export async function POST(req: Request) {
   if (!Number.isFinite(durationSec) || durationSec <= 0) {
     return NextResponse.json({ ok: false, error: "Could not read the video length." }, { status: 400 });
   }
-  const videoDurationInFrames = Math.round(Math.min(durationSec, MAX_CLIP_SECONDS) * CLIP_FPS);
+  const cappedDurationSec = Math.min(durationSec, MAX_CLIP_SECONDS);
 
   const videoUrl = supabaseServer.storage.from("social-images").getPublicUrl(videoPath).data.publicUrl;
 
@@ -70,14 +71,15 @@ export async function POST(req: Request) {
 
   const wantCaptions = body.captions !== false; // default on
   const wantAiCopy = body.aiCopy === true;
+  const wantSilenceCut = body.silenceCut === true;
 
-  // AI layer — one transcript powers both captions and AI-written copy. Both
-  // fail soft (a missing key / big file just skips that layer).
-  let cues: { text: string; from: number; to: number }[] = [];
-  if (wantCaptions || wantAiCopy) {
+  // AI layer — one transcript powers captions, AI copy, AND silence-cut. Each
+  // fails soft (a missing key / big file just skips it).
+  let words: ClipWord[] = [];
+  if (wantCaptions || wantAiCopy || wantSilenceCut) {
     const tr = await transcribeClip(videoUrl);
     if (tr) {
-      if (wantCaptions) cues = captionCues(tr.words, CLIP_FPS);
+      words = tr.words;
       if (wantAiCopy) {
         const ai = await generateClipCopy(tr.text);
         if (ai) {
@@ -93,9 +95,23 @@ export async function POST(req: Request) {
   cta = cta || "See how it works";
   caption = caption || hook;
 
+  // Trim + silence-cut + re-timed captions (all from the word timestamps).
+  const plan = planClip(words, {
+    videoDurationSec: cappedDurationSec,
+    fps: CLIP_FPS,
+    silenceCut: wantSilenceCut,
+  });
+
   let render: { renderId: string; bucketName: string } | null;
   try {
-    render = await triggerBrandedClipRender({ videoUrl, videoDurationInFrames, hook, cta, captions: cues });
+    render = await triggerBrandedClipRender({
+      videoUrl,
+      videoDurationInFrames: plan.totalFrames,
+      hook,
+      cta,
+      captions: wantCaptions ? plan.cues : [],
+      segments: plan.segments,
+    });
   } catch (e) {
     return NextResponse.json(
       { ok: false, error: e instanceof Error ? e.message : "Render could not be started." },
