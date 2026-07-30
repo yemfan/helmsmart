@@ -25,7 +25,6 @@ import {
   LineChart,
   MessagesSquare,
   PhoneCall,
-  PhoneMissed,
   Settings2,
   Sparkles,
   TrendingUp,
@@ -274,9 +273,6 @@ export default function LeadSmartLandingV2() {
                 </span>
                 {t("hero.badge")}
               </div>
-              <p className="mb-2 text-sm font-extrabold uppercase tracking-[0.18em] text-rose-600 dark:text-rose-400">
-                {t("hero.kill_crm_banner")}
-              </p>
               <h1 className="font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-gray-950 md:text-5xl lg:text-[3.25rem] dark:text-white">
                 {t("hero.h1_prefix")}
                 <span className="bg-gradient-to-r from-[#0072ce] via-[#4F46E5] to-[#7c3aed] bg-clip-text text-transparent">
@@ -967,39 +963,6 @@ export default function LeadSmartLandingV2() {
             <RevealSection delay={400} className="mt-8 text-center text-xs text-slate-400 dark:text-slate-500">
               <p>{t("results.disclaimer")}</p>
             </RevealSection>
-          </div>
-        </section>
-
-        {/* ── MISSED CALL HOOK STRIP — placement 3 of 3 ───
-            Scroll-stopping emotional break between Results and Why
-            Us. Single bold line + short body + inline CTA so it
-            interrupts the page rhythm without becoming yet another
-            full-content section. Pairs with the hero bullet and the
-            dedicated section above. */}
-        <section
-          aria-label={t("missed_call_hook.section_a11y")}
-          className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 px-6 py-12 text-white md:py-14"
-        >
-          <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 text-center md:flex-row md:gap-8 md:text-left">
-            <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/30 md:inline-flex">
-              <PhoneMissed size={26} strokeWidth={2.25} aria-hidden />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-heading text-2xl font-bold leading-tight md:text-3xl">
-                <span aria-hidden className="mr-2 md:hidden">⚡</span>
-                {t("missed_call_hook.h3")}
-              </h3>
-              <p className="mt-2 text-sm text-white/90 md:text-base">
-                {t("missed_call_hook.body")}
-              </p>
-            </div>
-            <Link
-              href="#missed-call-recovery"
-              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-amber-700 shadow-md transition hover:bg-slate-50 md:text-base"
-            >
-              {t("missed_call_hook.cta")}
-              <ArrowRight size={16} aria-hidden />
-            </Link>
           </div>
         </section>
 
