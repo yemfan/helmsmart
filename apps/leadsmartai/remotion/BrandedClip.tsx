@@ -21,15 +21,19 @@ import {
  */
 
 export type CaptionCue = { text: string; from: number; to: number };
+export type ClipSegment = { from: number; to: number };
 export type BrandedClipProps = {
   videoUrl: string;
-  /** Length of the uploaded clip in frames (computed client-side from the file's
-   *  duration × fps). Root derives the total composition length from it. */
+  /** Length of the composited clip in frames (sum of segment lengths after any
+   *  trim/silence-cut). Root derives the total composition length from it. */
   videoDurationInFrames: number;
   hook: string; // intro card text
   cta: string; // outro card text
-  /** Burned-in captions, in frames relative to the clip start. */
+  /** Burned-in captions, in frames on the (possibly compressed) clip timeline. */
   captions?: CaptionCue[];
+  /** Source-video frame ranges to play back-to-back (trim / silence-cut). Empty
+   *  or absent = play the whole clip. */
+  segments?: ClipSegment[];
 };
 
 const NAVY = "#0B1F44";
@@ -44,7 +48,7 @@ export const CLIP_HEIGHT = 1920;
 export const INTRO_FRAMES = 60; // 2s
 export const OUTRO_FRAMES = 60; // 2s
 
-export function BrandedClip({ videoUrl, videoDurationInFrames, hook, cta, captions }: BrandedClipProps) {
+export function BrandedClip({ videoUrl, videoDurationInFrames, hook, cta, captions, segments }: BrandedClipProps) {
   const vid = Math.max(1, Math.round(videoDurationInFrames || CLIP_FPS * 5));
   return (
     <AbsoluteFill style={{ background: NAVY, fontFamily: FONT }}>
@@ -53,7 +57,11 @@ export function BrandedClip({ videoUrl, videoDurationInFrames, hook, cta, captio
           <Card kind="intro" text={hook || "Watch this →"} />
         </Series.Sequence>
         <Series.Sequence durationInFrames={vid}>
-          <VideoScene src={videoUrl} captions={Array.isArray(captions) ? captions : []} />
+          <VideoScene
+            src={videoUrl}
+            captions={Array.isArray(captions) ? captions : []}
+            segments={Array.isArray(segments) ? segments : []}
+          />
         </Series.Sequence>
         <Series.Sequence durationInFrames={OUTRO_FRAMES}>
           <Card kind="outro" text={cta || "Your AI real estate team."} />
@@ -72,12 +80,26 @@ function Lockup({ size = 40 }: { size?: number }) {
   );
 }
 
-function VideoScene({ src, captions }: { src: string; captions: CaptionCue[] }) {
+function VideoScene({ src, captions, segments }: { src: string; captions: CaptionCue[]; segments: ClipSegment[] }) {
   const frame = useCurrentFrame();
   const cue = captions.find((c) => frame >= c.from && frame <= c.to);
+  const segs = segments.filter((s) => s.to > s.from);
+  const videoStyle = { width: CLIP_WIDTH, height: CLIP_HEIGHT, objectFit: "cover" } as const;
   return (
     <AbsoluteFill style={{ background: "#000000" }}>
-      <OffthreadVideo src={src} style={{ width: CLIP_WIDTH, height: CLIP_HEIGHT, objectFit: "cover" }} />
+      {segs.length > 0 ? (
+        // trim / silence-cut: play each source range back-to-back (jump cuts)
+        <Series>
+          {segs.map((s, i) => (
+            <Series.Sequence key={i} durationInFrames={Math.max(1, s.to - s.from)}>
+              {/* trimBefore/trimAfter = current Remotion API (was startFrom/endAt) */}
+              <OffthreadVideo src={src} trimBefore={s.from} trimAfter={s.to} style={videoStyle} />
+            </Series.Sequence>
+          ))}
+        </Series>
+      ) : (
+        <OffthreadVideo src={src} style={videoStyle} />
+      )}
       {/* persistent branding — top-left lockup + bottom center watermark, so it's
           on-screen throughout even if one edge gets cropped by the platform. */}
       <div style={{ position: "absolute", top: 56, left: 56, display: "flex" }}>

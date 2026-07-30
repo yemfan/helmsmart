@@ -42,6 +42,7 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
   const [caption, setCaption] = useState("");
   const [captionsOn, setCaptionsOn] = useState(true);
   const [aiCopy, setAiCopy] = useState(false);
+  const [silenceCut, setSilenceCut] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -83,6 +84,7 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
           caption: aiCopy ? "" : caption || hook,
           captions: captionsOn,
           aiCopy,
+          silenceCut,
         }),
       });
       const j = await res.json().catch(() => ({}));
@@ -99,7 +101,7 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
     } finally {
       setBusy(false);
     }
-  }, [file, duration, hook, cta, caption, captionsOn, aiCopy]);
+  }, [file, duration, hook, cta, caption, captionsOn, aiCopy, silenceCut]);
 
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -138,6 +140,10 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
             <label className="flex items-center gap-2 text-sm text-gray-700">
               <input type="checkbox" checked={aiCopy} onChange={(e) => setAiCopy(e.target.checked)} className="h-4 w-4" />
               Let AI write the hook &amp; caption from the video
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input type="checkbox" checked={silenceCut} onChange={(e) => setSilenceCut(e.target.checked)} className="h-4 w-4" />
+              Cut dead air &amp; long silences (tightens the edit)
             </label>
           </div>
 

@@ -76,6 +76,8 @@ export async function triggerBrandedClipRender(input: {
   cta: string;
   /** Optional burned-in caption cues, in frames relative to the clip start. */
   captions?: { text: string; from: number; to: number }[];
+  /** Optional source-video segments to play back-to-back (trim / silence-cut). */
+  segments?: { from: number; to: number }[];
 }): Promise<{ renderId: string; bucketName: string } | null> {
   if (!reelConfigured()) return null;
   if (!input.videoUrl) return null;
@@ -91,6 +93,7 @@ export async function triggerBrandedClipRender(input: {
       hook: input.hook || "Watch this →",
       cta: input.cta || "See how it works",
       captions: Array.isArray(input.captions) ? input.captions : [],
+      segments: Array.isArray(input.segments) ? input.segments : [],
     },
     codec: "h264",
     privacy: "public",
