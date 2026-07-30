@@ -14,6 +14,7 @@ import PostQueue from "@/components/marketing/PostQueue";
 import ClientNewsletterCard from "@/components/marketing/ClientNewsletterCard";
 import AdPhotoPanel from "@/components/marketing/AdPhotoPanel";
 import ReelTestPanel from "@/components/marketing/ReelTestPanel";
+import VideoEditorPanel from "@/components/marketing/VideoEditorPanel";
 
 /**
  * Marketing Assistant overview — demand generation. Took over from
@@ -180,6 +181,9 @@ export default function MarketingAssistantClient({
 
           {/* Manual video-reel smoke test — render, preview, then publish on demand */}
           <ReelTestPanel canCustomize={social.canCustomize} />
+
+          {/* Video editor — upload a clip → branded vertical reel → publish queue */}
+          <VideoEditorPanel canCustomize={social.canCustomize} />
         </div>
       </details>
 

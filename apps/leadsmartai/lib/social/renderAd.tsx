@@ -298,7 +298,9 @@ export function buildAdImageResponse(input: AdInput): ImageResponse {
   const { w, h } = DIMS[format];
   const t = THEMES[input.theme ?? "navy"];
   const footer = footerLine(input.agentName, input.brokerage);
-  const cta = input.ctaText?.trim();
+  // Every ad carries a CTA — a post without one is a wasted impression. Fall
+  // back to a universal CTA when the caller didn't set one.
+  const cta = input.ctaText?.trim() || "Learn more";
   const pad = format === "landscape" ? 72 : 88;
   const headMax = format === "landscape" ? 60 : 90;
   const logoUrl = input.logoUrl;
@@ -320,6 +322,7 @@ export function buildAdImageResponse(input: AdInput): ImageResponse {
           {input.statContext ? (
             <div style={{ display: "flex", fontSize: "38px", fontWeight: 500, color: t.body, marginTop: "18px", maxWidth: `${w - pad * 2}px` }}>{clamp(input.statContext, 90)}</div>
           ) : null}
+          <div style={{ display: "flex", marginTop: "40px" }}><CtaPill t={t} label={cta} /></div>
         </div>
         <BottomBar t={t} footer={footer} w={w} />
       </div>

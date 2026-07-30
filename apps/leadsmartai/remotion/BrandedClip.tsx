@@ -60,16 +60,26 @@ export function BrandedClip({ videoUrl, videoDurationInFrames, hook, cta }: Bran
   );
 }
 
+function Lockup({ size = 40 }: { size?: number }) {
+  return (
+    <div style={{ display: "flex", fontSize: size, fontWeight: 800, letterSpacing: 0.5, color: "#ffffff", background: "rgba(11,31,68,0.78)", padding: `${Math.round(size * 0.3)}px ${Math.round(size * 0.7)}px`, borderRadius: 999 }}>
+      <span>CLOSE</span>
+      <span style={{ color: GOLD }}>BOSS</span>
+    </div>
+  );
+}
+
 function VideoScene({ src }: { src: string }) {
   return (
     <AbsoluteFill style={{ background: "#000000" }}>
       <OffthreadVideo src={src} style={{ width: CLIP_WIDTH, height: CLIP_HEIGHT, objectFit: "cover" }} />
-      {/* watermark */}
+      {/* persistent branding — top-left lockup + bottom center watermark, so it's
+          on-screen throughout even if one edge gets cropped by the platform. */}
+      <div style={{ position: "absolute", top: 56, left: 56, display: "flex" }}>
+        <Lockup size={34} />
+      </div>
       <div style={{ position: "absolute", bottom: 64, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
-        <div style={{ display: "flex", fontSize: 40, fontWeight: 800, letterSpacing: 0.5, color: "#ffffff", background: "rgba(11,31,68,0.78)", padding: "12px 28px", borderRadius: 999 }}>
-          <span>CLOSE</span>
-          <span style={{ color: GOLD }}>BOSS</span>
-        </div>
+        <Lockup size={40} />
       </div>
     </AbsoluteFill>
   );

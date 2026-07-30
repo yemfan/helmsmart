@@ -87,7 +87,7 @@ export async function triggerBrandedClipRender(input: {
       videoUrl: input.videoUrl,
       videoDurationInFrames: Math.max(1, Math.round(input.videoDurationInFrames || 150)),
       hook: input.hook || "Watch this →",
-      cta: input.cta || "Your AI real estate team.",
+      cta: input.cta || "See how it works",
     },
     codec: "h264",
     privacy: "public",
