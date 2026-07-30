@@ -114,16 +114,69 @@ function postUrlFromUrn(urn: string): string | null {
 
 export type PublishResult = { ok: boolean; id?: string; url?: string | null; error?: string };
 
-/** Publish text to the org's connected LinkedIn member feed via /rest/posts. */
-export async function publishLinkedInPost(orgId: string, text: string): Promise<PublishResult> {
+/**
+ * Upload a public image to LinkedIn, returning its image URN to reference in a
+ * post. Three calls: initializeUpload → PUT the bytes to the returned URL → the
+ * caller attaches the URN. Throws on any failure so the caller can fall back to
+ * a text-only post.
+ */
+async function uploadLinkedInImage(conn: LinkedInConnection, imageUrl: string): Promise<string> {
+  const initRes = await fetch("https://api.linkedin.com/rest/images?action=initializeUpload", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${conn.accessToken}`,
+      "LinkedIn-Version": LINKEDIN_API_VERSION,
+      "X-Restli-Protocol-Version": "2.0.0",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ initializeUploadRequest: { owner: conn.authorUrn } }),
+  });
+  if (!initRes.ok) throw new Error(`initializeUpload ${initRes.status}`);
+  const init = (await initRes.json().catch(() => ({}))) as {
+    value?: { uploadUrl?: string; image?: string };
+  };
+  const uploadUrl = init.value?.uploadUrl;
+  const imageUrn = init.value?.image;
+  if (!uploadUrl || !imageUrn) throw new Error("initializeUpload: missing uploadUrl/image");
+
+  const imgRes = await fetch(imageUrl);
+  if (!imgRes.ok) throw new Error(`fetch image ${imgRes.status}`);
+  const bytes = new Uint8Array(await imgRes.arrayBuffer());
+
+  const putRes = await fetch(uploadUrl, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${conn.accessToken}` },
+    body: bytes,
+  });
+  if (!putRes.ok) throw new Error(`upload ${putRes.status}`);
+  return imageUrn;
+}
+
+/** Publish text (+ optional image) to the org's connected LinkedIn member feed. */
+export async function publishLinkedInPost(
+  orgId: string,
+  text: string,
+  imageUrl?: string | null,
+): Promise<PublishResult> {
   const conn = await getLinkedInConnection(orgId);
   if (!conn) return { ok: false, error: "LinkedIn not connected" };
   if (conn.expiresAt && new Date(conn.expiresAt) < new Date()) {
     return { ok: false, error: "LinkedIn token expired — reconnect" };
   }
 
-  try {
-    const res = await fetch("https://api.linkedin.com/rest/posts", {
+  // Best-effort image: LinkedIn image posting is a 3-call dance, so if any part
+  // of the UPLOAD fails we simply post text-only rather than losing the post.
+  let imageUrn: string | null = null;
+  if (imageUrl) {
+    try {
+      imageUrn = await uploadLinkedInImage(conn, imageUrl);
+    } catch (e) {
+      console.warn("[linkedin] image upload failed, posting text-only:", e instanceof Error ? e.message : e);
+    }
+  }
+
+  const create = (withImage: boolean) =>
+    fetch("https://api.linkedin.com/rest/posts", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${conn.accessToken}`,
@@ -140,10 +193,20 @@ export async function publishLinkedInPost(orgId: string, text: string): Promise<
           targetEntities: [],
           thirdPartyDistributionChannels: [],
         },
+        ...(withImage && imageUrn ? { content: { media: { id: imageUrn } } } : {}),
         lifecycleState: "PUBLISHED",
         isReshareDisabledByAuthor: false,
       }),
     });
+
+  try {
+    let res = await create(true);
+    // If ATTACHING the image is what broke the create, retry text-only so a
+    // media formatting hiccup never costs the whole post.
+    if (!res.ok && imageUrn) {
+      console.warn(`[linkedin] post with image failed (${res.status}), retrying text-only`);
+      res = await create(false);
+    }
     if (!res.ok) {
       const json = (await res.json().catch(() => ({}))) as { message?: string };
       return { ok: false, error: json.message || `LinkedIn error ${res.status}` };
