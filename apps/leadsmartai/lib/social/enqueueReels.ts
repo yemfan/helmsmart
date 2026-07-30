@@ -6,6 +6,7 @@ import {
   carouselClaimViolation,
 } from "@/lib/social/generateCarousel";
 import {
+  getReel,
   loadDraftReels,
   loadNextDraftReel,
   listRenderingReels,
@@ -15,6 +16,7 @@ import {
   persistReelDrafts,
   type ReelDraft,
 } from "@/lib/social/reels";
+import { queueStatusForPost } from "@/lib/social/queueGate";
 import {
   getReelRenderStatus,
   reelConfigured,
@@ -151,7 +153,12 @@ export async function runReelRenderTick(): Promise<ReelTickResult> {
 
       const agentStr = r.agent_id != null ? String(r.agent_id) : null;
       if (agentStr) {
-        const queueStatus = (await socialMode(agentStr)) === "auto" ? "scheduled" : "awaiting_approval";
+        // Reels are AI-written → 'assisted' claim-checks the caption (clean
+        // publishes, flagged holds); 'auto' publishes unchecked.
+        const reel = await getReel(r.id);
+        const queueStatus = await queueStatusForPost(await socialMode(agentStr), reel?.caption ?? "", {
+          aiGenerated: true,
+        });
         const res = await scheduleReel({ agentId: agentStr, reelId: r.id, queueStatus });
         if (res.scheduled > 0) {
           await markReelStatus(r.id, "scheduled");
