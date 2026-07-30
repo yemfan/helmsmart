@@ -6,6 +6,7 @@ import { buildFeatureAd, buildInterestRateAd, buildPhotoAd, buildPromoAd, buildS
 import { pickAgentAdPhoto } from "@/lib/social/adPhotos";
 import { pickThemeForIndex } from "@/lib/social/renderAd";
 import { scheduleAd } from "@/lib/social/scheduleAd";
+import { queueStatusForPost } from "@/lib/social/queueGate";
 
 /**
  * Weekly promo-ad auto-enqueue — the ad sibling of runWeeklyCarousels.
@@ -147,7 +148,9 @@ export async function runWeeklyAds(): Promise<WeeklyAdResult> {
         .eq("channel", "social")
         .maybeSingle();
       const mode = (setting as { mode?: string } | null)?.mode ?? "ask";
-      const queueStatus = mode === "auto" ? "scheduled" : "awaiting_approval";
+      // Ads are deterministic (hardcoded presets + real warehouse data), so
+      // 'assisted' publishes them without a claim-check — nothing to fabricate.
+      const queueStatus = await queueStatusForPost(mode, "", { aiGenerated: false });
 
       const res = await scheduleAd({ agentId: agentStr, adId: pick.id, queueStatus });
       if (res.scheduled > 0) {

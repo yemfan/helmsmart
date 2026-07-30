@@ -3,6 +3,7 @@ import "server-only";
 import { persistCarouselDrafts } from "@/lib/social/carousels";
 import { carouselClaimViolation, generateCarouselBatch } from "@/lib/social/generateCarousel";
 import { scheduleCarousel } from "@/lib/social/scheduleCarousel";
+import { queueStatusForPost } from "@/lib/social/queueGate";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 /**
@@ -97,7 +98,9 @@ export async function runWeeklyCarousels(): Promise<WeeklyCarouselResult> {
         .eq("channel", "social")
         .maybeSingle();
       const mode = (setting as { mode?: string } | null)?.mode ?? "ask";
-      const queueStatus = mode === "auto" ? "scheduled" : "awaiting_approval";
+      // Carousels are AI-written → in 'assisted' the caption is claim-checked
+      // (clean publishes, flagged holds); 'auto' publishes unchecked.
+      const queueStatus = await queueStatusForPost(mode, pick.caption, { aiGenerated: true });
 
       const res = await scheduleCarousel({ agentId: agentStr, carouselId: pick.id, queueStatus });
       if (res.scheduled > 0) {
@@ -119,14 +122,16 @@ export async function runWeeklyCarousels(): Promise<WeeklyCarouselResult> {
   return { brandAgents: brandAgentIds.length, generated, scheduled };
 }
 
-async function loadDraftCarousels(agentStr: string): Promise<{ id: string; title: string }[]> {
+async function loadDraftCarousels(
+  agentStr: string,
+): Promise<{ id: string; title: string; caption: string }[]> {
   const { data } = await supabaseAdmin
     .from("social_carousels")
-    .select("id, title")
+    .select("id, title, caption")
     .eq("agent_id", agentStr)
     .eq("status", "draft")
     .order("created_at", { ascending: true });
-  return (data as { id: string; title: string }[] | null) ?? [];
+  return (data as { id: string; title: string; caption: string }[] | null) ?? [];
 }
 
 async function loadAllCarouselTitles(agentStr: string): Promise<string[]> {
