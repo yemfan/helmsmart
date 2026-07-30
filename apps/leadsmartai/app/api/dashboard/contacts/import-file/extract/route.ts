@@ -16,7 +16,7 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 
 const MAX_BYTES = 20 * 1024 * 1024; // 20 MB cap — covers most rosters
-const MAX_CONTACTS = 100; // sanity cap to bound DB writes downstream
+const MAX_CONTACTS = 200; // sanity cap to bound DB writes (fits the 16k extract budget)
 
 /** Minimal File surface the extractor needs — a real File or a Storage blob. */
 type FileLike = {
