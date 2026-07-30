@@ -1,26 +1,20 @@
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { OnboardingForm } from "@/components/onboarding-form";
 import { getActivePack } from "@/lib/packs";
 
 /**
- * Onboarding page — server component that gate-checks auth,
- * then renders the client OnboardingForm.
+ * Onboarding page — server component that gate-checks auth, then renders the
+ * client OnboardingForm.
  *
- * If the user already has an org (cookie set), skip straight to /books.
- * Middleware already blocks unauthenticated access, but we double-check here
- * to be safe and to set the cookie if it's somehow missing.
+ * IMPORTANT: membership is resolved from the DB, NOT from the helmsmart-org-id
+ * cookie. A stale/invalid cookie (e.g. left behind by a previous account on this
+ * browser) must never skip onboarding — otherwise a fresh signup with a leftover
+ * cookie lands in an empty org it doesn't belong to and can never create its own.
+ * The cookie is an optimization set by createOrg / restore-org, not a source of
+ * truth here.
  */
 export default async function OnboardingPage() {
-  // Fast-path: cookie already set means org exists
-  const cookieStore = await cookies();
-  const orgCookie = cookieStore.get("helmsmart-org-id")?.value;
-  if (orgCookie) {
-    redirect("/books");
-  }
-
-  // Verify session (middleware already ensures user is logged in, but belt+suspenders)
   const supabase = await createClient();
   const {
     data: { user },
@@ -30,7 +24,7 @@ export default async function OnboardingPage() {
     redirect("/login");
   }
 
-  // Check DB in case cookie was cleared but membership exists
+  // Source of truth: does this user actually belong to an org?
   const { data: existing } = await supabase
     .from("organization_members")
     .select("organization_id")
@@ -39,12 +33,12 @@ export default async function OnboardingPage() {
     .maybeSingle();
 
   if (existing) {
-    // Restore cookie and redirect
-    // (cookie can't be set in a server component — do it via a small redirect
-    //  to an API route that re-establishes the cookie)
+    // Real membership — (re)establish the cookie via the API route (a server
+    // component can't set cookies) and head to the dashboard.
     redirect(`/api/auth/restore-org?org_id=${existing.organization_id}`);
   }
 
+  // No org yet — show the create form regardless of any leftover cookie.
   const pack = await getActivePack();
   return <OnboardingForm namePlaceholder={pack.businessNameExample} />;
 }
