@@ -73,6 +73,7 @@ Rules:
 - Phone: keep the digits the user wrote; do not reformat.
 - Email: lowercased.
 - If the source contains zero recognizable contacts, return {"contacts": []}.
+- Extract at most 100 contacts. If the source has more, return the first 100 in source order.
 
 Return only the JSON object.`;
 
@@ -90,7 +91,11 @@ export async function aiExtractContacts(
 
   const response = await client.messages.create({
     model: MODEL,
-    max_tokens: 4096,
+    // A dense roster of contacts can be long; 4096 truncated the JSON mid-array
+    // (→ "invalid JSON"). 16k covers ~150+ contacts and stays well under the
+    // threshold where the SDK demands streaming. salvageContacts() recovers the
+    // complete rows if an even larger roster still hits the ceiling.
+    max_tokens: 16000,
     system: SYSTEM_PROMPT,
     messages: [{ role: "user", content: contentBlocks }],
   });
@@ -165,8 +170,60 @@ function extractJsonObject(text: string): unknown {
   try {
     return JSON.parse(slice);
   } catch {
+    // A very large roster can still truncate mid-array (stop_reason=max_tokens),
+    // leaving a syntactically-broken object. Salvage every contact that WAS fully
+    // written rather than failing the whole import.
+    const salvaged = salvageContacts(body);
+    if (salvaged) return salvaged;
     throw new Error(`AI extractor returned invalid JSON: ${slice.slice(0, 200)}`);
   }
+}
+
+/**
+ * Best-effort recovery from a truncated `{"contacts": [ {...}, {...}, {...` blob:
+ * walk the array collecting each COMPLETE top-level object and JSON.parse it,
+ * discarding the final partial one. Returns null if nothing usable is found.
+ */
+function salvageContacts(body: string): { contacts: unknown[] } | null {
+  const key = body.indexOf('"contacts"');
+  const arrStart = key >= 0 ? body.indexOf("[", key) : body.indexOf("[");
+  if (arrStart < 0) return null;
+
+  const out: unknown[] = [];
+  let depth = 0;
+  let objStart = -1;
+  let inStr = false;
+  let esc = false;
+
+  for (let i = arrStart + 1; i < body.length; i += 1) {
+    const c = body[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (c === "\\") esc = true;
+      else if (c === '"') inStr = false;
+      continue;
+    }
+    if (c === '"') {
+      inStr = true;
+    } else if (c === "{") {
+      if (depth === 0) objStart = i;
+      depth += 1;
+    } else if (c === "}") {
+      depth -= 1;
+      if (depth === 0 && objStart >= 0) {
+        try {
+          out.push(JSON.parse(body.slice(objStart, i + 1)));
+        } catch {
+          /* skip a malformed object */
+        }
+        objStart = -1;
+      }
+    } else if (c === "]" && depth === 0) {
+      break;
+    }
+  }
+
+  return out.length > 0 ? { contacts: out } : null;
 }
 
 function coerceContacts(raw: unknown): ContactDraft[] {
