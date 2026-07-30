@@ -154,16 +154,18 @@ export function normalizeSettings(row: SettingsRow | null): AutopilotSettings {
   };
 }
 
-const SELECT_COLUMNS =
-  "enabled, mode, posts_per_week, posts_per_day, platforms, post_days, post_hour_utc, tone, day_topics, ad_template, last_generated_week";
-
 /** Read an org's autopilot settings (service-role, cron-safe). Never throws. */
 export async function getAutopilotSettings(orgId: string): Promise<AutopilotSettings> {
   try {
     const db = await createServiceClient();
+    // select("*") is deliberately tolerant of a not-yet-applied column (e.g.
+    // ad_template before migration 00084 lands): a missing column reads back as
+    // undefined, rather than the whole query erroring — which would fall into the
+    // catch below and silently disable autopilot for EVERY org until the migration
+    // runs. Deploy-order safety for the code-before-migration window.
     const { data } = await db
       .from("org_social_autopilot")
-      .select(SELECT_COLUMNS)
+      .select("*")
       .eq("organization_id", orgId)
       .maybeSingle();
     return normalizeSettings((data as SettingsRow | null) ?? null);
