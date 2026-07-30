@@ -458,7 +458,8 @@ function ReviewTable(props: {
           )}
           {truncated && (
             <span className="text-xs text-gray-500">
-              (showing first 100 of {totalExtracted})
+              showing the first {rows.length} of {totalExtracted} found — save these,
+              then split the file to import the rest
             </span>
           )}
         </div>

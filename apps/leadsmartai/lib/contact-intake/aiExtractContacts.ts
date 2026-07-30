@@ -73,7 +73,7 @@ Rules:
 - Phone: keep the digits the user wrote; do not reformat.
 - Email: lowercased.
 - If the source contains zero recognizable contacts, return {"contacts": []}.
-- Extract at most 100 contacts. If the source has more, return the first 100 in source order.
+- Extract at most 200 contacts. If the source has more, return the first 200 in source order.
 
 Return only the JSON object.`;
 
