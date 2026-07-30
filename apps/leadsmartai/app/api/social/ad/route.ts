@@ -16,7 +16,7 @@ import type { AdInput, AdFormat, AdTemplate, AdTheme } from "@/lib/social/render
  */
 export const runtime = "nodejs";
 
-const TEMPLATES: AdTemplate[] = ["bold", "photo", "stat", "spotlight", "feature"];
+const TEMPLATES: AdTemplate[] = ["bold", "photo", "stat", "spotlight", "feature", "hook"];
 const THEMES: AdTheme[] = ["navy", "midnight", "azure", "light"];
 const FORMATS: AdFormat[] = ["square", "portrait", "landscape"];
 

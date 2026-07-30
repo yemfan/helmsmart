@@ -16,7 +16,7 @@ import { pickThemeForIndex, type AdFormat, type AdInput, type AdTheme } from "./
  * Video presets are handled separately via the Remotion reel composition.
  */
 
-export type AdPreset = "interest-rate" | "market-update" | "promo" | "photo" | "spotlight" | "feature";
+export type AdPreset = "interest-rate" | "market-update" | "promo" | "photo" | "spotlight" | "feature" | "hook";
 
 /** Dark themes only — the spotlight/feature designs are built for a dark hero. */
 const DARK_THEMES: AdTheme[] = ["navy", "midnight", "azure"];
@@ -230,6 +230,47 @@ export function buildFeatureAd(
   };
 }
 
+/** Viral-hook copy sets — big bold curiosity-gap text, claim-safe (no fabricated
+ *  metrics/guarantees; only sanctioned "24/7"). Passes the claim screen. */
+const HOOK_COPY: Array<
+  Pick<AdInput, "badge" | "headline" | "headlineAccent" | "subhead" | "ctaText">
+> = [
+  {
+    badge: "For real estate agents",
+    headline: "Your best lead went cold",
+    headlineAccent: "while you slept.",
+    subhead: "Your AI team answers every call, texts back every missed lead, and follows up 24/7 — so no lead ever waits.",
+    ctaText: "Here's the fix",
+  },
+  {
+    badge: "Busy agents",
+    headline: "You're losing deals",
+    headlineAccent: "to slow replies.",
+    subhead: "The first agent to respond usually wins. Your AI team replies in seconds, day or night.",
+    ctaText: "See how",
+  },
+  {
+    badge: "Realtors",
+    headline: "Stop working nights",
+    headlineAccent: "and weekends.",
+    subhead: "Let your AI team handle reception, follow-up, and coordination — so you get your time back.",
+    ctaText: "Meet your AI team",
+  },
+  {
+    badge: "For agents",
+    headline: "A missed call is",
+    headlineAccent: "a missed commission.",
+    subhead: "Every unanswered call is a lead calling someone else next. Your AI receptionist never misses one.",
+    ctaText: "Here's how",
+  },
+];
+
+/** Viral engagement hook — big bold text card, dark theme, claim-safe copy. */
+export function buildHookAd(index = 0, format: AdFormat = "portrait", theme?: AdTheme): AdInput {
+  const c = HOOK_COPY[((index % HOOK_COPY.length) + HOOK_COPY.length) % HOOK_COPY.length];
+  return { template: "hook", ...c, theme: theme ?? darkTheme(index), format };
+}
+
 /**
  * Dispatch a preset name to its builder. Theme rotates by index when not given,
  * so consecutive scheduled posts vary their look. Returns null if data is
@@ -251,5 +292,6 @@ export async function buildPresetAd(
   }
   if (preset === "spotlight") return buildSpotlightAd(index, format, theme, opts.photoUrl);
   if (preset === "feature") return buildFeatureAd(index, format, theme, opts.photoUrl);
+  if (preset === "hook") return buildHookAd(index, format, theme);
   return buildPromoAd(index, format, theme);
 }

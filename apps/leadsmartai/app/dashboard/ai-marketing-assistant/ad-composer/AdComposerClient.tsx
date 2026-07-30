@@ -11,12 +11,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
  * an <img>; save/schedule POSTs to /api/social/ad.
  */
 
-type Template = "bold" | "photo" | "stat" | "spotlight" | "feature";
+type Template = "bold" | "photo" | "stat" | "spotlight" | "feature" | "hook";
 type Theme = "navy" | "midnight" | "azure" | "light";
 type Format = "square" | "portrait" | "landscape";
 
 const TEMPLATES: { key: Template; label: string; hint: string }[] = [
   { key: "feature", label: "Feature poster", hint: "Full capability layout" },
+  { key: "hook", label: "Hook", hint: "Viral big-text card" },
   { key: "spotlight", label: "Spotlight", hint: "Bold problem / promise" },
   { key: "photo", label: "Photo", hint: "Photo hero + overlay" },
   { key: "bold", label: "Statement", hint: "Big headline + CTA" },
@@ -181,8 +182,8 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
 
   const isStat = f.template === "stat";
   const usesPhoto = f.template === "photo" || f.template === "spotlight" || f.template === "feature";
-  const usesAccent = f.template === "spotlight" || f.template === "feature";
-  const usesBadge = f.template === "spotlight";
+  const usesAccent = f.template === "spotlight" || f.template === "feature" || f.template === "hook";
+  const usesBadge = f.template === "spotlight" || f.template === "hook";
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_minmax(320px,420px)]">
