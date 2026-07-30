@@ -485,7 +485,7 @@ export default function LeadSmartLandingV2() {
                   href={PRIMARY_CTA_HREF}
                   className="min-h-[48px] px-7 text-base shadow-floating hover:shadow-overlay"
                 >
-                  Hire Your AI Team
+                  Hire Your AI Team Free
                 </Button>
               </MagneticButton>
             </RevealSection>
