@@ -242,8 +242,11 @@ export function SocialComposer({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Platform tabs */}
-      <div className="flex items-center border-b border-slate-200 bg-white px-6">
+      {/* Platform tabs. flex-wrap so the owner slot (connect buttons) drops to a
+          second row instead of overflowing off the right edge — otherwise the
+          "Connect Facebook/LinkedIn/Threads" buttons get clipped and users think
+          connecting is disabled. */}
+      <div className="flex flex-wrap items-center gap-y-2 border-b border-slate-200 bg-white px-6">
         {(Object.keys(PLATFORM_META) as Platform[]).map((p) => {
           const meta = PLATFORM_META[p];
           const count = posts.filter((post) => post.platform === p && post.status !== "published").length;
