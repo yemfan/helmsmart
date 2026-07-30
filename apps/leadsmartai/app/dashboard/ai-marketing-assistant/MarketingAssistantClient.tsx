@@ -142,27 +142,46 @@ export default function MarketingAssistantClient({
         canCustomize={social.canCustomize}
       />
 
-      {/* Ad Composer entry — design a custom branded ad from a template */}
-      <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <div>
-          <h3 className="text-base font-semibold text-gray-900">Design a custom ad</h3>
-          <p className="mt-0.5 text-sm text-gray-500">
-            Pick a template + theme, edit the copy, preview live, then save or schedule.
-          </p>
+      {/* Advanced — power-user customization, collapsed by default so the auto-
+          rotating curated posts above stay the focus for busy agents. */}
+      <details className="group rounded-xl border border-gray-200 bg-white shadow-sm">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 [&::-webkit-details-marker]:hidden">
+          <div>
+            <h3 className="text-base font-semibold text-gray-900">Advanced</h3>
+            <p className="mt-0.5 text-sm text-gray-500">
+              Custom ad designer, brand photos, and video reels — optional. Your assistant
+              posts curated designs automatically without any of this.
+            </p>
+          </div>
+          <span className="shrink-0 text-gray-400 transition group-open:rotate-180" aria-hidden>
+            ▾
+          </span>
+        </summary>
+
+        <div className="space-y-5 border-t border-gray-100 p-5">
+          {/* Ad Composer entry — design a custom branded ad from a template */}
+          <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-gray-50 p-5">
+            <div>
+              <h3 className="text-base font-semibold text-gray-900">Design a custom ad</h3>
+              <p className="mt-0.5 text-sm text-gray-500">
+                Pick a template + theme, edit the copy, preview live, then save or schedule.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/ai-marketing-assistant/ad-composer"
+              className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005ba8]"
+            >
+              Open Ad Composer →
+            </Link>
+          </section>
+
+          {/* Brand photo pool → the Marketing Assistant rotates uploads into photo ads */}
+          <AdPhotoPanel canCustomize={social.canCustomize} />
+
+          {/* Manual video-reel smoke test — render, preview, then publish on demand */}
+          <ReelTestPanel canCustomize={social.canCustomize} />
         </div>
-        <Link
-          href="/dashboard/ai-marketing-assistant/ad-composer"
-          className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005ba8]"
-        >
-          Open Ad Composer →
-        </Link>
-      </section>
-
-      {/* Brand photo pool → the Marketing Assistant rotates uploads into photo ads */}
-      <AdPhotoPanel canCustomize={social.canCustomize} />
-
-      {/* Manual video-reel smoke test — render, preview, then publish on demand */}
-      <ReelTestPanel canCustomize={social.canCustomize} />
+      </details>
 
       {/* The queue: what's about to publish, and (in review mode) the gate that
           holds it until a human approves. Reads scheduled_posts, so it also
