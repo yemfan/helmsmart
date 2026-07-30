@@ -36,7 +36,7 @@ export async function publishToPlatform(params: {
 
   switch (platform) {
     case "linkedin": {
-      const res = await publishLinkedInPost(orgId, content);
+      const res = await publishLinkedInPost(orgId, content, imageUrl);
       // LinkedIn's helper predates the retryable flag; a failed publish there is
       // usually an expired token, so default to permanent rather than looping.
       return { ...res, retryable: false };
