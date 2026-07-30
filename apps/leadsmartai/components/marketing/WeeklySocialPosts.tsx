@@ -29,8 +29,8 @@ const MODE_HELP: Record<SocialMode, string> = {
   review:
     "Your week is written and scheduled at the right times, but nothing publishes until you approve it in the post queue.",
   assisted:
-    "The Boss fact-checks each post against what we actually ship, schedules what it can verify, and holds the rest for you. You can still cancel before it posts.",
-  auto: "Full autopilot — posts are written, scheduled AND published with no review.",
+    "Recommended hands-off mode. Writes and schedules your week, fact-checks every post, and publishes only the ones it can verify — the rest wait for you. You can still cancel before it posts.",
+  auto: "Autopilot with NO review — posts publish to your accounts without any fact-check. Prefer “Autopilot — fact-checked” unless you review everything yourself.",
 };
 
 export type SocialRec = {
@@ -171,6 +171,16 @@ export default function WeeklySocialPosts({
 
   async function changeMode(next: SocialMode) {
     if (next === mode) return;
+    // 'auto' publishes with NO review — make it a deliberate choice, not an
+    // accidental one. 'assisted' is the fact-checked hands-off default.
+    if (
+      next === "auto" &&
+      !window.confirm(
+        "Full autopilot posts to your accounts with NO review — nothing is fact-checked before it goes public.\n\n“Autopilot — fact-checked” gives you the same hands-off posting but claim-checks every post first. Use no-review autopilot anyway?",
+      )
+    ) {
+      return;
+    }
     setSavingMode(true);
     setError(null);
     // Optimistic.
@@ -257,8 +267,8 @@ export default function WeeklySocialPosts({
           >
             <option value="ask">Drafts only</option>
             <option value="review">Schedule, I approve</option>
-            <option value="assisted">Boss Assistant approves</option>
-            <option value="auto">Full autopilot</option>
+            <option value="assisted">Autopilot — fact-checked (recommended)</option>
+            <option value="auto">Autopilot — no review</option>
           </select>
 
           {/* Generate */}
