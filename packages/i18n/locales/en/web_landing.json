@@ -242,7 +242,7 @@
       "equity_threshold": "Sphere contacts crossing equity thresholds without a nudge"
     },
     "fix_line": "CloseBoss fixes that — automatically.",
-    "cta_primary": "Start Closing More Deals Today",
+    "cta_primary": "Hire Your AI Team",
     "cta_secondary": "Estimate Your ROI"
   },
   "faster": {
@@ -271,8 +271,8 @@
   "final": {
     "h2": "Your next deal is already visiting your website.",
     "subtitle": "Don't let it slip away.",
-    "cta_primary": "Activate Your AI Deal Engine",
-    "cta_secondary": "Book a Demo",
+    "cta_primary": "Hire Your AI Team",
+    "cta_secondary": "Schedule a Demo",
     "footer_note": "14-day trial on paid plans · No credit card required to start"
   },
   "kill_crm": {

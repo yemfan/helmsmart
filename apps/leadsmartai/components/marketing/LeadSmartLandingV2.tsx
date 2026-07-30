@@ -323,7 +323,7 @@ export default function LeadSmartLandingV2() {
                 </MagneticButton>
                 <Button
                   variant="outline"
-                  href="/login?next=/book"
+                  href="/book"
                   className="min-h-11 px-6 text-base"
                 >
                   {t("hero.cta_demo")}
@@ -485,7 +485,7 @@ export default function LeadSmartLandingV2() {
                   href={PRIMARY_CTA_HREF}
                   className="min-h-[48px] px-7 text-base shadow-floating hover:shadow-overlay"
                 >
-                  Hire your AI team
+                  Hire Your AI Team
                 </Button>
               </MagneticButton>
             </RevealSection>
@@ -1233,7 +1233,7 @@ export default function LeadSmartLandingV2() {
                   <ArrowRight size={18} aria-hidden />
                 </Link>
                 <Link
-                  href="/contact"
+                  href="/book"
                   className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20 md:text-base"
                 >
                   {t("final.cta_secondary")}

@@ -33,7 +33,7 @@ import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
  * Replaces the legacy left sidebar. On desktop:
  *   - Logo (left)
  *   - Horizontal menu with dropdowns for groups, direct links for leaves
- *   - Sign in / Sign up (auth-aware) + "Start free trial" CTA on right
+ *   - Sign in / Sign up (auth-aware) + "Hire your AI team" CTA on right
  *
  * On mobile (lg-) the menu collapses into the shared `MobileSidebar`
  * drawer (already implements section accordions, user card, logout).
@@ -55,9 +55,9 @@ export function MarketingTopNav({
       {/* Header layout tuning:
        *   - Below sm (<640px): hamburger | logo (compact) | Sign in | Sign up
        *     Hide SupportChatLauncher in the bar (FloatingCTA still surfaces
-       *     chat at the bottom right) and hide the "Start free trial"
+       *     chat at the bottom right) and hide the "Hire your AI team"
        *     button to make room for Sign in / Sign up.
-       *   - sm and up: also show "Start free trial" + chat launcher in
+       *   - sm and up: also show "Hire your AI team" + chat launcher in
        *     the bar.
        *   - At lg and up: full horizontal nav appears in the middle. */}
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:gap-6">
@@ -101,10 +101,10 @@ export function MarketingTopNav({
           <LanguageToggle className="hidden sm:inline-flex" />
           <HeaderAuthActions />
           <Link
-            href="/start-free"
+            href="/onboarding"
             className="hidden items-center justify-center rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:inline-flex sm:text-sm"
           >
-            {t("cta.start_free_trial", { defaultValue: "Start free trial" })}
+            {t("cta.hire_ai_team", { defaultValue: "Hire Your AI Team" })}
           </Link>
           {/* Chat launcher hidden below sm — FloatingCTA still surfaces
               support chat as a separate floating button so we don't lose
