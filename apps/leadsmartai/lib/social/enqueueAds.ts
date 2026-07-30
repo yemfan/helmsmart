@@ -2,7 +2,7 @@ import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { loadDraftAds, persistAdDrafts, type AdDraft } from "@/lib/social/ads";
-import { buildFeatureAd, buildInterestRateAd, buildPhotoAd, buildPromoAd, buildSpotlightAd } from "@/lib/social/adPresets";
+import { buildFeatureAd, buildHookAd, buildInterestRateAd, buildPhotoAd, buildPromoAd, buildSpotlightAd } from "@/lib/social/adPresets";
 import { pickAgentAdPhoto } from "@/lib/social/adPhotos";
 import { pickThemeForIndex } from "@/lib/social/renderAd";
 import { scheduleAd } from "@/lib/social/scheduleAd";
@@ -37,7 +37,7 @@ async function buildAdBatch(agentStr: string, count: number): Promise<AdDraft[]>
   const out: AdDraft[] = [];
   for (let i = 0; i < count; i += 1) {
     const theme = pickThemeForIndex(i);
-    const slot = i % 5;
+    const slot = i % 6;
     if (slot === 0) {
       const input = await buildInterestRateAd("square", theme);
       out.push({
@@ -79,6 +79,15 @@ async function buildAdBatch(agentStr: string, count: number): Promise<AdDraft[]>
         input,
         preset: "feature",
         caption: `${input.headline} ${input.headlineAccent} ${input.subhead ?? ""}`.trim(),
+        hashtags: AD_HASHTAGS,
+      });
+    } else if (slot === 4) {
+      // Viral hook — big bold text card (claim-safe curiosity copy).
+      const input = buildHookAd(i, "portrait");
+      out.push({
+        input,
+        preset: "hook",
+        caption: [input.headline, input.headlineAccent, input.subhead].filter(Boolean).join(" "),
         hashtags: AD_HASHTAGS,
       });
     } else {

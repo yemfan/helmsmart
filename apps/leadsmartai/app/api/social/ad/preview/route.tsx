@@ -11,7 +11,7 @@ import { buildPresetAd, type AdPreset } from "@/lib/social/adPresets";
  */
 export const runtime = "nodejs";
 
-const TEMPLATES: AdTemplate[] = ["bold", "photo", "stat", "spotlight", "feature"];
+const TEMPLATES: AdTemplate[] = ["bold", "photo", "stat", "spotlight", "feature", "hook"];
 const FORMATS: AdFormat[] = ["square", "portrait", "landscape"];
 const THEMES: AdTheme[] = ["navy", "midnight", "azure", "light"];
 

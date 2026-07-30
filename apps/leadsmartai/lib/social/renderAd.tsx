@@ -18,7 +18,7 @@ import { ImageResponse } from "next/og";
  * tofu) — arrows ↑ ↓ → and the middot · are safe.
  */
 
-export type AdTemplate = "bold" | "photo" | "stat" | "spotlight" | "feature";
+export type AdTemplate = "bold" | "photo" | "stat" | "spotlight" | "feature" | "hook";
 export type AdFormat = "square" | "portrait" | "landscape";
 export type AdTheme = "navy" | "midnight" | "azure" | "light";
 
@@ -428,6 +428,40 @@ export function buildAdImageResponse(input: AdInput): ImageResponse {
           <div style={{ display: "flex" }}>closebossai.com</div>
           <div style={{ display: "flex", color: t.body }}>contact@closebossai.com</div>
         </div>
+      </div>
+    );
+  } else if (input.template === "hook") {
+    // "hook" — the viral engagement-bait FORMAT (big bold centered text on a
+    // flat dark card, curiosity-gap CTA), with claim-safe brand copy. `badge`
+    // is the small eyebrow, `headline` (+ optional gold `headlineAccent`) is the
+    // hook, `subhead` the supporting line, `ctaText` the curiosity CTA.
+    const hookSize = format === "landscape" ? 60 : format === "portrait" ? 94 : 82;
+    inner = (
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center", background: t.solid, fontFamily: FONT, padding: `${pad}px`, textAlign: "center" }}>
+        <div style={{ display: "flex", fontSize: "26px", fontWeight: 800, letterSpacing: "0.16em", color: t.gold }}>
+          {clamp(input.badge || "For realtors", 28).toUpperCase()}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ display: "flex", fontSize: `${hookSize}px`, fontWeight: 800, color: "#ffffff", lineHeight: 1.08, letterSpacing: "-0.01em", maxWidth: `${w - pad * 2}px`, textAlign: "center" }}>
+            {clamp(input.headline, 95)}
+          </div>
+          {input.headlineAccent ? (
+            <div style={{ display: "flex", fontSize: `${hookSize}px`, fontWeight: 800, color: t.gold, lineHeight: 1.08, letterSpacing: "-0.01em", maxWidth: `${w - pad * 2}px`, textAlign: "center", marginTop: "10px" }}>
+              {clamp(input.headlineAccent, 95)}
+            </div>
+          ) : null}
+          {input.subhead ? (
+            <div style={{ display: "flex", fontSize: "36px", fontWeight: 500, color: t.body, marginTop: "36px", maxWidth: `${Math.round(w * 0.82)}px`, textAlign: "center", lineHeight: 1.35 }}>
+              {clamp(input.subhead, 150)}
+            </div>
+          ) : null}
+          {cta ? (
+            <div style={{ display: "flex", fontSize: "40px", fontWeight: 800, color: t.gold, marginTop: "40px" }}>
+              {`${clamp(cta, 42)}  ↓`}
+            </div>
+          ) : null}
+        </div>
+        <Wordmark t={t} scale={0.72} logoUrl={logoUrl} />
       </div>
     );
   } else if (input.template === "spotlight") {
