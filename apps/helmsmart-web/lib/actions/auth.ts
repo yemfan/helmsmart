@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 export type AuthState = { error: string } | null;
 
@@ -78,6 +78,16 @@ export async function signUp(
 export async function signOut(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
+
+  // Clear the org-scoping cookies too. Without this, a stale helmsmart-org-id
+  // (or legacy smbai-org-id) survives the sign-out and poisons the NEXT account
+  // that logs in on this browser: middleware sees a cookie and waves them into
+  // an org they don't belong to, and the onboarding gate is skipped — so a fresh
+  // signup lands in an empty, unusable dashboard and can never create its org.
+  const cookieStore = await cookies();
+  cookieStore.delete("helmsmart-org-id");
+  cookieStore.delete("smbai-org-id");
+
   redirect("/login");
 }
 
