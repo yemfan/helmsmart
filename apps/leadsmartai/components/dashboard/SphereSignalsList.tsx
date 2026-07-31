@@ -53,7 +53,7 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
         <p className="mt-1">
           Signals fire automatically when the detection batch runs — refi activity, job changes,
           equity milestones crossed. You can also{" "}
-          <Link href="/dashboard/sphere" className="text-brand-accent hover:underline">
+          <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">
             open a contact
           </Link>{" "}
           and add a signal manually.

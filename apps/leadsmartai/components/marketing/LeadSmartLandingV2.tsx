@@ -463,9 +463,15 @@ export default function LeadSmartLandingV2() {
                         <h3 className="font-heading text-base font-bold text-slate-900 dark:text-white">
                           {m.name}
                         </h3>
+                        {/* Label text is a neutral accessible tone, not the
+                            persona hex — the raw persona colors (e.g. pink
+                            #E86FA6, orange #E68A2E, green #2E9E6B) fail WCAG AA
+                            as 10px text on their own 10% tint (2.6–3.4:1). The
+                            persona color still identifies the assistant via the
+                            avatar ring + chip tint below. */}
                         <span
-                          className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                          style={{ backgroundColor: `${m.color}1A`, color: m.color }}
+                          className="rounded-full px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:text-slate-200"
+                          style={{ backgroundColor: `${m.color}1A` }}
                         >
                           {m.role}
                         </span>

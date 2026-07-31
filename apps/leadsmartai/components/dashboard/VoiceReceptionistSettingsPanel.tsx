@@ -285,7 +285,7 @@ export default function VoiceReceptionistSettingsPanel() {
         </div>
         <p className="mt-1 text-[11px] text-gray-400">
           Need more included minutes?{" "}
-          <a href="/agent/pricing" className="text-brand-accent underline underline-offset-2">
+          <a href="/agent/pricing" className="text-brand-accent-text underline underline-offset-2">
             Upgrade your plan →
           </a>
         </p>

@@ -91,7 +91,7 @@ export default function SettingsTabsClient({
                 onClick={() => setActiveTab(tab.id)}
                 className={`whitespace-nowrap border-b-2 px-1 py-3 text-sm font-medium transition-colors ${
                   isActive
-                    ? "border-brand-accent text-brand-accent"
+                    ? "border-brand-accent text-brand-accent-text"
                     : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >

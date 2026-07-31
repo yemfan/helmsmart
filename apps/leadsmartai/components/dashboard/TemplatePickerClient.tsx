@@ -183,7 +183,7 @@ export default function TemplatePickerClient() {
                           <div className="mt-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-gray-400">
                             <span>{t.channel}</span>
                             {t.override?.edited && (
-                              <span className="text-brand-accent">· edited</span>
+                              <span className="text-brand-accent-text">· edited</span>
                             )}
                           </div>
                         </button>

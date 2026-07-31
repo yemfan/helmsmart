@@ -8,6 +8,14 @@
   --color-brand-primary: #0072ce;
   --color-brand-success: #28a745;
   --color-brand-accent: #ff8c42;
+  /* Text/interactive orange — bright #ff8c42 fails WCAG AA on light
+     backgrounds (~2.1:1). This darker variant clears 4.5:1 on white
+     (#b45309 = 5.03:1) and is the ONLY orange allowed on text, links,
+     and small labels. Reserve --color-brand-accent for large fills,
+     icons, and graphics. The value flips back to bright orange in
+     dark mode (see the prefers-color-scheme override below), where the
+     surface is dark and the light orange is what reads. */
+  --color-brand-accent-text: #b45309;
   --color-brand-surface: #f5f5f5;
   --color-brand-text: #333333;
   /* Shared with PropertyTools: bg-blue-600 / hover:bg-blue-700 = brand primary + hover. */
@@ -75,6 +83,16 @@
   --color-accent: #ff8c42;
   --color-surface: #f5f5f5;
   --color-text: #333333;
+}
+
+/* Dark mode is media-driven here (no `.dark` class toggle), so the
+   accent-text variant flips by the same signal: on dark surfaces the
+   bright brand orange is what reads (7.7:1 on slate-900), so restore
+   it rather than the light-mode dark orange. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-brand-accent-text: #ff8c42;
+  }
 }
 
 html, body {
@@ -229,7 +247,9 @@ a.text-white:focus-visible {
 }
 
 .text-accent {
-  color: var(--color-accent);
+  /* Accessible by default — resolves to the darker orange on light
+     surfaces and bright orange on dark. Never the raw --color-accent. */
+  color: var(--color-brand-accent-text);
 }
 
 /* Hero entrance animation */

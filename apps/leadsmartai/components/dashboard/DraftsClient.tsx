@@ -133,7 +133,7 @@ function EmptyState({ filter }: { filter: DraftStatus | "all" }) {
         <p className="mt-1">
           When a trigger fires and your review policy is set to Review, the draft lands here. To
           see the flow without waiting,{" "}
-          <Link href="/dashboard/sphere" className="text-brand-accent hover:underline">
+          <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">
             open a contact
           </Link>{" "}
           and click &ldquo;Generate draft&rdquo;.
