@@ -89,14 +89,49 @@ export function deriveSlugFromEmail(email: string | null | undefined): string | 
 }
 
 /**
- * Look up the agent's email via auth.users metadata. Returns null
- * when we can't find one — caller falls back to opaque hex slug.
+ * Build an inbound-alias slug from the agent's full name in
+ * `lastname_firstname_MI` order — e.g. "Michael Ye" → `ye_michael`,
+ * "Michael John Ye" → `ye_michael_j`. Assumes Western "First [Middle…]
+ * Last" ordering (what signup collects). Each name token is lowercased
+ * and stripped to `[a-z0-9-]`; the middle initial(s) are the first
+ * letter of each middle token. Returns null when fewer than two usable
+ * tokens survive — caller falls back to the email-derived slug.
+ */
+export function deriveSlugFromName(fullName: string | null | undefined): string | null {
+  if (!fullName) return null;
+  const cleanToken = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  const tokens = fullName.trim().split(/\s+/).map(cleanToken).filter(Boolean);
+  if (tokens.length < 2) return null; // need at least a first + last name
+  const first = tokens[0];
+  const last = tokens[tokens.length - 1];
+  const mi = tokens
+    .slice(1, -1)
+    .map((t) => t[0])
+    .join("");
+  const slug = [last, first, mi].filter(Boolean).join("_");
+  if (slug.length < 4 || slug.length > 64) return null;
+  // Matches the (now underscore-permitting) DB constraint exactly.
+  if (!/^[a-z0-9][a-z0-9._\-]{2,62}[a-z0-9]$/.test(slug)) return null;
+  return slug;
+}
+
+/**
+ * Look up the agent's email + display name via auth.users. Returns
+ * nulls when we can't find them — caller falls back through the
+ * email-derived slug to an opaque hex slug.
  *
  * Uses the same supabase.auth.admin.getUserById path that
  * resolveAgentDisplay + getAgentForwardingInfo use, since
  * `agents.email` doesn't exist (verified PR #326).
  */
-async function getAgentEmail(agentId: string): Promise<string | null> {
+async function getAgentIdentity(
+  agentId: string,
+): Promise<{ email: string | null; fullName: string | null }> {
   const { data: agent } = await supabaseAdmin
     .from("agents")
     .select("auth_user_id")
@@ -104,12 +139,20 @@ async function getAgentEmail(agentId: string): Promise<string | null> {
     .maybeSingle();
   const authUserId = (agent as { auth_user_id?: string | null } | null)
     ?.auth_user_id;
-  if (!authUserId) return null;
+  if (!authUserId) return { email: null, fullName: null };
   try {
     const { data } = await supabaseAdmin.auth.admin.getUserById(String(authUserId));
-    return data?.user?.email ?? null;
+    const meta = (data?.user?.user_metadata ?? {}) as Record<string, unknown>;
+    const rawName =
+      (typeof meta.full_name === "string" && meta.full_name) ||
+      (typeof meta.name === "string" && meta.name) ||
+      "";
+    return {
+      email: data?.user?.email ?? null,
+      fullName: rawName.trim() || null,
+    };
   } catch {
-    return null;
+    return { email: null, fullName: null };
   }
 }
 
@@ -151,18 +194,19 @@ export async function ensureAgentAlias(agentId: string): Promise<AgentInboundAli
     .maybeSingle();
   if (existing) return existing as AgentInboundAlias;
 
-  // Pass 1: try the email-derived friendly slug + numeric suffixes
-  // on collision. `fan.yes@gmail.com` → `fan.yes`, then
-  // `fan.yes2`, `fan.yes3`, …. We give up after 10 attempts and
-  // fall through to the opaque-hex pass — by then the friendly
-  // namespace is too crowded and the agent gets a hex alias.
-  const email = await getAgentEmail(agentId);
-  const baseSlug = deriveSlugFromEmail(email);
-  if (baseSlug) {
+  // Pass 0/1: try the name-derived slug (lastname_firstname_MI) first,
+  // then the email-derived friendly slug, each with numeric suffixes on
+  // collision. "Michael Ye" → `ye_michael`, then `ye_michael2`, …;
+  // `fan.yes@gmail.com` → `fan.yes`, then `fan.yes2`, …. After 10
+  // attempts on each we fall through to the opaque-hex pass.
+  const { email, fullName } = await getAgentIdentity(agentId);
+  const baseSlugs = [deriveSlugFromName(fullName), deriveSlugFromEmail(email)];
+  for (const baseSlug of baseSlugs) {
+    if (!baseSlug) continue;
     for (let i = 0; i < 10; i++) {
       const candidate = i === 0 ? baseSlug : `${baseSlug}${i + 1}`;
-      // Numeric suffix could push past the 64-char limit on long
-      // emails. Skip rather than throw.
+      // Numeric suffix could push past the 64-char limit on long names.
+      // Skip rather than throw.
       if (candidate.length > 64) break;
       const result = await tryInsertAlias(agentId, candidate);
       if (result) return result;
