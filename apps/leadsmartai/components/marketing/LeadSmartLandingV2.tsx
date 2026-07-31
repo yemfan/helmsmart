@@ -25,7 +25,6 @@ import {
   LineChart,
   MessagesSquare,
   PhoneCall,
-  PhoneMissed,
   Settings2,
   Sparkles,
   TrendingUp,
@@ -235,8 +234,8 @@ export default function LeadSmartLandingV2() {
             removed when the marketing chrome moved from a left
             sidebar to a horizontal top nav — the strip now read as
             a duplicate nav bar stacked under the real one. In-page
-            anchors (#how, #results, #why) still resolve because
-            the sections below set those `id`s. If we want a softer
+            anchors (#how, #why) still resolve because the sections
+            below set those `id`s. If we want a softer
             in-page TOC again in the future, render it inline within
             the hero (not as a top-bar) so it doesn't compete with
             the global top nav. */}
@@ -274,9 +273,6 @@ export default function LeadSmartLandingV2() {
                 </span>
                 {t("hero.badge")}
               </div>
-              <p className="mb-2 text-sm font-extrabold uppercase tracking-[0.18em] text-rose-600 dark:text-rose-400">
-                {t("hero.kill_crm_banner")}
-              </p>
               <h1 className="font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-gray-950 md:text-5xl lg:text-[3.25rem] dark:text-white">
                 {t("hero.h1_prefix")}
                 <span className="bg-gradient-to-r from-[#0072ce] via-[#4F46E5] to-[#7c3aed] bg-clip-text text-transparent">
@@ -931,84 +927,6 @@ export default function LeadSmartLandingV2() {
           </div>
         </section>
 
-        {/* ── RESULTS ─── */}
-        <section
-          id="results"
-          className="px-6 py-20 md:py-24"
-        >
-          <div className="mx-auto max-w-6xl">
-            <RevealSection className="mx-auto max-w-3xl text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-                {t("results.eyebrow")}
-              </p>
-              <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-                {t("results.h2_prefix")}
-                <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
-                  {t("results.h2_highlight")}
-                </span>
-              </h2>
-            </RevealSection>
-
-            <div className="mt-12 grid gap-5 md:grid-cols-3">
-              {RESULTS.map((r, i) => (
-                <RevealSection key={r.key} delay={i * 100}>
-                  <div className="flex h-full flex-col rounded-2xl border-2 border-slate-200/80 bg-white p-7 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
-                    <span aria-hidden className="text-3xl">
-                      {r.emoji}
-                    </span>
-                    <p className="mt-3 font-heading text-4xl font-extrabold text-[#0072ce] md:text-5xl">
-                      {t(`results.${r.key}.value`)}
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                      {t(`results.${r.key}.label`)}
-                    </p>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                      {t(`results.${r.key}.body`)}
-                    </p>
-                  </div>
-                </RevealSection>
-              ))}
-            </div>
-
-            <RevealSection delay={400} className="mt-8 text-center text-xs text-slate-400 dark:text-slate-500">
-              <p>{t("results.disclaimer")}</p>
-            </RevealSection>
-          </div>
-        </section>
-
-        {/* ── MISSED CALL HOOK STRIP — placement 3 of 3 ───
-            Scroll-stopping emotional break between Results and Why
-            Us. Single bold line + short body + inline CTA so it
-            interrupts the page rhythm without becoming yet another
-            full-content section. Pairs with the hero bullet and the
-            dedicated section above. */}
-        <section
-          aria-label={t("missed_call_hook.section_a11y")}
-          className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 px-6 py-12 text-white md:py-14"
-        >
-          <div className="mx-auto flex max-w-6xl flex-col items-center gap-5 text-center md:flex-row md:gap-8 md:text-left">
-            <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/30 md:inline-flex">
-              <PhoneMissed size={26} strokeWidth={2.25} aria-hidden />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-heading text-2xl font-bold leading-tight md:text-3xl">
-                <span aria-hidden className="mr-2 md:hidden">⚡</span>
-                {t("missed_call_hook.h3")}
-              </h3>
-              <p className="mt-2 text-sm text-white/90 md:text-base">
-                {t("missed_call_hook.body")}
-              </p>
-            </div>
-            <Link
-              href="#missed-call-recovery"
-              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-amber-700 shadow-md transition hover:bg-slate-50 md:text-base"
-            >
-              {t("missed_call_hook.cta")}
-              <ArrowRight size={16} aria-hidden />
-            </Link>
-          </div>
-        </section>
-
         {/* ── WHY US (comparison table) ─── */}
         <section
           id="why"
@@ -1543,14 +1461,6 @@ const SALES_STYLES: Array<{
     emoji: "💬",
     chip: { bg: "bg-emerald-50 dark:bg-emerald-900/30", text: "text-emerald-600 dark:text-emerald-300" },
   },
-];
-
-type ResultKey = "appointments" | "speed" | "conversion";
-
-const RESULTS: Array<{ key: ResultKey; emoji: string }> = [
-  { key: "appointments", emoji: "📈" },
-  { key: "speed", emoji: "⚡" },
-  { key: "conversion", emoji: "💰" },
 ];
 
 const COMPARISON_KEYS = [
