@@ -1,7 +1,5 @@
 import "server-only";
 
-import sharp from "sharp";
-
 import { renderScamTreePng } from "@/lib/social/renderAd";
 import type { ScamTree } from "@/lib/social/scamTrees";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -35,6 +33,12 @@ export async function renderAndUploadScamAd(
   weekOf: string,
 ): Promise<string> {
   const png = await renderScamTreePng(tree);
+  // Lazy-load sharp: it's a heavy native module and importing it at module top
+  // pulls its libvips binary into the graph of every route that transitively
+  // imports this file (e.g. /api/social/autopilot), 500-ing them if the binary
+  // can't dlopen on Vercel. Loading it only here keeps that failure scoped to the
+  // ad-render path (which already falls back to text if it throws).
+  const sharp = (await import("sharp")).default;
   const jpeg = await sharp(Buffer.from(png)).jpeg({ quality: 92, chromaSubsampling: "4:4:4" }).toBuffer();
   const path = `${orgId}/ads/scam-${slugify(tree.key)}-${weekOf}.jpg`;
   const { error } = await db.storage.from(BUCKET).upload(path, jpeg, {
