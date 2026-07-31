@@ -364,6 +364,11 @@ export async function generateWeekForOrg(
   const adMode = settings.adTemplate === "scam_decision_tree";
   const context = adMode ? "" : await buildBusinessContext(db, orgId, orgName);
   const weekSeed = Number.parseInt(weekOf.replace(/-/g, ""), 10) || 0;
+  // In ad mode every post carries an image, so Instagram — normally skipped
+  // because text-only posts can't publish there — can join, off the SAME Meta
+  // grant as Facebook. (Publish fails cleanly if no IG is linked to the Page.)
+  const publishPlatforms: string[] =
+    adMode && targets.includes("facebook") ? [...targets, "instagram"] : targets;
   const rows: Record<string, unknown>[] = [];
 
   for (let j = 0; j < jobs.length; j++) {
@@ -394,7 +399,7 @@ export async function generateWeekForOrg(
 
     // One row per target platform, same copy. Auto → scheduled at the slot;
     // review → a plain draft for the human to schedule.
-    for (const platform of targets) {
+    for (const platform of publishPlatforms) {
       rows.push({
         organization_id: orgId,
         platform,

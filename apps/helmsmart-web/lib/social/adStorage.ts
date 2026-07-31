@@ -1,18 +1,23 @@
 import "server-only";
 
+import sharp from "sharp";
+
 import { renderScamTreePng } from "@/lib/social/renderAd";
 import type { ScamTree } from "@/lib/social/scamTrees";
 import { createServiceClient } from "@/lib/supabase/server";
 
 /**
- * Render a scam decision-tree ad to PNG and upload it to the public
- * `social-media` bucket under an org-scoped path, returning the public URL the
- * social publishers fetch at post time.
+ * Render a scam decision-tree ad and upload it to the public `social-media`
+ * bucket under an org-scoped path, returning the public URL publishers fetch at
+ * post time.
+ *
+ * We render PNG (next/og) then transcode to JPEG: Instagram's Content Publishing
+ * API only accepts JPEG, and JPEG is fine for Facebook / LinkedIn / Threads too,
+ * so one asset serves every platform. 4:4:4 chroma keeps the white/gold text on
+ * navy crisp (JPEG's default 4:2:0 muddies fine coloured edges).
  *
  * Service-role (takes the caller's cron client): the autopilot runs without a
  * user session, so the user-gated `uploadSocialImage` action can't be reused.
- * PNG is fine for Facebook / LinkedIn / Threads (the autopilot targets);
- * Instagram would need JPEG, but IG isn't an autopilot target.
  */
 
 type Db = Awaited<ReturnType<typeof createServiceClient>>;
@@ -30,10 +35,11 @@ export async function renderAndUploadScamAd(
   weekOf: string,
 ): Promise<string> {
   const png = await renderScamTreePng(tree);
-  const path = `${orgId}/ads/scam-${slugify(tree.key)}-${weekOf}.png`;
-  const { error } = await db.storage.from(BUCKET).upload(path, png, {
+  const jpeg = await sharp(Buffer.from(png)).jpeg({ quality: 92, chromaSubsampling: "4:4:4" }).toBuffer();
+  const path = `${orgId}/ads/scam-${slugify(tree.key)}-${weekOf}.jpg`;
+  const { error } = await db.storage.from(BUCKET).upload(path, jpeg, {
     upsert: true,
-    contentType: "image/png",
+    contentType: "image/jpeg",
     cacheControl: "3600",
   });
   if (error) throw new Error(error.message);
