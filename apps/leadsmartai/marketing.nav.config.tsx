@@ -122,7 +122,7 @@ function buildSections(tr: LabelResolver): NavSection[] {
     /* ── Schedule a Demo ── call-to-action for booking ── */
     {
       label: tr("cta.schedule_demo", "Schedule a Demo"),
-      href: "/login?next=/book",
+      href: "/book",
       icon: <Phone size={16} strokeWidth={2} aria-hidden />,
     },
   ];

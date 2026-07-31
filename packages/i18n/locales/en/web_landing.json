@@ -20,7 +20,7 @@
       "focus": "You're the boss — give the order; your AI team handles the rest while you close",
       "trained": "Trained on top-producer playbooks — and with none of the human weakness: never shy, never discouraged, never quits on the follow-up"
     },
-    "cta_primary": "Hire Your AI Team",
+    "cta_primary": "Hire Your AI Team Free",
     "cta_secondary": "See How It Works",
     "cta_demo": "Schedule a Demo",
     "trial_note": "No setup required · 14-day trial on paid plans · Cancel anytime"
@@ -242,7 +242,7 @@
       "equity_threshold": "Sphere contacts crossing equity thresholds without a nudge"
     },
     "fix_line": "CloseBoss fixes that — automatically.",
-    "cta_primary": "Start Closing More Deals Today",
+    "cta_primary": "Hire Your AI Team Free",
     "cta_secondary": "Estimate Your ROI"
   },
   "faster": {
@@ -271,8 +271,8 @@
   "final": {
     "h2": "Your next deal is already visiting your website.",
     "subtitle": "Don't let it slip away.",
-    "cta_primary": "Activate Your AI Deal Engine",
-    "cta_secondary": "Book a Demo",
+    "cta_primary": "Hire Your AI Team Free",
+    "cta_secondary": "Schedule a Demo",
     "footer_note": "14-day trial on paid plans · No credit card required to start"
   },
   "kill_crm": {
