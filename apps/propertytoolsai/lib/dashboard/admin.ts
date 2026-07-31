@@ -14,20 +14,33 @@ import {
   subscriptionMonthlyRevenue,
 } from "@/lib/dashboard/schemaConfig";
 
+export type PlatformKpis = {
+  visitors: number;
+  toolUsage: number;
+  leadsCaptured: number;
+  qualifiedLeads: number;
+  payingAgents: number;
+  revenue: number;
+};
+
 export type PlatformOverviewResponse = {
-  kpis: {
-    visitors: number;
-    toolUsage: number;
-    leadsCaptured: number;
-    qualifiedLeads: number;
-    payingAgents: number;
-    revenue: number;
+  kpis: PlatformKpis;
+  /** Same KPIs computed over the immediately-preceding window of equal length, for period-over-period deltas. */
+  kpisPrevious: PlatformKpis;
+  /** Per-day series over the current window for the KPI sparklines. */
+  kpiTrends: {
+    visitors: number[];
+    toolUsage: number[];
+    leadsCaptured: number[];
+    qualifiedLeads: number[];
   };
   propertyTools: {
     traffic: number;
     conversionRate: number;
     premiumUpgrades: number;
-    topTools: Array<{ name: string; users: number; conversion: number }>;
+    // `usageShare` = the % of visitors who used the tool (honest usage penetration).
+    // It is NOT a lead-conversion rate — per-tool lead attribution isn't tracked here.
+    topTools: Array<{ name: string; users: number; usageShare: number }>;
     topPages: Array<{ page: string; visitors: number }>;
   };
   leadSmart: {
@@ -41,7 +54,8 @@ export type PlatformOverviewResponse = {
   support: {
     openTickets: number;
     urgentTickets: number;
-    avgResponseMinutes: number;
+    /** Null when we can't compute it from available data — we don't fabricate a number. */
+    avgResponseMinutes: number | null;
     categories: Array<{ label: string; count: number }>;
   };
   alerts: Array<{ title: string; detail: string }>;
@@ -95,14 +109,22 @@ function supportPriority(r: SupportRow): string {
 }
 
 export function emptyPlatformOverviewResponse(): PlatformOverviewResponse {
+  const zeroKpis: PlatformKpis = {
+    visitors: 0,
+    toolUsage: 0,
+    leadsCaptured: 0,
+    qualifiedLeads: 0,
+    payingAgents: 0,
+    revenue: 0,
+  };
   return {
-    kpis: {
-      visitors: 0,
-      toolUsage: 0,
-      leadsCaptured: 0,
-      qualifiedLeads: 0,
-      payingAgents: 0,
-      revenue: 0,
+    kpis: { ...zeroKpis },
+    kpisPrevious: { ...zeroKpis },
+    kpiTrends: {
+      visitors: [],
+      toolUsage: [],
+      leadsCaptured: [],
+      qualifiedLeads: [],
     },
     propertyTools: {
       traffic: 0,
@@ -122,7 +144,7 @@ export function emptyPlatformOverviewResponse(): PlatformOverviewResponse {
     support: {
       openTickets: 0,
       urgentTickets: 0,
-      avgResponseMinutes: 4,
+      avgResponseMinutes: null,
       categories: [],
     },
     alerts: [],
@@ -134,6 +156,61 @@ export function emptyPlatformOverviewResponse(): PlatformOverviewResponse {
       revenueByPlan: [],
     },
   };
+}
+
+const USAGE_EVENT_NAMES = ["tool_started", "estimate_generated", "tool_click"];
+
+type MsRange = { startMs: number; endMs: number };
+
+function isQualifiedLead(l: LeadRow): boolean {
+  return leadEngagementScore(l) >= 60 || ["qualified", "closed"].includes(leadStatus(l));
+}
+
+/**
+ * The six headline KPIs computed over an arbitrary window. Used for the current
+ * window and, over the immediately-preceding window, for period-over-period
+ * deltas. Predicates mirror the inline current-window logic below.
+ */
+function computeKpis(
+  allEvents: ToolEventRow[],
+  allLeads: LeadRow[],
+  allSubs: BillingSubRow[],
+  range: MsRange | null
+): PlatformKpis {
+  const events = range
+    ? allEvents.filter((e) => {
+        const t = timeMs(e.created_at);
+        return t != null && t >= range.startMs && t <= range.endMs;
+      })
+    : allEvents;
+  const leads = range
+    ? allLeads.filter((l) =>
+        anyTimestampInRange(
+          [
+            l.created_at as string | undefined,
+            l.updated_at as string | undefined,
+            l.last_contacted_at as string | undefined,
+            l.next_contact_at as string | undefined,
+          ],
+          range
+        )
+      )
+    : allLeads;
+  const subs = range
+    ? allSubs.filter((s) =>
+        anyTimestampInRange([s.created_at as string | undefined, s.updated_at as string | undefined], range)
+      )
+    : allSubs;
+
+  const visitors = new Set(events.filter((e) => e.session_id).map((e) => String(e.session_id))).size;
+  const toolUsage = events.filter((e) => USAGE_EVENT_NAMES.includes(String(e.event_name ?? ""))).length;
+  const leadsCaptured = leads.length;
+  const qualifiedLeads = leads.filter(isQualifiedLead).length;
+  const payingSubs = subs.filter((s) => String(s.status ?? "").toLowerCase() === "active");
+  const payingAgents = payingSubs.length;
+  const revenue = payingSubs.reduce((sum, s) => sum + subscriptionMonthlyRevenue(s), 0);
+
+  return { visitors, toolUsage, leadsCaptured, qualifiedLeads, payingAgents, revenue };
 }
 
 /**
@@ -161,17 +238,19 @@ export async function getPlatformOverview({
 
   const range = parseDateRangeQuery(start, end);
 
-  let events = (toolRes.data ?? []) as ToolEventRow[];
+  const allEvents = (toolRes.data ?? []) as ToolEventRow[];
+  let events = allEvents;
   if (range) {
-    events = events.filter((e) => {
+    events = allEvents.filter((e) => {
       const t = timeMs(e.created_at);
       return t != null && t >= range.startMs && t <= range.endMs;
     });
   }
 
-  let leadRows = (leadsRes.data ?? []) as LeadRow[];
+  const allLeads = (leadsRes.data ?? []) as LeadRow[];
+  let leadRows = allLeads;
   if (range) {
-    leadRows = leadRows.filter((l) =>
+    leadRows = allLeads.filter((l) =>
       anyTimestampInRange(
         [
           l.created_at as string | undefined,
@@ -184,9 +263,10 @@ export async function getPlatformOverview({
     );
   }
 
-  let subscriptionRows = (billingRes.data ?? []) as BillingSubRow[];
+  const allSubs = (billingRes.data ?? []) as BillingSubRow[];
+  let subscriptionRows = allSubs;
   if (range) {
-    subscriptionRows = subscriptionRows.filter((s) =>
+    subscriptionRows = allSubs.filter((s) =>
       anyTimestampInRange([s.created_at as string | undefined, s.updated_at as string | undefined], range)
     );
   }
@@ -213,19 +293,25 @@ export async function getPlatformOverview({
   const payingAgents = payingSubs.length;
   const revenue = payingSubs.reduce((sum, s) => sum + subscriptionMonthlyRevenue(s), 0);
 
-  const propertyToolMap = new Map<string, number>();
+  // Unique sessions per tool = real "users" (the old code counted raw events and
+  // labelled them "users"). usageShare = those users as a % of all visitors — an
+  // honest usage-penetration figure, not a lead conversion (which we can't
+  // attribute per-tool from this data).
+  const propertyToolUsers = new Map<string, Set<string>>();
   for (const e of events) {
     const tn = e.tool_name;
-    if (tn) {
-      propertyToolMap.set(String(tn), (propertyToolMap.get(String(tn)) || 0) + 1);
-    }
+    const sid = e.session_id;
+    if (!tn || !sid) continue;
+    const key = String(tn);
+    if (!propertyToolUsers.has(key)) propertyToolUsers.set(key, new Set());
+    propertyToolUsers.get(key)!.add(String(sid));
   }
 
-  const topTools = Array.from(propertyToolMap.entries())
-    .map(([name, users]) => ({
+  const topTools = Array.from(propertyToolUsers.entries())
+    .map(([name, sessions]) => ({
       name,
-      users,
-      conversion: leadsCaptured > 0 ? Number(((users / Math.max(visitors, 1)) * 100).toFixed(1)) : 0,
+      users: sessions.size,
+      usageShare: visitors > 0 ? Number(((sessions.size / visitors) * 100).toFixed(1)) : 0,
     }))
     .sort((a, b) => b.users - a.users)
     .slice(0, 5);
@@ -262,7 +348,9 @@ export async function getPlatformOverview({
 
   const openTickets = supportRows.filter((r) => !["resolved", "closed"].includes(supportStatus(r))).length;
   const urgentTickets = supportRows.filter((r) => supportPriority(r) === "urgent").length;
-  const avgResponseMinutes = 4;
+  // We don't have first-response timestamps in the selected columns, so we can't
+  // compute this honestly. Null (rendered as "—") instead of a fabricated number.
+  const avgResponseMinutes = null;
 
   const supportCategoryMap = new Map<string, number>();
   for (const row of supportRows) {
@@ -341,6 +429,41 @@ export async function getPlatformOverview({
       value,
     }));
 
+  // Daily series for the remaining two KPI sparklines.
+  const toolUsageByDayMap = new Map<string, number>();
+  for (const e of events) {
+    if (!USAGE_EVENT_NAMES.includes(String(e.event_name ?? ""))) continue;
+    const iso = e.created_at;
+    if (typeof iso !== "string" || iso.length < 10) continue;
+    const dayKey = iso.slice(0, 10);
+    toolUsageByDayMap.set(dayKey, (toolUsageByDayMap.get(dayKey) || 0) + 1);
+  }
+  const toolUsageSpark = Array.from(toolUsageByDayMap.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, value]) => value);
+
+  const qualifiedByDayMap = new Map<string, number>();
+  for (const l of leadRows) {
+    if (!isQualifiedLead(l)) continue;
+    const iso = l.created_at;
+    if (typeof iso !== "string" || iso.length < 10) continue;
+    const dayKey = iso.slice(0, 10);
+    qualifiedByDayMap.set(dayKey, (qualifiedByDayMap.get(dayKey) || 0) + 1);
+  }
+  const qualifiedSpark = Array.from(qualifiedByDayMap.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, value]) => value);
+
+  // Previous window of equal length (immediately before the current range) for
+  // period-over-period deltas. No range (all-time) → no comparison baseline.
+  const prevRange: MsRange | null = range
+    ? { startMs: range.startMs - (range.endMs - range.startMs) - 1, endMs: range.startMs - 1 }
+    : null;
+  const kpisCurrent = computeKpis(allEvents, allLeads, allSubs, range);
+  const kpisPrevious = prevRange
+    ? computeKpis(allEvents, allLeads, allSubs, prevRange)
+    : kpisCurrent;
+
   const funnelBreakdown = funnel.map((f) => ({
     label: f.stage,
     value: f.value,
@@ -368,6 +491,13 @@ export async function getPlatformOverview({
       qualifiedLeads,
       payingAgents,
       revenue,
+    },
+    kpisPrevious,
+    kpiTrends: {
+      visitors: visitorsByDay.map((d) => d.value),
+      toolUsage: toolUsageSpark,
+      leadsCaptured: leadsByDay.map((d) => d.value),
+      qualifiedLeads: qualifiedSpark,
     },
     propertyTools: {
       traffic,
