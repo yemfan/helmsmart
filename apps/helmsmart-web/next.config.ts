@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   experimental: {},
+  // sharp is a native module (libvips); mark it external so Next doesn't bundle it
+  // and Vercel traces its platform binary, so it can dlopen at runtime (the cron's
+  // ad-image transcode). Without this it fails with ERR_DLOPEN_FAILED.
+  serverExternalPackages: ["sharp"],
   // HelmSmart Core packages are TS source — Next must transpile them.
   transpilePackages: [
     "@helm/data",
