@@ -225,6 +225,7 @@ export default function VoiceReceptionistSettingsPanel() {
                   <div className="flex items-center gap-1.5">
                     <input
                       type="time"
+                      aria-label={`${DAY_LABELS[d]} opening time`}
                       className="rounded border border-gray-300 px-2 py-1 text-xs"
                       value={dh.open}
                       onChange={(e) => setDay(d, { open: e.target.value, close: dh.close })}
@@ -232,6 +233,7 @@ export default function VoiceReceptionistSettingsPanel() {
                     <span className="text-gray-400">–</span>
                     <input
                       type="time"
+                      aria-label={`${DAY_LABELS[d]} closing time`}
                       className="rounded border border-gray-300 px-2 py-1 text-xs"
                       value={dh.close}
                       onChange={(e) => setDay(d, { open: dh.open, close: e.target.value })}
