@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getCampaign, insertPosts, type PlannedPostRow } from "@/lib/campaigns";
+import { buildInsights, getCampaign, insertPosts, type PlannedPostRow } from "@/lib/campaigns";
 import { planPosts } from "@/lib/planner";
 
 export const maxDuration = 120;
@@ -34,11 +34,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 
   try {
+    const insights = await buildInsights(user.id, id).catch(() => null);
     const planned = await planPosts(campaign.brief, {
       mediaTypes: campaign.media_types,
       channels: campaign.channels,
       link: campaign.link,
       count,
+      insights,
     });
     if (planned.length === 0) return NextResponse.json({ error: "The planner returned nothing — try again." }, { status: 502 });
 

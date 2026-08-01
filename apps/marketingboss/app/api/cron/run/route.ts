@@ -4,6 +4,9 @@ import { publishToChannels, type ChannelPost } from "@/lib/publish-dispatch";
 import { planPosts, type PlannedPost } from "@/lib/planner";
 import { generatePostMediaAdmin, BudgetError, CreditError } from "@/lib/generation";
 import { adaptForPlatforms, type Draft } from "@/lib/ai";
+import { buildInsights } from "@/lib/campaigns";
+import { getConnection, getValidAccessToken } from "@/lib/social";
+import { fetchMetric, METRIC_SUPPORTED, type Metric } from "@/lib/metrics";
 import type { BrandBrief } from "@/lib/research";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -107,8 +110,9 @@ export async function GET(req: Request) {
 
     if (c.brief) {
       try {
+        const insights = await buildInsights(c.user_id, c.id).catch(() => null);
         const planned = (
-          await planPosts(c.brief, { mediaTypes: c.media_types, channels: c.channels, link: c.link, count: 1 })
+          await planPosts(c.brief, { mediaTypes: c.media_types, channels: c.channels, link: c.link, count: 1, insights })
         )[0];
         if (planned) {
           const channels = (c.channels || []).filter((ch) => (ELIGIBLE[planned.type] || []).includes(ch));
@@ -129,8 +133,42 @@ export async function GET(req: Request) {
     await admin.from("campaigns").update({ next_run_at: nextRun, spent_credits: spent, updated_at: nowIso }).eq("id", c.id);
   }
 
-  return NextResponse.json({ ok: true, drained, posted, drafted, at: nowIso });
+  // 3) Refresh engagement metrics for recently published posts (FB / IG / YouTube).
+  const since = new Date(now.getTime() - 14 * 24 * 3600 * 1000).toISOString();
+  const stale = new Date(now.getTime() - 6 * 3600 * 1000).toISOString();
+  const { data: recent } = await admin
+    .from("campaign_posts")
+    .select("id, user_id, results, metrics")
+    .eq("status", "published")
+    .gte("published_at", since)
+    .or(`metrics_at.is.null,metrics_at.lte.${stale}`)
+    .limit(10);
+
+  let refreshed = 0;
+  for (const post of (recent as MetricRow[]) ?? []) {
+    const metrics: Record<string, Metric> = post.metrics ?? {};
+    for (const r of post.results ?? []) {
+      if (!r.ok || !r.externalId || !METRIC_SUPPORTED.has(r.platform)) continue;
+      const conn = await getConnection(post.user_id, r.platform).catch(() => null);
+      if (!conn) continue;
+      const token = r.platform === "youtube" ? await getValidAccessToken(post.user_id, conn).catch(() => null) : conn.access_token;
+      if (!token) continue;
+      const m = await fetchMetric(r.platform, r.externalId, token);
+      if (m) metrics[r.platform] = m;
+    }
+    await admin.from("campaign_posts").update({ metrics, metrics_at: nowIso }).eq("id", post.id);
+    refreshed++;
+  }
+
+  return NextResponse.json({ ok: true, drained, posted, drafted, refreshed, at: nowIso });
 }
+
+type MetricRow = {
+  id: string;
+  user_id: string;
+  results: { platform: string; ok: boolean; externalId?: string }[] | null;
+  metrics: Record<string, Metric> | null;
+};
 
 function captionOf(p: PlannedPost): string {
   return p.cta ? `${p.caption}\n\n${p.cta}` : p.caption;

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 export type ScheduleRow = { id: string; name: string; frequency: number; nextRunAt: string | null };
 
 type PubResult = { platform: string; ok: boolean; url?: string | null; error?: string };
+type Metric = { likes?: number; comments?: number; views?: number };
 type Post = {
   id: string;
   status: string;
@@ -16,10 +17,24 @@ type Post = {
   media_url: string | null;
   channels: string[];
   results: PubResult[] | null;
+  metrics: Record<string, Metric> | null;
   scheduled_for: string | null;
   published_at: string | null;
   created_at: string;
 };
+
+function totalMetrics(metrics: Record<string, Metric> | null): { likes: number; comments: number; views: number } | null {
+  if (!metrics || Object.keys(metrics).length === 0) return null;
+  let likes = 0,
+    comments = 0,
+    views = 0;
+  for (const m of Object.values(metrics)) {
+    likes += m.likes ?? 0;
+    comments += m.comments ?? 0;
+    views += m.views ?? 0;
+  }
+  return { likes, comments, views };
+}
 
 const LABEL: Record<string, string> = {
   facebook: "Facebook",
@@ -183,6 +198,16 @@ export default function PostingHub({
                   <span className="text-white/45">{TYPE_EMOJI[p.type]}</span>
                 </div>
                 <p className="mt-1 line-clamp-2 text-sm text-white/70">{p.caption}</p>
+                {(() => {
+                  const t = totalMetrics(p.metrics);
+                  return t ? (
+                    <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-white/55">
+                      <span>♥ {t.likes}</span>
+                      <span>💬 {t.comments}</span>
+                      {t.views > 0 && <span>▶ {t.views}</span>}
+                    </div>
+                  ) : null;
+                })()}
                 {p.results && (
                   <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
                     {p.results.map((r) => (
