@@ -175,7 +175,7 @@ export default function SphereDripSettingsPanel() {
             ) : null}
 
             <div>
-              <label className="block text-sm font-semibold text-slate-900">
+              <label htmlFor="drip-notes" className="block text-sm font-semibold text-slate-900">
                 Notes <span className="font-normal text-slate-400">(optional)</span>
               </label>
               <p className="mt-0.5 text-xs text-slate-500">
@@ -183,6 +183,7 @@ export default function SphereDripSettingsPanel() {
                 <em>&ldquo;paused for vacation, resume Aug 15&rdquo;</em>.
               </p>
               <textarea
+                id="drip-notes"
                 value={notesDraft}
                 onChange={(e) => setNotesDraft(e.target.value)}
                 rows={3}

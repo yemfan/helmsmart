@@ -128,17 +128,17 @@ export default function PresentationsClient({
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">
-        <div className="space-y-2">
-          <div className="ui-card-subtitle text-slate-700">
+        <label className="block space-y-2">
+          <span className="ui-card-subtitle block text-slate-700">
             Property Address
-          </div>
+          </span>
           <AddressAutocomplete
             value={address}
             onChange={setAddress}
             placeholder="Enter property address"
             className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
-        </div>
+        </label>
 
         {error ? (
           <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-800">
