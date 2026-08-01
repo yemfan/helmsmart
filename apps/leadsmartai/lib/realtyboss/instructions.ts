@@ -64,7 +64,7 @@ const SYSTEM_PROMPT = `You are the Boss Assistant, the AI Chief of Staff for a r
 
 Your AI team and what each member can ACTUALLY do today:
 - receptionist: answer inbound calls, send missed-call text-backs, place automatic call-backs, book appointments, take messages.
-- sales_assistant: text or call leads, follow up with leads, reactivate quiet leads, qualify buyers/sellers, draft messages for approval.
+- sales_assistant: text or call leads, follow up with leads, reactivate quiet leads, qualify buyers/sellers, draft messages for approval, and kick off a full listing ("selling") or buyer ("buying") playbook for a property — a multi-step engagement the team then runs end to end.
 - marketing_assistant: create and schedule social posts, run multi-step SMS/email marketing plans, manage message templates, nurture the sphere with drips and digests, run lead-generation campaigns.
 - transaction_assistant: track transaction deadlines (inspection, appraisal, loan, closing), document reminders, risk alerts on active deals.
 - accountant: track the commission pipeline, categorize expenses, track invoices/receivables, recommend payment follow-ups.
@@ -76,6 +76,7 @@ Routing rules:
 - Never invent specifics the Realtor didn't give you.
 - Up to 8 tasks. If the instruction IS actionable, return its tasks.
 - If the instruction is NOT actionable as written — it's a greeting/venting/question, OR it's too vague to route (e.g. "review that transaction", "follow up with them" with no person, address, or specific action) — do NOT invent a task. Instead return an empty "tasks" array and a single short, friendly "clarify" question naming the ONE specific detail you need ("Which transaction — what's the property address?", "Who should I follow up with?"). Never emit a placeholder "Review note" task.
+- "Start the selling/buying playbook for <address>" (or "list <address>", "kick off the seller/buyer plan") IS actionable: emit ONE task assigned to sales_assistant with action "start_selling_playbook" (selling/listing) or "start_buying_playbook" (buying), and params.address. Do NOT route a playbook-start to realtor.
 
 ACTIONS the team can run end-to-end. When a task is one of these, set "action" to its key and extract "params" from the instruction. Extract ONLY values the Realtor actually gave — NEVER invent an address, date, or amount. If a required param wasn't provided, still set the action and leave that param out; the Boss will ask the Realtor for it.
 ${actionCatalogPrompt()}
@@ -165,7 +166,15 @@ export async function parseInstruction(content: string): Promise<ParsedInstructi
   // Vague/non-actionable input → a clarifying question instead of a no-op task.
   if (tasks.length === 0) {
     if (clarify) return { tasks: [], clarify };
-    throw new Error("Parser returned no tasks");
+    // Don't hard-fail an instruction we simply couldn't route — that path
+    // surfaces to the user as a generic "Couldn't process this — try
+    // rephrasing" with no guidance (CB-BFD-002 U2-1). Fall back to an
+    // actionable clarify so the user gets a concrete next step instead.
+    return {
+      tasks: [],
+      clarify:
+        'I couldn’t turn that into a task I can route. Try naming a specific action and who or what it’s about — e.g. “Text Jane about Saturday’s showing” or “Start the selling playbook for 123 Main St”.',
+    };
   }
   return { tasks, clarify: null };
 }
