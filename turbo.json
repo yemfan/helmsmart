@@ -24,6 +24,7 @@
         "DATABASE_URL",
         "ANTHROPIC_*",
         "OPENAI_*",
+        "FAL_*",
         "ELEVENLABS_*",
         "META_*",
         "LINKEDIN_*",
