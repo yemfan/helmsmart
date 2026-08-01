@@ -4,16 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { PRESETS } from "@/lib/presets";
 
 type Mode = "image" | "video";
 const ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"] as const;
 type Aspect = (typeof ASPECTS)[number];
-
-const EXAMPLES = [
-  "Product hero shot of a matte-black skincare bottle on wet stone, water droplets, soft studio rim light, shallow depth of field, editorial, teal-and-amber grade",
-  "Bold Instagram ad: fresh iced coffee splashing mid-air on a peach background, high-speed capture, punchy colors, negative space for a headline",
-  "Cinematic real-estate twilight exterior of a modern hillside home, warm interior glow, pool reflection, wide 24mm, dramatic sky",
-];
 
 export default function Studio() {
   const router = useRouter();
@@ -25,6 +20,8 @@ export default function Studio() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<string[]>([]);
+  const [resultMode, setResultMode] = useState<Mode>("image");
+  const [modalOpen, setModalOpen] = useState(false);
 
   const [refUrl, setRefUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -33,6 +30,25 @@ export default function Studio() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUid(data.user?.id ?? null));
   }, [supabase]);
+
+  // Close the result popup on Escape.
+  useEffect(() => {
+    if (!modalOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setModalOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [modalOpen]);
+
+  function applyPreset(id: string) {
+    const p = PRESETS.find((x) => x.id === id);
+    if (!p) return;
+    setRefUrl(null);
+    setMode(p.mode);
+    setAspect(p.aspect);
+    setPrompt(p.prompt);
+  }
 
   async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -78,7 +94,10 @@ export default function Studio() {
       });
       const data = (await res.json()) as { urls?: string[]; error?: string };
       if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
-      setResults(data.urls || []);
+      const urls = data.urls || [];
+      setResults(urls);
+      setResultMode(mode);
+      if (urls.length) setModalOpen(true); // pop the result up front and center
       router.refresh(); // update the credit badge in the nav
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
@@ -194,18 +213,23 @@ export default function Studio() {
           </button>
         </div>
 
-        {!prompt && !hasRef && (
-          <div className="mt-4 flex flex-col gap-1.5">
-            <span className="text-xs text-white/35">Try one:</span>
-            {EXAMPLES.map((ex) => (
-              <button
-                key={ex}
-                onClick={() => setPrompt(ex)}
-                className="truncate rounded-lg border border-white/5 bg-white/[0.03] px-3 py-2 text-left text-xs text-white/55 transition hover:border-white/15 hover:text-white/80"
-              >
-                {ex}
-              </button>
-            ))}
+        {/* One-click marketing presets */}
+        {!hasRef && (
+          <div className="mt-4">
+            <span className="text-xs text-white/35">Start from a preset:</span>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {PRESETS.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => applyPreset(p.id)}
+                  title={`${p.mode} · ${p.aspect}`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/70 transition hover:border-boss-violet/50 hover:text-white"
+                >
+                  <span aria-hidden>{p.emoji}</span>
+                  {p.label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </section>
@@ -234,27 +258,84 @@ export default function Studio() {
         </div>
       )}
 
-      {results.length > 0 && (
-        <section className="grid grid-cols-1 gap-4">
-          {results.map((url) => (
-            <figure key={url} className="overflow-hidden rounded-2xl border border-white/10 bg-black/40">
-              {mode === "video" ? (
-                <video src={url} controls autoPlay loop muted className="w-full" />
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={url} alt="Generated marketing creative" className="w-full" />
-              )}
-              <figcaption className="flex items-center justify-between px-3 py-2 text-xs text-white/50">
-                <span className="capitalize">{mode} · saved to your gallery</span>
-                <a href={url} download target="_blank" rel="noreferrer" className="font-medium text-boss-gold hover:underline">
-                  Download ↗
-                </a>
-              </figcaption>
-            </figure>
-          ))}
-        </section>
+      {/* When the popup is closed, offer a quick way back to the last result */}
+      {results.length > 0 && !modalOpen && (
+        <button
+          onClick={() => setModalOpen(true)}
+          className="mx-auto inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-white/70 transition hover:text-white"
+        >
+          ✓ Saved to your gallery · View result ↗
+        </button>
+      )}
+
+      {modalOpen && results.length > 0 && (
+        <ResultModal urls={results} mode={resultMode} onClose={() => setModalOpen(false)} />
       )}
     </>
+  );
+}
+
+function ResultModal({
+  urls,
+  mode,
+  onClose,
+}: {
+  urls: string[];
+  mode: Mode;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Generated result"
+    >
+      <div
+        className="relative flex max-h-[90dvh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink-2 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full bg-black/50 text-lg text-white/80 transition hover:bg-black/70 hover:text-white"
+        >
+          ×
+        </button>
+
+        <div className="overflow-y-auto">
+          {urls.map((url) => (
+            <div key={url} className="bg-black/40">
+              {mode === "video" ? (
+                <video src={url} controls autoPlay loop className="max-h-[70dvh] w-full" />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={url} alt="Generated marketing creative" className="max-h-[70dvh] w-full object-contain" />
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between gap-3 border-t border-white/10 px-4 py-3 text-sm">
+          <span className="text-white/50">Saved to your gallery</span>
+          <div className="flex items-center gap-2">
+            <Link href="/gallery" className="rounded-lg px-3 py-1.5 font-medium text-white/60 transition hover:text-white">
+              Gallery
+            </Link>
+            <a
+              href={urls[0]}
+              download
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg bg-boss-gold px-4 py-1.5 font-semibold text-black transition hover:brightness-105"
+            >
+              Download ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
