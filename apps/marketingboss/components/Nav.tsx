@@ -36,7 +36,7 @@ export default function Nav({ email, credits }: { email: string; credits?: numbe
   const initial = (email?.[0] ?? "?").toUpperCase();
   const items = [
     { href: "/", label: "Studio" },
-    { href: "/compose", label: "AI Social Post" },
+    { href: "/compose", label: "Posting" },
     { href: "/autopilot", label: "Autopilot" },
     { href: "/gallery", label: "Gallery" },
     { href: "/connections", label: "Connections" },

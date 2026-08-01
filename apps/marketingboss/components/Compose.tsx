@@ -98,6 +98,9 @@ export default function Compose({ status }: { status: ComposeStatus }) {
 
   const [publishing, setPublishing] = useState(false);
   const [results, setResults] = useState<PubResult[] | null>(null);
+  const [publishMode, setPublishMode] = useState<"now" | "schedule">("now");
+  const [scheduledFor, setScheduledFor] = useState("");
+  const [scheduled, setScheduled] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
@@ -324,6 +327,40 @@ export default function Compose({ status }: { status: ComposeStatus }) {
       setResults(data.results || []);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Publish failed.");
+    } finally {
+      setPublishing(false);
+    }
+  }
+
+  async function schedule() {
+    if (publishing || !previews || previews.length === 0) return;
+    if (!scheduledFor) return setError("Pick a date and time.");
+    const when = new Date(scheduledFor);
+    if (isNaN(when.getTime()) || when.getTime() < Date.now() + 60_000) {
+      return setError("Pick a time at least a minute from now.");
+    }
+    setPublishing(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/compose/schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type,
+          url: mediaUrl || undefined,
+          link: link.trim() || undefined,
+          title,
+          caption,
+          hashtags: parseHashtags(hashtags),
+          posts: previews,
+          scheduledFor: when.toISOString(),
+        }),
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) throw new Error(data.error || `Scheduling failed (${res.status})`);
+      setScheduled(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Scheduling failed.");
     } finally {
       setPublishing(false);
     }
@@ -634,15 +671,57 @@ export default function Compose({ status }: { status: ComposeStatus }) {
                         <textarea value={p.caption} onChange={(e) => updatePreview(p.platform, e.target.value)} rows={3} className={`${fieldCls} resize-y`} />
                       </div>
                     ))}
-                    <div className="flex items-center justify-between gap-2">
-                      <button onClick={runPreview} disabled={previewing} className="text-xs text-white/50 underline underline-offset-2 transition hover:text-white disabled:opacity-40">
-                        {previewing ? "Re-tailoring…" : "Re-tailor with AI"}
-                      </button>
-                      <button onClick={publish} disabled={publishing} className={primaryBtn}>
-                        {publishing && <Spinner />}
-                        {publishing ? "Publishing…" : `Publish to ${previews.length} channel${previews.length > 1 ? "s" : ""}`}
-                      </button>
-                    </div>
+                    {scheduled ? (
+                      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
+                        Scheduled ✓ — it&apos;ll post automatically at your chosen time. Track it under{" "}
+                        <Link href="/compose" className="font-semibold underline underline-offset-2">
+                          Scheduled
+                        </Link>
+                        .
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <div className="inline-flex rounded-lg border border-white/10 bg-black/30 p-1 text-sm">
+                            {(["now", "schedule"] as const).map((m) => (
+                              <button
+                                key={m}
+                                onClick={() => setPublishMode(m)}
+                                className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
+                                  publishMode === m ? "bg-boss-violet text-white shadow" : "text-white/60 hover:text-white"
+                                }`}
+                              >
+                                {m === "now" ? "Publish now" : "Schedule"}
+                              </button>
+                            ))}
+                          </div>
+                          {publishMode === "schedule" && (
+                            <input
+                              type="datetime-local"
+                              value={scheduledFor}
+                              onChange={(e) => setScheduledFor(e.target.value)}
+                              className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none focus:border-boss-violet/60"
+                            />
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <button onClick={runPreview} disabled={previewing} className="text-xs text-white/50 underline underline-offset-2 transition hover:text-white disabled:opacity-40">
+                            {previewing ? "Re-tailoring…" : "Re-tailor with AI"}
+                          </button>
+                          {publishMode === "now" ? (
+                            <button onClick={publish} disabled={publishing} className={primaryBtn}>
+                              {publishing && <Spinner />}
+                              {publishing ? "Publishing…" : `Publish to ${previews.length} channel${previews.length > 1 ? "s" : ""}`}
+                            </button>
+                          ) : (
+                            <button onClick={schedule} disabled={publishing} className={primaryBtn}>
+                              {publishing && <Spinner />}
+                              {publishing ? "Scheduling…" : "Schedule post"}
+                            </button>
+                          )}
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </>

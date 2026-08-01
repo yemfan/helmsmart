@@ -87,6 +87,79 @@ export async function getPost(userId: string, id: string): Promise<CampaignPost 
   return (data as CampaignPost) ?? null;
 }
 
+/** Upcoming scheduled posts (one-off + campaign), soonest first. */
+export async function listScheduled(userId: string): Promise<CampaignPost[]> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("campaign_posts")
+    .select(POST_COLS)
+    .eq("user_id", userId)
+    .eq("status", "scheduled")
+    .order("scheduled_for", { ascending: true });
+  return (data as CampaignPost[]) ?? [];
+}
+
+/** Published + failed posts, most recent first. */
+export async function listHistory(userId: string, limit = 40): Promise<CampaignPost[]> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("campaign_posts")
+    .select(POST_COLS)
+    .eq("user_id", userId)
+    .in("status", ["published", "failed"])
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return (data as CampaignPost[]) ?? [];
+}
+
+export type ScheduledPostInput = {
+  type: "text" | "image" | "video";
+  title: string | null;
+  caption: string;
+  hashtags: string[];
+  link: string | null;
+  mediaUrl: string | null;
+  perPlatform: Record<string, string>;
+  channels: string[];
+  scheduledFor: string;
+};
+
+/** Store a standalone (no-campaign) post scheduled to go out later. */
+export async function insertScheduledPost(userId: string, p: ScheduledPostInput): Promise<CampaignPost> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("campaign_posts")
+    .insert({
+      user_id: userId,
+      campaign_id: null,
+      status: "scheduled",
+      type: p.type,
+      title: p.title,
+      caption: p.caption,
+      hashtags: p.hashtags,
+      link: p.link,
+      media_url: p.mediaUrl,
+      per_platform: p.perPlatform,
+      channels: p.channels,
+      scheduled_for: p.scheduledFor,
+    })
+    .select(POST_COLS)
+    .single();
+  if (error) throw new Error(error.message);
+  return data as CampaignPost;
+}
+
+/** Edit a campaign's posting cadence. */
+export async function setCampaignFrequency(userId: string, id: string, frequency: number): Promise<void> {
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("campaigns")
+    .update({ frequency, updated_at: new Date().toISOString() })
+    .eq("user_id", userId)
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
 export type PlannedPostRow = {
   type: "text" | "image" | "video";
   angle: string;

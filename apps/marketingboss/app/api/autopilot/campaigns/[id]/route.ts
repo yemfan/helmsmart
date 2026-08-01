@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { deleteCampaign, setCampaignStatus } from "@/lib/campaigns";
+import { deleteCampaign, setCampaignFrequency, setCampaignStatus } from "@/lib/campaigns";
 
 export const runtime = "nodejs";
 
-/** Pause / resume a campaign. */
+/** Pause / resume a campaign, or change its posting cadence. */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
@@ -19,12 +19,15 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
-  const status = body.status === "paused" ? "paused" : body.status === "active" ? "active" : null;
-  if (!status) return NextResponse.json({ error: "Unknown status." }, { status: 400 });
 
   try {
-    await setCampaignStatus(user.id, id, status);
-    return NextResponse.json({ ok: true, status });
+    if (body.status === "paused" || body.status === "active") {
+      await setCampaignStatus(user.id, id, body.status);
+    }
+    if (typeof body.frequency === "number") {
+      await setCampaignFrequency(user.id, id, Math.min(Math.max(Math.round(body.frequency), 1), 21));
+    }
+    return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "Update failed." }, { status: 500 });
   }
