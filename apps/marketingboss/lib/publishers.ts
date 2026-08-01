@@ -11,7 +11,7 @@ function firstImage(content: PostContent): string | null {
   return content.media.find((m) => m.kind === "image")?.url ?? null;
 }
 
-async function fetchBytes(url: string): Promise<{ bytes: Uint8Array; contentType: string }> {
+async function fetchBytes(url: string): Promise<{ bytes: Uint8Array<ArrayBuffer>; contentType: string }> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Could not fetch the image (${res.status}).`);
   const contentType = res.headers.get("content-type") || "image/jpeg";
