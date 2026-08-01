@@ -38,6 +38,9 @@ export type CheckoutSession = {
  * Create a hosted Checkout Session for a credit pack. The pack is built inline
  * with price_data (no pre-created Stripe Product). We stamp the buyer + credit
  * count into metadata so fulfillment knows who to credit and by how much.
+ *
+ * On success Stripe returns the buyer to the Studio (`/?purchased=<session>`),
+ * which fulfills the credits and shows a confirmation, ready to create.
  */
 export async function createCheckoutSession(opts: {
   origin: string;
@@ -47,7 +50,7 @@ export async function createCheckoutSession(opts: {
 }): Promise<CheckoutSession> {
   const form = new URLSearchParams();
   form.set("mode", "payment");
-  form.set("success_url", `${opts.origin}/billing?status=success&session_id={CHECKOUT_SESSION_ID}`);
+  form.set("success_url", `${opts.origin}/?purchased={CHECKOUT_SESSION_ID}`);
   form.set("cancel_url", `${opts.origin}/billing?status=cancel`);
   form.set("client_reference_id", opts.userId);
   if (opts.email) form.set("customer_email", opts.email);
