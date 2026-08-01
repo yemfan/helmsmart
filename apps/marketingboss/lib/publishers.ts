@@ -121,6 +121,8 @@ export async function publishPinterest(opts: {
       board_id: opts.boardId,
       title,
       description: opts.content.caption.slice(0, 800),
+      // The CTA destination, when the composer supplied one.
+      ...(opts.content.link ? { link: opts.content.link } : {}),
       media_source: { source_type: "image_url", url: imageUrl },
     }),
   });
