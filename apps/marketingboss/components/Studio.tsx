@@ -10,7 +10,17 @@ type Mode = "image" | "video";
 const ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"] as const;
 type Aspect = (typeof ASPECTS)[number];
 
-export default function Studio() {
+type YoutubeProps = {
+  youtubeEnabled?: boolean;
+  youtubeConnected?: boolean;
+  youtubeChannel?: string | null;
+};
+
+export default function Studio({
+  youtubeEnabled = false,
+  youtubeConnected = false,
+  youtubeChannel = null,
+}: YoutubeProps) {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [uid, setUid] = useState<string | null>(null);
@@ -21,6 +31,7 @@ export default function Studio() {
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<string[]>([]);
   const [resultMode, setResultMode] = useState<Mode>("image");
+  const [resultPrompt, setResultPrompt] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
 
   const [refUrl, setRefUrl] = useState<string | null>(null);
@@ -97,6 +108,7 @@ export default function Studio() {
       const urls = data.urls || [];
       setResults(urls);
       setResultMode(mode);
+      setResultPrompt(p);
       if (urls.length) setModalOpen(true); // pop the result up front and center
       router.refresh(); // update the credit badge in the nav
     } catch (e) {
@@ -269,7 +281,15 @@ export default function Studio() {
       )}
 
       {modalOpen && results.length > 0 && (
-        <ResultModal urls={results} mode={resultMode} onClose={() => setModalOpen(false)} />
+        <ResultModal
+          urls={results}
+          mode={resultMode}
+          defaultTitle={resultPrompt}
+          youtubeEnabled={youtubeEnabled}
+          youtubeConnected={youtubeConnected}
+          youtubeChannel={youtubeChannel}
+          onClose={() => setModalOpen(false)}
+        />
       )}
     </>
   );
@@ -278,10 +298,18 @@ export default function Studio() {
 function ResultModal({
   urls,
   mode,
+  defaultTitle,
+  youtubeEnabled,
+  youtubeConnected,
+  youtubeChannel,
   onClose,
 }: {
   urls: string[];
   mode: Mode;
+  defaultTitle: string;
+  youtubeEnabled: boolean;
+  youtubeConnected: boolean;
+  youtubeChannel: string | null;
   onClose: () => void;
 }) {
   return (
@@ -308,13 +336,22 @@ function ResultModal({
           {urls.map((url) => (
             <div key={url} className="bg-black/40">
               {mode === "video" ? (
-                <video src={url} controls autoPlay loop className="max-h-[70dvh] w-full" />
+                <video src={url} controls autoPlay loop className="max-h-[60dvh] w-full" />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={url} alt="Generated marketing creative" className="max-h-[70dvh] w-full object-contain" />
+                <img src={url} alt="Generated marketing creative" className="max-h-[60dvh] w-full object-contain" />
               )}
             </div>
           ))}
+
+          {mode === "video" && youtubeEnabled && (
+            <YoutubePublish
+              url={urls[0]}
+              defaultTitle={defaultTitle}
+              connected={youtubeConnected}
+              channel={youtubeChannel}
+            />
+          )}
         </div>
 
         <div className="flex items-center justify-between gap-3 border-t border-white/10 px-4 py-3 text-sm">
@@ -339,6 +376,117 @@ function ResultModal({
   );
 }
 
-function Spinner() {
-  return <span className="size-4 animate-spin rounded-full border-2 border-black/30 border-t-black" aria-hidden />;
+function YoutubePublish({
+  url,
+  defaultTitle,
+  connected,
+  channel,
+}: {
+  url: string;
+  defaultTitle: string;
+  connected: boolean;
+  channel: string | null;
+}) {
+  const [title, setTitle] = useState(defaultTitle.slice(0, 100));
+  const [privacy, setPrivacy] = useState<"unlisted" | "public" | "private">("unlisted");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [published, setPublished] = useState<string | null>(null);
+  const [needsConnect, setNeedsConnect] = useState(!connected);
+
+  async function publish() {
+    if (busy) return;
+    setBusy(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/youtube/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, title, privacy }),
+      });
+      const data = (await res.json()) as { url?: string; error?: string; needsConnect?: boolean };
+      if (!res.ok) {
+        if (data.needsConnect) setNeedsConnect(true);
+        throw new Error(data.error || `Publish failed (${res.status})`);
+      }
+      setPublished(data.url || null);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Publish failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="border-t border-white/10 bg-black/20 px-4 py-3">
+      {published ? (
+        <div className="flex items-center justify-between gap-3 text-sm">
+          <span className="text-emerald-300">Published to YouTube ✓</span>
+          <a
+            href={published}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg bg-boss-gold px-3 py-1.5 text-xs font-semibold text-black transition hover:brightness-105"
+          >
+            Watch on YouTube ↗
+          </a>
+        </div>
+      ) : needsConnect ? (
+        <div className="flex items-center justify-between gap-3 text-sm">
+          <span className="text-white/60">Publish this clip straight to your YouTube channel.</span>
+          <a
+            href="/api/youtube/connect"
+            className="whitespace-nowrap rounded-lg bg-[#FF0000] px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-110"
+          >
+            Connect YouTube
+          </a>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-xs text-white/45">
+            <span>▶ Publish to YouTube</span>
+            {channel && <span className="text-white/30">· {channel}</span>}
+          </div>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            maxLength={100}
+            placeholder="Video title"
+            className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-white/35 outline-none focus:border-boss-violet/60"
+          />
+          <div className="flex items-center gap-2">
+            <select
+              value={privacy}
+              onChange={(e) => setPrivacy(e.target.value as "unlisted" | "public" | "private")}
+              className="rounded-lg border border-white/10 bg-black/30 px-2.5 py-2 text-sm text-white/80 outline-none focus:border-boss-violet/60"
+            >
+              <option value="unlisted">Unlisted</option>
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
+            <button
+              onClick={publish}
+              disabled={busy || !title.trim()}
+              className="ml-auto inline-flex items-center gap-2 rounded-lg bg-[#FF0000] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {busy && <Spinner light />}
+              {busy ? "Publishing…" : "Publish"}
+            </button>
+          </div>
+          {err && <p className="text-xs text-red-300">{err}</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Spinner({ light = false }: { light?: boolean }) {
+  return (
+    <span
+      className={`size-4 animate-spin rounded-full border-2 ${
+        light ? "border-white/40 border-t-white" : "border-black/30 border-t-black"
+      }`}
+      aria-hidden
+    />
+  );
 }
