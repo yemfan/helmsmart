@@ -30,12 +30,13 @@ export default function Nav({ email, credits }: { email: string; credits?: numbe
 
       <nav className="ml-auto flex items-center gap-1.5 text-sm">
         {typeof credits === "number" && (
-          <span
-            title="Generation credits remaining"
-            className="mr-1 rounded-full border border-boss-gold/30 bg-boss-gold/10 px-2.5 py-1 text-xs font-semibold text-boss-gold"
+          <Link
+            href="/billing"
+            title="Generation credits — click to buy more"
+            className="mr-1 rounded-full border border-boss-gold/30 bg-boss-gold/10 px-2.5 py-1 text-xs font-semibold text-boss-gold transition hover:bg-boss-gold/20"
           >
-            {credits} credits
-          </span>
+            {credits} credits <span className="opacity-70">+</span>
+          </Link>
         )}
         <Link
           href="/"
@@ -52,6 +53,14 @@ export default function Nav({ email, credits }: { email: string; credits?: numbe
           }`}
         >
           Gallery
+        </Link>
+        <Link
+          href="/billing"
+          className={`rounded-lg px-3 py-1.5 font-medium transition ${
+            pathname === "/billing" ? "bg-white/10 text-white" : "text-white/55 hover:text-white"
+          }`}
+        >
+          Billing
         </Link>
         <button
           onClick={signOut}
