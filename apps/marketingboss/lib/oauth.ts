@@ -27,8 +27,14 @@ export interface OAuthAdapter {
   exchange(code: string, origin: string): Promise<UpsertConnection[]>;
 }
 
+/**
+ * Always use the APEX domain for the redirect URI, so a single whitelisted URI
+ * works whether the user is on www or the bare domain (Meta/LinkedIn/etc. do a
+ * strict exact-match). The state cookie is scoped to the registrable domain (see
+ * the connect route) so it's readable after the apex redirect.
+ */
 function redirectUri(origin: string, key: string): string {
-  return `${origin}/api/social/callback/${key}`;
+  return `${origin.replace(/:\/\/www\./, "://")}/api/social/callback/${key}`;
 }
 
 async function getJson<T = Record<string, unknown>>(

@@ -20,15 +20,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ platform
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.redirect(new URL("/login", req.url));
 
-  const origin = new URL(req.url).origin;
+  const url = new URL(req.url);
   const state = crypto.randomUUID();
-  const res = NextResponse.redirect(adapter.authUrl(origin, state));
+  const res = NextResponse.redirect(adapter.authUrl(url.origin, state));
+  // Scope to the registrable domain (strip www) so the cookie is still readable
+  // after OAuth redirects back to the apex host (redirectUri canonicalizes to apex).
+  const domain = url.hostname.replace(/^www\./, "");
   (await cookies()).set(`sc_state_${platform}`, state, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
     maxAge: 600,
     path: "/",
+    domain,
   });
   return res;
 }
