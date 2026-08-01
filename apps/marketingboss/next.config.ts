@@ -10,6 +10,10 @@ const config: NextConfig = {
       { protocol: "https", hostname: "v3.fal.media" },
     ],
   },
+  // Compile the shared marketing core (TS source, no build step) — it's resolved
+  // from the hoisted monorepo node_modules. Gives us publishToAll + the pure
+  // Meta/Threads request builders without duplicating that knowledge here.
+  transpilePackages: ["@helm/dna-marketing"],
   // Hardcode the PUBLIC Supabase URL + anon key so they're always inlined at
   // build (the auth middleware/client need them). The anon key is protected by
   // RLS and safe to commit — this removes a fragile manual Vercel env step, so

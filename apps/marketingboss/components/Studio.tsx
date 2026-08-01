@@ -5,22 +5,25 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { PRESETS } from "@/lib/presets";
+import SocialPublish, { type SocialStatus } from "@/components/SocialPublish";
 
 type Mode = "image" | "video";
 const ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"] as const;
 type Aspect = (typeof ASPECTS)[number];
 
-type YoutubeProps = {
+type StudioProps = {
   youtubeEnabled?: boolean;
   youtubeConnected?: boolean;
   youtubeChannel?: string | null;
+  social?: SocialStatus;
 };
 
 export default function Studio({
   youtubeEnabled = false,
   youtubeConnected = false,
   youtubeChannel = null,
-}: YoutubeProps) {
+  social,
+}: StudioProps) {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [uid, setUid] = useState<string | null>(null);
@@ -42,7 +45,6 @@ export default function Studio({
     supabase.auth.getUser().then(({ data }) => setUid(data.user?.id ?? null));
   }, [supabase]);
 
-  // Close the result popup on Escape.
   useEffect(() => {
     if (!modalOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -109,8 +111,8 @@ export default function Studio({
       setResults(urls);
       setResultMode(mode);
       setResultPrompt(p);
-      if (urls.length) setModalOpen(true); // pop the result up front and center
-      router.refresh(); // update the credit badge in the nav
+      if (urls.length) setModalOpen(true);
+      router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
     } finally {
@@ -159,7 +161,6 @@ export default function Studio({
             ))}
           </div>
 
-          {/* reference image */}
           {hasRef ? (
             <div className="ml-1 flex items-center gap-2 rounded-lg border border-boss-gold/30 bg-boss-gold/10 py-1 pl-1 pr-2 text-xs">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -225,7 +226,6 @@ export default function Studio({
           </button>
         </div>
 
-        {/* One-click marketing presets */}
         {!hasRef && (
           <div className="mt-4">
             <span className="text-xs text-white/35">Start from a preset:</span>
@@ -270,7 +270,6 @@ export default function Studio({
         </div>
       )}
 
-      {/* When the popup is closed, offer a quick way back to the last result */}
       {results.length > 0 && !modalOpen && (
         <button
           onClick={() => setModalOpen(true)}
@@ -288,6 +287,7 @@ export default function Studio({
           youtubeEnabled={youtubeEnabled}
           youtubeConnected={youtubeConnected}
           youtubeChannel={youtubeChannel}
+          social={social}
           onClose={() => setModalOpen(false)}
         />
       )}
@@ -302,6 +302,7 @@ function ResultModal({
   youtubeEnabled,
   youtubeConnected,
   youtubeChannel,
+  social,
   onClose,
 }: {
   urls: string[];
@@ -310,6 +311,7 @@ function ResultModal({
   youtubeEnabled: boolean;
   youtubeConnected: boolean;
   youtubeChannel: string | null;
+  social?: SocialStatus;
   onClose: () => void;
 }) {
   return (
@@ -351,6 +353,9 @@ function ResultModal({
               connected={youtubeConnected}
               channel={youtubeChannel}
             />
+          )}
+          {mode === "image" && social && (
+            <SocialPublish url={urls[0]} defaultCaption={defaultTitle} status={social} />
           )}
         </div>
 
