@@ -41,19 +41,21 @@ function extFrom(url: string, type: GenType): { ext: string; contentType: string
 export type GenParams = { type: GenType; prompt: string; aspect: string; model?: string; imageUrl?: string };
 
 /**
- * Reserve credits, generate, persist. Throws CreditError (402) when the user is
- * out of credits; refunds the reservation if generation fails.
+ * Reserve credits, generate on fal, persist to Storage + `generations`. The
+ * credit reserve/refund is injected so the same core serves a user session
+ * (consume_credits, keyed on auth.uid()) and the cron (deduct_credits by id).
  */
-export async function generateAndStore(
-  supabase: SupabaseClient,
+async function generateCore(
+  client: SupabaseClient,
   userId: string,
   params: GenParams,
+  reserve: (cost: number) => Promise<number>,
+  refund: (cost: number) => Promise<void>,
 ): Promise<{ urls: string[]; model: string; credits: number; cost: number }> {
   const cost = creditCost(params.type, !!params.imageUrl);
 
-  const { data: remaining, error: creditErr } = await supabase.rpc("consume_credits", { p_cost: cost });
-  if (creditErr) throw new Error("Could not check credits.");
-  if (typeof remaining !== "number" || remaining < 0) throw new CreditError(cost);
+  const remaining = await reserve(cost);
+  if (remaining < 0) throw new CreditError(cost);
 
   try {
     const result = await generate(params);
@@ -65,11 +67,11 @@ export async function generateAndStore(
       const { ext, contentType } = extFrom(src, params.type);
       const path = `${userId}/${crypto.randomUUID()}.${ext}`;
 
-      const { error: upErr } = await supabase.storage.from("media").upload(path, bytes, { contentType, upsert: false });
+      const { error: upErr } = await client.storage.from("media").upload(path, bytes, { contentType, upsert: false });
       if (upErr) throw new Error(`Storage upload failed: ${upErr.message}`);
-      const publicUrl = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+      const publicUrl = client.storage.from("media").getPublicUrl(path).data.publicUrl;
 
-      const { error: dbErr } = await supabase.from("generations").insert({
+      const { error: dbErr } = await client.from("generations").insert({
         user_id: userId,
         type: params.type,
         prompt: params.prompt,
@@ -80,12 +82,53 @@ export async function generateAndStore(
       if (dbErr) throw new Error(`Save failed: ${dbErr.message}`);
       savedUrls.push(publicUrl);
     }
-    return { urls: savedUrls, model: result.model, credits: remaining as number, cost };
+    return { urls: savedUrls, model: result.model, credits: remaining, cost };
   } catch (e) {
-    // Generation failed after reserving — refund (best-effort).
-    await supabase.rpc("consume_credits", { p_cost: -cost });
+    await refund(cost); // best-effort
     throw e;
   }
+}
+
+/** Session path — spends the calling user's credits via consume_credits(). */
+export async function generateAndStore(
+  supabase: SupabaseClient,
+  userId: string,
+  params: GenParams,
+): Promise<{ urls: string[]; model: string; credits: number; cost: number }> {
+  return generateCore(
+    supabase,
+    userId,
+    params,
+    async (cost) => {
+      const { data, error } = await supabase.rpc("consume_credits", { p_cost: cost });
+      if (error) throw new Error("Could not check credits.");
+      return typeof data === "number" ? data : -1;
+    },
+    async (cost) => {
+      await supabase.rpc("consume_credits", { p_cost: -cost });
+    },
+  );
+}
+
+/** Service-role path (cron) — spends a specific user's credits via deduct_credits(). */
+export async function generateAndStoreAdmin(
+  admin: SupabaseClient,
+  userId: string,
+  params: GenParams,
+): Promise<{ urls: string[]; model: string; credits: number; cost: number }> {
+  return generateCore(
+    admin,
+    userId,
+    params,
+    async (cost) => {
+      const { data, error } = await admin.rpc("deduct_credits", { p_user: userId, p_cost: cost });
+      if (error) throw new Error("Could not check credits.");
+      return typeof data === "number" ? data : -1;
+    },
+    async (cost) => {
+      await admin.rpc("deduct_credits", { p_user: userId, p_cost: -cost });
+    },
+  );
 }
 
 /**
@@ -105,6 +148,27 @@ export async function generatePostMedia(
   }
   const aspect = type === "video" ? "16:9" : "1:1";
   const out = await generateAndStore(supabase, userId, { type, prompt: post.media_prompt || "", aspect });
+  const url = out.urls[0];
+  if (!url) throw new Error("Generation returned no media.");
+  return { url, cost: out.cost };
+}
+
+/**
+ * Cron path: generate media for an autopilot post the same way, but spend
+ * credits via the service-role deduct_credits() (no user session).
+ */
+export async function generatePostMediaAdmin(
+  admin: SupabaseClient,
+  userId: string,
+  budgetCredits: number | null,
+  spentCredits: number,
+  type: GenType,
+  mediaPrompt: string,
+): Promise<{ url: string; cost: number }> {
+  const cost = creditCost(type, false);
+  if (budgetCredits != null && spentCredits + cost > budgetCredits) throw new BudgetError();
+  const aspect = type === "video" ? "16:9" : "1:1";
+  const out = await generateAndStoreAdmin(admin, userId, { type, prompt: mediaPrompt || "", aspect });
   const url = out.urls[0];
   if (!url) throw new Error("Generation returned no media.");
   return { url, cost: out.cost };
