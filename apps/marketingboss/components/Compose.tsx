@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 type PostType = "text" | "image" | "video";
 type Draft = {
@@ -14,6 +15,7 @@ type Draft = {
 };
 type PlatformCaption = { platform: string; caption: string };
 type PubResult = { platform: string; ok: boolean; url?: string | null; error?: string };
+type GalleryItem = { url: string; type: string };
 
 export type ComposeStatus = {
   /** provider key (meta/threads/linkedin/pinterest) → OAuth app configured */
@@ -64,6 +66,9 @@ function parseHashtags(s: string): string[] {
 }
 
 export default function Compose({ status }: { status: ComposeStatus }) {
+  const [supabase] = useState(() => createClient());
+  const [uid, setUid] = useState<string | null>(null);
+
   const [type, setType] = useState<PostType>("image");
   const [intent, setIntent] = useState("");
   const [drafting, setDrafting] = useState(false);
@@ -80,6 +85,13 @@ export default function Compose({ status }: { status: ComposeStatus }) {
   const [generating, setGenerating] = useState(false);
   const [mediaUrl, setMediaUrl] = useState<string | null>(null);
 
+  // Reference image (guides generation) + own-media upload/gallery.
+  const [refUrl, setRefUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const refFileRef = useRef<HTMLInputElement>(null);
+  const mediaFileRef = useRef<HTMLInputElement>(null);
+  const [gallery, setGallery] = useState<null | { mode: "ref" | "media"; loading: boolean; items: GalleryItem[] }>(null);
+
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [previewing, setPreviewing] = useState(false);
   const [previews, setPreviews] = useState<PlatformCaption[] | null>(null);
@@ -90,6 +102,10 @@ export default function Compose({ status }: { status: ComposeStatus }) {
   const [error, setError] = useState<string | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
   const isCreditError = !!error && /credit/i.test(error);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUid(data.user?.id ?? null));
+  }, [supabase]);
 
   const needsMedia = type !== "text";
   const steps: StepId[] = needsMedia ? ["idea", "copy", "media", "publish"] : ["idea", "copy", "publish"];
@@ -112,7 +128,6 @@ export default function Compose({ status }: { status: ComposeStatus }) {
     return PLATFORM_META[p].provider === "youtube" ? status.youtubeChannel : status.accountName[p] ?? null;
   }
 
-  // A step is reachable once its prerequisites are met.
   function unlocked(id: StepId): boolean {
     if (id === "idea") return true;
     if (id === "copy" || id === "media") return hasDraft;
@@ -131,9 +146,9 @@ export default function Compose({ status }: { status: ComposeStatus }) {
     if (t === type) return;
     setType(t);
     setAspect(t === "video" ? "16:9" : "1:1");
-    // A new format invalidates everything downstream.
     setHasDraft(false);
     setMediaUrl(null);
+    setRefUrl(null);
     setSelected(new Set());
     setPreviews(null);
     setResults(null);
@@ -165,7 +180,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
       setMediaPrompt(type === "image" ? d.imagePrompt : type === "video" ? d.videoPrompt : "");
       setHasDraft(true);
       setSelected(new Set(eligible.filter((p) => isConnected(p))));
-      setStepIdx(1); // advance to Copy
+      setStepIdx(1);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
     } finally {
@@ -184,7 +199,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, prompt: p, aspect }),
+        body: JSON.stringify({ type, prompt: p, aspect, imageUrl: refUrl || undefined }),
       });
       const data = (await res.json()) as { urls?: string[]; error?: string };
       if (!res.ok) throw new Error(data.error || `Generation failed (${res.status})`);
@@ -194,6 +209,70 @@ export default function Compose({ status }: { status: ComposeStatus }) {
     } finally {
       setGenerating(false);
     }
+  }
+
+  // Upload a file straight to Storage (browser → Supabase, bypassing Vercel's body cap).
+  async function uploadFile(file: File, folder: string): Promise<string> {
+    if (!uid) throw new Error("Still signing in — try again in a second.");
+    const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+    const path = `${uid}/${folder}/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("media").upload(path, file, { contentType: file.type, upsert: false });
+    if (upErr) throw upErr;
+    return supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+  }
+
+  async function onPickRef(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return setError("Reference must be an image.");
+    setError(null);
+    setUploading(true);
+    try {
+      setRefUrl(await uploadFile(file, "refs"));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function onPickOwnMedia(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const want = type === "video" ? "video/" : "image/";
+    if (!file.type.startsWith(want)) return setError(`Please choose ${type === "video" ? "a video" : "an image"} file.`);
+    setError(null);
+    setUploading(true);
+    try {
+      setMediaUrl(await uploadFile(file, "uploads"));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function openGallery(mode: "ref" | "media") {
+    setError(null);
+    setGallery({ mode, loading: true, items: [] });
+    // Reference is always an image; own-media matches the post type. RLS scopes rows to the owner.
+    const want = mode === "ref" ? "image" : type;
+    const { data } = await supabase
+      .from("generations")
+      .select("media_url,type")
+      .eq("type", want)
+      .order("created_at", { ascending: false })
+      .limit(36);
+    const items = ((data as { media_url: string; type: string }[]) ?? []).map((r) => ({ url: r.media_url, type: r.type }));
+    setGallery({ mode, loading: false, items });
+  }
+
+  function pickFromGallery(url: string) {
+    if (gallery?.mode === "ref") setRefUrl(url);
+    else setMediaUrl(url);
+    setGallery(null);
   }
 
   function toggle(p: string) {
@@ -260,6 +339,8 @@ export default function Compose({ status }: { status: ComposeStatus }) {
     "inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40";
   const ghostBtn =
     "inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-medium text-white/70 transition hover:text-white disabled:opacity-40";
+  const chipBtn =
+    "rounded-lg border border-white/10 bg-black/30 px-3 py-1.5 text-xs font-medium text-white/60 transition hover:text-white disabled:opacity-40";
 
   if (!status.aiConfigured) {
     return (
@@ -269,6 +350,18 @@ export default function Compose({ status }: { status: ComposeStatus }) {
       </div>
     );
   }
+
+  const genLabel = generating
+    ? type === "video"
+      ? "Rendering…"
+      : "Generating…"
+    : mediaUrl
+      ? "Regenerate"
+      : refUrl
+        ? type === "video"
+          ? "Animate reference"
+          : "Edit reference"
+        : `Generate ${type}`;
 
   return (
     <div className="flex flex-col gap-5">
@@ -289,18 +382,12 @@ export default function Compose({ status }: { status: ComposeStatus }) {
               >
                 <span
                   className={`grid size-6 shrink-0 place-items-center rounded-full text-xs font-bold ${
-                    active
-                      ? "bg-boss-gold text-black"
-                      : done
-                        ? "bg-emerald-500/20 text-emerald-300"
-                        : "bg-white/10 text-white/50"
+                    active ? "bg-boss-gold text-black" : done ? "bg-emerald-500/20 text-emerald-300" : "bg-white/10 text-white/50"
                   }`}
                 >
                   {done ? "✓" : i + 1}
                 </span>
-                <span className={`hidden text-xs font-medium sm:inline ${active ? "text-white" : "text-white/50"}`}>
-                  {STEP_LABEL[id]}
-                </span>
+                <span className={`hidden text-xs font-medium sm:inline ${active ? "text-white" : "text-white/50"}`}>{STEP_LABEL[id]}</span>
               </button>
               {i < steps.length - 1 && <span className="hidden h-px w-3 bg-white/10 sm:block" aria-hidden />}
             </li>
@@ -362,12 +449,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
                 <input value={title} onChange={(e) => setTitle(e.target.value)} className={fieldCls} />
               </Field>
               <Field label="Caption">
-                <textarea
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  rows={5}
-                  className={`${fieldCls} resize-y leading-relaxed`}
-                />
+                <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={5} className={`${fieldCls} resize-y leading-relaxed`} />
               </Field>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Call to action">
@@ -394,12 +476,33 @@ export default function Compose({ status }: { status: ComposeStatus }) {
           <>
             <h3 className="mb-1 text-base font-semibold text-white">Generate the {type}</h3>
             <p className="mb-2 text-xs text-white/45">The AI wrote this {type} prompt from your post. Tweak it, then generate.</p>
-            <textarea
-              value={mediaPrompt}
-              onChange={(e) => setMediaPrompt(e.target.value)}
-              rows={3}
-              className={`${fieldCls} resize-y`}
-            />
+            <textarea value={mediaPrompt} onChange={(e) => setMediaPrompt(e.target.value)} rows={3} className={`${fieldCls} resize-y`} />
+
+            {/* Optional reference image to guide generation */}
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-medium text-white/40">Reference {type === "video" ? "(animate an image)" : "(edit an image)"}:</span>
+              {refUrl ? (
+                <span className="inline-flex items-center gap-2 rounded-lg border border-boss-gold/30 bg-boss-gold/10 py-1 pl-1 pr-2 text-xs">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={refUrl} alt="reference" className="size-6 rounded object-cover" />
+                  <span className="text-white/70">Reference set</span>
+                  <button onClick={() => setRefUrl(null)} className="text-white/50 hover:text-white" aria-label="remove reference">
+                    ×
+                  </button>
+                </span>
+              ) : (
+                <>
+                  <button onClick={() => refFileRef.current?.click()} disabled={uploading} className={chipBtn}>
+                    {uploading ? "Uploading…" : "+ Upload image"}
+                  </button>
+                  <button onClick={() => openGallery("ref")} className={chipBtn}>
+                    From gallery
+                  </button>
+                </>
+              )}
+              <input ref={refFileRef} type="file" accept="image/*" onChange={onPickRef} className="hidden" />
+            </div>
+
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <span className="text-xs font-medium text-white/40">Aspect</span>
               {ASPECTS.map((a) => (
@@ -415,22 +518,38 @@ export default function Compose({ status }: { status: ComposeStatus }) {
               ))}
               <button onClick={generateMedia} disabled={generating || !mediaPrompt.trim()} className={`${primaryBtn} ml-auto`}>
                 {generating && <Spinner />}
-                {generating ? (type === "video" ? "Rendering…" : "Generating…") : mediaUrl ? "Regenerate" : `Generate ${type}`}
+                {genLabel}
               </button>
             </div>
             {generating && type === "video" && (
               <p className="mt-2 text-center text-xs text-white/45">Rendering video — this usually takes 1–3 minutes.</p>
             )}
+
+            {/* Or use your own media directly */}
+            <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-white/55">Already have {type === "video" ? "a video" : "an image"}? Use it directly:</span>
+                <button onClick={() => mediaFileRef.current?.click()} disabled={uploading} className={chipBtn}>
+                  {uploading ? "Uploading…" : `Upload ${type}`}
+                </button>
+                <button onClick={() => openGallery("media")} className={chipBtn}>
+                  From gallery
+                </button>
+              </div>
+              <input ref={mediaFileRef} type="file" accept={type === "video" ? "video/*" : "image/*"} onChange={onPickOwnMedia} className="hidden" />
+            </div>
+
             {mediaUrl && (
               <div className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-black/40">
                 {type === "video" ? (
                   <video src={mediaUrl} controls loop className="max-h-[45dvh] w-full" />
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={mediaUrl} alt="Generated media" className="max-h-[45dvh] w-full object-contain" />
+                  <img src={mediaUrl} alt="Post media" className="max-h-[45dvh] w-full object-contain" />
                 )}
               </div>
             )}
+
             <NavRow onBack={back}>
               <button onClick={() => goTo("publish")} disabled={!mediaUrl} className={primaryBtn}>
                 Continue →
@@ -512,12 +631,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
                             )}
                           </div>
                         )}
-                        <textarea
-                          value={p.caption}
-                          onChange={(e) => updatePreview(p.platform, e.target.value)}
-                          rows={3}
-                          className={`${fieldCls} resize-y`}
-                        />
+                        <textarea value={p.caption} onChange={(e) => updatePreview(p.platform, e.target.value)} rows={3} className={`${fieldCls} resize-y`} />
                       </div>
                     ))}
                     <div className="flex items-center justify-between gap-2">
@@ -572,6 +686,77 @@ export default function Compose({ status }: { status: ComposeStatus }) {
           </ul>
         </div>
       )}
+
+      {gallery && (
+        <GalleryModal
+          mode={gallery.mode}
+          loading={gallery.loading}
+          items={gallery.items}
+          onPick={pickFromGallery}
+          onClose={() => setGallery(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function GalleryModal({
+  mode,
+  loading,
+  items,
+  onPick,
+  onClose,
+}: {
+  mode: "ref" | "media";
+  loading: boolean;
+  items: GalleryItem[];
+  onPick: (url: string) => void;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="relative flex max-h-[85dvh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink-2 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+          <h4 className="text-sm font-semibold text-white">
+            {mode === "ref" ? "Pick a reference image" : "Pick from your gallery"}
+          </h4>
+          <button onClick={onClose} aria-label="Close" className="grid size-7 place-items-center rounded-full bg-black/40 text-white/70 hover:text-white">
+            ×
+          </button>
+        </div>
+        <div className="overflow-y-auto p-4">
+          {loading ? (
+            <p className="py-8 text-center text-sm text-white/45">Loading…</p>
+          ) : items.length === 0 ? (
+            <p className="py-8 text-center text-sm text-white/45">Nothing saved yet — generate something first.</p>
+          ) : (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {items.map((it) => (
+                <button
+                  key={it.url}
+                  onClick={() => onPick(it.url)}
+                  className="group aspect-square overflow-hidden rounded-lg border border-white/10 bg-black/40 transition hover:border-boss-gold/60"
+                >
+                  {it.type === "video" ? (
+                    <video src={it.url} muted className="size-full object-cover" />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={it.url} alt="" className="size-full object-cover transition group-hover:scale-105" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -579,10 +764,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
 function NavRow({ onBack, children }: { onBack: () => void; children?: React.ReactNode }) {
   return (
     <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/10 pt-3">
-      <button
-        onClick={onBack}
-        className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-white/55 transition hover:text-white"
-      >
+      <button onClick={onBack} className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-white/55 transition hover:text-white">
         ← Back
       </button>
       {children}
