@@ -1,17 +1,24 @@
 import "server-only";
-import { metaGraphBase } from "@helm/dna-marketing";
+import { metaGraphBase, threadsGraphBase } from "@helm/dna-marketing";
 
 /**
- * Engagement metrics for a published post, fetched from each platform. Only the
- * platforms whose read APIs work with our current OAuth scopes are supported:
- * Facebook (likes/comments), Instagram (like_count/comments_count), and YouTube
- * (statistics). LinkedIn/Threads/Pinterest need extra scopes + app review, so
- * they return null here (shown as "—" in the UI) until those are added.
+ * Engagement metrics for a published post, fetched from each platform:
+ *   Facebook  — likes/comments (page token)
+ *   Instagram — like_count/comments_count
+ *   YouTube   — statistics (views/likes/comments)
+ *   Threads   — insights: likes/replies/views (needs the threads_manage_insights
+ *               scope → reconnect Threads to grant it)
+ *   Pinterest — pin analytics: saves→likes, clicks→comments, impressions→views
+ *               (business account + pins:read)
+ *   LinkedIn  — socialActions likes/comments (best-effort; member-post reads are
+ *               gated by LinkedIn, so this often returns nothing without elevated
+ *               API access)
+ * Every fetcher is resilient: any network/permission failure returns null.
  */
 
 export type Metric = { likes?: number; comments?: number; views?: number };
 
-export const METRIC_SUPPORTED = new Set(["facebook", "instagram", "youtube"]);
+export const METRIC_SUPPORTED = new Set(["facebook", "instagram", "youtube", "threads", "pinterest", "linkedin"]);
 
 async function getJson(url: string, init?: RequestInit): Promise<Record<string, unknown> | null> {
   try {
@@ -50,6 +57,46 @@ async function youtube(videoId: string, token: string): Promise<Metric | null> {
   return { likes: Number(stats.likeCount) || 0, comments: Number(stats.commentCount) || 0, views: Number(stats.viewCount) || 0 };
 }
 
+async function threads(mediaId: string, token: string): Promise<Metric | null> {
+  const base = threadsGraphBase();
+  const d = await getJson(
+    `${base}/${mediaId}/insights?metric=likes,replies,views&access_token=${encodeURIComponent(token)}`,
+  );
+  const rows = (d?.data as { name?: string; values?: { value?: number }[] }[] | undefined) ?? null;
+  if (!rows) return null;
+  const val = (name: string) => rows.find((r) => r.name === name)?.values?.[0]?.value ?? 0;
+  return { likes: val("likes"), comments: val("replies"), views: val("views") };
+}
+
+function ymd(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+async function pinterest(pinId: string, token: string): Promise<Metric | null> {
+  const end = new Date();
+  const start = new Date(end.getTime() - 28 * 24 * 3600 * 1000);
+  const d = await getJson(
+    `https://api.pinterest.com/v5/pins/${encodeURIComponent(pinId)}/analytics?start_date=${ymd(start)}&end_date=${ymd(
+      end,
+    )}&metric_types=IMPRESSION,SAVE,PIN_CLICK`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  const summary = (d?.all as { summary_metrics?: Record<string, number> } | undefined)?.summary_metrics;
+  if (!summary) return null;
+  // Map Pinterest's engagement shape onto our common metric.
+  return { likes: summary.SAVE ?? 0, comments: summary.PIN_CLICK ?? 0, views: summary.IMPRESSION ?? 0 };
+}
+
+async function linkedin(urn: string, token: string): Promise<Metric | null> {
+  const d = await getJson(`https://api.linkedin.com/v2/socialActions/${encodeURIComponent(urn)}`, {
+    headers: { Authorization: `Bearer ${token}`, "X-Restli-Protocol-Version": "2.0.0" },
+  });
+  if (!d) return null;
+  const likes = (d.likesSummary as { aggregatedTotalLikes?: number; totalLikes?: number }) ?? {};
+  const comments = (d.commentsSummary as { aggregatedTotalComments?: number }) ?? {};
+  return { likes: likes.aggregatedTotalLikes ?? likes.totalLikes ?? 0, comments: comments.aggregatedTotalComments ?? 0 };
+}
+
 /** Fetch engagement for one published post on one platform. `token` is that platform's access token. */
 export async function fetchMetric(platform: string, externalId: string, token: string): Promise<Metric | null> {
   switch (platform) {
@@ -59,6 +106,12 @@ export async function fetchMetric(platform: string, externalId: string, token: s
       return instagram(externalId, token);
     case "youtube":
       return youtube(externalId, token);
+    case "threads":
+      return threads(externalId, token);
+    case "pinterest":
+      return pinterest(externalId, token);
+    case "linkedin":
+      return linkedin(externalId, token);
     default:
       return null;
   }
