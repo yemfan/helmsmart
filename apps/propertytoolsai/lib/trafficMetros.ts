@@ -68,6 +68,29 @@ export type MetroSnapshot = {
   period: string | null;
 };
 
+/**
+ * Resolve `p`, but never wait longer than `ms` — fall back to `fallback` if it's
+ * slow or errors. Static generation aborts a page after 60s; a single hung
+ * warehouse read for one city must not take the whole build down (it did:
+ * /home-value/san-diego-ca). The fallback here is an all-null snapshot, which the
+ * pages render gracefully, and ISR backfills real figures at runtime (no 60s cap).
+ */
+function withTimeout<T>(p: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return new Promise<T>((resolve) => {
+    const timer = setTimeout(() => resolve(fallback), ms);
+    p.then(
+      (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      },
+      () => {
+        clearTimeout(timer);
+        resolve(fallback);
+      },
+    );
+  });
+}
+
 /** Split a warehouse geo_name ("Los Angeles, CA") into its display city part. */
 function cityFromGeoName(geoName: string): string {
   const comma = geoName.indexOf(",");
@@ -214,10 +237,20 @@ export async function getMetroSnapshot(
   };
   if (!geoCode) return empty;
 
-  const [latest, zhviSeries] = await Promise.all([
-    getLatestMetrics(geoLevel, geoCode),
-    getMetricSeries(geoLevel, geoCode, "zhvi", 13),
-  ]);
+  // Bound the warehouse reads: a slow city must not exceed the 60s per-page
+  // static-generation limit and fail the whole build. On timeout we return the
+  // empty snapshot (graceful) and ISR fills in real figures at runtime.
+  const [latest, zhviSeries] = await withTimeout(
+    Promise.all([
+      getLatestMetrics(geoLevel, geoCode),
+      getMetricSeries(geoLevel, geoCode, "zhvi", 13),
+    ]),
+    20_000,
+    [[], []] as [
+      Awaited<ReturnType<typeof getLatestMetrics>>,
+      Awaited<ReturnType<typeof getMetricSeries>>,
+    ],
+  );
 
   const byMetric = new Map(latest.map((m) => [m.metric, m]));
   const zhvi = byMetric.get("zhvi")?.value ?? null;
