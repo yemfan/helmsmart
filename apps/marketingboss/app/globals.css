@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/*
+ * MarketingBoss AI — a dark "creative studio" surface. Boss family accent:
+ * violet primary + gold (the Boss gold) for the brand mark and CTAs.
+ */
+@theme {
+  --color-boss-gold: #f5b301;
+  --color-boss-violet: #7c5cff;
+  --color-boss-violet-600: #6a46f0;
+  --color-ink: #0a0a0f;
+  --color-ink-2: #12121a;
+  --color-ink-3: #1b1b26;
+  --color-line: #26263300;
+}
+
+@theme inline {
+  --font-sans: var(--font-body), system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(60rem 40rem at 20% -10%, rgba(124, 92, 255, 0.18), transparent 60%),
+    radial-gradient(50rem 40rem at 100% 0%, rgba(245, 179, 1, 0.1), transparent 55%),
+    #0a0a0f;
+  color: #e8e8ee;
+  min-height: 100dvh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
