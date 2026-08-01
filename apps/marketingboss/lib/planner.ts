@@ -48,7 +48,7 @@ function schema(allowed: string[]) {
 
 export async function planPosts(
   brief: BrandBrief,
-  opts: { mediaTypes: string[]; channels: string[]; link: string; count: number },
+  opts: { mediaTypes: string[]; channels: string[]; link: string; count: number; insights?: string | null },
 ): Promise<PlannedPost[]> {
   const count = Math.min(Math.max(opts.count, 1), 10);
 
@@ -56,6 +56,7 @@ export async function planPosts(
     "You are a social-media strategist planning a batch of posts for one brand.",
     "Rotate through the brand's content pillars so the batch is varied — no two posts on the same angle.",
     `For each post, choose the single most effective media type from the ALLOWED set (${opts.mediaTypes.join(", ")}) for that message and the target channels (${opts.channels.join(", ")}).`,
+    ...(opts.insights ? [opts.insights] : []),
     "Write in the brand's voice. For each post return:",
     "- type: the chosen media type (from the allowed set).",
     "- angle: the pillar / hook this post covers (short).",

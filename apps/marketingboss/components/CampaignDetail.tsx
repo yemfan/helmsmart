@@ -42,6 +42,7 @@ type CampaignPost = {
   media_url: string | null;
   channels: string[];
   results: PubResult[] | null;
+  metrics: Record<string, { likes?: number; comments?: number; views?: number }> | null;
 };
 
 const LABEL: Record<string, string> = {
@@ -180,6 +181,25 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
                 </span>
               </div>
               <p className="whitespace-pre-wrap text-sm text-white/70">{p.caption}</p>
+              {p.metrics &&
+                Object.keys(p.metrics).length > 0 &&
+                (() => {
+                  let likes = 0,
+                    comments = 0,
+                    views = 0;
+                  for (const m of Object.values(p.metrics)) {
+                    likes += m.likes ?? 0;
+                    comments += m.comments ?? 0;
+                    views += m.views ?? 0;
+                  }
+                  return (
+                    <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-white/55">
+                      <span>♥ {likes}</span>
+                      <span>💬 {comments}</span>
+                      {views > 0 && <span>▶ {views}</span>}
+                    </div>
+                  );
+                })()}
               {p.results && (
                 <ul className="mt-2 space-y-1 text-xs">
                   {p.results.map((r) => (

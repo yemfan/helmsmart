@@ -1,6 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { BrandBrief } from "@/lib/research";
+import { engagementScore, type Metric } from "@/lib/metrics";
 
 /**
  * Autopilot campaign storage. Rows are owner-RLS'd, but the server routes go
@@ -44,6 +45,8 @@ export type CampaignPost = {
   per_platform: Record<string, string> | null;
   channels: string[];
   results: { platform: string; ok: boolean; url?: string | null; error?: string }[] | null;
+  metrics: Record<string, Metric> | null;
+  metrics_at: string | null;
   scheduled_for: string | null;
   created_at: string;
   published_at: string | null;
@@ -52,7 +55,7 @@ export type CampaignPost = {
 const COLS =
   "id, link, name, brief, media_types, channels, frequency, budget_credits, spent_credits, mode, status, next_run_at, created_at";
 const POST_COLS =
-  "id, campaign_id, status, type, angle, title, caption, hashtags, link, media_prompt, media_url, per_platform, channels, results, scheduled_for, created_at, published_at";
+  "id, campaign_id, status, type, angle, title, caption, hashtags, link, media_prompt, media_url, per_platform, channels, results, metrics, metrics_at, scheduled_for, created_at, published_at";
 
 export async function listCampaigns(userId: string): Promise<Campaign[]> {
   const admin = createAdminClient();
@@ -147,6 +150,41 @@ export async function insertScheduledPost(userId: string, p: ScheduledPostInput)
     .single();
   if (error) throw new Error(error.message);
   return data as CampaignPost;
+}
+
+/**
+ * A short "what's working" hint from this campaign's published posts, to bias the
+ * planner. Returns null until there's enough engagement data to be meaningful.
+ */
+export async function buildInsights(userId: string, campaignId: string): Promise<string | null> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("campaign_posts")
+    .select("type, angle, metrics")
+    .eq("user_id", userId)
+    .eq("campaign_id", campaignId)
+    .eq("status", "published")
+    .not("metrics", "is", null)
+    .limit(50);
+
+  const rows = (data as { type: string; angle: string | null; metrics: Record<string, Metric> | null }[]) ?? [];
+  if (rows.length < 3) return null;
+
+  const byAngle = new Map<string, number>();
+  const byType = new Map<string, number>();
+  for (const r of rows) {
+    const s = engagementScore(r.metrics);
+    if (r.angle) byAngle.set(r.angle, (byAngle.get(r.angle) ?? 0) + s);
+    byType.set(r.type, (byType.get(r.type) ?? 0) + s);
+  }
+  const topAngles = [...byAngle.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2).map(([a]) => a);
+  const topType = [...byType.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+
+  const parts: string[] = [];
+  if (topAngles.length) parts.push(`your highest-engagement angles so far: ${topAngles.join("; ")}`);
+  if (topType) parts.push(`the ${topType} format is performing best`);
+  if (parts.length === 0) return null;
+  return `Performance signal — favor what's working: ${parts.join("; ")}.`;
 }
 
 /** Edit a campaign's posting cadence. */
