@@ -1,26 +1,13 @@
 import { NextResponse } from "next/server";
-import { generate, type GenType } from "@/lib/fal";
+import { type GenType } from "@/lib/fal";
 import { createClient } from "@/lib/supabase/server";
+import { generateAndStore, CreditError } from "@/lib/generation";
 
 // Video can take a couple minutes; give the function room (Vercel default 300s).
 export const maxDuration = 300;
 export const runtime = "nodejs";
 
 const ASPECTS = new Set(["16:9", "9:16", "1:1", "4:3", "3:4"]);
-
-function extFrom(url: string, type: GenType): { ext: string; contentType: string } {
-  const m = url.split("?")[0].match(/\.(\w{2,4})$/);
-  const ext = (m?.[1] || (type === "video" ? "mp4" : "jpg")).toLowerCase();
-  const contentType =
-    type === "video"
-      ? "video/mp4"
-      : ext === "png"
-        ? "image/png"
-        : ext === "webp"
-          ? "image/webp"
-          : "image/jpeg";
-  return { ext, contentType };
-}
 
 export async function POST(req: Request) {
   const supabase = await createClient();
@@ -47,57 +34,13 @@ export async function POST(req: Request) {
   if (prompt.length > 2000)
     return NextResponse.json({ error: "Prompt is too long (max 2000 chars)." }, { status: 400 });
 
-  // Credit cost, weighted by what the model actually costs on fal.ai.
-  const cost = type === "video" ? 20 : imageUrl ? 2 : 1;
-
-  // Reserve credits up front (atomic); refund below if generation fails.
-  const { data: remaining, error: creditErr } = await supabase.rpc("consume_credits", {
-    p_cost: cost,
-  });
-  if (creditErr) return NextResponse.json({ error: "Could not check credits." }, { status: 500 });
-  if (typeof remaining !== "number" || remaining < 0) {
-    return NextResponse.json(
-      { error: `Not enough credits — this costs ${cost}. Top up to keep creating.`, credits: 0 },
-      { status: 402 },
-    );
-  }
-
   try {
-    const result = await generate({ type, prompt, aspect, model, imageUrl });
-
-    // Persist each rendered asset to Storage (fal URLs are ephemeral) and record it.
-    const savedUrls: string[] = [];
-    for (const src of result.urls) {
-      const media = await fetch(src);
-      if (!media.ok) throw new Error(`Could not fetch rendered media (${media.status}).`);
-      const bytes = new Uint8Array(await media.arrayBuffer());
-      const { ext, contentType } = extFrom(src, type);
-      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-
-      const { error: upErr } = await supabase.storage
-        .from("media")
-        .upload(path, bytes, { contentType, upsert: false });
-      if (upErr) throw new Error(`Storage upload failed: ${upErr.message}`);
-
-      const publicUrl = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
-
-      const { error: dbErr } = await supabase.from("generations").insert({
-        user_id: user.id,
-        type,
-        prompt,
-        model: result.model,
-        aspect,
-        media_url: publicUrl,
-      });
-      if (dbErr) throw new Error(`Save failed: ${dbErr.message}`);
-
-      savedUrls.push(publicUrl);
-    }
-
-    return NextResponse.json({ urls: savedUrls, model: result.model, credits: remaining });
+    const out = await generateAndStore(supabase, user.id, { type, prompt, aspect, model, imageUrl });
+    return NextResponse.json({ urls: out.urls, model: out.model, credits: out.credits });
   } catch (e: unknown) {
-    // Generation failed after reserving credits — refund them (best-effort).
-    await supabase.rpc("consume_credits", { p_cost: -cost });
+    if (e instanceof CreditError) {
+      return NextResponse.json({ error: `${e.message} Top up to keep creating.`, credits: 0 }, { status: 402 });
+    }
     const msg = e instanceof Error ? e.message : "Generation failed.";
     if (/balance|locked/i.test(msg))
       return NextResponse.json(
