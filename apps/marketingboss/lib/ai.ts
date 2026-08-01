@@ -38,8 +38,11 @@ export function aiConfigured(): boolean {
   return !!process.env.ANTHROPIC_API_KEY;
 }
 
+export const ANTHROPIC_API_URL = API_URL;
+export const ANTHROPIC_MODEL = MODEL;
+
 /** Call Claude and parse the JSON its structured-output format guarantees. */
-async function anthropicJson<T>(opts: {
+export async function anthropicJson<T>(opts: {
   system: string;
   user: string;
   schema: Record<string, unknown>;
