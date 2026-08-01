@@ -11,6 +11,7 @@ const PROVIDER_PLATFORMS: Record<string, string[]> = {
   linkedin: ["linkedin"],
   pinterest: ["pinterest"],
   youtube: ["youtube"],
+  tiktok: ["tiktok"],
 };
 
 export async function POST(_req: Request, { params }: { params: Promise<{ provider: string }> }) {

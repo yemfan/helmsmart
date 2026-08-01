@@ -40,13 +40,14 @@ const PLATFORM_META: Record<string, { label: string; provider: string; connectPa
   linkedin: { label: "LinkedIn", provider: "linkedin", connectPath: "/api/social/connect/linkedin" },
   pinterest: { label: "Pinterest", provider: "pinterest", connectPath: "/api/social/connect/pinterest" },
   youtube: { label: "YouTube", provider: "youtube", connectPath: "/api/youtube/connect" },
+  tiktok: { label: "TikTok", provider: "tiktok", connectPath: "/api/social/connect/tiktok" },
 };
 
 // Which platforms can carry each post type.
 const ELIGIBLE: Record<PostType, string[]> = {
   text: ["facebook", "threads", "linkedin"],
   image: ["facebook", "instagram", "threads", "linkedin", "pinterest"],
-  video: ["youtube"],
+  video: ["youtube", "tiktok"],
 };
 
 const TYPES: { id: PostType; label: string; emoji: string; hint: string }[] = [

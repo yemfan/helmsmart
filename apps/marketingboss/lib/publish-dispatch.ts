@@ -3,6 +3,7 @@ import { publishToAll, type PostContent, type PublishResult, type SocialPlatform
 import { createConnectionStore, getConnection, getValidAccessToken } from "@/lib/social";
 import { linkedinPublisher, publishPinterest } from "@/lib/publishers";
 import { uploadVideo } from "@/lib/youtube";
+import { getValidTikTokAccessToken, publishVideo as tiktokPublishVideo } from "@/lib/tiktok";
 
 /**
  * Publish one piece of content to each requested channel, each with its own
@@ -78,6 +79,28 @@ export async function publishToChannels(
       } catch (e) {
         const msg = e instanceof Error ? e.message : "YouTube publish failed.";
         results.push({ platform: "youtube" as never, ok: false, error: msg, retryable: false });
+      }
+      continue;
+    }
+
+    if (post.platform === "tiktok") {
+      const conn = await getConnection(userId, "tiktok").catch(() => null);
+      if (!conn) {
+        results.push({ platform: "tiktok" as never, ok: false, error: "TikTok isn't connected.", retryable: false });
+        continue;
+      }
+      try {
+        if (!opts.mediaUrl) throw new Error("No video to publish.");
+        const token = await getValidTikTokAccessToken(userId, conn);
+        const res = await fetch(opts.mediaUrl);
+        if (!res.ok) throw new Error(`Could not fetch the video (${res.status}).`);
+        const bytes = new Uint8Array(await res.arrayBuffer());
+        const publishId = await tiktokPublishVideo(token, { bytes, title: post.caption || opts.title || "MarketingBoss" });
+        // TikTok processes async — no immediate public URL; the publish_id is the receipt.
+        results.push({ platform: "tiktok" as never, ok: true, externalId: publishId, url: null });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "TikTok publish failed.";
+        results.push({ platform: "tiktok" as never, ok: false, error: msg, retryable: false });
       }
     }
   }

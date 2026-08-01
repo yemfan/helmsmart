@@ -14,6 +14,7 @@ import {
 // threads_manage_insights means users must RECONNECT Threads to grant it.
 const THREADS_INSIGHT_SCOPES = [...THREADS_SCOPES, "threads_manage_insights"];
 import type { UpsertConnection } from "@/lib/social";
+import { tiktokConfigured, getAuthUrl as tiktokAuthUrl, exchangeCode as tiktokExchange } from "@/lib/tiktok";
 
 /**
  * Per-provider OAuth adapters. Each MarketingBoss OAuth app is its own (its own
@@ -313,11 +314,50 @@ const pinterestAdapter: OAuthAdapter = {
   },
 };
 
+// ─── TikTok (video) ──────────────────────────────────────────────────────────
+const tiktokAdapter: OAuthAdapter = {
+  key: "tiktok",
+  platforms: ["tiktok"],
+  label: "TikTok",
+  configured: () => tiktokConfigured(),
+  authUrl(origin, state) {
+    return tiktokAuthUrl(origin, state);
+  },
+  async exchange(code, origin) {
+    const t = await tiktokExchange(code, origin);
+    // Best-effort display name for the UI.
+    let name = "TikTok";
+    try {
+      const r = await getJson<{ data?: { user?: { display_name?: string } } }>(
+        "https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name",
+        { headers: { Authorization: `Bearer ${t.access_token}` } },
+      );
+      if (r.body?.data?.user?.display_name) name = `@${r.body.data.user.display_name}`;
+    } catch {
+      /* keep default */
+    }
+    const metadata: Record<string, string> = t.open_id ? { openId: t.open_id } : {};
+    return [
+      {
+        platform: "tiktok",
+        provider_account_id: t.open_id ?? null,
+        account_name: name,
+        access_token: t.access_token,
+        refresh_token: t.refresh_token ?? null,
+        token_expires_at: new Date(Date.now() + t.expires_in * 1000).toISOString(),
+        scope: t.scope ?? "user.info.basic,video.publish,video.upload",
+        metadata,
+      },
+    ];
+  },
+};
+
 export const OAUTH_ADAPTERS: Record<string, OAuthAdapter> = {
   meta: metaAdapter,
   threads: threadsAdapter,
   linkedin: linkedinAdapter,
   pinterest: pinterestAdapter,
+  tiktok: tiktokAdapter,
 };
 
 export function getAdapter(key: string): OAuthAdapter | null {

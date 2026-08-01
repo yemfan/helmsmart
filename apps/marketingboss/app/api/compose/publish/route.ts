@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 const ELIGIBLE: Record<string, string[]> = {
   text: ["facebook", "threads", "linkedin"],
   image: ["facebook", "instagram", "threads", "linkedin", "pinterest"],
-  video: ["youtube"],
+  video: ["youtube", "tiktok"],
 };
 
 /**

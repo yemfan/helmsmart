@@ -6,6 +6,7 @@ import { getConnectionStatus, getConnectionStatuses } from "@/lib/social";
 import { youtubeConfigured } from "@/lib/youtube";
 import { aiConfigured } from "@/lib/ai";
 import { listCampaigns } from "@/lib/campaigns";
+import { OAUTH_ADAPTERS } from "@/lib/oauth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ const LABELS: Record<string, string> = {
   linkedin: "LinkedIn",
   pinterest: "Pinterest",
   youtube: "YouTube",
+  tiktok: "TikTok",
 };
 
 export default async function AutopilotPage() {
@@ -30,14 +32,17 @@ export default async function AutopilotPage() {
   const [{ data: profile }, youtube, socialStatuses, campaigns] = await Promise.all([
     supabase.from("profiles").select("credits").eq("user_id", user.id).single(),
     getConnectionStatus(user.id, "youtube"),
-    getConnectionStatuses(user.id, SOCIAL_PLATFORMS),
+    getConnectionStatuses(user.id, [...SOCIAL_PLATFORMS, "tiktok"]),
     listCampaigns(user.id),
   ]);
 
   const channels: ChannelOption[] = [
     ...SOCIAL_PLATFORMS.map((id) => ({ id, label: LABELS[id], connected: socialStatuses[id]?.connected ?? false })),
-    { id: "youtube", label: LABELS.youtube, connected: youtube.connected },
-  ].filter((c) => (c.id === "youtube" ? youtubeConfigured() : true));
+    ...(youtubeConfigured() ? [{ id: "youtube", label: LABELS.youtube, connected: youtube.connected }] : []),
+    ...(OAUTH_ADAPTERS.tiktok.configured()
+      ? [{ id: "tiktok", label: LABELS.tiktok, connected: socialStatuses.tiktok?.connected ?? false }]
+      : []),
+  ];
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-8 px-5 py-8 sm:py-12">

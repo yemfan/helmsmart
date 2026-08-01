@@ -6,7 +6,7 @@ import type { BrandBrief } from "@/lib/research";
 export const runtime = "nodejs";
 
 const MEDIA_TYPES = ["text", "image", "video"];
-const CHANNELS = ["facebook", "instagram", "threads", "linkedin", "pinterest", "youtube"];
+const CHANNELS = ["facebook", "instagram", "threads", "linkedin", "pinterest", "youtube", "tiktok"];
 
 /** Save a researched campaign. */
 export async function POST(req: Request) {
