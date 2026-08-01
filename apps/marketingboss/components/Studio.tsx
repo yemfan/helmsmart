@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -106,6 +107,8 @@ export default function Studio() {
     : mode === "image"
       ? "Describe the marketing image you want…"
       : "Describe the clip — subject, motion, and camera move…";
+
+  const isCreditError = !!error && /credit/i.test(error);
 
   return (
     <>
@@ -218,7 +221,17 @@ export default function Studio() {
       )}
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-200">{error}</div>
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-200">
+          {error}
+          {isCreditError && (
+            <Link
+              href="/billing"
+              className="ml-2 inline-block font-semibold text-boss-gold underline underline-offset-2 hover:brightness-110"
+            >
+              Buy more credits →
+            </Link>
+          )}
+        </div>
       )}
 
       {results.length > 0 && (
