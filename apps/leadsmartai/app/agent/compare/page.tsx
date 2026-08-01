@@ -185,7 +185,7 @@ const CATEGORIES: Category[] = [
         boomtown: "no",
         sierra: "no",
       }),
-      r("Sales-Model framework (Influencer / Closer / Advisor)", {
+      r("Sales-Model framework (Advisor / Closer / Friendly Connector)", {
         leadsmart: "yes",
         followup_boss: "no",
         kvcore: "no",
