@@ -7,7 +7,12 @@ import {
   parseThreadsTokenExchangeResponse,
   buildThreadsLongLivedTokenUrl,
   parseThreadsLongLivedTokenResponse,
+  THREADS_SCOPES,
 } from "@helm/dna-marketing";
+
+// Publish scopes + insights read (for engagement metrics). Adding
+// threads_manage_insights means users must RECONNECT Threads to grant it.
+const THREADS_INSIGHT_SCOPES = [...THREADS_SCOPES, "threads_manage_insights"];
 import type { UpsertConnection } from "@/lib/social";
 
 /**
@@ -147,6 +152,7 @@ const threadsAdapter: OAuthAdapter = {
       clientId: process.env.THREADS_APP_ID!,
       redirectUri: redirectUri(origin, "threads"),
       state,
+      scopes: THREADS_INSIGHT_SCOPES,
     });
   },
   async exchange(code, origin) {
@@ -175,7 +181,7 @@ const threadsAdapter: OAuthAdapter = {
         access_token: accessToken,
         refresh_token: null,
         token_expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
-        scope: "threads_basic,threads_content_publish",
+        scope: THREADS_INSIGHT_SCOPES.join(","),
         metadata: { threadsUserId: parsed.userId },
       },
     ];
