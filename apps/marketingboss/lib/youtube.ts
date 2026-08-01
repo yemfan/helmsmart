@@ -138,7 +138,13 @@ export async function uploadVideo(
       `--${boundary}\r\nContent-Type: ${opts.contentType}\r\n\r\n`,
   );
   const epilogue = enc.encode(`\r\n--${boundary}--`);
-  const body = new Blob([preamble, opts.bytes, epilogue]);
+
+  // Concatenate into one freshly-allocated (ArrayBuffer-backed) Uint8Array — a
+  // clean fetch body that avoids Blob's stricter ArrayBufferView<ArrayBuffer> type.
+  const body = new Uint8Array(preamble.length + opts.bytes.length + epilogue.length);
+  body.set(preamble, 0);
+  body.set(opts.bytes, preamble.length);
+  body.set(epilogue, preamble.length + opts.bytes.length);
 
   const r = await fetch(
     "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=multipart&part=snippet,status",
