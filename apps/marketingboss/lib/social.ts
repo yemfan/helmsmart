@@ -81,7 +81,7 @@ export type UpsertConnection = {
   refresh_token: string | null;
   token_expires_at: string | null;
   scope: string | null;
-  metadata: Record<string, string> | null;
+  metadata?: Record<string, string> | null;
 };
 
 export async function upsertConnection(userId: string, c: UpsertConnection): Promise<void> {

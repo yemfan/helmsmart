@@ -31,9 +31,12 @@ function redirectUri(origin: string, key: string): string {
   return `${origin}/api/social/callback/${key}`;
 }
 
-async function getJson(url: string, init?: RequestInit): Promise<{ status: number; body: any }> {
+async function getJson<T = Record<string, unknown>>(
+  url: string,
+  init?: RequestInit,
+): Promise<{ status: number; body: T }> {
   const res = await fetch(url, init);
-  const body = await res.json().catch(() => ({}));
+  const body = (await res.json().catch(() => ({}))) as T;
   return { status: res.status, body };
 }
 
@@ -67,7 +70,7 @@ const metaAdapter: OAuthAdapter = {
     const secret = process.env.META_APP_SECRET!;
     const base = metaGraphBase();
 
-    const short = await getJson(
+    const short = await getJson<{ access_token?: string; error?: { message?: string } }>(
       `${base}/oauth/access_token?client_id=${id}&client_secret=${secret}&redirect_uri=${encodeURIComponent(
         redirectUri(origin, "meta"),
       )}&code=${encodeURIComponent(code)}`,
@@ -75,24 +78,25 @@ const metaAdapter: OAuthAdapter = {
     const shortToken = short.body?.access_token;
     if (!shortToken) throw new Error(short.body?.error?.message || "Meta code exchange failed.");
 
-    const long = await getJson(
+    const long = await getJson<{ access_token?: string; expires_in?: number }>(
       `${base}/oauth/access_token?grant_type=fb_exchange_token&client_id=${id}&client_secret=${secret}&fb_exchange_token=${encodeURIComponent(
         shortToken,
       )}`,
     );
     const userToken = long.body?.access_token || shortToken;
 
-    const pages = await getJson(
-      `${base}/me/accounts?fields=name,access_token,instagram_business_account{id,username}&access_token=${encodeURIComponent(
-        userToken,
-      )}`,
-    );
-    const list = (pages.body?.data ?? []) as {
+    type PageItem = {
       id: string;
       name: string;
       access_token: string;
       instagram_business_account?: { id: string; username?: string };
-    }[];
+    };
+    const pages = await getJson<{ data?: PageItem[] }>(
+      `${base}/me/accounts?fields=name,access_token,instagram_business_account{id,username}&access_token=${encodeURIComponent(
+        userToken,
+      )}`,
+    );
+    const list = pages.body?.data ?? [];
     if (list.length === 0) throw new Error("No Facebook Page found — create/connect a Page first.");
     // Prefer a Page that also has an Instagram business account.
     const page = list.find((p) => p.instagram_business_account) ?? list[0];
@@ -198,16 +202,19 @@ const linkedinAdapter: OAuthAdapter = {
       client_id: process.env.LINKEDIN_CLIENT_ID!,
       client_secret: process.env.LINKEDIN_CLIENT_SECRET!,
     });
-    const tok = await getJson("https://www.linkedin.com/oauth/v2/accessToken", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body,
-    });
+    const tok = await getJson<{ access_token?: string; expires_in?: number; error_description?: string }>(
+      "https://www.linkedin.com/oauth/v2/accessToken",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body,
+      },
+    );
     const accessToken = tok.body?.access_token;
     if (!accessToken) throw new Error(tok.body?.error_description || "LinkedIn code exchange failed.");
     const expiresIn = Number(tok.body?.expires_in) || 60 * 24 * 60 * 60;
 
-    const me = await getJson("https://api.linkedin.com/v2/userinfo", {
+    const me = await getJson<{ sub?: string; name?: string }>("https://api.linkedin.com/v2/userinfo", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     const sub = me.body?.sub;
@@ -251,27 +258,31 @@ const pinterestAdapter: OAuthAdapter = {
     const basic = Buffer.from(
       `${process.env.PINTEREST_APP_ID}:${process.env.PINTEREST_APP_SECRET}`,
     ).toString("base64");
-    const tok = await getJson("https://api.pinterest.com/v5/oauth/token", {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${basic}`,
-        "Content-Type": "application/x-www-form-urlencoded",
+    const tok = await getJson<{ access_token?: string; refresh_token?: string; expires_in?: number; message?: string }>(
+      "https://api.pinterest.com/v5/oauth/token",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${basic}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          code,
+          redirect_uri: redirectUri(origin, "pinterest"),
+        }),
       },
-      body: new URLSearchParams({
-        grant_type: "authorization_code",
-        code,
-        redirect_uri: redirectUri(origin, "pinterest"),
-      }),
-    });
+    );
     const accessToken = tok.body?.access_token;
     if (!accessToken) throw new Error(tok.body?.message || "Pinterest code exchange failed.");
     const expiresIn = Number(tok.body?.expires_in) || 30 * 24 * 60 * 60;
 
     // Pick a board to pin into (first one).
-    const boards = await getJson("https://api.pinterest.com/v5/boards?page_size=1", {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-    const board = (boards.body?.items ?? [])[0] as { id?: string; name?: string } | undefined;
+    const boards = await getJson<{ items?: { id?: string; name?: string }[] }>(
+      "https://api.pinterest.com/v5/boards?page_size=1",
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+    const board = (boards.body?.items ?? [])[0];
 
     return [
       {
