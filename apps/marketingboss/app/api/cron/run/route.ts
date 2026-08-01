@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { publishToChannels, type ChannelPost } from "@/lib/publish-dispatch";
-import { planPosts } from "@/lib/planner";
+import { planPosts, type PlannedPost } from "@/lib/planner";
+import { generatePostMediaAdmin, BudgetError, CreditError } from "@/lib/generation";
+import { adaptForPlatforms, type Draft } from "@/lib/ai";
 import type { BrandBrief } from "@/lib/research";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Vercel Cron hits this on a schedule (see vercel.json). Protected by CRON_SECRET.
 export const maxDuration = 300;
@@ -17,7 +20,7 @@ const ELIGIBLE: Record<string, string[]> = {
 
 // Small batches per tick so we stay within the function time budget.
 const DRAIN_LIMIT = 8;
-const ADVANCE_LIMIT = 8;
+const ADVANCE_LIMIT = 5;
 
 type ScheduledRow = {
   id: string;
@@ -32,6 +35,7 @@ type ScheduledRow = {
 type CampaignRow = {
   id: string;
   user_id: string;
+  mode: "review" | "auto";
   brief: BrandBrief | null;
   media_types: string[];
   channels: string[];
@@ -52,7 +56,8 @@ export async function GET(req: Request) {
   const now = new Date();
   const nowIso = now.toISOString();
   let drained = 0;
-  let advanced = 0;
+  let posted = 0;
+  let drafted = 0;
 
   // 1) Publish any scheduled posts whose time has come (media is pre-rendered).
   const { data: due } = await admin
@@ -63,8 +68,7 @@ export async function GET(req: Request) {
     .limit(DRAIN_LIMIT);
 
   for (const post of (due as ScheduledRow[]) ?? []) {
-    const perPlatform = post.per_platform ?? {};
-    const posts: ChannelPost[] = Object.entries(perPlatform).map(([platform, caption]) => ({ platform, caption }));
+    const posts: ChannelPost[] = Object.entries(post.per_platform ?? {}).map(([platform, caption]) => ({ platform, caption }));
     if (posts.length === 0) {
       await admin.from("campaign_posts").update({ status: "skipped" }).eq("id", post.id);
       continue;
@@ -88,10 +92,10 @@ export async function GET(req: Request) {
     }
   }
 
-  // 2) Advance active campaigns on their cadence — plan a fresh draft into the queue.
+  // 2) Advance active campaigns on their cadence.
   const { data: campaigns } = await admin
     .from("campaigns")
-    .select("id, user_id, brief, media_types, channels, link, frequency, budget_credits, spent_credits")
+    .select("id, user_id, mode, brief, media_types, channels, link, frequency, budget_credits, spent_credits")
     .eq("status", "active")
     .or(`next_run_at.is.null,next_run_at.lte.${nowIso}`)
     .limit(ADVANCE_LIMIT);
@@ -99,37 +103,110 @@ export async function GET(req: Request) {
   for (const c of (campaigns as CampaignRow[]) ?? []) {
     const intervalMs = Math.round((7 * 24 * 3600 * 1000) / Math.min(Math.max(c.frequency, 1), 21));
     const nextRun = new Date(now.getTime() + intervalMs).toISOString();
+    let spent = c.spent_credits;
 
-    const overBudget = c.budget_credits != null && c.spent_credits >= c.budget_credits;
-    if (c.brief && !overBudget) {
+    if (c.brief) {
       try {
-        const planned = await planPosts(c.brief, {
-          mediaTypes: c.media_types,
-          channels: c.channels,
-          link: c.link,
-          count: 1,
-        });
-        const rows = planned.map((p) => ({
-          user_id: c.user_id,
-          campaign_id: c.id,
-          status: "draft",
-          type: p.type,
-          angle: p.angle,
-          title: p.title,
-          caption: p.cta ? `${p.caption}\n\n${p.cta}` : p.caption,
-          hashtags: p.hashtags,
-          link: c.link,
-          media_prompt: p.mediaPrompt,
-          channels: (c.channels || []).filter((ch) => (ELIGIBLE[p.type] || []).includes(ch)),
-        }));
-        if (rows.length) await admin.from("campaign_posts").insert(rows);
-        advanced++;
+        const planned = (
+          await planPosts(c.brief, { mediaTypes: c.media_types, channels: c.channels, link: c.link, count: 1 })
+        )[0];
+        if (planned) {
+          const channels = (c.channels || []).filter((ch) => (ELIGIBLE[planned.type] || []).includes(ch));
+          // Full-auto: generate + tailor + publish now. Review (or no channels): drop a draft.
+          if (c.mode === "auto" && channels.length > 0) {
+            spent = await autoPublish(admin, c, planned, channels, spent, nowIso);
+            posted++;
+          } else {
+            await insertDraft(admin, c, planned, channels);
+            drafted++;
+          }
+        }
       } catch {
-        /* leave next_run_at bumped; try again next cycle */
+        /* leave next_run_at bumped; retry next cycle */
       }
     }
-    await admin.from("campaigns").update({ next_run_at: nextRun, updated_at: nowIso }).eq("id", c.id);
+
+    await admin.from("campaigns").update({ next_run_at: nextRun, spent_credits: spent, updated_at: nowIso }).eq("id", c.id);
   }
 
-  return NextResponse.json({ ok: true, drained, advanced, at: nowIso });
+  return NextResponse.json({ ok: true, drained, posted, drafted, at: nowIso });
+}
+
+function captionOf(p: PlannedPost): string {
+  return p.cta ? `${p.caption}\n\n${p.cta}` : p.caption;
+}
+
+async function insertDraft(admin: SupabaseClient, c: CampaignRow, p: PlannedPost, channels: string[]): Promise<void> {
+  await admin.from("campaign_posts").insert({
+    user_id: c.user_id,
+    campaign_id: c.id,
+    status: "draft",
+    type: p.type,
+    angle: p.angle,
+    title: p.title,
+    caption: captionOf(p),
+    hashtags: p.hashtags,
+    link: c.link,
+    media_prompt: p.mediaPrompt,
+    channels,
+  });
+}
+
+/** Generate (if needed), tailor, publish, and record one auto post. Returns new spent total. */
+async function autoPublish(
+  admin: SupabaseClient,
+  c: CampaignRow,
+  p: PlannedPost,
+  channels: string[],
+  spent: number,
+  nowIso: string,
+): Promise<number> {
+  let mediaUrl: string | undefined;
+  try {
+    if (p.type !== "text") {
+      const g = await generatePostMediaAdmin(admin, c.user_id, c.budget_credits, spent, p.type, p.mediaPrompt);
+      mediaUrl = g.url;
+      spent += g.cost;
+    }
+  } catch (e) {
+    // Out of budget/credits — fall back to a draft so the cadence still produces something.
+    if (e instanceof BudgetError || e instanceof CreditError) {
+      await insertDraft(admin, c, p, channels);
+      return spent;
+    }
+    throw e;
+  }
+
+  const draft: Draft = { title: p.title, caption: captionOf(p), cta: "", hashtags: p.hashtags, imagePrompt: "", videoPrompt: "" };
+  const posts = await adaptForPlatforms(draft, c.link, channels);
+  const results = await publishToChannels(c.user_id, {
+    type: p.type,
+    mediaUrl,
+    link: c.link,
+    title: p.title,
+    posts,
+  });
+  const anyOk = results.some((r) => r.ok);
+  const perPlatform: Record<string, string> = {};
+  for (const x of posts) perPlatform[x.platform] = x.caption;
+
+  await admin.from("campaign_posts").insert({
+    user_id: c.user_id,
+    campaign_id: c.id,
+    status: anyOk ? "published" : "failed",
+    type: p.type,
+    angle: p.angle,
+    title: p.title,
+    caption: captionOf(p),
+    hashtags: p.hashtags,
+    link: c.link,
+    media_prompt: p.mediaPrompt,
+    media_url: mediaUrl ?? null,
+    per_platform: perPlatform,
+    channels,
+    results,
+    published_at: anyOk ? nowIso : null,
+  });
+
+  return spent;
 }
