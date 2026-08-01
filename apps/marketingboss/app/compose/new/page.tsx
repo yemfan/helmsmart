@@ -11,7 +11,7 @@ import { OAUTH_ADAPTERS } from "@/lib/oauth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const SOCIAL_PLATFORMS = ["facebook", "instagram", "threads", "linkedin", "pinterest"];
+const SOCIAL_PLATFORMS = ["facebook", "instagram", "threads", "linkedin", "pinterest", "tiktok"];
 
 export default async function NewAIPostPage() {
   const supabase = await createClient();
@@ -31,6 +31,7 @@ export default async function NewAIPostPage() {
     threads: OAUTH_ADAPTERS.threads.configured(),
     linkedin: OAUTH_ADAPTERS.linkedin.configured(),
     pinterest: OAUTH_ADAPTERS.pinterest.configured(),
+    tiktok: OAUTH_ADAPTERS.tiktok.configured(),
   };
   const connected: Record<string, boolean> = {};
   const accountName: Record<string, string | null> = {};

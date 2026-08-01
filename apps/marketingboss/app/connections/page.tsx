@@ -9,7 +9,7 @@ import { OAUTH_ADAPTERS } from "@/lib/oauth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const PLATFORMS = ["youtube", "facebook", "instagram", "threads", "linkedin", "pinterest"];
+const PLATFORMS = ["youtube", "facebook", "instagram", "threads", "linkedin", "pinterest", "tiktok"];
 
 export default async function ConnectionsPage() {
   const supabase = await createClient();
@@ -28,6 +28,7 @@ export default async function ConnectionsPage() {
     linkedin: OAUTH_ADAPTERS.linkedin.configured(),
     threads: OAUTH_ADAPTERS.threads.configured(),
     pinterest: OAUTH_ADAPTERS.pinterest.configured(),
+    tiktok: OAUTH_ADAPTERS.tiktok.configured(),
     youtube: youtubeConfigured(),
   };
 

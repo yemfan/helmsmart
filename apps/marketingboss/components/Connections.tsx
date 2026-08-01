@@ -49,6 +49,13 @@ const PROVIDERS: {
     connectPath: "/api/youtube/connect",
     platforms: [{ id: "youtube", label: "YouTube" }],
   },
+  {
+    key: "tiktok",
+    label: "TikTok",
+    hint: "Publish generated videos to your TikTok account.",
+    connectPath: "/api/social/connect/tiktok",
+    platforms: [{ id: "tiktok", label: "TikTok" }],
+  },
 ];
 
 export default function Connections({

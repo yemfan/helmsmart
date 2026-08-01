@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 const ELIGIBLE: Record<string, string[]> = {
   text: ["facebook", "threads", "linkedin"],
   image: ["facebook", "instagram", "threads", "linkedin", "pinterest"],
-  video: ["youtube"],
+  video: ["youtube", "tiktok"],
 };
 
 // Small batches per tick so we stay within the function time budget.

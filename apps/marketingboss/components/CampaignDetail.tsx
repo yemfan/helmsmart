@@ -52,6 +52,7 @@ const LABEL: Record<string, string> = {
   linkedin: "LinkedIn",
   pinterest: "Pinterest",
   youtube: "YouTube",
+  tiktok: "TikTok",
 };
 const TYPE_EMOJI: Record<string, string> = { text: "✍️", image: "🖼️", video: "🎬" };
 

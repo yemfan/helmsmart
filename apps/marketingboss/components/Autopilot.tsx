@@ -421,6 +421,7 @@ const LABEL: Record<string, string> = {
   linkedin: "LinkedIn",
   pinterest: "Pinterest",
   youtube: "YouTube",
+  tiktok: "TikTok",
 };
 
 function Info({ label, value }: { label: string; value: string }) {

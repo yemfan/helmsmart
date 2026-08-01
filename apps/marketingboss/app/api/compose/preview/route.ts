@@ -6,7 +6,7 @@ export const maxDuration = 60;
 export const runtime = "nodejs";
 
 // Every platform the composer can tailor copy for.
-const KNOWN = ["facebook", "instagram", "threads", "linkedin", "pinterest", "youtube"];
+const KNOWN = ["facebook", "instagram", "threads", "linkedin", "pinterest", "youtube", "tiktok"];
 
 /** Draft + selected platforms → one caption tailored per platform (the preview). */
 export async function POST(req: Request) {
