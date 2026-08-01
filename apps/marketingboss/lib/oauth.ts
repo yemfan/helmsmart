@@ -283,17 +283,18 @@ const pinterestAdapter: OAuthAdapter = {
       { headers: { Authorization: `Bearer ${accessToken}` } },
     );
     const board = (boards.body?.items ?? [])[0];
+    const boardId = board?.id;
 
     return [
       {
         platform: "pinterest",
-        provider_account_id: board?.id ?? null,
+        provider_account_id: boardId ?? null,
         account_name: board?.name ? `Board: ${board.name}` : "Pinterest",
         access_token: accessToken,
         refresh_token: tok.body?.refresh_token ?? null,
         token_expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
         scope: PINTEREST_SCOPES.join(","),
-        metadata: board?.id ? { boardId: board.id } : {},
+        metadata: boardId ? { boardId } : {},
       },
     ];
   },
