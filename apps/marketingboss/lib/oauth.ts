@@ -284,6 +284,7 @@ const pinterestAdapter: OAuthAdapter = {
     );
     const board = (boards.body?.items ?? [])[0];
     const boardId = board?.id;
+    const metadata: Record<string, string> = boardId ? { boardId } : {};
 
     return [
       {
@@ -294,7 +295,7 @@ const pinterestAdapter: OAuthAdapter = {
         refresh_token: tok.body?.refresh_token ?? null,
         token_expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
         scope: PINTEREST_SCOPES.join(","),
-        metadata: boardId ? { boardId } : {},
+        metadata,
       },
     ];
   },
