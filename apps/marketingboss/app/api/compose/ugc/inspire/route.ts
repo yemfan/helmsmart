@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { aiConfigured, draftUgcAd } from "@/lib/ai";
+import { aiConfigured } from "@/lib/ai";
+import { findViralAds } from "@/lib/viral";
 
-export const maxDuration = 60;
+// Web search + a distill pass can take a while.
+export const maxDuration = 120;
 export const runtime = "nodejs";
 
-/** Intent → an AI UGC ad script + a Seedance-ready video prompt. */
+/** Intent → a shortlist of currently-trending UGC ad formats to emulate. */
 export async function POST(req: Request) {
   const supabase = await createClient();
   const {
@@ -25,16 +27,14 @@ export async function POST(req: Request) {
   }
 
   const intent = typeof body.intent === "string" ? body.intent.trim() : "";
-  const hasReference = body.hasReference === true;
-  const styleHint = typeof body.styleHint === "string" ? body.styleHint.trim().slice(0, 800) : undefined;
-  if (!intent) return NextResponse.json({ error: "Tell me what the ad is about." }, { status: 400 });
+  if (!intent) return NextResponse.json({ error: "Describe the product first." }, { status: 400 });
   if (intent.length > 1500) return NextResponse.json({ error: "Keep it under 1500 characters." }, { status: 400 });
 
   try {
-    const ad = await draftUgcAd(intent, hasReference, styleHint || undefined);
-    return NextResponse.json({ ad });
+    const refs = await findViralAds(intent);
+    return NextResponse.json({ refs });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Could not write the ad.";
+    const msg = e instanceof Error ? e.message : "Could not find references.";
     return NextResponse.json({ error: msg }, { status: /ANTHROPIC_API_KEY/.test(msg) ? 503 : 500 });
   }
 }
