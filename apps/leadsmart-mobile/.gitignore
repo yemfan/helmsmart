@@ -17,6 +17,9 @@ web-build/
 
 # EAS local credentials (secrets)
 credentials.json
+# Google Play service account key for `eas submit` (referenced by eas.json) — NEVER commit
+google-service-account.json
+*-service-account*.json
 
 # Supabase CLI (linked project metadata — may contain refs)
 .supabase/
