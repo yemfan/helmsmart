@@ -128,6 +128,65 @@ export async function draftPost(intent: string, type: PostType): Promise<Draft> 
   return anthropicJson<Draft>({ system, user, schema: DRAFT_SCHEMA });
 }
 
+export type UgcAd = {
+  /** The scroll-stopping first line the creator says. */
+  hook: string;
+  /** The full spoken script (hook → why → product → CTA), conversational. */
+  script: string;
+  /** On-screen caption lines to overlay (kept for future burn-in). */
+  onScreen: string[];
+  cta: string;
+  hashtags: string[];
+  /** A Seedance-ready prompt: the creator, scene, and the lines they speak. */
+  videoPrompt: string;
+};
+
+const UGC_SCHEMA = {
+  type: "object",
+  properties: {
+    hook: { type: "string" },
+    script: { type: "string" },
+    onScreen: { type: "array", items: { type: "string" } },
+    cta: { type: "string" },
+    hashtags: { type: "array", items: { type: "string" } },
+    videoPrompt: { type: "string" },
+  },
+  required: ["hook", "script", "onScreen", "cta", "hashtags", "videoPrompt"],
+  additionalProperties: false,
+};
+
+/**
+ * Write a short-form UGC ad: an authentic creator-to-camera script plus a
+ * Seedance-ready video prompt that renders that creator speaking it (Seedance
+ * generates the person + native audio, so the prompt embeds the actual lines).
+ */
+export async function draftUgcAd(intent: string, hasReference: boolean): Promise<UgcAd> {
+  const system = [
+    "You are a top-performing UGC (user-generated content) ad creator for short-form video (TikTok/Reels/Shorts).",
+    "Write a single ~10-15 second ad as if a real person filmed it on their phone — casual, authentic, NOT polished or corporate.",
+    "Structure: a scroll-stopping hook in the first 2 seconds, a quick relatable why/problem, the product as the fix, and a clear CTA.",
+    "Return:",
+    "- hook: the exact opening line the creator says.",
+    "- script: the full spoken script, first person, conversational, ~30-45 words.",
+    "- onScreen: 2-4 short on-screen caption lines (punchy fragments).",
+    "- cta: one clear call to action.",
+    "- hashtags: 4-8 relevant tags WITHOUT the # sign.",
+    "- videoPrompt: a vivid prompt for an AI video model that will GENERATE the creator and their VOICE. Describe the person (age/vibe), the real-world setting, that they speak directly to a handheld phone camera in a casual excited tone, and embed the spoken lines in quotes. Specify vertical 9:16, natural lighting, authentic selfie-style UGC — not cinematic or ad-like.",
+    hasReference
+      ? "A reference image/video was provided — in videoPrompt, match its style, energy, framing, and pacing (you may refer to it as @Video1 / @Image1)."
+      : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return anthropicJson<UgcAd>({
+    system,
+    user: `Create a UGC ad about:\n\n${intent}`,
+    schema: UGC_SCHEMA,
+    maxTokens: 1500,
+  });
+}
+
 const ADAPT_SCHEMA = {
   type: "object",
   properties: {

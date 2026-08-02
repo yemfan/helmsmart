@@ -38,7 +38,23 @@ function extFrom(url: string, type: GenType): { ext: string; contentType: string
   return { ext, contentType };
 }
 
-export type GenParams = { type: GenType; prompt: string; aspect: string; model?: string; imageUrl?: string };
+export type GenParams = {
+  type: GenType;
+  prompt: string;
+  aspect: string;
+  model?: string;
+  imageUrl?: string;
+  imageUrls?: string[];
+  videoUrls?: string[];
+};
+
+/** UGC (Seedance) clips cost more than a Kling clip. */
+export const UGC_CREDIT = 35;
+
+function costFor(params: GenParams): number {
+  if (params.model?.startsWith("bytedance/seedance")) return UGC_CREDIT;
+  return creditCost(params.type, !!params.imageUrl);
+}
 
 /**
  * Reserve credits, generate on fal, persist to Storage + `generations`. The
@@ -52,7 +68,7 @@ async function generateCore(
   reserve: (cost: number) => Promise<number>,
   refund: (cost: number) => Promise<void>,
 ): Promise<{ urls: string[]; model: string; credits: number; cost: number }> {
-  const cost = creditCost(params.type, !!params.imageUrl);
+  const cost = costFor(params);
 
   const remaining = await reserve(cost);
   if (remaining < 0) throw new CreditError(cost);

@@ -22,6 +22,11 @@ export const DEFAULT_MODELS = {
   imageEdit: "fal-ai/nano-banana/edit",
   videoText: "fal-ai/kling-video/v1.6/standard/text-to-video",
   videoImage: "fal-ai/kling-video/v1.6/standard/image-to-video",
+  // Seedance 2.0 — realistic people + native audio; used for UGC ads (a creator
+  // talking to camera). Reference-to-video accepts uploaded images/videos so we
+  // can emulate a viral ad the user drops in.
+  ugcText: "bytedance/seedance-2.0/text-to-video",
+  ugcRef: "bytedance/seedance-2.0/reference-to-video",
 };
 
 export type GenType = "image" | "video";
@@ -34,7 +39,15 @@ export type GenParams = {
   num?: number;
   duration?: number;
   imageUrl?: string;
+  /** Seedance reference-to-video inputs (up to 9 images / 3 videos, ≤12 total). */
+  imageUrls?: string[];
+  videoUrls?: string[];
 };
+
+/** Seedance models are ByteDance-hosted on fal and take a different input shape. */
+function isSeedance(model?: string): boolean {
+  return !!model && model.startsWith("bytedance/seedance");
+}
 
 export type GenResult = { urls: string[]; model: string };
 
@@ -46,6 +59,24 @@ function headers() {
 
 function buildRequest(p: GenParams): { model: string; input: Record<string, unknown> } {
   const aspect = p.aspect || "16:9";
+
+  // Seedance (UGC): realistic talking-creator video with native audio. Uploaded
+  // image/video references route to reference-to-video (emulate a viral ad).
+  if (isSeedance(p.model)) {
+    const hasRefs = !!(p.imageUrls?.length || p.videoUrls?.length);
+    const model = hasRefs ? DEFAULT_MODELS.ugcRef : p.model!;
+    const input: Record<string, unknown> = {
+      prompt: p.prompt,
+      aspect_ratio: aspect,
+      resolution: "720p",
+      duration: p.duration ? String(p.duration) : "auto",
+      generate_audio: true,
+    };
+    if (p.imageUrls?.length) input.image_urls = p.imageUrls.slice(0, 9);
+    if (p.videoUrls?.length) input.video_urls = p.videoUrls.slice(0, 3);
+    return { model, input };
+  }
+
   if (p.type === "video") {
     const model = p.model || (p.imageUrl ? DEFAULT_MODELS.videoImage : DEFAULT_MODELS.videoText);
     const input: Record<string, unknown> = {

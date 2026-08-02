@@ -116,6 +116,10 @@ export default function PostingHub({
               <div className="text-sm font-semibold text-white">✨ AI posting</div>
               <div className="text-[11px] text-white/45">Write one post now, or schedule it.</div>
             </Link>
+            <Link href="/compose/ugc" className="block border-t border-white/10 px-4 py-3 transition hover:bg-white/5">
+              <div className="text-sm font-semibold text-white">🎥 UGC ad</div>
+              <div className="text-[11px] text-white/45">AI films a creator-style video ad (with voice).</div>
+            </Link>
             <Link href="/autopilot" className="block border-t border-white/10 px-4 py-3 transition hover:bg-white/5">
               <div className="text-sm font-semibold text-white">🤖 Auto posting</div>
               <div className="text-[11px] text-white/45">Set up a campaign that posts on autopilot.</div>
