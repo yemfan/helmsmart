@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 const UPDATED = "August 1, 2026";
-const CONTACT = "support@marketingbossai.com";
+const CONTACT = "contact@marketingbossai.com";
 
 export default function PrivacyPage() {
   return (
