@@ -96,6 +96,15 @@ export type ListingDetail = {
   /** Cinematic clip URLs (fal image-to-video from the photos); defaults to []. */
   ad_clip_urls: string[];
   ad_clips_updated_at: string | null;
+  // ── Finished branded video ad (Phase 2b) ──────────────────────────
+  ad_reel_url: string | null;
+  ad_reel_caption: string | null;
+  ad_reel_render_id: string | null;
+  ad_reel_render_bucket: string | null;
+  /** idle | rendering | ready | failed | null. */
+  ad_reel_status: string | null;
+  ad_reel_error: string | null;
+  ad_reel_updated_at: string | null;
 };
 
 /** The AI-extracted (or manually filled) listing ad facts. Everything nullable. */
