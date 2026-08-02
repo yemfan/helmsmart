@@ -79,4 +79,37 @@ export type ListingDetail = {
   showings_total: number;
   showings_upcoming: number;
   last_showing_at: string | null;
+  // ── Ad facts (source material for the listing → video ad) ──────────
+  beds: number | null;
+  baths: number | null;
+  sqft: number | null;
+  year_built: number | null;
+  property_description: string | null;
+  /** Short selling-point strings; defaults to [] at the DB level. */
+  highlights: string[];
+  /** Listing photo URLs (MLS pull or upload); defaults to [] at the DB level. */
+  photo_urls: string[];
+  /** 'mls_url' | 'manual' | null (never pulled). */
+  ad_facts_source: string | null;
+  ad_facts_confidence: number | null;
+  ad_facts_updated_at: string | null;
+};
+
+/** The AI-extracted (or manually filled) listing ad facts. Everything nullable. */
+export type ListingAdFacts = {
+  beds: number | null;
+  baths: number | null;
+  sqft: number | null;
+  yearBuilt: number | null;
+  price: number | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  description: string | null;
+  highlights: string[];
+  photoUrls: string[];
+  /** 0-1 — how confident the extractor is the facts were read correctly. */
+  confidence: number;
+  /** Free-form notes when the page was blocked, thin, or non-listing. */
+  warnings: string[];
 };

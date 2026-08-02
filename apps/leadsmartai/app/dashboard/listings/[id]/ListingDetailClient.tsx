@@ -8,6 +8,7 @@ import {
   type ListingDetail,
   type ListingStatus,
 } from "@/lib/listings/types";
+import { ListingAdPanel } from "@/components/listings/ListingAdPanel";
 import type {
   ListingOfferCompareItem,
   ListingOfferStatus,
@@ -612,6 +613,10 @@ export function ListingDetailClient({
           </Card>
         </section>
       ) : null}
+
+      {/* Listing → video ad: pull photos + facts (Phase 1), then generate a
+          cinematic video ad (Phase 2, coming). */}
+      <ListingAdPanel listing={listing} />
 
       {/* Offers received — list with per-row actions. Sits below
           the cards grid because it's the operational surface (the
