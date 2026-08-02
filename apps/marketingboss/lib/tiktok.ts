@@ -37,8 +37,11 @@ export function tiktokConfigured(): boolean {
 }
 
 function creds(): { key: string; secret: string } {
-  const key = process.env.TIKTOK_CLIENT_KEY;
-  const secret = process.env.TIKTOK_CLIENT_SECRET;
+  // Trim: a stray newline/space pasted into the env var otherwise makes TikTok
+  // reject the request with a bare "client_key" error (same class of bug as the
+  // untrimmed META_APP_SECRET). Never send raw whitespace in OAuth params.
+  const key = process.env.TIKTOK_CLIENT_KEY?.trim();
+  const secret = process.env.TIKTOK_CLIENT_SECRET?.trim();
   if (!key || !secret) throw new Error("TikTok OAuth is not configured.");
   return { key, secret };
 }
