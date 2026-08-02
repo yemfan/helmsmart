@@ -31,7 +31,11 @@ export async function fetchRenderedHtml(url: string): Promise<string> {
     api_key: key,
     url,
     render_js: "true",
-    wait: "3000",
+    // Zillow/Realtor/Redfin run aggressive bot detection (PerimeterX/HUMAN) that
+    // 403s datacenter IPs — residential (premium) proxies are what actually get
+    // through. Costs more credits, but a basic render just returns a block page.
+    premium_proxy: "true",
+    wait: "3500",
     block_resources: "false", // need the JSON/images referenced
     country_code: "us",
   });
