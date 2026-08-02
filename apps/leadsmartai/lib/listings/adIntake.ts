@@ -3,6 +3,7 @@ import "server-only";
 import { getAnthropicClient } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { ListingAdFacts } from "@/lib/listings/types";
+import { scrapeConfigured, fetchRenderedHtml, extractPhotoUrls, htmlToText } from "@/lib/listings/photoScrape";
 
 /**
  * Listing ad intake — pull the photos + property facts a video ad needs from a
@@ -48,10 +49,64 @@ const SYSTEM_PROMPT =
 type Block = { type: string; text?: string };
 
 /**
- * Fetch + extract from a listing URL. Loops on `pause_turn` so the server-side
- * web_fetch tool can complete before we read the final JSON.
+ * Pull a listing's facts + photos from its URL. Prefers the scrape API (renders
+ * the page past the portal bot-wall, so we actually get the real photo gallery +
+ * facts); falls back to Claude's web_fetch when scraping isn't configured (which
+ * the big portals 403, but non-portal pages may still work).
  */
 export async function extractListingFromUrl(url: string): Promise<ListingAdFacts> {
+  if (scrapeConfigured()) {
+    try {
+      return await extractViaScrape(url);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Photo pull failed.";
+      // Fall back to web_fetch, but keep the scrape error as a warning.
+      const viaFetch = await extractViaWebFetch(url);
+      return { ...viaFetch, warnings: [...viaFetch.warnings, `Scrape fallback: ${msg}`] };
+    }
+  }
+  return extractViaWebFetch(url);
+}
+
+/**
+ * Scrape path: render the page → regex the CDN photo URLs (deterministic) → have
+ * Claude read the facts off the page text. This is what actually works on Zillow
+ * et al., because the render gets past the bot-wall and the photos sit on public
+ * CDNs.
+ */
+async function extractViaScrape(url: string): Promise<ListingAdFacts> {
+  const html = await fetchRenderedHtml(url);
+  const photoUrls = extractPhotoUrls(html);
+  const text = htmlToText(html).slice(0, 16000);
+
+  const client = getAnthropicClient();
+  const res = await client.messages.create({
+    model: MODEL,
+    max_tokens: 1500,
+    system:
+      "You extract real-estate listing facts from the visible text of a listing page for the listing agent. " +
+      "Read off ONLY what the text shows; null over a guess. Ignore navigation, ads, and 'similar homes'. " +
+      "Return photoUrls as an empty array (photos are gathered separately).",
+    messages: [{ role: "user", content: `Listing page text:\n\n${text}\n\n${SCHEMA_DESCRIPTION}` }],
+  });
+  const out = (res.content as unknown as Block[])
+    .filter((b) => b.type === "text" && b.text)
+    .map((b) => b.text as string)
+    .join("\n\n");
+
+  const facts = out.trim() ? parseFacts(out) : emptyFacts([]);
+  // Photos come from the deterministic scrape, not the model.
+  facts.photoUrls = photoUrls;
+  if (photoUrls.length > 0 && facts.confidence < 0.6) facts.confidence = 0.6;
+  if (photoUrls.length === 0) facts.warnings = [...facts.warnings, "No photos found on the page."];
+  return facts;
+}
+
+/**
+ * Fetch + extract from a listing URL via Claude web_fetch. Loops on `pause_turn`
+ * so the server-side tool can complete before we read the final JSON.
+ */
+async function extractViaWebFetch(url: string): Promise<ListingAdFacts> {
   const client = getAnthropicClient();
 
   const messages: Array<{ role: "user" | "assistant"; content: unknown }> = [
