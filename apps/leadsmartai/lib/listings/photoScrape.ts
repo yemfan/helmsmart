@@ -31,17 +31,21 @@ export async function fetchRenderedHtml(url: string): Promise<string> {
     api_key: key,
     url,
     render_js: "true",
-    // Zillow/Realtor/Redfin run aggressive bot detection (PerimeterX/HUMAN) that
-    // 403s datacenter IPs — residential (premium) proxies are what actually get
-    // through. Costs more credits, but a basic render just returns a block page.
-    premium_proxy: "true",
-    wait: "3500",
+    // Zillow/Realtor/Redfin run aggressive bot detection (PerimeterX/HUMAN).
+    // stealth_proxy is ScrapingBee's toughest tier (residential + anti-bot),
+    // the one they recommend for sites this hard. Costs more credits, but a
+    // basic/premium render just returns a block page on Zillow.
+    stealth_proxy: "true",
+    wait: "4000",
     block_resources: "false", // need the JSON/images referenced
     country_code: "us",
   });
   const res = await fetch(`${SCRAPINGBEE}?${params.toString()}`, { method: "GET" });
   const html = await res.text();
-  if (!res.ok) throw new Error(`Photo pull failed (${res.status}): ${html.slice(0, 160)}`);
+  // Diagnostic: surface what ScrapingBee returned (status + size) so a failed
+  // pull is debuggable from the logs without another round-trip.
+  console.log(`[photoScrape] status=${res.status} htmlLen=${html.length} url=${url.slice(0, 80)}`);
+  if (!res.ok) throw new Error(`Photo pull failed (${res.status}): ${html.slice(0, 200)}`);
   return html;
 }
 
