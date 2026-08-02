@@ -537,9 +537,9 @@ function SettingsModal({
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={s.modalBackdrop}>
-        <View style={s.modalSheet}>
+        <View style={s.modalSheet} accessibilityViewIsModal>
           <View style={s.modalHead}>
-            <Text style={s.modalTitle}>Approval settings</Text>
+            <Text style={s.modalTitle} accessibilityRole="header">Approval settings</Text>
             <Pressable onPress={onClose} accessibilityLabel="Close">
               <Ionicons name="close" size={22} color={tokens.textMuted} />
             </Pressable>

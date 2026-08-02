@@ -94,7 +94,7 @@ export function TaskComposerModal({ visible, leadId, onClose, onCreated }: Props
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={styles.sheetWrap}
         >
-        <View style={styles.sheet}>
+        <View style={styles.sheet} accessibilityViewIsModal>
           <Text style={styles.sheetTitle}>{t("task_composer.title")}</Text>
           <TextInput
             style={styles.input}

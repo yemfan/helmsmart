@@ -255,6 +255,8 @@ export default function OnboardingLoginScreen() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="email-address"
+                autoComplete="email"
+                textContentType="username"
                 editable={!busy}
                 accessibilityLabel="Email"
               />
@@ -267,6 +269,8 @@ export default function OnboardingLoginScreen() {
                 secureTextEntry
                 autoCapitalize="none"
                 autoCorrect={false}
+                autoComplete="current-password"
+                textContentType="password"
                 editable={!busy}
                 accessibilityLabel="Password"
               />
@@ -288,7 +292,11 @@ export default function OnboardingLoginScreen() {
             </>
           )}
 
-          {error ? <Text style={s.error}>{error}</Text> : null}
+          {error ? (
+            <Text style={s.error} accessibilityRole="alert" accessibilityLiveRegion="assertive">
+              {error}
+            </Text>
+          ) : null}
 
           <View
             style={{
