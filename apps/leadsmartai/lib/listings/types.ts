@@ -93,6 +93,9 @@ export type ListingDetail = {
   ad_facts_source: string | null;
   ad_facts_confidence: number | null;
   ad_facts_updated_at: string | null;
+  /** Cinematic clip URLs (fal image-to-video from the photos); defaults to []. */
+  ad_clip_urls: string[];
+  ad_clips_updated_at: string | null;
 };
 
 /** The AI-extracted (or manually filled) listing ad facts. Everything nullable. */
