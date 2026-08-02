@@ -42,10 +42,19 @@ export async function fetchRenderedHtml(url: string): Promise<string> {
   });
   const res = await fetch(`${SCRAPINGBEE}?${params.toString()}`, { method: "GET" });
   const html = await res.text();
-  // Diagnostic: surface what ScrapingBee returned (status + size) so a failed
-  // pull is debuggable from the logs without another round-trip.
+  // Diagnostic: status + size only. NEVER log/return the response body — on an
+  // auth error ScrapingBee echoes the api key back in the JSON, so surfacing the
+  // body would leak the secret into logs and the client-facing warnings.
   console.log(`[photoScrape] status=${res.status} htmlLen=${html.length} url=${url.slice(0, 80)}`);
-  if (!res.ok) throw new Error(`Photo pull failed (${res.status}): ${html.slice(0, 200)}`);
+  if (!res.ok) {
+    const hint =
+      res.status === 401
+        ? " — check SCRAPINGBEE_API_KEY is a valid key."
+        : res.status === 402
+          ? " — ScrapingBee is out of credits."
+          : "";
+    throw new Error(`Photo pull failed (${res.status})${hint}`);
+  }
   return html;
 }
 
