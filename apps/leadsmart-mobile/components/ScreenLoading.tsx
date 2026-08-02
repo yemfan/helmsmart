@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { useEffect, useMemo } from "react";
+import { AccessibilityInfo, ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useThemeTokens } from "../lib/useThemeTokens";
 import type { ThemeTokens } from "../lib/theme";
 
@@ -10,8 +10,12 @@ type Props = {
 export function ScreenLoading({ message }: Props) {
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
+  // Android live region + iOS imperative announce so the loading state isn't silent.
+  useEffect(() => {
+    AccessibilityInfo.announceForAccessibility(message);
+  }, [message]);
   return (
-    <View style={styles.wrap}>
+    <View style={styles.wrap} accessibilityLiveRegion="polite">
       <ActivityIndicator size="large" color={tokens.accent} />
       <Text style={styles.text}>{message}</Text>
     </View>

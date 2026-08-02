@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { LayoutAnimation, StyleSheet, Text, View } from "react-native";
+import { AccessibilityInfo, LayoutAnimation, StyleSheet, Text, View } from "react-native";
 import { useNetwork } from "../lib/offline/NetworkContext";
 import { useWriteQueue } from "../lib/offline/useWriteQueue";
 import { useThemeTokens } from "../lib/useThemeTokens";
@@ -21,6 +21,7 @@ export function OfflineBanner(): JSX.Element | null {
   useEffect(() => {
     if (prevConnected.current !== isConnected) {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      if (!isConnected) AccessibilityInfo.announceForAccessibility("You're offline");
       prevConnected.current = isConnected;
     }
   }, [isConnected]);
@@ -28,7 +29,7 @@ export function OfflineBanner(): JSX.Element | null {
   if (isConnected) return null;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityLiveRegion="assertive">
       <Text style={styles.title}>You're offline</Text>
       {pendingCount > 0 && (
         <Text style={styles.subtitle}>

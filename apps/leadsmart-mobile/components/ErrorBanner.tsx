@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useMemo } from "react";
+import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from "react-native";
 import { useThemeTokens } from "../lib/useThemeTokens";
 import type { ThemeTokens } from "../lib/theme";
 
@@ -13,8 +13,13 @@ type Props = {
 export function ErrorBanner({ title, message, onRetry, retryLabel = "Try again" }: Props) {
   const tokens = useThemeTokens();
   const styles = useMemo(() => createStyles(tokens), [tokens]);
+  // `accessibilityLiveRegion` covers Android; announce imperatively for iOS
+  // (VoiceOver has no live-region equivalent) so the error is spoken on mount.
+  useEffect(() => {
+    AccessibilityInfo.announceForAccessibility(`${title}. ${message}`);
+  }, [title, message]);
   return (
-    <View style={styles.banner}>
+    <View style={styles.banner} accessibilityLiveRegion="assertive">
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.msg}>{message}</Text>
       {onRetry ? (

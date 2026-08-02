@@ -178,7 +178,7 @@ export function AppointmentComposerModal({
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={styles.sheetWrap}
         >
-          <View style={styles.sheet}>
+          <View style={styles.sheet} accessibilityViewIsModal>
             <Text style={styles.sheetTitle}>{t("appointment_composer.title")}</Text>
             {/* Lead with something human — the title — then who it's for. */}
             <TextInput

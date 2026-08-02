@@ -82,7 +82,7 @@ export function BookingLinkComposerModal({ visible, leadId, onClose, onCreated }
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={styles.sheetWrap}
         >
-          <View style={styles.sheet}>
+          <View style={styles.sheet} accessibilityViewIsModal>
             <Text style={styles.sheetTitle}>{t("booking_link_composer.title")}</Text>
             <Text style={styles.hint}>{t("booking_link_composer.hint")}</Text>
             <TextInput
