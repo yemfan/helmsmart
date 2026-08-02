@@ -44,6 +44,11 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
   const [error, setError] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<string | null>(listing.ad_facts_updated_at);
 
+  // Cinematic clips (Phase 2).
+  const [clipUrls, setClipUrls] = useState<string[]>(listing.ad_clip_urls ?? []);
+  const [generating, setGenerating] = useState(false);
+  const [clipNote, setClipNote] = useState<string | null>(null);
+
   const hasFacts =
     !!facts.beds ||
     !!facts.baths ||
@@ -123,6 +128,42 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
 
   function removePhoto(url: string) {
     setFacts((f) => ({ ...f, photoUrls: f.photoUrls.filter((u) => u !== url) }));
+  }
+
+  async function generateClips() {
+    if (generating) return;
+    setGenerating(true);
+    setError(null);
+    setClipNote(null);
+    try {
+      const res = await fetch(`/api/dashboard/listings/${encodeURIComponent(listing.id)}/ad-video`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        urls?: string[];
+        attempted?: number;
+        failed?: number;
+        listing?: ListingDetail;
+        error?: string;
+      };
+      if (!res.ok || !body.ok) {
+        setError(body.error ?? "Couldn't generate clips.");
+        return;
+      }
+      setClipUrls(body.listing?.ad_clip_urls ?? body.urls ?? []);
+      if (body.failed && body.failed > 0) {
+        setClipNote(`${(body.urls ?? []).length} of ${body.attempted} clips rendered — ${body.failed} failed.`);
+      } else {
+        setClipNote(`${(body.urls ?? []).length} cinematic clip${(body.urls ?? []).length === 1 ? "" : "s"} ready.`);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error.");
+    } finally {
+      setGenerating(false);
+    }
   }
 
   const field = "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm";
@@ -250,8 +291,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           )}
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-2">
-          <span className="text-[11px] text-slate-400">Generating the video ad comes next.</span>
+        <div className="mt-4 flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={() => void save()}
@@ -260,6 +300,53 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           >
             {saving ? "Saving…" : "Save facts"}
           </button>
+        </div>
+
+        {/* ── Cinematic clips (Phase 2) ──────────────────────────────── */}
+        <div className="mt-5 border-t border-slate-100 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-900">Cinematic clips</h3>
+              <p className="text-[11px] text-slate-500">
+                Animate up to 5 photos into cinematic motion clips (the raw material for the video ad).
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void generateClips()}
+              disabled={generating || facts.photoUrls.length === 0}
+              className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              title={facts.photoUrls.length === 0 ? "Add photos first" : "Generate cinematic clips (fal)"}
+            >
+              {generating ? "Rendering…" : clipUrls.length > 0 ? "Re-generate clips" : "Generate cinematic clips"}
+            </button>
+          </div>
+
+          {generating ? (
+            <p className="mt-2 text-[11px] text-slate-500">
+              Rendering cinematic motion — this can take a couple minutes per photo.
+            </p>
+          ) : null}
+          {clipNote ? <p className="mt-2 text-[12px] text-slate-600">{clipNote}</p> : null}
+
+          {clipUrls.length > 0 ? (
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
+              {clipUrls.map((url) => (
+                <video
+                  key={url}
+                  src={url}
+                  controls
+                  loop
+                  muted
+                  className="aspect-[9/16] w-full rounded-lg border border-slate-200 bg-black object-cover"
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-2 text-[11px] text-slate-400">
+              No clips yet. Stitching clips into a branded, captioned ad + publishing comes next.
+            </p>
+          )}
         </div>
       </div>
     </section>
