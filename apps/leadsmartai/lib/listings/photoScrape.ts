@@ -7,52 +7,50 @@ import "server-only";
  * CDNs that don't block. So: render the page through a scrape API (residential
  * proxy + JS render), then regex the CDN URLs out and upsize to full resolution.
  *
- * Provider = ScrapingBee (simple GET, has a free tier). Swap by changing
- * fetchRenderedHtml. Gated on SCRAPINGBEE_API_KEY — scrapeConfigured() is false
- * until it's set, so callers degrade gracefully.
+ * Provider = ScraperAPI (simple GET, free tier). Its basic call already rotates
+ * proxies that get past Zillow's bot-wall (verified: a plain call returns the
+ * full server-rendered page with all photos — no JS render / premium tier
+ * needed). Gated on SCRAPER_API_KEY (SCRAPINGBEE_API_KEY still read as a
+ * fallback so an existing env var keeps working); scrapeConfigured() is false
+ * until one is set, so callers degrade gracefully.
  *
  * RIGHTS: intended for an agent pulling THEIR OWN listing's photos (MLS/IDX terms
  * generally permit the listing agent to use them). The UI must attest that.
  */
 
-const SCRAPINGBEE = "https://app.scrapingbee.com/api/v1/";
+const SCRAPERAPI = "https://api.scraperapi.com/";
 const MAX_PHOTOS = 20;
 
-export function scrapeConfigured(): boolean {
-  return Boolean(process.env.SCRAPINGBEE_API_KEY?.trim());
+function scraperKey(): string | undefined {
+  return process.env.SCRAPER_API_KEY?.trim() || process.env.SCRAPINGBEE_API_KEY?.trim();
 }
 
-/** Render a URL to HTML via the scrape API (gets past the portal bot-wall). */
-export async function fetchRenderedHtml(url: string): Promise<string> {
-  const key = process.env.SCRAPINGBEE_API_KEY?.trim();
-  if (!key) throw new Error("Photo pull isn't configured (missing SCRAPINGBEE_API_KEY).");
+export function scrapeConfigured(): boolean {
+  return Boolean(scraperKey());
+}
 
-  const params = new URLSearchParams({
-    api_key: key,
-    url,
-    render_js: "true",
-    // Zillow/Realtor/Redfin run aggressive bot detection (PerimeterX/HUMAN).
-    // stealth_proxy is ScrapingBee's toughest tier (residential + anti-bot),
-    // the one they recommend for sites this hard. Costs more credits, but a
-    // basic/premium render just returns a block page on Zillow.
-    stealth_proxy: "true",
-    wait: "4000",
-    block_resources: "false", // need the JSON/images referenced
-    country_code: "us",
-  });
-  const res = await fetch(`${SCRAPINGBEE}?${params.toString()}`, { method: "GET" });
+/** Fetch a URL's rendered HTML via ScraperAPI (gets past the portal bot-wall). */
+export async function fetchRenderedHtml(url: string): Promise<string> {
+  const key = scraperKey();
+  if (!key) throw new Error("Photo pull isn't configured (missing SCRAPER_API_KEY).");
+
+  // Basic call — ScraperAPI returns the full server-rendered page (its
+  // __NEXT_DATA__ carries every photo URL), so no render/premium is required.
+  const params = new URLSearchParams({ api_key: key, url, country_code: "us" });
+  const res = await fetch(`${SCRAPERAPI}?${params.toString()}`, { method: "GET" });
   const html = await res.text();
-  // Diagnostic: status + size only. NEVER log/return the response body — on an
-  // auth error ScrapingBee echoes the api key back in the JSON, so surfacing the
-  // body would leak the secret into logs and the client-facing warnings.
+  // Diagnostic: status + size only. NEVER log/return the response body — a
+  // provider auth error can echo the api key back, which would leak the secret.
   console.log(`[photoScrape] status=${res.status} htmlLen=${html.length} url=${url.slice(0, 80)}`);
   if (!res.ok) {
     const hint =
       res.status === 401
-        ? " — check SCRAPINGBEE_API_KEY is a valid key."
-        : res.status === 402
-          ? " — ScrapingBee is out of credits."
-          : "";
+        ? " — check SCRAPER_API_KEY is a valid ScraperAPI key."
+        : res.status === 403
+          ? " — the target blocked the scrape (or a gated feature)."
+          : res.status === 429
+            ? " — ScraperAPI is out of credits / rate-limited."
+            : "";
     throw new Error(`Photo pull failed (${res.status})${hint}`);
   }
   return html;

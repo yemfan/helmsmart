@@ -26,6 +26,7 @@
         "OPENAI_*",
         "FAL_*",
         "SCRAPINGBEE_API_KEY",
+        "SCRAPER_API_KEY",
         "YOUTUBE_*",
         "ELEVENLABS_*",
         "META_*",
