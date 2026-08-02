@@ -165,9 +165,15 @@ export async function lookupProperty(
   // Warehouse miss + the input is a listing URL + scraping is configured →
   // render the page and read real facts off it, so the brief isn't just an
   // address. Best-effort: any failure falls through to the plain address brief.
-  if (!row && /^https?:\/\//i.test(input.trim()) && scrapeConfigured()) {
+  const isUrl = /^https?:\/\//i.test(input.trim());
+  const canScrape = scrapeConfigured();
+  console.log(`[lookup-property] warehouseHit=${row !== null} isUrl=${isUrl} scrapeConfigured=${canScrape}`);
+  if (!row && isUrl && canScrape) {
     try {
       const facts = await extractListingFromUrl(input.trim());
+      console.log(
+        `[lookup-property] scrape facts: beds=${facts.beds} baths=${facts.baths} sqft=${facts.sqft} price=${facts.price} photos=${facts.photoUrls.length} conf=${facts.confidence} warnings=${JSON.stringify(facts.warnings)}`,
+      );
       if (facts && hasUsableFacts(facts)) {
         return resultFromFacts(address, input, facts);
       }
