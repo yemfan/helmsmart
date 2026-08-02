@@ -5,6 +5,8 @@ import { getDashboardAgentContext } from "@/lib/contact-intake/dashboardAgentCon
 import { lookupProperty } from "@/lib/leads-gen/property-lookup";
 
 export const runtime = "nodejs";
+// The scrape fallback (render a listing page + read facts) can take a bit.
+export const maxDuration = 120;
 
 const bodySchema = z.object({
   /** Free-form input — raw address OR a listing URL
