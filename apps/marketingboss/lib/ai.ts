@@ -160,7 +160,7 @@ const UGC_SCHEMA = {
  * Seedance-ready video prompt that renders that creator speaking it (Seedance
  * generates the person + native audio, so the prompt embeds the actual lines).
  */
-export async function draftUgcAd(intent: string, hasReference: boolean): Promise<UgcAd> {
+export async function draftUgcAd(intent: string, hasReference: boolean, styleHint?: string): Promise<UgcAd> {
   const system = [
     "You are a top-performing UGC (user-generated content) ad creator for short-form video (TikTok/Reels/Shorts).",
     "Write a single ~10-15 second ad as if a real person filmed it on their phone — casual, authentic, NOT polished or corporate.",
@@ -174,6 +174,9 @@ export async function draftUgcAd(intent: string, hasReference: boolean): Promise
     "- videoPrompt: a vivid prompt for an AI video model that will GENERATE the creator and their VOICE. Describe the person (age/vibe), the real-world setting, that they speak directly to a handheld phone camera in a casual excited tone, and embed the spoken lines in quotes. Specify vertical 9:16, natural lighting, authentic selfie-style UGC — not cinematic or ad-like.",
     hasReference
       ? "A reference image/video was provided — in videoPrompt, match its style, energy, framing, and pacing (you may refer to it as @Video1 / @Image1)."
+      : "",
+    styleHint
+      ? `Emulate this trending ad format the user chose — borrow its hook style, pacing, and structure (do NOT copy its exact words):\n${styleHint}`
       : "",
   ]
     .filter(Boolean)

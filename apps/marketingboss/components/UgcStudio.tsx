@@ -16,6 +16,7 @@ type UgcAd = {
 };
 type PubResult = { platform: string; ok: boolean; url?: string | null; error?: string };
 type Ref = { url: string; kind: "image" | "video" };
+type ViralRef = { title: string; platform: string; why: string; hook: string; styleNotes: string; url: string };
 
 function withHashes(tags: string[]): string {
   return tags.map((h) => `#${h.replace(/^#/, "")}`).join(" ");
@@ -40,6 +41,11 @@ export default function UgcStudio({
   const [intent, setIntent] = useState("");
   const [drafting, setDrafting] = useState(false);
   const [ad, setAd] = useState<UgcAd | null>(null);
+
+  // Viral-reference finder (AI web search) + the chosen style to emulate.
+  const [scouting, setScouting] = useState(false);
+  const [viralRefs, setViralRefs] = useState<ViralRef[] | null>(null);
+  const [chosenStyle, setChosenStyle] = useState<ViralRef | null>(null);
 
   // Editable ad fields
   const [script, setScript] = useState("");
@@ -106,6 +112,31 @@ export default function UgcStudio({
     }
   }
 
+  async function runInspire() {
+    const i = intent.trim();
+    if (!i || scouting) return;
+    setScouting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/compose/ugc/inspire", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ intent: i }),
+      });
+      const data = (await res.json()) as { refs?: ViralRef[]; error?: string };
+      if (!res.ok || !data.refs) throw new Error(data.error || `Couldn't find references (${res.status})`);
+      setViralRefs(data.refs);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Search failed.");
+    } finally {
+      setScouting(false);
+    }
+  }
+
+  function styleHintFrom(v: ViralRef): string {
+    return `"${v.title}" (${v.platform}). Hook style: ${v.hook}. Format to emulate: ${v.styleNotes}`;
+  }
+
   async function runDraft() {
     const i = intent.trim();
     if (!i || drafting) return;
@@ -116,7 +147,11 @@ export default function UgcStudio({
       const res = await fetch("/api/compose/ugc/draft", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ intent: i, hasReference: refs.length > 0 }),
+        body: JSON.stringify({
+          intent: i,
+          hasReference: refs.length > 0,
+          styleHint: chosenStyle ? styleHintFrom(chosenStyle) : undefined,
+        }),
       });
       const data = (await res.json()) as { ad?: UgcAd; error?: string };
       if (!res.ok || !data.ad) throw new Error(data.error || `Couldn't write the ad (${res.status})`);
@@ -294,6 +329,62 @@ export default function UgcStudio({
               <span className="self-center text-[11px] text-white/30">
                 {imgCount}/9 images · {vidCount}/3 videos
               </span>
+            </div>
+          )}
+        </div>
+
+        {/* Viral-reference finder */}
+        <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <button onClick={runInspire} disabled={scouting || !intent.trim()} className={chipBtn}>
+              {scouting ? "Searching…" : "✨ Find a viral ad to emulate"}
+            </button>
+            <span className="text-[11px] text-white/30">AI web-searches trending formats in your niche.</span>
+          </div>
+          {chosenStyle && (
+            <div className="mt-2 inline-flex items-center gap-2 rounded-lg border border-boss-gold/30 bg-boss-gold/10 py-1 pl-2.5 pr-2 text-xs">
+              <span className="text-white/70">Emulating: <span className="font-medium text-white">{chosenStyle.title}</span></span>
+              <button onClick={() => setChosenStyle(null)} className="text-white/50 hover:text-white" aria-label="clear style">
+                ×
+              </button>
+            </div>
+          )}
+          {scouting && <p className="mt-2 text-[11px] text-white/40">Scanning what&apos;s trending — this takes ~20–40s.</p>}
+          {viralRefs && viralRefs.length > 0 && (
+            <div className="mt-2 flex flex-col gap-2">
+              {viralRefs.map((v, i) => {
+                const picked = chosenStyle?.title === v.title;
+                return (
+                  <div
+                    key={i}
+                    className={`rounded-lg border p-2.5 text-xs transition ${
+                      picked ? "border-boss-gold/50 bg-boss-gold/5" : "border-white/10 bg-black/20"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-white">{v.title}</span>
+                      <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/50">{v.platform}</span>
+                      {v.url && (
+                        <a href={v.url} target="_blank" rel="noreferrer" className="ml-auto text-boss-violet/80 underline underline-offset-2 hover:text-boss-violet">
+                          example ↗
+                        </a>
+                      )}
+                    </div>
+                    <p className="mt-1 text-white/60">{v.why}</p>
+                    <p className="mt-1 text-white/40">
+                      <span className="text-white/55">Hook:</span> {v.hook}
+                    </p>
+                    <button
+                      onClick={() => setChosenStyle(picked ? null : v)}
+                      className={`mt-2 rounded-md px-2.5 py-1 text-[11px] font-medium transition ${
+                        picked ? "bg-boss-gold/20 text-boss-gold" : "border border-white/15 text-white/60 hover:text-white"
+                      }`}
+                    >
+                      {picked ? "✓ Emulating this" : "Use this style"}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
