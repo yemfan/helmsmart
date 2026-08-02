@@ -3,6 +3,7 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getAnthropicClient } from "@/lib/anthropic";
 import { falConfigured } from "@/lib/listings/adVideo";
+import { scheduleReel } from "@/lib/social/scheduleReel";
 import type { ListingAdFacts } from "@/lib/listings/types";
 
 /**
@@ -153,4 +154,35 @@ export async function buildListingReel(
     await setReel(agentId, listingId, { ad_reel_status: "failed", ad_reel_error: msg });
     throw e;
   }
+}
+
+/**
+ * Publish the finished ad to the agent's connected FB/IG/LinkedIn accounts.
+ * Reuses the whole reel publish pipeline: drop a social_reels row carrying the
+ * MP4 + caption, then scheduleReel fans it out to scheduled_posts (drained by
+ * the publish cron within a few minutes). Caption can be overridden by the UI.
+ */
+export async function publishListingReel(
+  agentId: string,
+  listingId: string,
+  captionOverride?: string,
+): Promise<{ scheduled: number; error?: string }> {
+  const { data } = await supabaseAdmin
+    .from("listings")
+    .select("ad_reel_url, ad_reel_caption, ad_reel_status")
+    .eq("id", listingId)
+    .eq("agent_id", agentId)
+    .maybeSingle();
+  const l = data as { ad_reel_url: string | null; ad_reel_caption: string | null; ad_reel_status: string | null } | null;
+  if (!l?.ad_reel_url || l.ad_reel_status !== "ready") throw new Error("Build the video ad first.");
+
+  const caption = (captionOverride?.trim() || l.ad_reel_caption || "").slice(0, 800);
+  const { data: reelRow, error } = await supabaseAdmin
+    .from("social_reels")
+    .insert({ agent_id: Number(agentId), slides: [], caption, hashtags: [], mp4_url: l.ad_reel_url, status: "rendered" } as never)
+    .select("id")
+    .single();
+  if (error || !reelRow) throw new Error(error?.message ?? "Could not queue the ad for posting.");
+
+  return scheduleReel({ agentId, reelId: (reelRow as { id: string }).id, queueStatus: "scheduled" });
 }
