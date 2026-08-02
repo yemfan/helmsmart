@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getListingById } from "@/lib/listings/service";
-import { reelBuildConfigured, buildListingReel, pollListingReel } from "@/lib/listings/adReel";
+import { reelBuildConfigured, buildListingReel } from "@/lib/listings/adReel";
 import type { ListingAdFacts } from "@/lib/listings/types";
 
-// Merging the clips can take a minute or two before the render is queued.
+// Merging the clips into the finished tour can take a minute or two.
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
@@ -37,7 +37,7 @@ export async function POST(_req: Request, ctx: { params: Promise<{ id: string }>
 
     if (!reelBuildConfigured()) {
       return NextResponse.json(
-        { ok: false, error: "The video-ad builder isn't fully configured (needs FAL_KEY + the Remotion Lambda env)." },
+        { ok: false, error: "The video-ad builder isn't configured yet (missing FAL_KEY)." },
         { status: 503 },
       );
     }
@@ -55,23 +55,20 @@ export async function POST(_req: Request, ctx: { params: Promise<{ id: string }>
   }
 }
 
-/** GET — poll the in-flight render; stores the final MP4 when done. */
+/** GET — the current reel status + URL for this listing (no external poll). */
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
     const { agentId } = await getCurrentAgentContext();
     const { id } = await ctx.params;
     const listing = await getListingById(String(agentId), id);
     if (!listing) return NextResponse.json({ ok: false, error: "Listing not found" }, { status: 404 });
-
-    if (listing.ad_reel_status === "ready" && listing.ad_reel_url) {
-      return NextResponse.json({ ok: true, status: "ready", url: listing.ad_reel_url, progress: 1 });
-    }
-    if (!listing.ad_reel_render_id || !listing.ad_reel_render_bucket) {
-      return NextResponse.json({ ok: true, status: listing.ad_reel_status ?? "idle", progress: 0 });
-    }
-
-    const st = await pollListingReel(String(agentId), id, listing.ad_reel_render_id, listing.ad_reel_render_bucket);
-    return NextResponse.json({ ok: true, ...st });
+    return NextResponse.json({
+      ok: true,
+      status: listing.ad_reel_status ?? "idle",
+      url: listing.ad_reel_url,
+      caption: listing.ad_reel_caption,
+      error: listing.ad_reel_error,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
     console.error("GET /api/dashboard/listings/[id]/ad-reel:", err);

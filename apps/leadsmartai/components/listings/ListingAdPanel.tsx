@@ -238,37 +238,23 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
     if (building || clipUrls.length === 0) return;
     setBuilding(true);
     setError(null);
-    setReelNote("Merging clips + writing the ad…");
+    setReelNote("Merging the clips + writing the caption… (a minute or two)");
     setReelUrl(null);
     try {
+      // The merge runs server-side and returns the finished MP4 (no separate poll).
       const res = await fetch(reelUrlEndpoint, { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
-      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; caption?: string; error?: string };
-      if (!res.ok || !body.ok) {
+      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; url?: string; caption?: string; error?: string };
+      if (!res.ok || !body.ok || !body.url) {
         setError(body.error ?? "Couldn't build the ad.");
+        setReelNote(null);
         return;
       }
+      setReelUrl(body.url);
       if (body.caption) setReelCaption(body.caption);
-      // Poll the render until ready.
-      setReelNote("Rendering the branded ad… (a couple of minutes)");
-      for (let i = 0; i < 90; i++) {
-        await new Promise((r) => setTimeout(r, 4000));
-        const p = await fetch(reelUrlEndpoint);
-        const pb = (await p.json().catch(() => ({}))) as { status?: string; url?: string; progress?: number; error?: string };
-        if (pb.status === "ready" && pb.url) {
-          setReelUrl(pb.url);
-          setReelNote("Your branded video ad is ready.");
-          return;
-        }
-        if (pb.status === "failed") {
-          setError(pb.error ?? "The render failed.");
-          setReelNote(null);
-          return;
-        }
-        if (typeof pb.progress === "number") setReelNote(`Rendering the branded ad… ${Math.round(pb.progress * 100)}%`);
-      }
-      setReelNote("Still rendering — reload in a minute to see it.");
+      setReelNote("Your video ad is ready.");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Network error.");
+      setReelNote(null);
     } finally {
       setBuilding(false);
     }
@@ -485,9 +471,9 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
         <div className="mt-5 border-t border-slate-100 pt-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Branded video ad</h3>
+              <h3 className="text-sm font-semibold text-slate-900">Video ad</h3>
               <p className="text-[11px] text-slate-500">
-                Stitch the clips into one branded, captioned reel — ready to post.
+                Stitch the clips into one video tour + an AI caption — ready to post.
               </p>
             </div>
             <button
@@ -495,9 +481,9 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               onClick={() => void buildReel()}
               disabled={building || clipUrls.length === 0}
               className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-              title={clipUrls.length === 0 ? "Generate cinematic clips first" : "Build the branded ad"}
+              title={clipUrls.length === 0 ? "Generate cinematic clips first" : "Build the video ad"}
             >
-              {building ? "Building…" : reelUrl ? "Rebuild ad" : "Build the branded ad"}
+              {building ? "Building…" : reelUrl ? "Rebuild ad" : "Build the video ad"}
             </button>
           </div>
 
