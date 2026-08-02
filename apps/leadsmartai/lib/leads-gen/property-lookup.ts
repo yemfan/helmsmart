@@ -6,6 +6,9 @@ import {
   type PropertyRow,
   type PropertySnapshotRow,
 } from "@/lib/propertyService";
+import { scrapeConfigured } from "@/lib/listings/photoScrape";
+import { extractListingFromUrl } from "@/lib/listings/adIntake";
+import type { ListingAdFacts } from "@/lib/listings/types";
 
 /**
  * Shared property-lookup helper for the "Paste an address or URL"
@@ -159,6 +162,23 @@ export async function lookupProperty(
     );
   }
 
+  // Warehouse miss + the input is a listing URL + scraping is configured →
+  // render the page and read real facts off it, so the brief isn't just an
+  // address. Best-effort: any failure falls through to the plain address brief.
+  if (!row && /^https?:\/\//i.test(input.trim()) && scrapeConfigured()) {
+    try {
+      const facts = await extractListingFromUrl(input.trim());
+      if (facts && hasUsableFacts(facts)) {
+        return resultFromFacts(address, input, facts);
+      }
+    } catch (e) {
+      console.warn(
+        "[leads-gen/lookup-property] scrape fallback failed",
+        e instanceof Error ? e.message : e,
+      );
+    }
+  }
+
   let snapshot: PropertySnapshotRow | null = null;
   if (row) {
     try {
@@ -245,6 +265,65 @@ function stitchBrief(params: {
     lines.push(`Source: ${rawInput.trim()}`);
   }
 
+  return lines.join("\n");
+}
+
+/** True when a scrape returned enough to beat the plain-address brief. */
+function hasUsableFacts(f: ListingAdFacts): boolean {
+  return (
+    f.beds != null ||
+    f.baths != null ||
+    f.sqft != null ||
+    f.price != null ||
+    (f.description != null && f.description.length > 0) ||
+    f.highlights.length > 0
+  );
+}
+
+/** Map scraped listing facts → the lookup result the wizard expects. */
+function resultFromFacts(
+  fallbackAddress: string,
+  rawInput: string,
+  f: ListingAdFacts,
+): PropertyLookupResult {
+  const address = f.address ?? fallbackAddress;
+  return {
+    address,
+    // `found: true` so the wizard shows the enriched brief without the
+    // "not in our database" hint — we DID resolve real details, just from
+    // the page rather than the warehouse.
+    found: true,
+    city: f.city,
+    state: f.state,
+    zipCode: null,
+    beds: f.beds,
+    baths: f.baths,
+    sqft: f.sqft,
+    yearBuilt: f.yearBuilt,
+    estimatedValue: f.price,
+    listingStatus: null,
+    brief: stitchBriefFromFacts(address, rawInput, f),
+  };
+}
+
+/** Build the brief from scraped facts. Mirrors stitchBrief's shape. */
+function stitchBriefFromFacts(address: string, rawInput: string, f: ListingAdFacts): string {
+  const lines: string[] = [];
+  const cityState = [f.city, f.state].filter(Boolean).join(", ");
+  lines.push(cityState ? `Property: ${capitalizeAddress(address)}, ${cityState}` : `Property: ${capitalizeAddress(address)}`);
+
+  const specs: string[] = [];
+  if (f.beds != null) specs.push(`${f.beds}bd`);
+  if (f.baths != null) specs.push(`${f.baths}ba`);
+  if (f.sqft != null) specs.push(`${f.sqft.toLocaleString()} sqft`);
+  if (f.yearBuilt != null) specs.push(`built ${f.yearBuilt}`);
+  if (specs.length > 0) lines.push(`Specs: ${specs.join(", ")}`);
+
+  if (f.price != null) lines.push(`List price: $${Number(f.price).toLocaleString()}`);
+  if (f.description) lines.push(`Description: ${f.description.slice(0, 600)}`);
+  if (f.highlights.length > 0) lines.push(`Highlights: ${f.highlights.slice(0, 6).join(", ")}`);
+
+  if (/^https?:\/\//i.test(rawInput.trim())) lines.push(`Source: ${rawInput.trim()}`);
   return lines.join("\n");
 }
 
