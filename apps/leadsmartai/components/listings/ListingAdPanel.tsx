@@ -51,6 +51,12 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
   const [generating, setGenerating] = useState(false);
   const [clipNote, setClipNote] = useState<string | null>(null);
 
+  // Finished branded reel (Phase 2b).
+  const [reelUrl, setReelUrl] = useState<string | null>(listing.ad_reel_url);
+  const [reelCaption, setReelCaption] = useState<string>(listing.ad_reel_caption ?? "");
+  const [building, setBuilding] = useState(false);
+  const [reelNote, setReelNote] = useState<string | null>(null);
+
   // Photo upload — the reliable foundation (portals like Zillow 403 the pull).
   const [uploading, setUploading] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -223,6 +229,48 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
       );
     } finally {
       setGenerating(false);
+    }
+  }
+
+  const reelUrlEndpoint = `/api/dashboard/listings/${encodeURIComponent(listing.id)}/ad-reel`;
+
+  async function buildReel() {
+    if (building || clipUrls.length === 0) return;
+    setBuilding(true);
+    setError(null);
+    setReelNote("Merging clips + writing the ad…");
+    setReelUrl(null);
+    try {
+      const res = await fetch(reelUrlEndpoint, { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
+      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; caption?: string; error?: string };
+      if (!res.ok || !body.ok) {
+        setError(body.error ?? "Couldn't build the ad.");
+        return;
+      }
+      if (body.caption) setReelCaption(body.caption);
+      // Poll the render until ready.
+      setReelNote("Rendering the branded ad… (a couple of minutes)");
+      for (let i = 0; i < 90; i++) {
+        await new Promise((r) => setTimeout(r, 4000));
+        const p = await fetch(reelUrlEndpoint);
+        const pb = (await p.json().catch(() => ({}))) as { status?: string; url?: string; progress?: number; error?: string };
+        if (pb.status === "ready" && pb.url) {
+          setReelUrl(pb.url);
+          setReelNote("Your branded video ad is ready.");
+          return;
+        }
+        if (pb.status === "failed") {
+          setError(pb.error ?? "The render failed.");
+          setReelNote(null);
+          return;
+        }
+        if (typeof pb.progress === "number") setReelNote(`Rendering the branded ad… ${Math.round(pb.progress * 100)}%`);
+      }
+      setReelNote("Still rendering — reload in a minute to see it.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error.");
+    } finally {
+      setBuilding(false);
     }
   }
 
@@ -428,9 +476,62 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
             </div>
           ) : (
             <p className="mt-2 text-[11px] text-slate-400">
-              No clips yet. Stitching clips into a branded, captioned ad + publishing comes next.
+              No clips yet. Generate them above, then build the branded ad below.
             </p>
           )}
+        </div>
+
+        {/* ── Finished branded ad (Phase 2b) ─────────────────────────── */}
+        <div className="mt-5 border-t border-slate-100 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-900">Branded video ad</h3>
+              <p className="text-[11px] text-slate-500">
+                Stitch the clips into one branded, captioned reel — ready to post.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void buildReel()}
+              disabled={building || clipUrls.length === 0}
+              className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+              title={clipUrls.length === 0 ? "Generate cinematic clips first" : "Build the branded ad"}
+            >
+              {building ? "Building…" : reelUrl ? "Rebuild ad" : "Build the branded ad"}
+            </button>
+          </div>
+
+          {reelNote ? <p className="mt-2 text-[12px] text-slate-600">{reelNote}</p> : null}
+
+          {reelUrl ? (
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-start">
+              <video src={reelUrl} controls loop className="aspect-[9/16] w-48 shrink-0 rounded-lg border border-slate-200 bg-black" />
+              <div className="min-w-0 flex-1">
+                <label className="block">
+                  <span className="text-xs font-medium text-slate-600">Caption</span>
+                  <textarea
+                    value={reelCaption}
+                    onChange={(e) => setReelCaption(e.target.value)}
+                    rows={4}
+                    className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                  />
+                </label>
+                <div className="mt-2 flex items-center gap-2">
+                  <a
+                    href={reelUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    Download ↗
+                  </a>
+                  <span className="text-[11px] text-slate-400">Posting to Facebook / Instagram / LinkedIn comes next.</span>
+                </div>
+              </div>
+            </div>
+          ) : clipUrls.length === 0 ? (
+            <p className="mt-2 text-[11px] text-slate-400">Generate the cinematic clips first.</p>
+          ) : null}
         </div>
       </div>
     </section>
