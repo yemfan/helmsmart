@@ -20,7 +20,7 @@ import type { ListingAdFacts } from "@/lib/listings/types";
 
 const FAL_QUEUE = "https://queue.fal.run";
 const MODEL = "fal-ai/kling-video/v1.6/standard/image-to-video";
-const MAX_CLIPS = 5;
+export const MAX_CLIPS = 5;
 const BUCKET = "social-images";
 
 export function falConfigured(): boolean {
@@ -69,7 +69,8 @@ async function animatePhoto(imageUrl: string, prompt: string): Promise<string> {
   const responseUrl = q.response_url || `${FAL_QUEUE}/${MODEL}/requests/${q.request_id}`;
 
   const started = Date.now();
-  const TIMEOUT_MS = 280_000;
+  // Keep one clip under the 300s route ceiling (with room for download+upload).
+  const TIMEOUT_MS = 240_000;
   for (;;) {
     const r = await fetch(statusUrl, { headers: H });
     const s = (await r.json().catch(() => ({}))) as { status?: string };
@@ -98,6 +99,48 @@ async function persistClip(agentId: string, listingId: string, index: number, sr
   });
   if (error) throw new Error(`Storage upload failed: ${error.message}`);
   return supabaseAdmin.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+}
+
+/**
+ * Animate ONE listing photo into a cinematic clip and APPEND it to the listing's
+ * ad_clip_urls (append-safe: reads current, adds, writes). One clip per request
+ * keeps each call well under the serverless timeout — the client loops over the
+ * photos and shows progress. Returns the new clip URL + the full list so far.
+ */
+export async function generateOneListingClip(
+  agentId: string,
+  listingId: string,
+  photoUrl: string,
+  index: number,
+  facts: ListingAdFacts,
+  reset = false,
+): Promise<{ url: string; clipUrls: string[] }> {
+  const falUrl = await animatePhoto(photoUrl, motionPrompt(index, facts));
+  const stored = await persistClip(agentId, listingId, index, falUrl);
+
+  // reset (first clip of a fresh run) starts a new list; otherwise append-safe:
+  // re-read the current list so earlier clips in this run aren't lost.
+  let current: string[] = [];
+  if (!reset) {
+    const { data } = await supabaseAdmin
+      .from("listings")
+      .select("ad_clip_urls")
+      .eq("id", listingId)
+      .eq("agent_id", agentId)
+      .maybeSingle();
+    current = Array.isArray((data as { ad_clip_urls?: unknown } | null)?.ad_clip_urls)
+      ? ((data as { ad_clip_urls: string[] }).ad_clip_urls)
+      : [];
+  }
+  const clipUrls = [...current, stored];
+
+  await supabaseAdmin
+    .from("listings")
+    .update({ ad_clip_urls: clipUrls, ad_clips_updated_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq("id", listingId)
+    .eq("agent_id", agentId);
+
+  return { url: stored, clipUrls };
 }
 
 export type ClipResult = { urls: string[]; attempted: number; failed: number };

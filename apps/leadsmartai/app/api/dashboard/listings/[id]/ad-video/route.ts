@@ -1,19 +1,21 @@
 import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getListingById } from "@/lib/listings/service";
-import { falConfigured, generateListingClips } from "@/lib/listings/adVideo";
+import { falConfigured, generateOneListingClip, MAX_CLIPS } from "@/lib/listings/adVideo";
 import type { ListingAdFacts } from "@/lib/listings/types";
 
-// fal image-to-video renders can take a couple minutes each; we run several.
+// One fal image-to-video render fits comfortably under the ceiling; the client
+// calls this once per photo so we never run several renders in a single request
+// (that's what timed out).
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
 /**
  * POST /api/dashboard/listings/[id]/ad-video
- * Animate the listing's photos into cinematic clips (fal image-to-video) and
- * persist the clip URLs onto the listing.
+ * Animate ONE listing photo (by `index`) into a cinematic clip and append it to
+ * the listing. The client loops index 0..N-1 to render the set with progress.
  */
-export async function POST(_req: Request, ctx: { params: Promise<{ id: string }> }) {
+export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
   try {
     const { agentId } = await getCurrentAgentContext();
     const { id } = await ctx.params;
@@ -27,11 +29,20 @@ export async function POST(_req: Request, ctx: { params: Promise<{ id: string }>
         { status: 503 },
       );
     }
-    if ((listing.photo_urls ?? []).length === 0) {
+
+    const photos = (listing.photo_urls ?? []).filter((u) => /^https?:\/\//i.test(u)).slice(0, MAX_CLIPS);
+    const total = photos.length;
+    if (total === 0) {
       return NextResponse.json(
-        { ok: false, error: "This listing has no photos yet. Pull from MLS or add photos first." },
+        { ok: false, error: "This listing has no photos yet. Pull from a URL or add photos first." },
         { status: 400 },
       );
+    }
+
+    const body = (await req.json().catch(() => ({}))) as { index?: unknown };
+    const index = typeof body.index === "number" ? body.index : 0;
+    if (index < 0 || index >= total) {
+      return NextResponse.json({ ok: false, error: "Clip index out of range." }, { status: 400 });
     }
 
     // motionPrompt only needs a bit of context; build a light facts object.
@@ -46,14 +57,14 @@ export async function POST(_req: Request, ctx: { params: Promise<{ id: string }>
       state: listing.state,
       description: listing.property_description,
       highlights: listing.highlights ?? [],
-      photoUrls: listing.photo_urls ?? [],
+      photoUrls: photos,
       confidence: 0,
       warnings: [],
     };
 
-    const result = await generateListingClips(String(agentId), id, listing.photo_urls ?? [], facts);
-    const updated = await getListingById(String(agentId), id);
-    return NextResponse.json({ ok: true, ...result, listing: updated });
+    // index 0 starts a fresh set (clears any prior clips); later indexes append.
+    const { url, clipUrls } = await generateOneListingClip(String(agentId), id, photos[index], index, facts, index === 0);
+    return NextResponse.json({ ok: true, index, total, url, clipUrls });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
     console.error("POST /api/dashboard/listings/[id]/ad-video:", err);

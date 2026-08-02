@@ -178,35 +178,49 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
 
   async function generateClips() {
     if (generating) return;
+    // Render one photo per request (fal clips are slow; all-at-once times out).
+    // The client loops and shows progress; index 0 resets the set server-side.
+    const total = Math.min(facts.photoUrls.length, 5);
+    if (total === 0) {
+      setError("Add photos first.");
+      return;
+    }
     setGenerating(true);
     setError(null);
     setClipNote(null);
+    setClipUrls([]);
     try {
-      const res = await fetch(`/api/dashboard/listings/${encodeURIComponent(listing.id)}/ad-video`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const body = (await res.json().catch(() => ({}))) as {
-        ok?: boolean;
-        urls?: string[];
-        attempted?: number;
-        failed?: number;
-        listing?: ListingDetail;
-        error?: string;
-      };
-      if (!res.ok || !body.ok) {
-        setError(body.error ?? "Couldn't generate clips.");
-        return;
+      let done = 0;
+      let failed = 0;
+      for (let i = 0; i < total; i++) {
+        setClipNote(`Rendering clip ${i + 1} of ${total}… (~1–2 min each)`);
+        try {
+          const res = await fetch(`/api/dashboard/listings/${encodeURIComponent(listing.id)}/ad-video`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ index: i }),
+          });
+          const body = (await res.json().catch(() => ({}))) as { ok?: boolean; clipUrls?: string[]; error?: string };
+          if (!res.ok || !body.ok) {
+            failed += 1;
+            // A hard config/credit error: stop the loop.
+            if (res.status === 503 || res.status === 402) {
+              setError(body.error ?? "Couldn't generate clips.");
+              break;
+            }
+            continue;
+          }
+          done += 1;
+          if (body.clipUrls) setClipUrls(body.clipUrls);
+        } catch {
+          failed += 1;
+        }
       }
-      setClipUrls(body.listing?.ad_clip_urls ?? body.urls ?? []);
-      if (body.failed && body.failed > 0) {
-        setClipNote(`${(body.urls ?? []).length} of ${body.attempted} clips rendered — ${body.failed} failed.`);
-      } else {
-        setClipNote(`${(body.urls ?? []).length} cinematic clip${(body.urls ?? []).length === 1 ? "" : "s"} ready.`);
-      }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Network error.");
+      setClipNote(
+        failed > 0
+          ? `${done} of ${total} clips rendered — ${failed} failed. Try again to retry.`
+          : `${done} cinematic clip${done === 1 ? "" : "s"} ready.`,
+      );
     } finally {
       setGenerating(false);
     }
