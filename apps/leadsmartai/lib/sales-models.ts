@@ -58,34 +58,39 @@ export type SalesModel = {
 };
 
 export const salesModels: Record<SalesModelId, SalesModel> = {
+  // Internal key kept as "influencer" (was the "Influencer Model") so we
+  // avoid a DB CHECK-constraint migration + agent_profiles data migration
+  // and don't disturb the id-keyed branches (tone rules, pipeline stages).
+  // Displayed everywhere as "Friendly Connector" to match the marketing
+  // Sales Style Engine (i18n web_landing styles.connector). CB-BFD-002 U2-6.
   influencer: {
     id: "influencer",
-    name: "Influencer Model",
-    label: "Content-Led Growth",
-    inspiredBy: "Ryan Serhant-style content and personal branding",
-    emoji: "🎬",
+    name: "Friendly Connector",
+    label: "Relationship-First",
+    inspiredBy: "warm, personable agents who win on relationships and referrals",
+    emoji: "🤝",
     description:
-      "Attract clients through content, storytelling, and social media trust.",
-    bestFor: ["Social media agents", "Inbound leads", "Personal brand builders"],
-    strengths: ["Content creation", "DM conversion", "Audience trust"],
-    identityTitle: "You are operating as a Real Estate Influencer",
+      "Win through warmth, real relationships, and staying genuinely in touch.",
+    bestFor: ["First-time buyers", "Social-media leads", "Sphere & referrals"],
+    strengths: ["Rapport building", "DM & text conversion", "Staying top-of-mind"],
+    identityTitle: "You are operating as a Friendly Connector",
     philosophy:
-      "Build trust at scale through education, visibility, and storytelling.",
-    tone: "Friendly, energetic, engaging, educational",
-    leadTypes: ["Social media leads", "DM leads", "Warm inbound leads"],
+      "Lead with relationships — be warm, human, and consistently in touch so people actually reply.",
+    tone: "Warm, casual, personable, relationship-first",
+    leadTypes: ["First-time buyers", "Social media leads", "Sphere & referrals", "Warm inbound leads"],
     tasks: [
-      "Post one short educational video",
-      "Reply to 5 social media DMs",
-      "Follow up with 3 warm content leads",
-      "Create one market insight post",
-      "Invite one engaged follower to a consultation",
+      "Check in with 5 sphere or past clients",
+      "Reply to every social DM and text",
+      "Follow up with 3 warm leads",
+      "Send one helpful, personal note — no ask",
+      "Invite one warm contact to a friendly consult",
     ],
     tools: [
-      "Xiaohongshu Post Generator",
       "Instagram Caption Generator",
       "DM Reply Assistant",
-      "Video Hook Generator",
+      "Message Composer",
       "Content Calendar",
+      "Contact Manager",
     ],
     pipeline: ["Audience", "DM Lead", "Qualified", "Consultation", "Client", "Closed"],
   },
