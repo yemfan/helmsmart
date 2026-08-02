@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ListingDetail } from "@/lib/listings/types";
+import { createClient } from "@/lib/supabase/client";
+import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 
 /**
  * Listing → video ad panel (Phase 1: intake).
@@ -49,6 +51,10 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
   const [generating, setGenerating] = useState(false);
   const [clipNote, setClipNote] = useState<string | null>(null);
 
+  // Photo upload — the reliable foundation (portals like Zillow 403 the pull).
+  const [uploading, setUploading] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
   const hasFacts =
     !!facts.beds ||
     !!facts.baths ||
@@ -89,36 +95,38 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
     }
   }
 
+  /** Persist the given facts (manual source). Shared by Save + photo upload. */
+  async function persistFacts(next: Facts): Promise<boolean> {
+    const res = await fetch(`/api/dashboard/listings/${encodeURIComponent(listing.id)}/ad-intake`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        beds: next.beds,
+        baths: next.baths,
+        sqft: next.sqft,
+        yearBuilt: next.yearBuilt,
+        description: next.description,
+        highlights: next.highlights.split("\n").map((s) => s.trim()).filter(Boolean),
+        photoUrls: next.photoUrls,
+      }),
+    });
+    const body = (await res.json().catch(() => ({}))) as { ok?: boolean; listing?: ListingDetail; error?: string };
+    if (!res.ok || !body.ok || !body.listing) {
+      setError(body.error ?? "Couldn't save.");
+      return false;
+    }
+    setSource(body.listing.ad_facts_source);
+    setSavedAt(body.listing.ad_facts_updated_at);
+    setConfidence(null);
+    return true;
+  }
+
   async function save() {
     if (saving) return;
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch(`/api/dashboard/listings/${encodeURIComponent(listing.id)}/ad-intake`, {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          beds: facts.beds,
-          baths: facts.baths,
-          sqft: facts.sqft,
-          yearBuilt: facts.yearBuilt,
-          description: facts.description,
-          highlights: facts.highlights.split("\n").map((s) => s.trim()).filter(Boolean),
-          photoUrls: facts.photoUrls,
-        }),
-      });
-      const body = (await res.json().catch(() => ({}))) as {
-        ok?: boolean;
-        listing?: ListingDetail;
-        error?: string;
-      };
-      if (!res.ok || !body.ok || !body.listing) {
-        setError(body.error ?? "Couldn't save.");
-        return;
-      }
-      setSource(body.listing.ad_facts_source);
-      setSavedAt(body.listing.ad_facts_updated_at);
-      setConfidence(null);
+      await persistFacts(facts);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Network error.");
     } finally {
@@ -126,8 +134,43 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
     }
   }
 
+  async function onPickPhotos(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    e.target.value = "";
+    if (files.length === 0 || uploading) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const supa = createClient();
+      const uploaded: string[] = [];
+      for (const f of files) {
+        if (!f.type.startsWith("image/")) continue;
+        const path = await uploadViaStorage(f, "ad_photo");
+        const url = supa?.storage.from("social-images").getPublicUrl(path).data.publicUrl;
+        if (url) uploaded.push(url);
+      }
+      if (uploaded.length === 0) {
+        setError("Please choose image files.");
+        return;
+      }
+      // Cap the total so a huge upload can't fan out into 30 fal clips later.
+      const next = { ...facts, photoUrls: [...facts.photoUrls, ...uploaded].slice(0, 20) };
+      setFacts(next);
+      // Persist immediately so "Generate cinematic clips" (which reads the DB) sees them.
+      await persistFacts(next);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
   function removePhoto(url: string) {
-    setFacts((f) => ({ ...f, photoUrls: f.photoUrls.filter((u) => u !== url) }));
+    setFacts((f) => {
+      const next = { ...f, photoUrls: f.photoUrls.filter((u) => u !== url) };
+      void persistFacts(next);
+      return next;
+    });
   }
 
   async function generateClips() {
@@ -264,12 +307,28 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
 
         {/* Photos */}
         <div className="mt-3">
-          <span className="text-xs font-medium text-slate-600">
-            Photos ({facts.photoUrls.length})
-          </span>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs font-medium text-slate-600">Photos ({facts.photoUrls.length})</span>
+            <button
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
+              disabled={uploading}
+              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            >
+              {uploading ? "Uploading…" : "+ Upload photos"}
+            </button>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={onPickPhotos}
+              className="hidden"
+            />
+          </div>
           {facts.photoUrls.length === 0 ? (
             <p className="mt-1 text-[12px] text-slate-400">
-              No photos yet. Pull from the MLS URL, or (in a later step) upload your own.
+              No photos yet. <strong>Upload your listing photos</strong> (most reliable), or try Pull from MLS.
             </p>
           ) : (
             <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
