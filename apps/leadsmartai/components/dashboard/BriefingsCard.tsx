@@ -86,6 +86,21 @@ const ASSIGNEE_LABELS: Record<InstructionTask["assigned_to"], string> = {
   realtor: "For your review",
 };
 
+/** Human label for a completed task's deliverable, keyed by the registry
+ *  artifactType (registry.ts). Falls back to "result" for anything new. */
+const ARTIFACT_LABEL: Record<string, string> = {
+  cma: "CMA",
+  presentation: "presentation",
+  playbook_run: "playbook",
+  buyer_search: "matches",
+  social: "post",
+  social_draft: "draft",
+  showing: "showing",
+  open_house: "open house",
+  closing: "closing",
+  skill_output: "result",
+};
+
 export default function BriefingsCard() {
   return (
     <section aria-label="Briefing and instructions" className="grid gap-4 lg:grid-cols-2">
@@ -495,7 +510,7 @@ function TaskItem({
               href={t.artifact_url}
               className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B1F44] hover:underline"
             >
-              View {t.artifact_type === "cma" ? "CMA" : t.artifact_type === "presentation" ? "presentation" : "result"} →
+              View {ARTIFACT_LABEL[t.artifact_type ?? ""] ?? "result"} →
             </a>
           )}
         </div>
