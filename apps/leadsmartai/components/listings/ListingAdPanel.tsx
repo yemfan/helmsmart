@@ -51,11 +51,14 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
   const [generating, setGenerating] = useState(false);
   const [clipNote, setClipNote] = useState<string | null>(null);
 
-  // Finished branded reel (Phase 2b).
+  // Finished video ad (Phase 2b) + publish (Phase 2c).
   const [reelUrl, setReelUrl] = useState<string | null>(listing.ad_reel_url);
   const [reelCaption, setReelCaption] = useState<string>(listing.ad_reel_caption ?? "");
   const [building, setBuilding] = useState(false);
   const [reelNote, setReelNote] = useState<string | null>(null);
+  const [publishing, setPublishing] = useState(false);
+  const [publishNote, setPublishNote] = useState<string | null>(null);
+  const [needsConnect, setNeedsConnect] = useState(false);
 
   // Photo upload — the reliable foundation (portals like Zillow 403 the pull).
   const [uploading, setUploading] = useState(false);
@@ -257,6 +260,32 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
       setReelNote(null);
     } finally {
       setBuilding(false);
+    }
+  }
+
+  async function publishReel() {
+    if (publishing || !reelUrl) return;
+    setPublishing(true);
+    setError(null);
+    setPublishNote(null);
+    setNeedsConnect(false);
+    try {
+      const res = await fetch(`${reelUrlEndpoint}/publish`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ caption: reelCaption }),
+      });
+      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; scheduled?: number; error?: string };
+      if (!res.ok || !body.ok) {
+        if ((body.error ?? "").toLowerCase().includes("connected")) setNeedsConnect(true);
+        setError(body.error ?? "Couldn't publish.");
+        return;
+      }
+      setPublishNote(`Queued to ${body.scheduled ?? 0} channel${body.scheduled === 1 ? "" : "s"} — posts within a few minutes.`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error.");
+    } finally {
+      setPublishing(false);
     }
   }
 
@@ -502,7 +531,16 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                     className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                   />
                 </label>
-                <div className="mt-2 flex items-center gap-2">
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => void publishReel()}
+                    disabled={publishing}
+                    className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                    title="Post to your connected Facebook / Instagram / LinkedIn"
+                  >
+                    {publishing ? "Publishing…" : "Publish to social"}
+                  </button>
                   <a
                     href={reelUrl}
                     target="_blank"
@@ -511,7 +549,12 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                   >
                     Download ↗
                   </a>
-                  <span className="text-[11px] text-slate-400">Posting to Facebook / Instagram / LinkedIn comes next.</span>
+                  {publishNote ? <span className="text-[11px] text-emerald-700">{publishNote}</span> : null}
+                  {needsConnect ? (
+                    <a href="/connections" className="text-[11px] text-indigo-600 underline underline-offset-2">
+                      Connect Facebook / Instagram / LinkedIn →
+                    </a>
+                  ) : null}
                 </div>
               </div>
             </div>
