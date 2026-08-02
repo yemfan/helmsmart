@@ -46,9 +46,9 @@ export default function Nav({ email, credits }: { email: string; credits?: numbe
   return (
     <header className="flex items-center gap-3">
       <Link href="/" className="flex items-center gap-3">
-        <div className="grid size-10 place-items-center rounded-xl bg-boss-violet/15 text-lg font-black text-boss-gold ring-1 ring-white/10">
-          M
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="MarketingBoss AI" className="size-10 rounded-xl ring-1 ring-white/10" />
+
         <div>
           <h1 className="text-lg font-bold leading-tight tracking-tight">
             Marketing<span className="text-boss-gold">Boss</span> AI
