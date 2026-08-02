@@ -55,6 +55,9 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
   const [uploading, setUploading] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
+  // Paste-a-URL for the pull (the create form has no Listing-URL field).
+  const [pullUrl, setPullUrl] = useState(listing.mls_url ?? "");
+
   const hasFacts =
     !!facts.beds ||
     !!facts.baths ||
@@ -71,7 +74,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
       const res = await fetch(`/api/dashboard/listings/${encodeURIComponent(listing.id)}/ad-intake`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ url: pullUrl.trim() || undefined }),
       });
       const body = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
@@ -224,20 +227,28 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           <button
             type="button"
             onClick={() => void pull()}
-            disabled={pulling}
+            disabled={pulling || !pullUrl.trim()}
             className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-            title={listing.mls_url ? "Fetch photos + facts from the MLS URL" : "No MLS URL on this listing"}
+            title={pullUrl.trim() ? "Render the listing page and pull photos + facts" : "Paste a listing URL first"}
           >
-            {pulling ? "Pulling…" : hasFacts ? "Re-pull from MLS" : "Pull from MLS"}
+            {pulling ? "Pulling…" : hasFacts ? "Re-pull from URL" : "Pull from URL"}
           </button>
         </div>
 
-        {!listing.mls_url ? (
-          <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
-            This listing has no MLS URL — pulling won&apos;t work. Add one on the listing, or fill the facts in
-            manually below.
+        {/* Paste any listing URL (Zillow/Realtor/etc.). The create form has no
+            Listing-URL field, so this is where the pull gets its URL. */}
+        <div className="mb-3">
+          <input
+            value={pullUrl}
+            onChange={(e) => setPullUrl(e.target.value)}
+            placeholder="Paste a listing URL — e.g. https://www.zillow.com/homedetails/…"
+            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+            inputMode="url"
+          />
+          <p className="mt-1 text-[11px] text-slate-400">
+            Best on your own listing. Photos come from the page; if a portal blocks it, use “+ Upload photos” below.
           </p>
-        ) : null}
+        </div>
 
         {error ? (
           <p className="mb-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-800">{error}</p>
