@@ -3,6 +3,7 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getVoiceCloneAdapter } from "./cloneProvider";
 import { getAgentVoiceSettings, upsertAgentVoiceSettings } from "./settings";
+import { generateClonedCallLines } from "./clonedCallLines";
 import type { AgentVoiceSettings } from "./types";
 
 /**
@@ -96,6 +97,7 @@ export async function acknowledgeVoiceClone(agentId: string): Promise<VoiceClone
 
 /** Turn cloned-voice use on/off. Only allowed once consent + ready clone + acknowledgement are all in place. */
 export async function setUseClonedVoice(agentId: string, on: boolean): Promise<VoiceCloneState> {
+  let voiceId: string | null = null;
   if (on) {
     const s = await getAgentVoiceSettings(agentId);
     const ready =
@@ -104,8 +106,21 @@ export async function setUseClonedVoice(agentId: string, on: boolean): Promise<V
       Boolean(s.voiceCloneRemoteId?.trim()) &&
       Boolean(s.voiceClonePreviewAcknowledgedAt);
     if (!ready) throw new Error("Confirm your voice clone before turning it on.");
+    voiceId = s.voiceCloneRemoteId?.trim() ?? null;
   }
   await patchClone(agentId, { use_cloned_voice: on });
+
+  // Turning it ON pre-renders the fixed call voice-lines in the cloned voice so
+  // the phone webhook can <Play> them. Best-effort — a failure just leaves calls
+  // on the preset voice (per-line <Say> fallback) rather than blocking the toggle.
+  if (on && voiceId) {
+    try {
+      await generateClonedCallLines(agentId, voiceId);
+    } catch {
+      /* fall back to preset on calls */
+    }
+  }
+
   return getVoiceCloneState(agentId);
 }
 

@@ -15,6 +15,21 @@ function speakingStyleToRate(style: VoiceSpeakingStyle): string | undefined {
 }
 
 /**
+ * Cloned voice-line URLs to `<Play>`, or null to keep `<Say>`. Only returns URLs
+ * when the agent has the cloned voice ON, the clone is ready, and the cached
+ * lines were generated for the CURRENT clone (voiceId match) — so a re-clone or
+ * a disabled toggle safely falls back to Polly. Pure (client-safe).
+ */
+function clonedLinesFor(settings: AgentVoiceSettings): Record<string, string> | null {
+  if (!settings.useClonedVoice || settings.voiceCloneStatus !== "ready") return null;
+  const voiceId = settings.voiceCloneRemoteId?.trim();
+  const lines = settings.voiceLines;
+  if (!voiceId || !lines || lines.voiceId !== voiceId) return null;
+  const urls = lines.urls ?? {};
+  return Object.keys(urls).length > 0 ? urls : null;
+}
+
+/**
  * Maps saved agent voice settings to Twilio `<Say>` playback. OpenAI/ElevenLabs providers
  * use preset metadata; actual OpenAI/ElevenLabs audio generation is a future step.
  */
@@ -33,6 +48,7 @@ export function resolveTwilioVoicePlayback(settings: AgentVoiceSettings): Twilio
     bilingualEnabled,
     defaultLanguage,
     ...(ratePercent ? { ratePercent } : {}),
+    clonedLines: clonedLinesFor(settings),
   };
 }
 

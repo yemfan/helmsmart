@@ -43,9 +43,26 @@ export function xmlResponse(xml: string) {
 
 type TwilioSayAttrs = Parameters<typeof twilio.twiml.VoiceResponse.prototype.say>[0];
 
+/** Any TwiML node that can hold speech/audio (VoiceResponse or a Gather). */
+type SpeechNode = {
+  say: (attrs: TwilioSayAttrs, message: string) => unknown;
+  play: (attrs: Record<string, unknown>, url: string) => unknown;
+};
+
 function sayAttributes(playback: TwilioVoicePlayback, lang: "en" | "zh"): TwilioSayAttrs {
   const voice = (lang === "zh" ? playback.voiceZh : playback.voiceEn) as NonNullable<TwilioSayAttrs["voice"]>;
   return { voice };
+}
+
+/**
+ * Emit one spoken line. When the agent has a cached cloned voice-line for `key`,
+ * `<Play>` it (their own voice); otherwise `<Say>` the text with the preset voice.
+ * The per-line fallback means a missing clip never breaks a live call.
+ */
+function speak(node: SpeechNode, playback: TwilioVoicePlayback, lang: "en" | "zh", key: string, text: string): void {
+  const url = playback.clonedLines?.[key];
+  if (url) node.play({}, url);
+  else node.say(sayAttributes(playback, lang), text);
 }
 
 /**
@@ -56,10 +73,10 @@ export function buildInboundGatherTwiml(actionUrl: string, playback: TwilioVoice
   const vr = new twilio.twiml.VoiceResponse();
 
   if (playback.bilingualEnabled) {
-    vr.say(sayAttributes(playback, "en"), VOICE_BILINGUAL_GREETING_EN);
-    vr.say(sayAttributes(playback, "zh"), VOICE_BILINGUAL_GREETING_ZH);
-    vr.say(sayAttributes(playback, "en"), VOICE_LANGUAGE_PROMPT_EN);
-    vr.say(sayAttributes(playback, "zh"), VOICE_LANGUAGE_PROMPT_ZH);
+    speak(vr, playback, "en", "greeting_en", VOICE_BILINGUAL_GREETING_EN);
+    speak(vr, playback, "zh", "greeting_zh", VOICE_BILINGUAL_GREETING_ZH);
+    speak(vr, playback, "en", "langprompt_en", VOICE_LANGUAGE_PROMPT_EN);
+    speak(vr, playback, "zh", "langprompt_zh", VOICE_LANGUAGE_PROMPT_ZH);
 
     const gather = vr.gather({
       input: ["speech"],
@@ -72,13 +89,13 @@ export function buildInboundGatherTwiml(actionUrl: string, playback: TwilioVoice
       timeout: 12,
       hints: "english,chinese,中文,英文,buying,selling",
     });
-    gather.say(sayAttributes(playback, "en"), VOICE_GATHER_REPROMPT_BILINGUAL_EN);
-    gather.say(sayAttributes(playback, "zh"), VOICE_GATHER_REPROMPT_BILINGUAL_ZH);
+    speak(gather, playback, "en", "reprompt_bi_en", VOICE_GATHER_REPROMPT_BILINGUAL_EN);
+    speak(gather, playback, "zh", "reprompt_bi_zh", VOICE_GATHER_REPROMPT_BILINGUAL_ZH);
 
-    vr.say(sayAttributes(playback, "en"), VOICE_CLOSING_SHORT);
-    vr.say(sayAttributes(playback, "zh"), VOICE_CLOSING_SHORT_ZH);
+    speak(vr, playback, "en", "closing_short_en", VOICE_CLOSING_SHORT);
+    speak(vr, playback, "zh", "closing_short_zh", VOICE_CLOSING_SHORT_ZH);
   } else if (playback.defaultLanguage === "en") {
-    vr.say(sayAttributes(playback, "en"), VOICE_BILINGUAL_GREETING_EN);
+    speak(vr, playback, "en", "greeting_en", VOICE_BILINGUAL_GREETING_EN);
     const gather = vr.gather({
       input: ["speech"],
       action: actionUrl,
@@ -90,10 +107,10 @@ export function buildInboundGatherTwiml(actionUrl: string, playback: TwilioVoice
       timeout: 12,
       hints: "english,buying,selling,loan,schedule",
     });
-    gather.say(sayAttributes(playback, "en"), VOICE_GATHER_REPROMPT);
-    vr.say(sayAttributes(playback, "en"), VOICE_CLOSING_SHORT);
+    speak(gather, playback, "en", "reprompt_en", VOICE_GATHER_REPROMPT);
+    speak(vr, playback, "en", "closing_short_en", VOICE_CLOSING_SHORT);
   } else {
-    vr.say(sayAttributes(playback, "zh"), VOICE_BILINGUAL_GREETING_ZH);
+    speak(vr, playback, "zh", "greeting_zh", VOICE_BILINGUAL_GREETING_ZH);
     const gather = vr.gather({
       input: ["speech"],
       action: actionUrl,
@@ -105,8 +122,8 @@ export function buildInboundGatherTwiml(actionUrl: string, playback: TwilioVoice
       timeout: 12,
       hints: "买房,卖房,贷款,中文,英文",
     });
-    gather.say(sayAttributes(playback, "zh"), VOICE_GATHER_REPROMPT_ZH);
-    vr.say(sayAttributes(playback, "zh"), VOICE_CLOSING_SHORT_ZH);
+    speak(gather, playback, "zh", "reprompt_zh", VOICE_GATHER_REPROMPT_ZH);
+    speak(vr, playback, "zh", "closing_short_zh", VOICE_CLOSING_SHORT_ZH);
   }
 
   vr.hangup();
@@ -121,14 +138,14 @@ export function buildClosingTwiml(
   const vr = new twilio.twiml.VoiceResponse();
   const text = voiceClosingSavedForLanguage(lang);
   const L: "en" | "zh" = lang === "zh" ? "zh" : "en";
-  vr.say(sayAttributes(playback, L), text);
+  speak(vr, playback, L, L === "zh" ? "closing_saved_zh" : "closing_saved_en", text);
   vr.hangup();
   return vr.toString();
 }
 
 export function buildSafeFallbackTwiml(playback: TwilioVoicePlayback = defaultTwilioVoicePlayback()) {
   const vr = new twilio.twiml.VoiceResponse();
-  vr.say(sayAttributes(playback, "en"), VOICE_SAFE_FALLBACK_SCRIPT);
+  speak(vr, playback, "en", "fallback_en", VOICE_SAFE_FALLBACK_SCRIPT);
   vr.hangup();
   return vr.toString();
 }

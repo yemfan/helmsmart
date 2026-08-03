@@ -366,7 +366,7 @@ export default function DigitalTwinPanel() {
         </div>
         <p className="text-[12px] text-slate-500">
           Clone your voice from the <strong>same intro video</strong> — no second recording. We use it to voice your AI
-          content. Playback on phone calls is coming; for now this creates your voice so it&apos;s ready.
+          content, and (once you turn it on below) your AI receptionist answers calls in your voice.
         </p>
 
         {vc && !vc.configured ? (
@@ -438,7 +438,7 @@ export default function DigitalTwinPanel() {
                   disabled={vcBusy !== null}
                   onChange={(e) => void voiceAction("activate", { on: e.target.checked })}
                 />
-                <span className="text-slate-700">Use my cloned voice for AI content (once phone playback is enabled)</span>
+                <span className="text-slate-700">Answer phone calls in my cloned voice</span>
               </label>
             )}
           </div>
