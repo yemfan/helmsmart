@@ -36,14 +36,17 @@ async function elevenLabsSubmit(params: {
   }
 
   const form = new FormData();
-  form.append("name", `LeadSmart AI-${params.agentId.slice(0, 8)}`);
-  form.append("description", "LeadSmart AI agent voice clone");
+  form.append("name", `CloseBoss-${params.agentId.slice(0, 8)}`);
+  form.append("description", "CloseBoss agent voice clone");
+  // ElevenLabs sniffs the actual bytes, but keep the multipart filename honest —
+  // it accepts both audio (wav/webm/mp3/m4a/ogg/flac) and video (mp4/mov) samples
+  // (audio is extracted from video). The intro-video path sends an mp4.
+  const lower = params.filename.toLowerCase();
+  const mime = params.mimeType.toLowerCase();
   const ext =
-    params.filename.toLowerCase().endsWith(".wav") || params.mimeType.includes("wav")
-      ? "wav"
-      : params.filename.toLowerCase().endsWith(".webm") || params.mimeType.includes("webm")
-        ? "webm"
-        : "mp3";
+    ["wav", "webm", "m4a", "ogg", "flac", "mp4", "mov"].find(
+      (e) => lower.endsWith(`.${e}`) || mime.includes(e),
+    ) ?? "mp3";
   const blob = new Blob([new Uint8Array(params.bytes)], { type: params.mimeType || "audio/mpeg" });
   form.append("files", blob, `sample.${ext}`);
 
