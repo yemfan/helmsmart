@@ -160,7 +160,11 @@ export default function AuthModal({
             const role = me?.role ?? null;
             const hasAgent = Boolean(me?.has_agent_record);
             if (isRealEstateProfessionalRole(role) || hasAgent) {
-              router.replace(resolveRoleHomePath(role, hasAgent));
+              // HARD navigation (not router.replace): the dashboard is a protected
+              // SSR route, and a client-side nav right after sign-in races the
+              // Supabase auth cookie — the server renders it as guest and bounces
+              // to "/". A full-page load guarantees the fresh cookie is sent.
+              window.location.assign(resolveRoleHomePath(role, hasAgent));
             } else if (consumerShouldUsePropertyToolsApp(me?.signup_origin_app)) {
               window.location.assign(getPropertyToolsConsumerPostLoginUrl());
             } else {
