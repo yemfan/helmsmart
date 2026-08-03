@@ -161,6 +161,45 @@ export default async function GenerateLeadsPage() {
             </svg>
           </span>
         </Link>
+
+        {/* Video ad — lives on a listing's detail page (Video ad panel). This
+            card is the discoverable entry point into it from the leads hub. */}
+        <Link
+          href="/dashboard/properties"
+          className="group block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow-md"
+        >
+          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"
+              />
+            </svg>
+          </div>
+          <div className="mb-1 flex items-center gap-2">
+            <h2 className="text-base font-semibold text-gray-900">Video ad</h2>
+            <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-800">
+              New
+            </span>
+          </div>
+          <p className="text-sm text-gray-600">
+            Turn a listing&apos;s photos into a cinematic video ad — AI animates the shots, stitches them, and writes the
+            caption. Then post to Facebook, Instagram, or LinkedIn.
+          </p>
+          <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 group-hover:gap-1.5">
+            Pick a listing
+            <svg
+              className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5l7.5 7.5-7.5 7.5M3 12h18" />
+            </svg>
+          </span>
+        </Link>
       </div>
 
       {suggestions.length > 0 && (
