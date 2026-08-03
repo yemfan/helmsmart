@@ -442,9 +442,8 @@ export default function DigitalTwinPanel() {
           </div>
         ) : null}
 
-        {vc?.status === "failed" && vc.error ? (
-          <p className="text-[12px] text-rose-700">{vc.error}</p>
-        ) : null}
+        {/* Only the current session's attempt shows the full error — a reload clears it.
+            (A stored failure still shows the compact "Clone failed" label by the button.) */}
         {vcError ? <p className="text-[12px] text-rose-700">{vcError}</p> : null}
       </div>
 

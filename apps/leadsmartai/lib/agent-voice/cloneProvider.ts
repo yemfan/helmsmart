@@ -60,7 +60,21 @@ async function elevenLabsSubmit(params: {
 
   const text = await res.text();
   if (!res.ok) {
-    throw new Error(`ElevenLabs voice create failed (${res.status}): ${text.slice(0, 500)}`);
+    // Surface the common account-limit case in plain language instead of raw JSON.
+    let friendly = "";
+    try {
+      const j = JSON.parse(text) as { detail?: { status?: string; code?: string; message?: string } };
+      const d = j.detail;
+      if (d?.code === "paid_plan_required" || d?.status === "can_not_use_instant_voice_cloning") {
+        friendly =
+          "Voice cloning needs a paid ElevenLabs plan (Starter or higher). Upgrade your ElevenLabs subscription, then try again — no other change needed.";
+      } else if (typeof d?.message === "string" && d.message) {
+        friendly = d.message;
+      }
+    } catch {
+      /* fall back to raw text */
+    }
+    throw new Error(friendly || `ElevenLabs voice create failed (${res.status}): ${text.slice(0, 300)}`);
   }
 
   let voiceId = "";
