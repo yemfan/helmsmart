@@ -86,6 +86,17 @@ type TikTokAccountRow = {
   connected_at: string;
 };
 
+type YouTubeAccountRow = {
+  id: string;
+  youtube_channel_title: string | null;
+  account_display_name: string | null;
+  account_picture_url: string | null;
+  status: string;
+  last_error: string | null;
+  user_token_expires_at: string | null;
+  connected_at: string;
+};
+
 /**
  * Connection management for the Generate Leads feature. Surfaces
  * Meta (Phase 2A) and LinkedIn (Phase 2D — personal feed via Share
@@ -103,7 +114,8 @@ export default async function ConnectPage({ searchParams }: PageProps) {
   // Pull this agent's existing connections in parallel. Service-role
   // reads; the token columns are intentionally OMITTED from the
   // SELECT — they never need to leave the server.
-  const [metaResult, linkedinResult, threadsResult, pinterestResult, tiktokResult] = await Promise.all([
+  const [metaResult, linkedinResult, threadsResult, pinterestResult, tiktokResult, youtubeResult] =
+    await Promise.all([
     supabaseAdmin
       .from("social_accounts")
       .select(
@@ -144,7 +156,15 @@ export default async function ConnectPage({ searchParams }: PageProps) {
       .eq("agent_id", String(agentId))
       .eq("platform", "tiktok")
       .order("connected_at", { ascending: false }),
-  ]);
+    supabaseAdmin
+      .from("social_accounts")
+      .select(
+        "id, youtube_channel_title, account_display_name, account_picture_url, status, last_error, user_token_expires_at, connected_at",
+      )
+      .eq("agent_id", String(agentId))
+      .eq("platform", "youtube")
+      .order("connected_at", { ascending: false }),
+    ]);
 
   const metaConnections = (metaResult.data as MetaAccountRow[] | null) ?? [];
   const linkedinConnections =
@@ -155,6 +175,8 @@ export default async function ConnectPage({ searchParams }: PageProps) {
     (pinterestResult.data as PinterestAccountRow[] | null) ?? [];
   const tiktokConnections =
     (tiktokResult.data as TikTokAccountRow[] | null) ?? [];
+  const youtubeConnections =
+    (youtubeResult.data as YouTubeAccountRow[] | null) ?? [];
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
@@ -185,6 +207,7 @@ export default async function ConnectPage({ searchParams }: PageProps) {
         threadsConnections={threadsConnections}
         pinterestConnections={pinterestConnections}
         tiktokConnections={tiktokConnections}
+        youtubeConnections={youtubeConnections}
       />
     </div>
   );
