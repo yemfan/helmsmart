@@ -10,6 +10,7 @@ import {
 } from "./meta-post";
 import { publishThreadsPost } from "./threads-post";
 import { publishPinterestPin } from "./pinterest-post";
+import { ensureTikTokAccessToken, publishTikTokVideo } from "./tiktok-publish";
 import { decryptToken } from "./token-enc";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -42,7 +43,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
  * dispatching here.
  */
 
-export type PublishPlatform = "facebook" | "instagram" | "linkedin" | "threads" | "pinterest";
+export type PublishPlatform = "facebook" | "instagram" | "linkedin" | "threads" | "pinterest" | "tiktok";
 
 export type PublishInput = {
   agentId: string;
@@ -151,7 +152,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   const { data: connRow, error: connErr } = await supabaseAdmin
     .from("social_accounts")
     .select(
-      "id, agent_id, platform, fb_page_id, ig_business_user_id, page_access_token_enc, user_access_token_enc, linkedin_member_urn, threads_user_id, pinterest_board_id, status",
+      "id, agent_id, platform, fb_page_id, ig_business_user_id, page_access_token_enc, user_access_token_enc, linkedin_member_urn, threads_user_id, pinterest_board_id, tiktok_open_id, tiktok_refresh_token_enc, user_token_expires_at, status",
     )
     .eq("id", connectionId)
     .eq("agent_id", agentId)
@@ -183,6 +184,9 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     linkedin_member_urn: string | null;
     threads_user_id: string | null;
     pinterest_board_id: string | null;
+    tiktok_open_id: string | null;
+    tiktok_refresh_token_enc: string | null;
+    user_token_expires_at: string | null;
     status: string;
   };
 
@@ -217,6 +221,14 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       ok: false,
       status: 422,
       error: "Connection platform is not Pinterest.",
+      retryable: false,
+    };
+  }
+  if (platform === "tiktok" && conn.platform !== "tiktok") {
+    return {
+      ok: false,
+      status: 422,
+      error: "Connection platform is not TikTok.",
       retryable: false,
     };
   }
@@ -280,6 +292,17 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       retryable: false,
     };
   }
+  if (
+    platform === "tiktok" &&
+    (!conn.tiktok_open_id || !conn.user_access_token_enc)
+  ) {
+    return {
+      ok: false,
+      status: 422,
+      error: "Connection is missing TikTok credentials. Reconnect to refresh.",
+      retryable: false,
+    };
+  }
 
   // 2. Image — required for IG, optional for FB / LinkedIn.
   let mediaLibraryId: string | null = null;
@@ -309,9 +332,9 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     imageContentType = media.contentType ?? "image/jpeg";
 
     // LinkedIn's upload endpoint won't pull from arbitrary URLs the
-    // way Meta does — we have to PUT the bytes ourselves. Fetch
-    // them here once via the signed URL.
-    if (platform === "linkedin") {
+    // way Meta does — we have to PUT the bytes ourselves. TikTok's
+    // FILE_UPLOAD is the same. Fetch them here once via the signed URL.
+    if (platform === "linkedin" || platform === "tiktok") {
       try {
         const imgRes = await fetch(media.signedUrl);
         if (!imgRes.ok) {
@@ -336,9 +359,9 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     // so fetch them here the same way the media_library path does.
     imageUrl = directImageUrl;
     imageContentType = isVideo ? "video/mp4" : "image/png";
-    // LinkedIn needs the raw bytes (image OR video) PUT to its upload
-    // endpoint — Meta pulls the MP4 by URL, LinkedIn does not.
-    if (platform === "linkedin") {
+    // LinkedIn + TikTok need the raw bytes PUT to their upload endpoint —
+    // Meta pulls the MP4 by URL, LinkedIn/TikTok do not.
+    if (platform === "linkedin" || platform === "tiktok") {
       try {
         const imgRes = await fetch(directImageUrl);
         if (!imgRes.ok) {
@@ -378,14 +401,27 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
         retryable: false,
       };
     }
-    if (platform !== "facebook" && platform !== "instagram" && platform !== "linkedin") {
+    if (
+      platform !== "facebook" &&
+      platform !== "instagram" &&
+      platform !== "linkedin" &&
+      platform !== "tiktok"
+    ) {
       return {
         ok: false,
         status: 422,
-        error: `Video reels are only supported on Facebook, Instagram, and LinkedIn — not ${platform}.`,
+        error: `Video reels are only supported on Facebook, Instagram, LinkedIn, and TikTok — not ${platform}.`,
         retryable: false,
       };
     }
+  } else if (platform === "tiktok") {
+    // TikTok is video-only (Direct Post).
+    return {
+      ok: false,
+      status: 422,
+      error: "TikTok posts must be a video.",
+      retryable: false,
+    };
   }
 
   // 3. Decrypt access token at the point of use. Each platform
@@ -393,7 +429,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   let accessToken: string;
   try {
     const encrypted =
-      platform === "linkedin" || platform === "threads" || platform === "pinterest"
+      platform === "linkedin" || platform === "threads" || platform === "pinterest" || platform === "tiktok"
         ? conn.user_access_token_enc!
         : conn.page_access_token_enc!;
     accessToken = decryptToken(encrypted);
@@ -423,7 +459,9 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
           ? "Threads"
           : platform === "pinterest"
             ? "Pinterest"
-            : "Facebook";
+            : platform === "tiktok"
+              ? "TikTok"
+              : "Facebook";
     return {
       ok: false,
       status: 422,
@@ -487,8 +525,15 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
         });
         externalPostId = result.externalPostId;
         externalPostUrl = result.externalPostUrl;
+      } else if (platform === "tiktok") {
+        // TikTok Direct Post (FILE_UPLOAD): refresh the token if stale, then PUT
+        // the MP4 bytes. Returns a publish_id (async processing, no public URL).
+        const token = await ensureTikTokAccessToken(conn);
+        const result = await publishTikTokVideo(token, { bytes: imageBytes!, title: caption });
+        externalPostId = result.externalPostId;
+        externalPostUrl = result.externalPostUrl;
       } else {
-        // linkedin (guarded above to fb/ig/linkedin only)
+        // linkedin (guarded above to fb/ig/linkedin/tiktok only)
         const result = await publishLinkedInVideo({
           memberUrn: conn.linkedin_member_urn!,
           accessToken,
