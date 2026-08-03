@@ -7,6 +7,7 @@ import { adaptForPlatforms, type Draft } from "@/lib/ai";
 import { buildInsights } from "@/lib/campaigns";
 import { getConnection, getValidAccessToken } from "@/lib/social";
 import { fetchMetric, METRIC_SUPPORTED, type Metric } from "@/lib/metrics";
+import { runDueWeeklySlots } from "@/lib/weeklySchedule";
 import type { BrandBrief } from "@/lib/research";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -160,7 +161,17 @@ export async function GET(req: Request) {
     refreshed++;
   }
 
-  return NextResponse.json({ ok: true, drained, posted, drafted, refreshed, at: nowIso });
+  // Weekly schedule: research + enqueue posts for any due weekday slots. The
+  // scheduled rows drain on the next tick. Best-effort — never fails the cron.
+  let weeklyEnqueued = 0;
+  try {
+    const w = await runDueWeeklySlots();
+    weeklyEnqueued = w.enqueued;
+  } catch (e) {
+    console.warn("[cron/run] weekly-schedule phase failed:", e instanceof Error ? e.message : e);
+  }
+
+  return NextResponse.json({ ok: true, drained, posted, drafted, refreshed, weeklyEnqueued, at: nowIso });
 }
 
 type MetricRow = {
