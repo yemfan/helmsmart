@@ -162,6 +162,8 @@ export default function DigitalTwinPanel() {
         return;
       }
       setVc(toVoiceState(b));
+      // A newly-ready clone unlocks the avatar section — refresh it without a reload.
+      await loadAvatar();
     } catch (e) {
       setVcError(e instanceof Error ? e.message : "Network error.");
     } finally {
