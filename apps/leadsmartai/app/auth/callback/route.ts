@@ -6,8 +6,22 @@ import { oauthBackfillFullName } from "@/lib/auth/canonicalUserContact";
 import { supabaseAuthCookieOptions } from "@/lib/authCookieOptions";
 import { getPropertyToolsConsumerPostLoginUrl } from "@/lib/propertyToolsConsumerUrl";
 import { fetchUserPortalContext } from "@/lib/rolePortalServer";
+import { resolveRoleHomePath } from "@/lib/rolePortalPaths";
 import { consumerShouldUsePropertyToolsApp } from "@/lib/signupOriginApp";
 import { requireSupabasePublicEnv } from "@/lib/supabasePublicEnv";
+
+/** App destinations we honor as an OAuth `next` deep-link (else pros go to their dashboard home). */
+const APP_PREFIXES = [
+  "/dashboard",
+  "/agent",
+  "/broker",
+  "/account",
+  "/portal",
+  "/loan-broker",
+  "/admin",
+  "/client",
+  "/propertytools/dashboard",
+];
 
 /**
  * OAuth redirect target (Google / Apple via Supabase).
@@ -93,6 +107,23 @@ export async function GET(request: Request) {
           out.headers.append("Set-Cookie", v);
         }
         return out;
+      }
+
+      // Pro professionals: land them on their dashboard home. The default `next`
+      // is the PUBLIC page they clicked "log in" from (usually the homepage), so
+      // without this a Google/Apple sign-in bounces an agent back to the
+      // marketing site instead of the portal. A genuine deep-link (next already
+      // points at an app page) is still honored.
+      if (ctx?.isPro) {
+        const wantsAppPage = APP_PREFIXES.some((p) => next === p || next.startsWith(`${p}/`));
+        const dest = wantsAppPage ? next : resolveRoleHomePath(ctx.role, ctx.hasAgentRow);
+        if (dest !== next) {
+          const out = NextResponse.redirect(new URL(dest, url.origin));
+          for (const v of response.headers.getSetCookie()) {
+            out.headers.append("Set-Cookie", v);
+          }
+          return out;
+        }
       }
       return response;
     }
