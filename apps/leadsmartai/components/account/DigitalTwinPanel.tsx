@@ -27,6 +27,21 @@ type VoiceCloneState = {
 
 type VoiceCloneResp = Partial<VoiceCloneState> & { ok?: boolean; error?: string };
 
+type AvatarState = {
+  configured: boolean;
+  hasIntroVideo: boolean;
+  voiceReady: boolean;
+  script: string | null;
+  videoUrl: string | null;
+};
+
+type AvatarResp = Partial<AvatarState> & {
+  ok?: boolean;
+  error?: string;
+  audioUrl?: string;
+  audioPath?: string;
+};
+
 function toVoiceState(b: VoiceCloneResp): VoiceCloneState {
   return {
     configured: Boolean(b.configured),
@@ -58,6 +73,67 @@ export default function DigitalTwinPanel() {
   const [vc, setVc] = useState<VoiceCloneState | null>(null);
   const [vcBusy, setVcBusy] = useState<string | null>(null);
   const [vcError, setVcError] = useState<string | null>(null);
+
+  // Phase C — talking avatar.
+  const [av, setAv] = useState<AvatarState | null>(null);
+  const [avTopic, setAvTopic] = useState("");
+  const [avScript, setAvScript] = useState("");
+  const [avAudioUrl, setAvAudioUrl] = useState<string | null>(null);
+  const [avAudioPath, setAvAudioPath] = useState<string | null>(null);
+  const [avBusy, setAvBusy] = useState<string | null>(null);
+  const [avError, setAvError] = useState<string | null>(null);
+
+  async function loadAvatar() {
+    try {
+      const res = await fetch("/api/dashboard/avatar");
+      const b = (await res.json().catch(() => ({}))) as AvatarResp;
+      if (b.ok) {
+        setAv({
+          configured: Boolean(b.configured),
+          hasIntroVideo: Boolean(b.hasIntroVideo),
+          voiceReady: Boolean(b.voiceReady),
+          script: b.script ?? null,
+          videoUrl: b.videoUrl ?? null,
+        });
+        if (b.script) setAvScript(b.script);
+      }
+    } catch {
+      /* best-effort */
+    }
+  }
+
+  async function avatarAction(action: "draft" | "preview" | "render") {
+    setAvBusy(action);
+    setAvError(null);
+    try {
+      const res = await fetch("/api/dashboard/avatar", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(
+          action === "draft"
+            ? { action, topic: avTopic }
+            : { action, text: avScript, audioPath: avAudioPath },
+        ),
+      });
+      const b = (await res.json().catch(() => ({}))) as AvatarResp;
+      if (!res.ok || !b.ok) {
+        setAvError(b.error ?? "Something went wrong.");
+        return;
+      }
+      if (action === "draft" && b.script) setAvScript(b.script);
+      if (action === "preview") {
+        setAvAudioUrl(b.audioUrl ?? null);
+        setAvAudioPath(b.audioPath ?? null);
+      }
+      if (action === "render" && b.videoUrl) {
+        setAv((s) => (s ? { ...s, videoUrl: b.videoUrl ?? s.videoUrl } : s));
+      }
+    } catch (e) {
+      setAvError(e instanceof Error ? e.message : "Network error.");
+    } finally {
+      setAvBusy(null);
+    }
+  }
 
   async function loadVoice() {
     try {
@@ -115,6 +191,7 @@ export default function DigitalTwinPanel() {
         /* best-effort */
       }
       await loadVoice();
+      await loadAvatar();
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -369,6 +446,105 @@ export default function DigitalTwinPanel() {
           <p className="text-[12px] text-rose-700">{vc.error}</p>
         ) : null}
         {vcError ? <p className="text-[12px] text-rose-700">{vcError}</p> : null}
+      </div>
+
+      {/* Phase C — talking avatar */}
+      <div className="mt-5 space-y-3 border-t border-slate-100 pt-5">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-slate-900">AI avatar video</h3>
+          <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+            Beta
+          </span>
+        </div>
+        <p className="text-[12px] text-slate-500">
+          Turn a script into a talking-head video of <strong>you</strong> — your face (intro video) speaking in your
+          cloned voice. Drafting + the voice preview are free; the video render is a separate step so you hear it first.
+        </p>
+
+        {av && !av.configured ? (
+          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
+            Not enabled yet (needs <code>FAL_KEY</code> + <code>ELEVENLABS_API_KEY</code>).
+          </p>
+        ) : av && !av.voiceReady ? (
+          <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] text-slate-600">
+            Clone your voice above first — the avatar speaks in your cloned voice.
+          </p>
+        ) : av ? (
+          <>
+            <div className="flex flex-wrap items-end gap-2">
+              <label className="flex-1 min-w-[200px]">
+                <span className="text-xs font-medium text-slate-600">Topic (optional)</span>
+                <input
+                  value={avTopic}
+                  onChange={(e) => setAvTopic(e.target.value)}
+                  placeholder="e.g. a new listing, market update, just introduce myself"
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => void avatarAction("draft")}
+                disabled={avBusy !== null}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              >
+                {avBusy === "draft" ? "Writing…" : "Draft script"}
+              </button>
+            </div>
+
+            <label className="block">
+              <span className="text-xs font-medium text-slate-600">Script (edit freely)</span>
+              <textarea
+                value={avScript}
+                onChange={(e) => {
+                  setAvScript(e.target.value);
+                  // Editing the script invalidates a prior voice preview.
+                  setAvAudioUrl(null);
+                  setAvAudioPath(null);
+                }}
+                rows={4}
+                placeholder="What you'll say to camera…"
+                className="mt-1 w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+              />
+            </label>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => void avatarAction("preview")}
+                disabled={avBusy !== null || !avScript.trim()}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              >
+                {avBusy === "preview" ? "Synthesizing…" : "Preview voice (free)"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void avatarAction("render")}
+                disabled={avBusy !== null || !avAudioPath}
+                title={avAudioPath ? "Render the talking-avatar video" : "Preview the voice first"}
+                className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
+              >
+                {avBusy === "render" ? "Rendering… (1–2 min)" : "Generate video (uses credits)"}
+              </button>
+            </div>
+
+            {avAudioUrl ? (
+              <audio controls src={avAudioUrl} className="mt-1 w-full max-w-md">
+                <track kind="captions" />
+              </audio>
+            ) : null}
+
+            {av.videoUrl ? (
+              <div className="space-y-1">
+                <video controls src={av.videoUrl} className="mt-1 w-full max-w-md rounded-lg border border-slate-200" />
+                <a href={av.videoUrl} download className="text-[12px] font-medium text-violet-700 hover:underline">
+                  Download video
+                </a>
+              </div>
+            ) : null}
+          </>
+        ) : null}
+
+        {avError ? <p className="text-[12px] text-rose-700">{avError}</p> : null}
       </div>
     </div>
   );
