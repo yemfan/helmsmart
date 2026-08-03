@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Nav from "@/components/Nav";
 import Autopilot, { type ChannelOption } from "@/components/Autopilot";
+import WeeklySchedule from "@/components/WeeklySchedule";
 import { getConnectionStatus, getConnectionStatuses } from "@/lib/social";
 import { youtubeConfigured } from "@/lib/youtube";
 import { aiConfigured } from "@/lib/ai";
@@ -55,6 +56,9 @@ export default async function AutopilotPage() {
         </p>
       </section>
       <Autopilot campaigns={campaigns} channels={channels} aiConfigured={aiConfigured()} />
+      <section className="rounded-2xl bg-white p-5 text-neutral-900 shadow-sm">
+        <WeeklySchedule />
+      </section>
       <footer className="mt-auto pt-6 text-center text-[11px] text-white/25">
         Research by Claude · content by fal.ai · you approve or let it run — always within your budget
       </footer>
