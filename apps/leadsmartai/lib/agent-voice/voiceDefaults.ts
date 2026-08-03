@@ -17,4 +17,5 @@ export const DEFAULT_AGENT_VOICE_SETTINGS: AgentVoiceSettings = {
   voiceCloneError: null,
   useClonedVoice: false,
   voiceClonePreviewAcknowledgedAt: null,
+  voiceLines: null,
 };

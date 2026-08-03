@@ -32,10 +32,18 @@ export type AgentVoiceSettings = {
   /** Optional path to generated preview audio (e.g. provider TTS sample). */
   voiceClonePreviewStoragePath: string | null;
   voiceCloneError: string | null;
-  /** When true (and clone ready + consent + review), production may use clone id — Twilio still uses preset until Play/TTS wired. */
+  /** When true (and clone ready + consent + review), calls play the cloned voice-lines. */
   useClonedVoice: boolean;
   /** User confirmed they listened to preview; required before activation. */
   voiceClonePreviewAcknowledgedAt: string | null;
+  /** Pre-rendered cloned voice-lines for TwiML `<Play>` (null until generated). */
+  voiceLines: ClonedVoiceLines | null;
+};
+
+/** Cached cloned-voice TwiML lines: only valid while `voiceId` matches the current clone. */
+export type ClonedVoiceLines = {
+  voiceId: string;
+  urls: Record<string, string>;
 };
 
 export type AgentVoiceSettingsRow = {
@@ -56,6 +64,7 @@ export type AgentVoiceSettingsRow = {
   voice_clone_error: string | null;
   use_cloned_voice: boolean;
   voice_clone_preview_acknowledged_at: string | null;
+  voice_lines: ClonedVoiceLines | null;
   created_at: string;
   updated_at: string;
 };
@@ -86,6 +95,8 @@ export type TwilioVoicePlayback = {
   defaultLanguage: VoiceDefaultLanguage;
   /** Twilio Say speech rate (20%–200%). Omitted for friendly default. */
   ratePercent?: string;
+  /** When set, `<Play>` these cloned voice-line mp3s (by line key) instead of `<Say>`. */
+  clonedLines?: Record<string, string> | null;
 };
 
 /** How inbound call audio is sourced (preset is always available as fallback). */

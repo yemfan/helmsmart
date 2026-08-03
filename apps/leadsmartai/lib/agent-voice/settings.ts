@@ -29,6 +29,7 @@ function mapRow(row: AgentVoiceSettingsRow): AgentVoiceSettings {
     voiceCloneError: row.voice_clone_error,
     useClonedVoice: Boolean(row.use_cloned_voice),
     voiceClonePreviewAcknowledgedAt: row.voice_clone_preview_acknowledged_at,
+    voiceLines: row.voice_lines ?? null,
   };
 }
 
@@ -46,7 +47,7 @@ export async function getAgentVoiceSettings(agentId: string | null | undefined):
     const { data, error } = await supabaseAdmin
       .from("agent_voice_settings")
       .select(
-        "id, agent_id, provider, preset_voice_id, speaking_style, default_language, bilingual_enabled, voice_clone_provider, voice_clone_remote_id, voice_clone_status, consent_confirmed, consent_confirmed_at, voice_clone_sample_storage_path, voice_clone_preview_storage_path, voice_clone_error, use_cloned_voice, voice_clone_preview_acknowledged_at, created_at, updated_at"
+        "id, agent_id, provider, preset_voice_id, speaking_style, default_language, bilingual_enabled, voice_clone_provider, voice_clone_remote_id, voice_clone_status, consent_confirmed, consent_confirmed_at, voice_clone_sample_storage_path, voice_clone_preview_storage_path, voice_clone_error, use_cloned_voice, voice_clone_preview_acknowledged_at, voice_lines, created_at, updated_at"
       )
       .eq("agent_id", agentId as never)
       .maybeSingle();
@@ -97,6 +98,7 @@ export async function upsertAgentVoiceSettings(
     voiceCloneError: current.voiceCloneError,
     useClonedVoice: current.useClonedVoice,
     voiceClonePreviewAcknowledgedAt: current.voiceClonePreviewAcknowledgedAt,
+    voiceLines: current.voiceLines,
   };
 
   const now = new Date().toISOString();
