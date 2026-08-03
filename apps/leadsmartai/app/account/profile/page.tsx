@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ProfileSettingsForm from "@/components/account/ProfileSettingsForm";
 import BrandingSettingsPanel from "@/components/dashboard/BrandingSettingsPanel";
+import DigitalTwinPanel from "@/components/account/DigitalTwinPanel";
 
 export const metadata = {
   title: "My Profile | CloseBoss",
@@ -28,6 +29,8 @@ export default function AccountProfilePage() {
           <p className="mt-0.5 text-xs text-gray-500 mb-4">Brand name, logo, and email signature.</p>
           <BrandingSettingsPanel />
         </div>
+
+        <DigitalTwinPanel />
       </div>
     </div>
   );

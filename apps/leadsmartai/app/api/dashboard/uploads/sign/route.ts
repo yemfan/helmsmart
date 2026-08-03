@@ -27,6 +27,9 @@ const KINDS: Record<string, KindSpec> = {
   listing_pdf: { bucket: "lead-media", prefix: (a) => `listings/${a}` },
   offer_pdf: { bucket: "lead-media", prefix: (a) => `offers/${a}` },
   contract_pdf: { bucket: "lead-media", prefix: (a) => `contracts/${a}` },
+  // Private — the agent's intro video (their likeness/voice). Never public;
+  // the digital-twin processor reads it via a short-lived signed URL.
+  agent_intro_video: { bucket: "lead-media", prefix: (a) => `digital-twin/${a}` },
 };
 
 function extFromName(name: string): string {
