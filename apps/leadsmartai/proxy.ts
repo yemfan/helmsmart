@@ -108,11 +108,29 @@ export async function proxy(req: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Verify the JWT LOCALLY (cached JWKS) instead of calling GoTrue's /user on
+  // every request. getUser() per request — multiplied by RSC prefetches — was
+  // flooding the Auth server + DB and exhausting the connection pool (login
+  // outages). getClaims() verifies the token signature locally when the project
+  // uses asymmetric JWT signing keys; it only falls back to a server call on a
+  // legacy secret. We additionally fall back to getUser() when the token can't
+  // be verified locally (expired/invalid) — that path also refreshes the cookie,
+  // preserving the previous session-refresh behavior for edge cases.
+  let userId: string | null = null;
+  {
+    const { data: claimsData } = await supabase.auth.getClaims();
+    const sub = claimsData?.claims?.sub;
+    if (sub) {
+      userId = String(sub);
+    } else {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      userId = user?.id ?? null;
+    }
+  }
 
-  if (protectedPath && !user) {
+  if (protectedPath && !userId) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", `${pathname}${search || ""}`);
@@ -120,7 +138,7 @@ export async function proxy(req: NextRequest) {
   }
 
   // Consumers: PropertyTools-first accounts → PropertyTools app; LeadSmart-first → stay (except pro-only areas).
-  if (user && protectedPath) {
+  if (userId && protectedPath) {
     const ctx = await fetchUserPortalContext(supabase);
     if (ctx && !ctx.isPro) {
       if (consumerShouldUsePropertyToolsApp(ctx.signupOriginApp)) {
@@ -136,7 +154,7 @@ export async function proxy(req: NextRequest) {
     }
   }
 
-  if (isAuthPage(pathname) && user) {
+  if (isAuthPage(pathname) && userId) {
     const ctx = await fetchUserPortalContext(supabase);
     if (ctx && !ctx.isPro && consumerShouldUsePropertyToolsApp(ctx.signupOriginApp)) {
       return NextResponse.redirect(getPropertyToolsConsumerPostLoginUrl());
@@ -148,11 +166,11 @@ export async function proxy(req: NextRequest) {
   }
 
   // Strict admin / support trees — only `admin` + `support` roles (layout uses `ensurePortalAccess("admin")`)
-  if ((isAdminPath(pathname) || isSupportPath(pathname)) && user) {
+  if ((isAdminPath(pathname) || isSupportPath(pathname)) && userId) {
     const { data: adminProfile } = await supabase
       .from("leadsmart_users")
       .select("role")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .maybeSingle();
 
     const adminRole = adminProfile?.role ?? null;
@@ -165,11 +183,11 @@ export async function proxy(req: NextRequest) {
   }
 
   // Soft entitlement redirect for agent workspace (aligns with `hasAgentWorkspaceAccess` admin bypass)
-  if (isAgentPath(pathname) && user) {
+  if (isAgentPath(pathname) && userId) {
     const { data: profile } = await supabase
       .from("leadsmart_users")
       .select("role")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .maybeSingle();
 
     const role = String(profile?.role ?? "").toLowerCase().trim();
@@ -180,7 +198,7 @@ export async function proxy(req: NextRequest) {
     const { data: entitlement } = await supabase
       .from("active_product_entitlements")
       .select("id, product, is_active")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("product", PRODUCT_LEADSMART_AGENT)
       .maybeSingle();
 
