@@ -3,6 +3,7 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
 import { getAgentVoiceSettings } from "@/lib/agent-voice/settings";
+import { scheduleReel } from "@/lib/social/scheduleReel";
 import type { BrandProfile } from "@/lib/agent/digitalTwin";
 
 /**
@@ -244,4 +245,56 @@ export async function renderAvatarVideo(
 
   await setAgent(agentId, { dt_avatar_video_url: publicUrl, dt_avatar_script: text.trim().slice(0, 1200) });
   return { videoUrl: publicUrl };
+}
+
+/** Claude writes a social caption for the talking-head clip from its script. */
+async function draftAvatarCaption(script: string, name: string | null): Promise<string> {
+  try {
+    const client = getAnthropicClient();
+    const res = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 300,
+      system:
+        "You write ONE social caption for a short talking-head video where a real-estate agent speaks to camera. " +
+        "1-2 punchy sentences that hook the viewer, a light call to action, then 3-5 relevant hashtags. " +
+        "Use only what the script implies — don't invent stats or claims. Return ONLY the caption text.",
+      messages: [{ role: "user", content: `Agent: ${name ?? "(unknown)"}\nVideo script:\n${script.slice(0, 1200)}` }],
+    });
+    const text = (res.content.find((b) => b.type === "text") as { text?: string } | undefined)?.text?.trim();
+    if (text) return text.slice(0, 800);
+  } catch {
+    /* fall through */
+  }
+  // Fallback: first sentence of the script.
+  return (script.split(/(?<=[.!?])\s/)[0] || script).slice(0, 280);
+}
+
+/**
+ * Publish the finished avatar clip to the agent's connected FB/IG/LinkedIn.
+ * Reuses the reel publish pipeline: a social_reels row carrying the MP4 +
+ * caption, then scheduleReel fans it out to scheduled_posts (drained by the
+ * publish cron). Returns how many accounts it queued (0 + error if none
+ * connected). Caption can be overridden by the UI.
+ */
+export async function publishAvatarVideo(
+  agentId: string,
+  captionOverride?: string,
+): Promise<{ scheduled: number; error?: string }> {
+  const agent = await readAgent(agentId);
+  const videoUrl = agent?.dt_avatar_video_url?.trim();
+  if (!videoUrl) throw new Error("Generate your avatar video first.");
+
+  const caption = (
+    captionOverride?.trim() ||
+    (await draftAvatarCaption(agent?.dt_avatar_script ?? "", agent?.brand_name ?? null))
+  ).slice(0, 800);
+
+  const { data: reelRow, error } = await supabaseAdmin
+    .from("social_reels")
+    .insert({ agent_id: Number(agentId), slides: [], caption, hashtags: [], mp4_url: videoUrl, status: "rendered" } as never)
+    .select("id")
+    .single();
+  if (error || !reelRow) throw new Error(error?.message ?? "Could not queue the video for posting.");
+
+  return scheduleReel({ agentId, reelId: (reelRow as { id: string }).id, queueStatus: "scheduled" });
 }

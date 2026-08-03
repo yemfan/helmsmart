@@ -5,6 +5,7 @@ import {
   draftAvatarScript,
   getAvatarState,
   previewAvatarVoice,
+  publishAvatarVideo,
   renderAvatarVideo,
 } from "@/lib/agent/avatarStudio";
 
@@ -48,6 +49,7 @@ export async function POST(req: Request) {
       topic?: unknown;
       text?: unknown;
       audioPath?: unknown;
+      caption?: unknown;
     };
     const action = typeof body.action === "string" ? body.action : "";
     const text = typeof body.text === "string" ? body.text : "";
@@ -66,6 +68,12 @@ export async function POST(req: Request) {
         const audioPath = typeof body.audioPath === "string" ? body.audioPath : null;
         const out = await renderAvatarVideo(id, text, audioPath);
         return NextResponse.json({ ok: true, ...out });
+      }
+      case "publish": {
+        const caption = typeof body.caption === "string" ? body.caption : undefined;
+        const out = await publishAvatarVideo(id, caption);
+        // scheduled:0 with an error means no connected accounts — surface it, not a 500.
+        return NextResponse.json({ ok: true, scheduled: out.scheduled, error: out.error ?? null });
       }
       default:
         return NextResponse.json({ ok: false, error: "Unknown action" }, { status: 400 });

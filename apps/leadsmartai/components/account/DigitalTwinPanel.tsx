@@ -37,9 +37,10 @@ type AvatarState = {
 
 type AvatarResp = Partial<AvatarState> & {
   ok?: boolean;
-  error?: string;
+  error?: string | null;
   audioUrl?: string;
   audioPath?: string;
+  scheduled?: number;
 };
 
 function toVoiceState(b: VoiceCloneResp): VoiceCloneState {
@@ -82,6 +83,38 @@ export default function DigitalTwinPanel() {
   const [avAudioPath, setAvAudioPath] = useState<string | null>(null);
   const [avBusy, setAvBusy] = useState<string | null>(null);
   const [avError, setAvError] = useState<string | null>(null);
+  const [avCaption, setAvCaption] = useState("");
+  const [avPublishMsg, setAvPublishMsg] = useState<string | null>(null);
+  const [avNeedsConnect, setAvNeedsConnect] = useState(false);
+
+  async function publishAvatar() {
+    setAvBusy("publish");
+    setAvError(null);
+    setAvPublishMsg(null);
+    setAvNeedsConnect(false);
+    try {
+      const res = await fetch("/api/dashboard/avatar", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "publish", caption: avCaption.trim() || undefined }),
+      });
+      const b = (await res.json().catch(() => ({}))) as AvatarResp;
+      if (!res.ok || !b.ok) {
+        setAvError(b.error ?? "Couldn't post the video.");
+        return;
+      }
+      if ((b.scheduled ?? 0) > 0) {
+        setAvPublishMsg(`Queued to ${b.scheduled} account${b.scheduled === 1 ? "" : "s"} — posting within a few minutes.`);
+      } else {
+        setAvNeedsConnect(true);
+        setAvPublishMsg(b.error ?? "No connected video-capable accounts yet.");
+      }
+    } catch (e) {
+      setAvError(e instanceof Error ? e.message : "Network error.");
+    } finally {
+      setAvBusy(null);
+    }
+  }
 
   async function loadAvatar() {
     try {
@@ -535,11 +568,45 @@ export default function DigitalTwinPanel() {
             ) : null}
 
             {av.videoUrl ? (
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <video controls src={av.videoUrl} className="mt-1 w-full max-w-md rounded-lg border border-slate-200" />
-                <a href={av.videoUrl} download className="text-[12px] font-medium text-violet-700 hover:underline">
-                  Download video
-                </a>
+                <div className="flex items-center gap-3">
+                  <a href={av.videoUrl} download className="text-[12px] font-medium text-violet-700 hover:underline">
+                    Download video
+                  </a>
+                </div>
+
+                {/* Post straight to social */}
+                <div className="mt-1 space-y-2 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+                  <label className="block">
+                    <span className="text-xs font-medium text-slate-600">Caption (optional)</span>
+                    <textarea
+                      value={avCaption}
+                      onChange={(e) => setAvCaption(e.target.value)}
+                      rows={2}
+                      placeholder="Leave blank to auto-write a caption from your script."
+                      className="mt-1 w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                    />
+                  </label>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void publishAvatar()}
+                      disabled={avBusy !== null}
+                      className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+                    >
+                      {avBusy === "publish" ? "Posting…" : "Post to Facebook / Instagram / LinkedIn"}
+                    </button>
+                    {avNeedsConnect ? (
+                      <a href="/connections" className="text-[12px] font-medium text-violet-700 underline underline-offset-2">
+                        Connect accounts
+                      </a>
+                    ) : null}
+                  </div>
+                  {avPublishMsg ? (
+                    <p className={`text-[12px] ${avNeedsConnect ? "text-amber-700" : "text-emerald-700"}`}>{avPublishMsg}</p>
+                  ) : null}
+                </div>
               </div>
             ) : null}
           </>
