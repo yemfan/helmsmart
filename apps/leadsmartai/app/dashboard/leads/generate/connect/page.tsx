@@ -75,6 +75,17 @@ type PinterestAccountRow = {
   connected_at: string;
 };
 
+type TikTokAccountRow = {
+  id: string;
+  tiktok_username: string | null;
+  account_display_name: string | null;
+  account_picture_url: string | null;
+  status: string;
+  last_error: string | null;
+  user_token_expires_at: string | null;
+  connected_at: string;
+};
+
 /**
  * Connection management for the Generate Leads feature. Surfaces
  * Meta (Phase 2A) and LinkedIn (Phase 2D — personal feed via Share
@@ -92,7 +103,7 @@ export default async function ConnectPage({ searchParams }: PageProps) {
   // Pull this agent's existing connections in parallel. Service-role
   // reads; the token columns are intentionally OMITTED from the
   // SELECT — they never need to leave the server.
-  const [metaResult, linkedinResult, threadsResult, pinterestResult] = await Promise.all([
+  const [metaResult, linkedinResult, threadsResult, pinterestResult, tiktokResult] = await Promise.all([
     supabaseAdmin
       .from("social_accounts")
       .select(
@@ -125,6 +136,14 @@ export default async function ConnectPage({ searchParams }: PageProps) {
       .eq("agent_id", String(agentId))
       .eq("platform", "pinterest")
       .order("connected_at", { ascending: false }),
+    supabaseAdmin
+      .from("social_accounts")
+      .select(
+        "id, tiktok_username, account_display_name, account_picture_url, status, last_error, user_token_expires_at, connected_at",
+      )
+      .eq("agent_id", String(agentId))
+      .eq("platform", "tiktok")
+      .order("connected_at", { ascending: false }),
   ]);
 
   const metaConnections = (metaResult.data as MetaAccountRow[] | null) ?? [];
@@ -134,6 +153,8 @@ export default async function ConnectPage({ searchParams }: PageProps) {
     (threadsResult.data as ThreadsAccountRow[] | null) ?? [];
   const pinterestConnections =
     (pinterestResult.data as PinterestAccountRow[] | null) ?? [];
+  const tiktokConnections =
+    (tiktokResult.data as TikTokAccountRow[] | null) ?? [];
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
@@ -163,6 +184,7 @@ export default async function ConnectPage({ searchParams }: PageProps) {
         linkedinConnections={linkedinConnections}
         threadsConnections={threadsConnections}
         pinterestConnections={pinterestConnections}
+        tiktokConnections={tiktokConnections}
       />
     </div>
   );
