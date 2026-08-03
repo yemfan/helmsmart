@@ -131,7 +131,7 @@ export default function AuthModal({
     try {
       const supabase = supabaseBrowser();
       if (mode === "login") {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password,
         });
@@ -143,7 +143,14 @@ export default function AuthModal({
         // If the signed-in user is an agent, take them straight to the dashboard.
         // (Homepage stays public; this is only the post-auth UX.)
         try {
-          const meRes = await fetch("/api/me", { credentials: "include" });
+          // Pass the fresh access token as a Bearer — right after sign-in the
+          // server-side auth cookie may not be synced yet, so a cookie-only
+          // /api/me returns "guest", which mis-routed agents to the homepage.
+          const token = signInData.session?.access_token;
+          const meRes = await fetch("/api/me", {
+            credentials: "include",
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          });
           if (meRes.ok) {
             const me = (await meRes.json()) as {
               role?: string;
