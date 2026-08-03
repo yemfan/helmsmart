@@ -16,6 +16,7 @@ import LeadRoutingSettingsPanel from "@/components/dashboard/LeadRoutingSettings
 import ReviewPolicyPanel from "@/components/dashboard/ReviewPolicyPanel";
 import SettingsTabsClient from "@/components/dashboard/SettingsTabsClient";
 import SocialAutopilotController from "@/components/dashboard/SocialAutopilotController";
+import WeeklyScheduleController from "@/components/dashboard/WeeklyScheduleController";
 import SphereDripSettingsPanel from "@/components/dashboard/SphereDripSettingsPanel";
 import TemplatesSummaryCard from "@/components/dashboard/TemplatesSummaryCard";
 import TimingPanel from "@/components/dashboard/TimingPanel";
@@ -146,6 +147,12 @@ export default async function SettingsPage() {
               description="Your AI team writes and publishes posts for your feed. This decides what goes out, where, how often — and who signs off."
             >
               <SocialAutopilotController />
+            </Card>
+            <Card
+              title="Weekly post schedule"
+              description="Pick the weekdays you want a post. For each, set a time, channels, and a topic — AI researches the topic and publishes on schedule."
+            >
+              <WeeklyScheduleController />
             </Card>
             <LeadRoutingSettingsPanel />
             <Card
