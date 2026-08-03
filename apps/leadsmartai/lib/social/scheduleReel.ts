@@ -14,7 +14,7 @@ import { getReel } from "./reels";
  * (rendered by Remotion Lambda) and carousel_id stays null.
  */
 
-export type ReelPlatform = "facebook" | "instagram" | "linkedin" | "tiktok";
+export type ReelPlatform = "facebook" | "instagram" | "linkedin" | "tiktok" | "youtube";
 
 export async function scheduleReel(params: {
   agentId: string;
@@ -42,9 +42,11 @@ export async function scheduleReel(params: {
 
   const { data: accountRows } = await supabaseAdmin
     .from("social_accounts")
-    .select("id, platform, fb_page_id, ig_business_user_id, linkedin_member_urn, tiktok_open_id, status")
+    .select(
+      "id, platform, fb_page_id, ig_business_user_id, linkedin_member_urn, tiktok_open_id, youtube_channel_id, status",
+    )
     .eq("agent_id", agentId)
-    .in("platform", ["meta", "linkedin", "tiktok"])
+    .in("platform", ["meta", "linkedin", "tiktok", "youtube"])
     .eq("status", "connected");
   const accounts = (accountRows as
     | {
@@ -54,6 +56,7 @@ export async function scheduleReel(params: {
         ig_business_user_id: string | null;
         linkedin_member_urn: string | null;
         tiktok_open_id: string | null;
+        youtube_channel_id: string | null;
       }[]
     | null) ?? [];
 
@@ -87,13 +90,15 @@ export async function scheduleReel(params: {
       if (acct.linkedin_member_urn && wants("linkedin")) rows.push(mkRow("linkedin", acct.id));
     } else if (acct.platform === "tiktok") {
       if (acct.tiktok_open_id && wants("tiktok")) rows.push(mkRow("tiktok", acct.id));
+    } else if (acct.platform === "youtube") {
+      if (acct.youtube_channel_id && wants("youtube")) rows.push(mkRow("youtube", acct.id));
     }
   }
 
   if (rows.length === 0) {
     return {
       scheduled: 0,
-      error: "No connected video-capable accounts (Facebook, Instagram, LinkedIn, or TikTok).",
+      error: "No connected video-capable accounts (Facebook, Instagram, LinkedIn, TikTok, or YouTube).",
     };
   }
 
