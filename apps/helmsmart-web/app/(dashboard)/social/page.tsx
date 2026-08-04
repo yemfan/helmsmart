@@ -20,6 +20,10 @@ export default async function SocialPage({
     ig?: string;
     threads?: string;
     threads_error?: string;
+    tiktok?: string;
+    tiktok_error?: string;
+    youtube?: string;
+    youtube_error?: string;
   }>;
 }) {
   const cookieStore = await cookies();
@@ -69,6 +73,8 @@ export default async function SocialPage({
   const linkedinConnected = connected.has("linkedin");
   const metaConnected = connected.has("meta");
   const threadsConnected = connected.has("threads");
+  const tiktokConnected = connected.has("tiktok");
+  const youtubeConnected = connected.has("youtube");
 
   return (
     <div className="flex flex-col h-full">
@@ -119,6 +125,26 @@ export default async function SocialPage({
           Couldn&apos;t connect Threads ({sp.threads_error.replace(/_/g, " ")}). Please try again.
         </div>
       )}
+      {sp.tiktok === "connected" && (
+        <div className="mx-4 mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
+          TikTok connected. Video posting to TikTok is coming soon.
+        </div>
+      )}
+      {sp.tiktok_error && (
+        <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
+          Couldn&apos;t connect TikTok ({sp.tiktok_error.replace(/_/g, " ")}). Please try again.
+        </div>
+      )}
+      {sp.youtube === "connected" && (
+        <div className="mx-4 mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
+          YouTube connected. Video uploads to YouTube are coming soon.
+        </div>
+      )}
+      {sp.youtube_error && (
+        <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
+          Couldn&apos;t connect YouTube ({sp.youtube_error.replace(/_/g, " ")}). Please try again.
+        </div>
+      )}
       <SocialAutopilotPanel />
       <SocialComposer
         posts={(posts ?? []) as Parameters<typeof SocialComposer>[0]["posts"]}
@@ -165,6 +191,32 @@ export default async function SocialPage({
                 className="inline-flex items-center gap-1.5 rounded-full border border-black bg-black px-3 py-1 text-xs font-medium text-white hover:opacity-90"
               >
                 Connect Threads
+              </a>
+            )}
+            {tiktokConnected ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                TikTok connected
+              </span>
+            ) : (
+              <a
+                href="/api/auth/tiktok"
+                className="inline-flex items-center gap-1.5 rounded-full border border-black bg-black px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+              >
+                Connect TikTok
+              </a>
+            )}
+            {youtubeConnected ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                YouTube connected
+              </span>
+            ) : (
+              <a
+                href="/api/auth/youtube"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#ff0000] bg-[#ff0000] px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+              >
+                Connect YouTube
               </a>
             )}
           </div>
