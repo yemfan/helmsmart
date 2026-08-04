@@ -68,6 +68,80 @@ ${platform === "x" ? "- X posts should be punchy and direct — get to the point
   return text.slice(0, limit);
 }
 
+// ─── Research the topic on the web, then write the post ───────────────────────
+
+/**
+ * Like generateSocialPost, but Claude first RESEARCHES the topic with the
+ * web_search server tool so the post reflects current facts (news, data,
+ * seasonality) instead of only the knowledge base. Used by the weekly schedule /
+ * day-topics autopilot. Degrades gracefully: any failure (tool/model unsupported,
+ * network) falls back to the plain knowledge-base write, so it can never break a
+ * generation run.
+ */
+export async function researchAndWriteSocialPost(
+  platform: Platform,
+  tone: Tone,
+  topic: string,
+  orgName: string,
+  context = ""
+): Promise<string> {
+  const limit = CHAR_LIMITS[platform];
+  const platformLabel = platform === "x" ? "X (Twitter)" : platform.charAt(0).toUpperCase() + platform.slice(1);
+
+  const system =
+    `You are the social-media writer for "${orgName}". FIRST research the topic with the web_search tool — ` +
+    `check anything current or time-sensitive (news, data, seasonality, prices) so the post is accurate and timely. ` +
+    `Never invent statistics. THEN write ONE ${platformLabel} post.\n\n` +
+    `Tone: ${TONE_DESC[tone]}. Character limit: ${limit} (MUST stay under it). ` +
+    `No hashtag spam (1-3 for Instagram/LinkedIn, 0-2 for X, none for Facebook). Authentic, not corporate. ` +
+    `Output ONLY the final post text — no preamble, no quotes, no explanation.`;
+
+  const userPrompt =
+    `Topic for today's ${platformLabel} post: ${topic}\n\n` +
+    (context ? `About the business you are posting as:\n${context}\n\n` : "") +
+    `Research the topic on the web for anything current, then write the post.`;
+
+  const tools = [{ type: "web_search_20250305", name: "web_search", max_uses: 3 }];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const messages: any[] = [{ role: "user", content: userPrompt }];
+
+  try {
+    let finalText = "";
+    for (let round = 0; round < 5; round++) {
+      const res = await anthropic.messages.create({
+        model: "claude-opus-4-5",
+        max_tokens: 1200,
+        system,
+        messages,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        tools: tools as any,
+      });
+      const content: unknown[] = Array.isArray(res?.content) ? res.content : [];
+      for (const block of content) {
+        const b = block as { type?: string; text?: string };
+        if (b.type === "text" && typeof b.text === "string") finalText += b.text;
+      }
+      if ((res as { stop_reason?: string })?.stop_reason === "pause_turn") {
+        messages.push({ role: "assistant", content: res.content });
+        continue;
+      }
+      break;
+    }
+    const text = finalText.trim();
+    if (text) return text.slice(0, limit);
+  } catch (e) {
+    console.warn("[social] research-and-write failed, falling back to plain write:", e instanceof Error ? e.message : e);
+  }
+
+  // Fallback: plain knowledge-base generation.
+  return generateSocialPost(
+    platform,
+    tone,
+    context ? `${topic}\n\nContext about the business you are posting as:\n${context}` : topic,
+    orgName
+  );
+}
+
 // ─── Generate variants (Week 54) ──────────────────────────────────────────────
 
 function parseStringArray(raw: string, max: number): string[] {

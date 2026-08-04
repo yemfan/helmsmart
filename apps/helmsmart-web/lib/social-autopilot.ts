@@ -16,7 +16,7 @@ import {
   planPublishTimes,
 } from "@helm/dna-marketing";
 
-import { generateSocialPost } from "@/lib/actions/social";
+import { generateSocialPost, researchAndWriteSocialPost } from "@/lib/actions/social";
 import { renderAndUploadScamAd } from "@/lib/social/adStorage";
 import { pickScamTree } from "@/lib/social/scamTrees";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -328,7 +328,7 @@ export async function generateWeekForOrg(
   //   - Per-day topics set → one post per selected weekday, on that day, with
   //     that day's topic. This is what the day picker drives.
   //   - Otherwise → the older N-per-week spread with rotating angles.
-  type Job = { instruction: string; scheduledAt: string | null };
+  type Job = { instruction: string; rawTopic?: string; scheduledAt: string | null };
   const jobs: Job[] = [];
   const selectedDays = Object.keys(settings.dayTopics)
     .map(Number)
@@ -339,6 +339,9 @@ export async function generateWeekForOrg(
     for (const dow of selectedDays) {
       jobs.push({
         instruction: topicInstruction(settings.dayTopics[String(dow)]),
+        // The raw day topic (not the wrapped instruction) is what the web
+        // research searches for.
+        rawTopic: settings.dayTopics[String(dow)],
         scheduledAt: auto ? slotForWeekday(weekOf, dow, hour, now) : null,
       });
     }
@@ -387,9 +390,18 @@ export async function generateWeekForOrg(
         // Fall through: still post the caption as text rather than nothing.
       }
     } else {
-      const topic = `${job.instruction}\n\nContext about the business you are posting as:\n${context}`;
       try {
-        content = await generateSocialPost(tightest, settings.tone, topic, orgName);
+        // A user-picked day topic → research it on the web first (accurate,
+        // timely). Rotating angles (no rawTopic) → the plain knowledge-base write.
+        content =
+          job.rawTopic && job.rawTopic.trim()
+            ? await researchAndWriteSocialPost(tightest, settings.tone, job.rawTopic.trim(), orgName, context)
+            : await generateSocialPost(
+                tightest,
+                settings.tone,
+                `${job.instruction}\n\nContext about the business you are posting as:\n${context}`,
+                orgName
+              );
       } catch (e) {
         console.warn(`[social-autopilot] generation failed for org ${orgId}:`, e instanceof Error ? e.message : e);
         continue;
