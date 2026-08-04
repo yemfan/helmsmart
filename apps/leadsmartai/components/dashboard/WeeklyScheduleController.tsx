@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 
 /**
  * Weekly Social Schedule — check the days you want a post, and per checked day
- * set a time, channels, and a topic. AI researches the topic and publishes on
- * schedule. Text posts → Facebook / LinkedIn / Threads (image/video platforms
- * come later). Config for CloseBoss; a sibling exists in MarketingBoss.
+ * set a time, a content type (text or image), channels, and a topic. AI
+ * researches the topic and publishes on schedule. Text posts → Facebook /
+ * LinkedIn / Threads; image posts render a branded card and additionally reach
+ * Instagram + Pinterest. Config for CloseBoss; a sibling exists in MarketingBoss.
  */
 
-type Platform = "facebook" | "linkedin" | "threads";
+type Platform = "facebook" | "instagram" | "linkedin" | "threads" | "pinterest";
+type MediaType = "text" | "image";
 
 type Day = {
   weekday: number;
@@ -17,17 +19,25 @@ type Day = {
   postHour: number;
   postMinute: number;
   timezone: string;
-  platforms: Platform[] | null; // null = all
+  mediaType: MediaType;
+  platforms: Platform[] | null; // null = all of this content type
   topic: string;
 };
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const PLATFORMS: { id: Platform; label: string }[] = [
-  { id: "facebook", label: "Facebook" },
-  { id: "linkedin", label: "LinkedIn" },
-  { id: "threads", label: "Threads" },
-];
-const ALL_PLATFORMS: Platform[] = ["facebook", "linkedin", "threads"];
+const LABELS: Record<Platform, string> = {
+  facebook: "Facebook",
+  instagram: "Instagram",
+  linkedin: "LinkedIn",
+  threads: "Threads",
+  pinterest: "Pinterest",
+};
+const TEXT_PLATFORMS: Platform[] = ["facebook", "linkedin", "threads"];
+const IMAGE_PLATFORMS: Platform[] = ["facebook", "instagram", "linkedin", "threads", "pinterest"];
+
+function platformsFor(mediaType: MediaType): Platform[] {
+  return mediaType === "image" ? IMAGE_PLATFORMS : TEXT_PLATFORMS;
+}
 
 function hhmm(h: number, m: number): string {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
@@ -52,8 +62,8 @@ export default function WeeklyScheduleController() {
       };
       if (!b.ok || !b.days) return;
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
-      // Default any never-saved day to the viewer's timezone.
-      setDays(b.days.map((d) => ({ ...d, timezone: d.timezone || tz })));
+      // Default any never-saved day to the viewer's timezone; default content type to text.
+      setDays(b.days.map((d) => ({ ...d, mediaType: d.mediaType ?? "text", timezone: d.timezone || tz })));
       setPresets(b.topicPresets ?? []);
       setConfigured(b.configured ?? true);
     } catch {
@@ -70,14 +80,20 @@ export default function WeeklyScheduleController() {
     setNote(null);
   }
 
+  function setMediaType(day: Day, mediaType: MediaType) {
+    // Changing content type resets channels to "all" (the platform sets differ).
+    patch(day.weekday, { mediaType, platforms: null });
+  }
+
   function togglePlatform(day: Day, p: Platform) {
-    const current = day.platforms ?? ALL_PLATFORMS;
+    const all = platformsFor(day.mediaType);
+    const current = day.platforms ?? all;
     const set = new Set(current);
     if (set.has(p)) set.delete(p);
     else set.add(p);
-    const arr = ALL_PLATFORMS.filter((x) => set.has(x));
+    const arr = all.filter((x) => set.has(x));
     // All selected (or none) → null meaning "all connected".
-    patch(day.weekday, { platforms: arr.length === 0 || arr.length === ALL_PLATFORMS.length ? null : arr });
+    patch(day.weekday, { platforms: arr.length === 0 || arr.length === all.length ? null : arr });
   }
 
   async function save() {
@@ -98,7 +114,7 @@ export default function WeeklyScheduleController() {
       }
       if (b.days) {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
-        setDays(b.days.map((d) => ({ ...d, timezone: d.timezone || tz })));
+        setDays(b.days.map((d) => ({ ...d, mediaType: d.mediaType ?? "text", timezone: d.timezone || tz })));
       }
       setNote("Schedule saved.");
     } catch (e) {
@@ -115,8 +131,9 @@ export default function WeeklyScheduleController() {
   return (
     <div className="space-y-3">
       <p className="text-xs text-gray-600">
-        Pick the days you want a post to go out. For each day, set a time, the channels, and a topic — AI researches the
-        topic and writes + publishes the post automatically. Text posts go to Facebook, LinkedIn, and Threads.
+        Pick the days you want a post to go out. For each day, choose text or an image, set a time, the channels, and a
+        topic — AI researches the topic and writes + publishes the post automatically. Text → Facebook, LinkedIn,
+        Threads. Image renders a branded card and also reaches Instagram + Pinterest.
       </p>
 
       {!configured ? (
@@ -127,7 +144,8 @@ export default function WeeklyScheduleController() {
 
       <ul className="space-y-2">
         {days.map((d) => {
-          const selected = d.platforms ?? ALL_PLATFORMS;
+          const all = platformsFor(d.mediaType);
+          const selected = d.platforms ?? all;
           const allSelected = d.platforms === null;
           return (
             <li key={d.weekday} className="rounded-xl border border-gray-200 bg-white p-3">
@@ -143,35 +161,51 @@ export default function WeeklyScheduleController() {
 
               {d.enabled ? (
                 <div className="mt-3 grid gap-3 sm:grid-cols-[auto,1fr]">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-medium text-gray-500">Time</span>
-                    <input
-                      type="time"
-                      value={hhmm(d.postHour, d.postMinute)}
-                      onChange={(e) => {
-                        const [h, m] = e.target.value.split(":").map((n) => parseInt(n, 10));
-                        patch(d.weekday, { postHour: h || 0, postMinute: m || 0 });
-                      }}
-                      className="rounded-lg border border-gray-300 px-2 py-1 text-sm"
-                    />
-                    <span className="text-[10px] text-gray-400">{d.timezone}</span>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-medium text-gray-500">Time</span>
+                      <input
+                        type="time"
+                        value={hhmm(d.postHour, d.postMinute)}
+                        onChange={(e) => {
+                          const [h, m] = e.target.value.split(":").map((n) => parseInt(n, 10));
+                          patch(d.weekday, { postHour: h || 0, postMinute: m || 0 });
+                        }}
+                        className="rounded-lg border border-gray-300 px-2 py-1 text-sm"
+                      />
+                      <span className="text-[10px] text-gray-400">{d.timezone}</span>
+                    </div>
+                    <div className="inline-flex overflow-hidden rounded-lg border border-gray-300 text-[11px] font-medium">
+                      {(["text", "image"] as MediaType[]).map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setMediaType(d, t)}
+                          className={`px-3 py-1 ${
+                            d.mediaType === t ? "bg-brand-accent text-white" : "bg-white text-gray-600"
+                          }`}
+                        >
+                          {t === "text" ? "Text" : "Image"}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <span className="text-[11px] font-medium text-gray-500">Channels</span>
-                      {PLATFORMS.map((p) => (
+                      {all.map((p) => (
                         <button
-                          key={p.id}
+                          key={p}
                           type="button"
-                          onClick={() => togglePlatform(d, p.id)}
+                          onClick={() => togglePlatform(d, p)}
                           className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
-                            selected.includes(p.id)
+                            selected.includes(p)
                               ? "border-brand-accent bg-brand-accent/10 text-gray-900"
                               : "border-gray-200 text-gray-500"
                           }`}
                         >
-                          {p.label}
+                          {LABELS[p]}
                         </button>
                       ))}
                       <span className="text-[10px] text-gray-400">{allSelected ? "all connected" : ""}</span>
