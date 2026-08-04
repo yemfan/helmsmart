@@ -73,8 +73,8 @@ export default function SocialPublish({
   }
 
   return (
-    <div className="border-t border-white/10 bg-black/20 px-4 py-3">
-      <div className="mb-2 text-xs font-medium text-white/45">Publish to social</div>
+    <div className="border-t border-slate-200 bg-slate-50 px-4 py-3">
+      <div className="mb-2 text-xs font-medium text-slate-500">Publish to social</div>
 
       <div className="mb-2 flex flex-wrap gap-1.5">
         {PROVIDERS.map((prov) => {
@@ -86,7 +86,7 @@ export default function SocialPublish({
                 <a
                   key={pf.id}
                   href={`/api/social/connect/${prov.key}`}
-                  className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs text-white/60 transition hover:border-boss-violet/50 hover:text-white"
+                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-600 transition hover:border-boss-violet/50 hover:text-slate-900"
                 >
                   Connect {pf.label}
                 </a>
@@ -101,7 +101,7 @@ export default function SocialPublish({
                 className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                   on
                     ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold"
-                    : "border-white/15 bg-white/[0.04] text-white/60 hover:text-white"
+                    : "border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900"
                 }`}
               >
                 {on ? "✓ " : ""}
@@ -119,10 +119,10 @@ export default function SocialPublish({
             onChange={(e) => setCaption(e.target.value)}
             rows={2}
             placeholder="Write a caption…"
-            className="w-full resize-y rounded-lg border border-white/10 bg-black/30 p-2.5 text-sm text-white placeholder:text-white/35 outline-none focus:border-boss-violet/60"
+            className="w-full resize-y rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
           />
           <div className="mt-2 flex items-center justify-between gap-2">
-            <span className="text-[11px] text-white/35">
+            <span className="text-[11px] text-slate-400">
               {selected.size ? `${selected.size} selected` : "Select platforms above"}
             </span>
             <button
@@ -136,11 +136,11 @@ export default function SocialPublish({
         </>
       )}
 
-      {error && <p className="mt-2 text-xs text-red-300">{error}</p>}
+      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
       {results && (
         <ul className="mt-2 space-y-1 text-xs">
           {results.map((r) => (
-            <li key={r.platform} className={r.ok ? "text-emerald-300" : "text-red-300"}>
+            <li key={r.platform} className={r.ok ? "text-emerald-600" : "text-red-600"}>
               <span className="capitalize">{r.platform}</span>:{" "}
               {r.ok ? (
                 r.url ? (

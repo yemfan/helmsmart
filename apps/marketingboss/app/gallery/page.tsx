@@ -35,11 +35,11 @@ export default async function GalleryPage() {
 
       <div>
         <h2 className="text-xl font-bold tracking-tight">Your gallery</h2>
-        <p className="text-sm text-white/45">{items.length} saved generation{items.length === 1 ? "" : "s"}</p>
+        <p className="text-sm text-slate-500">{items.length} saved generation{items.length === 1 ? "" : "s"}</p>
       </div>
 
       {items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-10 text-center text-sm text-white/50">
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center text-sm text-slate-500">
           Nothing here yet. Head to the{" "}
           <a href="/" className="font-medium text-boss-gold hover:underline">
             Studio
@@ -51,7 +51,7 @@ export default async function GalleryPage() {
           {items.map((g) => (
             <figure
               key={g.id}
-              className="group overflow-hidden rounded-xl border border-white/10 bg-black/40"
+              className="group overflow-hidden rounded-xl border border-slate-200 bg-white"
               title={g.prompt}
             >
               {g.type === "video" ? (
@@ -60,7 +60,7 @@ export default async function GalleryPage() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={g.media_url} alt={g.prompt} className="aspect-video w-full object-cover" />
               )}
-              <figcaption className="flex items-center justify-between gap-2 px-2.5 py-1.5 text-[11px] text-white/45">
+              <figcaption className="flex items-center justify-between gap-2 px-2.5 py-1.5 text-[11px] text-slate-500">
                 <span className="capitalize">{g.type}</span>
                 <a
                   href={g.media_url}

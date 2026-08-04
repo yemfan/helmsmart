@@ -38,17 +38,17 @@ export default async function UgcPage() {
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-8 px-5 py-8 sm:py-12">
       <Nav email={user.email ?? ""} credits={profile?.credits ?? 0} />
       <section className="flex flex-col gap-1">
-        <Link href="/compose" className="text-xs text-white/45 transition hover:text-white">
+        <Link href="/compose" className="text-xs text-slate-500 transition hover:text-slate-900">
           ← Posting
         </Link>
         <h2 className="text-2xl font-bold tracking-tight">UGC ad</h2>
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-slate-500">
           AI writes an authentic creator-style ad and films it — a person talking to camera with real voice (Seedance).
           Drop in a reference image or a viral ad to emulate its style.
         </p>
       </section>
       <UgcStudio channels={channels} aiConfigured={aiConfigured()} />
-      <footer className="mt-auto pt-6 text-center text-[11px] text-white/25">
+      <footer className="mt-auto pt-6 text-center text-[11px] text-slate-400">
         Script by Claude · video + voice by Seedance · a UGC clip costs 35 credits
       </footer>
     </main>

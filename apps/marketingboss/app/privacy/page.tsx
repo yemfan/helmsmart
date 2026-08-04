@@ -12,14 +12,14 @@ export default function PrivacyPage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-5 py-10 sm:py-14">
       <header className="flex flex-col gap-1">
-        <Link href="/" className="text-xs text-white/45 transition hover:text-white">
+        <Link href="/" className="text-xs text-slate-500 transition hover:text-slate-900">
           ← MarketingBoss
         </Link>
         <h1 className="text-3xl font-bold tracking-tight">Privacy Policy</h1>
-        <p className="text-sm text-white/45">Last updated: {UPDATED}</p>
+        <p className="text-sm text-slate-500">Last updated: {UPDATED}</p>
       </header>
 
-      <div className="flex flex-col gap-6 text-[15px] leading-relaxed text-white/75">
+      <div className="flex flex-col gap-6 text-[15px] leading-relaxed text-slate-700">
         <Section title="Overview">
           MarketingBoss (“MarketingBoss,” “we,” “us”) provides tools to create multimedia content and publish it to
           social media. This policy explains what we collect, how we use it, and the choices you have.
@@ -28,23 +28,23 @@ export default function PrivacyPage() {
         <Section title="Information we collect">
           <ul className="mt-1 list-disc space-y-1 pl-5">
             <li>
-              <b className="text-white/85">Account information</b> — your email address and authentication details.
+              <b className="text-slate-900">Account information</b> — your email address and authentication details.
             </li>
             <li>
-              <b className="text-white/85">Content you create</b> — the prompts, uploads, generated images and video,
+              <b className="text-slate-900">Content you create</b> — the prompts, uploads, generated images and video,
               and post copy you produce, which we store so you can access and publish them.
             </li>
             <li>
-              <b className="text-white/85">Connected accounts</b> — when you connect a social account (Facebook,
+              <b className="text-slate-900">Connected accounts</b> — when you connect a social account (Facebook,
               Instagram, Threads, LinkedIn, Pinterest, YouTube, TikTok), we store the access tokens needed to publish on
               your behalf, and basic profile details such as the account name.
             </li>
             <li>
-              <b className="text-white/85">Payment information</b> — purchases are processed by Stripe. We receive a
+              <b className="text-slate-900">Payment information</b> — purchases are processed by Stripe. We receive a
               record of your purchase; we do not store your full card number.
             </li>
             <li>
-              <b className="text-white/85">Usage data</b> — logs and technical information generated as you use the
+              <b className="text-slate-900">Usage data</b> — logs and technical information generated as you use the
               service, used to operate, secure, and improve it.
             </li>
           </ul>
@@ -109,9 +109,9 @@ export default function PrivacyPage() {
         </Section>
       </div>
 
-      <footer className="mt-4 border-t border-white/10 pt-4 text-xs text-white/35">
+      <footer className="mt-4 border-t border-slate-200 pt-4 text-xs text-slate-400">
         See also our{" "}
-        <Link href="/terms" className="text-white/60 underline underline-offset-2 hover:text-white">
+        <Link href="/terms" className="text-slate-600 underline underline-offset-2 hover:text-slate-900">
           Terms of Service
         </Link>
         .
@@ -123,7 +123,7 @@ export default function PrivacyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-1.5">
-      <h2 className="text-lg font-semibold text-white">{title}</h2>
+      <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
       <div>{children}</div>
     </section>
   );

@@ -160,13 +160,13 @@ export default function Autopilot({
   }
 
   const fieldCls =
-    "w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-white/35 outline-none focus:border-boss-violet/60";
+    "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60";
   const primaryBtn =
     "inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40";
 
   if (!aiConfigured) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-ink-2/70 p-5 text-sm text-white/60">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
         AI isn&apos;t turned on yet. Set <code className="text-boss-gold">ANTHROPIC_API_KEY</code> in the project to
         enable autopilot research.
       </div>
@@ -176,8 +176,8 @@ export default function Autopilot({
   return (
     <div className="flex flex-col gap-6">
       {/* New campaign */}
-      <section className="rounded-2xl border border-white/10 bg-ink-2/70 p-4 sm:p-5">
-        <h3 className="mb-3 text-base font-semibold text-white">New campaign</h3>
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+        <h3 className="mb-3 text-base font-semibold text-slate-900">New campaign</h3>
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
             value={link}
@@ -192,7 +192,7 @@ export default function Autopilot({
           </button>
         </div>
         {researching && (
-          <p className="mt-2 text-xs text-white/45">
+          <p className="mt-2 text-xs text-slate-500">
             Reading your page, scanning your market and competitors — this can take up to a minute.
           </p>
         )}
@@ -200,9 +200,9 @@ export default function Autopilot({
         {brief && (
           <div className="mt-4 flex flex-col gap-4">
             {/* Brief */}
-            <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
               <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-boss-gold">Your brand brief</div>
-              <p className="text-sm text-white/80">{brief.summary}</p>
+              <p className="text-sm text-slate-900">{brief.summary}</p>
               <dl className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
                 <Info label="Audience" value={brief.audience} />
                 <Info label="Voice" value={brief.tone} />
@@ -213,11 +213,11 @@ export default function Autopilot({
               {brief.pillars.length > 0 && <ChipRow label="Content pillars" items={brief.pillars} gold />}
               {brief.competitors.length > 0 && (
                 <div className="mt-3">
-                  <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-white/40">Competitors</div>
-                  <ul className="space-y-1 text-xs text-white/60">
+                  <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-slate-400">Competitors</div>
+                  <ul className="space-y-1 text-xs text-slate-600">
                     {brief.competitors.map((c, i) => (
                       <li key={i}>
-                        <span className="font-medium text-white/80">{c.name}</span> — {c.angle}
+                        <span className="font-medium text-slate-900">{c.name}</span> — {c.angle}
                       </li>
                     ))}
                   </ul>
@@ -228,11 +228,11 @@ export default function Autopilot({
             {/* Settings */}
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="flex flex-col gap-1">
-                <span className="text-[11px] font-medium uppercase tracking-wide text-white/40">Campaign name</span>
+                <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Campaign name</span>
                 <input value={name} onChange={(e) => setName(e.target.value)} className={fieldCls} />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-[11px] font-medium uppercase tracking-wide text-white/40">Posts per week</span>
+                <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Posts per week</span>
                 <input
                   type="number"
                   min={1}
@@ -245,7 +245,7 @@ export default function Autopilot({
             </div>
 
             <div>
-              <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-white/40">Content types (controls cost)</div>
+              <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">Content types (controls cost)</div>
               <div className="flex flex-wrap gap-1.5">
                 {MEDIA_TYPES.map((m) => {
                   const on = mediaTypes.has(m.id);
@@ -254,7 +254,7 @@ export default function Autopilot({
                       key={m.id}
                       onClick={() => toggle(mediaTypes, setMediaTypes, m.id)}
                       className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-                        on ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold" : "border-white/15 bg-white/[0.04] text-white/60 hover:text-white"
+                        on ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold" : "border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900"
                       }`}
                     >
                       {on ? "✓ " : ""}
@@ -263,13 +263,13 @@ export default function Autopilot({
                   );
                 })}
               </div>
-              <p className="mt-1 text-[11px] text-white/35">Image ≈ 1 credit · video ≈ 20. Limit types to cap spend.</p>
+              <p className="mt-1 text-[11px] text-slate-400">Image ≈ 1 credit · video ≈ 20. Limit types to cap spend.</p>
             </div>
 
             <div>
-              <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-white/40">Channels</div>
+              <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">Channels</div>
               {connectedChannels.length === 0 ? (
-                <p className="text-xs text-white/55">
+                <p className="text-xs text-slate-500">
                   No channels connected.{" "}
                   <Link href="/connections" className="text-boss-gold underline underline-offset-2">
                     Connect accounts →
@@ -283,7 +283,7 @@ export default function Autopilot({
                         <a
                           key={c.id}
                           href="/connections"
-                          className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs text-white/40 transition hover:text-white/70"
+                          className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-400 transition hover:text-slate-700"
                         >
                           + {c.label}
                         </a>
@@ -295,7 +295,7 @@ export default function Autopilot({
                         key={c.id}
                         onClick={() => toggle(selChannels, setSelChannels, c.id)}
                         className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-                          on ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold" : "border-white/15 bg-white/[0.04] text-white/60 hover:text-white"
+                          on ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold" : "border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900"
                         }`}
                       >
                         {on ? "✓ " : ""}
@@ -309,7 +309,7 @@ export default function Autopilot({
 
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="flex flex-col gap-1">
-                <span className="text-[11px] font-medium uppercase tracking-wide text-white/40">Credit budget (optional)</span>
+                <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Credit budget (optional)</span>
                 <input
                   type="number"
                   min={0}
@@ -320,21 +320,21 @@ export default function Autopilot({
                 />
               </label>
               <div className="flex flex-col gap-1">
-                <span className="text-[11px] font-medium uppercase tracking-wide text-white/40">Autonomy</span>
-                <div className="inline-flex rounded-lg border border-white/10 bg-black/30 p-1 text-sm">
+                <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Autonomy</span>
+                <div className="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-sm">
                   {(["review", "auto"] as const).map((m) => (
                     <button
                       key={m}
                       onClick={() => setMode(m)}
                       className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium capitalize transition ${
-                        mode === m ? "bg-boss-violet text-white shadow" : "text-white/60 hover:text-white"
+                        mode === m ? "bg-boss-violet text-white shadow" : "text-slate-600 hover:text-slate-900"
                       }`}
                     >
                       {m === "review" ? "Review first" : "Full auto"}
                     </button>
                   ))}
                 </div>
-                <span className="text-[11px] text-white/35">
+                <span className="text-[11px] text-slate-400">
                   {mode === "review" ? "AI drafts; you approve before it posts." : "AI posts on schedule automatically."}
                 </span>
               </div>
@@ -350,27 +350,27 @@ export default function Autopilot({
         )}
       </section>
 
-      {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-200">{error}</div>}
+      {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-600">{error}</div>}
 
       {/* Existing campaigns */}
       {campaigns.length > 0 && (
         <section className="flex flex-col gap-3">
-          <div className="rounded-xl border border-boss-violet/25 bg-boss-violet/10 p-3 text-xs text-white/70">
+          <div className="rounded-xl border border-boss-violet/25 bg-boss-violet/10 p-3 text-xs text-slate-700">
             Your strategy is saved. Automatic planning &amp; posting are rolling out next — for now you can create and
             manage campaigns here.
           </div>
           {campaigns.map((c) => (
-            <div key={c.id} className="rounded-2xl border border-white/10 bg-ink-2/70 p-4">
+            <div key={c.id} className="rounded-2xl border border-slate-200 bg-white p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Link href={`/autopilot/${c.id}`} className="font-semibold text-white hover:text-boss-gold">
+                    <Link href={`/autopilot/${c.id}`} className="font-semibold text-slate-900 hover:text-boss-gold">
                       {c.name || "Campaign"}
                     </Link>
                     <Badge tone={c.status === "active" ? "green" : "muted"}>{c.status}</Badge>
                     <Badge tone="violet">{c.mode === "auto" ? "Full auto" : "Review"}</Badge>
                   </div>
-                  <a href={c.link} target="_blank" rel="noreferrer" className="mt-0.5 block truncate text-xs text-white/45 hover:text-white/70">
+                  <a href={c.link} target="_blank" rel="noreferrer" className="mt-0.5 block truncate text-xs text-slate-500 hover:text-slate-700">
                     {c.link}
                   </a>
                 </div>
@@ -378,28 +378,28 @@ export default function Autopilot({
                   <button
                     onClick={() => setStatus(c.id, c.status === "active" ? "paused" : "active")}
                     disabled={busyId === c.id}
-                    className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/60 transition hover:text-white disabled:opacity-40"
+                    className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
                   >
                     {c.status === "active" ? "Pause" : "Resume"}
                   </button>
                   <button
                     onClick={() => remove(c.id)}
                     disabled={busyId === c.id}
-                    className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-red-300/80 transition hover:text-red-300 disabled:opacity-40"
+                    className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-red-600 transition hover:text-red-700 disabled:opacity-40"
                   >
                     Delete
                   </button>
                 </div>
               </div>
-              <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-white/50">
+              <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
                 <span>{c.frequency}×/week</span>
-                <span className="text-white/20">·</span>
+                <span className="text-slate-400">·</span>
                 <span>{c.media_types.join(", ")}</span>
-                <span className="text-white/20">·</span>
+                <span className="text-slate-400">·</span>
                 <span>{c.channels.map((ch) => LABEL[ch] ?? ch).join(", ")}</span>
                 {c.budget_credits != null && (
                   <>
-                    <span className="text-white/20">·</span>
+                    <span className="text-slate-400">·</span>
                     <span>
                       {c.spent_credits}/{c.budget_credits} credits
                     </span>
@@ -427,8 +427,8 @@ const LABEL: Record<string, string> = {
 function Info({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-[11px] font-medium uppercase tracking-wide text-white/40">{label}</dt>
-      <dd className="text-white/70">{value}</dd>
+      <dt className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{label}</dt>
+      <dd className="text-slate-700">{value}</dd>
     </div>
   );
 }
@@ -436,13 +436,13 @@ function Info({ label, value }: { label: string; value: string }) {
 function ChipRow({ label, items, gold = false }: { label: string; items: string[]; gold?: boolean }) {
   return (
     <div className="mt-3">
-      <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-white/40">{label}</div>
+      <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-slate-400">{label}</div>
       <div className="flex flex-wrap gap-1.5">
         {items.map((it, i) => (
           <span
             key={i}
             className={`rounded-full border px-2.5 py-1 text-[11px] ${
-              gold ? "border-boss-gold/30 bg-boss-gold/10 text-boss-gold" : "border-white/10 bg-white/[0.04] text-white/60"
+              gold ? "border-boss-gold/30 bg-boss-gold/10 text-boss-gold" : "border-slate-200 bg-slate-50 text-slate-600"
             }`}
           >
             {it}
@@ -456,10 +456,10 @@ function ChipRow({ label, items, gold = false }: { label: string; items: string[
 function Badge({ children, tone }: { children: React.ReactNode; tone: "green" | "violet" | "muted" }) {
   const cls =
     tone === "green"
-      ? "bg-emerald-500/15 text-emerald-300"
+      ? "bg-emerald-500/15 text-emerald-600"
       : tone === "violet"
         ? "bg-boss-violet/20 text-boss-violet"
-        : "bg-white/10 text-white/50";
+        : "bg-slate-100 text-slate-500";
   return <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${cls}`}>{children}</span>;
 }
 

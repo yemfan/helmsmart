@@ -81,7 +81,7 @@ export default async function Home({
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-8 px-5 py-8 sm:py-12">
       <Nav email={user.email ?? ""} credits={credits} />
       {creditsAdded !== null && (
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-sm text-emerald-200">
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-sm text-emerald-600">
           Payment received —{" "}
           {creditsAdded > 0 ? `${creditsAdded} credits added` : "your credits have been added"}. Happy
           creating! 🎬
@@ -93,8 +93,8 @@ export default async function Home({
             key={i}
             className={`rounded-xl border p-3.5 text-sm ${
               n.kind === "ok"
-                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
-                : "border-white/15 bg-white/5 text-white/60"
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
+                : "border-slate-200 bg-slate-50 text-slate-600"
             }`}
           >
             {n.text}
@@ -107,7 +107,7 @@ export default async function Home({
         youtubeChannel={youtube.accountName}
         social={{ providersConfigured, connected, accountName }}
       />
-      <footer className="mt-auto pt-6 text-center text-[11px] text-white/25">
+      <footer className="mt-auto pt-6 text-center text-[11px] text-slate-400">
         Powered by fal.ai · image 1 credit · edit 2 · video 20 · every render is saved to your gallery
       </footer>
     </main>
