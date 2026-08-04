@@ -192,6 +192,15 @@ export const HOME_FEATURE_SECTIONS: readonly HomeFeatureSectionConfig[] = [
         iconName: "link-outline",
         href: "/connect-platforms",
       },
+      {
+        key: "digital_twin",
+        labelKey: "v2.tiles.digital_twin",
+        iconName: "person-circle-outline",
+        // Cast: expo-router's typed-route union is generated at build time; this
+        // newly-added route isn't in the checked-in `.expo/types` yet.
+        href: "/digital-twin" as Href,
+        badge: { label: "NEW", variant: "new" },
+      },
     ],
   },
 ];

@@ -72,7 +72,8 @@
       "briefings": "Briefings",
       "settings": "Settings",
       "notifications": "Notifications",
-      "connect_platforms": "Connect Platforms"
+      "connect_platforms": "Connect Platforms",
+      "digital_twin": "Digital Twin"
     },
     "tab_subtitle": {
       "work": "Leads, tasks, calendar, showings, and posting.",

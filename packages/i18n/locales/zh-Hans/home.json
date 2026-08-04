@@ -72,7 +72,8 @@
       "briefings": "每日简报",
       "settings": "设置",
       "notifications": "通知设置",
-      "connect_platforms": "连接平台"
+      "connect_platforms": "连接平台",
+      "digital_twin": "数字分身"
     },
     "tab_subtitle": {
       "work": "客户、任务、日历、看房与发帖。",
