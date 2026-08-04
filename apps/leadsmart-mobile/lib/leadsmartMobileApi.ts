@@ -36,6 +36,7 @@ import type {
 } from "@leadsmart/shared";
 import { getLeadsmartAccessToken, getLeadsmartApiBaseUrl } from "./env";
 import { MOBILE_API_PATHS } from "./mobileEndpoints";
+import { createMobileSupabaseClient } from "./supabaseMobile";
 
 type MobileJsonError = {
   ok?: boolean;
@@ -2745,4 +2746,134 @@ export async function saveMobileWeeklySchedule(
   });
   if (res.ok === false) return res;
   return { ok: true, data: normalizeWeeklyResponse(res.data) };
+}
+
+
+// ── Digital twin (intro video → brand profile) ───────────────────────────────
+
+export type MobileBrandProfile = {
+  bio: string;
+  specialties: string[];
+  market: string;
+  tone: string;
+  tagline: string;
+};
+
+export type MobileDigitalTwinState = {
+  configured: boolean;
+  status: string;
+  consent: boolean;
+  hasVideo: boolean;
+  profile: MobileBrandProfile | null;
+  error: string | null;
+};
+
+type MobileDigitalTwinJson = MobileJsonError & Partial<MobileDigitalTwinState>;
+
+/** Current digital-twin status + brand profile. */
+export async function fetchMobileDigitalTwin(): Promise<
+  { ok: true; data: MobileDigitalTwinState } | MobileApiFailure
+> {
+  const res = await mobileGet<MobileDigitalTwinJson>(MOBILE_API_PATHS.digitalTwin);
+  if (res.ok === false) return res;
+  const d = res.data;
+  return {
+    ok: true,
+    data: {
+      configured: d.configured ?? false,
+      status: d.status ?? "idle",
+      consent: d.consent ?? false,
+      hasVideo: d.hasVideo ?? false,
+      profile: d.profile ?? null,
+      error: d.error ?? null,
+    },
+  };
+}
+
+type MobileSignUploadJson = MobileJsonError & { bucket?: string; path?: string; token?: string };
+
+/**
+ * Minimal shape of the supabase-js storage signed-upload API. Cast to this
+ * rather than lean on the full `SupabaseClient` types — `.storage` doesn't
+ * resolve cleanly through the mobile app's cross-package type setup, and this is
+ * the only place the mobile client touches Storage.
+ */
+type SignedUploader = {
+  storage: {
+    from: (bucket: string) => {
+      uploadToSignedUrl: (
+        path: string,
+        token: string,
+        body: ArrayBuffer,
+        opts?: { contentType?: string },
+      ) => Promise<{ error: { message?: string } | null }>;
+    };
+  };
+};
+
+/**
+ * Upload a local file (expo-image-picker uri) straight to Supabase Storage via a
+ * signed URL minted by /api/mobile/uploads/sign — bypasses Vercel's ~4.5MB body
+ * cap. Returns the storage path the digital-twin build reads back.
+ */
+export async function uploadMobileIntroVideo(input: {
+  uri: string;
+  fileName?: string;
+  contentType?: string;
+}): Promise<{ ok: true; path: string } | MobileApiFailure> {
+  const token = getLeadsmartAccessToken();
+  if (!token) return { ok: false, status: 401, message: "You are not signed in." };
+
+  // 1) Mint a signed upload URL (agent-scoped private prefix).
+  const sign = await mobilePost<MobileSignUploadJson>(MOBILE_API_PATHS.uploadsSign, {
+    kind: "agent_intro_video",
+    fileName: input.fileName ?? "intro.mp4",
+  });
+  if (sign.ok === false) return sign;
+  const { bucket, path, token: uploadToken } = sign.data;
+  if (!bucket || !path || !uploadToken) {
+    return { ok: false, status: 500, message: "Upload URL was incomplete." };
+  }
+
+  // 2) Read the local file into bytes and PUT it to the signed URL.
+  try {
+    const client = createMobileSupabaseClient(token);
+    if (!client) return { ok: false, status: 0, message: "Upload is unavailable in this environment." };
+    const supa = client as unknown as SignedUploader;
+    const fileRes = await fetch(input.uri);
+    const bytes = await fileRes.arrayBuffer();
+    const up = await supa.storage.from(bucket).uploadToSignedUrl(path, uploadToken, bytes, {
+      contentType: input.contentType || "video/mp4",
+    });
+    if (up.error) return { ok: false, status: 0, message: up.error.message || "Upload failed." };
+    return { ok: true, path };
+  } catch (e) {
+    return { ok: false, status: 0, message: e instanceof Error ? e.message : "Upload failed." };
+  }
+}
+
+/** Build the brand profile from an uploaded intro video (requires consent). */
+export async function buildMobileDigitalTwin(input: {
+  videoPath: string;
+  consent: boolean;
+}): Promise<{ ok: true; data: MobileDigitalTwinJson } | MobileApiFailure> {
+  const res = await mobilePost<MobileDigitalTwinJson>(MOBILE_API_PATHS.digitalTwin, {
+    videoPath: input.videoPath,
+    consent: input.consent,
+  });
+  if (res.ok === false) return res;
+  return { ok: true, data: res.data };
+}
+
+/** Save an edited brand profile and/or update consent. */
+export async function updateMobileDigitalTwin(input: {
+  profile?: MobileBrandProfile;
+  consent?: boolean;
+}): Promise<{ ok: true } | MobileApiFailure> {
+  const res = await mobilePatch<MobileJsonError>(
+    MOBILE_API_PATHS.digitalTwin,
+    input as unknown as Record<string, unknown>,
+  );
+  if (res.ok === false) return res;
+  return { ok: true };
 }
