@@ -5,6 +5,7 @@ import {
   IMAGE_PLATFORMS,
   TEXT_PLATFORMS,
   TOPIC_PRESETS,
+  VIDEO_PLATFORMS,
   getWeeklySchedule,
   platformsForMedia,
   saveWeeklySchedule,
@@ -13,6 +14,7 @@ import {
   type WeeklyPlatform,
   type WeeklyScheduleDay,
 } from "@/lib/social/weeklySchedule";
+import { getAvatarState } from "@/lib/agent/avatarStudio";
 
 export const runtime = "nodejs";
 
@@ -21,13 +23,18 @@ export async function GET() {
   try {
     const auth = await getDashboardAgentContext();
     if (auth.ok === false) return auth.response;
-    const days = await getWeeklySchedule(auth.agentId);
+    const [days, avatar] = await Promise.all([
+      getWeeklySchedule(auth.agentId),
+      getAvatarState(auth.agentId).catch(() => null),
+    ]);
+    const videoReady = Boolean(avatar?.configured && avatar?.hasIntroVideo && avatar?.voiceReady);
     return NextResponse.json({
       ok: true,
       configured: weeklyScheduleConfigured(),
       days,
       topicPresets: TOPIC_PRESETS,
-      platformsByMedia: { text: TEXT_PLATFORMS, image: IMAGE_PLATFORMS },
+      platformsByMedia: { text: TEXT_PLATFORMS, image: IMAGE_PLATFORMS, video: VIDEO_PLATFORMS },
+      videoReady,
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Server error";
@@ -36,7 +43,7 @@ export async function GET() {
 }
 
 function normalizeMediaType(v: unknown): MediaType {
-  return v === "image" ? "image" : "text";
+  return v === "image" || v === "video" ? v : "text";
 }
 
 /** PUT — save the full week. Pro or higher (mirrors the other autopilot writes). */

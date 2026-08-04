@@ -7,18 +7,21 @@ import { renderCardPng, type BrandKit } from "@/lib/social/renderCard";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import { agentHasSocialCustomization } from "@/lib/social/customization";
 import { getAgentAiSettings } from "@/lib/agent-ai/settings";
+import { draftAvatarScript, getAvatarState, renderAvatarVideo } from "@/lib/agent/avatarStudio";
+import { scheduleReel, type ReelPlatform } from "@/lib/social/scheduleReel";
 
 /**
  * Weekly social schedule. The agent checks weekdays; each checked day carries a
- * time-of-day, a content type (text or image), channels (empty = all connected),
- * and a topic. A cron (app/api/cron/weekly-social) fires due days, has Claude
- * RESEARCH the topic (web_search) and write a post, then enqueues it into
- * scheduled_posts — the existing publish cron delivers it.
+ * time-of-day, a content type (text / image / video), channels (empty = all
+ * connected), and a topic. A cron (app/api/cron/weekly-social) fires due days,
+ * has Claude RESEARCH the topic (web_search) and write a post, then enqueues it.
  *
  * Text  posts → Facebook / LinkedIn / Threads.
  * Image posts → a branded card rendered from the topic, which additionally
  * unlocks Instagram + Pinterest (both require an image).
- * ('video' is reserved — a topic->video engine is a later step.)
+ * Video posts → a talking-avatar clip of the agent (digital twin) delivering the
+ * topic, fanned out to Facebook / Instagram / LinkedIn / TikTok / YouTube via the
+ * reel pipeline. Requires the agent's digital twin (intro video + cloned voice).
  */
 
 // ── Types + presets ──────────────────────────────────────────────────────────
@@ -29,19 +32,19 @@ export type MediaType = "text" | "image" | "video";
 export const TEXT_PLATFORMS = ["facebook", "linkedin", "threads"] as const;
 /** Publish targets an IMAGE topic-post can go to (adds the image-required ones). */
 export const IMAGE_PLATFORMS = ["facebook", "instagram", "linkedin", "threads", "pinterest"] as const;
+/** Publish targets a VIDEO topic-post can go to (the reel pipeline's platforms). */
+export const VIDEO_PLATFORMS = ["facebook", "instagram", "linkedin", "tiktok", "youtube"] as const;
 
 /** Kept for import compatibility. */
 export const WEEKLY_TEXT_PLATFORMS = TEXT_PLATFORMS;
-export type WeeklyPlatform = (typeof IMAGE_PLATFORMS)[number];
+export type WeeklyPlatform = (typeof IMAGE_PLATFORMS)[number] | (typeof VIDEO_PLATFORMS)[number];
 
 export function platformsForMedia(mediaType: MediaType): readonly WeeklyPlatform[] {
-  // 'video' has no generic engine yet — treat as text targets (won't post media).
-  return mediaType === "image" ? IMAGE_PLATFORMS : TEXT_PLATFORMS;
+  return mediaType === "video" ? VIDEO_PLATFORMS : mediaType === "image" ? IMAGE_PLATFORMS : TEXT_PLATFORMS;
 }
 
 function normalizeMediaType(v: unknown): MediaType {
-  // 'video' is accepted by the column but not yet generatable — fold to text.
-  return v === "image" ? "image" : "text";
+  return v === "image" || v === "video" ? v : "text";
 }
 
 export const WEEKDAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] as const;
@@ -336,12 +339,73 @@ function targetsForAccount(acct: ConnectedSocialAccount, mediaType: MediaType): 
   }
 }
 
+const REEL_PLATFORMS = new Set<string>(["facebook", "instagram", "linkedin", "tiktok", "youtube"]);
+
+/**
+ * Video slot: render a talking-avatar clip (the agent's digital twin delivering
+ * the topic) and enqueue it to the connected video platforms via the reel
+ * pipeline. Requires the twin to be set up (intro video + cloned voice) — returns
+ * 0 (a logged skip) when it isn't. Returns how many posts were queued.
+ */
+async function enqueueTopicVideo(
+  agentId: string,
+  topic: string,
+  post: { caption: string; hashtags: string[] },
+  wantedPlatforms: string[] | null,
+): Promise<number> {
+  const state = await getAvatarState(agentId);
+  if (!state.configured || !state.hasIntroVideo || !state.voiceReady) {
+    console.warn(`[weekly-social] video slot skipped for agent ${agentId} — digital twin not ready`);
+    return 0;
+  }
+  try {
+    // Ground the spoken script in the researched post so it reflects current facts.
+    const script = await draftAvatarScript(agentId, `${topic}\n\nKey points to cover: ${post.caption}`);
+    if (!script.trim()) return 0;
+    const { videoUrl } = await renderAvatarVideo(agentId, script, null);
+
+    const tagLine = post.hashtags.length ? post.hashtags.map((h) => `#${h}`).join(" ") : "";
+    const caption = [post.caption, tagLine].filter(Boolean).join("\n\n");
+    const { data: reelRow, error } = await supabaseAdmin
+      .from("social_reels")
+      .insert({
+        agent_id: Number(agentId),
+        slides: [],
+        caption,
+        hashtags: post.hashtags,
+        mp4_url: videoUrl,
+        status: "rendered",
+      } as never)
+      .select("id")
+      .single();
+    if (error || !reelRow) {
+      console.warn(`[weekly-social] reel insert failed for agent ${agentId}:`, error?.message);
+      return 0;
+    }
+
+    const allow =
+      wantedPlatforms && wantedPlatforms.length
+        ? (wantedPlatforms.filter((p): p is ReelPlatform => REEL_PLATFORMS.has(p)) as ReelPlatform[])
+        : undefined;
+    const res = await scheduleReel({
+      agentId,
+      reelId: (reelRow as { id: string }).id,
+      platforms: allow,
+      queueStatus: "scheduled",
+    });
+    if (res.error) console.warn(`[weekly-social] reel schedule for agent ${agentId}: ${res.error}`);
+    return res.scheduled;
+  } catch (e) {
+    console.warn(`[weekly-social] video slot failed for agent ${agentId}:`, e instanceof Error ? e.message : e);
+    return 0;
+  }
+}
+
 /**
  * Fire every due weekly slot: for each enabled row whose local weekday matches,
  * whose time has passed, and which hasn't fired yet today, research the topic +
- * write a post (rendering a branded card for image days) and enqueue one
- * scheduled_posts row per matching connected account/platform. Idempotent per day
- * via last_fired_on. Returns a summary for the cron.
+ * write a post (a branded card for image days, a talking-avatar clip for video
+ * days) and enqueue it. Idempotent per day via last_fired_on. Returns a summary.
  */
 export async function runDueWeeklySlots(): Promise<{ fired: number; enqueued: number }> {
   const { data } = await supabaseAdmin
@@ -380,6 +444,12 @@ export async function runDueWeeklySlots(): Promise<{ fired: number; enqueued: nu
       const post = await generatePostFromTopic(r.topic);
       if (!post) continue;
       fired += 1;
+
+      // Video days render a talking-avatar clip and fan out via the reel pipeline.
+      if (mediaType === "video") {
+        enqueued += await enqueueTopicVideo(String(r.agent_id), r.topic, post, r.platforms);
+        continue;
+      }
 
       // Render the branded card for image days (fall back to text on failure).
       let imageUrl: string | null = null;
