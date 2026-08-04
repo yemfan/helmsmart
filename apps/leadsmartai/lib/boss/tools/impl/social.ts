@@ -3,6 +3,12 @@ import "server-only";
 import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { publishPost } from "@/lib/leads-gen/publish";
+import {
+  draftAvatarScript,
+  getAvatarState,
+  publishAvatarVideo,
+  renderAvatarVideo,
+} from "@/lib/agent/avatarStudio";
 import { defineTool } from "../types";
 
 async function findSocialAccount(
@@ -117,4 +123,70 @@ export const scheduleSocialPost = defineTool({
       publish_at: input.publish_at,
     },
   }),
+});
+
+const avatarInput = z.object({
+  topic: z.string().min(3).max(300).describe("What the talking-head video should be about"),
+});
+
+/** Twin-readiness gate → a human-readable blocker, or null when good to go. */
+async function avatarBlocker(agentId: string): Promise<string | null> {
+  const state = await getAvatarState(agentId);
+  if (!state.configured) return "Avatar video isn't set up on the server (needs FAL_KEY + ELEVENLABS_API_KEY).";
+  if (!state.hasIntroVideo || !state.voiceReady) {
+    return "Set up your Digital Twin first — record your intro video and clone your voice in My Profile → Digital Twin.";
+  }
+  return null;
+}
+
+export const createAvatarVideo = defineTool({
+  name: "create_avatar_video",
+  description:
+    "Film a short talking-head VIDEO of the agent (their digital-twin avatar) about a topic and post it to their connected social accounts (Facebook/Instagram/LinkedIn). Use ONLY for a VIDEO of themselves / an avatar or talking-head clip — a plain text or image post uses publish_social_post. Requires the agent's Digital Twin (intro video + cloned voice). Rendering spends credits.",
+  inputSchema: avatarInput,
+  riskClass: "outbound",
+  assignee: "marketing_assistant",
+  outbound: { channel: () => "social" as const },
+  execute: async (ctx, input) => {
+    const blocked = await avatarBlocker(ctx.agentId);
+    if (blocked) return { status: "failed", error: blocked };
+
+    const script = await draftAvatarScript(ctx.agentId, input.topic);
+    if (!script.trim()) return { status: "failed", error: "Couldn't draft the video script." };
+
+    let videoUrl: string | null = null;
+    try {
+      videoUrl = (await renderAvatarVideo(ctx.agentId, script, null)).videoUrl;
+    } catch (e) {
+      return { status: "failed", error: `Couldn't render the avatar video: ${e instanceof Error ? e.message : "render failed"}` };
+    }
+
+    const pub = await publishAvatarVideo(ctx.agentId).catch((e) => ({
+      scheduled: 0,
+      error: e instanceof Error ? e.message : "publish failed",
+    }));
+    if (pub.scheduled === 0) {
+      return {
+        status: "completed",
+        summary: pub.error ?? "Avatar video made, but no connected social accounts to post to.",
+        artifactUrl: videoUrl,
+      };
+    }
+    return {
+      status: "completed",
+      summary: `Avatar video posted to ${pub.scheduled} account${pub.scheduled === 1 ? "" : "s"} — "${input.topic}"`,
+      artifactUrl: videoUrl,
+      data: { accounts: pub.scheduled },
+    };
+  },
+  propose: async (ctx, input) => {
+    const blocked = await avatarBlocker(ctx.agentId);
+    if (blocked) return { status: "failed", error: blocked };
+    const script = await draftAvatarScript(ctx.agentId, input.topic).catch(() => "");
+    return {
+      status: "pending_approval",
+      summary: `Avatar video about "${input.topic}" — script drafted; approve to render + post (rendering spends credits).`,
+      proposal: { topic: input.topic, script: script.slice(0, 1200) },
+    };
+  },
 });

@@ -6,7 +6,7 @@ import { houseSearch } from "./impl/houseSearch";
 import { draftMessage, sendMessage } from "./impl/messaging";
 import { scheduleVoiceCall } from "./impl/voice";
 import { createCrmTask, createCalendarEvent, queryCrm } from "./impl/crm";
-import { publishSocialPost, scheduleSocialPost } from "./impl/social";
+import { publishSocialPost, scheduleSocialPost, createAvatarVideo } from "./impl/social";
 import { getMarketSnapshot } from "./impl/market";
 
 /**
@@ -33,6 +33,7 @@ const ALL_TOOLS = [
   createCalendarEvent,
   publishSocialPost,
   scheduleSocialPost,
+  createAvatarVideo,
   queryCrm,
   getMarketSnapshot,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

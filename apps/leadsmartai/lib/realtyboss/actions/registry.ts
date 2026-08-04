@@ -19,6 +19,12 @@ import { startPlaybookRun } from "@/lib/realtyboss/playbook-runs/service";
 import { autoDispatchRunTasks } from "@/lib/realtyboss/playbook-runs/dispatch";
 import { routeSkillRequest, runSkillAndSave } from "@/lib/realtyboss/skills/run";
 import { getSkill, ASSIGNEE_LABEL } from "@/lib/realtyboss/skills/catalog";
+import {
+  draftAvatarScript,
+  getAvatarState,
+  publishAvatarVideo,
+  renderAvatarVideo,
+} from "@/lib/agent/avatarStudio";
 
 /**
  * Boss Assistant ACTION REGISTRY.
@@ -45,6 +51,7 @@ export type BossActionType =
   | "open_house"
   | "coordinate_closing"
   | "post_social"
+  | "create_avatar_video"
   | "buyer_home_search"
   | "start_selling_playbook"
   | "start_buying_playbook"
@@ -548,6 +555,91 @@ export const BOSS_ACTIONS: Record<BossActionType, BossActionDef> = {
         artifactType: "social",
         artifactUrl: null,
         note: `Facebook post scheduled — "${params.topic}"`,
+      };
+    },
+  },
+
+  create_avatar_video: {
+    type: "create_avatar_video",
+    assignee: "marketing_assistant",
+    label: "Avatar video",
+    channel: "social",
+    planHint:
+      'create_avatar_video — film a short talking-head VIDEO of the agent (their digital twin / avatar) about a topic and post it to social (Facebook, Instagram, LinkedIn). Choose ONLY when asked for a VIDEO of themselves / an avatar video / a talking-head clip. A plain text or image post is post_social, not this. Requires the agent to have set up their Digital Twin (intro video + cloned voice). params: { topic } (what the video is about).',
+    requiredParams: [
+      { key: "topic", label: "what the video is about", question: "What should the avatar video be about?" },
+    ],
+    run: async ({ agentId, params, autoExecute }) => {
+      // Gate 1: the feature must be configured on the server.
+      const state = await getAvatarState(agentId);
+      if (!state.configured) {
+        return { status: "assigned", note: "Avatar video isn't set up on the server yet (needs FAL_KEY + ELEVENLABS_API_KEY)." };
+      }
+      // Gate 2: the agent's own twin must be ready (intro video + consented voice clone).
+      if (!state.hasIntroVideo || !state.voiceReady) {
+        await createPlaybookTask(agentId, {
+          title: "Set up your Digital Twin to make avatar videos",
+          description:
+            "To create talking-head videos, first record your intro video and clone your voice in My Profile → Digital Twin.",
+          priority: "medium",
+        });
+        return {
+          status: "completed",
+          artifactType: "social_draft",
+          artifactUrl: null,
+          note: "Set up your Digital Twin (intro video + voice clone) first — I left you a task.",
+        };
+      }
+
+      // Draft the spoken script from the topic (grounded in the brand profile).
+      const script = await draftAvatarScript(agentId, params.topic);
+      if (!script.trim()) return { status: "assigned", note: "Couldn't draft the video script." };
+
+      // Approval gate: the render costs money, so only render + publish when
+      // communication approval is OFF (auto-send). Otherwise hand the script over.
+      if (!autoExecute) {
+        await createPlaybookTask(agentId, {
+          title: `Approve avatar video: ${params.topic}`,
+          description:
+            "Communication approval is on. Review this script, then render + post it from My Profile → Digital Twin → Avatar:\n\n" +
+            script,
+          priority: "medium",
+        });
+        return {
+          status: "completed",
+          artifactType: "social_draft",
+          artifactUrl: null,
+          note: "Avatar video script drafted for your review",
+        };
+      }
+
+      // Render the talking-head clip (paid), then publish to the connected
+      // video-capable accounts (Facebook / Instagram / LinkedIn / …).
+      let videoUrl: string | null = null;
+      try {
+        const rendered = await renderAvatarVideo(agentId, script, null);
+        videoUrl = rendered.videoUrl;
+      } catch (e) {
+        return { status: "assigned", note: `Couldn't render the avatar video: ${e instanceof Error ? e.message : "render failed"}` };
+      }
+
+      const pub = await publishAvatarVideo(agentId).catch((e) => ({
+        scheduled: 0,
+        error: e instanceof Error ? e.message : "publish failed",
+      }));
+      if (pub.scheduled === 0) {
+        return {
+          status: "completed",
+          artifactType: "social_draft",
+          artifactUrl: videoUrl,
+          note: pub.error ?? "Avatar video made, but no connected social accounts to post to.",
+        };
+      }
+      return {
+        status: "completed",
+        artifactType: "social",
+        artifactUrl: videoUrl,
+        note: `Avatar video posted to ${pub.scheduled} ${pub.scheduled === 1 ? "account" : "accounts"} — "${params.topic}"`,
       };
     },
   },
