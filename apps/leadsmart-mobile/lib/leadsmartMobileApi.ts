@@ -2638,3 +2638,69 @@ export async function fetchMobileNextPostSuggestions(opts?: {
   if (res.ok === false) return res;
   return { ok: true, suggestions: res.data.suggestions ?? [] };
 }
+
+
+// ── Weekly post schedule (pick weekdays → AI researches + auto-posts) ─────────
+
+export type MobileWeeklyMediaType = "text" | "image" | "video";
+
+export type MobileWeeklyDay = {
+  weekday: number; // 0=Sun..6=Sat
+  enabled: boolean;
+  postHour: number;
+  postMinute: number;
+  timezone: string;
+  mediaType: MobileWeeklyMediaType;
+  platforms: string[] | null; // null = all connected of this content type
+  topic: string;
+};
+
+export type MobileWeeklyScheduleData = {
+  days: MobileWeeklyDay[];
+  topicPresets: string[];
+  platformsByMedia: { text: string[]; image: string[]; video: string[] };
+  configured: boolean;
+  videoReady: boolean;
+};
+
+type MobileWeeklyScheduleJson = MobileJsonError & {
+  days?: MobileWeeklyDay[];
+  topicPresets?: string[];
+  platformsByMedia?: { text?: string[]; image?: string[]; video?: string[] };
+  configured?: boolean;
+  videoReady?: boolean;
+};
+
+function normalizeWeeklyResponse(data: MobileWeeklyScheduleJson): MobileWeeklyScheduleData {
+  return {
+    days: (data.days ?? []).map((d) => ({ ...d, mediaType: d.mediaType ?? "text" })),
+    topicPresets: data.topicPresets ?? [],
+    platformsByMedia: {
+      text: data.platformsByMedia?.text ?? [],
+      image: data.platformsByMedia?.image ?? [],
+      video: data.platformsByMedia?.video ?? [],
+    },
+    configured: data.configured ?? true,
+    videoReady: data.videoReady ?? false,
+  };
+}
+
+/** Load the agent's 7-day weekly schedule + presets + per-media channels. */
+export async function fetchMobileWeeklySchedule(): Promise<
+  { ok: true; data: MobileWeeklyScheduleData } | MobileApiFailure
+> {
+  const res = await mobileGet<MobileWeeklyScheduleJson>(MOBILE_API_PATHS.socialWeeklySchedule);
+  if (res.ok === false) return res;
+  return { ok: true, data: normalizeWeeklyResponse(res.data) };
+}
+
+/** Save the full week. Pro-gated on the server (402 when free). */
+export async function saveMobileWeeklySchedule(
+  days: MobileWeeklyDay[],
+): Promise<{ ok: true; data: MobileWeeklyScheduleData } | MobileApiFailure> {
+  const res = await mobilePut<MobileWeeklyScheduleJson>(MOBILE_API_PATHS.socialWeeklySchedule, {
+    days: days as unknown as Record<string, unknown>[],
+  });
+  if (res.ok === false) return res;
+  return { ok: true, data: normalizeWeeklyResponse(res.data) };
+}

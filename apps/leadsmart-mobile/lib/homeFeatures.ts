@@ -122,6 +122,15 @@ export const HOME_FEATURE_SECTIONS: readonly HomeFeatureSectionConfig[] = [
         href: "/recurring",
       },
       {
+        key: "weekly_schedule",
+        labelKey: "v2.tiles.weekly_schedule",
+        iconName: "calendar-outline",
+        // Cast: expo-router's typed-route union is generated from the app dir at
+        // build time; this newly-added route isn't in the checked-in `.expo/types` yet.
+        href: "/weekly-schedule" as Href,
+        badge: { label: "NEW", variant: "new" },
+      },
+      {
         key: "post_history",
         labelKey: "v2.tiles.post_history",
         iconName: "archive-outline",
