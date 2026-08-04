@@ -85,4 +85,5 @@ export const MOBILE_API_PATHS = {
   leadsGenInsightsTopPosts: "/api/mobile/leads-gen/insights/top-posts",
   leadsGenSuggestionsNextPost:
     "/api/mobile/leads-gen/suggestions/next-post",
+  socialWeeklySchedule: "/api/mobile/social/weekly-schedule",
 } as const;
