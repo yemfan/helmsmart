@@ -51,7 +51,7 @@ export default function LoginPage() {
           M
         </div>
         <h1 className="text-2xl font-bold tracking-tight">
-          Marketing<span className="text-boss-gold">Boss</span> AI
+          Marketing<span className="text-boss-gold">Boss</span>
         </h1>
         <p className="mt-1 text-sm text-white/50">Cinematic marketing creative on demand</p>
       </div>

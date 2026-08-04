@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 
 export const metadata: Metadata = {
-  title: "MarketingBoss AI — cinematic marketing creative on demand",
+  title: "MarketingBoss — cinematic marketing creative on demand",
   description:
     "Generate scroll-stopping marketing images and video from a prompt. Pay-as-you-go, no subscription.",
 };

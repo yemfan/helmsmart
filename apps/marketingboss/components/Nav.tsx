@@ -47,11 +47,11 @@ export default function Nav({ email, credits }: { email: string; credits?: numbe
     <header className="flex items-center gap-3">
       <Link href="/" className="flex items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="MarketingBoss AI" className="size-10 rounded-xl ring-1 ring-white/10" />
+        <img src="/logo.png" alt="MarketingBoss" className="size-10 rounded-xl ring-1 ring-white/10" />
 
         <div>
           <h1 className="text-lg font-bold leading-tight tracking-tight">
-            Marketing<span className="text-boss-gold">Boss</span> AI
+            Marketing<span className="text-boss-gold">Boss</span>
           </h1>
           <p className="text-[11px] text-white/45">Cinematic marketing creative on demand</p>
         </div>

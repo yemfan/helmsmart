@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Privacy Policy — MarketingBoss AI",
-  description: "How MarketingBoss AI collects, uses, and protects your information.",
+  title: "Privacy Policy — MarketingBoss",
+  description: "How MarketingBoss collects, uses, and protects your information.",
 };
 
 const UPDATED = "August 1, 2026";
@@ -13,7 +13,7 @@ export default function PrivacyPage() {
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-5 py-10 sm:py-14">
       <header className="flex flex-col gap-1">
         <Link href="/" className="text-xs text-white/45 transition hover:text-white">
-          ← MarketingBoss AI
+          ← MarketingBoss
         </Link>
         <h1 className="text-3xl font-bold tracking-tight">Privacy Policy</h1>
         <p className="text-sm text-white/45">Last updated: {UPDATED}</p>
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
 
       <div className="flex flex-col gap-6 text-[15px] leading-relaxed text-white/75">
         <Section title="Overview">
-          MarketingBoss AI (“MarketingBoss,” “we,” “us”) provides tools to create multimedia content and publish it to
+          MarketingBoss (“MarketingBoss,” “we,” “us”) provides tools to create multimedia content and publish it to
           social media. This policy explains what we collect, how we use it, and the choices you have.
         </Section>
 
