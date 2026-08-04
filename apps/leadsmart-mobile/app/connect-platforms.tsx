@@ -16,9 +16,13 @@ import {
 import {
   disconnectMobileLinkedIn,
   disconnectMobileMeta,
+  disconnectMobileTikTok,
+  disconnectMobileYouTube,
   fetchMobileConnections,
   initMobileLinkedInConnect,
   initMobileMetaConnect,
+  initMobileTikTokConnect,
+  initMobileYouTubeConnect,
   type MobileConnection,
 } from "../lib/leadsmartMobileApi";
 import {
@@ -47,7 +51,7 @@ import type { ThemeTokens } from "../lib/theme";
 
 const RETURN_TO_DEEP_LINK = "leadsmart://leads-gen/connect/callback";
 
-type Network = "meta" | "linkedin";
+type Network = "meta" | "linkedin" | "tiktok" | "youtube";
 
 export default function ConnectPlatformsScreen() {
   const tokens = useThemeTokens();
@@ -94,7 +98,11 @@ export default function ConnectPlatformsScreen() {
         const init =
           network === "linkedin"
             ? await initMobileLinkedInConnect(RETURN_TO_DEEP_LINK)
-            : await initMobileMetaConnect(RETURN_TO_DEEP_LINK);
+            : network === "tiktok"
+              ? await initMobileTikTokConnect(RETURN_TO_DEEP_LINK)
+              : network === "youtube"
+                ? await initMobileYouTubeConnect(RETURN_TO_DEEP_LINK)
+                : await initMobileMetaConnect(RETURN_TO_DEEP_LINK);
         if (init.ok === false) {
           throw new Error(init.message);
         }
@@ -127,6 +135,10 @@ export default function ConnectPlatformsScreen() {
             const inferredNetwork = (parsed.network ?? network) as Network;
             if (inferredNetwork === "linkedin") {
               setFlash("LinkedIn connected.");
+            } else if (inferredNetwork === "tiktok") {
+              setFlash("TikTok connected.");
+            } else if (inferredNetwork === "youtube") {
+              setFlash("YouTube connected.");
             } else {
               const n = Number(parsed.count) || 1;
               setFlash(`Linked ${n} Facebook ${n === 1 ? "Page" : "Pages"}.`);
@@ -150,11 +162,16 @@ export default function ConnectPlatformsScreen() {
 
   const onDisconnect = useCallback(
     async (conn: MobileConnection) => {
-      const networkLabel = conn.platform === "linkedin" ? "LinkedIn" : "Facebook";
-      const label =
+      const networkLabel =
         conn.platform === "linkedin"
-          ? conn.displayName ?? "your LinkedIn"
-          : conn.fbPageName ?? "this Page";
+          ? "LinkedIn"
+          : conn.platform === "tiktok"
+            ? "TikTok"
+            : conn.platform === "youtube"
+              ? "YouTube"
+              : "Facebook";
+      const label =
+        conn.platform === "meta" ? conn.fbPageName ?? "this Page" : conn.displayName ?? `your ${networkLabel}`;
       Alert.alert(
         `Disconnect ${networkLabel}`,
         `Disconnect ${label}? Posts already published will stay live on ${networkLabel}.`,
@@ -169,7 +186,11 @@ export default function ConnectPlatformsScreen() {
               const res =
                 conn.platform === "linkedin"
                   ? await disconnectMobileLinkedIn({ id: conn.id })
-                  : await disconnectMobileMeta({ id: conn.id });
+                  : conn.platform === "tiktok"
+                    ? await disconnectMobileTikTok({ id: conn.id })
+                    : conn.platform === "youtube"
+                      ? await disconnectMobileYouTube({ id: conn.id })
+                      : await disconnectMobileMeta({ id: conn.id });
               setDisconnectingId(null);
               if (res.ok === false) {
                 hapticError();
@@ -192,6 +213,14 @@ export default function ConnectPlatformsScreen() {
   );
   const linkedinConnections = useMemo(
     () => (connections ?? []).filter((c) => c.platform === "linkedin"),
+    [connections],
+  );
+  const tiktokConnections = useMemo(
+    () => (connections ?? []).filter((c) => c.platform === "tiktok"),
+    [connections],
+  );
+  const youtubeConnections = useMemo(
+    () => (connections ?? []).filter((c) => c.platform === "youtube"),
     [connections],
   );
 
@@ -416,6 +445,146 @@ export default function ConnectPlatformsScreen() {
           Posts go to your personal LinkedIn feed. To revoke from
           LinkedIn&apos;s side, visit Settings → Data privacy → Permitted
           services and remove LeadSmart AI.
+        </Text>
+      </View>
+
+      {/* TikTok card */}
+      <View style={[styles.card, { marginTop: 16 }]}>
+        <View style={styles.cardHeader}>
+          <View style={styles.cardHeaderText}>
+            <Text style={styles.cardTitle}>TikTok</Text>
+            <Text style={styles.cardSubtitle}>
+              Publish videos to your TikTok. Great for listing tours, market takes, and behind-the-scenes clips.
+            </Text>
+          </View>
+        </View>
+
+        <Pressable
+          onPress={() => onConnect("tiktok")}
+          disabled={connecting}
+          style={[styles.connectButton, { backgroundColor: "#000" }, connecting && styles.connectButtonBusy]}
+        >
+          {connecting && connectingNetwork === "tiktok" ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <Ionicons name="logo-tiktok" size={16} color="#fff" />
+              <Text style={styles.connectButtonText}>
+                {tiktokConnections.length > 0 ? "Reconnect" : "Connect TikTok"}
+              </Text>
+            </>
+          )}
+        </Pressable>
+
+        {connections === null ? null : tiktokConnections.length === 0 ? (
+          <View style={styles.emptyBlock}>
+            <Text style={styles.emptyText}>Not connected. Sign in with TikTok to publish videos.</Text>
+          </View>
+        ) : (
+          <View style={styles.connectionsList}>
+            {tiktokConnections.map((c) => (
+              <View key={c.id} style={styles.connectionRow}>
+                <View style={styles.connectionLeft}>
+                  {c.pictureUrl ? (
+                    <Image source={{ uri: c.pictureUrl }} style={styles.connectionAvatar} />
+                  ) : (
+                    <View style={[styles.connectionAvatar, styles.connectionAvatarFallback]}>
+                      <Text style={styles.connectionAvatarFallbackText}>
+                        {(c.displayName ?? "?").slice(0, 1).toUpperCase()}
+                      </Text>
+                    </View>
+                  )}
+                  <View style={styles.connectionInfo}>
+                    <Text style={styles.connectionName} numberOfLines={1}>
+                      {c.displayName ?? "TikTok account"}
+                    </Text>
+                  </View>
+                </View>
+                <Pressable
+                  onPress={() => onDisconnect(c)}
+                  disabled={disconnectingId === c.id}
+                  style={styles.disconnectButton}
+                >
+                  <Text style={styles.disconnectButtonText}>{disconnectingId === c.id ? "…" : "Disconnect"}</Text>
+                </Pressable>
+              </View>
+            ))}
+          </View>
+        )}
+
+        <Text style={styles.helperText}>
+          Videos post to your connected TikTok account. New TikTok apps publish to a private/self-only audience until
+          TikTok approves the app for public posting.
+        </Text>
+      </View>
+
+      {/* YouTube card */}
+      <View style={[styles.card, { marginTop: 16 }]}>
+        <View style={styles.cardHeader}>
+          <View style={styles.cardHeaderText}>
+            <Text style={styles.cardTitle}>YouTube</Text>
+            <Text style={styles.cardSubtitle}>
+              Upload videos to your YouTube channel as Shorts or standard uploads — perfect for reels and walkthroughs.
+            </Text>
+          </View>
+        </View>
+
+        <Pressable
+          onPress={() => onConnect("youtube")}
+          disabled={connecting}
+          style={[styles.connectButton, { backgroundColor: "#FF0000" }, connecting && styles.connectButtonBusy]}
+        >
+          {connecting && connectingNetwork === "youtube" ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <Ionicons name="logo-youtube" size={16} color="#fff" />
+              <Text style={styles.connectButtonText}>
+                {youtubeConnections.length > 0 ? "Reconnect" : "Connect YouTube"}
+              </Text>
+            </>
+          )}
+        </Pressable>
+
+        {connections === null ? null : youtubeConnections.length === 0 ? (
+          <View style={styles.emptyBlock}>
+            <Text style={styles.emptyText}>Not connected. Sign in with Google to upload to your channel.</Text>
+          </View>
+        ) : (
+          <View style={styles.connectionsList}>
+            {youtubeConnections.map((c) => (
+              <View key={c.id} style={styles.connectionRow}>
+                <View style={styles.connectionLeft}>
+                  {c.pictureUrl ? (
+                    <Image source={{ uri: c.pictureUrl }} style={styles.connectionAvatar} />
+                  ) : (
+                    <View style={[styles.connectionAvatar, styles.connectionAvatarFallback]}>
+                      <Text style={styles.connectionAvatarFallbackText}>
+                        {(c.displayName ?? "?").slice(0, 1).toUpperCase()}
+                      </Text>
+                    </View>
+                  )}
+                  <View style={styles.connectionInfo}>
+                    <Text style={styles.connectionName} numberOfLines={1}>
+                      {c.displayName ?? "YouTube channel"}
+                    </Text>
+                  </View>
+                </View>
+                <Pressable
+                  onPress={() => onDisconnect(c)}
+                  disabled={disconnectingId === c.id}
+                  style={styles.disconnectButton}
+                >
+                  <Text style={styles.disconnectButtonText}>{disconnectingId === c.id ? "…" : "Disconnect"}</Text>
+                </Pressable>
+              </View>
+            ))}
+          </View>
+        )}
+
+        <Text style={styles.helperText}>
+          Uploads go to your connected YouTube channel. To revoke from Google&apos;s side, visit your Google Account →
+          Security → Third-party access.
         </Text>
       </View>
     </ScrollView>

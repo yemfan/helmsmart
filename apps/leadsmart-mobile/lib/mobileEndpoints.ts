@@ -65,6 +65,10 @@ export const MOBILE_API_PATHS = {
   leadsGenConnectLinkedInInit: "/api/mobile/leads-gen/connect/linkedin/init",
   leadsGenConnectLinkedInDisconnect:
     "/api/mobile/leads-gen/connect/linkedin/disconnect",
+  leadsGenConnectTikTokInit: "/api/mobile/leads-gen/connect/tiktok/init",
+  leadsGenConnectTikTokDisconnect: "/api/mobile/leads-gen/connect/tiktok/disconnect",
+  leadsGenConnectYouTubeInit: "/api/mobile/leads-gen/connect/youtube/init",
+  leadsGenConnectYouTubeDisconnect: "/api/mobile/leads-gen/connect/youtube/disconnect",
   leadsGenMediaUpload: "/api/mobile/leads-gen/media/upload",
   leadsGenSchedule: "/api/mobile/leads-gen/schedule",
   leadsGenScheduleList: "/api/mobile/leads-gen/schedule/list",

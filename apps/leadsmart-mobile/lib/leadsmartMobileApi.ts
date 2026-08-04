@@ -1861,18 +1861,22 @@ export async function fetchMobileQuickPostDraft(input: {
 
 export type MobileConnection = {
   id: string;
-  platform: "meta" | "linkedin";
+  platform: "meta" | "linkedin" | "tiktok" | "youtube";
   fbPageId: string | null;
   fbPageName: string | null;
   igBusinessUserId: string | null;
   igBusinessUsername: string | null;
   linkedinMemberUrn: string | null;
   linkedinMemberEmail: string | null;
+  tiktokOpenId?: string | null;
+  youtubeChannelId?: string | null;
   displayName: string | null;
   pictureUrl: string | null;
   canPublishFacebook: boolean;
   canPublishInstagram: boolean;
   canPublishLinkedIn: boolean;
+  canPublishTikTok?: boolean;
+  canPublishYouTube?: boolean;
 };
 
 type MobileConnectionsJson = MobileJsonError & {
@@ -1958,6 +1962,44 @@ export async function disconnectMobileLinkedIn(input: {
     MOBILE_API_PATHS.leadsGenConnectLinkedInDisconnect,
     input,
   );
+  if (res.ok === false) return res;
+  return { ok: true, removed: res.data.removed ?? 0 };
+}
+
+/** Mint a TikTok OAuth URL for the mobile in-app browser (returnTo deep-link baked in). */
+export async function initMobileTikTokConnect(returnTo: string): Promise<
+  { ok: true; url: string } | MobileApiFailure
+> {
+  const res = await mobilePost<MobileMetaInitJson>(MOBILE_API_PATHS.leadsGenConnectTikTokInit, { returnTo });
+  if (res.ok === false) return res;
+  if (!res.data.url) return { ok: false, status: 500, message: "No URL returned" };
+  return { ok: true, url: res.data.url };
+}
+
+export async function disconnectMobileTikTok(input: {
+  id?: string;
+  all?: boolean;
+}): Promise<{ ok: true; removed: number } | MobileApiFailure> {
+  const res = await mobilePost<MobileDisconnectJson>(MOBILE_API_PATHS.leadsGenConnectTikTokDisconnect, input);
+  if (res.ok === false) return res;
+  return { ok: true, removed: res.data.removed ?? 0 };
+}
+
+/** Mint a YouTube (Google) OAuth URL for the mobile in-app browser (returnTo deep-link baked in). */
+export async function initMobileYouTubeConnect(returnTo: string): Promise<
+  { ok: true; url: string } | MobileApiFailure
+> {
+  const res = await mobilePost<MobileMetaInitJson>(MOBILE_API_PATHS.leadsGenConnectYouTubeInit, { returnTo });
+  if (res.ok === false) return res;
+  if (!res.data.url) return { ok: false, status: 500, message: "No URL returned" };
+  return { ok: true, url: res.data.url };
+}
+
+export async function disconnectMobileYouTube(input: {
+  id?: string;
+  all?: boolean;
+}): Promise<{ ok: true; removed: number } | MobileApiFailure> {
+  const res = await mobilePost<MobileDisconnectJson>(MOBILE_API_PATHS.leadsGenConnectYouTubeDisconnect, input);
   if (res.ok === false) return res;
   return { ok: true, removed: res.data.removed ?? 0 };
 }
