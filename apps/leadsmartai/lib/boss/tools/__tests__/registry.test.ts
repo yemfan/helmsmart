@@ -108,6 +108,7 @@ describe("boss tool registry", () => {
         "create_calendar_event",
         "publish_social_post",
         "schedule_social_post",
+        "create_avatar_video",
         "query_crm",
         "get_market_snapshot",
       ].sort(),
