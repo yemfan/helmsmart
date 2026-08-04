@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 
 /**
  * Weekly Social Schedule (MarketingBoss). Check the days you want a post; per
- * checked day set a time, channels, and a topic. AI researches the topic and
- * publishes on schedule. Text posts → Facebook / Threads / LinkedIn (image/video
- * platforms come later).
+ * checked day pick a content type (text / image / video), a time, channels, and a
+ * topic. AI researches the topic; image/video days also generate the media on
+ * fal.ai (spends credits). Text → Facebook / Threads / LinkedIn; Image adds
+ * Instagram + Pinterest; Video → YouTube + TikTok.
  */
 
-type Platform = "facebook" | "threads" | "linkedin";
+type Platform = "facebook" | "instagram" | "threads" | "linkedin" | "pinterest" | "youtube" | "tiktok";
+type MediaType = "text" | "image" | "video";
 
 type Day = {
   weekday: number;
@@ -17,17 +19,28 @@ type Day = {
   postHour: number;
   postMinute: number;
   timezone: string;
+  mediaType: MediaType;
   channels: Platform[] | null;
   topic: string;
 };
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const PLATFORMS: { id: Platform; label: string }[] = [
-  { id: "facebook", label: "Facebook" },
-  { id: "threads", label: "Threads" },
-  { id: "linkedin", label: "LinkedIn" },
-];
-const ALL: Platform[] = ["facebook", "threads", "linkedin"];
+const LABELS: Record<Platform, string> = {
+  facebook: "Facebook",
+  instagram: "Instagram",
+  threads: "Threads",
+  linkedin: "LinkedIn",
+  pinterest: "Pinterest",
+  youtube: "YouTube",
+  tiktok: "TikTok",
+};
+const TEXT_PLATFORMS: Platform[] = ["facebook", "threads", "linkedin"];
+const IMAGE_PLATFORMS: Platform[] = ["facebook", "instagram", "threads", "linkedin", "pinterest"];
+const VIDEO_PLATFORMS: Platform[] = ["youtube", "tiktok"];
+
+function platformsFor(mediaType: MediaType): Platform[] {
+  return mediaType === "video" ? VIDEO_PLATFORMS : mediaType === "image" ? IMAGE_PLATFORMS : TEXT_PLATFORMS;
+}
 
 const hhmm = (h: number, m: number) => `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 
@@ -50,7 +63,7 @@ export default function WeeklySchedule() {
       };
       if (!b.ok || !b.days) return;
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
-      setDays(b.days.map((d) => ({ ...d, timezone: d.timezone || tz })));
+      setDays(b.days.map((d) => ({ ...d, mediaType: d.mediaType ?? "text", timezone: d.timezone || tz })));
       setPresets(b.topicPresets ?? []);
       setConfigured(b.configured ?? true);
     } catch {
@@ -67,13 +80,19 @@ export default function WeeklySchedule() {
     setNote(null);
   }
 
+  function setMediaType(day: Day, mediaType: MediaType) {
+    // Content type determines the available channels — reset to "all" on change.
+    patch(day.weekday, { mediaType, channels: null });
+  }
+
   function togglePlatform(day: Day, p: Platform) {
-    const cur = day.channels ?? ALL;
+    const all = platformsFor(day.mediaType);
+    const cur = day.channels ?? all;
     const set = new Set(cur);
     if (set.has(p)) set.delete(p);
     else set.add(p);
-    const arr = ALL.filter((x) => set.has(x));
-    patch(day.weekday, { channels: arr.length === 0 || arr.length === ALL.length ? null : arr });
+    const arr = all.filter((x) => set.has(x));
+    patch(day.weekday, { channels: arr.length === 0 || arr.length === all.length ? null : arr });
   }
 
   async function save() {
@@ -94,7 +113,7 @@ export default function WeeklySchedule() {
       }
       if (b.days) {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
-        setDays(b.days.map((d) => ({ ...d, timezone: d.timezone || tz })));
+        setDays(b.days.map((d) => ({ ...d, mediaType: d.mediaType ?? "text", timezone: d.timezone || tz })));
       }
       setNote("Schedule saved.");
     } catch (e) {
@@ -111,8 +130,9 @@ export default function WeeklySchedule() {
       <div>
         <h2 className="text-base font-semibold text-neutral-900">Weekly post schedule</h2>
         <p className="mt-0.5 text-xs text-neutral-500">
-          Pick the days you want a post. For each, set a time, channels, and a topic — AI researches the topic and posts
-          automatically. Text posts go to Facebook, Threads, and LinkedIn.
+          Pick the days you want a post. For each, choose a content type, time, channels, and a topic — AI researches the
+          topic and posts automatically. Text → Facebook, Threads, LinkedIn. Image adds Instagram + Pinterest. Video →
+          YouTube + TikTok (image/video generation spends credits).
         </p>
       </div>
 
@@ -124,7 +144,8 @@ export default function WeeklySchedule() {
 
       <ul className="space-y-2">
         {days.map((d) => {
-          const selected = d.channels ?? ALL;
+          const all = platformsFor(d.mediaType);
+          const selected = d.channels ?? all;
           return (
             <li key={d.weekday} className="rounded-xl border border-neutral-200 bg-white p-3">
               <label className="flex items-center gap-2">
@@ -138,7 +159,7 @@ export default function WeeklySchedule() {
 
               {d.enabled ? (
                 <div className="mt-3 space-y-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="text-[11px] font-medium text-neutral-500">Time</span>
                     <input
                       type="time"
@@ -150,22 +171,36 @@ export default function WeeklySchedule() {
                       className="rounded-lg border border-neutral-300 px-2 py-1 text-sm"
                     />
                     <span className="text-[10px] text-neutral-400">{d.timezone}</span>
+                    <span className="ml-2 inline-flex overflow-hidden rounded-lg border border-neutral-300 text-[11px] font-medium">
+                      {(["text", "image", "video"] as MediaType[]).map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setMediaType(d, t)}
+                          className={`px-3 py-1 ${
+                            d.mediaType === t ? "bg-indigo-600 text-white" : "bg-white text-neutral-600"
+                          }`}
+                        >
+                          {t === "text" ? "Text" : t === "image" ? "Image" : "Video"}
+                        </button>
+                      ))}
+                    </span>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[11px] font-medium text-neutral-500">Channels</span>
-                    {PLATFORMS.map((p) => (
+                    {all.map((p) => (
                       <button
-                        key={p.id}
+                        key={p}
                         type="button"
-                        onClick={() => togglePlatform(d, p.id)}
+                        onClick={() => togglePlatform(d, p)}
                         className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
-                          selected.includes(p.id)
+                          selected.includes(p)
                             ? "border-indigo-400 bg-indigo-50 text-neutral-900"
                             : "border-neutral-200 text-neutral-500"
                         }`}
                       >
-                        {p.label}
+                        {LABELS[p]}
                       </button>
                     ))}
                     {d.channels === null ? <span className="text-[10px] text-neutral-400">all connected</span> : null}

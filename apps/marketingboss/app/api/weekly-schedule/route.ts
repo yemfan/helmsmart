@@ -1,17 +1,21 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import {
+  IMAGE_PLATFORMS,
+  TEXT_PLATFORMS,
   TOPIC_PRESETS,
-  WEEKLY_TEXT_PLATFORMS,
+  VIDEO_PLATFORMS,
   getWeeklySchedule,
+  platformsForMedia,
   saveWeeklySchedule,
+  type MediaType,
   type WeeklyPlatform,
   type WeeklyScheduleDay,
 } from "@/lib/weeklySchedule";
 
 export const runtime = "nodejs";
 
-/** GET — the user's 7-day weekly schedule + preset options. */
+/** GET — the user's 7-day weekly schedule + preset options + per-type channels. */
 export async function GET() {
   const supabase = await createClient();
   const {
@@ -24,12 +28,14 @@ export async function GET() {
     ok: true,
     days,
     topicPresets: TOPIC_PRESETS,
-    platforms: WEEKLY_TEXT_PLATFORMS,
+    platformsByMedia: { text: TEXT_PLATFORMS, image: IMAGE_PLATFORMS, video: VIDEO_PLATFORMS },
     configured: Boolean(process.env.ANTHROPIC_API_KEY),
   });
 }
 
-const VALID = new Set<string>(WEEKLY_TEXT_PLATFORMS);
+function normalizeMediaType(v: unknown): MediaType {
+  return v === "image" || v === "video" ? v : "text";
+}
 
 /** PUT — save the full week. */
 export async function PUT(req: Request) {
@@ -50,9 +56,11 @@ export async function PUT(req: Request) {
   const days: WeeklyScheduleDay[] = [];
   for (let wd = 0; wd < 7; wd++) {
     const d = raw.find((x) => (x as { weekday?: number })?.weekday === wd) as Record<string, unknown> | undefined;
+    const mediaType = normalizeMediaType(d?.mediaType);
+    const allowed = new Set<string>(platformsForMedia(mediaType));
     const channelsRaw = Array.isArray(d?.channels) ? (d!.channels as unknown[]) : null;
     const channels = channelsRaw
-      ? (channelsRaw.filter((p): p is WeeklyPlatform => typeof p === "string" && VALID.has(p)))
+      ? (channelsRaw.filter((p): p is WeeklyPlatform => typeof p === "string" && allowed.has(p)))
       : null;
     days.push({
       weekday: wd,
@@ -60,6 +68,7 @@ export async function PUT(req: Request) {
       postHour: Number(d?.postHour ?? 9),
       postMinute: Number(d?.postMinute ?? 0),
       timezone: typeof d?.timezone === "string" && d.timezone ? (d.timezone as string) : "America/Los_Angeles",
+      mediaType,
       channels: channels && channels.length ? channels : null,
       topic: typeof d?.topic === "string" ? (d.topic as string) : "",
     });

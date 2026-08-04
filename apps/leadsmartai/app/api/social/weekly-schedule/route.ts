@@ -2,11 +2,14 @@ import { NextResponse } from "next/server";
 
 import { getDashboardAgentContext } from "@/lib/contact-intake/dashboardAgentContext";
 import {
+  IMAGE_PLATFORMS,
+  TEXT_PLATFORMS,
   TOPIC_PRESETS,
-  WEEKLY_TEXT_PLATFORMS,
   getWeeklySchedule,
+  platformsForMedia,
   saveWeeklySchedule,
   weeklyScheduleConfigured,
+  type MediaType,
   type WeeklyPlatform,
   type WeeklyScheduleDay,
 } from "@/lib/social/weeklySchedule";
@@ -24,7 +27,7 @@ export async function GET() {
       configured: weeklyScheduleConfigured(),
       days,
       topicPresets: TOPIC_PRESETS,
-      platforms: WEEKLY_TEXT_PLATFORMS,
+      platformsByMedia: { text: TEXT_PLATFORMS, image: IMAGE_PLATFORMS },
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Server error";
@@ -32,7 +35,9 @@ export async function GET() {
   }
 }
 
-const VALID_PLATFORMS = new Set<string>(WEEKLY_TEXT_PLATFORMS);
+function normalizeMediaType(v: unknown): MediaType {
+  return v === "image" ? "image" : "text";
+}
 
 /** PUT — save the full week. Pro or higher (mirrors the other autopilot writes). */
 export async function PUT(req: Request) {
@@ -53,9 +58,11 @@ export async function PUT(req: Request) {
       const d = raw.find((x) => (x as { weekday?: number })?.weekday === wd) as
         | Record<string, unknown>
         | undefined;
+      const mediaType = normalizeMediaType(d?.mediaType);
+      const allowed = new Set<string>(platformsForMedia(mediaType));
       const platformsRaw = Array.isArray(d?.platforms) ? (d!.platforms as unknown[]) : null;
       const platforms = platformsRaw
-        ? (platformsRaw.filter((p): p is WeeklyPlatform => typeof p === "string" && VALID_PLATFORMS.has(p)))
+        ? (platformsRaw.filter((p): p is WeeklyPlatform => typeof p === "string" && allowed.has(p)))
         : null;
       days.push({
         weekday: wd,
@@ -63,6 +70,7 @@ export async function PUT(req: Request) {
         postHour: Number(d?.postHour ?? 9),
         postMinute: Number(d?.postMinute ?? 0),
         timezone: typeof d?.timezone === "string" && d.timezone ? (d.timezone as string) : "America/Los_Angeles",
+        mediaType,
         platforms: platforms && platforms.length ? platforms : null,
         topic: typeof d?.topic === "string" ? (d.topic as string) : "",
       });
