@@ -10,8 +10,8 @@ import { useCallback, useEffect, useState } from "react";
  * Instagram + Pinterest. Config for CloseBoss; a sibling exists in MarketingBoss.
  */
 
-type Platform = "facebook" | "instagram" | "linkedin" | "threads" | "pinterest";
-type MediaType = "text" | "image";
+type Platform = "facebook" | "instagram" | "linkedin" | "threads" | "pinterest" | "tiktok" | "youtube";
+type MediaType = "text" | "image" | "video";
 
 type Day = {
   weekday: number;
@@ -31,12 +31,15 @@ const LABELS: Record<Platform, string> = {
   linkedin: "LinkedIn",
   threads: "Threads",
   pinterest: "Pinterest",
+  tiktok: "TikTok",
+  youtube: "YouTube",
 };
 const TEXT_PLATFORMS: Platform[] = ["facebook", "linkedin", "threads"];
 const IMAGE_PLATFORMS: Platform[] = ["facebook", "instagram", "linkedin", "threads", "pinterest"];
+const VIDEO_PLATFORMS: Platform[] = ["facebook", "instagram", "linkedin", "tiktok", "youtube"];
 
 function platformsFor(mediaType: MediaType): Platform[] {
-  return mediaType === "image" ? IMAGE_PLATFORMS : TEXT_PLATFORMS;
+  return mediaType === "video" ? VIDEO_PLATFORMS : mediaType === "image" ? IMAGE_PLATFORMS : TEXT_PLATFORMS;
 }
 
 function hhmm(h: number, m: number): string {
@@ -47,6 +50,7 @@ export default function WeeklyScheduleController() {
   const [days, setDays] = useState<Day[] | null>(null);
   const [presets, setPresets] = useState<string[]>([]);
   const [configured, setConfigured] = useState(true);
+  const [videoReady, setVideoReady] = useState(false);
   const [saving, setSaving] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -59,6 +63,7 @@ export default function WeeklyScheduleController() {
         configured?: boolean;
         days?: Day[];
         topicPresets?: string[];
+        videoReady?: boolean;
       };
       if (!b.ok || !b.days) return;
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
@@ -66,6 +71,7 @@ export default function WeeklyScheduleController() {
       setDays(b.days.map((d) => ({ ...d, mediaType: d.mediaType ?? "text", timezone: d.timezone || tz })));
       setPresets(b.topicPresets ?? []);
       setConfigured(b.configured ?? true);
+      setVideoReady(b.videoReady ?? false);
     } catch {
       /* best-effort */
     }
@@ -131,9 +137,10 @@ export default function WeeklyScheduleController() {
   return (
     <div className="space-y-3">
       <p className="text-xs text-gray-600">
-        Pick the days you want a post to go out. For each day, choose text or an image, set a time, the channels, and a
-        topic — AI researches the topic and writes + publishes the post automatically. Text → Facebook, LinkedIn,
-        Threads. Image renders a branded card and also reaches Instagram + Pinterest.
+        Pick the days you want a post to go out. For each day, choose text, an image, or a video, set a time, the
+        channels, and a topic — AI researches the topic and writes + publishes the post automatically. Text → Facebook,
+        LinkedIn, Threads. Image renders a branded card and also reaches Instagram + Pinterest. Video films your digital
+        twin delivering the topic → Facebook, Instagram, LinkedIn, TikTok, YouTube.
       </p>
 
       {!configured ? (
@@ -176,7 +183,7 @@ export default function WeeklyScheduleController() {
                       <span className="text-[10px] text-gray-400">{d.timezone}</span>
                     </div>
                     <div className="inline-flex overflow-hidden rounded-lg border border-gray-300 text-[11px] font-medium">
-                      {(["text", "image"] as MediaType[]).map((t) => (
+                      {(["text", "image", "video"] as MediaType[]).map((t) => (
                         <button
                           key={t}
                           type="button"
@@ -185,10 +192,16 @@ export default function WeeklyScheduleController() {
                             d.mediaType === t ? "bg-brand-accent text-white" : "bg-white text-gray-600"
                           }`}
                         >
-                          {t === "text" ? "Text" : "Image"}
+                          {t === "text" ? "Text" : t === "image" ? "Image" : "Video"}
                         </button>
                       ))}
                     </div>
+                    {d.mediaType === "video" && !videoReady ? (
+                      <p className="text-[10px] leading-tight text-amber-700">
+                        Video uses your digital twin — set up your intro video + cloned voice first (Digital Twin) or
+                        this day won&apos;t post.
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className="space-y-2">
