@@ -30,7 +30,7 @@ export default async function PostingPage() {
       <Nav email={user.email ?? ""} credits={profile?.credits ?? 0} />
       <section className="flex flex-col gap-2">
         <h2 className="text-2xl font-bold tracking-tight">Posting</h2>
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-slate-500">
           Your posting schedule, what&apos;s queued, and everything you&apos;ve published — in one place.
         </p>
       </section>

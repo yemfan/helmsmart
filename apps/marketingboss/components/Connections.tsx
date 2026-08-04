@@ -87,26 +87,26 @@ export default function Connections({
         const allConnected = connectedPlatforms.length === prov.platforms.length;
 
         return (
-          <div key={prov.key} className="flex items-center gap-4 rounded-2xl border border-white/10 bg-ink-2/70 p-4">
+          <div key={prov.key} className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-semibold text-white">{prov.label}</span>
+                <span className="font-semibold text-slate-900">{prov.label}</span>
                 {anyConnected && (
-                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-600">
                     Connected
                   </span>
                 )}
                 {!configured && (
-                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-white/50">Not set up yet</span>
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500">Not set up yet</span>
                 )}
               </div>
-              <p className="mt-0.5 text-xs text-white/45">{prov.hint}</p>
+              <p className="mt-0.5 text-xs text-slate-500">{prov.hint}</p>
               {anyConnected && (
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   {connectedPlatforms.map((p) => (
                     <span
                       key={p.id}
-                      className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[11px] text-white/60"
+                      className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600"
                     >
                       {p.label}
                       {statuses[p.id]?.accountName ? ` · ${statuses[p.id]!.accountName}` : ""}
@@ -129,7 +129,7 @@ export default function Connections({
                 <button
                   onClick={() => disconnect(prov.key)}
                   disabled={busy === prov.key}
-                  className="rounded-lg border border-white/10 px-3.5 py-2 text-sm text-white/60 transition hover:text-white disabled:opacity-40"
+                  className="rounded-lg border border-slate-200 px-3.5 py-2 text-sm text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
                 >
                   {busy === prov.key ? "…" : "Disconnect"}
                 </button>

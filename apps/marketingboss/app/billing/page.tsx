@@ -47,27 +47,27 @@ export default async function BillingPage({
 
       <section className="flex flex-col gap-2">
         <h2 className="text-2xl font-bold tracking-tight">Buy credits</h2>
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-slate-500">
           Pay-as-you-go — no subscription. Credits never expire. Image = 1 credit · edit = 2 · video = 20.
         </p>
       </section>
 
       {sp.status === "success" && (
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-sm text-emerald-200">
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-sm text-emerald-600">
           {justCredited
             ? "Payment received — your credits have been added. Happy creating! 🎬"
             : "Payment received — your credits will appear within a few seconds. Refresh if the balance hasn't updated."}
         </div>
       )}
       {sp.status === "cancel" && (
-        <div className="rounded-xl border border-white/15 bg-white/5 p-3.5 text-sm text-white/60">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-sm text-slate-600">
           Checkout canceled — no charge was made.
         </div>
       )}
 
       <BuyCredits packs={CREDIT_PACKS} configured={stripeConfigured()} />
 
-      <footer className="mt-auto pt-6 text-center text-[11px] text-white/25">
+      <footer className="mt-auto pt-6 text-center text-[11px] text-slate-400">
         Secure payments by Stripe · every render is saved to your gallery
       </footer>
     </main>

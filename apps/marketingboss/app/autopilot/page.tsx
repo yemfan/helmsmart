@@ -50,7 +50,7 @@ export default async function AutopilotPage() {
       <Nav email={user.email ?? ""} credits={profile?.credits ?? 0} />
       <section className="flex flex-col gap-2">
         <h2 className="text-2xl font-bold tracking-tight">Autopilot marketing</h2>
-        <p className="text-sm text-white/50">
+        <p className="text-sm text-slate-500">
           Point us at your product or business link. AI researches your market and competitors, then plans and posts
           content on the cadence you set — you control the content types, channels, and budget.
         </p>
@@ -59,7 +59,7 @@ export default async function AutopilotPage() {
       <section className="rounded-2xl bg-white p-5 text-neutral-900 shadow-sm">
         <WeeklySchedule />
       </section>
-      <footer className="mt-auto pt-6 text-center text-[11px] text-white/25">
+      <footer className="mt-auto pt-6 text-center text-[11px] text-slate-400">
         Research by Claude · content by fal.ai · you approve or let it run — always within your budget
       </footer>
     </main>

@@ -88,7 +88,7 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link href="/autopilot" className="text-xs text-white/45 transition hover:text-white">
+        <Link href="/autopilot" className="text-xs text-slate-500 transition hover:text-slate-900">
           ← All campaigns
         </Link>
         <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -97,18 +97,18 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
             {campaign.mode === "auto" ? "Full auto" : "Review"}
           </span>
         </div>
-        <a href={campaign.link} target="_blank" rel="noreferrer" className="block truncate text-xs text-white/45 hover:text-white/70">
+        <a href={campaign.link} target="_blank" rel="noreferrer" className="block truncate text-xs text-slate-500 hover:text-slate-700">
           {campaign.link}
         </a>
-        <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] text-white/50">
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500">
           <span>{campaign.frequency}×/week</span>
-          <span className="text-white/20">·</span>
+          <span className="text-slate-400">·</span>
           <span>{campaign.media_types.join(", ")}</span>
-          <span className="text-white/20">·</span>
+          <span className="text-slate-400">·</span>
           <span>{campaign.channels.map((c) => LABEL[c] ?? c).join(", ")}</span>
           {campaign.budget_credits != null && (
             <>
-              <span className="text-white/20">·</span>
+              <span className="text-slate-400">·</span>
               <span>
                 {campaign.spent_credits}/{campaign.budget_credits} credits
               </span>
@@ -127,10 +127,10 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
       </div>
 
       {/* Plan */}
-      <section className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-ink-2/70 p-4">
+      <section className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4">
         <div>
-          <div className="text-sm font-semibold text-white">Plan posts</div>
-          <div className="text-xs text-white/45">AI drafts a batch from your pillars — review, then publish.</div>
+          <div className="text-sm font-semibold text-slate-900">Plan posts</div>
+          <div className="text-xs text-slate-500">AI drafts a batch from your pillars — review, then publish.</div>
         </div>
         <div className="flex items-center gap-2">
           <input
@@ -139,7 +139,7 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
             max={10}
             value={count}
             onChange={(e) => setCount(Math.min(Math.max(Number(e.target.value) || 1, 1), 10))}
-            className="w-16 rounded-lg border border-white/10 bg-black/30 px-2 py-2 text-sm text-white outline-none focus:border-boss-violet/60"
+            className="w-16 rounded-lg border border-slate-200 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-boss-violet/60"
           />
           <button
             onClick={plan}
@@ -152,12 +152,12 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
         </div>
       </section>
 
-      {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-200">{error}</div>}
+      {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-600">{error}</div>}
 
       {/* Drafts */}
       {drafts.length > 0 && (
         <section className="flex flex-col gap-3">
-          <h3 className="text-sm font-semibold text-white/80">Review queue ({drafts.length})</h3>
+          <h3 className="text-sm font-semibold text-slate-900">Review queue ({drafts.length})</h3>
           {drafts.map((p) => (
             <PostCard key={p.id} post={p} onChanged={() => router.refresh()} />
           ))}
@@ -167,21 +167,21 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
       {/* Done */}
       {done.length > 0 && (
         <section className="flex flex-col gap-3">
-          <h3 className="text-sm font-semibold text-white/80">Published &amp; history</h3>
+          <h3 className="text-sm font-semibold text-slate-900">Published &amp; history</h3>
           {done.map((p) => (
-            <div key={p.id} className="rounded-2xl border border-white/10 bg-ink-2/70 p-4">
+            <div key={p.id} className="rounded-2xl border border-slate-200 bg-white p-4">
               <div className="mb-1 flex items-center gap-2 text-xs">
                 <span>{TYPE_EMOJI[p.type]}</span>
-                <span className="font-medium text-white/70">{p.angle}</span>
+                <span className="font-medium text-slate-700">{p.angle}</span>
                 <span
                   className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
-                    p.status === "published" ? "bg-emerald-500/15 text-emerald-300" : "bg-red-500/15 text-red-300"
+                    p.status === "published" ? "bg-emerald-500/15 text-emerald-600" : "bg-red-500/15 text-red-600"
                   }`}
                 >
                   {p.status}
                 </span>
               </div>
-              <p className="whitespace-pre-wrap text-sm text-white/70">{p.caption}</p>
+              <p className="whitespace-pre-wrap text-sm text-slate-700">{p.caption}</p>
               {p.metrics &&
                 Object.keys(p.metrics).length > 0 &&
                 (() => {
@@ -194,7 +194,7 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
                     views += m.views ?? 0;
                   }
                   return (
-                    <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-white/55">
+                    <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-slate-500">
                       <span>♥ {likes}</span>
                       <span>💬 {comments}</span>
                       {views > 0 && <span>▶ {views}</span>}
@@ -204,7 +204,7 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
               {p.results && (
                 <ul className="mt-2 space-y-1 text-xs">
                   {p.results.map((r) => (
-                    <li key={r.platform} className={r.ok ? "text-emerald-300" : "text-red-300"}>
+                    <li key={r.platform} className={r.ok ? "text-emerald-600" : "text-red-600"}>
                       <span className="font-medium">{LABEL[r.platform] ?? r.platform}</span>:{" "}
                       {r.ok ? (
                         r.url ? (
@@ -227,8 +227,8 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
       )}
 
       {posts.length === 0 && (
-        <p className="rounded-2xl border border-white/10 bg-ink-2/70 p-5 text-center text-sm text-white/50">
-          No posts yet — click <span className="text-white/80">Plan posts</span> to have AI draft your first batch.
+        <p className="rounded-2xl border border-slate-200 bg-white p-5 text-center text-sm text-slate-500">
+          No posts yet — click <span className="text-slate-900">Plan posts</span> to have AI draft your first batch.
         </p>
       )}
     </div>
@@ -246,7 +246,7 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
 
   const needsMedia = post.type !== "text";
   const fieldCls =
-    "w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-white/35 outline-none focus:border-boss-violet/60";
+    "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60";
 
   async function save(): Promise<boolean> {
     const res = await fetch(`/api/autopilot/posts/${post.id}`, {
@@ -321,13 +321,13 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-ink-2/70 p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4">
       <div className="mb-2 flex flex-wrap items-center gap-2 text-xs">
-        <span className="rounded-full bg-white/10 px-2 py-0.5 font-medium text-white/70">
+        <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-700">
           {TYPE_EMOJI[post.type]} {post.type}
         </span>
-        {post.angle && <span className="text-white/55">{post.angle}</span>}
-        <span className="ml-auto text-white/35">{post.channels.map((c) => LABEL[c] ?? c).join(", ")}</span>
+        {post.angle && <span className="text-slate-500">{post.angle}</span>}
+        <span className="ml-auto text-slate-400">{post.channels.map((c) => LABEL[c] ?? c).join(", ")}</span>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -340,7 +340,7 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
       </div>
 
       {mediaUrl && (
-        <div className="mt-2 overflow-hidden rounded-lg border border-white/10 bg-black/40">
+        <div className="mt-2 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
           {post.type === "video" ? (
             <video src={mediaUrl} controls className="max-h-64 w-full" />
           ) : (
@@ -350,21 +350,21 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
         </div>
       )}
 
-      {err && <p className="mt-2 text-xs text-red-300">{err}</p>}
+      {err && <p className="mt-2 text-xs text-red-600">{err}</p>}
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button onClick={onSave} disabled={!!busy} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/60 transition hover:text-white disabled:opacity-40">
+        <button onClick={onSave} disabled={!!busy} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40">
           {busy === "save" ? "Saving…" : "Save"}
         </button>
         {needsMedia && (
-          <button onClick={generate} disabled={!!busy} className="rounded-lg border border-boss-violet/40 bg-boss-violet/10 px-3 py-1.5 text-xs font-medium text-white/80 transition hover:text-white disabled:opacity-40">
+          <button onClick={generate} disabled={!!busy} className="rounded-lg border border-boss-violet/40 bg-boss-violet/10 px-3 py-1.5 text-xs font-medium text-slate-900 transition hover:text-slate-900 disabled:opacity-40">
             {busy === "gen" ? "Generating…" : mediaUrl ? "Regenerate" : "Generate preview"}
           </button>
         )}
         <button
           onClick={remove}
           disabled={!!busy}
-          className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-red-300/80 transition hover:text-red-300 disabled:opacity-40"
+          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-red-600/80 transition hover:text-red-600 disabled:opacity-40"
         >
           Delete
         </button>

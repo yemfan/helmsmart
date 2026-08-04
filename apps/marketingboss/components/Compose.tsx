@@ -372,17 +372,17 @@ export default function Compose({ status }: { status: ComposeStatus }) {
   }
 
   const fieldCls =
-    "w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-white/35 outline-none focus:border-boss-violet/60";
+    "w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60";
   const primaryBtn =
     "inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40";
   const ghostBtn =
-    "inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-medium text-white/70 transition hover:text-white disabled:opacity-40";
+    "inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:text-slate-900 disabled:opacity-40";
   const chipBtn =
-    "rounded-lg border border-white/10 bg-black/30 px-3 py-1.5 text-xs font-medium text-white/60 transition hover:text-white disabled:opacity-40";
+    "rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:text-slate-900 disabled:opacity-40";
 
   if (!status.aiConfigured) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-ink-2/70 p-5 text-sm text-white/60">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
         AI copywriting isn&apos;t turned on yet. Set <code className="text-boss-gold">ANTHROPIC_API_KEY</code> in the
         project to enable the AI Social Post composer.
       </div>
@@ -415,45 +415,45 @@ export default function Compose({ status }: { status: ComposeStatus }) {
                 onClick={() => goTo(id)}
                 disabled={!canJump}
                 className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left transition ${
-                  active ? "bg-boss-violet/15" : canJump ? "hover:bg-white/5" : "opacity-40"
+                  active ? "bg-boss-violet/15" : canJump ? "hover:bg-slate-100" : "opacity-40"
                 }`}
               >
                 <span
                   className={`grid size-6 shrink-0 place-items-center rounded-full text-xs font-bold ${
-                    active ? "bg-boss-gold text-black" : done ? "bg-emerald-500/20 text-emerald-300" : "bg-white/10 text-white/50"
+                    active ? "bg-boss-gold text-black" : done ? "bg-emerald-500/20 text-emerald-600" : "bg-slate-100 text-slate-500"
                   }`}
                 >
                   {done ? "✓" : i + 1}
                 </span>
-                <span className={`hidden text-xs font-medium sm:inline ${active ? "text-white" : "text-white/50"}`}>{STEP_LABEL[id]}</span>
+                <span className={`hidden text-xs font-medium sm:inline ${active ? "text-slate-900" : "text-slate-500"}`}>{STEP_LABEL[id]}</span>
               </button>
-              {i < steps.length - 1 && <span className="hidden h-px w-3 bg-white/10 sm:block" aria-hidden />}
+              {i < steps.length - 1 && <span className="hidden h-px w-3 bg-slate-200 sm:block" aria-hidden />}
             </li>
           );
         })}
       </ol>
 
-      <section className="rounded-2xl border border-white/10 bg-ink-2/70 p-4 sm:p-5">
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
         {/* ── Step: Idea ─────────────────────────────────────────────── */}
         {step === "idea" && (
           <>
-            <h3 className="mb-3 text-base font-semibold text-white">What do you want to post about?</h3>
+            <h3 className="mb-3 text-base font-semibold text-slate-900">What do you want to post about?</h3>
             <div className="mb-3 grid grid-cols-3 gap-2">
               {TYPES.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => pickType(t.id)}
                   className={`flex flex-col items-start gap-0.5 rounded-xl border p-3 text-left transition ${
-                    type === t.id ? "border-boss-violet/60 bg-boss-violet/10" : "border-white/10 bg-black/20 hover:border-white/25"
+                    type === t.id ? "border-boss-violet/60 bg-boss-violet/10" : "border-slate-200 bg-slate-50 hover:border-slate-300"
                   }`}
                 >
-                  <span className="text-sm font-semibold text-white">
+                  <span className="text-sm font-semibold text-slate-900">
                     <span aria-hidden className="mr-1">
                       {t.emoji}
                     </span>
                     {t.label}
                   </span>
-                  <span className="text-[11px] leading-snug text-white/45">{t.hint}</span>
+                  <span className="text-[11px] leading-snug text-slate-500">{t.hint}</span>
                 </button>
               ))}
             </div>
@@ -462,7 +462,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
               onChange={(e) => setIntent(e.target.value)}
               rows={4}
               placeholder="e.g. Promote our free first-time homebuyer webinar this Saturday — friendly, encouraging, aimed at young families."
-              className="w-full resize-y rounded-xl border border-white/10 bg-black/30 p-3.5 text-[15px] leading-relaxed text-white placeholder:text-white/35 outline-none focus:border-boss-violet/60"
+              className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-[15px] leading-relaxed text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
             />
             <div className="mt-4 flex items-center justify-end gap-2">
               {hasDraft && (
@@ -481,7 +481,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
         {/* ── Step: Copy ─────────────────────────────────────────────── */}
         {step === "copy" && (
           <>
-            <h3 className="mb-3 text-base font-semibold text-white">Review your post</h3>
+            <h3 className="mb-3 text-base font-semibold text-slate-900">Review your post</h3>
             <div className="flex flex-col gap-3">
               <Field label={type === "video" ? "Title (also the video title)" : "Title / headline"}>
                 <input value={title} onChange={(e) => setTitle(e.target.value)} className={fieldCls} />
@@ -512,19 +512,19 @@ export default function Compose({ status }: { status: ComposeStatus }) {
         {/* ── Step: Media ────────────────────────────────────────────── */}
         {step === "media" && needsMedia && (
           <>
-            <h3 className="mb-1 text-base font-semibold text-white">Generate the {type}</h3>
-            <p className="mb-2 text-xs text-white/45">The AI wrote this {type} prompt from your post. Tweak it, then generate.</p>
+            <h3 className="mb-1 text-base font-semibold text-slate-900">Generate the {type}</h3>
+            <p className="mb-2 text-xs text-slate-500">The AI wrote this {type} prompt from your post. Tweak it, then generate.</p>
             <textarea value={mediaPrompt} onChange={(e) => setMediaPrompt(e.target.value)} rows={3} className={`${fieldCls} resize-y`} />
 
             {/* Optional reference image to guide generation */}
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium text-white/40">Reference {type === "video" ? "(animate an image)" : "(edit an image)"}:</span>
+              <span className="text-xs font-medium text-slate-400">Reference {type === "video" ? "(animate an image)" : "(edit an image)"}:</span>
               {refUrl ? (
                 <span className="inline-flex items-center gap-2 rounded-lg border border-boss-gold/30 bg-boss-gold/10 py-1 pl-1 pr-2 text-xs">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={refUrl} alt="reference" className="size-6 rounded object-cover" />
-                  <span className="text-white/70">Reference set</span>
-                  <button onClick={() => setRefUrl(null)} className="text-white/50 hover:text-white" aria-label="remove reference">
+                  <span className="text-slate-700">Reference set</span>
+                  <button onClick={() => setRefUrl(null)} className="text-slate-500 hover:text-slate-900" aria-label="remove reference">
                     ×
                   </button>
                 </span>
@@ -542,13 +542,13 @@ export default function Compose({ status }: { status: ComposeStatus }) {
             </div>
 
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium text-white/40">Aspect</span>
+              <span className="text-xs font-medium text-slate-400">Aspect</span>
               {ASPECTS.map((a) => (
                 <button
                   key={a}
                   onClick={() => setAspect(a)}
                   className={`rounded-md px-2.5 py-1 text-xs font-medium ring-1 transition ${
-                    aspect === a ? "bg-white/10 text-white ring-white/25" : "text-white/50 ring-white/10 hover:text-white/80"
+                    aspect === a ? "bg-slate-100 text-slate-900 ring-slate-300" : "text-slate-500 ring-slate-200 hover:text-slate-900"
                   }`}
                 >
                   {a}
@@ -560,13 +560,13 @@ export default function Compose({ status }: { status: ComposeStatus }) {
               </button>
             </div>
             {generating && type === "video" && (
-              <p className="mt-2 text-center text-xs text-white/45">Rendering video — this usually takes 1–3 minutes.</p>
+              <p className="mt-2 text-center text-xs text-slate-500">Rendering video — this usually takes 1–3 minutes.</p>
             )}
 
             {/* Or use your own media directly */}
-            <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-3">
+            <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs text-white/55">Already have {type === "video" ? "a video" : "an image"}? Use it directly:</span>
+                <span className="text-xs text-slate-500">Already have {type === "video" ? "a video" : "an image"}? Use it directly:</span>
                 <button onClick={() => mediaFileRef.current?.click()} disabled={uploading} className={chipBtn}>
                   {uploading ? "Uploading…" : `Upload ${type}`}
                 </button>
@@ -578,7 +578,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
             </div>
 
             {mediaUrl && (
-              <div className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-black/40">
+              <div className="mt-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
                 {type === "video" ? (
                   <video src={mediaUrl} controls loop className="max-h-[45dvh] w-full" />
                 ) : (
@@ -599,9 +599,9 @@ export default function Compose({ status }: { status: ComposeStatus }) {
         {/* ── Step: Publish ──────────────────────────────────────────── */}
         {step === "publish" && (
           <>
-            <h3 className="mb-3 text-base font-semibold text-white">Post to your channels</h3>
+            <h3 className="mb-3 text-base font-semibold text-slate-900">Post to your channels</h3>
             {configuredEligible.length === 0 ? (
-              <p className="text-sm text-white/55">
+              <p className="text-sm text-slate-500">
                 No channels are set up for {type} posts yet.{" "}
                 <Link href="/connections" className="text-boss-gold underline underline-offset-2">
                   Connect an account →
@@ -617,7 +617,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
                         <a
                           key={p}
                           href={meta.connectPath}
-                          className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs text-white/60 transition hover:border-boss-violet/50 hover:text-white"
+                          className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-600 transition hover:border-boss-violet/50 hover:text-slate-900"
                         >
                           Connect {meta.label}
                         </a>
@@ -630,7 +630,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
                         onClick={() => toggle(p)}
                         title={accountFor(p) ?? undefined}
                         className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-                          on ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold" : "border-white/15 bg-white/[0.04] text-white/60 hover:text-white"
+                          on ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold" : "border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900"
                         }`}
                       >
                         {on ? "✓ " : ""}
@@ -642,7 +642,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
 
                 {!previews && (
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] text-white/35">{selected.size ? `${selected.size} selected` : "Select channels above"}</span>
+                    <span className="text-[11px] text-slate-400">{selected.size ? `${selected.size} selected` : "Select channels above"}</span>
                     <button onClick={runPreview} disabled={previewing || selected.size === 0} className={`${primaryBtn} !bg-boss-violet !text-white`}>
                       {previewing && <Spinner light />}
                       {previewing ? "Tailoring…" : "Preview per channel"}
@@ -652,15 +652,15 @@ export default function Compose({ status }: { status: ComposeStatus }) {
 
                 {previews && (
                   <div className="mt-1 flex flex-col gap-3">
-                    <p className="text-xs text-white/45">AI tailored a caption for each channel. Edit anything, then publish.</p>
+                    <p className="text-xs text-slate-500">AI tailored a caption for each channel. Edit anything, then publish.</p>
                     {previews.map((p) => (
-                      <div key={p.platform} className="rounded-xl border border-white/10 bg-black/20 p-3">
+                      <div key={p.platform} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                         <div className="mb-1.5 flex items-center gap-2 text-xs">
-                          <span className="font-semibold text-white/80">{PLATFORM_META[p.platform]?.label ?? p.platform}</span>
-                          {accountFor(p.platform) && <span className="text-white/35">· {accountFor(p.platform)}</span>}
+                          <span className="font-semibold text-slate-900">{PLATFORM_META[p.platform]?.label ?? p.platform}</span>
+                          {accountFor(p.platform) && <span className="text-slate-400">· {accountFor(p.platform)}</span>}
                         </div>
                         {needsMedia && mediaUrl && (
-                          <div className="mb-2 overflow-hidden rounded-lg border border-white/10">
+                          <div className="mb-2 overflow-hidden rounded-lg border border-slate-200">
                             {type === "video" ? (
                               <video src={mediaUrl} muted className="max-h-40 w-full object-cover" />
                             ) : (
@@ -673,7 +673,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
                       </div>
                     ))}
                     {scheduled ? (
-                      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
+                      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-700">
                         Scheduled ✓ — it&apos;ll post automatically at your chosen time. Track it under{" "}
                         <Link href="/compose" className="font-semibold underline underline-offset-2">
                           Scheduled
@@ -683,13 +683,13 @@ export default function Compose({ status }: { status: ComposeStatus }) {
                     ) : (
                       <>
                         <div className="flex items-center gap-2">
-                          <div className="inline-flex rounded-lg border border-white/10 bg-black/30 p-1 text-sm">
+                          <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1 text-sm">
                             {(["now", "schedule"] as const).map((m) => (
                               <button
                                 key={m}
                                 onClick={() => setPublishMode(m)}
                                 className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
-                                  publishMode === m ? "bg-boss-violet text-white shadow" : "text-white/60 hover:text-white"
+                                  publishMode === m ? "bg-boss-violet text-white shadow" : "text-slate-600 hover:text-slate-900"
                                 }`}
                               >
                                 {m === "now" ? "Publish now" : "Schedule"}
@@ -701,12 +701,12 @@ export default function Compose({ status }: { status: ComposeStatus }) {
                               type="datetime-local"
                               value={scheduledFor}
                               onChange={(e) => setScheduledFor(e.target.value)}
-                              className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none focus:border-boss-violet/60"
+                              className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-boss-violet/60"
                             />
                           )}
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <button onClick={runPreview} disabled={previewing} className="text-xs text-white/50 underline underline-offset-2 transition hover:text-white disabled:opacity-40">
+                          <button onClick={runPreview} disabled={previewing} className="text-xs text-slate-500 underline underline-offset-2 transition hover:text-slate-900 disabled:opacity-40">
                             {previewing ? "Re-tailoring…" : "Re-tailor with AI"}
                           </button>
                           {publishMode === "now" ? (
@@ -733,7 +733,7 @@ export default function Compose({ status }: { status: ComposeStatus }) {
       </section>
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-200">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-700">
           {error}
           {isCreditError && (
             <Link href="/billing" className="ml-2 inline-block font-semibold text-boss-gold underline underline-offset-2 hover:brightness-110">
@@ -744,11 +744,11 @@ export default function Compose({ status }: { status: ComposeStatus }) {
       )}
 
       {results && (
-        <div className="rounded-2xl border border-white/10 bg-ink-2/70 p-4 sm:p-5">
-          <div className="mb-2 text-sm font-semibold text-white">Results</div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+          <div className="mb-2 text-sm font-semibold text-slate-900">Results</div>
           <ul className="space-y-1.5 text-sm">
             {results.map((r) => (
-              <li key={r.platform} className={r.ok ? "text-emerald-300" : "text-red-300"}>
+              <li key={r.platform} className={r.ok ? "text-emerald-600" : "text-red-600"}>
                 <span className="font-medium">{PLATFORM_META[r.platform]?.label ?? r.platform}</span>:{" "}
                 {r.ok ? (
                   r.url ? (
@@ -803,27 +803,27 @@ function GalleryModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="relative flex max-h-[85dvh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink-2 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-          <h4 className="text-sm font-semibold text-white">
+      <div className="relative flex max-h-[85dvh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+          <h4 className="text-sm font-semibold text-slate-900">
             {mode === "ref" ? "Pick a reference image" : "Pick from your gallery"}
           </h4>
-          <button onClick={onClose} aria-label="Close" className="grid size-7 place-items-center rounded-full bg-black/40 text-white/70 hover:text-white">
+          <button onClick={onClose} aria-label="Close" className="grid size-7 place-items-center rounded-full bg-slate-100 text-slate-700 hover:text-slate-900">
             ×
           </button>
         </div>
         <div className="overflow-y-auto p-4">
           {loading ? (
-            <p className="py-8 text-center text-sm text-white/45">Loading…</p>
+            <p className="py-8 text-center text-sm text-slate-500">Loading…</p>
           ) : items.length === 0 ? (
-            <p className="py-8 text-center text-sm text-white/45">Nothing saved yet — generate something first.</p>
+            <p className="py-8 text-center text-sm text-slate-500">Nothing saved yet — generate something first.</p>
           ) : (
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
               {items.map((it) => (
                 <button
                   key={it.url}
                   onClick={() => onPick(it.url)}
-                  className="group aspect-square overflow-hidden rounded-lg border border-white/10 bg-black/40 transition hover:border-boss-gold/60"
+                  className="group aspect-square overflow-hidden rounded-lg border border-slate-200 bg-slate-100 transition hover:border-boss-gold/60"
                 >
                   {it.type === "video" ? (
                     <video src={it.url} muted className="size-full object-cover" />
@@ -843,8 +843,8 @@ function GalleryModal({
 
 function NavRow({ onBack, children }: { onBack: () => void; children?: React.ReactNode }) {
   return (
-    <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/10 pt-3">
-      <button onClick={onBack} className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-white/55 transition hover:text-white">
+    <div className="mt-4 flex items-center justify-between gap-2 border-t border-slate-200 pt-3">
+      <button onClick={onBack} className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition hover:text-slate-900">
         ← Back
       </button>
       {children}
@@ -855,7 +855,7 @@ function NavRow({ onBack, children }: { onBack: () => void; children?: React.Rea
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[11px] font-medium uppercase tracking-wide text-white/40">{label}</span>
+      <span className="text-[11px] font-medium uppercase tracking-wide text-slate-500">{label}</span>
       {children}
     </label>
   );

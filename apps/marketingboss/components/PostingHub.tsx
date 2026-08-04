@@ -111,18 +111,18 @@ export default function PostingHub({
           <span className="text-[10px] opacity-70">▼</span>
         </button>
         {menuOpen && (
-          <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-white/10 bg-ink-2 shadow-2xl">
-            <Link href="/compose/new" className="block px-4 py-3 transition hover:bg-white/5">
-              <div className="text-sm font-semibold text-white">✨ AI posting</div>
-              <div className="text-[11px] text-white/45">Write one post now, or schedule it.</div>
+          <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
+            <Link href="/compose/new" className="block px-4 py-3 transition hover:bg-slate-100">
+              <div className="text-sm font-semibold text-slate-900">✨ AI posting</div>
+              <div className="text-[11px] text-slate-500">Write one post now, or schedule it.</div>
             </Link>
-            <Link href="/compose/ugc" className="block border-t border-white/10 px-4 py-3 transition hover:bg-white/5">
-              <div className="text-sm font-semibold text-white">🎥 UGC ad</div>
-              <div className="text-[11px] text-white/45">AI films a creator-style video ad (with voice).</div>
+            <Link href="/compose/ugc" className="block border-t border-slate-200 px-4 py-3 transition hover:bg-slate-100">
+              <div className="text-sm font-semibold text-slate-900">🎥 UGC ad</div>
+              <div className="text-[11px] text-slate-500">AI films a creator-style video ad (with voice).</div>
             </Link>
-            <Link href="/autopilot" className="block border-t border-white/10 px-4 py-3 transition hover:bg-white/5">
-              <div className="text-sm font-semibold text-white">🤖 Auto posting</div>
-              <div className="text-[11px] text-white/45">Set up a campaign that posts on autopilot.</div>
+            <Link href="/autopilot" className="block border-t border-slate-200 px-4 py-3 transition hover:bg-slate-100">
+              <div className="text-sm font-semibold text-slate-900">🤖 Auto posting</div>
+              <div className="text-[11px] text-slate-500">Set up a campaign that posts on autopilot.</div>
             </Link>
           </div>
         )}
@@ -130,9 +130,9 @@ export default function PostingHub({
 
       {/* Schedule (cadences) */}
       <section className="flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-white/80">Posting schedule</h3>
+        <h3 className="text-sm font-semibold text-slate-900">Posting schedule</h3>
         {cadences.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-ink-2/70 p-4 text-sm text-white/50">
+          <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
             No auto-posting campaigns yet.{" "}
             <Link href="/autopilot" className="text-boss-gold underline underline-offset-2">
               Set one up →
@@ -146,9 +146,9 @@ export default function PostingHub({
       {/* Scheduled */}
       {scheduled.length > 0 && (
         <section className="flex flex-col gap-2">
-          <h3 className="text-sm font-semibold text-white/80">Scheduled ({scheduled.length})</h3>
+          <h3 className="text-sm font-semibold text-slate-900">Scheduled ({scheduled.length})</h3>
           {scheduled.map((p) => (
-            <div key={p.id} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-ink-2/70 p-4">
+            <div key={p.id} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4">
               {p.media_url && p.type !== "video" && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={p.media_url} alt="" className="size-14 shrink-0 rounded-lg object-cover" />
@@ -158,16 +158,16 @@ export default function PostingHub({
                   <span className="rounded-full bg-boss-violet/20 px-2 py-0.5 font-semibold text-boss-violet">
                     {fmt(p.scheduled_for)}
                   </span>
-                  <span className="text-white/45">
+                  <span className="text-slate-500">
                     {TYPE_EMOJI[p.type]} {p.channels.map((c) => LABEL[c] ?? c).join(", ")}
                   </span>
                 </div>
-                <p className="mt-1 line-clamp-2 text-sm text-white/70">{p.caption}</p>
+                <p className="mt-1 line-clamp-2 text-sm text-slate-700">{p.caption}</p>
               </div>
               <button
                 onClick={() => cancel(p.id)}
                 disabled={busy === p.id}
-                className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/55 transition hover:text-white disabled:opacity-40"
+                className="shrink-0 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-500 transition hover:text-slate-900 disabled:opacity-40"
               >
                 Cancel
               </button>
@@ -178,14 +178,14 @@ export default function PostingHub({
 
       {/* History */}
       <section className="flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-white/80">Posting history</h3>
+        <h3 className="text-sm font-semibold text-slate-900">Posting history</h3>
         {history.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-ink-2/70 p-4 text-sm text-white/50">
+          <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
             Nothing published yet.
           </p>
         ) : (
           history.map((p) => (
-            <div key={p.id} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-ink-2/70 p-4">
+            <div key={p.id} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4">
               {p.media_url && p.type !== "video" && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={p.media_url} alt="" className="size-14 shrink-0 rounded-lg object-cover" />
@@ -194,19 +194,19 @@ export default function PostingHub({
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                   <span
                     className={`rounded-full px-2 py-0.5 font-semibold capitalize ${
-                      p.status === "published" ? "bg-emerald-500/15 text-emerald-300" : "bg-red-500/15 text-red-300"
+                      p.status === "published" ? "bg-emerald-500/15 text-emerald-600" : "bg-red-500/15 text-red-600"
                     }`}
                   >
                     {p.status}
                   </span>
-                  <span className="text-white/40">{fmt(p.published_at || p.created_at)}</span>
-                  <span className="text-white/45">{TYPE_EMOJI[p.type]}</span>
+                  <span className="text-slate-400">{fmt(p.published_at || p.created_at)}</span>
+                  <span className="text-slate-500">{TYPE_EMOJI[p.type]}</span>
                 </div>
-                <p className="mt-1 line-clamp-2 text-sm text-white/70">{p.caption}</p>
+                <p className="mt-1 line-clamp-2 text-sm text-slate-700">{p.caption}</p>
                 {(() => {
                   const t = totalMetrics(p.metrics);
                   return t ? (
-                    <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-white/55">
+                    <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-slate-500">
                       <span>♥ {t.likes}</span>
                       <span>💬 {t.comments}</span>
                       {t.views > 0 && <span>▶ {t.views}</span>}
@@ -216,7 +216,7 @@ export default function PostingHub({
                 {p.results && (
                   <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
                     {p.results.map((r) => (
-                      <span key={r.platform} className={r.ok ? "text-emerald-300/80" : "text-red-300/80"}>
+                      <span key={r.platform} className={r.ok ? "text-emerald-600" : "text-red-600"}>
                         {LABEL[r.platform] ?? r.platform}
                         {r.ok && r.url ? (
                           <>
@@ -245,21 +245,21 @@ function CadenceRow({ row, onSave }: { row: ScheduleRow; onSave: (id: string, fr
   const [freq, setFreq] = useState(row.frequency);
   const dirty = freq !== row.frequency;
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-ink-2/70 p-4">
+    <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4">
       <div className="min-w-0 flex-1">
-        <Link href={`/autopilot/${row.id}`} className="font-medium text-white hover:text-boss-gold">
+        <Link href={`/autopilot/${row.id}`} className="font-medium text-slate-900 hover:text-boss-gold">
           {row.name}
         </Link>
-        {row.nextRunAt && <div className="text-[11px] text-white/40">Next: {fmt(row.nextRunAt)}</div>}
+        {row.nextRunAt && <div className="text-[11px] text-slate-400">Next: {fmt(row.nextRunAt)}</div>}
       </div>
-      <div className="flex items-center gap-1.5 text-xs text-white/60">
+      <div className="flex items-center gap-1.5 text-xs text-slate-600">
         <input
           type="number"
           min={1}
           max={21}
           value={freq}
           onChange={(e) => setFreq(Math.min(Math.max(Number(e.target.value) || 1, 1), 21))}
-          className="w-14 rounded-lg border border-white/10 bg-black/30 px-2 py-1.5 text-white outline-none focus:border-boss-violet/60"
+          className="w-14 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-slate-900 outline-none focus:border-boss-violet/60"
         />
         <span>×/week</span>
       </div>

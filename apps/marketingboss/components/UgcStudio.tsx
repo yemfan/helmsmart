@@ -76,11 +76,11 @@ export default function UgcStudio({
   }, [supabase]);
 
   const fieldCls =
-    "w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-white/35 outline-none focus:border-boss-violet/60";
+    "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60";
   const primaryBtn =
     "inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40";
   const chipBtn =
-    "rounded-lg border border-white/10 bg-black/30 px-3 py-1.5 text-xs font-medium text-white/60 transition hover:text-white disabled:opacity-40";
+    "rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:text-slate-900 disabled:opacity-40";
 
   async function uploadFile(file: File, folder: string): Promise<string> {
     if (!uid) throw new Error("Still signing in — try again in a second.");
@@ -269,7 +269,7 @@ export default function UgcStudio({
 
   if (!aiConfigured) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-ink-2/70 p-5 text-sm text-white/60">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
         AI copywriting isn&apos;t turned on yet. Set <code className="text-boss-gold">ANTHROPIC_API_KEY</code> to enable UGC ads.
       </div>
     );
@@ -281,28 +281,28 @@ export default function UgcStudio({
   return (
     <div className="flex flex-col gap-5">
       {/* ── Step 1: the idea + references ─────────────────────────────── */}
-      <section className="rounded-2xl border border-white/10 bg-ink-2/70 p-4 sm:p-5">
-        <h3 className="mb-1 text-base font-semibold text-white">1 · What&apos;s the ad about?</h3>
-        <p className="mb-3 text-xs text-white/45">Describe the product and the angle. The AI writes a creator-style script and a shot list.</p>
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+        <h3 className="mb-1 text-base font-semibold text-slate-900">1 · What&apos;s the ad about?</h3>
+        <p className="mb-3 text-xs text-slate-500">Describe the product and the angle. The AI writes a creator-style script and a shot list.</p>
         <textarea
           value={intent}
           onChange={(e) => setIntent(e.target.value)}
           rows={4}
           placeholder="e.g. A busy first-time homebuyer discovers our free AI home-search tool — casual, excited, 'you have to try this' energy."
-          className="w-full resize-y rounded-xl border border-white/10 bg-black/30 p-3.5 text-[15px] leading-relaxed text-white placeholder:text-white/35 outline-none focus:border-boss-violet/60"
+          className="w-full resize-y rounded-xl border border-slate-200 bg-white p-3.5 text-[15px] leading-relaxed text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
         />
 
         {/* References */}
-        <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
+        <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium text-white/50">Reference (optional):</span>
+            <span className="text-xs font-medium text-slate-500">Reference (optional):</span>
             <button onClick={() => imgRef.current?.click()} disabled={uploading} className={chipBtn}>
               {uploading ? "Uploading…" : "+ Image"}
             </button>
             <button onClick={() => vidRef.current?.click()} disabled={uploading} className={chipBtn}>
               {uploading ? "Uploading…" : "+ Video (a viral ad)"}
             </button>
-            <span className="text-[11px] text-white/30">Drop in a still or a clip to emulate its style, framing &amp; pacing.</span>
+            <span className="text-[11px] text-slate-400">Drop in a still or a clip to emulate its style, framing &amp; pacing.</span>
           </div>
           <input ref={imgRef} type="file" accept="image/*" onChange={(e) => onPickRef(e, "image")} className="hidden" />
           <input ref={vidRef} type="file" accept="video/*" onChange={(e) => onPickRef(e, "video")} className="hidden" />
@@ -316,17 +316,17 @@ export default function UgcStudio({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={r.url} alt="reference" className="size-7 rounded object-cover" />
                   )}
-                  <span className="text-white/70">{r.kind === "video" ? "Video" : "Image"}</span>
+                  <span className="text-slate-700">{r.kind === "video" ? "Video" : "Image"}</span>
                   <button
                     onClick={() => setRefs((prev) => prev.filter((_, i) => i !== idx))}
-                    className="text-white/50 hover:text-white"
+                    className="text-slate-500 hover:text-slate-900"
                     aria-label="remove reference"
                   >
                     ×
                   </button>
                 </span>
               ))}
-              <span className="self-center text-[11px] text-white/30">
+              <span className="self-center text-[11px] text-slate-400">
                 {imgCount}/9 images · {vidCount}/3 videos
               </span>
             </div>
@@ -334,22 +334,22 @@ export default function UgcStudio({
         </div>
 
         {/* Viral-reference finder */}
-        <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-3">
+        <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
           <div className="flex flex-wrap items-center gap-2">
             <button onClick={runInspire} disabled={scouting || !intent.trim()} className={chipBtn}>
               {scouting ? "Searching…" : "✨ Find a viral ad to emulate"}
             </button>
-            <span className="text-[11px] text-white/30">AI web-searches trending formats in your niche.</span>
+            <span className="text-[11px] text-slate-400">AI web-searches trending formats in your niche.</span>
           </div>
           {chosenStyle && (
             <div className="mt-2 inline-flex items-center gap-2 rounded-lg border border-boss-gold/30 bg-boss-gold/10 py-1 pl-2.5 pr-2 text-xs">
-              <span className="text-white/70">Emulating: <span className="font-medium text-white">{chosenStyle.title}</span></span>
-              <button onClick={() => setChosenStyle(null)} className="text-white/50 hover:text-white" aria-label="clear style">
+              <span className="text-slate-700">Emulating: <span className="font-medium text-slate-900">{chosenStyle.title}</span></span>
+              <button onClick={() => setChosenStyle(null)} className="text-slate-500 hover:text-slate-900" aria-label="clear style">
                 ×
               </button>
             </div>
           )}
-          {scouting && <p className="mt-2 text-[11px] text-white/40">Scanning what&apos;s trending — this takes ~20–40s.</p>}
+          {scouting && <p className="mt-2 text-[11px] text-slate-400">Scanning what&apos;s trending — this takes ~20–40s.</p>}
           {viralRefs && viralRefs.length > 0 && (
             <div className="mt-2 flex flex-col gap-2">
               {viralRefs.map((v, i) => {
@@ -358,26 +358,26 @@ export default function UgcStudio({
                   <div
                     key={i}
                     className={`rounded-lg border p-2.5 text-xs transition ${
-                      picked ? "border-boss-gold/50 bg-boss-gold/5" : "border-white/10 bg-black/20"
+                      picked ? "border-boss-gold/50 bg-boss-gold/5" : "border-slate-200 bg-slate-50"
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">{v.title}</span>
-                      <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/50">{v.platform}</span>
+                      <span className="font-semibold text-slate-900">{v.title}</span>
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500">{v.platform}</span>
                       {v.url && (
                         <a href={v.url} target="_blank" rel="noreferrer" className="ml-auto text-boss-violet/80 underline underline-offset-2 hover:text-boss-violet">
                           example ↗
                         </a>
                       )}
                     </div>
-                    <p className="mt-1 text-white/60">{v.why}</p>
-                    <p className="mt-1 text-white/40">
-                      <span className="text-white/55">Hook:</span> {v.hook}
+                    <p className="mt-1 text-slate-600">{v.why}</p>
+                    <p className="mt-1 text-slate-400">
+                      <span className="text-slate-500">Hook:</span> {v.hook}
                     </p>
                     <button
                       onClick={() => setChosenStyle(picked ? null : v)}
                       className={`mt-2 rounded-md px-2.5 py-1 text-[11px] font-medium transition ${
-                        picked ? "bg-boss-gold/20 text-boss-gold" : "border border-white/15 text-white/60 hover:text-white"
+                        picked ? "bg-boss-gold/20 text-boss-gold" : "border border-slate-200 text-slate-600 hover:text-slate-900"
                       }`}
                     >
                       {picked ? "✓ Emulating this" : "Use this style"}
@@ -399,16 +399,16 @@ export default function UgcStudio({
 
       {/* ── Step 2: the ad + render ───────────────────────────────────── */}
       {ad && (
-        <section className="rounded-2xl border border-white/10 bg-ink-2/70 p-4 sm:p-5">
-          <h3 className="mb-3 text-base font-semibold text-white">2 · Review &amp; film</h3>
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+          <h3 className="mb-3 text-base font-semibold text-slate-900">2 · Review &amp; film</h3>
 
           <div className="mb-3 rounded-xl border border-boss-violet/20 bg-boss-violet/5 p-3">
             <div className="text-[11px] font-semibold uppercase tracking-wide text-boss-violet/80">Hook</div>
-            <p className="mt-0.5 text-sm text-white">{ad.hook}</p>
+            <p className="mt-0.5 text-sm text-slate-900">{ad.hook}</p>
             {ad.onScreen.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {ad.onScreen.map((line, i) => (
-                  <span key={i} className="rounded-md bg-black/30 px-2 py-0.5 text-[11px] text-white/60">
+                  <span key={i} className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600">
                     {line}
                   </span>
                 ))}
@@ -419,7 +419,7 @@ export default function UgcStudio({
           <Field label="Spoken script">
             <textarea value={script} onChange={(e) => setScript(e.target.value)} rows={4} className={`${fieldCls} resize-y leading-relaxed`} />
           </Field>
-          <p className="mt-1 mb-3 text-[11px] text-white/35">
+          <p className="mt-1 mb-3 text-[11px] text-slate-400">
             Seedance renders the creator + voice from the shot prompt below. Edit the script for your records; edit the prompt to change the render.
           </p>
           <Field label="Shot prompt (what gets filmed)">
@@ -427,16 +427,16 @@ export default function UgcStudio({
           </Field>
 
           <div className="mt-4 flex items-center justify-between gap-2">
-            <span className="text-[11px] text-white/35">9:16 vertical · native voice · ~35 credits</span>
+            <span className="text-[11px] text-slate-400">9:16 vertical · native voice · ~35 credits</span>
             <button onClick={generateClip} disabled={generating || !videoPrompt.trim()} className={primaryBtn}>
               {generating && <Spinner />}
               {generating ? "Filming…" : clipUrl ? "Re-film" : "Film the ad"}
             </button>
           </div>
-          {generating && <p className="mt-2 text-center text-xs text-white/45">Filming with Seedance — this usually takes 1–3 minutes.</p>}
+          {generating && <p className="mt-2 text-center text-xs text-slate-500">Filming with Seedance — this usually takes 1–3 minutes.</p>}
 
           {clipUrl && (
-            <div className="mt-3 flex justify-center overflow-hidden rounded-xl border border-white/10 bg-black/40">
+            <div className="mt-3 flex justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
               <video src={clipUrl} controls loop className="max-h-[60dvh]" />
             </div>
           )}
@@ -445,10 +445,10 @@ export default function UgcStudio({
 
       {/* ── Step 3: publish ───────────────────────────────────────────── */}
       {ad && clipUrl && (
-        <section className="rounded-2xl border border-white/10 bg-ink-2/70 p-4 sm:p-5">
-          <h3 className="mb-3 text-base font-semibold text-white">3 · Post it</h3>
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+          <h3 className="mb-3 text-base font-semibold text-slate-900">3 · Post it</h3>
           {channels.length === 0 ? (
-            <p className="text-sm text-white/55">
+            <p className="text-sm text-slate-500">
               No video channels are set up yet.{" "}
               <Link href="/connections" className="text-boss-gold underline underline-offset-2">
                 Connect TikTok or YouTube →
@@ -466,7 +466,7 @@ export default function UgcStudio({
                       <a
                         key={c.id}
                         href={c.connectPath}
-                        className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs text-white/60 transition hover:border-boss-violet/50 hover:text-white"
+                        className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-600 transition hover:border-boss-violet/50 hover:text-slate-900"
                       >
                         Connect {c.label}
                       </a>
@@ -478,7 +478,7 @@ export default function UgcStudio({
                       key={c.id}
                       onClick={() => toggle(c.id)}
                       className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-                        on ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold" : "border-white/15 bg-white/[0.04] text-white/60 hover:text-white"
+                        on ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold" : "border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900"
                       }`}
                     >
                       {on ? "✓ " : ""}
@@ -489,7 +489,7 @@ export default function UgcStudio({
               </div>
 
               {scheduled ? (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-600">
                   Scheduled ✓ — it&apos;ll post automatically at your chosen time. Track it under{" "}
                   <Link href="/compose" className="font-semibold underline underline-offset-2">
                     Scheduled
@@ -499,13 +499,13 @@ export default function UgcStudio({
               ) : (
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-2">
-                    <div className="inline-flex rounded-lg border border-white/10 bg-black/30 p-1 text-sm">
+                    <div className="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-sm">
                       {(["now", "schedule"] as const).map((m) => (
                         <button
                           key={m}
                           onClick={() => setPublishMode(m)}
                           className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
-                            publishMode === m ? "bg-boss-violet text-white shadow" : "text-white/60 hover:text-white"
+                            publishMode === m ? "bg-boss-violet text-white shadow" : "text-slate-600 hover:text-slate-900"
                           }`}
                         >
                           {m === "now" ? "Publish now" : "Schedule"}
@@ -517,7 +517,7 @@ export default function UgcStudio({
                         type="datetime-local"
                         value={scheduledFor}
                         onChange={(e) => setScheduledFor(e.target.value)}
-                        className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none focus:border-boss-violet/60"
+                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-boss-violet/60"
                       />
                     )}
                     <div className="ml-auto">
@@ -542,7 +542,7 @@ export default function UgcStudio({
       )}
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-200">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-600">
           {error}
           {isCreditError && (
             <Link href="/billing" className="ml-2 inline-block font-semibold text-boss-gold underline underline-offset-2 hover:brightness-110">
@@ -553,11 +553,11 @@ export default function UgcStudio({
       )}
 
       {results && (
-        <div className="rounded-2xl border border-white/10 bg-ink-2/70 p-4 sm:p-5">
-          <div className="mb-2 text-sm font-semibold text-white">Results</div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+          <div className="mb-2 text-sm font-semibold text-slate-900">Results</div>
           <ul className="space-y-1.5 text-sm">
             {results.map((r) => (
-              <li key={r.platform} className={r.ok ? "text-emerald-300" : "text-red-300"}>
+              <li key={r.platform} className={r.ok ? "text-emerald-600" : "text-red-600"}>
                 <span className="font-medium">{channels.find((c) => c.id === r.platform)?.label ?? r.platform}</span>:{" "}
                 {r.ok ? (
                   r.url ? (
@@ -582,7 +582,7 @@ export default function UgcStudio({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-[11px] font-medium uppercase tracking-wide text-white/40">{label}</span>
+      <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{label}</span>
       {children}
     </label>
   );

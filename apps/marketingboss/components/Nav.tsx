@@ -47,13 +47,13 @@ export default function Nav({ email, credits }: { email: string; credits?: numbe
     <header className="flex items-center gap-3">
       <Link href="/" className="flex items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.png" alt="MarketingBoss" className="size-10 rounded-xl ring-1 ring-white/10" />
+        <img src="/logo.png" alt="MarketingBoss" className="size-10 rounded-xl ring-1 ring-slate-200" />
 
         <div>
           <h1 className="text-lg font-bold leading-tight tracking-tight">
             Marketing<span className="text-boss-gold">Boss</span>
           </h1>
-          <p className="text-[11px] text-white/45">Cinematic marketing creative on demand</p>
+          <p className="text-[11px] text-slate-500">Cinematic marketing creative on demand</p>
         </div>
       </Link>
 
@@ -73,23 +73,23 @@ export default function Nav({ email, credits }: { email: string; credits?: numbe
             onClick={() => setOpen((o) => !o)}
             aria-haspopup="menu"
             aria-expanded={open}
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] py-1 pl-1 pr-2.5 text-sm transition hover:bg-white/10"
+            className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 py-1 pl-1 pr-2.5 text-sm transition hover:bg-slate-100"
           >
             <span className="grid size-7 place-items-center rounded-full bg-boss-violet text-xs font-bold text-white">
               {initial}
             </span>
-            <span className="hidden max-w-[160px] truncate text-white/80 sm:inline">{email}</span>
-            <span className="text-[10px] text-white/40">▼</span>
+            <span className="hidden max-w-[160px] truncate text-slate-900 sm:inline">{email}</span>
+            <span className="text-[10px] text-slate-400">▼</span>
           </button>
 
           {open && (
             <div
               role="menu"
-              className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-xl border border-white/10 bg-ink-2 shadow-2xl"
+              className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl"
             >
-              <div className="border-b border-white/10 px-4 py-3">
-                <div className="text-[10px] font-semibold uppercase tracking-wide text-white/35">Signed in</div>
-                <div className="truncate text-sm text-white/80">{email}</div>
+              <div className="border-b border-slate-200 px-4 py-3">
+                <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Signed in</div>
+                <div className="truncate text-sm text-slate-900">{email}</div>
               </div>
               <nav className="py-1.5">
                 {items.map((it) => (
@@ -99,18 +99,18 @@ export default function Nav({ email, credits }: { email: string; credits?: numbe
                     onClick={() => setOpen(false)}
                     className={`block px-4 py-2 text-sm transition ${
                       pathname === it.href
-                        ? "bg-white/10 text-white"
-                        : "text-white/70 hover:bg-white/5 hover:text-white"
+                        ? "bg-slate-100 text-slate-900"
+                        : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
                     }`}
                   >
                     {it.label}
                   </Link>
                 ))}
               </nav>
-              <div className="border-t border-white/10 py-1.5">
+              <div className="border-t border-slate-200 py-1.5">
                 <button
                   onClick={signOut}
-                  className="block w-full px-4 py-2 text-left text-sm font-medium text-red-300 transition hover:bg-red-500/10"
+                  className="block w-full px-4 py-2 text-left text-sm font-medium text-red-600 transition hover:bg-red-500/10"
                 >
                   Sign out
                 </button>

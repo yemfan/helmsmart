@@ -145,15 +145,15 @@ export default function Studio({
 
   return (
     <>
-      <section className="rounded-2xl border border-white/10 bg-ink-2/70 p-4 backdrop-blur sm:p-5">
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 backdrop-blur sm:p-5">
         <div className="mb-3 flex items-center gap-2">
-          <div className="inline-flex rounded-lg border border-white/10 bg-black/30 p-1 text-sm">
+          <div className="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-sm">
             {(["image", "video"] as Mode[]).map((m) => (
               <button
                 key={m}
                 onClick={() => setMode(m)}
                 className={`rounded-md px-4 py-1.5 font-medium capitalize transition ${
-                  mode === m ? "bg-boss-violet text-white shadow" : "text-white/60 hover:text-white"
+                  mode === m ? "bg-boss-violet text-white shadow" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 {m}
@@ -165,8 +165,8 @@ export default function Studio({
             <div className="ml-1 flex items-center gap-2 rounded-lg border border-boss-gold/30 bg-boss-gold/10 py-1 pl-1 pr-2 text-xs">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={refUrl!} alt="reference" className="size-7 rounded object-cover" />
-              <span className="text-white/70">{mode === "video" ? "Source frame" : "Reference"}</span>
-              <button onClick={() => setRefUrl(null)} className="text-white/50 hover:text-white" aria-label="remove reference">
+              <span className="text-slate-700">{mode === "video" ? "Source frame" : "Reference"}</span>
+              <button onClick={() => setRefUrl(null)} className="text-slate-500 hover:text-slate-900" aria-label="remove reference">
                 ×
               </button>
             </div>
@@ -174,7 +174,7 @@ export default function Studio({
             <button
               onClick={() => fileRef.current?.click()}
               disabled={uploading}
-              className="ml-1 rounded-lg border border-white/10 bg-black/30 px-3 py-1.5 text-xs font-medium text-white/60 transition hover:text-white disabled:opacity-40"
+              className="ml-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
             >
               {uploading ? "Uploading…" : "+ Reference image"}
             </button>
@@ -190,21 +190,21 @@ export default function Studio({
           }}
           rows={4}
           placeholder={placeholder}
-          className="w-full resize-y rounded-xl border border-white/10 bg-black/30 p-3.5 text-[15px] leading-relaxed text-white placeholder:text-white/35 outline-none focus:border-boss-violet/60 focus:ring-2 focus:ring-boss-violet/20"
+          className="w-full resize-y rounded-xl border border-slate-200 bg-white p-3.5 text-[15px] leading-relaxed text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60 focus:ring-2 focus:ring-boss-violet/20"
         />
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {!hasRef && (
             <>
-              <span className="text-xs font-medium text-white/40">Aspect</span>
+              <span className="text-xs font-medium text-slate-400">Aspect</span>
               {ASPECTS.map((a) => (
                 <button
                   key={a}
                   onClick={() => setAspect(a)}
                   className={`rounded-md px-2.5 py-1 text-xs font-medium ring-1 transition ${
                     aspect === a
-                      ? "bg-white/10 text-white ring-white/25"
-                      : "text-white/50 ring-white/10 hover:text-white/80"
+                      ? "bg-slate-100 text-slate-900 ring-slate-200"
+                      : "text-slate-500 ring-slate-200 hover:text-slate-700"
                   }`}
                 >
                   {a}
@@ -213,7 +213,7 @@ export default function Studio({
             </>
           )}
           {hasRef && mode === "image" && (
-            <span className="text-xs text-white/40">Editing your reference with nano-banana</span>
+            <span className="text-xs text-slate-400">Editing your reference with nano-banana</span>
           )}
 
           <button
@@ -228,14 +228,14 @@ export default function Studio({
 
         {!hasRef && (
           <div className="mt-4">
-            <span className="text-xs text-white/35">Start from a preset:</span>
+            <span className="text-xs text-slate-400">Start from a preset:</span>
             <div className="mt-2 flex flex-wrap gap-2">
               {PRESETS.map((p) => (
                 <button
                   key={p.id}
                   onClick={() => applyPreset(p.id)}
                   title={`${p.mode} · ${p.aspect}`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/70 transition hover:border-boss-violet/50 hover:text-white"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-boss-violet/50 hover:text-slate-900"
                 >
                   <span aria-hidden>{p.emoji}</span>
                   {p.label}
@@ -247,7 +247,7 @@ export default function Studio({
       </section>
 
       {loading && (
-        <p className="text-center text-sm text-white/45">
+        <p className="text-center text-sm text-slate-500">
           {mode === "video"
             ? "Rendering video — this usually takes 1–3 minutes."
             : hasRef
@@ -257,7 +257,7 @@ export default function Studio({
       )}
 
       {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-200">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-700">
           {error}
           {isCreditError && (
             <Link
@@ -273,7 +273,7 @@ export default function Studio({
       {results.length > 0 && !modalOpen && (
         <button
           onClick={() => setModalOpen(true)}
-          className="mx-auto inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-white/70 transition hover:text-white"
+          className="mx-auto inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-700 transition hover:text-slate-900"
         >
           ✓ Saved to your gallery · View result ↗
         </button>
@@ -323,20 +323,20 @@ function ResultModal({
       aria-label="Generated result"
     >
       <div
-        className="relative flex max-h-[90dvh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-ink-2 shadow-2xl"
+        className="relative flex max-h-[90dvh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full bg-black/50 text-lg text-white/80 transition hover:bg-black/70 hover:text-white"
+          className="absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full bg-white/80 text-lg text-slate-700 transition hover:bg-white hover:text-slate-900"
         >
           ×
         </button>
 
         <div className="overflow-y-auto">
           {urls.map((url) => (
-            <div key={url} className="bg-black/40">
+            <div key={url} className="bg-slate-100">
               {mode === "video" ? (
                 <video src={url} controls autoPlay loop className="max-h-[60dvh] w-full" />
               ) : (
@@ -359,10 +359,10 @@ function ResultModal({
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-white/10 px-4 py-3 text-sm">
-          <span className="text-white/50">Saved to your gallery</span>
+        <div className="flex items-center justify-between gap-3 border-t border-slate-200 px-4 py-3 text-sm">
+          <span className="text-slate-500">Saved to your gallery</span>
           <div className="flex items-center gap-2">
-            <Link href="/gallery" className="rounded-lg px-3 py-1.5 font-medium text-white/60 transition hover:text-white">
+            <Link href="/gallery" className="rounded-lg px-3 py-1.5 font-medium text-slate-600 transition hover:text-slate-900">
               Gallery
             </Link>
             <a
@@ -423,10 +423,10 @@ function YoutubePublish({
   }
 
   return (
-    <div className="border-t border-white/10 bg-black/20 px-4 py-3">
+    <div className="border-t border-slate-200 bg-slate-50 px-4 py-3">
       {published ? (
         <div className="flex items-center justify-between gap-3 text-sm">
-          <span className="text-emerald-300">Published to YouTube ✓</span>
+          <span className="text-emerald-600">Published to YouTube ✓</span>
           <a
             href={published}
             target="_blank"
@@ -438,7 +438,7 @@ function YoutubePublish({
         </div>
       ) : needsConnect ? (
         <div className="flex items-center justify-between gap-3 text-sm">
-          <span className="text-white/60">Publish this clip straight to your YouTube channel.</span>
+          <span className="text-slate-600">Publish this clip straight to your YouTube channel.</span>
           <a
             href="/api/youtube/connect"
             className="whitespace-nowrap rounded-lg bg-[#FF0000] px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-110"
@@ -448,22 +448,22 @@ function YoutubePublish({
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-xs text-white/45">
+          <div className="flex items-center gap-2 text-xs text-slate-500">
             <span>▶ Publish to YouTube</span>
-            {channel && <span className="text-white/30">· {channel}</span>}
+            {channel && <span className="text-slate-400">· {channel}</span>}
           </div>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={100}
             placeholder="Video title"
-            className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-white/35 outline-none focus:border-boss-violet/60"
+            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
           />
           <div className="flex items-center gap-2">
             <select
               value={privacy}
               onChange={(e) => setPrivacy(e.target.value as "unlisted" | "public" | "private")}
-              className="rounded-lg border border-white/10 bg-black/30 px-2.5 py-2 text-sm text-white/80 outline-none focus:border-boss-violet/60"
+              className="rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm text-slate-900 outline-none focus:border-boss-violet/60"
             >
               <option value="unlisted">Unlisted</option>
               <option value="public">Public</option>
@@ -478,7 +478,7 @@ function YoutubePublish({
               {busy ? "Publishing…" : "Publish"}
             </button>
           </div>
-          {err && <p className="text-xs text-red-300">{err}</p>}
+          {err && <p className="text-xs text-red-600">{err}</p>}
         </div>
       )}
     </div>
