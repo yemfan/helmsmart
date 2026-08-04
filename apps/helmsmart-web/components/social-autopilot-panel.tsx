@@ -265,7 +265,8 @@ export function SocialAutopilotPanel() {
           <div>
             <p className="text-xs font-semibold text-slate-700">Posting schedule</p>
             <p className="mt-0.5 text-[11px] text-slate-500">
-              Tick the days to post and choose a topic for each — pick one or type your own.
+              Tick the days to post and choose a topic for each — pick one or type your own. AI researches each topic on
+              the web so the post is current, then writes it.
             </p>
             <datalist id="autopilot-topics">
               {PREDEFINED_TOPICS.map((t) => (
