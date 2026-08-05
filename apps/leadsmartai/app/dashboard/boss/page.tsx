@@ -5,9 +5,9 @@ import BossAssistantClient from "./BossAssistantClient";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Boss Assistant",
+  title: "Ask Max",
   description:
-    "Your AI Chief of Staff — daily briefing, top priorities, hot leads, and AI team activity.",
+    "Max, captain of your AI team — morning briefing, today's priorities, hot leads, and AI team activity.",
   robots: { index: false },
 };
 

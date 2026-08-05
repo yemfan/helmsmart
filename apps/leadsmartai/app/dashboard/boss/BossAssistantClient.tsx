@@ -468,7 +468,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           )}
           {teamDigest && (
             <p className="mt-2 border-t border-gray-100 pt-2 text-xs text-gray-600">
-              <span className="font-semibold text-gray-800">While you were out</span>, your team {teamDigest.line}.
+              <span className="font-semibold text-gray-800">Your team finished {teamDigest.total} task{teamDigest.total === 1 ? "" : "s"} while you were away</span> — {teamDigest.line}.
               {teamDigest.needsYou > 0 && (
                 <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700">
                   {teamDigest.needsYou} need{teamDigest.needsYou === 1 ? "s" : ""} you
@@ -478,7 +478,12 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           )}
         </BossBubble>
 
-        {/* Proposals (from the recommendations engine) — propose + initiate */}
+        {/* Today's priorities — the proposals the recommendations engine surfaced */}
+        {recommendations.length > 0 && (
+          <p className="px-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+            Today&apos;s priorities
+          </p>
+        )}
         {recommendations.map((r) => (
           <ProposalCard
             key={r.id}
