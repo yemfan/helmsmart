@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { AssistantAvatar } from "@/components/realtyboss/AssistantAvatar";
 
 /**
  * Live Boss v2 run card (HANDOFF_BOSS_V2 PR-4): plan + step timeline with
@@ -29,7 +30,29 @@ type RunStep = {
   status: string;
   approval_state: string;
   error: string | null;
+  /** The teammate who ran this step (from the tool's assignee). */
+  assignee?: string | null;
+  created_at?: string | null;
+  finished_at?: string | null;
 };
+
+/** assignee → the AI employee who owns it (name · avatar · profession). */
+const ASSIGNEE_PERSONA: Record<string, { name: string; avatar: string; role: string }> = {
+  receptionist: { name: "Emma", avatar: "emma", role: "Receptionist" },
+  sales_assistant: { name: "Chris", avatar: "chris", role: "Sales Specialist" },
+  marketing_assistant: { name: "Ruby", avatar: "ruby", role: "Marketing Specialist" },
+  transaction_assistant: { name: "Grace", avatar: "grace", role: "Transaction Coordinator" },
+  accountant: { name: "Oliver", avatar: "oliver", role: "Financial Analyst" },
+  boss_assistant: { name: "Max", avatar: "max", role: "Captain" },
+};
+
+function fmtDuration(start?: string | null, end?: string | null): string | null {
+  if (!start || !end) return null;
+  const ms = new Date(end).getTime() - new Date(start).getTime();
+  if (!Number.isFinite(ms) || ms < 0) return null;
+  const s = Math.round(ms / 1000);
+  return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${s % 60}s`;
+}
 
 type RunDetail = {
   id: string;
@@ -57,6 +80,8 @@ const TOOL_LABEL: Record<string, string> = {
   create_calendar_event: "Calendar event",
   publish_social_post: "Social post",
   schedule_social_post: "Scheduled social post",
+  create_avatar_video: "Avatar video",
+  import_contacts_from_file: "Import contacts",
   query_crm: "CRM lookup",
   get_market_snapshot: "Market snapshot",
 };
@@ -173,6 +198,8 @@ function StepRow({
 }) {
   const label = TOOL_LABEL[step.tool_name] ?? step.tool_name;
   const out = step.output_json;
+  const persona = step.assignee ? ASSIGNEE_PERSONA[step.assignee] : null;
+  const duration = step.status === "completed" ? fmtDuration(step.created_at, step.finished_at) : null;
   const icon =
     step.status === "completed"
       ? "✓"
@@ -199,7 +226,19 @@ function StepRow({
           {icon}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium text-gray-800">{label}</p>
+          <div className="flex items-center gap-1.5">
+            {persona ? (
+              <>
+                <AssistantAvatar id={persona.avatar} size={18} alt={persona.name} className="h-[18px] w-[18px]" />
+                <span className="text-xs font-semibold text-gray-900">{persona.name}</span>
+                <span className="truncate text-[10px] text-gray-400">· {persona.role}</span>
+              </>
+            ) : (
+              <span className="text-xs font-medium text-gray-800">{label}</span>
+            )}
+            {duration && <span className="ml-auto shrink-0 text-[10px] font-medium text-gray-400">{duration}</span>}
+          </div>
+          {persona && <p className="mt-0.5 text-[11px] font-medium text-gray-700">{label}</p>}
           {out?.summary && <p className="text-[11px] text-gray-500">{out.summary}</p>}
           {out?.reason && step.status === "rejected" && (
             <p className="text-[11px] text-gray-400">{out.reason}</p>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAgentContextFromRequest } from "@/lib/dashboardService";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getBossTool } from "@/lib/boss/tools/registry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,7 +30,14 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
       .eq("run_id", id)
       .order("step_index", { ascending: true });
 
-    return NextResponse.json({ ok: true, run, steps: steps ?? [] });
+    // Attribute each step to the teammate who ran it (the tool's assignee), so
+    // the UI can show "Ruby · Marketing Specialist" instead of a generic label.
+    const enriched = (steps ?? []).map((s) => {
+      const toolName = (s as { tool_name: string }).tool_name;
+      return { ...s, assignee: getBossTool(toolName)?.assignee ?? null };
+    });
+
+    return NextResponse.json({ ok: true, run, steps: enriched });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
