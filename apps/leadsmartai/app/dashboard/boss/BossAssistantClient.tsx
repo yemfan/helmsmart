@@ -426,10 +426,8 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
         <div className="flex items-center gap-2.5">
           <BossAvatar avatar={bossAvatar} />
           <div>
-            <h1 className="text-lg font-semibold leading-tight text-gray-900">Ask Max</h1>
-            <p className="text-xs text-gray-500">
-              {bossName === "Max" ? "Captain of your AI team" : `${bossName} · captain of your AI team`}
-            </p>
+            <h1 className="text-lg font-semibold leading-tight text-gray-900">👋 {bossName}</h1>
+            <p className="text-xs text-gray-500">Captain of your AI Real Estate Team</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
