@@ -36,8 +36,14 @@ const postInput = z.object({
 export const publishSocialPost = defineTool({
   name: "publish_social_post",
   description:
-    "Publish a social post NOW on the agent's connected account (Facebook/Instagram/LinkedIn). Requires a connected account. In ask mode this parks the post for approval instead.",
-  inputSchema: postInput,
+    "Publish a social post NOW on the agent's connected account (Facebook/Instagram/LinkedIn). Pass image_url to attach a photo (e.g. one the user uploaded) — required for Instagram. To post to ALL of the agent's socials, call this once per platform. Requires a connected account. In ask mode this parks the post for approval instead.",
+  inputSchema: postInput.extend({
+    image_url: z
+      .string()
+      .url()
+      .optional()
+      .describe("Public URL of an image to attach to the post (e.g. a photo the user uploaded)."),
+  }),
   riskClass: "outbound",
   assignee: "marketing_assistant",
   outbound: { channel: () => "social" as const },
@@ -55,6 +61,7 @@ export const publishSocialPost = defineTool({
       connectionId: account.id,
       caption: input.caption,
       hashtags: input.hashtags,
+      imageUrl: input.image_url ?? null,
       trigger: "boss_tool",
     });
     if (!res.ok) return { status: "failed", error: res.error };
@@ -66,8 +73,8 @@ export const publishSocialPost = defineTool({
   },
   propose: async (_ctx, input) => ({
     status: "pending_approval",
-    summary: `Social post drafted for ${input.platform}: "${input.caption.slice(0, 80)}…"`,
-    proposal: { platform: input.platform, caption: input.caption, hashtags: input.hashtags ?? [] },
+    summary: `Social post drafted for ${input.platform}${input.image_url ? " (with photo)" : ""}: "${input.caption.slice(0, 80)}…"`,
+    proposal: { platform: input.platform, caption: input.caption, hashtags: input.hashtags ?? [], image_url: input.image_url ?? null },
   }),
 });
 
