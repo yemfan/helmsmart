@@ -19,7 +19,11 @@ There is a **second, older engine** — the action registry (`lib/realtyboss/act
 
 ---
 
-> **Progress:** Phase 1 shipped — `run_skill` (#1113) + `setup_open_house`, `coordinate_closing`, `start_selling_playbook`, `start_buying_playbook` (#1114). Ask Max is now at **20 tools** (~80 effective abilities). Buyer-saved-search and cold-call-qualify turned out already-reachable by composition, so no separate tools were added.
+> **Progress:**
+> - Phase 1 shipped — `run_skill` (#1113) + `setup_open_house`, `coordinate_closing`, `start_selling_playbook`, `start_buying_playbook` (#1114). All five verified end-to-end in production. Buyer-saved-search and cold-call-qualify turned out already-reachable by composition, so no separate tools.
+> - Phase 2 (read tools) partly shipped — `get_pipeline`, `get_deals`, `get_financials` (#1115). `get_sphere_signals`, `get_calendar`, `get_performance` still open.
+>
+> Ask Max is now at **23 tools**.
 
 ## Ask Max today — the core tools
 
@@ -120,7 +124,7 @@ There is a **second, older engine** — the action registry (`lib/realtyboss/act
 | Market snapshot | ✅ `get_market_snapshot` | — |
 | Create task / calendar event | ✅ | — |
 | **Run any of ~59 Realtor AI skills** | ✅ `run_skill` | `/dashboard/skills` |
-| Answer: "how's my pipeline / what's at risk / what did I make" | 🔴 (no read tools) | summary/perf/tx/books APIs |
+| Answer: "how's my pipeline / what's at risk / what did I make" | ✅ `get_pipeline` · `get_deals` · `get_financials` | summary/perf/tx/books APIs |
 | On-demand daily briefing | 🔴 | `briefings` |
 | Change branding / voice / settings | ⛔ / 🔴 | `/dashboard/settings` |
 | Billing / plan changes | ⛔ | `/dashboard/billing` |
@@ -140,10 +144,11 @@ Wrap capabilities that **already exist** in `lib/realtyboss/actions/registry.ts`
 5. ✅ **Saved buyer search** — already reachable: `house_search` accepts `contact_id` + `auto_run_frequency`. No new tool.
 6. ✅ **Cold-call & qualify** — already reachable by composition: `query_crm` → `schedule_voice_call`. **`schedule_showing`** is composable via `create_task`; add a dedicated tool only if usage warrants.
 
-### Phase 2 — "Ask Max anything": read tools (low risk, read-only)
-Today Max can *do* but barely *answer*. A captain you can question is the charter test. Wrap existing GET endpoints:
-- `get_pipeline` (leads/stages/hot), `get_deals` (transactions + deadlines + risk), `get_financials` (commission pipeline, expenses, next payout), `get_sphere_signals` (likely buyers/sellers, life events), `get_calendar` (today/week), `get_performance` (revenue, forecast, email engagement, lead-source ROI).
-- These make "what should I do today?", "which deals are at risk?", "what did I make this month?", "who's likely to sell?" answerable in-chat.
+### Phase 2 — "Ask Max anything": read tools (low risk, read-only) — IN PROGRESS
+Today Max can *do* but barely *answer*. A captain you can question is the charter test.
+- ✅ `get_pipeline` (leads hot/warm/cold + cooling), ✅ `get_deals` (transactions + deadlines + risk), ✅ `get_financials` (commission pipeline, closed YTD, next payout, expenses) — #1115.
+- ⏳ `get_sphere_signals` (likely buyers/sellers, life events), `get_calendar` (today/week), `get_performance` (revenue, forecast, email engagement, lead-source ROI).
+- These make "which deals are at risk?", "what did I make this month?", "who's likely to sell?" answerable in-chat.
 
 ### Phase 3 — Per-employee write tools (agentize the pure-UI 🔴 rows)
 Prioritize by daily use:
