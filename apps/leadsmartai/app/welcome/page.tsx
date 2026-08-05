@@ -104,6 +104,7 @@ export default function WelcomePage() {
 
   const answersRef = useRef<Answers>({});
   const firstNameRef = useRef("");
+  const userIdRef = useRef("");
   const answerResolver = useRef<((v: { value?: string; skipped?: boolean }) => void) | null>(null);
   const started = useRef(false);
   const idRef = useRef(0);
@@ -132,6 +133,43 @@ export default function WelcomePage() {
     });
   }, []);
 
+  // Persist the collected answers to the account (best-effort, same RLS the
+  // signup uses): name -> user_profiles.full_name, brokerage -> agents.brokerage,
+  // and the softer signals (market/focus/goal) into agents.onboarding. Also
+  // flips agents.onboarding_completed so login won't re-route here.
+  const persistProfile = useCallback(async () => {
+    const uid = userIdRef.current;
+    if (!uid) return;
+    const a = answersRef.current;
+    try {
+      const supabase = supabaseBrowser();
+      const agentUpdate: Record<string, unknown> = {
+        onboarding_completed: true,
+        onboarding: { ...a, completed_at: new Date().toISOString() },
+      };
+      if (a.brokerage?.trim()) agentUpdate.brokerage = a.brokerage.trim();
+      await supabase.from("agents").update(agentUpdate).eq("auth_user_id", uid);
+      if (a.name?.trim()) {
+        await supabase
+          .from("user_profiles")
+          .upsert({ user_id: uid, full_name: a.name.trim() }, { onConflict: "user_id" });
+      }
+    } catch {
+      /* best-effort — never block onboarding */
+    }
+  }, []);
+
+  // Skipping onboarding still counts as "done" so it isn't shown again.
+  const markCompletedInDb = useCallback(async () => {
+    const uid = userIdRef.current;
+    if (!uid) return;
+    try {
+      await supabaseBrowser().from("agents").update({ onboarding_completed: true }).eq("auth_user_id", uid);
+    } catch {
+      /* best-effort */
+    }
+  }, []);
+
   // Auth gate + name prefill.
   useEffect(() => {
     let cancelled = false;
@@ -144,6 +182,7 @@ export default function WelcomePage() {
           router.replace("/login?redirect=/welcome");
           return;
         }
+        userIdRef.current = user.id;
         const name = String((user.user_metadata as { full_name?: string } | null)?.full_name ?? "").trim();
         firstNameRef.current = name.split(/\s+/)[0] ?? "";
         if (!cancelled) setReady(true);
@@ -221,8 +260,9 @@ export default function WelcomePage() {
       await say("Anytime you have an idea, a question, or something you want done — just Ask Max. 💬 I'll figure out who does what and get it moving.");
       pushMsg({ role: "max", kind: "askmax" });
       setDone(true);
+      void persistProfile();
     })();
-  }, [ready, say, ask, pushMsg]);
+  }, [ready, say, ask, pushMsg, persistProfile]);
 
   function markSeen() {
     try {
@@ -230,6 +270,7 @@ export default function WelcomePage() {
     } catch {
       /* ignore */
     }
+    void markCompletedInDb();
   }
 
   function submitText() {
