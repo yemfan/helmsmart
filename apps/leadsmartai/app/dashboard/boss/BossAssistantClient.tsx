@@ -115,6 +115,10 @@ type RunRow = {
 };
 const LIVE_RUN_STATUSES = new Set(["planning", "running", "awaiting_approval"]);
 
+/** A teammate's live state for the top status ribbon. */
+type TeamState = "working" | "needs-you" | "active" | "idle" | "off";
+type TeamLive = { type: string; state: TeamState; verb: string };
+
 const ASSIGNEE_LABEL: Record<string, string> = {
   receptionist: "Receptionist",
   sales_assistant: "Sales Specialist",
@@ -131,6 +135,17 @@ const QUICK_COMMANDS = [
   "Draft a just-listed social post",
   "Plan my day",
 ];
+
+// Live status verbs for the team ribbon — present tense when busy, a calm
+// standby phrase when idle. Keeps the "company floor" feeling: someone is
+// always on.
+const TEAM_VERBS: Record<string, { working: string; idle: string }> = {
+  receptionist: { working: "Answering calls", idle: "On call" },
+  sales_assistant: { working: "Following up", idle: "Watching leads" },
+  marketing_assistant: { working: "Creating content", idle: "Planning posts" },
+  transaction_assistant: { working: "Tracking deadlines", idle: "Monitoring deals" },
+  accountant: { working: "Running the numbers", idle: "Watching the books" },
+};
 
 // ── helpers ──────────────────────────────────────────────────────────
 
@@ -416,6 +431,29 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     return { total: recent.length, line: parts.join(", "), needsYou: recent.filter((a) => a.requires_attention).length };
   }, [activities]);
 
+  // Live per-teammate status for the top ribbon — derived from data already
+  // loaded (in-flight tasks, recent activity, paused state). No extra fetch.
+  // This is what makes the roster feel like a real company floor: at a glance,
+  // who's working, who needs you, who's standing by.
+  const teamLive = useMemo<TeamLive[]>(() => {
+    const now = Date.now();
+    const recentMs = 20 * 60 * 1000;
+    return AI_TEAM.filter((a) => a.type !== "boss_assistant").map((a) => {
+      const type = a.type;
+      if ((teamStatus[type] ?? "active") === "paused") return { type, state: "off", verb: "Off duty" };
+      const mine = tasks.filter((t) => t.assigned_to === type);
+      if (mine.some((t) => t.status === "awaiting_approval" || t.status === "needs_input" || t.status === "needs_review"))
+        return { type, state: "needs-you", verb: "Waiting on you" };
+      const verbs = TEAM_VERBS[type] ?? { working: "Working", idle: "Standing by" };
+      if (mine.some((t) => t.status === "assigned" || t.status === "scheduled"))
+        return { type, state: "working", verb: `${verbs.working}…` };
+      const latest = activities.find((act) => act.assistant_type === type);
+      if (latest && now - new Date(latest.created_at).getTime() < recentMs)
+        return { type, state: "active", verb: "Active just now" };
+      return { type, state: "idle", verb: verbs.idle };
+    });
+  }, [tasks, activities, teamStatus]);
+
   const bossName = teamNames["boss_assistant"] || "Max";
   const bossAvatar = teamAvatars["boss_assistant"] ?? null;
 
@@ -443,6 +481,9 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           </button>
         </div>
       </div>
+
+      {/* ── AI team status ribbon — who's working right now ── */}
+      {!loading && <TeamStatusStrip team={teamLive} names={teamNames} avatars={teamAvatars} />}
 
       {/* ── Context strip (clickable → inline detail) ── */}
       <ContextStrip
@@ -606,6 +647,63 @@ function AutopilotToggle({ on, onToggle }: { on: boolean; onToggle: () => void }
       <span aria-hidden>{on ? "🛫" : "✈️"}</span>
       {on ? "Autopilot on" : "Autopilot off"}
     </button>
+  );
+}
+
+// ── team status ribbon ─────────────────────────────────────────────────
+
+const TEAM_DOT: Record<TeamState, string> = {
+  working: "bg-blue-500",
+  "needs-you": "bg-amber-500",
+  active: "bg-emerald-500",
+  idle: "bg-emerald-400/70",
+  off: "bg-gray-300",
+};
+
+/**
+ * The live team ribbon: a glanceable row of the AI employees and what each is
+ * doing this moment. Working/needs-you dots pulse so the floor feels alive.
+ * Purely a status view (no navigation — the "Your AI team" grid below links
+ * out); it reads from state already loaded, so it re-derives on every poll.
+ */
+function TeamStatusStrip({
+  team, names, avatars,
+}: {
+  team: TeamLive[];
+  names: Record<string, string>;
+  avatars: Record<string, { id: string; url: string | null }>;
+}) {
+  if (team.length === 0) return null;
+  return (
+    <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5">
+      {team.map((m) => {
+        const av = avatars[m.type];
+        const name = names[m.type] ?? m.type;
+        const pulse = m.state === "working" || m.state === "needs-you";
+        return (
+          <div
+            key={m.type}
+            className="flex shrink-0 items-center gap-2 rounded-full border border-gray-200 bg-white py-1 pl-1 pr-3 shadow-sm"
+            title={`${name} · ${m.verb}`}
+          >
+            {av ? (
+              <AssistantAvatar id={av.id} url={av.url} size={26} alt={name} />
+            ) : (
+              <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-blue-50 text-[11px] font-semibold text-blue-700">
+                {name.slice(0, 1)}
+              </span>
+            )}
+            <span className="flex flex-col leading-tight">
+              <span className="text-xs font-semibold text-gray-900">{name}</span>
+              <span className="flex items-center gap-1 text-[10px] text-gray-500">
+                <span className={`h-1.5 w-1.5 rounded-full ${TEAM_DOT[m.state]} ${pulse ? "animate-pulse" : ""}`} />
+                {m.verb}
+              </span>
+            </span>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
