@@ -2,10 +2,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Redirect, Stack, useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { HomeFeatureGrid } from "../../components/home/v2/HomeFeatureGrid";
 import { HomeFeatureTile } from "../../components/home/v2/HomeFeatureTile";
 import { getAssistantHub, isAssistantType } from "../../lib/teamSections";
+import { TEAM_PORTRAITS } from "../../lib/teamPortraits";
 import type { ThemeTokens } from "../../lib/theme";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 
@@ -39,8 +40,13 @@ export default function AssistantHubScreen() {
       <Stack.Screen options={{ title: name }} />
 
       <View style={styles.header}>
-        <View style={[styles.iconBubble, { backgroundColor: hub.accentColor }]}>
-          <Ionicons name={hub.iconName} size={26} color="#ffffff" />
+        <View style={styles.avatar}>
+          <Image
+            source={TEAM_PORTRAITS[raw]}
+            style={styles.avatarImg}
+            resizeMode="cover"
+            accessibilityIgnoresInvertColors
+          />
         </View>
         <View style={styles.headerText}>
           <Text style={styles.h1}>{name}</Text>
@@ -76,13 +82,14 @@ const createStyles = (theme: ThemeTokens) =>
       gap: 12,
       marginBottom: 20,
     },
-    iconBubble: {
+    avatar: {
       width: 52,
       height: 52,
-      borderRadius: 16,
-      alignItems: "center",
-      justifyContent: "center",
+      borderRadius: 26,
+      overflow: "hidden",
+      backgroundColor: theme.surfaceMuted,
     },
+    avatarImg: { width: 52, height: 52 },
     headerText: { flex: 1, minWidth: 0 },
     h1: { fontSize: 24, fontWeight: "700", color: theme.text },
     subtitle: {

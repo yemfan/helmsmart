@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { hapticSelectionChange } from "../../lib/haptics";
 import {
   fetchBossTeam,
@@ -14,6 +14,7 @@ import {
   TEAM_SECTIONS,
   type AssistantType,
 } from "../../lib/teamSections";
+import { TEAM_PORTRAITS } from "../../lib/teamPortraits";
 import type { ThemeTokens } from "../../lib/theme";
 import { useThemeTokens } from "../../lib/useThemeTokens";
 
@@ -78,8 +79,13 @@ export default function TeamScreen() {
                 pressed && styles.rowPressed,
               ]}
             >
-              <View style={[styles.avatar, { backgroundColor: hub.accentColor }]}>
-                <Ionicons name={hub.iconName} size={20} color="#ffffff" />
+              <View style={styles.avatar}>
+                <Image
+                  source={TEAM_PORTRAITS[type]}
+                  style={styles.avatarImg}
+                  resizeMode="cover"
+                  accessibilityIgnoresInvertColors
+                />
               </View>
               <View style={styles.rowText}>
                 <View style={styles.nameRow}>
@@ -159,10 +165,11 @@ const createStyles = (theme: ThemeTokens) =>
     avatar: {
       width: 40,
       height: 40,
-      borderRadius: 12,
-      alignItems: "center",
-      justifyContent: "center",
+      borderRadius: 20,
+      overflow: "hidden",
+      backgroundColor: theme.surfaceMuted,
     },
+    avatarImg: { width: 40, height: 40 },
     rowText: { flex: 1, minWidth: 0 },
     nameRow: {
       flexDirection: "row",
