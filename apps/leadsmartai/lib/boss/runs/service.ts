@@ -86,20 +86,26 @@ async function buildSystemPrompt(run: BossRunRow): Promise<string> {
   const [{ data: agentRow }, matrix, globalAuto] = await Promise.all([
     supabaseAdmin
       .from("agents")
-      .select("brand_name, city, state")
+      .select("brand_name, onboarding")
       .eq("id", run.agent_id)
       .maybeSingle(),
     getAutopilotMatrix(run.agent_id).catch(() => []),
     getGlobalAutopilot(run.agent_id).catch(() => false),
   ]);
-  const agent = agentRow as { brand_name?: string | null; city?: string | null; state?: string | null } | null;
+  const agent = agentRow as { brand_name?: string | null; onboarding?: Record<string, unknown> | null } | null;
+  const ob = (agent?.onboarding ?? {}) as { market?: string; focus?: string; goal?: string };
+  const where = ob.market ? ` in ${ob.market}` : "";
+  const profileLine =
+    ob.focus || ob.goal
+      ? `\nThe realtor works mostly with ${ob.focus ?? "buyers & sellers"} and their top goal right now is ${ob.goal ?? "growing the business"} — weight your plan toward that when it's relevant.`
+      : "";
 
   const matrixLines =
     matrix.length > 0
       ? matrix.map((c) => `  - ${c.assignee}/${c.channel}: ${c.mode}`).join("\n")
       : "  (no per-channel overrides)";
 
-  return `You are the Boss Assistant of an AI real estate team (CloseBoss), acting for ${agent?.brand_name ?? "the realtor"}${agent?.city ? ` in ${agent.city}${agent?.state ? `, ${agent.state}` : ""}` : ""}.
+  return `You are Max, captain of an AI real estate team (CloseBoss), acting for ${agent?.brand_name ?? "the realtor"}${where}.${profileLine}
 Today is ${new Date().toISOString().slice(0, 10)}.
 
 You execute the realtor's command by calling tools. Rules:

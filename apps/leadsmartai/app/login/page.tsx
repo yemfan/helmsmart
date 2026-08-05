@@ -69,6 +69,7 @@ function LoginPageInner() {
       let role: string | null = null;
       let hasAgentRow = false;
       let isPro = false;
+      let onboardingCompleted = false;
       if (user) {
         try {
           const missingUserId = (err: any) => {
@@ -96,10 +97,12 @@ function LoginPageInner() {
 
           const { data: agentRow } = await supabase
             .from("agents")
-            .select("id")
+            .select("id, onboarding_completed")
             .eq("auth_user_id", user.id)
             .maybeSingle();
           hasAgentRow = !!agentRow;
+          onboardingCompleted =
+            (agentRow as { onboarding_completed?: boolean } | null)?.onboarding_completed === true;
 
           if (!rowErr && r === "user" && !hasAgentRow) {
             isPro = false;
@@ -123,12 +126,15 @@ function LoginPageInner() {
           router.replace(safe);
         } else {
           // First-run agents meet Max (the AI-team onboarding) before the
-          // dashboard; shown once per device. Explicit redirects skip it.
-          let seenWelcome = true;
-          try {
-            seenWelcome = localStorage.getItem("rb_welcome_seen_v1") === "1";
-          } catch {
-            /* ignore */
+          // dashboard. Authoritative flag is agents.onboarding_completed;
+          // localStorage is a fast secondary guard against a lagged write.
+          let seenWelcome = onboardingCompleted;
+          if (!seenWelcome) {
+            try {
+              seenWelcome = localStorage.getItem("rb_welcome_seen_v1") === "1";
+            } catch {
+              /* ignore */
+            }
           }
           router.replace(seenWelcome ? resolveRoleHomePath(role, hasAgentRow) : "/welcome");
         }

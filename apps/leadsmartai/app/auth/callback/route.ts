@@ -116,6 +116,24 @@ export async function GET(request: Request) {
       // points at an app page) is still honored.
       if (ctx?.isPro) {
         const wantsAppPage = APP_PREFIXES.some((p) => next === p || next.startsWith(`${p}/`));
+        // First-run agents (no explicit app deep-link) meet Max before the
+        // dashboard — the same /welcome flow email/password logins get.
+        if (!wantsAppPage && user) {
+          const { data: agentRow } = await supabase
+            .from("agents")
+            .select("onboarding_completed")
+            .eq("auth_user_id", user.id)
+            .maybeSingle();
+          const onboarded =
+            (agentRow as { onboarding_completed?: boolean } | null)?.onboarding_completed === true;
+          if (!onboarded) {
+            const out = NextResponse.redirect(new URL("/welcome", url.origin));
+            for (const v of response.headers.getSetCookie()) {
+              out.headers.append("Set-Cookie", v);
+            }
+            return out;
+          }
+        }
         const dest = wantsAppPage ? next : resolveRoleHomePath(ctx.role, ctx.hasAgentRow);
         if (dest !== next) {
           const out = NextResponse.redirect(new URL(dest, url.origin));
