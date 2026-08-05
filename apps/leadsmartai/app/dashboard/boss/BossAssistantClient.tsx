@@ -118,7 +118,7 @@ const ASSIGNEE_LABEL: Record<string, string> = {
   transaction_assistant: "Transaction Assistant",
   accountant: "Accountant",
   realtor: "For your review",
-  boss_assistant: "Boss",
+  boss_assistant: "Max",
 };
 const CHANNEL_LABEL: Record<Channel, string> = { call: "Call", sms: "Text", email: "Email", social: "Social" };
 
@@ -412,7 +412,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     return { total: recent.length, line: parts.join(", "), needsYou: recent.filter((a) => a.requires_attention).length };
   }, [activities]);
 
-  const bossName = teamNames["boss_assistant"] || "Boss";
+  const bossName = teamNames["boss_assistant"] || "Max";
   const bossAvatar = teamAvatars["boss_assistant"] ?? null;
 
   return (
@@ -422,8 +422,10 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
         <div className="flex items-center gap-2.5">
           <BossAvatar avatar={bossAvatar} />
           <div>
-            <h1 className="text-lg font-semibold leading-tight text-gray-900">{bossName}</h1>
-            <p className="text-xs text-gray-500">your AI chief of staff</p>
+            <h1 className="text-lg font-semibold leading-tight text-gray-900">Ask Max</h1>
+            <p className="text-xs text-gray-500">
+              {bossName === "Max" ? "Captain of your AI team" : `${bossName} · captain of your AI team`}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">

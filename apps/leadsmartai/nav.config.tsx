@@ -68,7 +68,7 @@ const navConfig = {
   sections: [
     /* ── The Boss's day ── */
     {
-      label: "Boss Assistant",
+      label: "Ask Max",
       href: "/dashboard/boss",
       match: ["/dashboard", "/dashboard/boss", "/dashboard/broker"],
       icon: p(<House size={17} strokeWidth={STROKE} aria-hidden />),
