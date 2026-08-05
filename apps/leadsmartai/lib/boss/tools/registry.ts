@@ -9,6 +9,12 @@ import { createCrmTask, createCalendarEvent, queryCrm } from "./impl/crm";
 import { publishSocialPost, scheduleSocialPost, createAvatarVideo } from "./impl/social";
 import { importContactsFromFile } from "./impl/contacts";
 import { runSkill } from "./impl/skills";
+import {
+  startSellingPlaybook,
+  startBuyingPlaybook,
+  setupOpenHouse,
+  coordinateClosing,
+} from "./impl/playbooks";
 import { getMarketSnapshot } from "./impl/market";
 
 /**
@@ -38,6 +44,10 @@ const ALL_TOOLS = [
   createAvatarVideo,
   importContactsFromFile,
   runSkill,
+  startSellingPlaybook,
+  startBuyingPlaybook,
+  setupOpenHouse,
+  coordinateClosing,
   queryCrm,
   getMarketSnapshot,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
