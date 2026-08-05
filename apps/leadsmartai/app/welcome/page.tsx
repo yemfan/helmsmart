@@ -3,33 +3,51 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, Clock } from "lucide-react";
+import { ArrowRight, Check, Clock, Send } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { AssistantAvatar } from "@/components/realtyboss/AssistantAvatar";
 
 /**
  * First-run welcome — hosted by Max, the captain of the AI real estate team.
- * Max introduces himself as the agent's operations manager, then lays out a
- * concrete 5-step setup plan. Each step deep-links to its real setup page;
- * the two we can detect (contacts, receptionist) check off automatically.
  *
- * Voice: calm, confident, proactive — a dependable captain, never a chatbot.
- * Shown once (agents.onboarding_completed / localStorage); login + OAuth
- * callback route first-run agents here.
+ * Flow: Max introduces himself as the agent's operations manager, runs a BRIEF
+ * interview asking only the profile info we don't already have (name/brokerage
+ * come from signup), then lays out a concrete setup plan. Every answer is saved
+ * to the agent's profile (agents.onboarding + canonical columns) so it's part
+ * of Max's memory and shapes his suggestions everywhere.
+ *
+ * Voice: calm, confident captain — never a chatbot. Shown once
+ * (agents.onboarding_completed / localStorage); login + OAuth route here.
  */
 
 const WELCOME_SEEN_KEY = "rb_welcome_seen_v1";
 
-const WELCOME_LINES = [
-  "👋 Welcome to CloseBoss.",
-  "I'm Max — Captain of your AI Real Estate Team.",
-  "Think of me as your operations manager. You don't have to learn every feature of CloseBoss — just tell me what you want done, and I'll put your team on it.",
-  "Today, let's get your business up and running.",
+type Answers = Record<string, string>;
+type Known = { name: string; brokerage: string; market: string; focus: string; goal: string };
+
+type Question = {
+  field: keyof Known;
+  text: string | ((a: Answers) => string);
+  input: "text" | "choice";
+  choices?: string[];
+  placeholder?: string;
+};
+
+const FOCUS = ["🏠 Buyers", "🔑 Sellers", "🤝 Both"];
+const GOAL = ["🎯 More leads", "⚡ Faster follow-up", "🧾 Less admin", "🏡 More listings", "📣 Better marketing"];
+
+const QUESTIONS: Question[] = [
+  { field: "name", input: "text", placeholder: "Your name", text: "Quick one — what should I call you?" },
+  { field: "market", input: "text", placeholder: "City or area", text: (a) => `Where do you do most of your business${a.name ? `, ${a.name}` : ""}? 📍` },
+  { field: "focus", input: "choice", choices: FOCUS, text: "Who do you work with most?" },
+  { field: "goal", input: "choice", choices: GOAL, text: "If I could hand you one win this month, what would it be?" },
+  { field: "brokerage", input: "text", placeholder: "Your brokerage", text: "And which brokerage are you with? 🏢" },
 ];
 
-type Item = { key: string; icon: string; label: string; href: string; activationKey?: string };
+type PlanItem = { key: string; icon: string; label: string; href?: string; activationKey?: string; interview?: boolean };
 
-const CHECKLIST: Item[] = [
+const PLAN: PlanItem[] = [
+  { key: "profile", icon: "🧭", label: "Tell Max about you", interview: true },
   { key: "email", icon: "📧", label: "Connect your email", href: "/dashboard/settings" },
   { key: "contacts", icon: "👥", label: "Import your contacts", href: "/dashboard/leads/import", activationKey: "import_contacts" },
   { key: "social", icon: "📣", label: "Connect Facebook & Instagram", href: "/dashboard/leads/generate/connect" },
@@ -37,27 +55,77 @@ const CHECKLIST: Item[] = [
   { key: "campaign", icon: "🚀", label: "Launch your first marketing campaign", href: "/dashboard/marketing" },
 ];
 
+const resolve = (t: string | ((a: Answers) => string), a: Answers) => (typeof t === "function" ? t(a) : t);
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+type Msg = { id: number; role: "max" | "user"; text: string };
 
 export default function WelcomePage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
-  const [lines, setLines] = useState<string[]>([]);
+  const [log, setLog] = useState<Msg[]>([]);
   const [typing, setTyping] = useState(false);
+  const [currentAsk, setCurrentAsk] = useState<Question | null>(null);
+  const [draft, setDraft] = useState("");
   const [showPlan, setShowPlan] = useState(false);
   const [doneMap, setDoneMap] = useState<Record<string, boolean>>({});
+  const [profileDone, setProfileDone] = useState(false);
 
+  const answersRef = useRef<Answers>({});
   const userIdRef = useRef("");
+  const answerResolver = useRef<((v: { value?: string; skipped?: boolean }) => void) | null>(null);
   const started = useRef(false);
+  const idRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const pushMsg = useCallback((m: Omit<Msg, "id">) => {
+    idRef.current += 1;
+    setLog((prev) => [...prev, { id: idRef.current, ...m }]);
+  }, []);
+
+  const say = useCallback(
+    async (line: string) => {
+      setTyping(true);
+      await sleep(650);
+      setTyping(false);
+      pushMsg({ role: "max", text: line });
+      await sleep(140);
+    },
+    [pushMsg],
+  );
+
+  const ask = useCallback((q: Question) => {
+    setCurrentAsk(q);
+    return new Promise<{ value?: string; skipped?: boolean }>((res) => {
+      answerResolver.current = res;
+    });
+  }, []);
+
+  const persistProfile = useCallback(async () => {
+    const uid = userIdRef.current;
+    if (!uid) return;
+    const a = answersRef.current;
+    try {
+      const supabase = supabaseBrowser();
+      const agentUpdate: Record<string, unknown> = {
+        onboarding: { ...a, completed_at: new Date().toISOString() },
+      };
+      if (a.brokerage?.trim()) agentUpdate.brokerage = a.brokerage.trim();
+      await supabase.from("agents").update(agentUpdate).eq("auth_user_id", uid);
+      if (a.name?.trim()) {
+        await supabase.from("user_profiles").upsert({ user_id: uid, full_name: a.name.trim() }, { onConflict: "user_id" });
+      }
+    } catch {
+      /* best-effort */
+    }
+  }, []);
 
   // Auth gate.
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const supabase = supabaseBrowser();
-        const { data } = await supabase.auth.getUser();
+        const { data } = await supabaseBrowser().auth.getUser();
         const user = data?.user;
         if (!user) {
           router.replace("/login?redirect=/welcome");
@@ -74,7 +142,7 @@ export default function WelcomePage() {
     };
   }, [router]);
 
-  // Real progress for the steps we can detect.
+  // Real progress for the detectable setup steps.
   useEffect(() => {
     if (!ready) return;
     let cancelled = false;
@@ -96,28 +164,84 @@ export default function WelcomePage() {
     };
   }, [ready]);
 
-  // Play the welcome, then reveal the plan.
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [log, typing, currentAsk, showPlan]);
+
+  useEffect(() => {
+    if (currentAsk?.field === "name" && answersRef.current.name) setDraft(answersRef.current.name);
+  }, [currentAsk]);
+
+  // The conversation — runs once.
   useEffect(() => {
     if (!ready || started.current) return;
     started.current = true;
-    (async () => {
-      for (const line of WELCOME_LINES) {
-        setTyping(true);
-        await sleep(700);
-        setTyping(false);
-        setLines((prev) => [...prev, line]);
-        await sleep(160);
+
+    const setAnswer = (field: string, value: string) => {
+      answersRef.current = { ...answersRef.current, [field]: value };
+    };
+
+    const fetchKnown = async (): Promise<Known> => {
+      const supabase = supabaseBrowser();
+      const { data } = await supabase.auth.getUser();
+      const user = data?.user;
+      const accountName = String((user?.user_metadata as { full_name?: string } | null)?.full_name ?? "")
+        .trim()
+        .split(/\s+/)[0] || "";
+      let brokerage = "";
+      let ob: Record<string, string> = {};
+      try {
+        const { data: agent } = await supabase
+          .from("agents")
+          .select("brokerage, onboarding")
+          .eq("auth_user_id", user?.id ?? "")
+          .maybeSingle();
+        const row = agent as { brokerage?: string | null; onboarding?: Record<string, string> | null } | null;
+        brokerage = String(row?.brokerage ?? "").trim();
+        ob = row?.onboarding ?? {};
+      } catch {
+        /* best-effort */
       }
-      setTyping(true);
-      await sleep(600);
-      setTyping(false);
+      return {
+        name: accountName || ob.name || "",
+        brokerage: brokerage || ob.brokerage || "",
+        market: ob.market ?? "",
+        focus: ob.focus ?? "",
+        goal: ob.goal ?? "",
+      };
+    };
+
+    (async () => {
+      const known = await fetchKnown();
+      // Seed answers with what we already know (part of Max's memory).
+      for (const k of Object.keys(known) as (keyof Known)[]) {
+        if (known[k]) setAnswer(k, known[k]);
+      }
+      const greetName = known.name ? `, ${known.name}` : "";
+
+      await say(`👋 Welcome to CloseBoss${greetName}.`);
+      await say("I'm Max — Captain of your AI Real Estate Team.");
+      await say("Think of me as your operations manager. You don't have to learn every feature — just tell me what you want done, and I'll put your team on it.");
+
+      // Brief interview — only the profile fields we don't already have.
+      const toAsk = QUESTIONS.filter((q) => !known[q.field]);
+      if (toAsk.length) {
+        await say("First, a couple of quick questions so I can tailor everything to you.");
+        for (const q of toAsk) {
+          await say(resolve(q.text, answersRef.current));
+          const r = await ask(q);
+          setCurrentAsk(null);
+          if (!r.skipped && r.value) setAnswer(q.field, r.value);
+        }
+        await say("Got it — that's on file. I'll keep it in mind from here on. 🧭");
+        await persistProfile();
+      }
+      setProfileDone(true);
+
+      await say("Here's the plan to get your business up and running.");
       setShowPlan(true);
     })();
-  }, [ready]);
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [lines, typing, showPlan]);
+  }, [ready, say, ask, persistProfile]);
 
   const markSeen = useCallback(() => {
     try {
@@ -135,20 +259,40 @@ export default function WelcomePage() {
     }
   }, []);
 
-  const isDone = (it: Item) => (it.activationKey ? Boolean(doneMap[it.activationKey]) : false);
+  const isDone = (it: PlanItem) => (it.interview ? profileDone : it.activationKey ? Boolean(doneMap[it.activationKey]) : false);
 
-  function start() {
-    markSeen();
-    const next = CHECKLIST.find((it) => !isDone(it));
-    router.push(next ? next.href : "/dashboard");
+  function submitText() {
+    const v = draft.trim();
+    if (!v || !currentAsk) return;
+    pushMsg({ role: "user", text: v });
+    setDraft("");
+    answerResolver.current?.({ value: v });
+    answerResolver.current = null;
+  }
+  function submitChoice(v: string) {
+    if (!currentAsk) return;
+    pushMsg({ role: "user", text: v });
+    answerResolver.current?.({ value: v });
+    answerResolver.current = null;
+  }
+  function skip() {
+    if (!currentAsk) return;
+    pushMsg({ role: "user", text: "Skip for now →" });
+    answerResolver.current?.({ skipped: true });
+    answerResolver.current = null;
   }
 
-  function openStep(it: Item) {
+  function openStep(it: PlanItem) {
+    if (it.interview || !it.href) return;
     markSeen();
     router.push(it.href);
   }
-
-  function skip() {
+  function start() {
+    markSeen();
+    const next = PLAN.find((it) => !it.interview && !isDone(it));
+    router.push(next?.href ?? "/dashboard");
+  }
+  function skipAll() {
     markSeen();
     router.push("/dashboard");
   }
@@ -159,7 +303,6 @@ export default function WelcomePage() {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-2xl flex-col px-4">
-      {/* Header */}
       <div className="flex items-center justify-between py-4">
         <div className="flex items-center gap-2">
           <AssistantAvatar id="max" size={32} alt="Max" className="h-8 w-8" />
@@ -168,21 +311,28 @@ export default function WelcomePage() {
             <p className="text-[11px] text-slate-500">Captain of your AI team</p>
           </div>
         </div>
-        <button type="button" onClick={skip} className="text-xs font-semibold text-slate-500 hover:text-slate-800">
+        <button type="button" onClick={skipAll} className="text-xs font-semibold text-slate-500 hover:text-slate-800">
           Skip for now
         </button>
       </div>
 
-      {/* Conversation */}
       <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto py-2">
-        {lines.map((line, i) => (
-          <div key={i} className="flex items-start gap-2">
-            <AssistantAvatar id="max" size={30} alt="Max" className="h-[30px] w-[30px]" />
-            <div className="max-w-[82%] whitespace-pre-wrap rounded-2xl rounded-tl-md bg-white px-4 py-2.5 text-[15px] leading-relaxed text-slate-800 shadow-sm ring-1 ring-slate-100">
-              {line}
+        {log.map((m) =>
+          m.role === "max" ? (
+            <div key={m.id} className="flex items-start gap-2">
+              <AssistantAvatar id="max" size={30} alt="Max" className="h-[30px] w-[30px]" />
+              <div className="max-w-[82%] whitespace-pre-wrap rounded-2xl rounded-tl-md bg-white px-4 py-2.5 text-[15px] leading-relaxed text-slate-800 shadow-sm ring-1 ring-slate-100">
+                {m.text}
+              </div>
             </div>
-          </div>
-        ))}
+          ) : (
+            <div key={m.id} className="flex justify-end">
+              <div className="max-w-[82%] whitespace-pre-wrap rounded-2xl rounded-tr-md bg-blue-600 px-4 py-2.5 text-[15px] leading-relaxed text-white">
+                {m.text}
+              </div>
+            </div>
+          ),
+        )}
 
         {typing && (
           <div className="flex items-center gap-2">
@@ -204,14 +354,16 @@ export default function WelcomePage() {
                 </span>
               </div>
               <ul className="divide-y divide-slate-100">
-                {CHECKLIST.map((it) => {
+                {PLAN.map((it) => {
                   const done = isDone(it);
+                  const clickable = !it.interview && !!it.href;
                   return (
                     <li key={it.key}>
                       <button
                         type="button"
                         onClick={() => openStep(it)}
-                        className="group flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-50"
+                        disabled={!clickable}
+                        className={`group flex w-full items-center gap-3 px-4 py-3 text-left transition ${clickable ? "hover:bg-slate-50" : "cursor-default"}`}
                       >
                         <span
                           className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px] ${
@@ -224,7 +376,7 @@ export default function WelcomePage() {
                         <span className={`flex-1 text-sm font-medium ${done ? "text-slate-400 line-through" : "text-slate-800"}`}>
                           {it.label}
                         </span>
-                        {!done && (
+                        {clickable && !done && (
                           <ArrowRight className="h-4 w-4 shrink-0 text-slate-300 transition group-hover:text-amber-500" aria-hidden />
                         )}
                       </button>
@@ -237,22 +389,68 @@ export default function WelcomePage() {
         )}
       </div>
 
-      {/* CTA dock */}
-      {showPlan && (
-        <div className="sticky bottom-0 flex flex-col items-center gap-2 bg-slate-50/95 py-4 backdrop-blur">
-          <button
-            type="button"
-            onClick={start}
-            className="inline-flex w-full max-w-sm items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white hover:bg-blue-700"
-          >
-            Let's build your AI team
-            <ArrowRight className="h-4 w-4" aria-hidden />
-          </button>
-          <Link href="/dashboard/boss" onClick={markSeen} className="text-xs font-semibold text-slate-500 hover:text-slate-800">
-            Or just Ask Max anything
-          </Link>
-        </div>
-      )}
+      {/* Input dock — question inputs during the interview, CTA once the plan shows */}
+      <div className="sticky bottom-0 bg-slate-50/95 py-3 backdrop-blur">
+        {currentAsk && currentAsk.input === "choice" ? (
+          <div className="flex flex-wrap gap-2">
+            {currentAsk.choices?.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => submitChoice(c)}
+                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-800 shadow-sm hover:border-amber-300 hover:bg-amber-50/60"
+              >
+                {c}
+              </button>
+            ))}
+            <button type="button" onClick={skip} className="rounded-full px-3 py-2 text-sm font-medium text-slate-400 hover:text-slate-600">
+              Skip
+            </button>
+          </div>
+        ) : currentAsk && currentAsk.input === "text" ? (
+          <div className="flex items-end gap-2">
+            <input
+              autoFocus
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  submitText();
+                }
+              }}
+              placeholder={currentAsk.placeholder ?? "Type your answer…"}
+              className="flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-500"
+            />
+            <button type="button" onClick={skip} className="px-2 py-2 text-xs font-semibold text-slate-400 hover:text-slate-600">
+              Skip
+            </button>
+            <button
+              type="button"
+              onClick={submitText}
+              disabled={!draft.trim()}
+              aria-label="Send"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-40"
+            >
+              <Send className="h-4 w-4" aria-hidden />
+            </button>
+          </div>
+        ) : showPlan ? (
+          <div className="flex flex-col items-center gap-2">
+            <button
+              type="button"
+              onClick={start}
+              className="inline-flex w-full max-w-sm items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white hover:bg-blue-700"
+            >
+              Let's build your AI team
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </button>
+            <Link href="/dashboard/boss" onClick={markSeen} className="text-xs font-semibold text-slate-500 hover:text-slate-800">
+              Or just Ask Max anything
+            </Link>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
