@@ -103,10 +103,10 @@ const BUY_FASTER = ["auto_criteria", "ai_machine"] as const;
 const AI_TEAM_MEMBERS = [
   { id: "max", name: "Max", role: "Captain", color: "#6C5BD0", line: "Runs the team and keeps you focused on what matters most today." },
   { id: "emma", name: "Emma", role: "AI Receptionist", color: "#E86FA6", line: "Answers every call and text — instantly, day or night." },
-  { id: "chris", name: "Chris", role: "AI Sales Assistant", color: "#2F6FE0", line: "Follows up relentlessly and turns leads into booked appointments." },
-  { id: "ruby", name: "Ruby", role: "AI Marketing Assistant", color: "#E68A2E", line: "Creates content and campaigns that keep your pipeline full." },
+  { id: "chris", name: "Chris", role: "AI Sales Specialist", color: "#2F6FE0", line: "Follows up relentlessly and turns leads into booked appointments." },
+  { id: "ruby", name: "Ruby", role: "AI Marketing Specialist", color: "#E68A2E", line: "Creates content and campaigns that keep your pipeline full." },
   { id: "grace", name: "Grace", role: "AI Transaction Coordinator", color: "#2E9E6B", line: "Tracks every deadline so deals move smoothly to the closing table." },
-  { id: "oliver", name: "Oliver", role: "AI Accountant", color: "#3A6E8F", line: "Watches every dollar and keeps your commissions and books straight." },
+  { id: "oliver", name: "Oliver", role: "AI Financial Analyst", color: "#3A6E8F", line: "Watches every dollar and keeps your commissions and books straight." },
 ] as const;
 
 /* JUMP_LINKS removed — the in-page jump-link strip was deleted when

@@ -117,10 +117,10 @@ const LIVE_RUN_STATUSES = new Set(["planning", "running", "awaiting_approval"]);
 
 const ASSIGNEE_LABEL: Record<string, string> = {
   receptionist: "Receptionist",
-  sales_assistant: "Sales Assistant",
-  marketing_assistant: "Marketing Assistant",
-  transaction_assistant: "Transaction Assistant",
-  accountant: "Accountant",
+  sales_assistant: "Sales Specialist",
+  marketing_assistant: "Marketing Specialist",
+  transaction_assistant: "Transaction Coordinator",
+  accountant: "Financial Analyst",
   realtor: "For your review",
   boss_assistant: "Max",
 };
