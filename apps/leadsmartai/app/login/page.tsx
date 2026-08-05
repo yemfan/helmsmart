@@ -232,6 +232,24 @@ function LoginPageInner() {
             too long or was opened in a different browser tab. Please try again.
           </p>
         ) : null}
+
+        {/* Create account leads — new visitors should start here (Zillow-style).
+            Sign-in for returning users sits below the divider. */}
+        <div className="space-y-1.5 text-center">
+          <a
+            href="/signup"
+            className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+          >
+            Create your free account
+          </a>
+          <p className="text-[11px] text-gray-500">Meet Max and your AI real estate team in minutes.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="h-px flex-1 bg-gray-200" />
+          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">or sign in</span>
+          <span className="h-px flex-1 bg-gray-200" />
+        </div>
+
         <div className="space-y-2">
           <button
             type="button"
@@ -308,12 +326,6 @@ function LoginPageInner() {
           </button>
         </form>
         <div className="text-[11px] text-gray-500 text-center space-y-2">
-          <p>
-            New user?{" "}
-            <a className="text-blue-700 font-semibold" href="/signup">
-              Sign up
-            </a>
-          </p>
           {!sessionUser ? (
             <p>
               Real estate agent?{" "}
