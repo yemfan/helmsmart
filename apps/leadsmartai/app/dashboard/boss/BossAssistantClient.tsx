@@ -2,11 +2,15 @@
 
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { AI_TEAM } from "@/lib/realtyboss/team";
 import { LeadProfileDrawer } from "@/components/realtyboss/LeadProfileDrawer";
 import { AssistantAvatar } from "@/components/realtyboss/AssistantAvatar";
 import RunCard from "@/components/realtyboss/RunCard";
+import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
+
+/** A file the user attached in the command bar (uploaded to Storage). */
+type CommandAttachment = { path: string; name: string; mime: string; kind: "ad_photo" | "contact_import" };
 
 /**
  * Boss Assistant — the conversational command center.
@@ -291,7 +295,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     }
   }, []);
 
-  const submitCommand = useCallback(async (text: string) => {
+  const submitCommand = useCallback(async (text: string, attachment?: CommandAttachment) => {
     const content = text.trim();
     if (!content) return;
 
@@ -319,7 +323,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     await fetch("/api/dashboard/realtyboss/instructions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify(attachment ? { content, attachment } : { content }),
     }).catch(() => {});
     await loadConversation();
   }, [loadConversation, tasks]);
@@ -879,9 +883,29 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
   );
 }
 
-function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onSubmit: (text: string) => void; autopilot: boolean; pendingQuestion?: string | null; initialText?: string }) {
+function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onSubmit: (text: string, attachment?: CommandAttachment) => void; autopilot: boolean; pendingQuestion?: string | null; initialText?: string }) {
   const [text, setText] = useState("");
+  const [attach, setAttach] = useState<CommandAttachment | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadErr, setUploadErr] = useState<string | null>(null);
   const ref = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const onPickFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    setUploadErr(null);
+    setUploading(true);
+    try {
+      const kind: CommandAttachment["kind"] = f.type.startsWith("image/") ? "ad_photo" : "contact_import";
+      const path = await uploadViaStorage(f, kind);
+      setAttach({ path, name: f.name, mime: f.type, kind });
+    } catch (err) {
+      setUploadErr(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
   // Prefill from a deep link (e.g. /dashboard/boss?ask=… launched from the
   // welcome page's "Ask Max" prompts). We seed the box + focus, but never
   // auto-send — the agent stays in control of what actually runs.
@@ -898,7 +922,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
       });
     }
   }, [initialText]);
-  const send = () => { if (text.trim()) { onSubmit(text); setText(""); if (ref.current) ref.current.style.height = "auto"; } };
+  const send = () => { if (text.trim()) { onSubmit(text, attach ?? undefined); setText(""); setAttach(null); if (ref.current) ref.current.style.height = "auto"; } };
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-2">
       {pendingQuestion ? (
@@ -924,6 +948,33 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
         />
         <button type="button" onClick={send} disabled={!text.trim()} className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" aria-label="Send">↑</button>
       </div>
+
+      {/* Add a file — attach an image to post, or a spreadsheet to import from */}
+      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+        >
+          <span aria-hidden className="text-sm leading-none">＋</span> Add a file
+        </button>
+        {uploading && <span className="text-xs text-gray-400">Uploading…</span>}
+        {attach && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
+            📎 <span className="max-w-[160px] truncate">{attach.name}</span>
+            <button type="button" onClick={() => setAttach(null)} aria-label="Remove file" className="text-gray-400 hover:text-gray-700">×</button>
+          </span>
+        )}
+        {uploadErr && <span className="text-xs text-red-600">{uploadErr}</span>}
+      </div>
+      <input
+        ref={fileRef}
+        type="file"
+        className="hidden"
+        accept="image/*,.csv,.xlsx,.xls,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        onChange={onPickFile}
+      />
     </div>
   );
 }

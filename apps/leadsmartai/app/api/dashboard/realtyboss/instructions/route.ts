@@ -58,13 +58,31 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const { agentId } = await getAgentContextFromRequest(req);
-    const body = (await req.json().catch(() => ({}))) as { content?: unknown };
-    const content = typeof body.content === "string" ? body.content.trim().slice(0, 4000) : "";
+    const body = (await req.json().catch(() => ({}))) as {
+      content?: unknown;
+      attachment?: { path?: unknown; name?: unknown; mime?: unknown; kind?: unknown };
+    };
+    let content = typeof body.content === "string" ? body.content.trim().slice(0, 4000) : "";
     if (!content) {
       return NextResponse.json(
         { ok: false, error: "Write an instruction first." },
         { status: 400 },
       );
+    }
+
+    // A file the user attached in the command bar — surface it to Max as a
+    // reference in the instruction (public URL for images so a social post can
+    // use it; storage path for docs so the import tool can read it back).
+    const att = body.attachment;
+    const attPath = typeof att?.path === "string" ? att.path : "";
+    if (attPath) {
+      const base = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/\/$/, "");
+      const name = String(att?.name ?? "file").slice(0, 200);
+      const ref =
+        att?.kind === "ad_photo" && base
+          ? `(Attached image "${name}": ${base}/storage/v1/object/public/social-images/${attPath})`
+          : `(Attached file "${name}" [${String(att?.mime ?? "unknown")}], stored at lead-media/${attPath})`;
+      content = `${content}\n\n${ref}`.slice(0, 4000);
     }
     const { data, error } = await supabaseAdmin
       .from("boss_instructions")
