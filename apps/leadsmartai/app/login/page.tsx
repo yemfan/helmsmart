@@ -122,7 +122,15 @@ function LoginPageInner() {
         if (safe) {
           router.replace(safe);
         } else {
-          router.replace(resolveRoleHomePath(role, hasAgentRow));
+          // First-run agents meet Max (the AI-team onboarding) before the
+          // dashboard; shown once per device. Explicit redirects skip it.
+          let seenWelcome = true;
+          try {
+            seenWelcome = localStorage.getItem("rb_welcome_seen_v1") === "1";
+          } catch {
+            /* ignore */
+          }
+          router.replace(seenWelcome ? resolveRoleHomePath(role, hasAgentRow) : "/welcome");
         }
       } else {
         const fallback = redirectParam ?? "/";

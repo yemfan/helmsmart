@@ -273,6 +273,24 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     return () => clearInterval(t);
   }, [hasPending, loadConversation]);
 
+  // Deep-link prefill: /dashboard/boss?ask=<prompt> (launched from the welcome
+  // page's "Ask Max" prompts) seeds the command bar once, then we strip the
+  // param so a refresh doesn't re-inject it.
+  const [askPrefill, setAskPrefill] = useState("");
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search).get("ask");
+      if (q && q.trim()) {
+        setAskPrefill(q);
+        const url = new URL(window.location.href);
+        url.searchParams.delete("ask");
+        window.history.replaceState({}, "", url.toString());
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const submitCommand = useCallback(async (text: string) => {
     const content = text.trim();
     if (!content) return;
@@ -507,7 +525,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           </BossBubble>
         )}
 
-        <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} />
+        <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} initialText={askPrefill} />
       </section>
 
       {/* ── Your AI team (compact) ── */}
@@ -854,9 +872,25 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
   );
 }
 
-function CommandBar({ onSubmit, autopilot, pendingQuestion }: { onSubmit: (text: string) => void; autopilot: boolean; pendingQuestion?: string | null }) {
+function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onSubmit: (text: string) => void; autopilot: boolean; pendingQuestion?: string | null; initialText?: string }) {
   const [text, setText] = useState("");
   const ref = useRef<HTMLTextAreaElement>(null);
+  // Prefill from a deep link (e.g. /dashboard/boss?ask=… launched from the
+  // welcome page's "Ask Max" prompts). We seed the box + focus, but never
+  // auto-send — the agent stays in control of what actually runs.
+  useEffect(() => {
+    if (initialText && initialText.trim()) {
+      setText(initialText);
+      requestAnimationFrame(() => {
+        const el = ref.current;
+        if (el) {
+          el.focus();
+          el.style.height = "auto";
+          el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+        }
+      });
+    }
+  }, [initialText]);
   const send = () => { if (text.trim()) { onSubmit(text); setText(""); if (ref.current) ref.current.style.height = "auto"; } };
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-2">
