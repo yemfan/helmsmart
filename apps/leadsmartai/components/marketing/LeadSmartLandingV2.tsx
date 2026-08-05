@@ -101,7 +101,7 @@ const BUY_FASTER = ["auto_criteria", "ai_machine"] as const;
  * /avatars/personas). Copy is brand content, kept inline (not i18n) for now.
  */
 const AI_TEAM_MEMBERS = [
-  { id: "max", name: "Max", role: "Boss Assistant", color: "#6C5BD0", line: "Runs the team and keeps you focused on what matters most today." },
+  { id: "max", name: "Max", role: "Captain", color: "#6C5BD0", line: "Runs the team and keeps you focused on what matters most today." },
   { id: "emma", name: "Emma", role: "AI Receptionist", color: "#E86FA6", line: "Answers every call and text — instantly, day or night." },
   { id: "chris", name: "Chris", role: "AI Sales Assistant", color: "#2F6FE0", line: "Follows up relentlessly and turns leads into booked appointments." },
   { id: "ruby", name: "Ruby", role: "AI Marketing Assistant", color: "#E68A2E", line: "Creates content and campaigns that keep your pipeline full." },
@@ -284,30 +284,6 @@ export default function LeadSmartLandingV2() {
                 {t("hero.subtitle")}
               </p>
 
-              {/* Hero proof bullets — Missed Call Recovery sits in
-                  the middle slot so it lands right after the speed
-                  promise. This is placement 1 of 3 for Missed Call
-                  Recovery (also dedicated feature section and mid-
-                  page emotional hook strip further down). */}
-              <ul className="mt-7 space-y-2.5 text-base text-slate-700 dark:text-slate-300">
-                <li className="flex items-start gap-2.5">
-                  <span aria-hidden className="mt-0.5 text-lg">⚡</span>
-                  <span>{t("hero.bullets.speed")}</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span aria-hidden className="mt-0.5 text-lg">📞</span>
-                  <span>{t("hero.bullets.missed_call")}</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span aria-hidden className="mt-0.5 text-lg">🎯</span>
-                  <span>{t("hero.bullets.focus")}</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span aria-hidden className="mt-0.5 text-lg">🏆</span>
-                  <span>{t("hero.bullets.trained")}</span>
-                </li>
-              </ul>
-
               <div className="mt-8 flex flex-wrap gap-3">
                 <MagneticButton>
                   <Button
@@ -317,13 +293,6 @@ export default function LeadSmartLandingV2() {
                     {t("hero.cta_primary")}
                   </Button>
                 </MagneticButton>
-                <Button
-                  variant="outline"
-                  href="/book"
-                  className="min-h-11 px-6 text-base"
-                >
-                  {t("hero.cta_demo")}
-                </Button>
                 <Button
                   variant="outline"
                   href="#how"
