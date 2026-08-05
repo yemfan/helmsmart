@@ -14,6 +14,7 @@ import {
   clearSignupAttribution,
 } from "@/components/attribution/AttributionCapture";
 import { consumeStashedReferralCode } from "@/components/referrals/ReferralCodeCapture";
+import { evaluatePassword, PasswordStrength } from "@/components/auth/PasswordStrength";
 
 // BCP-47 base ids shown on the SMS opt-in disclosure. Keep in sync with
 // the POSTs to /api/consent/sms — the `sms_consent_version` string must
@@ -37,6 +38,7 @@ function SignupForm() {
   // timestamp + IP here so we have a defensible consent audit trail.
   const [smsConsent, setSmsConsent] = useState(false);
   const [password, setPassword] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -144,8 +146,11 @@ function SignupForm() {
       return;
     }
 
-    if (!password.trim() || password.length < 6) {
-      return setError("Password must be at least 6 characters.");
+    if (!evaluatePassword(password).allMet) {
+      return setError("Please choose a password that meets all the requirements below.");
+    }
+    if (!acceptTerms) {
+      return setError("Please accept the Terms of Service and Privacy Policy to continue.");
     }
 
     setLoading(true);
@@ -350,6 +355,7 @@ function SignupForm() {
                 disabled={prefillLoading}
                 autoComplete="new-password"
               />
+              <PasswordStrength password={password} />
             </div>
           ) : null}
 
@@ -360,35 +366,45 @@ function SignupForm() {
             <p className="text-[11px] text-emerald-700 font-medium whitespace-pre-line">{success}</p>
           ) : null}
 
+          {/*
+           * Explicit consent — TVR-011 / BF-031. Required for CCPA + GDPR +
+           * general consumer protection. An active checkbox recorded before
+           * account creation; suppressed in profile-completion mode (already
+           * signed in) since they accepted at original signup.
+           */}
+          {hasSession ? null : (
+            <label className="flex cursor-pointer items-start gap-2">
+              <input
+                type="checkbox"
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+                className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-blue-600"
+              />
+              <span className="text-[11px] leading-relaxed text-slate-600">
+                I agree to the{" "}
+                <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">
+                  Privacy Policy
+                </Link>
+                .
+              </span>
+            </label>
+          )}
+
           <button
             type="submit"
-            disabled={loading || prefillLoading}
+            disabled={
+              loading ||
+              prefillLoading ||
+              (!hasSession && (!evaluatePassword(password).allMet || !acceptTerms))
+            }
             className="w-full inline-flex items-center justify-center bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? (hasSession ? "Saving…" : "Creating account...") : hasSession ? "Save profile" : "Sign Up"}
           </button>
-
-          {/*
-           * Consent disclosure — TVR-011 / BF-031. Required for
-           * CCPA + GDPR + general consumer protection: users can't
-           * legally consent to terms they haven't been shown.
-           * Suppressed when the page is in profile-completion mode
-           * (already-signed-in user finishing required fields) —
-           * they accepted at original signup.
-           */}
-          {hasSession ? null : (
-            <p className="text-[11px] leading-relaxed text-slate-500 text-center">
-              By creating an account, you agree to our{" "}
-              <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">
-                Privacy Policy
-              </Link>
-              .
-            </p>
-          )}
         </form>
 
         <p className="text-[11px] text-gray-500 text-center space-y-2">
