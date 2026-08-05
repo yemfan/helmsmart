@@ -36,9 +36,9 @@ export const AI_TEAM: readonly AssistantDef[] = [
   {
     type: "boss_assistant",
     displayName: "Max",
-    name: "Boss Assistant",
+    name: "Captain",
     personality: "Calm leader, strategic, always in control.",
-    role: "AI Chief of Staff",
+    role: "Captain of your AI real estate team",
     mission: "Help you focus on the most important actions today.",
     href: "/dashboard/boss",
     skills: [],
@@ -70,7 +70,7 @@ export const AI_TEAM: readonly AssistantDef[] = [
   {
     type: "sales_assistant",
     displayName: "Chris",
-    name: "AI Sales Assistant",
+    name: "AI Sales Specialist",
     personality: "Confident, persuasive, follows up relentlessly.",
     role: "Outbound lead conversion",
     mission: "Never miss a lead.",
@@ -97,7 +97,7 @@ export const AI_TEAM: readonly AssistantDef[] = [
     // social posts, marketing plans, templates, sphere nurture.
     type: "marketing_assistant",
     displayName: "Ruby",
-    name: "AI Marketing Assistant",
+    name: "AI Marketing Specialist",
     personality: "Creative, energetic, grows your business.",
     role: "Demand generation",
     mission: "Keep your pipeline full.",
@@ -138,7 +138,7 @@ export const AI_TEAM: readonly AssistantDef[] = [
     // rebills) are the edge case, not the lead.
     type: "accountant",
     displayName: "Oliver",
-    name: "AI Accountant",
+    name: "AI Financial Analyst",
     personality: "Accurate, analytical, watches every dollar.",
     role: "Money & books",
     mission: "Know what you'll make — and keep more of it.",
