@@ -15,6 +15,7 @@ import {
   setupOpenHouse,
   coordinateClosing,
 } from "./impl/playbooks";
+import { getPipeline, getDeals, getFinancials } from "./impl/reads";
 import { getMarketSnapshot } from "./impl/market";
 
 /**
@@ -48,6 +49,9 @@ const ALL_TOOLS = [
   startBuyingPlaybook,
   setupOpenHouse,
   coordinateClosing,
+  getPipeline,
+  getDeals,
+  getFinancials,
   queryCrm,
   getMarketSnapshot,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
