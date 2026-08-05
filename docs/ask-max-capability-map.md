@@ -19,7 +19,9 @@ There is a **second, older engine** — the action registry (`lib/realtyboss/act
 
 ---
 
-## Ask Max today — the 15 tools
+> **Progress:** Phase 1 shipped — `run_skill` (#1113) + `setup_open_house`, `coordinate_closing`, `start_selling_playbook`, `start_buying_playbook` (#1114). Ask Max is now at **20 tools** (~80 effective abilities). Buyer-saved-search and cold-call-qualify turned out already-reachable by composition, so no separate tools were added.
+
+## Ask Max today — the core tools
 
 | Tool | Capability | Employee |
 |---|---|---|
@@ -52,10 +54,10 @@ There is a **second, older engine** — the action registry (`lib/realtyboss/act
 | Seller presentation | ✅ `generate_seller_presentation` | `/dashboard/presentations` |
 | Deep report | ✅ `generate_deep_report` | `/dashboard/deep-report` |
 | One-off house search | ✅ `house_search` | `/dashboard/house-search` |
-| **Saved buyer search + auto-email matches** | 🟡 `buyer_home_search` | `saved-searches`, `house-search/email` |
-| **Cold-call & qualify a lead** | 🟡 `cold_call_qualify` | `voice/outbound-call` |
-| **Schedule a showing** | 🟡 `schedule_showing` | `/dashboard/showings` |
-| **Start buying playbook** (stateful engagement) | 🟡 `start_buying_playbook` | `/dashboard/playbook-runs` |
+| Saved buyer search + auto-email matches | ✅ `house_search` (contact_id + auto_run_frequency) | `saved-searches` |
+| Cold-call & qualify a lead | ✅ `query_crm` → `schedule_voice_call` | `voice/outbound-call` |
+| Schedule a showing | 🟡 composable via `create_task` | `/dashboard/showings` |
+| **Start buying playbook** (stateful engagement) | ✅ `start_buying_playbook` | `/dashboard/playbook-runs` |
 | Draft/send outreach (SMS/email/voice) | ✅ draft/send/voice | Sales composer |
 | Sphere likely-buyer / likely-seller outreach | 🔴 | `sphere/likely-buyers…/outreach-message`, `…/equity-message/send` |
 | Smart lists / dynamic segments | 🔴 | `smart-lists` |
@@ -69,8 +71,8 @@ There is a **second, older engine** — the action registry (`lib/realtyboss/act
 | Publish / schedule social post | ✅ `publish_social_post`, `schedule_social_post` | Generate → posts |
 | Avatar (digital-twin) video | ✅ `create_avatar_video` | avatar studio |
 | **Single social post (draft+schedule)** | 🟡 `post_social` | (overlaps ✅) |
-| **Open house** (playbook: CMA + dated checklist) | 🟡 `open_house` | `/dashboard/open-houses` |
-| **Start selling playbook** (marketing plan + 3 ads + rollout) | 🟡 `start_selling_playbook` | `/dashboard/playbook-runs` |
+| **Open house** (playbook: CMA + dated checklist) | ✅ `setup_open_house` | `/dashboard/open-houses` |
+| **Start selling playbook** (marketing plan + 3 ads + rollout) | ✅ `start_selling_playbook` | `/dashboard/playbook-runs` |
 | Marketing plan (standalone) | 🔴 | `/dashboard/marketing/plans` |
 | Listing → ad reel / ad video | 🔴 | `listings/[id]/ad-reel`, `/ad-video` |
 | Postcards (single / bulk direct mail) | 🔴 | `postcards`, `/bulk` |
@@ -83,7 +85,7 @@ There is a **second, older engine** — the action registry (`lib/realtyboss/act
 ### Grace — Transaction Coordinator
 | Capability | Status | Route / source |
 |---|---|---|
-| **Coordinate closing** (deadline timeline) | 🟡 `coordinate_closing` | `/dashboard/transactions` |
+| **Coordinate closing** (deadline timeline) | ✅ `coordinate_closing` | `/dashboard/transactions` |
 | Create / update a transaction | 🔴 | `/dashboard/transactions/new` |
 | Deal task checklist (add/update) | 🔴 | `transactions/[id]/tasks` |
 | Deadlines & health / risk assessment | 🔴 | `/dashboard/ai-transaction-assistant` |
@@ -117,7 +119,7 @@ There is a **second, older engine** — the action registry (`lib/realtyboss/act
 | Look up contacts | ✅ `query_crm` | — |
 | Market snapshot | ✅ `get_market_snapshot` | — |
 | Create task / calendar event | ✅ | — |
-| **Run any of ~59 Realtor AI skills** | 🟡 `run_skill` | `/dashboard/skills` |
+| **Run any of ~59 Realtor AI skills** | ✅ `run_skill` | `/dashboard/skills` |
 | Answer: "how's my pipeline / what's at risk / what did I make" | 🔴 (no read tools) | summary/perf/tx/books APIs |
 | On-demand daily briefing | 🔴 | `briefings` |
 | Change branding / voice / settings | ⛔ / 🔴 | `/dashboard/settings` |
@@ -128,15 +130,15 @@ There is a **second, older engine** — the action registry (`lib/realtyboss/act
 
 ## Recommended plan (most leverage first)
 
-### Phase 1 — Restore parity: bridge the action registry into the loop
+### Phase 1 — Restore parity: bridge the action registry into the loop ✅ DONE
 Wrap capabilities that **already exist** in `lib/realtyboss/actions/registry.ts` as `BossTool`s. Lowest effort, biggest jump.
 
-1. **`run_skill`** — unlocks the **~59-skill** catalog (listing descriptions, farm/expired/FSBO scripts, objection scripts, GCI plan, net sheets, newsletters, case studies, video scripts…). Single highest-value addition. Reuse `routeSkillRequest` + `runSkillAndSave`.
-2. **`setup_open_house`** — playbook (pricing CMA + dated checklist).
-3. **`coordinate_closing`** — deadline timeline from the closing date.
-4. **`start_selling_playbook`** / **`start_buying_playbook`** — stateful engagements.
-5. **`save_buyer_search`** — saved search + daily/weekly auto-email (superset of `house_search`).
-6. **`schedule_showing`**, **`cold_call_qualify`** — thin wrappers (the latter may fold into `schedule_voice_call` with a `qualify` purpose).
+1. ✅ **`run_skill`** (#1113) — unlocks the **~59-skill** catalog (listing descriptions, farm/expired/FSBO scripts, objection scripts, GCI plan, net sheets, newsletters, case studies, video scripts…). Single highest-value addition. Wraps `routeSkillRequest` + `runSkillAndSave`.
+2. ✅ **`setup_open_house`** (#1114) — playbook (pricing CMA + dated checklist).
+3. ✅ **`coordinate_closing`** (#1114) — deadline timeline from the closing date.
+4. ✅ **`start_selling_playbook`** / **`start_buying_playbook`** (#1114) — stateful engagements.
+5. ✅ **Saved buyer search** — already reachable: `house_search` accepts `contact_id` + `auto_run_frequency`. No new tool.
+6. ✅ **Cold-call & qualify** — already reachable by composition: `query_crm` → `schedule_voice_call`. **`schedule_showing`** is composable via `create_task`; add a dedicated tool only if usage warrants.
 
 ### Phase 2 — "Ask Max anything": read tools (low risk, read-only)
 Today Max can *do* but barely *answer*. A captain you can question is the charter test. Wrap existing GET endpoints:
