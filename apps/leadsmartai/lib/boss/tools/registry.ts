@@ -7,6 +7,7 @@ import { draftMessage, sendMessage } from "./impl/messaging";
 import { scheduleVoiceCall } from "./impl/voice";
 import { createCrmTask, createCalendarEvent, queryCrm } from "./impl/crm";
 import { publishSocialPost, scheduleSocialPost, createAvatarVideo } from "./impl/social";
+import { importContactsFromFile } from "./impl/contacts";
 import { getMarketSnapshot } from "./impl/market";
 
 /**
@@ -34,6 +35,7 @@ const ALL_TOOLS = [
   publishSocialPost,
   scheduleSocialPost,
   createAvatarVideo,
+  importContactsFromFile,
   queryCrm,
   getMarketSnapshot,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
