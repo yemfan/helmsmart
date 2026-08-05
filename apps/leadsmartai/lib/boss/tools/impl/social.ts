@@ -3,6 +3,8 @@ import "server-only";
 import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { publishPost } from "@/lib/leads-gen/publish";
+import { getAnthropicClient } from "@/lib/anthropic";
+import { asImageMediaType } from "@/lib/contact-intake/aiExtractContacts";
 import {
   draftAvatarScript,
   getAvatarState,
@@ -33,16 +35,97 @@ const postInput = z.object({
   hashtags: z.array(z.string()).max(15).optional(),
 });
 
+/**
+ * Draft a caption + hashtags from the image itself (vision) plus the agent's
+ * brand memory (brand name + onboarding profile). Used when the agent asked to
+ * post a photo but didn't dictate the words — the Marketing team writes them.
+ */
+async function generateSocialCaption(
+  agentId: string,
+  imageUrl: string,
+): Promise<{ caption: string; hashtags: string[] } | null> {
+  try {
+    const { data: agentRow } = await supabaseAdmin
+      .from("agents")
+      .select("brand_name, onboarding")
+      .eq("id", agentId)
+      .maybeSingle();
+    const agent = agentRow as { brand_name?: string | null; onboarding?: Record<string, string> | null } | null;
+    const ob = agent?.onboarding ?? {};
+    const context = [
+      agent?.brand_name ? `Brand: ${agent.brand_name}` : null,
+      ob.market ? `Market: ${ob.market}` : null,
+      ob.focus ? `Works with: ${ob.focus}` : null,
+      ob.goal ? `Current goal: ${ob.goal}` : null,
+    ]
+      .filter(Boolean)
+      .join(". ");
+
+    const res = await fetch(imageUrl);
+    if (!res.ok) return null;
+    const media = asImageMediaType(res.headers.get("content-type") ?? "");
+    if (!media) return null;
+    const b64 = Buffer.from(await res.arrayBuffer()).toString("base64");
+
+    const client = getAnthropicClient();
+    const resp = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 600,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: media, data: b64 } },
+            {
+              type: "text",
+              text: `You are the marketing assistant for a real estate agent. Write ONE social media caption for this image, in the agent's brand voice. Read any text in the image and use it.${context ? ` Context — ${context}.` : ""} Keep it 1-3 short sentences, warm and professional, with a light call to action. Then give 5-10 relevant hashtags (real estate + local). Respond ONLY as minified JSON: {"caption": string, "hashtags": string[]}.`,
+            },
+          ],
+        },
+      ],
+    });
+    const text = resp.content.map((c) => (c.type === "text" ? c.text : "")).join("");
+    const parsed = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] ?? text) as { caption?: unknown; hashtags?: unknown };
+    const caption = String(parsed.caption ?? "").trim();
+    if (!caption) return null;
+    const hashtags = Array.isArray(parsed.hashtags) ? parsed.hashtags.map((h) => String(h)).slice(0, 15) : [];
+    return { caption, hashtags };
+  } catch {
+    return null;
+  }
+}
+
+/** Use the agent's own caption if they wrote one; otherwise draft it from the image. */
+async function resolveCaption(
+  agentId: string,
+  input: { caption?: string; hashtags?: string[]; image_url?: string },
+): Promise<{ caption: string; hashtags: string[] } | { error: string }> {
+  if (input.caption && input.caption.trim().length >= 3) {
+    return { caption: input.caption.trim(), hashtags: input.hashtags ?? [] };
+  }
+  if (!input.image_url) {
+    return { error: "Give me the caption text, or attach a photo and I'll write one." };
+  }
+  const gen = await generateSocialCaption(agentId, input.image_url);
+  if (!gen) return { error: "I couldn't draft a caption from that image — send me a caption to use." };
+  return { caption: gen.caption, hashtags: input.hashtags?.length ? input.hashtags : gen.hashtags };
+}
+
 export const publishSocialPost = defineTool({
   name: "publish_social_post",
   description:
-    "Publish a social post NOW on the agent's connected account (Facebook/Instagram/LinkedIn). Pass image_url to attach a photo (e.g. one the user uploaded) — required for Instagram. To post to ALL of the agent's socials, call this once per platform. Requires a connected account. In ask mode this parks the post for approval instead.",
+    "Publish a social post NOW on the agent's connected account (Facebook/Instagram/LinkedIn). Pass image_url to attach a photo (required for Instagram). If the agent wrote their own caption, pass it; otherwise OMIT caption/hashtags and the Marketing team drafts them from the image + the agent's brand. NEVER ask the agent to write a caption. To post to ALL socials, call this once per platform. In ask mode the drafted post is parked for the agent to approve or edit.",
   inputSchema: postInput.extend({
+    caption: z
+      .string()
+      .max(2200)
+      .optional()
+      .describe("Only if the agent dictated the words; otherwise omit and the team drafts it from the image."),
     image_url: z
       .string()
       .url()
       .optional()
-      .describe("Public URL of an image to attach to the post (e.g. a photo the user uploaded)."),
+      .describe("Public URL of an image to attach (e.g. a photo the agent uploaded)."),
   }),
   riskClass: "outbound",
   assignee: "marketing_assistant",
@@ -55,27 +138,33 @@ export const publishSocialPost = defineTool({
         error: `No connected ${input.platform} account — connect it under Marketing first.`,
       };
     }
+    const c = await resolveCaption(ctx.agentId, input);
+    if ("error" in c) return { status: "failed", error: c.error };
     const res = await publishPost({
       agentId: ctx.agentId,
       platform: input.platform,
       connectionId: account.id,
-      caption: input.caption,
-      hashtags: input.hashtags,
+      caption: c.caption,
+      hashtags: c.hashtags,
       imageUrl: input.image_url ?? null,
       trigger: "boss_tool",
     });
     if (!res.ok) return { status: "failed", error: res.error };
     return {
       status: "completed",
-      summary: `Published to ${input.platform}: "${input.caption.slice(0, 60)}…"`,
+      summary: `Published to ${input.platform}: "${c.caption.slice(0, 60)}…"`,
       data: { lead_post_id: res.leadPostId, url: res.externalPostUrl },
     };
   },
-  propose: async (_ctx, input) => ({
-    status: "pending_approval",
-    summary: `Social post drafted for ${input.platform}${input.image_url ? " (with photo)" : ""}: "${input.caption.slice(0, 80)}…"`,
-    proposal: { platform: input.platform, caption: input.caption, hashtags: input.hashtags ?? [], image_url: input.image_url ?? null },
-  }),
+  propose: async (ctx, input) => {
+    const c = await resolveCaption(ctx.agentId, input);
+    if ("error" in c) return { status: "failed", error: c.error };
+    return {
+      status: "pending_approval",
+      summary: `${input.platform} post drafted${input.image_url ? " (with photo)" : ""}: "${c.caption.slice(0, 80)}…"`,
+      proposal: { platform: input.platform, caption: c.caption, hashtags: c.hashtags, image_url: input.image_url ?? null },
+    };
+  },
 });
 
 export const scheduleSocialPost = defineTool({
