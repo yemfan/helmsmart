@@ -19,6 +19,7 @@ import {
   clearSignupAttribution,
 } from "@/components/attribution/AttributionCapture";
 import { consumeStashedReferralCode } from "@/components/referrals/ReferralCodeCapture";
+import { evaluatePassword, PasswordStrength } from "@/components/auth/PasswordStrength";
 
 /** Matches `leadsmart_users.role` for this onboarding form. */
 type AgentSignupAccountType = "agent" | "loan_broker";
@@ -61,6 +62,7 @@ export function AgentSignupForm({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [accountType, setAccountType] = useState<AgentSignupAccountType>("agent");
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   useEffect(() => {
     if (prefillLoading) return;
@@ -126,8 +128,11 @@ export function AgentSignupForm({
     if (!isValidUsPhone(phone)) {
       return setError("Phone must be a valid US number (10 digits).");
     }
-    if (!hasSession && (!password.trim() || password.length < 6)) {
-      return setError("Password must be at least 6 characters.");
+    if (!hasSession && !evaluatePassword(password).allMet) {
+      return setError("Please choose a password that meets all the requirements below.");
+    }
+    if (!hasSession && !acceptTerms) {
+      return setError("Please accept the Terms of Service and Privacy Policy to continue.");
     }
 
     setLoading(true);
@@ -463,6 +468,7 @@ export function AgentSignupForm({
               autoComplete="new-password"
               disabled={prefillLoading}
             />
+            <PasswordStrength password={password} />
           </div>
         ) : null}
 
@@ -473,32 +479,44 @@ export function AgentSignupForm({
           <p className="text-[11px] text-emerald-700 font-medium whitespace-pre-line">{success}</p>
         ) : null}
 
+        {/*
+         * Explicit consent — TVR-011 / BF-031. An active checkbox (not just
+         * passive copy) recorded before account creation; suppressed for the
+         * signed-in profile-completion flow since they accepted at signup.
+         */}
+        {signedInAgentFlow ? null : (
+          <label className="flex cursor-pointer items-start gap-2">
+            <input
+              type="checkbox"
+              checked={acceptTerms}
+              onChange={(e) => setAcceptTerms(e.target.checked)}
+              className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-blue-600"
+            />
+            <span className="text-[11px] leading-relaxed text-slate-600">
+              I agree to the{" "}
+              <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">
+                Privacy Policy
+              </Link>
+              .
+            </span>
+          </label>
+        )}
+
         <button
           type="submit"
-          disabled={loading || prefillLoading}
+          disabled={
+            loading ||
+            prefillLoading ||
+            (!signedInAgentFlow && (!evaluatePassword(password).allMet || !acceptTerms))
+          }
           className="w-full inline-flex items-center justify-center bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? "Saving…" : signedInAgentFlow ? "Save agent profile" : "Create Agent Account"}
         </button>
-
-        {/*
-         * Consent disclosure — TVR-011 / BF-031. Same pattern as
-         * /signup; suppressed for the signed-in profile-completion
-         * flow since they accepted at original signup.
-         */}
-        {signedInAgentFlow ? null : (
-          <p className="text-[11px] leading-relaxed text-slate-500 text-center">
-            By creating an agent account, you agree to our{" "}
-            <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">
-              Privacy Policy
-            </Link>
-            .
-          </p>
-        )}
       </form>
 
       <p className="text-[11px] text-gray-500 text-center">
