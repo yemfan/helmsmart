@@ -982,22 +982,40 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
 function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onSubmit: (text: string, attachment?: CommandAttachment) => void; autopilot: boolean; pendingQuestion?: string | null; initialText?: string }) {
   const [text, setText] = useState("");
   const [attach, setAttach] = useState<CommandAttachment | null>(null);
+  // Local object-URL for an instant image thumbnail (no round-trip to Storage).
+  const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadErr, setUploadErr] = useState<string | null>(null);
   const ref = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Release the object URL when it changes or the bar unmounts, so previews
+  // don't leak.
+  useEffect(() => {
+    return () => { if (preview) URL.revokeObjectURL(preview); };
+  }, [preview]);
+
+  const clearAttach = () => {
+    setPreview((cur) => { if (cur) URL.revokeObjectURL(cur); return null; });
+    setAttach(null);
+  };
+
   const onPickFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
     setUploadErr(null);
     setUploading(true);
+    const isImage = f.type.startsWith("image/");
+    // Show the thumbnail immediately from the local file while it uploads.
+    if (isImage) setPreview((cur) => { if (cur) URL.revokeObjectURL(cur); return URL.createObjectURL(f); });
     try {
-      const kind: CommandAttachment["kind"] = f.type.startsWith("image/") ? "ad_photo" : "contact_import";
+      const kind: CommandAttachment["kind"] = isImage ? "ad_photo" : "contact_import";
       const path = await uploadViaStorage(f, kind);
       setAttach({ path, name: f.name, mime: f.type, kind });
     } catch (err) {
       setUploadErr(err instanceof Error ? err.message : "Upload failed");
+      setPreview((cur) => { if (cur) URL.revokeObjectURL(cur); return null; });
     } finally {
       setUploading(false);
     }
@@ -1018,7 +1036,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
       });
     }
   }, [initialText]);
-  const send = () => { if (text.trim()) { onSubmit(text, attach ?? undefined); setText(""); setAttach(null); if (ref.current) ref.current.style.height = "auto"; } };
+  const send = () => { if (text.trim()) { onSubmit(text, attach ?? undefined); setText(""); clearAttach(); if (ref.current) ref.current.style.height = "auto"; } };
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-2">
       {pendingQuestion ? (
@@ -1056,10 +1074,16 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
           <span aria-hidden className="text-sm leading-none">＋</span> Add a file
         </button>
         {uploading && <span className="text-xs text-gray-400">Uploading…</span>}
-        {attach && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
-            📎 <span className="max-w-[160px] truncate">{attach.name}</span>
-            <button type="button" onClick={() => setAttach(null)} aria-label="Remove file" className="text-gray-400 hover:text-gray-700">×</button>
+        {(attach || preview) && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 py-0.5 pl-1 pr-2 text-xs text-gray-700">
+            {preview ? (
+              // eslint-disable-next-line @next/next/no-img-element -- local object URL thumbnail
+              <img src={preview} alt="" className="h-7 w-7 rounded-full object-cover" />
+            ) : (
+              <span className="pl-1" aria-hidden>📎</span>
+            )}
+            <span className="max-w-[160px] truncate">{attach?.name ?? "Image"}</span>
+            <button type="button" onClick={clearAttach} aria-label="Remove file" className="text-gray-400 hover:text-gray-700">×</button>
           </span>
         )}
         {uploadErr && <span className="text-xs text-red-600">{uploadErr}</span>}
