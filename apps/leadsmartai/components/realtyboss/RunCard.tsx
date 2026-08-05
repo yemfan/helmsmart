@@ -66,6 +66,8 @@ type RunDetail = {
   input_tokens: number;
   output_tokens: number;
   token_budget: number;
+  started_at?: string | null;
+  finished_at?: string | null;
 };
 
 const TOOL_LABEL: Record<string, string> = {
@@ -158,10 +160,14 @@ export default function RunCard({
         </p>
       )}
 
-      {run.report && (
-        <div className="rounded-lg border border-gray-100 bg-gray-50 p-2.5">
-          <p className="whitespace-pre-line text-sm text-gray-800">{run.report}</p>
-        </div>
+      {run.status === "completed" ? (
+        <MissionCompleteCard run={run} steps={steps} />
+      ) : (
+        run.report && (
+          <div className="rounded-lg border border-gray-100 bg-gray-50 p-2.5">
+            <p className="whitespace-pre-line text-sm text-gray-800">{run.report}</p>
+          </div>
+        )
       )}
       {run.status === "failed" && run.error && (
         <p className="text-xs text-red-600">Run failed: {run.error}</p>
@@ -169,6 +175,92 @@ export default function RunCard({
       {run.status === "budget_exceeded" && (
         <p className="text-xs text-amber-700">Stopped at the run budget — partial work above.</p>
       )}
+    </div>
+  );
+}
+
+/**
+ * The premium mission-complete card — the payoff moment. Instead of dumping the
+ * report in a gray box, it frames the finish like a real team delivering: Max's
+ * headline + a subtle five-star flourish, the crew who did the work (avatars),
+ * how long the whole mission took, the deliverables, and Max's report (which
+ * already ends with his proactive next step). Restrained, not confetti — the
+ * "premium" cue is the gold stars + soft emerald wash, nothing that flashes.
+ */
+function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] }) {
+  const done = steps.filter((s) => s.status === "completed");
+
+  // Crew credit — the distinct AI employees who completed a step, in order.
+  const crew: { name: string; avatar: string }[] = [];
+  const seen = new Set<string>();
+  for (const s of done) {
+    const p = s.assignee ? ASSIGNEE_PERSONA[s.assignee] : null;
+    if (p && !seen.has(p.name)) {
+      seen.add(p.name);
+      crew.push({ name: p.name, avatar: p.avatar });
+    }
+  }
+
+  const total = fmtDuration(run.started_at, run.finished_at);
+  const deliverables = done
+    .map((s) => ({ url: s.output_json?.artifactUrl ?? null, label: TOOL_LABEL[s.tool_name] ?? s.tool_name }))
+    .filter((d): d is { url: string; label: string } => Boolean(d.url));
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-emerald-200 bg-gradient-to-b from-emerald-50/80 to-white">
+      {/* headline row */}
+      <div className="flex items-start gap-2.5 px-3 pt-3">
+        <AssistantAvatar id="max" size={30} alt="Max" className="mt-0.5 h-[30px] w-[30px]" />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <p className="text-sm font-semibold text-gray-900">Mission accomplished.</p>
+            <span className="text-xs tracking-tight text-amber-500" aria-label="five stars">★★★★★</span>
+          </div>
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-gray-500">
+            <span className="font-medium text-emerald-700">
+              {done.length} step{done.length === 1 ? "" : "s"} complete
+            </span>
+            {total && <span>· ⏱ {total}</span>}
+          </p>
+        </div>
+      </div>
+
+      {/* crew credit */}
+      {crew.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 px-3 pt-2">
+          <span className="text-[10px] uppercase tracking-[0.12em] text-gray-400">Delivered by</span>
+          <span className="flex items-center gap-1.5">
+            {crew.map((c) => (
+              <span key={c.name} className="inline-flex items-center gap-1 rounded-full bg-white/80 px-1.5 py-0.5 ring-1 ring-emerald-100">
+                <AssistantAvatar id={c.avatar} size={16} alt={c.name} className="h-4 w-4" />
+                <span className="text-[10px] font-semibold text-gray-700">{c.name}</span>
+              </span>
+            ))}
+          </span>
+        </div>
+      )}
+
+      {/* Max's report — his voice, already ending with a proactive next step */}
+      {run.report && (
+        <p className="whitespace-pre-line px-3 pt-2.5 text-sm text-gray-800">{run.report}</p>
+      )}
+
+      {/* deliverables */}
+      {deliverables.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 px-3 pt-2.5">
+          {deliverables.map((d, i) => (
+            <Link
+              key={`${d.url}-${i}`}
+              href={d.url}
+              className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-1 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-50"
+            >
+              {d.label} →
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <div className="h-3" />
     </div>
   );
 }
