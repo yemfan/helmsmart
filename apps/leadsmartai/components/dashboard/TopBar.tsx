@@ -150,7 +150,7 @@ function QuickActionsDropdown() {
         onClick={() => setOpen(false)}
       >
         <Sparkles className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
-        Ask Boss Assistant
+        Ask Max
       </Link>
       <p className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
         Quick actions

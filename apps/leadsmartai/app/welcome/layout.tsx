@@ -7,5 +7,7 @@ export const metadata: Metadata = {
 };
 
 export default function WelcomeLayout({ children }: { children: React.ReactNode }) {
-  return <div className="min-h-screen bg-slate-50">{children}</div>;
+  // Full-screen takeover: the onboarding is a focused first-run flow, so it
+  // covers the marketing header/footer rendered by the root layout.
+  return <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-50">{children}</div>;
 }
