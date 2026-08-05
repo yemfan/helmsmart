@@ -33,8 +33,13 @@ export function isAdminOrSupportRole(role: string | null | undefined): boolean {
 
 export type PortalKind = "admin" | "broker" | "agent";
 
-/** Primary CRM dashboard (shared shell) for agents. */
-export const DASHBOARD_HOME_PATH = "/dashboard/overview";
+/**
+ * Agents' default landing — "Ask Max", the conversational command center. This
+ * is where every agent lands after login / "Dashboard" in the account menu; the
+ * classic overview + the rest of the CRM stay reachable from the nav. Making
+ * Max the home is the "goals, not features" front door.
+ */
+export const DASHBOARD_HOME_PATH = "/dashboard/boss";
 
 /** Brokerage leadership dashboard (same CRM shell; brokerage-focused home). */
 export const BROKER_DASHBOARD_PATH = "/dashboard/broker";
