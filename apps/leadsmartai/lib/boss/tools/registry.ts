@@ -24,6 +24,7 @@ import {
   getPerformance,
 } from "./impl/reads";
 import { handOffToAgent } from "./impl/handoff";
+import { reportBug } from "./impl/bugs";
 import { getMarketSnapshot } from "./impl/market";
 
 /**
@@ -64,6 +65,7 @@ const ALL_TOOLS = [
   getSphereSignals,
   getPerformance,
   handOffToAgent,
+  reportBug,
   queryCrm,
   getMarketSnapshot,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
