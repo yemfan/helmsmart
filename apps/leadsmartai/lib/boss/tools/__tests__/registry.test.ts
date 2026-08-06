@@ -121,6 +121,7 @@ describe("boss tool registry", () => {
         "get_calendar",
         "get_sphere_signals",
         "get_performance",
+        "hand_off_to_agent",
         "query_crm",
         "get_market_snapshot",
       ].sort(),
