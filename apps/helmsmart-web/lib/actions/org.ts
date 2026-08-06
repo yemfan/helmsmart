@@ -47,6 +47,9 @@ export async function createOrg(
   const name = (formData.get("name") as string)?.trim();
   const entityType = formData.get("entity_type") as string;
   const website = (formData.get("website") as string)?.trim() || null;
+  const businessCategory = (formData.get("business_category") as string)?.trim() || null;
+  const businessDescription = (formData.get("business_description") as string)?.trim() || null;
+  const businessLocation = (formData.get("business_location") as string)?.trim() || null;
 
   if (!name) return { error: "Business name is required." };
   if (!entityType) return { error: "Please select a business structure." };
@@ -138,6 +141,41 @@ export async function createOrg(
         "createOrg: could not save website (is migration 00085 applied?):",
         error.message,
       );
+    }
+  }
+
+  // Business-profile fields (migration 00086). Isolated from the website update
+  // so each persists independently once its migration lands; best-effort.
+  const profile: Record<string, string> = {};
+  if (businessCategory) profile.business_category = businessCategory;
+  if (businessDescription) profile.business_description = businessDescription;
+  if (businessLocation) profile.business_location = businessLocation;
+  if (Object.keys(profile).length > 0) {
+    const { error } = await supabase.from("organizations").update(profile).eq("id", orgId);
+    if (error) {
+      console.error(
+        "createOrg: could not save business profile (is migration 00086 applied?):",
+        error.message,
+      );
+    }
+
+    // Mirror the profile into knowledge_base so the EXISTING content generator
+    // (buildBusinessContext reads knowledge_base) uses it immediately — no new
+    // plumbing needed. Non-fatal: context is optional.
+    const kbLines: string[] = [];
+    if (businessCategory) kbLines.push(`Category: ${businessCategory}.`);
+    if (businessLocation) kbLines.push(`Based in ${businessLocation}.`);
+    if (businessDescription) kbLines.push(businessDescription);
+    if (kbLines.length > 0) {
+      const { error: kbErr } = await supabase.from("knowledge_base").insert({
+        organization_id: orgId,
+        title: "Business profile",
+        content: kbLines.join("\n"),
+        sort: 0,
+      });
+      if (kbErr) {
+        console.error("createOrg: could not seed knowledge_base profile:", kbErr.message);
+      }
     }
   }
 

@@ -37,6 +37,24 @@ const ENTITY_TYPES = [
   },
 ] as const;
 
+// Suggestions for the category field. A datalist gives picklist convenience
+// while still allowing free text ("Other") — the value drives topic prompts.
+const CATEGORIES = [
+  "Real Estate",
+  "Home Services",
+  "Healthcare",
+  "Retail",
+  "Food & Beverage",
+  "Professional Services",
+  "Fitness & Wellness",
+  "Beauty & Personal Care",
+  "Automotive",
+  "Construction",
+  "Education",
+  "Technology",
+  "Non-profit",
+] as const;
+
 export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }) {
   const [state, action, isPending] = useActionState<OrgState, FormData>(
     createOrg,
@@ -109,6 +127,86 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
           />
           <p className="mt-1 text-xs text-slate-400">
             We&apos;ll use it to tailor your AI marketing and content.
+          </p>
+        </div>
+
+        {/* Business category (picklist + free text via datalist) */}
+        <div>
+          <label
+            htmlFor="business_category"
+            className="block text-sm font-medium text-slate-700 mb-1"
+          >
+            What does your business do?{" "}
+            <span className="font-normal text-slate-400">(optional)</span>
+          </label>
+          <input
+            id="business_category"
+            name="business_category"
+            list="business-categories"
+            type="text"
+            autoComplete="off"
+            disabled={isPending}
+            maxLength={80}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                       disabled:bg-slate-50 disabled:text-slate-500"
+            placeholder="Pick one or type your own…"
+          />
+          <datalist id="business-categories">
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+        </div>
+
+        {/* Business location */}
+        <div>
+          <label
+            htmlFor="business_location"
+            className="block text-sm font-medium text-slate-700 mb-1"
+          >
+            Where are you based?{" "}
+            <span className="font-normal text-slate-400">(optional)</span>
+          </label>
+          <input
+            id="business_location"
+            name="business_location"
+            type="text"
+            autoComplete="off"
+            disabled={isPending}
+            maxLength={120}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                       disabled:bg-slate-50 disabled:text-slate-500"
+            placeholder="City, State (e.g. Austin, TX)"
+          />
+          <p className="mt-1 text-xs text-slate-400">
+            Lets your AI write local-market content for your area.
+          </p>
+        </div>
+
+        {/* Business description */}
+        <div>
+          <label
+            htmlFor="business_description"
+            className="block text-sm font-medium text-slate-700 mb-1"
+          >
+            Describe your business{" "}
+            <span className="font-normal text-slate-400">(optional)</span>
+          </label>
+          <textarea
+            id="business_description"
+            name="business_description"
+            rows={3}
+            disabled={isPending}
+            maxLength={600}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                       disabled:bg-slate-50 disabled:text-slate-500 resize-none"
+            placeholder="What you offer, who you serve, and what makes you different — a couple of sentences is plenty."
+          />
+          <p className="mt-1 text-xs text-slate-400">
+            The more you share, the better your AI-generated posts and topics.
           </p>
         </div>
 
