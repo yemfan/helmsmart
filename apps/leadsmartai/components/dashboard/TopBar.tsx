@@ -26,7 +26,7 @@ import { formatUserRoleLabel } from "@leadsmart/shared";
 import { Topbar, filterNavSectionsByRole } from "@repo/ui";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
-import { leadSmartNav } from "@/nav.config";
+import { leadSmartMobileNav } from "@/nav.config";
 import { CloseBossLogo, CloseBossMark } from "@/components/brand/CloseBossLogo";
 import { NotificationsBell } from "@/components/dashboard/NotificationsBell";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
@@ -388,7 +388,7 @@ export default function TopBar({
   avatarUrl?: string | null;
 }) {
   const navSections = useMemo(
-    () => filterNavSectionsByRole(leadSmartNav, appRole),
+    () => filterNavSectionsByRole(leadSmartMobileNav, appRole),
     [appRole]
   );
   const showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole);
