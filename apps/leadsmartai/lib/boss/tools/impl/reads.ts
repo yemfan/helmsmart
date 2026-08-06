@@ -213,3 +213,143 @@ export const getFinancials = defineTool({
     };
   },
 });
+
+// ── get_calendar ─────────────────────────────────────────────────────
+
+export const getCalendar = defineTool({
+  name: "get_calendar",
+  description:
+    "Answer questions about the schedule: what's on the calendar today or in the next few days — appointments, showings, calls, meetings — and who they're with. Use for 'what's on my calendar', 'what do I have today', 'what's coming up this week', 'am I free tomorrow'.",
+  inputSchema: z.object({
+    within_days: z.number().int().min(1).max(60).optional().describe("How many days ahead to look (default 7)."),
+  }),
+  riskClass: "research",
+  assignee: "receptionist",
+  execute: async (ctx, input) => {
+    const horizon = input.within_days ?? 7;
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const end = new Date(now.getTime() + horizon * 86_400_000).toISOString();
+    const { data, error } = await supabaseAdmin
+      .from("lead_calendar_events")
+      .select("id, title, starts_at, status, contacts(name)")
+      .eq("agent_id", ctx.agentId)
+      .neq("status", "cancelled")
+      .gte("starts_at", start)
+      .lte("starts_at", end)
+      .order("starts_at", { ascending: true })
+      .limit(50);
+    if (error) return { status: "failed", error: error.message };
+    const rows = (data ?? []) as Array<{
+      id: string; title: string | null; starts_at: string; status: string | null;
+      contacts: { name: string | null } | { name: string | null }[] | null;
+    }>;
+    const contactName = (c: (typeof rows)[number]["contacts"]) =>
+      Array.isArray(c) ? c[0]?.name ?? null : c?.name ?? null;
+    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).getTime();
+    const todayCount = rows.filter((r) => new Date(r.starts_at).getTime() <= todayEnd).length;
+    const events = rows.map((r) => ({
+      title: r.title ?? "Untitled",
+      when: r.starts_at,
+      who: contactName(r.contacts),
+    }));
+
+    return {
+      status: "completed",
+      summary: `${todayCount} appointment${todayCount === 1 ? "" : "s"} today; ${rows.length} in the next ${horizon} days.`,
+      artifactUrl: "/dashboard/calendar",
+      data: { todayCount, total: rows.length, events },
+    };
+  },
+});
+
+// ── get_sphere_signals ───────────────────────────────────────────────
+
+export const getSphereSignals = defineTool({
+  name: "get_sphere_signals",
+  description:
+    "Answer 'who in my sphere is showing buying/selling signals' — life-event and intent signals detected on contacts (new job, growing family, equity milestone, browsing activity) with the suggested next move. Use for 'who's likely to sell', 'who's likely to buy', 'any signals in my sphere', 'who should I reach out to'.",
+  inputSchema: NO_ARGS,
+  riskClass: "research",
+  assignee: "sales_assistant",
+  execute: async (ctx) => {
+    // contact_signals has no agent_id; scope through the contacts embed.
+    const { data, error } = await supabaseAdmin
+      .from("contact_signals")
+      .select("id, signal_type, label, confidence, suggested_action, detected_at, contacts!inner(name, agent_id)")
+      .eq("contacts.agent_id", ctx.agentId)
+      .is("dismissed_at", null)
+      .order("detected_at", { ascending: false })
+      .limit(20);
+    if (error) return { status: "failed", error: error.message };
+    const rows = (data ?? []) as Array<{
+      id: string; signal_type: string | null; label: string | null; confidence: string | null;
+      suggested_action: string | null; detected_at: string | null;
+      contacts: { name: string | null } | { name: string | null }[] | null;
+    }>;
+    const name = (c: (typeof rows)[number]["contacts"]) => (Array.isArray(c) ? c[0]?.name : c?.name) ?? "A contact";
+    const signals = rows.map((r) => ({
+      contact: name(r.contacts),
+      type: r.signal_type,
+      label: r.label,
+      confidence: r.confidence,
+      suggestedAction: r.suggested_action,
+    }));
+
+    return {
+      status: "completed",
+      summary: rows.length
+        ? `${rows.length} active sphere signal${rows.length === 1 ? "" : "s"} — e.g. ${signals
+            .slice(0, 3)
+            .map((s) => `${s.contact} (${s.label ?? s.type})`)
+            .join(", ")}.`
+        : "No active sphere signals right now.",
+      artifactUrl: "/dashboard/sphere/signals",
+      data: { count: rows.length, signals },
+    };
+  },
+});
+
+// ── get_performance ──────────────────────────────────────────────────
+
+export const getPerformance = defineTool({
+  name: "get_performance",
+  description:
+    "Answer 'how's business doing / how am I trending' — a throughput snapshot: total leads, active deals in flight, and deals closed so far this year with their volume. Complements get_financials (money) and get_pipeline (leads) with the overall business picture. Use for 'how's business', 'how am I doing this year', 'how many deals have I closed'.",
+  inputSchema: NO_ARGS,
+  riskClass: "research",
+  assignee: "accountant",
+  execute: async (ctx) => {
+    const yearStart = `${new Date().getFullYear()}-01-01`;
+    const [leadsRes, activeRes, closedRes] = await Promise.all([
+      supabaseAdmin.from("contacts").select("id", { count: "exact", head: true }).eq("agent_id", ctx.agentId),
+      supabaseAdmin
+        .from("transactions")
+        .select("id", { count: "exact", head: true })
+        .eq("agent_id", ctx.agentId)
+        .in("status", ["active", "pending"]),
+      supabaseAdmin
+        .from("transactions")
+        .select("gross_commission, purchase_price")
+        .eq("agent_id", ctx.agentId)
+        .eq("status", "closed")
+        .gte("closing_date", yearStart),
+    ]);
+    if (closedRes.error) return { status: "failed", error: closedRes.error.message };
+    const leads = leadsRes.count ?? 0;
+    const active = activeRes.count ?? 0;
+    const closed = (closedRes.data ?? []) as Array<{ gross_commission: number | null; purchase_price: number | null }>;
+    const closedCount = closed.length;
+    const closedVolume = closed.reduce((a, t) => a + Number(t.purchase_price ?? 0), 0);
+    const fmt = (n: number) => `$${Math.round(n).toLocaleString()}`;
+
+    return {
+      status: "completed",
+      summary: `${leads} lead${leads === 1 ? "" : "s"} in the CRM, ${active} deal${
+        active === 1 ? "" : "s"
+      } in flight, and ${closedCount} closed this year${closedVolume ? ` (${fmt(closedVolume)} in volume)` : ""}.`,
+      artifactUrl: "/dashboard/boss",
+      data: { leads, activeDeals: active, closedYtd: closedCount, closedVolumeYtd: closedVolume },
+    };
+  },
+});
