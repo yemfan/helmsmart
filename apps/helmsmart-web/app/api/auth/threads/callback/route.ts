@@ -38,7 +38,15 @@ export async function GET(req: Request) {
     if (!state || !stateCookie || state !== stateCookie) return back("threads_error=bad_state");
 
     const token = await exchangeThreadsCode(code);
-    if (!token) return back("threads_error=token_exchange_failed");
+    if (!token.ok) {
+      // Pass a SHORT, non-sensitive detail (Meta's oauth error text, e.g.
+      // "Invalid platform app" / "redirect_uri mismatch") so a failed connect
+      // is diagnosable from the URL instead of an opaque generic error.
+      const detail = token.error.slice(0, 120);
+      return back(
+        `threads_error=token_exchange_failed&threads_detail=${encodeURIComponent(detail)}`,
+      );
+    }
 
     // /me is canonical for the id + handle; fall back to the id from the token
     // response if the profile lookup hiccups.

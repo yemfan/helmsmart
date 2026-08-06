@@ -15,7 +15,7 @@ describe("publishable platforms", () => {
     // If a platform is added here, its publish path must actually work — this
     // list is what the UI promises and what the cron will attempt.
     expect([...PUBLISHABLE_PLATFORMS].sort()).toEqual(
-      ["facebook", "instagram", "linkedin"].sort(),
+      ["facebook", "instagram", "linkedin", "threads"].sort(),
     );
   });
 
