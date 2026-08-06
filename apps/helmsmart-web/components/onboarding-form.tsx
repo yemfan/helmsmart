@@ -30,6 +30,11 @@ const ENTITY_TYPES = [
     label: "Partnership",
     description: "Two or more owners sharing profits and liability.",
   },
+  {
+    value: "nonprofit",
+    label: "Non-profit",
+    description: "501(c) or other tax-exempt organization funded by donations and grants.",
+  },
 ] as const;
 
 export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }) {
@@ -78,6 +83,33 @@ export function OnboardingForm({ namePlaceholder }: { namePlaceholder?: string }
                        disabled:bg-slate-50 disabled:text-slate-500"
             placeholder={namePlaceholder || "Acme Plumbing LLC"}
           />
+        </div>
+
+        {/* Company website (optional) */}
+        <div>
+          <label
+            htmlFor="website"
+            className="block text-sm font-medium text-slate-700 mb-1"
+          >
+            Company website{" "}
+            <span className="font-normal text-slate-400">(optional)</span>
+          </label>
+          <input
+            id="website"
+            name="website"
+            type="url"
+            inputMode="url"
+            autoComplete="url"
+            disabled={isPending}
+            maxLength={200}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                       disabled:bg-slate-50 disabled:text-slate-500"
+            placeholder="https://acme.com"
+          />
+          <p className="mt-1 text-xs text-slate-400">
+            We&apos;ll use it to tailor your AI marketing and content.
+          </p>
         </div>
 
         {/* Entity type */}

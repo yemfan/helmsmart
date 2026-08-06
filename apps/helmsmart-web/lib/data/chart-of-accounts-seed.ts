@@ -72,6 +72,11 @@ const EQUITY_BY_ENTITY: Record<string, AccountSeed[]> = {
     { code: "3100", name: "Partner Distributions", type: "equity", normal_balance: "debit",  tax_line_code: null },
     { code: "3900", name: "Retained Earnings",     type: "equity", normal_balance: "credit", tax_line_code: null },
   ],
+  // Non-profits report net assets (FASB ASC 958), not owner equity/retained earnings.
+  nonprofit: [
+    { code: "3000", name: "Net Assets Without Donor Restrictions", type: "equity", normal_balance: "credit", tax_line_code: null },
+    { code: "3100", name: "Net Assets With Donor Restrictions",    type: "equity", normal_balance: "credit", tax_line_code: null },
+  ],
 };
 
 // ─── Revenue ──────────────────────────────────────────────────────────────────
