@@ -25,6 +25,18 @@
     "cta_demo": "Schedule a Demo",
     "trial_note": "No setup required · 14-day trial on paid plans · Cancel anytime"
   },
+  "ask_max": {
+    "eyebrow": "One captain. One AI team. Your success.",
+    "h2_prefix": "Don't do it all. ",
+    "h2_highlight": "Ask Max.",
+    "body": "Max is your AI captain. Tell him what you need — follow up with a lead, launch a listing, chase a signature — and he puts your whole AI team to work. Around the clock.",
+    "cta": "Ask Max free",
+    "bubble_prefix": "Ask Max",
+    "bubble": " — what would you like your AI team to do today?",
+    "name": "Max",
+    "role": "Captain of your AI team",
+    "quote": "“I've got your back.”"
+  },
   "brokerage_strip": {
     "eyebrow": "Trusted by agents at"
   },
