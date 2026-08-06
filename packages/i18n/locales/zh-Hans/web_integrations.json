@@ -53,6 +53,39 @@
         "wechat": { "name": "微信公众号", "description": "面向服务华语客户的经纪人的原生微信公众号集成。平台内置中英双语模板。" }
       }
     },
+    "voice_ai": {
+      "title": "语音 AI",
+      "description": "接听来电的 AI 前台，以及让它听起来像你本人的语音克隆。",
+      "items": {
+        "retell": { "name": "Retell AI", "description": "驱动 AI 前台——实时对话接听、筛选、预约并转接，通话录音与摘要自动记录到联系人。" },
+        "elevenlabs": { "name": "ElevenLabs", "description": "用一段简短的自我介绍视频克隆你的声音，让你的数字分身与语音回拨听起来就是你。" }
+      }
+    },
+    "media": {
+      "title": "AI 视频与媒体",
+      "description": "把房源或脚本变成精美视频——电影级片段、数字人口播短片与品牌剪辑。",
+      "items": {
+        "fal": { "name": "fal.ai", "description": "生成式媒体的底座——在高速可扩展的基础设施上运行下列视频、转写与对口型模型。" },
+        "seedance": { "name": "Seedance", "description": "文字加图片生成视频，制作 UGC 风格的房源与品牌广告。" },
+        "wizper": { "name": "Wizper", "description": "快速精准的语音转写——把你的介绍视频转成数字分身背后的脚本。" },
+        "lipsync": { "name": "Sync Lipsync", "description": "将你的克隆语音对口型到你的数字人形象，让口播短片逐字对齐。" },
+        "remotion": { "name": "Remotion", "description": "程序化、贴合品牌的视频——用你的数据渲染轮播与房源短片。" },
+        "kling": { "name": "可灵 Kling", "description": "电影级的图生视频，制作高端房源与生活方式片段。" },
+        "veo": { "name": "Google Veo", "description": "顶尖的文生视频，打造高端营销镜头。" }
+      }
+    },
+    "social": {
+      "title": "社交发布",
+      "description": "账号一次连接，营销助理便会为你撰写、排期并自动发布到各个渠道。",
+      "items": {
+        "meta": { "name": "Facebook 与 Instagram", "description": "一次 Meta 连接即可发布到你的 Facebook 主页和关联的 Instagram 商业账号。" },
+        "linkedin": { "name": "LinkedIn", "description": "自动发布市场动态、房源与品牌内容到你的 LinkedIn 个人主页或公司页。" },
+        "threads": { "name": "Threads", "description": "按你的发布计划将文字与图片贴文发布到 Threads。" },
+        "pinterest": { "name": "Pinterest", "description": "将房源照片与市场图钉到持续为你带来曝光的图板。" },
+        "tiktok": { "name": "TikTok", "description": "将短视频房源与品牌内容发布到 TikTok。" },
+        "youtube": { "name": "YouTube", "description": "将房源导览与品牌短片上传到你的 YouTube 频道。" }
+      }
+    },
     "esignature": {
       "title": "电子签名",
       "description": "无需离开交易记录，即可发送买方经纪协议、报价和房源委托协议供签署。",
