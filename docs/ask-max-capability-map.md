@@ -21,9 +21,9 @@ There is a **second, older engine** — the action registry (`lib/realtyboss/act
 
 > **Progress:**
 > - Phase 1 shipped — `run_skill` (#1113) + `setup_open_house`, `coordinate_closing`, `start_selling_playbook`, `start_buying_playbook` (#1114). All five verified end-to-end in production. Buyer-saved-search and cold-call-qualify turned out already-reachable by composition, so no separate tools.
-> - Phase 2 (read tools) partly shipped — `get_pipeline`, `get_deals`, `get_financials` (#1115). `get_sphere_signals`, `get_calendar`, `get_performance` still open.
+> - Phase 2 (read tools) COMPLETE — `get_pipeline`, `get_deals`, `get_financials` (#1115) + `get_calendar`, `get_sphere_signals`, `get_performance` (#1117).
 >
-> Ask Max is now at **23 tools**.
+> Ask Max is now at **26 tools**.
 
 ## Ask Max today — the core tools
 
@@ -144,11 +144,11 @@ Wrap capabilities that **already exist** in `lib/realtyboss/actions/registry.ts`
 5. ✅ **Saved buyer search** — already reachable: `house_search` accepts `contact_id` + `auto_run_frequency`. No new tool.
 6. ✅ **Cold-call & qualify** — already reachable by composition: `query_crm` → `schedule_voice_call`. **`schedule_showing`** is composable via `create_task`; add a dedicated tool only if usage warrants.
 
-### Phase 2 — "Ask Max anything": read tools (low risk, read-only) — IN PROGRESS
+### Phase 2 — "Ask Max anything": read tools (low risk, read-only) — ✅ DONE
 Today Max can *do* but barely *answer*. A captain you can question is the charter test.
 - ✅ `get_pipeline` (leads hot/warm/cold + cooling), ✅ `get_deals` (transactions + deadlines + risk), ✅ `get_financials` (commission pipeline, closed YTD, next payout, expenses) — #1115.
-- ⏳ `get_sphere_signals` (likely buyers/sellers, life events), `get_calendar` (today/week), `get_performance` (revenue, forecast, email engagement, lead-source ROI).
-- These make "which deals are at risk?", "what did I make this month?", "who's likely to sell?" answerable in-chat.
+- ✅ `get_calendar` (today/week appointments), ✅ `get_sphere_signals` (buying/selling signals + next move), ✅ `get_performance` (leads + active deals + closed-YTD throughput) — #1117.
+- "Which deals are at risk?", "what did I make this month?", "who's likely to sell?", "what's on my calendar?" are all answerable in-chat.
 
 ### Phase 3 — Per-employee write tools (agentize the pure-UI 🔴 rows)
 Prioritize by daily use:
