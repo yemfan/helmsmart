@@ -4,6 +4,7 @@
  * code for a token + user id, and stores the (encrypted) token against the
  * logged-in user's active org. Mirrors the LinkedIn callback.
  */
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { THREADS_SCOPES } from "@helm/dna-marketing";
@@ -64,7 +65,14 @@ export async function GET(req: Request) {
       // (slen 0 / not 32) apart from a genuine id↔secret mismatch (right length,
       // still rejected). Remove once Threads connects.
       const cfg = getThreadsConfig();
-      const dbg = `id=${cfg.clientId ?? "unset"},slen=${cfg.clientSecret?.length ?? 0}`;
+      // fp = first 12 hex of sha256(secret). NOT reversible (can't recover a
+      // 32-char secret from a 48-bit hash prefix), but uniquely identifies WHICH
+      // secret is live — so "old value still deployed" (matches the prior fp) is
+      // told apart from "new but wrong value" (different fp, still rejected).
+      const fp = cfg.clientSecret
+        ? createHash("sha256").update(cfg.clientSecret).digest("hex").slice(0, 12)
+        : "none";
+      const dbg = `id=${cfg.clientId ?? "unset"},slen=${cfg.clientSecret?.length ?? 0},fp=${fp}`;
       return back(
         `threads_error=token_exchange_failed&threads_detail=${encodeURIComponent(detail)}&threads_debug=${encodeURIComponent(dbg)}`,
       );
