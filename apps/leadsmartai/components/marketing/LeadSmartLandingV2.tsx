@@ -376,6 +376,59 @@ export default function LeadSmartLandingV2() {
           </div>
         </section>
 
+        {/* ── ASK MAX ─── the captain, introduced right after the hero */}
+        <section className="border-b border-slate-800 bg-[#0B1F44] px-6 py-16 md:py-20">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2">
+            <RevealSection>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#F2C94C]">
+                One captain. One AI team. Your success.
+              </p>
+              <h2 className="mt-3 font-heading text-3xl font-bold text-white md:text-4xl">
+                Don&apos;t do it all. <span className="text-[#FF941D]">Ask Max.</span>
+              </h2>
+              <p className="mt-4 max-w-md text-base leading-relaxed text-slate-300 md:text-lg">
+                Max is your AI captain. Tell him what you need — follow up with a lead, launch a
+                listing, chase a signature — and he puts your whole AI team to work. Around the clock.
+              </p>
+              <div className="mt-6">
+                <MagneticButton>
+                  <Button
+                    href={PRIMARY_CTA_HREF}
+                    className="min-h-[48px] px-7 text-base shadow-floating hover:shadow-overlay"
+                  >
+                    Ask Max free
+                  </Button>
+                </MagneticButton>
+              </div>
+            </RevealSection>
+
+            <RevealSection delay={100} className="flex justify-center">
+              <div className="w-full max-w-sm rounded-2xl bg-white/5 p-6 ring-1 ring-white/10 backdrop-blur">
+                {/* Max's greeting, mirroring the in-app Ask Max command bar */}
+                <div className="mb-4 rounded-2xl rounded-bl-sm bg-[#0072ce] px-4 py-3 text-sm leading-snug text-white shadow-lg">
+                  <span className="font-semibold">Ask Max</span> — what would you like your AI team
+                  to do today?
+                </div>
+                <div className="flex items-center gap-4">
+                  <Image
+                    src="/avatars/personas/max.png"
+                    alt="Max, the captain of your CloseBoss AI team"
+                    width={80}
+                    height={80}
+                    className="h-20 w-20 shrink-0 rounded-full border-2 border-[#F2C94C] object-cover"
+                    style={{ backgroundColor: "#0b1424" }}
+                  />
+                  <div className="min-w-0">
+                    <p className="font-heading text-lg font-bold text-white">Max</p>
+                    <p className="text-sm text-[#F2C94C]">Captain of your AI team</p>
+                    <p className="mt-1 text-xs italic text-slate-400">&ldquo;I&apos;ve got your back.&rdquo;</p>
+                  </div>
+                </div>
+              </div>
+            </RevealSection>
+          </div>
+        </section>
+
         {/* ── MEET YOUR AI TEAM ─── introduced first, right under the hero */}
         <section
           id="team"
@@ -401,8 +454,8 @@ export default function LeadSmartLandingV2() {
             {/* The team lineup */}
             <RevealSection delay={100} className="mt-10">
               <Image
-                src="/brand/realtyboss/ai-team.jpg"
-                alt="The CloseBoss AI team — six house-mascot assistants standing together"
+                src="/brand/closeboss/ai-team.png"
+                alt="Meet the CloseBoss AI real estate team — Emma, Chris, Ruby, Oliver, Grace, and Max"
                 width={1536}
                 height={1024}
                 sizes="(max-width: 896px) 100vw, 896px"
