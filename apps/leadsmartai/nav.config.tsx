@@ -1,4 +1,4 @@
-import type { NavConfig } from "@repo/ui";
+import type { NavConfig, NavSection } from "@repo/ui";
 import {
   BarChart3,
   Calendar,
@@ -390,6 +390,35 @@ const navConfig = {
 } satisfies NavConfig;
 
 export const leadSmartNav = navConfig.sections;
+
+/** Pick top-level sections by label, in the given order, skipping any missing. */
+function pick(...labels: string[]): NavSection[] {
+  const all = navConfig.sections as NavSection[];
+  return labels
+    .map((label) => all.find((s) => "label" in s && s.label === label))
+    .filter((s): s is NavSection => Boolean(s));
+}
+
+/**
+ * Mobile drawer nav (Option B) — DERIVED from the desktop sections so the two
+ * never drift. Condensed for a phone: only the daily-driver rows stay at the
+ * top; the AI Team keeps its Overview/Actions groups; Leads + Deals drop BELOW
+ * the team (out of the prime top slots) rather than competing up top.
+ */
+export const leadSmartMobileNav: NavSection[] = [
+  ...pick("Ask Max", "Conversations", "Tasks", "Calendar"),
+  { kind: "section-label", label: "Your AI Team" },
+  ...pick(
+    "Receptionist",
+    "Sales Assistant",
+    "Marketing Assistant",
+    "Transaction Assistant",
+    "Accountant",
+    "Manage AI Team",
+  ),
+  { kind: "divider" },
+  ...pick("Leads", "Deals", "More", "Settings", "Admin"),
+];
 
 export { default as marketingNavConfig, leadSmartMarketingNav } from "./marketing.nav.config";
 
