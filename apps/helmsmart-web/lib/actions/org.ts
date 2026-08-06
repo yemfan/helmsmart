@@ -8,6 +8,17 @@ import { getAccountsForEntityType } from "@/lib/data/chart-of-accounts-seed";
 
 export type OrgState = { error: string } | null;
 
+// Business structures that existed BEFORE migration 00085 widened the CHECK to
+// add 'nonprofit'. We insert with one of these (always valid) and set a newer
+// value best-effort, so onboarding can't break if 00085 hasn't been applied yet.
+const LEGACY_ENTITY_TYPES = new Set([
+  "sole_prop",
+  "llc",
+  "s_corp",
+  "c_corp",
+  "partnership",
+]);
+
 /** Slugify a business name: lowercase, hyphens only. */
 function slugify(name: string): string {
   return name
@@ -35,6 +46,7 @@ export async function createOrg(
 ): Promise<OrgState> {
   const name = (formData.get("name") as string)?.trim();
   const entityType = formData.get("entity_type") as string;
+  const website = (formData.get("website") as string)?.trim() || null;
 
   if (!name) return { error: "Business name is required." };
   if (!entityType) return { error: "Please select a business structure." };
@@ -58,7 +70,7 @@ export async function createOrg(
   if (existing) {
     const cookieStore = await cookies();
     cookieStore.set(ORG_COOKIE, existing.organization_id, COOKIE_OPTS);
-    redirect("/books");
+    redirect("/home");
   }
 
   // Create the org, membership, and chart of accounts with the RLS client (NOT
@@ -69,11 +81,18 @@ export async function createOrg(
   // org INSERT needs no RETURNING (which RLS blocks until the membership exists).
   const orgId = randomUUID();
 
+  // Insert with a pre-00085 entity type so the row always satisfies the CHECK,
+  // even if the migration adding 'nonprofit' hasn't run yet. The real value +
+  // website are applied best-effort below (once the owner membership exists).
+  const insertEntityType = LEGACY_ENTITY_TYPES.has(entityType)
+    ? entityType
+    : "sole_prop";
+
   const { error: orgError } = await supabase.from("organizations").insert({
     id: orgId,
     name,
     slug: `${slugify(name)}-${Date.now()}`,
-    entity_type: entityType,
+    entity_type: insertEntityType,
   });
 
   if (orgError) {
@@ -93,6 +112,35 @@ export async function createOrg(
     return { error: "Organization created but membership failed. Contact support." };
   }
 
+  // Persist the onboarding details that depend on migration 00085 — the
+  // 'nonprofit' entity type and the `website` column. Done AFTER membership (so
+  // the owner UPDATE policy applies) and best-effort + isolated: a not-yet-run
+  // migration only means these persist later, never that a signup fails.
+  if (entityType !== insertEntityType) {
+    const { error } = await supabase
+      .from("organizations")
+      .update({ entity_type: entityType })
+      .eq("id", orgId);
+    if (error) {
+      console.error(
+        "createOrg: could not set entity_type (is migration 00085 applied?):",
+        error.message,
+      );
+    }
+  }
+  if (website) {
+    const { error } = await supabase
+      .from("organizations")
+      .update({ website })
+      .eq("id", orgId);
+    if (error) {
+      console.error(
+        "createOrg: could not save website (is migration 00085 applied?):",
+        error.message,
+      );
+    }
+  }
+
   // Seed chart of accounts (the user is now owner, so RLS permits the insert)
   const accounts = getAccountsForEntityType(entityType);
   const { error: coaError } = await supabase.from("chart_of_accounts").insert(
@@ -108,5 +156,5 @@ export async function createOrg(
   const cookieStore = await cookies();
   cookieStore.set(ORG_COOKIE, orgId, COOKIE_OPTS);
 
-  redirect("/books");
+  redirect("/home");
 }

@@ -53,5 +53,5 @@ export async function GET(request: NextRequest) {
     path: "/",
   });
 
-  return NextResponse.redirect(`${origin}/books`);
+  return NextResponse.redirect(`${origin}/home`);
 }
