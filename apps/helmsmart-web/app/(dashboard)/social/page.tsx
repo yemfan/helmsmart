@@ -161,7 +161,7 @@ export default async function SocialPage({
             ) : (
               <a
                 href="/api/auth/linkedin"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#0a66c2] bg-[#0a66c2] px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
               >
                 Connect LinkedIn
               </a>
@@ -175,7 +175,7 @@ export default async function SocialPage({
             ) : (
               <a
                 href="/api/auth/meta"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#1877f2] bg-[#1877f2] px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
               >
                 Connect Facebook
               </a>
@@ -188,7 +188,7 @@ export default async function SocialPage({
             ) : (
               <a
                 href="/api/auth/threads"
-                className="inline-flex items-center gap-1.5 rounded-full border border-black bg-black px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
               >
                 Connect Threads
               </a>
@@ -201,7 +201,7 @@ export default async function SocialPage({
             ) : (
               <a
                 href="/api/auth/tiktok"
-                className="inline-flex items-center gap-1.5 rounded-full border border-black bg-black px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
               >
                 Connect TikTok
               </a>
@@ -214,7 +214,7 @@ export default async function SocialPage({
             ) : (
               <a
                 href="/api/auth/youtube"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#ff0000] bg-[#ff0000] px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
               >
                 Connect YouTube
               </a>
