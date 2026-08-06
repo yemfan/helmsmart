@@ -5,6 +5,7 @@ import { SocialComposer } from "@/components/social-composer";
 import { ResponsibleEmployee } from "@/components/responsible-employee";
 import { EmilyDraftButton } from "@/components/emily-draft-button";
 import { SocialAutopilotPanel } from "@/components/social-autopilot-panel";
+import { connectErrorMessage } from "@/lib/connect-error";
 
 export const metadata: Metadata = { title: "Social" };
 
@@ -85,7 +86,7 @@ export default async function SocialPage({
       )}
       {sp.linkedin_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          Couldn&apos;t connect LinkedIn ({sp.linkedin_error.replace(/_/g, " ")}). Please try again.
+          {connectErrorMessage("LinkedIn", sp.linkedin_error)}
         </div>
       )}
       {sp.meta === "connected" && (
@@ -111,7 +112,7 @@ export default async function SocialPage({
               you want to post to on Meta&apos;s permissions screen.
             </>
           ) : (
-            <>Couldn&apos;t connect Facebook ({sp.meta_error.replace(/_/g, " ")}). Please try again.</>
+            <>{connectErrorMessage("Facebook", sp.meta_error)}</>
           )}
         </div>
       )}
@@ -122,7 +123,7 @@ export default async function SocialPage({
       )}
       {sp.threads_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          Couldn&apos;t connect Threads ({sp.threads_error.replace(/_/g, " ")}). Please try again.
+          {connectErrorMessage("Threads", sp.threads_error)}
         </div>
       )}
       {sp.tiktok === "connected" && (
@@ -132,7 +133,7 @@ export default async function SocialPage({
       )}
       {sp.tiktok_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          Couldn&apos;t connect TikTok ({sp.tiktok_error.replace(/_/g, " ")}). Please try again.
+          {connectErrorMessage("TikTok", sp.tiktok_error)}
         </div>
       )}
       {sp.youtube === "connected" && (
@@ -142,7 +143,7 @@ export default async function SocialPage({
       )}
       {sp.youtube_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          Couldn&apos;t connect YouTube ({sp.youtube_error.replace(/_/g, " ")}). Please try again.
+          {connectErrorMessage("YouTube", sp.youtube_error)}
         </div>
       )}
       <SocialAutopilotPanel />
@@ -161,7 +162,7 @@ export default async function SocialPage({
             ) : (
               <a
                 href="/api/auth/linkedin"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#0a66c2] bg-[#0a66c2] px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
               >
                 Connect LinkedIn
               </a>
@@ -175,7 +176,7 @@ export default async function SocialPage({
             ) : (
               <a
                 href="/api/auth/meta"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#1877f2] bg-[#1877f2] px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
               >
                 Connect Facebook
               </a>
@@ -188,7 +189,7 @@ export default async function SocialPage({
             ) : (
               <a
                 href="/api/auth/threads"
-                className="inline-flex items-center gap-1.5 rounded-full border border-black bg-black px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
               >
                 Connect Threads
               </a>
@@ -201,7 +202,7 @@ export default async function SocialPage({
             ) : (
               <a
                 href="/api/auth/tiktok"
-                className="inline-flex items-center gap-1.5 rounded-full border border-black bg-black px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
               >
                 Connect TikTok
               </a>
@@ -214,7 +215,7 @@ export default async function SocialPage({
             ) : (
               <a
                 href="/api/auth/youtube"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#ff0000] bg-[#ff0000] px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
               >
                 Connect YouTube
               </a>

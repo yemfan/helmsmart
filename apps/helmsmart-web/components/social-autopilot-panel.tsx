@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Toggle } from "@/components/ui/toggle";
 
 /**
  * Social autopilot controls for HelmSmart: turn it on, and Emily writes and
@@ -122,31 +123,37 @@ export function SocialAutopilotPanel() {
 
   return (
     <div className="mx-4 mt-3 rounded-xl border border-slate-200 bg-white shadow-sm">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left"
-      >
-        <div>
-          <span className="text-sm font-semibold text-slate-900">Social autopilot</span>
-          <span className="ml-2 text-xs text-slate-500">
-            {s.enabled ? "On — writing & scheduling posts for you" : "Off"}
-          </span>
-        </div>
-        <span
-          className={`inline-flex h-5 w-9 items-center rounded-full transition ${s.enabled ? "bg-emerald-500" : "bg-slate-300"}`}
-          role="switch"
-          aria-checked={s.enabled}
-          onClick={(e) => {
-            e.stopPropagation();
-            void save({ enabled: !s.enabled });
-          }}
-        >
-          <span
-            className={`h-4 w-4 rounded-full bg-white transition ${s.enabled ? "translate-x-4" : "translate-x-0.5"}`}
+      <div className="flex items-center justify-between px-4 py-3">
+        {/* On/off sits right next to its label so the status is unmistakable. */}
+        <div className="flex items-center gap-2.5">
+          <Toggle
+            checked={s.enabled}
+            disabled={saving}
+            onChange={(v) => void save({ enabled: v })}
+            label="Social autopilot"
           />
-        </span>
-      </button>
+          <div className="leading-tight">
+            <span className="text-sm font-semibold text-slate-900">Social autopilot</span>
+            <span className="ml-2 text-xs text-slate-500">
+              {s.enabled ? "On — writing & scheduling posts for you" : "Off"}
+            </span>
+          </div>
+        </div>
+        {/* Configure cadence, platforms, schedule. */}
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-label="Autopilot settings"
+          aria-expanded={open}
+          title="Settings"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+      </div>
 
       {open && (
         <div className={`space-y-5 border-t border-slate-100 px-4 py-4 ${s.enabled ? "" : "opacity-60"}`}>
