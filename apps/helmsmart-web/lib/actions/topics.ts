@@ -184,6 +184,61 @@ export async function setTopicStatus(id: string, status: TopicStatus): Promise<v
   revalidatePath("/social");
 }
 
+/**
+ * Fill the weekly autopilot schedule from the approved topic pool. Assigns up to
+ * 7 approved topics to weekdays (Mon→Sun) in org_social_autopilot.day_topics —
+ * the same map the autopilot form + publish cron read. Does NOT force autopilot
+ * on; reports back whether it's enabled so the UI can nudge.
+ */
+export async function applyApprovedTopicsToSchedule(): Promise<{
+  ok: boolean;
+  error?: string;
+  scheduled?: number;
+  enabled?: boolean;
+}> {
+  const orgId = await requireOrgId();
+  const db = await createClient();
+
+  const { data: approved } = await db
+    .from("social_topics")
+    .select("id, topic")
+    .eq("organization_id", orgId)
+    .eq("status", "approved")
+    .order("created_at", { ascending: true })
+    .limit(7);
+  const list = (approved as { id: string; topic: string }[]) ?? [];
+  if (list.length === 0) {
+    return { ok: false, error: "Approve some topics first, then add them to the schedule." };
+  }
+
+  // Mon, Tue, … Sun — fill as many days as there are topics (max 7).
+  const WEEKDAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
+  const dayTopics: Record<string, string> = {};
+  list.forEach((t, i) => {
+    dayTopics[String(WEEKDAY_ORDER[i])] = t.topic.trim().slice(0, 120);
+  });
+
+  const { data: cur } = await db
+    .from("org_social_autopilot")
+    .select("enabled")
+    .eq("organization_id", orgId)
+    .maybeSingle();
+  const enabled = Boolean((cur as { enabled?: boolean } | null)?.enabled);
+
+  const { error } = await db.from("org_social_autopilot").upsert(
+    { organization_id: orgId, day_topics: dayTopics, updated_at: new Date().toISOString() },
+    { onConflict: "organization_id" },
+  );
+  if (error) {
+    console.error("applyApprovedTopicsToSchedule error:", error.message);
+    return { ok: false, error: "Couldn't update the schedule. Please try again." };
+  }
+
+  revalidatePath("/social");
+  revalidatePath("/settings");
+  return { ok: true, scheduled: list.length, enabled };
+}
+
 /** Add a manual topic (already approved). */
 export async function addManualTopic(text: string): Promise<void> {
   const topic = text.trim().slice(0, 160);

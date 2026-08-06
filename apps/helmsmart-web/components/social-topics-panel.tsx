@@ -6,10 +6,12 @@
  */
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import {
   generateSocialTopics,
   setTopicStatus,
   addManualTopic,
+  applyApprovedTopicsToSchedule,
   type SocialTopic,
 } from "@/lib/actions/topics";
 
@@ -18,10 +20,24 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
   const [error, setError] = useState<string | null>(null);
   const [manual, setManual] = useState("");
   const [open, setOpen] = useState(initialTopics.length > 0);
+  const [sched, setSched] = useState<{ scheduled: number; enabled: boolean } | null>(null);
   const [pending, start] = useTransition();
 
   const suggested = topics.filter((t) => t.status === "suggested");
   const approved = topics.filter((t) => t.status === "approved");
+
+  function schedule() {
+    setError(null);
+    setSched(null);
+    start(async () => {
+      const res = await applyApprovedTopicsToSchedule();
+      if (!res.ok) {
+        setError(res.error ?? "Couldn't update the schedule.");
+        return;
+      }
+      setSched({ scheduled: res.scheduled ?? 0, enabled: res.enabled ?? false });
+    });
+  }
 
   function generate() {
     setError(null);
@@ -147,9 +163,37 @@ export function SocialTopicsPanel({ initialTopics }: { initialTopics: SocialTopi
 
           {/* Approved — will feed scheduling */}
           <div>
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">
-              Approved · ready to schedule
-            </p>
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Approved · ready to schedule
+              </p>
+              {approved.length > 0 && (
+                <button
+                  type="button"
+                  onClick={schedule}
+                  disabled={pending}
+                  className="shrink-0 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-60"
+                >
+                  📅 Add to weekly schedule
+                </button>
+              )}
+            </div>
+            {sched && (
+              <p className="mb-2 text-xs text-emerald-700">
+                Added {sched.scheduled} topic{sched.scheduled === 1 ? "" : "s"} to your weekly
+                schedule.
+                {!sched.enabled && (
+                  <>
+                    {" "}
+                    Turn on{" "}
+                    <Link href="/settings?tab=marketing" className="underline">
+                      Social autopilot
+                    </Link>{" "}
+                    to start posting them.
+                  </>
+                )}
+              </p>
+            )}
             {approved.length === 0 ? (
               <p className="text-xs text-slate-400">
                 No approved topics yet. Generate ideas above and approve the ones you like, or add
