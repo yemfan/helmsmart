@@ -15,6 +15,18 @@ import {
   encryptThreadsToken,
 } from "@/lib/threads";
 
+/**
+ * Strip credential-like tokens from an error string before it ever reaches a
+ * URL. Meta echoes the rejected secret in "Invalid client_secret: <value>", and
+ * a secret must never sit in a redirect (it can be logged, cached, or shared).
+ * Keeps the human-readable label, drops the value.
+ */
+function redactSecrets(msg: string): string {
+  return msg
+    .replace(/(client_secret[:=]?\s*)\S+/gi, "$1[redacted]")
+    .replace(/\b[A-Fa-f0-9]{16,}\b/g, "[redacted]");
+}
+
 export async function GET(req: Request) {
   const { baseUrl } = getThreadsConfig();
   const back = (q: string) => NextResponse.redirect(`${baseUrl}/social?${q}`);
@@ -39,10 +51,13 @@ export async function GET(req: Request) {
 
     const token = await exchangeThreadsCode(code);
     if (!token.ok) {
-      // Pass a SHORT, non-sensitive detail (Meta's oauth error text, e.g.
-      // "Invalid platform app" / "redirect_uri mismatch") so a failed connect
-      // is diagnosable from the URL instead of an opaque generic error.
-      const detail = token.error.slice(0, 120);
+      // Full detail (incl. any secret Meta echoes) is logged server-side only.
+      console.error("[threads] token exchange failed:", token.error);
+      // The URL detail must never carry a credential: Meta echoes the offending
+      // value in "Invalid client_secret: <value>", so redact secret-like tokens
+      // before surfacing a SHORT, diagnosable hint (e.g. "Invalid client_secret:
+      // [redacted]" / "redirect_uri mismatch").
+      const detail = redactSecrets(token.error).slice(0, 120);
       return back(
         `threads_error=token_exchange_failed&threads_detail=${encodeURIComponent(detail)}`,
       );
