@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { AI_TEAM } from "@/lib/realtyboss/team";
 import { LeadProfileDrawer } from "@/components/realtyboss/LeadProfileDrawer";
 import { AssistantAvatar } from "@/components/realtyboss/AssistantAvatar";
@@ -163,6 +163,27 @@ function fmtTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 }
 
+// How many recent exchanges the thread shows before you page back in time.
+// Kept small so the command center stays scannable; "Load earlier" walks the
+// history by date from here.
+const RECENT_LIMIT = 6;
+
+/** "Today" / "Yesterday" / weekday / "Aug 3" — the day-separator label. */
+function dayLabel(iso: string): string {
+  const d = new Date(iso);
+  const now = new Date();
+  const startOf = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diffDays = Math.round((startOf(now) - startOf(d)) / 86_400_000);
+  if (diffDays <= 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return d.toLocaleDateString("en-US", { weekday: "long" });
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: d.getFullYear() === now.getFullYear() ? undefined : "numeric",
+  });
+}
+
 type DeadlineAlert = { transactionId: string; propertyAddress: string; label: string; due: Date; risk: "high" | "medium" };
 function deadlineAlerts(transactions: TransactionItem[]): DeadlineAlert[] {
   const now = Date.now();
@@ -205,6 +226,14 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [instructions, setInstructions] = useState<InstructionRow[]>([]);
   const [tasks, setTasks] = useState<TaskRow[]>([]);
   const [runs, setRuns] = useState<RunRow[]>([]);
+  // Older pages walked back via "Load earlier" (kept separate from the polled
+  // recent window so a poll never clobbers history the user paged in).
+  const [earlier, setEarlier] = useState<InstructionRow[]>([]);
+  const [earlierTasks, setEarlierTasks] = useState<TaskRow[]>([]);
+  const [hasMoreEarlier, setHasMoreEarlier] = useState(false);
+  const [loadingEarlier, setLoadingEarlier] = useState(false);
+  const earlierCountRef = useRef(0);
+  useEffect(() => { earlierCountRef.current = earlier.length; }, [earlier]);
   const [teamNames, setTeamNames] = useState<Record<string, string>>({});
   const [teamStatus, setTeamStatus] = useState<Record<string, "active" | "paused">>({});
   const [teamAvatars, setTeamAvatars] = useState<Record<string, { id: string; url: string | null }>>({});
@@ -220,13 +249,50 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
   const loadConversation = useCallback(async () => {
     const [res, runsRes] = await Promise.all([
-      fetch("/api/dashboard/realtyboss/instructions?limit=8").then((r) => r.json()).catch(() => ({})),
+      fetch(`/api/dashboard/realtyboss/instructions?limit=${RECENT_LIMIT}`).then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/realtyboss/runs?limit=12").then((r) => r.json()).catch(() => ({})),
     ]);
-    setInstructions(((res?.instructions ?? []) as InstructionRow[]).slice().reverse());
+    const recent = (res?.instructions ?? []) as InstructionRow[];
+    setInstructions(recent.slice().reverse());
     setTasks((res?.tasks ?? []) as TaskRow[]);
     setRuns((runsRes?.runs ?? []) as RunRow[]);
+    // Seed the pager only when we haven't paged back yet — otherwise a poll
+    // would resurrect the "Load earlier" button after the user reached the end.
+    if (earlierCountRef.current === 0) {
+      setHasMoreEarlier(Boolean(res?.hasMore) || recent.length >= RECENT_LIMIT);
+    }
   }, []);
+
+  // Page back through history by date. Cursor = the oldest exchange already
+  // shown; the API returns the next older page (see the route's `before`).
+  const loadEarlier = useCallback(async () => {
+    setLoadingEarlier(true);
+    try {
+      const shown = [...earlier, ...instructions];
+      const oldest = shown.reduce<string | null>(
+        (min, i) => (!min || new Date(i.created_at) < new Date(min) ? i.created_at : min),
+        null,
+      );
+      if (!oldest) { setHasMoreEarlier(false); return; }
+      const res = await fetch(
+        `/api/dashboard/realtyboss/instructions?limit=${RECENT_LIMIT}&before=${encodeURIComponent(oldest)}`,
+      ).then((r) => r.json()).catch(() => ({}));
+      const older = (res?.instructions ?? []) as InstructionRow[];
+      setEarlier((prev) => {
+        const map = new Map(prev.map((i) => [i.id, i]));
+        for (const i of older) map.set(i.id, i);
+        return [...map.values()];
+      });
+      setEarlierTasks((prev) => {
+        const map = new Map(prev.map((t) => [t.id, t]));
+        for (const t of (res?.tasks ?? []) as TaskRow[]) map.set(t.id, t);
+        return [...map.values()];
+      });
+      setHasMoreEarlier(Boolean(res?.hasMore));
+    } finally {
+      setLoadingEarlier(false);
+    }
+  }, [earlier, instructions]);
 
   const loadData = useCallback(async () => {
     const today = new Date();
@@ -415,6 +481,21 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const alerts = useMemo(() => deadlineAlerts(transactions), [transactions]);
   const activeDeals = useMemo(() => transactions.filter((t) => t.status === "active" || t.status === "pending"), [transactions]);
 
+  // The full thread = paged-in history + the polled recent window, de-duped by
+  // id and ordered oldest→newest so the command bar (newest) sits at the bottom.
+  const allInstructions = useMemo(() => {
+    const map = new Map<string, InstructionRow>();
+    for (const i of [...earlier, ...instructions]) map.set(i.id, i);
+    return [...map.values()].sort(
+      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+    );
+  }, [earlier, instructions]);
+  const allTasks = useMemo(() => {
+    const map = new Map<string, TaskRow>();
+    for (const t of [...earlierTasks, ...tasks]) map.set(t.id, t);
+    return [...map.values()];
+  }, [earlierTasks, tasks]);
+
   const teamDigest = useMemo(() => {
     const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
     const recent = activities.filter((a) => new Date(a.created_at).getTime() >= dayAgo);
@@ -555,21 +636,50 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
             </BossBubble>
           ))}
 
-        {/* Live conversation — instructions you sent + the team's replies */}
-        {instructions.map((ins) => (
-          <InstructionExchange
-            key={ins.id}
-            instruction={ins}
-            tasks={tasks.filter((t) => t.instruction_id === ins.id)}
-            run={runs.find((r) => r.instruction_id === ins.id) ?? null}
-            bossName={bossName}
-            avatar={bossAvatar}
-            teamNames={teamNames}
-            onChanged={loadConversation}
-          />
-        ))}
+        {/* Page back through older conversations by date */}
+        {hasMoreEarlier && allInstructions.length > 0 && (
+          <div className="flex justify-center pt-1">
+            <button
+              type="button"
+              onClick={() => void loadEarlier()}
+              disabled={loadingEarlier}
+              className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600 shadow-sm hover:bg-gray-50 disabled:opacity-50"
+            >
+              {loadingEarlier ? "Loading…" : "↑ Load earlier conversations"}
+            </button>
+          </div>
+        )}
 
-        {recommendations.length === 0 && instructions.length === 0 && !loading && (
+        {/* Live conversation — instructions you sent + the team's replies,
+            grouped by day so the thread reads as a dated history. */}
+        {allInstructions.map((ins, idx) => {
+          const prev = allInstructions[idx - 1];
+          const showSeparator = !prev || dayLabel(prev.created_at) !== dayLabel(ins.created_at);
+          return (
+            <Fragment key={ins.id}>
+              {showSeparator && (
+                <div className="flex items-center gap-2 py-1" aria-hidden>
+                  <span className="h-px flex-1 bg-gray-200" />
+                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+                    {dayLabel(ins.created_at)}
+                  </span>
+                  <span className="h-px flex-1 bg-gray-200" />
+                </div>
+              )}
+              <InstructionExchange
+                instruction={ins}
+                tasks={allTasks.filter((t) => t.instruction_id === ins.id)}
+                run={runs.find((r) => r.instruction_id === ins.id) ?? null}
+                bossName={bossName}
+                avatar={bossAvatar}
+                teamNames={teamNames}
+                onChanged={loadConversation}
+              />
+            </Fragment>
+          );
+        })}
+
+        {recommendations.length === 0 && allInstructions.length === 0 && !loading && (
           <BossBubble bossName={bossName} avatar={bossAvatar}>
             <p className="text-sm text-gray-600">Nothing urgent — your team has things under control. Tell me what you&apos;d like done.</p>
           </BossBubble>

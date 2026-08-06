@@ -13,22 +13,35 @@ export const maxDuration = 300;
 /**
  * The Boss Assistant instruction channel.
  *
- *   GET  ?limit=5  → latest instructions, each with its routed tasks
- *   POST { content } → queue a new instruction (status pending; the
- *                      5-minute cron parses + routes it)
+ *   GET  ?limit=5              → latest instructions, each with its routed tasks
+ *   GET  ?limit=5&before=<iso> → the next page of OLDER instructions (created
+ *                                strictly before the cursor) — powers the
+ *                                "Load earlier conversations" pager so the
+ *                                thread stays bounded by date instead of piling
+ *                                up. `hasMore` tells the client whether another
+ *                                older page exists.
+ *   POST { content }           → queue a new instruction (status pending; the
+ *                                5-minute cron parses + routes it)
  */
 export async function GET(req: NextRequest) {
   try {
     const { agentId } = await getAgentContextFromRequest(req);
     const limitRaw = Number(req.nextUrl.searchParams.get("limit") ?? 5);
     const limit = Math.min(Math.max(Number.isFinite(limitRaw) ? limitRaw : 5, 1), 20);
+    // Keyset pagination cursor: fetch the page of instructions created strictly
+    // before this ISO timestamp (the oldest one the client is already showing).
+    const before = req.nextUrl.searchParams.get("before");
 
-    const { data: instructions, error } = await supabaseAdmin
+    let query = supabaseAdmin
       .from("boss_instructions")
       .select("id, content, status, error, clarification, processed_at, created_at")
       .eq("agent_id", agentId)
       .order("created_at", { ascending: false })
       .limit(limit);
+    if (before && !Number.isNaN(Date.parse(before))) {
+      query = query.lt("created_at", before);
+    }
+    const { data: instructions, error } = await query;
     if (error) throw new Error(error.message);
 
     const ids = (instructions ?? []).map((i) => (i as { id: string }).id);
@@ -45,7 +58,9 @@ export async function GET(req: NextRequest) {
       tasks = taskRows ?? [];
     }
 
-    return NextResponse.json({ ok: true, instructions: instructions ?? [], tasks });
+    // A full page implies there may be another older page behind it.
+    const hasMore = (instructions?.length ?? 0) >= limit;
+    return NextResponse.json({ ok: true, instructions: instructions ?? [], tasks, hasMore });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Server error";
     return NextResponse.json(
