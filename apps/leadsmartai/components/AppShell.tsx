@@ -10,6 +10,7 @@ import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 import { CloseBossLogo } from "@/components/brand/CloseBossLogo";
 import { getMarketingNavSections } from "@/marketing.nav.config";
 import { MarketingTopNav } from "@/components/marketing/MarketingTopNav";
+import { AskMaxBand } from "@/components/marketing/AskMaxBand";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
 import Footer from "./Footer";
 import FloatingCTA from "./FloatingCTA";
@@ -200,6 +201,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
 }
 
 function MarketingChrome({ children }: { children: ReactNode }) {
+  const pathname = usePathname() ?? "";
+  // The homepage already leads with Max and ends with its own final CTA, so the
+  // site-wide closing band would be a redundant second closing CTA there.
+  const showAskMaxBand = pathname !== "/";
   const sidebarUser = useSidebarUser();
   const { t } = useTranslation("web_marketing");
   const sections = useMemo(() => getMarketingNavSections(t), [t]);
@@ -218,6 +223,7 @@ function MarketingChrome({ children }: { children: ReactNode }) {
       <main id="main-content" className="min-w-0 flex-1 overflow-x-hidden p-4 sm:p-8">
         {children}
       </main>
+      {showAskMaxBand && <AskMaxBand />}
       <Footer />
       <FloatingCTA />
     </div>
