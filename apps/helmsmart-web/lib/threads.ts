@@ -37,9 +37,13 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { encrypt, decrypt } from "@/lib/crypto";
 
 export function getThreadsConfig() {
-  const clientId = process.env.THREADS_APP_ID;
-  const clientSecret = process.env.THREADS_APP_SECRET;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3002";
+  // Pasted secrets frequently carry a trailing newline/space; an untrimmed
+  // secret fails the token exchange silently (same class of bug as #899's
+  // untrimmed META_APP_SECRET). Trim defensively so a stray whitespace char
+  // can never be the reason a connect fails.
+  const clientId = process.env.THREADS_APP_ID?.trim();
+  const clientSecret = process.env.THREADS_APP_SECRET?.trim();
+  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3002").trim();
   const redirectUri = `${baseUrl}/api/auth/threads/callback`;
   return { clientId, clientSecret, redirectUri, baseUrl };
 }
@@ -66,7 +70,10 @@ export function threadsAuthorizeUrl(state: string): string {
  */
 export async function exchangeThreadsCode(
   code: string,
-): Promise<{ accessToken: string; userId: string; expiresIn: number } | null> {
+): Promise<
+  | { ok: true; accessToken: string; userId: string; expiresIn: number }
+  | { ok: false; error: string }
+> {
   const { clientId, clientSecret, redirectUri } = getThreadsConfig();
   const req = buildThreadsTokenExchangeRequest({
     clientId: clientId!,
@@ -79,7 +86,13 @@ export async function exchangeThreadsCode(
     res.status,
     await res.json().catch(() => ({})),
   );
-  if (!short.ok) return null;
+  if (!short.ok) {
+    // Surface the REAL reason (bad secret, redirect mismatch, used code, …)
+    // instead of a blanket failure — the callback logs it and can pass a short
+    // detail back so a connect never fails for an invisible reason.
+    console.error("[threads] token exchange failed:", short.error);
+    return { ok: false, error: short.error };
+  }
 
   let accessToken = short.accessToken;
   let expiresIn = 60 * 60; // short-lived default
@@ -102,7 +115,7 @@ export async function exchangeThreadsCode(
     // keep the short-lived token — a connection that works for an hour beats
     // failing the whole connect
   }
-  return { accessToken, userId: short.userId, expiresIn };
+  return { ok: true, accessToken, userId: short.userId, expiresIn };
 }
 
 /** Canonical profile (id + @handle) via graph.threads.net /me. */
