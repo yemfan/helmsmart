@@ -5,6 +5,8 @@ import { SocialComposer } from "@/components/social-composer";
 import { ResponsibleEmployee } from "@/components/responsible-employee";
 import { EmilyDraftButton } from "@/components/emily-draft-button";
 import { SocialAutopilotPanel } from "@/components/social-autopilot-panel";
+import { SocialTopicsPanel } from "@/components/social-topics-panel";
+import type { SocialTopic } from "@/lib/actions/topics";
 import { connectErrorMessage } from "@/lib/connect-error";
 
 export const metadata: Metadata = { title: "Social" };
@@ -67,6 +69,18 @@ export default async function SocialPage({
       .select("provider")
       .eq("organization_id", orgId),
   ]);
+
+  // Topic pool (migration 00086). Applied by hand while Vercel deploys on merge,
+  // so tolerate the table not existing yet — degrade to an empty pool rather
+  // than blanking the page.
+  const topicsRes = await supabase
+    .from("social_topics")
+    .select("id, topic, theme, source, status, used_count, created_at")
+    .eq("organization_id", orgId)
+    .neq("status", "archived")
+    .order("created_at", { ascending: false })
+    .limit(100);
+  const topics = (topicsRes.error ? [] : (topicsRes.data as SocialTopic[])) ?? [];
 
   const connected = new Set(
     ((tokens ?? []) as { provider: string }[]).map((t) => t.provider),
@@ -147,6 +161,7 @@ export default async function SocialPage({
         </div>
       )}
       <SocialAutopilotPanel />
+      <SocialTopicsPanel initialTopics={topics} />
       <SocialComposer
         posts={(posts ?? []) as Parameters<typeof SocialComposer>[0]["posts"]}
         orgName={org?.name ?? "My Business"}
