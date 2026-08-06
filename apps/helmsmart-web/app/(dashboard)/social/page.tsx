@@ -8,6 +8,29 @@ import { SocialAutopilotPanel } from "@/components/social-autopilot-panel";
 
 export const metadata: Metadata = { title: "Social" };
 
+/**
+ * A friendly, ACCURATE message for a failed social connect. Never dumps a raw
+ * provider error and never tells the user to "try again" when a retry can't
+ * help (e.g. missing config, or a dev-mode app the account isn't approved for).
+ */
+function connectErrorMessage(provider: string, code: string): string {
+  const pretty = code.replace(/_/g, " ");
+  switch (code) {
+    case "not_configured":
+      return `${provider} isn't set up on this site yet — its app credentials are missing. This needs an admin to configure; retrying won't help.`;
+    case "bad_state":
+    case "missing_context":
+      return `That ${provider} connection attempt expired before it finished. Please start Connect ${provider} again.`;
+    case "token_exchange_failed":
+    case "save_failed":
+      return `${provider} sign-in didn't complete. Please try connecting again.`;
+    case "access_denied":
+      return `You cancelled the ${provider} connection, or didn't grant the permissions it needs. Reconnect and approve the requested permissions.`;
+    default:
+      return `Couldn't connect ${provider} (${pretty}). Try reconnecting — if it keeps failing, the app may still need ${provider} approval or your account must be added as a tester.`;
+  }
+}
+
 export default async function SocialPage({
   searchParams,
 }: {
@@ -85,7 +108,7 @@ export default async function SocialPage({
       )}
       {sp.linkedin_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          Couldn&apos;t connect LinkedIn ({sp.linkedin_error.replace(/_/g, " ")}). Please try again.
+          {connectErrorMessage("LinkedIn", sp.linkedin_error)}
         </div>
       )}
       {sp.meta === "connected" && (
@@ -111,7 +134,7 @@ export default async function SocialPage({
               you want to post to on Meta&apos;s permissions screen.
             </>
           ) : (
-            <>Couldn&apos;t connect Facebook ({sp.meta_error.replace(/_/g, " ")}). Please try again.</>
+            <>{connectErrorMessage("Facebook", sp.meta_error)}</>
           )}
         </div>
       )}
@@ -122,7 +145,7 @@ export default async function SocialPage({
       )}
       {sp.threads_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          Couldn&apos;t connect Threads ({sp.threads_error.replace(/_/g, " ")}). Please try again.
+          {connectErrorMessage("Threads", sp.threads_error)}
         </div>
       )}
       {sp.tiktok === "connected" && (
@@ -132,7 +155,7 @@ export default async function SocialPage({
       )}
       {sp.tiktok_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          Couldn&apos;t connect TikTok ({sp.tiktok_error.replace(/_/g, " ")}). Please try again.
+          {connectErrorMessage("TikTok", sp.tiktok_error)}
         </div>
       )}
       {sp.youtube === "connected" && (
@@ -142,7 +165,7 @@ export default async function SocialPage({
       )}
       {sp.youtube_error && (
         <div className="mx-4 mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-          Couldn&apos;t connect YouTube ({sp.youtube_error.replace(/_/g, " ")}). Please try again.
+          {connectErrorMessage("YouTube", sp.youtube_error)}
         </div>
       )}
       <SocialAutopilotPanel />
