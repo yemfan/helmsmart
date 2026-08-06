@@ -29,6 +29,14 @@
     "schedule_demo": "Schedule a Demo",
     "menu": "Menu"
   },
+  "ask_max_band": {
+    "eyebrow": "One captain. One AI team. Your success.",
+    "h2_prefix": "Don't do it all. ",
+    "h2_highlight": "Ask Max.",
+    "body": "Tell Max what you need — he puts your whole AI team to work, around the clock.",
+    "cta": "Ask Max free",
+    "avatar_alt": "Max, the captain of your CloseBoss AI team"
+  },
   "nav": {
     "product": "Product",
     "free_tools": "Free tools",

@@ -29,6 +29,14 @@
     "schedule_demo": "预约演示",
     "menu": "菜单"
   },
+  "ask_max_band": {
+    "eyebrow": "一位队长。一支 AI 团队。您的成功。",
+    "h2_prefix": "别再事事亲力亲为，",
+    "h2_highlight": "问问 Max。",
+    "body": "告诉 Max 您的需求 —— 他就会调动您的整支 AI 团队，全天候为您效力。",
+    "cta": "免费问 Max",
+    "avatar_alt": "Max，您的 CloseBoss AI 团队队长"
+  },
   "nav": {
     "product": "产品",
     "free_tools": "免费工具",

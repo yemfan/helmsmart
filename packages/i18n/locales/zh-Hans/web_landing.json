@@ -25,6 +25,18 @@
     "cta_demo": "预约演示",
     "trial_note": "无需设置 · 付费套餐 14 天试用 · 随时可取消"
   },
+  "ask_max": {
+    "eyebrow": "一位队长。一支 AI 团队。您的成功。",
+    "h2_prefix": "别再事事亲力亲为，",
+    "h2_highlight": "问问 Max。",
+    "body": "Max 是您的 AI 队长。告诉他您的需求 —— 跟进客户、上线房源、追签合同 —— 他就会调动您的整支 AI 团队，全天候为您效力。",
+    "cta": "免费问 Max",
+    "bubble_prefix": "问问 Max",
+    "bubble": " —— 今天想让您的 AI 团队做点什么？",
+    "name": "Max",
+    "role": "您的 AI 团队队长",
+    "quote": "“有我在，放心。”"
+  },
   "brokerage_strip": {
     "eyebrow": "深受以下经纪行的经纪人信赖"
   },
