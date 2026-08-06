@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect, type ReactNode } from "react";
-import { Building2, DollarSign, Mic, Cog } from "lucide-react";
+import { Building2, DollarSign, Mic, Cog, Megaphone } from "lucide-react";
 
-type TabKey = "general" | "financial" | "voice" | "operations";
+type TabKey = "general" | "financial" | "marketing" | "voice" | "operations";
 
 const TABS: { key: TabKey; label: string; icon: typeof Building2 }[] = [
   { key: "general", label: "General", icon: Building2 },
   { key: "financial", label: "Financial", icon: DollarSign },
+  { key: "marketing", label: "Marketing", icon: Megaphone },
   { key: "voice", label: "Voice AI", icon: Mic },
   { key: "operations", label: "Operations", icon: Cog },
 ];
@@ -19,26 +20,33 @@ const TABS: { key: TabKey; label: string; icon: typeof Building2 }[] = [
 export function SettingsTabs({
   general,
   financial,
+  marketing,
   voice,
   operations,
 }: {
   general: ReactNode;
   financial: ReactNode;
+  marketing: ReactNode;
   voice: ReactNode;
   operations: ReactNode;
 }) {
   const [tab, setTab] = useState<TabKey>("general");
 
-  // Deep-link from other pages: /settings#voice-agent opens Voice AI,
-  // /settings#operations opens Operations.
+  // Deep-link from other pages: ?tab=marketing (e.g. the /social autopilot
+  // Settings link) opens Marketing; #voice-agent / #operations still work.
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const q = new URLSearchParams(window.location.search).get("tab");
+    if (q && ["general", "financial", "marketing", "voice", "operations"].includes(q)) {
+      setTab(q as TabKey);
+      return;
+    }
     const hash = window.location.hash;
     if (hash === "#voice-agent") setTab("voice");
     else if (hash === "#operations") setTab("operations");
   }, []);
 
-  const slots: Record<TabKey, ReactNode> = { general, financial, voice, operations };
+  const slots: Record<TabKey, ReactNode> = { general, financial, marketing, voice, operations };
 
   return (
     <div>

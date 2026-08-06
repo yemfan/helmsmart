@@ -6,6 +6,8 @@ import { OrgSettingsForm } from "@/components/org-settings-form";
 import { BankAccountMappingForm } from "@/components/bank-account-mapping-form";
 import { VoiceAgentSettingsSection } from "@/components/voice-agent-settings-section";
 import { SettingsTabs } from "@/components/settings-tabs";
+import { SocialConnections } from "@/components/social-connections";
+import { SocialAutopilotPanel } from "@/components/social-autopilot-panel";
 import { PlaidLink } from "@/components/plaid-link";
 import { BillingRatesForm } from "@/components/billing-rates-form";
 import { ReceptionSettings } from "@/components/reception-settings";
@@ -60,6 +62,16 @@ export default async function SettingsPage() {
       .in("type", ["asset", "liability"])
       .order("code"),
   ]);
+
+  // Connected social channels for the Marketing tab (connect/disconnect live
+  // here now). Tolerate the table not existing — degrade to "none connected".
+  const tokensRes = await supabase
+    .from("org_oauth_tokens")
+    .select("provider")
+    .eq("organization_id", orgId);
+  const connectedProviders = (
+    tokensRes.error ? [] : ((tokensRes.data as { provider: string }[]) ?? [])
+  ).map((t) => t.provider);
 
   const isMedical = (await getActivePack()).id === "medical";
 
@@ -166,6 +178,27 @@ export default async function SettingsPage() {
                 daysIntervals={(org?.reminder_days_intervals as number[] | null) ?? [3, 7, 14, 30]}
                 maxCount={org?.reminder_max_count ?? 4}
               />
+            </section>
+          </>
+        }
+        marketing={
+          <>
+            <section>
+              <h2 className={SECTION_H2}>Social channels</h2>
+              <p className="text-xs text-slate-500 mb-4">
+                Connect the accounts your AI marketing posts to. Connecting opens the
+                provider&apos;s secure sign-in; disconnecting removes the stored access here.
+              </p>
+              <SocialConnections connected={connectedProviders} />
+            </section>
+
+            <section>
+              <h2 className={SECTION_H2}>Social autopilot</h2>
+              <p className="text-xs text-slate-500 mb-4">
+                Turn it on and Emily writes &amp; schedules posts about your business on the
+                cadence you choose.
+              </p>
+              <SocialAutopilotPanel variant="full" />
             </section>
           </>
         }

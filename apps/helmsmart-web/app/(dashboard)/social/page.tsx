@@ -6,6 +6,7 @@ import { ResponsibleEmployee } from "@/components/responsible-employee";
 import { EmilyDraftButton } from "@/components/emily-draft-button";
 import { SocialAutopilotPanel } from "@/components/social-autopilot-panel";
 import { SocialTopicsPanel } from "@/components/social-topics-panel";
+import { ChannelStatusList } from "@/components/channel-status-list";
 import type { SocialTopic } from "@/lib/actions/topics";
 import { connectErrorMessage } from "@/lib/connect-error";
 
@@ -85,11 +86,6 @@ export default async function SocialPage({
   const connected = new Set(
     ((tokens ?? []) as { provider: string }[]).map((t) => t.provider),
   );
-  const linkedinConnected = connected.has("linkedin");
-  const metaConnected = connected.has("meta");
-  const threadsConnected = connected.has("threads");
-  const tiktokConnected = connected.has("tiktok");
-  const youtubeConnected = connected.has("youtube");
 
   return (
     <div className="flex flex-col h-full">
@@ -161,6 +157,7 @@ export default async function SocialPage({
         </div>
       )}
       <SocialAutopilotPanel />
+      <ChannelStatusList connected={[...connected]} />
       <SocialTopicsPanel initialTopics={topics} />
       <SocialComposer
         posts={(posts ?? []) as Parameters<typeof SocialComposer>[0]["posts"]}
@@ -169,72 +166,6 @@ export default async function SocialPage({
           <div className="flex items-center gap-4">
             <ResponsibleEmployee slug="emily" />
             <EmilyDraftButton />
-            {linkedinConnected ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                LinkedIn connected
-              </span>
-            ) : (
-              <a
-                href="/api/auth/linkedin"
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
-              >
-                Connect LinkedIn
-              </a>
-            )}
-            {/* One Meta grant covers both Facebook and Instagram. */}
-            {metaConnected ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Facebook connected
-              </span>
-            ) : (
-              <a
-                href="/api/auth/meta"
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
-              >
-                Connect Facebook
-              </a>
-            )}
-            {threadsConnected ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Threads connected
-              </span>
-            ) : (
-              <a
-                href="/api/auth/threads"
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
-              >
-                Connect Threads
-              </a>
-            )}
-            {tiktokConnected ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                TikTok connected
-              </span>
-            ) : (
-              <a
-                href="/api/auth/tiktok"
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
-              >
-                Connect TikTok
-              </a>
-            )}
-            {youtubeConnected ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                YouTube connected
-              </span>
-            ) : (
-              <a
-                href="/api/auth/youtube"
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3 py-1 text-xs font-medium text-white transition hover:opacity-90"
-              >
-                Connect YouTube
-              </a>
-            )}
           </div>
         }
         connectedProviders={[...connected]}
