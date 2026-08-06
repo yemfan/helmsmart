@@ -58,8 +58,15 @@ export async function GET(req: Request) {
       // before surfacing a SHORT, diagnosable hint (e.g. "Invalid client_secret:
       // [redacted]" / "redirect_uri mismatch").
       const detail = redactSecrets(token.error).slice(0, 120);
+      // TEMP diagnostic: on "Invalid client_secret", report what the RUNNING
+      // server actually uses — the (public) app id + the secret's LENGTH (never
+      // the value). Tells "wrong app id" / "secret unset or wrong Vercel env"
+      // (slen 0 / not 32) apart from a genuine id↔secret mismatch (right length,
+      // still rejected). Remove once Threads connects.
+      const cfg = getThreadsConfig();
+      const dbg = `id=${cfg.clientId ?? "unset"},slen=${cfg.clientSecret?.length ?? 0}`;
       return back(
-        `threads_error=token_exchange_failed&threads_detail=${encodeURIComponent(detail)}`,
+        `threads_error=token_exchange_failed&threads_detail=${encodeURIComponent(detail)}&threads_debug=${encodeURIComponent(dbg)}`,
       );
     }
 
