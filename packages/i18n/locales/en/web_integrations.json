@@ -53,6 +53,39 @@
         "wechat": { "name": "WeChat Official Account", "description": "Native WeChat OA integration for agents serving Chinese-speaking clients. Bilingual templates ship with the platform." }
       }
     },
+    "voice_ai": {
+      "title": "Voice AI",
+      "description": "The AI receptionist that answers calls, and the voice cloning that lets it sound like you.",
+      "items": {
+        "retell": { "name": "Retell AI", "description": "Powers the AI receptionist — real-time conversation that answers, qualifies, books, and hands off, with recordings and summaries on the contact." },
+        "elevenlabs": { "name": "ElevenLabs", "description": "Clones your voice from a short intro video so your digital twin and voice-line call-backs sound like you." }
+      }
+    },
+    "media": {
+      "title": "AI video & media",
+      "description": "Turn a listing or a script into polished video — cinematic clips, talking-avatar reels, and branded edits.",
+      "items": {
+        "fal": { "name": "fal.ai", "description": "The generative-media backbone — runs the video, transcription, and lip-sync models below on fast, scalable infrastructure." },
+        "seedance": { "name": "Seedance", "description": "Text-and-photo-to-video for UGC-style listing and brand ads." },
+        "wizper": { "name": "Wizper", "description": "Fast, accurate transcription — turns your intro video into the script behind your digital twin." },
+        "lipsync": { "name": "Sync Lipsync", "description": "Lip-syncs your cloned voice onto your avatar so a talking-head reel matches every word." },
+        "remotion": { "name": "Remotion", "description": "Programmatic, on-brand video — carousel and listing reels rendered from your data." },
+        "kling": { "name": "Kling", "description": "Cinematic image-to-video for high-end listing and lifestyle clips." },
+        "veo": { "name": "Google Veo", "description": "State-of-the-art text-to-video for premium marketing shots." }
+      }
+    },
+    "social": {
+      "title": "Social publishing",
+      "description": "Connect your accounts once and your Marketing Assistant writes, schedules, and auto-posts across every channel.",
+      "items": {
+        "meta": { "name": "Facebook & Instagram", "description": "One Meta connection publishes to your Facebook Page and linked Instagram Business account." },
+        "linkedin": { "name": "LinkedIn", "description": "Auto-post market updates, listings, and brand content to your LinkedIn profile or page." },
+        "threads": { "name": "Threads", "description": "Publish text and image posts to Threads on your posting schedule." },
+        "pinterest": { "name": "Pinterest", "description": "Pin listing photos and market graphics to boards that keep working for you." },
+        "tiktok": { "name": "TikTok", "description": "Publish short-form listing and brand video to TikTok." },
+        "youtube": { "name": "YouTube", "description": "Upload listing tours and brand reels to your YouTube channel." }
+      }
+    },
     "esignature": {
       "title": "E-signature",
       "description": "Send Buyer Broker Agreements, offers, and listing agreements for signature without leaving the deal record.",
