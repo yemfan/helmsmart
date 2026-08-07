@@ -9,6 +9,8 @@ import {
   renderAvatarVideo,
 } from "@/lib/agent/avatarStudio";
 import { userHasCrmFeature, subscriptionRequiredResponse } from "@/lib/billing/subscriptionAccess";
+import { withCreditsMetered, meteringEnforced, InsufficientCreditsError } from "@/lib/credits/metering";
+import { CREDIT_COSTS } from "@/lib/credits/ledger";
 
 // The lipsync render can take a couple of minutes.
 export const runtime = "nodejs";
@@ -18,10 +20,13 @@ export const maxDuration = 300;
 export async function GET() {
   try {
     const { agentId, userId } = await getCurrentAgentContext();
-    const [state, premiumAvatar] = await Promise.all([
+    const [state, hasPremium] = await Promise.all([
       getAvatarState(String(agentId)),
       userHasCrmFeature(String(userId), "premium_avatar").catch(() => false),
     ]);
+    // Under the usage model everything's included, so the premium enhancements
+    // are available to everyone (the credit balance is the gate, not the plan).
+    const premiumAvatar = hasPremium || meteringEnforced();
     return NextResponse.json({ ok: true, ...state, premiumAvatar });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
@@ -74,12 +79,20 @@ export async function POST(req: Request) {
         const audioPath = typeof body.audioPath === "string" ? body.audioPath : null;
         const sharpen = body.sharpen === true;
         const photoAvatar = body.photoAvatar === true;
-        // Premium enhancements — gate server-side so the client can't bypass the
-        // entitlement even if a toggle is forced on.
-        if ((sharpen || photoAvatar) && !(await userHasCrmFeature(String(userId), "premium_avatar"))) {
+        // Old model: premium enhancements are plan-gated. New usage model
+        // (metering enforced): everything's included — the credit charge is the
+        // only gate, so skip the entitlement check.
+        if (
+          (sharpen || photoAvatar) &&
+          !meteringEnforced() &&
+          !(await userHasCrmFeature(String(userId), "premium_avatar"))
+        ) {
           return subscriptionRequiredResponse("premium_avatar");
         }
-        const out = await renderAvatarVideo(id, text, audioPath, { sharpen, photoAvatar });
+        // Reserve credits around the paid render (no-op unless metering is on).
+        const out = await withCreditsMetered(String(userId), CREDIT_COSTS.twinAvatar, "twin", () =>
+          renderAvatarVideo(id, text, audioPath, { sharpen, photoAvatar }),
+        );
         return NextResponse.json({ ok: true, ...out });
       }
       case "publish": {
@@ -92,6 +105,9 @@ export async function POST(req: Request) {
         return NextResponse.json({ ok: false, error: "Unknown action" }, { status: 400 });
     }
   } catch (err) {
+    if (err instanceof InsufficientCreditsError) {
+      return NextResponse.json({ ok: false, error: err.message, code: "INSUFFICIENT_CREDITS" }, { status: 402 });
+    }
     const message = err instanceof Error ? err.message : "Server error";
     console.error("POST /api/dashboard/avatar:", err);
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
