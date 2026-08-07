@@ -250,24 +250,6 @@ function LoginPageInner() {
           <span className="h-px flex-1 bg-gray-200" />
         </div>
 
-        <div className="space-y-2">
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => void handleOAuth("google")}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Continue with Google
-          </button>
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => void handleOAuth("apple")}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Continue with Apple
-          </button>
-        </div>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1">
             <label className="block text-xs font-medium text-gray-700">Email</label>
@@ -325,6 +307,29 @@ function LoginPageInner() {
             {loading ? "Logging in..." : "Log in"}
           </button>
         </form>
+        <div className="flex items-center gap-3">
+          <span className="h-px flex-1 bg-gray-200" />
+          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">or</span>
+          <span className="h-px flex-1 bg-gray-200" />
+        </div>
+        <div className="space-y-2">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => void handleOAuth("google")}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Continue with Google
+          </button>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => void handleOAuth("apple")}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Continue with Apple
+          </button>
+        </div>
         <div className="text-[11px] text-gray-500 text-center space-y-2">
           {!sessionUser ? (
             <p>
