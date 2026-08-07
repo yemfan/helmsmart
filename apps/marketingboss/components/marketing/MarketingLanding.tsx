@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { PublicNav } from "./PublicNav";
 import { PublicFooter } from "./PublicFooter";
+import { CREDIT_PACKS, formatPrice } from "@/lib/billing";
+
+// New accounts start with this many free credits (profiles.credits default,
+// granted by the handle_new_user trigger). Surfaced here so visitors know they
+// can start without paying.
+const FREE_CREDITS = 40;
 
 /**
  * Public marketing homepage for marketingbossai.com (logged-out visitors).
@@ -74,7 +80,9 @@ export function MarketingLanding() {
                 See how it works
               </a>
             </div>
-            <p className="mt-4 text-xs text-ink-3">No subscription · pay-as-you-go credits · publish anywhere</p>
+            <p className="mt-4 text-xs text-ink-3">
+              {FREE_CREDITS} free credits to start · no card required · no subscription
+            </p>
           </div>
 
           {/* Studio mock — pure CSS, no external assets */}
@@ -162,20 +170,66 @@ export function MarketingLanding() {
           <div className="mx-auto max-w-6xl px-5 py-16 md:py-20">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-boss-violet">Pricing</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-ink md:text-4xl">
-              Pay for what you create. Nothing else.
+              Start free. Pay for what you create.
             </h2>
             <p className="mt-3 max-w-xl text-ink-3">
-              Buy credits and spend them as you generate — no monthly fee, no seats. Every render is saved to your
-              gallery.
+              Every account starts with {FREE_CREDITS} free credits — no card. After that, buy credits and spend them
+              as you generate: no monthly fee, no seats. Every render is saved to your gallery.
             </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              {PRICING.map((p) => (
-                <div key={p.label} className="rounded-2xl border border-line bg-white p-6 text-center">
-                  <p className="text-sm font-medium text-ink-3">{p.label}</p>
-                  <p className="mt-1 text-2xl font-bold text-ink">{p.credits}</p>
-                  <p className="mt-0.5 text-xs text-ink-3">{p.note}</p>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {/* Free tier */}
+              <div className="flex flex-col rounded-2xl border border-line bg-white p-6">
+                <p className="text-sm font-semibold text-ink">Free</p>
+                <p className="mt-2 text-3xl font-bold text-ink">$0</p>
+                <p className="mt-1 text-sm text-ink-3">{FREE_CREDITS} credits to start</p>
+                <p className="mt-3 flex-1 text-xs text-ink-3">
+                  ~{FREE_CREDITS} images or {Math.floor(FREE_CREDITS / 20)} videos. No card required.
+                </p>
+                <Link
+                  href="/login"
+                  className="mt-4 rounded-xl border border-boss-violet/30 bg-white px-4 py-2 text-center text-sm font-semibold text-boss-violet transition hover:bg-boss-violet/5"
+                >
+                  Start free
+                </Link>
+              </div>
+
+              {/* Credit packs */}
+              {CREDIT_PACKS.map((pack) => (
+                <div
+                  key={pack.id}
+                  className={`relative flex flex-col rounded-2xl border bg-white p-6 ${
+                    pack.popular ? "border-boss-violet ring-1 ring-boss-violet" : "border-line"
+                  }`}
+                >
+                  {pack.popular && (
+                    <span className="absolute -top-2.5 left-6 rounded-full bg-boss-violet px-2 py-0.5 text-[10px] font-semibold text-white">
+                      Best value
+                    </span>
+                  )}
+                  <p className="text-sm font-semibold text-ink">{pack.name}</p>
+                  <p className="mt-2 text-3xl font-bold text-ink">{formatPrice(pack.priceCents)}</p>
+                  <p className="mt-1 text-sm text-ink-3">{pack.credits.toLocaleString()} credits</p>
+                  <p className="mt-3 flex-1 text-xs text-ink-3">{pack.blurb}</p>
+                  <Link
+                    href="/login"
+                    className="mt-4 rounded-xl bg-boss-gold px-4 py-2 text-center text-sm font-semibold text-black transition hover:brightness-105"
+                  >
+                    Get {pack.name}
+                  </Link>
                 </div>
               ))}
+            </div>
+
+            {/* What a credit buys */}
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-ink-3">
+              <span className="font-semibold text-ink">What a credit buys:</span>
+              {PRICING.map((p) => (
+                <span key={p.label}>
+                  {p.label} = {p.credits}
+                </span>
+              ))}
+              <span>· Credits never expire.</span>
             </div>
           </div>
         </section>
