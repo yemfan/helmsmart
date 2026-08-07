@@ -1,5 +1,13 @@
 import { HelmLogo } from "@/components/logo";
 
+// Sibling businesses under MAXY Investment — cross-promoted in every footer.
+// This app is HelmSmart, so it links to the other three.
+const PARTNERS = [
+  { label: "Property Tools AI", blurb: "Real estate tools & data", href: "https://www.propertytoolsai.com" },
+  { label: "CloseBoss", blurb: "Your AI real estate team", href: "https://www.closebossai.com" },
+  { label: "MarketingBoss", blurb: "AI marketing creative", href: "https://marketingbossai.com" },
+];
+
 const footerLinks = {
   Product: [
     { label: "Features", href: "/features" },
@@ -49,7 +57,26 @@ export function MarketingFooter() {
           ))}
         </div>
 
-        <div className="mt-16 border-t border-slate-800 pt-8">
+        {/* Business partners — our sibling products */}
+        <div className="mt-14 border-t border-slate-800 pt-8">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-white">Business partners</h3>
+          <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+            {PARTNERS.map((p) => (
+              <li key={p.href}>
+                <a
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-slate-400 transition-colors hover:text-white"
+                >
+                  {p.label} <span className="text-slate-500">· {p.blurb}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-8 border-t border-slate-800 pt-8">
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
               <HelmLogo />
