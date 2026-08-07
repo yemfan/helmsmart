@@ -7,6 +7,7 @@ import {
   setVoiceCloneConsent,
   startVoiceCloneFromTwin,
 } from "@/lib/agent-voice/voiceClone";
+import { userHasCrmFeature, subscriptionRequiredResponse } from "@/lib/billing/subscriptionAccess";
 
 // Downloading the intro video + creating the ElevenLabs voice can take a bit.
 export const runtime = "nodejs";
@@ -30,12 +31,13 @@ export async function GET() {
  */
 export async function POST(req: Request) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId, userId } = await getCurrentAgentContext();
     const id = String(agentId);
     const body = (await req.json().catch(() => ({}))) as {
       action?: unknown;
       value?: unknown;
       on?: unknown;
+      clean?: unknown;
     };
     const action = typeof body.action === "string" ? body.action : "";
 
@@ -45,7 +47,12 @@ export async function POST(req: Request) {
         return NextResponse.json({ ok: true, ...state });
       }
       case "start": {
-        const state = await startVoiceCloneFromTwin(id);
+        const clean = body.clean === true;
+        // "Clean my voice" is a premium enhancement — gate server-side.
+        if (clean && !(await userHasCrmFeature(String(userId), "premium_avatar"))) {
+          return subscriptionRequiredResponse("premium_avatar");
+        }
+        const state = await startVoiceCloneFromTwin(id, { clean });
         return NextResponse.json({ ok: true, ...state });
       }
       case "acknowledge": {

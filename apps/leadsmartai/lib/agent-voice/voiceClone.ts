@@ -130,7 +130,31 @@ export async function setUseClonedVoice(agentId: string, on: boolean): Promise<V
  * prefix). Runs synchronously: download the video, submit to ElevenLabs, and
  * store the returned voice id (or a readable error on failure).
  */
-export async function startVoiceCloneFromTwin(agentId: string): Promise<VoiceCloneState> {
+/**
+ * Premium "Clean my voice" — ElevenLabs audio isolation to denoise/isolate the
+ * voice from the sample before cloning, for a higher-fidelity clone.
+ */
+async function isolateVoiceAudio(bytes: Buffer, mimeType: string): Promise<Buffer> {
+  const key = process.env.ELEVENLABS_API_KEY?.trim();
+  if (!key) throw new Error("ELEVENLABS_API_KEY is not set.");
+  const form = new FormData();
+  form.append("audio", new Blob([new Uint8Array(bytes)], { type: mimeType || "audio/mpeg" }), "sample");
+  const res = await fetch("https://api.elevenlabs.io/v1/audio-isolation", {
+    method: "POST",
+    headers: { "xi-api-key": key },
+    body: form,
+  });
+  if (!res.ok) {
+    const t = await res.text().catch(() => "");
+    throw new Error(`Audio isolation failed (${res.status})${t ? `: ${t.slice(0, 200)}` : ""}`);
+  }
+  return Buffer.from(await res.arrayBuffer());
+}
+
+export async function startVoiceCloneFromTwin(
+  agentId: string,
+  opts?: { clean?: boolean },
+): Promise<VoiceCloneState> {
   if (!voiceCloneConfigured()) {
     throw new Error("Voice cloning isn't configured yet (needs ELEVENLABS_API_KEY).");
   }
@@ -162,14 +186,32 @@ export async function startVoiceCloneFromTwin(agentId: string): Promise<VoiceClo
     const { data: file, error: dlErr } = await supabaseAdmin.storage.from(LEAD_MEDIA).download(videoPath);
     if (dlErr || !file) throw new Error(dlErr?.message || "Could not read your intro video.");
 
-    const bytes = Buffer.from(await file.arrayBuffer());
-    const filename = videoPath.split("/").pop() || "intro.mp4";
-    const mimeType = file.type || "video/mp4";
+    const rawBytes = Buffer.from(await file.arrayBuffer());
+    let sampleBytes: Buffer = rawBytes;
+    let sampleName = videoPath.split("/").pop() || "intro.mp4";
+    let sampleMime = file.type || "video/mp4";
+
+    // Premium "Clean my voice": best-effort isolation before cloning. Falls back
+    // to the raw sample on any failure so cloning never breaks on the pass.
+    if (opts?.clean) {
+      try {
+        sampleBytes = await isolateVoiceAudio(rawBytes, sampleMime);
+        sampleName = "intro-clean.mp3";
+        sampleMime = "audio/mpeg";
+      } catch (e) {
+        console.warn("[voice-clone] audio isolation failed, using raw sample:", e instanceof Error ? e.message : e);
+      }
+    }
 
     const adapter = getVoiceCloneAdapter("elevenlabs");
     if (!adapter) throw new Error("Voice clone provider unavailable.");
 
-    const result = await adapter.submitFromSample({ agentId, filename, bytes, mimeType });
+    const result = await adapter.submitFromSample({
+      agentId,
+      filename: sampleName,
+      bytes: sampleBytes,
+      mimeType: sampleMime,
+    });
 
     await patchClone(agentId, {
       voice_clone_status: "ready",

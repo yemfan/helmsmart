@@ -92,6 +92,7 @@ export default function DigitalTwinPanel() {
   const [avPremium, setAvPremium] = useState(false);
   const [avSharpen, setAvSharpen] = useState(false);
   const [avPhotoAvatar, setAvPhotoAvatar] = useState(false);
+  const [vcClean, setVcClean] = useState(false);
 
   async function publishAvatar() {
     setAvBusy("publish");
@@ -445,7 +446,7 @@ export default function DigitalTwinPanel() {
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => void voiceAction("start")}
+            onClick={() => void voiceAction("start", { clean: avPremium && vcClean })}
             disabled={vcBusy !== null || !vc?.configured || !vc?.consent || !vc?.hasIntroVideo}
             className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
             title={!vc?.consent ? "Check the voice consent box first" : !vc?.hasIntroVideo ? "Record + build your intro video first" : "Clone my voice"}
@@ -456,6 +457,27 @@ export default function DigitalTwinPanel() {
                 ? "Re-clone my voice"
                 : "Clone my voice"}
           </button>
+
+          <label className={`mt-2 flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-400"}`}>
+            <input
+              type="checkbox"
+              checked={avPremium && vcClean}
+              disabled={!avPremium || vcBusy !== null}
+              onChange={(e) => setVcClean(e.target.checked)}
+              className="h-4 w-4 rounded border-slate-300 text-violet-600 disabled:opacity-50"
+            />
+            <span className="inline-flex flex-wrap items-center gap-1">
+              🎙️ Clean my voice
+              <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">Premium</span>
+              {avPremium ? (
+                <span className="text-slate-400">— denoise the source for a sharper clone</span>
+              ) : (
+                <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">
+                  Upgrade to unlock
+                </a>
+              )}
+            </span>
+          </label>
 
           {vc?.status === "ready" && vc.hasClone ? (
             <span className="text-[12px] font-medium text-emerald-700">✓ Voice ready</span>
