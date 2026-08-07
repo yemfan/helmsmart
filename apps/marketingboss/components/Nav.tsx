@@ -11,6 +11,7 @@ const NAV = [
   { href: "/", label: "Studio" },
   { href: "/compose", label: "Posting" },
   { href: "/autopilot", label: "Autopilot" },
+  { href: "/performance", label: "Performance" },
   { href: "/gallery", label: "Gallery" },
 ];
 
