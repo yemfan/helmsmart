@@ -30,6 +30,9 @@ export default function Studio({
   const [mode, setMode] = useState<Mode>("image");
   const [prompt, setPrompt] = useState("");
   const [aspect, setAspect] = useState<Aspect>("16:9");
+  // Which preset is currently applied (highlighted) — cleared once the user
+  // edits the prompt/mode/aspect so the highlight always reflects real state.
+  const [activePreset, setActivePreset] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<string[]>([]);
@@ -61,6 +64,7 @@ export default function Studio({
     setMode(p.mode);
     setAspect(p.aspect);
     setPrompt(p.prompt);
+    setActivePreset(id);
   }
 
   async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -151,7 +155,10 @@ export default function Studio({
             {(["image", "video"] as Mode[]).map((m) => (
               <button
                 key={m}
-                onClick={() => setMode(m)}
+                onClick={() => {
+                  setMode(m);
+                  setActivePreset(null);
+                }}
                 className={`rounded-md px-4 py-1.5 font-medium capitalize transition ${
                   mode === m ? "bg-boss-violet text-white shadow" : "text-slate-600 hover:text-slate-900"
                 }`}
@@ -184,7 +191,10 @@ export default function Studio({
 
         <textarea
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
+          onChange={(e) => {
+            setPrompt(e.target.value);
+            setActivePreset(null);
+          }}
           onKeyDown={(e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") run();
           }}
@@ -200,11 +210,14 @@ export default function Studio({
               {ASPECTS.map((a) => (
                 <button
                   key={a}
-                  onClick={() => setAspect(a)}
+                  onClick={() => {
+                    setAspect(a);
+                    setActivePreset(null);
+                  }}
                   className={`rounded-md px-2.5 py-1 text-xs font-medium ring-1 transition ${
                     aspect === a
-                      ? "bg-slate-100 text-slate-900 ring-slate-200"
-                      : "text-slate-500 ring-slate-200 hover:text-slate-700"
+                      ? "bg-boss-violet text-white ring-boss-violet"
+                      : "bg-white text-slate-500 ring-slate-200 hover:text-slate-700"
                   }`}
                 >
                   {a}
@@ -235,7 +248,12 @@ export default function Studio({
                   key={p.id}
                   onClick={() => applyPreset(p.id)}
                   title={`${p.mode} · ${p.aspect}`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-boss-violet/50 hover:text-slate-900"
+                  aria-pressed={activePreset === p.id}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                    activePreset === p.id
+                      ? "border-boss-violet bg-boss-violet/10 text-boss-violet"
+                      : "border-slate-200 bg-slate-50 text-slate-700 hover:border-boss-violet/50 hover:text-slate-900"
+                  }`}
                 >
                   <span aria-hidden>{p.emoji}</span>
                   {p.label}
