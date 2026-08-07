@@ -17,6 +17,7 @@ type StudioProps = {
   youtubeConnected?: boolean;
   youtubeChannel?: string | null;
   social?: SocialStatus;
+  brandName?: string | null;
 };
 
 export default function Studio({
@@ -24,6 +25,7 @@ export default function Studio({
   youtubeConnected = false,
   youtubeChannel = null,
   social,
+  brandName = null,
 }: StudioProps) {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
@@ -39,6 +41,7 @@ export default function Studio({
   const [results, setResults] = useState<string[]>([]);
   const [resultMode, setResultMode] = useState<Mode>("image");
   const [resultPrompt, setResultPrompt] = useState("");
+  const [resultAspect, setResultAspect] = useState<string>("16:9");
   const [modalOpen, setModalOpen] = useState(false);
 
   const [refUrl, setRefUrl] = useState<string | null>(null);
@@ -165,6 +168,7 @@ export default function Studio({
       const urls = data.urls || [];
       setResults(urls);
       setResultMode("video");
+      setResultAspect("16:9");
       setResultPrompt(prompt.trim() || `${swapTarget} swap`);
       if (urls.length) setModalOpen(true);
       router.refresh();
@@ -192,6 +196,7 @@ export default function Studio({
       const urls = data.urls || [];
       setResults(urls);
       setResultMode(mode);
+      setResultAspect(aspect);
       setResultPrompt(p);
       if (urls.length) setModalOpen(true);
       router.refresh();
@@ -507,7 +512,9 @@ export default function Studio({
         <ResultModal
           urls={results}
           mode={resultMode}
+          aspect={resultAspect}
           defaultTitle={resultPrompt}
+          brandName={brandName}
           youtubeEnabled={youtubeEnabled}
           youtubeConnected={youtubeConnected}
           youtubeChannel={youtubeChannel}
@@ -522,7 +529,9 @@ export default function Studio({
 function ResultModal({
   urls,
   mode,
+  aspect,
   defaultTitle,
+  brandName,
   youtubeEnabled,
   youtubeConnected,
   youtubeChannel,
@@ -531,13 +540,18 @@ function ResultModal({
 }: {
   urls: string[];
   mode: Mode;
+  aspect: string;
   defaultTitle: string;
+  brandName: string | null;
   youtubeEnabled: boolean;
   youtubeConnected: boolean;
   youtubeChannel: string | null;
   social?: SocialStatus;
   onClose: () => void;
 }) {
+  // The shown video can be replaced by a CTA-appended version in place.
+  const [videoUrl, setVideoUrl] = useState(urls[0]);
+  const [ctaAdded, setCtaAdded] = useState(false);
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
@@ -559,20 +573,36 @@ function ResultModal({
         </button>
 
         <div className="overflow-y-auto">
-          {urls.map((url) => (
-            <div key={url} className="bg-slate-100">
-              {mode === "video" ? (
-                <video src={url} controls autoPlay loop className="max-h-[60dvh] w-full" />
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={url} alt="Generated marketing creative" className="max-h-[60dvh] w-full object-contain" />
-              )}
+          {mode === "video" ? (
+            <div className="bg-slate-100">
+              <video key={videoUrl} src={videoUrl} controls autoPlay loop className="max-h-[60dvh] w-full" />
             </div>
-          ))}
+          ) : (
+            urls.map((url) => (
+              <div key={url} className="bg-slate-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={url} alt="Generated marketing creative" className="max-h-[60dvh] w-full object-contain" />
+              </div>
+            ))
+          )}
+
+          {mode === "video" && (
+            <CtaEndCard
+              videoUrl={videoUrl}
+              aspect={aspect}
+              brandName={brandName}
+              defaultTopic={defaultTitle}
+              added={ctaAdded}
+              onDone={(u) => {
+                setVideoUrl(u);
+                setCtaAdded(true);
+              }}
+            />
+          )}
 
           {mode === "video" && youtubeEnabled && (
             <YoutubePublish
-              url={urls[0]}
+              url={videoUrl}
               defaultTitle={defaultTitle}
               connected={youtubeConnected}
               channel={youtubeChannel}
@@ -590,7 +620,7 @@ function ResultModal({
               Gallery
             </Link>
             <a
-              href={urls[0]}
+              href={mode === "video" ? videoUrl : urls[0]}
               download
               target="_blank"
               rel="noreferrer"
@@ -601,6 +631,167 @@ function ResultModal({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function CtaEndCard({
+  videoUrl,
+  aspect,
+  brandName,
+  defaultTopic,
+  added,
+  onDone,
+}: {
+  videoUrl: string;
+  aspect: string;
+  brandName: string | null;
+  defaultTopic: string;
+  added: boolean;
+  onDone: (url: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [source, setSource] = useState<"brand" | "custom" | "ai">("brand");
+  const [headline, setHeadline] = useState("");
+  const [subline, setSubline] = useState(brandName ?? "");
+  const [duration, setDuration] = useState(3);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function add() {
+    if (busy) return;
+    setBusy(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/cta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          videoUrl,
+          aspect,
+          source,
+          durationSec: duration,
+          headline: headline.trim() || undefined,
+          subline: subline.trim() || undefined,
+          topic: defaultTopic,
+        }),
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) throw new Error(data.error || `Failed (${res.status})`);
+      onDone(data.url);
+      setOpen(false);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Couldn't add the end card.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (added && !open) {
+    return (
+      <div className="flex items-center justify-between gap-3 border-t border-slate-200 bg-emerald-50 px-4 py-3 text-sm">
+        <span className="text-emerald-700">CTA end card added ✓</span>
+        <button onClick={() => setOpen(true)} className="text-xs font-medium text-slate-600 hover:text-slate-900">
+          Redo
+        </button>
+      </div>
+    );
+  }
+
+  if (!open) {
+    return (
+      <div className="border-t border-slate-200 bg-slate-50 px-4 py-3">
+        <button
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900"
+        >
+          + Add CTA end card
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50 px-4 py-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-slate-600">CTA end card</span>
+        <button onClick={() => setOpen(false)} className="text-xs text-slate-500 hover:text-slate-900">
+          Cancel
+        </button>
+      </div>
+
+      <div className="inline-flex w-fit rounded-lg border border-slate-200 bg-white p-1 text-xs">
+        {(
+          [
+            ["brand", "Brand Kit"],
+            ["custom", "Custom"],
+            ["ai", "AI-written"],
+          ] as [typeof source, string][]
+        ).map(([s, label]) => (
+          <button
+            key={s}
+            onClick={() => setSource(s)}
+            className={`rounded-md px-3 py-1 font-medium transition ${
+              source === s ? "bg-boss-violet text-white" : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {source === "ai" ? (
+        <p className="text-xs text-slate-500">
+          Claude writes the CTA from your video&apos;s topic + Brand Kit voice. Leave the fields blank, or fill one to
+          override.
+        </p>
+      ) : source === "brand" ? (
+        <p className="text-xs text-slate-500">
+          Uses your Brand Kit colours &amp; logo. Add a headline / contact line, or leave blank for a sensible default.
+        </p>
+      ) : null}
+
+      <input
+        value={headline}
+        onChange={(e) => setHeadline(e.target.value)}
+        maxLength={60}
+        placeholder="Headline (e.g. Book a free consult)"
+        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
+      />
+      <input
+        value={subline}
+        onChange={(e) => setSubline(e.target.value)}
+        maxLength={90}
+        placeholder="Contact line (phone · site · @handle)"
+        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
+      />
+
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs text-slate-500">Length</span>
+        {[2, 3].map((d) => (
+          <button
+            key={d}
+            onClick={() => setDuration(d)}
+            className={`rounded-md px-2.5 py-1 text-xs font-medium ring-1 transition ${
+              duration === d
+                ? "bg-boss-violet text-white ring-boss-violet"
+                : "bg-white text-slate-500 ring-slate-200 hover:text-slate-700"
+            }`}
+          >
+            {d}s
+          </button>
+        ))}
+        <span className="ml-2 text-xs text-slate-400">Costs 6 credits</span>
+        <button
+          onClick={add}
+          disabled={busy}
+          className="ml-auto inline-flex items-center gap-2 rounded-lg bg-boss-gold px-4 py-2 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {busy && <Spinner />}
+          {busy ? "Adding…" : "Add end card"}
+        </button>
+      </div>
+      {err && <p className="text-xs text-red-600">{err}</p>}
     </div>
   );
 }

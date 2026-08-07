@@ -41,10 +41,11 @@ export default async function Home({
     }
   }
 
-  const [{ data: profile }, youtube, socialStatuses] = await Promise.all([
+  const [{ data: profile }, youtube, socialStatuses, { data: brandKit }] = await Promise.all([
     supabase.from("profiles").select("credits").eq("user_id", user.id).single(),
     getConnectionStatus(user.id, "youtube"),
     getConnectionStatuses(user.id, SOCIAL_PLATFORMS),
+    supabase.from("brand_kits").select("brand_name").eq("user_id", user.id).maybeSingle(),
   ]);
   const credits = profile?.credits ?? 0;
 
@@ -114,6 +115,7 @@ export default async function Home({
         youtubeConnected={youtube.connected}
         youtubeChannel={youtube.accountName}
         social={{ providersConfigured, connected, accountName }}
+        brandName={brandKit?.brand_name ?? null}
       />
       <footer className="mt-auto pt-6 text-center text-[11px] text-slate-400">
         Powered by fal.ai · image 1 credit · edit 2 · video 20 · every render is saved to your gallery
