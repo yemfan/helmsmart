@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Nav from "@/components/Nav";
 import Studio from "@/components/Studio";
+import { MarketingLanding } from "@/components/marketing/MarketingLanding";
 import { retrieveSession } from "@/lib/stripe";
 import { fulfillSession } from "@/lib/fulfill";
 import { getConnectionStatus, getConnectionStatuses } from "@/lib/social";
@@ -23,7 +23,9 @@ export default async function Home({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  // Logged-out visitors get the public marketing homepage (marketingbossai.com)
+  // instead of an immediate bounce to /login.
+  if (!user) return <MarketingLanding />;
 
   let creditsAdded: number | null = null;
   if (sp.purchased) {
