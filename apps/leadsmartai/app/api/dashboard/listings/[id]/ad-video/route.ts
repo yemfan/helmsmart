@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getListingById } from "@/lib/listings/service";
-import { falConfigured, generateOneListingClip, MAX_CLIPS } from "@/lib/listings/adVideo";
+import { falConfigured, generateOneListingClip, normalizeSeconds, MAX_CLIPS } from "@/lib/listings/adVideo";
 import type { ListingAdFacts } from "@/lib/listings/types";
 
 // One fal image-to-video render fits comfortably under the ceiling; the client
@@ -30,20 +30,41 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       );
     }
 
-    const photos = (listing.photo_urls ?? []).filter((u) => /^https?:\/\//i.test(u)).slice(0, MAX_CLIPS);
-    const total = photos.length;
-    if (total === 0) {
+    // The full set of the listing's photos — the agent's selection must be a
+    // subset of these (never animate an arbitrary URL: each clip is a paid fal
+    // render, so an open `photoUrl` would be a cost-abuse vector).
+    const listingPhotos = new Set(
+      (listing.photo_urls ?? []).filter((u) => /^https?:\/\//i.test(u)),
+    );
+    if (listingPhotos.size === 0) {
       return NextResponse.json(
         { ok: false, error: "This listing has no photos yet. Pull from a URL or add photos first." },
         { status: 400 },
       );
     }
 
-    const body = (await req.json().catch(() => ({}))) as { index?: unknown };
+    const body = (await req.json().catch(() => ({}))) as {
+      index?: unknown;
+      photoUrl?: unknown;
+      durationSec?: unknown;
+    };
     const index = typeof body.index === "number" ? body.index : 0;
-    if (index < 0 || index >= total) {
+    // Guardrail: never let the client drive more renders than the hard cap.
+    if (index < 0 || index >= MAX_CLIPS) {
       return NextResponse.json({ ok: false, error: "Clip index out of range." }, { status: 400 });
     }
+    const seconds = normalizeSeconds(body.durationSec);
+
+    // Which photo to animate: the agent's chosen one (validated against the
+    // listing), falling back to the Nth listing photo for older clients that
+    // don't send an explicit selection.
+    const orderedPhotos = [...listingPhotos];
+    const requested = typeof body.photoUrl === "string" ? body.photoUrl : "";
+    const photo = requested && listingPhotos.has(requested) ? requested : orderedPhotos[index];
+    if (!photo) {
+      return NextResponse.json({ ok: false, error: "Clip index out of range." }, { status: 400 });
+    }
+    const photos = orderedPhotos;
 
     // motionPrompt only needs a bit of context; build a light facts object.
     const facts: ListingAdFacts = {
@@ -63,8 +84,8 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     };
 
     // index 0 starts a fresh set (clears any prior clips); later indexes append.
-    const { url, clipUrls } = await generateOneListingClip(String(agentId), id, photos[index], index, facts, index === 0);
-    return NextResponse.json({ ok: true, index, total, url, clipUrls });
+    const { url, clipUrls } = await generateOneListingClip(String(agentId), id, photo, index, facts, index === 0, seconds);
+    return NextResponse.json({ ok: true, index, total: photos.length, url, clipUrls });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
     console.error("POST /api/dashboard/listings/[id]/ad-video:", err);
