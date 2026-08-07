@@ -10,6 +10,7 @@ import {
 import { stripe } from "@/lib/stripe/server";
 import { persistAgentAndProfileFromSubscription } from "@/lib/stripeSubscriptionApply";
 import { grantCredits } from "@/lib/credits/ledger";
+import { grantMonthlyCreditsForInvoice } from "@/lib/credits/subscriptionCredits";
 
 function customerIdFromSubscription(sub: Stripe.Subscription): string | null {
   const c = sub.customer;
@@ -113,6 +114,9 @@ export async function POST(req: Request) {
       case "invoice.paid": {
         const invoice = event.data.object as Stripe.Invoice;
         await markInvoicePaid(invoice);
+        // Grant the plan's monthly credits for this billing period (first
+        // invoice + every renewal), idempotent on the invoice id.
+        await grantMonthlyCreditsForInvoice(invoice);
         break;
       }
 
