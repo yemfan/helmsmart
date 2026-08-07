@@ -8,6 +8,8 @@ import {
   startVoiceCloneFromTwin,
 } from "@/lib/agent-voice/voiceClone";
 import { userHasCrmFeature, subscriptionRequiredResponse } from "@/lib/billing/subscriptionAccess";
+import { withCreditsMetered, meteringEnforced, InsufficientCreditsError } from "@/lib/credits/metering";
+import { CREDIT_COSTS } from "@/lib/credits/ledger";
 
 // Downloading the intro video + creating the ElevenLabs voice can take a bit.
 export const runtime = "nodejs";
@@ -48,11 +50,15 @@ export async function POST(req: Request) {
       }
       case "start": {
         const clean = body.clean === true;
-        // "Clean my voice" is a premium enhancement — gate server-side.
-        if (clean && !(await userHasCrmFeature(String(userId), "premium_avatar"))) {
+        // Old model: "Clean my voice" is plan-gated. New usage model (metering
+        // enforced): everything's included — the credit charge is the only gate.
+        if (clean && !meteringEnforced() && !(await userHasCrmFeature(String(userId), "premium_avatar"))) {
           return subscriptionRequiredResponse("premium_avatar");
         }
-        const state = await startVoiceCloneFromTwin(id, { clean });
+        // Reserve credits around the paid clone (no-op unless metering is on).
+        const state = await withCreditsMetered(String(userId), CREDIT_COSTS.voiceClone, "voice_clone", () =>
+          startVoiceCloneFromTwin(id, { clean }),
+        );
         return NextResponse.json({ ok: true, ...state });
       }
       case "acknowledge": {
@@ -67,6 +73,9 @@ export async function POST(req: Request) {
         return NextResponse.json({ ok: false, error: "Unknown action" }, { status: 400 });
     }
   } catch (err) {
+    if (err instanceof InsufficientCreditsError) {
+      return NextResponse.json({ ok: false, error: err.message, code: "INSUFFICIENT_CREDITS" }, { status: 402 });
+    }
     const message = err instanceof Error ? err.message : "Server error";
     console.error("POST /api/dashboard/voice-clone:", err);
     return NextResponse.json({ ok: false, error: message }, { status: 500 });

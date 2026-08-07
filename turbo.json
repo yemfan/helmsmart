@@ -51,6 +51,7 @@
         "MOBILE_*",
         "EXPO_ACCESS_TOKEN",
         "STRIPE_*",
+        "CREDIT_*",
         "PLAID_*",
         "ALLOW_*",
         "GOOGLE_*",

@@ -4,6 +4,8 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { PRODUCT_LEADSMART_AGENT } from "@/lib/entitlements/product";
 import { incrementUsage } from "./adminUsage";
 import { maybeNotifyApproachingVoiceLimit } from "./voiceLimitNotify";
+import { meterUsage } from "@/lib/credits/metering";
+import { CREDIT_COSTS } from "@/lib/credits/ledger";
 
 /**
  * Convert a call's wall-clock duration into billable AI-voice minutes.
@@ -43,6 +45,10 @@ export async function recordVoiceUsageForAgent(
   if (!userId) return 0;
 
   await incrementUsage(userId, "voice_minutes_used", PRODUCT_LEADSMART_AGENT, minutes);
+
+  // Charge the credit meter for the minutes used (usage model). No-op unless
+  // metering is enabled; never blocks — the call already happened.
+  await meterUsage(userId, CREDIT_COSTS.voicePerMinute * minutes, "voice");
 
   // Heads-up email when the agent crosses ~80% of their monthly allotment
   // (once/month, best-effort — never blocks metering).
