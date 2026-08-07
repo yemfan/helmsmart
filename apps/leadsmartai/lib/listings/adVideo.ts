@@ -2,6 +2,25 @@ import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { LISTING_AD_MAX_CLIPS, type ListingAdFacts } from "@/lib/listings/types";
+import { meterUsage } from "@/lib/credits/metering";
+import { CREDIT_COSTS } from "@/lib/credits/ledger";
+
+/**
+ * Resolve the owning auth user for a listing's `agent_id`, which may be the
+ * bigint `agents.id` or already an auth uuid. Best-effort — returns null if it
+ * can't be resolved (metering then no-ops).
+ */
+async function resolveListingOwner(agentId: string): Promise<string | null> {
+  if (/^\d+$/.test(agentId)) {
+    const { data } = await supabaseAdmin
+      .from("agents")
+      .select("auth_user_id")
+      .eq("id", Number(agentId) as never)
+      .maybeSingle();
+    return (data as { auth_user_id?: string | null } | null)?.auth_user_id ?? null;
+  }
+  return /^[0-9a-f-]{36}$/i.test(agentId) ? agentId : null;
+}
 
 /**
  * Listing ad video — Phase 2a: animate the listing's REAL photos into short
@@ -190,6 +209,14 @@ export async function generateListingClips(
     .update({ ad_clip_urls: urls, ad_clips_updated_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq("id", listingId)
     .eq("agent_id", agentId);
+
+  // Charge the credit meter for the clips that actually rendered (usage model).
+  // Post-facto + best-effort: the fal spend already happened, so this never
+  // blocks; no-op unless metering is enabled.
+  if (urls.length > 0) {
+    const ownerId = await resolveListingOwner(agentId).catch(() => null);
+    if (ownerId) await meterUsage(ownerId, urls.length * CREDIT_COSTS.listingClip, "video");
+  }
 
   return { urls, attempted: photos.length, failed };
 }
