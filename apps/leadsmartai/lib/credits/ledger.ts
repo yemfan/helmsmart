@@ -19,6 +19,7 @@ export const CREDIT_COSTS = {
   sms: 1,
   image: 1,
   ctaEndCard: 5,
+  listingClip: 5, // one cinematic clip (fal image-to-video) in a listing ad
   listingVideo: 15,
   swap: 20,
   twinAvatar: 20,
