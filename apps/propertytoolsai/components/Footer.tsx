@@ -1,7 +1,10 @@
 import Link from "next/link";
 import PropertyToolsLogo from "@/components/brand/PropertyToolsLogo";
 
-const LEADSMART_URL = process.env.NEXT_PUBLIC_LEADSMART_URL ?? "https://www.leadsmart-ai.com";
+// LeadSmart AI was renamed to CloseBoss (leadsmart-ai.com is retired / 404).
+// Use a dedicated env var so a stale NEXT_PUBLIC_LEADSMART_URL can't repoint us
+// back at the dead domain; default to the live CloseBoss host.
+const CLOSEBOSS_URL = process.env.NEXT_PUBLIC_CLOSEBOSS_URL?.trim() || "https://www.closebossai.com";
 
 const productLinks = [
   { label: "Mortgage Calculator", href: "/mortgage-calculator" },
@@ -136,17 +139,17 @@ export default function Footer() {
             <ul className="mt-4 space-y-2.5">
               <li>
                 <a
-                  href={LEADSMART_URL}
+                  href={CLOSEBOSS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-slate-600 transition-colors hover:text-[#0072ce] dark:text-slate-400 dark:hover:text-[#4da3e8]"
                 >
-                  LeadSmart AI
+                  CloseBoss
                 </a>
               </li>
               <li>
                 <a
-                  href={`${LEADSMART_URL}/pricing`}
+                  href={`${CLOSEBOSS_URL}/pricing`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-slate-600 transition-colors hover:text-[#0072ce] dark:text-slate-400 dark:hover:text-[#4da3e8]"
@@ -156,7 +159,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href={`${LEADSMART_URL}/signup`}
+                  href={`${CLOSEBOSS_URL}/signup`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-slate-600 transition-colors hover:text-[#0072ce] dark:text-slate-400 dark:hover:text-[#4da3e8]"
