@@ -329,25 +329,6 @@ export default function AuthModal({
             </button>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => void signInWithOAuth("google")}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Continue with Google
-            </button>
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => void signInWithOAuth("apple")}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Continue with Apple
-            </button>
-          </div>
-
           <form onSubmit={submit} className="space-y-3">
             {mode === "signup" ? (
               <div className="space-y-1">
@@ -454,6 +435,31 @@ export default function AuthModal({
               Not now
             </button>
           </form>
+
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-slate-200" />
+            <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">or</span>
+            <span className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => void signInWithOAuth("google")}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Continue with Google
+            </button>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => void signInWithOAuth("apple")}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Continue with Apple
+            </button>
+          </div>
         </div>
       </div>
     </div>
