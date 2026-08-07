@@ -9,6 +9,7 @@ import {
 } from "@/lib/billing/stripe-sync";
 import { stripe } from "@/lib/stripe/server";
 import { persistAgentAndProfileFromSubscription } from "@/lib/stripeSubscriptionApply";
+import { grantCredits } from "@/lib/credits/ledger";
 
 function customerIdFromSubscription(sub: Stripe.Subscription): string | null {
   const c = sub.customer;
@@ -58,6 +59,14 @@ export async function POST(req: Request) {
             checkoutPlanMeta: session.metadata?.plan ?? null,
           });
           await syncStripeSubscription(subscription);
+        } else if (session.mode === "payment" && session.metadata?.kind === "credit_topup") {
+          // One-time credit top-up — grant the purchased credits, idempotent on
+          // the session id so a re-delivered webhook can't double-credit.
+          const userId = session.metadata.user_id as string | undefined;
+          const credits = Number.parseInt(session.metadata.credits ?? "", 10);
+          if (userId && Number.isFinite(credits) && credits > 0) {
+            await grantCredits(userId, credits, "topup", session.id);
+          }
         }
         break;
       }
