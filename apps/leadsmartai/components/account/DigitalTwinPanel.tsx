@@ -41,6 +41,8 @@ type AvatarResp = Partial<AvatarState> & {
   audioUrl?: string;
   audioPath?: string;
   scheduled?: number;
+  premiumAvatar?: boolean;
+  sharpened?: boolean;
 };
 
 function toVoiceState(b: VoiceCloneResp): VoiceCloneState {
@@ -86,6 +88,9 @@ export default function DigitalTwinPanel() {
   const [avCaption, setAvCaption] = useState("");
   const [avPublishMsg, setAvPublishMsg] = useState<string | null>(null);
   const [avNeedsConnect, setAvNeedsConnect] = useState(false);
+  // Premium "Sharper video" enhancement — gated to Premium+ plans.
+  const [avPremium, setAvPremium] = useState(false);
+  const [avSharpen, setAvSharpen] = useState(false);
 
   async function publishAvatar() {
     setAvBusy("publish");
@@ -129,6 +134,7 @@ export default function DigitalTwinPanel() {
           videoUrl: b.videoUrl ?? null,
         });
         if (b.script) setAvScript(b.script);
+        setAvPremium(Boolean(b.premiumAvatar));
       }
     } catch {
       /* best-effort */
@@ -145,7 +151,9 @@ export default function DigitalTwinPanel() {
         body: JSON.stringify(
           action === "draft"
             ? { action, topic: avTopic }
-            : { action, text: avScript, audioPath: avAudioPath },
+            : action === "render"
+              ? { action, text: avScript, audioPath: avAudioPath, sharpen: avPremium && avSharpen }
+              : { action, text: avScript, audioPath: avAudioPath },
         ),
       });
       const b = (await res.json().catch(() => ({}))) as AvatarResp;
@@ -560,6 +568,28 @@ export default function DigitalTwinPanel() {
                 {avBusy === "render" ? "Rendering… (1–2 min)" : "Generate video (uses credits)"}
               </button>
             </div>
+
+            {/* Premium enhancement — gated to Premium+ plans; opt-in per render. */}
+            <label className={`flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-400"}`}>
+              <input
+                type="checkbox"
+                checked={avPremium && avSharpen}
+                disabled={!avPremium || avBusy !== null}
+                onChange={(e) => setAvSharpen(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-violet-600 disabled:opacity-50"
+              />
+              <span className="inline-flex flex-wrap items-center gap-1">
+                ✨ Sharper video
+                <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">Premium</span>
+                {avPremium ? (
+                  <span className="text-slate-400">— upscales &amp; restores the render</span>
+                ) : (
+                  <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">
+                    Upgrade to unlock
+                  </a>
+                )}
+              </span>
+            </label>
 
             {avAudioUrl ? (
               <audio controls src={avAudioUrl} className="mt-1 w-full max-w-md">

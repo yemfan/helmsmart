@@ -44,7 +44,8 @@ export type PlanFeature =
   | "custom_voice_tuning"
   | "bookkeeping"
   | "ai_calling"
-  | "social_customization";
+  | "social_customization"
+  | "premium_avatar";
 
 export type BillingCadence = "monthly" | "annual";
 
@@ -131,6 +132,7 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
       "top_producer_track_coaching",
       "bookkeeping",
       "ai_calling",
+      "premium_avatar",
     ],
     // STRIPE_PRICE_ID_PREMIUM with fallback to STRIPE_PRICE_ID_ELITE
     // is handled in crmStripePrices.ts so existing deployments don't
@@ -161,6 +163,7 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
       "bookkeeping",
       "ai_calling",
       "social_customization",
+      "premium_avatar",
     ],
     stripePriceEnvVar: "STRIPE_PRICE_ID_SIGNATURE",
     stripePriceEnvVarAnnual: "STRIPE_PRICE_ID_SIGNATURE_ANNUAL",
@@ -185,6 +188,7 @@ export const PLANS: Record<PlanSlug, PlanDefinition> = {
       "bookkeeping",
       "ai_calling",
       "social_customization",
+      "premium_avatar",
     ],
     // Team is sales-assisted (per-seat, brokerage terms) — no self-serve
     // checkout, so no STRIPE_PRICE_ID_TEAM* env vars are needed. The pricing UI
