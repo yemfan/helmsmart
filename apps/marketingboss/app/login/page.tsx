@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { PublicNav } from "@/components/marketing/PublicNav";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -45,7 +46,9 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-5 py-12">
+    <>
+    <PublicNav />
+    <main className="mx-auto flex min-h-[calc(100dvh-3.5rem)] max-w-sm flex-col justify-center px-5 py-12">
       <div className="mb-8 text-center">
         <div className="mx-auto mb-3 grid size-12 place-items-center rounded-2xl bg-boss-violet/15 text-xl font-black text-boss-gold ring-1 ring-slate-200">
           M
@@ -102,5 +105,6 @@ export default function LoginPage() {
         </button>
       </form>
     </main>
+    </>
   );
 }

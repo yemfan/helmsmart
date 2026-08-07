@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { PublicNav } from "@/components/marketing/PublicNav";
+import { PublicFooter } from "@/components/marketing/PublicFooter";
 
 export const metadata = {
   title: "Terms of Service — MarketingBoss",
@@ -10,11 +12,10 @@ const CONTACT = "contact@marketingbossai.com";
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-5 py-10 sm:py-14">
+    <>
+    <PublicNav />
+    <main className="mx-auto flex max-w-3xl flex-col gap-6 px-5 py-10 sm:py-14">
       <header className="flex flex-col gap-1">
-        <Link href="/" className="text-xs text-slate-500 transition hover:text-slate-900">
-          ← MarketingBoss
-        </Link>
         <h1 className="text-3xl font-bold tracking-tight">Terms of Service</h1>
         <p className="text-sm text-slate-500">Last updated: {UPDATED}</p>
       </header>
@@ -109,6 +110,8 @@ export default function TermsPage() {
         .
       </footer>
     </main>
+    <PublicFooter />
+    </>
   );
 }
 
