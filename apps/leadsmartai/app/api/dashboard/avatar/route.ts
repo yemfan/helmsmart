@@ -8,6 +8,7 @@ import {
   publishAvatarVideo,
   renderAvatarVideo,
 } from "@/lib/agent/avatarStudio";
+import { userHasCrmFeature, subscriptionRequiredResponse } from "@/lib/billing/subscriptionAccess";
 
 // The lipsync render can take a couple of minutes.
 export const runtime = "nodejs";
@@ -16,9 +17,12 @@ export const maxDuration = 300;
 /** GET — current avatar-studio state (readiness + last script/video). */
 export async function GET() {
   try {
-    const { agentId } = await getCurrentAgentContext();
-    const state = await getAvatarState(String(agentId));
-    return NextResponse.json({ ok: true, ...state });
+    const { agentId, userId } = await getCurrentAgentContext();
+    const [state, premiumAvatar] = await Promise.all([
+      getAvatarState(String(agentId)),
+      userHasCrmFeature(String(userId), "premium_avatar").catch(() => false),
+    ]);
+    return NextResponse.json({ ok: true, ...state, premiumAvatar });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
@@ -34,7 +38,7 @@ export async function GET() {
  */
 export async function POST(req: Request) {
   try {
-    const { agentId } = await getCurrentAgentContext();
+    const { agentId, userId } = await getCurrentAgentContext();
     const id = String(agentId);
 
     if (!avatarConfigured()) {
@@ -50,6 +54,7 @@ export async function POST(req: Request) {
       text?: unknown;
       audioPath?: unknown;
       caption?: unknown;
+      sharpen?: unknown;
     };
     const action = typeof body.action === "string" ? body.action : "";
     const text = typeof body.text === "string" ? body.text : "";
@@ -66,7 +71,13 @@ export async function POST(req: Request) {
       }
       case "render": {
         const audioPath = typeof body.audioPath === "string" ? body.audioPath : null;
-        const out = await renderAvatarVideo(id, text, audioPath);
+        const sharpen = body.sharpen === true;
+        // "Sharper video" is a premium enhancement — gate server-side so the
+        // client can't bypass the entitlement even if the toggle is forced on.
+        if (sharpen && !(await userHasCrmFeature(String(userId), "premium_avatar"))) {
+          return subscriptionRequiredResponse("premium_avatar");
+        }
+        const out = await renderAvatarVideo(id, text, audioPath, { sharpen });
         return NextResponse.json({ ok: true, ...out });
       }
       case "publish": {

@@ -24,6 +24,8 @@ import type { BrandProfile } from "@/lib/agent/digitalTwin";
 
 const FAL_QUEUE = "https://queue.fal.run";
 const LIPSYNC = "fal-ai/sync-lipsync/v2/pro";
+// Premium "Sharper video" pass — RealESRGAN per-frame video upscale/restore.
+const FAL_UPSCALE = "fal-ai/video-upscaler";
 const PRIVATE_BUCKET = "lead-media";
 const PUBLIC_BUCKET = "social-images";
 const ELEVEN_TTS = "https://api.elevenlabs.io/v1/text-to-speech";
@@ -190,11 +192,39 @@ async function pollFal(statusUrl: string, responseUrl: string, headers: Record<s
  * previously-approved `audioPath` isn't supplied, then fal-lipsyncs it onto the
  * agent's intro video. Persists the finished clip to the public social bucket.
  */
+/**
+ * Premium "Sharper video" pass: upscale/restore the finished clip via fal
+ * video-upscaler. Best-effort — the caller falls back to the base video on any
+ * failure, so this never blocks a render.
+ */
+async function upscaleVideo(url: string): Promise<string> {
+  const H = falHeaders();
+  const sub = await fetch(`${FAL_QUEUE}/${FAL_UPSCALE}`, {
+    method: "POST",
+    headers: H,
+    body: JSON.stringify({ video_url: url }),
+  });
+  const q = (await sub.json().catch(() => ({}))) as {
+    request_id?: string;
+    status_url?: string;
+    response_url?: string;
+    detail?: string;
+  };
+  if (!sub.ok) throw new Error(`Upscale submit ${sub.status}: ${q.detail || ""}`);
+  const statusUrl = q.status_url || `${FAL_QUEUE}/${FAL_UPSCALE}/requests/${q.request_id}/status`;
+  const responseUrl = q.response_url || `${FAL_QUEUE}/${FAL_UPSCALE}/requests/${q.request_id}`;
+  const out = (await pollFal(statusUrl, responseUrl, H)) as { video?: { url?: string }; url?: string };
+  const outUrl = out.video?.url || out.url;
+  if (!outUrl) throw new Error("Upscale returned no video.");
+  return outUrl;
+}
+
 export async function renderAvatarVideo(
   agentId: string,
   text: string,
   audioPath: string | null,
-): Promise<{ videoUrl: string }> {
+  options?: { sharpen?: boolean },
+): Promise<{ videoUrl: string; sharpened?: boolean }> {
   if (!avatarConfigured()) throw new Error("Avatar isn't configured (needs FAL_KEY + ELEVENLABS_API_KEY).");
   await clonedVoiceId(agentId); // consent/ready guard
 
@@ -237,8 +267,21 @@ export async function renderAvatarVideo(
   const resultUrl = out.video?.url;
   if (!resultUrl) throw new Error("Render returned no video.");
 
+  // Premium "Sharper video": best-effort upscale/restore; fall back to the base
+  // clip if it fails so a render never breaks on the enhancement.
+  let finalUrl = resultUrl;
+  let sharpened = false;
+  if (options?.sharpen) {
+    try {
+      finalUrl = await upscaleVideo(resultUrl);
+      sharpened = true;
+    } catch (e) {
+      console.warn("[avatar] sharpen/upscale failed, using base video:", e instanceof Error ? e.message : e);
+    }
+  }
+
   // Persist to our public bucket so the URL is durable + shareable.
-  const dl = await fetch(resultUrl);
+  const dl = await fetch(finalUrl);
   if (!dl.ok) throw new Error("Could not download the rendered video.");
   const bytes = Buffer.from(await dl.arrayBuffer());
   const outPath = `avatars/${agentId}/${crypto.randomUUID()}.mp4`;
@@ -249,7 +292,7 @@ export async function renderAvatarVideo(
   const publicUrl = supabaseAdmin.storage.from(PUBLIC_BUCKET).getPublicUrl(outPath).data.publicUrl;
 
   await setAgent(agentId, { dt_avatar_video_url: publicUrl, dt_avatar_script: text.trim().slice(0, 1200) });
-  return { videoUrl: publicUrl };
+  return { videoUrl: publicUrl, sharpened };
 }
 
 /** Claude writes a social caption for the talking-head clip from its script. */
