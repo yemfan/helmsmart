@@ -66,6 +66,15 @@ export default function Autopilot({
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Inline editor for an existing campaign's settings.
+  const [editId, setEditId] = useState<string | null>(null);
+  const [eName, setEName] = useState("");
+  const [eFreq, setEFreq] = useState(3);
+  const [eMedia, setEMedia] = useState<Set<string>>(new Set());
+  const [eChannels, setEChannels] = useState<Set<string>>(new Set());
+  const [eBudget, setEBudget] = useState("");
+  const [eMode, setEMode] = useState<"review" | "auto">("review");
+
   function toggle(set: Set<string>, setter: (s: Set<string>) => void, v: string) {
     const next = new Set(set);
     if (next.has(v)) next.delete(v);
@@ -154,6 +163,47 @@ export default function Autopilot({
     try {
       await fetch(`/api/autopilot/campaigns/${id}`, { method: "DELETE" });
       router.refresh();
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  function startEdit(c: Campaign) {
+    setEditId(c.id);
+    setEName(c.name || "");
+    setEFreq(c.frequency);
+    setEMedia(new Set(c.media_types));
+    setEChannels(new Set(c.channels));
+    setEBudget(c.budget_credits != null ? String(c.budget_credits) : "");
+    setEMode(c.mode);
+    setError(null);
+  }
+
+  async function saveEdit(id: string) {
+    if (busyId) return;
+    if (eMedia.size === 0) return setError("Pick at least one content type.");
+    if (eChannels.size === 0) return setError("Pick at least one channel.");
+    setBusyId(id);
+    setError(null);
+    try {
+      const res = await fetch(`/api/autopilot/campaigns/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: eName.trim() || undefined,
+          frequency: eFreq,
+          mediaTypes: [...eMedia],
+          channels: [...eChannels],
+          budgetCredits: eBudget.trim() === "" ? null : Number(eBudget),
+          mode: eMode,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) throw new Error(data.error || "Save failed.");
+      setEditId(null);
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not save changes.");
     } finally {
       setBusyId(null);
     }
@@ -376,6 +426,13 @@ export default function Autopilot({
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <button
+                    onClick={() => (editId === c.id ? setEditId(null) : startEdit(c))}
+                    disabled={busyId === c.id}
+                    className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+                  >
+                    {editId === c.id ? "Close" : "Edit"}
+                  </button>
+                  <button
                     onClick={() => setStatus(c.id, c.status === "active" ? "paused" : "active")}
                     disabled={busyId === c.id}
                     className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
@@ -406,6 +463,133 @@ export default function Autopilot({
                   </>
                 )}
               </div>
+
+              {editId === c.id && (
+                <div className="mt-3 flex flex-col gap-3 border-t border-slate-100 pt-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="flex flex-col gap-1">
+                      <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Campaign name</span>
+                      <input value={eName} onChange={(e) => setEName(e.target.value)} className={fieldCls} />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Posts per week</span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={21}
+                        value={eFreq}
+                        onChange={(e) => setEFreq(Math.min(Math.max(Number(e.target.value) || 1, 1), 21))}
+                        className={fieldCls}
+                      />
+                    </label>
+                  </div>
+
+                  <div>
+                    <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">Content types</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {MEDIA_TYPES.map((m) => {
+                        const on = eMedia.has(m.id);
+                        return (
+                          <button
+                            key={m.id}
+                            onClick={() => toggle(eMedia, setEMedia, m.id)}
+                            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                              on
+                                ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold"
+                                : "border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            {on ? "✓ " : ""}
+                            {m.emoji} {m.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">Channels</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {channels.map((ch) => {
+                        if (!ch.connected) {
+                          return (
+                            <a
+                              key={ch.id}
+                              href="/connections"
+                              className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-400 transition hover:text-slate-700"
+                            >
+                              + {ch.label}
+                            </a>
+                          );
+                        }
+                        const on = eChannels.has(ch.id);
+                        return (
+                          <button
+                            key={ch.id}
+                            onClick={() => toggle(eChannels, setEChannels, ch.id)}
+                            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                              on
+                                ? "border-boss-gold/50 bg-boss-gold/15 text-boss-gold"
+                                : "border-slate-200 bg-slate-50 text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            {on ? "✓ " : ""}
+                            {ch.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="flex flex-col gap-1">
+                      <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Credit budget (optional)</span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={eBudget}
+                        onChange={(e) => setEBudget(e.target.value)}
+                        placeholder="Uncapped"
+                        className={fieldCls}
+                      />
+                    </label>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Autonomy</span>
+                      <div className="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-sm">
+                        {(["review", "auto"] as const).map((m) => (
+                          <button
+                            key={m}
+                            onClick={() => setEMode(m)}
+                            className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium capitalize transition ${
+                              eMode === m ? "bg-boss-violet text-white shadow" : "text-slate-600 hover:text-slate-900"
+                            }`}
+                          >
+                            {m === "review" ? "Review first" : "Full auto"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => setEditId(null)}
+                      disabled={busyId === c.id}
+                      className="rounded-lg border border-slate-200 px-4 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 disabled:opacity-40"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => saveEdit(c.id)}
+                      disabled={busyId === c.id}
+                      className="inline-flex items-center gap-2 rounded-lg bg-boss-gold px-4 py-1.5 text-xs font-semibold text-black transition hover:brightness-105 disabled:opacity-40"
+                    >
+                      {busyId === c.id && <Spinner />}
+                      Save changes
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </section>

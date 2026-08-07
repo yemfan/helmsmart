@@ -198,6 +198,28 @@ export async function setCampaignFrequency(userId: string, id: string, frequency
   if (error) throw new Error(error.message);
 }
 
+/** Edit a campaign's settings (name, cadence, content types, channels, budget, mode). */
+export async function updateCampaignSettings(
+  userId: string,
+  id: string,
+  fields: {
+    name?: string;
+    frequency?: number;
+    media_types?: string[];
+    channels?: string[];
+    budget_credits?: number | null;
+    mode?: CampaignMode;
+  },
+): Promise<void> {
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("campaigns")
+    .update({ ...fields, updated_at: new Date().toISOString() })
+    .eq("user_id", userId)
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
 export type PlannedPostRow = {
   type: "text" | "image" | "video";
   angle: string;

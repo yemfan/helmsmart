@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { deleteCampaign, setCampaignFrequency, setCampaignStatus } from "@/lib/campaigns";
+import { deleteCampaign, setCampaignStatus, updateCampaignSettings } from "@/lib/campaigns";
 
 export const runtime = "nodejs";
 
-/** Pause / resume a campaign, or change its posting cadence. */
+const MEDIA = new Set(["text", "image", "video"]);
+
+/** Pause / resume a campaign, or edit its settings (cadence, types, channels, budget, mode, name). */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
@@ -24,8 +26,29 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (body.status === "paused" || body.status === "active") {
       await setCampaignStatus(user.id, id, body.status);
     }
+
+    // Collect any settings fields present into one update.
+    const fields: Parameters<typeof updateCampaignSettings>[2] = {};
+    if (typeof body.name === "string" && body.name.trim()) fields.name = body.name.trim().slice(0, 120);
     if (typeof body.frequency === "number") {
-      await setCampaignFrequency(user.id, id, Math.min(Math.max(Math.round(body.frequency), 1), 21));
+      fields.frequency = Math.min(Math.max(Math.round(body.frequency), 1), 21);
+    }
+    if (Array.isArray(body.mediaTypes)) {
+      const types = body.mediaTypes.filter((t): t is string => typeof t === "string" && MEDIA.has(t));
+      if (types.length > 0) fields.media_types = types;
+    }
+    if (Array.isArray(body.channels)) {
+      const chans = body.channels.filter((c): c is string => typeof c === "string" && c.length > 0);
+      if (chans.length > 0) fields.channels = chans;
+    }
+    if (body.mode === "review" || body.mode === "auto") fields.mode = body.mode;
+    if ("budgetCredits" in body) {
+      const b = body.budgetCredits;
+      fields.budget_credits = typeof b === "number" && b >= 0 ? Math.round(b) : null;
+    }
+
+    if (Object.keys(fields).length > 0) {
+      await updateCampaignSettings(user.id, id, fields);
     }
     return NextResponse.json({ ok: true });
   } catch (e) {
