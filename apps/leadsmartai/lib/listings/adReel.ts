@@ -169,17 +169,24 @@ export async function publishListingReel(
 ): Promise<{ scheduled: number; error?: string }> {
   const { data } = await supabaseAdmin
     .from("listings")
-    .select("ad_reel_url, ad_reel_caption, ad_reel_status")
+    .select("ad_reel_url, ad_reel_voiced_url, ad_reel_caption, ad_reel_status")
     .eq("id", listingId)
     .eq("agent_id", agentId)
     .maybeSingle();
-  const l = data as { ad_reel_url: string | null; ad_reel_caption: string | null; ad_reel_status: string | null } | null;
+  const l = data as {
+    ad_reel_url: string | null;
+    ad_reel_voiced_url: string | null;
+    ad_reel_caption: string | null;
+    ad_reel_status: string | null;
+  } | null;
   if (!l?.ad_reel_url || l.ad_reel_status !== "ready") throw new Error("Build the video ad first.");
+  // Post the voiced cut when the agent added one; fall back to the silent tour.
+  const videoToPost = l.ad_reel_voiced_url?.trim() || l.ad_reel_url;
 
   const caption = (captionOverride?.trim() || l.ad_reel_caption || "").slice(0, 800);
   const { data: reelRow, error } = await supabaseAdmin
     .from("social_reels")
-    .insert({ agent_id: Number(agentId), slides: [], caption, hashtags: [], mp4_url: l.ad_reel_url, status: "rendered" } as never)
+    .insert({ agent_id: Number(agentId), slides: [], caption, hashtags: [], mp4_url: videoToPost, status: "rendered" } as never)
     .select("id")
     .single();
   if (error || !reelRow) throw new Error(error?.message ?? "Could not queue the ad for posting.");
