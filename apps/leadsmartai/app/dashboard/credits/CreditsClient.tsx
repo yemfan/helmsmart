@@ -14,6 +14,7 @@ export default function CreditsClient() {
   const [balance, setBalance] = useState<number | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [portalBusy, setPortalBusy] = useState(false);
 
   const loadBalance = useCallback(async () => {
     try {
@@ -28,6 +29,20 @@ export default function CreditsClient() {
   useEffect(() => {
     void loadBalance();
   }, [loadBalance]);
+
+  async function openPortal() {
+    setPortalBusy(true);
+    setError(null);
+    try {
+      const r = await fetch("/api/billing/portal", { method: "POST", credentials: "include" });
+      const j = (await r.json().catch(() => ({}))) as { url?: string; error?: string };
+      if (!r.ok || !j.url) throw new Error(j.error || "Couldn't open the billing portal.");
+      window.location.href = j.url;
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Couldn't open the billing portal.");
+      setPortalBusy(false);
+    }
+  }
 
   async function go(url: string, body: unknown, key: string) {
     setBusy(key);
@@ -144,6 +159,19 @@ export default function CreditsClient() {
           ))}
         </div>
       </section>
+
+      {/* Manage billing / invoices (Stripe portal) */}
+      <div className="border-t border-gray-100 pt-4">
+        <button
+          type="button"
+          onClick={() => void openPortal()}
+          disabled={portalBusy}
+          className="text-xs font-medium underline hover:no-underline disabled:opacity-60"
+          style={{ color: BRAND }}
+        >
+          {portalBusy ? "Opening…" : "Manage billing & invoices →"}
+        </button>
+      </div>
     </div>
   );
 }
