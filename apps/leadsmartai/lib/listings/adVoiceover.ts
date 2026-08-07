@@ -107,8 +107,9 @@ async function synthVoice(voiceId: string, text: string): Promise<Buffer> {
     headers: { "xi-api-key": key, "Content-Type": "application/json", Accept: "audio/mpeg" },
     body: JSON.stringify({
       text: text.slice(0, 2500),
-      model_id: "eleven_multilingual_v2",
-      voice_settings: { stability: 0.5, similarity_boost: 0.8 },
+      // Overridable model (default GA); expressive settings — same cost, one call.
+      model_id: process.env.ELEVENLABS_TTS_MODEL?.trim() || "eleven_multilingual_v2",
+      voice_settings: { stability: 0.4, similarity_boost: 0.85, style: 0.35, use_speaker_boost: true },
     }),
   });
   if (!res.ok) {

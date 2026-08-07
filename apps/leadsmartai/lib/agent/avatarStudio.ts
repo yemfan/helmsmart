@@ -145,8 +145,13 @@ export async function previewAvatarVoice(
     headers: { "xi-api-key": key, "Content-Type": "application/json", Accept: "audio/mpeg" },
     body: JSON.stringify({
       text: clean.slice(0, 2500),
-      model_id: "eleven_multilingual_v2",
-      voice_settings: { stability: 0.5, similarity_boost: 0.8 },
+      // Model is overridable so the newest ElevenLabs model (e.g. eleven_v3) can
+      // be switched on with an env change, no redeploy of logic. Default stays a
+      // GA model so a missing/misset var can never break synthesis.
+      model_id: process.env.ELEVENLABS_TTS_MODEL?.trim() || "eleven_multilingual_v2",
+      // More expressive delivery: a touch of style + speaker boost, slightly
+      // looser stability, higher similarity for fidelity to the cloned voice.
+      voice_settings: { stability: 0.4, similarity_boost: 0.85, style: 0.35, use_speaker_boost: true },
     }),
   });
   if (!res.ok) {
