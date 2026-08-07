@@ -44,6 +44,14 @@ const legalLinks = [
   { key: "link.terms_of_service", en: "Terms of Service", href: "/terms" },
 ];
 
+// Sibling businesses under MAXY Investment — cross-promoted in every footer.
+// This app is CloseBoss, so it links to the other three.
+const PARTNERS = [
+  { label: "Property Tools AI", blurb: "Real estate tools & data", href: "https://www.propertytoolsai.com" },
+  { label: "HelmSmart", blurb: "AI operating system for business", href: "https://helmsmart.ai" },
+  { label: "MarketingBoss", blurb: "AI marketing creative", href: "https://marketingbossai.com" },
+];
+
 type FooterLink = { key: string; en: string; href: string };
 
 export default function Footer() {
@@ -78,6 +86,27 @@ export default function Footer() {
           {column("footer.company", "Company", companyLinks)}
           {column("footer.resources", "Resources", resourceLinks)}
           {column("footer.legal", "Legal", legalLinks)}
+        </div>
+
+        {/* Business partners — our sibling products */}
+        <div className="mt-10 border-t border-slate-200/80 pt-6 dark:border-slate-800">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            {t("footer.partners", { defaultValue: "Business partners" })}
+          </h3>
+          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+            {PARTNERS.map((p) => (
+              <li key={p.href}>
+                <a
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-slate-600 transition-colors hover:text-[#0072ce] dark:text-slate-400 dark:hover:text-[#4da3e8]"
+                >
+                  {p.label} <span className="text-slate-400 dark:text-slate-500">· {p.blurb}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Bottom bar */}

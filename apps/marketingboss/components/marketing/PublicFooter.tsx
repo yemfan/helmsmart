@@ -1,5 +1,13 @@
 import Link from "next/link";
 
+// Sibling businesses under MAXY Investment — cross-promoted in every footer.
+// This app is MarketingBoss, so it links to the other three.
+const PARTNERS = [
+  { label: "Property Tools AI", blurb: "Real estate tools & data", href: "https://www.propertytoolsai.com" },
+  { label: "HelmSmart", blurb: "AI operating system for business", href: "https://helmsmart.ai" },
+  { label: "CloseBoss", blurb: "Your AI real estate team", href: "https://www.closebossai.com" },
+];
+
 /**
  * Public marketing footer for marketingbossai.com. Mirrors the CloseBoss
  * footer's column + legal-line shape in MarketingBoss's own brand.
@@ -42,6 +50,25 @@ export function PublicFooter() {
               { label: "Terms of Service", href: "/terms" },
             ]}
           />
+        </div>
+
+        {/* Business partners — our sibling products */}
+        <div className="mt-10 border-t border-line/80 pt-6">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-3">Business partners</h3>
+          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+            {PARTNERS.map((p) => (
+              <li key={p.href}>
+                <a
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-ink-3 transition-colors hover:text-boss-violet"
+                >
+                  {p.label} <span className="text-slate-400">· {p.blurb}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="mt-10 flex flex-col items-start justify-between gap-2 border-t border-line/80 pt-6 text-xs text-ink-3 sm:flex-row sm:items-center">

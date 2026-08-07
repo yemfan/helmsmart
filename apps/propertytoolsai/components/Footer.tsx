@@ -35,6 +35,14 @@ const legalLinks = [
   { label: "Do Not Sell My Info", href: "/privacy#ccpa" },
 ];
 
+// Sibling businesses under MAXY Investment — cross-promoted in every footer.
+// This app is Property Tools AI, so it links to the other three.
+const PARTNERS = [
+  { label: "HelmSmart", blurb: "AI operating system for business", href: "https://helmsmart.ai" },
+  { label: "CloseBoss", blurb: "Your AI real estate team", href: "https://www.closebossai.com" },
+  { label: "MarketingBoss", blurb: "AI marketing creative", href: "https://marketingbossai.com" },
+];
+
 export default function Footer() {
   return (
     <footer className="mt-16 border-t border-slate-200/80 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
@@ -160,8 +168,29 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Business partners — our sibling products */}
+        <div className="mt-10 border-t border-slate-200/80 pt-6 dark:border-slate-800">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Business partners
+          </h3>
+          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+            {PARTNERS.map((p) => (
+              <li key={p.href}>
+                <a
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-slate-600 transition-colors hover:text-[#0072ce] dark:text-slate-400 dark:hover:text-[#4da3e8]"
+                >
+                  {p.label} <span className="text-slate-400 dark:text-slate-500">· {p.blurb}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         {/* Bottom bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200/80 pt-8 sm:flex-row dark:border-slate-800">
+        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-slate-200/80 pt-8 sm:flex-row dark:border-slate-800">
           {/* Brand — single horizontal lockup (TOM BF-021: the previous
               "PT" monogram stacked with the wordmark read as two logos).
               Tagline moved next to the lockup as a single visual unit. */}
