@@ -14,7 +14,7 @@
 
 /** What each real-cost action spends. SMS is bundled (fair-use), never charged. */
 export const CREDIT_COSTS = {
-  voicePerMinute: 5, // AI phone call, per billable minute (~$0.10 cost)
+  voicePerMinute: 8, // AI phone call, per billable minute (Retell all-in ~$0.15/min)
   image: 0, // social images render via next/og — no marginal cost
   ctaEndCard: 5,
   listingClip: 15, // one cinematic clip (fal Kling image-to-video, ~$0.30)
