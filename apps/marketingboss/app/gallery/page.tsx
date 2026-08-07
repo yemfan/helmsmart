@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Nav from "@/components/Nav";
+import GalleryGrid from "@/components/GalleryGrid";
 
 type Generation = {
   id: string;
@@ -47,34 +48,7 @@ export default async function GalleryPage() {
           and generate something.
         </div>
       ) : (
-        <section className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {items.map((g) => (
-            <figure
-              key={g.id}
-              className="group overflow-hidden rounded-xl border border-slate-200 bg-white"
-              title={g.prompt}
-            >
-              {g.type === "video" ? (
-                <video src={g.media_url} muted loop playsInline className="aspect-video w-full object-cover" />
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={g.media_url} alt={g.prompt} className="aspect-video w-full object-cover" />
-              )}
-              <figcaption className="flex items-center justify-between gap-2 px-2.5 py-1.5 text-[11px] text-slate-500">
-                <span className="capitalize">{g.type}</span>
-                <a
-                  href={g.media_url}
-                  download
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-medium text-boss-gold opacity-0 transition group-hover:opacity-100"
-                >
-                  ↓
-                </a>
-              </figcaption>
-            </figure>
-          ))}
-        </section>
+        <GalleryGrid items={items} />
       )}
     </main>
   );
