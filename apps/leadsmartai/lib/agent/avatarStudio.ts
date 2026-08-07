@@ -26,6 +26,10 @@ const FAL_QUEUE = "https://queue.fal.run";
 const LIPSYNC = "fal-ai/sync-lipsync/v2/pro";
 // Premium "Sharper video" pass — RealESRGAN per-frame video upscale/restore.
 const FAL_UPSCALE = "fal-ai/video-upscaler";
+// Premium "Lifelike avatar" — a portrait frame from the intro video (extract-frame)
+// driven by the voice into a talking avatar (Fabric), vs lipsync onto the clip.
+const FAL_EXTRACT_FRAME = "fal-ai/ffmpeg-api/extract-frame";
+const FAL_FABRIC = "veed/fabric-1.0";
 const PRIVATE_BUCKET = "lead-media";
 const PUBLIC_BUCKET = "social-images";
 const ELEVEN_TTS = "https://api.elevenlabs.io/v1/text-to-speech";
@@ -219,12 +223,61 @@ async function upscaleVideo(url: string): Promise<string> {
   return outUrl;
 }
 
+/** Extract a still portrait frame from the intro video (fal ffmpeg extract-frame). */
+async function extractPortrait(videoUrl: string): Promise<string> {
+  const H = falHeaders();
+  const sub = await fetch(`${FAL_QUEUE}/${FAL_EXTRACT_FRAME}`, {
+    method: "POST",
+    headers: H,
+    body: JSON.stringify({ video_url: videoUrl, frame_type: "middle" }),
+  });
+  const q = (await sub.json().catch(() => ({}))) as {
+    request_id?: string;
+    status_url?: string;
+    response_url?: string;
+    detail?: string;
+  };
+  if (!sub.ok) throw new Error(`Frame extract ${sub.status}: ${q.detail || ""}`);
+  const statusUrl = q.status_url || `${FAL_QUEUE}/${FAL_EXTRACT_FRAME}/requests/${q.request_id}/status`;
+  const responseUrl = q.response_url || `${FAL_QUEUE}/${FAL_EXTRACT_FRAME}/requests/${q.request_id}`;
+  const out = (await pollFal(statusUrl, responseUrl, H)) as {
+    images?: { url?: string }[];
+    image?: { url?: string };
+  };
+  const url = out.images?.find((i) => i?.url)?.url || out.image?.url;
+  if (!url) throw new Error("Frame extraction returned no image.");
+  return url;
+}
+
+/** Photo-to-avatar: portrait + voice → a lifelike talking video (fal Fabric). */
+async function fabricAvatar(imageUrl: string, audioUrl: string): Promise<string> {
+  const H = falHeaders();
+  const sub = await fetch(`${FAL_QUEUE}/${FAL_FABRIC}`, {
+    method: "POST",
+    headers: H,
+    body: JSON.stringify({ image_url: imageUrl, audio_url: audioUrl, resolution: "720p" }),
+  });
+  const q = (await sub.json().catch(() => ({}))) as {
+    request_id?: string;
+    status_url?: string;
+    response_url?: string;
+    detail?: string;
+  };
+  if (!sub.ok) throw new Error(`Avatar render ${sub.status}: ${q.detail || ""}`);
+  const statusUrl = q.status_url || `${FAL_QUEUE}/${FAL_FABRIC}/requests/${q.request_id}/status`;
+  const responseUrl = q.response_url || `${FAL_QUEUE}/${FAL_FABRIC}/requests/${q.request_id}`;
+  const out = (await pollFal(statusUrl, responseUrl, H)) as { video?: { url?: string } };
+  const url = out.video?.url;
+  if (!url) throw new Error("Avatar render returned no video.");
+  return url;
+}
+
 export async function renderAvatarVideo(
   agentId: string,
   text: string,
   audioPath: string | null,
-  options?: { sharpen?: boolean },
-): Promise<{ videoUrl: string; sharpened?: boolean }> {
+  options?: { sharpen?: boolean; photoAvatar?: boolean },
+): Promise<{ videoUrl: string; sharpened?: boolean; photoAvatar?: boolean }> {
   if (!avatarConfigured()) throw new Error("Avatar isn't configured (needs FAL_KEY + ELEVENLABS_API_KEY).");
   await clonedVoiceId(agentId); // consent/ready guard
 
@@ -247,25 +300,34 @@ export async function renderAvatarVideo(
   if (vErr || !v?.signedUrl) throw new Error("Could not read your intro video.");
   if (aErr || !a?.signedUrl) throw new Error("Could not read the voice audio.");
 
-  const H = falHeaders();
-  const sub = await fetch(`${FAL_QUEUE}/${LIPSYNC}`, {
-    method: "POST",
-    headers: H,
-    body: JSON.stringify({ video_url: v.signedUrl, audio_url: a.signedUrl, sync_mode: "loop" }),
-  });
-  const q = (await sub.json().catch(() => ({}))) as {
-    request_id?: string;
-    status_url?: string;
-    response_url?: string;
-    detail?: string;
-  };
-  if (!sub.ok) throw new Error(`Render submit ${sub.status}: ${q.detail || ""}`);
-
-  const statusUrl = q.status_url || `${FAL_QUEUE}/${LIPSYNC}/requests/${q.request_id}/status`;
-  const responseUrl = q.response_url || `${FAL_QUEUE}/${LIPSYNC}/requests/${q.request_id}`;
-  const out = (await pollFal(statusUrl, responseUrl, H)) as { video?: { url?: string } };
-  const resultUrl = out.video?.url;
-  if (!resultUrl) throw new Error("Render returned no video.");
+  let resultUrl: string;
+  const photoAvatar = Boolean(options?.photoAvatar);
+  if (photoAvatar) {
+    // Lifelike avatar: a portrait frame from the intro video + the voice →
+    // a talking avatar with head motion (Fabric), instead of lipsync-on-clip.
+    const portrait = await extractPortrait(v.signedUrl);
+    resultUrl = await fabricAvatar(portrait, a.signedUrl);
+  } else {
+    const H = falHeaders();
+    const sub = await fetch(`${FAL_QUEUE}/${LIPSYNC}`, {
+      method: "POST",
+      headers: H,
+      body: JSON.stringify({ video_url: v.signedUrl, audio_url: a.signedUrl, sync_mode: "loop" }),
+    });
+    const q = (await sub.json().catch(() => ({}))) as {
+      request_id?: string;
+      status_url?: string;
+      response_url?: string;
+      detail?: string;
+    };
+    if (!sub.ok) throw new Error(`Render submit ${sub.status}: ${q.detail || ""}`);
+    const statusUrl = q.status_url || `${FAL_QUEUE}/${LIPSYNC}/requests/${q.request_id}/status`;
+    const responseUrl = q.response_url || `${FAL_QUEUE}/${LIPSYNC}/requests/${q.request_id}`;
+    const out = (await pollFal(statusUrl, responseUrl, H)) as { video?: { url?: string } };
+    const url = out.video?.url;
+    if (!url) throw new Error("Render returned no video.");
+    resultUrl = url;
+  }
 
   // Premium "Sharper video": best-effort upscale/restore; fall back to the base
   // clip if it fails so a render never breaks on the enhancement.
@@ -292,7 +354,7 @@ export async function renderAvatarVideo(
   const publicUrl = supabaseAdmin.storage.from(PUBLIC_BUCKET).getPublicUrl(outPath).data.publicUrl;
 
   await setAgent(agentId, { dt_avatar_video_url: publicUrl, dt_avatar_script: text.trim().slice(0, 1200) });
-  return { videoUrl: publicUrl, sharpened };
+  return { videoUrl: publicUrl, sharpened, photoAvatar };
 }
 
 /** Claude writes a social caption for the talking-head clip from its script. */

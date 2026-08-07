@@ -91,6 +91,7 @@ export default function DigitalTwinPanel() {
   // Premium "Sharper video" enhancement — gated to Premium+ plans.
   const [avPremium, setAvPremium] = useState(false);
   const [avSharpen, setAvSharpen] = useState(false);
+  const [avPhotoAvatar, setAvPhotoAvatar] = useState(false);
 
   async function publishAvatar() {
     setAvBusy("publish");
@@ -152,7 +153,13 @@ export default function DigitalTwinPanel() {
           action === "draft"
             ? { action, topic: avTopic }
             : action === "render"
-              ? { action, text: avScript, audioPath: avAudioPath, sharpen: avPremium && avSharpen }
+              ? {
+                  action,
+                  text: avScript,
+                  audioPath: avAudioPath,
+                  sharpen: avPremium && avSharpen,
+                  photoAvatar: avPremium && avPhotoAvatar,
+                }
               : { action, text: avScript, audioPath: avAudioPath },
         ),
       });
@@ -583,6 +590,27 @@ export default function DigitalTwinPanel() {
                 <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">Premium</span>
                 {avPremium ? (
                   <span className="text-slate-400">— upscales &amp; restores the render</span>
+                ) : (
+                  <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">
+                    Upgrade to unlock
+                  </a>
+                )}
+              </span>
+            </label>
+
+            <label className={`flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-400"}`}>
+              <input
+                type="checkbox"
+                checked={avPremium && avPhotoAvatar}
+                disabled={!avPremium || avBusy !== null}
+                onChange={(e) => setAvPhotoAvatar(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-violet-600 disabled:opacity-50"
+              />
+              <span className="inline-flex flex-wrap items-center gap-1">
+                🧑‍💼 Lifelike avatar
+                <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">Premium</span>
+                {avPremium ? (
+                  <span className="text-slate-400">— photo-to-avatar with head motion (vs lip-sync)</span>
                 ) : (
                   <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">
                     Upgrade to unlock

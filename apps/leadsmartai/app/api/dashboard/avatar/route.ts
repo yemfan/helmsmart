@@ -55,6 +55,7 @@ export async function POST(req: Request) {
       audioPath?: unknown;
       caption?: unknown;
       sharpen?: unknown;
+      photoAvatar?: unknown;
     };
     const action = typeof body.action === "string" ? body.action : "";
     const text = typeof body.text === "string" ? body.text : "";
@@ -72,12 +73,13 @@ export async function POST(req: Request) {
       case "render": {
         const audioPath = typeof body.audioPath === "string" ? body.audioPath : null;
         const sharpen = body.sharpen === true;
-        // "Sharper video" is a premium enhancement — gate server-side so the
-        // client can't bypass the entitlement even if the toggle is forced on.
-        if (sharpen && !(await userHasCrmFeature(String(userId), "premium_avatar"))) {
+        const photoAvatar = body.photoAvatar === true;
+        // Premium enhancements — gate server-side so the client can't bypass the
+        // entitlement even if a toggle is forced on.
+        if ((sharpen || photoAvatar) && !(await userHasCrmFeature(String(userId), "premium_avatar"))) {
           return subscriptionRequiredResponse("premium_avatar");
         }
-        const out = await renderAvatarVideo(id, text, audioPath, { sharpen });
+        const out = await renderAvatarVideo(id, text, audioPath, { sharpen, photoAvatar });
         return NextResponse.json({ ok: true, ...out });
       }
       case "publish": {
