@@ -5,7 +5,7 @@ import SettingsTabs from "@/components/SettingsTabs";
 import { getConnectionStatuses } from "@/lib/social";
 import { youtubeConfigured } from "@/lib/youtube";
 import { OAUTH_ADAPTERS } from "@/lib/oauth";
-import { CREDIT_PACKS } from "@/lib/billing";
+import { CREDIT_PACKS, SUBSCRIPTION_PLANS } from "@/lib/billing";
 import { stripeConfigured } from "@/lib/stripe";
 import { BRAND_KIT_COLUMNS, type BrandKit } from "@/lib/brandKit";
 
@@ -31,10 +31,11 @@ export default async function SettingsPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: profile }, statuses, { data: brand }] = await Promise.all([
+  const [{ data: profile }, statuses, { data: brand }, { data: sub }] = await Promise.all([
     supabase.from("profiles").select("credits").eq("user_id", user.id).single(),
     getConnectionStatuses(user.id, PLATFORMS),
     supabase.from("brand_kits").select(BRAND_KIT_COLUMNS).eq("user_id", user.id).maybeSingle(),
+    supabase.from("subscriptions").select("plan, status").eq("user_id", user.id).maybeSingle(),
   ]);
 
   const providersConfigured: Record<string, boolean> = {
@@ -61,7 +62,12 @@ export default async function SettingsPage({
         uid={user.id}
         brand={(brand ?? null) as BrandKit | null}
         connections={{ providersConfigured, statuses }}
-        billing={{ packs: CREDIT_PACKS, configured: stripeConfigured() }}
+        billing={{
+          packs: CREDIT_PACKS,
+          configured: stripeConfigured(),
+          plans: SUBSCRIPTION_PLANS,
+          currentPlan: (sub as { plan: string | null; status: string | null } | null) ?? null,
+        }}
       />
     </main>
   );
