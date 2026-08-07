@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { aiConfigured, draftPost, type PostType } from "@/lib/ai";
+import { BRAND_KIT_COLUMNS, brandPromptContext, type BrandKit } from "@/lib/brandKit";
 
 export const maxDuration = 60;
 export const runtime = "nodejs";
@@ -32,7 +33,21 @@ export async function POST(req: Request) {
   if (intent.length > 1500) return NextResponse.json({ error: "That's a bit long — keep it under 1500 characters." }, { status: 400 });
 
   try {
-    const draft = await draftPost(intent, type);
+    // Fold in the user's Brand Kit so copy + media prompts stay on-brand.
+    // Best-effort: a missing kit (or missing table before the migration runs)
+    // simply leaves the draft unbranded.
+    let brand = "";
+    try {
+      const { data: kit } = await supabase
+        .from("brand_kits")
+        .select(BRAND_KIT_COLUMNS)
+        .eq("user_id", user.id)
+        .maybeSingle();
+      brand = brandPromptContext(kit as BrandKit | null);
+    } catch {
+      /* no brand kit — proceed unbranded */
+    }
+    const draft = await draftPost(intent, type, brand);
     return NextResponse.json({ draft });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Could not write the draft.";
