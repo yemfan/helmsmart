@@ -1,7 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
-import type { ListingDetail } from "@/lib/listings/types";
+import { useMemo, useRef, useState } from "react";
+import {
+  LISTING_AD_MAX_CLIPS,
+  LISTING_AD_CLIP_SECONDS,
+  type ListingAdClipSeconds,
+  type ListingDetail,
+} from "@/lib/listings/types";
 import { createClient } from "@/lib/supabase/client";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 
@@ -50,6 +55,30 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
   const [clipUrls, setClipUrls] = useState<string[]>(listing.ad_clip_urls ?? []);
   const [generating, setGenerating] = useState(false);
   const [clipNote, setClipNote] = useState<string | null>(null);
+  // Which photos to animate (agent-selected) + how long each clip runs. Null
+  // selection = "all" (the default) so it Just Works before the agent touches it.
+  const [selectedPhotos, setSelectedPhotos] = useState<Set<string> | null>(null);
+  const [clipSeconds, setClipSeconds] = useState<ListingAdClipSeconds>(5);
+
+  // The ordered photos that will actually be animated: the agent's selection
+  // (or all photos) in listing order, capped at the hard clip ceiling.
+  const photosToAnimate = useMemo(() => {
+    const chosen = facts.photoUrls.filter((u) => (selectedPhotos ? selectedPhotos.has(u) : true));
+    return chosen.slice(0, LISTING_AD_MAX_CLIPS);
+  }, [facts.photoUrls, selectedPhotos]);
+  const estSeconds = photosToAnimate.length * clipSeconds;
+
+  const isSelected = (url: string) => (selectedPhotos ? selectedPhotos.has(url) : true);
+  const togglePhoto = (url: string) =>
+    setSelectedPhotos((cur) => {
+      const base = cur ?? new Set(facts.photoUrls);
+      const next = new Set(base);
+      if (next.has(url)) next.delete(url);
+      else next.add(url);
+      return next;
+    });
+  const selectAllPhotos = () => setSelectedPhotos(null);
+  const clearPhotoSelection = () => setSelectedPhotos(new Set());
 
   // Finished video ad (Phase 2b) + publish (Phase 2c).
   const [reelUrl, setReelUrl] = useState<string | null>(listing.ad_reel_url);
@@ -188,10 +217,12 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
   async function generateClips() {
     if (generating) return;
     // Render one photo per request (fal clips are slow; all-at-once times out).
-    // The client loops and shows progress; index 0 resets the set server-side.
-    const total = Math.min(facts.photoUrls.length, 5);
+    // The client loops over the agent's selected photos and shows progress;
+    // index 0 resets the set server-side.
+    const queue = photosToAnimate;
+    const total = queue.length;
     if (total === 0) {
-      setError("Add photos first.");
+      setError("Select at least one photo to animate.");
       return;
     }
     setGenerating(true);
@@ -207,7 +238,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           const res = await fetch(`/api/dashboard/listings/${encodeURIComponent(listing.id)}/ad-video`, {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ index: i }),
+            body: JSON.stringify({ index: i, photoUrl: queue[i], durationSec: String(clipSeconds) }),
           });
           const body = (await res.json().catch(() => ({}))) as { ok?: boolean; clipUrls?: string[]; error?: string };
           if (!res.ok || !body.ok) {
@@ -396,15 +427,40 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
         {/* Photos */}
         <div className="mt-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs font-medium text-slate-600">Photos ({facts.photoUrls.length})</span>
-            <button
-              type="button"
-              onClick={() => photoInputRef.current?.click()}
-              disabled={uploading}
-              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-            >
-              {uploading ? "Uploading…" : "+ Upload photos"}
-            </button>
+            <span className="text-xs font-medium text-slate-600">
+              Photos ({facts.photoUrls.length})
+              {facts.photoUrls.length > 0 && (
+                <span className="ml-1 text-slate-400">· {photosToAnimate.length} selected for video</span>
+              )}
+            </span>
+            <div className="flex items-center gap-2">
+              {facts.photoUrls.length > 0 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={selectAllPhotos}
+                    className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                  >
+                    Select all
+                  </button>
+                  <button
+                    type="button"
+                    onClick={clearPhotoSelection}
+                    className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                  >
+                    Clear
+                  </button>
+                </>
+              )}
+              <button
+                type="button"
+                onClick={() => photoInputRef.current?.click()}
+                disabled={uploading}
+                className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              >
+                {uploading ? "Uploading…" : "+ Upload photos"}
+              </button>
+            </div>
             <input
               ref={photoInputRef}
               type="file"
@@ -419,22 +475,59 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               No photos yet. <strong>Upload your listing photos</strong> (most reliable), or try Pull from MLS.
             </p>
           ) : (
-            <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
-              {facts.photoUrls.map((url) => (
-                <div key={url} className="group relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt="listing" className="h-full w-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => removePhoto(url)}
-                    className="absolute right-1 top-1 hidden rounded-full bg-black/60 px-1.5 text-xs text-white group-hover:block"
-                    aria-label="remove photo"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
+            <>
+              <p className="mt-1 text-[11px] text-slate-400">
+                Tap a photo to include or exclude it from the video. The first {LISTING_AD_MAX_CLIPS} selected
+                (in order) become clips.
+              </p>
+              <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+                {facts.photoUrls.map((url) => {
+                  const on = isSelected(url);
+                  const overCap = on && photosToAnimate.indexOf(url) === -1; // selected but past the cap
+                  return (
+                    <div
+                      key={url}
+                      className={`group relative aspect-square overflow-hidden rounded-lg border-2 bg-slate-50 transition ${
+                        on && !overCap ? "border-indigo-500" : "border-slate-200"
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={url}
+                        alt="listing"
+                        onClick={() => togglePhoto(url)}
+                        className={`h-full w-full cursor-pointer object-cover transition ${on ? "" : "opacity-40"}`}
+                      />
+                      {/* selection tick */}
+                      <button
+                        type="button"
+                        onClick={() => togglePhoto(url)}
+                        aria-label={on ? "Exclude photo from video" : "Include photo in video"}
+                        aria-pressed={on}
+                        className={`absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold shadow ${
+                          on && !overCap
+                            ? "bg-indigo-600 text-white"
+                            : overCap
+                              ? "bg-amber-500 text-white"
+                              : "bg-white/80 text-slate-400"
+                        }`}
+                        title={overCap ? `Beyond the ${LISTING_AD_MAX_CLIPS}-clip limit — won't be used` : undefined}
+                      >
+                        {on ? (overCap ? "!" : "✓") : ""}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(url)}
+                        className="absolute right-1 top-1 hidden rounded-full bg-black/60 px-1.5 text-xs text-white group-hover:block"
+                        aria-label="remove photo"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
 
@@ -455,18 +548,47 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
             <div>
               <h3 className="text-sm font-semibold text-slate-900">Cinematic clips</h3>
               <p className="text-[11px] text-slate-500">
-                Animate up to 5 photos into cinematic motion clips (the raw material for the video ad).
+                Animate your selected photos into cinematic motion clips (the raw material for the video ad).
               </p>
             </div>
             <button
               type="button"
               onClick={() => void generateClips()}
-              disabled={generating || facts.photoUrls.length === 0}
+              disabled={generating || photosToAnimate.length === 0}
               className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-              title={facts.photoUrls.length === 0 ? "Add photos first" : "Generate cinematic clips (fal)"}
+              title={photosToAnimate.length === 0 ? "Select at least one photo" : "Generate cinematic clips (fal)"}
             >
               {generating ? "Rendering…" : clipUrls.length > 0 ? "Re-generate clips" : "Generate cinematic clips"}
             </button>
+          </div>
+
+          {/* Length controls: per-clip seconds + a live total-length estimate. */}
+          <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/60 p-2.5">
+            <span className="text-xs font-medium text-slate-600">Clip length</span>
+            <div className="inline-flex overflow-hidden rounded-lg border border-slate-200">
+              {LISTING_AD_CLIP_SECONDS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setClipSeconds(s)}
+                  className={`px-3 py-1 text-xs font-medium transition ${
+                    clipSeconds === s ? "bg-indigo-600 text-white" : "bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {s}s
+                </button>
+              ))}
+            </div>
+            <span className="text-xs text-slate-500">
+              {photosToAnimate.length > 0 ? (
+                <>
+                  {photosToAnimate.length} clip{photosToAnimate.length === 1 ? "" : "s"} × {clipSeconds}s ≈{" "}
+                  <span className="font-semibold text-slate-700">~{estSeconds}s video</span>
+                </>
+              ) : (
+                "Select photos above to set the length"
+              )}
+            </span>
           </div>
 
           {generating ? (

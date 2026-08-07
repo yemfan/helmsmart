@@ -28,6 +28,18 @@ export const LISTING_STATUS_LABEL: Record<ListingStatus, string> = {
   expired: "Expired",
 };
 
+/**
+ * Hard ceiling on cinematic clips per video ad. Each clip is a paid fal render,
+ * so this caps a big photo set from fanning into a surprise bill. Shared by the
+ * server (adVideo.ts) and the panel UI so both agree on the max. At 5–10s per
+ * clip this allows roughly a 60–120s tour.
+ */
+export const LISTING_AD_MAX_CLIPS = 12;
+
+/** Per-clip lengths the agent can pick (Kling image-to-video supports 5 or 10). */
+export const LISTING_AD_CLIP_SECONDS = [5, 10] as const;
+export type ListingAdClipSeconds = (typeof LISTING_AD_CLIP_SECONDS)[number];
+
 /** List-page row shape returned by `listListingsForAgent`. */
 export type ListingListItem = {
   /** Listings table primary key. */

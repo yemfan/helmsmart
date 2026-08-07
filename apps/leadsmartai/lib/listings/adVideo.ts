@@ -1,7 +1,7 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import type { ListingAdFacts } from "@/lib/listings/types";
+import { LISTING_AD_MAX_CLIPS, type ListingAdFacts } from "@/lib/listings/types";
 
 /**
  * Listing ad video — Phase 2a: animate the listing's REAL photos into short
@@ -20,8 +20,14 @@ import type { ListingAdFacts } from "@/lib/listings/types";
 
 const FAL_QUEUE = "https://queue.fal.run";
 const MODEL = "fal-ai/kling-video/v1.6/standard/image-to-video";
-export const MAX_CLIPS = 5;
+export const MAX_CLIPS = LISTING_AD_MAX_CLIPS;
 const BUCKET = "social-images";
+
+/** Kling image-to-video supports 5s or 10s clips; default 5. */
+export type ClipSeconds = "5" | "10";
+export function normalizeSeconds(v: unknown): ClipSeconds {
+  return v === "10" || v === 10 ? "10" : "5";
+}
 
 export function falConfigured(): boolean {
   return Boolean(process.env.FAL_KEY?.trim());
@@ -55,12 +61,12 @@ function motionPrompt(index: number, facts: ListingAdFacts): string {
 type FalSubmit = { request_id?: string; status_url?: string; response_url?: string; detail?: string };
 
 /** Animate one photo → a fal video URL (temporary; caller persists to Storage). */
-async function animatePhoto(imageUrl: string, prompt: string): Promise<string> {
+async function animatePhoto(imageUrl: string, prompt: string, seconds: ClipSeconds = "5"): Promise<string> {
   const H = falHeaders();
   const sub = await fetch(`${FAL_QUEUE}/${MODEL}`, {
     method: "POST",
     headers: H,
-    body: JSON.stringify({ prompt, image_url: imageUrl, duration: "5", aspect_ratio: "9:16" }),
+    body: JSON.stringify({ prompt, image_url: imageUrl, duration: seconds, aspect_ratio: "9:16" }),
   });
   const q = (await sub.json().catch(() => ({}))) as FalSubmit;
   if (!sub.ok) throw new Error(`fal submit ${sub.status}: ${q.detail || JSON.stringify(q)}`);
@@ -114,8 +120,9 @@ export async function generateOneListingClip(
   index: number,
   facts: ListingAdFacts,
   reset = false,
+  seconds: ClipSeconds = "5",
 ): Promise<{ url: string; clipUrls: string[] }> {
-  const falUrl = await animatePhoto(photoUrl, motionPrompt(index, facts));
+  const falUrl = await animatePhoto(photoUrl, motionPrompt(index, facts), seconds);
   const stored = await persistClip(agentId, listingId, index, falUrl);
 
   // reset (first clip of a fresh run) starts a new list; otherwise append-safe:
