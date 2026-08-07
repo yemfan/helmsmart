@@ -45,6 +45,49 @@ export function getPack(id: string): CreditPack | undefined {
   return CREDIT_PACKS.find((p) => p.id === id);
 }
 
+/**
+ * Recurring subscription plans (monthly). Each grants `creditsPerMonth` on every
+ * paid invoice. Priced for a better per-credit rate than the one-time packs so a
+ * subscription is the smarter buy for regular creators.
+ */
+export type SubscriptionPlan = {
+  id: string;
+  name: string;
+  priceCents: number;
+  creditsPerMonth: number;
+  blurb: string;
+  popular?: boolean;
+};
+
+export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
+  {
+    id: "creator",
+    name: "Creator",
+    priceCents: 1900,
+    creditsPerMonth: 300,
+    blurb: "300 credits every month — steady posting on one brand.",
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    priceCents: 4900,
+    creditsPerMonth: 900,
+    blurb: "900 credits every month — heavier video + autopilot.",
+    popular: true,
+  },
+  {
+    id: "studio",
+    name: "Studio",
+    priceCents: 9900,
+    creditsPerMonth: 2000,
+    blurb: "2,000 credits every month — agencies & big campaigns.",
+  },
+];
+
+export function getPlan(id: string): SubscriptionPlan | undefined {
+  return SUBSCRIPTION_PLANS.find((p) => p.id === id);
+}
+
 /** "$9", "$39" — packs are priced in whole dollars, so no cents shown. */
 export function formatPrice(cents: number): string {
   const dollars = cents / 100;

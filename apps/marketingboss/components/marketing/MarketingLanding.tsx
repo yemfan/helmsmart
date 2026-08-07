@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PublicNav } from "./PublicNav";
 import { PublicFooter } from "./PublicFooter";
-import { CREDIT_PACKS, formatPrice } from "@/lib/billing";
+import { CREDIT_PACKS, SUBSCRIPTION_PLANS, formatPrice } from "@/lib/billing";
 
 // New accounts start with this many free credits (profiles.credits default,
 // granted by the handle_new_user trigger). Surfaced here so visitors know they
@@ -173,11 +173,43 @@ export function MarketingLanding() {
               Start free. Pay for what you create.
             </h2>
             <p className="mt-3 max-w-xl text-ink-3">
-              Every account starts with {FREE_CREDITS} free credits — no card. After that, buy credits and spend them
-              as you generate: no monthly fee, no seats. Every render is saved to your gallery.
+              Every account starts with {FREE_CREDITS} free credits — no card. Then pick a monthly plan for credits at
+              the best rate, or top up one-time as you go. Every render is saved to your gallery.
             </p>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Monthly plans */}
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              {SUBSCRIPTION_PLANS.map((plan) => (
+                <div
+                  key={plan.id}
+                  className={`relative flex flex-col rounded-2xl border bg-white p-6 ${
+                    plan.popular ? "border-boss-violet ring-1 ring-boss-violet" : "border-line"
+                  }`}
+                >
+                  {plan.popular && (
+                    <span className="absolute -top-2.5 left-6 rounded-full bg-boss-violet px-2 py-0.5 text-[10px] font-semibold text-white">
+                      Most popular
+                    </span>
+                  )}
+                  <p className="text-sm font-semibold text-ink">{plan.name}</p>
+                  <p className="mt-2 text-3xl font-bold text-ink">
+                    {formatPrice(plan.priceCents)}
+                    <span className="text-base font-medium text-ink-3">/mo</span>
+                  </p>
+                  <p className="mt-1 text-sm text-ink-3">{plan.creditsPerMonth.toLocaleString()} credits / month</p>
+                  <p className="mt-3 flex-1 text-xs text-ink-3">{plan.blurb}</p>
+                  <Link
+                    href="/login"
+                    className="mt-4 rounded-xl bg-boss-violet px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-boss-violet-600"
+                  >
+                    Choose {plan.name}
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-ink-3">Or start free / top up</p>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {/* Free tier */}
               <div className="flex flex-col rounded-2xl border border-line bg-white p-6">
                 <p className="text-sm font-semibold text-ink">Free</p>

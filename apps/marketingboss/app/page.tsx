@@ -16,7 +16,7 @@ const SOCIAL_PLATFORMS = ["facebook", "instagram", "threads", "linkedin", "pinte
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ purchased?: string; youtube?: string; social?: string; provider?: string }>;
+  searchParams: Promise<{ purchased?: string; subscribed?: string; youtube?: string; social?: string; provider?: string }>;
 }) {
   const sp = await searchParams;
   const supabase = await createClient();
@@ -87,6 +87,12 @@ export default async function Home({
           Payment received —{" "}
           {creditsAdded > 0 ? `${creditsAdded} credits added` : "your credits have been added"}. Happy
           creating! 🎬
+        </div>
+      )}
+      {sp.subscribed && (
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-sm text-emerald-600">
+          You&apos;re subscribed 🎉 Your monthly credits will appear within a few seconds — refresh if the balance
+          hasn&apos;t updated yet.
         </div>
       )}
       {[ytNotice, socialNotice].map((n, i) =>

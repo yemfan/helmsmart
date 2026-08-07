@@ -7,7 +7,7 @@
  *   STRIPE_WEBHOOK_SECRET  — signing secret (whsec_...), verifies webhook events
  */
 import crypto from "node:crypto";
-import type { CreditPack } from "@/lib/billing";
+import type { CreditPack, SubscriptionPlan } from "@/lib/billing";
 
 const API = "https://api.stripe.com/v1";
 
@@ -31,6 +31,18 @@ export type CheckoutSession = {
   payment_status?: string;
   amount_total?: number | null;
   client_reference_id?: string | null;
+  metadata?: Record<string, string> | null;
+  mode?: string | null;
+  customer?: string | null;
+  subscription?: string | null;
+};
+
+/** A Stripe Subscription (only the fields we read). */
+export type StripeSubscription = {
+  id: string;
+  status?: string;
+  current_period_end?: number | null;
+  customer?: string | null;
   metadata?: Record<string, string> | null;
 };
 
@@ -79,6 +91,64 @@ export async function createCheckoutSession(opts: {
   return data;
 }
 
+/**
+ * Create a recurring subscription Checkout Session (mode=subscription) with an
+ * inline monthly price — no pre-created Stripe Product. The buyer + plan +
+ * monthly credit count are stamped onto the SUBSCRIPTION's metadata so every
+ * paid invoice (first + renewals) can be fulfilled from the subscription alone.
+ */
+export async function createSubscriptionCheckout(opts: {
+  origin: string;
+  userId: string;
+  email?: string;
+  plan: SubscriptionPlan;
+}): Promise<CheckoutSession> {
+  const form = new URLSearchParams();
+  form.set("mode", "subscription");
+  form.set("success_url", `${opts.origin}/?subscribed=1`);
+  form.set("cancel_url", `${opts.origin}/settings?tab=billing&status=cancel`);
+  form.set("client_reference_id", opts.userId);
+  if (opts.email) form.set("customer_email", opts.email);
+  form.set("line_items[0][quantity]", "1");
+  form.set("line_items[0][price_data][currency]", "usd");
+  form.set("line_items[0][price_data][unit_amount]", String(opts.plan.priceCents));
+  form.set("line_items[0][price_data][recurring][interval]", "month");
+  form.set(
+    "line_items[0][price_data][product_data][name]",
+    `MarketingBoss ${opts.plan.name} — ${opts.plan.creditsPerMonth} credits/mo`,
+  );
+  form.set("line_items[0][price_data][product_data][description]", opts.plan.blurb);
+  // Metadata on the SUBSCRIPTION (not just the session) so invoice.paid can map
+  // back to the user without depending on session.completed having landed.
+  form.set("subscription_data[metadata][user_id]", opts.userId);
+  form.set("subscription_data[metadata][plan]", opts.plan.id);
+  form.set("subscription_data[metadata][credits]", String(opts.plan.creditsPerMonth));
+  form.set("metadata[user_id]", opts.userId);
+  form.set("metadata[plan]", opts.plan.id);
+
+  const res = await fetch(`${API}/checkout/sessions`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key()}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: form.toString(),
+  });
+  const data = (await res.json()) as CheckoutSession & StripeError;
+  if (!res.ok) throw new Error(data.error?.message || `Stripe error ${res.status}`);
+  return data;
+}
+
+/** Fetch a Subscription by id (used by the webhook to read its metadata). */
+export async function retrieveSubscription(id: string): Promise<StripeSubscription> {
+  const res = await fetch(`${API}/subscriptions/${encodeURIComponent(id)}`, {
+    headers: { Authorization: `Bearer ${key()}` },
+  });
+  const data = (await res.json()) as StripeSubscription & StripeError;
+  if (!res.ok) throw new Error(data.error?.message || `Stripe error ${res.status}`);
+  return data;
+}
+
 /** Fetch a Checkout Session by id (used to fulfill instantly on the return page). */
 export async function retrieveSession(id: string): Promise<CheckoutSession> {
   const res = await fetch(`${API}/checkout/sessions/${encodeURIComponent(id)}`, {
@@ -95,11 +165,13 @@ export async function retrieveSession(id: string): Promise<CheckoutSession> {
  * HMAC-SHA256 over `${t}.${payload}` keyed by the webhook secret, compared
  * timing-safely, with a 5-minute timestamp tolerance to block replays.
  */
+export type StripeWebhookEvent = { type: string; data: { object: Record<string, unknown> } };
+
 export function constructWebhookEvent(
   payload: string,
   header: string | null,
   secret: string,
-): { type: string; data: { object: CheckoutSession } } {
+): StripeWebhookEvent {
   if (!header) throw new Error("Missing Stripe-Signature header.");
   const parts = new Map(
     header.split(",").map((kv) => {
@@ -123,5 +195,5 @@ export function constructWebhookEvent(
     throw new Error("Webhook timestamp outside tolerance.");
   }
 
-  return JSON.parse(payload) as { type: string; data: { object: CheckoutSession } };
+  return JSON.parse(payload) as StripeWebhookEvent;
 }
