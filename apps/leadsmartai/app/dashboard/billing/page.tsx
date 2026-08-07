@@ -1,18 +1,8 @@
-import { Suspense } from "react";
-import BillingPageClient from "./BillingPageClient";
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Billing",
-  description: "Manage your subscription and payment details.",
-  keywords: ["billing", "subscription", "payments"],
-  robots: { index: false },
-};
-
+// CloseBoss moved to usage-based pricing — the Credits page is the billing
+// surface now. Redirect the old billing route (and anything that still links to
+// it, e.g. subscriptionRequiredResponse's billingPath) to /dashboard/credits.
 export default function DashboardBillingPage() {
-  return (
-    <Suspense fallback={<div className="text-sm text-gray-600 p-4">Loading billing…</div>}>
-      <BillingPageClient />
-    </Suspense>
-  );
+  redirect("/dashboard/credits");
 }

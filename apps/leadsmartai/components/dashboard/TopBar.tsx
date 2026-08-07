@@ -318,13 +318,13 @@ function ProfileMenu({
         My Settings
       </Link>
       <Link
-        href="/dashboard/billing"
+        href="/dashboard/credits"
         className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
         role="menuitem"
         onClick={() => setOpen(false)}
       >
         <CreditCard className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
-        Billing &amp; Subscription
+        Credits &amp; Billing
       </Link>
       <div className="mt-1 border-t border-slate-100 pt-1">
         <button
@@ -424,11 +424,11 @@ export default function TopBar({
   }, []);
   const mobileUpgradePromo = showAgentBrokerPromotion ? (
     <Link
-      href="/dashboard/billing"
+      href="/dashboard/credits"
       className="block rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-3 py-2.5 text-sm leading-snug text-white shadow-lg shadow-slate-900/25 ring-1 ring-white/10"
     >
       <span className="block font-medium text-white/95">Grow with AI follow-ups</span>
-      <span className="mt-0.5 block text-xs text-white/70">Upgrade for more credits and automation.</span>
+      <span className="mt-0.5 block text-xs text-white/70">Top up credits any time — everything included.</span>
     </Link>
   ) : undefined;
 
@@ -527,7 +527,7 @@ export default function TopBar({
           {/* Upgrade pill — md+ only (already hidden on small screens) */}
           {showAgentBrokerPromotion ? (
             <Link
-              href="/dashboard/billing"
+              href="/dashboard/credits"
               className="hidden md:inline-flex h-10 items-center justify-center rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 text-xs font-semibold text-white shadow-md shadow-amber-500/20 transition hover:from-amber-600 hover:to-orange-600 md:text-sm"
             >
               Upgrade
