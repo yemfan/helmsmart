@@ -117,6 +117,13 @@ export type ListingDetail = {
   ad_reel_status: string | null;
   ad_reel_error: string | null;
   ad_reel_updated_at: string | null;
+  // ── AI script + voiceover (Phase 2d) ──────────────────────────────
+  /** Seconds per clip used for the current ad (5 or 10); null = legacy 5. */
+  ad_clip_seconds: number | null;
+  /** AI-written, agent-editable narration script for the voiceover. */
+  ad_reel_script: string | null;
+  /** Finished ad with voiceover muxed on; preferred over ad_reel_url. */
+  ad_reel_voiced_url: string | null;
 };
 
 /** The AI-extracted (or manually filled) listing ad facts. Everything nullable. */

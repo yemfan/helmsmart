@@ -143,7 +143,14 @@ export async function generateOneListingClip(
 
   await supabaseAdmin
     .from("listings")
-    .update({ ad_clip_urls: clipUrls, ad_clips_updated_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .update({
+      ad_clip_urls: clipUrls,
+      // Remember the per-clip length so the voiceover step knows the finished
+      // tour's duration without having to probe the video.
+      ad_clip_seconds: Number(seconds),
+      ad_clips_updated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", listingId)
     .eq("agent_id", agentId);
 

@@ -85,6 +85,14 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
   const [reelCaption, setReelCaption] = useState<string>(listing.ad_reel_caption ?? "");
   const [building, setBuilding] = useState(false);
   const [reelNote, setReelNote] = useState<string | null>(null);
+
+  // AI script + voiceover (Phase 2d).
+  const [script, setScript] = useState<string>(listing.ad_reel_script ?? "");
+  const [voicedUrl, setVoicedUrl] = useState<string | null>(listing.ad_reel_voiced_url);
+  const [voiceKind, setVoiceKind] = useState<"cloned" | "default" | null>(null);
+  const [scripting, setScripting] = useState(false);
+  const [voicing, setVoicing] = useState(false);
+  const [voNote, setVoNote] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
   const [publishNote, setPublishNote] = useState<string | null>(null);
   const [needsConnect, setNeedsConnect] = useState(false);
@@ -291,6 +299,74 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
       setReelNote(null);
     } finally {
       setBuilding(false);
+    }
+  }
+
+  const voiceoverEndpoint = `/api/dashboard/listings/${encodeURIComponent(listing.id)}/ad-voiceover`;
+
+  async function generateScript() {
+    if (scripting) return;
+    setScripting(true);
+    setError(null);
+    setVoNote("Writing a narration script from the listing…");
+    try {
+      const res = await fetch(voiceoverEndpoint, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "script" }),
+      });
+      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; script?: string; error?: string };
+      if (!res.ok || !body.ok || !body.script) {
+        setError(body.error ?? "Couldn't write a script.");
+        setVoNote(null);
+        return;
+      }
+      setScript(body.script);
+      setVoNote("Script ready — edit it, then add the voiceover.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error.");
+      setVoNote(null);
+    } finally {
+      setScripting(false);
+    }
+  }
+
+  async function addVoiceover() {
+    if (voicing) return;
+    setVoicing(true);
+    setError(null);
+    setVoNote("Recording the voiceover and adding it to your video… (a minute or two)");
+    try {
+      const res = await fetch(voiceoverEndpoint, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "build", script: script.trim() || undefined }),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        url?: string;
+        script?: string;
+        voice?: "cloned" | "default";
+        error?: string;
+      };
+      if (!res.ok || !body.ok || !body.url) {
+        setError(body.error ?? "Couldn't add the voiceover.");
+        setVoNote(null);
+        return;
+      }
+      setVoicedUrl(body.url);
+      if (body.script) setScript(body.script);
+      setVoiceKind(body.voice ?? null);
+      setVoNote(
+        body.voice === "cloned"
+          ? "Voiceover added in your cloned voice."
+          : "Voiceover added in a professional voice.",
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error.");
+      setVoNote(null);
+    } finally {
+      setVoicing(false);
     }
   }
 
@@ -683,6 +759,86 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           ) : clipUrls.length === 0 ? (
             <p className="mt-2 text-[11px] text-slate-400">Generate the cinematic clips first.</p>
           ) : null}
+        </div>
+
+        {/* ── AI script + voiceover (Phase 2d) ───────────────────────── */}
+        <div className="mt-5 border-t border-slate-100 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-900">Script &amp; voiceover</h3>
+              <p className="text-[11px] text-slate-500">
+                Let AI write a narration, then speak it over your video — in your cloned voice if you&apos;ve set one
+                up, otherwise a professional voice.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void generateScript()}
+              disabled={scripting || !reelUrl}
+              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              title={!reelUrl ? "Build the video ad first" : "Write a narration script"}
+            >
+              {scripting ? "Writing…" : script ? "Rewrite script" : "Generate script"}
+            </button>
+          </div>
+
+          {!reelUrl ? (
+            <p className="mt-2 text-[11px] text-slate-400">Build the video ad above first, then add a voiceover.</p>
+          ) : (
+            <>
+              <label className="mt-3 block">
+                <span className="text-xs font-medium text-slate-600">Narration script</span>
+                <textarea
+                  value={script}
+                  onChange={(e) => setScript(e.target.value)}
+                  rows={4}
+                  placeholder="Generate a script above, or write your own — this is exactly what the voice will say."
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                />
+              </label>
+
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => void addVoiceover()}
+                  disabled={voicing || !script.trim()}
+                  className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                  title={!script.trim() ? "Generate or write a script first" : "Speak the script over your video"}
+                >
+                  {voicing ? "Adding…" : voicedUrl ? "Redo voiceover" : "Add voiceover"}
+                </button>
+                {voNote ? <span className="text-[11px] text-slate-600">{voNote}</span> : null}
+              </div>
+
+              {voicedUrl ? (
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-start">
+                  <video
+                    src={voicedUrl}
+                    controls
+                    loop
+                    className="aspect-[9/16] w-48 shrink-0 rounded-lg border border-slate-200 bg-black"
+                  />
+                  <div className="min-w-0 flex-1 text-[11px] text-slate-500">
+                    <p className="font-medium text-slate-700">Video ad with voiceover</p>
+                    {voiceKind ? (
+                      <p className="mt-0.5">
+                        {voiceKind === "cloned" ? "Narrated in your cloned voice." : "Narrated in a professional voice."}
+                      </p>
+                    ) : null}
+                    <p className="mt-1">This voiced version is what gets posted when you publish above.</p>
+                    <a
+                      href={voicedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-1 inline-block rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      Download ↗
+                    </a>
+                  </div>
+                </div>
+              ) : null}
+            </>
+          )}
         </div>
       </div>
     </section>
