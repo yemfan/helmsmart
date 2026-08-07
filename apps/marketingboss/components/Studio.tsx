@@ -7,7 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import { PRESETS } from "@/lib/presets";
 import SocialPublish, { type SocialStatus } from "@/components/SocialPublish";
 
-type Mode = "image" | "video";
+type Mode = "image" | "video" | "swap";
+type SwapTarget = "face" | "product" | "background";
 const ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"] as const;
 type Aspect = (typeof ASPECTS)[number];
 
@@ -43,6 +44,13 @@ export default function Studio({
   const [refUrl, setRefUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Swap mode (video-to-video edit): a source clip + reference image + target.
+  const [srcVideoUrl, setSrcVideoUrl] = useState<string | null>(null);
+  const [srcVideoName, setSrcVideoName] = useState<string | null>(null);
+  const [srcUploading, setSrcUploading] = useState(false);
+  const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
+  const videoRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUid(data.user?.id ?? null));
@@ -94,6 +102,76 @@ export default function Studio({
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function onPickVideo(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("video/")) {
+      setError("Source must be a video file.");
+      return;
+    }
+    if (!uid) {
+      setError("Still signing in — try again in a second.");
+      return;
+    }
+    setError(null);
+    setSrcUploading(true);
+    try {
+      const ext = (file.name.split(".").pop() || "mp4").toLowerCase();
+      const path = `${uid}/src/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("media")
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (upErr) throw upErr;
+      const url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+      setSrcVideoUrl(url);
+      setSrcVideoName(file.name);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setSrcUploading(false);
+    }
+  }
+
+  async function runSwap() {
+    if (loading) return;
+    if (!srcVideoUrl) {
+      setError("Add a source video — upload a clip or paste a direct video URL.");
+      return;
+    }
+    if (!refUrl) {
+      setError("Add a reference image to swap in.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    setResults([]);
+    try {
+      const res = await fetch("/api/swap", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          videoUrl: srcVideoUrl,
+          imageUrl: refUrl,
+          target: swapTarget,
+          prompt: prompt.trim() || undefined,
+        }),
+      });
+      const data = (await res.json()) as { urls?: string[]; error?: string };
+      if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+      const urls = data.urls || [];
+      setResults(urls);
+      setResultMode("video");
+      setResultPrompt(prompt.trim() || `${swapTarget} swap`);
+      if (urls.length) setModalOpen(true);
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -152,7 +230,7 @@ export default function Studio({
       <section className="rounded-2xl border border-slate-200 bg-white p-4 backdrop-blur sm:p-5">
         <div className="mb-3 flex items-center gap-2">
           <div className="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-sm">
-            {(["image", "video"] as Mode[]).map((m) => (
+            {(["image", "video", "swap"] as Mode[]).map((m) => (
               <button
                 key={m}
                 onClick={() => {
@@ -168,27 +246,151 @@ export default function Studio({
             ))}
           </div>
 
-          {hasRef ? (
-            <div className="ml-1 flex items-center gap-2 rounded-lg border border-boss-gold/30 bg-boss-gold/10 py-1 pl-1 pr-2 text-xs">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={refUrl!} alt="reference" className="size-7 rounded object-cover" />
-              <span className="text-slate-700">{mode === "video" ? "Source frame" : "Reference"}</span>
-              <button onClick={() => setRefUrl(null)} className="text-slate-500 hover:text-slate-900" aria-label="remove reference">
-                ×
+          {mode !== "swap" &&
+            (hasRef ? (
+              <div className="ml-1 flex items-center gap-2 rounded-lg border border-boss-gold/30 bg-boss-gold/10 py-1 pl-1 pr-2 text-xs">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={refUrl!} alt="reference" className="size-7 rounded object-cover" />
+                <span className="text-slate-700">{mode === "video" ? "Source frame" : "Reference"}</span>
+                <button onClick={() => setRefUrl(null)} className="text-slate-500 hover:text-slate-900" aria-label="remove reference">
+                  ×
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="ml-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+              >
+                {uploading ? "Uploading…" : "+ Reference image"}
               </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-              className="ml-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
-            >
-              {uploading ? "Uploading…" : "+ Reference image"}
-            </button>
-          )}
+            ))}
           <input ref={fileRef} type="file" accept="image/*" onChange={onPickFile} className="hidden" />
+          <input ref={videoRef} type="file" accept="video/*" onChange={onPickVideo} className="hidden" />
         </div>
 
+        {mode === "swap" ? (
+          <div className="space-y-3">
+            <p className="text-xs text-slate-500">
+              Replace a face, product, or background inside an existing clip — the original motion,
+              lighting and camera stay put.
+            </p>
+
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-600">1 · Source video</span>
+                {srcVideoUrl && (
+                  <button
+                    onClick={() => {
+                      setSrcVideoUrl(null);
+                      setSrcVideoName(null);
+                    }}
+                    className="text-xs text-slate-500 hover:text-slate-900"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              {srcVideoUrl ? (
+                <video src={srcVideoUrl} controls className="max-h-48 w-full rounded-lg bg-slate-100" />
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => videoRef.current?.click()}
+                      disabled={srcUploading}
+                      className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+                    >
+                      {srcUploading ? "Uploading…" : "Upload a clip"}
+                    </button>
+                    <span className="text-xs text-slate-400">or paste a direct URL</span>
+                  </div>
+                  <input
+                    type="url"
+                    placeholder="https://…/clip.mp4"
+                    onChange={(e) => setSrcVideoUrl(e.target.value.trim() || null)}
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
+                  />
+                  <p className="text-[11px] text-slate-400">
+                    3–10s, 720p+, under 200MB. Must be a direct video file (.mp4/.mov) — not a
+                    YouTube/TikTok page link.
+                  </p>
+                </div>
+              )}
+              {srcVideoName && <p className="mt-1 text-[11px] text-slate-400">{srcVideoName}</p>}
+            </div>
+
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-600">2 · Swap in this image</span>
+                {refUrl && (
+                  <button onClick={() => setRefUrl(null)} className="text-xs text-slate-500 hover:text-slate-900">
+                    Remove
+                  </button>
+                )}
+              </div>
+              {refUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={refUrl} alt="reference" className="max-h-40 rounded-lg object-contain" />
+              ) : (
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading}
+                  className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+                >
+                  {uploading ? "Uploading…" : "Upload reference image"}
+                </button>
+              )}
+            </div>
+
+            <div>
+              <span className="text-xs font-semibold text-slate-600">3 · What to replace</span>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {(
+                  [
+                    ["face", "🙂 Face"],
+                    ["product", "📦 Product"],
+                    ["background", "🖼 Background"],
+                  ] as [SwapTarget, string][]
+                ).map(([t, label]) => (
+                  <button
+                    key={t}
+                    onClick={() => setSwapTarget(t)}
+                    aria-pressed={swapTarget === t}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                      swapTarget === t
+                        ? "border-boss-violet bg-boss-violet/10 text-boss-violet"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:border-boss-violet/50 hover:text-slate-900"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              rows={2}
+              placeholder="Optional: extra instructions (e.g. keep the sunglasses, match the warm lighting)…"
+              className="w-full resize-y rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60 focus:ring-2 focus:ring-boss-violet/20"
+            />
+
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-400">Costs 25 credits · ~1–3 min</span>
+              <button
+                onClick={runSwap}
+                disabled={loading || !srcVideoUrl || !refUrl}
+                className="ml-auto inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {loading && <Spinner />}
+                {loading ? "Swapping…" : "Run swap"}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
         <textarea
           value={prompt}
           onChange={(e) => {
@@ -262,15 +464,19 @@ export default function Studio({
             </div>
           </div>
         )}
+          </>
+        )}
       </section>
 
       {loading && (
         <p className="text-center text-sm text-slate-500">
-          {mode === "video"
-            ? "Rendering video — this usually takes 1–3 minutes."
-            : hasRef
-              ? "Editing your image…"
-              : "Painting your image…"}
+          {mode === "swap"
+            ? "Swapping in your reference — this usually takes 1–3 minutes."
+            : mode === "video"
+              ? "Rendering video — this usually takes 1–3 minutes."
+              : hasRef
+                ? "Editing your image…"
+                : "Painting your image…"}
         </p>
       )}
 
