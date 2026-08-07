@@ -22,6 +22,10 @@ export const DEFAULT_MODELS = {
   imageEdit: "fal-ai/nano-banana/edit",
   videoText: "fal-ai/kling-video/v1.6/standard/text-to-video",
   videoImage: "fal-ai/kling-video/v1.6/standard/image-to-video",
+  // Kling O1 video-to-video edit: swap a face / product / background inside an
+  // existing clip while keeping the original motion, lighting and camera.
+  // Reference images map to @Image1..@Image4 in the prompt.
+  videoEdit: "fal-ai/kling-video/o1/video-to-video/edit",
   // Seedance 2.0 — realistic people + native audio; used for UGC ads (a creator
   // talking to camera). Reference-to-video accepts uploaded images/videos so we
   // can emulate a viral ad the user drops in.
@@ -42,6 +46,10 @@ export type GenParams = {
   /** Seedance reference-to-video inputs (up to 9 images / 3 videos, ≤12 total). */
   imageUrls?: string[];
   videoUrls?: string[];
+  /** Source clip for a video-to-video edit / swap (Kling O1). */
+  videoUrl?: string;
+  /** Keep the source clip's original audio through the edit. */
+  keepAudio?: boolean;
 };
 
 /** Seedance models are ByteDance-hosted on fal and take a different input shape. */
@@ -59,6 +67,20 @@ function headers() {
 
 function buildRequest(p: GenParams): { model: string; input: Record<string, unknown> } {
   const aspect = p.aspect || "16:9";
+
+  // Video-to-video edit / swap: a source clip + reference image(s) -> Kling O1
+  // replaces the named face / product / background while preserving the original
+  // motion, lighting and camera. Reference images map to @Image1..@Image4.
+  if (p.videoUrl) {
+    const model = p.model || DEFAULT_MODELS.videoEdit;
+    const input: Record<string, unknown> = {
+      prompt: p.prompt,
+      video_url: p.videoUrl,
+      keep_audio: p.keepAudio ?? true,
+    };
+    if (p.imageUrls?.length) input.image_urls = p.imageUrls.slice(0, 4);
+    return { model, input };
+  }
 
   // Seedance (UGC): realistic talking-creator video with native audio. Uploaded
   // image/video references route to reference-to-video (emulate a viral ad).

@@ -46,12 +46,18 @@ export type GenParams = {
   imageUrl?: string;
   imageUrls?: string[];
   videoUrls?: string[];
+  /** Source clip for a video-to-video edit / swap. */
+  videoUrl?: string;
+  keepAudio?: boolean;
 };
 
 /** UGC (Seedance) clips cost more than a Kling clip. */
 export const UGC_CREDIT = 35;
+/** Video-to-video edit / swap (Kling O1) — heavier than a plain clip. */
+export const SWAP_CREDIT = 25;
 
 function costFor(params: GenParams): number {
+  if (params.videoUrl) return SWAP_CREDIT;
   if (params.model?.startsWith("bytedance/seedance")) return UGC_CREDIT;
   return creditCost(params.type, !!params.imageUrl);
 }
