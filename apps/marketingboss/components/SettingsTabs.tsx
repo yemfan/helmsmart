@@ -3,17 +3,21 @@
 import { useState } from "react";
 import Connections from "@/components/Connections";
 import BuyCredits from "@/components/BuyCredits";
+import BrandKitForm from "@/components/BrandKitForm";
 import type { CreditPack } from "@/lib/billing";
+import type { BrandKit } from "@/lib/brandKit";
 
 /**
- * One place for every MarketingBoss configuration — social Connections and
- * Billing & credits — behind a tab bar. Deep-linkable via ?tab=connections|billing
- * (used by the top-nav Settings link and the credits pill).
+ * One place for every MarketingBoss configuration — Brand Kit, social
+ * Connections, and Billing & credits — behind a tab bar. Deep-linkable via
+ * ?tab=brand|connections|billing (used by the top-nav Settings link and the
+ * credits pill).
  */
 
-type Tab = "connections" | "billing";
+type Tab = "brand" | "connections" | "billing";
 
 const TABS: { id: Tab; label: string }[] = [
+  { id: "brand", label: "Brand Kit" },
   { id: "connections", label: "Connections" },
   { id: "billing", label: "Billing & credits" },
 ];
@@ -21,11 +25,15 @@ const TABS: { id: Tab; label: string }[] = [
 export default function SettingsTabs({
   initialTab,
   stripeStatus,
+  uid,
+  brand,
   connections,
   billing,
 }: {
   initialTab: Tab;
   stripeStatus: string | null;
+  uid: string;
+  brand: BrandKit | null;
   connections: { providersConfigured: Record<string, boolean>; statuses: Record<string, { connected: boolean; accountName: string | null }> };
   billing: { packs: CreditPack[]; configured: boolean };
 }) {
@@ -62,6 +70,8 @@ export default function SettingsTabs({
           </button>
         ))}
       </div>
+
+      {tab === "brand" && <BrandKitForm uid={uid} initial={brand} />}
 
       {tab === "connections" && (
         <section className="flex flex-col gap-4">

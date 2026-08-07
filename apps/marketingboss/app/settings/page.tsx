@@ -7,6 +7,7 @@ import { youtubeConfigured } from "@/lib/youtube";
 import { OAUTH_ADAPTERS } from "@/lib/oauth";
 import { CREDIT_PACKS } from "@/lib/billing";
 import { stripeConfigured } from "@/lib/stripe";
+import { BRAND_KIT_COLUMNS, type BrandKit } from "@/lib/brandKit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -30,9 +31,10 @@ export default async function SettingsPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: profile }, statuses] = await Promise.all([
+  const [{ data: profile }, statuses, { data: brand }] = await Promise.all([
     supabase.from("profiles").select("credits").eq("user_id", user.id).single(),
     getConnectionStatuses(user.id, PLATFORMS),
+    supabase.from("brand_kits").select(BRAND_KIT_COLUMNS).eq("user_id", user.id).maybeSingle(),
   ]);
 
   const providersConfigured: Record<string, boolean> = {
@@ -44,7 +46,7 @@ export default async function SettingsPage({
     youtube: youtubeConfigured(),
   };
 
-  const initialTab = sp.tab === "billing" ? "billing" : "connections";
+  const initialTab = sp.tab === "billing" ? "billing" : sp.tab === "connections" ? "connections" : "brand";
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-8 px-5 py-8 sm:py-12">
@@ -56,6 +58,8 @@ export default async function SettingsPage({
       <SettingsTabs
         initialTab={initialTab}
         stripeStatus={sp.status ?? null}
+        uid={user.id}
+        brand={(brand ?? null) as BrandKit | null}
         connections={{ providersConfigured, statuses }}
         billing={{ packs: CREDIT_PACKS, configured: stripeConfigured() }}
       />

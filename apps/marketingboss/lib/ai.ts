@@ -104,7 +104,7 @@ const DRAFT_SCHEMA = {
  * "image" or "video" it also writes a strong fal.ai generation prompt the user
  * reviews before rendering; the unused prompt field comes back empty.
  */
-export async function draftPost(intent: string, type: PostType): Promise<Draft> {
+export async function draftPost(intent: string, type: PostType, brand?: string): Promise<Draft> {
   const wantsImage = type === "image";
   const wantsVideo = type === "video";
 
@@ -121,7 +121,12 @@ export async function draftPost(intent: string, type: PostType): Promise<Draft> 
       : wantsVideo
         ? "- videoPrompt: a vivid, detailed prompt for an AI video generator (subject, motion, camera move, mood, ~5s clip). Leave imagePrompt as an empty string."
         : "- Leave both imagePrompt and videoPrompt as empty strings (this is a text-only post).",
-  ].join("\n");
+    // Brand Kit — fold the user's brand memory in so copy + media prompts stay
+    // on-brand. Empty string when no kit is set, leaving the prompt unchanged.
+    brand?.trim() ? `\n${brand.trim()}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   const user = `Write a ${type} social media post about:\n\n${intent}`;
 
