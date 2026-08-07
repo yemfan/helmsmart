@@ -3,8 +3,12 @@ import { stripe } from "@/lib/stripe";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { getPaidSubscriptionEligibility } from "@/lib/paidSubscriptionEligibility";
 import { getStripePriceIdForPlan } from "@/lib/stripePriceIds";
+import { CREDIT_TIERS } from "@/lib/credits/pricing";
+import { monthlyCreditsForPlan } from "@/lib/credits/subscriptionCredits";
 
-type Body = { plan: "pro" | "premium" };
+// The usage-model plans (Starter/Growth/Scale) replace the old Pro/Premium
+// tiers; legacy slugs still resolve (nearest plan) so nothing breaks mid-cutover.
+type Body = { plan: string };
 
 const PRO_ONLY_MSG =
   "Paid plans are for licensed agents, brokers, and real estate teams. Sign up with a professional account or contact support.";
@@ -25,11 +29,24 @@ export async function POST(req: Request) {
     }
 
     const body = (await req.json().catch(() => ({}))) as Partial<Body>;
-    if (body.plan !== "pro" && body.plan !== "premium") {
-      return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
+    const plan = typeof body.plan === "string" ? body.plan : "";
+    const tier = CREDIT_TIERS.find((t) => t.id === plan);
+
+    // New credit plans resolve their price from env; legacy pro/premium still work.
+    let price: string | undefined;
+    if (tier) price = process.env[tier.priceEnv]?.trim();
+    else if (plan === "pro" || plan === "premium") price = getStripePriceIdForPlan(plan);
+
+    if (!price) {
+      return NextResponse.json(
+        { error: tier ? `That plan isn't set up yet (missing ${tier.priceEnv}).` : "Invalid plan" },
+        { status: tier ? 503 : 400 },
+      );
     }
 
-    const price = getStripePriceIdForPlan(body.plan);
+    // Monthly credit allotment carried in the subscription metadata so each
+    // paid invoice (first + renewals) grants the right number of credits.
+    const credits = tier ? tier.monthlyCredits : monthlyCreditsForPlan(plan);
     const origin = new URL(req.url).origin;
 
     const session = await stripe.checkout.sessions.create({
@@ -42,12 +59,14 @@ export async function POST(req: Request) {
       subscription_data: {
         metadata: {
           user_id: user.id,
-          plan: body.plan,
+          plan,
+          credits: String(credits),
         },
       },
       metadata: {
         user_id: user.id,
-        plan: body.plan,
+        plan,
+        credits: String(credits),
       },
     });
 
