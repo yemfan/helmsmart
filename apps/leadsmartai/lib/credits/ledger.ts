@@ -9,22 +9,10 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
  * `credit_ledger`. All mutations run server-side with the service role and an
  * explicitly-resolved user id (same posture as consumeAiToken / adminUsage).
  *
- * Credit scale ≈ $0.05 of retail value per credit (kept aligned with
- * MarketingBoss so a unified wallet stays possible later). These are the single
- * source of truth for what an action costs — Phase 2 wires the actual features
- * (voice metering, listing video, twin, swap, CTA, images) to spend them.
+ * Per-action credit costs are the single source of truth in the pricing config
+ * (`@/lib/credits/pricing`), re-exported here for the metering call sites.
  */
-export const CREDIT_COSTS = {
-  voicePerMinute: 5,
-  sms: 1,
-  image: 1,
-  ctaEndCard: 5,
-  listingClip: 5, // one cinematic clip (fal image-to-video) in a listing ad
-  listingVideo: 15,
-  swap: 20,
-  twinAvatar: 20,
-  voiceClone: 40,
-} as const;
+export { CREDIT_COSTS } from "@/lib/credits/pricing";
 
 export type CreditReason =
   | "signup"
