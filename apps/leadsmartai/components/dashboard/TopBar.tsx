@@ -29,6 +29,7 @@ import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { leadSmartMobileNav } from "@/nav.config";
 import { CloseBossLogo, CloseBossMark } from "@/components/brand/CloseBossLogo";
 import { NotificationsBell } from "@/components/dashboard/NotificationsBell";
+import { CreditBalancePill } from "@/components/dashboard/CreditBalancePill";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
 import LanguageToggle from "@/components/LanguageToggle";
 import { isAdminOrSupportRole, isAgentOrBrokerProfileRole } from "@/lib/rolePortalPaths";
@@ -542,6 +543,7 @@ export default function TopBar({
             in-page CTAs.
           */}
           <div className="hidden md:flex items-center gap-2">
+            <CreditBalancePill />
             <LanguageToggle />
             <SupportChatLauncher />
             <QuickActionsDropdown />
