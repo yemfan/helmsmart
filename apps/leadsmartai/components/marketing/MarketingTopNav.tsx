@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import {
   useCallback,
   useEffect,
-  useId,
   useRef,
   useState,
   type ReactNode,
@@ -118,6 +117,20 @@ export function MarketingTopNav({
   );
 }
 
+/**
+ * Slugify a stable string (an href/label) into a DOM-id-safe token.
+ * Deterministic and ASCII-only so it produces the same value on the server
+ * and the client regardless of the active locale.
+ */
+function slugForId(value: string): string {
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "group"
+  );
+}
+
 function NavEntry({ section }: { section: NavSection }) {
   if (isNavDivider(section) || isNavSectionLabel(section)) {
     return null;
@@ -151,7 +164,15 @@ function NavDropdown({ group }: { group: NavGroupItem }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [open, setOpen] = useState(false);
-  const menuId = useId();
+  // Deterministic menu id (NOT `useId`). `useId` derives its value from the
+  // component's position in the React tree, and that position is not
+  // guaranteed identical between the streaming SSR pass and the single-pass
+  // client hydration under the App Router — so the server- and client-
+  // generated ids could drift, surfacing as a hydration mismatch on this
+  // button's `aria-controls`. A slug of the group's first href is stable,
+  // unique per group, and locale-independent, so SSR and hydration always
+  // agree while preserving the `aria-controls`↔menu `id` relationship.
+  const menuId = `nav-menu-${slugForId(group.items[0]?.href ?? group.label)}`;
 
   // Active if any child route matches the current pathname.
   const isActive = group.items.some((child) => {
