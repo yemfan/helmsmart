@@ -12,14 +12,19 @@
  * Credit scale: 1 credit ≈ $0.02 of our cost, so per-action credits track COGS.
  */
 
-/** What each real-cost action spends. SMS is bundled (fair-use), never charged. */
+/**
+ * We charge for only two things: VOICE CALLING and VIDEO CREATION. Everything
+ * else — images, SMS, voice cloning, CRM, chat with Max — is included free. A
+ * one-sentence story for users: "you only pay for AI calls and the videos you make."
+ */
 export const CREDIT_COSTS = {
-  voicePerMinute: 8, // AI phone call, per billable minute (Retell all-in ~$0.15/min)
+  voicePerMinute: 8, // voice calling — charged (Retell all-in ~$0.15/min)
+  listingClip: 15, // video creation — a cinematic listing clip (fal Kling, ~$0.30)
+  twinAvatar: 20, // video creation — digital-twin lipsync render (~$0.35)
+  ctaEndCard: 5, // video creation — branded end-card appended to a video
+  // Included free — not a call and not a video:
+  voiceClone: 0, // one-time voice-model setup
   image: 0, // social images render via next/og — no marginal cost
-  ctaEndCard: 5,
-  listingClip: 15, // one cinematic clip (fal Kling image-to-video, ~$0.30)
-  twinAvatar: 20, // digital-twin lipsync render (~$0.35)
-  voiceClone: 40, // one-time ElevenLabs clone (value-priced)
 } as const;
 
 export type CreditTierId = "starter" | "growth" | "scale";
