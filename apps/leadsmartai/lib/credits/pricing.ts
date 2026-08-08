@@ -42,18 +42,18 @@ export const CREDIT_TIERS: ReadonlyArray<{
   {
     id: "starter",
     name: "Starter",
-    priceUsd: 29,
+    priceUsd: 49,
     monthlyCredits: 1000,
     priceEnv: "STRIPE_PRICE_ID_CB_STARTER",
-    blurb: "~200 call-min or ~13 listing clips or ~50 twin videos",
+    blurb: "~125 call-min or ~50 twin videos",
   },
   {
     id: "growth",
     name: "Growth",
-    priceUsd: 79,
+    priceUsd: 99,
     monthlyCredits: 3000,
     priceEnv: "STRIPE_PRICE_ID_CB_GROWTH",
-    blurb: "~600 call-min, heavier video",
+    blurb: "~375 call-min, heavier video",
   },
   {
     id: "scale",
