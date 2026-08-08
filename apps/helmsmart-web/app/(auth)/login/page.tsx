@@ -41,34 +41,6 @@ export default function LoginPage() {
       <h1 className="text-xl font-semibold text-slate-900 mb-1">Welcome back</h1>
       <p className="text-sm text-slate-500 mb-6">Sign in to your account</p>
 
-      {/* OAuth buttons */}
-      <div className="space-y-3 mb-6">
-        <a
-          href="/api/auth/google"
-          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
-        >
-          <GoogleIcon />
-          Continue with Google
-        </a>
-        <a
-          href="/api/auth/apple"
-          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-900 bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-slate-800 transition-colors"
-        >
-          <AppleIcon />
-          Continue with Apple
-        </a>
-      </div>
-
-      {/* Divider */}
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-200" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-slate-400 tracking-wide">or sign in with email</span>
-        </div>
-      </div>
-
       {oauthError && (
         <p className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
           Sign-in failed. Please try again.
@@ -137,6 +109,34 @@ export default function LoginPage() {
           {isPending ? "Signing in…" : "Sign in"}
         </button>
       </form>
+
+      {/* Divider */}
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-200" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-white px-2 text-slate-400 tracking-wide">or</span>
+        </div>
+      </div>
+
+      {/* OAuth buttons */}
+      <div className="space-y-3">
+        <a
+          href="/api/auth/google"
+          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
+        >
+          <GoogleIcon />
+          Continue with Google
+        </a>
+        <a
+          href="/api/auth/apple"
+          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-900 bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-slate-800 transition-colors"
+        >
+          <AppleIcon />
+          Continue with Apple
+        </a>
+      </div>
 
       <p className="mt-6 text-center text-sm text-slate-500">
         Don&apos;t have an account?{" "}

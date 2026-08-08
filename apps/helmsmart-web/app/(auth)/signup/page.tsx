@@ -37,34 +37,6 @@ export default function SignUpPage() {
       <h1 className="text-xl font-semibold text-slate-900 mb-1">Create your account</h1>
       <p className="text-sm text-slate-500 mb-6">Start your free trial — no credit card required</p>
 
-      {/* OAuth buttons */}
-      <div className="space-y-3 mb-6">
-        <a
-          href="/api/auth/google"
-          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
-        >
-          <GoogleIcon />
-          Continue with Google
-        </a>
-        <a
-          href="/api/auth/apple"
-          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-900 bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-slate-800 transition-colors"
-        >
-          <AppleIcon />
-          Continue with Apple
-        </a>
-      </div>
-
-      {/* Divider */}
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-200" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-slate-400 tracking-wide">or sign up with email</span>
-        </div>
-      </div>
-
       <form action={action} className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
@@ -125,6 +97,34 @@ export default function SignUpPage() {
           </button>
         )}
       </form>
+
+      {/* Divider */}
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-200" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-white px-2 text-slate-400 tracking-wide">or</span>
+        </div>
+      </div>
+
+      {/* OAuth buttons */}
+      <div className="space-y-3">
+        <a
+          href="/api/auth/google"
+          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
+        >
+          <GoogleIcon />
+          Continue with Google
+        </a>
+        <a
+          href="/api/auth/apple"
+          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-900 bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-slate-800 transition-colors"
+        >
+          <AppleIcon />
+          Continue with Apple
+        </a>
+      </div>
 
       <p className="mt-6 text-center text-sm text-slate-500">
         Already have an account?{" "}
