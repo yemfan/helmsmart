@@ -8,6 +8,7 @@ import { SmsConsentNotice, composeConsentVersion } from "@/components/consent/Sm
 import { useSignupProfilePrefill, type SignupPrefillConsumer } from "@/lib/hooks/useSignupProfilePrefill";
 import { safeInternalRedirect } from "@/lib/loginUrl";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
+import { getOAuthRedirectOrigin } from "@/lib/siteUrl";
 import { formatUsPhoneInput, formatUsPhoneStored, isValidUsPhone } from "@/lib/usPhone";
 import {
   readSignupAttribution,
@@ -280,6 +281,26 @@ function SignupForm() {
     }
   }
 
+  async function handleOAuth(provider: "google" | "apple") {
+    setError(null);
+    setLoading(true);
+    try {
+      const supabase = supabaseBrowser();
+      const nextPath = safeInternalRedirect(searchParams?.get("redirect") ?? null) ?? "/";
+      const origin = getOAuthRedirectOrigin();
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}&provider=${provider}`,
+        },
+      });
+      if (oauthError) throw oauthError;
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Sign in failed.");
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-sm bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-5">
@@ -406,6 +427,34 @@ function SignupForm() {
             {loading ? (hasSession ? "Saving…" : "Creating account...") : hasSession ? "Save profile" : "Sign Up"}
           </button>
         </form>
+
+        {!hasSession ? (
+          <>
+            <div className="flex items-center gap-3">
+              <span className="h-px flex-1 bg-gray-200" />
+              <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">or</span>
+              <span className="h-px flex-1 bg-gray-200" />
+            </div>
+            <div className="space-y-2">
+              <button
+                type="button"
+                disabled={loading || prefillLoading}
+                onClick={() => void handleOAuth("google")}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Continue with Google
+              </button>
+              <button
+                type="button"
+                disabled={loading || prefillLoading}
+                onClick={() => void handleOAuth("apple")}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Continue with Apple
+              </button>
+            </div>
+          </>
+        ) : null}
 
         <p className="text-[11px] text-gray-500 text-center space-y-2">
           {hasSession ? (
