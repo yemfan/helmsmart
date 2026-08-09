@@ -66,12 +66,21 @@ function parseHashtags(s: string): string[] {
     .filter(Boolean);
 }
 
-export default function Compose({ status }: { status: ComposeStatus }) {
+export default function Compose({
+  status,
+  initialIntent,
+  initialType,
+}: {
+  status: ComposeStatus;
+  /** Prefill from an accepted Opportunity (?intent= / ?type= on /actions/new). */
+  initialIntent?: string;
+  initialType?: PostType;
+}) {
   const [supabase] = useState(() => createClient());
   const [uid, setUid] = useState<string | null>(null);
 
-  const [type, setType] = useState<PostType>("image");
-  const [intent, setIntent] = useState("");
+  const [type, setType] = useState<PostType>(initialType ?? "image");
+  const [intent, setIntent] = useState(initialIntent ?? "");
   const [drafting, setDrafting] = useState(false);
 
   const [hasDraft, setHasDraft] = useState(false);

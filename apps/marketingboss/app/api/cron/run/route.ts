@@ -9,6 +9,8 @@ import { creditCost } from "@/lib/generation";
 import { getConnection, getValidAccessToken } from "@/lib/social";
 import { fetchMetric, METRIC_SUPPORTED, type Metric } from "@/lib/metrics";
 import { runDueWeeklySlots } from "@/lib/weeklySchedule";
+import { discoverForUser } from "@/lib/discovery";
+import { latestOpportunityAt } from "@/lib/opportunities";
 import type { BrandBrief } from "@/lib/research";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -26,6 +28,9 @@ const ELIGIBLE: Record<string, string[]> = {
 // Small batches per tick so we stay within the function time budget.
 const DRAIN_LIMIT = 8;
 const ADVANCE_LIMIT = 5;
+// Discovery includes a live web-research scout, so one user per tick — with a
+// */15 cron and a once-per-24h per-user gate, that's still 96 scans/day of headroom.
+const DISCOVER_LIMIT = 1;
 
 type ScheduledRow = {
   id: string;
@@ -172,7 +177,38 @@ export async function GET(req: Request) {
     console.warn("[cron/run] weekly-schedule phase failed:", e instanceof Error ? e.message : e);
   }
 
-  return NextResponse.json({ ok: true, drained, posted, drafted, refreshed, weeklyEnqueued, at: nowIso });
+  // 5) Opportunity discovery — scan trends / competitors / performance for users
+  // who haven't been scanned in 24h. Best-effort; no-ops pre-migration-0015.
+  let discovered = 0;
+  try {
+    const [{ data: owners }, { data: kits }] = await Promise.all([
+      admin.from("campaigns").select("user_id").eq("status", "active").limit(50),
+      admin.from("brand_kits").select("user_id").limit(50),
+    ]);
+    const users = [
+      ...new Set(
+        [...((owners as { user_id: string }[]) ?? []), ...((kits as { user_id: string }[]) ?? [])].map((r) => r.user_id),
+      ),
+    ];
+    const dayAgo = new Date(now.getTime() - 24 * 3600 * 1000).toISOString();
+    let ran = 0;
+    for (const uid of users) {
+      if (ran >= DISCOVER_LIMIT) break;
+      const latest = await latestOpportunityAt(uid);
+      if (latest && latest > dayAgo) continue;
+      ran++;
+      try {
+        const r = await discoverForUser(uid);
+        discovered += r.found;
+      } catch {
+        /* per-user best effort */
+      }
+    }
+  } catch (e) {
+    console.warn("[cron/run] discovery phase failed:", e instanceof Error ? e.message : e);
+  }
+
+  return NextResponse.json({ ok: true, drained, posted, drafted, refreshed, weeklyEnqueued, discovered, at: nowIso });
 }
 
 type MetricRow = {
