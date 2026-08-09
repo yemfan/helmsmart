@@ -7,6 +7,7 @@ import { fulfillSession } from "@/lib/fulfill";
 import { getConnectionStatuses } from "@/lib/social";
 import { listCampaigns, listDrafts, listHistory, listScheduled } from "@/lib/campaigns";
 import { listOpenOpportunities } from "@/lib/opportunities";
+import { listLearnings } from "@/lib/learnings";
 import { engagementScore } from "@/lib/metrics";
 
 export const runtime = "nodejs";
@@ -57,7 +58,7 @@ export default async function Home({
     }
   }
 
-  const [{ data: profile }, socialStatuses, campaigns, drafts, scheduled, history, { data: brandKit }, opportunities] =
+  const [{ data: profile }, socialStatuses, campaigns, drafts, scheduled, history, { data: brandKit }, opportunities, learnings] =
     await Promise.all([
       supabase.from("profiles").select("credits").eq("user_id", user.id).single(),
       getConnectionStatuses(user.id, ALL_PLATFORMS),
@@ -67,6 +68,7 @@ export default async function Home({
       listHistory(user.id, 20),
       supabase.from("brand_kits").select("brand_name").eq("user_id", user.id).maybeSingle(),
       listOpenOpportunities(user.id, 2).catch(() => []),
+      listLearnings(user.id, 1).catch(() => []),
     ]);
 
   const credits = profile?.credits ?? 0;
@@ -260,7 +262,14 @@ export default async function Home({
           </Link>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
-          {topPost ? (
+          {learnings.length > 0 ? (
+            <>
+              <span className="font-medium text-slate-900">{learnings[0].insight}</span>{" "}
+              <Link href="/learning" className="font-semibold text-boss-gold underline underline-offset-2">
+                See the evidence →
+              </Link>
+            </>
+          ) : topPost ? (
             <>
               Your best recent post: <span className="font-medium text-slate-900">“{topPost.p.title || topPost.p.caption?.slice(0, 60)}”</span>{" "}
               ({TYPE_EMOJI[topPost.p.type]} {topPost.p.angle || topPost.p.type}, engagement {topPost.score}). More like

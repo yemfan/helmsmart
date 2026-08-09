@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildInsights, getCampaign, insertPosts, type PlannedPostRow } from "@/lib/campaigns";
+import { appliedLearningsHint } from "@/lib/learnings";
 import { creditCost } from "@/lib/generation";
 import { planPosts } from "@/lib/planner";
 
@@ -35,7 +36,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 
   try {
-    const insights = await buildInsights(user.id, id).catch(() => null);
+    const [autoInsights, learned] = await Promise.all([
+      buildInsights(user.id, id).catch(() => null),
+      appliedLearningsHint(user.id, id).catch(() => null),
+    ]);
+    const insights = [autoInsights, learned].filter(Boolean).join("\n") || null;
     const planned = await planPosts(campaign.brief, {
       mediaTypes: campaign.media_types,
       channels: campaign.channels,
