@@ -30,6 +30,9 @@ export type Campaign = {
   objective?: string | null;
   template?: string | null;
   milestones?: { id: string; title: string; metric: "published" | "engagement"; target: number }[] | null;
+  /** Cost-only autonomy dial (migration 0018): auto-run actions whose estimated
+   * cost is <= this many credits; null = ask for everything. */
+  auto_approve_max_credits?: number | null;
 };
 
 export type PostStatus = "draft" | "approved" | "scheduled" | "publishing" | "published" | "failed" | "skipped";
@@ -231,6 +234,7 @@ export async function updateCampaignSettings(
     channels?: string[];
     budget_credits?: number | null;
     mode?: CampaignMode;
+    auto_approve_max_credits?: number | null;
   },
 ): Promise<void> {
   const admin = createAdminClient();
@@ -325,10 +329,14 @@ export type CreateCampaignInput = {
   objective?: string | null;
   template?: string | null;
   milestones?: { id: string; title: string; metric: "published" | "engagement"; target: number }[] | null;
+  /** Autonomy dial (migration 0018) — stripped on insert if the DB predates it. */
+  autoApproveMaxCredits?: number | null;
 };
 
-/** Columns added by migration 0016 — stripped and retried if the DB predates it. */
-const PLAYBOOK_COLS = ["objective", "template", "milestones"] as const;
+/** Columns from later migrations (0016, 0018) — stripped one-by-one (only the
+ * ones the error names) and retried, so a partially-migrated DB keeps every
+ * column it does have. */
+const OPTIONAL_CAMPAIGN_COLS = ["objective", "template", "milestones", "auto_approve_max_credits"] as const;
 
 export async function createCampaign(userId: string, input: CreateCampaignInput): Promise<Campaign> {
   const admin = createAdminClient();
@@ -346,19 +354,19 @@ export async function createCampaign(userId: string, input: CreateCampaignInput)
     objective: input.objective ?? null,
     template: input.template ?? null,
     milestones: input.milestones ?? null,
+    auto_approve_max_credits: input.autoApproveMaxCredits ?? null,
   };
 
-  const first = await admin.from("campaigns").insert(values).select(COLS).single();
-  if (!first.error) return first.data as Campaign;
-
-  const msg = first.error.message || "";
-  if (PLAYBOOK_COLS.some((c) => msg.includes(c))) {
-    for (const c of PLAYBOOK_COLS) delete values[c];
-    const retry = await admin.from("campaigns").insert(values).select(COLS).single();
-    if (!retry.error) return retry.data as Campaign;
-    throw new Error(retry.error.message);
+  // Retry, dropping only the optional columns the error actually names.
+  for (let attempt = 0; attempt <= OPTIONAL_CAMPAIGN_COLS.length; attempt++) {
+    const res = await admin.from("campaigns").insert(values).select(COLS).single();
+    if (!res.error) return res.data as Campaign;
+    const msg = res.error.message || "";
+    const missing = OPTIONAL_CAMPAIGN_COLS.filter((c) => c in values && msg.includes(c));
+    if (missing.length === 0) throw new Error(msg);
+    for (const c of missing) delete values[c];
   }
-  throw new Error(msg);
+  throw new Error("Could not save the playbook.");
 }
 
 export async function setCampaignStatus(userId: string, id: string, status: CampaignStatus): Promise<void> {
