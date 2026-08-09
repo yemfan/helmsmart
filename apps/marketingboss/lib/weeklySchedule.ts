@@ -59,6 +59,14 @@ export const TOPIC_PRESETS: readonly string[] = [
   "Motivational / value post",
 ];
 
+/** One posting run: a time of day with its own content type and channels. */
+export type ScheduleRun = {
+  hour: number;
+  minute: number;
+  mediaType: MediaType;
+  channels: WeeklyPlatform[] | null; // null/empty = all connected of this media type
+};
+
 export type WeeklyScheduleDay = {
   weekday: number;
   enabled: boolean;
@@ -69,8 +77,10 @@ export type WeeklyScheduleDay = {
   channels: WeeklyPlatform[] | null; // null/empty = all connected of this media type
   /** Legacy single topic — the fallback when the rotation pool is empty. */
   topic: string;
-  /** Topic ROTATION pool (0019): each posting day takes the next topic. */
+  /** Topic ROTATION pool (0019): each posting run takes the next topic. */
   topics: string[];
+  /** Posting runs (0020). Always at least one (falls back to the legacy time). */
+  runs: ScheduleRun[];
 };
 
 type Row = {
@@ -84,8 +94,34 @@ type Row = {
   channels: string[] | null;
   topic: string;
   topics?: string[] | null; // 0019; absent pre-migration
+  runs?: unknown; // 0020; absent pre-migration
+  fired_key?: string | null; // 0020
   last_fired_on: string | null;
 };
+
+/** Validate a stored/submitted runs value into ScheduleRun[]; [] when absent/garbage. */
+export function parseRuns(v: unknown): ScheduleRun[] {
+  if (!Array.isArray(v)) return [];
+  const runs: ScheduleRun[] = [];
+  for (const item of v.slice(0, 6)) {
+    const o = item as Record<string, unknown>;
+    const hour = Number(o?.hour);
+    const minute = Number(o?.minute);
+    if (!Number.isFinite(hour) || !Number.isFinite(minute)) continue;
+    const mediaType = normalizeMediaType(o?.mediaType);
+    const allowed = platformsForMedia(mediaType) as readonly string[];
+    const channels = Array.isArray(o?.channels)
+      ? ((o.channels as unknown[]).filter((p): p is WeeklyPlatform => typeof p === "string" && allowed.includes(p)) as WeeklyPlatform[])
+      : null;
+    runs.push({
+      hour: Math.min(23, Math.max(0, Math.floor(hour))),
+      minute: Math.min(59, Math.max(0, Math.floor(minute))),
+      mediaType,
+      channels: channels && channels.length ? channels : null,
+    });
+  }
+  return runs.sort((a, b) => a.hour * 60 + a.minute - (b.hour * 60 + b.minute));
+}
 
 function defaultDay(weekday: number): WeeklyScheduleDay {
   return {
@@ -98,6 +134,7 @@ function defaultDay(weekday: number): WeeklyScheduleDay {
     channels: null,
     topic: "",
     topics: [],
+    runs: [{ hour: 9, minute: 0, mediaType: "text", channels: null }],
   };
 }
 
@@ -117,6 +154,19 @@ function rowToDay(r: Row): WeeklyScheduleDay {
     channels: channels && channels.length ? channels : null,
     topic: r.topic ?? "",
     topics: Array.isArray(r.topics) ? r.topics.filter((t): t is string => typeof t === "string" && !!t.trim()) : [],
+    runs: (() => {
+      const runs = parseRuns(r.runs);
+      if (runs.length > 0) return runs;
+      // Legacy row: its single time/type/channels become run 0.
+      return [
+        {
+          hour: r.post_hour,
+          minute: r.post_minute,
+          mediaType,
+          channels: channels && channels.length ? (channels as WeeklyPlatform[]) : null,
+        },
+      ];
+    })(),
   };
 }
 
@@ -136,42 +186,54 @@ export async function saveWeeklySchedule(userId: string, days: WeeklyScheduleDay
   const admin = createAdminClient();
   const nowIso = new Date().toISOString();
   const rows: Record<string, unknown>[] = days.slice(0, 7).map((d) => {
-    const mediaType = normalizeMediaType(d.mediaType);
-    const allowed = platformsForMedia(mediaType) as readonly string[];
-    const channels = d.channels && d.channels.length ? d.channels.filter((c) => allowed.includes(c)) : null;
     const topics = (d.topics ?? [])
       .filter((t) => typeof t === "string" && t.trim())
       .map((t) => t.trim().slice(0, 300))
-      .slice(0, 12);
+      .slice(0, 20);
+    const runs = parseRuns(d.runs);
+    // Run 0 mirrors into the legacy columns so a pre-0020 DB (or old code)
+    // still fires the first run of the day.
+    const first = runs[0] ?? {
+      hour: d.postHour,
+      minute: d.postMinute,
+      mediaType: normalizeMediaType(d.mediaType),
+      channels: d.channels,
+    };
     return {
       user_id: userId,
       weekday: d.weekday,
       enabled: Boolean(d.enabled),
-      post_hour: Math.min(23, Math.max(0, Math.floor(d.postHour))),
-      post_minute: Math.min(59, Math.max(0, Math.floor(d.postMinute))),
+      post_hour: Math.min(23, Math.max(0, Math.floor(first.hour))),
+      post_minute: Math.min(59, Math.max(0, Math.floor(first.minute))),
       timezone: d.timezone || "America/Los_Angeles",
-      media_type: mediaType,
-      channels: channels && channels.length ? channels : null,
+      media_type: first.mediaType,
+      channels: first.channels && first.channels.length ? first.channels : null,
       topic: (d.topic ?? "").slice(0, 300),
       topics: topics.length ? topics : null,
+      runs: runs.length ? runs : null,
       last_fired_on: null, // editing resets so a changed time/topic can fire today
+      fired_key: null,
       updated_at: nowIso,
     };
   });
-  const first = await admin.from("weekly_schedules").upsert(rows, { onConflict: "user_id,weekday" });
-  if (!first.error) return;
-  // Pre-0019 DB: retry without the topics column so saving still works.
-  if ((first.error.message || "").includes("topics")) {
-    const stripped = rows.map((r) => {
+
+  // Strip only the columns a partially-migrated DB doesn't have yet (0019
+  // topics, 0020 runs/fired_key), one error at a time.
+  const OPTIONAL = ["topics", "runs", "fired_key"] as const;
+  let payload = rows;
+  for (let attempt = 0; attempt <= OPTIONAL.length; attempt++) {
+    const res = await admin.from("weekly_schedules").upsert(payload, { onConflict: "user_id,weekday" });
+    if (!res.error) return;
+    const msg = res.error.message || "";
+    const missing = OPTIONAL.filter((c) => msg.includes(c) && payload.some((r) => c in r));
+    if (missing.length === 0) throw new Error(msg);
+    payload = payload.map((r) => {
       const copy = { ...r };
-      delete copy.topics;
+      for (const c of missing) delete copy[c];
       return copy;
     });
-    const retry = await admin.from("weekly_schedules").upsert(stripped, { onConflict: "user_id,weekday" });
-    if (!retry.error) return;
-    throw new Error(retry.error.message);
   }
-  throw new Error(first.error.message);
+  throw new Error("Could not save the schedule.");
 }
 
 // ── Topic → researched post (web tools + structured JSON) ────────────────────
@@ -284,15 +346,23 @@ function localNow(tz: string): { weekday: number; minutes: number; date: string 
 }
 
 /**
- * Deterministic, stateless topic rotation: the local calendar date picks the
- * topic (days-since-epoch % pool size), so consecutive posting days step
- * through the pool with no cursor to store or drift.
+ * Deterministic, stateless topic rotation — now PER RUN: the local calendar
+ * date and the run's index within the day pick the topic
+ * ((days-since-epoch × runs-per-day + run-index) % pool size), so two runs on
+ * the same day get two different topics and there's no cursor to drift.
  */
-export function topicForDate(pool: string[], localDate: string, fallback: string): string {
+export function topicForSlot(
+  pool: string[],
+  localDate: string,
+  runsPerDay: number,
+  runIndex: number,
+  fallback: string,
+): string {
   const topics = pool.filter((t) => t.trim());
   if (topics.length === 0) return fallback;
   const ordinal = Math.floor(Date.parse(`${localDate}T00:00:00Z`) / 86_400_000);
-  return topics[((ordinal % topics.length) + topics.length) % topics.length];
+  const seq = ordinal * Math.max(1, runsPerDay) + runIndex;
+  return topics[((seq % topics.length) + topics.length) % topics.length];
 }
 
 /**
@@ -315,64 +385,117 @@ export async function runDueWeeklySlots(): Promise<{ fired: number; enqueued: nu
     const tz = r.timezone || "America/Los_Angeles";
     const now = localNow(tz);
     if (now.weekday !== r.weekday) continue;
-    if (now.minutes < r.post_hour * 60 + r.post_minute) continue;
-    if (r.last_fired_on === now.date) continue;
 
-    // Optimistic claim (dedupe across ticks).
-    let claim = admin
-      .from("weekly_schedules")
-      .update({ last_fired_on: now.date, updated_at: new Date().toISOString() })
-      .eq("user_id", r.user_id)
-      .eq("weekday", r.weekday);
-    claim = r.last_fired_on === null ? claim.is("last_fired_on", null) : claim.eq("last_fired_on", r.last_fired_on);
-    const { data: claimed } = await claim.select("user_id");
-    if (!claimed || (claimed as unknown[]).length === 0) continue;
+    // Runs: 0020 rows carry several; legacy rows get their single time as run 0.
+    const stored = parseRuns(r.runs);
+    const runs: ScheduleRun[] = stored.length
+      ? stored
+      : [
+          {
+            hour: r.post_hour,
+            minute: r.post_minute,
+            mediaType: normalizeMediaType(r.media_type),
+            channels: (r.channels as WeeklyPlatform[] | null) ?? null,
+          },
+        ];
 
-    try {
-      const mediaType = normalizeMediaType(r.media_type);
-      const topic = topicForDate(pool, now.date, r.topic ?? "");
-      const post = await generatePostFromTopic(topic, mediaType);
-      if (!post) continue;
-      fired += 1;
+    // Which runs already fired today (fired_key = "YYYY-MM-DD:0,1").
+    const firedToday = new Set<number>(
+      r.fired_key?.startsWith(`${now.date}:`)
+        ? r.fired_key.slice(now.date.length + 1).split(",").map((n) => parseInt(n, 10)).filter(Number.isFinite)
+        : [],
+    );
+    // Legacy dedupe still counts for run 0 (pre-0020 rows / old code's claims).
+    if (r.last_fired_on === now.date) firedToday.add(0);
 
-      const allowed = platformsForMedia(mediaType);
-      const statuses = await getConnectionStatuses(r.user_id, [...allowed]);
-      const wanted = r.channels && r.channels.length ? new Set(r.channels) : null;
-      const channels = allowed.filter((p) => statuses[p]?.connected && (!wanted || wanted.has(p)));
-      if (channels.length === 0) continue;
+    let prevKey = r.fired_key ?? null;
+    let canUseFiredKey = true; // flips off if the DB predates 0020
 
-      // Generate the media for image / video days (credit-metered; skip on shortfall).
-      let mediaUrl: string | null = null;
-      if (mediaType !== "text") {
-        if (!post.mediaPrompt) continue;
-        try {
-          const g = await generatePostMediaAdmin(admin, r.user_id, null, 0, mediaType, post.mediaPrompt);
-          mediaUrl = g.url;
-        } catch (e) {
-          console.warn(`[mkb weekly-social] media gen failed (user ${r.user_id}, wd ${r.weekday}):`, e instanceof Error ? e.message : e);
-          continue;
+    for (let i = 0; i < runs.length; i++) {
+      const run = runs[i];
+      if (firedToday.has(i)) continue;
+      if (now.minutes < run.hour * 60 + run.minute) continue;
+
+      // Optimistic claim (dedupe across ticks) — per run via fired_key, with a
+      // legacy last_fired_on fallback (run 0 only) when the column is missing.
+      const nextKey = `${now.date}:${[...firedToday, i].sort((a, b) => a - b).join(",")}`;
+      let claimedOk = false;
+      if (canUseFiredKey) {
+        let claim = admin
+          .from("weekly_schedules")
+          .update({ fired_key: nextKey, last_fired_on: now.date, updated_at: new Date().toISOString() })
+          .eq("user_id", r.user_id)
+          .eq("weekday", r.weekday);
+        claim = prevKey === null ? claim.is("fired_key", null) : claim.eq("fired_key", prevKey);
+        const { data: claimed, error: claimErr } = await claim.select("user_id");
+        if (claimErr && (claimErr.message || "").includes("fired_key")) {
+          canUseFiredKey = false;
+        } else {
+          claimedOk = Boolean(claimed && (claimed as unknown[]).length > 0);
+          if (!claimedOk) break; // lost the race for this row — another tick owns it
         }
       }
+      if (!canUseFiredKey) {
+        if (i !== 0) break; // pre-0020 DB can only dedupe one run per day
+        let claim = admin
+          .from("weekly_schedules")
+          .update({ last_fired_on: now.date, updated_at: new Date().toISOString() })
+          .eq("user_id", r.user_id)
+          .eq("weekday", r.weekday);
+        claim = r.last_fired_on === null ? claim.is("last_fired_on", null) : claim.eq("last_fired_on", r.last_fired_on);
+        const { data: claimed } = await claim.select("user_id");
+        claimedOk = Boolean(claimed && (claimed as unknown[]).length > 0);
+        if (!claimedOk) break;
+      }
+      firedToday.add(i);
+      prevKey = nextKey;
 
-      const tagLine = post.hashtags.length ? post.hashtags.map((h) => `#${h}`).join(" ") : "";
-      const caption = [post.caption, tagLine].filter(Boolean).join("\n\n");
-      // Populate per_platform so the drain phase (which targets per_platform keys) publishes.
-      const perPlatform = Object.fromEntries(channels.map((c) => [c, caption]));
+      try {
+        const mediaType = run.mediaType;
+        const topic = topicForSlot(pool, now.date, runs.length, i, r.topic ?? "");
+        const post = await generatePostFromTopic(topic, mediaType);
+        if (!post) continue;
+        fired += 1;
 
-      await insertScheduledPost(r.user_id, {
-        type: mediaType,
-        title: null,
-        caption,
-        hashtags: post.hashtags,
-        link: null,
-        mediaUrl,
-        perPlatform,
-        channels,
-        scheduledFor: new Date().toISOString(),
-      });
-      enqueued += channels.length;
-    } catch (e) {
-      console.warn(`[mkb weekly-social] slot failed (user ${r.user_id}, wd ${r.weekday}):`, e instanceof Error ? e.message : e);
+        const allowed = platformsForMedia(mediaType);
+        const statuses = await getConnectionStatuses(r.user_id, [...allowed]);
+        const wanted = run.channels && run.channels.length ? new Set(run.channels) : null;
+        const channels = allowed.filter((p) => statuses[p]?.connected && (!wanted || wanted.has(p)));
+        if (channels.length === 0) continue;
+
+        // Generate the media for image / video runs (credit-metered; skip on shortfall).
+        let mediaUrl: string | null = null;
+        if (mediaType !== "text") {
+          if (!post.mediaPrompt) continue;
+          try {
+            const g = await generatePostMediaAdmin(admin, r.user_id, null, 0, mediaType, post.mediaPrompt);
+            mediaUrl = g.url;
+          } catch (e) {
+            console.warn(`[mkb weekly-social] media gen failed (user ${r.user_id}, wd ${r.weekday}, run ${i}):`, e instanceof Error ? e.message : e);
+            continue;
+          }
+        }
+
+        const tagLine = post.hashtags.length ? post.hashtags.map((h) => `#${h}`).join(" ") : "";
+        const caption = [post.caption, tagLine].filter(Boolean).join("\n\n");
+        // Populate per_platform so the drain phase (which targets per_platform keys) publishes.
+        const perPlatform = Object.fromEntries(channels.map((c) => [c, caption]));
+
+        await insertScheduledPost(r.user_id, {
+          type: mediaType,
+          title: null,
+          caption,
+          hashtags: post.hashtags,
+          link: null,
+          mediaUrl,
+          perPlatform,
+          channels,
+          scheduledFor: new Date().toISOString(),
+        });
+        enqueued += channels.length;
+      } catch (e) {
+        console.warn(`[mkb weekly-social] run failed (user ${r.user_id}, wd ${r.weekday}, run ${i}):`, e instanceof Error ? e.message : e);
+      }
     }
   }
 
