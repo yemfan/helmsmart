@@ -253,58 +253,44 @@ async function scoutTrends(userId: string, niche: string): Promise<OpportunityIn
 }
 
 /**
- * Run every applicable scout for one user. Sources fail independently; the
- * result reports per-source counts (or the error note) for honest logging.
+ * Run every applicable scout for one user. Sources fail independently, cheap
+ * scouts run first, and each source's finds are INSERTED AS SOON AS IT
+ * COMPLETES — so if the function dies mid-run (the trends web research can
+ * push a scan past the platform time budget), everything already discovered
+ * is safely stored instead of lost.
  */
 export async function discoverForUser(userId: string, opts?: { skipTrends?: boolean }): Promise<DiscoveryResult> {
   const campaigns = await listCampaigns(userId);
   const sources: Record<string, number | string> = {};
-  const all: OpportunityInput[] = [];
+  let found = 0;
 
-  try {
-    const perf = await scoutPerformance(userId);
-    sources.performance = perf.length;
-    all.push(...perf);
-  } catch (e) {
-    sources.performance = `error: ${e instanceof Error ? e.message : "failed"}`;
-  }
+  const runScout = async (name: string, scout: () => Promise<OpportunityInput[]>) => {
+    try {
+      const items = await scout();
+      sources[name] = items.length;
+      if (items.length > 0) found += await insertOpportunities(userId, items);
+    } catch (e) {
+      sources[name] = `error: ${e instanceof Error ? e.message : "failed"}`;
+    }
+  };
 
-  try {
-    const comp = await scoutCompetitors(userId, campaigns);
-    sources.competitors = comp.length;
-    all.push(...comp);
-  } catch (e) {
-    sources.competitors = `error: ${e instanceof Error ? e.message : "failed"}`;
-  }
+  await runScout("performance", () => scoutPerformance(userId));
+  await runScout("competitors", () => scoutCompetitors(userId, campaigns));
 
   const niche = await nicheOf(userId, campaigns).catch(() => null);
-
-  try {
-    if (niche) {
-      const seasonal = await scoutSeasonal(niche);
-      sources.seasonal = seasonal.length;
-      all.push(...seasonal);
-    } else {
-      sources.seasonal = "skipped: no brand kit or campaign brief yet";
-    }
-  } catch (e) {
-    sources.seasonal = `error: ${e instanceof Error ? e.message : "failed"}`;
+  if (niche) {
+    await runScout("seasonal", () => scoutSeasonal(niche));
+  } else {
+    sources.seasonal = "skipped: no brand kit or campaign brief yet";
   }
 
   if (!opts?.skipTrends) {
-    try {
-      if (niche) {
-        const trends = await scoutTrends(userId, niche);
-        sources.trends = trends.length;
-        all.push(...trends);
-      } else {
-        sources.trends = "skipped: no brand kit or campaign brief yet";
-      }
-    } catch (e) {
-      sources.trends = `error: ${e instanceof Error ? e.message : "failed"}`;
+    if (niche) {
+      await runScout("trends", () => scoutTrends(userId, niche));
+    } else {
+      sources.trends = "skipped: no brand kit or campaign brief yet";
     }
   }
 
-  const found = await insertOpportunities(userId, all);
   return { found, sources };
 }

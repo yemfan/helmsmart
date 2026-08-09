@@ -64,8 +64,16 @@ export default function OpportunityFeed({ initial, aiConfigured }: { initial: Op
     setNote(null);
     try {
       const res = await fetch("/api/opportunities/discover", { method: "POST" });
-      const data = (await res.json().catch(() => ({}))) as { found?: number; error?: string };
-      if (!res.ok) throw new Error(data.error || "Discovery failed — please try again.");
+      const data = (await res.json().catch(() => null)) as { found?: number; error?: string } | null;
+      if (!res.ok || !data) {
+        // A long trends research can outlive the server's time budget and come
+        // back as a non-JSON error page. Anything found before the cutoff is
+        // already saved — show it rather than a scary raw error.
+        throw new Error(
+          data?.error ||
+            "The scan ran long and was cut off. Anything it found before the cutoff is already in your feed — scan again to pick up where it left off.",
+        );
+      }
       setNote(
         data.found && data.found > 0
           ? `Found ${data.found} new opportunit${data.found === 1 ? "y" : "ies"}.`
@@ -74,6 +82,7 @@ export default function OpportunityFeed({ initial, aiConfigured }: { initial: Op
       router.refresh();
     } catch (e) {
       setNote(e instanceof Error ? e.message : "Discovery failed — please try again.");
+      router.refresh(); // partial finds may already be stored
     } finally {
       setScanning(false);
     }
