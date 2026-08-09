@@ -17,6 +17,8 @@ export type PlannedPost = {
   cta: string;
   hashtags: string[];
   mediaPrompt: string;
+  /** The business case for this post — why this angle/format, shown in review. */
+  reasoning: string;
 };
 
 function schema(allowed: string[]) {
@@ -35,8 +37,9 @@ function schema(allowed: string[]) {
             cta: { type: "string" },
             hashtags: { type: "array", items: { type: "string" } },
             mediaPrompt: { type: "string" },
+            reasoning: { type: "string" },
           },
-          required: ["type", "angle", "title", "caption", "cta", "hashtags", "mediaPrompt"],
+          required: ["type", "angle", "title", "caption", "cta", "hashtags", "mediaPrompt", "reasoning"],
           additionalProperties: false,
         },
       },
@@ -65,6 +68,7 @@ export async function planPosts(
     "- cta: one clear call to action.",
     "- hashtags: 4–8 relevant tags WITHOUT the # sign.",
     "- mediaPrompt: if type is image or video, a vivid generation prompt for it; if type is text, an empty string.",
+    "- reasoning: ONE sentence making the business case — why this angle and format, for this audience, now. Written to the brand owner (\"Your audience...\"), concrete, no fluff.",
   ].join("\n");
 
   const user = [

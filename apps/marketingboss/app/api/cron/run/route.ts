@@ -4,7 +4,8 @@ import { publishToChannels, type ChannelPost } from "@/lib/publish-dispatch";
 import { planPosts, type PlannedPost } from "@/lib/planner";
 import { generatePostMediaAdmin, BudgetError, CreditError } from "@/lib/generation";
 import { adaptForPlatforms, type Draft } from "@/lib/ai";
-import { buildInsights } from "@/lib/campaigns";
+import { buildInsights, insertPostRows } from "@/lib/campaigns";
+import { creditCost } from "@/lib/generation";
 import { getConnection, getValidAccessToken } from "@/lib/social";
 import { fetchMetric, METRIC_SUPPORTED, type Metric } from "@/lib/metrics";
 import { runDueWeeklySlots } from "@/lib/weeklySchedule";
@@ -186,19 +187,23 @@ function captionOf(p: PlannedPost): string {
 }
 
 async function insertDraft(admin: SupabaseClient, c: CampaignRow, p: PlannedPost, channels: string[]): Promise<void> {
-  await admin.from("campaign_posts").insert({
-    user_id: c.user_id,
-    campaign_id: c.id,
-    status: "draft",
-    type: p.type,
-    angle: p.angle,
-    title: p.title,
-    caption: captionOf(p),
-    hashtags: p.hashtags,
-    link: c.link,
-    media_prompt: p.mediaPrompt,
-    channels,
-  });
+  await insertPostRows(admin, [
+    {
+      user_id: c.user_id,
+      campaign_id: c.id,
+      status: "draft",
+      type: p.type,
+      angle: p.angle,
+      title: p.title,
+      caption: captionOf(p),
+      hashtags: p.hashtags,
+      link: c.link,
+      media_prompt: p.mediaPrompt,
+      channels,
+      reasoning: p.reasoning || null,
+      estimated_credits: p.type === "text" ? 0 : creditCost(p.type, false),
+    },
+  ]);
 }
 
 /** Generate (if needed), tailor, publish, and record one auto post. Returns new spent total. */
@@ -239,23 +244,26 @@ async function autoPublish(
   const perPlatform: Record<string, string> = {};
   for (const x of posts) perPlatform[x.platform] = x.caption;
 
-  await admin.from("campaign_posts").insert({
-    user_id: c.user_id,
-    campaign_id: c.id,
-    status: anyOk ? "published" : "failed",
-    type: p.type,
-    angle: p.angle,
-    title: p.title,
-    caption: captionOf(p),
-    hashtags: p.hashtags,
-    link: c.link,
-    media_prompt: p.mediaPrompt,
-    media_url: mediaUrl ?? null,
-    per_platform: perPlatform,
-    channels,
-    results,
-    published_at: anyOk ? nowIso : null,
-  });
+  await insertPostRows(admin, [
+    {
+      user_id: c.user_id,
+      campaign_id: c.id,
+      status: anyOk ? "published" : "failed",
+      type: p.type,
+      angle: p.angle,
+      title: p.title,
+      caption: captionOf(p),
+      hashtags: p.hashtags,
+      link: c.link,
+      media_prompt: p.mediaPrompt,
+      media_url: mediaUrl ?? null,
+      per_platform: perPlatform,
+      channels,
+      results,
+      published_at: anyOk ? nowIso : null,
+      reasoning: p.reasoning || null,
+    },
+  ]);
 
   return spent;
 }

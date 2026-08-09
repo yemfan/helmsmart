@@ -50,12 +50,17 @@ export type CampaignPost = {
   scheduled_for: string | null;
   created_at: string;
   published_at: string | null;
+  /** Why the planner proposed this action (migration 0014; null pre-migration). */
+  reasoning?: string | null;
+  /** Credits the user approves up front (migration 0014; null pre-migration / text posts). */
+  estimated_credits?: number | null;
 };
 
 const COLS =
   "id, link, name, brief, media_types, channels, frequency, budget_credits, spent_credits, mode, status, next_run_at, created_at";
-const POST_COLS =
-  "id, campaign_id, status, type, angle, title, caption, hashtags, link, media_prompt, media_url, per_platform, channels, results, metrics, metrics_at, scheduled_for, created_at, published_at";
+// select * so reads keep working whether or not migration 0014 (reasoning /
+// estimated_credits) has been applied — MB migrations are user-applied.
+const POST_COLS = "*";
 
 export async function listCampaigns(userId: string): Promise<Campaign[]> {
   const admin = createAdminClient();
@@ -242,16 +247,44 @@ export type PlannedPostRow = {
   link: string | null;
   media_prompt: string;
   channels: string[];
+  reasoning?: string | null;
+  estimated_credits?: number | null;
 };
+
+/** Columns added by migration 0014 — stripped and retried if the DB predates it. */
+const LIFECYCLE_COLS = ["reasoning", "estimated_credits"] as const;
+
+/**
+ * Insert campaign_posts rows, tolerating a pre-0014 database: if the insert
+ * fails because the lifecycle columns don't exist yet, retry without them.
+ */
+export async function insertPostRows(
+  admin: ReturnType<typeof createAdminClient>,
+  values: Record<string, unknown>[],
+): Promise<CampaignPost[]> {
+  const first = await admin.from("campaign_posts").insert(values).select(POST_COLS);
+  if (!first.error) return (first.data as CampaignPost[]) ?? [];
+
+  const msg = first.error.message || "";
+  if (LIFECYCLE_COLS.some((c) => msg.includes(c))) {
+    const stripped = values.map((v) => {
+      const copy = { ...v };
+      for (const c of LIFECYCLE_COLS) delete copy[c];
+      return copy;
+    });
+    const retry = await admin.from("campaign_posts").insert(stripped).select(POST_COLS);
+    if (!retry.error) return (retry.data as CampaignPost[]) ?? [];
+    throw new Error(retry.error.message);
+  }
+  throw new Error(msg);
+}
 
 export async function insertPosts(userId: string, campaignId: string, rows: PlannedPostRow[]): Promise<CampaignPost[]> {
   const admin = createAdminClient();
-  const { data, error } = await admin
-    .from("campaign_posts")
-    .insert(rows.map((r) => ({ ...r, user_id: userId, campaign_id: campaignId, status: "draft" })))
-    .select(POST_COLS);
-  if (error) throw new Error(error.message);
-  return (data as CampaignPost[]) ?? [];
+  return insertPostRows(
+    admin,
+    rows.map((r) => ({ ...r, user_id: userId, campaign_id: campaignId, status: "draft" })),
+  );
 }
 
 export async function updatePost(userId: string, id: string, fields: Record<string, unknown>): Promise<void> {

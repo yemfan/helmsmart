@@ -21,6 +21,8 @@ export type QueuePost = {
   scheduled_for: string | null;
   published_at: string | null;
   created_at: string;
+  reasoning?: string | null;
+  estimated_credits?: number | null;
 };
 
 const LABEL: Record<string, string> = {
@@ -143,8 +145,18 @@ export default function ActionsQueue({
                     {TYPE_EMOJI[p.type]}
                     {p.angle ? ` ${p.angle}` : ""}
                   </span>
+                  {typeof p.estimated_credits === "number" && p.estimated_credits > 0 && (
+                    <span className="rounded-full border border-boss-gold/30 bg-boss-gold/10 px-2 py-0.5 font-semibold text-boss-gold">
+                      ~{p.estimated_credits} credits
+                    </span>
+                  )}
                 </div>
                 <p className="mt-1 line-clamp-2 text-sm text-slate-700">{p.title || p.caption}</p>
+                {p.reasoning && (
+                  <p className="mt-1 line-clamp-2 text-xs text-slate-500">
+                    <span className="font-semibold text-boss-violet">Why:</span> {p.reasoning}
+                  </p>
+                )}
               </div>
               <span className="shrink-0 self-center text-xs font-medium text-boss-gold">Review →</span>
             </Link>

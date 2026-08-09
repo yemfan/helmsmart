@@ -43,6 +43,8 @@ type CampaignPost = {
   channels: string[];
   results: PubResult[] | null;
   metrics: Record<string, { likes?: number; comments?: number; views?: number }> | null;
+  reasoning?: string | null;
+  estimated_credits?: number | null;
 };
 
 const LABEL: Record<string, string> = {
@@ -327,8 +329,22 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
           {TYPE_EMOJI[post.type]} {post.type}
         </span>
         {post.angle && <span className="text-slate-500">{post.angle}</span>}
+        {typeof post.estimated_credits === "number" && post.estimated_credits > 0 && (
+          <span
+            title="Credits this action will spend when approved"
+            className="rounded-full border border-boss-gold/30 bg-boss-gold/10 px-2 py-0.5 font-semibold text-boss-gold"
+          >
+            ~{post.estimated_credits} credits
+          </span>
+        )}
         <span className="ml-auto text-slate-400">{post.channels.map((c) => LABEL[c] ?? c).join(", ")}</span>
       </div>
+
+      {post.reasoning && (
+        <p className="mb-2 rounded-lg bg-boss-violet/5 px-3 py-2 text-xs leading-relaxed text-slate-600">
+          <span className="font-semibold text-boss-violet">Why:</span> {post.reasoning}
+        </p>
+      )}
 
       <div className="flex flex-col gap-2">
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className={fieldCls} />
