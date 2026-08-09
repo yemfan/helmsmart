@@ -102,8 +102,8 @@ export default function OpportunityFeed({ initial, aiConfigured }: { initial: Op
 
       {scanning && (
         <p className="rounded-xl border border-boss-violet/20 bg-boss-violet/5 p-3 text-xs text-slate-600">
-          Researching live trends in your niche, re-reading competitor angles, and checking your own results — this can
-          take a minute or two.
+          Researching live trends in your niche, re-reading competitor angles, checking the calendar for upcoming
+          moments, and reviewing your own results — this can take a minute or two.
         </p>
       )}
       {note && <p className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">{note}</p>}

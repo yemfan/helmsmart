@@ -10,13 +10,12 @@ import { aiConfigured } from "@/lib/ai";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// The discovery sources feeding the feed (trends/competitors/performance are
-// live; seasonal is next).
+// The discovery sources feeding the feed — all four scouts are live.
 const SOURCES = [
   { emoji: "🔥", name: "Trends", desc: "What's going viral in your niche right now — formats and hooks worth riding." },
   { emoji: "🥊", name: "Competitors", desc: "Angles your competitors are using (and gaps they're leaving open)." },
   { emoji: "📈", name: "Your performance", desc: "What's already working for you — do more of it, deliberately." },
-  { emoji: "🗓️", name: "Seasonal", desc: "Holidays, events, and moments your audience already cares about. (Coming next.)" },
+  { emoji: "🗓️", name: "Seasonal", desc: "Holidays, events, and moments your audience already cares about." },
 ];
 
 /**
