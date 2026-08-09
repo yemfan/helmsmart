@@ -15,6 +15,7 @@ type BrandBrief = {
   pillars: string[];
   suggestedHashtags: string[];
 };
+type MilestoneDef = { id: string; title: string; metric: "published" | "engagement"; target: number };
 type Campaign = {
   id: string;
   link: string;
@@ -27,6 +28,8 @@ type Campaign = {
   spent_credits: number;
   mode: "review" | "auto";
   status: "active" | "paused";
+  objective?: string | null;
+  milestones?: MilestoneDef[] | null;
 };
 type PubResult = { platform: string; ok: boolean; url?: string | null; error?: string };
 type CampaignPost = {
@@ -94,11 +97,12 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
           ← All playbooks
         </Link>
         <div className="mt-1 flex flex-wrap items-center gap-2">
-          <h2 className="text-2xl font-bold tracking-tight">{campaign.name || "Campaign"}</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{campaign.name || "Playbook"}</h2>
           <span className="rounded-full bg-boss-violet/20 px-2 py-0.5 text-[10px] font-semibold capitalize text-boss-violet">
             {campaign.mode === "auto" ? "Full auto" : "Review"}
           </span>
         </div>
+        {campaign.objective && <p className="mt-1 text-sm text-slate-600">🎯 {campaign.objective}</p>}
         <a href={campaign.link} target="_blank" rel="noreferrer" className="block truncate text-xs text-slate-500 hover:text-slate-700">
           {campaign.link}
         </a>
@@ -127,6 +131,46 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
           </div>
         )}
       </div>
+
+      {/* Milestones — progress derived live from this playbook's posts. */}
+      {campaign.milestones && campaign.milestones.length > 0 && (
+        <section className="rounded-2xl border border-slate-200 bg-white p-4">
+          <h3 className="text-sm font-semibold text-slate-900">Milestones</h3>
+          <div className="mt-2 flex flex-col gap-2.5">
+            {campaign.milestones.map((m) => {
+              const current =
+                m.metric === "published"
+                  ? posts.filter((p) => p.status === "published").length
+                  : posts.reduce((sum, p) => {
+                      for (const v of Object.values(p.metrics ?? {}))
+                        sum += (v.likes ?? 0) + (v.comments ?? 0) + (v.views ?? 0);
+                      return sum;
+                    }, 0);
+              const pct = Math.min(100, Math.round((current / Math.max(m.target, 1)) * 100));
+              const done = current >= m.target;
+              return (
+                <div key={m.id}>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className={done ? "font-medium text-emerald-600" : "text-slate-600"}>
+                      {done ? "✓ " : ""}
+                      {m.title}
+                    </span>
+                    <span className="text-slate-400">
+                      {Math.min(current, m.target)}/{m.target}
+                    </span>
+                  </div>
+                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className={`h-full rounded-full ${done ? "bg-emerald-500" : "bg-boss-violet"}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Plan */}
       <section className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4">

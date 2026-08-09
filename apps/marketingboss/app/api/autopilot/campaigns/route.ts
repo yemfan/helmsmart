@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createCampaign, type CampaignMode } from "@/lib/campaigns";
+import { getTemplate } from "@/lib/playbookTemplates";
 import type { BrandBrief } from "@/lib/research";
 
 export const runtime = "nodejs";
@@ -46,6 +47,14 @@ export async function POST(req: Request) {
   const mode: CampaignMode = body.mode === "auto" ? "auto" : "review";
   const name = typeof body.name === "string" && body.name.trim() ? body.name.trim() : brief.name || "Campaign";
 
+  // Playbook fields: the template lookup is server-authoritative (the client
+  // only sends a key); the objective is free text the user may have edited.
+  const template = getTemplate(typeof body.template === "string" ? body.template : null);
+  const objective =
+    typeof body.objective === "string" && body.objective.trim()
+      ? body.objective.trim().slice(0, 300)
+      : template?.objective ?? null;
+
   try {
     const campaign = await createCampaign(user.id, {
       link,
@@ -56,6 +65,9 @@ export async function POST(req: Request) {
       frequency,
       budgetCredits,
       mode,
+      objective,
+      template: template?.key ?? null,
+      milestones: template?.milestones ?? null,
     });
     return NextResponse.json({ campaign });
   } catch (e) {

@@ -26,6 +26,10 @@ export type Campaign = {
   status: CampaignStatus;
   next_run_at: string | null;
   created_at: string;
+  /** Playbook fields (migration 0016; null/absent pre-migration). */
+  objective?: string | null;
+  template?: string | null;
+  milestones?: { id: string; title: string; metric: "published" | "engagement"; target: number }[] | null;
 };
 
 export type PostStatus = "draft" | "approved" | "scheduled" | "publishing" | "published" | "failed" | "skipped";
@@ -56,10 +60,10 @@ export type CampaignPost = {
   estimated_credits?: number | null;
 };
 
-const COLS =
-  "id, link, name, brief, media_types, channels, frequency, budget_credits, spent_credits, mode, status, next_run_at, created_at";
-// select * so reads keep working whether or not migration 0014 (reasoning /
-// estimated_credits) has been applied — MB migrations are user-applied.
+// select * so reads keep working whether or not migrations 0014 (post
+// lifecycle) / 0016 (playbook fields) have been applied — MB migrations are
+// user-applied.
+const COLS = "*";
 const POST_COLS = "*";
 
 export async function listCampaigns(userId: string): Promise<Campaign[]> {
@@ -317,28 +321,44 @@ export type CreateCampaignInput = {
   frequency: number;
   budgetCredits: number | null;
   mode: CampaignMode;
+  /** Playbook fields (migration 0016) — stripped on insert if the DB predates it. */
+  objective?: string | null;
+  template?: string | null;
+  milestones?: { id: string; title: string; metric: "published" | "engagement"; target: number }[] | null;
 };
+
+/** Columns added by migration 0016 — stripped and retried if the DB predates it. */
+const PLAYBOOK_COLS = ["objective", "template", "milestones"] as const;
 
 export async function createCampaign(userId: string, input: CreateCampaignInput): Promise<Campaign> {
   const admin = createAdminClient();
-  const { data, error } = await admin
-    .from("campaigns")
-    .insert({
-      user_id: userId,
-      link: input.link,
-      name: input.name,
-      brief: input.brief,
-      media_types: input.mediaTypes,
-      channels: input.channels,
-      frequency: input.frequency,
-      budget_credits: input.budgetCredits,
-      mode: input.mode,
-      status: "active",
-    })
-    .select(COLS)
-    .single();
-  if (error) throw new Error(error.message);
-  return data as Campaign;
+  const values: Record<string, unknown> = {
+    user_id: userId,
+    link: input.link,
+    name: input.name,
+    brief: input.brief,
+    media_types: input.mediaTypes,
+    channels: input.channels,
+    frequency: input.frequency,
+    budget_credits: input.budgetCredits,
+    mode: input.mode,
+    status: "active",
+    objective: input.objective ?? null,
+    template: input.template ?? null,
+    milestones: input.milestones ?? null,
+  };
+
+  const first = await admin.from("campaigns").insert(values).select(COLS).single();
+  if (!first.error) return first.data as Campaign;
+
+  const msg = first.error.message || "";
+  if (PLAYBOOK_COLS.some((c) => msg.includes(c))) {
+    for (const c of PLAYBOOK_COLS) delete values[c];
+    const retry = await admin.from("campaigns").insert(values).select(COLS).single();
+    if (!retry.error) return retry.data as Campaign;
+    throw new Error(retry.error.message);
+  }
+  throw new Error(msg);
 }
 
 export async function setCampaignStatus(userId: string, id: string, status: CampaignStatus): Promise<void> {
