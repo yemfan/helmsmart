@@ -79,6 +79,9 @@ export async function PUT(req: Request) {
       mediaType,
       channels: channels && channels.length ? channels : null,
       topic: typeof d?.topic === "string" ? (d.topic as string) : "",
+      topics: Array.isArray(d?.topics)
+        ? (d!.topics as unknown[]).filter((t): t is string => typeof t === "string" && !!t.trim()).slice(0, 12)
+        : [],
     });
   }
 

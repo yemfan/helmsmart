@@ -22,6 +22,7 @@ type Day = {
   mediaType: MediaType;
   channels: Platform[] | null;
   topic: string;
+  topics: string[];
 };
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -47,6 +48,9 @@ const hhmm = (h: number, m: number) => `${String(h).padStart(2, "0")}:${String(m
 export default function WeeklySchedule() {
   const [days, setDays] = useState<Day[] | null>(null);
   const [presets, setPresets] = useState<string[]>([]);
+  // The shared rotation pool — content rotates through these across posting days.
+  const [topics, setTopics] = useState<string[]>([]);
+  const [customTopic, setCustomTopic] = useState("");
   // null until loaded — we only mark channels unconnected once we know.
   const [connected, setConnected] = useState<string[] | null>(null);
   const [configured, setConfigured] = useState(true);
@@ -66,7 +70,18 @@ export default function WeeklySchedule() {
       };
       if (!b.ok || !b.days) return;
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
-      setDays(b.days.map((d) => ({ ...d, mediaType: d.mediaType ?? "text", timezone: d.timezone || tz })));
+      const loaded = b.days.map((d) => ({
+        ...d,
+        mediaType: d.mediaType ?? "text",
+        timezone: d.timezone || tz,
+        topics: Array.isArray(d.topics) ? d.topics : [],
+      }));
+      setDays(loaded);
+      // The pool is shared across days: union of stored pools, seeded from the
+      // legacy per-day topics for schedules created before rotation existed.
+      const pool = [...new Set(loaded.flatMap((d) => d.topics))];
+      const legacy = [...new Set(loaded.map((d) => d.topic).filter(Boolean))];
+      setTopics(pool.length > 0 ? pool : legacy);
       setPresets(b.topicPresets ?? []);
       setConnected(b.connected ?? null);
       setConfigured(b.configured ?? true);
@@ -99,8 +114,30 @@ export default function WeeklySchedule() {
     patch(day.weekday, { channels: arr.length === 0 || arr.length === all.length ? null : arr });
   }
 
+  function toggleTopic(t: string) {
+    setTopics((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]));
+    setNote(null);
+  }
+
+  function addCustomTopic() {
+    const t = customTopic.trim();
+    if (!t) return;
+    setTopics((cur) => (cur.includes(t) ? cur : [...cur, t]));
+    setCustomTopic("");
+    setNote(null);
+  }
+
+  function enableAllDays() {
+    setDays((cur) => cur?.map((d) => ({ ...d, enabled: true })) ?? cur);
+    setNote(null);
+  }
+
   async function save() {
     if (!days) return;
+    if (days.some((d) => d.enabled) && topics.length === 0) {
+      setError("Pick at least one topic — posts rotate through them.");
+      return;
+    }
     setSaving(true);
     setError(null);
     setNote(null);
@@ -108,7 +145,8 @@ export default function WeeklySchedule() {
       const res = await fetch("/api/weekly-schedule", {
         method: "PUT",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ days }),
+        // The pool is shared: every day carries the same rotation topics.
+        body: JSON.stringify({ days: days.map((d) => ({ ...d, topics })) }),
       });
       const b = (await res.json().catch(() => ({}))) as { ok?: boolean; days?: Day[]; error?: string };
       if (!res.ok || !b.ok) {
@@ -117,7 +155,14 @@ export default function WeeklySchedule() {
       }
       if (b.days) {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
-        setDays(b.days.map((d) => ({ ...d, mediaType: d.mediaType ?? "text", timezone: d.timezone || tz })));
+        setDays(
+          b.days.map((d) => ({
+            ...d,
+            mediaType: d.mediaType ?? "text",
+            timezone: d.timezone || tz,
+            topics: Array.isArray(d.topics) ? d.topics : [],
+          })),
+        );
       }
       setNote("Schedule saved.");
     } catch (e) {
@@ -131,13 +176,71 @@ export default function WeeklySchedule() {
 
   return (
     <div className="space-y-3">
-      <div>
-        <h2 className="text-base font-semibold text-neutral-900">Weekly post schedule</h2>
-        <p className="mt-0.5 text-xs text-neutral-500">
-          Pick the days you want a post. For each, choose a content type, time, channels, and a topic — AI researches the
-          topic and posts automatically. Text → Facebook, Threads, LinkedIn. Image adds Instagram + Pinterest. Video →
-          YouTube + TikTok (image/video generation spends credits).
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-base font-semibold text-neutral-900">Weekly post schedule</h2>
+          <p className="mt-0.5 text-xs text-neutral-500">
+            Pick your topics once — every posting day takes the next one in rotation, so daily posting never repeats
+            itself. AI researches each topic and posts automatically. Text → Facebook, Threads, LinkedIn. Image adds
+            Instagram + Pinterest. Video → YouTube + TikTok (image/video generation spends credits).
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={enableAllDays}
+          className="shrink-0 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100"
+        >
+          Post every day
+        </button>
+      </div>
+
+      {/* The rotation pool — shared across all posting days. */}
+      <div className="rounded-xl border border-neutral-200 bg-white p-3">
+        <div className="text-sm font-semibold text-neutral-900">
+          Topics <span className="font-normal text-neutral-400">· content rotates through your selection</span>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {[...new Set([...presets, ...topics])].map((t) => {
+            const on = topics.includes(t);
+            return (
+              <button
+                key={t}
+                type="button"
+                onClick={() => toggleTopic(t)}
+                className={`rounded-full border px-2.5 py-1 text-[11px] font-medium ${
+                  on ? "border-indigo-400 bg-indigo-50 text-neutral-900" : "border-neutral-200 text-neutral-500 hover:text-neutral-800"
+                }`}
+              >
+                {on ? "✓ " : ""}
+                {t}
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-2 flex items-center gap-2">
+          <input
+            type="text"
+            value={customTopic}
+            onChange={(e) => setCustomTopic(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addCustomTopic()}
+            placeholder="Add your own topic…"
+            className="min-w-[200px] flex-1 rounded-lg border border-neutral-300 px-2 py-1 text-sm"
+          />
+          <button
+            type="button"
+            onClick={addCustomTopic}
+            className="rounded-lg border border-neutral-300 px-3 py-1 text-sm text-neutral-700 hover:bg-neutral-50"
+          >
+            Add
+          </button>
+        </div>
+        {topics.length > 0 ? (
+          <p className="mt-1.5 text-[11px] text-neutral-400">
+            {topics.length} topic{topics.length === 1 ? "" : "s"} in rotation — each posting day takes the next one.
+          </p>
+        ) : (
+          <p className="mt-1.5 text-[11px] text-amber-600">Pick at least one topic to enable posting.</p>
+        )}
       </div>
 
       {!configured ? (
@@ -237,28 +340,6 @@ export default function WeeklySchedule() {
                     ) : null}
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[11px] font-medium text-neutral-500">Topic</span>
-                    <select
-                      value={presets.includes(d.topic) ? d.topic : ""}
-                      onChange={(e) => e.target.value && patch(d.weekday, { topic: e.target.value })}
-                      className="rounded-lg border border-neutral-300 bg-white px-2 py-1 text-sm"
-                    >
-                      <option value="">Pick a topic…</option>
-                      {presets.map((t) => (
-                        <option key={t} value={t}>
-                          {t}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="text"
-                      value={d.topic}
-                      onChange={(e) => patch(d.weekday, { topic: e.target.value })}
-                      placeholder="…or type your own"
-                      className="min-w-[180px] flex-1 rounded-lg border border-neutral-300 px-2 py-1 text-sm"
-                    />
-                  </div>
                 </div>
               ) : null}
             </li>
