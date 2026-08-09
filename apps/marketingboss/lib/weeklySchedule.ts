@@ -67,7 +67,10 @@ export type WeeklyScheduleDay = {
   timezone: string;
   mediaType: MediaType;
   channels: WeeklyPlatform[] | null; // null/empty = all connected of this media type
+  /** Legacy single topic — the fallback when the rotation pool is empty. */
   topic: string;
+  /** Topic ROTATION pool (0019): each posting day takes the next topic. */
+  topics: string[];
 };
 
 type Row = {
@@ -80,6 +83,7 @@ type Row = {
   media_type: string | null;
   channels: string[] | null;
   topic: string;
+  topics?: string[] | null; // 0019; absent pre-migration
   last_fired_on: string | null;
 };
 
@@ -93,6 +97,7 @@ function defaultDay(weekday: number): WeeklyScheduleDay {
     mediaType: "text",
     channels: null,
     topic: "",
+    topics: [],
   };
 }
 
@@ -111,11 +116,13 @@ function rowToDay(r: Row): WeeklyScheduleDay {
     mediaType,
     channels: channels && channels.length ? channels : null,
     topic: r.topic ?? "",
+    topics: Array.isArray(r.topics) ? r.topics.filter((t): t is string => typeof t === "string" && !!t.trim()) : [],
   };
 }
 
-const SELECT_COLS =
-  "user_id, weekday, enabled, post_hour, post_minute, timezone, media_type, channels, topic, last_fired_on";
+// select * so reads keep working whether or not migration 0019 (topics) has
+// been applied — MB migrations are user-applied.
+const SELECT_COLS = "*";
 
 export async function getWeeklySchedule(userId: string): Promise<WeeklyScheduleDay[]> {
   const admin = createAdminClient();
@@ -128,10 +135,14 @@ export async function getWeeklySchedule(userId: string): Promise<WeeklyScheduleD
 export async function saveWeeklySchedule(userId: string, days: WeeklyScheduleDay[]): Promise<void> {
   const admin = createAdminClient();
   const nowIso = new Date().toISOString();
-  const rows = days.slice(0, 7).map((d) => {
+  const rows: Record<string, unknown>[] = days.slice(0, 7).map((d) => {
     const mediaType = normalizeMediaType(d.mediaType);
     const allowed = platformsForMedia(mediaType) as readonly string[];
     const channels = d.channels && d.channels.length ? d.channels.filter((c) => allowed.includes(c)) : null;
+    const topics = (d.topics ?? [])
+      .filter((t) => typeof t === "string" && t.trim())
+      .map((t) => t.trim().slice(0, 300))
+      .slice(0, 12);
     return {
       user_id: userId,
       weekday: d.weekday,
@@ -142,12 +153,25 @@ export async function saveWeeklySchedule(userId: string, days: WeeklyScheduleDay
       media_type: mediaType,
       channels: channels && channels.length ? channels : null,
       topic: (d.topic ?? "").slice(0, 300),
+      topics: topics.length ? topics : null,
       last_fired_on: null, // editing resets so a changed time/topic can fire today
       updated_at: nowIso,
     };
   });
-  const { error } = await admin.from("weekly_schedules").upsert(rows, { onConflict: "user_id,weekday" });
-  if (error) throw new Error(error.message);
+  const first = await admin.from("weekly_schedules").upsert(rows, { onConflict: "user_id,weekday" });
+  if (!first.error) return;
+  // Pre-0019 DB: retry without the topics column so saving still works.
+  if ((first.error.message || "").includes("topics")) {
+    const stripped = rows.map((r) => {
+      const copy = { ...r };
+      delete copy.topics;
+      return copy;
+    });
+    const retry = await admin.from("weekly_schedules").upsert(stripped, { onConflict: "user_id,weekday" });
+    if (!retry.error) return;
+    throw new Error(retry.error.message);
+  }
+  throw new Error(first.error.message);
 }
 
 // ── Topic → researched post (web tools + structured JSON) ────────────────────
@@ -260,6 +284,18 @@ function localNow(tz: string): { weekday: number; minutes: number; date: string 
 }
 
 /**
+ * Deterministic, stateless topic rotation: the local calendar date picks the
+ * topic (days-since-epoch % pool size), so consecutive posting days step
+ * through the pool with no cursor to store or drift.
+ */
+export function topicForDate(pool: string[], localDate: string, fallback: string): string {
+  const topics = pool.filter((t) => t.trim());
+  if (topics.length === 0) return fallback;
+  const ordinal = Math.floor(Date.parse(`${localDate}T00:00:00Z`) / 86_400_000);
+  return topics[((ordinal % topics.length) + topics.length) % topics.length];
+}
+
+/**
  * Fire every due weekly slot: research + write a post (and generate image/video
  * media for non-text days), then enqueue it as a scheduled campaign_posts row
  * (drained + published by the cron's drain phase). Idempotent per day via
@@ -274,7 +310,8 @@ export async function runDueWeeklySlots(): Promise<{ fired: number; enqueued: nu
   let enqueued = 0;
 
   for (const r of rows) {
-    if (!r.topic?.trim()) continue;
+    const pool = Array.isArray(r.topics) ? r.topics.filter((t): t is string => typeof t === "string") : [];
+    if (pool.filter((t) => t.trim()).length === 0 && !r.topic?.trim()) continue;
     const tz = r.timezone || "America/Los_Angeles";
     const now = localNow(tz);
     if (now.weekday !== r.weekday) continue;
@@ -293,7 +330,8 @@ export async function runDueWeeklySlots(): Promise<{ fired: number; enqueued: nu
 
     try {
       const mediaType = normalizeMediaType(r.media_type);
-      const post = await generatePostFromTopic(r.topic, mediaType);
+      const topic = topicForDate(pool, now.date, r.topic ?? "");
+      const post = await generatePostFromTopic(topic, mediaType);
       if (!post) continue;
       fired += 1;
 

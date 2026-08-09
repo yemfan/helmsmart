@@ -125,6 +125,17 @@ export default function Connections({
                   {anyConnected ? "Finish" : "Connect"}
                 </a>
               )}
+              {!configured && (
+                // The OAuth app credentials for this platform aren't set on the
+                // server — a live-looking button would just dead-end.
+                <button
+                  disabled
+                  title={`${prov.label} isn't available yet — its app credentials aren't configured on the server.`}
+                  className="cursor-not-allowed rounded-lg bg-slate-100 px-3.5 py-2 text-sm font-semibold text-slate-400"
+                >
+                  Connect
+                </button>
+              )}
               {anyConnected && (
                 <button
                   onClick={() => disconnect(prov.key)}
