@@ -54,6 +54,8 @@ type CampaignRow = {
   frequency: number;
   budget_credits: number | null;
   spent_credits: number;
+  /** Cost-only autonomy dial (0018); undefined pre-migration. */
+  auto_approve_max_credits?: number | null;
 };
 
 export async function GET(req: Request) {
@@ -106,7 +108,7 @@ export async function GET(req: Request) {
   // 2) Advance active campaigns on their cadence.
   const { data: campaigns } = await admin
     .from("campaigns")
-    .select("id, user_id, mode, brief, media_types, channels, link, frequency, budget_credits, spent_credits")
+    .select("*") // tolerate a pre-0018 DB (no auto_approve_max_credits column)
     .eq("status", "active")
     .or(`next_run_at.is.null,next_run_at.lte.${nowIso}`)
     .limit(ADVANCE_LIMIT);
@@ -128,8 +130,15 @@ export async function GET(req: Request) {
         )[0];
         if (planned) {
           const channels = (c.channels || []).filter((ch) => (ELIGIBLE[planned.type] || []).includes(ch));
-          // Full-auto: generate + tailor + publish now. Review (or no channels): drop a draft.
-          if (c.mode === "auto" && channels.length > 0) {
+          // Autonomy is gated on COST, not confidence: full-auto runs everything,
+          // and review mode auto-runs actions at or under the playbook's
+          // auto-approve dial (early marketing is exploration — the prepaid
+          // credit budget is the constraint, not certainty). Pricier actions
+          // (and no-channel plans) still queue for approval.
+          const cost = planned.type === "text" ? 0 : creditCost(planned.type, false);
+          const dial = c.auto_approve_max_credits;
+          const autonomous = c.mode === "auto" || (typeof dial === "number" && cost <= dial);
+          if (autonomous && channels.length > 0) {
             spent = await autoPublish(admin, c, planned, channels, spent, nowIso);
             posted++;
           } else {

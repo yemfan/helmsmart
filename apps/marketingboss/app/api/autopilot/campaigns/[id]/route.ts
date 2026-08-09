@@ -46,6 +46,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       const b = body.budgetCredits;
       fields.budget_credits = typeof b === "number" && b >= 0 ? Math.round(b) : null;
     }
+    if ("autoApproveMaxCredits" in body) {
+      const a = body.autoApproveMaxCredits;
+      fields.auto_approve_max_credits = typeof a === "number" && a >= 0 ? Math.round(a) : null;
+    }
 
     if (Object.keys(fields).length > 0) {
       await updateCampaignSettings(user.id, id, fields);

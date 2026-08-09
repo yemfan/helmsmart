@@ -55,6 +55,11 @@ export async function POST(req: Request) {
       ? body.objective.trim().slice(0, 300)
       : template?.objective ?? null;
 
+  const autoApproveMaxCredits =
+    typeof body.autoApproveMaxCredits === "number" && body.autoApproveMaxCredits >= 0
+      ? Math.round(body.autoApproveMaxCredits)
+      : null;
+
   try {
     const campaign = await createCampaign(user.id, {
       link,
@@ -68,6 +73,7 @@ export async function POST(req: Request) {
       objective,
       template: template?.key ?? null,
       milestones: template?.milestones ?? null,
+      autoApproveMaxCredits,
     });
     return NextResponse.json({ campaign });
   } catch (e) {

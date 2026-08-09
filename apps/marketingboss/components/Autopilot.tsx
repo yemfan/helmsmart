@@ -33,6 +33,7 @@ type Campaign = {
   next_run_at: string | null;
   created_at: string;
   objective?: string | null;
+  auto_approve_max_credits?: number | null;
 };
 
 const MEDIA_TYPES: { id: string; label: string; emoji: string }[] = [
@@ -66,6 +67,8 @@ export default function Autopilot({
   const [frequency, setFrequency] = useState(3);
   const [budget, setBudget] = useState("");
   const [mode, setMode] = useState<"review" | "auto">("review");
+  // Cost-only autonomy dial: auto-run actions up to N credits; "" = always ask.
+  const [autoMax, setAutoMax] = useState("");
 
   const [saving, setSaving] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -79,6 +82,7 @@ export default function Autopilot({
   const [eChannels, setEChannels] = useState<Set<string>>(new Set());
   const [eBudget, setEBudget] = useState("");
   const [eMode, setEMode] = useState<"review" | "auto">("review");
+  const [eAutoMax, setEAutoMax] = useState("");
 
   function toggle(set: Set<string>, setter: (s: Set<string>) => void, v: string) {
     const next = new Set(set);
@@ -148,6 +152,7 @@ export default function Autopilot({
           mode,
           template,
           objective: objective.trim() || null,
+          autoApproveMaxCredits: autoMax.trim() === "" ? null : Number(autoMax),
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -158,6 +163,7 @@ export default function Autopilot({
       setName("");
       setTemplate(null);
       setObjective("");
+      setAutoMax("");
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not save the campaign.");
@@ -201,6 +207,7 @@ export default function Autopilot({
     setEChannels(new Set(c.channels));
     setEBudget(c.budget_credits != null ? String(c.budget_credits) : "");
     setEMode(c.mode);
+    setEAutoMax(c.auto_approve_max_credits != null ? String(c.auto_approve_max_credits) : "");
     setError(null);
   }
 
@@ -221,6 +228,7 @@ export default function Autopilot({
           channels: [...eChannels],
           budgetCredits: eBudget.trim() === "" ? null : Number(eBudget),
           mode: eMode,
+          autoApproveMaxCredits: eAutoMax.trim() === "" ? null : Number(eAutoMax),
         }),
       });
       const data = (await res.json().catch(() => ({}))) as { error?: string };
@@ -450,6 +458,21 @@ export default function Autopilot({
                 <span className="text-[11px] text-slate-400">
                   {mode === "review" ? "AI drafts; you approve before it posts." : "AI posts on schedule automatically."}
                 </span>
+                {mode === "review" && (
+                  <div className="mt-1 flex items-center gap-2">
+                    <input
+                      type="number"
+                      min={0}
+                      value={autoMax}
+                      onChange={(e) => setAutoMax(e.target.value)}
+                      placeholder="—"
+                      className="w-16 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-900 outline-none focus:border-boss-violet/60"
+                    />
+                    <span className="text-[11px] text-slate-500">
+                      auto-run actions up to this many credits (empty = always ask). Text 0 · image 1 · video 20.
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -477,7 +500,13 @@ export default function Autopilot({
                       {c.name || "Playbook"}
                     </Link>
                     <Badge tone={c.status === "active" ? "green" : "muted"}>{c.status}</Badge>
-                    <Badge tone="violet">{c.mode === "auto" ? "Full auto" : "Review"}</Badge>
+                    <Badge tone="violet">
+                      {c.mode === "auto"
+                        ? "Full auto"
+                        : c.auto_approve_max_credits != null
+                          ? `Auto ≤ ${c.auto_approve_max_credits} cr`
+                          : "Review"}
+                    </Badge>
                   </div>
                   {c.objective && <p className="mt-0.5 text-xs text-slate-600">🎯 {c.objective}</p>}
                   <a href={c.link} target="_blank" rel="noreferrer" className="mt-0.5 block truncate text-xs text-slate-500 hover:text-slate-700">
@@ -628,6 +657,19 @@ export default function Autopilot({
                           </button>
                         ))}
                       </div>
+                      {eMode === "review" && (
+                        <div className="mt-1 flex items-center gap-2">
+                          <input
+                            type="number"
+                            min={0}
+                            value={eAutoMax}
+                            onChange={(e) => setEAutoMax(e.target.value)}
+                            placeholder="—"
+                            className="w-16 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-900 outline-none focus:border-boss-violet/60"
+                          />
+                          <span className="text-[11px] text-slate-500">auto-run up to this many credits (empty = always ask)</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
