@@ -13,7 +13,12 @@ export const dynamic = "force-dynamic";
 
 const SOCIAL_PLATFORMS = ["facebook", "instagram", "threads", "linkedin", "pinterest", "tiktok"];
 
-export default async function NewActionPage() {
+export default async function NewActionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ intent?: string; type?: string }>;
+}) {
+  const sp = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -54,6 +59,8 @@ export default async function NewActionPage() {
         </p>
       </section>
       <Compose
+        initialIntent={sp.intent}
+        initialType={sp.type === "text" || sp.type === "image" || sp.type === "video" ? sp.type : undefined}
         status={{
           providersConfigured,
           connected,

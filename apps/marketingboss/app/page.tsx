@@ -6,6 +6,7 @@ import { retrieveSession } from "@/lib/stripe";
 import { fulfillSession } from "@/lib/fulfill";
 import { getConnectionStatuses } from "@/lib/social";
 import { listCampaigns, listDrafts, listHistory, listScheduled } from "@/lib/campaigns";
+import { listOpenOpportunities } from "@/lib/opportunities";
 import { engagementScore } from "@/lib/metrics";
 
 export const runtime = "nodejs";
@@ -56,7 +57,7 @@ export default async function Home({
     }
   }
 
-  const [{ data: profile }, socialStatuses, campaigns, drafts, scheduled, history, { data: brandKit }] =
+  const [{ data: profile }, socialStatuses, campaigns, drafts, scheduled, history, { data: brandKit }, opportunities] =
     await Promise.all([
       supabase.from("profiles").select("credits").eq("user_id", user.id).single(),
       getConnectionStatuses(user.id, ALL_PLATFORMS),
@@ -65,6 +66,7 @@ export default async function Home({
       listScheduled(user.id),
       listHistory(user.id, 20),
       supabase.from("brand_kits").select("brand_name").eq("user_id", user.id).maybeSingle(),
+      listOpenOpportunities(user.id, 2).catch(() => []),
     ]);
 
   const credits = profile?.credits ?? 0;
@@ -146,7 +148,28 @@ export default async function Home({
 
       {/* Today's opportunities */}
       <section className="flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-slate-900">🎯 Today&apos;s opportunities</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-slate-900">🎯 Today&apos;s opportunities</h3>
+          {opportunities.length > 0 && (
+            <Link href="/opportunities" className="text-xs text-slate-500 transition hover:text-slate-900">
+              All opportunities →
+            </Link>
+          )}
+        </div>
+        {opportunities.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            {opportunities.map((o) => (
+              <Link
+                key={o.id}
+                href="/opportunities"
+                className="rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-boss-violet/40"
+              >
+                <div className="text-sm font-semibold text-slate-900">{o.title}</div>
+                <p className="mt-0.5 line-clamp-2 text-xs text-slate-500">{o.reasoning}</p>
+              </Link>
+            ))}
+          </div>
+        ) : (
         <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
           {activePlaybooks.length === 0 ? (
             <>
@@ -166,8 +189,8 @@ export default async function Home({
             </>
           ) : (
             <>
-              Your playbooks are running on schedule. Automatic opportunity discovery (trends, competitors, what&apos;s
-              working) is coming online next — see{" "}
+              Your playbooks are running on schedule. Scan for fresh openings — trends, competitor gaps, and
+              what&apos;s already working — under{" "}
               <Link href="/opportunities" className="font-semibold text-boss-gold underline underline-offset-2">
                 Opportunities
               </Link>
@@ -175,6 +198,7 @@ export default async function Home({
             </>
           )}
         </div>
+        )}
       </section>
 
       {/* Action queue */}
