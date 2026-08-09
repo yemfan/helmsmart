@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { PLAYBOOK_TEMPLATES } from "@/lib/playbookTemplates";
 
 export type ChannelOption = { id: string; label: string; connected: boolean };
 
@@ -31,6 +32,7 @@ type Campaign = {
   status: "active" | "paused";
   next_run_at: string | null;
   created_at: string;
+  objective?: string | null;
 };
 
 const MEDIA_TYPES: { id: string; label: string; emoji: string }[] = [
@@ -55,6 +57,9 @@ export default function Autopilot({
   const [researching, setResearching] = useState(false);
   const [brief, setBrief] = useState<BrandBrief | null>(null);
   const [name, setName] = useState("");
+  // Template = strategy-as-config: picking one seeds objective + defaults.
+  const [template, setTemplate] = useState<string | null>(null);
+  const [objective, setObjective] = useState("");
 
   const [mediaTypes, setMediaTypes] = useState<Set<string>>(new Set(["image"]));
   const [selChannels, setSelChannels] = useState<Set<string>>(new Set());
@@ -80,6 +85,22 @@ export default function Autopilot({
     if (next.has(v)) next.delete(v);
     else next.add(v);
     setter(next);
+  }
+
+  /** Pick (or unpick) a template — seeds objective + defaults, all still editable. */
+  function pickTemplate(key: string) {
+    if (template === key) {
+      setTemplate(null);
+      setObjective("");
+      return;
+    }
+    const t = PLAYBOOK_TEMPLATES.find((x) => x.key === key);
+    if (!t) return;
+    setTemplate(t.key);
+    setObjective(t.objective);
+    setMediaTypes(new Set(t.defaults.mediaTypes));
+    setFrequency(t.defaults.frequency);
+    setMode(t.defaults.mode);
   }
 
   async function research() {
@@ -125,6 +146,8 @@ export default function Autopilot({
           frequency,
           budgetCredits: budget.trim() === "" ? null : Number(budget),
           mode,
+          template,
+          objective: objective.trim() || null,
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -133,6 +156,8 @@ export default function Autopilot({
       setLink("");
       setBrief(null);
       setName("");
+      setTemplate(null);
+      setObjective("");
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not save the campaign.");
@@ -225,9 +250,38 @@ export default function Autopilot({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* New campaign */}
+      {/* New playbook */}
       <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
-        <h3 className="mb-3 text-base font-semibold text-slate-900">New campaign</h3>
+        <h3 className="mb-3 text-base font-semibold text-slate-900">New playbook</h3>
+
+        {/* Template gallery — strategies as config. Optional; everything stays editable. */}
+        <div className="mb-3">
+          <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">
+            Start from a strategy (optional)
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {PLAYBOOK_TEMPLATES.map((t) => {
+              const on = template === t.key;
+              return (
+                <button
+                  key={t.key}
+                  onClick={() => pickTemplate(t.key)}
+                  className={`rounded-xl border p-3 text-left transition ${
+                    on ? "border-boss-gold/60 bg-boss-gold/10" : "border-slate-200 bg-slate-50 hover:border-boss-violet/40"
+                  }`}
+                >
+                  <div className="text-sm font-semibold text-slate-900">
+                    <span aria-hidden className="mr-1">{t.emoji}</span>
+                    {t.name}
+                    {on && <span className="ml-1.5 text-xs text-boss-gold">✓</span>}
+                  </div>
+                  <p className="mt-0.5 text-[11px] text-slate-500">{t.description}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
             value={link}
@@ -276,9 +330,18 @@ export default function Autopilot({
             </div>
 
             {/* Settings */}
+            <label className="flex flex-col gap-1">
+              <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Objective</span>
+              <input
+                value={objective}
+                onChange={(e) => setObjective(e.target.value)}
+                placeholder="What should this playbook achieve? e.g. Win our first 100 customers"
+                className={fieldCls}
+              />
+            </label>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="flex flex-col gap-1">
-                <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Campaign name</span>
+                <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Playbook name</span>
                 <input value={name} onChange={(e) => setName(e.target.value)} className={fieldCls} />
               </label>
               <label className="flex flex-col gap-1">
@@ -393,7 +456,7 @@ export default function Autopilot({
             <div className="flex justify-end">
               <button onClick={create} disabled={saving} className={primaryBtn}>
                 {saving && <Spinner />}
-                {saving ? "Saving…" : "Create campaign"}
+                {saving ? "Saving…" : "Create playbook"}
               </button>
             </div>
           </div>
@@ -402,24 +465,21 @@ export default function Autopilot({
 
       {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-600">{error}</div>}
 
-      {/* Existing campaigns */}
+      {/* Existing playbooks */}
       {campaigns.length > 0 && (
         <section className="flex flex-col gap-3">
-          <div className="rounded-xl border border-boss-violet/25 bg-boss-violet/10 p-3 text-xs text-slate-700">
-            Your strategy is saved. Automatic planning &amp; posting are rolling out next — for now you can create and
-            manage campaigns here.
-          </div>
           {campaigns.map((c) => (
             <div key={c.id} className="rounded-2xl border border-slate-200 bg-white p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <Link href={`/playbooks/${c.id}`} className="font-semibold text-slate-900 hover:text-boss-gold">
-                      {c.name || "Campaign"}
+                      {c.name || "Playbook"}
                     </Link>
                     <Badge tone={c.status === "active" ? "green" : "muted"}>{c.status}</Badge>
                     <Badge tone="violet">{c.mode === "auto" ? "Full auto" : "Review"}</Badge>
                   </div>
+                  {c.objective && <p className="mt-0.5 text-xs text-slate-600">🎯 {c.objective}</p>}
                   <a href={c.link} target="_blank" rel="noreferrer" className="mt-0.5 block truncate text-xs text-slate-500 hover:text-slate-700">
                     {c.link}
                   </a>
