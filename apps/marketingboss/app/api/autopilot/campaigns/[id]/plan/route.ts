@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildInsights, getCampaign, insertPosts, type PlannedPostRow } from "@/lib/campaigns";
+import { creditCost } from "@/lib/generation";
 import { planPosts } from "@/lib/planner";
 
 export const maxDuration = 120;
@@ -54,6 +55,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       link: campaign.link,
       media_prompt: p.mediaPrompt,
       channels: (campaign.channels || []).filter((c) => (ELIGIBLE[p.type] || []).includes(c)),
+      reasoning: p.reasoning || null,
+      estimated_credits: p.type === "text" ? 0 : creditCost(p.type, false),
     }));
 
     const posts = await insertPosts(user.id, id, rows);
