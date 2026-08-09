@@ -34,7 +34,7 @@ export default function Performance({ summary }: { summary: PerfSummary }) {
           what&apos;s working, and one click to make more like it.
         </p>
         <Link
-          href="/compose/new"
+          href="/actions/new"
           className="mt-4 inline-block rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105"
         >
           Create a post

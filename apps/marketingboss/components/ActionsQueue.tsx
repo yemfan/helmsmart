@@ -6,35 +6,22 @@ import { useRouter } from "next/navigation";
 
 export type ScheduleRow = { id: string; name: string; frequency: number; nextRunAt: string | null };
 
-type PubResult = { platform: string; ok: boolean; url?: string | null; error?: string };
 type Metric = { likes?: number; comments?: number; views?: number };
-type Post = {
+export type QueuePost = {
   id: string;
+  campaign_id: string | null;
   status: string;
   type: "text" | "image" | "video";
+  angle: string | null;
   title: string | null;
   caption: string | null;
   media_url: string | null;
   channels: string[];
-  results: PubResult[] | null;
   metrics: Record<string, Metric> | null;
   scheduled_for: string | null;
   published_at: string | null;
   created_at: string;
 };
-
-function totalMetrics(metrics: Record<string, Metric> | null): { likes: number; comments: number; views: number } | null {
-  if (!metrics || Object.keys(metrics).length === 0) return null;
-  let likes = 0,
-    comments = 0,
-    views = 0;
-  for (const m of Object.values(metrics)) {
-    likes += m.likes ?? 0;
-    comments += m.comments ?? 0;
-    views += m.views ?? 0;
-  }
-  return { likes, comments, views };
-}
 
 const LABEL: Record<string, string> = {
   facebook: "Facebook",
@@ -56,14 +43,19 @@ function fmt(iso: string | null): string {
   }
 }
 
-export default function PostingHub({
+/**
+ * The Actions queue — what's waiting for approval, what's scheduled, and the
+ * standing cadences producing new actions. Every action shows its state, like
+ * a PR list: you always know what's happening and what needs you.
+ */
+export default function ActionsQueue({
   cadences,
+  drafts,
   scheduled,
-  history,
 }: {
   cadences: ScheduleRow[];
-  scheduled: Post[];
-  history: Post[];
+  drafts: QueuePost[];
+  scheduled: QueuePost[];
 }) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -101,53 +93,74 @@ export default function PostingHub({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* New posting */}
+      {/* New action */}
       <div className="relative flex justify-end" ref={menuRef}>
         <button
           onClick={() => setMenuOpen((o) => !o)}
           className="inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105"
         >
-          + New posting
+          + New action
           <span className="text-[10px] opacity-70">▼</span>
         </button>
         {menuOpen && (
           <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl">
-            <Link href="/compose/new" className="block px-4 py-3 transition hover:bg-slate-100">
-              <div className="text-sm font-semibold text-slate-900">✨ AI posting</div>
+            <Link href="/actions/new" className="block px-4 py-3 transition hover:bg-slate-100">
+              <div className="text-sm font-semibold text-slate-900">✨ AI post</div>
               <div className="text-[11px] text-slate-500">Write one post now, or schedule it.</div>
             </Link>
-            <Link href="/compose/ugc" className="block border-t border-slate-200 px-4 py-3 transition hover:bg-slate-100">
+            <Link href="/actions/ugc" className="block border-t border-slate-200 px-4 py-3 transition hover:bg-slate-100">
               <div className="text-sm font-semibold text-slate-900">🎥 UGC ad</div>
               <div className="text-[11px] text-slate-500">AI films a creator-style video ad (with voice).</div>
             </Link>
-            <Link href="/autopilot" className="block border-t border-slate-200 px-4 py-3 transition hover:bg-slate-100">
-              <div className="text-sm font-semibold text-slate-900">🤖 Auto posting</div>
-              <div className="text-[11px] text-slate-500">Set up a campaign that posts on autopilot.</div>
+            <Link href="/playbooks" className="block border-t border-slate-200 px-4 py-3 transition hover:bg-slate-100">
+              <div className="text-sm font-semibold text-slate-900">📚 Playbook</div>
+              <div className="text-[11px] text-slate-500">A strategy that plans actions for you, on cadence.</div>
             </Link>
           </div>
         )}
       </div>
 
-      {/* Schedule (cadences) */}
-      <section className="flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-slate-900">Posting schedule</h3>
-        {cadences.length === 0 ? (
-          <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-            No auto-posting campaigns yet.{" "}
-            <Link href="/autopilot" className="text-boss-gold underline underline-offset-2">
-              Set one up →
+      {/* Waiting approval */}
+      {drafts.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h3 className="text-sm font-semibold text-slate-900">Waiting approval ({drafts.length})</h3>
+          {drafts.map((p) => (
+            <Link
+              key={p.id}
+              href={p.campaign_id ? `/playbooks/${p.campaign_id}` : "/actions"}
+              className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-boss-violet/40"
+            >
+              {p.media_url && p.type !== "video" && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.media_url} alt="" className="size-14 shrink-0 rounded-lg object-cover" />
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="rounded-full bg-amber-500/15 px-2 py-0.5 font-semibold text-amber-600">
+                    Waiting approval
+                  </span>
+                  <span className="text-slate-500">
+                    {TYPE_EMOJI[p.type]}
+                    {p.angle ? ` ${p.angle}` : ""}
+                  </span>
+                </div>
+                <p className="mt-1 line-clamp-2 text-sm text-slate-700">{p.title || p.caption}</p>
+              </div>
+              <span className="shrink-0 self-center text-xs font-medium text-boss-gold">Review →</span>
             </Link>
-          </p>
-        ) : (
-          cadences.map((c) => <CadenceRow key={c.id} row={c} onSave={saveFreq} />)
-        )}
-      </section>
+          ))}
+        </section>
+      )}
 
       {/* Scheduled */}
-      {scheduled.length > 0 && (
-        <section className="flex flex-col gap-2">
-          <h3 className="text-sm font-semibold text-slate-900">Scheduled ({scheduled.length})</h3>
-          {scheduled.map((p) => (
+      <section className="flex flex-col gap-2">
+        <h3 className="text-sm font-semibold text-slate-900">Scheduled ({scheduled.length})</h3>
+        {scheduled.length === 0 ? (
+          <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
+            Nothing scheduled yet.
+          </p>
+        ) : (
+          scheduled.map((p) => (
             <div key={p.id} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4">
               {p.media_url && p.type !== "video" && (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -172,69 +185,22 @@ export default function PostingHub({
                 Cancel
               </button>
             </div>
-          ))}
-        </section>
-      )}
+          ))
+        )}
+      </section>
 
-      {/* History */}
+      {/* Standing cadences (playbook schedules) */}
       <section className="flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-slate-900">Posting history</h3>
-        {history.length === 0 ? (
+        <h3 className="text-sm font-semibold text-slate-900">Playbook cadences</h3>
+        {cadences.length === 0 ? (
           <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
-            Nothing published yet.
+            No playbooks producing actions yet.{" "}
+            <Link href="/playbooks" className="text-boss-gold underline underline-offset-2">
+              Start one →
+            </Link>
           </p>
         ) : (
-          history.map((p) => (
-            <div key={p.id} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4">
-              {p.media_url && p.type !== "video" && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.media_url} alt="" className="size-14 shrink-0 rounded-lg object-cover" />
-              )}
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span
-                    className={`rounded-full px-2 py-0.5 font-semibold capitalize ${
-                      p.status === "published" ? "bg-emerald-500/15 text-emerald-600" : "bg-red-500/15 text-red-600"
-                    }`}
-                  >
-                    {p.status}
-                  </span>
-                  <span className="text-slate-400">{fmt(p.published_at || p.created_at)}</span>
-                  <span className="text-slate-500">{TYPE_EMOJI[p.type]}</span>
-                </div>
-                <p className="mt-1 line-clamp-2 text-sm text-slate-700">{p.caption}</p>
-                {(() => {
-                  const t = totalMetrics(p.metrics);
-                  return t ? (
-                    <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-slate-500">
-                      <span>♥ {t.likes}</span>
-                      <span>💬 {t.comments}</span>
-                      {t.views > 0 && <span>▶ {t.views}</span>}
-                    </div>
-                  ) : null;
-                })()}
-                {p.results && (
-                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
-                    {p.results.map((r) => (
-                      <span key={r.platform} className={r.ok ? "text-emerald-600" : "text-red-600"}>
-                        {LABEL[r.platform] ?? r.platform}
-                        {r.ok && r.url ? (
-                          <>
-                            {" "}
-                            <a href={r.url} target="_blank" rel="noreferrer" className="underline">
-                              ↗
-                            </a>
-                          </>
-                        ) : (
-                          r.ok ? " ✓" : " ✕"
-                        )}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))
+          cadences.map((c) => <CadenceRow key={c.id} row={c} onSave={saveFreq} />)
         )}
       </section>
     </div>
@@ -247,7 +213,7 @@ function CadenceRow({ row, onSave }: { row: ScheduleRow; onSave: (id: string, fr
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4">
       <div className="min-w-0 flex-1">
-        <Link href={`/autopilot/${row.id}`} className="font-medium text-slate-900 hover:text-boss-gold">
+        <Link href={`/playbooks/${row.id}`} className="font-medium text-slate-900 hover:text-boss-gold">
           {row.name}
         </Link>
         {row.nextRunAt && <div className="text-[11px] text-slate-400">Next: {fmt(row.nextRunAt)}</div>}

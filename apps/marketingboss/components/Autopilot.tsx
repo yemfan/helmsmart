@@ -414,7 +414,7 @@ export default function Autopilot({
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Link href={`/autopilot/${c.id}`} className="font-semibold text-slate-900 hover:text-boss-gold">
+                    <Link href={`/playbooks/${c.id}`} className="font-semibold text-slate-900 hover:text-boss-gold">
                       {c.name || "Campaign"}
                     </Link>
                     <Badge tone={c.status === "active" ? "green" : "muted"}>{c.status}</Badge>

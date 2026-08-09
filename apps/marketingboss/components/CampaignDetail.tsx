@@ -88,8 +88,8 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link href="/autopilot" className="text-xs text-slate-500 transition hover:text-slate-900">
-          ← All campaigns
+        <Link href="/playbooks" className="text-xs text-slate-500 transition hover:text-slate-900">
+          ← All playbooks
         </Link>
         <div className="mt-1 flex flex-wrap items-center gap-2">
           <h2 className="text-2xl font-bold tracking-tight">{campaign.name || "Campaign"}</h2>
