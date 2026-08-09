@@ -616,7 +616,7 @@ function ResultModal({
         <div className="flex items-center justify-between gap-3 border-t border-slate-200 px-4 py-3 text-sm">
           <span className="text-slate-500">Saved to your gallery</span>
           <div className="flex items-center gap-2">
-            <Link href="/gallery" className="rounded-lg px-3 py-1.5 font-medium text-slate-600 transition hover:text-slate-900">
+            <Link href="/studio/gallery" className="rounded-lg px-3 py-1.5 font-medium text-slate-600 transition hover:text-slate-900">
               Gallery
             </Link>
             <a

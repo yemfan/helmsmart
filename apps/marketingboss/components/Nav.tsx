@@ -5,14 +5,16 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-// Primary app sections — promoted from the old avatar dropdown to a top-level
-// tab bar so they're one click from anywhere.
+// Primary app sections — the 2.0 workflow: discover → decide → act → learn.
+// Home is mission control; Studio holds the pro tools; Published is the record.
 const NAV = [
-  { href: "/", label: "Studio" },
-  { href: "/compose", label: "Posting" },
-  { href: "/autopilot", label: "Autopilot" },
-  { href: "/performance", label: "Performance" },
-  { href: "/gallery", label: "Gallery" },
+  { href: "/", label: "Home", emoji: "🏠" },
+  { href: "/opportunities", label: "Opportunities", emoji: "🎯" },
+  { href: "/actions", label: "Actions", emoji: "⚡" },
+  { href: "/playbooks", label: "Playbooks", emoji: "📚" },
+  { href: "/studio", label: "Studio", emoji: "🧰" },
+  { href: "/published", label: "Published", emoji: "📢" },
+  { href: "/learning", label: "Learning", emoji: "📈" },
 ];
 
 export default function Nav({ email, credits }: { email: string; credits?: number }) {
@@ -127,12 +129,13 @@ export default function Nav({ email, credits }: { email: string; credits?: numbe
             <Link
               key={it.href}
               href={it.href}
-              className={`shrink-0 border-b-2 px-3 py-2 text-sm font-medium transition ${
+              className={`shrink-0 border-b-2 px-2.5 py-2 text-sm font-medium transition ${
                 active
                   ? "border-boss-violet text-slate-900"
                   : "border-transparent text-slate-500 hover:text-slate-900"
               }`}
             >
+              <span aria-hidden className="mr-1 hidden sm:inline">{it.emoji}</span>
               {it.label}
             </Link>
           );

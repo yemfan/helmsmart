@@ -90,6 +90,19 @@ export async function getPost(userId: string, id: string): Promise<CampaignPost 
   return (data as CampaignPost) ?? null;
 }
 
+/** Draft posts awaiting review/approval across all campaigns, newest first. */
+export async function listDrafts(userId: string, limit = 20): Promise<CampaignPost[]> {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("campaign_posts")
+    .select(POST_COLS)
+    .eq("user_id", userId)
+    .eq("status", "draft")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return (data as CampaignPost[]) ?? [];
+}
+
 /** Upcoming scheduled posts (one-off + campaign), soonest first. */
 export async function listScheduled(userId: string): Promise<CampaignPost[]> {
   const admin = createAdminClient();

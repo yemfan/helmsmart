@@ -491,7 +491,7 @@ export default function UgcStudio({
               {scheduled ? (
                 <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-600">
                   Scheduled ✓ — it&apos;ll post automatically at your chosen time. Track it under{" "}
-                  <Link href="/compose" className="font-semibold underline underline-offset-2">
+                  <Link href="/actions" className="font-semibold underline underline-offset-2">
                     Scheduled
                   </Link>
                   .
