@@ -47,6 +47,8 @@ const hhmm = (h: number, m: number) => `${String(h).padStart(2, "0")}:${String(m
 export default function WeeklySchedule() {
   const [days, setDays] = useState<Day[] | null>(null);
   const [presets, setPresets] = useState<string[]>([]);
+  // null until loaded — we only mark channels unconnected once we know.
+  const [connected, setConnected] = useState<string[] | null>(null);
   const [configured, setConfigured] = useState(true);
   const [saving, setSaving] = useState(false);
   const [note, setNote] = useState<string | null>(null);
@@ -58,6 +60,7 @@ export default function WeeklySchedule() {
       const b = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
         days?: Day[];
+        connected?: string[];
         topicPresets?: string[];
         configured?: boolean;
       };
@@ -65,6 +68,7 @@ export default function WeeklySchedule() {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
       setDays(b.days.map((d) => ({ ...d, mediaType: d.mediaType ?? "text", timezone: d.timezone || tz })));
       setPresets(b.topicPresets ?? []);
+      setConnected(b.connected ?? null);
       setConfigured(b.configured ?? true);
     } catch {
       /* best-effort */
@@ -189,21 +193,48 @@ export default function WeeklySchedule() {
 
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[11px] font-medium text-neutral-500">Channels</span>
-                    {all.map((p) => (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => togglePlatform(d, p)}
-                        className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
-                          selected.includes(p)
-                            ? "border-indigo-400 bg-indigo-50 text-neutral-900"
-                            : "border-neutral-200 text-neutral-500"
-                        }`}
-                      >
-                        {LABELS[p]}
-                      </button>
-                    ))}
-                    {d.channels === null ? <span className="text-[10px] text-neutral-400">all connected</span> : null}
+                    {all.map((p) => {
+                      // A channel that isn't connected can't be posted to — show it
+                      // as a connect link, not a selectable-looking toggle.
+                      if (connected !== null && !connected.includes(p)) {
+                        return (
+                          <a
+                            key={p}
+                            href="/settings?tab=connections"
+                            title={`${LABELS[p]} isn't connected — click to connect it`}
+                            className="rounded-full border border-dashed border-neutral-300 px-2.5 py-0.5 text-[11px] font-medium text-neutral-400 hover:text-neutral-700"
+                          >
+                            + {LABELS[p]}
+                          </a>
+                        );
+                      }
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => togglePlatform(d, p)}
+                          className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
+                            selected.includes(p)
+                              ? "border-indigo-400 bg-indigo-50 text-neutral-900"
+                              : "border-neutral-200 text-neutral-500"
+                          }`}
+                        >
+                          {LABELS[p]}
+                        </button>
+                      );
+                    })}
+                    {d.channels === null ? (
+                      <span className="text-[10px] text-neutral-400">
+                        {connected === null
+                          ? "posts to all connected channels"
+                          : (() => {
+                              const live = all.filter((p) => connected.includes(p));
+                              return live.length > 0
+                                ? `posts to all connected: ${live.map((p) => LABELS[p]).join(", ")}`
+                                : "no channels connected yet";
+                            })()}
+                      </span>
+                    ) : null}
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">

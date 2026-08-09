@@ -92,25 +92,40 @@ export default function PublishedHistory({ history }: { history: PublishedPost[]
               ) : null;
             })()}
             {p.results && (
-              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
-                {p.results.map((r) => (
-                  <span key={r.platform} className={r.ok ? "text-emerald-600" : "text-red-600"}>
-                    {LABEL[r.platform] ?? r.platform}
-                    {r.ok && r.url ? (
-                      <>
-                        {" "}
-                        <a href={r.url} target="_blank" rel="noreferrer" className="underline">
-                          ↗
-                        </a>
-                      </>
-                    ) : r.ok ? (
-                      " ✓"
-                    ) : (
-                      " ✕"
-                    )}
-                  </span>
-                ))}
-              </div>
+              <>
+                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]">
+                  {p.results.map((r) => (
+                    <span key={r.platform} className={r.ok ? "text-emerald-600" : "text-red-600"}>
+                      {LABEL[r.platform] ?? r.platform}
+                      {r.ok && r.url ? (
+                        <>
+                          {" "}
+                          <a href={r.url} target="_blank" rel="noreferrer" className="underline">
+                            ↗
+                          </a>
+                        </>
+                      ) : r.ok ? (
+                        " ✓"
+                      ) : (
+                        " ✕"
+                      )}
+                    </span>
+                  ))}
+                </div>
+                {/* Failures explain themselves — the platform's own message is
+                    usually the actionable one ("open the Facebook app…"). */}
+                {p.results.some((r) => !r.ok && r.error) && (
+                  <div className="mt-1.5 flex flex-col gap-1">
+                    {p.results
+                      .filter((r) => !r.ok && r.error)
+                      .map((r) => (
+                        <p key={r.platform} className="rounded-lg bg-red-500/5 px-2.5 py-1.5 text-[11px] leading-snug text-red-700">
+                          <span className="font-semibold">{LABEL[r.platform] ?? r.platform}:</span> {r.error}
+                        </p>
+                      ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
