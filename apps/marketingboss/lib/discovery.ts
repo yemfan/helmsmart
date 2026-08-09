@@ -160,6 +160,78 @@ async function scoutCompetitors(userId: string, campaigns: Campaign[]): Promise<
   }));
 }
 
+const SEASONAL_SCHEMA = {
+  type: "object",
+  properties: {
+    moments: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          when: { type: "string" },
+          description: { type: "string" },
+          reasoning: { type: "string" },
+          businessValue: { type: "string" },
+          reach: { type: "string", enum: ["low", "medium", "high"] },
+          urgency: { type: "string", enum: ["low", "medium", "high"] },
+          confidence: { type: "number" },
+          type: { type: "string", enum: ["text", "image", "video"] },
+          intent: { type: "string" },
+        },
+        required: ["title", "when", "description", "reasoning", "businessValue", "reach", "urgency", "confidence", "type", "intent"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["moments"],
+  additionalProperties: false,
+};
+
+type SeasonalMoment = CompOpp & { when: string };
+
+/**
+ * SEASONAL — upcoming marketing moments (holidays, observances, retail
+ * rhythms) relevant to the niche. One structured pass, no web search — the
+ * calendar is stable knowledge; the model is told today's date and is allowed
+ * to return NOTHING when no moment genuinely fits.
+ */
+async function scoutSeasonal(niche: string): Promise<OpportunityInput[]> {
+  if (!aiConfigured()) return [];
+  const today = new Date().toISOString().slice(0, 10);
+
+  const system = [
+    "You are a marketing strategist working the calendar. Given today's date and a business niche, pick the 1-2 most",
+    "valuable marketing moments in the NEXT 45 days: holidays, observances, gifting windows, seasonal behavior shifts,",
+    "or retail rhythms (back-to-school, BFCM, etc.).",
+    "Only moments genuinely relevant to THIS niche — if nothing meaningful is coming up, return an empty list.",
+    "For each: title (actionable, names the moment), when (the date or window, e.g. 'Sep 29 — National Coffee Day'),",
+    "description (what the moment is and the angle to take), reasoning (ONE sentence business case addressed to the",
+    "owner — why acting BEFORE the moment beats sitting it out), businessValue, reach/urgency (low|medium|high —",
+    "urgency high only if the window opens within ~2 weeks), confidence (0-1, honest), type (best media format),",
+    "intent (a ready instruction for an AI composer, mentioning the moment and the angle).",
+  ].join("\n");
+
+  const out = await anthropicJson<{ moments: SeasonalMoment[] }>({
+    system,
+    user: `Today's date: ${today}\nBusiness niche:\n${niche}`,
+    schema: SEASONAL_SCHEMA,
+    maxTokens: 1500,
+  });
+
+  return out.moments.slice(0, 2).map((m) => ({
+    source: "seasonal" as const,
+    title: m.title,
+    description: `${m.when} — ${m.description}`,
+    reasoning: m.reasoning,
+    business_value: m.businessValue,
+    reach: m.reach,
+    urgency: m.urgency,
+    confidence: Math.max(0, Math.min(1, m.confidence)),
+    recommended_action: { type: m.type, intent: m.intent },
+  }));
+}
+
 /** TRENDS — the viral scout (web search), mapped onto ride-this-format opportunities. */
 async function scoutTrends(userId: string, niche: string): Promise<OpportunityInput[]> {
   if (!aiConfigured()) return [];
@@ -205,9 +277,22 @@ export async function discoverForUser(userId: string, opts?: { skipTrends?: bool
     sources.competitors = `error: ${e instanceof Error ? e.message : "failed"}`;
   }
 
+  const niche = await nicheOf(userId, campaigns).catch(() => null);
+
+  try {
+    if (niche) {
+      const seasonal = await scoutSeasonal(niche);
+      sources.seasonal = seasonal.length;
+      all.push(...seasonal);
+    } else {
+      sources.seasonal = "skipped: no brand kit or campaign brief yet";
+    }
+  } catch (e) {
+    sources.seasonal = `error: ${e instanceof Error ? e.message : "failed"}`;
+  }
+
   if (!opts?.skipTrends) {
     try {
-      const niche = await nicheOf(userId, campaigns);
       if (niche) {
         const trends = await scoutTrends(userId, niche);
         sources.trends = trends.length;
