@@ -11,6 +11,7 @@ import { fetchMetric, METRIC_SUPPORTED, type Metric } from "@/lib/metrics";
 import { runDueWeeklySlots } from "@/lib/weeklySchedule";
 import { discoverForUser } from "@/lib/discovery";
 import { latestOpportunityAt } from "@/lib/opportunities";
+import { appliedLearningsHint, latestLearningAt, synthesizeLearnings } from "@/lib/learnings";
 import type { BrandBrief } from "@/lib/research";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -117,7 +118,11 @@ export async function GET(req: Request) {
 
     if (c.brief) {
       try {
-        const insights = await buildInsights(c.user_id, c.id).catch(() => null);
+        const [autoInsights, learned] = await Promise.all([
+          buildInsights(c.user_id, c.id).catch(() => null),
+          appliedLearningsHint(c.user_id, c.id).catch(() => null),
+        ]);
+        const insights = [autoInsights, learned].filter(Boolean).join("\n") || null;
         const planned = (
           await planPosts(c.brief, { mediaTypes: c.media_types, channels: c.channels, link: c.link, count: 1, insights })
         )[0];
@@ -208,7 +213,36 @@ export async function GET(req: Request) {
     console.warn("[cron/run] discovery phase failed:", e instanceof Error ? e.message : e);
   }
 
-  return NextResponse.json({ ok: true, drained, posted, drafted, refreshed, weeklyEnqueued, discovered, at: nowIso });
+  // 6) Learning synthesis — pure-code cohort comparisons over each user's own
+  // published results, at most weekly per user. Best-effort; no-ops pre-0017.
+  let learned = 0;
+  try {
+    const { data: publishers } = await admin
+      .from("campaign_posts")
+      .select("user_id")
+      .eq("status", "published")
+      .not("metrics", "is", null)
+      .order("published_at", { ascending: false })
+      .limit(50);
+    const users = [...new Set(((publishers as { user_id: string }[]) ?? []).map((r) => r.user_id))];
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 3600 * 1000).toISOString();
+    let ran = 0;
+    for (const uid of users) {
+      if (ran >= 1) break;
+      const latest = await latestLearningAt(uid);
+      if (latest && latest > weekAgo) continue;
+      ran++;
+      try {
+        learned += await synthesizeLearnings(uid);
+      } catch {
+        /* per-user best effort */
+      }
+    }
+  } catch (e) {
+    console.warn("[cron/run] learning phase failed:", e instanceof Error ? e.message : e);
+  }
+
+  return NextResponse.json({ ok: true, drained, posted, drafted, refreshed, weeklyEnqueued, discovered, learned, at: nowIso });
 }
 
 type MetricRow = {
