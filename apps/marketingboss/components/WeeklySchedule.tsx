@@ -30,6 +30,14 @@ type Day = {
   runs: Run[];
 };
 
+type BusinessProfile = {
+  companyUrl: string | null;
+  name: string | null;
+  summary: string | null;
+  audience: string | null;
+  topicPresets: string[];
+};
+
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const LABELS: Record<Platform, string> = {
   facebook: "Facebook",
@@ -55,6 +63,11 @@ const MAX_RUNS = 6;
 export default function WeeklySchedule() {
   const [days, setDays] = useState<Day[] | null>(null);
   const [presets, setPresets] = useState<string[]>([]);
+  // Business profile: URL → researched info + topics tailored to the business.
+  const [profile, setProfile] = useState<BusinessProfile | null>(null);
+  const [companyUrl, setCompanyUrl] = useState("");
+  const [researching, setResearching] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
   // Rotation list (left box) + user-added custom topics (live in the right box until moved).
   const [selected, setSelected] = useState<string[]>([]);
   const [customs, setCustoms] = useState<string[]>([]);
@@ -78,6 +91,7 @@ export default function WeeklySchedule() {
         ok?: boolean;
         days?: Day[];
         connected?: string[];
+        profile?: BusinessProfile | null;
         topicPresets?: string[];
         configured?: boolean;
       };
@@ -102,6 +116,10 @@ export default function WeeklySchedule() {
       const src = loaded.find((d) => d.enabled) ?? loaded[0];
       if (src) setRuns(src.runs);
       setPresets(pres);
+      if (b.profile) {
+        setProfile(b.profile);
+        setCompanyUrl(b.profile.companyUrl ?? "");
+      }
       setConnected(b.connected ?? null);
       setConfigured(b.configured ?? true);
     } catch {
@@ -113,9 +131,36 @@ export default function WeeklySchedule() {
     void load();
   }, [load]);
 
+  // ── Business profile ───────────────────────────────────────────────────────
+
+  async function researchCompany() {
+    const url = companyUrl.trim();
+    if (!url || researching) return;
+    setResearching(true);
+    setProfileError(null);
+    try {
+      const res = await fetch("/api/business-profile", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const b = (await res.json().catch(() => null)) as { ok?: boolean; profile?: BusinessProfile; error?: string } | null;
+      if (!res.ok || !b?.profile) {
+        throw new Error(b?.error || "The research ran long or failed — please try again.");
+      }
+      setProfile(b.profile);
+    } catch (e) {
+      setProfileError(e instanceof Error ? e.message : "Couldn't research that site — please try again.");
+    } finally {
+      setResearching(false);
+    }
+  }
+
   // ── Topics (dual listbox) ──────────────────────────────────────────────────
 
-  const available = [...new Set([...presets, ...customs])].filter((t) => !selected.includes(t));
+  // Business-specific topics first, generic presets after.
+  const businessPresets = profile?.topicPresets ?? [];
+  const available = [...new Set([...businessPresets, ...presets, ...customs])].filter((t) => !selected.includes(t));
 
   function toggleHl(set: Set<string>, setter: (s: Set<string>) => void, t: string) {
     const next = new Set(set);
@@ -266,6 +311,53 @@ export default function WeeklySchedule() {
         </p>
       ) : null}
 
+      {/* Business profile — URL → researched info + tailored topics */}
+      <div className="rounded-xl border border-neutral-200 bg-white p-3">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-neutral-500">Your business</div>
+        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+          <input
+            type="url"
+            value={companyUrl}
+            onChange={(e) => setCompanyUrl(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && void researchCompany()}
+            placeholder="https://your-company.com"
+            className="min-w-[220px] flex-1 rounded-lg border border-neutral-300 px-2 py-1.5 text-sm"
+          />
+          <button
+            type="button"
+            onClick={() => void researchCompany()}
+            disabled={researching || !companyUrl.trim() || !configured}
+            title={configured ? "Research the site and generate topics for this business" : "Needs ANTHROPIC_API_KEY"}
+            className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-40"
+          >
+            {researching ? "Researching…" : profile ? "Re-research" : "Fill from website"}
+          </button>
+        </div>
+        {researching && (
+          <p className="mt-1.5 text-[11px] text-neutral-500">
+            Reading your site and generating topics for your business — this can take a minute or two.
+          </p>
+        )}
+        {profileError && <p className="mt-1.5 text-[11px] text-red-600">{profileError}</p>}
+        {profile && !researching && (
+          <div className="mt-2 rounded-lg bg-neutral-50 p-2.5 text-[12px] text-neutral-600">
+            {profile.name && <span className="font-semibold text-neutral-900">{profile.name}. </span>}
+            {profile.summary}
+            {profile.audience && (
+              <span className="text-neutral-500">
+                {" "}
+                Audience: {profile.audience}
+              </span>
+            )}
+            {profile.topicPresets.length > 0 && (
+              <span className="mt-1 block text-[11px] text-indigo-600">
+                ✨ {profile.topicPresets.length} topics generated for your business — find them at the top of Available.
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Topics — dual listbox */}
       <div className="rounded-xl border border-neutral-200 bg-white p-3">
         <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
@@ -314,7 +406,10 @@ export default function WeeklySchedule() {
               {available.map((t) => (
                 <div key={t} className="flex items-center">
                   <button type="button" onClick={() => toggleHl(hlAvail, setHlAvail, t)} className={itemCls(hlAvail.has(t))}>
-                    <span className="min-w-0 flex-1 truncate">{t}</span>
+                    <span className="min-w-0 flex-1 truncate">
+                      {businessPresets.includes(t) ? "✨ " : ""}
+                      {t}
+                    </span>
                   </button>
                   {customs.includes(t) && (
                     <button
