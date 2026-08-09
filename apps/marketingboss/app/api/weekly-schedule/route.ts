@@ -14,6 +14,7 @@ import {
   type WeeklyScheduleDay,
 } from "@/lib/weeklySchedule";
 import { getConnectionStatuses } from "@/lib/social";
+import { getBusinessProfile } from "@/lib/businessProfile";
 
 export const runtime = "nodejs";
 
@@ -27,15 +28,17 @@ export async function GET() {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Please sign in first." }, { status: 401 });
 
-  const [days, statuses] = await Promise.all([
+  const [days, statuses, profile] = await Promise.all([
     getWeeklySchedule(user.id),
     getConnectionStatuses(user.id, ALL_PLATFORMS),
+    getBusinessProfile(user.id).catch(() => null),
   ]);
   const connected = ALL_PLATFORMS.filter((p) => statuses[p]?.connected);
   return NextResponse.json({
     ok: true,
     days,
     connected,
+    profile,
     topicPresets: TOPIC_PRESETS,
     platformsByMedia: { text: TEXT_PLATFORMS, image: IMAGE_PLATFORMS, video: VIDEO_PLATFORMS },
     configured: Boolean(process.env.ANTHROPIC_API_KEY),
