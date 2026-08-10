@@ -9,6 +9,14 @@ import type { BrandKit } from "@/lib/brandKit";
  * voice, audience, colors, logo — which the draft API folds into every AI post
  * so copy and image/video prompts come out on-brand.
  */
+type ResearchedProfile = {
+  name: string | null;
+  summary: string | null;
+  audience: string | null;
+  topicPresets: string[];
+  brand?: { brand_name: string | null; voice: string | null; audience: string | null };
+};
+
 export default function BrandKitForm({ uid, initial }: { uid: string; initial: BrandKit | null }) {
   const [brandName, setBrandName] = useState(initial?.brand_name ?? "");
   const [voice, setVoice] = useState(initial?.voice ?? "");
@@ -16,10 +24,41 @@ export default function BrandKitForm({ uid, initial }: { uid: string; initial: B
   const [primary, setPrimary] = useState(initial?.primary_color ?? "#7c5cff");
   const [accent, setAccent] = useState(initial?.accent_color ?? "#f5b301");
   const [logoUrl, setLogoUrl] = useState(initial?.logo_url ?? "");
+  const [companyUrl, setCompanyUrl] = useState(initial?.company_url ?? "");
+  const [researching, setResearching] = useState(false);
+  const [researched, setResearched] = useState<ResearchedProfile | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  async function fillFromWebsite() {
+    const url = companyUrl.trim();
+    if (!url || researching) return;
+    setResearching(true);
+    setError(null);
+    setNote(null);
+    try {
+      const res = await fetch("/api/business-profile", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const b = (await res.json().catch(() => null)) as { ok?: boolean; profile?: ResearchedProfile; error?: string } | null;
+      if (!res.ok || !b?.profile) throw new Error(b?.error || "The research ran long or failed — please try again.");
+      setResearched(b.profile);
+      // Fill only fields the user hasn't typed — same rule as the server.
+      const brand = b.profile.brand;
+      if (!brandName.trim() && (brand?.brand_name || b.profile.name)) setBrandName(brand?.brand_name || b.profile.name || "");
+      if (!voice.trim() && (brand?.voice || b.profile.summary)) setVoice(brand?.voice || b.profile.summary || "");
+      if (!audience.trim() && (brand?.audience || b.profile.audience)) setAudience(brand?.audience || b.profile.audience || "");
+      setNote("Business info filled from your website and saved — review or tweak anytime.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Couldn't research that site — please try again.");
+    } finally {
+      setResearching(false);
+    }
+  }
 
   async function onPickLogo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -86,6 +125,45 @@ export default function BrandKitForm({ uid, initial }: { uid: string; initial: B
         Tell MarketingBoss about your brand once — it&apos;s woven into every AI caption and image prompt so your
         content stays on-brand automatically.
       </p>
+
+      {/* Fastest path: research the company site and fill the kit from it. */}
+      <div className="rounded-2xl border border-boss-violet/20 bg-boss-violet/5 p-4">
+        <span className="text-xs font-medium text-slate-600">Company website</span>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <input
+            type="url"
+            value={companyUrl}
+            onChange={(e) => setCompanyUrl(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && void fillFromWebsite()}
+            placeholder="https://your-company.com"
+            className="min-w-[220px] flex-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none focus:border-boss-violet/60"
+          />
+          <button
+            type="button"
+            onClick={() => void fillFromWebsite()}
+            disabled={researching || !companyUrl.trim()}
+            className="rounded-lg bg-boss-violet px-3.5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-40"
+          >
+            {researching ? "Researching…" : "Fill from website"}
+          </button>
+        </div>
+        {researching && (
+          <p className="mt-1.5 text-xs text-slate-500">
+            Reading your site, filling your brand info, and generating post topics — this can take a minute or two.
+          </p>
+        )}
+        {researched && !researching && (
+          <p className="mt-1.5 text-xs text-slate-600">
+            {researched.summary}
+            {researched.topicPresets.length > 0 && (
+              <span className="mt-1 block text-boss-violet">
+                ✨ {researched.topicPresets.length} post topics generated for your business — they&apos;re in your
+                posting schedule&apos;s Available box (Playbooks → Weekly post schedule).
+              </span>
+            )}
+          </p>
+        )}
+      </div>
 
       <label className="block">
         <span className="text-xs font-medium text-slate-600">Brand / business name</span>

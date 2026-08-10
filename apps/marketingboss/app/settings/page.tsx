@@ -7,7 +7,7 @@ import { youtubeConfigured } from "@/lib/youtube";
 import { OAUTH_ADAPTERS } from "@/lib/oauth";
 import { CREDIT_PACKS, SUBSCRIPTION_PLANS } from "@/lib/billing";
 import { stripeConfigured } from "@/lib/stripe";
-import { BRAND_KIT_COLUMNS, type BrandKit } from "@/lib/brandKit";
+import type { BrandKit } from "@/lib/brandKit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,7 +34,8 @@ export default async function SettingsPage({
   const [{ data: profile }, statuses, { data: brand }, { data: sub }] = await Promise.all([
     supabase.from("profiles").select("credits").eq("user_id", user.id).single(),
     getConnectionStatuses(user.id, PLATFORMS),
-    supabase.from("brand_kits").select(BRAND_KIT_COLUMNS).eq("user_id", user.id).maybeSingle(),
+    // select * so company_url (0021) comes along, tolerant of older schemas.
+    supabase.from("brand_kits").select("*").eq("user_id", user.id).maybeSingle(),
     supabase.from("subscriptions").select("plan, status").eq("user_id", user.id).maybeSingle(),
   ]);
 

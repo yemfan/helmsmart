@@ -12,6 +12,8 @@ export type BrandKit = {
   primary_color: string | null;
   accent_color: string | null;
   logo_url: string | null;
+  /** Business profile (migration 0021) — present when selected with *. */
+  company_url?: string | null;
 };
 
 /** Column list for selecting a brand kit row. */
