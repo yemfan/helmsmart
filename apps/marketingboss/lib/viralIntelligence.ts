@@ -331,14 +331,168 @@ async function extractTemplateDna(item: ScoutedItem): Promise<TemplateDna> {
   });
 }
 
+// ── YouTube trending connector (real metrics; active when YOUTUBE_API_KEY set) ─
+
+type YtVideo = {
+  id: string;
+  snippet?: { title?: string; description?: string; channelTitle?: string; publishedAt?: string; categoryId?: string };
+  statistics?: { viewCount?: string; likeCount?: string; commentCount?: string };
+};
+
+const YT_FILTER_SCHEMA = {
+  type: "object",
+  properties: {
+    videos: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          keep: { type: "boolean" },
+          format: { type: "string" },
+          hookType: { type: "string" },
+          emotionalTrigger: { type: "string" },
+          industries: { type: "array", items: { type: "string" } },
+          replicability: { type: "number" },
+          industryFit: { type: "number" },
+          whyItWorks: { type: "array", items: { type: "string" } },
+        },
+        required: ["id", "keep", "format", "hookType", "emotionalTrigger", "industries", "replicability", "industryFit", "whyItWorks"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["videos"],
+  additionalProperties: false,
+};
+
+type YtJudged = {
+  id: string;
+  keep: boolean;
+  format: string;
+  hookType: string;
+  emotionalTrigger: string;
+  industries: string[];
+  replicability: number;
+  industryFit: number;
+  whyItWorks: string[];
+};
+
+function ytVelocity(views: number, vph: number, ageHours: number): string {
+  if (ageHours < 48 && vph > 20_000) return "exploding";
+  if (views > 5_000_000 && vph > 10_000) return "viral";
+  if (vph > 5_000) return "rising";
+  if (ageHours > 24 * 30) return "established";
+  return "emerging";
+}
+
+/**
+ * Real-metric scout: YouTube mostPopular (1 quota unit) → exact stats.
+ * Momentum/engagement/recency are COMPUTED from real numbers; one cheap
+ * structured pass filters for marketing-replicable videos and adds the
+ * creative DNA. Acceleration/crossPlatform are omitted (need snapshots) —
+ * computeViralScore reweights around missing components.
+ */
+async function scoutYouTubeTrending(): Promise<{ rows: Record<string, unknown>[]; scanned: number }> {
+  const key = process.env.YOUTUBE_API_KEY;
+  if (!key) return { rows: [], scanned: 0 };
+
+  const res = await fetch(
+    `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=25&regionCode=US&key=${encodeURIComponent(key)}`,
+    { signal: AbortSignal.timeout(8000) },
+  );
+  if (!res.ok) throw new Error(`YouTube trending failed (${res.status}).`);
+  const body = (await res.json()) as { items?: YtVideo[] };
+  const videos = (body.items ?? []).filter((v) => v.id && v.snippet?.title && v.statistics?.viewCount);
+  if (videos.length === 0) return { rows: [], scanned: 0 };
+
+  const enriched = videos.map((v) => {
+    const views = Number(v.statistics!.viewCount ?? 0);
+    const likes = Number(v.statistics!.likeCount ?? 0);
+    const comments = Number(v.statistics!.commentCount ?? 0);
+    const ageHours = Math.max(1, (Date.now() - Date.parse(v.snippet!.publishedAt ?? new Date().toISOString())) / 3_600_000);
+    const vph = views / ageHours;
+    const engagementRatio = views > 0 ? (likes + comments) / views : 0;
+    return { v, views, likes, comments, ageHours, vph, engagementRatio };
+  });
+
+  // One cheap structured pass: which of these are marketing-replicable formats?
+  const judged = await anthropicJson<{ videos: YtJudged[] }>({
+    system: [
+      "You screen trending YouTube videos for a small-business marketing intelligence library. keep=true ONLY when",
+      "the video's FORMAT is something a small business could realistically replicate for marketing (educational,",
+      "listicle, UGC-style, talking-head, demo, transformation, story…). keep=false for music videos, trailers,",
+      "celebrity/gaming/sports content with no replicable marketing format. For kept videos: the format, hook type,",
+      "emotional trigger, 2-4 fitting industries, replicability 0-100 (production effort), industryFit 0-100",
+      "(breadth of business types it serves), and 2-4 whyItWorks mechanics.",
+    ].join("\n"),
+    user: JSON.stringify(
+      enriched.map((e) => ({
+        id: e.v.id,
+        title: e.v.snippet!.title,
+        channel: e.v.snippet!.channelTitle,
+        views: e.views,
+        likes: e.likes,
+        comments: e.comments,
+        ageHours: Math.round(e.ageHours),
+      })),
+    ),
+    schema: YT_FILTER_SCHEMA,
+    maxTokens: 3000,
+  });
+
+  const keep = new Map(judged.videos.filter((j) => j.keep).map((j) => [j.id, j]));
+  const rows: Record<string, unknown>[] = [];
+  for (const e of enriched) {
+    const j = keep.get(e.v.id!);
+    if (!j) continue;
+    const components: Partial<ScoreComponents> = {
+      momentum: Math.min(100, Math.round(Math.log10(e.vph + 1) * 25)),
+      engagement: Math.min(100, Math.round(e.engagementRatio * 2000)),
+      recency: Math.max(20, Math.min(100, Math.round(100 - (e.ageHours / 24) * 10))),
+      replicability: Math.max(0, Math.min(100, Math.round(j.replicability))),
+      industryFit: Math.max(0, Math.min(100, Math.round(j.industryFit))),
+    };
+    rows.push({
+      source: "youtube",
+      url: `https://www.youtube.com/watch?v=${e.v.id}`,
+      title: (e.v.snippet!.title ?? "").slice(0, 300),
+      description: (e.v.snippet!.description ?? "").slice(0, 400) || null,
+      platform: "youtube",
+      content_type: "video",
+      format: j.format.toLowerCase().slice(0, 60),
+      industries: j.industries.slice(0, 8),
+      metrics: {
+        views: e.views,
+        likes: e.likes,
+        comments: e.comments,
+        viewsPerHour: Math.round(e.vph),
+        ageHours: Math.round(e.ageHours),
+        estimated: false,
+        note: `YouTube mostPopular — ${e.views.toLocaleString()} views, ${Math.round(e.vph).toLocaleString()}/hr (exact)`,
+      },
+      score_components: components,
+      viral_score: computeViralScore(components),
+      velocity: ytVelocity(e.views, e.vph, e.ageHours),
+      status: "analyzed",
+      analysis: { hookType: j.hookType, emotionalTrigger: j.emotionalTrigger, whyItWorks: j.whyItWorks.slice(0, 6) },
+      analysis_version: ANALYSIS_VERSION,
+      rights: { sourceType: "reference", storage: "metadata_only", displayAllowed: true, remixAllowed: "concept_only", attribution: e.v.snippet!.channelTitle ?? null },
+    });
+  }
+  return { rows, scanned: videos.length };
+}
+
 // ── Daily refresh (the cron phase) ───────────────────────────────────────────
 
 const ANALYSIS_VERSION = 1;
 const TEMPLATE_TOP_N = 3;
 
 /**
- * Once-per-~22h global library refresh: scout+analyze, dedupe, insert, then
- * Template-DNA for the top new items. No-ops pre-migration and without AI.
+ * Once-per-~22h global library refresh. Sources: YouTube trending (real
+ * metrics, when YOUTUBE_API_KEY is set) + the web-research sweep. Unified
+ * dedupe, then Template-DNA for the top new items across both sources.
+ * No-ops pre-migration and without AI.
  */
 export async function refreshViralLibrary(): Promise<{ found: number; templated: number } | null> {
   if (!aiConfigured()) return null;
@@ -346,10 +500,44 @@ export async function refreshViralLibrary(): Promise<{ found: number; templated:
   if (latest && Date.now() - Date.parse(latest) < 22 * 3600 * 1000) return null;
 
   const admin = createAdminClient();
-  const briefing = await scoutRaw();
-  const scouted = await structureScout(briefing);
 
-  // Dedupe against live titles/urls (cheap; semantic clustering is a later phase).
+  // Source 1 — YouTube trending (cheap, exact metrics; [] without the key).
+  let ytRows: Record<string, unknown>[] = [];
+  try {
+    ytRows = (await scoutYouTubeTrending()).rows;
+  } catch (e) {
+    console.warn("[viral] youtube connector failed:", e instanceof Error ? e.message : e);
+  }
+
+  // Source 2 — the web-research sweep (formats + cross-platform signals).
+  let webRows: Record<string, unknown>[] = [];
+  const scoutedByTitle = new Map<string, ScoutedItem>();
+  try {
+    const scouted = await structureScout(await scoutRaw());
+    for (const s of scouted) scoutedByTitle.set(s.title.slice(0, 300), s);
+    webRows = scouted.map((s) => ({
+      source: "web_research",
+      url: s.url || null,
+      title: s.title.slice(0, 300),
+      description: s.description,
+      platform: s.platform.toLowerCase().slice(0, 40),
+      content_type: s.contentType,
+      format: s.format.toLowerCase().slice(0, 60),
+      industries: s.industries.slice(0, 8),
+      metrics: { note: s.metricsNote, estimated: true },
+      score_components: s.components,
+      viral_score: computeViralScore(s.components),
+      velocity: s.velocity,
+      status: "analyzed",
+      analysis: { hookType: s.hookType, emotionalTrigger: s.emotionalTrigger, whyItWorks: s.whyItWorks.slice(0, 6) },
+      analysis_version: ANALYSIS_VERSION,
+      rights: { sourceType: "reference", storage: "metadata_only", displayAllowed: true, remixAllowed: "concept_only" },
+    }));
+  } catch (e) {
+    console.warn("[viral] web-research scout failed:", e instanceof Error ? e.message : e);
+  }
+
+  // Unified dedupe: against the live library AND across the two sources.
   const { data: existing, error: readErr } = await admin
     .from("viral_items")
     .select("title, url")
@@ -361,33 +549,16 @@ export async function refreshViralLibrary(): Promise<{ found: number; templated:
   }
   const seenTitles = new Set(((existing as { title: string }[]) ?? []).map((r) => r.title.trim().toLowerCase()));
   const seenUrls = new Set(((existing as { url: string | null }[]) ?? []).map((r) => r.url).filter(Boolean));
-  const fresh = scouted.filter(
-    (s) => !seenTitles.has(s.title.trim().toLowerCase()) && (!s.url || !seenUrls.has(s.url)),
-  );
-  if (fresh.length === 0) return { found: 0, templated: 0 };
-
-  const rows = fresh.map((s) => ({
-    source: "web_research",
-    url: s.url || null,
-    title: s.title.slice(0, 300),
-    description: s.description,
-    platform: s.platform.toLowerCase().slice(0, 40),
-    content_type: s.contentType,
-    format: s.format.toLowerCase().slice(0, 60),
-    industries: s.industries.slice(0, 8),
-    metrics: { note: s.metricsNote, estimated: true },
-    score_components: s.components,
-    viral_score: computeViralScore(s.components),
-    velocity: s.velocity,
-    status: "analyzed",
-    analysis: {
-      hookType: s.hookType,
-      emotionalTrigger: s.emotionalTrigger,
-      whyItWorks: s.whyItWorks.slice(0, 6),
-    },
-    analysis_version: ANALYSIS_VERSION,
-    rights: { sourceType: "reference", storage: "metadata_only", displayAllowed: true, remixAllowed: "concept_only" },
-  }));
+  const rows: Record<string, unknown>[] = [];
+  for (const r of [...ytRows, ...webRows]) {
+    const t = String(r.title).trim().toLowerCase();
+    const u = r.url as string | null;
+    if (seenTitles.has(t) || (u && seenUrls.has(u))) continue;
+    seenTitles.add(t);
+    if (u) seenUrls.add(u);
+    rows.push(r);
+  }
+  if (rows.length === 0) return { found: 0, templated: 0 };
 
   const { data: inserted, error } = await admin.from("viral_items").insert(rows).select("id, title, viral_score");
   if (error) {
@@ -395,31 +566,49 @@ export async function refreshViralLibrary(): Promise<{ found: number; templated:
     throw new Error(error.message);
   }
 
-  // Template-DNA only for the top new items (cost staging).
-  const byScore = [...fresh].sort((a, b) => computeViralScore(b.components) - computeViralScore(a.components));
+  // Template-DNA only for the top new items across both sources (cost staging).
+  const sorted = ((inserted as { id: string; title: string; viral_score: number }[]) ?? []).sort(
+    (a, b) => Number(b.viral_score) - Number(a.viral_score),
+  );
   let templated = 0;
-  for (const s of byScore.slice(0, TEMPLATE_TOP_N)) {
-    const row = ((inserted as { id: string; title: string }[]) ?? []).find((r) => r.title === s.title.slice(0, 300));
-    if (!row) continue;
+  for (const row of sorted.slice(0, TEMPLATE_TOP_N)) {
+    const src = rows.find((r) => r.title === row.title);
+    if (!src) continue;
+    const analysis = (src.analysis ?? {}) as { hookType?: string; emotionalTrigger?: string; whyItWorks?: string[] };
+    const pseudo: ScoutedItem = scoutedByTitle.get(row.title) ?? {
+      title: row.title,
+      description: String(src.description ?? ""),
+      url: String(src.url ?? ""),
+      platform: String(src.platform ?? ""),
+      contentType: (src.content_type as ScoutedItem["contentType"]) ?? "video",
+      format: String(src.format ?? ""),
+      industries: (src.industries as string[]) ?? [],
+      metricsNote: "",
+      velocity: String(src.velocity ?? "emerging"),
+      hookType: analysis.hookType ?? "",
+      emotionalTrigger: analysis.emotionalTrigger ?? "",
+      whyItWorks: analysis.whyItWorks ?? [],
+      components: (src.score_components as ScoreComponents) ?? ({} as ScoreComponents),
+    };
     try {
-      const dna = await extractTemplateDna(s);
+      const dna = await extractTemplateDna(pseudo);
       const { error: tErr } = await admin.from("viral_templates").insert({
         viral_item_id: row.id,
         title: dna.title.slice(0, 200),
         description: dna.description,
-        content_type: s.contentType,
-        format: s.format.toLowerCase().slice(0, 60),
-        platforms: [s.platform.toLowerCase()],
-        industries: s.industries.slice(0, 8),
+        content_type: pseudo.contentType,
+        format: pseudo.format.toLowerCase().slice(0, 60),
+        platforms: [pseudo.platform.toLowerCase()],
+        industries: pseudo.industries.slice(0, 8),
         objective: dna.objective,
-        hook_type: s.hookType,
-        emotional_trigger: s.emotionalTrigger,
+        hook_type: pseudo.hookType,
+        emotional_trigger: pseudo.emotionalTrigger,
         structure: dna.structure,
         variables: dna.variables,
         replicability: Math.round(Math.max(0, Math.min(100, dna.replicability))),
         difficulty: dna.difficulty,
         estimated_duration: dna.estimatedDuration,
-        viral_score: computeViralScore(s.components),
+        viral_score: Number(src.viral_score ?? 0),
       });
       if (!tErr) {
         templated++;
@@ -430,7 +619,7 @@ export async function refreshViralLibrary(): Promise<{ found: number; templated:
     }
   }
 
-  return { found: fresh.length, templated };
+  return { found: rows.length, templated };
 }
 
 // ── Remix ────────────────────────────────────────────────────────────────────
