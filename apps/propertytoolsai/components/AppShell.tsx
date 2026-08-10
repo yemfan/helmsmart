@@ -171,7 +171,14 @@ function AppShellAuthedLayout({ children }: { children: ReactNode }) {
         sections={navSections}
         branding="none"
         height="stretch"
-        topSlot={<AssignedAgentCard />}
+        topSlot={
+          /* min-height reserves the card's space while it resolves — the
+             anonymous "no agent" state is much shorter than the loading
+             skeleton, and the swap shifted the nav up (CLS). */
+          <div className="min-h-[164px]">
+            <AssignedAgentCard />
+          </div>
+        }
       />
       {/* Right: header (logo + menu) then page content */}
       <div className="flex min-h-screen min-w-0 flex-1 flex-col">

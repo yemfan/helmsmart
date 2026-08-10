@@ -1,12 +1,40 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useHomeValueEstimate } from "@/lib/home-value/useHomeValueEstimate";
 import { AddressAutocompleteInput } from "@/components/home-value/AddressAutocompleteInput";
 import { AddressConfirmCard } from "@/components/home-value/AddressConfirmCard";
 import { RecentHistory } from "@/components/home-value/RecentHistory";
 import { EstimateResultsSection } from "@/components/home-value/EstimateResultsSection";
+
+/**
+ * Seeds the address input from `?address=` on first mount so the homepage
+ * hero search routes here pre-filled (validation report UX-01).
+ *
+ * Isolated in its own component (rendering nothing) because
+ * `useSearchParams()` forces client-side rendering up to the nearest
+ * Suspense boundary during static prerender. When the whole page called it,
+ * the entire tool was stripped from the initial HTML and popped in after
+ * hydration, shoving the footer down — CLS ~0.32 on the Lighthouse CI run.
+ * Keeping the bailout scoped to this null-rendering child lets the hero,
+ * input, and the rest of the page prerender normally.
+ */
+function AddressQuerySeed({ onSeed }: { onSeed: (address: string) => void }) {
+  const searchParams = useSearchParams();
+  // Ref guard prevents a navigation-triggered re-seed from clobbering
+  // user edits.
+  const seededRef = useRef(false);
+  useEffect(() => {
+    if (seededRef.current) return;
+    const seed = searchParams.get("address");
+    if (seed && seed.trim().length > 0) {
+      seededRef.current = true;
+      onSeed(seed.trim());
+    }
+  }, [searchParams, onSeed]);
+  return null;
+}
 
 export default function HomeValuePage() {
   const {
@@ -34,23 +62,14 @@ export default function HomeValuePage() {
     busyRefine,
   } = useHomeValueEstimate();
 
-  // Seed the input from `?address=` on first mount so the homepage hero
-  // search routes here pre-filled (validation report UX-01). Ref guard
-  // prevents a navigation-triggered re-seed from clobbering user edits.
-  const searchParams = useSearchParams();
-  const seededRef = useRef(false);
-  useEffect(() => {
-    if (seededRef.current) return;
-    const seed = searchParams.get("address");
-    if (seed && seed.trim().length > 0) {
-      seededRef.current = true;
-      setAddressInput(seed.trim());
-    }
-  }, [searchParams, setAddressInput]);
-
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="mx-auto max-w-7xl space-y-6">
+        {/* Renders nothing — fallback null causes no layout shift. See
+            AddressQuerySeed for why this has its own Suspense boundary. */}
+        <Suspense fallback={null}>
+          <AddressQuerySeed onSeed={setAddressInput} />
+        </Suspense>
         <AddressAutocompleteInput
           value={addressInput}
           onChange={setAddressInput}

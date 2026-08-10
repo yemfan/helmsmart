@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { CronJob } from "@/app/api/admin/cron-jobs/route";
+import type { CronJob } from "@/lib/admin/cronJobs";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

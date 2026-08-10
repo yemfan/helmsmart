@@ -1,5 +1,5 @@
 import { requireRolePage } from "@/lib/auth/requireRolePage";
-import { CRON_JOBS } from "@/app/api/admin/cron-jobs/route";
+import { CRON_JOBS } from "@/lib/admin/cronJobs";
 import { JobsClient } from "./JobsClient";
 
 export const dynamic = "force-dynamic";
