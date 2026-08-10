@@ -81,7 +81,8 @@ async function generateTopicPresets(brief: BrandBrief): Promise<string[]> {
  * the fresh profile. Throws with a friendly message on research failure.
  */
 export async function researchBusinessProfile(userId: string, url: string): Promise<BusinessProfile> {
-  const brief = await buildBrandBrief(url);
+  // fast mode: read the site's own key pages first, minimal searching.
+  const brief = await buildBrandBrief(url, { mode: "fast" });
   const topicPresets = await generateTopicPresets(brief).catch(() => brief.pillars?.slice(0, 10) ?? []);
 
   const admin = createAdminClient();
