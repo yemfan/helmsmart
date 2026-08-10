@@ -56,6 +56,15 @@ async function sitemapCandidates(origin: string): Promise<string[]> {
   try {
     const res = await fetch(`${origin}/sitemap.xml`, SITEMAP_FETCH_OPTS);
     if (!res.ok) return [];
+    // Apex domains usually 308 to www (avasc.org → www.avasc.org): the sitemap
+    // lists the FINAL origin's URLs, so filter against where we actually landed.
+    const finalOrigin = (() => {
+      try {
+        return new URL(res.url).origin;
+      } catch {
+        return origin;
+      }
+    })();
     let locs = extractLocs((await res.text()).slice(0, 300_000));
     // Sitemap INDEX (children are .xml) → read the first child sitemap.
     if (locs.length > 0 && locs.every((u) => u.endsWith(".xml"))) {
@@ -64,7 +73,7 @@ async function sitemapCandidates(origin: string): Promise<string[]> {
       locs = extractLocs((await child.text()).slice(0, 300_000));
     }
     const pages = locs
-      .filter((u) => u.startsWith(origin))
+      .filter((u) => u.startsWith(finalOrigin) || u.startsWith(origin))
       .filter((u) => !/\.(xml|pdf|jpe?g|png|webp|svg|gif|mp4)(\?|$)/i.test(u))
       .filter((u) => !/\/(blog|news|post|article|tag|category|author)\//i.test(u));
     const depth = (u: string) => u.replace(/\/$/, "").split("/").length;
