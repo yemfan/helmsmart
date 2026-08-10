@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import HomeValueEstimatePage from "@/components/home-value/HomeValueEstimatePage";
 import JsonLd from "@/components/JsonLd";
 
@@ -56,15 +55,13 @@ export default function HomeValuePage() {
           Data sources, accuracy, and known limits.
         </span>
       </div>
-      {/* Suspense boundary required by Next 15+/16 because the child
-          component calls useSearchParams() to seed the address input
-          from `?address=` (see HomeValueEstimatePage). Without it the
-          build bails on CSR prerendering. Fallback is null because the
-          parent already renders the methodology banner synchronously,
-          so there's no layout shift while the client hydrates. */}
-      <Suspense fallback={null}>
-        <HomeValueEstimatePage />
-      </Suspense>
+      {/* No Suspense here on purpose: the `useSearchParams()` call that
+          seeds the address input lives in a null-rendering child with its
+          own boundary inside HomeValueEstimatePage, so the hero/input/tool
+          markup statically prerenders. Wrapping the whole tool at this
+          level made the entire page client-render after hydration —
+          footer shoved down, CLS ~0.32, failing the Lighthouse CI gate. */}
+      <HomeValueEstimatePage />
     </>
   );
 }
