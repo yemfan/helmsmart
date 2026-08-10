@@ -33,10 +33,56 @@ type Block = { type: string; text?: string };
  */
 export type ResearchMode = "deep" | "fast";
 
-/** Likely key pages on a company site — web_fetch can only fetch URLs already in the conversation, so we list them. */
-function candidatePages(link: string): string[] {
+/** Paths that usually carry the business substance, used to rank sitemap URLs. */
+const KEY_PAGE_HINT =
+  /about|service|product|program|pricing|plan|mission|team|story|what-we-do|solutions|menu|shop|features/i;
+
+const SITEMAP_FETCH_OPTS: RequestInit = {
+  signal: AbortSignal.timeout(4000),
+  headers: { "user-agent": "MarketingBossBot/1.0 (+https://marketingbossai.com)" },
+};
+
+function extractLocs(xml: string): string[] {
+  return [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)].map((m) => m[1]);
+}
+
+/**
+ * Read the site's own sitemap first (user's suggestion): it tells us the real
+ * pages instead of guessed paths. Server-side, ~1 request, 4s cap; handles a
+ * one-level sitemap index. Returns the best-scoring content pages, [] on any
+ * failure.
+ */
+async function sitemapCandidates(origin: string): Promise<string[]> {
+  try {
+    const res = await fetch(`${origin}/sitemap.xml`, SITEMAP_FETCH_OPTS);
+    if (!res.ok) return [];
+    let locs = extractLocs((await res.text()).slice(0, 300_000));
+    // Sitemap INDEX (children are .xml) → read the first child sitemap.
+    if (locs.length > 0 && locs.every((u) => u.endsWith(".xml"))) {
+      const child = await fetch(locs[0], SITEMAP_FETCH_OPTS);
+      if (!child.ok) return [];
+      locs = extractLocs((await child.text()).slice(0, 300_000));
+    }
+    const pages = locs
+      .filter((u) => u.startsWith(origin))
+      .filter((u) => !/\.(xml|pdf|jpe?g|png|webp|svg|gif|mp4)(\?|$)/i.test(u))
+      .filter((u) => !/\/(blog|news|post|article|tag|category|author)\//i.test(u));
+    const depth = (u: string) => u.replace(/\/$/, "").split("/").length;
+    const scored = pages
+      .map((u) => ({ u, s: (KEY_PAGE_HINT.test(u) ? 100 : 0) - depth(u) * 2 - u.length / 50 }))
+      .sort((a, b) => b.s - a.s);
+    return [...new Set(scored.map((x) => x.u))].slice(0, 6);
+  } catch {
+    return [];
+  }
+}
+
+/** Likely key pages — sitemap-discovered when possible, guessed paths otherwise. */
+async function candidatePages(link: string): Promise<string[]> {
   try {
     const origin = new URL(link).origin;
+    const fromSitemap = await sitemapCandidates(origin);
+    if (fromSitemap.length >= 2) return [...new Set([link, ...fromSitemap])];
     return [
       link,
       `${origin}/about`,
@@ -66,12 +112,13 @@ async function researchRaw(link: string, mode: ResearchMode): Promise<string> {
         "the positioning, and 2–4 direct competitors and how each markets itself. Be concrete and specific.";
 
   // web_fetch only fetches URLs already in the conversation — the link(s) are here.
+  const candidates = mode === "fast" ? await candidatePages(link) : [link];
   const messages: { role: string; content: unknown }[] = [
     {
       role: "user",
       content:
         mode === "fast"
-          ? `Business site: ${link}\nKey pages you may fetch directly:\n${candidatePages(link).join("\n")}\n\n` +
+          ? `Business site: ${link}\nKey pages you may fetch directly (from the site's sitemap where available):\n${candidates.join("\n")}\n\n` +
             "Fetch the homepage plus the 2–3 most informative of those pages, then write a tight briefing: what they " +
             "offer, who it's for, their voice/positioning, their strongest selling points, and (if quickly findable) " +
             "2–3 competitors. Speed matters more than exhaustiveness."
