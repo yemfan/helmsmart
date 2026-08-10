@@ -12,6 +12,7 @@ import { runDueWeeklySlots } from "@/lib/weeklySchedule";
 import { discoverForUser } from "@/lib/discovery";
 import { latestOpportunityAt } from "@/lib/opportunities";
 import { appliedLearningsHint, latestLearningAt, synthesizeLearnings } from "@/lib/learnings";
+import { refreshViralLibrary } from "@/lib/viralIntelligence";
 import type { BrandBrief } from "@/lib/research";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -191,10 +192,21 @@ export async function GET(req: Request) {
     console.warn("[cron/run] weekly-schedule phase failed:", e instanceof Error ? e.message : e);
   }
 
+  // 5a) Shared viral-library refresh (Marketing Intelligence Engine) — one
+  // scout+analyze sweep per ~22h. It shares the tick's time budget with the
+  // per-user discovery below, so whichever fires first wins the tick.
+  let viralRefresh: { found: number; templated: number } | null = null;
+  try {
+    viralRefresh = await refreshViralLibrary();
+  } catch (e) {
+    console.warn("[cron/run] viral-library phase failed:", e instanceof Error ? e.message : e);
+  }
+
   // 5) Opportunity discovery — scan trends / competitors / performance for users
   // who haven't been scanned in 24h. Best-effort; no-ops pre-migration-0015.
+  // Skipped on ticks where the viral refresh ran (function time budget).
   let discovered = 0;
-  try {
+  if (viralRefresh === null) try {
     const [{ data: owners }, { data: kits }] = await Promise.all([
       admin.from("campaigns").select("user_id").eq("status", "active").limit(50),
       admin.from("brand_kits").select("user_id").limit(50),
@@ -251,7 +263,7 @@ export async function GET(req: Request) {
     console.warn("[cron/run] learning phase failed:", e instanceof Error ? e.message : e);
   }
 
-  return NextResponse.json({ ok: true, drained, posted, drafted, refreshed, weeklyEnqueued, discovered, learned, at: nowIso });
+  return NextResponse.json({ ok: true, drained, posted, drafted, refreshed, weeklyEnqueued, discovered, learned, viralRefresh, at: nowIso });
 }
 
 type MetricRow = {

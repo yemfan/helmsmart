@@ -68,6 +68,7 @@
         "KEYWORD_DISCOVERY_*",
         "LISTING_FETCH_ENABLED",
         "LEAD_ID",
+        "ADMIN_*",
         "AGENT_*",
         "AI_*",
         "BOSS_*",

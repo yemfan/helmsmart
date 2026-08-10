@@ -3,8 +3,10 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Nav from "@/components/Nav";
 import OpportunityFeed from "@/components/OpportunityFeed";
+import TrendingLibrary from "@/components/TrendingLibrary";
 import { listCampaigns } from "@/lib/campaigns";
 import { listOpenOpportunities } from "@/lib/opportunities";
+import { listTrending } from "@/lib/viralIntelligence";
 import { aiConfigured } from "@/lib/ai";
 
 export const runtime = "nodejs";
@@ -29,11 +31,12 @@ export default async function OpportunitiesPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: profile }, { data: brandKit }, campaigns, opportunities] = await Promise.all([
+  const [{ data: profile }, { data: brandKit }, campaigns, opportunities, trending] = await Promise.all([
     supabase.from("profiles").select("credits").eq("user_id", user.id).single(),
     supabase.from("brand_kits").select("brand_name").eq("user_id", user.id).maybeSingle(),
     listCampaigns(user.id),
     listOpenOpportunities(user.id),
+    listTrending(8).catch(() => []),
   ]);
 
   const hasBrand = Boolean(brandKit?.brand_name);
@@ -52,6 +55,8 @@ export default async function OpportunitiesPage() {
       </section>
 
       <OpportunityFeed initial={opportunities} aiConfigured={aiConfigured()} />
+
+      <TrendingLibrary initial={trending} />
 
       {opportunities.length === 0 && (
         <section className="rounded-2xl border border-boss-violet/20 bg-boss-violet/5 p-5">
