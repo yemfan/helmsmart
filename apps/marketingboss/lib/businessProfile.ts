@@ -19,6 +19,8 @@ export type BusinessProfile = {
   summary: string | null;
   audience: string | null;
   topicPresets: string[];
+  /** The brand-kit fields as persisted after auto-fill (research only). */
+  brand?: { brand_name: string | null; voice: string | null; audience: string | null };
 };
 
 const PROFILE_COLS = ["company_url", "business", "topic_presets"] as const;
@@ -113,5 +115,10 @@ export async function researchBusinessProfile(userId: string, url: string): Prom
     summary: brief.summary ?? null,
     audience: brief.audience ?? null,
     topicPresets,
+    brand: {
+      brand_name: (values.brand_name as string | null) ?? null,
+      voice: (values.voice as string | null) ?? null,
+      audience: (values.audience as string | null) ?? null,
+    },
   };
 }
