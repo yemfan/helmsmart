@@ -26,39 +26,80 @@ export type BrandBrief = {
 
 type Block = { type: string; text?: string };
 
+/**
+ * deep = the autopilot's market research (broad web search for competitors).
+ * fast = the URL-fill flow: read the site's OWN key pages first, search at
+ * most twice — much quicker, since most business info lives on the site.
+ */
+export type ResearchMode = "deep" | "fast";
+
+/** Likely key pages on a company site — web_fetch can only fetch URLs already in the conversation, so we list them. */
+function candidatePages(link: string): string[] {
+  try {
+    const origin = new URL(link).origin;
+    return [
+      link,
+      `${origin}/about`,
+      `${origin}/about-us`,
+      `${origin}/services`,
+      `${origin}/products`,
+      `${origin}/programs`,
+      `${origin}/pricing`,
+    ];
+  } catch {
+    return [link];
+  }
+}
+
 /** One request against the Messages API with the web tools, resuming pause_turn. */
-async function researchRaw(link: string): Promise<string> {
+async function researchRaw(link: string, mode: ResearchMode): Promise<string> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) throw new Error("ANTHROPIC_API_KEY is not configured on the server.");
 
   const system =
-    "You are a sharp marketing strategist. Research the given business or product and its market. " +
-    "Fetch the provided page first, then search the web to understand the offering, the target audience, " +
-    "the positioning, and 2–4 direct competitors and how each markets itself. Be concrete and specific.";
+    mode === "fast"
+      ? "You are a sharp marketing strategist working QUICKLY. The business's own site is your primary source: " +
+        "fetch its key pages first (candidates are listed — skip any that 404). Use web search at most twice, and " +
+        "only to fill real gaps (e.g. naming 2–3 competitors). Be concrete; do not pad."
+      : "You are a sharp marketing strategist. Research the given business or product and its market. " +
+        "Fetch the provided page first, then search the web to understand the offering, the target audience, " +
+        "the positioning, and 2–4 direct competitors and how each markets itself. Be concrete and specific.";
 
-  // web_fetch only fetches URLs already in the conversation — the link is here.
+  // web_fetch only fetches URLs already in the conversation — the link(s) are here.
   const messages: { role: string; content: unknown }[] = [
     {
       role: "user",
       content:
-        `Business / product page: ${link}\n\n` +
-        "Fetch that page, then research the company and its market. Cover: what they sell, who it's for, " +
-        "their voice/positioning, their strongest selling points, and 2–4 real competitors with how each " +
-        "one markets. Write a thorough briefing.",
+        mode === "fast"
+          ? `Business site: ${link}\nKey pages you may fetch directly:\n${candidatePages(link).join("\n")}\n\n` +
+            "Fetch the homepage plus the 2–3 most informative of those pages, then write a tight briefing: what they " +
+            "offer, who it's for, their voice/positioning, their strongest selling points, and (if quickly findable) " +
+            "2–3 competitors. Speed matters more than exhaustiveness."
+          : `Business / product page: ${link}\n\n` +
+            "Fetch that page, then research the company and its market. Cover: what they sell, who it's for, " +
+            "their voice/positioning, their strongest selling points, and 2–4 real competitors with how each " +
+            "one markets. Write a thorough briefing.",
     },
   ];
 
-  const tools = [
-    { type: "web_search_20260209", name: "web_search", max_uses: 8 },
-    { type: "web_fetch_20260209", name: "web_fetch", max_uses: 5 },
-  ];
+  const tools =
+    mode === "fast"
+      ? [
+          { type: "web_search_20260209", name: "web_search", max_uses: 2 },
+          { type: "web_fetch_20260209", name: "web_fetch", max_uses: 5 },
+        ]
+      : [
+          { type: "web_search_20260209", name: "web_search", max_uses: 8 },
+          { type: "web_fetch_20260209", name: "web_fetch", max_uses: 5 },
+        ];
 
   let text = "";
-  for (let i = 0; i < 6; i++) {
+  const maxRounds = mode === "fast" ? 4 : 6;
+  for (let i = 0; i < maxRounds; i++) {
     const res = await fetch(ANTHROPIC_API_URL, {
       method: "POST",
       headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: ANTHROPIC_MODEL, max_tokens: 6000, system, messages, tools }),
+      body: JSON.stringify({ model: ANTHROPIC_MODEL, max_tokens: mode === "fast" ? 4000 : 6000, system, messages, tools }),
     });
     const data = (await res.json().catch(() => ({}))) as {
       content?: Block[];
@@ -111,8 +152,8 @@ const BRIEF_SCHEMA = {
 };
 
 /** Research a link and return a structured brand brief for the campaign. */
-export async function buildBrandBrief(link: string): Promise<BrandBrief> {
-  const research = await researchRaw(link);
+export async function buildBrandBrief(link: string, opts?: { mode?: ResearchMode }): Promise<BrandBrief> {
+  const research = await researchRaw(link, opts?.mode ?? "deep");
 
   const system = [
     "You turn a marketing research briefing into a structured brand brief for an automated social-media program.",

@@ -21,8 +21,16 @@ export async function POST(req: Request) {
   } catch {
     /* validated below */
   }
-  if (!/^https?:\/\/.+\..+/.test(url)) {
-    return NextResponse.json({ error: "Enter your company's full URL (https://…)." }, { status: 400 });
+  // Accept bare domains ("www.avasc.org") — people rarely type the scheme.
+  if (url && !/^https?:\/\//i.test(url)) url = `https://${url}`;
+  try {
+    const host = new URL(url).hostname;
+    if (!host.includes(".")) throw new Error("no tld");
+  } catch {
+    return NextResponse.json(
+      { error: "Enter your company's website — e.g. www.yourcompany.com" },
+      { status: 400 },
+    );
   }
 
   try {
