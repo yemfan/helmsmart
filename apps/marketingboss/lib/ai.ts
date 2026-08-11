@@ -118,9 +118,9 @@ export async function draftPost(intent: string, type: PostType, brand?: string):
     "- cta: one clear call to action (e.g. 'Book a free consult', 'Visit AVASC.org').",
     "- hashtags: 4–8 relevant hashtags WITHOUT the # sign.",
     wantsImage
-      ? "- imagePrompt: a vivid, detailed prompt for an AI image generator that would make a strong visual for this post (subject, style, lighting, composition, mood). Leave videoPrompt as an empty string."
+      ? "- imagePrompt: a vivid, detailed prompt for an AI image generator that would make a strong visual for this post (subject, style, lighting, composition, mood). Design it to work WITHOUT any rendered text — image models garble lettering and the caption carries the words; only when a short overlay is truly essential, give the exact wording (3 words max) in double quotes. Leave videoPrompt as an empty string."
       : wantsVideo
-        ? "- videoPrompt: a vivid, detailed prompt for an AI video generator (subject, motion, camera move, mood, ~5s clip). Leave imagePrompt as an empty string."
+        ? "- videoPrompt: a vivid, detailed prompt for an AI video generator (subject, motion, camera move, mood, ~5s clip). No on-screen text, captions, or subtitles. Leave imagePrompt as an empty string."
         : "- Leave both imagePrompt and videoPrompt as empty strings (this is a text-only post).",
     // Brand Kit — fold the user's brand memory in so copy + media prompts stay
     // on-brand. Empty string when no kit is set, leaving the prompt unchanged.

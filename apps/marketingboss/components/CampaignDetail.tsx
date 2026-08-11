@@ -216,7 +216,12 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
         <section className="flex flex-col gap-3">
           <h3 className="text-sm font-semibold text-slate-900">Review queue ({drafts.length})</h3>
           {drafts.map((p) => (
-            <PostCard key={p.id} post={p} onChanged={() => router.refresh()} />
+            <PostCard
+              key={p.id}
+              post={p}
+              brandName={campaign.brief?.name || campaign.name || "Your brand"}
+              onChanged={() => router.refresh()}
+            />
           ))}
         </section>
       )}
@@ -302,16 +307,23 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
   );
 }
 
-function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => void }) {
+function PostCard({ post, brandName, onChanged }: { post: CampaignPost; brandName: string; onChanged: () => void }) {
   const [title, setTitle] = useState(post.title ?? "");
   const [caption, setCaption] = useState(post.caption ?? "");
   const [hashtags, setHashtags] = useState((post.hashtags ?? []).map((h) => `#${h.replace(/^#/, "")}`).join(" "));
   const [mediaPrompt, setMediaPrompt] = useState(post.media_prompt ?? "");
   const [mediaUrl, setMediaUrl] = useState(post.media_url);
-  const [busy, setBusy] = useState<null | "save" | "gen" | "pub" | "approve" | "del">(null);
+  const [busy, setBusy] = useState<null | "save" | "gen" | "prev" | "pub" | "approve" | "del">(null);
   const [err, setErr] = useState<string | null>(null);
+  const [preview, setPreview] = useState<Record<string, string> | null>(null);
+  const [previewTab, setPreviewTab] = useState<string>("");
 
   const needsMedia = post.type !== "text";
+  const dirty =
+    title !== (post.title ?? "") ||
+    caption !== (post.caption ?? "") ||
+    mediaPrompt !== (post.media_prompt ?? "") ||
+    hashtags !== (post.hashtags ?? []).map((h) => `#${h.replace(/^#/, "")}`).join(" ");
   const fieldCls =
     "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60";
 
@@ -354,6 +366,27 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
       setMediaUrl(data.url ?? null);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Generation failed.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  // Tailor per-channel captions now (no publish, no credits) and show the
+  // post the way each platform's feed will render it.
+  async function previewPost() {
+    if (busy) return;
+    setBusy("prev");
+    setErr(null);
+    try {
+      if (dirty) await save(); // saving clears stale tailoring; unchanged copy reuses it
+      const res = await fetch(`/api/autopilot/posts/${post.id}/preview`, { method: "POST" });
+      const data = (await res.json()) as { perPlatform?: Record<string, string>; error?: string };
+      if (!res.ok) throw new Error(data.error || `Preview failed (${res.status})`);
+      const per = data.perPlatform ?? {};
+      setPreview(per);
+      setPreviewTab(Object.keys(per)[0] ?? "");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Preview failed.");
     } finally {
       setBusy(null);
     }
@@ -467,6 +500,59 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
         </div>
       )}
 
+      {/* Feed preview — the post as each platform will actually show it. */}
+      {preview && previewTab && (
+        <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <div className="mb-2 flex flex-wrap items-center gap-1.5">
+            <span className="text-[11px] font-semibold text-slate-500">Preview as:</span>
+            {Object.keys(preview).map((pl) => (
+              <button
+                key={pl}
+                onClick={() => setPreviewTab(pl)}
+                className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition ${
+                  previewTab === pl
+                    ? "bg-boss-violet text-white"
+                    : "border border-slate-200 bg-white text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                {LABEL[pl] ?? pl}
+              </button>
+            ))}
+          </div>
+          <div className="mx-auto max-w-md overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div className="flex items-center gap-2.5 p-3">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-boss-violet/15 text-sm font-bold text-boss-violet">
+                {brandName.slice(0, 1).toUpperCase()}
+              </span>
+              <div className="leading-tight">
+                <div className="text-[13px] font-semibold text-slate-900">{brandName}</div>
+                <div className="text-[11px] text-slate-400">{LABEL[previewTab] ?? previewTab} · just now</div>
+              </div>
+            </div>
+            {needsMedia &&
+              (mediaUrl ? (
+                post.type === "video" ? (
+                  <video src={mediaUrl} controls className="w-full" />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={mediaUrl} alt="" className="w-full object-cover" />
+                )
+              ) : (
+                <div className="flex h-40 items-center justify-center bg-slate-100 px-6 text-center text-xs text-slate-400">
+                  The {post.type} isn&apos;t rendered yet — click &ldquo;Generate preview&rdquo; to see it here, or approve
+                  and the system generates it before publishing.
+                </div>
+              ))}
+            <p className="whitespace-pre-wrap px-3 py-2.5 text-sm leading-relaxed text-slate-800">{preview[previewTab]}</p>
+            <div className="flex gap-5 border-t border-slate-100 px-3 py-2 text-[11px] text-slate-400">
+              <span>👍 Like</span>
+              <span>💬 Comment</span>
+              <span>↗ Share</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {err && <p className="mt-2 text-xs text-red-600">{err}</p>}
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -478,6 +564,14 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
             {busy === "gen" ? "Generating…" : mediaUrl ? "Regenerate" : "Generate preview"}
           </button>
         )}
+        <button
+          onClick={previewPost}
+          disabled={!!busy}
+          title="See the post exactly as each platform's feed will show it — tailored caption included"
+          className="rounded-lg border border-boss-violet/40 bg-boss-violet/10 px-3 py-1.5 text-xs font-medium text-slate-900 transition hover:text-slate-900 disabled:opacity-40"
+        >
+          {busy === "prev" ? "Tailoring…" : "👁 Preview post"}
+        </button>
         <button
           onClick={remove}
           disabled={!!busy}

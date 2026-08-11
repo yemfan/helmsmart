@@ -67,7 +67,7 @@ export async function planPosts(
     "- caption: ready-to-post copy, no hashtags inside it.",
     "- cta: one clear call to action.",
     "- hashtags: 4–8 relevant tags WITHOUT the # sign.",
-    "- mediaPrompt: if type is image or video, a vivid generation prompt for it; if type is text, an empty string.",
+    "- mediaPrompt: if type is image or video, a vivid generation prompt (subject, setting, style, lighting, composition, mood). Design the visual to work WITHOUT any rendered text — AI image models garble lettering, and the caption carries the words. Only when a short overlay is truly essential, give the exact wording (3 words max) in double quotes. If type is text, an empty string.",
     "- reasoning: ONE sentence making the business case — why this angle and format, for this audience, now. Written to the brand owner (\"Your audience...\"), concrete, no fluff.",
   ].join("\n");
 
