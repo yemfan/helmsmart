@@ -150,6 +150,11 @@ export default function ActionsQueue({
                       ~{p.estimated_credits} credits
                     </span>
                   )}
+                  {p.scheduled_for && (
+                    <span className="rounded-full bg-boss-violet/15 px-2 py-0.5 font-semibold text-boss-violet">
+                      📅 {fmt(p.scheduled_for)}
+                    </span>
+                  )}
                 </div>
                 <p className="mt-1 line-clamp-2 text-sm text-slate-700">{p.title || p.caption}</p>
                 {p.reasoning && (
@@ -186,7 +191,7 @@ export default function ActionsQueue({
                     </span>
                   ) : (
                     <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 font-semibold text-emerald-600">
-                      ✓ Approved — publishing soon
+                      {p.scheduled_for ? `✓ Approved · publishes ${fmt(p.scheduled_for)}` : "✓ Approved — publishing soon"}
                     </span>
                   )}
                   <span className="text-slate-500">

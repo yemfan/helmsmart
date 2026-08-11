@@ -46,9 +46,19 @@ type CampaignPost = {
   channels: string[];
   results: PubResult[] | null;
   metrics: Record<string, { likes?: number; comments?: number; views?: number }> | null;
+  scheduled_for?: string | null;
   reasoning?: string | null;
   estimated_credits?: number | null;
 };
+
+function fmtSlot(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  try {
+    return new Date(iso).toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  } catch {
+    return null;
+  }
+}
 
 const LABEL: Record<string, string> = {
   facebook: "Facebook",
@@ -68,8 +78,8 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
   const [error, setError] = useState<string | null>(null);
 
   const drafts = posts.filter((p) => p.status === "draft");
-  const queued = posts.filter((p) => p.status === "approved" || p.status === "publishing");
-  const done = posts.filter((p) => !["draft", "approved", "publishing"].includes(p.status));
+  const queued = posts.filter((p) => ["approved", "publishing", "scheduled"].includes(p.status));
+  const done = posts.filter((p) => !["draft", "approved", "publishing", "scheduled"].includes(p.status));
 
   async function plan() {
     if (planning) return;
@@ -420,6 +430,14 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
             ~{post.estimated_credits} credits
           </span>
         )}
+        {fmtSlot(post.scheduled_for) && (
+          <span
+            title="Approve any time before this — it publishes at its slot, not when you approve"
+            className="rounded-full bg-boss-violet/15 px-2 py-0.5 font-semibold text-boss-violet"
+          >
+            📅 Publishes {fmtSlot(post.scheduled_for)}
+          </span>
+        )}
         <span className="ml-auto text-slate-400">{post.channels.map((c) => LABEL[c] ?? c).join(", ")}</span>
       </div>
 
@@ -490,10 +508,11 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
   );
 }
 
-/** An approved post waiting for the background publisher (next cron tick). */
+/** An approved/scheduled post waiting for the background publisher. */
 function QueuedCard({ post, onChanged }: { post: CampaignPost; onChanged: () => void }) {
   const [busy, setBusy] = useState(false);
   const publishing = post.status === "publishing";
+  const scheduled = post.status === "scheduled";
 
   async function backToDrafts() {
     if (busy) return;
@@ -513,10 +532,20 @@ function QueuedCard({ post, onChanged }: { post: CampaignPost; onChanged: () => 
   return (
     <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.04] p-4">
       <div className="mb-1 flex flex-wrap items-center gap-2 text-xs">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2 py-0.5 font-semibold text-emerald-600">
-          {publishing && <span className="size-3 animate-spin rounded-full border-2 border-emerald-600/30 border-t-emerald-600" aria-hidden />}
-          {publishing ? "Publishing…" : "✓ Approved — publishing soon"}
-        </span>
+        {scheduled ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-boss-violet/15 px-2 py-0.5 font-semibold text-boss-violet">
+            📅 Scheduled{fmtSlot(post.scheduled_for) ? ` · ${fmtSlot(post.scheduled_for)}` : ""}
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2 py-0.5 font-semibold text-emerald-600">
+            {publishing && <span className="size-3 animate-spin rounded-full border-2 border-emerald-600/30 border-t-emerald-600" aria-hidden />}
+            {publishing
+              ? "Publishing…"
+              : fmtSlot(post.scheduled_for)
+                ? `✓ Approved · publishes ${fmtSlot(post.scheduled_for)}`
+                : "✓ Approved — publishing soon"}
+          </span>
+        )}
         <span className="text-slate-500">
           {TYPE_EMOJI[post.type]}
           {post.angle ? ` ${post.angle}` : ""}
@@ -530,7 +559,13 @@ function QueuedCard({ post, onChanged }: { post: CampaignPost; onChanged: () => 
       )}
       <div className="mt-2 flex items-center justify-between gap-2">
         <span className="text-[11px] text-slate-400">
-          {publishing ? "The system is publishing this post." : "The system will generate anything missing and publish it within ~15 minutes."}
+          {publishing
+            ? "The system is publishing this post."
+            : scheduled
+              ? "Runs on its own — pull it back to drafts if you want to review it first."
+              : fmtSlot(post.scheduled_for) && new Date(post.scheduled_for as string) > new Date()
+                ? `The system will generate anything missing and publish it ${fmtSlot(post.scheduled_for)}.`
+                : "The system will generate anything missing and publish it within ~15 minutes."}
         </span>
         {!publishing && (
           <button
