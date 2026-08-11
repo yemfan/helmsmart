@@ -42,16 +42,28 @@ export default async function StudioPage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-8 px-5 py-8 sm:py-12">
       <Nav email={user.email ?? ""} credits={profile?.credits ?? 0} />
-      <a
-        href="/studio/characters"
-        className="flex items-center justify-between rounded-2xl border border-boss-violet/20 bg-boss-violet/5 p-4 transition hover:border-boss-violet/40"
-      >
-        <div>
-          <div className="text-sm font-semibold text-slate-900">🎭 Character Studio</div>
-          <p className="text-xs text-slate-500">Create a persistent cast — the same recognizable presenters in every asset.</p>
-        </div>
-        <span className="text-sm font-medium text-boss-violet">Open →</span>
-      </a>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <a
+          href="/studio/characters"
+          className="flex items-center justify-between rounded-2xl border border-boss-violet/20 bg-boss-violet/5 p-4 transition hover:border-boss-violet/40"
+        >
+          <div>
+            <div className="text-sm font-semibold text-slate-900">🎭 Character Studio</div>
+            <p className="text-xs text-slate-500">A persistent cast — the same recognizable presenters in every asset.</p>
+          </div>
+          <span className="text-sm font-medium text-boss-violet">Open →</span>
+        </a>
+        <a
+          href="/studio/communities"
+          className="flex items-center justify-between rounded-2xl border border-boss-violet/20 bg-boss-violet/5 p-4 transition hover:border-boss-violet/40"
+        >
+          <div>
+            <div className="text-sm font-semibold text-slate-900">🌐 Community Intelligence</div>
+            <p className="text-xs text-slate-500">Where your audience gathers — culture, rules, and how to win there.</p>
+          </div>
+          <span className="text-sm font-medium text-boss-violet">Open →</span>
+        </a>
+      </div>
       <Studio
         youtubeEnabled={youtubeConfigured()}
         youtubeConnected={youtube.connected}
