@@ -241,9 +241,15 @@ export default async function Home({
             ))}
             {upcoming.map((p) => (
               <div key={p.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4">
-                <span className="rounded-full bg-boss-violet/15 px-2 py-0.5 text-xs font-semibold text-boss-violet">
-                  {fmt(p.scheduled_for)}
-                </span>
+                {p.status === "scheduled" ? (
+                  <span className="rounded-full bg-boss-violet/15 px-2 py-0.5 text-xs font-semibold text-boss-violet">
+                    {fmt(p.scheduled_for)}
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-600">
+                    ✓ Publishing soon
+                  </span>
+                )}
                 <span className="min-w-0 flex-1 truncate text-sm text-slate-700">
                   {TYPE_EMOJI[p.type]} {p.title || p.caption}
                 </span>

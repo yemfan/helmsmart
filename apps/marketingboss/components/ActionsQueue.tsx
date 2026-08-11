@@ -180,22 +180,30 @@ export default function ActionsQueue({
               )}
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2 text-xs">
-                  <span className="rounded-full bg-boss-violet/20 px-2 py-0.5 font-semibold text-boss-violet">
-                    {fmt(p.scheduled_for)}
-                  </span>
+                  {p.status === "scheduled" ? (
+                    <span className="rounded-full bg-boss-violet/20 px-2 py-0.5 font-semibold text-boss-violet">
+                      {fmt(p.scheduled_for)}
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 font-semibold text-emerald-600">
+                      ✓ Approved — publishing soon
+                    </span>
+                  )}
                   <span className="text-slate-500">
                     {TYPE_EMOJI[p.type]} {p.channels.map((c) => LABEL[c] ?? c).join(", ")}
                   </span>
                 </div>
                 <p className="mt-1 line-clamp-2 text-sm text-slate-700">{p.caption}</p>
               </div>
-              <button
-                onClick={() => cancel(p.id)}
-                disabled={busy === p.id}
-                className="shrink-0 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-500 transition hover:text-slate-900 disabled:opacity-40"
-              >
-                Cancel
-              </button>
+              {p.status !== "publishing" && (
+                <button
+                  onClick={() => cancel(p.id)}
+                  disabled={busy === p.id}
+                  className="shrink-0 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-500 transition hover:text-slate-900 disabled:opacity-40"
+                >
+                  Cancel
+                </button>
+              )}
             </div>
           ))
         )}

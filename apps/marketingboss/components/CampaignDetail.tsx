@@ -68,7 +68,8 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
   const [error, setError] = useState<string | null>(null);
 
   const drafts = posts.filter((p) => p.status === "draft");
-  const done = posts.filter((p) => p.status !== "draft");
+  const queued = posts.filter((p) => p.status === "approved" || p.status === "publishing");
+  const done = posts.filter((p) => !["draft", "approved", "publishing"].includes(p.status));
 
   async function plan() {
     if (planning) return;
@@ -210,6 +211,16 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
         </section>
       )}
 
+      {/* Approved — waiting for the publisher to pick them up */}
+      {queued.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h3 className="text-sm font-semibold text-slate-900">Publishing soon ({queued.length})</h3>
+          {queued.map((p) => (
+            <QueuedCard key={p.id} post={p} onChanged={() => router.refresh()} />
+          ))}
+        </section>
+      )}
+
       {/* Done */}
       {done.length > 0 && (
         <section className="flex flex-col gap-3">
@@ -287,7 +298,7 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
   const [hashtags, setHashtags] = useState((post.hashtags ?? []).map((h) => `#${h.replace(/^#/, "")}`).join(" "));
   const [mediaPrompt, setMediaPrompt] = useState(post.media_prompt ?? "");
   const [mediaUrl, setMediaUrl] = useState(post.media_url);
-  const [busy, setBusy] = useState<null | "save" | "gen" | "pub" | "del">(null);
+  const [busy, setBusy] = useState<null | "save" | "gen" | "pub" | "approve" | "del">(null);
   const [err, setErr] = useState<string | null>(null);
 
   const needsMedia = post.type !== "text";
@@ -333,6 +344,34 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
       setMediaUrl(data.url ?? null);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Generation failed.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  // Instant: mark approved and move on — the system generates anything
+  // missing and publishes it in the background (next cron tick, ≤15 min).
+  async function approve() {
+    if (busy) return;
+    setBusy("approve");
+    setErr(null);
+    try {
+      const res = await fetch(`/api/autopilot/posts/${post.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          caption,
+          mediaPrompt,
+          hashtags: hashtags.split(/[\s,]+/).map((h) => h.replace(/^#/, "")).filter(Boolean),
+          status: "approved",
+        }),
+      });
+      const data = (await res.json()) as { error?: string };
+      if (!res.ok) throw new Error(data.error || `Approve failed (${res.status})`);
+      onChanged();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Approve failed.");
     } finally {
       setBusy(null);
     }
@@ -431,11 +470,77 @@ function PostCard({ post, onChanged }: { post: CampaignPost; onChanged: () => vo
         <button
           onClick={publish}
           disabled={!!busy}
-          className="ml-auto inline-flex items-center gap-2 rounded-xl bg-boss-gold px-4 py-2 text-sm font-semibold text-black transition hover:brightness-105 disabled:opacity-40"
+          title="Publish right now and wait for it (may take a minute for media posts)"
+          className="ml-auto inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
         >
           {busy === "pub" && <Spinner />}
-          {busy === "pub" ? "Publishing…" : "Approve & publish"}
+          {busy === "pub" ? "Publishing…" : "Publish now"}
         </button>
+        <button
+          onClick={approve}
+          disabled={!!busy}
+          title="Approve instantly — the system generates anything missing and publishes it shortly"
+          className="inline-flex items-center gap-2 rounded-xl bg-boss-gold px-4 py-2 text-sm font-semibold text-black transition hover:brightness-105 disabled:opacity-40"
+        >
+          {busy === "approve" && <Spinner />}
+          {busy === "approve" ? "Approving…" : "✓ Approve"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** An approved post waiting for the background publisher (next cron tick). */
+function QueuedCard({ post, onChanged }: { post: CampaignPost; onChanged: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const publishing = post.status === "publishing";
+
+  async function backToDrafts() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await fetch(`/api/autopilot/posts/${post.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "draft" }),
+      });
+      onChanged();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.04] p-4">
+      <div className="mb-1 flex flex-wrap items-center gap-2 text-xs">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2 py-0.5 font-semibold text-emerald-600">
+          {publishing && <span className="size-3 animate-spin rounded-full border-2 border-emerald-600/30 border-t-emerald-600" aria-hidden />}
+          {publishing ? "Publishing…" : "✓ Approved — publishing soon"}
+        </span>
+        <span className="text-slate-500">
+          {TYPE_EMOJI[post.type]}
+          {post.angle ? ` ${post.angle}` : ""}
+        </span>
+        <span className="ml-auto text-slate-400">{post.channels.map((c) => LABEL[c] ?? c).join(", ")}</span>
+      </div>
+      <p className="line-clamp-3 whitespace-pre-wrap text-sm text-slate-700">{post.caption}</p>
+      {post.media_url && post.type !== "video" && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={post.media_url} alt="" className="mt-2 max-h-40 rounded-lg object-contain" />
+      )}
+      <div className="mt-2 flex items-center justify-between gap-2">
+        <span className="text-[11px] text-slate-400">
+          {publishing ? "The system is publishing this post." : "The system will generate anything missing and publish it within ~15 minutes."}
+        </span>
+        {!publishing && (
+          <button
+            onClick={backToDrafts}
+            disabled={busy}
+            className="shrink-0 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-500 transition hover:text-slate-900 disabled:opacity-40"
+          >
+            Back to drafts
+          </button>
+        )}
       </div>
     </div>
   );
