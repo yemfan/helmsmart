@@ -115,15 +115,15 @@ export async function listDrafts(userId: string, limit = 20): Promise<CampaignPo
   return (data as CampaignPost[]) ?? [];
 }
 
-/** Upcoming scheduled posts (one-off + campaign), soonest first. */
+/** Upcoming posts: approved (publishing soon) + scheduled, soonest first. */
 export async function listScheduled(userId: string): Promise<CampaignPost[]> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("campaign_posts")
     .select(POST_COLS)
     .eq("user_id", userId)
-    .eq("status", "scheduled")
-    .order("scheduled_for", { ascending: true });
+    .in("status", ["approved", "publishing", "scheduled"])
+    .order("scheduled_for", { ascending: true, nullsFirst: true });
   return (data as CampaignPost[]) ?? [];
 }
 

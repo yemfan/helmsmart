@@ -4,7 +4,7 @@ import { publishToChannels, type ChannelPost } from "@/lib/publish-dispatch";
 import { planPosts, type PlannedPost } from "@/lib/planner";
 import { generatePostMediaAdmin, BudgetError, CreditError } from "@/lib/generation";
 import { adaptForPlatforms, type Draft } from "@/lib/ai";
-import { buildInsights, insertPostRows } from "@/lib/campaigns";
+import { addSpentCredits, buildInsights, insertPostRows } from "@/lib/campaigns";
 import { creditCost } from "@/lib/generation";
 import { getConnection, getValidAccessToken } from "@/lib/social";
 import { fetchMetric, METRIC_SUPPORTED, type Metric } from "@/lib/metrics";
@@ -29,6 +29,8 @@ const ELIGIBLE: Record<string, string[]> = {
 
 // Small batches per tick so we stay within the function time budget.
 const DRAIN_LIMIT = 8;
+// Approved posts may still need media generation (slow), so a smaller batch.
+const APPROVED_LIMIT = 2;
 const ADVANCE_LIMIT = 5;
 // Discovery includes a live web-research scout, so one user per tick — with a
 // */15 cron and a once-per-24h per-user gate, that's still 96 scans/day of headroom.
@@ -42,6 +44,14 @@ type ScheduledRow = {
   link: string | null;
   media_url: string | null;
   per_platform: Record<string, string> | null;
+};
+
+type ApprovedRow = ScheduledRow & {
+  campaign_id: string | null;
+  caption: string | null;
+  hashtags: string[] | null;
+  media_prompt: string | null;
+  channels: string[] | null;
 };
 
 type CampaignRow = {
@@ -103,6 +113,94 @@ export async function GET(req: Request) {
       drained++;
     } catch {
       await admin.from("campaign_posts").update({ status: "failed" }).eq("id", post.id);
+    }
+  }
+
+  // 1b) Finish approved posts. Approval is instant in the UI — the user said
+  // yes and moved on; this worker generates any missing media, tailors the
+  // per-channel captions, and publishes on the next tick.
+  const { data: approvedDue } = await admin
+    .from("campaign_posts")
+    .select("id, user_id, campaign_id, type, title, caption, hashtags, link, media_prompt, media_url, per_platform, channels")
+    .eq("status", "approved")
+    .order("created_at", { ascending: true })
+    .limit(APPROVED_LIMIT);
+
+  for (const post of (approvedDue as ApprovedRow[]) ?? []) {
+    // Claim the row so overlapping ticks can't double-publish.
+    const { data: claimed } = await admin
+      .from("campaign_posts")
+      .update({ status: "publishing" })
+      .eq("id", post.id)
+      .eq("status", "approved")
+      .select("id");
+    if (!claimed || claimed.length === 0) continue;
+
+    // A media post with nothing to render can't proceed — back to the queue.
+    if (post.type !== "text" && !post.media_url && !post.media_prompt) {
+      await admin.from("campaign_posts").update({ status: "draft" }).eq("id", post.id);
+      continue;
+    }
+
+    try {
+      let mediaUrl = post.media_url ?? undefined;
+      if (post.type !== "text" && !mediaUrl) {
+        let budget: number | null = null;
+        let campSpent = 0;
+        if (post.campaign_id) {
+          const { data: camp } = await admin
+            .from("campaigns")
+            .select("budget_credits, spent_credits")
+            .eq("id", post.campaign_id)
+            .maybeSingle();
+          budget = camp?.budget_credits ?? null;
+          campSpent = camp?.spent_credits ?? 0;
+        }
+        const g = await generatePostMediaAdmin(admin, post.user_id, budget, campSpent, post.type, post.media_prompt ?? "");
+        mediaUrl = g.url;
+        await admin.from("campaign_posts").update({ media_url: mediaUrl }).eq("id", post.id);
+        if (post.campaign_id) await addSpentCredits(post.user_id, post.campaign_id, g.cost, campSpent);
+      }
+
+      let posts: ChannelPost[];
+      if (post.per_platform && Object.keys(post.per_platform).length > 0) {
+        posts = Object.entries(post.per_platform).map(([platform, caption]) => ({ platform, caption }));
+      } else {
+        const draft: Draft = {
+          title: post.title ?? "",
+          caption: post.caption ?? "",
+          cta: "",
+          hashtags: post.hashtags ?? [],
+          imagePrompt: "",
+          videoPrompt: "",
+        };
+        posts = await adaptForPlatforms(draft, post.link, post.channels ?? []);
+      }
+      if (posts.length === 0) {
+        await admin.from("campaign_posts").update({ status: "skipped" }).eq("id", post.id);
+        continue;
+      }
+
+      const results = await publishToChannels(post.user_id, {
+        type: post.type,
+        mediaUrl,
+        link: post.link ?? undefined,
+        title: post.title ?? undefined,
+        posts,
+      });
+      const anyOk = results.some((r) => r.ok);
+      const perPlatform: Record<string, string> = {};
+      for (const x of posts) perPlatform[x.platform] = x.caption;
+      await admin
+        .from("campaign_posts")
+        .update({ status: anyOk ? "published" : "failed", per_platform: perPlatform, results, published_at: anyOk ? nowIso : null })
+        .eq("id", post.id);
+      drained++;
+    } catch (e) {
+      // Out of budget/credits isn't a failure of the post — hand it back to the
+      // review queue instead of retrying (and re-billing) forever.
+      const backToDraft = e instanceof BudgetError || e instanceof CreditError;
+      await admin.from("campaign_posts").update({ status: backToDraft ? "draft" : "failed" }).eq("id", post.id);
     }
   }
 
