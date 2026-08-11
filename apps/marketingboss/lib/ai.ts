@@ -75,6 +75,7 @@ export async function anthropicJson<T>(opts: {
   };
   if (!res.ok) throw new Error(data.error?.message || `AI request failed (${res.status}).`);
   if (data.stop_reason === "refusal") throw new Error("The AI declined this request. Try rephrasing your topic.");
+  if (data.stop_reason === "max_tokens") throw new Error("The AI response was cut off before it finished — please try again.");
 
   const text = data.content?.find((b) => b.type === "text")?.text;
   if (!text) throw new Error("The AI returned an empty response.");
