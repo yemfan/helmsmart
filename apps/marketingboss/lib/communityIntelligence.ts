@@ -131,21 +131,23 @@ async function scoutRaw(niche: string): Promise<string> {
       role: "user",
       content:
         `The business:\n${niche}\n\n` +
-        "Find 6-10 online communities where this business's marketing could genuinely land. Cover several " +
+        "Find 5-8 online communities where this business's marketing could genuinely land. Cover several " +
         "platforms. For each: name, platform, URL, approximate size, how active it is, the culture, the " +
-        "promotion/self-promotion rules, trending discussion topics, and what kind of content works there.",
+        "promotion/self-promotion rules, trending discussion topics, and what kind of content works there. " +
+        "Work FAST — a tight briefing now beats a perfect one that never arrives.",
     },
   ];
+  // Budgeted tightly: the whole discover request must fit Vercel's 300s cap.
   const tools = [
-    { type: "web_search_20260209", name: "web_search", max_uses: 6 },
-    { type: "web_fetch_20260209", name: "web_fetch", max_uses: 3 },
+    { type: "web_search_20260209", name: "web_search", max_uses: 4 },
+    { type: "web_fetch_20260209", name: "web_fetch", max_uses: 2 },
   ];
   let text = "";
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 3; i++) {
     const res = await fetch(ANTHROPIC_API_URL, {
       method: "POST",
       headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: ANTHROPIC_MODEL, max_tokens: 5000, system, messages, tools }),
+      body: JSON.stringify({ model: ANTHROPIC_MODEL, max_tokens: 3500, system, messages, tools }),
     });
     const data = (await res.json().catch(() => ({}))) as { content?: Block[]; stop_reason?: string; error?: { message?: string } };
     if (!res.ok) throw new Error(data.error?.message || `Community scout failed (${res.status}).`);
@@ -245,11 +247,11 @@ async function structureScout(niche: string, briefing: string): Promise<ScoutedC
       "membersEstimate keeps its source flavor ('~120k members per the sidebar'). platform: lowercase",
       "(reddit/facebook/linkedin/discord/slack/x/quora/forum). url: '' if not in the briefing.",
     ].join("\n"),
-    user: `The business:\n${niche}\n\nResearch briefing:\n${briefing.slice(0, 12_000)}`,
+    user: `The business:\n${niche}\n\nResearch briefing:\n${briefing.slice(0, 10_000)}`,
     schema: COMMUNITY_SCHEMA,
-    maxTokens: 6000,
+    maxTokens: 4500,
   });
-  return out.communities.slice(0, 10);
+  return out.communities.slice(0, 8);
 }
 
 /** On-demand discovery for one user's business. Dedupes by (platform, name). */
