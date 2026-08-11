@@ -219,16 +219,28 @@ export async function recordCharacterUsage(userId: string, id: string): Promise<
 
 // ── Conversational creator: description → structured DNA ─────────────────────
 
+// Structured outputs demand closed objects (additionalProperties: false with
+// explicit keys) — a generic key set that works for every character type;
+// values are "" when not applicable.
+function section(keys: string[]) {
+  return {
+    type: "object",
+    properties: Object.fromEntries(keys.map((k) => [k, { type: "string" }])),
+    required: keys,
+    additionalProperties: false,
+  };
+}
+
 const DNA_SCHEMA = {
   type: "object",
   properties: {
     name: { type: "string" },
     role: { type: "string" },
-    appearance: { type: "object", additionalProperties: { type: "string" } },
-    style: { type: "object", additionalProperties: { type: "string" } },
-    personality: { type: "object", additionalProperties: { type: "string" } },
-    voice: { type: "object", additionalProperties: { type: "string" } },
-    professional: { type: "object", additionalProperties: { type: "string" } },
+    appearance: section(["summary", "hair", "eyes", "buildOrForm", "distinctive"]),
+    style: section(["clothing", "accessories", "visualStyle", "colors"]),
+    personality: section(["traits", "energy", "communicationStyle", "humor"]),
+    voice: section(["genderPresentation", "ageStyle", "tone", "accent", "speed"]),
+    professional: section(["profession", "industry", "expertise", "location"]),
   },
   required: ["name", "role", "appearance", "style", "personality", "voice", "professional"],
   additionalProperties: false,
@@ -242,13 +254,14 @@ export async function composeCharacter(description: string, type: CharacterType)
       `You design a reusable ${type} marketing character from a short description. Return structured Character DNA:`,
       "- name: a fitting first name (or mascot/robot name).",
       "- role: their profession/role in one short phrase.",
-      "- appearance: concrete visual keys (for humans: age, hair, eyes, build, distinguishingFeature — do NOT",
-      "  include ethnicity unless the user's description asks; for animals: species, breed, color, size,",
-      "  anthropomorphicLevel; for robots: bodyStyle, materials, face, colors).",
+      "- appearance.summary: the core visual identity in one phrase (for humans: age + presentation, do NOT include",
+      "  ethnicity unless the user's description asks; for animals: species/breed/color; for robots: body style +",
+      "  materials). hair/eyes: as applicable ('' if not). buildOrForm: body type / form factor.",
+      "  distinctive: one memorable distinguishing feature.",
       "- style: clothing, accessories, visualStyle, colors.",
       "- personality: traits, energy, communicationStyle, humor.",
       "- voice: genderPresentation, ageStyle, tone, accent, speed (descriptive only).",
-      "- professional: profession, industry, expertise, location (empty strings when N/A).",
+      "- professional: profession, industry, expertise, location ('' when N/A).",
       "Keep every value SHORT and concrete (a phrase, not sentences) — these become stable generation prompts.",
       "Avoid stereotypes; make the character feel specific and memorable.",
     ].join("\n"),

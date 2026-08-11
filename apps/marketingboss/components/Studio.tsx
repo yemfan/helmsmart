@@ -51,6 +51,22 @@ export default function Studio({
   // Swap mode (video-to-video edit): a source clip + reference image + target.
   const [srcVideoUrl, setSrcVideoUrl] = useState<string | null>(null);
   const [srcVideoName, setSrcVideoName] = useState<string | null>(null);
+  // Draft text for the direct-URL field — committed only on Use/Enter, so
+  // typing doesn't collapse the input into the preview player mid-keystroke.
+  const [srcUrlText, setSrcUrlText] = useState("");
+  const [srcUrlError, setSrcUrlError] = useState<string | null>(null);
+
+  function commitSrcUrl() {
+    const url = srcUrlText.trim();
+    if (!url) return;
+    if (!/^https?:\/\/\S+\.(mp4|mov|webm)(\?\S*)?$/i.test(url)) {
+      setSrcUrlError("That needs to be a direct video file link ending in .mp4, .mov or .webm — page links (YouTube/TikTok) won't work.");
+      return;
+    }
+    setSrcUrlError(null);
+    setSrcVideoUrl(url);
+    setSrcVideoName(null);
+  }
   const [srcUploading, setSrcUploading] = useState(false);
   const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
   const videoRef = useRef<HTMLInputElement>(null);
@@ -310,12 +326,27 @@ export default function Studio({
                     </button>
                     <span className="text-xs text-slate-400">or paste a direct URL</span>
                   </div>
-                  <input
-                    type="url"
-                    placeholder="https://…/clip.mp4"
-                    onChange={(e) => setSrcVideoUrl(e.target.value.trim() || null)}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="url"
+                      value={srcUrlText}
+                      onChange={(e) => {
+                        setSrcUrlText(e.target.value);
+                        setSrcUrlError(null);
+                      }}
+                      onKeyDown={(e) => e.key === "Enter" && commitSrcUrl()}
+                      placeholder="https://…/clip.mp4"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
+                    />
+                    <button
+                      onClick={commitSrcUrl}
+                      disabled={!srcUrlText.trim()}
+                      className="shrink-0 rounded-lg bg-boss-violet px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-40"
+                    >
+                      Use
+                    </button>
+                  </div>
+                  {srcUrlError && <p className="text-[11px] text-red-600">{srcUrlError}</p>}
                   <p className="text-[11px] text-slate-400">
                     3–10s, 720p+, under 200MB. Must be a direct video file (.mp4/.mov) — not a
                     YouTube/TikTok page link.
