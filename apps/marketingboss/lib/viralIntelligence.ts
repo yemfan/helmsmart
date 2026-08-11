@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { ANTHROPIC_API_URL, ANTHROPIC_MODEL, aiConfigured, anthropicJson } from "@/lib/ai";
 import { getBusinessProfile } from "@/lib/businessProfile";
 import { brandPromptContext, type BrandKit } from "@/lib/brandKit";
+import { getCharacter, personaBlock, recordCharacterUsage } from "@/lib/characters";
 
 /**
  * Marketing Intelligence Engine (MVP) — the shared viral library.
@@ -649,8 +650,12 @@ export type Remix = {
   intent: string;
 };
 
-/** Generate an ORIGINAL version of the pattern for THIS user's business. */
-export async function remixForUser(userId: string, itemId: string): Promise<Remix> {
+/**
+ * Generate an ORIGINAL version of the pattern for THIS user's business.
+ * With a characterId, the remix is written in that character's persona
+ * (Character Studio integration: the library answers WHAT, the cast answers WHO).
+ */
+export async function remixForUser(userId: string, itemId: string, characterId?: string | null): Promise<Remix> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("viral_items")
@@ -661,20 +666,27 @@ export async function remixForUser(userId: string, itemId: string): Promise<Remi
   const item = data as unknown as ViralItem & { viral_templates: ViralTemplate[] | null };
   const template = Array.isArray(item.viral_templates) && item.viral_templates.length ? item.viral_templates[0] : null;
 
-  const [profile, { data: kit }] = await Promise.all([
+  const [profile, { data: kit }, character] = await Promise.all([
     getBusinessProfile(userId).catch(() => null),
     admin.from("brand_kits").select("*").eq("user_id", userId).maybeSingle(),
+    characterId ? getCharacter(userId, characterId).catch(() => null) : Promise.resolve(null),
   ]);
   const brand = brandPromptContext((kit as BrandKit) ?? null);
+  const persona = character ? personaBlock(character) : "";
 
   const remix = await anthropicJson<Remix>({
     system: [
       "You adapt a viral content PATTERN into an ORIGINAL piece for one specific business. Preserve the creative",
       "STRUCTURE (hook mechanic, pacing, slots) — never reproduce the original's exact expression.",
       brand ? `\n${brand}` : "",
+      persona
+        ? `\nThe content is PRESENTED BY this recurring character — write the hook/outline in their voice and describe THEM in any mediaPrompt so they stay visually consistent:\n${persona}`
+        : "",
       "Return: hook (ready to use), outline (the slots filled for THIS business, one line each), caption",
       "(ready to post), hashtags (4-8, no #), mediaPrompt (if visual), suggestedType, and intent — ONE",
-      "self-contained instruction for an AI composer to produce this post (mention format + hook + angle).",
+      "self-contained instruction for an AI composer to produce this post (mention format + hook + angle" +
+        (persona ? " + the presenter's exact look" : "") +
+        ").",
     ].join("\n"),
     user: JSON.stringify({
       pattern: {
@@ -699,6 +711,7 @@ export async function remixForUser(userId: string, itemId: string): Promise<Remi
       .update({ usage_count: template.usage_count + 1, updated_at: new Date().toISOString() })
       .eq("id", template.id);
   }
+  if (character) await recordCharacterUsage(userId, character.id).catch(() => {});
   return remix;
 }
 

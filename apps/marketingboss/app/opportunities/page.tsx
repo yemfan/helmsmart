@@ -7,6 +7,7 @@ import TrendingLibrary from "@/components/TrendingLibrary";
 import { listCampaigns } from "@/lib/campaigns";
 import { listOpenOpportunities } from "@/lib/opportunities";
 import { listTrending } from "@/lib/viralIntelligence";
+import { listCharacters } from "@/lib/characters";
 import { aiConfigured } from "@/lib/ai";
 
 export const runtime = "nodejs";
@@ -38,6 +39,7 @@ export default async function OpportunitiesPage() {
     listOpenOpportunities(user.id),
     listTrending(8).catch(() => []),
   ]);
+  const cast = await listCharacters(user.id).catch(() => []);
 
   const hasBrand = Boolean(brandKit?.brand_name);
   const hasPlaybook = campaigns.length > 0;
@@ -56,7 +58,10 @@ export default async function OpportunitiesPage() {
 
       <OpportunityFeed initial={opportunities} aiConfigured={aiConfigured()} />
 
-      <TrendingLibrary initial={trending} />
+      <TrendingLibrary
+        initial={trending}
+        presenters={cast.map((c) => ({ id: c.id, name: c.name, role: c.role }))}
+      />
 
       {opportunities.length === 0 && (
         <section className="rounded-2xl border border-boss-violet/20 bg-boss-violet/5 p-5">

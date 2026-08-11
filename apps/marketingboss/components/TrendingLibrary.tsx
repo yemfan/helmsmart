@@ -31,8 +31,18 @@ const COMPONENT_LABEL: Record<keyof ScoreComponents, string> = {
  * works; the primary CTA is Remix (an ORIGINAL version for this business),
  * never Copy.
  */
-export default function TrendingLibrary({ initial }: { initial: Item[] }) {
+export type PresenterOption = { id: string; name: string; role: string | null };
+
+export default function TrendingLibrary({
+  initial,
+  presenters = [],
+}: {
+  initial: Item[];
+  /** The user's cast (Character Studio) — remixes are written in the chosen persona. */
+  presenters?: PresenterOption[];
+}) {
   const [items, setItems] = useState<Item[]>(initial);
+  const [presenter, setPresenter] = useState<string>("");
   const [q, setQ] = useState("");
   const [searching, setSearching] = useState(false);
   const [note, setNote] = useState<string | null>(null);
@@ -62,7 +72,11 @@ export default function TrendingLibrary({ initial }: { initial: Item[] }) {
     setRemixing(item.id);
     setNote(null);
     try {
-      const res = await fetch(`/api/viral/${item.id}/remix`, { method: "POST" });
+      const res = await fetch(`/api/viral/${item.id}/remix`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ characterId: presenter || null }),
+      });
       const b = (await res.json().catch(() => null)) as { ok?: boolean; remix?: Remix; error?: string } | null;
       if (!res.ok || !b?.remix) throw new Error(b?.error || "Remix failed — please try again.");
       setRemixes((cur) => ({ ...cur, [item.id]: b.remix! }));
@@ -100,6 +114,26 @@ export default function TrendingLibrary({ initial }: { initial: Item[] }) {
         What&apos;s gaining momentum across social right now, refreshed daily. Remix makes an{" "}
         <em>original</em> version for your business — never a copy.
       </p>
+
+      {presenters.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="font-medium text-slate-600">🎭 Presenter</span>
+          <select
+            value={presenter}
+            onChange={(e) => setPresenter(e.target.value)}
+            className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-700 outline-none focus:border-boss-violet/60"
+          >
+            <option value="">No character</option>
+            {presenters.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+                {p.role ? ` — ${p.role}` : ""}
+              </option>
+            ))}
+          </select>
+          <span className="text-slate-400">remixes are written in your character&apos;s voice and look</span>
+        </div>
+      )}
 
       {note && <p className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">{note}</p>}
 
