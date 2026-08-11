@@ -249,7 +249,10 @@ async function structureScout(niche: string, briefing: string): Promise<ScoutedC
     ].join("\n"),
     user: `The business:\n${niche}\n\nResearch briefing:\n${briefing.slice(0, 10_000)}`,
     schema: COMMUNITY_SCHEMA,
-    maxTokens: 4500,
+    // Each community record is ~15 fields; 4.5k tokens truncated the JSON
+    // mid-array (unparseable). The structured pass is a single fast call, so
+    // headroom here costs seconds, not the 300s budget.
+    maxTokens: 12_000,
   });
   return out.communities.slice(0, 8);
 }
