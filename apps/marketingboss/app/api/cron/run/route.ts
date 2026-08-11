@@ -27,6 +27,11 @@ const ELIGIBLE: Record<string, string[]> = {
   video: ["youtube", "tiktok"],
 };
 
+// Plan cadence posts one day AHEAD of their publish slot, so review-mode
+// users get a full day to approve without delaying the post — approval marks
+// it ready; the drain still waits for the slot.
+const REVIEW_LEAD_MS = 24 * 3600 * 1000;
+
 // Small batches per tick so we stay within the function time budget.
 const DRAIN_LIMIT = 8;
 // Approved posts may still need media generation (slow), so a smaller batch.
@@ -123,6 +128,9 @@ export async function GET(req: Request) {
     .from("campaign_posts")
     .select("id, user_id, campaign_id, type, title, caption, hashtags, link, media_prompt, media_url, per_platform, channels")
     .eq("status", "approved")
+    // Posts planned ahead carry their publish slot — approving early must not
+    // publish early. No slot = publish on the next tick.
+    .or(`scheduled_for.is.null,scheduled_for.lte.${nowIso}`)
     .order("created_at", { ascending: true })
     .limit(APPROVED_LIMIT);
 
@@ -237,11 +245,15 @@ export async function GET(req: Request) {
           const cost = planned.type === "text" ? 0 : creditCost(planned.type, false);
           const dial = c.auto_approve_max_credits;
           const autonomous = c.mode === "auto" || (typeof dial === "number" && cost <= dial);
+          // Plan a day ahead: the post gets a publish slot 24h out. Review
+          // drafts sit in the queue a full day before they're due; autonomous
+          // posts are pre-rendered and visible (cancellable) as Scheduled.
+          const publishAt = new Date(now.getTime() + REVIEW_LEAD_MS).toISOString();
           if (autonomous && channels.length > 0) {
-            spent = await autoPublish(admin, c, planned, channels, spent, nowIso);
+            spent = await autoSchedule(admin, c, planned, channels, spent, publishAt);
             posted++;
           } else {
-            await insertDraft(admin, c, planned, channels);
+            await insertDraft(admin, c, planned, channels, publishAt);
             drafted++;
           }
         }
@@ -375,7 +387,13 @@ function captionOf(p: PlannedPost): string {
   return p.cta ? `${p.caption}\n\n${p.cta}` : p.caption;
 }
 
-async function insertDraft(admin: SupabaseClient, c: CampaignRow, p: PlannedPost, channels: string[]): Promise<void> {
+async function insertDraft(
+  admin: SupabaseClient,
+  c: CampaignRow,
+  p: PlannedPost,
+  channels: string[],
+  publishAt?: string,
+): Promise<void> {
   await insertPostRows(admin, [
     {
       user_id: c.user_id,
@@ -389,20 +407,25 @@ async function insertDraft(admin: SupabaseClient, c: CampaignRow, p: PlannedPost
       link: c.link,
       media_prompt: p.mediaPrompt,
       channels,
+      scheduled_for: publishAt ?? null,
       reasoning: p.reasoning || null,
       estimated_credits: p.type === "text" ? 0 : creditCost(p.type, false),
     },
   ]);
 }
 
-/** Generate (if needed), tailor, publish, and record one auto post. Returns new spent total. */
-async function autoPublish(
+/**
+ * Generate (if needed), tailor, and SCHEDULE one autonomous post for its slot
+ * (a day out) — visible and cancellable until the drain publishes it.
+ * Returns new spent total.
+ */
+async function autoSchedule(
   admin: SupabaseClient,
   c: CampaignRow,
   p: PlannedPost,
   channels: string[],
   spent: number,
-  nowIso: string,
+  publishAt: string,
 ): Promise<number> {
   let mediaUrl: string | undefined;
   try {
@@ -414,7 +437,7 @@ async function autoPublish(
   } catch (e) {
     // Out of budget/credits — fall back to a draft so the cadence still produces something.
     if (e instanceof BudgetError || e instanceof CreditError) {
-      await insertDraft(admin, c, p, channels);
+      await insertDraft(admin, c, p, channels, publishAt);
       return spent;
     }
     throw e;
@@ -422,14 +445,6 @@ async function autoPublish(
 
   const draft: Draft = { title: p.title, caption: captionOf(p), cta: "", hashtags: p.hashtags, imagePrompt: "", videoPrompt: "" };
   const posts = await adaptForPlatforms(draft, c.link, channels);
-  const results = await publishToChannels(c.user_id, {
-    type: p.type,
-    mediaUrl,
-    link: c.link,
-    title: p.title,
-    posts,
-  });
-  const anyOk = results.some((r) => r.ok);
   const perPlatform: Record<string, string> = {};
   for (const x of posts) perPlatform[x.platform] = x.caption;
 
@@ -437,7 +452,7 @@ async function autoPublish(
     {
       user_id: c.user_id,
       campaign_id: c.id,
-      status: anyOk ? "published" : "failed",
+      status: "scheduled",
       type: p.type,
       angle: p.angle,
       title: p.title,
@@ -448,8 +463,7 @@ async function autoPublish(
       media_url: mediaUrl ?? null,
       per_platform: perPlatform,
       channels,
-      results,
-      published_at: anyOk ? nowIso : null,
+      scheduled_for: publishAt,
       reasoning: p.reasoning || null,
     },
   ]);

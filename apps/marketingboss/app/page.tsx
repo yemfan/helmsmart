@@ -247,7 +247,7 @@ export default async function Home({
                   </span>
                 ) : (
                   <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-600">
-                    ✓ Publishing soon
+                    {p.scheduled_for ? `✓ ${fmt(p.scheduled_for)}` : "✓ Publishing soon"}
                   </span>
                 )}
                 <span className="min-w-0 flex-1 truncate text-sm text-slate-700">
