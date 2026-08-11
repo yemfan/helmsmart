@@ -38,6 +38,21 @@ function extFrom(url: string, type: GenType): { ext: string; contentType: string
   return { ext, contentType };
 }
 
+/**
+ * Image/video models garble freeform lettering. For post-pipeline media: if
+ * the prompt pins exact wording in double quotes, protect it; otherwise steer
+ * the model away from rendering ANY text — the caption carries the words.
+ * (Studio generations are untouched — there the user's prompt is law.)
+ */
+export function guardMediaPrompt(prompt: string): string {
+  const p = prompt.trim();
+  if (!p) return p;
+  if (/"[^"]{2,}"/.test(p)) {
+    return `${p}. Render ONLY the exact quoted wording, in large clean legible lettering, spelled precisely — no other text anywhere in the frame.`;
+  }
+  return `${p}. Absolutely no text, words, letters, numbers, captions, watermarks, or logos anywhere in the frame.`;
+}
+
 export type GenParams = {
   type: GenType;
   prompt: string;
@@ -169,7 +184,7 @@ export async function generatePostMedia(
     throw new BudgetError();
   }
   const aspect = type === "video" ? "16:9" : "1:1";
-  const out = await generateAndStore(supabase, userId, { type, prompt: post.media_prompt || "", aspect });
+  const out = await generateAndStore(supabase, userId, { type, prompt: guardMediaPrompt(post.media_prompt || ""), aspect });
   const url = out.urls[0];
   if (!url) throw new Error("Generation returned no media.");
   return { url, cost: out.cost };
@@ -190,7 +205,7 @@ export async function generatePostMediaAdmin(
   const cost = creditCost(type, false);
   if (budgetCredits != null && spentCredits + cost > budgetCredits) throw new BudgetError();
   const aspect = type === "video" ? "16:9" : "1:1";
-  const out = await generateAndStoreAdmin(admin, userId, { type, prompt: mediaPrompt || "", aspect });
+  const out = await generateAndStoreAdmin(admin, userId, { type, prompt: guardMediaPrompt(mediaPrompt || ""), aspect });
   const url = out.urls[0];
   if (!url) throw new Error("Generation returned no media.");
   return { url, cost: out.cost };
