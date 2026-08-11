@@ -97,7 +97,7 @@ export default function CommunityLibrary({
     try {
       const res = await fetch("/api/communities/discover", { method: "POST" });
       const b = (await res.json().catch(() => null)) as { ok?: boolean; found?: number; error?: string } | null;
-      if (!res.ok || !b?.ok) throw new Error(b?.error || "Discovery ran long or failed — anything found is saved; try refreshing.");
+      if (!res.ok || !b?.ok) throw new Error(b?.error || "The research ran long and was cut off — runs vary, try once more.");
       setNote(
         b.found && b.found > 0
           ? `Found ${b.found} new communit${b.found === 1 ? "y" : "ies"} for your audience.`
