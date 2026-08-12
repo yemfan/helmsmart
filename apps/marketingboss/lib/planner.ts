@@ -1,5 +1,5 @@
 import "server-only";
-import { anthropicJson } from "@/lib/ai";
+import { anthropicJson, HOOK_RULE } from "@/lib/ai";
 import type { BrandBrief } from "@/lib/research";
 
 /**
@@ -64,7 +64,7 @@ export async function planPosts(
     "- type: the chosen media type (from the allowed set).",
     "- angle: the pillar / hook this post covers (short).",
     "- title: a short headline (also a video title).",
-    "- caption: ready-to-post copy, no hashtags inside it.",
+    "- caption: ready-to-post copy, no hashtags inside it. " + HOOK_RULE,
     "- cta: one clear call to action.",
     "- hashtags: 4–8 relevant tags WITHOUT the # sign.",
     "- mediaPrompt: if type is image or video, a vivid generation prompt (subject, setting, style, lighting, composition, mood). Design the visual to work WITHOUT any rendered text — AI image models garble lettering, and the caption carries the words. Only when a short overlay is truly essential, give the exact wording (3 words max) in double quotes. If type is text, an empty string.",

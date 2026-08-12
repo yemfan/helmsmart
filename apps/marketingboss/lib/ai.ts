@@ -38,6 +38,10 @@ export function aiConfigured(): boolean {
   return !!process.env.ANTHROPIC_API_KEY;
 }
 
+/** Every caption opens with a scroll-stopper — one rule shared by all post generators. */
+export const HOOK_RULE =
+  'The caption MUST open with a HOOK on its own first line: 12 words or fewer that stop the target reader mid-scroll — a surprising number, a bold claim, a sharp question, or real stakes. Never open with the brand name, "We…", or a label like "Tip of the week:". Blank line after the hook, then the body.';
+
 export const ANTHROPIC_API_URL = API_URL;
 export const ANTHROPIC_MODEL = MODEL;
 
@@ -114,7 +118,7 @@ export async function draftPost(intent: string, type: PostType, brand?: string):
     "Write in a warm, confident, human voice — specific and benefit-led, never generic or salesy.",
     "Return ALL fields:",
     "- title: a short punchy headline (also used as a video title). Under ~70 characters.",
-    "- caption: the main post copy, 1–3 short paragraphs, ready to publish. Do NOT include hashtags in the caption.",
+    "- caption: the main post copy, 1–3 short paragraphs, ready to publish. Do NOT include hashtags in the caption. " + HOOK_RULE,
     "- cta: one clear call to action (e.g. 'Book a free consult', 'Visit AVASC.org').",
     "- hashtags: 4–8 relevant hashtags WITHOUT the # sign.",
     wantsImage
@@ -239,6 +243,7 @@ export async function adaptForPlatforms(
     "You are a social-media manager tailoring ONE post to several networks.",
     "Keep the core message and voice, but rewrite each caption to be native to its platform:",
     ...platforms.map((p) => `- ${PLATFORM_GUIDE[p] ?? p}`),
+    "Every caption keeps a HOOK as its very first line — reuse the original's hook or sharpen it for the platform; never replace it with a label, greeting, or the brand name.",
     "Weave in the call to action naturally. Only paste the link on platforms where links are clickable and a link is provided.",
     "Return exactly one entry per requested platform, using these platform keys: " + platforms.join(", ") + ".",
   ].join("\n");
