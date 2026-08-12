@@ -12,7 +12,7 @@ import { runDueWeeklySlots } from "@/lib/weeklySchedule";
 import { discoverForUser } from "@/lib/discovery";
 import { latestOpportunityAt } from "@/lib/opportunities";
 import { appliedLearningsHint, latestLearningAt, synthesizeLearnings } from "@/lib/learnings";
-import { refreshViralLibrary } from "@/lib/viralIntelligence";
+import { refreshViralLibrary, templateHints } from "@/lib/viralIntelligence";
 import type { BrandBrief } from "@/lib/research";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -227,13 +227,14 @@ export async function GET(req: Request) {
 
     if (c.brief) {
       try {
-        const [autoInsights, learned] = await Promise.all([
+        const [autoInsights, learned, styleHints] = await Promise.all([
           buildInsights(c.user_id, c.id).catch(() => null),
           appliedLearningsHint(c.user_id, c.id).catch(() => null),
+          templateHints(),
         ]);
         const insights = [autoInsights, learned].filter(Boolean).join("\n") || null;
         const planned = (
-          await planPosts(c.brief, { mediaTypes: c.media_types, channels: c.channels, link: c.link, count: 1, insights })
+          await planPosts(c.brief, { mediaTypes: c.media_types, channels: c.channels, link: c.link, count: 1, insights, styleHints })
         )[0];
         if (planned) {
           const channels = (c.channels || []).filter((ch) => (ELIGIBLE[planned.type] || []).includes(ch));

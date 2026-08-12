@@ -158,6 +158,43 @@ export async function latestGlobalItemAt(): Promise<string | null> {
   return (data as { created_at: string } | null)?.created_at ?? null;
 }
 
+/**
+ * A compact "formats proven viral right now" hint for the planner — top active
+ * templates by viral score. Returns null when the library is empty (or on any
+ * error) so callers can pass it straight through as an optional prompt block.
+ */
+export async function templateHints(limit = 2): Promise<string | null> {
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin
+      .from("viral_templates")
+      .select("title, content_type, hook_type, emotional_trigger, structure")
+      .eq("status", "active")
+      .order("viral_score", { ascending: false })
+      .limit(limit);
+    if (error) return null;
+    const rows =
+      (data as {
+        title: string;
+        content_type: string | null;
+        hook_type: string | null;
+        emotional_trigger: string | null;
+        structure: { slot?: string; pattern?: string }[] | null;
+      }[]) ?? [];
+    if (rows.length === 0) return null;
+    const lines = rows.map((t, i) => {
+      const hook = Array.isArray(t.structure) ? t.structure.find((s) => s.slot === "HOOK")?.pattern : null;
+      const bits = [t.content_type, t.hook_type && `hook: ${t.hook_type}`, t.emotional_trigger && `trigger: ${t.emotional_trigger}`]
+        .filter(Boolean)
+        .join("; ");
+      return `${i + 1}. "${t.title}"${bits ? ` (${bits})` : ""}${hook ? ` — hook pattern: ${hook}` : ""}`;
+    });
+    return `Formats proven viral right now — borrow the STRUCTURE where it fits the brand, never the exact words:\n${lines.join("\n")}`;
+  } catch {
+    return null;
+  }
+}
+
 // ── Scout + Analyze (merged; 1 research + 1 structured pass) ─────────────────
 
 type Block = { type: string; text?: string };

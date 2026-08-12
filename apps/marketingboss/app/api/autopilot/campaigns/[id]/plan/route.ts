@@ -4,6 +4,7 @@ import { buildInsights, getCampaign, insertPosts, type PlannedPostRow } from "@/
 import { appliedLearningsHint } from "@/lib/learnings";
 import { creditCost } from "@/lib/generation";
 import { planPosts } from "@/lib/planner";
+import { templateHints } from "@/lib/viralIntelligence";
 
 export const maxDuration = 120;
 export const runtime = "nodejs";
@@ -36,9 +37,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 
   try {
-    const [autoInsights, learned] = await Promise.all([
+    const [autoInsights, learned, styleHints] = await Promise.all([
       buildInsights(user.id, id).catch(() => null),
       appliedLearningsHint(user.id, id).catch(() => null),
+      templateHints(),
     ]);
     const insights = [autoInsights, learned].filter(Boolean).join("\n") || null;
     const planned = await planPosts(campaign.brief, {
@@ -47,6 +49,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       link: campaign.link,
       count,
       insights,
+      styleHints,
     });
     if (planned.length === 0) return NextResponse.json({ error: "The planner returned nothing — try again." }, { status: 502 });
 

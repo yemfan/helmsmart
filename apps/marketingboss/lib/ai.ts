@@ -42,6 +42,21 @@ export function aiConfigured(): boolean {
 export const HOOK_RULE =
   'The caption MUST open with a HOOK on its own first line: 12 words or fewer that stop the target reader mid-scroll — a surprising number, a bold claim, a sharp question, or real stakes. Never open with the brand name, "We…", or a label like "Tip of the week:". Blank line after the hook, then the body.';
 
+/** The marketing-craft checklist folded into every caption-writing prompt. */
+export const CRAFT_RULES = [
+  "Craft rules — apply ALL of these to the caption:",
+  "• ONE idea per post. Cut anything serving a second idea.",
+  "• Specificity beats adjectives: use real numbers, names, timeframes, and receipts FROM THE MATERIAL PROVIDED — never invent them.",
+  "• Pick ONE emotional driver that fits (curiosity, loss-aversion, aspiration, belonging) and commit the whole post to it.",
+  "• Use evidence when the material provides it — a stat, a quote, a source name. Attribution builds trust.",
+  "• Write for skimmers: short lines, line breaks between thoughts, a numbered/bulleted list when there are 3+ items.",
+  "• End with exactly ONE low-friction call to action tied to the value just delivered — not three asks.",
+].join("\n");
+
+/** Media prompts sell the post's ONE idea, not a generic scene. */
+export const MEDIA_CRAFT =
+  "The visual must dramatize the post's ONE idea with a single strong subject, bold composition, and feed-stopping contrast — a pattern interrupt, never a generic stock scene.";
+
 export const ANTHROPIC_API_URL = API_URL;
 export const ANTHROPIC_MODEL = MODEL;
 
@@ -116,15 +131,20 @@ export async function draftPost(intent: string, type: PostType, brand?: string):
   const system = [
     "You are a senior social-media marketer writing scroll-stopping posts for a small business.",
     "Write in a warm, confident, human voice — specific and benefit-led, never generic or salesy.",
+    CRAFT_RULES,
     "Return ALL fields:",
     "- title: a short punchy headline (also used as a video title). Under ~70 characters.",
     "- caption: the main post copy, 1–3 short paragraphs, ready to publish. Do NOT include hashtags in the caption. " + HOOK_RULE,
     "- cta: one clear call to action (e.g. 'Book a free consult', 'Visit AVASC.org').",
     "- hashtags: 4–8 relevant hashtags WITHOUT the # sign.",
     wantsImage
-      ? "- imagePrompt: a vivid, detailed prompt for an AI image generator that would make a strong visual for this post (subject, style, lighting, composition, mood). Design it to work WITHOUT any rendered text — image models garble lettering and the caption carries the words; only when a short overlay is truly essential, give the exact wording (3 words max) in double quotes. Leave videoPrompt as an empty string."
+      ? "- imagePrompt: a vivid, detailed prompt for an AI image generator that would make a strong visual for this post (subject, style, lighting, composition, mood). " +
+        MEDIA_CRAFT +
+        " Design it to work WITHOUT any rendered text — image models garble lettering and the caption carries the words; only when a short overlay is truly essential, give the exact wording (3 words max) in double quotes. Leave videoPrompt as an empty string."
       : wantsVideo
-        ? "- videoPrompt: a vivid, detailed prompt for an AI video generator (subject, motion, camera move, mood, ~5s clip). No on-screen text, captions, or subtitles. Leave imagePrompt as an empty string."
+        ? "- videoPrompt: a vivid, detailed prompt for an AI video generator (subject, motion, camera move, mood, ~5s clip). " +
+          MEDIA_CRAFT +
+          " No on-screen text, captions, or subtitles. Leave imagePrompt as an empty string."
         : "- Leave both imagePrompt and videoPrompt as empty strings (this is a text-only post).",
     // Brand Kit — fold the user's brand memory in so copy + media prompts stay
     // on-brand. Empty string when no kit is set, leaving the prompt unchanged.
