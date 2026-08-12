@@ -60,6 +60,11 @@ export function generateAuthorizeUrl(state: string): string {
     response_type: "code",
     redirect_uri: redirectUri(),
     state,
+    // Always show the consent screen. Without this, TikTok silently reuses a
+    // prior grant — and if that grant was missing a scope (partial toggles),
+    // every reconnect loops on "did not authorize the scope" with no way for
+    // the user to fix it from the web (revoke lives in the mobile app only).
+    disable_auto_auth: "1",
   });
   return `${AUTH_URL}?${params.toString()}`;
 }
