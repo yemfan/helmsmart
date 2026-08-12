@@ -247,7 +247,11 @@ export default function CampaignDetail({ campaign, posts }: { campaign: Campaign
                 <span className="font-medium text-slate-700">{p.angle}</span>
                 <span
                   className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
-                    p.status === "published" ? "bg-emerald-500/15 text-emerald-600" : "bg-red-500/15 text-red-600"
+                    p.status === "published"
+                      ? "bg-emerald-500/15 text-emerald-600"
+                      : p.status === "skipped"
+                        ? "bg-slate-200 text-slate-500"
+                        : "bg-red-500/15 text-red-600"
                   }`}
                 >
                   {p.status}
@@ -313,7 +317,7 @@ function PostCard({ post, brandName, onChanged }: { post: CampaignPost; brandNam
   const [hashtags, setHashtags] = useState((post.hashtags ?? []).map((h) => `#${h.replace(/^#/, "")}`).join(" "));
   const [mediaPrompt, setMediaPrompt] = useState(post.media_prompt ?? "");
   const [mediaUrl, setMediaUrl] = useState(post.media_url);
-  const [busy, setBusy] = useState<null | "save" | "gen" | "prev" | "pub" | "approve" | "del">(null);
+  const [busy, setBusy] = useState<null | "save" | "gen" | "prev" | "pub" | "approve" | "skip" | "del">(null);
   const [err, setErr] = useState<string | null>(null);
   const [preview, setPreview] = useState<Record<string, string> | null>(null);
   const [previewTab, setPreviewTab] = useState<string>("");
@@ -432,6 +436,27 @@ function PostCard({ post, brandName, onChanged }: { post: CampaignPost; brandNam
       onChanged();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Publish failed.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  // Decline the recommendation: never publishes, kept in history as "skipped"
+  // (unlike Delete, which erases it) — a signal the planner can learn from.
+  async function skip() {
+    if (busy) return;
+    setBusy("skip");
+    setErr(null);
+    try {
+      const res = await fetch(`/api/autopilot/posts/${post.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "skipped" }),
+      });
+      if (!res.ok) throw new Error("Skip failed.");
+      onChanged();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Skip failed.");
     } finally {
       setBusy(null);
     }
@@ -571,6 +596,14 @@ function PostCard({ post, brandName, onChanged }: { post: CampaignPost; brandNam
           className="rounded-lg border border-boss-violet/40 bg-boss-violet/10 px-3 py-1.5 text-xs font-medium text-slate-900 transition hover:text-slate-900 disabled:opacity-40"
         >
           {busy === "prev" ? "Tailoring…" : "👁 Preview post"}
+        </button>
+        <button
+          onClick={skip}
+          disabled={!!busy}
+          title="Decline this recommendation — it won't publish and stays in history as skipped"
+          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+        >
+          {busy === "skip" ? "Skipping…" : "Skip"}
         </button>
         <button
           onClick={remove}

@@ -26,8 +26,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (typeof body.mediaPrompt === "string") fields.media_prompt = body.mediaPrompt;
   if (Array.isArray(body.hashtags)) fields.hashtags = body.hashtags.filter((h) => typeof h === "string");
   // Async approve: "approved" hands the post to the cron worker to generate +
-  // publish shortly; "draft" pulls it back into the review queue.
-  if (body.status === "approved" || body.status === "draft") fields.status = body.status;
+  // publish shortly; "draft" pulls it back into the review queue; "skipped"
+  // declines the recommendation — never publishes, kept in history.
+  if (body.status === "approved" || body.status === "draft" || body.status === "skipped") fields.status = body.status;
   // Editing copy invalidates any previously-tailored per-platform captions.
   if ("caption" in fields || "title" in fields) fields.per_platform = null;
   if (Object.keys(fields).length === 0) return NextResponse.json({ error: "Nothing to update." }, { status: 400 });
