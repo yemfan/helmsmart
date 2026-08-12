@@ -1,7 +1,8 @@
 import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ANTHROPIC_API_URL, ANTHROPIC_MODEL, anthropicJson, HOOK_RULE } from "@/lib/ai";
+import { ANTHROPIC_API_URL, ANTHROPIC_MODEL, anthropicJson, CRAFT_RULES, HOOK_RULE, MEDIA_CRAFT } from "@/lib/ai";
+import { BRAND_KIT_COLUMNS, brandPromptContext, type BrandKit } from "@/lib/brandKit";
 import { getConnectionStatuses } from "@/lib/social";
 import { insertScheduledPost } from "@/lib/campaigns";
 import { generatePostMediaAdmin } from "@/lib/generation";
@@ -293,7 +294,11 @@ const POST_SCHEMA = {
 export type GeneratedPost = { caption: string; hashtags: string[]; mediaPrompt: string };
 
 /** Research the topic and write a post (+ a media prompt for image/video days). Null on failure (cron-safe). */
-export async function generatePostFromTopic(topic: string, mediaType: MediaType = "text"): Promise<GeneratedPost | null> {
+export async function generatePostFromTopic(
+  topic: string,
+  mediaType: MediaType = "text",
+  brand?: string | null,
+): Promise<GeneratedPost | null> {
   if (!process.env.ANTHROPIC_API_KEY || !topic.trim()) return null;
   const wantsMedia = mediaType !== "text";
   try {
@@ -301,9 +306,11 @@ export async function generatePostFromTopic(topic: string, mediaType: MediaType 
     const out = await anthropicJson<{ caption: string; hashtags: string[]; mediaPrompt?: string }>({
       system:
         "You write ONE short, engaging social post from a research briefing. Value-first, natural voice, no clickbait. " +
+        (brand?.trim() ? brand.trim() + "\n" : "") +
+        CRAFT_RULES + "\n" +
         "caption: 2-4 short sentences ready to post. " + HOOK_RULE + " hashtags: 3-6 relevant tags without the # sign." +
         (wantsMedia
-          ? ` mediaPrompt: a vivid, concrete ${mediaType}-generation prompt (subject, setting, style, lighting, mood) that illustrates the post. No text overlays, no watermarks, no logos.`
+          ? ` mediaPrompt: a vivid, concrete ${mediaType}-generation prompt (subject, setting, style, lighting, mood) that illustrates the post. ${MEDIA_CRAFT} No text overlays, no watermarks, no logos.`
           : ""),
       user: `Topic: ${topic}\nContent type: ${mediaType}\n\nResearch briefing:\n${research.slice(0, 6000)}`,
       schema: POST_SCHEMA,
@@ -378,6 +385,7 @@ export async function runDueWeeklySlots(): Promise<{ fired: number; enqueued: nu
 
   let fired = 0;
   let enqueued = 0;
+  const brandByUser = new Map<string, string>();
 
   for (const r of rows) {
     const pool = Array.isArray(r.topics) ? r.topics.filter((t): t is string => typeof t === "string") : [];
@@ -453,7 +461,16 @@ export async function runDueWeeklySlots(): Promise<{ fired: number; enqueued: nu
       try {
         const mediaType = run.mediaType;
         const topic = topicForSlot(pool, now.date, runs.length, i, r.topic ?? "");
-        const post = await generatePostFromTopic(topic, mediaType);
+        // Fold the user's Brand Kit in (once per user) so scheduled posts stay on-brand.
+        if (!brandByUser.has(r.user_id)) {
+          const { data: kit } = await admin
+            .from("brand_kits")
+            .select(BRAND_KIT_COLUMNS)
+            .eq("user_id", r.user_id)
+            .maybeSingle();
+          brandByUser.set(r.user_id, brandPromptContext(kit as BrandKit | null));
+        }
+        const post = await generatePostFromTopic(topic, mediaType, brandByUser.get(r.user_id));
         if (!post) continue;
         fired += 1;
 

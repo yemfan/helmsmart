@@ -1,5 +1,5 @@
 import "server-only";
-import { anthropicJson, HOOK_RULE } from "@/lib/ai";
+import { anthropicJson, CRAFT_RULES, HOOK_RULE, MEDIA_CRAFT } from "@/lib/ai";
 import type { BrandBrief } from "@/lib/research";
 
 /**
@@ -51,7 +51,15 @@ function schema(allowed: string[]) {
 
 export async function planPosts(
   brief: BrandBrief,
-  opts: { mediaTypes: string[]; channels: string[]; link: string; count: number; insights?: string | null },
+  opts: {
+    mediaTypes: string[];
+    channels: string[];
+    link: string;
+    count: number;
+    insights?: string | null;
+    /** Compact "proven formats" hint from the viral library (borrow structure, never words). */
+    styleHints?: string | null;
+  },
 ): Promise<PlannedPost[]> {
   const count = Math.min(Math.max(opts.count, 1), 10);
 
@@ -60,6 +68,8 @@ export async function planPosts(
     "Rotate through the brand's content pillars so the batch is varied — no two posts on the same angle.",
     `For each post, choose the single most effective media type from the ALLOWED set (${opts.mediaTypes.join(", ")}) for that message and the target channels (${opts.channels.join(", ")}).`,
     ...(opts.insights ? [opts.insights] : []),
+    ...(opts.styleHints ? [opts.styleHints] : []),
+    CRAFT_RULES,
     "Write in the brand's voice. For each post return:",
     "- type: the chosen media type (from the allowed set).",
     "- angle: the pillar / hook this post covers (short).",
@@ -67,7 +77,9 @@ export async function planPosts(
     "- caption: ready-to-post copy, no hashtags inside it. " + HOOK_RULE,
     "- cta: one clear call to action.",
     "- hashtags: 4–8 relevant tags WITHOUT the # sign.",
-    "- mediaPrompt: if type is image or video, a vivid generation prompt (subject, setting, style, lighting, composition, mood). Design the visual to work WITHOUT any rendered text — AI image models garble lettering, and the caption carries the words. Only when a short overlay is truly essential, give the exact wording (3 words max) in double quotes. If type is text, an empty string.",
+    "- mediaPrompt: if type is image or video, a vivid generation prompt (subject, setting, style, lighting, composition, mood). " +
+      MEDIA_CRAFT +
+      " Design the visual to work WITHOUT any rendered text — AI image models garble lettering, and the caption carries the words. Only when a short overlay is truly essential, give the exact wording (3 words max) in double quotes. If type is text, an empty string.",
     "- reasoning: ONE sentence making the business case — why this angle and format, for this audience, now. Written to the brand owner (\"Your audience...\"), concrete, no fluff.",
   ].join("\n");
 
