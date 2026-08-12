@@ -39,9 +39,16 @@ export default function CreditsClient() {
       if (!r.ok || !j.url) throw new Error(j.error || "Couldn't open the billing portal.");
       window.location.href = j.url;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't open the billing portal.");
+      showError(e instanceof Error ? e.message : "Couldn't open the billing portal.");
       setPortalBusy(false);
     }
+  }
+
+  // Surface an error where the user can see it — the banner is at the top of the
+  // page, so scroll it into view (the buy/subscribe buttons are far below it).
+  function showError(message: string) {
+    setError(message);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   async function go(url: string, body: unknown, key: string) {
@@ -58,7 +65,7 @@ export default function CreditsClient() {
       if (!r.ok || !j.url) throw new Error(j.error || "Checkout couldn't start.");
       window.location.href = j.url;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Checkout couldn't start.");
+      showError(e instanceof Error ? e.message : "Checkout couldn't start.");
       setBusy(null);
     }
   }
