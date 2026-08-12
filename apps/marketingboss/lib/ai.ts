@@ -135,7 +135,7 @@ export async function draftPost(intent: string, type: PostType, brand?: string):
     "Return ALL fields:",
     "- title: a short punchy headline (also used as a video title). Under ~70 characters.",
     "- caption: the main post copy, 1–3 short paragraphs, ready to publish. Do NOT include hashtags in the caption. " + HOOK_RULE,
-    "- cta: one clear call to action (e.g. 'Book a free consult', 'Visit AVASC.org').",
+    "- cta: one clear call to action (e.g. 'Book a free consult', 'Visit AVASC.org'). Do NOT also write the CTA inside the caption — it is appended from this field, so repeating it publishes it twice.",
     "- hashtags: 4–8 relevant hashtags WITHOUT the # sign.",
     wantsImage
       ? "- imagePrompt: a vivid, detailed prompt for an AI image generator that would make a strong visual for this post (subject, style, lighting, composition, mood). " +

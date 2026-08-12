@@ -75,7 +75,7 @@ export async function planPosts(
     "- angle: the pillar / hook this post covers (short).",
     "- title: a short headline (also a video title).",
     "- caption: ready-to-post copy, no hashtags inside it. " + HOOK_RULE,
-    "- cta: one clear call to action.",
+    "- cta: one clear call to action. Do NOT also write the CTA inside the caption — the cta field is appended to the caption automatically, so repeating it publishes it twice.",
     "- hashtags: 4–8 relevant tags WITHOUT the # sign.",
     "- mediaPrompt: if type is image or video, a vivid generation prompt (subject, setting, style, lighting, composition, mood). " +
       MEDIA_CRAFT +
