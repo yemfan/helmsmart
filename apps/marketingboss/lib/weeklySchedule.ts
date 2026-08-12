@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ANTHROPIC_API_URL, ANTHROPIC_MODEL, anthropicJson } from "@/lib/ai";
+import { ANTHROPIC_API_URL, ANTHROPIC_MODEL, anthropicJson, HOOK_RULE } from "@/lib/ai";
 import { getConnectionStatuses } from "@/lib/social";
 import { insertScheduledPost } from "@/lib/campaigns";
 import { generatePostMediaAdmin } from "@/lib/generation";
@@ -301,7 +301,7 @@ export async function generatePostFromTopic(topic: string, mediaType: MediaType 
     const out = await anthropicJson<{ caption: string; hashtags: string[]; mediaPrompt?: string }>({
       system:
         "You write ONE short, engaging social post from a research briefing. Value-first, natural voice, no clickbait. " +
-        "caption: 2-4 short sentences ready to post. hashtags: 3-6 relevant tags without the # sign." +
+        "caption: 2-4 short sentences ready to post. " + HOOK_RULE + " hashtags: 3-6 relevant tags without the # sign." +
         (wantsMedia
           ? ` mediaPrompt: a vivid, concrete ${mediaType}-generation prompt (subject, setting, style, lighting, mood) that illustrates the post. No text overlays, no watermarks, no logos.`
           : ""),
