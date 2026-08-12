@@ -317,10 +317,12 @@ function PostCard({ post, brandName, onChanged }: { post: CampaignPost; brandNam
   const [hashtags, setHashtags] = useState((post.hashtags ?? []).map((h) => `#${h.replace(/^#/, "")}`).join(" "));
   const [mediaPrompt, setMediaPrompt] = useState(post.media_prompt ?? "");
   const [mediaUrl, setMediaUrl] = useState(post.media_url);
-  const [busy, setBusy] = useState<null | "save" | "gen" | "prev" | "pub" | "approve" | "skip" | "del">(null);
+  const [busy, setBusy] = useState<null | "save" | "gen" | "prev" | "pub" | "approve" | "skip" | "rev" | "del">(null);
   const [err, setErr] = useState<string | null>(null);
   const [preview, setPreview] = useState<Record<string, string> | null>(null);
   const [previewTab, setPreviewTab] = useState<string>("");
+  const [feedback, setFeedback] = useState("");
+  const [revised, setRevised] = useState(false);
 
   const needsMedia = post.type !== "text";
   const dirty =
@@ -436,6 +438,45 @@ function PostCard({ post, brandName, onChanged }: { post: CampaignPost; brandNam
       onChanged();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Publish failed.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  // The middle path between Approve and Skip: the owner says what to change,
+  // the team rewrites the post to those instructions and hands it back for
+  // another review. The rendered image is kept unless the visual concept changed.
+  async function revise() {
+    if (busy || !feedback.trim()) return;
+    setBusy("rev");
+    setErr(null);
+    setRevised(false);
+    try {
+      if (dirty) await save(); // revision builds on any manual edits
+      const res = await fetch(`/api/autopilot/posts/${post.id}/revise`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ feedback }),
+      });
+      const data = (await res.json()) as {
+        title?: string;
+        caption?: string;
+        hashtags?: string[];
+        mediaPrompt?: string;
+        mediaCleared?: boolean;
+        error?: string;
+      };
+      if (!res.ok) throw new Error(data.error || `Revision failed (${res.status})`);
+      setTitle(data.title ?? "");
+      setCaption(data.caption ?? "");
+      setHashtags((data.hashtags ?? []).map((h) => `#${h.replace(/^#/, "")}`).join(" "));
+      if (data.mediaPrompt) setMediaPrompt(data.mediaPrompt);
+      if (data.mediaCleared) setMediaUrl(null);
+      setPreview(null);
+      setFeedback("");
+      setRevised(true);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Revision failed.");
     } finally {
       setBusy(null);
     }
@@ -579,6 +620,31 @@ function PostCard({ post, brandName, onChanged }: { post: CampaignPost; brandNam
       )}
 
       {err && <p className="mt-2 text-xs text-red-600">{err}</p>}
+      {revised && (
+        <p className="mt-2 rounded-lg bg-emerald-500/10 px-3 py-2 text-xs text-emerald-700">
+          ✓ Revised to your instructions — review the new version and approve when it&apos;s right.
+        </p>
+      )}
+
+      {/* Request changes — the middle path between Approve and Skip. */}
+      <div className="mt-3 flex items-start gap-2">
+        <textarea
+          value={feedback}
+          onChange={(e) => setFeedback(e.target.value)}
+          rows={1}
+          placeholder="Not quite right? Tell the team what to change — e.g. “shorter, focus on families, less salesy”"
+          className={`${fieldCls} resize-y`}
+        />
+        <button
+          onClick={revise}
+          disabled={!!busy || !feedback.trim()}
+          title="The team rewrites this post to your instructions and hands it back for review"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-boss-violet/40 bg-boss-violet/10 px-3 py-2 text-xs font-medium text-slate-900 transition hover:text-slate-900 disabled:opacity-40"
+        >
+          {busy === "rev" && <Spinner />}
+          {busy === "rev" ? "Revising…" : "↻ Revise"}
+        </button>
+      </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <button onClick={onSave} disabled={!!busy} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40">
