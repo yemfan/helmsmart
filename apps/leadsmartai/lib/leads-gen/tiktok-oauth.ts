@@ -122,6 +122,8 @@ async function tokenRequest(body: URLSearchParams): Promise<{
   refreshToken: string | null;
   expiresIn: number;
   openId: string | null;
+  /** Scopes the user actually granted — may be fewer than we asked for. */
+  scope: string | null;
 }> {
   const res = await fetch(TOKEN_URL, {
     method: "POST",
@@ -138,6 +140,7 @@ async function tokenRequest(body: URLSearchParams): Promise<{
     refreshToken: json.refresh_token ?? null,
     expiresIn: json.expires_in ?? 24 * 60 * 60,
     openId: json.open_id ?? null,
+    scope: json.scope ?? null,
   };
 }
 

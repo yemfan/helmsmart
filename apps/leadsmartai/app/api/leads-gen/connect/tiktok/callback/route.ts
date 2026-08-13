@@ -5,6 +5,7 @@ import {
   exchangeCodeForToken,
   fetchUserInfo,
   verifyState,
+  type TikTokUser,
 } from "@/lib/leads-gen/tiktok-oauth";
 import { encryptToken } from "@/lib/leads-gen/token-enc";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -74,10 +75,26 @@ export async function GET(req: Request) {
     const token = await exchangeCodeForToken(code);
     const tokenExpiresAt = new Date(Date.now() + token.expiresIn * 1000).toISOString();
 
-    const profile = await fetchUserInfo(token.accessToken);
+    // The profile scope (user.info.basic) is an OPTIONAL toggle on TikTok's
+    // consent screen — declining it must not block a connection that can still
+    // publish. Fall back to the token's open_id and a plain label.
+    let profile: TikTokUser = { openId: null, displayName: null, avatarUrl: null, username: null };
+    try {
+      profile = await fetchUserInfo(token.accessToken);
+    } catch (e) {
+      console.warn(
+        "[tiktok/callback] profile lookup skipped:",
+        e instanceof Error ? e.message : e,
+      );
+    }
+
     const openId = profile.openId ?? token.openId;
     if (!openId) {
-      return back({ status: "error", reason: "Could not read your TikTok account id." });
+      return back({
+        status: "error",
+        reason:
+          'TikTok didn\'t share your account id. Reconnect and leave "Access your profile info" switched on.',
+      });
     }
 
     const nowIso = new Date().toISOString();
@@ -91,7 +108,11 @@ export async function GET(req: Request) {
       user_access_token_enc: encryptToken(token.accessToken),
       tiktok_refresh_token_enc: token.refreshToken ? encryptToken(token.refreshToken) : null,
       user_token_expires_at: tokenExpiresAt,
-      scopes: TIKTOK_OAUTH_SCOPES as unknown as string[],
+      // Record what was actually GRANTED (the user may decline a toggle), not
+      // what we requested — otherwise the stored list silently lies.
+      scopes: (token.scope
+        ? token.scope.split(",").map((s) => s.trim()).filter(Boolean)
+        : (TIKTOK_OAUTH_SCOPES as unknown as string[])) as unknown as string[],
       status: "connected",
       last_error: null,
       last_refreshed_at: nowIso,
