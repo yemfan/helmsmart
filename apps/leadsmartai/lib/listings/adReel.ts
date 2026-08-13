@@ -157,7 +157,9 @@ export async function buildListingReel(
 }
 
 /**
- * Publish the finished ad to the agent's connected FB/IG/LinkedIn accounts.
+ * Publish the finished ad to every connected video-capable account — Facebook,
+ * Instagram, LinkedIn, TikTok, and YouTube (scheduleReel gets no platform
+ * filter, so it fans out to whatever the agent has connected).
  * Reuses the whole reel publish pipeline: drop a social_reels row carrying the
  * MP4 + caption, then scheduleReel fans it out to scheduled_posts (drained by
  * the publish cron within a few minutes). Caption can be overridden by the UI.

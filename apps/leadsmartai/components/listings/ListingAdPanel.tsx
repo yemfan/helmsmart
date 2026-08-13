@@ -735,7 +735,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                     onClick={() => void publishReel()}
                     disabled={publishing}
                     className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-                    title="Post to your connected Facebook / Instagram / LinkedIn"
+                    title="Post to every connected video channel — Facebook, Instagram, LinkedIn, TikTok, YouTube"
                   >
                     {publishing ? "Publishing…" : "Publish to social"}
                   </button>
