@@ -32,15 +32,47 @@ export async function POST(req: Request) {
 
   let event: Stripe.Event;
 
-  try {
-    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!);
-  } catch (err) {
-    console.error("Stripe webhook signature error:", err);
+  // Signing secrets are per-endpoint, and this Stripe account has more than one
+  // endpoint (CloseBoss + a sibling app). Accept a comma-separated list so the
+  // right one wins whichever endpoint delivered the event. Each value is TRIMMED
+  // — a stray newline/space from pasting into the dashboard silently breaks the
+  // HMAC and looks exactly like a wrong secret (cf. the untrimmed META_APP_SECRET
+  // bug). Never log the secret itself; a length+suffix fingerprint is enough to
+  // tell which value is deployed.
+  const secrets = (process.env.STRIPE_WEBHOOK_SECRET ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (secrets.length === 0) {
+    console.error("Stripe webhook: STRIPE_WEBHOOK_SECRET is not set");
+    return NextResponse.json({ success: false, error: "Webhook not configured" }, { status: 500 });
+  }
+
+  let lastErr: unknown = null;
+  for (const secret of secrets) {
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, secret);
+      lastErr = null;
+      break;
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+
+  if (lastErr) {
+    console.error(
+      "Stripe webhook signature error (tried %d secret(s): %s):",
+      secrets.length,
+      secrets.map((s) => `len=${s.length}/…${s.slice(-4)}`).join(", "),
+      lastErr,
+    );
     return NextResponse.json(
       { success: false, error: "Invalid webhook signature" },
       { status: 400 }
     );
   }
+  event = event!;
 
   try {
     switch (event.type) {
