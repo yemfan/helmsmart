@@ -78,6 +78,21 @@ export async function publishTikTokVideo(
     error?: { code?: string; message?: string };
   };
   if (!initRes.ok || init.error?.code !== "ok" || !init.data?.upload_url || !init.data?.publish_id) {
+    // TikTok answers these with a bare "review our integration guidelines"
+    // link, which tells the agent nothing they can act on. Name the fix.
+    const code = init.error?.code;
+    if (code === "unaudited_client_can_only_post_to_private_accounts") {
+      throw new Error(
+        "TikTok only accepts posts from a PRIVATE account until this app passes its Content Posting audit. " +
+          "Open TikTok → Settings and privacy → Privacy → turn on Private account, then publish again.",
+      );
+    }
+    if (code === "spam_risk_too_many_posts" || code === "spam_risk_too_many_pending_share") {
+      throw new Error("TikTok is rate-limiting posts from this account right now. Try again in a few hours.");
+    }
+    if (code === "reached_active_user_cap") {
+      throw new Error("TikTok caps an unaudited app at 5 posting accounts per 24 hours. Try again tomorrow.");
+    }
     throw new Error(init.error?.message || `TikTok init failed (${initRes.status}).`);
   }
 
