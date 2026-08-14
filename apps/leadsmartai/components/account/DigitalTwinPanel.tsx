@@ -656,6 +656,19 @@ export default function DigitalTwinPanel() {
               </button>
             </div>
 
+            {/*
+              Render stays gated on an approved preview so nobody spends credits
+              on a take they haven't heard — but a disabled button with only a
+              hover tooltip reads as "broken". Say why, on screen.
+            */}
+            {!avAudioPath && avBusy === null ? (
+              <p className="text-[12px] text-slate-500">
+                {avScript.trim()
+                  ? "Hit Preview voice (free) first — Generate video unlocks once you've heard the take."
+                  : "Draft or write a script, then Preview voice (free) to unlock Generate video."}
+              </p>
+            ) : null}
+
             {/* Premium enhancement — gated to Premium+ plans; opt-in per render. */}
             <label className={`flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-400"}`}>
               <input
