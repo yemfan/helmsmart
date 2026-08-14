@@ -30,6 +30,7 @@ export default function CreditsClient() {
   const [plan, setPlan] = useState<CurrentPlan | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [portalBusy, setPortalBusy] = useState(false);
 
   const loadBalance = useCallback(async () => {
@@ -71,6 +72,7 @@ export default function CreditsClient() {
   async function go(url: string, body: unknown, key: string) {
     setBusy(key);
     setError(null);
+    setNotice(null);
     try {
       const r = await fetch(url, {
         method: "POST",
@@ -78,8 +80,24 @@ export default function CreditsClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      const j = (await r.json().catch(() => ({}))) as { url?: string; error?: string };
-      if (!r.ok || !j.url) throw new Error(j.error || "Checkout couldn't start.");
+      const j = (await r.json().catch(() => ({}))) as {
+        url?: string;
+        error?: string;
+        switched?: boolean;
+        message?: string;
+      };
+      if (!r.ok) throw new Error(j.error || "Checkout couldn't start.");
+
+      // Existing subscribers change plan in place (prorated) — no checkout trip.
+      if (j.switched) {
+        setNotice(j.message || "Plan changed.");
+        setBusy(null);
+        await loadBalance();
+        if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+
+      if (!j.url) throw new Error(j.error || "Checkout couldn't start.");
       window.location.href = j.url;
     } catch (e) {
       showError(e instanceof Error ? e.message : "Checkout couldn't start.");
@@ -152,6 +170,7 @@ export default function CreditsClient() {
       {checkout === "success" && (
         <Banner tone="ok">Subscription updated — your monthly credits will appear shortly.</Banner>
       )}
+      {notice && <Banner tone="ok">{notice}</Banner>}
       {error && <Banner tone="err">{error}</Banner>}
 
       {/* Monthly plans */}
@@ -161,31 +180,54 @@ export default function CreditsClient() {
           A credit allotment every month at the best per-credit rate. One seat, everything included.
         </p>
         <div className="grid gap-4 md:grid-cols-3">
-          {CREDIT_TIERS.map((t) => (
-            <div key={t.id} className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <p className="text-sm font-semibold" style={{ color: BRAND }}>
-                {t.name}
-              </p>
-              <p className="mt-1 text-3xl font-extrabold text-brand-text">
-                ${t.priceUsd}
-                <span className="text-base font-normal text-gray-500">/mo</span>
-              </p>
-              <p className="mt-1 text-sm font-semibold text-gray-700">
-                {t.monthlyCredits.toLocaleString()} credits / mo
-              </p>
-              <p className="mt-1 flex-1 text-xs text-gray-500">{t.blurb}</p>
-              <button
-                type="button"
-                onClick={() => void go("/api/stripe/checkout", { plan: t.id }, `plan:${t.id}`)}
-                disabled={busy !== null}
-                className="mt-5 w-full rounded-xl py-2.5 text-sm font-bold text-white shadow transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ background: BRAND }}
+          {CREDIT_TIERS.map((t) => {
+            const isCurrent = plan?.planId === t.id;
+            // Rank by credit allotment so the button says what the change is.
+            const currentTier = CREDIT_TIERS.find((x) => x.id === plan?.planId);
+            const label = isCurrent
+              ? "Current plan"
+              : !currentTier
+                ? "Subscribe"
+                : t.monthlyCredits > currentTier.monthlyCredits
+                  ? "Upgrade"
+                  : "Downgrade";
+            return (
+              <div
+                key={t.id}
+                className={`flex flex-col rounded-2xl border bg-white p-6 shadow-sm ${
+                  isCurrent ? "border-[#0072ce] ring-2 ring-[#0072ce]/20" : "border-gray-200"
+                }`}
               >
-                {busy === `plan:${t.id}` ? "Redirecting…" : "Subscribe"}
-              </button>
-            </div>
-          ))}
+                <p className="text-sm font-semibold" style={{ color: BRAND }}>
+                  {t.name}
+                </p>
+                <p className="mt-1 text-3xl font-extrabold text-brand-text">
+                  ${t.priceUsd}
+                  <span className="text-base font-normal text-gray-500">/mo</span>
+                </p>
+                <p className="mt-1 text-sm font-semibold text-gray-700">
+                  {t.monthlyCredits.toLocaleString()} credits / mo
+                </p>
+                <p className="mt-1 flex-1 text-xs text-gray-500">{t.blurb}</p>
+                <button
+                  type="button"
+                  onClick={() => void go("/api/stripe/checkout", { plan: t.id }, `plan:${t.id}`)}
+                  disabled={busy !== null || isCurrent}
+                  className="mt-5 w-full rounded-xl py-2.5 text-sm font-bold text-white shadow transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  style={{ background: isCurrent ? "#94a3b8" : BRAND }}
+                >
+                  {busy === `plan:${t.id}` ? "Working…" : label}
+                </button>
+              </div>
+            );
+          })}
         </div>
+        {plan?.planId && (
+          <p className="mt-3 text-xs text-gray-500">
+            Switching plans only bills the difference for the rest of your billing period. Downgrades keep
+            the credits you&apos;ve already been given.
+          </p>
+        )}
         <p className="mt-3 text-xs text-gray-500">
           Running a team?{" "}
           <a href="/contact?topic=team" className="font-medium underline" style={{ color: BRAND }}>
