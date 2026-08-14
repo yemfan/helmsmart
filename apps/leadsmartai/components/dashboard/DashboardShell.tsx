@@ -4,7 +4,9 @@ import Link from "next/link";
 import { ReactNode, useCallback, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { CloseBossLogo } from "@/components/brand/CloseBossLogo";
-import { PremiumSidebarV2, filterNavSectionsByRole } from "@repo/ui";
+import { useTranslation } from "react-i18next";
+import { PremiumSidebarV2, filterNavSectionsByRole, type NavSection } from "@repo/ui";
+import { translateNavSections } from "@/lib/i18n/navLabels";
 import navConfig, { leadSmartNav } from "@/nav.config";
 import brokerNavConfig from "@/brokerNav.config";
 import TopBar from "@/components/dashboard/TopBar";
@@ -77,13 +79,20 @@ export default function AppDashboardShell({
   /** Pass "broker" to use the loan broker sidebar instead of the agent sidebar. */
   navConfigOverride?: "broker" | null;
 }) {
-  const navSections = useMemo(
-    () =>
+  // The nav config is authored in English; translate at render time keyed by
+  // the English label, so a new nav entry keeps working (it falls back to its
+  // own label) until someone adds a translation for it.
+  const { t, i18n } = useTranslation("dashboard_nav");
+  const navSections = useMemo(() => {
+    const raw =
       navConfigOverride === "broker"
         ? brokerNavConfig.sections
-        : filterNavSectionsByRole(leadSmartNav, appRole),
-    [appRole, navConfigOverride]
-  );
+        : filterNavSectionsByRole(leadSmartNav, appRole);
+    return translateNavSections(raw as NavSection[], (s) => t(s, { defaultValue: s }));
+    // i18n.language is a dependency in substance: `t` is stable across a
+    // language change, so without it the sidebar would keep the old labels.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appRole, navConfigOverride, t, i18n.language]);
 
   const activeNavConfig = navConfigOverride === "broker" ? brokerNavConfig : navConfig;
   const showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole);
