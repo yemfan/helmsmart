@@ -580,6 +580,42 @@
         "loan": "Loan contingency",
         "closing": "Closing"
       }
+    },
+    "yourAiTeam": "Your AI Team",
+    "personality": {
+      "boss_assistant": "Calm leader, strategic, always in control.",
+      "receptionist": "Friendly, welcoming, never misses a call.",
+      "sales_assistant": "Confident, persuasive, follows up relentlessly.",
+      "marketing_assistant": "Creative, energetic, grows your business.",
+      "transaction_assistant": "Organized, detail-oriented, keeps deals moving.",
+      "accountant": "Accurate, analytical, watches every dollar."
+    },
+    "skills": {
+      "appointment_scheduling": "appointment scheduling",
+      "buyer_qualification": "buyer qualification",
+      "commission_tracking": "commission tracking",
+      "document_reminders": "document reminders",
+      "expense_tracking": "expense tracking",
+      "faq": "FAQ",
+      "follow_up": "follow-up",
+      "invoice_tracking": "invoice tracking",
+      "lead_capture": "lead capture",
+      "lead_generation": "lead generation",
+      "marketing_plans": "marketing plans",
+      "objection_handling": "objection handling",
+      "payment_reminders": "payment reminders",
+      "reactivation": "reactivation",
+      "seller_qualification": "seller qualification",
+      "social_content": "social content",
+      "speed_to_lead": "speed to lead",
+      "sphere_nurture": "sphere nurture",
+      "transaction_deadlines": "transaction deadlines",
+      "transfer": "transfer"
+    },
+    "unknownCaller": "Unknown caller",
+    "hints": {
+      "textback": "text-back or call-back",
+      "autoCallbacks": "auto call-backs at 5, 10, 30 min"
     }
   },
   "more": {
