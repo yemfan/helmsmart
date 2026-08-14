@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
@@ -42,6 +44,7 @@ type PreviewState =
   | { kind: "error"; msg: string };
 
 export default function BrandingSettingsPanel() {
+  const { t } = useTranslation("dashboard");
   const [branding, setBranding] = useState<Branding>(empty);
   const [saved, setSaved] = useState<Branding>(empty);
   const [loading, setLoading] = useState(true);
@@ -88,12 +91,12 @@ export default function BrandingSettingsPanel() {
         body: JSON.stringify(branding),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok || !body.ok) throw new Error(body.error ?? "Save failed");
+      if (!res.ok || !body.ok) throw new Error(body.error ?? t("branding.saveFailed"));
       setSaved({ ...branding });
-      setMessage("Saved.");
+      setMessage(t("branding.saved"));
       setEditingSignature(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Save failed");
+      setError(e instanceof Error ? e.message : t("branding.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -115,7 +118,7 @@ export default function BrandingSettingsPanel() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
-        setError("Sign in required.");
+        setError(t("branding.signInRequired"));
         return null;
       }
       const ext = file.name.split(".").pop()?.toLowerCase() || "png";
@@ -131,7 +134,7 @@ export default function BrandingSettingsPanel() {
       const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
       return urlData.publicUrl;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Upload failed");
+      setError(e instanceof Error ? e.message : t("branding.uploadFailed"));
       return null;
     } finally {
       setUploading(false);
@@ -148,7 +151,7 @@ export default function BrandingSettingsPanel() {
       body: JSON.stringify({ logoUrl: publicUrl }),
     });
     setSaved((s) => ({ ...s, logoUrl: publicUrl }));
-    setMessage("Logo uploaded.");
+    setMessage(t("branding.logoUploaded"));
     setPreview({ kind: "idle" });
   }
 
@@ -180,7 +183,7 @@ export default function BrandingSettingsPanel() {
         error?: string;
       };
       if (!res.ok || !body.ok || !body.signature) {
-        throw new Error(body.error || "Preview failed");
+        throw new Error(body.error || t("branding.previewFailed"));
       }
       setPreview({
         kind: "ready",
@@ -189,34 +192,34 @@ export default function BrandingSettingsPanel() {
         isCustom: body.signature.isCustom,
       });
     } catch (e) {
-      setPreview({ kind: "error", msg: e instanceof Error ? e.message : "Preview failed" });
+      setPreview({ kind: "error", msg: e instanceof Error ? e.message : t("branding.previewFailed") });
     }
   }
 
   if (loading) {
-    return <div className="text-sm text-gray-500 py-4">Loading branding...</div>;
+    return <div className="text-sm text-gray-500 py-4">{t("branding.loading")}</div>;
   }
 
   return (
     <div className="space-y-5">
       {/* Brand Name */}
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-gray-500">Brand Name</label>
+        <label className="block text-[11px] font-medium text-gray-500">{t("branding.brandName")}</label>
         <input
           value={branding.brandName}
           onChange={(e) => setBranding((b) => ({ ...b, brandName: e.target.value }))}
-          placeholder="e.g. Michael Ye Real Estate"
+          placeholder={t("branding.brandNamePlaceholder")}
           maxLength={200}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
         />
         <p className="text-[11px] text-gray-500">
-          Used in email signatures, reports, and client-facing messages.
+          {t("branding.brandNameHelp")}
         </p>
       </div>
 
       {/* Agent photo upload retired — the circular headshot in email
           signatures now comes from user_profiles.avatar_url, which the
-          agent sets once via "Change photo" at the top of this Profile
+          agent sets once via t("branding.changePhoto") at the top of this Profile
           page. Having two upload spots caused agents to expect they
           needed to upload the same image twice, and caused signatures
           to show a stale image if the profile photo was updated but
@@ -225,14 +228,14 @@ export default function BrandingSettingsPanel() {
         {/* Brokerage logo */}
         <div className="space-y-2">
           <label className="block text-[11px] font-medium text-gray-500">
-            Brokerage logo <span className="text-gray-400 font-normal">(optional)</span>
+            {t("branding.logoLabel")} <span className="text-gray-400 font-normal">{t("branding.optional")}</span>
           </label>
           {branding.logoUrl ? (
             <div className="flex items-center gap-3">
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-2">
                 <img
                   src={branding.logoUrl}
-                  alt="Logo"
+                  alt={t("branding.logoAlt")}
                   className="max-h-12 max-w-[140px] object-contain"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = "";
@@ -246,14 +249,14 @@ export default function BrandingSettingsPanel() {
                   disabled={uploading}
                   className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                 >
-                  {uploading ? "Uploading..." : "Change"}
+                  {uploading ? t("branding.uploading") : t("branding.change")}
                 </button>
                 <button
                   type="button"
                   onClick={removeLogo}
                   className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
                 >
-                  Remove
+                  {t("branding.remove")}
                 </button>
               </div>
             </div>
@@ -267,7 +270,7 @@ export default function BrandingSettingsPanel() {
               <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
               </svg>
-              {uploading ? "Uploading..." : "Upload logo"}
+              {uploading ? t("branding.uploading") : t("branding.uploadLogo")}
             </button>
           )}
           <input
@@ -282,7 +285,7 @@ export default function BrandingSettingsPanel() {
             }}
           />
           <p className="text-[11px] text-gray-500">
-            Rectangular brokerage/team logo shown lower-right. 2MB max.
+            {t("branding.logoHelp")}
           </p>
         </div>
       </div>
@@ -290,7 +293,7 @@ export default function BrandingSettingsPanel() {
       {/* Email Signature */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="block text-[11px] font-medium text-gray-500">Email Signature</label>
+          <label className="block text-[11px] font-medium text-gray-500">{t("branding.emailSignature")}</label>
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -298,7 +301,7 @@ export default function BrandingSettingsPanel() {
               disabled={preview.kind === "loading"}
               className="text-xs font-medium text-blue-600 hover:text-blue-800 disabled:opacity-50"
             >
-              {preview.kind === "loading" ? "Loading preview…" : "Preview"}
+              {preview.kind === "loading" ? "Loading preview…" : t("branding.preview")}
             </button>
             {!editingSignature && (
               <button
@@ -317,7 +320,7 @@ export default function BrandingSettingsPanel() {
             <textarea
               value={branding.signatureHtml}
               onChange={(e) => setBranding((b) => ({ ...b, signatureHtml: e.target.value }))}
-              placeholder="Leave blank to use the default signature with your name, brand, and contact info."
+              placeholder={t("branding.signaturePlaceholder")}
               maxLength={2000}
               rows={6}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono"
@@ -341,9 +344,9 @@ export default function BrandingSettingsPanel() {
         ) : (
           <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50/60 p-4 text-xs text-gray-500">
             {branding.signatureHtml ? (
-              <>Custom signature set — click <span className="font-medium">Preview</span> to see how it&apos;ll render, or <span className="font-medium">Change</span> to edit.</>
+              <>{t("branding.customSet")} <span className="font-medium">{t("branding.preview")}</span> {t("branding.previewTail")} <span className="font-medium">{t("branding.change")}</span> {t("branding.editTail")}</>
             ) : (
-              <>Using the default signature — click <span className="font-medium">Preview</span> to see how it&apos;ll render, or <span className="font-medium">Change</span> to customize.</>
+              <>{t("branding.usingDefault")} <span className="font-medium">{t("branding.preview")}</span> {t("branding.previewTail")} <span className="font-medium">{t("branding.change")}</span> {t("branding.customizeTail")}</>
             )}
           </div>
         )}
@@ -363,7 +366,7 @@ export default function BrandingSettingsPanel() {
                       : "bg-emerald-50 text-emerald-700"
                   }`}
                 >
-                  {preview.isCustom ? "Custom" : "Default"}
+                  {preview.isCustom ? t("branding.custom") : t("branding.default")}
                 </span>
                 <button
                   type="button"
@@ -439,7 +442,7 @@ export default function BrandingSettingsPanel() {
           disabled={saving || !isDirty}
           className="rounded-lg bg-brand-accent text-white text-sm font-medium px-4 py-2 disabled:opacity-50"
         >
-          {saving ? "Saving..." : "Save"}
+          {saving ? t("branding.saving") : t("branding.save")}
         </button>
         {message && <span className="text-sm text-green-700">{message}</span>}
         {error && <span className="text-sm text-red-600">{error}</span>}

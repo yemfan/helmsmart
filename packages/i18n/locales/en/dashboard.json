@@ -49,7 +49,12 @@
     "branding": "Branding",
     "brandingSubtitle": "Brand name, logo, and email signature.",
     "brandName": "Brand Name",
-    "brandNameHelp": "Used in email signatures, reports, and client-facing messages."
+    "brandNameHelp": "Used in email signatures, reports, and client-facing messages.",
+    "signInAgain": "Sign in again to upload.",
+    "photoUpdated": "Photo updated.",
+    "uploadFailed": "Upload failed",
+    "loading": "Loading...",
+    "profileAlt": "Profile"
   },
   "tasks": {
     "title": "Tasks",
@@ -762,5 +767,53 @@
       "jumpTo": "Jump to {{stage}} — {{completed}}/{{total}} complete",
       "jumpToOverdue": "Jump to {{stage}} — {{completed}}/{{total}} complete, {{overdue}} overdue"
     }
+  },
+  "branding": {
+    "loading": "Loading branding...",
+    "brandName": "Brand Name",
+    "brandNamePlaceholder": "e.g. Michael Ye Real Estate",
+    "brandNameHelp": "Used in email signatures, reports, and client-facing messages.",
+    "logoLabel": "Brokerage logo",
+    "optional": "(optional)",
+    "logoHelp": "Rectangular brokerage/team logo shown lower-right. 2MB max.",
+    "uploadLogo": "Upload logo",
+    "uploading": "Uploading...",
+    "change": "Change",
+    "changePhoto": "Change photo",
+    "logoAlt": "Logo",
+    "photoAlt": "Photo",
+    "emailSignature": "Email Signature",
+    "signaturePlaceholder": "Leave blank to use the default signature with your name, brand, and contact info.",
+    "preview": "Preview",
+    "customSet": "Custom signature set — click",
+    "usingDefault": "Using the default signature — click",
+    "custom": "Custom",
+    "default": "Default",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved.",
+    "saveFailed": "Save failed",
+    "signInRequired": "Sign in required.",
+    "uploadFailed": "Upload failed",
+    "logoUploaded": "Logo uploaded.",
+    "previewFailed": "Preview failed",
+    "remove": "Remove",
+    "previewTail": "to see how it will render, or",
+    "editTail": "to edit.",
+    "customizeTail": "to customize."
+  },
+  "roles": {
+    "user": "Consumer",
+    "agent": "Real estate agent",
+    "loan_broker": "Loan / mortgage broker",
+    "broker": "Broker",
+    "broker_owner": "Broker owner",
+    "managing_broker": "Managing broker",
+    "team_lead": "Team lead",
+    "brokerage_admin": "Brokerage admin",
+    "owner": "Owner",
+    "partner": "Partner",
+    "admin": "Administrator",
+    "support": "Support"
   }
 }

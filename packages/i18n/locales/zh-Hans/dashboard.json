@@ -49,7 +49,12 @@
     "branding": "品牌",
     "brandingSubtitle": "品牌名称、标志与邮件签名。",
     "brandName": "品牌名称",
-    "brandNameHelp": "用于邮件签名、报告以及发送给客户的消息。"
+    "brandNameHelp": "用于邮件签名、报告以及发送给客户的消息。",
+    "signInAgain": "请重新登录后再上传。",
+    "photoUpdated": "照片已更新。",
+    "uploadFailed": "上传失败",
+    "loading": "加载中…",
+    "profileAlt": "头像"
   },
   "tasks": {
     "title": "任务",
@@ -762,5 +767,53 @@
       "jumpTo": "跳转到「{{stage}}」—— 已完成 {{completed}}/{{total}}",
       "jumpToOverdue": "跳转到「{{stage}}」—— 已完成 {{completed}}/{{total}}，{{overdue}} 项逾期"
     }
+  },
+  "branding": {
+    "loading": "正在加载品牌设置…",
+    "brandName": "品牌名称",
+    "brandNamePlaceholder": "例如：叶迈克房地产",
+    "brandNameHelp": "用于邮件签名、报告以及发送给客户的消息。",
+    "logoLabel": "经纪公司标志",
+    "optional": "（选填）",
+    "logoHelp": "横向的经纪公司／团队标志，显示在右下角。最大 2MB。",
+    "uploadLogo": "上传标志",
+    "uploading": "上传中…",
+    "change": "更换",
+    "changePhoto": "更换照片",
+    "logoAlt": "标志",
+    "photoAlt": "照片",
+    "emailSignature": "邮件签名",
+    "signaturePlaceholder": "留空则使用默认签名（包含您的姓名、品牌和联系方式）。",
+    "preview": "预览",
+    "customSet": "已设置自定义签名 —— 点击",
+    "usingDefault": "正在使用默认签名 —— 点击",
+    "custom": "自定义",
+    "default": "默认",
+    "save": "保存",
+    "saving": "保存中…",
+    "saved": "已保存。",
+    "saveFailed": "保存失败",
+    "signInRequired": "请先登录。",
+    "uploadFailed": "上传失败",
+    "logoUploaded": "标志已上传。",
+    "previewFailed": "预览失败",
+    "remove": "移除",
+    "previewTail": "查看实际效果，或点击",
+    "editTail": "进行编辑。",
+    "customizeTail": "进行自定义。"
+  },
+  "roles": {
+    "user": "普通用户",
+    "agent": "房地产经纪人",
+    "loan_broker": "贷款 / 房贷经纪",
+    "broker": "经纪商",
+    "broker_owner": "经纪公司股东",
+    "managing_broker": "管理经纪人",
+    "team_lead": "团队负责人",
+    "brokerage_admin": "经纪公司管理员",
+    "owner": "所有者",
+    "partner": "合伙人",
+    "admin": "管理员",
+    "support": "客服支持"
   }
 }

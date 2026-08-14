@@ -293,7 +293,7 @@ function ProfileMenu({
         {name && email ? (
           <p className="truncate text-xs text-slate-500">{email}</p>
         ) : null}
-        <p className="mt-1 truncate text-xs text-slate-500">{formatUserRoleLabel(appRole)}</p>
+        <p className="mt-1 truncate text-xs text-slate-500">{t(`roles.${(appRole ?? "user").toLowerCase()}`, { defaultValue: formatUserRoleLabel(appRole) })}</p>
       </div>
       <Link
         href="/dashboard"
