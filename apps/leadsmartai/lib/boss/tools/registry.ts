@@ -7,6 +7,7 @@ import { draftMessage, sendMessage } from "./impl/messaging";
 import { scheduleVoiceCall } from "./impl/voice";
 import { createCrmTask, createCalendarEvent, queryCrm } from "./impl/crm";
 import { publishSocialPost, scheduleSocialPost, createAvatarVideo } from "./impl/social";
+import { importListingFromUrl, createListingVideoAd } from "./impl/listings";
 import { importContactsFromFile } from "./impl/contacts";
 import { runSkill } from "./impl/skills";
 import {
@@ -52,6 +53,8 @@ const ALL_TOOLS = [
   publishSocialPost,
   scheduleSocialPost,
   createAvatarVideo,
+  importListingFromUrl,
+  createListingVideoAd,
   importContactsFromFile,
   runSkill,
   startSellingPlaybook,
