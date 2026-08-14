@@ -198,7 +198,13 @@ export async function driveRun(runId: string, deps: EngineDeps): Promise<DriveRe
     const toolResults: unknown[] = [];
     for (const tu of response.toolUses) {
       let outcome: ToolOutcome;
-      if (pausedForApproval) {
+      // An earlier step in THIS turn parked for approval. Outbound tools can
+      // still run — they only ever propose, so nothing is sent and the realtor
+      // gets one batch of decisions instead of a trickle. Everything else waits:
+      // a CRM write or a report may assume the parked send actually happened.
+      const parkableAlongside =
+        pausedForApproval && toolSet.find((t) => t.name === tu.name)?.riskClass === "outbound";
+      if (pausedForApproval && !parkableAlongside) {
         outcome = {
           status: "rejected",
           reason: "Skipped: the run paused for approval of an earlier step. Re-plan after the decision.",
