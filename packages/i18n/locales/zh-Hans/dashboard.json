@@ -706,6 +706,61 @@
       "confirmDelete": "确定删除这条报价吗？此操作无法撤销。",
       "deleteFailed": "删除失败。",
       "counterFailed": "记录还价失败。"
+    },
+    "transaction": {
+      "stage": {
+        "contract": "签约",
+        "inspection": "验房",
+        "appraisal": "评估",
+        "loan": "贷款",
+        "closing": "过户"
+      },
+      "counterparty": {
+        "title": "产权 / 托管公司",
+        "lender": "贷款机构",
+        "inspector": "验房师",
+        "insurance": "保险",
+        "co_agent": "合作经纪 / 挂牌经纪",
+        "other": "其他"
+      },
+      "tabs": {
+        "dates": "日期",
+        "people": "相关人员",
+        "notes": "备注"
+      },
+      "tasks": "任务",
+      "taskTitle": "任务标题",
+      "noTasksInStage": "该阶段暂无任务。",
+      "deleteCustomTask": "删除自定义任务",
+      "confirmDeleteTask": "确定删除这条自定义任务吗？",
+      "peopleBlurb": "产权 / 贷款 / 验房 / 保险相关方。",
+      "name": "姓名",
+      "companyOptional": "公司（选填）",
+      "emailOptional": "邮箱（选填）",
+      "phoneOptional": "电话（选填）",
+      "cancel": "取消",
+      "status": "状态",
+      "statusValues": {
+        "active": "进行中",
+        "pending": "待处理",
+        "closed": "已成交",
+        "terminated": "已终止"
+      },
+      "notesPlaceholder": "关于这笔交易，任何需要记住的事…",
+      "postCloseReview": "成交后复盘",
+      "weeklyUpdateOn": "每周卖方进度更新已开启 —— 点击关闭",
+      "weeklyUpdateOff": "每周卖方进度更新已关闭 —— 点击开启",
+      "dates": {
+        "mutualAcceptance": "双方签署日",
+        "inspectionDeadline": "验房截止日",
+        "appraisalDeadline": "评估截止日",
+        "loanContingency": "贷款条件期限",
+        "closingDate": "过户日"
+      },
+      "saveFailed": "保存失败。",
+      "networkError": "网络错误",
+      "jumpTo": "跳转到「{{stage}}」—— 已完成 {{completed}}/{{total}}",
+      "jumpToOverdue": "跳转到「{{stage}}」—— 已完成 {{completed}}/{{total}}，{{overdue}} 项逾期"
     }
   }
 }

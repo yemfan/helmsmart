@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { DealReviewPanel } from "@/components/dashboard/DealReviewPanel";
@@ -24,23 +26,8 @@ type Bundle = {
   contactName: string | null;
 };
 
-const STAGE_LABELS: Record<TransactionStage, string> = {
-  contract: "Contract",
-  inspection: "Inspection",
-  appraisal: "Appraisal",
-  loan: "Loan",
-  closing: "Closing",
-};
 const STAGE_ORDER: TransactionStage[] = ["contract", "inspection", "appraisal", "loan", "closing"];
 
-const COUNTERPARTY_LABELS: Record<CounterpartyRole, string> = {
-  title: "Title / escrow",
-  lender: "Lender",
-  inspector: "Inspector",
-  insurance: "Insurance",
-  co_agent: "Co-agent / listing agent",
-  other: "Other",
-};
 const COUNTERPARTY_ROLES: CounterpartyRole[] = [
   "title",
   "lender",
@@ -59,6 +46,7 @@ function daysUntil(dateIso: string | null): number | null {
 }
 
 export function TransactionDetailClient({ initial }: { initial: Bundle }) {
+  const { t } = useTranslation("dashboard");
   const [txn, setTxn] = useState<TransactionRow>(initial.transaction);
   const [tasks, setTasks] = useState<TransactionTaskRow[]>(initial.tasks);
   const [cps, setCps] = useState<TransactionCounterpartyRow[]>(initial.counterparties);
@@ -188,12 +176,12 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
         error?: string;
       };
       if (!res.ok || !body.ok || !body.transaction) {
-        setError(body.error ?? "Save failed.");
+        setError(body.error ?? t("detail.transaction.saveFailed"));
         return;
       }
       setTxn(body.transaction);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Network error");
+      setError(e instanceof Error ? e.message : t("detail.transaction.networkError"));
     } finally {
       setSavingField(null);
     }
@@ -250,7 +238,7 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
             </div>
           </div>
           <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center shadow-sm">
-            <div className="text-[11px] uppercase tracking-wide text-slate-500">Tasks</div>
+            <div className="text-[11px] uppercase tracking-wide text-slate-500">{t("detail.transaction.tasks")}</div>
             <div className="mt-1 text-2xl font-semibold text-slate-900">
               {totals.completed}/{totals.total}
             </div>
@@ -458,6 +446,8 @@ function StageBlock({
   onAdd: (t: TransactionTaskRow) => void;
   onDelete: (id: string) => void;
 }) {
+  // Named `tr` — the task rows in this block bind `t` to a TransactionTaskRow.
+  const { t: tr } = useTranslation("dashboard");
   const [adding, setAdding] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDue, setNewDue] = useState("");
@@ -503,7 +493,7 @@ function StageBlock({
           <ChevronGlyph open={open} />
           <span className="min-w-0">
             <span className="block text-sm font-semibold text-slate-900">
-              {STAGE_LABELS[stage]}
+              {tr(`detail.transaction.stage.${stage}`)}
               {allDone ? (
                 <span className="ml-2 align-middle text-[10px] font-medium text-emerald-700">
                   ✓ done
@@ -525,7 +515,7 @@ function StageBlock({
               onClick={() => setAdding((v) => !v)}
               className="text-xs font-medium text-slate-600 hover:text-slate-900"
             >
-              {adding ? "Cancel" : "+ Add task"}
+              {adding ? tr("detail.transaction.cancel") : "+ Add task"}
             </button>
           </div>
 
@@ -534,7 +524,7 @@ function StageBlock({
               <input
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="Task title"
+                placeholder={tr("detail.transaction.taskTitle")}
                 className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
                 autoFocus
               />
@@ -559,7 +549,7 @@ function StageBlock({
 
           <ul className="divide-y divide-slate-100">
             {tasks.length === 0 ? (
-              <li className="px-5 py-4 text-xs text-slate-500">No tasks in this stage yet.</li>
+              <li className="px-5 py-4 text-xs text-slate-500">{tr("detail.transaction.noTasksInStage")}</li>
             ) : (
               tasks.map((t) => (
                 <li key={t.id} className="flex items-start gap-3 px-5 py-2.5">
@@ -592,9 +582,9 @@ function StageBlock({
                   {t.source === "custom" ? (
                     <button
                       type="button"
-                      title="Delete custom task"
+                      title={tr("detail.transaction.deleteCustomTask")}
                       onClick={async () => {
-                        if (!confirm("Delete this custom task?")) return;
+                        if (!confirm(tr("detail.transaction.confirmDeleteTask"))) return;
                         const res = await fetch(
                           `/api/dashboard/transactions/${transactionId}/tasks/${t.id}`,
                           { method: "DELETE" },
@@ -662,6 +652,7 @@ function StagePipeline({
   >;
   onStageClick: (stage: TransactionStage) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="sticky top-0 z-10 -mx-1 rounded-2xl border border-slate-200 bg-white/90 px-2 py-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/75">
       <div className="flex items-stretch gap-1 overflow-x-auto">
@@ -680,7 +671,15 @@ function StagePipeline({
               key={stage}
               type="button"
               onClick={() => onStageClick(stage)}
-              title={`Jump to ${STAGE_LABELS[stage]} — ${m.completed}/${m.total} complete${m.overdue > 0 ? `, ${m.overdue} overdue` : ""}`}
+              title={t(
+                m.overdue > 0 ? "detail.transaction.jumpToOverdue" : "detail.transaction.jumpTo",
+                {
+                  stage: t(`detail.transaction.stage.${stage}`),
+                  completed: m.completed,
+                  total: m.total,
+                  overdue: m.overdue,
+                },
+              )}
               className={`group flex min-w-0 flex-1 items-center justify-between gap-2 rounded-xl border px-3 py-1.5 text-left transition ${tone}`}
             >
               <span className="flex min-w-0 items-center gap-2">
@@ -688,7 +687,7 @@ function StagePipeline({
                   {idx + 1}
                 </span>
                 <span className="min-w-0 truncate text-xs font-semibold">
-                  {STAGE_LABELS[stage]}
+                  {t(`detail.transaction.stage.${stage}`)}
                 </span>
               </span>
               <span className="shrink-0 text-[10px] font-medium tabular-nums opacity-80">
@@ -749,6 +748,7 @@ function CounterpartiesBlockBody({
   onAdd: (cp: TransactionCounterpartyRow) => void;
   onDelete: (id: string) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState<{
     role: CounterpartyRole;
@@ -779,13 +779,13 @@ function CounterpartiesBlockBody({
   return (
     <div>
       <header className="flex items-center justify-between">
-        <p className="text-xs text-slate-500">Title / lender / inspector / insurance.</p>
+        <p className="text-xs text-slate-500">{t("detail.transaction.peopleBlurb")}</p>
         <button
           type="button"
           onClick={() => setAdding((v) => !v)}
           className="text-xs font-medium text-slate-600 hover:text-slate-900"
         >
-          {adding ? "Cancel" : "+ Add"}
+          {adding ? t("detail.transaction.cancel") : "+ Add"}
         </button>
       </header>
 
@@ -798,30 +798,30 @@ function CounterpartiesBlockBody({
           >
             {COUNTERPARTY_ROLES.map((r) => (
               <option key={r} value={r}>
-                {COUNTERPARTY_LABELS[r]}
+                {t(`detail.transaction.counterparty.${r}`)}
               </option>
             ))}
           </select>
           <input
-            placeholder="Name"
+            placeholder={t("detail.transaction.name")}
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
           />
           <input
-            placeholder="Company (optional)"
+            placeholder={t("detail.transaction.companyOptional")}
             value={form.company}
             onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
             className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
           />
           <input
-            placeholder="Email (optional)"
+            placeholder={t("detail.transaction.emailOptional")}
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
             className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
           />
           <input
-            placeholder="Phone (optional)"
+            placeholder={t("detail.transaction.phoneOptional")}
             value={form.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
             className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
@@ -851,7 +851,7 @@ function CounterpartiesBlockBody({
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-[11px] uppercase tracking-wide text-slate-500">
-                    {COUNTERPARTY_LABELS[cp.role]}
+                    {t(`detail.transaction.counterparty.${cp.role}`)}
                   </div>
                   <div className="font-medium text-slate-900">{cp.name}</div>
                   {cp.company ? <div className="text-xs text-slate-600">{cp.company}</div> : null}
@@ -912,6 +912,7 @@ function SellerUpdateInlineToggle({
   transaction: TransactionRow;
   onChange: (enabled: boolean) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [saving, setSaving] = useState(false);
   const enabled = transaction.seller_update_enabled;
 
@@ -945,8 +946,8 @@ function SellerUpdateInlineToggle({
       disabled={saving}
       title={
         enabled
-          ? "Weekly seller update is ON — click to turn off"
-          : "Weekly seller update is OFF — click to turn on"
+          ? t("detail.transaction.weeklyUpdateOn")
+          : t("detail.transaction.weeklyUpdateOff")
       }
       className={`inline-flex items-center gap-2 rounded-lg border px-2.5 py-1 font-medium transition disabled:opacity-50 ${
         enabled
@@ -961,7 +962,7 @@ function SellerUpdateInlineToggle({
 }
 
 /**
- * Right-rail Dates / People / Notes tabs. The "Dates" pane carries the
+ * Right-rail Dates / People / Notes tabs. The t("detail.transaction.tabs.dates") pane carries the
  * Status select since both deal with deal-level metadata that the
  * coordinator changes together. Active tab is persisted per-tab via
  * localStorage so an agent who lives on People doesn't have to re-click.
@@ -981,6 +982,7 @@ function RightRailTabs({
   onCpAdd: (cp: TransactionCounterpartyRow) => void;
   onCpDelete: (id: string) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   type Tab = "dates" | "people" | "notes";
   const [tab, setTab] = useState<Tab>(() => {
     if (typeof window === "undefined") return "dates";
@@ -1001,9 +1003,9 @@ function RightRailTabs({
   }, []);
 
   const tabs: { key: Tab; label: string; count?: number }[] = [
-    { key: "dates", label: "Dates" },
-    { key: "people", label: "People", count: cps.length },
-    { key: "notes", label: "Notes" },
+    { key: "dates", label: t("detail.transaction.tabs.dates") },
+    { key: "people", label: t("detail.transaction.tabs.people"), count: cps.length },
+    { key: "notes", label: t("detail.transaction.tabs.notes") },
   ];
 
   return (
@@ -1037,32 +1039,32 @@ function RightRailTabs({
           <div>
             <div className="space-y-2 text-sm">
               <DateRow
-                label="Mutual acceptance"
+                label={t("detail.transaction.dates.mutualAcceptance")}
                 value={txn.mutual_acceptance_date}
                 onChange={(v) => patchTransaction({ mutual_acceptance_date: v }, "mutual")}
                 saving={savingField === "mutual"}
                 help="Setting this auto-fills contingency deadlines with CA defaults (17d inspection, 21d loan, 30d closing) unless already set."
               />
               <DateRow
-                label="Inspection deadline"
+                label={t("detail.transaction.dates.inspectionDeadline")}
                 value={txn.inspection_deadline}
                 onChange={(v) => patchTransaction({ inspection_deadline: v }, "inspection")}
                 saving={savingField === "inspection"}
               />
               <DateRow
-                label="Appraisal deadline"
+                label={t("detail.transaction.dates.appraisalDeadline")}
                 value={txn.appraisal_deadline}
                 onChange={(v) => patchTransaction({ appraisal_deadline: v }, "appraisal")}
                 saving={savingField === "appraisal"}
               />
               <DateRow
-                label="Loan contingency"
+                label={t("detail.transaction.dates.loanContingency")}
                 value={txn.loan_contingency_deadline}
                 onChange={(v) => patchTransaction({ loan_contingency_deadline: v }, "loan")}
                 saving={savingField === "loan"}
               />
               <DateRow
-                label="Closing date"
+                label={t("detail.transaction.dates.closingDate")}
                 value={txn.closing_date}
                 onChange={(v) => patchTransaction({ closing_date: v }, "closing")}
                 saving={savingField === "closing"}
@@ -1070,17 +1072,17 @@ function RightRailTabs({
             </div>
 
             <div className="mt-4 border-t border-slate-100 pt-3">
-              <label className="block text-[11px] font-medium text-slate-500">Status</label>
+              <label className="block text-[11px] font-medium text-slate-500">{t("detail.transaction.status")}</label>
               <select
                 value={txn.status}
                 onChange={(e) => patchTransaction({ status: e.target.value }, "status")}
                 disabled={savingField === "status"}
                 className="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
               >
-                <option value="active">Active</option>
-                <option value="pending">Pending</option>
-                <option value="closed">Closed</option>
-                <option value="terminated">Terminated</option>
+                <option value="active">{t("detail.transaction.statusValues.active")}</option>
+                <option value="pending">{t("detail.transaction.statusValues.pending")}</option>
+                <option value="closed">{t("detail.transaction.statusValues.closed")}</option>
+                <option value="terminated">{t("detail.transaction.statusValues.terminated")}</option>
               </select>
             </div>
           </div>
@@ -1107,7 +1109,7 @@ function RightRailTabs({
               }}
               rows={9}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-              placeholder="Anything you need to remember about this deal…"
+              placeholder={t("detail.transaction.notesPlaceholder")}
             />
             {savingField === "notes" ? (
               <div className="mt-1 text-[11px] text-slate-500">Saving…</div>
@@ -1128,6 +1130,7 @@ function RightRailTabs({
  * not a global preference.)
  */
 function PostCloseReviewExpander({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(true);
   return (
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
@@ -1139,7 +1142,7 @@ function PostCloseReviewExpander({ children }: { children: React.ReactNode }) {
       >
         <div className="flex items-center gap-2">
           <span aria-hidden className="text-base">🏁</span>
-          <h2 className="text-sm font-semibold text-slate-900">Post-close review</h2>
+          <h2 className="text-sm font-semibold text-slate-900">{t("detail.transaction.postCloseReview")}</h2>
         </div>
         <span
           aria-hidden
