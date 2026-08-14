@@ -210,7 +210,7 @@ function deadlineAlerts(transactions: TransactionItem[], tr: (k: string, o?: Rec
 // ── main ─────────────────────────────────────────────────────────────
 
 export default function BossAssistantClient({ greetingName }: { greetingName: string }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
   const [metrics, setMetrics] = useState<SummaryMetrics | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [hotLeads, setHotLeads] = useState<HotLead[]>([]);
@@ -462,7 +462,11 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   useEffect(() => {
     const h = new Date().getHours();
     setGreeting(h < 12 ? tr("boss.greeting.morning") : h < 17 ? tr("boss.greeting.afternoon") : tr("boss.greeting.evening"));
-  }, []);
+    // Re-runs on language change too: the greeting is state, so without
+    // i18n.language here it would keep whichever language it was computed in
+    // when the agent flips the toggle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tr, i18n.language]);
 
   // The most recent question the Boss is waiting on — the command bar answers
   // it directly (see submitCommand) and its placeholder reflects it.
@@ -582,7 +586,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
         <BossBubble bossName={bossName} avatar={bossAvatar}>
           <p className="text-sm text-gray-800">
             {greeting}{greetingName ? `, ${greetingName}` : ""}.{" "}
-            {briefing?.headline?.trim() || briefing?.summary?.split(/[.!?]\s/)[0] || "Here's where things stand — and what I'd like to do for you."}
+            {briefing?.headline?.trim() || briefing?.summary?.split(/[.!?]\s/)[0] || tr("boss.defaultHeadline")}
           </p>
           {briefing?.insights?.topOpportunity && (
             <p className="mt-1.5 text-xs font-medium text-[#8a6a0e]">→ {briefing.insights.topOpportunity}</p>
@@ -694,13 +698,13 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
             const av = teamAvatars[a.type];
             return (
               <Link key={a.type} href={a.href} className="flex min-w-0 items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-3 hover:bg-gray-50">
-                {av ? <AssistantAvatar id={av.id} url={av.url} size={32} /> : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-xs font-semibold text-blue-700">{(teamNames[a.type] || a.name).slice(0, 1)}</span>}
+                {av ? <AssistantAvatar id={av.id} url={av.url} size={32} /> : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-xs font-semibold text-blue-700">{(teamNames[a.type] || tr(`roster.${a.type}.name`, { defaultValue: a.name })).slice(0, 1)}</span>}
                 <div className="min-w-0">
                   <p className="flex items-center gap-1.5 truncate text-sm font-medium text-gray-900">
-                    {teamNames[a.type] || a.name}
+                    {teamNames[a.type] || tr(`roster.${a.type}.name`, { defaultValue: a.name })}
                     <span className={`h-1.5 w-1.5 rounded-full ${(teamStatus[a.type] ?? "active") === "active" ? "bg-emerald-500" : "bg-gray-300"}`} />
                   </p>
-                  <p className="truncate text-[11px] text-gray-500">{latest ? `${latest.summary} · ${fmtAgo(latest.created_at)}` : a.role}</p>
+                  <p className="truncate text-[11px] text-gray-500">{latest ? `${latest.summary} · ${fmtAgo(latest.created_at)}` : tr(`roster.${a.type}.role`, { defaultValue: a.role })}</p>
                 </div>
               </Link>
             );
@@ -1184,7 +1188,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
           disabled={uploading}
           className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50"
         >
-          <span aria-hidden className="text-sm leading-none">＋</span> Add a file
+          <span aria-hidden className="text-sm leading-none">＋</span> {tr("boss.addFile")}
         </button>
         {uploading && <span className="text-xs text-gray-400">Uploading…</span>}
         {(attach || preview) && (
@@ -1312,7 +1316,7 @@ function PerformanceSection() {
   return (
     <section>
       <button type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50" aria-expanded={open}>
-        📈 Business performance <span className="text-gray-400">{open ? "▾" : "▸"}</span>
+        📈 {tr("boss.businessPerformance")} <span className="text-gray-400">{open ? "▾" : "▸"}</span>
       </button>
       {open && (
         <div className="mt-3 space-y-5">

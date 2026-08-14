@@ -299,7 +299,10 @@
     "notNow": "Not now",
     "actionFailed": "Action failed.",
     "uploadFailed": "Upload failed",
-    "couldNotWorkOut": "Couldn't work that one out — try rephrasing it."
+    "couldNotWorkOut": "Couldn't work that one out — try rephrasing it.",
+    "addFile": "Add a file",
+    "businessPerformance": "Business performance",
+    "defaultHeadline": "Here's where things stand — and what I'd like to do for you."
   },
   "support": {
     "title": "Support Dashboard",
@@ -815,5 +818,36 @@
     "partner": "Partner",
     "admin": "Administrator",
     "support": "Support"
+  },
+  "roster": {
+    "boss_assistant": {
+      "name": "Captain",
+      "role": "Captain of your AI real estate team"
+    },
+    "receptionist": {
+      "name": "AI Receptionist",
+      "role": "Inbound communication"
+    },
+    "sales_assistant": {
+      "name": "AI Sales Specialist",
+      "role": "Outbound lead conversion"
+    },
+    "marketing_assistant": {
+      "name": "AI Marketing Specialist",
+      "role": "Demand generation"
+    },
+    "transaction_assistant": {
+      "name": "AI Transaction Coordinator",
+      "role": "Transaction coordination"
+    },
+    "accountant": {
+      "name": "AI Financial Analyst",
+      "role": "Money & books"
+    }
+  },
+  "upgrade": {
+    "starterPlan": "You're on the Starter plan",
+    "unlocks": "Upgrade for more leads, full CRM, AI automation, and engagement tracking.",
+    "cta": "Upgrade"
   }
 }

@@ -299,7 +299,10 @@
     "notNow": "暂不处理",
     "actionFailed": "操作失败。",
     "uploadFailed": "上传失败",
-    "couldNotWorkOut": "这条我没能理解 —— 换个说法再试试。"
+    "couldNotWorkOut": "这条我没能理解 —— 换个说法再试试。",
+    "addFile": "添加文件",
+    "businessPerformance": "业务表现",
+    "defaultHeadline": "这是目前的情况 —— 以及我建议为您做的事。"
   },
   "support": {
     "title": "客服工作台",
@@ -815,5 +818,36 @@
     "partner": "合伙人",
     "admin": "管理员",
     "support": "客服支持"
+  },
+  "roster": {
+    "boss_assistant": {
+      "name": "队长",
+      "role": "您的 AI 房产团队队长"
+    },
+    "receptionist": {
+      "name": "AI 前台接待",
+      "role": "接听来电与来信"
+    },
+    "sales_assistant": {
+      "name": "AI 销售专员",
+      "role": "主动跟进、促成成交"
+    },
+    "marketing_assistant": {
+      "name": "AI 营销专员",
+      "role": "获客与推广"
+    },
+    "transaction_assistant": {
+      "name": "AI 交易协调员",
+      "role": "交易流程协调"
+    },
+    "accountant": {
+      "name": "AI 财务分析师",
+      "role": "账目与收支"
+    }
+  },
+  "upgrade": {
+    "starterPlan": "您当前使用的是入门版",
+    "unlocks": "升级可获得更多客户线索、完整 CRM、AI 自动化以及互动追踪。",
+    "cta": "升级"
   }
 }

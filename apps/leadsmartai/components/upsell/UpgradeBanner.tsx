@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
@@ -25,12 +27,13 @@ export function UpgradeBanner({
   href = "/dashboard/billing",
   variant = "banner",
 }: Props) {
+  const { t } = useTranslation("dashboard");
   const isFree = !planType || planType === "free" || planType === "starter";
   if (!isFree) return null;
 
-  const defaultMessage = "You're on the Starter plan";
-  const defaultUnlocks = "Upgrade for more leads, full CRM, AI automation, and engagement tracking.";
-  const defaultCta = "Upgrade";
+  const defaultMessage = t("upgrade.starterPlan");
+  const defaultUnlocks = t("upgrade.unlocks");
+  const defaultCta = t("upgrade.cta");
 
   if (variant === "inline") {
     return (
