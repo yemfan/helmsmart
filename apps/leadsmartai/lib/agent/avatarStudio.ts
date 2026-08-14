@@ -37,6 +37,8 @@ const ELEVEN_TTS = "https://api.elevenlabs.io/v1/text-to-speech";
 export type AvatarState = {
   configured: boolean;
   hasIntroVideo: boolean;
+  /** An uploaded portrait photo — an alternative likeness source for Lifelike avatars. */
+  hasPortrait: boolean;
   voiceReady: boolean;
   script: string | null;
   videoUrl: string | null;
@@ -59,6 +61,7 @@ function falHeaders(): Record<string, string> {
 type AgentRow = {
   brand_name: string | null;
   dt_intro_video_path: string | null;
+  dt_portrait_path: string | null;
   dt_brand_profile: BrandProfile | null;
   dt_avatar_script: string | null;
   dt_avatar_video_url: string | null;
@@ -67,10 +70,23 @@ type AgentRow = {
 async function readAgent(agentId: string): Promise<AgentRow | null> {
   const { data } = await supabaseAdmin
     .from("agents")
-    .select("brand_name, dt_intro_video_path, dt_brand_profile, dt_avatar_script, dt_avatar_video_url")
+    .select(
+      "brand_name, dt_intro_video_path, dt_portrait_path, dt_brand_profile, dt_avatar_script, dt_avatar_video_url",
+    )
     .eq("id", agentId)
     .maybeSingle();
   return (data ?? null) as AgentRow | null;
+}
+
+/**
+ * A stored likeness path is only usable if it lives in this agent's own
+ * digital-twin folder — the same ownership check the upload signer enforces,
+ * re-applied at read time so a tampered row can't point us at someone else.
+ */
+function ownPath(path: string | null | undefined, agentId: string): string | null {
+  const p = path?.trim();
+  if (!p || !p.startsWith("digital-twin/") || !p.includes(`/${agentId}`)) return null;
+  return p;
 }
 
 async function setAgent(agentId: string, patch: Record<string, unknown>): Promise<void> {
@@ -92,6 +108,7 @@ export async function getAvatarState(agentId: string): Promise<AvatarState> {
   return {
     configured: avatarConfigured(),
     hasIntroVideo: Boolean(agent?.dt_intro_video_path?.trim()),
+    hasPortrait: Boolean(agent?.dt_portrait_path?.trim()),
     voiceReady:
       voice.consentConfirmed && voice.voiceCloneStatus === "ready" && Boolean(voice.voiceCloneRemoteId?.trim()),
     script: agent?.dt_avatar_script ?? null,
@@ -282,9 +299,18 @@ export async function renderAvatarVideo(
   await clonedVoiceId(agentId); // consent/ready guard
 
   const agent = await readAgent(agentId);
-  const videoPath = agent?.dt_intro_video_path?.trim();
-  if (!videoPath || !videoPath.startsWith("digital-twin/") || !videoPath.includes(`/${agentId}`)) {
-    throw new Error("Record your intro video first (Digital Twin).");
+  const photoAvatar = Boolean(options?.photoAvatar);
+  const videoPath = ownPath(agent?.dt_intro_video_path, agentId);
+  const portraitPath = ownPath(agent?.dt_portrait_path, agentId);
+
+  // A still portrait only drives the Fabric ("lifelike") path — lipsync needs
+  // real footage to sync onto, so that mode still requires the intro video.
+  if (!videoPath && !(photoAvatar && portraitPath)) {
+    throw new Error(
+      photoAvatar
+        ? "Add a photo or record your intro video first (Digital Twin)."
+        : "Record your intro video first (Digital Twin). A photo alone can only make a Lifelike avatar.",
+    );
   }
 
   // Reuse the approved preview audio when given (and it's this agent's), else synthesize now.
@@ -293,19 +319,26 @@ export async function renderAvatarVideo(
     audio = (await previewAvatarVoice(agentId, text)).audioPath;
   }
 
+  // Prefer an uploaded portrait as the likeness source; it skips the
+  // extract-frame hop and is usually a better-lit shot than a video still.
+  const likenessPath = photoAvatar && portraitPath ? portraitPath : videoPath!;
+  const usingPortrait = likenessPath === portraitPath;
+
   const [{ data: v, error: vErr }, { data: a, error: aErr }] = await Promise.all([
-    supabaseAdmin.storage.from(PRIVATE_BUCKET).createSignedUrl(videoPath, 900),
+    supabaseAdmin.storage.from(PRIVATE_BUCKET).createSignedUrl(likenessPath, 900),
     supabaseAdmin.storage.from(PRIVATE_BUCKET).createSignedUrl(audio, 900),
   ]);
-  if (vErr || !v?.signedUrl) throw new Error("Could not read your intro video.");
+  if (vErr || !v?.signedUrl) {
+    throw new Error(usingPortrait ? "Could not read your photo." : "Could not read your intro video.");
+  }
   if (aErr || !a?.signedUrl) throw new Error("Could not read the voice audio.");
 
   let resultUrl: string;
-  const photoAvatar = Boolean(options?.photoAvatar);
   if (photoAvatar) {
-    // Lifelike avatar: a portrait frame from the intro video + the voice →
-    // a talking avatar with head motion (Fabric), instead of lipsync-on-clip.
-    const portrait = await extractPortrait(v.signedUrl);
+    // Lifelike avatar: a portrait (uploaded, or a frame pulled from the intro
+    // video) + the voice → a talking avatar with head motion (Fabric), instead
+    // of lipsync-on-clip.
+    const portrait = usingPortrait ? v.signedUrl : await extractPortrait(v.signedUrl);
     resultUrl = await fabricAvatar(portrait, a.signedUrl);
   } else {
     const H = falHeaders();

@@ -18,7 +18,9 @@ const VIDEO_PREFIX_RE = /^digital-twin\//;
 async function readTwin(agentId: string) {
   const { data } = await supabaseAdmin
     .from("agents")
-    .select("dt_intro_video_path, dt_consent, dt_consent_at, dt_brand_profile, dt_status, dt_error, dt_updated_at")
+    .select(
+      "dt_intro_video_path, dt_portrait_path, dt_consent, dt_consent_at, dt_brand_profile, dt_status, dt_error, dt_updated_at",
+    )
     .eq("id", agentId)
     .maybeSingle();
   return (data ?? null) as Record<string, unknown> | null;
@@ -35,6 +37,7 @@ export async function GET() {
       status: (t?.dt_status as string) ?? "idle",
       consent: Boolean(t?.dt_consent),
       hasVideo: Boolean(t?.dt_intro_video_path),
+      hasPortrait: Boolean(t?.dt_portrait_path),
       profile: (t?.dt_brand_profile as BrandProfile | null) ?? null,
       error: (t?.dt_error as string | null) ?? null,
     });
@@ -89,15 +92,38 @@ export async function POST(req: Request) {
   }
 }
 
-/** PATCH — save an edited brand profile, or update consent. */
+/** PATCH — save an edited brand profile, a portrait photo, or update consent. */
 export async function PATCH(req: Request) {
   try {
     const { agentId } = await getCurrentAgentContext();
-    const body = (await req.json().catch(() => ({}))) as { profile?: unknown; consent?: unknown };
+    const body = (await req.json().catch(() => ({}))) as {
+      profile?: unknown;
+      consent?: unknown;
+      portraitPath?: unknown;
+    };
 
     if (typeof body.consent === "boolean") {
       await setDigitalTwinConsent(String(agentId), body.consent);
     }
+
+    // A portrait photo is an alternative likeness source for Lifelike avatars —
+    // so it sits behind exactly the same consent gate as the intro video, and a
+    // photo upload can never be a way around it.
+    if (typeof body.portraitPath === "string" && body.portraitPath) {
+      const portraitPath = body.portraitPath;
+      if (!VIDEO_PREFIX_RE.test(portraitPath) || !portraitPath.includes(`/${agentId}`)) {
+        return NextResponse.json({ ok: false, error: "That photo isn't yours to use." }, { status: 400 });
+      }
+      const twin = await readTwin(String(agentId));
+      if (!twin?.dt_consent && body.consent !== true) {
+        return NextResponse.json(
+          { ok: false, error: "You must consent to AI use of your likeness and voice first." },
+          { status: 400 },
+        );
+      }
+      await supabaseAdmin.from("agents").update({ dt_portrait_path: portraitPath }).eq("id", agentId);
+    }
+
     if (body.profile && typeof body.profile === "object") {
       const p = body.profile as Record<string, unknown>;
       const profile: BrandProfile = {

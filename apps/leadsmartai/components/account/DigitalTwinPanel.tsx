@@ -30,6 +30,7 @@ type VoiceCloneResp = Partial<VoiceCloneState> & { ok?: boolean; error?: string 
 type AvatarState = {
   configured: boolean;
   hasIntroVideo: boolean;
+  hasPortrait: boolean;
   voiceReady: boolean;
   script: string | null;
   videoUrl: string | null;
@@ -64,6 +65,9 @@ export default function DigitalTwinPanel() {
   const [consent, setConsent] = useState(false);
   const [hasVideo, setHasVideo] = useState(false);
   const [videoPath, setVideoPath] = useState<string | null>(null);
+  const [hasPortrait, setHasPortrait] = useState(false);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const photoRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState<Profile>(EMPTY);
   const [uploading, setUploading] = useState(false);
   const [building, setBuilding] = useState(false);
@@ -131,6 +135,7 @@ export default function DigitalTwinPanel() {
         setAv({
           configured: Boolean(b.configured),
           hasIntroVideo: Boolean(b.hasIntroVideo),
+          hasPortrait: Boolean(b.hasPortrait),
           voiceReady: Boolean(b.voiceReady),
           script: b.script ?? null,
           videoUrl: b.videoUrl ?? null,
@@ -230,6 +235,7 @@ export default function DigitalTwinPanel() {
           status?: string;
           consent?: boolean;
           hasVideo?: boolean;
+          hasPortrait?: boolean;
           profile?: Profile | null;
         };
         if (!b.ok) return;
@@ -237,6 +243,7 @@ export default function DigitalTwinPanel() {
         setStatus(b.status ?? "idle");
         setConsent(Boolean(b.consent));
         setHasVideo(Boolean(b.hasVideo));
+        setHasPortrait(Boolean(b.hasPortrait));
         if (b.profile) setProfile({ ...EMPTY, ...b.profile });
       } catch {
         /* best-effort */
@@ -263,6 +270,41 @@ export default function DigitalTwinPanel() {
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
       setUploading(false);
+    }
+  }
+
+  /**
+   * A photo is an alternative likeness source for the Lifelike avatar, so the
+   * camera-shy aren't locked out of it. It goes up under the same consent gate
+   * as the intro video — the server re-checks, this is just the friendly stop.
+   */
+  async function onPickPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || photoUploading) return;
+    if (!file.type.startsWith("image/")) return setError("Please choose an image file.");
+    if (!consent) return setError("Please check the consent box first.");
+    setError(null);
+    setPhotoUploading(true);
+    try {
+      const path = await uploadViaStorage(file, "agent_portrait");
+      const res = await fetch("/api/dashboard/digital-twin", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ portraitPath: path, consent: true }),
+      });
+      const b = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !b.ok) {
+        setError(b.error ?? "Couldn't save your photo.");
+        return;
+      }
+      setHasPortrait(true);
+      setAv((prev) => (prev ? { ...prev, hasPortrait: true } : prev));
+      setNote("Photo saved — pick “Lifelike avatar” below to have it speak.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setPhotoUploading(false);
     }
   }
 
@@ -336,7 +378,7 @@ export default function DigitalTwinPanel() {
       <label className="mt-4 flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
         <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5" />
         <span className="text-[12px] text-slate-700">
-          This video is of <strong>me</strong>, and I consent to CloseBoss using my likeness and voice to generate
+          This video and photo are of <strong>me</strong>, and I consent to CloseBoss using my likeness and voice to generate
           marketing on my behalf. I can revoke this anytime.
         </span>
       </label>
@@ -353,6 +395,16 @@ export default function DigitalTwinPanel() {
           {uploading ? "Uploading…" : hasVideo ? "Replace intro video" : "Upload intro video"}
         </button>
         <input ref={fileRef} type="file" accept="video/*" onChange={onPickVideo} className="hidden" />
+        <button
+          type="button"
+          onClick={() => photoRef.current?.click()}
+          disabled={photoUploading || !consent}
+          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+          title={consent ? "Use a photo instead of filming yourself" : "Check the consent box first"}
+        >
+          {photoUploading ? "Uploading…" : hasPortrait ? "Replace photo" : "Use a photo instead"}
+        </button>
+        <input ref={photoRef} type="file" accept="image/*" onChange={onPickPhoto} className="hidden" />
         <button
           type="button"
           onClick={() => void build()}
@@ -528,9 +580,15 @@ export default function DigitalTwinPanel() {
           </span>
         </div>
         <p className="text-[12px] text-slate-500">
-          Turn a script into a talking-head video of <strong>you</strong> — your face (intro video) speaking in your
-          cloned voice. Drafting + the voice preview are free; the video render is a separate step so you hear it first.
+          Turn a script into a talking-head video of <strong>you</strong> — your face speaking in your cloned voice.
+          Drafting + the voice preview are free; the video render is a separate step so you hear it first.
         </p>
+        {av?.hasPortrait ? (
+          <p className="text-[12px] text-slate-500">
+            Your uploaded photo is the face for <strong>Lifelike avatar</strong> renders. Lip-sync renders still use
+            your intro video, since they sync onto real footage.
+          </p>
+        ) : null}
 
         {av && !av.configured ? (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
