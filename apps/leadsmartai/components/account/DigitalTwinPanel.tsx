@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
+import { AVATAR_PRESET_VOICES, CLONE_VOICE_ID } from "@/lib/agent/avatarVoices";
 
 /**
  * Digital Twin (Phase A) — the agent uploads a short intro video; we transcribe
@@ -96,6 +97,9 @@ export default function DigitalTwinPanel() {
   const [avPremium, setAvPremium] = useState(false);
   const [avSharpen, setAvSharpen] = useState(false);
   const [avPhotoAvatar, setAvPhotoAvatar] = useState(false);
+  // Which voice speaks the script. Defaults to the agent's clone; a stock
+  // preset lets them make content without cloning, or in a different voice.
+  const [avVoice, setAvVoice] = useState<string>(CLONE_VOICE_ID);
   const [vcClean, setVcClean] = useState(false);
 
   async function publishAvatar() {
@@ -132,6 +136,11 @@ export default function DigitalTwinPanel() {
       const res = await fetch("/api/dashboard/avatar");
       const b = (await res.json().catch(() => ({}))) as AvatarResp;
       if (b.ok) {
+        // No clone yet? Start on a stock voice rather than a selection that
+        // can only fail — they can still switch to their clone once it's ready.
+        if (!b.voiceReady) {
+          setAvVoice((v) => (v === CLONE_VOICE_ID ? (AVATAR_PRESET_VOICES[0]?.id ?? CLONE_VOICE_ID) : v));
+        }
         setAv({
           configured: Boolean(b.configured),
           hasIntroVideo: Boolean(b.hasIntroVideo),
@@ -163,10 +172,11 @@ export default function DigitalTwinPanel() {
                   action,
                   text: avScript,
                   audioPath: avAudioPath,
+                  voice: avVoice,
                   sharpen: avPremium && avSharpen,
                   photoAvatar: avPremium && avPhotoAvatar,
                 }
-              : { action, text: avScript, audioPath: avAudioPath },
+              : { action, text: avScript, audioPath: avAudioPath, voice: avVoice },
         ),
       });
       const b = (await res.json().catch(() => ({}))) as AvatarResp;
@@ -580,8 +590,9 @@ export default function DigitalTwinPanel() {
           </span>
         </div>
         <p className="text-[12px] text-slate-500">
-          Turn a script into a talking-head video of <strong>you</strong> — your face speaking in your cloned voice.
-          Drafting + the voice preview are free; the video render is a separate step so you hear it first.
+          Turn a script into a talking-head video of <strong>you</strong> — your face, speaking in your cloned voice
+          or any stock voice you pick. Drafting + the voice preview are free; the video render is a separate step so
+          you hear it first.
         </p>
         {av?.hasPortrait ? (
           <p className="text-[12px] text-slate-500">
@@ -594,9 +605,11 @@ export default function DigitalTwinPanel() {
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
             Not enabled yet (needs <code>FAL_KEY</code> + <code>ELEVENLABS_API_KEY</code>).
           </p>
-        ) : av && !av.voiceReady ? (
+        ) : av && !av.hasIntroVideo && !av.hasPortrait ? (
+          /* The face is the hard requirement, not the voice — a stock voice can
+             speak the script, but nothing can stand in for the agent's likeness. */
           <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] text-slate-600">
-            Clone your voice above first — the avatar speaks in your cloned voice.
+            Upload your intro video or a photo above first — the avatar needs your face.
           </p>
         ) : av ? (
           <>
@@ -634,6 +647,29 @@ export default function DigitalTwinPanel() {
                 placeholder="What you'll say to camera…"
                 className="mt-1 w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
               />
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-medium text-slate-600">Voice</span>
+              <select
+                value={avVoice}
+                onChange={(e) => {
+                  setAvVoice(e.target.value);
+                  // Switching voice invalidates a prior preview for the same
+                  // reason editing the script does — it's no longer what you heard.
+                  setAvAudioUrl(null);
+                  setAvAudioPath(null);
+                }}
+                disabled={avBusy !== null}
+                className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm disabled:opacity-50"
+              >
+                <option value={CLONE_VOICE_ID} disabled={!av.voiceReady}>
+                  {av.voiceReady ? "My cloned voice" : "My cloned voice — clone it above first"}
+                </option>
+                {AVATAR_PRESET_VOICES.map((v) => (
+                  <option key={v.id} value={v.id}>{`${v.label} — ${v.hint}`}</option>
+                ))}
+              </select>
             </label>
 
             <div className="flex flex-wrap items-center gap-2">
