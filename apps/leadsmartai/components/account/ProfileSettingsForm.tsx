@@ -87,15 +87,15 @@ export default function ProfileSettingsForm() {
     try {
       const supabase = supabaseBrowser();
       const { data: refreshed } = await supabase.auth.refreshSession();
-      if (!refreshed.session) { setError("Sign in again to upload."); return; }
+      if (!refreshed.session) { setError(t("profile.signInAgain")); return; }
       const result = await uploadProfilePhotoWithSessionClient(supabase, file);
       if (result.ok === false) { setError(result.error); return; }
       setMe((m) => ({ ...m, avatar_url: result.publicUrl }));
-      setSuccess("Photo updated."); router.refresh();
-    } catch (err) { setError(err instanceof Error ? err.message : "Upload failed"); } finally { setUploading(false); }
+      setSuccess(t("profile.photoUpdated")); router.refresh();
+    } catch (err) { setError(err instanceof Error ? err.message : t("profile.uploadFailed")); } finally { setUploading(false); }
   }
 
-  if (loading) return <div className="rounded-lg border border-gray-200 bg-white p-6 text-sm text-gray-500">Loading...</div>;
+  if (loading) return <div className="rounded-lg border border-gray-200 bg-white p-6 text-sm text-gray-500">{t("profile.loading")}</div>;
 
   const avatarSrc = me?.avatar_url?.trim() || null;
   const initial = (me?.email?.trim()?.[0] || "?").toUpperCase();
@@ -106,14 +106,14 @@ export default function ProfileSettingsForm() {
       <div className="flex items-center gap-4 p-5">
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-gray-200 bg-gray-100">
           {avatarSrc ? (
-            <img src={avatarSrc} alt="Profile" className="h-full w-full object-cover" />
+            <img src={avatarSrc} alt={t("profile.profileAlt")} className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-lg font-bold text-blue-800">{initial}</div>
           )}
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-gray-900 truncate">{me?.full_name || me?.email || t("profile.agent")}</p>
-          <p className="text-xs text-gray-500">{formatUserRoleLabel(me?.role)}</p>
+          <p className="text-xs text-gray-500">{t(`roles.${(me?.role ?? "user").toLowerCase()}`, { defaultValue: formatUserRoleLabel(me?.role) })}</p>
         </div>
         <label className="shrink-0 cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">
           {uploading ? t("profile.uploading") : t("profile.changePhoto")}
