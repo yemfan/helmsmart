@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { formatUserRoleLabel } from "@leadsmart/shared";
@@ -17,6 +19,7 @@ type Me = {
 };
 
 export default function ProfileSettingsForm() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -43,14 +46,14 @@ export default function ProfileSettingsForm() {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       const json = (await res.json().catch(() => ({}))) as Me & { error?: string };
-      if (!res.ok) { setError(json.error ?? "Could not load profile"); return; }
+      if (!res.ok) { setError(json.error ?? t("profile.loadFailed")); return; }
       setMe(json);
       const fn = (json.full_name ?? "").trim();
       const ph = formatUsPhoneInput((json.phone ?? "").trim());
       const em = (json.email ?? "").trim();
       setFullName(fn); setPhone(ph); setEmail(em);
       setSavedFullName(fn); setSavedPhone(ph); setSavedEmail(em);
-    } catch { setError("Could not load profile"); } finally { setLoading(false); }
+    } catch { setError(t("profile.loadFailed")); } finally { setLoading(false); }
   }, []);
 
   useEffect(() => { void load(); }, [load]);
@@ -59,9 +62,9 @@ export default function ProfileSettingsForm() {
     e.preventDefault();
     setSaving(true); setError(null); setSuccess(null);
     const phoneTrim = phone.trim();
-    if (phoneTrim && !isValidUsPhone(phone)) { setError("Phone must be a valid US number (10 digits)."); setSaving(false); return; }
+    if (phoneTrim && !isValidUsPhone(phone)) { setError(t("profile.phoneInvalid")); setSaving(false); return; }
     const phonePayload = phoneTrim ? formatUsPhoneStored(phone) ?? "" : "";
-    if (!email.trim()) { setError("Email is required."); setSaving(false); return; }
+    if (!email.trim()) { setError(t("profile.emailRequired")); setSaving(false); return; }
     try {
       const { data: sessionData } = await supabaseBrowser().auth.getSession();
       const token = sessionData.session?.access_token;
@@ -71,10 +74,10 @@ export default function ProfileSettingsForm() {
         body: JSON.stringify({ full_name: fullName, phone: phonePayload, email: email.trim() }),
       });
       const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
-      if (!res.ok || !json.ok) { setError(json.error ?? "Save failed"); return; }
+      if (!res.ok || !json.ok) { setError(json.error ?? t("profile.saveFailed")); return; }
       await supabaseBrowser().auth.refreshSession();
-      setSuccess("Saved."); await load(); router.refresh();
-    } catch { setError("Save failed"); } finally { setSaving(false); }
+      setSuccess(t("profile.savedShort")); await load(); router.refresh();
+    } catch { setError(t("profile.saveFailed")); } finally { setSaving(false); }
   }
 
   async function onPickPhoto(e: React.ChangeEvent<HTMLInputElement>) {
@@ -109,11 +112,11 @@ export default function ProfileSettingsForm() {
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-gray-900 truncate">{me?.full_name || me?.email || "Agent"}</p>
+          <p className="text-sm font-semibold text-gray-900 truncate">{me?.full_name || me?.email || t("profile.agent")}</p>
           <p className="text-xs text-gray-500">{formatUserRoleLabel(me?.role)}</p>
         </div>
         <label className="shrink-0 cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">
-          {uploading ? "Uploading..." : "Change photo"}
+          {uploading ? t("profile.uploading") : t("profile.changePhoto")}
           <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={(ev) => void onPickPhoto(ev)} disabled={uploading} />
         </label>
       </div>
@@ -122,18 +125,18 @@ export default function ProfileSettingsForm() {
       <form onSubmit={saveProfile} className="p-5 space-y-3">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <label className="block text-[11px] font-medium text-gray-500 mb-1">Full name</label>
+            <label className="block text-[11px] font-medium text-gray-500 mb-1">{t("profile.fullName")}</label>
             <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-gray-500 mb-1">Phone</label>
+            <label className="block text-[11px] font-medium text-gray-500 mb-1">{t("profile.phone")}</label>
             <input type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(formatUsPhoneInput(e.target.value))} autoComplete="tel" placeholder="(555) 555-5555"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
         <div>
-          <label className="block text-[11px] font-medium text-gray-500 mb-1">Email</label>
+          <label className="block text-[11px] font-medium text-gray-500 mb-1">{t("profile.email")}</label>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email"
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
@@ -143,7 +146,7 @@ export default function ProfileSettingsForm() {
 
         <button type="submit" disabled={saving || !isDirty}
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-40">
-          {saving ? "Saving..." : "Save changes"}
+          {saving ? t("profile.saving") : t("profile.saveChanges")}
         </button>
       </form>
     </div>

@@ -158,24 +158,27 @@ export async function GET() {
 
     const completion = [
       {
+        key: "done",
         name: "Done",
         value: doneOnTime + doneLate,
         color: "#16a34a", // green-600
         breakdown: [
-          { name: "On time", value: doneOnTime, color: "#16a34a" }, // green-600
-          { name: "Late", value: doneLate, color: "#84cc16" }, // lime-500
+          { key: "onTime", name: "On time", value: doneOnTime, color: "#16a34a" }, // green-600
+          { key: "late", name: "Late", value: doneLate, color: "#84cc16" }, // lime-500
         ].filter((s) => s.value > 0),
       },
       {
+        key: "open",
         name: "Open",
         value: overdue + pending,
         color: "#3b82f6", // blue-500
         breakdown: [
-          { name: "Overdue", value: overdue, color: "#f97316" }, // orange-500
-          { name: "Pending", value: pending, color: "#94a3b8" }, // slate-400
+          { key: "overdue", name: "Overdue", value: overdue, color: "#f97316" }, // orange-500
+          { key: "pending", name: "Pending", value: pending, color: "#94a3b8" }, // slate-400
         ].filter((s) => s.value > 0),
       },
       {
+        key: "cancelled",
         name: "Cancelled",
         value: cancelled,
         color: "#e5e7eb", // gray-200

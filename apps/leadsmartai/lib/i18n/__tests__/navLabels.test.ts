@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import en from "@leadsmart/i18n/locale/en/dashboard_nav";
 import zh from "@leadsmart/i18n/locale/zh-Hans/dashboard_nav";
+import enDash from "@leadsmart/i18n/locale/en/dashboard";
+import zhDash from "@leadsmart/i18n/locale/zh-Hans/dashboard";
 import { translateNavSections } from "../navLabels";
 import type { NavSection } from "@repo/ui";
 
@@ -54,6 +56,43 @@ describe("translateNavSections", () => {
     const sections = [{ label: "Brand New Feature", href: "/x" }] as NavSection[];
     const out = translateNavSections(sections, (s) => (zh as Record<string, string>)[s] ?? s);
     expect(labelsOf(out)).toEqual(["Brand New Feature"]);
+  });
+});
+
+/** Flatten a nested namespace to dotted leaf paths, so nesting can't hide a gap. */
+function leafKeys(obj: Record<string, unknown>, prefix = ""): string[] {
+  return Object.entries(obj).flatMap(([k, v]) =>
+    v && typeof v === "object" && !Array.isArray(v)
+      ? leafKeys(v as Record<string, unknown>, `${prefix}${k}.`)
+      : [`${prefix}${k}`],
+  );
+}
+
+describe("dashboard namespace (page copy)", () => {
+  it("has a Chinese string for every English key, at every nesting level", () => {
+    const enKeys = leafKeys(enDash as Record<string, unknown>);
+    const zhKeys = new Set(leafKeys(zhDash as Record<string, unknown>));
+    expect(enKeys.filter((k) => !zhKeys.has(k))).toEqual([]);
+  });
+
+  it("has no Chinese keys the English file doesn't declare", () => {
+    const enKeys = new Set(leafKeys(enDash as Record<string, unknown>));
+    expect(leafKeys(zhDash as Record<string, unknown>).filter((k) => !enKeys.has(k))).toEqual([]);
+  });
+
+  it("leaves no Chinese value identical to its English source", () => {
+    // A copy-paste that never got translated reads as "translated" to the
+    // parity checks above but ships English to a Chinese-speaking agent.
+    // Brand names and pure punctuation are legitimately identical.
+    const ALLOWED = new Set(["topbar.askMax", "profile.backToDashboard"]);
+    const en = enDash as Record<string, unknown>;
+    const zh = zhDash as Record<string, unknown>;
+    const get = (o: Record<string, unknown>, path: string) =>
+      path.split(".").reduce<unknown>((acc, seg) => (acc as Record<string, unknown>)?.[seg], o);
+    const untranslated = leafKeys(en).filter(
+      (k) => !ALLOWED.has(k) && get(en, k) === get(zh, k),
+    );
+    expect(untranslated).toEqual([]);
   });
 });
 

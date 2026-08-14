@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Check, X, CalendarClock, Pencil, ExternalLink } from "lucide-react";
 
@@ -50,6 +51,8 @@ type TaskRow = {
 
 type LeadInfo = { id: string; name: string | null };
 type ChartItem = {
+  /** Stable slice id from the stats API; the label is translated from it. */
+  key?: string;
   name: string;
   value: number;
   color: string;
@@ -79,17 +82,18 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled: "bg-gray-100 text-gray-500",
 };
 
-function timeLabel(iso: string | null) {
+/** Module-level (no hook available), so the caller passes its `t` in. */
+function timeLabel(iso: string | null, tr: (k: string, o?: Record<string, unknown>) => string) {
   if (!iso) return "\u2014";
   const d = new Date(iso);
   const now = Date.now();
   const diff = d.getTime() - now;
   const days = Math.floor(diff / 86_400_000);
-  if (days < -1) return `${Math.abs(days)}d overdue`;
-  if (days === -1) return "Yesterday";
-  if (days === 0) return "Today";
-  if (days === 1) return "Tomorrow";
-  return `${days}d`;
+  if (days < -1) return tr("tasks.overdueDays", { count: Math.abs(days) });
+  if (days === -1) return tr("tasks.yesterday");
+  if (days === 0) return tr("tasks.today");
+  if (days === 1) return tr("tasks.tomorrow");
+  return tr("tasks.inDays", { count: days });
 }
 
 /**
@@ -102,6 +106,9 @@ function timeLabel(iso: string | null) {
  * "Cancelled" where there's nothing more to expand into.
  */
 function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
+  const { t: tr } = useTranslation("dashboard");
+  /** Translate by the API key; fall back to the English name it sent. */
+  const sliceLabel = (d: ChartItem) => (d.key ? tr(`tasks.chart.${d.key}`, { defaultValue: d.name }) : d.name);
   const [drillName, setDrillName] = useState<string | null>(null);
   const drillSlice = drillName ? data.find((d) => d.name === drillName) : null;
   const drillData = drillSlice?.breakdown ?? null;
@@ -131,7 +138,7 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
           {isDrilled ? (
             <span>
               {title} <span className="text-gray-400">·</span>{" "}
-              <span className="text-gray-700">{drillName}</span>
+              <span className="text-gray-700">{drillSlice ? sliceLabel(drillSlice) : drillName}</span>
             </span>
           ) : (
             title
@@ -143,7 +150,7 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
             onClick={() => setDrillName(null)}
             className="text-[11px] font-medium text-blue-600 hover:text-blue-700"
           >
-            ← Back
+            {tr("tasks.back")}
           </button>
         )}
       </div>
@@ -187,7 +194,7 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
                   className="h-2.5 w-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: d.color }}
                 />
-                <span className="text-gray-600">{d.name}</span>
+                <span className="text-gray-600">{sliceLabel(d)}</span>
                 <span className="font-semibold text-gray-900">{d.value}</span>
                 {total > 0 && (
                   <span className="text-gray-400">
@@ -202,7 +209,7 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
                 type="button"
                 onClick={() => onSliceClick(d)}
                 className="flex items-center gap-2 rounded px-1 -mx-1 hover:bg-gray-50"
-                title={`Click to see ${d.name} breakdown`}
+                title={sliceLabel(d)}
               >
                 {Row}
                 <span className="text-gray-300">›</span>
@@ -229,6 +236,8 @@ export default function TasksClient({
 }: {
   leads: LeadInfo[];
 }) {
+  // Named `tr` — the task rows below already bind `t` in their .map().
+  const { t: tr } = useTranslation("dashboard");
   const [tasks, setTasks] = useState<TaskRow[]>([]);
   const [tasksLoading, setTasksLoading] = useState(true);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -311,12 +320,12 @@ export default function TasksClient({
         }),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok || !body.ok) throw new Error(body.error ?? "Failed");
+      if (!res.ok || !body.ok) throw new Error(body.error ?? tr("tasks.failed"));
       setAddFields({ title: "", description: "", priority: "normal", due_at: "", contact_id: "" });
       setShowAddForm(false);
-      setActionMsg("Task added.");
+      setActionMsg(tr("tasks.taskAdded"));
       window.location.reload();
-    } catch (e) { setActionMsg(e instanceof Error ? e.message : "Error"); }
+    } catch (e) { setActionMsg(e instanceof Error ? e.message : tr("tasks.error")); }
     finally { setActionLoading(false); }
   }
 
@@ -358,7 +367,7 @@ export default function TasksClient({
           body: JSON.stringify(pbBody),
         });
         const body = await res.json().catch(() => ({}));
-        if (!res.ok || !body.ok) throw new Error(body.error ?? "Update failed");
+        if (!res.ok || !body.ok) throw new Error(body.error ?? tr("tasks.updateFailed"));
         setTasks((prev) =>
           prev.map((t) => {
             if (t.id !== id) return t;
@@ -377,7 +386,7 @@ export default function TasksClient({
           }),
         );
         setEditingId(null);
-        setActionMsg("Updated.");
+        setActionMsg(tr("tasks.updated"));
         loadStats();
         return;
       }
@@ -388,16 +397,16 @@ export default function TasksClient({
         body: JSON.stringify({ taskId: rawId, ...patch }),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok || !body.ok) throw new Error(body.error ?? "Update failed");
+      if (!res.ok || !body.ok) throw new Error(body.error ?? tr("tasks.updateFailed"));
       setTasks((prev) =>
         prev.map((t) =>
           t.id === id ? ({ ...t, ...patch, status: String(patch.status ?? t.status) } as TaskRow) : t,
         ),
       );
       setEditingId(null);
-      setActionMsg("Updated.");
+      setActionMsg(tr("tasks.updated"));
       loadStats();
-    } catch (e) { setActionMsg(e instanceof Error ? e.message : "Error"); }
+    } catch (e) { setActionMsg(e instanceof Error ? e.message : tr("tasks.error")); }
     finally { setActionLoading(false); }
   }
 
@@ -456,24 +465,24 @@ export default function TasksClient({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Tasks</h1>
-          <p className="text-sm text-gray-500">{tasks.filter((t) => t.status === "open").length} open tasks</p>
+          <h1 className="text-xl font-semibold text-gray-900">{tr("tasks.title")}</h1>
+          <p className="text-sm text-gray-500">{tr("tasks.openCount", { count: tasks.filter((t) => t.status === "open").length })}</p>
         </div>
       </div>
 
       {/* Stats */}
       {stats && (
         <div className="grid gap-3 md:grid-cols-2">
-          <MiniPie data={stats.completion} title="Task Completion (30 days)" />
+          <MiniPie data={stats.completion} title={tr("tasks.completion")} />
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h3 className="text-xs font-semibold text-gray-500 mb-2">Tasks Done by Day (30 days) &mdash; {stats.performed} total</h3>
+            <h3 className="text-xs font-semibold text-gray-500 mb-2">{tr("tasks.doneByDay", { count: stats.performed })}</h3>
             <div className="h-[120px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.performedByDay} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
                   <XAxis dataKey="label" tick={{ fontSize: 8 }} stroke="#9ca3af" interval={4} />
                   <YAxis tick={{ fontSize: 9 }} stroke="#9ca3af" allowDecimals={false} />
-                  <Tooltip formatter={((v: number) => [v, "Done"]) as never} />
+                  <Tooltip formatter={((v: number) => [v, tr("tasks.done")]) as never} />
                   <Bar dataKey="count" fill="#22c55e" radius={[2, 2, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -487,32 +496,32 @@ export default function TasksClient({
       <div className="flex flex-wrap gap-2">
         <button type="button" onClick={() => setShowAddForm((v) => !v)}
           className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800">
-          {showAddForm ? "Cancel" : "Add Task"}
+          {showAddForm ? tr("tasks.cancel") : tr("tasks.addTask")}
         </button>
       </div>
 
       {/* Add task form */}
       {showAddForm && (
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
-          <h3 className="text-sm font-semibold text-gray-900">New Task</h3>
-          <input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder="Task title *" className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+          <h3 className="text-sm font-semibold text-gray-900">{tr("tasks.newTask")}</h3>
+          <input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder={tr("tasks.titlePlaceholder")} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
           <div className="grid gap-3 sm:grid-cols-3">
             <select value={addFields.priority} onChange={(e) => setAddFields((f) => ({ ...f, priority: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
-              <option value="low">Low</option>
-              <option value="normal">Normal</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
+              <option value="low">{tr("tasks.priority.low")}</option>
+              <option value="normal">{tr("tasks.priority.normal")}</option>
+              <option value="high">{tr("tasks.priority.high")}</option>
+              <option value="urgent">{tr("tasks.priority.urgent")}</option>
             </select>
             <input type="datetime-local" value={addFields.due_at} onChange={(e) => setAddFields((f) => ({ ...f, due_at: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
             <select value={addFields.contact_id} onChange={(e) => setAddFields((f) => ({ ...f, contact_id: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
-              <option value="">No contact</option>
+              <option value="">{tr("tasks.noContact")}</option>
               {leads.map((l) => <option key={l.id} value={l.id}>{l.name ?? `Lead #${l.id}`}</option>)}
             </select>
           </div>
-          <textarea value={addFields.description} onChange={(e) => setAddFields((f) => ({ ...f, description: e.target.value }))} placeholder="Notes / description" rows={2} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+          <textarea value={addFields.description} onChange={(e) => setAddFields((f) => ({ ...f, description: e.target.value }))} placeholder={tr("tasks.notesPlaceholder")} rows={2} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
           <button type="button" onClick={() => void addTask()} disabled={actionLoading || !addFields.title.trim()}
             className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
-            {actionLoading ? "Saving..." : "Create Task"}
+            {actionLoading ? tr("tasks.saving") : tr("tasks.createTask")}
           </button>
         </div>
       )}
@@ -522,10 +531,10 @@ export default function TasksClient({
           much of each bucket exists. */}
       <div className="flex flex-wrap items-center gap-2 border-b border-gray-200">
         {([
-          { key: "open", label: "Open" },
-          { key: "done", label: "Done" },
-          { key: "cancelled", label: "Cancelled" },
-          { key: "all", label: "All" },
+          { key: "open", label: tr("tasks.status.open") },
+          { key: "done", label: tr("tasks.status.done") },
+          { key: "cancelled", label: tr("tasks.status.cancelled") },
+          { key: "all", label: tr("tasks.status.all") },
         ] as const).map((tab) => {
           const count =
             tab.key === "all"
@@ -562,11 +571,11 @@ export default function TasksClient({
           to "All". */}
       <div className="flex flex-wrap items-center gap-1.5">
         {([
-          { key: "all", label: "All sources", emoji: null },
-          { key: "manual", label: "Manual", emoji: "✋" },
-          { key: "briefing", label: "Briefing", emoji: "☀️" },
-          { key: "playbook", label: "Playbook", emoji: "📋" },
-          { key: "coaching", label: "Coaching", emoji: "🎯" },
+          { key: "all", label: tr("tasks.source.all"), emoji: null },
+          { key: "manual", label: tr("tasks.source.manual"), emoji: "✋" },
+          { key: "briefing", label: tr("tasks.source.briefing"), emoji: "☀️" },
+          { key: "playbook", label: tr("tasks.source.playbook"), emoji: "📋" },
+          { key: "coaching", label: tr("tasks.source.coaching"), emoji: "🎯" },
         ] as const).map((chip) => {
           const count = sourceCounts[chip.key];
           const active = sourceFilter === chip.key;
@@ -591,7 +600,7 @@ export default function TasksClient({
 
       {/* Search */}
       <div className="flex flex-wrap gap-2">
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search tasks..."
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={tr("tasks.searchPlaceholder")}
           className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-gray-300 px-3 py-2 text-sm" />
       </div>
 
@@ -621,7 +630,7 @@ export default function TasksClient({
                       <td className="px-4 py-2"><input type="datetime-local" value={editFields.due_at ? new Date(editFields.due_at).toISOString().slice(0, 16) : ""} onChange={(e) => setEditFields((f) => ({ ...f, due_at: e.target.value ? new Date(e.target.value).toISOString() : null }))} className="rounded border border-gray-300 px-2 py-1 text-sm" /></td>
                       <td className="px-4 py-2">
                         <select value={editFields.priority ?? "normal"} onChange={(e) => setEditFields((f) => ({ ...f, priority: e.target.value }))} className="rounded border border-gray-300 px-2 py-1 text-sm">
-                          <option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option>
+                          <option value="low">{tr("tasks.priority.low")}</option><option value="normal">{tr("tasks.priority.normal")}</option><option value="high">{tr("tasks.priority.high")}</option><option value="urgent">{tr("tasks.priority.urgent")}</option>
                         </select>
                       </td>
                       <td className="px-4 py-2">
@@ -672,7 +681,7 @@ export default function TasksClient({
                     <td className="px-4 py-2.5 text-xs whitespace-nowrap">
                       {t.due_at ? (
                         <span className={t.status === "open" && t.due_at && new Date(t.due_at).getTime() < Date.now() ? "text-red-600 font-medium" : "text-gray-600"}>
-                          {timeLabel(t.due_at)}
+                          {timeLabel(t.due_at, tr)}
                         </span>
                       ) : "\u2014"}
                     </td>
@@ -694,7 +703,7 @@ export default function TasksClient({
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-700 hover:text-blue-900 hover:underline"
-                          title="Open the linked page"
+                          title={tr("tasks.openLinked")}
                         >
                           {taskLinkUrl}
                         </a>
@@ -717,8 +726,8 @@ export default function TasksClient({
                             href={taskLinkUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            title="Open linked page"
-                            aria-label="Open linked page"
+                            title={tr("tasks.openLinked")}
+                            aria-label={tr("tasks.openLinked")}
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-blue-700 hover:bg-blue-50 hover:text-blue-900"
                           >
                             <ExternalLink className="h-4 w-4" strokeWidth={2.5} />
@@ -728,8 +737,8 @@ export default function TasksClient({
                           <TaskIconButton
                             onClick={() => void markDone(t.id)}
                             disabled={actionLoading}
-                            title="Mark done"
-                            ariaLabel="Mark done"
+                            title={tr("tasks.markDone")}
+                            ariaLabel={tr("tasks.markDone")}
                             tone="success"
                           >
                             <Check className="h-4 w-4" strokeWidth={2.5} />
@@ -740,8 +749,8 @@ export default function TasksClient({
                             <TaskIconButton
                               onClick={() => void markCancelled(t.id)}
                               disabled={actionLoading}
-                              title="Cancel task"
-                              ariaLabel="Cancel task"
+                              title={tr("tasks.cancelTask")}
+                              ariaLabel={tr("tasks.cancelTask")}
                               tone="danger"
                             >
                               <X className="h-4 w-4" strokeWidth={2.5} />
@@ -755,8 +764,8 @@ export default function TasksClient({
                         {!isPlaybookRow ? (
                           <TaskIconButton
                             onClick={() => startEdit(t)}
-                            title="Edit task"
-                            ariaLabel="Edit task"
+                            title={tr("tasks.editTask")}
+                            ariaLabel={tr("tasks.editTask")}
                           >
                             <Pencil className="h-4 w-4" strokeWidth={2} />
                           </TaskIconButton>
@@ -769,7 +778,7 @@ export default function TasksClient({
               {!filtered.length && (
                 <tr>
                   <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
-                    {search ? "No tasks match your search." : statusFilter === "open" ? "No open tasks." : "No tasks."}
+                    {search ? tr("tasks.noMatch") : statusFilter === "open" ? tr("tasks.noOpen") : tr("tasks.none")}
                   </td>
                 </tr>
               )}
