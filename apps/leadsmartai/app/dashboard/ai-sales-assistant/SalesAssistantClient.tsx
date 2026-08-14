@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Mail, MessageSquare, Phone, PhoneOutgoing, X } from "lucide-react";
@@ -53,6 +55,7 @@ type Lead = {
 const assistant = getAssistant("sales_assistant");
 
 export default function SalesAssistantClient() {
+  const { t } = useTranslation("dashboard");
   const [metrics, setMetrics] = useState<SummaryMetrics | null>(null);
   const [hotLeads, setHotLeads] = useState<Lead[]>([]);
   const [quietLeads, setQuietLeads] = useState<Lead[]>([]);
@@ -95,16 +98,16 @@ export default function SalesAssistantClient() {
         assistant={assistant}
         actions={[
           // Lead Queue hidden for now (route stays live at /dashboard/lead-queue).
-          { label: "Conversations", href: "/dashboard/inbox" },
-          { label: "Voice settings", onClick: () => setVoiceSettingsOpen(true) },
+          { label: t("assistants.sales.conversations"), href: "/dashboard/inbox" },
+          { label: t("assistants.common.voiceSettings"), onClick: () => setVoiceSettingsOpen(true) },
         ]}
       />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <AssistantKpiCard label="Hot leads identified" value={loading ? undefined : metrics?.hotLeads} tone="hot" />
-        <AssistantKpiCard label="Quiet leads to revive" value={loading ? undefined : metrics?.inactive7Days} hint="7+ days inactive" tone={metrics && metrics.inactive7Days > 0 ? "warn" : undefined} />
-        <AssistantKpiCard label="Total leads" value={loading ? undefined : metrics?.totalLeads} />
-        <AssistantKpiCard label="Messages sent" value={loading ? undefined : metrics?.messagesSent} hint="all time" />
+        <AssistantKpiCard label={t("assistants.sales.stats.hotLeads")} value={loading ? undefined : metrics?.hotLeads} tone="hot" />
+        <AssistantKpiCard label={t("assistants.sales.stats.quietLeads")} value={loading ? undefined : metrics?.inactive7Days} hint="7+ days inactive" tone={metrics && metrics.inactive7Days > 0 ? "warn" : undefined} />
+        <AssistantKpiCard label={t("assistants.sales.stats.totalLeads")} value={loading ? undefined : metrics?.totalLeads} />
+        <AssistantKpiCard label={t("assistants.sales.stats.messagesSent")} value={loading ? undefined : metrics?.messagesSent} hint="all time" />
       </div>
 
       <SalesOutreachComposer
@@ -124,10 +127,10 @@ export default function SalesAssistantClient() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <LeadList
-          title="Hot leads — call these first"
+          title={t("assistants.sales.hotHeading")}
           leads={hotLeads}
           loading={loading}
-          empty="No hot leads right now."
+          empty={t("assistants.sales.noHot")}
           viewAllHref="/dashboard/leads?filter=hot"
           onOpenLead={setProfileLeadId}
           onQuickAction={quickAction}
@@ -136,7 +139,7 @@ export default function SalesAssistantClient() {
           title="Reactivation queue — quiet for 7+ days"
           leads={quietLeads}
           loading={loading}
-          empty="No quiet leads — everyone has recent activity."
+          empty={t("assistants.sales.noQuiet")}
           viewAllHref="/dashboard/leads?filter=inactive"
           onOpenLead={setProfileLeadId}
           onQuickAction={quickAction}
@@ -176,25 +179,26 @@ export default function SalesAssistantClient() {
 }
 
 function SalesVoiceSettingsModal({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="Sales Assistant voice settings"
+      aria-label={t("assistants.sales.voicePanel")}
     >
       <div
         className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between gap-3">
-          <h2 className="text-base font-semibold text-gray-900">Sales Assistant voice settings</h2>
+          <h2 className="text-base font-semibold text-gray-900">{t("assistants.sales.voicePanel")}</h2>
           <button
             type="button"
             onClick={onClose}
             className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-            aria-label="Close"
+            aria-label={t("assistants.common.close")}
           >
             <X className="h-4 w-4" />
           </button>
@@ -237,11 +241,12 @@ function LeadList({
   /** Aim the outreach composer at this lead + channel (per-row quick buttons). */
   onQuickAction?: (id: string, channel: "call" | "sms" | "email") => void;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-gray-900">{title}</h2>
-        <Link href={viewAllHref} className="text-xs font-medium text-blue-600 hover:text-blue-800">View all</Link>
+        <Link href={viewAllHref} className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.common.viewAll")}</Link>
       </div>
       {leads.length === 0 ? (
         <p className="py-4 text-center text-sm text-gray-400">{loading ? "Loading…" : empty}</p>
@@ -258,7 +263,7 @@ function LeadList({
                 className="flex min-w-0 flex-1 items-center justify-between gap-2 text-left"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-gray-900">{l.name ?? "Unnamed lead"}</p>
+                  <p className="truncate text-sm font-medium text-gray-900">{l.name ?? t("assistants.sales.unnamedLead")}</p>
                   <p className="truncate text-xs text-gray-500">
                     {[l.ai_intent, l.source].filter(Boolean).join(" · ") || "—"}
                   </p>

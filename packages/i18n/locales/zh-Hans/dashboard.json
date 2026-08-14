@@ -438,5 +438,116 @@
     },
     "empty": "暂无交易记录。",
     "noMatch": "没有符合该筛选条件的交易。"
+  },
+  "assistants": {
+    "common": {
+      "manage": "管理",
+      "viewAll": "查看全部",
+      "close": "关闭",
+      "voiceSettings": "语音设置"
+    },
+    "receptionist": {
+      "stats": {
+        "answered": "今日已接来电",
+        "recovered": "已挽回的未接来电",
+        "callingBack": "正在回拨",
+        "needingYou": "需要您处理"
+      },
+      "allCalls": "全部通话",
+      "doubleClickHint": "双击某通电话查看完整详情",
+      "columns": {
+        "when": "时间",
+        "phone": "电话号码",
+        "name": "姓名",
+        "reason": "来电事由",
+        "action": "已处理动作",
+        "status": "状态"
+      },
+      "voicePanel": "前台接待语音设置",
+      "missedCallSettings": "未接来电设置",
+      "callDetails": "通话详情",
+      "status": {
+        "answered": "已接听",
+        "inProgress": "通话中",
+        "missed": "未接",
+        "noAnswer": "无人接听",
+        "busy": "忙线",
+        "voicemail": "转语音信箱",
+        "dialing": "拨号中",
+        "failed": "呼叫失败"
+      }
+    },
+    "sales": {
+      "conversations": "对话",
+      "stats": {
+        "hotLeads": "已识别的重点客户",
+        "quietLeads": "待唤醒的沉默客户",
+        "totalLeads": "客户总数",
+        "messagesSent": "已发送消息"
+      },
+      "hotHeading": "重点客户 —— 优先致电",
+      "noHot": "暂无重点客户。",
+      "noQuiet": "没有沉默客户 —— 每位客户近期都有互动。",
+      "voicePanel": "销售助理语音设置",
+      "unnamedLead": "未命名客户"
+    },
+    "marketing": {
+      "tabs": {
+        "drafts": "草稿",
+        "plans": "营销方案",
+        "templates": "模板",
+        "generateLeads": "获取客户"
+      },
+      "stats": {
+        "scheduled": "已排期发布",
+        "published": "已发布内容",
+        "plansRunning": "进行中的营销方案",
+        "newLeads": "本月新增客户"
+      },
+      "advanced": "高级设置",
+      "customAd": "设计自定义广告",
+      "comingUp": "即将发布",
+      "latestActivity": "最新动态"
+    },
+    "accountant": {
+      "tabs": {
+        "expenses": "支出",
+        "invoices": "发票"
+      },
+      "stats": {
+        "pipeline": "佣金管道",
+        "nextPayout": "下次到账",
+        "closedThisYear": "今年已成交",
+        "expensesThisMonth": "本月支出"
+      },
+      "commissionPipeline": "佣金管道",
+      "revenueForecast": "收入与预测",
+      "spendingThisMonth": "本月支出情况",
+      "allExpenses": "全部支出",
+      "allInvoices": "全部发票"
+    },
+    "transaction": {
+      "tabs": {
+        "allDeals": "全部交易",
+        "coordinator": "协调看板"
+      },
+      "stats": {
+        "active": "进行中的交易",
+        "deadlines14": "14 天内的截止日期",
+        "overdueItems": "逾期的清单事项",
+        "atRisk": "存在风险的交易"
+      },
+      "deadlinesHeading": "即将到期与风险提示",
+      "healthHeading": "交易健康度",
+      "next": "下一步：",
+      "missing": "缺少：",
+      "atRisk": "风险：",
+      "deadlineLabels": {
+        "inspection": "验房期限",
+        "appraisal": "评估截止日期",
+        "loan": "贷款条件期限",
+        "closing": "过户日"
+      }
+    }
   }
 }

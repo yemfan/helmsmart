@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useState } from "react";
 import { BookOpen, ChevronDown, ChevronUp } from "lucide-react";
@@ -82,25 +84,26 @@ export default function MarketingAssistantClient({
   social: SocialData;
   newsletter?: ClientNewsletter;
 }) {
+  const { t } = useTranslation("dashboard");
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   return (
     <div className="space-y-4">
       <AssistantHeader
         assistant={assistant}
         actions={[
-          { label: "Drafts", href: "/dashboard/drafts" },
-          { label: "Marketing plans", href: "/dashboard/marketing/plans" },
-          { label: "Templates", href: "/dashboard/templates" },
-          { label: "Generate leads", href: "/dashboard/leads/generate" },
-          { label: "Manage", href: "/dashboard/ai-team" },
+          { label: t("assistants.marketing.tabs.drafts"), href: "/dashboard/drafts" },
+          { label: t("assistants.marketing.tabs.plans"), href: "/dashboard/marketing/plans" },
+          { label: t("assistants.marketing.tabs.templates"), href: "/dashboard/templates" },
+          { label: t("assistants.marketing.tabs.generateLeads"), href: "/dashboard/leads/generate" },
+          { label: t("assistants.common.manage"), href: "/dashboard/ai-team" },
         ]}
       />
 
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
-        <AssistantKpiCard label="Posts scheduled" value={data.postsScheduled} />
-        <AssistantKpiCard label="Posts published" value={data.postsPublished30d} hint="last 30 days" />
-        <AssistantKpiCard label="Marketing plans running" value={data.plansActive} />
-        <AssistantKpiCard label="New leads this month" value={data.newLeadsThisMonth} />
+        <AssistantKpiCard label={t("assistants.marketing.stats.scheduled")} value={data.postsScheduled} />
+        <AssistantKpiCard label={t("assistants.marketing.stats.published")} value={data.postsPublished30d} hint="last 30 days" />
+        <AssistantKpiCard label={t("assistants.marketing.stats.plansRunning")} value={data.plansActive} />
+        <AssistantKpiCard label={t("assistants.marketing.stats.newLeads")} value={data.newLeadsThisMonth} />
       </div>
 
       <div>
@@ -148,7 +151,7 @@ export default function MarketingAssistantClient({
       <details className="group rounded-xl border border-gray-200 bg-white shadow-sm">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 [&::-webkit-details-marker]:hidden">
           <div>
-            <h3 className="text-base font-semibold text-gray-900">Advanced</h3>
+            <h3 className="text-base font-semibold text-gray-900">{t("assistants.marketing.advanced")}</h3>
             <p className="mt-0.5 text-sm text-gray-500">
               Custom ad designer, brand photos, and video reels — optional. Your assistant
               posts curated designs automatically without any of this.
@@ -163,7 +166,7 @@ export default function MarketingAssistantClient({
           {/* Ad Composer entry — design a custom branded ad from a template */}
           <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-gray-50 p-5">
             <div>
-              <h3 className="text-base font-semibold text-gray-900">Design a custom ad</h3>
+              <h3 className="text-base font-semibold text-gray-900">{t("assistants.marketing.customAd")}</h3>
               <p className="mt-0.5 text-sm text-gray-500">
                 Pick a template + theme, edit the copy, preview live, then save or schedule.
               </p>
@@ -205,7 +208,7 @@ export default function MarketingAssistantClient({
         {/* Publishing calendar */}
         <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">Coming up</h2>
+            <h2 className="text-sm font-semibold text-gray-900">{t("assistants.marketing.comingUp")}</h2>
             <Link
               href="/dashboard/leads/generate"
               className="text-xs font-medium text-blue-600 hover:text-blue-800"
@@ -243,7 +246,7 @@ export default function MarketingAssistantClient({
 
         {/* What it's been doing */}
         <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <h2 className="mb-3 text-sm font-semibold text-gray-900">Latest activity</h2>
+          <h2 className="mb-3 text-sm font-semibold text-gray-900">{t("assistants.marketing.latestActivity")}</h2>
           {data.activities.length === 0 ? (
             <p className="py-6 text-center text-sm text-gray-400">
               No activity yet. Once your Marketing Assistant starts publishing and nurturing, its

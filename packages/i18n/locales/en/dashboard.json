@@ -438,5 +438,116 @@
     },
     "empty": "No transactions yet.",
     "noMatch": "No transactions match this filter."
+  },
+  "assistants": {
+    "common": {
+      "manage": "Manage",
+      "viewAll": "View all",
+      "close": "Close",
+      "voiceSettings": "Voice settings"
+    },
+    "receptionist": {
+      "stats": {
+        "answered": "Calls answered today",
+        "recovered": "Missed calls recovered",
+        "callingBack": "Calling back now",
+        "needingYou": "Needing you"
+      },
+      "allCalls": "All calls",
+      "doubleClickHint": "Double-click a call for full details",
+      "columns": {
+        "when": "When",
+        "phone": "Phone",
+        "name": "Name",
+        "reason": "Call reason",
+        "action": "Action taken",
+        "status": "Status"
+      },
+      "voicePanel": "Receptionist voice settings",
+      "missedCallSettings": "Missed-call settings",
+      "callDetails": "Call details",
+      "status": {
+        "answered": "Answered",
+        "inProgress": "In progress",
+        "missed": "Missed",
+        "noAnswer": "No answer",
+        "busy": "Busy",
+        "voicemail": "Voicemail",
+        "dialing": "Dialing",
+        "failed": "Failed"
+      }
+    },
+    "sales": {
+      "conversations": "Conversations",
+      "stats": {
+        "hotLeads": "Hot leads identified",
+        "quietLeads": "Quiet leads to revive",
+        "totalLeads": "Total leads",
+        "messagesSent": "Messages sent"
+      },
+      "hotHeading": "Hot leads — call these first",
+      "noHot": "No hot leads right now.",
+      "noQuiet": "No quiet leads — everyone has recent activity.",
+      "voicePanel": "Sales Assistant voice settings",
+      "unnamedLead": "Unnamed lead"
+    },
+    "marketing": {
+      "tabs": {
+        "drafts": "Drafts",
+        "plans": "Marketing plans",
+        "templates": "Templates",
+        "generateLeads": "Generate leads"
+      },
+      "stats": {
+        "scheduled": "Posts scheduled",
+        "published": "Posts published",
+        "plansRunning": "Marketing plans running",
+        "newLeads": "New leads this month"
+      },
+      "advanced": "Advanced",
+      "customAd": "Design a custom ad",
+      "comingUp": "Coming up",
+      "latestActivity": "Latest activity"
+    },
+    "accountant": {
+      "tabs": {
+        "expenses": "Expenses",
+        "invoices": "Invoices"
+      },
+      "stats": {
+        "pipeline": "Commission pipeline",
+        "nextPayout": "Next payout",
+        "closedThisYear": "Closed this year",
+        "expensesThisMonth": "Expenses this month"
+      },
+      "commissionPipeline": "Commission pipeline",
+      "revenueForecast": "Revenue & forecast",
+      "spendingThisMonth": "Spending this month",
+      "allExpenses": "All expenses",
+      "allInvoices": "All invoices"
+    },
+    "transaction": {
+      "tabs": {
+        "allDeals": "All deals",
+        "coordinator": "Coordinator board"
+      },
+      "stats": {
+        "active": "Active transactions",
+        "deadlines14": "Deadlines in 14 days",
+        "overdueItems": "Overdue checklist items",
+        "atRisk": "Transactions at risk"
+      },
+      "deadlinesHeading": "Upcoming Deadlines & Risks",
+      "healthHeading": "Transaction Health",
+      "next": "Next:",
+      "missing": "Missing:",
+      "atRisk": "At risk:",
+      "deadlineLabels": {
+        "inspection": "Inspection contingency",
+        "appraisal": "Appraisal deadline",
+        "loan": "Loan contingency",
+        "closing": "Closing"
+      }
+    }
   }
 }

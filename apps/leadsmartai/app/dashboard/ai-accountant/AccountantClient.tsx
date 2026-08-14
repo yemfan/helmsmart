@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { getAssistant } from "@/lib/realtyboss/team";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
@@ -65,6 +67,7 @@ export default function AccountantClient({
   expensesByCategory: { category: string; total: number }[];
   recentExpenses: ExpenseItem[];
 }) {
+  const { t } = useTranslation("dashboard");
   const pipelineTotal = pipelineDeals.reduce((s, d) => s + (d.expected_net ?? 0), 0);
   const nextPayout = pipelineDeals.find((d) => d.closing_date && d.expected_net != null);
   const openReceivables = invoices.filter((i) => i.status === "sent" || i.status === "overdue");
@@ -76,37 +79,37 @@ export default function AccountantClient({
       <AssistantHeader
         assistant={assistant}
         actions={[
-          { label: "Expenses", href: "/dashboard/expenses" },
-          { label: "Invoices", href: "/dashboard/books" },
-          { label: "Manage", href: "/dashboard/ai-team" },
+          { label: t("assistants.accountant.tabs.expenses"), href: "/dashboard/expenses" },
+          { label: t("assistants.accountant.tabs.invoices"), href: "/dashboard/books" },
+          { label: t("assistants.common.manage"), href: "/dashboard/ai-team" },
         ]}
       />
 
       {/* A Realtor's paycheck is commission at closing — lead with it. */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <AssistantKpiCard
-          label="Commission pipeline"
+          label={t("assistants.accountant.stats.pipeline")}
           value={money(pipelineTotal)}
           hint={`${pipelineDeals.length} deal${pipelineDeals.length === 1 ? "" : "s"} · expected net`}
         />
         <AssistantKpiCard
-          label="Next payout"
+          label={t("assistants.accountant.stats.nextPayout")}
           value={nextPayout?.expected_net != null ? money(nextPayout.expected_net) : "—"}
           hint={nextPayout?.closing_date ? `${nextPayout.property_address} · closes ${fmtDay(nextPayout.closing_date)}` : "no closing scheduled"}
         />
         <AssistantKpiCard
-          label="Closed this year"
+          label={t("assistants.accountant.stats.closedThisYear")}
           value={money(closedYtdNet)}
           hint={`${closedYtdCount} closing${closedYtdCount === 1 ? "" : "s"} · net`}
         />
-        <AssistantKpiCard label="Expenses this month" value={money(expensesMonthTotal)} />
+        <AssistantKpiCard label={t("assistants.accountant.stats.expensesThisMonth")} value={money(expensesMonthTotal)} />
       </div>
 
       {/* ── Commission pipeline — the real paycheck ── */}
       <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-900">Commission pipeline</h2>
-          <Link href="/dashboard/performance" className="text-xs font-medium text-blue-600 hover:text-blue-800">Revenue & forecast</Link>
+          <h2 className="text-sm font-semibold text-gray-900">{t("assistants.accountant.commissionPipeline")}</h2>
+          <Link href="/dashboard/performance" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.revenueForecast")}</Link>
         </div>
         {pipelineDeals.length === 0 ? (
           <p className="py-6 text-center text-sm text-gray-400">
@@ -139,8 +142,8 @@ export default function AccountantClient({
         {/* ── Spending this month (1099 life: every category counts) ── */}
         <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">Spending this month</h2>
-            <Link href="/dashboard/expenses" className="text-xs font-medium text-blue-600 hover:text-blue-800">All expenses</Link>
+            <h2 className="text-sm font-semibold text-gray-900">{t("assistants.accountant.spendingThisMonth")}</h2>
+            <Link href="/dashboard/expenses" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.allExpenses")}</Link>
           </div>
           {topCategories.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-1.5">
@@ -181,7 +184,7 @@ export default function AccountantClient({
                 </span>
               )}
             </h2>
-            <Link href="/dashboard/books" className="text-xs font-medium text-blue-600 hover:text-blue-800">All invoices</Link>
+            <Link href="/dashboard/books" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.allInvoices")}</Link>
           </div>
           <p className="mb-2 text-[11px] text-gray-400">Referral fees, vendor rebills, and anything else owed to you outside of closings.</p>
           {invoices.length === 0 ? (
