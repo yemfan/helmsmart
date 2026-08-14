@@ -112,5 +112,188 @@
       "cancelled": "Cancelled"
     },
     "back": "← Back"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "cancel": "Cancel",
+    "addEvent": "Add Event",
+    "appointment": "Appointment",
+    "task": "Task",
+    "titlePlaceholder": "Title *",
+    "noContact": "No contact",
+    "add": "Add",
+    "adding": "Adding...",
+    "added": "Added!",
+    "failed": "Failed",
+    "failedToAdd": "Failed to add.",
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "days": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "gcal": {
+      "connected": "Google Calendar connected",
+      "connect": "Sync with Google Calendar",
+      "connectedHelp": "New appointments auto-sync to your Google Calendar.",
+      "connectHelp": "Connect to automatically sync appointments both ways.",
+      "disconnect": "Disconnect",
+      "working": "..."
+    },
+    "inbound": {
+      "heading": "Forward emails for auto-import",
+      "body": "Set up a one-time Gmail filter forwarding offers, listing agreements, and showing requests to your unique address — we'll classify each one and add it to your task list for review.",
+      "copy": "Copy",
+      "copied": "Copied ✓",
+      "setupSummary": "Gmail filter setup (one-time, ~30 seconds)",
+      "step1": "Gmail → ⚙ → See all settings → Filters and Blocked Addresses",
+      "step2": "Click Create a new filter",
+      "step3": "In the Has the words field, paste:",
+      "step4": "Click Create filter at the bottom-right",
+      "step5": "Tick Forward it to: and pick (or add)",
+      "step6": "Click Create filter. Done.",
+      "verifyNote": "Gmail will email you a verification code the first time you forward to a new address — paste it back into the Forwarding settings to confirm. After that, every matching email auto-flows into your task list."
+    },
+    "actions": {
+      "markDone": "Mark done",
+      "cancelTask": "Cancel task",
+      "editTask": "Edit task",
+      "cancelAppointment": "Cancel appointment",
+      "reviewDraft": "Review draft",
+      "moveLater": "Move to a later date",
+      "moveTaskLater": "Move task to a later date"
+    },
+    "snooze": {
+      "tomorrow": "Tomorrow",
+      "nextWeek": "Next week"
+    }
+  },
+  "boss": {
+    "captain": "Captain of your AI Real Estate Team",
+    "greeting": {
+      "welcome": "Welcome back",
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "composer": {
+      "answer": "Type your answer…",
+      "autopilot": "Tell your team what to do — they'll act and report back…",
+      "ask": "Tell your team what to do…"
+    },
+    "suggestions": {
+      "checkIn": "Text my hot leads a check-in",
+      "justListed": "Draft a just-listed social post",
+      "planDay": "Plan my day"
+    },
+    "team": {
+      "heading": "Your AI team",
+      "receptionist": "Receptionist",
+      "sales_assistant": "Sales Specialist",
+      "marketing_assistant": "Marketing Specialist",
+      "transaction_assistant": "Transaction Coordinator",
+      "accountant": "Financial Analyst",
+      "realtor": "For your review"
+    },
+    "verbs": {
+      "off": "Off duty",
+      "needsYou": "Waiting on you",
+      "activeNow": "Active just now",
+      "working": "Working",
+      "idle": "Standing by",
+      "receptionist": {
+        "working": "Answering calls",
+        "idle": "On call"
+      },
+      "sales_assistant": {
+        "working": "Following up",
+        "idle": "Watching leads"
+      },
+      "marketing_assistant": {
+        "working": "Creating content",
+        "idle": "Planning posts"
+      },
+      "transaction_assistant": {
+        "working": "Tracking deadlines",
+        "idle": "Monitoring deals"
+      },
+      "accountant": {
+        "working": "Running the numbers",
+        "idle": "Watching the books"
+      }
+    },
+    "channel": {
+      "call": "Call",
+      "sms": "Text",
+      "email": "Email",
+      "social": "Social"
+    },
+    "metrics": {
+      "hotLeads": "Hot leads",
+      "apptsToday": "Appts today",
+      "activeDeals": "Active deals",
+      "deadlines": "Deadlines",
+      "noHotLeads": "No hot leads right now.",
+      "noAppts": "No appointments today.",
+      "noDeals": "No active deals.",
+      "noDeadlines": "No deadlines in the next 7 days."
+    },
+    "deadlines": {
+      "inspection": "Inspection contingency",
+      "appraisal": "Appraisal deadline",
+      "loan": "Loan contingency",
+      "closing": "Closing"
+    },
+    "day": {
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "runs": {
+      "overnight": "From last night's run",
+      "earlier": "Earlier command"
+    },
+    "autopilot": {
+      "on": "Autopilot on",
+      "off": "Autopilot off",
+      "onTitle": "Autopilot on — the Boss acts, then tells you",
+      "offTitle": "Autopilot off — the Boss asks before sending"
+    },
+    "approvals": {
+      "title": "Approval settings",
+      "subtitle": "Choose where the Boss acts on its own and where it asks first — per assistant, per channel.",
+      "allChannels": "Autopilot (all channels)",
+      "allChannelsHelp": "The master switch. Per-channel choices below override it.",
+      "askFirstTitle": "Flip everything to ask-first — nothing sends without you",
+      "done": "Done"
+    },
+    "status": {
+      "done": "Done",
+      "scheduled": "Scheduled",
+      "needsInput": "Needs info",
+      "awaitingApproval": "Awaiting you"
+    },
+    "panels": {
+      "revenue": "Revenue & commission",
+      "pipeline": "Pipeline forecast",
+      "emailEngagement": "Email engagement",
+      "loading": "Loading…"
+    },
+    "proposal": "Proposal",
+    "openLead": "Open lead",
+    "open": "Open",
+    "dismiss": "Dismiss",
+    "notNow": "Not now",
+    "actionFailed": "Action failed.",
+    "uploadFailed": "Upload failed",
+    "couldNotWorkOut": "Couldn't work that one out — try rephrasing it."
   }
 }
