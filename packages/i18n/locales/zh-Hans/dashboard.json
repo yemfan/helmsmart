@@ -586,6 +586,67 @@
     },
     "salesModel": {
       "title": "销售模式"
+    },
+    "playbooks": {
+      "tabs": {
+        "open": "待办",
+        "done": "已完成",
+        "cancelled": "已取消"
+      },
+      "columns": {
+        "task": "任务",
+        "contact": "联系人",
+        "due": "截止日期",
+        "actions": "操作"
+      },
+      "applyPlaybook": "套用剧本",
+      "markedComplete": "已标记为完成。",
+      "reopened": "已重新打开。",
+      "cancelled": "已取消。",
+      "updateFailed": "更新失败",
+      "dueToday": "今天到期",
+      "overdue": "已逾期",
+      "thisWeek": "本周",
+      "emptyOpen": "暂无待办任务。套用一个剧本即可开始。",
+      "emptyDone": "还没有已完成的任务。",
+      "emptyCancelled": "没有已取消的任务。",
+      "emptyNone": "暂无任务。",
+      "reopen": "重新打开",
+      "markDone": "标记完成",
+      "restore": "恢复",
+      "cancel": "取消",
+      "delay": "延后到其他日期",
+      "pickDate": "选择日期",
+      "writeOffer": "撰写报价",
+      "linkedTransaction": "关联的交易",
+      "linkedOpenHouse": "关联的开放日",
+      "adHocTasks": "临时任务"
+    },
+    "tools": {
+      "title": "工具",
+      "subtitle": "CloseBoss 的全部工具，都在这里。",
+      "open": "打开 →",
+      "items": {
+        "sellerPresentation": "卖方推介材料生成器",
+        "propertyToolsApp": "PropertyTools 应用（买家 / 卖家）",
+        "dealCloser": "AI 成交助手",
+        "homeValue": "房屋估值工具",
+        "smartCma": "智能 CMA 生成器",
+        "rentalAnalyzer": "出租房产分析器",
+        "linkAnalyzer": "Zillow / Redfin 链接分析器",
+        "mortgage": "房贷计算器",
+        "refinance": "再融资计算器",
+        "affordability": "购房能力计算器",
+        "rentVsBuy": "租房与买房对比计算器",
+        "closingCost": "过户费用估算器",
+        "investmentAnalyzer": "房产投资分析器",
+        "dealAnalyzer": "AI 交易分析器",
+        "cmaAnalyzer": "AI CMA 分析器",
+        "downPayment": "首付计算器",
+        "cashFlow": "现金流计算器",
+        "capRate": "资本化率与投资回报率计算器",
+        "propertyReport": "房产报告生成器"
+      }
     }
   }
 }

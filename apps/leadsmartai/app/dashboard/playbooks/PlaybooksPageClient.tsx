@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CalendarClock, Check, X } from "lucide-react";
 import { PlaybookPickerModal } from "@/components/dashboard/PlaybooksPanel";
@@ -23,16 +25,19 @@ import type { PlaybookTaskRow } from "@/lib/playbooks/types";
 
 type StatusTab = "open" | "done" | "cancelled" | "all";
 
-const TABS: { key: StatusTab; label: string }[] = [
-  { key: "open", label: "Open" },
-  { key: "done", label: "Done" },
-  { key: "cancelled", label: "Cancelled" },
-  { key: "all", label: "All" },
+/** Labels resolve from `dashboard:more.playbooks.tabs.*` at render. */
+const TABS: { key: StatusTab }[] = [
+  { key: "open" },
+  { key: "done" },
+  { key: "cancelled" },
+  { key: "all" },
 ];
 
 type LeadInfo = { id: string; name: string | null };
 
 export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
+  // Named `tr` — task rows already bind `t` to a PlaybookTaskRow.
+  const { t: tr } = useTranslation("dashboard");
   const [tasks, setTasks] = useState<PlaybookTaskRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusTab, setStatusTab] = useState<StatusTab>("open");
@@ -87,7 +92,7 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
 
   /**
    * Visible rows: filter to the active status tab, then group by
-   * apply batch (each "Apply playbook" click) so two applies of the
+   * apply batch (each tr("more.playbooks.applyPlaybook") click) so two applies of the
    * same template land as separate cards. Sort within group by due
    * date asc (nulls last).
    */
@@ -101,7 +106,7 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
 
   const visible = useMemo(() => {
     const filtered = tasks.filter((t) => matchesStatus(t, statusTab));
-    return groupByBatch(filtered, leadNameMap);
+    return groupByBatch(filtered, leadNameMap, tr);
   }, [tasks, statusTab, leadNameMap]);
 
   async function patchTask(taskId: string, body: Record<string, unknown>) {
@@ -130,9 +135,9 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
     );
     try {
       await patchTask(t.id, { completed });
-      setActionMsg(completed ? "Marked complete." : "Reopened.");
+      setActionMsg(completed ? tr("more.playbooks.markedComplete") : tr("more.playbooks.reopened"));
     } catch (e) {
-      setActionMsg(e instanceof Error ? e.message : "Update failed");
+      setActionMsg(e instanceof Error ? e.message : tr("more.playbooks.updateFailed"));
       await load();
     }
   }
@@ -151,9 +156,9 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
     );
     try {
       await patchTask(t.id, { cancelled });
-      setActionMsg(cancelled ? "Cancelled." : "Reopened.");
+      setActionMsg(cancelled ? tr("more.playbooks.cancelled") : tr("more.playbooks.reopened"));
     } catch (e) {
-      setActionMsg(e instanceof Error ? e.message : "Update failed");
+      setActionMsg(e instanceof Error ? e.message : tr("more.playbooks.updateFailed"));
       await load();
     }
   }
@@ -166,7 +171,7 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
       await patchTask(t.id, { dueDate: ymd });
       setActionMsg(`Moved to ${formatYmd(ymd)}.`);
     } catch (e) {
-      setActionMsg(e instanceof Error ? e.message : "Update failed");
+      setActionMsg(e instanceof Error ? e.message : tr("more.playbooks.updateFailed"));
       await load();
     }
   }
@@ -191,9 +196,9 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Due today" value={String(stats.dueToday)} tone="blue" />
-        <Stat label="Overdue" value={String(stats.overdue)} tone={stats.overdue > 0 ? "red" : "slate"} />
-        <Stat label="This week" value={String(stats.thisWeek)} />
+        <Stat label={tr("more.playbooks.dueToday")} value={String(stats.dueToday)} tone="blue" />
+        <Stat label={tr("more.playbooks.overdue")} value={String(stats.overdue)} tone={stats.overdue > 0 ? "red" : "slate"} />
+        <Stat label={tr("more.playbooks.thisWeek")} value={String(stats.thisWeek)} />
         <Stat label="Done (last 7d)" value={String(stats.doneRecent)} tone="green" />
       </div>
 
@@ -218,7 +223,7 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
                   : "border-transparent text-slate-500 hover:text-slate-800"
               }`}
             >
-              {tab.label}
+              {tr(`more.playbooks.tabs.${tab.key}`, { defaultValue: tab.key })}
               <span
                 className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
                   active ? "bg-blue-50 text-blue-700" : "bg-slate-100 text-slate-600"
@@ -238,12 +243,12 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
       ) : visible.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">
           {statusTab === "open"
-            ? "No open tasks. Apply a playbook to get started."
+            ? tr("more.playbooks.emptyOpen")
             : statusTab === "done"
-              ? "No completed tasks yet."
+              ? tr("more.playbooks.emptyDone")
               : statusTab === "cancelled"
-                ? "No cancelled tasks."
-                : "No tasks."}
+                ? tr("more.playbooks.emptyCancelled")
+                : tr("more.playbooks.emptyNone")}
         </div>
       ) : (
         <div className="space-y-4">
@@ -266,10 +271,10 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
               {/* Column header row — same grid template as TaskRow so
                   Task / Contact / Due / Actions align over their columns. */}
               <div className="grid grid-cols-[minmax(0,1fr)_minmax(120px,160px)_72px_104px] items-center gap-4 border-b border-slate-100 bg-slate-50 px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                <div>Task</div>
-                <div>Contact</div>
-                <div>Due</div>
-                <div className="sr-only">Actions</div>
+                <div>{tr("more.playbooks.columns.task")}</div>
+                <div>{tr("more.playbooks.columns.contact")}</div>
+                <div>{tr("more.playbooks.columns.due")}</div>
+                <div className="sr-only">{tr("more.playbooks.columns.actions")}</div>
               </div>
               <ul className="divide-y divide-slate-100">
                 {group.tasks.map((t) => (
@@ -324,6 +329,7 @@ function TaskRow({
   onCancel: () => void;
   onReschedule: (ymd: string) => void;
 }) {
+  const { t: tr } = useTranslation("dashboard");
   const complete = task.completed_at != null;
   const cancelled = task.cancelled_at != null;
   const closed = complete || cancelled;
@@ -390,7 +396,7 @@ function TaskRow({
       <div className="inline-flex shrink-0 items-center gap-1 pt-0.5">
         <IconButton
           onClick={onComplete}
-          title={complete ? "Reopen" : "Mark done"}
+          title={complete ? tr("more.playbooks.reopen") : tr("more.playbooks.markDone")}
           ariaLabel={complete ? `Reopen "${task.title}"` : `Mark "${task.title}" complete`}
           tone="success"
           active={complete}
@@ -404,7 +410,7 @@ function TaskRow({
         />
         <IconButton
           onClick={onCancel}
-          title={cancelled ? "Restore" : "Cancel"}
+          title={cancelled ? tr("more.playbooks.restore") : "Cancel"}
           ariaLabel={cancelled ? `Restore "${task.title}"` : `Cancel "${task.title}"`}
           tone="danger"
           active={cancelled}
@@ -472,6 +478,7 @@ function DelayButton({
   currentDueDate: string | null;
   onPick: (ymd: string) => void;
 }) {
+  const { t: tr } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -502,8 +509,8 @@ function DelayButton({
         type="button"
         onClick={() => setOpen((v) => !v)}
         disabled={disabled}
-        title="Delay to a later date"
-        aria-label="Delay to a later date"
+        title={tr("more.playbooks.delay")}
+        aria-label={tr("more.playbooks.delay")}
         aria-haspopup="menu"
         aria-expanded={open}
         className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-400 transition hover:border-amber-400 hover:text-amber-600 disabled:opacity-40"
@@ -532,7 +539,7 @@ function DelayButton({
             Next week
           </button>
           <div className="border-t border-slate-100 px-3 py-2">
-            <label className="block text-[11px] font-medium text-slate-500">Pick a date</label>
+            <label className="block text-[11px] font-medium text-slate-500">{tr("more.playbooks.pickDate")}</label>
             <input
               type="date"
               defaultValue={currentDueDate ?? todayYmd()}
@@ -558,6 +565,7 @@ function AnchorChip({
   task: PlaybookTaskRow;
   fallback?: React.ReactNode;
 }) {
+  const { t: tr } = useTranslation("dashboard");
   if (task.anchor_kind === "transaction" && task.anchor_id) {
     return (
       <a
@@ -653,17 +661,18 @@ type Group = {
 
 /**
  * Group by `apply_batch_id` so re-applying the same playbook (e.g.
- * "Write an offer" for two different leads) renders as separate cards.
+ * tr("more.playbooks.writeOffer") for two different leads) renders as separate cards.
  * Within each card, sort by due date asc (nulls last), then created_at.
  *
  * Subtitle resolution priority:
  *   - anchor_kind=contact → contact name from leads map (or "#id" fallback)
- *   - anchor_kind=transaction / open_house → "Linked transaction" etc.
+ *   - anchor_kind=transaction / open_house → tr("more.playbooks.linkedTransaction") etc.
  *   - no anchor → null (header stays clean)
  */
 function groupByBatch(
   tasks: PlaybookTaskRow[],
   leadNameMap: Map<string, string>,
+  tr: (k: string, o?: Record<string, unknown>) => string,
 ): Group[] {
   const groups = new Map<string, PlaybookTaskRow[]>();
   for (const t of tasks) {
@@ -685,11 +694,11 @@ function groupByBatch(
     const title =
       meta?.title ??
       first.template_key ??
-      "Ad-hoc tasks";
+      tr("more.playbooks.adHocTasks");
     out.push({
       id,
       title,
-      subtitle: subtitleFor(first, leadNameMap),
+      subtitle: subtitleFor(first, leadNameMap, tr),
       tasks: list,
     });
   });
@@ -705,12 +714,13 @@ function groupByBatch(
 function subtitleFor(
   task: PlaybookTaskRow,
   leadNameMap: Map<string, string>,
+  tr: (k: string, o?: Record<string, unknown>) => string,
 ): string | null {
   if (task.anchor_kind === "contact" && task.anchor_id) {
     return leadNameMap.get(task.anchor_id) ?? `Contact #${task.anchor_id.slice(0, 6)}`;
   }
-  if (task.anchor_kind === "transaction") return "Linked transaction";
-  if (task.anchor_kind === "open_house") return "Linked open house";
+  if (task.anchor_kind === "transaction") return tr("more.playbooks.linkedTransaction");
+  if (task.anchor_kind === "open_house") return tr("more.playbooks.linkedOpenHouse");
   return null;
 }
 

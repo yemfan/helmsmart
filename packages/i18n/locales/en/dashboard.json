@@ -586,6 +586,67 @@
     },
     "salesModel": {
       "title": "Sales Model"
+    },
+    "playbooks": {
+      "tabs": {
+        "open": "Open",
+        "done": "Done",
+        "cancelled": "Cancelled"
+      },
+      "columns": {
+        "task": "Task",
+        "contact": "Contact",
+        "due": "Due",
+        "actions": "Actions"
+      },
+      "applyPlaybook": "Apply playbook",
+      "markedComplete": "Marked complete.",
+      "reopened": "Reopened.",
+      "cancelled": "Cancelled.",
+      "updateFailed": "Update failed",
+      "dueToday": "Due today",
+      "overdue": "Overdue",
+      "thisWeek": "This week",
+      "emptyOpen": "No open tasks. Apply a playbook to get started.",
+      "emptyDone": "No completed tasks yet.",
+      "emptyCancelled": "No cancelled tasks.",
+      "emptyNone": "No tasks.",
+      "reopen": "Reopen",
+      "markDone": "Mark done",
+      "restore": "Restore",
+      "cancel": "Cancel",
+      "delay": "Delay to a later date",
+      "pickDate": "Pick a date",
+      "writeOffer": "Write an offer",
+      "linkedTransaction": "Linked transaction",
+      "linkedOpenHouse": "Linked open house",
+      "adHocTasks": "Ad-hoc tasks"
+    },
+    "tools": {
+      "title": "Tools",
+      "subtitle": "All CloseBoss tools in one place.",
+      "open": "Open →",
+      "items": {
+        "sellerPresentation": "Seller Presentation Generator",
+        "propertyToolsApp": "PropertyTools app (buyer / seller)",
+        "dealCloser": "AI Deal Closer",
+        "homeValue": "Home Value Estimator",
+        "smartCma": "Smart CMA Builder",
+        "rentalAnalyzer": "Rental Property Analyzer",
+        "linkAnalyzer": "Zillow / Redfin Link Analyzer",
+        "mortgage": "Mortgage Calculator",
+        "refinance": "Refinance Calculator",
+        "affordability": "Home Affordability Calculator",
+        "rentVsBuy": "Rent vs Buy Calculator",
+        "closingCost": "Closing Cost Estimator",
+        "investmentAnalyzer": "Property Investment Analyzer",
+        "dealAnalyzer": "AI Deal Analyzer",
+        "cmaAnalyzer": "AI CMA Analyzer",
+        "downPayment": "Down Payment Calculator",
+        "cashFlow": "Cash Flow Calculator",
+        "capRate": "Cap Rate & ROI Calculator",
+        "propertyReport": "Property Report Generator"
+      }
     }
   }
 }
