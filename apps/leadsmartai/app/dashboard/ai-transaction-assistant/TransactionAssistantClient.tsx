@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getAssistant } from "@/lib/realtyboss/team";
@@ -37,6 +39,8 @@ const assistant = getAssistant("transaction_assistant");
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export default function TransactionAssistantClient() {
+  // Named `tr` — transaction rows already bind `t` in their maps.
+  const { t: tr } = useTranslation("dashboard");
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -60,10 +64,10 @@ export default function TransactionAssistantClient() {
     const out: Alert[] = [];
     for (const t of active) {
       const candidates: { label: string; date: string | null; done: string | null }[] = [
-        { label: "Inspection contingency", date: t.inspection_deadline, done: t.inspection_completed_at },
-        { label: "Appraisal deadline", date: t.appraisal_deadline, done: t.appraisal_completed_at },
-        { label: "Loan contingency", date: t.loan_contingency_deadline, done: t.loan_contingency_removed_at },
-        { label: "Closing", date: t.closing_date, done: null },
+        { label: tr("assistants.transaction.deadlineLabels.inspection"), date: t.inspection_deadline, done: t.inspection_completed_at },
+        { label: tr("assistants.transaction.deadlineLabels.appraisal"), date: t.appraisal_deadline, done: t.appraisal_completed_at },
+        { label: tr("assistants.transaction.deadlineLabels.loan"), date: t.loan_contingency_deadline, done: t.loan_contingency_removed_at },
+        { label: tr("assistants.transaction.deadlineLabels.closing"), date: t.closing_date, done: null },
       ];
       for (const c of candidates) {
         if (!c.date || c.done) continue;
@@ -101,21 +105,21 @@ export default function TransactionAssistantClient() {
       <AssistantHeader
         assistant={assistant}
         actions={[
-          { label: "All deals", href: "/dashboard/transactions" },
-          { label: "Coordinator board", href: "/dashboard/transactions/coordinator" },
-          { label: "Manage", href: "/dashboard/ai-team" },
+          { label: tr("assistants.transaction.tabs.allDeals"), href: "/dashboard/transactions" },
+          { label: tr("assistants.transaction.tabs.coordinator"), href: "/dashboard/transactions/coordinator" },
+          { label: tr("assistants.common.manage"), href: "/dashboard/ai-team" },
         ]}
       />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <AssistantKpiCard label="Active transactions" value={loading ? undefined : active.length} />
-        <AssistantKpiCard label="Deadlines in 14 days" value={loading ? undefined : alerts.length} tone={alerts.some((a) => a.risk === "high") ? "warn" : undefined} />
-        <AssistantKpiCard label="Overdue checklist items" value={loading ? undefined : overdueTaskCount} tone={overdueTaskCount > 0 ? "warn" : undefined} />
-        <AssistantKpiCard label="Transactions at risk" value={loading ? undefined : atRisk.length} tone={atRisk.length > 0 ? "hot" : undefined} />
+        <AssistantKpiCard label={tr("assistants.transaction.stats.active")} value={loading ? undefined : active.length} />
+        <AssistantKpiCard label={tr("assistants.transaction.stats.deadlines14")} value={loading ? undefined : alerts.length} tone={alerts.some((a) => a.risk === "high") ? "warn" : undefined} />
+        <AssistantKpiCard label={tr("assistants.transaction.stats.overdueItems")} value={loading ? undefined : overdueTaskCount} tone={overdueTaskCount > 0 ? "warn" : undefined} />
+        <AssistantKpiCard label={tr("assistants.transaction.stats.atRisk")} value={loading ? undefined : atRisk.length} tone={atRisk.length > 0 ? "hot" : undefined} />
       </div>
 
       <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">Upcoming Deadlines & Risks</h2>
+        <h2 className="mb-3 text-sm font-semibold text-gray-900">{tr("assistants.transaction.deadlinesHeading")}</h2>
         {alerts.length === 0 ? (
           <p className="py-6 text-center text-sm text-gray-400">
             {loading ? "Checking your transactions…" : "No open deadlines in the next 14 days."}
@@ -144,8 +148,8 @@ export default function TransactionAssistantClient() {
       {/* ── Transaction health (constitution: health, not data) ── */}
       <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-900">Transaction Health</h2>
-          <Link href="/dashboard/transactions" className="text-xs font-medium text-blue-600 hover:text-blue-800">View all</Link>
+          <h2 className="text-sm font-semibold text-gray-900">{tr("assistants.transaction.healthHeading")}</h2>
+          <Link href="/dashboard/transactions" className="text-xs font-medium text-blue-600 hover:text-blue-800">{tr("assistants.common.viewAll")}</Link>
         </div>
         {active.length === 0 ? (
           <p className="py-6 text-center text-sm text-gray-400">
@@ -176,15 +180,15 @@ export default function TransactionAssistantClient() {
                   <p className="mt-0.5 text-xs text-gray-600">{t.contact_name ?? "—"} · {h.happening}</p>
                   {h.next && (
                     <p className="mt-1.5 text-xs text-gray-700">
-                      <span className="font-medium">Next:</span> {h.next.label} · {fmtMilestoneDay(h.next.date)}
+                      <span className="font-medium">{tr("assistants.transaction.next")}</span> {h.next.label} · {fmtMilestoneDay(h.next.date)}
                       {h.next.overdue ? " (overdue)" : ""}
                     </p>
                   )}
                   {h.missing && (
-                    <p className="text-xs text-amber-700"><span className="font-medium">Missing:</span> {h.missing}</p>
+                    <p className="text-xs text-amber-700"><span className="font-medium">{tr("assistants.transaction.missing")}</span> {h.missing}</p>
                   )}
                   {h.risk && (
-                    <p className="text-xs font-medium text-red-700"><span className="font-semibold">At risk:</span> {h.risk}</p>
+                    <p className="text-xs font-medium text-red-700"><span className="font-semibold">{tr("assistants.transaction.atRisk")}</span> {h.risk}</p>
                   )}
                 </Link>
               );
