@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { TransactionListItem, TransactionType } from "@/lib/transactions/types";
@@ -81,6 +83,7 @@ export function TransactionsListClient({
 }: {
   initialItems: TransactionListItem[];
 }) {
+  const { t } = useTranslation("dashboard");
   const [items] = useState(initialItems);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("active");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
@@ -127,7 +130,7 @@ export function TransactionsListClient({
     <div className="space-y-5">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Transactions</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("transactions.title")}</h1>
           <p className="mt-1 text-sm text-slate-500">
             Every deal from mutual acceptance through close — deadlines, tasks,
             counterparties in one place.
@@ -146,14 +149,14 @@ export function TransactionsListClient({
 
       {/* KPI strip — mirrors /dashboard/transactions/coordinator. */}
       <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-slate-200 bg-slate-200">
-        <KpiCell label="In-flight deals" value={kpis.inFlight} tone="text-slate-900" />
+        <KpiCell label={t("transactions.kpis.inFlight")} value={kpis.inFlight} tone="text-slate-900" />
         <KpiCell
-          label="Overdue tasks"
+          label={t("transactions.kpis.overdueTasks")}
           value={kpis.overdueTasks}
           tone={kpis.overdueTasks > 0 ? "text-rose-700" : "text-slate-900"}
         />
         <KpiCell
-          label="Closing this week"
+          label={t("transactions.kpis.closingThisWeek")}
           value={kpis.closingThisWeek}
           tone={kpis.closingThisWeek > 0 ? "text-emerald-700" : "text-slate-900"}
         />
@@ -188,10 +191,10 @@ export function TransactionsListClient({
             onChange={(e) => setTypeFilter(e.target.value as TypeFilter)}
             className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs"
           >
-            <option value="all">Any</option>
-            <option value="buyer_rep">Buyer</option>
-            <option value="listing_rep">Listing</option>
-            <option value="dual">Dual</option>
+            <option value="all">{t("transactions.typeFilters.all")}</option>
+            <option value="buyer_rep">{t("transactions.typeFilters.buyer")}</option>
+            <option value="listing_rep">{t("transactions.typeFilters.listing")}</option>
+            <option value="dual">{t("transactions.typeFilters.dual")}</option>
           </select>
         </div>
       </div>
@@ -199,7 +202,7 @@ export function TransactionsListClient({
       {visible.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
           <p className="text-sm font-medium text-slate-900">
-            {items.length === 0 ? "No transactions yet." : "No transactions match this filter."}
+            {items.length === 0 ? t("transactions.empty") : t("transactions.noMatch")}
           </p>
           {items.length === 0 ? (
             <p className="mt-2 text-xs text-slate-500">
@@ -219,12 +222,12 @@ export function TransactionsListClient({
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
               <tr>
-                <th className="px-5 py-3 text-left font-semibold">Property</th>
-                <th className="px-5 py-3 text-left font-semibold">Client</th>
-                <th className="px-5 py-3 text-left font-semibold">Type</th>
-                <th className="px-5 py-3 text-left font-semibold">Status</th>
-                <th className="px-5 py-3 text-left font-semibold">Closing</th>
-                <th className="px-5 py-3 text-left font-semibold">Tasks</th>
+                <th className="px-5 py-3 text-left font-semibold">{t("transactions.columns.property")}</th>
+                <th className="px-5 py-3 text-left font-semibold">{t("transactions.columns.client")}</th>
+                <th className="px-5 py-3 text-left font-semibold">{t("transactions.columns.type")}</th>
+                <th className="px-5 py-3 text-left font-semibold">{t("transactions.columns.status")}</th>
+                <th className="px-5 py-3 text-left font-semibold">{t("transactions.columns.closing")}</th>
+                <th className="px-5 py-3 text-left font-semibold">{t("transactions.columns.tasks")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

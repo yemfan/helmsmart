@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -52,6 +54,7 @@ export function OffersListClient({
   initialOffers: OfferListItem[];
   initialContactFilter: string | null;
 }) {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
@@ -141,7 +144,7 @@ export function OffersListClient({
     <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Offers</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("offers.title")}</h1>
           <p className="mt-1 text-sm text-slate-500">
             {contactFilterName ? (
               <>
@@ -210,7 +213,7 @@ export function OffersListClient({
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search address or buyer…"
+          placeholder={t("offers.searchPlaceholder")}
           className="min-w-[240px] flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
         />
         <select
@@ -218,10 +221,10 @@ export function OffersListClient({
           onChange={(e) => setFilter(e.target.value as Filter)}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         >
-          <option value="all">All offers</option>
-          <option value="active">Active</option>
-          <option value="won">Won</option>
-          <option value="lost">Lost</option>
+          <option value="all">{t("offers.filters.all")}</option>
+          <option value="active">{t("offers.filters.active")}</option>
+          <option value="won">{t("offers.filters.won")}</option>
+          <option value="lost">{t("offers.filters.lost")}</option>
         </select>
       </div>
 
@@ -230,14 +233,14 @@ export function OffersListClient({
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-600">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">Property</th>
-                <th className="px-3 py-2 text-left font-medium">Buyer</th>
-                <th className="px-3 py-2 text-right font-medium">Offer</th>
-                <th className="px-3 py-2 text-right font-medium">Current</th>
-                <th className="px-3 py-2 text-center font-medium">Counters</th>
-                <th className="px-3 py-2 text-left font-medium">Status</th>
-                <th className="px-3 py-2 text-left font-medium">Submitted</th>
-                <th className="px-3 py-2 text-right font-medium">Actions</th>
+                <th className="px-3 py-2 text-left font-medium">{t("offers.columns.property")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("offers.columns.buyer")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("offers.columns.offer")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("offers.columns.current")}</th>
+                <th className="px-3 py-2 text-center font-medium">{t("offers.columns.counters")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("offers.columns.status")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("offers.columns.submitted")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("offers.columns.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -303,13 +306,13 @@ export function OffersListClient({
                   <td colSpan={8} className="px-3 py-10 text-center text-sm text-slate-500">
                     {initialOffers.length === 0 ? (
                       <>
-                        <div className="font-medium">No offers yet.</div>
+                        <div className="font-medium">{t("offers.empty")}</div>
                         <div className="mt-1 text-[12px]">
                           Click <strong>+ New offer</strong> to log the first one.
                         </div>
                       </>
                     ) : (
-                      "No offers match your filters."
+                      t("offers.noMatch")
                     )}
                   </td>
                 </tr>
@@ -347,6 +350,7 @@ function RowActions({
   onAccept: (id: string) => void;
   onDecline: (id: string) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const editHref = `/dashboard/offers/${offer.id}`;
   const status = offer.status;
   const isClosed =
@@ -365,7 +369,7 @@ function RowActions({
           <RowIconButton
             onClick={() => onAccept(offer.id)}
             disabled={accepting}
-            title="Mark accepted"
+            title={t("offers.markAccepted")}
             tone="success"
           >
             <Check className="h-4 w-4" strokeWidth={2.5} />
@@ -373,14 +377,14 @@ function RowActions({
           <RowIconButton
             onClick={() => onDecline(offer.id)}
             disabled={declining}
-            title="Mark declined"
+            title={t("offers.markDeclined")}
             tone="danger"
           >
             <X className="h-4 w-4" strokeWidth={2.5} />
           </RowIconButton>
         </>
       ) : null}
-      <RowIconButton href={editHref} title="Modify offer">
+      <RowIconButton href={editHref} title={t("offers.modifyOffer")}>
         <Pencil className="h-4 w-4" strokeWidth={2} />
       </RowIconButton>
     </div>

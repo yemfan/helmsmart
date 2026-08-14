@@ -347,5 +347,96 @@
     "smartLink": "房屋估值智能链接",
     "smartLinkHelp": "分享给房主，把他们引入您的客户漏斗。",
     "mlsImport": "MLS 数据导入"
+  },
+  "showings": {
+    "title": "带看",
+    "schedule": "+ 安排带看",
+    "searchPlaceholder": "搜索地址、买家或挂牌经纪…",
+    "stats": {
+      "total": "总计",
+      "upcoming": "即将进行",
+      "attended": "已带看",
+      "loved": "很满意",
+      "wouldOffer": "有意出价"
+    },
+    "filters": {
+      "all": "全部带看",
+      "upcoming": "即将进行",
+      "attended": "已带看"
+    },
+    "columns": {
+      "when": "时间",
+      "property": "房源",
+      "buyer": "买家",
+      "listingAgent": "挂牌经纪",
+      "status": "状态",
+      "actions": "操作"
+    },
+    "empty": "暂无带看记录。",
+    "noMatch": "没有符合筛选条件的带看。",
+    "markAttended": "标记为已带看",
+    "cancel": "取消带看",
+    "submitOffer": "提交报价",
+    "captureFeedback": "记录反馈"
+  },
+  "offers": {
+    "title": "报价",
+    "searchPlaceholder": "搜索地址或买家…",
+    "filters": {
+      "all": "全部报价",
+      "active": "进行中",
+      "won": "已成交",
+      "lost": "未成交"
+    },
+    "columns": {
+      "property": "房源",
+      "buyer": "买家",
+      "offer": "报价",
+      "current": "当前价",
+      "counters": "还价次数",
+      "status": "状态",
+      "submitted": "提交时间",
+      "actions": "操作"
+    },
+    "empty": "暂无报价。",
+    "noMatch": "没有符合筛选条件的报价。",
+    "accept": "接受",
+    "decline": "拒绝",
+    "modify": "修改",
+    "markAccepted": "标记为已接受",
+    "markDeclined": "标记为已拒绝",
+    "modifyOffer": "修改报价"
+  },
+  "transactions": {
+    "title": "成交管理",
+    "kpis": {
+      "inFlight": "进行中的交易",
+      "overdueTasks": "逾期任务",
+      "closingThisWeek": "本周过户"
+    },
+    "statusFilters": {
+      "active": "进行中",
+      "pending": "待处理",
+      "closing_this_week": "本周过户",
+      "overdue": "已逾期",
+      "closed_this_month": "本月已成交",
+      "all": "全部"
+    },
+    "typeFilters": {
+      "all": "不限",
+      "buyer": "买方代理",
+      "listing": "卖方代理",
+      "dual": "双方代理"
+    },
+    "columns": {
+      "property": "房源",
+      "client": "客户",
+      "type": "类型",
+      "status": "状态",
+      "closing": "过户日",
+      "tasks": "任务"
+    },
+    "empty": "暂无交易记录。",
+    "noMatch": "没有符合该筛选条件的交易。"
   }
 }
