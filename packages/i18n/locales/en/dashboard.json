@@ -295,5 +295,57 @@
     "actionFailed": "Action failed.",
     "uploadFailed": "Upload failed",
     "couldNotWorkOut": "Couldn't work that one out — try rephrasing it."
+  },
+  "support": {
+    "title": "Support Dashboard",
+    "openCount": "Open",
+    "waitingCount": "Waiting",
+    "searchPlaceholder": "Search name, email, subject...",
+    "loadingList": "Loading conversations...",
+    "loadingConversation": "Loading conversation...",
+    "selectPrompt": "Select a conversation to view details.",
+    "replyPlaceholder": "Write your reply...",
+    "sending": "Sending...",
+    "sendReply": "Send reply",
+    "details": "Conversation Details",
+    "assigned": "Assigned",
+    "unassigned": "Unassigned",
+    "unreadForCustomer": "Unread for customer",
+    "lastUpdated": "Last updated",
+    "quickActions": "Quick Actions",
+    "markResolved": "Mark resolved",
+    "markUrgent": "Mark urgent",
+    "filters": {
+      "all": "All",
+      "open": "Open",
+      "waiting": "Waiting",
+      "resolved": "Resolved"
+    },
+    "status": {
+      "open": "Open",
+      "waiting_on_support": "Waiting on Support",
+      "waiting_on_customer": "Waiting on Customer",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    }
+  },
+  "settings": {
+    "aiStyle": "AI Assistant Style",
+    "phoneVoice": "Phone Voice",
+    "voiceReceptionist": "AI Voice Receptionist",
+    "voiceReceptionistHelp": "Your AI phone receptionist's identity and what it knows about your business — used on every inbound call to your receptionist number.",
+    "missedCall": "Missed Call Text-Back",
+    "missedCallHelp": "Auto-text inbound callers when you can't pick up. Forward calls to your personal mobile and capture every missed lead.",
+    "briefings": "Daily Briefings",
+    "briefingsHelp": "When the ☀️ morning plan and 🌙 evening summary fire each day on your dashboard and in the mobile app.",
+    "smartLink": "Home Value Smart Link",
+    "smartLinkHelp": "Share with homeowners to route them into your funnel.",
+    "mlsImport": "MLS Data Import"
   }
 }

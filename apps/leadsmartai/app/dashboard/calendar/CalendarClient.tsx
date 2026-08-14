@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -61,7 +62,7 @@ function formatTime(iso: string, locale = "en-US") { return new Date(iso).toLoca
 export default function CalendarClient({ leads }: { leads: Array<{ id: string; name: string | null }> }) {
   const { t: tr, i18n } = useTranslation("dashboard");
   // Times were pinned to en-US regardless of the chosen language.
-  const timeLocale = i18n.language === "zh-Hans" ? "zh-CN" : "en-US";
+  const timeLocale = intlLocale(i18n.language);
   const [currentMonth, setCurrentMonth] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -745,7 +746,7 @@ function ListView({
   goToday: () => void;
 }) {
   const { i18n } = useTranslation("dashboard");
-  const timeLocale = i18n.language === "zh-Hans" ? "zh-CN" : "en-US";
+  const timeLocale = intlLocale(i18n.language);
   // Sort the date keys ascending so the oldest entries in the month
   // come first — consistent with how a paper calendar reads.
   const sortedKeys = Array.from(dayMap.keys()).sort();

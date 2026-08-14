@@ -295,5 +295,57 @@
     "actionFailed": "操作失败。",
     "uploadFailed": "上传失败",
     "couldNotWorkOut": "这条我没能理解 —— 换个说法再试试。"
+  },
+  "support": {
+    "title": "客服工作台",
+    "openCount": "待处理",
+    "waitingCount": "等待中",
+    "searchPlaceholder": "搜索姓名、邮箱或主题…",
+    "loadingList": "正在加载对话…",
+    "loadingConversation": "正在加载对话内容…",
+    "selectPrompt": "请选择一个对话查看详情。",
+    "replyPlaceholder": "输入您的回复…",
+    "sending": "发送中…",
+    "sendReply": "发送回复",
+    "details": "对话详情",
+    "assigned": "负责人",
+    "unassigned": "未分配",
+    "unreadForCustomer": "客户未读",
+    "lastUpdated": "最后更新",
+    "quickActions": "快捷操作",
+    "markResolved": "标记为已解决",
+    "markUrgent": "标记为紧急",
+    "filters": {
+      "all": "全部",
+      "open": "待处理",
+      "waiting": "等待中",
+      "resolved": "已解决"
+    },
+    "status": {
+      "open": "待处理",
+      "waiting_on_support": "等待客服回复",
+      "waiting_on_customer": "等待客户回复",
+      "resolved": "已解决",
+      "closed": "已关闭"
+    },
+    "priority": {
+      "low": "低",
+      "normal": "普通",
+      "high": "高",
+      "urgent": "紧急"
+    }
+  },
+  "settings": {
+    "aiStyle": "AI 助理风格",
+    "phoneVoice": "通话语音",
+    "voiceReceptionist": "AI 电话接待",
+    "voiceReceptionistHelp": "您的 AI 电话接待的身份设定，以及它对您业务的了解 —— 每一通打到接待号码的来电都会用到。",
+    "missedCall": "未接来电自动回短信",
+    "missedCallHelp": "来电您没接时自动发短信。把来电转接到您的手机，不漏掉任何一个客户。",
+    "briefings": "每日简报",
+    "briefingsHelp": "设置 ☀️ 早间计划和 🌙 晚间总结每天在控制台和手机 App 中推送的时间。",
+    "smartLink": "房屋估值智能链接",
+    "smartLinkHelp": "分享给房主，把他们引入您的客户漏斗。",
+    "mlsImport": "MLS 数据导入"
   }
 }
