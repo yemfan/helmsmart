@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -17,6 +19,7 @@ import { SendMarketReportButton } from "@/components/marketReport/SendMarketRepo
  * click away in the contacts hub.
  */
 export default function LeadProfileClient({ leadId }: { leadId: string }) {
+  const { t } = useTranslation("dashboard");
   const [data, setData] = useState<LeadProfilePayload | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,9 +30,9 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
       .then((j) => {
         if (cancelled) return;
         if (j?.ok) setData(j as LeadProfilePayload);
-        else setError(j?.error ?? "Could not load this lead.");
+        else setError(j?.error ?? t("detail.leadProfile.loadFailed"));
       })
-      .catch(() => !cancelled && setError("Could not load this lead."));
+      .catch(() => !cancelled && setError(t("detail.leadProfile.loadFailed")));
     return () => {
       cancelled = true;
     };
@@ -59,13 +62,13 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
       {/* ── Who they are ── */}
       <header className="rounded-2xl border border-gray-200 bg-gradient-to-b from-slate-50 to-white p-5 shadow-sm">
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/contacts" className="hover:underline">Leads</Link>
+          <Link href="/dashboard/contacts" className="hover:underline">{t("detail.leadProfile.breadcrumb")}</Link>
           {" / "}
-          <span>{p.name ?? "Lead"}</span>
+          <span>{p.name ?? t("detail.leadProfile.lead")}</span>
         </div>
         <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <h1 className="text-2xl font-semibold text-gray-900">{p.name ?? "Unnamed lead"}</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">{p.name ?? t("detail.leadProfile.unnamed")}</h1>
             <p className="mt-0.5 text-sm text-gray-500">
               {[p.source, `with you since ${new Date(p.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric" })}`]
                 .filter(Boolean)
@@ -127,7 +130,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
         <div className="space-y-4 lg:col-span-2">
           {data.nextBestAction && (
             <section className="rounded-xl border border-amber-200/80 bg-gradient-to-r from-amber-50 to-white p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8a6a0e]">Next best action</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8a6a0e]">{t("detail.leadProfile.nextBestAction")}</p>
               <p className="mt-1 text-sm font-medium text-gray-900">{data.nextBestAction.title}</p>
               {data.nextBestAction.reason && <p className="mt-0.5 text-xs text-gray-600">{data.nextBestAction.reason}</p>}
               {data.nextBestAction.expected_outcome && (
@@ -138,13 +141,13 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
 
           {p.notes && (
             <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">What you know</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">{t("detail.leadProfile.whatYouKnow")}</p>
               <p className="mt-1.5 text-sm leading-relaxed text-gray-700">{p.notes}</p>
             </section>
           )}
 
           <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Open follow-ups</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">{t("detail.leadProfile.openFollowUps")}</p>
             {data.tasks.length === 0 ? (
               <p className="mt-1.5 text-sm text-gray-400">Nothing open — your AI team will flag the next touch.</p>
             ) : (
@@ -165,7 +168,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
 
           {data.appointments.length > 0 && (
             <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Upcoming</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">{t("detail.leadProfile.upcoming")}</p>
               <ul className="mt-1.5 space-y-1.5">
                 {data.appointments.map((e) => (
                   <li key={e.id} className="text-sm text-gray-700">
@@ -182,7 +185,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
 
         {/* ── Right: the relationship so far ── */}
         <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm lg:col-span-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Story so far</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">{t("detail.leadProfile.storySoFar")}</p>
           {timeline.length === 0 ? (
             <p className="mt-2 text-sm text-gray-400">
               No interactions yet — your AI team will log calls, texts, and follow-ups here.
