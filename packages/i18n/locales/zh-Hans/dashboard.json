@@ -909,5 +909,8 @@
     "starterPlan": "您当前使用的是入门版",
     "unlocks": "升级可获得更多客户线索、完整 CRM、AI 自动化以及互动追踪。",
     "cta": "升级"
+  },
+  "twin": {
+    "scriptLanguage": "脚本语言"
   }
 }
