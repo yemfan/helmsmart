@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
-import { CREDIT_PACKS } from "@/lib/credits/pricing";
+import { CREDIT_PACKS, readStripePriceId } from "@/lib/credits/pricing";
 
 // One-time credit top-up checkout (Stripe `mode: "payment"`). The matching
 // fulfillment lives in the Stripe webhook (checkout.session.completed →
@@ -25,14 +25,13 @@ export async function POST(req: Request) {
     }
 
     // Price ids are provisioned in Stripe + set as env vars; until then the
-    // pack simply isn't buyable (graceful degradation, like every integration here).
-    const price = process.env[pack.priceEnv]?.trim();
-    if (!price) {
-      return NextResponse.json(
-        { error: `Credit packs aren't set up yet (missing ${pack.priceEnv}).` },
-        { status: 503 },
-      );
+    // pack simply isn't buyable (graceful degradation, like every integration
+    // here). A malformed value is named explicitly rather than handed to Stripe.
+    const resolved = readStripePriceId(pack.priceEnv);
+    if ("error" in resolved) {
+      return NextResponse.json({ error: resolved.error }, { status: 503 });
     }
+    const price = resolved.id;
 
     const origin = new URL(req.url).origin;
     const session = await stripe.checkout.sessions.create({

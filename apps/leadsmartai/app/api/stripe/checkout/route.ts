@@ -3,7 +3,7 @@ import { stripe } from "@/lib/stripe";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { getPaidSubscriptionEligibility } from "@/lib/paidSubscriptionEligibility";
 import { getStripePriceIdForPlan } from "@/lib/stripePriceIds";
-import { CREDIT_TIERS } from "@/lib/credits/pricing";
+import { CREDIT_TIERS, readStripePriceId } from "@/lib/credits/pricing";
 import { monthlyCreditsForPlan } from "@/lib/credits/subscriptionCredits";
 
 // The usage-model plans (Starter/Growth/Scale) replace the old Pro/Premium
@@ -34,14 +34,18 @@ export async function POST(req: Request) {
 
     // New credit plans resolve their price from env; legacy pro/premium still work.
     let price: string | undefined;
-    if (tier) price = process.env[tier.priceEnv]?.trim();
-    else if (plan === "pro" || plan === "premium") price = getStripePriceIdForPlan(plan);
+    if (tier) {
+      const resolved = readStripePriceId(tier.priceEnv);
+      if ("error" in resolved) {
+        return NextResponse.json({ error: resolved.error }, { status: 503 });
+      }
+      price = resolved.id;
+    } else if (plan === "pro" || plan === "premium") {
+      price = getStripePriceIdForPlan(plan);
+    }
 
     if (!price) {
-      return NextResponse.json(
-        { error: tier ? `That plan isn't set up yet (missing ${tier.priceEnv}).` : "Invalid plan" },
-        { status: tier ? 503 : 400 },
-      );
+      return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
     // Monthly credit allotment carried in the subscription metadata so each
