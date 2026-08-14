@@ -62,6 +62,8 @@ export async function POST(req: Request) {
       sharpen?: unknown;
       photoAvatar?: unknown;
       voice?: unknown;
+      /** Script language for the "draft" action — "en" (default) or "zh-Hans". */
+      language?: unknown;
     };
     const action = typeof body.action === "string" ? body.action : "";
     const text = typeof body.text === "string" ? body.text : "";
@@ -72,7 +74,8 @@ export async function POST(req: Request) {
     switch (action) {
       case "draft": {
         const topic = typeof body.topic === "string" ? body.topic : null;
-        const script = await draftAvatarScript(id, topic);
+        const language = body.language === "zh-Hans" ? "zh-Hans" : "en";
+        const script = await draftAvatarScript(id, topic, language);
         return NextResponse.json({ ok: true, script });
       }
       case "preview": {

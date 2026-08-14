@@ -137,7 +137,18 @@ export async function getAvatarState(agentId: string): Promise<AvatarState> {
 }
 
 /** Claude drafts a short, first-person spoken script from the brand profile. */
-export async function draftAvatarScript(agentId: string, topic: string | null): Promise<string> {
+/**
+ * Script language. The ElevenLabs model we speak with (eleven_multilingual_v2)
+ * already handles Chinese, so this only steers what Claude writes — the same
+ * cloned voice speaks either language.
+ */
+export type ScriptLanguage = "en" | "zh-Hans";
+
+export async function draftAvatarScript(
+  agentId: string,
+  topic: string | null,
+  language: ScriptLanguage = "en",
+): Promise<string> {
   const agent = await readAgent(agentId);
   const profile = agent?.dt_brand_profile ?? null;
   const name = agent?.brand_name ?? null;
@@ -150,7 +161,10 @@ export async function draftAvatarScript(agentId: string, topic: string | null): 
       "You write a SHORT script for a real-estate agent to say to camera in a talking-head video (about 20-30 seconds, 55-85 words). " +
       "First person, in their own voice, natural and spoken — no stage directions, no emojis, no hashtags, no markdown. " +
       "Ground it ONLY in the agent's brand profile and the topic; never invent stats, awards, or claims they didn't make. " +
-      "Return ONLY the words they should say.",
+      "Return ONLY the words they should say. " +
+      (language === "zh-Hans"
+        ? "Write the script in Simplified Chinese (简体中文), natural spoken Mandarin as a real estate agent would actually say it to camera — not a literal translation of English phrasing. Aim for 90-140 characters. Keep proper nouns (city names, the agent's brand) in whatever form the brand profile uses."
+        : "Write the script in English."),
     messages: [
       {
         role: "user",

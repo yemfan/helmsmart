@@ -909,5 +909,8 @@
     "starterPlan": "You're on the Starter plan",
     "unlocks": "Upgrade for more leads, full CRM, AI automation, and engagement tracking.",
     "cta": "Upgrade"
+  },
+  "twin": {
+    "scriptLanguage": "Script language"
   }
 }

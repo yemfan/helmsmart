@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 import { AVATAR_PRESET_VOICES, CLONE_VOICE_ID } from "@/lib/agent/avatarVoices";
 
@@ -61,6 +62,7 @@ function toVoiceState(b: VoiceCloneResp): VoiceCloneState {
 }
 
 export default function DigitalTwinPanel() {
+  const { t, i18n } = useTranslation("dashboard");
   const [configured, setConfigured] = useState(true);
   const [status, setStatus] = useState<string>("idle");
   const [consent, setConsent] = useState(false);
@@ -84,6 +86,14 @@ export default function DigitalTwinPanel() {
 
   // Phase C — talking avatar.
   const [av, setAv] = useState<AvatarState | null>(null);
+  /**
+   * Script language. Separate from the UI language on purpose: a bilingual
+   * agent may run the app in English and still want a Chinese video (or the
+   * reverse). Seeded from the UI language as the likely default.
+   */
+  const [avLang, setAvLang] = useState<"en" | "zh-Hans">(() =>
+    i18n.language === "zh-Hans" ? "zh-Hans" : "en",
+  );
   const [avTopic, setAvTopic] = useState("");
   const [avScript, setAvScript] = useState("");
   const [avAudioUrl, setAvAudioUrl] = useState<string | null>(null);
@@ -166,7 +176,7 @@ export default function DigitalTwinPanel() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(
           action === "draft"
-            ? { action, topic: avTopic }
+            ? { action, topic: avTopic, language: avLang }
             : action === "render"
               ? {
                   action,
@@ -622,6 +632,28 @@ export default function DigitalTwinPanel() {
                   placeholder="e.g. a new listing, market update, just introduce myself"
                   className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                 />
+              </label>
+              <label className="min-w-[130px]">
+                <span className="text-xs font-medium text-slate-600">{t("twin.scriptLanguage")}</span>
+                <select
+                  value={avLang}
+                  onChange={(e) => setAvLang(e.target.value === "zh-Hans" ? "zh-Hans" : "en")}
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                >
+                  <option value="en">English</option>
+                  <option value="zh-Hans">中文</option>
+                </select>
+              </label>
+              <label className="min-w-[130px]">
+                <span className="text-xs font-medium text-slate-600">{t("twin.scriptLanguage")}</span>
+                <select
+                  value={avLang}
+                  onChange={(e) => setAvLang(e.target.value === "zh-Hans" ? "zh-Hans" : "en")}
+                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                >
+                  <option value="en">English</option>
+                  <option value="zh-Hans">中文</option>
+                </select>
               </label>
               <button
                 type="button"
