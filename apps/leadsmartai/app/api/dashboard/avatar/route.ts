@@ -61,9 +61,13 @@ export async function POST(req: Request) {
       caption?: unknown;
       sharpen?: unknown;
       photoAvatar?: unknown;
+      voice?: unknown;
     };
     const action = typeof body.action === "string" ? body.action : "";
     const text = typeof body.text === "string" ? body.text : "";
+    // Which voice speaks the script — the agent's clone or a stock preset.
+    // Validated server-side in resolveVoiceId; unknown ids are rejected there.
+    const voice = typeof body.voice === "string" ? body.voice : null;
 
     switch (action) {
       case "draft": {
@@ -72,7 +76,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ ok: true, script });
       }
       case "preview": {
-        const out = await previewAvatarVoice(id, text);
+        const out = await previewAvatarVoice(id, text, voice);
         return NextResponse.json({ ok: true, ...out });
       }
       case "render": {
@@ -91,7 +95,7 @@ export async function POST(req: Request) {
         }
         // Reserve credits around the paid render (no-op unless metering is on).
         const out = await withCreditsMetered(String(userId), CREDIT_COSTS.twinAvatar, "twin", () =>
-          renderAvatarVideo(id, text, audioPath, { sharpen, photoAvatar }),
+          renderAvatarVideo(id, text, audioPath, { sharpen, photoAvatar, voice }),
         );
         return NextResponse.json({ ok: true, ...out });
       }

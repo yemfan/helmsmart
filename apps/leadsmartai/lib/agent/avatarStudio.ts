@@ -3,6 +3,8 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
 import { getAgentVoiceSettings } from "@/lib/agent-voice/settings";
+import { findPreset } from "@/lib/agent-voice/presets";
+import { CLONE_VOICE_ID } from "@/lib/agent/avatarVoices";
 import { scheduleReel } from "@/lib/social/scheduleReel";
 import type { BrandProfile } from "@/lib/agent/digitalTwin";
 
@@ -60,6 +62,7 @@ function falHeaders(): Record<string, string> {
 
 type AgentRow = {
   brand_name: string | null;
+  dt_consent: boolean | null;
   dt_intro_video_path: string | null;
   dt_portrait_path: string | null;
   dt_brand_profile: BrandProfile | null;
@@ -71,7 +74,7 @@ async function readAgent(agentId: string): Promise<AgentRow | null> {
   const { data } = await supabaseAdmin
     .from("agents")
     .select(
-      "brand_name, dt_intro_video_path, dt_portrait_path, dt_brand_profile, dt_avatar_script, dt_avatar_video_url",
+      "brand_name, dt_consent, dt_intro_video_path, dt_portrait_path, dt_brand_profile, dt_avatar_script, dt_avatar_video_url",
     )
     .eq("id", agentId)
     .maybeSingle();
@@ -98,8 +101,25 @@ async function clonedVoiceId(agentId: string): Promise<string> {
   const s = await getAgentVoiceSettings(agentId);
   const id = s.voiceCloneRemoteId?.trim();
   if (!s.consentConfirmed || s.voiceCloneStatus !== "ready" || !id) {
-    throw new Error("Clone your voice first (Digital Twin → Your AI voice).");
+    throw new Error("Clone your voice first (Digital Twin → Your AI voice), or pick a stock voice.");
   }
+  return id;
+}
+
+/**
+ * Which ElevenLabs voice speaks the script: the agent's own clone (default), or
+ * one of the stock presets.
+ *
+ * A preset is nobody's likeness, so it needs no voice consent and no clone —
+ * that's the point: an agent can make content on day one, and can pick a
+ * different voice for content than the one that answers their phone.
+ */
+async function resolveVoiceId(agentId: string, choice: string | null | undefined): Promise<string> {
+  const want = choice?.trim() || CLONE_VOICE_ID;
+  if (want === CLONE_VOICE_ID) return clonedVoiceId(agentId);
+
+  const id = findPreset("elevenlabs", want)?.elevenLabsVoiceId?.trim();
+  if (!id) throw new Error("That voice isn't available — pick another from the list.");
   return id;
 }
 
@@ -148,15 +168,17 @@ export async function draftAvatarScript(agentId: string, topic: string | null): 
 }
 
 /**
- * Speak `text` in the agent's cloned voice (ElevenLabs). Uploads the mp3 to the
- * PRIVATE bucket and returns both a signed preview URL and the storage path
- * (so a later render can reuse the exact audio the agent approved).
+ * Speak `text` in the chosen ElevenLabs voice — the agent's clone by default,
+ * or a stock preset. Uploads the mp3 to the PRIVATE bucket and returns both a
+ * signed preview URL and the storage path (so a later render can reuse the
+ * exact audio the agent approved).
  */
 export async function previewAvatarVoice(
   agentId: string,
   text: string,
+  voice?: string | null,
 ): Promise<{ audioUrl: string; audioPath: string }> {
-  const voiceId = await clonedVoiceId(agentId);
+  const voiceId = await resolveVoiceId(agentId, voice);
   const clean = text.trim();
   if (!clean) throw new Error("Nothing to say — draft or write a script first.");
 
@@ -293,12 +315,20 @@ export async function renderAvatarVideo(
   agentId: string,
   text: string,
   audioPath: string | null,
-  options?: { sharpen?: boolean; photoAvatar?: boolean },
+  options?: { sharpen?: boolean; photoAvatar?: boolean; voice?: string | null },
 ): Promise<{ videoUrl: string; sharpened?: boolean; photoAvatar?: boolean }> {
   if (!avatarConfigured()) throw new Error("Avatar isn't configured (needs FAL_KEY + ELEVENLABS_API_KEY).");
-  await clonedVoiceId(agentId); // consent/ready guard
 
   const agent = await readAgent(agentId);
+
+  // Every render puts the agent's FACE on screen, so likeness consent is
+  // required no matter whose voice speaks. This used to ride on the voice-clone
+  // guard, which no longer runs when a stock voice is chosen — so check it
+  // directly rather than leaving the gate to a side effect.
+  if (!agent?.dt_consent) {
+    throw new Error("Consent to AI use of your likeness first (Digital Twin).");
+  }
+
   const photoAvatar = Boolean(options?.photoAvatar);
   const videoPath = ownPath(agent?.dt_intro_video_path, agentId);
   const portraitPath = ownPath(agent?.dt_portrait_path, agentId);
@@ -313,10 +343,11 @@ export async function renderAvatarVideo(
     );
   }
 
-  // Reuse the approved preview audio when given (and it's this agent's), else synthesize now.
+  // Reuse the approved preview audio when given (and it's this agent's), else
+  // synthesize now in the chosen voice.
   let audio = audioPath?.trim() || "";
   if (!audio || !audio.startsWith(`digital-twin/${agentId}/`)) {
-    audio = (await previewAvatarVoice(agentId, text)).audioPath;
+    audio = (await previewAvatarVoice(agentId, text, options?.voice)).audioPath;
   }
 
   // Prefer an uploaded portrait as the likeness source; it skips the
