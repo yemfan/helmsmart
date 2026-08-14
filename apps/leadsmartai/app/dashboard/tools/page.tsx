@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getPropertyToolsConsumerPostLoginUrl } from "@/lib/propertyToolsConsumerUrl";
+import { getServerT } from "@/lib/i18n/server";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,34 +10,38 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
+/** `key` indexes `dashboard:more.tools.items.*`; the label resolves at render. */
 const tools = [
-  { href: "/dashboard/seller-presentation", label: "Seller Presentation Generator" },
-  { href: getPropertyToolsConsumerPostLoginUrl(), label: "PropertyTools app (buyer / seller)" },
-  { href: "/deal-assistant", label: "AI Deal Closer" },
-  { href: "/home-value-estimator", label: "Home Value Estimator" },
-  { href: "/smart-cma-builder", label: "Smart CMA Builder" },
-  { href: "/rental-property-analyzer", label: "Rental Property Analyzer" },
-  { href: "/ai-zillow-redfin-link-analyzer", label: "Zillow / Redfin Link Analyzer" },
-  { href: "/mortgage-calculator", label: "Mortgage Calculator" },
-  { href: "/refinance-calculator", label: "Refinance Calculator" },
-  { href: "/affordability-calculator", label: "Home Affordability Calculator" },
-  { href: "/rent-vs-buy-calculator", label: "Rent vs Buy Calculator" },
-  { href: "/closing-cost-estimator", label: "Closing Cost Estimator" },
-  { href: "/property-investment-analyzer", label: "Property Investment Analyzer" },
-  { href: "/ai-real-estate-deal-analyzer", label: "AI Deal Analyzer" },
-  { href: "/ai-cma-analyzer", label: "AI CMA Analyzer" },
-  { href: "/down-payment-calculator", label: "Down Payment Calculator" },
-  { href: "/cash-flow-calculator", label: "Cash Flow Calculator" },
-  { href: "/cap-rate-calculator", label: "Cap Rate & ROI Calculator" },
-  { href: "/property-report", label: "Property Report Generator" },
+  { href: "/dashboard/seller-presentation", key: "sellerPresentation" },
+  { href: getPropertyToolsConsumerPostLoginUrl(), key: "propertyToolsApp" },
+  { href: "/deal-assistant", key: "dealCloser" },
+  { href: "/home-value-estimator", key: "homeValue" },
+  { href: "/smart-cma-builder", key: "smartCma" },
+  { href: "/rental-property-analyzer", key: "rentalAnalyzer" },
+  { href: "/ai-zillow-redfin-link-analyzer", key: "linkAnalyzer" },
+  { href: "/mortgage-calculator", key: "mortgage" },
+  { href: "/refinance-calculator", key: "refinance" },
+  { href: "/affordability-calculator", key: "affordability" },
+  { href: "/rent-vs-buy-calculator", key: "rentVsBuy" },
+  { href: "/closing-cost-estimator", key: "closingCost" },
+  { href: "/property-investment-analyzer", key: "investmentAnalyzer" },
+  { href: "/ai-real-estate-deal-analyzer", key: "dealAnalyzer" },
+  { href: "/ai-cma-analyzer", key: "cmaAnalyzer" },
+  { href: "/down-payment-calculator", key: "downPayment" },
+  { href: "/cash-flow-calculator", key: "cashFlow" },
+  { href: "/cap-rate-calculator", key: "capRate" },
+  { href: "/property-report", key: "propertyReport" },
 ];
 
-export default function ToolsPage() {
+export default async function ToolsPage() {
+  const serverT = await getServerT();
+  const tr = (key: string) => serverT(key, { ns: "dashboard" });
+
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="ui-page-title text-brand-text">Tools</h1>
-        <p className="ui-page-subtitle text-brand-text/80">All CloseBoss tools in one place.</p>
+        <h1 className="ui-page-title text-brand-text">{tr("more.tools.title")}</h1>
+        <p className="ui-page-subtitle text-brand-text/80">{tr("more.tools.subtitle")}</p>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
@@ -47,8 +52,8 @@ export default function ToolsPage() {
               href={t.href}
               className="rounded-xl border border-gray-200 bg-brand-surface hover:bg-white hover:border-brand-primary/40 p-4 transition-colors"
             >
-              <div className="ui-card-title text-brand-text">{t.label}</div>
-              <div className="mt-2 text-xs font-semibold text-brand-primary">Open →</div>
+              <div className="ui-card-title text-brand-text">{tr(`more.tools.items.${t.key}`)}</div>
+              <div className="mt-2 text-xs font-semibold text-brand-primary">{tr("more.tools.open")}</div>
             </Link>
           ))}
         </div>
@@ -56,4 +61,3 @@ export default function ToolsPage() {
     </div>
   );
 }
-
