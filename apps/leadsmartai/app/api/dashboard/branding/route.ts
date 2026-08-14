@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { describeApiError, serializeError } from "@/lib/api/describeApiError";
 
 export async function GET() {
   try {
@@ -48,7 +49,9 @@ export async function GET() {
       },
     });
   } catch (e: unknown) {
-    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : "Server error" }, { status: 500 });
+    console.error("GET /api/dashboard/branding:", serializeError(e));
+    const { message, status } = describeApiError(e, "Could not load your branding settings.");
+    return NextResponse.json({ ok: false, error: message }, { status });
   }
 }
 
@@ -114,6 +117,8 @@ export async function PATCH(req: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {
-    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : "Server error" }, { status: 500 });
+    console.error("PATCH /api/dashboard/branding:", serializeError(e));
+    const { message, status } = describeApiError(e, "Could not save your branding settings.");
+    return NextResponse.json({ ok: false, error: message }, { status });
   }
 }
