@@ -1,0 +1,54 @@
+{
+  "topbar": {
+    "search": "搜索客户、房源地址…",
+    "askMax": "问 Max",
+    "quickActions": "快捷操作",
+    "openQuickActions": "打开快捷操作菜单",
+    "closeQuickActions": "关闭快捷操作菜单",
+    "signedIn": "已登录",
+    "account": "账户",
+    "home": "首页",
+    "myProfile": "个人资料",
+    "mySettings": "我的设置",
+    "creditsBilling": "额度与账单",
+    "logOut": "退出登录",
+    "upsell": "用 AI 跟进赢得更多客户",
+    "actions": {
+      "addLead": "添加客户",
+      "sendMessage": "发送消息",
+      "createTask": "新建任务",
+      "createAppointment": "新建预约",
+      "generateCma": "生成 CMA 报告",
+      "compareProperties": "房源对比"
+    },
+    "searchLeads": "搜索客户",
+    "topUp": "随时充值额度 — 功能全部包含。"
+  },
+  "sidebar": {
+    "upsellTitle": "用 AI 跟进赢得更多客户",
+    "upsellBody": "升级可获得更多额度与自动化功能。"
+  },
+  "profile": {
+    "title": "个人资料",
+    "subtitle": "个人信息与品牌设置。",
+    "backToDashboard": "← 返回控制台",
+    "changePhoto": "更换照片",
+    "uploading": "上传中…",
+    "agent": "经纪人",
+    "loadFailed": "无法加载个人资料",
+    "phoneInvalid": "请输入有效的美国电话号码（10 位数字）。",
+    "emailRequired": "请填写邮箱。",
+    "saveFailed": "保存失败",
+    "savedShort": "已保存。",
+    "fullName": "姓名",
+    "phone": "电话",
+    "email": "邮箱",
+    "saveChanges": "保存更改",
+    "saving": "保存中…",
+    "saved": "已保存",
+    "branding": "品牌",
+    "brandingSubtitle": "品牌名称、标志与邮件签名。",
+    "brandName": "品牌名称",
+    "brandNameHelp": "用于邮件签名、报告以及发送给客户的消息。"
+  }
+}

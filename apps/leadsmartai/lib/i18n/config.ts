@@ -13,6 +13,7 @@ import {
 import enCommon from "@leadsmart/i18n/locale/en/common";
 import enSettings from "@leadsmart/i18n/locale/en/settings";
 import enDashboardNav from "@leadsmart/i18n/locale/en/dashboard_nav";
+import enDashboard from "@leadsmart/i18n/locale/en/dashboard";
 import enWebContacts from "@leadsmart/i18n/locale/en/web_contacts";
 import enWebContactsClient from "@leadsmart/i18n/locale/en/web_contacts_client";
 import enWebGenerateLeads from "@leadsmart/i18n/locale/en/web_generate_leads";
@@ -37,6 +38,7 @@ import enWebFreeTools from "@leadsmart/i18n/locale/en/web_free_tools";
 import zhCommon from "@leadsmart/i18n/locale/zh-Hans/common";
 import zhSettings from "@leadsmart/i18n/locale/zh-Hans/settings";
 import zhDashboardNav from "@leadsmart/i18n/locale/zh-Hans/dashboard_nav";
+import zhDashboard from "@leadsmart/i18n/locale/zh-Hans/dashboard";
 import zhWebAbout from "@leadsmart/i18n/locale/zh-Hans/web_about";
 import zhWebContact from "@leadsmart/i18n/locale/zh-Hans/web_contact";
 import zhWebFeatures from "@leadsmart/i18n/locale/zh-Hans/web_features";
@@ -68,6 +70,7 @@ export const namespaces = [
   "common",
   "settings",
   "dashboard_nav",
+  "dashboard",
   "web_posts",
   "web_generate_leads",
   "web_contacts",
@@ -100,6 +103,7 @@ export const resources: Record<
     common: enCommon,
     settings: enSettings,
     dashboard_nav: enDashboardNav,
+    dashboard: enDashboard,
     web_posts: enWebPosts,
     web_generate_leads: enWebGenerateLeads,
     web_contacts: enWebContacts,
@@ -126,6 +130,7 @@ export const resources: Record<
     common: zhCommon,
     settings: zhSettings,
     dashboard_nav: zhDashboardNav,
+    dashboard: zhDashboard,
     web_posts: zhWebPosts,
     web_generate_leads: zhWebGenerateLeads,
     web_contacts: zhWebContacts,

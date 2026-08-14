@@ -1,0 +1,54 @@
+{
+  "topbar": {
+    "search": "Search leads, clients, addresses...",
+    "askMax": "Ask Max",
+    "quickActions": "Quick actions",
+    "openQuickActions": "Open quick actions menu",
+    "closeQuickActions": "Close quick actions menu",
+    "signedIn": "Signed in",
+    "account": "Account",
+    "home": "Home",
+    "myProfile": "My Profile",
+    "mySettings": "My Settings",
+    "creditsBilling": "Credits & Billing",
+    "logOut": "Log out",
+    "upsell": "Grow with AI follow-ups",
+    "actions": {
+      "addLead": "Add Lead",
+      "sendMessage": "Send Message",
+      "createTask": "Create Task",
+      "createAppointment": "Create Appointment",
+      "generateCma": "Generate CMA",
+      "compareProperties": "Compare properties"
+    },
+    "searchLeads": "Search leads",
+    "topUp": "Top up credits any time — everything included."
+  },
+  "sidebar": {
+    "upsellTitle": "Grow with AI follow-ups",
+    "upsellBody": "Upgrade for more credits and automation."
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Personal info and branding.",
+    "backToDashboard": "← Dashboard",
+    "changePhoto": "Change photo",
+    "uploading": "Uploading...",
+    "agent": "Agent",
+    "loadFailed": "Could not load profile",
+    "phoneInvalid": "Phone must be a valid US number (10 digits).",
+    "emailRequired": "Email is required.",
+    "saveFailed": "Save failed",
+    "savedShort": "Saved.",
+    "fullName": "Full name",
+    "phone": "Phone",
+    "email": "Email",
+    "saveChanges": "Save changes",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "branding": "Branding",
+    "brandingSubtitle": "Brand name, logo, and email signature.",
+    "brandName": "Brand Name",
+    "brandNameHelp": "Used in email signatures, reports, and client-facing messages."
+  }
+}

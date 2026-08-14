@@ -72,18 +72,20 @@ function initialsFromDisplay(display: string): string {
   );
 }
 
+/** `key` indexes `dashboard:topbar.actions.*` — the label is resolved at render. */
 const QUICK_ACTION_LINKS = [
-  { href: "/dashboard/leads/add", label: "Add Lead", Icon: UserPlus },
-  { href: "/dashboard/send", label: "Send Message", Icon: MessageSquare },
-  { href: "/dashboard/tasks?new=1", label: "Create Task", Icon: ListTodo },
-  { href: "/dashboard/calendar?new=1", label: "Create Appointment", Icon: Calendar },
+  { href: "/dashboard/leads/add", key: "addLead", Icon: UserPlus },
+  { href: "/dashboard/send", key: "sendMessage", Icon: MessageSquare },
+  { href: "/dashboard/tasks?new=1", key: "createTask", Icon: ListTodo },
+  { href: "/dashboard/calendar?new=1", key: "createAppointment", Icon: Calendar },
   // "Generate CMA" now opens the real comps/valuation CMA; the AI
   // property-comparison report is its own action.
-  { href: "/dashboard/cma", label: "Generate CMA", Icon: BarChart3 },
-  { href: "/dashboard/comparison-report", label: "Compare properties", Icon: Scale },
+  { href: "/dashboard/cma", key: "generateCma", Icon: BarChart3 },
+  { href: "/dashboard/comparison-report", key: "compareProperties", Icon: Scale },
 ] as const;
 
 function QuickActionsDropdown() {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -139,7 +141,7 @@ function QuickActionsDropdown() {
       ref={menuRef}
       className="fixed z-[199] w-[min(100vw-1.5rem,17rem)] rounded-2xl border border-slate-200/90 bg-white p-1.5 shadow-xl shadow-slate-900/10 ring-1 ring-slate-900/[0.04]"
       role="menu"
-      aria-label="Quick actions"
+      aria-label={t("topbar.quickActions")}
       style={
         placement
           ? { top: placement.top, right: placement.right }
@@ -153,12 +155,12 @@ function QuickActionsDropdown() {
         onClick={() => setOpen(false)}
       >
         <Sparkles className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
-        Ask Max
+        {t("topbar.askMax")}
       </Link>
       <p className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-        Quick actions
+        {t("topbar.quickActions")}
       </p>
-      {QUICK_ACTION_LINKS.map(({ href, label, Icon }) => (
+      {QUICK_ACTION_LINKS.map(({ href, key, Icon }) => (
         <Link
           key={href}
           href={href}
@@ -167,7 +169,7 @@ function QuickActionsDropdown() {
           onClick={() => setOpen(false)}
         >
           <Icon className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
-          {label}
+          {t(`topbar.actions.${key}`)}
         </Link>
       ))}
     </div>
@@ -182,10 +184,10 @@ function QuickActionsDropdown() {
         className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3 text-slate-700 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40"
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label={open ? "Close quick actions menu" : "Open quick actions menu"}
+        aria-label={open ? t("topbar.closeQuickActions") : t("topbar.openQuickActions")}
       >
         <Plus className="h-[18px] w-[18px] shrink-0" strokeWidth={2} aria-hidden />
-        <span className="hidden text-sm font-semibold sm:inline">Quick actions</span>
+        <span className="hidden text-sm font-semibold sm:inline">{t("topbar.quickActions")}</span>
         <ChevronDown
           className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
           strokeWidth={2}
@@ -220,6 +222,7 @@ function ProfileMenu({
   /** `leadsmart_users.role` — shown under email. */
   appRole?: string | null;
 }) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -285,8 +288,8 @@ function ProfileMenu({
       }
     >
       <div className="border-b border-slate-100 px-3 py-2.5">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Signed in</p>
-        <p className="truncate text-sm font-medium text-slate-900">{name || email || "Account"}</p>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">{t("topbar.signedIn")}</p>
+        <p className="truncate text-sm font-medium text-slate-900">{name || email || t("topbar.account")}</p>
         {name && email ? (
           <p className="truncate text-xs text-slate-500">{email}</p>
         ) : null}
@@ -299,7 +302,7 @@ function ProfileMenu({
         onClick={() => setOpen(false)}
       >
         <House className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
-        Home
+        {t("topbar.home")}
       </Link>
       <Link
         href="/account/profile"
@@ -308,7 +311,7 @@ function ProfileMenu({
         onClick={() => setOpen(false)}
       >
         <User className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
-        My Profile
+        {t("topbar.myProfile")}
       </Link>
       <Link
         href="/dashboard/settings"
@@ -317,7 +320,7 @@ function ProfileMenu({
         onClick={() => setOpen(false)}
       >
         <Settings className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
-        My Settings
+        {t("topbar.mySettings")}
       </Link>
       <Link
         href="/dashboard/credits"
@@ -326,7 +329,7 @@ function ProfileMenu({
         onClick={() => setOpen(false)}
       >
         <CreditCard className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
-        Credits &amp; Billing
+        {t("topbar.creditsBilling")}
       </Link>
       <div className="mt-1 border-t border-slate-100 pt-1">
         <button
@@ -339,7 +342,7 @@ function ProfileMenu({
           }}
         >
           <LogOut className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
-          Log out
+          {t("topbar.logOut")}
         </button>
       </div>
     </div>
@@ -364,7 +367,7 @@ function ProfileMenu({
           )}
         </span>
         <span className="hidden min-w-0 flex-1 sm:block">
-          <span className="block truncate text-sm font-semibold text-slate-900">{name || email || "Account"}</span>
+          <span className="block truncate text-sm font-semibold text-slate-900">{name || email || t("topbar.account")}</span>
         </span>
         <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} aria-hidden />
       </button>
@@ -393,6 +396,7 @@ export default function TopBar({
   // Same English-keyed translation the desktop sidebar uses, so the mobile
   // drawer doesn't stay English after the agent switches language.
   const { t: tNav, i18n } = useTranslation("dashboard_nav");
+  const { t } = useTranslation("dashboard");
   const navSections = useMemo(
     () =>
       translateNavSections(filterNavSectionsByRole(leadSmartMobileNav, appRole) as NavSection[], (s) =>
@@ -437,8 +441,8 @@ export default function TopBar({
       href="/dashboard/credits"
       className="block rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-3 py-2.5 text-sm leading-snug text-white shadow-lg shadow-slate-900/25 ring-1 ring-white/10"
     >
-      <span className="block font-medium text-white/95">Grow with AI follow-ups</span>
-      <span className="mt-0.5 block text-xs text-white/70">Top up credits any time — everything included.</span>
+      <span className="block font-medium text-white/95">{t("topbar.upsell")}</span>
+      <span className="mt-0.5 block text-xs text-white/70">{t("topbar.topUp")}</span>
     </Link>
   ) : undefined;
 
@@ -487,7 +491,7 @@ export default function TopBar({
       role="search"
     >
       <label htmlFor={inputId} className="sr-only">
-        Search leads
+        {t("topbar.searchLeads")}
       </label>
       <div className="flex h-11 min-w-0 items-center gap-3 rounded-2xl border border-slate-200/90 bg-slate-50/80 px-3.5 shadow-sm ring-1 ring-slate-900/[0.02] transition-all focus-within:border-slate-300 focus-within:bg-white focus-within:shadow-md focus-within:ring-slate-900/[0.04] md:px-4">
         <Search className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} aria-hidden />
@@ -495,7 +499,7 @@ export default function TopBar({
           id={inputId}
           name="q"
           type="search"
-          placeholder="Search leads, clients, addresses..."
+          placeholder={t("topbar.search")}
           className="min-w-0 flex-1 border-0 bg-transparent py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400"
         />
       </div>
