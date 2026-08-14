@@ -225,7 +225,7 @@ export default function SupportDashboard() {
           <div>
             <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{t("support.title")}</h1>
             <p className="mt-1 text-sm text-gray-500">
-              Manage customer conversations and respond faster.
+              {t("support.subtitle")}
             </p>
           </div>
 

@@ -116,7 +116,15 @@
       "pending": "Pending",
       "cancelled": "Cancelled"
     },
-    "back": "← Back"
+    "back": "← Back",
+    "columns": {
+      "task": "Task",
+      "contact": "Contact",
+      "due": "Due",
+      "priority": "Priority",
+      "status": "Status",
+      "memo": "Memo"
+    }
   },
   "calendar": {
     "title": "Calendar",
@@ -180,7 +188,21 @@
     "snooze": {
       "tomorrow": "Tomorrow",
       "nextWeek": "Next week"
-    }
+    },
+    "summary": "{{events}} appointments · {{tasks}} tasks · {{followups}} follow-ups · {{drafts}} drafts",
+    "filters": {
+      "all": "All",
+      "appointments": "Appointments",
+      "tasks": "Tasks",
+      "followups": "Follow-ups",
+      "drafts": "Drafts"
+    },
+    "view": {
+      "month": "Month",
+      "list": "List"
+    },
+    "today": "Today",
+    "noEvents": "No events on this day."
   },
   "boss": {
     "captain": "Captain of your AI Real Estate Team",
@@ -341,7 +363,9 @@
       "normal": "Normal",
       "high": "High",
       "urgent": "Urgent"
-    }
+    },
+    "subtitle": "Manage customer conversations and respond faster.",
+    "replyToCustomer": "Reply to customer"
   },
   "settings": {
     "aiStyle": "AI Assistant Style",
