@@ -1,5 +1,8 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   fetchConversation,
@@ -19,9 +22,9 @@ import {
   useSupportRealtime,
 } from "@/lib/support-chat/useSupportRealtime";
 
-function formatTime(iso?: string) {
+function formatTime(iso: string | undefined, locale: string) {
   if (!iso) return "";
-  return new Date(iso).toLocaleString([], {
+  return new Date(iso).toLocaleString(locale, {
     month: "short",
     day: "numeric",
     hour: "numeric",
@@ -67,6 +70,9 @@ function priorityClasses(priority: SupportPriority) {
  * were opened for dev — do not expose this page publicly without locking the API down.
  */
 export default function SupportDashboard() {
+  const { t, i18n } = useTranslation("dashboard");
+  // Dates followed the browser default, not the language the agent picked.
+  const dateLocale = intlLocale(i18n.language);
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedPublicId, setSelectedPublicId] = useState("");
@@ -217,7 +223,7 @@ export default function SupportDashboard() {
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-gray-900">Support Dashboard</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{t("support.title")}</h1>
             <p className="mt-1 text-sm text-gray-500">
               Manage customer conversations and respond faster.
             </p>
@@ -225,13 +231,13 @@ export default function SupportDashboard() {
 
           <div className="grid grid-cols-2 gap-3 md:flex">
             <div className="rounded-2xl border bg-white px-4 py-3 text-sm shadow-sm">
-              <div className="text-gray-400">Open</div>
+              <div className="text-gray-400">{t("support.openCount")}</div>
               <div className="mt-1 text-lg font-semibold text-gray-900">
                 {conversations.filter((c) => c.status === "open").length}
               </div>
             </div>
             <div className="rounded-2xl border bg-white px-4 py-3 text-sm shadow-sm">
-              <div className="text-gray-400">Waiting</div>
+              <div className="text-gray-400">{t("support.waitingCount")}</div>
               <div className="mt-1 text-lg font-semibold text-gray-900">
                 {conversations.filter((c) => c.status === "waiting_on_support").length}
               </div>
@@ -251,15 +257,15 @@ export default function SupportDashboard() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search name, email, subject..."
+                placeholder={t("support.searchPlaceholder")}
                 className="w-full rounded-2xl border px-4 py-2.5 text-sm outline-none focus:border-gray-400"
               />
               <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
                 {[
-                  { label: "All", value: "all" },
-                  { label: "Open", value: "open" },
-                  { label: "Waiting", value: "waiting_on_support" },
-                  { label: "Resolved", value: "resolved" },
+                  { label: t("support.filters.all"), value: "all" },
+                  { label: t("support.filters.open"), value: "open" },
+                  { label: t("support.filters.waiting"), value: "waiting_on_support" },
+                  { label: t("support.filters.resolved"), value: "resolved" },
                 ].map((item) => (
                   <button
                     key={item.value}
@@ -280,7 +286,7 @@ export default function SupportDashboard() {
 
             <div className="max-h-[720px] overflow-y-auto p-3">
               {listLoading ? (
-                <div className="p-4 text-sm text-gray-500">Loading conversations...</div>
+                <div className="p-4 text-sm text-gray-500">{t("support.loadingList")}</div>
               ) : (
                 <div className="space-y-2">
                   {filteredConversations.map((conversation) => {
@@ -342,7 +348,7 @@ export default function SupportDashboard() {
                           {conversation.subject || "No subject"}
                         </div>
                         <div className={`mt-1 text-xs ${selected ? "text-gray-400" : "text-gray-400"}`}>
-                          {formatTime(conversation.lastMessageAt)}
+                          {formatTime(conversation.lastMessageAt, dateLocale)}
                         </div>
                       </button>
                     );
@@ -375,11 +381,11 @@ export default function SupportDashboard() {
                         onChange={(e) => void handleUpdateStatus(e.target.value as SupportStatus)}
                         className="rounded-xl border px-3 py-2 text-sm"
                       >
-                        <option value="open">Open</option>
-                        <option value="waiting_on_support">Waiting on Support</option>
-                        <option value="waiting_on_customer">Waiting on Customer</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
+                        <option value="open">{t("support.status.open")}</option>
+                        <option value="waiting_on_support">{t("support.status.waiting_on_support")}</option>
+                        <option value="waiting_on_customer">{t("support.status.waiting_on_customer")}</option>
+                        <option value="resolved">{t("support.status.resolved")}</option>
+                        <option value="closed">{t("support.status.closed")}</option>
                       </select>
 
                       <select
@@ -388,10 +394,10 @@ export default function SupportDashboard() {
                         onChange={(e) => void handleUpdatePriority(e.target.value as SupportPriority)}
                         className="rounded-xl border px-3 py-2 text-sm"
                       >
-                        <option value="low">Low</option>
-                        <option value="normal">Normal</option>
-                        <option value="high">High</option>
-                        <option value="urgent">Urgent</option>
+                        <option value="low">{t("support.priority.low")}</option>
+                        <option value="normal">{t("support.priority.normal")}</option>
+                        <option value="high">{t("support.priority.high")}</option>
+                        <option value="urgent">{t("support.priority.urgent")}</option>
                       </select>
                     </div>
                   </div>
@@ -401,7 +407,7 @@ export default function SupportDashboard() {
                   <div className="flex min-h-[680px] flex-col border-r">
                     <div className="flex-1 overflow-y-auto p-5">
                       {threadLoading ? (
-                        <div className="text-sm text-gray-500">Loading conversation...</div>
+                        <div className="text-sm text-gray-500">{t("support.loadingConversation")}</div>
                       ) : (
                         <div className="space-y-4">
                           {selectedConversation.messages.map((message) => {
@@ -415,7 +421,7 @@ export default function SupportDashboard() {
                                 <div className="max-w-[82%]">
                                   <div className="mb-1 text-xs text-gray-400">
                                     {message.senderName || message.senderType} •{" "}
-                                    {formatTime(message.createdAt)}
+                                    {formatTime(message.createdAt, dateLocale)}
                                   </div>
                                   <div
                                     className={[
@@ -452,7 +458,7 @@ export default function SupportDashboard() {
                           }}
                           onBlur={() => notifyComposerActivity(false)}
                           rows={4}
-                          placeholder="Write your reply..."
+                          placeholder={t("support.replyPlaceholder")}
                           className="flex-1 resize-none rounded-2xl border px-4 py-3 text-sm outline-none focus:border-gray-400"
                         />
                         <button
@@ -461,7 +467,7 @@ export default function SupportDashboard() {
                           disabled={!reply.trim() || sending}
                           className="self-end rounded-2xl bg-gray-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
                         >
-                          {sending ? "Sending..." : "Send reply"}
+                          {sending ? t("support.sending") : t("support.sendReply")}
                         </button>
                       </div>
                     </div>
@@ -469,29 +475,29 @@ export default function SupportDashboard() {
 
                   <aside className="p-5">
                     <div className="rounded-2xl bg-gray-50 p-4">
-                      <h3 className="text-sm font-semibold text-gray-900">Conversation Details</h3>
+                      <h3 className="text-sm font-semibold text-gray-900">{t("support.details")}</h3>
                       <dl className="mt-4 space-y-3 text-sm">
                         <div>
-                          <dt className="text-gray-400">Assigned</dt>
+                          <dt className="text-gray-400">{t("support.assigned")}</dt>
                           <dd className="mt-1 text-gray-900">
-                            {selectedConversation.assignedAgentName || "Unassigned"}
+                            {selectedConversation.assignedAgentName || t("support.unassigned")}
                           </dd>
                         </div>
                         <div>
-                          <dt className="text-gray-400">Unread for customer</dt>
+                          <dt className="text-gray-400">{t("support.unreadForCustomer")}</dt>
                           <dd className="mt-1 text-gray-900">{selectedConversation.unreadForCustomer}</dd>
                         </div>
                         <div>
-                          <dt className="text-gray-400">Last updated</dt>
+                          <dt className="text-gray-400">{t("support.lastUpdated")}</dt>
                           <dd className="mt-1 text-gray-900">
-                            {formatTime(selectedConversation.lastMessageAt)}
+                            {formatTime(selectedConversation.lastMessageAt, dateLocale)}
                           </dd>
                         </div>
                       </dl>
                     </div>
 
                     <div className="mt-5 rounded-2xl border p-4">
-                      <h3 className="text-sm font-semibold text-gray-900">Quick Actions</h3>
+                      <h3 className="text-sm font-semibold text-gray-900">{t("support.quickActions")}</h3>
                       <div className="mt-3 grid gap-2">
                         <button
                           type="button"
@@ -499,7 +505,7 @@ export default function SupportDashboard() {
                           disabled={updating}
                           className="rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
                         >
-                          Mark resolved
+                          {t("support.markResolved")}
                         </button>
                         <button
                           type="button"
@@ -507,7 +513,7 @@ export default function SupportDashboard() {
                           disabled={updating}
                           className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900 hover:bg-gray-50 disabled:opacity-50"
                         >
-                          Mark urgent
+                          {t("support.markUrgent")}
                         </button>
                       </div>
                     </div>
@@ -516,7 +522,7 @@ export default function SupportDashboard() {
               </div>
             ) : (
               <div className="flex min-h-[680px] items-center justify-center text-gray-500">
-                Select a conversation to view details.
+                {t("support.selectPrompt")}
               </div>
             )}
           </section>

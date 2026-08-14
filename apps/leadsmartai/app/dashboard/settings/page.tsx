@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
+import { getServerT } from "@/lib/i18n/server";
 import { agentHasSocialCustomization } from "@/lib/social/customization";
 import AgentAiSettingsPanel from "@/components/dashboard/AgentAiSettingsPanel";
 import AgentVoiceSettingsPanel from "@/components/dashboard/AgentVoiceSettingsPanel";
@@ -30,6 +31,8 @@ export const metadata: Metadata = {
 };
 
 export default async function SettingsPage() {
+  const serverT = await getServerT();
+  const tr = (key: string) => serverT(key, { ns: "dashboard" });
   const ctx = await getCurrentAgentContext();
   const widgetAgentKey = ctx.agentId || ctx.userId;
   const canCustomizeBrand = await agentHasSocialCustomization(ctx.agentId).catch(() => false);
@@ -42,32 +45,31 @@ export default async function SettingsPage() {
             <LanguagePanel />
             <div className="rounded-xl border border-gray-200 bg-white shadow-sm divide-y divide-gray-100">
             <div className="p-5">
-              <h2 className="text-sm font-semibold text-gray-900 mb-3">AI Assistant Style</h2>
+              <h2 className="text-sm font-semibold text-gray-900 mb-3">{tr("settings.aiStyle")}</h2>
               <AgentAiSettingsPanel canCustomizeBrand={canCustomizeBrand} />
             </div>
             <div className="p-5">
-              <h2 className="text-sm font-semibold text-gray-900 mb-3">Phone Voice</h2>
+              <h2 className="text-sm font-semibold text-gray-900 mb-3">{tr("settings.phoneVoice")}</h2>
               <AgentVoiceSettingsPanel />
             </div>
             <div className="p-5">
-              <h2 className="text-sm font-semibold text-gray-900 mb-1">AI Voice Receptionist</h2>
+              <h2 className="text-sm font-semibold text-gray-900 mb-1">{tr("settings.voiceReceptionist")}</h2>
               <p className="mb-3 text-xs text-gray-500">
-                Your AI phone receptionist&apos;s identity and what it knows about your business —
-                used on every inbound call to your receptionist number.
+                {tr("settings.voiceReceptionistHelp")}
               </p>
               <VoiceReceptionistSettingsPanel />
             </div>
             <div className="p-5">
-              <h2 className="text-sm font-semibold text-gray-900 mb-1">Missed Call Text-Back</h2>
+              <h2 className="text-sm font-semibold text-gray-900 mb-1">{tr("settings.missedCall")}</h2>
               <p className="mb-3 text-xs text-gray-500">
-                Auto-text inbound callers when you can't pick up. Forward calls to your personal mobile and capture every missed lead.
+                {tr("settings.missedCallHelp")}
               </p>
               <MissedCallSettingsPanel />
             </div>
             <div className="p-5">
-              <h2 className="text-sm font-semibold text-gray-900 mb-1">Daily Briefings</h2>
+              <h2 className="text-sm font-semibold text-gray-900 mb-1">{tr("settings.briefings")}</h2>
               <p className="mb-3 text-xs text-gray-500">
-                When the ☀️ morning plan and 🌙 evening summary fire each day on your dashboard and in the mobile app.
+                {tr("settings.briefingsHelp")}
               </p>
               <BriefingScheduleCard />
             </div>
@@ -98,9 +100,9 @@ export default async function SettingsPage() {
         tools={
           <>
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <h2 className="text-sm font-semibold text-gray-900">Home Value Smart Link</h2>
+              <h2 className="text-sm font-semibold text-gray-900">{tr("settings.smartLink")}</h2>
               <p className="mt-0.5 text-xs text-gray-500 mb-3">
-                Share with homeowners to route them into your funnel.
+                {tr("settings.smartLinkHelp")}
               </p>
               <div className="flex items-center gap-2">
                 <input
@@ -117,7 +119,7 @@ export default async function SettingsPage() {
             </div>
 
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <h2 className="text-sm font-semibold text-gray-900 mb-3">MLS Data Import</h2>
+              <h2 className="text-sm font-semibold text-gray-900 mb-3">{tr("settings.mlsImport")}</h2>
               <MlsCsvImportClient />
             </div>
           </>
