@@ -90,7 +90,22 @@ export async function grantMonthlyCreditsForInvoice(invoice: Stripe.Invoice): Pr
   const plan = meta?.plan;
   if (!userId || !plan) return;
 
-  const credits = monthlyCreditsForPlan(plan);
+  let credits = monthlyCreditsForPlan(plan);
+
+  // A mid-cycle plan change bills only the PRORATED difference, so it should
+  // grant only the difference in credits — the user already received the old
+  // plan's allotment for this period. Stripe flags these invoices with
+  // billing_reason "subscription_update"; `prev_credits` is stamped onto the
+  // subscription metadata when we perform the switch.
+  const billingReason = (invoice as unknown as { billing_reason?: string | null }).billing_reason;
+  if (billingReason === "subscription_update") {
+    const prev = Number.parseInt(meta?.prev_credits ?? "", 10);
+    const delta = credits - (Number.isFinite(prev) ? prev : 0);
+    // Downgrades (delta <= 0) keep the credits already granted — we never claw back.
+    if (delta <= 0) return;
+    credits = delta;
+  }
+
   if (credits <= 0) return;
 
   // ref = invoice id → one grant per billing period, replay-safe.

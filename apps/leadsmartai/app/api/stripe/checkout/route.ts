@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getPaidSubscriptionEligibility } from "@/lib/paidSubscriptionEligibility";
 import { getStripePriceIdForPlan } from "@/lib/stripePriceIds";
 import { CREDIT_TIERS, readStripePriceId } from "@/lib/credits/pricing";
@@ -12,6 +13,27 @@ type Body = { plan: string };
 
 const PRO_ONLY_MSG =
   "Paid plans are for licensed agents, brokers, and real estate teams. Sign up with a professional account or contact support.";
+
+/** Subscription states we treat as "already subscribed" for plan changes. */
+const LIVE_STATUSES = new Set(["active", "trialing", "past_due"]);
+
+/**
+ * The user's current live subscription, if any. Looked up through the Stripe
+ * customer rather than a local column — the local subscription fields have
+ * proven to drift, and billing a customer twice is the expensive failure here.
+ */
+async function findActiveSubscription(userId: string) {
+  const { data } = await supabaseAdmin
+    .from("leadsmart_users")
+    .select("stripe_customer_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  const customerId = (data as { stripe_customer_id?: string | null } | null)?.stripe_customer_id;
+  if (!customerId) return null;
+
+  const subs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 10 });
+  return subs.data.find((s) => LIVE_STATUSES.has(s.status)) ?? null;
+}
 
 export async function POST(req: Request) {
   try {
@@ -52,6 +74,44 @@ export async function POST(req: Request) {
     // paid invoice (first + renewals) grants the right number of credits.
     const credits = tier ? tier.monthlyCredits : monthlyCreditsForPlan(plan);
     const origin = new URL(req.url).origin;
+
+    // ── Already subscribed? Change the plan instead of starting a second one ──
+    // Sending an existing subscriber through Checkout would create a SECOND
+    // live subscription (billed twice) and charge the full new price rather
+    // than the difference. Switching the existing subscription's price with
+    // proration bills only the balance for the rest of the period.
+    const existing = await findActiveSubscription(user.id);
+    if (existing) {
+      const item = existing.items.data[0];
+      if (item?.price?.id === price) {
+        return NextResponse.json({ error: "You're already on that plan." }, { status: 400 });
+      }
+
+      const prevCredits = Number.parseInt(existing.metadata?.credits ?? "", 10);
+      const updated = await stripe.subscriptions.update(existing.id, {
+        items: [{ id: item.id, price }],
+        // Bill (or credit) the difference for the remainder of the period now.
+        proration_behavior: "always_invoice",
+        payment_behavior: "allow_incomplete",
+        metadata: {
+          user_id: user.id,
+          plan,
+          credits: String(credits),
+          // Lets the webhook grant only the DELTA on the proration invoice,
+          // instead of a second full month of credits.
+          prev_credits: Number.isFinite(prevCredits) ? String(prevCredits) : "0",
+        },
+      });
+
+      return NextResponse.json({
+        switched: true,
+        plan,
+        status: updated.status,
+        message: `Plan changed — you're only billed the difference for the rest of this period.`,
+      });
+    }
+
+
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
