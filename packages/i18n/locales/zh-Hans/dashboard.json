@@ -556,6 +556,42 @@
         "loan": "贷款条件期限",
         "closing": "过户日"
       }
+    },
+    "yourAiTeam": "您的 AI 团队",
+    "personality": {
+      "boss_assistant": "沉稳的领导者，有策略，始终掌控全局。",
+      "receptionist": "亲切热情，从不漏接任何一通电话。",
+      "sales_assistant": "自信、有说服力，跟进从不松懈。",
+      "marketing_assistant": "富有创意、充满干劲，助您把生意做大。",
+      "transaction_assistant": "条理清晰、注重细节，推动交易稳步前进。",
+      "accountant": "精准、善于分析，每一分钱都盯得住。"
+    },
+    "skills": {
+      "appointment_scheduling": "预约安排",
+      "buyer_qualification": "买家资质筛选",
+      "commission_tracking": "佣金跟踪",
+      "document_reminders": "文件提醒",
+      "expense_tracking": "支出记录",
+      "faq": "常见问题",
+      "follow_up": "跟进",
+      "invoice_tracking": "发票跟踪",
+      "lead_capture": "客户线索收集",
+      "lead_generation": "获客",
+      "marketing_plans": "营销方案",
+      "objection_handling": "异议处理",
+      "payment_reminders": "付款提醒",
+      "reactivation": "客户唤醒",
+      "seller_qualification": "卖家资质筛选",
+      "social_content": "社交内容",
+      "speed_to_lead": "快速响应线索",
+      "sphere_nurture": "人脉维护",
+      "transaction_deadlines": "交易截止日期",
+      "transfer": "转接"
+    },
+    "unknownCaller": "未知来电",
+    "hints": {
+      "textback": "短信回复或回拨",
+      "autoCallbacks": "在 5、10、30 分钟自动回拨"
     }
   },
   "more": {

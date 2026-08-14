@@ -157,12 +157,12 @@ export default function ReceptionistClient() {
         <AssistantKpiCard
           label={t("assistants.receptionist.stats.recovered")}
           value={loading ? undefined : recovered.length}
-          hint="text-back or call-back"
+          hint={t("assistants.hints.textback")}
         />
         <AssistantKpiCard
           label={t("assistants.receptionist.stats.callingBack")}
           value={loading ? undefined : callingBack.length}
-          hint="auto call-backs at 5, 10, 30 min"
+          hint={t("assistants.hints.autoCallbacks")}
         />
         <AssistantKpiCard
           label={t("assistants.receptionist.stats.needingYou")}
@@ -213,7 +213,7 @@ export default function ReceptionistClient() {
                         {callerPhone(c)}
                       </td>
                       <td className="max-w-[10rem] truncate px-4 py-2.5 font-medium text-gray-900">
-                        {c.contact_name ?? "Unknown caller"}
+                        {c.contact_name ?? t("assistants.unknownCaller")}
                       </td>
                       <td className="max-w-[18rem] truncate px-4 py-2.5 text-xs text-gray-600">
                         {c.reason}
@@ -378,7 +378,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h3 className="truncate text-base font-semibold text-gray-900">
-              {call.contact_name ?? "Unknown caller"}
+              {call.contact_name ?? t("assistants.unknownCaller")}
             </h3>
             <p className="text-xs text-gray-500">
               {callerPhone(call)} · {call.direction === "inbound" ? "Inbound" : "Outbound"} ·{" "}
