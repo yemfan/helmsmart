@@ -706,6 +706,61 @@
       "confirmDelete": "Delete this offer? This cannot be undone.",
       "deleteFailed": "Failed to delete.",
       "counterFailed": "Failed to record counter."
+    },
+    "transaction": {
+      "stage": {
+        "contract": "Contract",
+        "inspection": "Inspection",
+        "appraisal": "Appraisal",
+        "loan": "Loan",
+        "closing": "Closing"
+      },
+      "counterparty": {
+        "title": "Title / escrow",
+        "lender": "Lender",
+        "inspector": "Inspector",
+        "insurance": "Insurance",
+        "co_agent": "Co-agent / listing agent",
+        "other": "Other"
+      },
+      "tabs": {
+        "dates": "Dates",
+        "people": "People",
+        "notes": "Notes"
+      },
+      "tasks": "Tasks",
+      "taskTitle": "Task title",
+      "noTasksInStage": "No tasks in this stage yet.",
+      "deleteCustomTask": "Delete custom task",
+      "confirmDeleteTask": "Delete this custom task?",
+      "peopleBlurb": "Title / lender / inspector / insurance.",
+      "name": "Name",
+      "companyOptional": "Company (optional)",
+      "emailOptional": "Email (optional)",
+      "phoneOptional": "Phone (optional)",
+      "cancel": "Cancel",
+      "status": "Status",
+      "statusValues": {
+        "active": "Active",
+        "pending": "Pending",
+        "closed": "Closed",
+        "terminated": "Terminated"
+      },
+      "notesPlaceholder": "Anything you need to remember about this deal…",
+      "postCloseReview": "Post-close review",
+      "weeklyUpdateOn": "Weekly seller update is ON — click to turn off",
+      "weeklyUpdateOff": "Weekly seller update is OFF — click to turn on",
+      "dates": {
+        "mutualAcceptance": "Mutual acceptance",
+        "inspectionDeadline": "Inspection deadline",
+        "appraisalDeadline": "Appraisal deadline",
+        "loanContingency": "Loan contingency",
+        "closingDate": "Closing date"
+      },
+      "saveFailed": "Save failed.",
+      "networkError": "Network error",
+      "jumpTo": "Jump to {{stage}} — {{completed}}/{{total}} complete",
+      "jumpToOverdue": "Jump to {{stage}} — {{completed}}/{{total}} complete, {{overdue}} overdue"
     }
   }
 }
