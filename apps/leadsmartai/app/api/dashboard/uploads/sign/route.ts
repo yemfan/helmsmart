@@ -30,6 +30,10 @@ const KINDS: Record<string, KindSpec> = {
   // Private — the agent's intro video (their likeness/voice). Never public;
   // the digital-twin processor reads it via a short-lived signed URL.
   agent_intro_video: { bucket: "lead-media", prefix: (a) => `digital-twin/${a}` },
+  // Private — the agent's portrait photo, an alternative likeness source for a
+  // Lifelike avatar when they'd rather not film an intro video. Same folder,
+  // same consent gate as the video.
+  agent_portrait: { bucket: "lead-media", prefix: (a) => `digital-twin/${a}` },
 };
 
 function extFromName(name: string): string {
