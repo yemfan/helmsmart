@@ -347,5 +347,96 @@
     "smartLink": "Home Value Smart Link",
     "smartLinkHelp": "Share with homeowners to route them into your funnel.",
     "mlsImport": "MLS Data Import"
+  },
+  "showings": {
+    "title": "Showings",
+    "schedule": "+ Schedule showing",
+    "searchPlaceholder": "Search address, buyer, listing agent…",
+    "stats": {
+      "total": "Total",
+      "upcoming": "Upcoming",
+      "attended": "Attended",
+      "loved": "Loved",
+      "wouldOffer": "Would offer"
+    },
+    "filters": {
+      "all": "All showings",
+      "upcoming": "Upcoming",
+      "attended": "Attended"
+    },
+    "columns": {
+      "when": "When",
+      "property": "Property",
+      "buyer": "Buyer",
+      "listingAgent": "Listing agent",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": "No showings yet.",
+    "noMatch": "No showings match your filters.",
+    "markAttended": "Mark attended",
+    "cancel": "Cancel showing",
+    "submitOffer": "Submit offer",
+    "captureFeedback": "Capture feedback"
+  },
+  "offers": {
+    "title": "Offers",
+    "searchPlaceholder": "Search address or buyer…",
+    "filters": {
+      "all": "All offers",
+      "active": "Active",
+      "won": "Won",
+      "lost": "Lost"
+    },
+    "columns": {
+      "property": "Property",
+      "buyer": "Buyer",
+      "offer": "Offer",
+      "current": "Current",
+      "counters": "Counters",
+      "status": "Status",
+      "submitted": "Submitted",
+      "actions": "Actions"
+    },
+    "empty": "No offers yet.",
+    "noMatch": "No offers match your filters.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "modify": "Modify",
+    "markAccepted": "Mark accepted",
+    "markDeclined": "Mark declined",
+    "modifyOffer": "Modify offer"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "kpis": {
+      "inFlight": "In-flight deals",
+      "overdueTasks": "Overdue tasks",
+      "closingThisWeek": "Closing this week"
+    },
+    "statusFilters": {
+      "active": "Active",
+      "pending": "Pending",
+      "closing_this_week": "Closing this week",
+      "overdue": "Overdue",
+      "closed_this_month": "Closed (this month)",
+      "all": "All"
+    },
+    "typeFilters": {
+      "all": "Any",
+      "buyer": "Buyer",
+      "listing": "Listing",
+      "dual": "Dual"
+    },
+    "columns": {
+      "property": "Property",
+      "client": "Client",
+      "type": "Type",
+      "status": "Status",
+      "closing": "Closing",
+      "tasks": "Tasks"
+    },
+    "empty": "No transactions yet.",
+    "noMatch": "No transactions match this filter."
   }
 }

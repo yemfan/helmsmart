@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -44,6 +46,7 @@ export function ShowingsListClient({
   initialShowings: ShowingListItem[];
   initialContactFilter: string | null;
 }) {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
@@ -116,7 +119,7 @@ export function ShowingsListClient({
     <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Showings</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("showings.title")}</h1>
           <p className="mt-1 text-sm text-slate-500">
             {contactFilterName ? (
               <>
@@ -138,23 +141,23 @@ export function ShowingsListClient({
           }
           className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
         >
-          + Schedule showing
+          {t("showings.schedule")}
         </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-        <Stat label="Total" value={stats.total} />
-        <Stat label="Upcoming" value={stats.upcoming} tone="blue" />
-        <Stat label="Attended" value={stats.attended} tone="green" />
-        <Stat label="Loved" value={stats.loved} tone="red" />
-        <Stat label="Would offer" value={stats.wouldOffer} tone="amber" />
+        <Stat label={t("showings.stats.total")} value={stats.total} />
+        <Stat label={t("showings.stats.upcoming")} value={stats.upcoming} tone="blue" />
+        <Stat label={t("showings.stats.attended")} value={stats.attended} tone="green" />
+        <Stat label={t("showings.stats.loved")} value={stats.loved} tone="red" />
+        <Stat label={t("showings.stats.wouldOffer")} value={stats.wouldOffer} tone="amber" />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search address, buyer, listing agent…"
+          placeholder={t("showings.searchPlaceholder")}
           className="min-w-[240px] flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
         />
         <select
@@ -162,9 +165,9 @@ export function ShowingsListClient({
           onChange={(e) => setFilter(e.target.value as Filter)}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         >
-          <option value="all">All showings</option>
-          <option value="upcoming">Upcoming</option>
-          <option value="attended">Attended</option>
+          <option value="all">{t("showings.filters.all")}</option>
+          <option value="upcoming">{t("showings.filters.upcoming")}</option>
+          <option value="attended">{t("showings.filters.attended")}</option>
           <option value="cancelled">Cancelled / no-show</option>
         </select>
       </div>
@@ -174,12 +177,12 @@ export function ShowingsListClient({
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-600">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">When</th>
-                <th className="px-3 py-2 text-left font-medium">Property</th>
-                <th className="px-3 py-2 text-left font-medium">Buyer</th>
-                <th className="px-3 py-2 text-left font-medium">Listing agent</th>
-                <th className="px-3 py-2 text-left font-medium">Status</th>
-                <th className="px-3 py-2 text-right font-medium">Actions</th>
+                <th className="px-3 py-2 text-left font-medium">{t("showings.columns.when")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("showings.columns.property")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("showings.columns.buyer")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("showings.columns.listingAgent")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("showings.columns.status")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("showings.columns.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -237,13 +240,13 @@ export function ShowingsListClient({
                   <td colSpan={6} className="px-3 py-10 text-center text-sm text-slate-500">
                     {initialShowings.length === 0 ? (
                       <>
-                        <div className="font-medium">No showings yet.</div>
+                        <div className="font-medium">{t("showings.empty")}</div>
                         <div className="mt-1 text-[12px]">
-                          Click <strong>+ Schedule showing</strong> to log a buyer&apos;s first property visit.
+                          Click <strong>{t("showings.schedule")}</strong> to log a buyer&apos;s first property visit.
                         </div>
                       </>
                     ) : (
-                      "No showings match your filters."
+                      t("showings.noMatch")
                     )}
                   </td>
                 </tr>
@@ -277,6 +280,7 @@ function RowActions({
   onMarkAttended: (id: string) => void;
   onCancel: (id: string) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const offerHref = `/dashboard/offers/new?contactId=${encodeURIComponent(showing.contact_id)}&showingId=${encodeURIComponent(showing.id)}`;
   const feedbackHref = `/dashboard/showings/${showing.id}#feedback`;
   const status = showing.status;
@@ -291,7 +295,7 @@ function RowActions({
           <RowIconButton
             onClick={() => onMarkAttended(showing.id)}
             disabled={markingDone}
-            title="Mark attended"
+            title={t("showings.markAttended")}
             tone="success"
           >
             <Check className="h-4 w-4" strokeWidth={2.5} />
@@ -299,12 +303,12 @@ function RowActions({
           <RowIconButton
             onClick={() => onCancel(showing.id)}
             disabled={cancelling}
-            title="Cancel showing"
+            title={t("showings.cancel")}
             tone="danger"
           >
             <X className="h-4 w-4" strokeWidth={2.5} />
           </RowIconButton>
-          <RowIconButton href={offerHref} title="Submit offer">
+          <RowIconButton href={offerHref} title={t("showings.submitOffer")}>
             <FileText className="h-4 w-4" strokeWidth={2} />
           </RowIconButton>
         </>
@@ -312,10 +316,10 @@ function RowActions({
 
       {status === "attended" ? (
         <>
-          <RowIconButton href={offerHref} title="Submit offer" tone="success">
+          <RowIconButton href={offerHref} title={t("showings.submitOffer")} tone="success">
             <FileText className="h-4 w-4" strokeWidth={2} />
           </RowIconButton>
-          <RowIconButton href={feedbackHref} title="Capture feedback">
+          <RowIconButton href={feedbackHref} title={t("showings.captureFeedback")}>
             <MessageCircle className="h-4 w-4" strokeWidth={2} />
           </RowIconButton>
         </>
