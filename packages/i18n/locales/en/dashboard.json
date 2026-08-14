@@ -549,5 +549,43 @@
         "closing": "Closing"
       }
     }
+  },
+  "more": {
+    "skills": {
+      "title": "Skills",
+      "subtitle": "Your AI team's skill library — {{enabled}} of {{total}} on. Toggle any skill on/off or reassign it to a different assistant. The shared compliance validators live on the Boss Assistant and run on every public-facing output.",
+      "onCount": "{{enabled}}/{{total}} on",
+      "none": "No skills assigned.",
+      "saveFailed": "Couldn't save."
+    },
+    "coaching": {
+      "severity": {
+        "action": "Action needed",
+        "headsUp": "Heads up",
+        "onTrack": "On track"
+      },
+      "allClear": "All clear.",
+      "allClearBody": "No coaching nudges right now. Your sphere is touched, hot leads are replied to, and the pipeline is on schedule.",
+      "lastRefreshed": "Last refreshed {{when}}",
+      "loadFailed": "Failed to load"
+    },
+    "credits": {
+      "title": "Credits",
+      "balance": "Balance",
+      "currentPlan": "Current plan",
+      "monthlyPlans": "Monthly plans",
+      "topUpPacks": "Top-up packs",
+      "canceled": "Top-up canceled — no charge was made.",
+      "managePlan": "Manage plan",
+      "subscribe": "Subscribe",
+      "upgrade": "Upgrade",
+      "downgrade": "Downgrade",
+      "portalFailed": "Couldn't open the billing portal.",
+      "checkoutFailed": "Checkout couldn't start.",
+      "planChanged": "Plan changed."
+    },
+    "salesModel": {
+      "title": "Sales Model"
+    }
   }
 }

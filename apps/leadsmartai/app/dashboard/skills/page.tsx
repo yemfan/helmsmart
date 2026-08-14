@@ -20,7 +20,11 @@ export const metadata: Metadata = {
  * resolved from the agent's primary market (fallback: IP geo), so every skill
  * applies the right license authority + rules automatically.
  */
+import { getServerT } from "@/lib/i18n/server";
+
 export default async function SkillsPage() {
+  const serverT = await getServerT();
+  const tr = (key: string, o?: Record<string, unknown>) => serverT(key, { ns: "dashboard", ...o });
   const ctx = await getCurrentAgentContext();
   const h = await headers();
   const ipRegion = h.get("x-vercel-ip-country-region"); // US state code on Vercel
@@ -47,11 +51,9 @@ export default async function SkillsPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-4 sm:p-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">Skills</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{tr("more.skills.title")}</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Your AI team&rsquo;s skill library — {enabledTotal} of {rows.length} on. Toggle any skill on/off or reassign it
-          to a different assistant. The shared compliance validators live on the Boss Assistant and run on every
-          public-facing output.
+          {tr("more.skills.subtitle", { enabled: enabledTotal, total: rows.length })}
         </p>
       </div>
 

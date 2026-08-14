@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 
@@ -33,6 +35,7 @@ export function SkillsManager({
   initial: SkillRow[];
   assigneeLabels: Record<SkillAssignee, string>;
 }) {
+  const { t } = useTranslation("dashboard");
   const [skills, setSkills] = useState<SkillRow[]>(initial);
   const [, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +57,7 @@ export function SkillsManager({
       const res = await setSkillOverrideAction(id, next);
       if (!res.ok) {
         setSkills(prev); // revert
-        setError(res.error ?? "Couldn't save.");
+        setError(res.error ?? t("more.skills.saveFailed"));
       }
     });
   }
@@ -79,12 +82,12 @@ export function SkillsManager({
                 ) : null}
               </h2>
               <span className="text-xs text-slate-500 dark:text-slate-400">
-                {enabledCount}/{rows.length} on
+                {t("more.skills.onCount", { enabled: enabledCount, total: rows.length })}
               </span>
             </div>
             <ul className="mt-3 space-y-2">
               {rows.length === 0 ? (
-                <li className="text-sm text-slate-400">No skills assigned.</li>
+                <li className="text-sm text-slate-400">{t("more.skills.none")}</li>
               ) : (
                 rows.map((s) => (
                   <li

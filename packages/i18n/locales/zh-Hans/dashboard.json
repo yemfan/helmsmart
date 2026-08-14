@@ -549,5 +549,43 @@
         "closing": "过户日"
       }
     }
+  },
+  "more": {
+    "skills": {
+      "title": "技能",
+      "subtitle": "您的 AI 团队技能库 —— 已启用 {{enabled}} / 共 {{total}} 项。您可以开启或关闭任一技能，或把它交给另一位助理。共用的合规校验器归 Boss 助理管理，对所有对外输出都会执行。",
+      "onCount": "已启用 {{enabled}}/{{total}}",
+      "none": "尚未分配技能。",
+      "saveFailed": "保存失败。"
+    },
+    "coaching": {
+      "severity": {
+        "action": "需要处理",
+        "headsUp": "请留意",
+        "onTrack": "进展正常"
+      },
+      "allClear": "一切正常。",
+      "allClearBody": "目前没有需要提醒的事项。人脉已维护，重点客户均已回复，交易进度也在计划之内。",
+      "lastRefreshed": "最后更新于 {{when}}",
+      "loadFailed": "加载失败"
+    },
+    "credits": {
+      "title": "额度",
+      "balance": "余额",
+      "currentPlan": "当前套餐",
+      "monthlyPlans": "包月套餐",
+      "topUpPacks": "额度充值包",
+      "canceled": "充值已取消 —— 未产生任何扣款。",
+      "managePlan": "管理套餐",
+      "subscribe": "订阅",
+      "upgrade": "升级",
+      "downgrade": "降级",
+      "portalFailed": "无法打开账单管理页面。",
+      "checkoutFailed": "无法启动支付流程。",
+      "planChanged": "套餐已变更。"
+    },
+    "salesModel": {
+      "title": "销售模式"
+    }
   }
 }

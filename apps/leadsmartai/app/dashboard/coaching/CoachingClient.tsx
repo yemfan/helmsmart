@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
@@ -21,21 +23,22 @@ type CoachingResponse = {
   error?: string;
 };
 
-const SEVERITY_TONE: Record<InsightSeverity, { ring: string; tag: string; tagText: string }> = {
+/** Keys, not labels — module scope has no hook. */
+const SEVERITY_TONE: Record<InsightSeverity, { ring: string; tag: string; tagKey: string }> = {
   crit: {
     ring: "border-rose-200",
     tag: "bg-rose-100 text-rose-700",
-    tagText: "Action needed",
+    tagKey: "action",
   },
   warn: {
     ring: "border-amber-200",
     tag: "bg-amber-100 text-amber-800",
-    tagText: "Heads up",
+    tagKey: "headsUp",
   },
   info: {
     ring: "border-slate-200",
     tag: "bg-emerald-100 text-emerald-700",
-    tagText: "On track",
+    tagKey: "onTrack",
   },
 };
 
@@ -52,6 +55,7 @@ function formatGeneratedAt(iso: string | undefined): string {
 }
 
 export default function CoachingClient() {
+  const { t } = useTranslation("dashboard");
   const [insights, setInsights] = useState<CoachingInsight[]>([]);
   const [generatedAt, setGeneratedAt] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
@@ -94,7 +98,7 @@ export default function CoachingClient() {
         setInsights(data.insights ?? []);
         setGeneratedAt(data.generatedAt);
       } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load");
+        if (!cancelled) setError(e instanceof Error ? e.message : t("more.coaching.loadFailed"));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -129,14 +133,13 @@ export default function CoachingClient() {
   if (insights.length === 0) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-12 text-center text-sm text-slate-600">
-        <p className="text-base font-semibold text-slate-900">All clear.</p>
+        <p className="text-base font-semibold text-slate-900">{t("more.coaching.allClear")}</p>
         <p className="mt-1">
-          No coaching nudges right now. Your sphere is touched, hot leads are
-          replied to, and the pipeline is on schedule.
+          {t("more.coaching.allClearBody")}
         </p>
         {generatedAt ? (
           <p className="mt-3 text-[11px] text-slate-400">
-            Last refreshed {formatGeneratedAt(generatedAt)}
+            {t("more.coaching.lastRefreshed", { when: formatGeneratedAt(generatedAt) })}
           </p>
         ) : null}
       </div>
@@ -156,7 +159,7 @@ export default function CoachingClient() {
                 <span
                   className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${SEVERITY_TONE[i.severity].tag}`}
                 >
-                  {SEVERITY_TONE[i.severity].tagText}
+                  {t(`more.coaching.severity.${SEVERITY_TONE[i.severity].tagKey}`)}
                 </span>
                 <h2 className="mt-2 text-base font-semibold text-slate-900">
                   {i.title}
