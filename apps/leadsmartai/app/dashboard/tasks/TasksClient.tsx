@@ -610,12 +610,12 @@ export default function TasksClient({
           <table className="min-w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
               <tr>
-                <th className="text-left px-4 py-2.5 font-medium">Task</th>
-                <th className="text-left px-4 py-2.5 font-medium">Contact</th>
-                <th className="text-left px-4 py-2.5 font-medium">Due</th>
-                <th className="text-left px-4 py-2.5 font-medium">Priority</th>
-                <th className="text-left px-4 py-2.5 font-medium">Status</th>
-                <th className="text-left px-4 py-2.5 font-medium">Memo</th>
+                <th className="text-left px-4 py-2.5 font-medium">{tr("tasks.columns.task")}</th>
+                <th className="text-left px-4 py-2.5 font-medium">{tr("tasks.columns.contact")}</th>
+                <th className="text-left px-4 py-2.5 font-medium">{tr("tasks.columns.due")}</th>
+                <th className="text-left px-4 py-2.5 font-medium">{tr("tasks.columns.priority")}</th>
+                <th className="text-left px-4 py-2.5 font-medium">{tr("tasks.columns.status")}</th>
+                <th className="text-left px-4 py-2.5 font-medium">{tr("tasks.columns.memo")}</th>
                 <th className="text-left px-4 py-2.5 font-medium"></th>
               </tr>
             </thead>

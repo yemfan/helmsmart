@@ -530,16 +530,16 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
           All
         </button>
         <button onClick={() => { setShowEvents(true); setShowTasks(false); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${showEvents && !showTasks && !showFollowups && !showDrafts ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-500"}`}>
-          <span className="h-2 w-2 rounded-full bg-blue-500" /> Appointments
+          <span className="h-2 w-2 rounded-full bg-blue-500" /> {tr("calendar.filters.appointments")}
         </button>
         <button onClick={() => { setShowEvents(false); setShowTasks(true); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && showTasks && !showFollowups && !showDrafts ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-          <span className="h-2 w-2 rounded-full bg-green-500" /> Tasks
+          <span className="h-2 w-2 rounded-full bg-green-500" /> {tr("calendar.filters.tasks")}
         </button>
         <button onClick={() => { setShowEvents(false); setShowTasks(false); setShowFollowups(true); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && !showTasks && showFollowups && !showDrafts ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-500"}`}>
-          <span className="h-2 w-2 rounded-full bg-amber-500" /> Follow-ups
+          <span className="h-2 w-2 rounded-full bg-amber-500" /> {tr("calendar.filters.followups")}
         </button>
         <button onClick={() => { setShowEvents(false); setShowTasks(false); setShowFollowups(false); setShowDrafts(true); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${!showEvents && !showTasks && !showFollowups && showDrafts ? "bg-purple-100 text-purple-700" : "bg-gray-100 text-gray-500"}`}>
-          <span className="h-2 w-2 rounded-full bg-purple-500" /> Drafts
+          <span className="h-2 w-2 rounded-full bg-purple-500" /> {tr("calendar.filters.drafts")}
         </button>
         </div>
         {/* Month / List view toggle. Persisted to localStorage so the
@@ -550,14 +550,14 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
             className={`px-3 py-1 transition ${view === "month" ? "bg-gray-900 text-white" : "text-gray-600 hover:bg-gray-50"}`}
             aria-pressed={view === "month"}
           >
-            Month
+            {tr("calendar.view.month")}
           </button>
           <button
             onClick={() => setView("list")}
             className={`px-3 py-1 transition ${view === "list" ? "bg-gray-900 text-white" : "text-gray-600 hover:bg-gray-50"}`}
             aria-pressed={view === "list"}
           >
-            List
+            {tr("calendar.view.list")}
           </button>
         </div>
       </div>
@@ -570,11 +570,11 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
           <button onClick={prevMonth} className="rounded-lg border border-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">&larr;</button>
           <div className="text-center">
             <h2 className="text-sm font-semibold text-gray-900">
-              {currentMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+              {currentMonth.toLocaleDateString(timeLocale, { month: "long", year: "numeric" })}
             </h2>
           </div>
           <div className="flex gap-2">
-            <button onClick={goToday} className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">Today</button>
+            <button onClick={goToday} className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">{tr("calendar.today")}</button>
             <button onClick={nextMonth} className="rounded-lg border border-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">&rarr;</button>
           </div>
         </div>
@@ -672,10 +672,10 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {view === "month" && selectedDate && (
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <h3 className="text-sm font-semibold text-gray-900">
-            {selectedDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+            {selectedDate.toLocaleDateString(timeLocale, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
           </h3>
           {selectedEntries.length === 0 ? (
-            <p className="mt-2 text-sm text-gray-400">No events on this day.</p>
+            <p className="mt-2 text-sm text-gray-400">{tr("calendar.noEvents")}</p>
           ) : (
             <div className="mt-3 space-y-2">
               {selectedEntries.map((entry, i) => (
@@ -745,7 +745,7 @@ function ListView({
   nextMonth: () => void;
   goToday: () => void;
 }) {
-  const { i18n } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
   const timeLocale = intlLocale(i18n.language);
   // Sort the date keys ascending so the oldest entries in the month
   // come first — consistent with how a paper calendar reads.
@@ -766,10 +766,10 @@ function ListView({
       <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
         <button onClick={prevMonth} className="rounded-lg border border-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">&larr;</button>
         <h2 className="text-sm font-semibold text-gray-900">
-          {currentMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+          {currentMonth.toLocaleDateString(timeLocale, { month: "long", year: "numeric" })}
         </h2>
         <div className="flex gap-2">
-          <button onClick={goToday} className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">Today</button>
+          <button onClick={goToday} className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">{tr("calendar.today")}</button>
           <button onClick={nextMonth} className="rounded-lg border border-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">&rarr;</button>
         </div>
       </div>

@@ -116,7 +116,15 @@
       "pending": "进行中",
       "cancelled": "已取消"
     },
-    "back": "← 返回"
+    "back": "← 返回",
+    "columns": {
+      "task": "任务",
+      "contact": "联系人",
+      "due": "截止日期",
+      "priority": "优先级",
+      "status": "状态",
+      "memo": "备注"
+    }
   },
   "calendar": {
     "title": "日历",
@@ -180,7 +188,21 @@
     "snooze": {
       "tomorrow": "明天",
       "nextWeek": "下周"
-    }
+    },
+    "summary": "{{events}} 个预约 · {{tasks}} 项任务 · {{followups}} 项跟进 · {{drafts}} 份草稿",
+    "filters": {
+      "all": "全部",
+      "appointments": "预约",
+      "tasks": "任务",
+      "followups": "跟进",
+      "drafts": "草稿"
+    },
+    "view": {
+      "month": "月视图",
+      "list": "列表"
+    },
+    "today": "今天",
+    "noEvents": "当天没有安排。"
   },
   "boss": {
     "captain": "您的 AI 房产团队队长",
@@ -341,7 +363,9 @@
       "normal": "普通",
       "high": "高",
       "urgent": "紧急"
-    }
+    },
+    "subtitle": "集中管理客户对话，更快回复。",
+    "replyToCustomer": "回复客户"
   },
   "settings": {
     "aiStyle": "AI 助理风格",
