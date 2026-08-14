@@ -173,6 +173,39 @@ describe("driveRun", () => {
     expect(steps[0].output_json?.status).toBe("pending_approval");
   });
 
+  it("batches outbound approvals fired in one turn, but still defers dependent work", async () => {
+    const store = new InMemoryRunStore();
+    store.runs.set("run-batch", makeRun({ id: "run-batch" }));
+
+    // One turn, three calls: two sends (independent — each only proposes) and a
+    // research step that may assume the sends went out.
+    const model = scriptedModel([
+      {
+        toolUses: [
+          { id: "t1", name: "send_tool", input: { contact_id: "c1" } },
+          { id: "t2", name: "send_tool", input: { contact_id: "c2" } },
+          { id: "t3", name: "research_tool", input: { q: "after the sends" } },
+        ],
+        rawContent: [
+          { type: "tool_use", id: "t1", name: "send_tool", input: { contact_id: "c1" } },
+          { type: "tool_use", id: "t2", name: "send_tool", input: { contact_id: "c2" } },
+          { type: "tool_use", id: "t3", name: "research_tool", input: { q: "after the sends" } },
+        ],
+      },
+    ]);
+
+    const result = await driveRun("run-batch", deps(store, model));
+    expect(result.status).toBe("awaiting_approval");
+
+    const steps = await store.loadSteps("run-batch");
+    // Both sends parked together — the realtor decides once, not in a trickle.
+    expect(steps[0]).toMatchObject({ tool_name: "send_tool", status: "pending_approval" });
+    expect(steps[1]).toMatchObject({ tool_name: "send_tool", status: "pending_approval" });
+    // The non-outbound step is deferred entirely (no step recorded) — it may
+    // assume the parked sends happened, so it re-plans after the decision.
+    expect(steps).toHaveLength(2);
+  });
+
   it("ends budget_exceeded when the token budget is exhausted, keeping partial work", async () => {
     const store = new InMemoryRunStore();
     store.runs.set("run-1", makeRun({ token_budget: 120 }));

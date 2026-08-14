@@ -167,6 +167,124 @@ export const publishSocialPost = defineTool({
   },
 });
 
+type SocialPlatform = "facebook" | "instagram" | "linkedin";
+
+/** Which of the three the agent can actually post to right now. */
+async function connectedPlatforms(agentId: string): Promise<SocialPlatform[]> {
+  const { data } = await supabaseAdmin
+    .from("social_accounts")
+    .select("id, platform, fb_page_id, ig_business_user_id, linkedin_member_urn, status")
+    .eq("agent_id", agentId);
+  const rows = (data as
+    | {
+        id: string;
+        platform: string;
+        fb_page_id: string | null;
+        ig_business_user_id: string | null;
+        linkedin_member_urn: string | null;
+        status: string | null;
+      }[]
+    | null) ?? [];
+  const live = rows.filter((r) => r.status !== "revoked");
+  const out: SocialPlatform[] = [];
+  if (live.some((r) => r.platform === "meta" && r.fb_page_id)) out.push("facebook");
+  if (live.some((r) => r.platform === "meta" && r.ig_business_user_id)) out.push("instagram");
+  if (live.some((r) => r.platform === "linkedin" && r.linkedin_member_urn)) out.push("linkedin");
+  return out;
+}
+
+export const publishPostEverywhere = defineTool({
+  name: "publish_post_everywhere",
+  description:
+    "Publish ONE post across every channel the agent has connected (Facebook, Instagram, LinkedIn) — a single action and, in ask mode, a SINGLE approval covering all of them. Prefer this over calling publish_social_post per platform whenever the agent wants a post out broadly (\"post this everywhere\", \"announce my new listing\"). Pass image_url to attach a photo; Instagram is skipped when there is no image. Omit the caption and the Marketing team writes it.",
+  inputSchema: z.object({
+    caption: z
+      .string()
+      .max(2200)
+      .optional()
+      .describe("Only if the agent dictated the words; otherwise omit and the team drafts it."),
+    hashtags: z.array(z.string()).max(15).optional(),
+    image_url: z.string().url().optional().describe("Public image URL to attach. Instagram needs one."),
+    platforms: z
+      .array(z.enum(["facebook", "instagram", "linkedin"]))
+      .optional()
+      .describe("Limit to these channels. Omit to use every connected channel."),
+  }),
+  riskClass: "outbound",
+  assignee: "marketing_assistant",
+  outbound: { channel: () => "social" as const },
+  execute: async (ctx, input) => {
+    const available = await connectedPlatforms(ctx.agentId);
+    const wanted = input.platforms?.length ? available.filter((p) => input.platforms!.includes(p)) : available;
+    const targets = wanted.filter((p) => p !== "instagram" || !!input.image_url);
+    if (targets.length === 0) {
+      return {
+        status: "failed",
+        error:
+          available.length === 0
+            ? "No social channels are connected yet — connect them under Marketing first."
+            : "Nothing to post to: Instagram needs an image, and the other channels were excluded.",
+      };
+    }
+
+    const c = await resolveCaption(ctx.agentId, { caption: input.caption, hashtags: input.hashtags, image_url: input.image_url });
+    if ("error" in c) return { status: "failed", error: c.error };
+
+    const posted: string[] = [];
+    const failed: string[] = [];
+    for (const platform of targets) {
+      const account = await findSocialAccount(ctx.agentId, platform);
+      if (!account) {
+        failed.push(`${platform} (not connected)`);
+        continue;
+      }
+      const res = await publishPost({
+        agentId: ctx.agentId,
+        platform,
+        connectionId: account.id,
+        caption: c.caption,
+        hashtags: c.hashtags,
+        imageUrl: input.image_url ?? null,
+        trigger: "boss_tool",
+      });
+      if (res.ok) posted.push(platform);
+      else failed.push(`${platform} (${res.error})`);
+    }
+
+    if (posted.length === 0) {
+      return { status: "failed", error: `Couldn't post anywhere — ${failed.join("; ")}.` };
+    }
+    return {
+      status: "completed",
+      summary:
+        `Published to ${posted.join(", ")}` +
+        (failed.length ? `. Didn't go out on ${failed.join("; ")}.` : "."),
+      data: { posted, failed },
+    };
+  },
+  propose: async (ctx, input) => {
+    const available = await connectedPlatforms(ctx.agentId);
+    const wanted = input.platforms?.length ? available.filter((p) => input.platforms!.includes(p)) : available;
+    const targets = wanted.filter((p) => p !== "instagram" || !!input.image_url);
+    if (targets.length === 0) {
+      return {
+        status: "failed",
+        error:
+          available.length === 0
+            ? "No social channels are connected yet — connect them under Marketing first."
+            : "Nothing to post to: Instagram needs an image, and the other channels were excluded.",
+      };
+    }
+    const c = await resolveCaption(ctx.agentId, { caption: input.caption, hashtags: input.hashtags, image_url: input.image_url });
+    if ("error" in c) return { status: "failed", error: c.error };
+    return {
+      status: "pending_approval",
+      summary: `Post drafted for ${targets.join(", ")}${input.image_url ? " (with photo)" : ""}: "${c.caption.slice(0, 80)}…" — approve once and it goes to all ${targets.length}.`,
+      proposal: { platforms: targets, caption: c.caption, hashtags: c.hashtags, image_url: input.image_url ?? null },
+    };
+  },
+});
+
 export const scheduleSocialPost = defineTool({
   name: "schedule_social_post",
   description:

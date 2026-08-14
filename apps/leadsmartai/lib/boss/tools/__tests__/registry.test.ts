@@ -107,6 +107,7 @@ describe("boss tool registry", () => {
         "create_task",
         "create_calendar_event",
         "publish_social_post",
+        "publish_post_everywhere",
         "schedule_social_post",
         "create_avatar_video",
         "import_listing_from_url",
