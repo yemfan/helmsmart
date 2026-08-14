@@ -112,5 +112,188 @@
       "cancelled": "已取消"
     },
     "back": "← 返回"
+  },
+  "calendar": {
+    "title": "日历",
+    "cancel": "取消",
+    "addEvent": "添加日程",
+    "appointment": "预约",
+    "task": "任务",
+    "titlePlaceholder": "标题 *",
+    "noContact": "不关联客户",
+    "add": "添加",
+    "adding": "添加中…",
+    "added": "已添加！",
+    "failed": "操作失败",
+    "failedToAdd": "添加失败。",
+    "priority": {
+      "low": "低",
+      "normal": "普通",
+      "high": "高",
+      "urgent": "紧急"
+    },
+    "days": {
+      "sun": "日",
+      "mon": "一",
+      "tue": "二",
+      "wed": "三",
+      "thu": "四",
+      "fri": "五",
+      "sat": "六"
+    },
+    "gcal": {
+      "connected": "已连接 Google 日历",
+      "connect": "同步到 Google 日历",
+      "connectedHelp": "新建的预约会自动同步到您的 Google 日历。",
+      "connectHelp": "连接后可双向自动同步预约。",
+      "disconnect": "断开连接",
+      "working": "…"
+    },
+    "inbound": {
+      "heading": "转发邮件自动导入",
+      "body": "在 Gmail 中一次性设置过滤器，把报价、委托协议和看房请求转发到您的专属地址 —— 我们会自动分类，并加入您的任务列表待审阅。",
+      "copy": "复制",
+      "copied": "已复制 ✓",
+      "setupSummary": "Gmail 过滤器设置（一次性，约 30 秒）",
+      "step1": "Gmail → ⚙ → 查看所有设置 → 过滤器和已屏蔽的地址",
+      "step2": "点击「创建新的过滤器」",
+      "step3": "在「包含字词」栏中粘贴：",
+      "step4": "点击右下角的「创建过滤器」",
+      "step5": "勾选「转发到：」并选择（或添加）",
+      "step6": "点击「创建过滤器」，完成。",
+      "verifyNote": "首次转发到新地址时，Gmail 会给您发送一个验证码 —— 把它粘贴回转发设置中确认即可。之后所有匹配的邮件都会自动进入您的任务列表。"
+    },
+    "actions": {
+      "markDone": "标记完成",
+      "cancelTask": "取消任务",
+      "editTask": "编辑任务",
+      "cancelAppointment": "取消预约",
+      "reviewDraft": "审阅草稿",
+      "moveLater": "改到更晚的日期",
+      "moveTaskLater": "把任务改到更晚的日期"
+    },
+    "snooze": {
+      "tomorrow": "明天",
+      "nextWeek": "下周"
+    }
+  },
+  "boss": {
+    "captain": "您的 AI 房产团队队长",
+    "greeting": {
+      "welcome": "欢迎回来",
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好"
+    },
+    "composer": {
+      "answer": "输入您的回答…",
+      "autopilot": "告诉团队要做什么 —— 他们会执行并向您汇报…",
+      "ask": "告诉团队要做什么…"
+    },
+    "suggestions": {
+      "checkIn": "给我的重点客户发条问候短信",
+      "justListed": "写一条新房源上市的社交帖子",
+      "planDay": "安排我今天的日程"
+    },
+    "team": {
+      "heading": "您的 AI 团队",
+      "receptionist": "前台接待",
+      "sales_assistant": "销售专员",
+      "marketing_assistant": "营销专员",
+      "transaction_assistant": "交易协调员",
+      "accountant": "财务分析师",
+      "realtor": "待您审阅"
+    },
+    "verbs": {
+      "off": "已停用",
+      "needsYou": "等待您处理",
+      "activeNow": "刚刚活跃",
+      "working": "工作中",
+      "idle": "待命中",
+      "receptionist": {
+        "working": "正在接听来电",
+        "idle": "随时接听"
+      },
+      "sales_assistant": {
+        "working": "正在跟进",
+        "idle": "关注客户动向"
+      },
+      "marketing_assistant": {
+        "working": "正在创作内容",
+        "idle": "规划发帖"
+      },
+      "transaction_assistant": {
+        "working": "正在跟踪截止日期",
+        "idle": "监控交易进度"
+      },
+      "accountant": {
+        "working": "正在核算数据",
+        "idle": "关注账目"
+      }
+    },
+    "channel": {
+      "call": "电话",
+      "sms": "短信",
+      "email": "邮件",
+      "social": "社交媒体"
+    },
+    "metrics": {
+      "hotLeads": "重点客户",
+      "apptsToday": "今日预约",
+      "activeDeals": "进行中交易",
+      "deadlines": "截止日期",
+      "noHotLeads": "暂无重点客户。",
+      "noAppts": "今天没有预约。",
+      "noDeals": "暂无进行中的交易。",
+      "noDeadlines": "未来 7 天内没有截止日期。"
+    },
+    "deadlines": {
+      "inspection": "验房期限",
+      "appraisal": "评估截止日期",
+      "loan": "贷款条件期限",
+      "closing": "过户日"
+    },
+    "day": {
+      "today": "今天",
+      "yesterday": "昨天"
+    },
+    "runs": {
+      "overnight": "来自昨晚的任务",
+      "earlier": "较早的指令"
+    },
+    "autopilot": {
+      "on": "自动执行已开启",
+      "off": "自动执行已关闭",
+      "onTitle": "自动执行开启 —— 团队先执行，再向您汇报",
+      "offTitle": "自动执行关闭 —— 发送前会先征求您的同意"
+    },
+    "approvals": {
+      "title": "审批设置",
+      "subtitle": "按助理、按渠道决定团队可以自行执行，还是需要先征求您的同意。",
+      "allChannels": "自动执行（所有渠道）",
+      "allChannelsHelp": "总开关。下方的单个渠道设置会覆盖它。",
+      "askFirstTitle": "全部改为先询问 —— 未经您同意不会发送任何内容",
+      "done": "完成"
+    },
+    "status": {
+      "done": "已完成",
+      "scheduled": "已安排",
+      "needsInput": "需要补充信息",
+      "awaitingApproval": "等待您审批"
+    },
+    "panels": {
+      "revenue": "收入与佣金",
+      "pipeline": "成交预测",
+      "emailEngagement": "邮件互动情况",
+      "loading": "加载中…"
+    },
+    "proposal": "提议",
+    "openLead": "查看客户",
+    "open": "打开",
+    "dismiss": "忽略",
+    "notNow": "暂不处理",
+    "actionFailed": "操作失败。",
+    "uploadFailed": "上传失败",
+    "couldNotWorkOut": "这条我没能理解 —— 换个说法再试试。"
   }
 }

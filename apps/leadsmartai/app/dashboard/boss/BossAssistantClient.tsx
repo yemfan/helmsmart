@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
@@ -119,33 +121,25 @@ const LIVE_RUN_STATUSES = new Set(["planning", "running", "awaiting_approval"]);
 type TeamState = "working" | "needs-you" | "active" | "idle" | "off";
 type TeamLive = { type: string; state: TeamState; verb: string };
 
-const ASSIGNEE_LABEL: Record<string, string> = {
-  receptionist: "Receptionist",
-  sales_assistant: "Sales Specialist",
-  marketing_assistant: "Marketing Specialist",
-  transaction_assistant: "Transaction Coordinator",
-  accountant: "Financial Analyst",
-  realtor: "For your review",
-  boss_assistant: "Max",
-};
-const CHANNEL_LABEL: Record<Channel, string> = { call: "Call", sms: "Text", email: "Email", social: "Social" };
-
-const QUICK_COMMANDS = [
-  "Text my hot leads a check-in",
-  "Draft a just-listed social post",
-  "Plan my day",
-];
+/**
+ * Assistant + channel labels and the starter commands are authored in English
+ * and resolved through `dashboard:boss.*` at render time. "Max" is a name, so
+ * it is not a translation key.
+ */
+const CHANNEL_KEYS: Channel[] = ["call", "sms", "email", "social"];
+const QUICK_COMMAND_KEYS = ["checkIn", "justListed", "planDay"] as const;
 
 // Live status verbs for the team ribbon — present tense when busy, a calm
 // standby phrase when idle. Keeps the "company floor" feeling: someone is
 // always on.
-const TEAM_VERBS: Record<string, { working: string; idle: string }> = {
-  receptionist: { working: "Answering calls", idle: "On call" },
-  sales_assistant: { working: "Following up", idle: "Watching leads" },
-  marketing_assistant: { working: "Creating content", idle: "Planning posts" },
-  transaction_assistant: { working: "Tracking deadlines", idle: "Monitoring deals" },
-  accountant: { working: "Running the numbers", idle: "Watching the books" },
-};
+/** Assistants that have their own status verbs; others use the generic pair. */
+const TEAM_VERB_KEYS = new Set([
+  "receptionist",
+  "sales_assistant",
+  "marketing_assistant",
+  "transaction_assistant",
+  "accountant",
+]);
 
 // ── helpers ──────────────────────────────────────────────────────────
 
@@ -169,13 +163,13 @@ function fmtTime(iso: string): string {
 const RECENT_LIMIT = 6;
 
 /** "Today" / "Yesterday" / weekday / "Aug 3" — the day-separator label. */
-function dayLabel(iso: string): string {
+function dayLabel(iso: string, tr: (k: string, o?: Record<string, unknown>) => string): string {
   const d = new Date(iso);
   const now = new Date();
   const startOf = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
   const diffDays = Math.round((startOf(now) - startOf(d)) / 86_400_000);
-  if (diffDays <= 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
+  if (diffDays <= 0) return tr("boss.day.today");
+  if (diffDays === 1) return tr("boss.day.yesterday");
   if (diffDays < 7) return d.toLocaleDateString("en-US", { weekday: "long" });
   return d.toLocaleDateString("en-US", {
     month: "short",
@@ -185,17 +179,17 @@ function dayLabel(iso: string): string {
 }
 
 type DeadlineAlert = { transactionId: string; propertyAddress: string; label: string; due: Date; risk: "high" | "medium" };
-function deadlineAlerts(transactions: TransactionItem[]): DeadlineAlert[] {
+function deadlineAlerts(transactions: TransactionItem[], tr: (k: string, o?: Record<string, unknown>) => string): DeadlineAlert[] {
   const now = Date.now();
   const horizon = now + 7 * 24 * 60 * 60 * 1000;
   const alerts: DeadlineAlert[] = [];
   for (const t of transactions) {
     if (t.status !== "active" && t.status !== "pending") continue;
     const candidates = [
-      { label: "Inspection contingency", date: t.inspection_deadline, done: t.inspection_completed_at },
-      { label: "Appraisal deadline", date: t.appraisal_deadline, done: t.appraisal_completed_at },
-      { label: "Loan contingency", date: t.loan_contingency_deadline, done: t.loan_contingency_removed_at },
-      { label: "Closing", date: t.closing_date, done: null as string | null },
+      { label: tr("boss.deadlines.inspection"), date: t.inspection_deadline, done: t.inspection_completed_at },
+      { label: tr("boss.deadlines.appraisal"), date: t.appraisal_deadline, done: t.appraisal_completed_at },
+      { label: tr("boss.deadlines.loan"), date: t.loan_contingency_deadline, done: t.loan_contingency_removed_at },
+      { label: tr("boss.deadlines.closing"), date: t.closing_date, done: null as string | null },
     ];
     for (const c of candidates) {
       if (!c.date || c.done) continue;
@@ -216,6 +210,7 @@ function deadlineAlerts(transactions: TransactionItem[]): DeadlineAlert[] {
 // ── main ─────────────────────────────────────────────────────────────
 
 export default function BossAssistantClient({ greetingName }: { greetingName: string }) {
+  const { t: tr } = useTranslation("dashboard");
   const [metrics, setMetrics] = useState<SummaryMetrics | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [hotLeads, setHotLeads] = useState<HotLead[]>([]);
@@ -463,10 +458,10 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   // the client only to avoid a hydration mismatch (#418) when the server clock
   // produces a different bucket than the browser. Seed with a clock-independent
   // default so SSR and the first client render agree.
-  const [greeting, setGreeting] = useState("Welcome back");
+  const [greeting, setGreeting] = useState(() => tr("boss.greeting.welcome"));
   useEffect(() => {
     const h = new Date().getHours();
-    setGreeting(h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
+    setGreeting(h < 12 ? tr("boss.greeting.morning") : h < 17 ? tr("boss.greeting.afternoon") : tr("boss.greeting.evening"));
   }, []);
 
   // The most recent question the Boss is waiting on — the command bar answers
@@ -478,7 +473,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     return p?.follow_up_question ?? null;
   }, [tasks]);
 
-  const alerts = useMemo(() => deadlineAlerts(transactions), [transactions]);
+  const alerts = useMemo(() => deadlineAlerts(transactions, tr), [transactions, tr]);
   const activeDeals = useMemo(() => transactions.filter((t) => t.status === "active" || t.status === "pending"), [transactions]);
 
   // The full thread = paged-in history + the polled recent window, de-duped by
@@ -521,16 +516,18 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     const recentMs = 20 * 60 * 1000;
     return AI_TEAM.filter((a) => a.type !== "boss_assistant").map((a) => {
       const type = a.type;
-      if ((teamStatus[type] ?? "active") === "paused") return { type, state: "off", verb: "Off duty" };
+      if ((teamStatus[type] ?? "active") === "paused") return { type, state: "off", verb: tr("boss.verbs.off") };
       const mine = tasks.filter((t) => t.assigned_to === type);
       if (mine.some((t) => t.status === "awaiting_approval" || t.status === "needs_input" || t.status === "needs_review"))
-        return { type, state: "needs-you", verb: "Waiting on you" };
-      const verbs = TEAM_VERBS[type] ?? { working: "Working", idle: "Standing by" };
+        return { type, state: "needs-you", verb: tr("boss.verbs.needsYou") };
+      const verbs = TEAM_VERB_KEYS.has(type)
+        ? { working: tr(`boss.verbs.${type}.working`), idle: tr(`boss.verbs.${type}.idle`) }
+        : { working: tr("boss.verbs.working"), idle: tr("boss.verbs.idle") };
       if (mine.some((t) => t.status === "assigned" || t.status === "scheduled"))
         return { type, state: "working", verb: `${verbs.working}…` };
       const latest = activities.find((act) => act.assistant_type === type);
       if (latest && now - new Date(latest.created_at).getTime() < recentMs)
-        return { type, state: "active", verb: "Active just now" };
+        return { type, state: "active", verb: tr("boss.verbs.activeNow") };
       return { type, state: "idle", verb: verbs.idle };
     });
   }, [tasks, activities, teamStatus]);
@@ -546,7 +543,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           <BossAvatar avatar={bossAvatar} />
           <div>
             <h1 className="text-lg font-semibold leading-tight text-gray-900">👋 {bossName}</h1>
-            <p className="text-xs text-gray-500">Captain of your AI Real Estate Team</p>
+            <p className="text-xs text-gray-500">{tr("boss.captain")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -555,8 +552,8 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
             type="button"
             onClick={() => setSettingsOpen(true)}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
-            aria-label="Approval settings"
-            title="Approval settings"
+            aria-label={tr("boss.approvals.title")}
+            title={tr("boss.approvals.title")}
           >
             ⚙
           </button>
@@ -630,7 +627,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           .map((r) => (
             <BossBubble key={r.id} bossName={bossName} avatar={bossAvatar}>
               <p className="mb-1.5 text-xs text-gray-500">
-                {r.trigger === "overnight" ? "From last night's run" : "Earlier command"}: {r.objective.slice(0, 120)}
+                {r.trigger === "overnight" ? tr("boss.runs.overnight") : tr("boss.runs.earlier")}: {r.objective.slice(0, 120)}
               </p>
               <RunCard runId={r.id} onChanged={loadConversation} />
             </BossBubble>
@@ -654,14 +651,14 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
             grouped by day so the thread reads as a dated history. */}
         {allInstructions.map((ins, idx) => {
           const prev = allInstructions[idx - 1];
-          const showSeparator = !prev || dayLabel(prev.created_at) !== dayLabel(ins.created_at);
+          const showSeparator = !prev || dayLabel(prev.created_at, tr) !== dayLabel(ins.created_at, tr);
           return (
             <Fragment key={ins.id}>
               {showSeparator && (
                 <div className="flex items-center gap-2 py-1" aria-hidden>
                   <span className="h-px flex-1 bg-gray-200" />
                   <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
-                    {dayLabel(ins.created_at)}
+                    {dayLabel(ins.created_at, tr)}
                   </span>
                   <span className="h-px flex-1 bg-gray-200" />
                 </div>
@@ -690,7 +687,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
       {/* ── Your AI team (compact) ── */}
       <section>
-        <h2 className="mb-2 text-sm font-semibold text-gray-900">Your AI team</h2>
+        <h2 className="mb-2 text-sm font-semibold text-gray-900">{tr("boss.team.heading")}</h2>
         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {AI_TEAM.filter((a) => a.type !== "boss_assistant").map((a) => {
             const latest = activities.find((act) => act.assistant_type === a.type);
@@ -743,19 +740,20 @@ function BossAvatar({ avatar }: { avatar: { id: string; url: string | null } | n
 }
 
 function AutopilotToggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+  const { t: tr } = useTranslation("dashboard");
   return (
     <button
       type="button"
       role="switch"
       aria-checked={on}
       onClick={onToggle}
-      title={on ? "Autopilot on — the Boss acts, then tells you" : "Autopilot off — the Boss asks before sending"}
+      title={on ? tr("boss.autopilot.onTitle") : tr("boss.autopilot.offTitle")}
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
         on ? "bg-emerald-100 text-emerald-800" : "border border-gray-200 bg-white text-gray-600"
       }`}
     >
       <span aria-hidden>{on ? "🛫" : "✈️"}</span>
-      {on ? "Autopilot on" : "Autopilot off"}
+      {on ? tr("boss.autopilot.on") : tr("boss.autopilot.off")}
     </button>
   );
 }
@@ -832,16 +830,17 @@ function ContextStrip({
   alerts: DeadlineAlert[];
   onOpenLead: (id: string) => void;
 }) {
+  const { t: tr } = useTranslation("dashboard");
   const [open, setOpen] = useState<null | "hot" | "today" | "deals" | "dead">(null);
   const toggle = (k: "hot" | "today" | "deals" | "dead") => setOpen((cur) => (cur === k ? null : k));
 
   return (
     <div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Metric label="Hot leads" value={metrics?.hotLeads} tone="hot" active={open === "hot"} onClick={() => toggle("hot")} />
-        <Metric label="Appts today" value={eventsCount} active={open === "today"} onClick={() => toggle("today")} />
-        <Metric label="Active deals" value={dealsCount} active={open === "deals"} onClick={() => toggle("deals")} />
-        <Metric label="Deadlines" value={deadlinesCount} tone={deadlinesCount ? "warn" : undefined} active={open === "dead"} onClick={() => toggle("dead")} />
+        <Metric label={tr("boss.metrics.hotLeads")} value={metrics?.hotLeads} tone="hot" active={open === "hot"} onClick={() => toggle("hot")} />
+        <Metric label={tr("boss.metrics.apptsToday")} value={eventsCount} active={open === "today"} onClick={() => toggle("today")} />
+        <Metric label={tr("boss.metrics.activeDeals")} value={dealsCount} active={open === "deals"} onClick={() => toggle("deals")} />
+        <Metric label={tr("boss.metrics.deadlines")} value={deadlinesCount} tone={deadlinesCount ? "warn" : undefined} active={open === "dead"} onClick={() => toggle("dead")} />
       </div>
       {open && (
         <div className="mt-2 rounded-xl border border-gray-200 bg-white p-2">
@@ -853,25 +852,25 @@ function ContextStrip({
               </span>
               {typeof l.engagement_score === "number" && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">{l.engagement_score}</span>}
             </button>
-          )) : <Empty>No hot leads right now.</Empty>)}
+          )) : <Empty>{tr("boss.metrics.noHotLeads")}</Empty>)}
           {open === "today" && (events.length ? events.map((e) => (
             <div key={e.id} className="flex items-center justify-between gap-2 px-2 py-1.5">
               <span className="min-w-0"><span className="block truncate text-sm font-medium text-gray-900">{e.title}</span>{e.lead_name && <span className="block truncate text-xs text-gray-500">{e.lead_name}</span>}</span>
               <span className="text-xs font-medium text-blue-600">{fmtTime(e.starts_at)}</span>
             </div>
-          )) : <Empty>No appointments today.</Empty>)}
+          )) : <Empty>{tr("boss.metrics.noAppts")}</Empty>)}
           {open === "deals" && (deals.length ? deals.map((d) => (
             <Link key={d.id} href={`/dashboard/transactions/${d.id}`} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-50">
               <span className="truncate text-sm font-medium text-gray-900">{d.property_address}</span>
               <span className="shrink-0 text-xs text-gray-500">{d.status}</span>
             </Link>
-          )) : <Empty>No active deals.</Empty>)}
+          )) : <Empty>{tr("boss.metrics.noDeals")}</Empty>)}
           {open === "dead" && (alerts.length ? alerts.map((a) => (
             <Link key={`${a.transactionId}-${a.label}`} href={`/dashboard/transactions/${a.transactionId}`} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-50">
               <span className="min-w-0"><span className="block truncate text-sm font-medium text-gray-900">{a.propertyAddress}</span><span className="block text-xs text-gray-500">{a.label}</span></span>
               <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.risk === "high" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{fmtDay(a.due)}</span>
             </Link>
-          )) : <Empty>No deadlines in the next 7 days.</Empty>)}
+          )) : <Empty>{tr("boss.metrics.noDeadlines")}</Empty>)}
         </div>
       )}
     </div>
@@ -913,10 +912,11 @@ function ProposalCard({
   onOpenLead: (() => void) | null;
   onDismiss: () => void;
 }) {
+  const { t: tr } = useTranslation("dashboard");
   const [handled, setHandled] = useState(false);
   return (
     <BossBubble bossName={bossName} avatar={avatar}>
-      <span className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">Proposal</span>
+      <span className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">{tr("boss.proposal")}</span>
       <p className="text-sm font-medium text-gray-900">{rec.title}</p>
       {(rec.summary || rec.reason) && <p className="mt-0.5 text-xs text-gray-500">{[rec.summary, rec.reason].filter(Boolean).join(" — ")}</p>}
       {rec.expected_outcome && <p className="mt-0.5 text-xs font-medium text-[#8a6a0e]">→ {rec.expected_outcome}</p>}
@@ -930,18 +930,18 @@ function ProposalCard({
               to routing it through the Boss when there's no destination. */}
           {onOpenLead ? (
             <button type="button" onClick={onOpenLead} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
-              {rec.recommended_action && rec.recommended_action.length > 3 ? rec.recommended_action : "Open lead"}
+              {rec.recommended_action && rec.recommended_action.length > 3 ? rec.recommended_action : tr("boss.openLead")}
             </button>
           ) : rec.action_href ? (
             <Link href={rec.action_href} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
-              {rec.recommended_action && rec.recommended_action.length > 3 ? rec.recommended_action : "Open"}
+              {rec.recommended_action && rec.recommended_action.length > 3 ? rec.recommended_action : tr("boss.open")}
             </Link>
           ) : (
             <button type="button" onClick={() => { setHandled(true); onHandle(); }} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
               Have Boss handle it
             </button>
           )}
-          <button type="button" onClick={onDismiss} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-400 hover:bg-gray-50">Not now</button>
+          <button type="button" onClick={onDismiss} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-400 hover:bg-gray-50">{tr("boss.notNow")}</button>
         </div>
       )}
     </BossBubble>
@@ -959,6 +959,7 @@ function InstructionExchange({
   teamNames: Record<string, string>;
   onChanged: () => void | Promise<void>;
 }) {
+  const { t: tr } = useTranslation("dashboard");
   const processing = instruction.status === "pending" || instruction.status === "processing";
   return (
     <div className="space-y-2">
@@ -978,7 +979,7 @@ function InstructionExchange({
         </BossBubble>
       ) : instruction.status === "failed" ? (
         <BossBubble bossName={bossName} avatar={avatar}>
-          <p className="text-sm text-gray-500">Couldn&apos;t work that one out — try rephrasing it.</p>
+          <p className="text-sm text-gray-500">{tr("boss.couldNotWorkOut")}</p>
         </BossBubble>
       ) : tasks.length > 0 ? (
         <BossBubble bossName={bossName} avatar={avatar}>
@@ -998,6 +999,7 @@ function InstructionExchange({
 }
 
 function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamNames: Record<string, string>; onChanged: () => void | Promise<void> }) {
+  const { t: tr } = useTranslation("dashboard");
   const [busy, setBusy] = useState<"approve" | "dismiss" | "answer" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [answer, setAnswer] = useState("");
@@ -1012,17 +1014,17 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(action === "answer" ? { id: t.id, action, answer: answer.trim() } : { id: t.id, action }),
       }).then((r) => r.json());
-      if (!res?.ok) throw new Error(res?.error || "Action failed.");
+      if (!res?.ok) throw new Error(res?.error || tr("boss.actionFailed"));
       setAnswer("");
       await onChanged();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Action failed.");
+      setError(e instanceof Error ? e.message : tr("boss.actionFailed"));
     } finally {
       setBusy(null);
     }
   }
 
-  const who = teamNames[t.assigned_to] ?? ASSIGNEE_LABEL[t.assigned_to] ?? t.assigned_to;
+  const who = teamNames[t.assigned_to] ?? tr(`boss.team.${t.assigned_to}`, { defaultValue: t.assigned_to }) as string;
   const done = t.status === "sent" || t.status === "completed" || t.status === "done";
 
   return (
@@ -1034,7 +1036,7 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
           {t.title}
         </p>
         <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${done ? "bg-emerald-50 text-emerald-700" : t.status === "needs_input" || t.assigned_to === "realtor" ? "bg-amber-50 text-amber-800" : "bg-blue-50 text-blue-700"}`}>
-          {done ? "Done" : t.status === "scheduled" ? "Scheduled" : t.status === "needs_input" ? "Needs info" : t.status === "awaiting_approval" ? "Awaiting you" : who}
+          {done ? tr("boss.status.done") : t.status === "scheduled" ? tr("boss.status.scheduled") : t.status === "needs_input" ? tr("boss.status.needsInput") : t.status === "awaiting_approval" ? tr("boss.status.awaitingApproval") : who}
         </span>
       </div>
 
@@ -1047,7 +1049,7 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
           <p className="mt-1 whitespace-pre-wrap text-xs text-gray-700">{t.draft_body}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <button type="button" disabled={busy !== null} onClick={() => act("approve")} className="rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{busy === "approve" ? "Sending…" : "Approve & send"}</button>
-            <button type="button" disabled={busy !== null} onClick={() => act("dismiss")} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50">Dismiss</button>
+            <button type="button" disabled={busy !== null} onClick={() => act("dismiss")} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50">{tr("boss.dismiss")}</button>
             {error && <span className="text-[11px] text-red-600">{error}</span>}
           </div>
         </div>
@@ -1090,6 +1092,7 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
 }
 
 function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onSubmit: (text: string, attachment?: CommandAttachment) => void; autopilot: boolean; pendingQuestion?: string | null; initialText?: string }) {
+  const { t: tr } = useTranslation("dashboard");
   const [text, setText] = useState("");
   const [attach, setAttach] = useState<CommandAttachment | null>(null);
   // Local object-URL for an instant image thumbnail (no round-trip to Storage).
@@ -1124,7 +1127,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
       const path = await uploadViaStorage(f, kind);
       setAttach({ path, name: f.name, mime: f.type, kind });
     } catch (err) {
-      setUploadErr(err instanceof Error ? err.message : "Upload failed");
+      setUploadErr(err instanceof Error ? err.message : tr("boss.uploadFailed"));
       setPreview((cur) => { if (cur) URL.revokeObjectURL(cur); return null; });
     } finally {
       setUploading(false);
@@ -1155,8 +1158,8 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
         </div>
       ) : (
         <div className="mb-2 flex flex-wrap gap-1.5">
-          {QUICK_COMMANDS.map((q) => (
-            <button key={q} type="button" onClick={() => onSubmit(q)} className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] text-gray-600 hover:bg-gray-100">{q}</button>
+          {QUICK_COMMAND_KEYS.map((k) => (
+            <button key={k} type="button" onClick={() => onSubmit(tr(`boss.suggestions.${k}`))} className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] text-gray-600 hover:bg-gray-100">{tr(`boss.suggestions.${k}`)}</button>
           ))}
         </div>
       )}
@@ -1167,7 +1170,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
           onChange={(e) => { setText(e.target.value); e.target.style.height = "auto"; e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`; }}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
           rows={1}
-          placeholder={pendingQuestion ? "Type your answer…" : autopilot ? "Tell your team what to do — they'll act and report back…" : "Tell your team what to do…"}
+          placeholder={pendingQuestion ? tr("boss.composer.answer") : autopilot ? tr("boss.composer.autopilot") : tr("boss.composer.ask")}
           className="max-h-[120px] min-h-[38px] flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
         />
         <button type="button" onClick={send} disabled={!text.trim()} className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" aria-label="Send">↑</button>
@@ -1224,6 +1227,7 @@ function SettingsModal({
   onOvernight: (on: boolean) => void;
   onClose: () => void;
 }) {
+  const { t: tr } = useTranslation("dashboard");
   const cellMode = (assignee: string, channel: Channel): "ask" | "auto" => {
     const c = cells.find((x) => x.assignee === assignee && x.channel === channel);
     if (c) return c.mode;
@@ -1233,15 +1237,15 @@ function SettingsModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" onClick={onClose}>
       <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-gray-900">Approval settings</h2>
+          <h2 className="text-base font-semibold text-gray-900">{tr("boss.approvals.title")}</h2>
           <button type="button" onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-gray-700">✕</button>
         </div>
-        <p className="mt-1 text-xs text-gray-500">Choose where the Boss acts on its own and where it asks first — per assistant, per channel.</p>
+        <p className="mt-1 text-xs text-gray-500">{tr("boss.approvals.subtitle")}</p>
 
         <div className="mt-4 flex items-center justify-between rounded-xl border border-gray-200 p-3">
           <div>
-            <p className="text-sm font-medium text-gray-900">Autopilot (all channels)</p>
-            <p className="text-xs text-gray-500">The master switch. Per-channel choices below override it.</p>
+            <p className="text-sm font-medium text-gray-900">{tr("boss.approvals.allChannels")}</p>
+            <p className="text-xs text-gray-500">{tr("boss.approvals.allChannelsHelp")}</p>
           </div>
           <AutopilotToggle on={global} onToggle={() => onGlobal(!global)} />
         </div>
@@ -1260,7 +1264,7 @@ function SettingsModal({
         <div className="mt-3 space-y-2">
           {channels.map((row) => (
             <div key={row.assignee} className="rounded-xl border border-gray-200 p-3">
-              <p className="mb-2 text-sm font-medium text-gray-900">{ASSIGNEE_LABEL[row.assignee] ?? row.assignee}</p>
+              <p className="mb-2 text-sm font-medium text-gray-900">{tr(`boss.team.${row.assignee}`, { defaultValue: row.assignee })}</p>
               <div className="flex flex-wrap gap-1.5">
                 {row.channels.map((ch) => {
                   const mode = cellMode(row.assignee, ch);
@@ -1271,7 +1275,7 @@ function SettingsModal({
                       onClick={() => onCell(row.assignee, ch, mode === "auto" ? "ask" : "auto")}
                       className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition ${mode === "auto" ? "bg-emerald-100 text-emerald-800" : "border border-gray-200 bg-white text-gray-500"}`}
                     >
-                      {CHANNEL_LABEL[ch]}: {mode === "auto" ? "auto" : "ask"}
+                      {tr(`boss.channel.${ch}`)}: {mode === "auto" ? "auto" : "ask"}
                     </button>
                   );
                 })}
@@ -1285,7 +1289,7 @@ function SettingsModal({
             type="button"
             onClick={onPauseAll}
             className="rounded-lg border border-red-200 bg-white px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50"
-            title="Flip everything to ask-first — nothing sends without you"
+            title={tr("boss.approvals.askFirstTitle")}
           >
             ⏸ Pause all autonomy
           </button>
@@ -1303,6 +1307,7 @@ const PipelineForecastPanel = nextDynamic(() => import("@/components/dashboard/P
 const EmailEngagementPanel = nextDynamic(() => import("@/components/dashboard/EmailEngagementPanel").then((m) => m.EmailEngagementPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> });
 
 function PerformanceSection() {
+  const { t: tr } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   return (
     <section>
@@ -1311,9 +1316,9 @@ function PerformanceSection() {
       </button>
       {open && (
         <div className="mt-3 space-y-5">
-          <div><h3 className="mb-2 text-sm font-semibold text-gray-900">Revenue &amp; commission</h3><RevenuePanel /></div>
-          <div><h3 className="mb-1 text-sm font-semibold text-gray-900">Pipeline forecast</h3><PipelineForecastPanel /></div>
-          <div><h3 className="mb-1 text-sm font-semibold text-gray-900">Email engagement</h3><EmailEngagementPanel /></div>
+          <div><h3 className="mb-2 text-sm font-semibold text-gray-900">{tr("boss.panels.revenue")}</h3><RevenuePanel /></div>
+          <div><h3 className="mb-1 text-sm font-semibold text-gray-900">{tr("boss.panels.pipeline")}</h3><PipelineForecastPanel /></div>
+          <div><h3 className="mb-1 text-sm font-semibold text-gray-900">{tr("boss.panels.emailEngagement")}</h3><EmailEngagementPanel /></div>
         </div>
       )}
     </section>

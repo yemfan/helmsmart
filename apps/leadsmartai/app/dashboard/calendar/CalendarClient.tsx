@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CalendarClock, Check, Eye, Pencil, X } from "lucide-react";
@@ -44,7 +46,7 @@ type DayEntry = {
   channel?: "sms" | "email";
 };
 
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 const DOT_COLORS = {
   event: "bg-blue-500",
   task: "bg-green-500",
@@ -54,9 +56,12 @@ const DOT_COLORS = {
 
 function dateKey(d: Date) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
 function isSameDay(a: Date, b: Date) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
-function formatTime(iso: string) { return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }); }
+function formatTime(iso: string, locale = "en-US") { return new Date(iso).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" }); }
 
 export default function CalendarClient({ leads }: { leads: Array<{ id: string; name: string | null }> }) {
+  const { t: tr, i18n } = useTranslation("dashboard");
+  // Times were pinned to en-US regardless of the chosen language.
+  const timeLocale = i18n.language === "zh-Hans" ? "zh-CN" : "en-US";
   const [currentMonth, setCurrentMonth] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -266,18 +271,18 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title: addFields.title, leadId: addFields.leadId || null, startsAt: addFields.startsAt ? new Date(addFields.startsAt).toISOString() : null }),
         });
-        if (!(await res.json()).ok) throw new Error("Failed");
+        if (!(await res.json()).ok) throw new Error(tr("calendar.failed"));
       } else {
         const res = await fetch("/api/dashboard/tasks", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title: addFields.title, leadId: addFields.leadId || null, dueAt: addFields.dueAt ? new Date(addFields.dueAt).toISOString() : null, priority: addFields.priority }),
         });
-        if (!(await res.json()).ok) throw new Error("Failed");
+        if (!(await res.json()).ok) throw new Error(tr("calendar.failed"));
       }
-      setAddMsg("Added!"); setShowAdd(false);
+      setAddMsg(tr("calendar.added")); setShowAdd(false);
       setAddFields({ title: "", leadId: "", startsAt: "", dueAt: "", priority: "normal" });
       loadData();
-    } catch { setAddMsg("Failed to add."); }
+    } catch { setAddMsg(tr("calendar.failedToAdd")); }
     finally { setAddLoading(false); }
   }
 
@@ -362,13 +367,13 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Calendar</h1>
+          <h1 className="text-xl font-semibold text-gray-900">{tr("calendar.title")}</h1>
           <p className="text-sm text-gray-500">
             {monthStats.events} appointments &middot; {monthStats.tasks} tasks &middot; {monthStats.followups} follow-ups &middot; {monthStats.drafts} drafts
           </p>
         </div>
         <button onClick={() => setShowAdd((v) => !v)} className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800">
-          {showAdd ? "Cancel" : "Add Event"}
+          {showAdd ? tr("calendar.cancel") : tr("calendar.addEvent")}
         </button>
       </div>
 
@@ -385,13 +390,10 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-gray-900">
-                Forward emails for auto-import
+                {tr("calendar.inbound.heading")}
               </p>
               <p className="mt-0.5 text-xs text-gray-600">
-                Set up a one-time Gmail filter forwarding offers, listing
-                agreements, and showing requests to your unique address —
-                we&apos;ll classify each one and add it to your task list
-                for review.
+                {tr("calendar.inbound.body")}
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <code className="rounded-md border border-blue-200 bg-white px-2 py-1 font-mono text-[12px] text-gray-900">
@@ -406,32 +408,31 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                   }}
                   className="rounded-md border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-700 hover:bg-gray-50"
                 >
-                  {aliasCopied ? "Copied ✓" : "Copy"}
+                  {aliasCopied ? tr("calendar.inbound.copied") : tr("calendar.inbound.copy")}
                 </button>
               </div>
               <details className="mt-3 text-xs text-gray-600">
                 <summary className="cursor-pointer font-medium text-gray-700 hover:text-gray-900">
-                  Gmail filter setup (one-time, ~30 seconds)
+                  {tr("calendar.inbound.setupSummary")}
                 </summary>
+                {/* Steps quote Gmail's own menu labels, so the translations use
+                    Google's published Chinese strings rather than literal ones. */}
                 <ol className="mt-2 list-decimal space-y-1 pl-5 leading-relaxed">
-                  <li>Gmail → ⚙ → <em>See all settings</em> → <em>Filters and Blocked Addresses</em></li>
-                  <li>Click <em>Create a new filter</em></li>
+                  <li>{tr("calendar.inbound.step1")}</li>
+                  <li>{tr("calendar.inbound.step2")}</li>
                   <li>
-                    In the <em>Has the words</em> field, paste:{" "}
+                    {tr("calendar.inbound.step3")}{" "}
                     <code className="rounded bg-white px-1 font-mono">offer OR &quot;purchase agreement&quot; OR &quot;listing agreement&quot; OR &quot;showing request&quot;</code>
                   </li>
-                  <li>Click <em>Create filter</em> at the bottom-right</li>
+                  <li>{tr("calendar.inbound.step4")}</li>
                   <li>
-                    Tick <em>Forward it to:</em> and pick (or add){" "}
+                    {tr("calendar.inbound.step5")}{" "}
                     <code className="rounded bg-white px-1 font-mono">{inboundAlias.address}</code>
                   </li>
-                  <li>Click <em>Create filter</em>. Done.</li>
+                  <li>{tr("calendar.inbound.step6")}</li>
                 </ol>
                 <p className="mt-2 text-[11px] text-gray-500">
-                  Gmail will email you a verification code the first time
-                  you forward to a new address — paste it back into the
-                  Forwarding settings to confirm. After that, every
-                  matching email auto-flows into your task list.
+                  {tr("calendar.inbound.verifyNote")}
                 </p>
               </details>
             </div>
@@ -458,12 +459,12 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
         <div className={`flex items-center justify-between rounded-xl border p-4 ${gcalStatus.connected ? "border-green-200 bg-green-50" : "border-blue-200 bg-blue-50"}`}>
           <div>
             <p className="text-sm font-semibold text-gray-900">
-              {gcalStatus.connected ? "Google Calendar connected" : "Sync with Google Calendar"}
+              {gcalStatus.connected ? tr("calendar.gcal.connected") : tr("calendar.gcal.connect")}
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
               {gcalStatus.connected
-                ? "New appointments auto-sync to your Google Calendar."
-                : "Connect to automatically sync appointments both ways."}
+                ? tr("calendar.gcal.connectedHelp")
+                : tr("calendar.gcal.connectHelp")}
             </p>
           </div>
           {gcalStatus.connected ? (
@@ -477,7 +478,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
               disabled={gcalDisconnecting}
               className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
             >
-              {gcalDisconnecting ? "..." : "Disconnect"}
+              {gcalDisconnecting ? tr("calendar.gcal.working") : tr("calendar.gcal.disconnect")}
             </button>
           ) : (
             <a
@@ -494,13 +495,13 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {showAdd && (
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
           <div className="flex gap-2">
-            <button onClick={() => setAddType("event")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "event" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}>Appointment</button>
-            <button onClick={() => setAddType("task")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "task" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700"}`}>Task</button>
+            <button onClick={() => setAddType("event")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "event" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}>{tr("calendar.appointment")}</button>
+            <button onClick={() => setAddType("task")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "task" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700"}`}>{tr("calendar.task")}</button>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder="Title *" className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+            <input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder={tr("calendar.titlePlaceholder")} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
             <select value={addFields.leadId} onChange={(e) => setAddFields((f) => ({ ...f, leadId: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
-              <option value="">No contact</option>
+              <option value="">{tr("calendar.noContact")}</option>
               {leads.map((l) => <option key={l.id} value={l.id}>{l.name ?? `Lead #${l.id}`}</option>)}
             </select>
             {addType === "event" ? (
@@ -509,14 +510,14 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
               <>
                 <input type="datetime-local" value={addFields.dueAt} onChange={(e) => setAddFields((f) => ({ ...f, dueAt: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
                 <select value={addFields.priority} onChange={(e) => setAddFields((f) => ({ ...f, priority: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
-                  <option value="low">Low</option><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option>
+                  <option value="low">{tr("calendar.priority.low")}</option><option value="normal">{tr("calendar.priority.normal")}</option><option value="high">{tr("calendar.priority.high")}</option><option value="urgent">{tr("calendar.priority.urgent")}</option>
                 </select>
               </>
             )}
           </div>
           {addMsg && <p className={`text-xs ${addMsg === "Added!" ? "text-green-700" : "text-red-600"}`}>{addMsg}</p>}
           <button onClick={() => void addItem()} disabled={addLoading || !addFields.title.trim()} className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
-            {addLoading ? "Adding..." : "Add"}
+            {addLoading ? tr("calendar.adding") : tr("calendar.add")}
           </button>
         </div>
       )}
@@ -579,8 +580,8 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
 
         {/* Day headers */}
         <div className="grid grid-cols-7 border-b border-gray-100 bg-gray-50">
-          {DAYS.map((d) => (
-            <div key={d} className="px-2 py-2 text-center text-[10px] font-semibold text-gray-500">{d}</div>
+          {DAY_KEYS.map((d) => (
+            <div key={d} className="px-2 py-2 text-center text-[10px] font-semibold text-gray-500">{tr(`calendar.days.${d}`)}</div>
           ))}
         </div>
 
@@ -684,7 +685,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                       <p className="text-sm font-medium text-gray-900 truncate">{entry.title}</p>
                       <p className="text-xs text-gray-500">
                         {entry.leadName && <span>{entry.leadName} &middot; </span>}
-                        {formatTime(entry.time)}
+                        {formatTime(entry.time, timeLocale)}
                         {entry.priority && entry.priority !== "normal" && <span className="ml-1 capitalize text-amber-600">{entry.priority}</span>}
                         {entry.overdue && <span className="ml-1 text-red-600">Overdue</span>}
                         {entry.status === "done" && <span className="ml-1 text-green-600">Done</span>}
@@ -743,6 +744,8 @@ function ListView({
   nextMonth: () => void;
   goToday: () => void;
 }) {
+  const { i18n } = useTranslation("dashboard");
+  const timeLocale = i18n.language === "zh-Hans" ? "zh-CN" : "en-US";
   // Sort the date keys ascending so the oldest entries in the month
   // come first — consistent with how a paper calendar reads.
   const sortedKeys = Array.from(dayMap.keys()).sort();
@@ -810,7 +813,7 @@ function ListView({
                           <p className="text-sm font-medium text-gray-900 truncate">{entry.title}</p>
                           <p className="text-xs text-gray-500">
                             {entry.leadName && <span>{entry.leadName} &middot; </span>}
-                            {formatTime(entry.time)}
+                            {formatTime(entry.time, timeLocale)}
                             {entry.priority && entry.priority !== "normal" && (
                               <span className="ml-1 capitalize text-amber-600">{entry.priority}</span>
                             )}
@@ -856,6 +859,7 @@ function EntryActions({
   snoozeTaskBy: (taskId: string, days: number) => Promise<void> | void;
   cancelEvent: (eventId: string) => Promise<void> | void;
 }) {
+  const { t: tr } = useTranslation("dashboard");
   if (entry.type === "task" && entry.status !== "done") {
     // Edit is CRM-only; playbook tasks don't support title/description
     // edits via the simple PATCH route.
@@ -864,16 +868,16 @@ function EntryActions({
       <div className="inline-flex items-center gap-0.5 shrink-0 ml-2">
         <TaskIconButton
           onClick={() => void markTaskDone(entry.id)}
-          title="Mark done"
-          ariaLabel="Mark done"
+          title={tr("calendar.actions.markDone")}
+          ariaLabel={tr("calendar.actions.markDone")}
           tone="success"
         >
           <Check className="h-4 w-4" strokeWidth={2.5} />
         </TaskIconButton>
         <TaskIconButton
           onClick={() => void markTaskCancelled(entry.id)}
-          title="Cancel task"
-          ariaLabel="Cancel task"
+          title={tr("calendar.actions.cancelTask")}
+          ariaLabel={tr("calendar.actions.cancelTask")}
           tone="danger"
         >
           <X className="h-4 w-4" strokeWidth={2.5} />
@@ -882,8 +886,8 @@ function EntryActions({
         {isCrm ? (
           <TaskIconButton
             href={`/dashboard/tasks?focus=${encodeURIComponent(entry.id.slice(4))}`}
-            title="Edit task"
-            ariaLabel="Edit task"
+            title={tr("calendar.actions.editTask")}
+            ariaLabel={tr("calendar.actions.editTask")}
           >
             <Pencil className="h-4 w-4" strokeWidth={2} />
           </TaskIconButton>
@@ -896,8 +900,8 @@ function EntryActions({
       <div className="inline-flex items-center gap-0.5 shrink-0 ml-2">
         <TaskIconButton
           onClick={() => void cancelEvent(entry.id)}
-          title="Cancel appointment"
-          ariaLabel="Cancel appointment"
+          title={tr("calendar.actions.cancelAppointment")}
+          ariaLabel={tr("calendar.actions.cancelAppointment")}
           tone="danger"
         >
           <X className="h-4 w-4" strokeWidth={2.5} />
@@ -910,8 +914,8 @@ function EntryActions({
       <div className="inline-flex items-center gap-0.5 shrink-0 ml-2">
         <TaskIconButton
           href="/dashboard/drafts"
-          title="Review draft"
-          ariaLabel="Review draft"
+          title={tr("calendar.actions.reviewDraft")}
+          ariaLabel={tr("calendar.actions.reviewDraft")}
         >
           <Eye className="h-4 w-4" strokeWidth={2} />
         </TaskIconButton>
@@ -974,6 +978,7 @@ function TaskIconButton({
 // forcing the full edit flow. Same UX as the Tasks page so the user
 // learns the pattern in one place.
 function SnoozeMenu({ onSnooze }: { onSnooze: (days: number) => void }) {
+  const { t: tr } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (!open) return;
@@ -993,9 +998,9 @@ function SnoozeMenu({ onSnooze }: { onSnooze: (days: number) => void }) {
   }, [open]);
 
   const presets: Array<{ label: string; days: number }> = [
-    { label: "Tomorrow", days: 1 },
+    { label: tr("calendar.snooze.tomorrow"), days: 1 },
     { label: "In 3 days", days: 3 },
-    { label: "Next week", days: 7 },
+    { label: tr("calendar.snooze.nextWeek"), days: 7 },
   ];
 
   return (
@@ -1003,8 +1008,8 @@ function SnoozeMenu({ onSnooze }: { onSnooze: (days: number) => void }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        title="Move to a later date"
-        aria-label="Move task to a later date"
+        title={tr("calendar.actions.moveLater")}
+        aria-label={tr("calendar.actions.moveTaskLater")}
         aria-haspopup="menu"
         aria-expanded={open}
         className="inline-flex h-7 w-7 items-center justify-center rounded-md text-amber-600 transition hover:bg-amber-50 hover:text-amber-700"
