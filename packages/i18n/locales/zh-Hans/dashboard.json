@@ -409,7 +409,15 @@
     "markAttended": "标记为已带看",
     "cancel": "取消带看",
     "submitOffer": "提交报价",
-    "captureFeedback": "记录反馈"
+    "captureFeedback": "记录反馈",
+    "subtitle": "买方看房记录 —— 安排、跟踪并记录反馈。",
+    "status": {
+      "scheduled": "已安排",
+      "attended": "已带看",
+      "cancelled": "已取消",
+      "no_show": "未到场"
+    },
+    "filterCancelled": "已取消 / 未到场"
   },
   "offers": {
     "title": "报价",
@@ -437,7 +445,20 @@
     "modify": "修改",
     "markAccepted": "标记为已接受",
     "markDeclined": "标记为已拒绝",
-    "modifyOffer": "修改报价"
+    "modifyOffer": "修改报价",
+    "subtitle": "买方报价追踪 —— 草稿、提交、还价与结果。",
+    "buildWithAi": "用 AI 撰写",
+    "uploadOffer": "上传报价",
+    "reviewContract": "审阅合同",
+    "newOffer": "新建报价",
+    "stats": {
+      "active": "进行中",
+      "won": "已成交",
+      "lost": "未成交",
+      "pipeline": "在途金额",
+      "winRate": "成交率"
+    },
+    "toDeal": "→ 已转为交易"
   },
   "transactions": {
     "title": "成交管理",

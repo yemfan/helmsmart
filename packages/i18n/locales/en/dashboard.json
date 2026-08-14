@@ -409,7 +409,15 @@
     "markAttended": "Mark attended",
     "cancel": "Cancel showing",
     "submitOffer": "Submit offer",
-    "captureFeedback": "Capture feedback"
+    "captureFeedback": "Capture feedback",
+    "subtitle": "Buyer-side property visits — schedule, track, capture feedback.",
+    "status": {
+      "scheduled": "Scheduled",
+      "attended": "Attended",
+      "cancelled": "Cancelled",
+      "no_show": "No show"
+    },
+    "filterCancelled": "Cancelled / no-show"
   },
   "offers": {
     "title": "Offers",
@@ -437,7 +445,20 @@
     "modify": "Modify",
     "markAccepted": "Mark accepted",
     "markDeclined": "Mark declined",
-    "modifyOffer": "Modify offer"
+    "modifyOffer": "Modify offer",
+    "subtitle": "Buyer-side offer tracker — drafts, submissions, counters, outcomes.",
+    "buildWithAi": "Build with AI",
+    "uploadOffer": "Upload offer",
+    "reviewContract": "Review contract",
+    "newOffer": "New offer",
+    "stats": {
+      "active": "Active",
+      "won": "Won",
+      "lost": "Lost",
+      "pipeline": "Pipeline",
+      "winRate": "Win rate"
+    },
+    "toDeal": "→ deal"
   },
   "transactions": {
     "title": "Transactions",
