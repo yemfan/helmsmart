@@ -19,7 +19,8 @@ update public.leadsmart_users
        stripe_subscription_id = null,
        subscription_current_period_start = null,
        subscription_current_period_end = null,
-       subscription_cancel_at_period_end = null,
+       -- NOT NULL column: reset to false rather than null.
+       subscription_cancel_at_period_end = false,
        updated_at = now()
  where subscription_status is not null
     or stripe_subscription_id is not null
