@@ -109,6 +109,8 @@ describe("boss tool registry", () => {
         "publish_social_post",
         "schedule_social_post",
         "create_avatar_video",
+        "import_listing_from_url",
+        "create_listing_video_ad",
         "import_contacts_from_file",
         "run_skill",
         "start_selling_playbook",
