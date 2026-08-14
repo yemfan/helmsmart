@@ -648,5 +648,64 @@
         "propertyReport": "房产报告生成器"
       }
     }
+  },
+  "detail": {
+    "leadProfile": {
+      "loadFailed": "无法加载该客户资料。",
+      "breadcrumb": "潜在客户",
+      "lead": "客户",
+      "unnamed": "未命名客户",
+      "nextBestAction": "建议下一步",
+      "whatYouKnow": "已掌握的信息",
+      "openFollowUps": "待跟进事项",
+      "upcoming": "即将进行",
+      "storySoFar": "往来记录"
+    },
+    "offerDetail": {
+      "status": {
+        "draft": "草稿",
+        "submitted": "已提交",
+        "countered": "已还价",
+        "accepted": "已接受",
+        "rejected": "已拒绝",
+        "withdrawn": "已撤回",
+        "expired": "已过期"
+      },
+      "terms": "报价条款",
+      "listPrice": "挂牌价",
+      "offerPrice": "报价金额",
+      "currentPrice": "当前价格",
+      "earnestMoney": "定金",
+      "downPayment": "首付",
+      "financing": "贷款方式",
+      "proposedClosing": "拟定过户日",
+      "offerExpires": "报价有效期至",
+      "contingencies": "附加条件",
+      "inspection": "验房",
+      "appraisal": "评估",
+      "loan": "贷款",
+      "otherContingencies": "其他附加条件",
+      "notes": "备注",
+      "statusLabel": "状态",
+      "quickActions": "快捷操作",
+      "timeline": "时间线",
+      "created": "创建时间",
+      "closed": "已成交",
+      "activity": "活动记录",
+      "direction": "方向",
+      "sellerCountered": "卖方还价",
+      "weCountered": "我方还价",
+      "drafted": "已起草",
+      "submittedToAgent": "已提交给挂牌经纪",
+      "rejectedBySeller": "卖方已拒绝",
+      "recordCounter": "记录还价",
+      "noActivity": "暂无活动记录。",
+      "saveFailed": "保存失败。",
+      "statusSaved": "状态已保存。",
+      "networkError": "网络错误。",
+      "confirmDelete": "确定删除这条报价吗？此操作无法撤销。",
+      "deleteFailed": "删除失败。",
+      "counterFailed": "记录还价失败。"
+    }
   }
 }

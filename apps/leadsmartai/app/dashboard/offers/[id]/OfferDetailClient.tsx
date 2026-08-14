@@ -1,18 +1,21 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { CounterDirection, OfferCounterRow, OfferRow, OfferStatus } from "@/lib/offers/types";
 
-const STATUS_LABEL: Record<OfferStatus, string> = {
-  draft: "Draft",
-  submitted: "Submitted",
-  countered: "Countered",
-  accepted: "Accepted",
-  rejected: "Rejected",
-  withdrawn: "Withdrawn",
-  expired: "Expired",
+/** Keys into `dashboard:detail.offerDetail.status.*` — module scope has no hook. */
+const STATUS_KEY: Record<OfferStatus, string> = {
+  draft: "draft",
+  submitted: "submitted",
+  countered: "countered",
+  accepted: "accepted",
+  rejected: "rejected",
+  withdrawn: "withdrawn",
+  expired: "expired",
 };
 
 const STATUS_BADGE: Record<OfferStatus, string> = {
@@ -63,6 +66,7 @@ export function OfferDetailClient({
   counters: OfferCounterRow[];
   contactName: string | null;
 }) {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [offer, setOffer] = useState(initialOffer);
   const [counters, setCounters] = useState(initialCounters);
@@ -84,7 +88,7 @@ export function OfferDetailClient({
         error?: string;
       };
       if (!res.ok || !body.ok || !body.offer) {
-        setMsg({ tone: "err", text: body.error ?? "Failed to save." });
+        setMsg({ tone: "err", text: body.error ?? t("detail.offerDetail.saveFailed") });
         return;
       }
       // Special case: flipping to "accepted" routes the agent to
@@ -101,9 +105,9 @@ export function OfferDetailClient({
         return;
       }
       setOffer(body.offer);
-      setMsg({ tone: "ok", text: "Status saved." });
+      setMsg({ tone: "ok", text: t("detail.offerDetail.statusSaved") });
     } catch (e) {
-      setMsg({ tone: "err", text: e instanceof Error ? e.message : "Network error." });
+      setMsg({ tone: "err", text: e instanceof Error ? e.message : t("detail.offerDetail.networkError") });
     } finally {
       setSavingStatus(false);
     }
@@ -122,11 +126,11 @@ export function OfferDetailClient({
   }
 
   async function onDelete() {
-    if (!confirm("Delete this offer? This cannot be undone.")) return;
+    if (!confirm(t("detail.offerDetail.confirmDelete"))) return;
     const res = await fetch(`/api/dashboard/offers/${offer.id}`, { method: "DELETE" });
     const body = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
     if (!res.ok || !body.ok) {
-      setMsg({ tone: "err", text: body.error ?? "Failed to delete." });
+      setMsg({ tone: "err", text: body.error ?? t("detail.offerDetail.deleteFailed") });
       return;
     }
     router.push("/dashboard/offers");
@@ -160,7 +164,7 @@ export function OfferDetailClient({
           <span
             className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[offer.status]}`}
           >
-            {STATUS_LABEL[offer.status]}
+            {t(`detail.offerDetail.status.${STATUS_KEY[offer.status]}`)}
           </span>
           {offer.transaction_id ? (
             <Link
@@ -188,12 +192,12 @@ export function OfferDetailClient({
 
       <div className="grid gap-5 md:grid-cols-3">
         <div className="space-y-4 md:col-span-2">
-          <Card title="Offer terms">
+          <Card title={t("detail.offerDetail.terms")}>
             <dl className="grid grid-cols-2 gap-3 text-sm">
-              <Detail label="List price" value={formatMoney(offer.list_price)} />
-              <Detail label="Offer price" value={formatMoney(offer.offer_price)} />
+              <Detail label={t("detail.offerDetail.listPrice")} value={formatMoney(offer.list_price)} />
+              <Detail label={t("detail.offerDetail.offerPrice")} value={formatMoney(offer.offer_price)} />
               <Detail
-                label="Current price"
+                label={t("detail.offerDetail.currentPrice")}
                 value={
                   offer.current_price != null && offer.current_price !== offer.offer_price ? (
                     <span className="font-semibold text-slate-900">{formatMoney(offer.current_price)}</span>
@@ -202,19 +206,19 @@ export function OfferDetailClient({
                   )
                 }
               />
-              <Detail label="Earnest money" value={formatMoney(offer.earnest_money)} />
-              <Detail label="Down payment" value={formatMoney(offer.down_payment)} />
-              <Detail label="Financing" value={offer.financing_type ?? "—"} />
-              <Detail label="Proposed closing" value={formatDate(offer.closing_date_proposed)} />
-              <Detail label="Offer expires" value={formatDateTime(offer.offer_expires_at)} />
+              <Detail label={t("detail.offerDetail.earnestMoney")} value={formatMoney(offer.earnest_money)} />
+              <Detail label={t("detail.offerDetail.downPayment")} value={formatMoney(offer.down_payment)} />
+              <Detail label={t("detail.offerDetail.financing")} value={offer.financing_type ?? "—"} />
+              <Detail label={t("detail.offerDetail.proposedClosing")} value={formatDate(offer.closing_date_proposed)} />
+              <Detail label={t("detail.offerDetail.offerExpires")} value={formatDateTime(offer.offer_expires_at)} />
               <Detail
-                label="Contingencies"
+                label={t("detail.offerDetail.contingencies")}
                 wide
                 value={
                   <div className="flex flex-wrap gap-1.5">
-                    {offer.inspection_contingency ? <Chip>Inspection</Chip> : null}
-                    {offer.appraisal_contingency ? <Chip>Appraisal</Chip> : null}
-                    {offer.loan_contingency ? <Chip>Loan</Chip> : null}
+                    {offer.inspection_contingency ? <Chip>{t("detail.offerDetail.inspection")}</Chip> : null}
+                    {offer.appraisal_contingency ? <Chip>{t("detail.offerDetail.appraisal")}</Chip> : null}
+                    {offer.loan_contingency ? <Chip>{t("detail.offerDetail.loan")}</Chip> : null}
                     {!offer.inspection_contingency &&
                     !offer.appraisal_contingency &&
                     !offer.loan_contingency ? (
@@ -224,9 +228,9 @@ export function OfferDetailClient({
                 }
               />
               {offer.contingency_notes ? (
-                <Detail label="Other contingencies" value={offer.contingency_notes} wide />
+                <Detail label={t("detail.offerDetail.otherContingencies")} value={offer.contingency_notes} wide />
               ) : null}
-              {offer.notes ? <Detail label="Notes" value={offer.notes} wide /> : null}
+              {offer.notes ? <Detail label={t("detail.offerDetail.notes")} value={offer.notes} wide /> : null}
             </dl>
           </Card>
 
@@ -246,7 +250,7 @@ export function OfferDetailClient({
                       : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                   } disabled:opacity-60`}
                 >
-                  {STATUS_LABEL[s]}
+                  {t(`detail.offerDetail.status.${STATUS_KEY[s]}`)}
                 </button>
               ))}
             </div>
@@ -276,7 +280,7 @@ export function OfferDetailClient({
         </div>
 
         <div className="space-y-4">
-          <Card title="Quick actions">
+          <Card title={t("detail.offerDetail.quickActions")}>
             <div className="space-y-2">
               {isAccepted && !offer.transaction_id ? (
                 <button
@@ -310,12 +314,12 @@ export function OfferDetailClient({
             </div>
           </Card>
 
-          <Card title="Timeline">
+          <Card title={t("detail.offerDetail.timeline")}>
             <dl className="space-y-2 text-sm">
-              <Detail label="Created" value={formatDateTime(offer.created_at)} />
+              <Detail label={t("detail.offerDetail.created")} value={formatDateTime(offer.created_at)} />
               <Detail label="Submitted" value={formatDateTime(offer.submitted_at)} />
               <Detail label="Accepted" value={formatDateTime(offer.accepted_at)} />
-              <Detail label="Closed" value={formatDateTime(offer.closed_at)} />
+              <Detail label={t("detail.offerDetail.closed")} value={formatDateTime(offer.closed_at)} />
             </dl>
           </Card>
         </div>
@@ -375,8 +379,8 @@ function Chip({ children }: { children: React.ReactNode }) {
  *   Submitted       ← offer.submitted_at (skipped when status='draft')
  *   Counter (each)  ← offer_counters[i].created_at
  *                     direction discriminates the label:
- *                       seller_to_buyer → "Seller countered"
- *                       buyer_to_seller → "We countered"
+ *                       seller_to_buyer → t("detail.offerDetail.sellerCountered")
+ *                       buyer_to_seller → t("detail.offerDetail.weCountered")
  *   Accepted        ← offer.accepted_at
  *   Rejected        ← offer.closed_at when status='rejected'
  *   Withdrawn       ← offer.closed_at when status='withdrawn'
@@ -395,18 +399,19 @@ type ActivityEvent = {
 function buildActivity(
   offer: OfferRow,
   counters: OfferCounterRow[],
+  t: (k: string) => string,
 ): ActivityEvent[] {
   const events: ActivityEvent[] = [];
   events.push({
     at: offer.created_at,
     icon: "📝",
-    label: "Drafted",
+    label: t("detail.offerDetail.drafted"),
   });
   if (offer.submitted_at) {
     events.push({
       at: offer.submitted_at,
       icon: "📤",
-      label: "Submitted to listing agent",
+      label: t("detail.offerDetail.submittedToAgent"),
       detail:
         offer.offer_price != null
           ? `at ${formatMoney(offer.offer_price)}`
@@ -443,12 +448,12 @@ function buildActivity(
   if (offer.closed_at && offer.status !== "accepted") {
     const closedLabel =
       offer.status === "rejected"
-        ? { icon: "❌", label: "Rejected by seller" }
+        ? { icon: "❌", label: t("detail.offerDetail.rejectedBySeller") }
         : offer.status === "withdrawn"
           ? { icon: "↩", label: "Withdrawn" }
           : offer.status === "expired"
             ? { icon: "⏰", label: "Expired" }
-            : { icon: "⚪", label: "Closed" };
+            : { icon: "⚪", label: t("detail.offerDetail.closed") };
     events.push({
       at: offer.closed_at,
       icon: closedLabel.icon,
@@ -476,7 +481,8 @@ function ActivityTimeline({
    *  rejected / withdrawn / expired). */
   disabled: boolean;
 }) {
-  const events = buildActivity(offer, counters);
+  const { t } = useTranslation("dashboard");
+  const events = buildActivity(offer, counters, t);
 
   // Inline add-counter form state. Used to live in a separate
   // CounterTimeline card; folded in here so the Activity card
@@ -508,7 +514,7 @@ function ActivityTimeline({
         error?: string;
       };
       if (!res.ok || !body.ok || !body.counter) {
-        setErr(body.error ?? "Failed to record counter.");
+        setErr(body.error ?? t("detail.offerDetail.counterFailed"));
         return;
       }
       onCounterAdded(body.counter);
@@ -516,7 +522,7 @@ function ActivityTimeline({
       setNotes("");
       setAdding(false);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Network error.");
+      setErr(e instanceof Error ? e.message : t("detail.offerDetail.networkError"));
     } finally {
       setSaving(false);
     }
@@ -525,7 +531,7 @@ function ActivityTimeline({
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">Activity</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("detail.offerDetail.activity")}</h2>
         {!adding && !disabled ? (
           <button
             type="button"
@@ -540,7 +546,7 @@ function ActivityTimeline({
       {adding ? (
         <div className="mt-3 space-y-2 rounded-lg bg-slate-50 p-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">Direction</label>
+            <label className="block text-xs font-medium text-slate-700">{t("detail.offerDetail.direction")}</label>
             <select
               value={direction}
               onChange={(e) => setDirection(e.target.value as CounterDirection)}
@@ -560,7 +566,7 @@ function ActivityTimeline({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Notes</label>
+            <label className="block text-xs font-medium text-slate-700">{t("detail.offerDetail.notes")}</label>
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -586,7 +592,7 @@ function ActivityTimeline({
               disabled={saving}
               className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             >
-              {saving ? "Recording…" : "Record counter"}
+              {saving ? "Recording…" : t("detail.offerDetail.recordCounter")}
             </button>
           </div>
         </div>
@@ -594,7 +600,7 @@ function ActivityTimeline({
 
       {events.length === 0 ? (
         <p className="mt-3 text-sm text-slate-500">
-          {disabled ? "Offer is closed — no further counters." : "No activity yet."}
+          {disabled ? "Offer is closed — no further counters." : t("detail.offerDetail.noActivity")}
         </p>
       ) : (
         <ol className="mt-3 space-y-2">

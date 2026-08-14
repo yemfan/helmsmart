@@ -648,5 +648,64 @@
         "propertyReport": "Property Report Generator"
       }
     }
+  },
+  "detail": {
+    "leadProfile": {
+      "loadFailed": "Could not load this lead.",
+      "breadcrumb": "Leads",
+      "lead": "Lead",
+      "unnamed": "Unnamed lead",
+      "nextBestAction": "Next best action",
+      "whatYouKnow": "What you know",
+      "openFollowUps": "Open follow-ups",
+      "upcoming": "Upcoming",
+      "storySoFar": "Story so far"
+    },
+    "offerDetail": {
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "countered": "Countered",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "withdrawn": "Withdrawn",
+        "expired": "Expired"
+      },
+      "terms": "Offer terms",
+      "listPrice": "List price",
+      "offerPrice": "Offer price",
+      "currentPrice": "Current price",
+      "earnestMoney": "Earnest money",
+      "downPayment": "Down payment",
+      "financing": "Financing",
+      "proposedClosing": "Proposed closing",
+      "offerExpires": "Offer expires",
+      "contingencies": "Contingencies",
+      "inspection": "Inspection",
+      "appraisal": "Appraisal",
+      "loan": "Loan",
+      "otherContingencies": "Other contingencies",
+      "notes": "Notes",
+      "statusLabel": "Status",
+      "quickActions": "Quick actions",
+      "timeline": "Timeline",
+      "created": "Created",
+      "closed": "Closed",
+      "activity": "Activity",
+      "direction": "Direction",
+      "sellerCountered": "Seller countered",
+      "weCountered": "We countered",
+      "drafted": "Drafted",
+      "submittedToAgent": "Submitted to listing agent",
+      "rejectedBySeller": "Rejected by seller",
+      "recordCounter": "Record counter",
+      "noActivity": "No activity yet.",
+      "saveFailed": "Failed to save.",
+      "statusSaved": "Status saved.",
+      "networkError": "Network error.",
+      "confirmDelete": "Delete this offer? This cannot be undone.",
+      "deleteFailed": "Failed to delete.",
+      "counterFailed": "Failed to record counter."
+    }
   }
 }
