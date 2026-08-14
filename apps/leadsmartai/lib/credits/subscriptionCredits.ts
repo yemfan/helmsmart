@@ -33,10 +33,35 @@ export function monthlyCreditsForPlan(plan: string | null | undefined): number {
   }
 }
 
-function subscriptionIdFromInvoice(invoice: Stripe.Invoice): string | null {
-  const s = (invoice as unknown as { subscription?: string | { id?: string } | null }).subscription;
-  if (!s) return null;
-  return typeof s === "string" ? s : (s.id ?? null);
+/**
+ * Where an invoice points at its subscription — and the metadata we stamped on
+ * that subscription at checkout.
+ *
+ * Stripe MOVED this: on current API versions `invoice.subscription` is null and
+ * the reference lives at `invoice.parent.subscription_details` (which also
+ * carries the subscription's metadata, so the happy path needs no extra API
+ * call). The legacy top-level field is still read as a fallback for older
+ * event payloads.
+ */
+function subscriptionRefFromInvoice(invoice: Stripe.Invoice): {
+  id: string | null;
+  metadata: Record<string, string> | null;
+} {
+  const inv = invoice as unknown as {
+    subscription?: string | { id?: string } | null;
+    parent?: {
+      subscription_details?: {
+        subscription?: string | { id?: string } | null;
+        metadata?: Record<string, string> | null;
+      } | null;
+    } | null;
+  };
+
+  const details = inv.parent?.subscription_details ?? null;
+  const raw = details?.subscription ?? inv.subscription ?? null;
+  const id = !raw ? null : typeof raw === "string" ? raw : (raw.id ?? null);
+
+  return { id, metadata: details?.metadata ?? null };
 }
 
 /**
@@ -46,18 +71,23 @@ function subscriptionIdFromInvoice(invoice: Stripe.Invoice): string | null {
  * can't be resolved (e.g. a legacy subscription with no metadata).
  */
 export async function grantMonthlyCreditsForInvoice(invoice: Stripe.Invoice): Promise<void> {
-  const subId = subscriptionIdFromInvoice(invoice);
-  if (!subId) return;
+  const ref = subscriptionRefFromInvoice(invoice);
+  if (!ref.id) return;
 
-  let sub: Stripe.Subscription;
-  try {
-    sub = await stripe.subscriptions.retrieve(subId);
-  } catch {
-    return;
+  // Prefer the metadata the invoice already carries; only call the API when the
+  // payload didn't include it (older/partial event shapes).
+  let meta = ref.metadata;
+  if (!meta?.user_id || !meta?.plan) {
+    try {
+      const sub = await stripe.subscriptions.retrieve(ref.id);
+      meta = (sub.metadata ?? null) as Record<string, string> | null;
+    } catch {
+      return;
+    }
   }
 
-  const userId = (sub.metadata?.user_id as string | undefined) ?? undefined;
-  const plan = (sub.metadata?.plan as string | undefined) ?? undefined;
+  const userId = meta?.user_id;
+  const plan = meta?.plan;
   if (!userId || !plan) return;
 
   const credits = monthlyCreditsForPlan(plan);

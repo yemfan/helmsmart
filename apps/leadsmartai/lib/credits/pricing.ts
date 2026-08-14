@@ -78,6 +78,26 @@ export const CREDIT_PACKS: ReadonlyArray<{
   { id: "pack_8k", credits: 8000, priceUsd: 299, priceEnv: "STRIPE_PRICE_ID_CB_PACK_8K" },
 ] as const;
 
+/**
+ * Read a Stripe Price id out of the environment, validating its shape.
+ *
+ * Guards a real misconfiguration we hit in production: an env var whose VALUE
+ * was set to its own NAME ("STRIPE_PRICE_ID_CB_GROWTH"), which sailed through
+ * and made Stripe reject the checkout with a cryptic "No such price". Every
+ * Stripe Price id starts with `price_`, so anything else is a config error we
+ * can name precisely instead of forwarding to Stripe.
+ */
+export function readStripePriceId(envVar: string): { id: string } | { error: string } {
+  const raw = process.env[envVar]?.trim();
+  if (!raw) return { error: `Billing isn't set up yet (missing ${envVar}).` };
+  if (!raw.startsWith("price_")) {
+    return {
+      error: `Billing is misconfigured: ${envVar} should hold a Stripe price id starting with "price_".`,
+    };
+  }
+  return { id: raw };
+}
+
 /** New signups: a 14-day trial with a sample of credits (no perpetual free tier). */
 export const TRIAL_CREDITS = 300;
 export const TRIAL_DAYS = 14;
