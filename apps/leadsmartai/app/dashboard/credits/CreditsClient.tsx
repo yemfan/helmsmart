@@ -6,12 +6,28 @@ import { CREDIT_TIERS, CREDIT_PACKS } from "@/lib/credits/pricing";
 
 const BRAND = "#0072CE";
 
+/** Mirrors CurrentPlan from lib/credits/currentPlan (planId null = pay-as-you-go). */
+type CurrentPlan = {
+  planId: string | null;
+  name: string;
+  priceUsd: number | null;
+  monthlyCredits: number | null;
+  renewsAt: string | null;
+  cancelAtPeriodEnd: boolean;
+  status: string | null;
+};
+
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+}
+
 export default function CreditsClient() {
   const sp = useSearchParams();
   const topup = sp?.get("topup"); // "success" | "canceled"
   const checkout = sp?.get("checkout"); // "success" (subscription)
 
   const [balance, setBalance] = useState<number | null>(null);
+  const [plan, setPlan] = useState<CurrentPlan | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [portalBusy, setPortalBusy] = useState(false);
@@ -19,8 +35,9 @@ export default function CreditsClient() {
   const loadBalance = useCallback(async () => {
     try {
       const r = await fetch("/api/dashboard/credits", { credentials: "include" });
-      const j = (await r.json().catch(() => ({}))) as { credits?: number };
+      const j = (await r.json().catch(() => ({}))) as { credits?: number; plan?: CurrentPlan | null };
       if (typeof j.credits === "number") setBalance(j.credits);
+      if (j.plan) setPlan(j.plan);
     } catch {
       /* ignore */
     }
@@ -89,6 +106,43 @@ export default function CreditsClient() {
             </p>
           </div>
         </div>
+
+        {/* Current plan — the app should be able to answer "what am I on?" */}
+        {plan && (
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 px-6 py-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">Current plan</p>
+              <p className="mt-0.5 text-lg font-bold text-brand-text">
+                {plan.name}
+                {plan.priceUsd !== null && (
+                  <span className="ml-1 text-sm font-normal text-gray-500">${plan.priceUsd}/mo</span>
+                )}
+              </p>
+              <p className="mt-0.5 text-xs text-gray-500">
+                {plan.planId === null ? (
+                  <>No subscription — buy credits any time, everything&apos;s included.</>
+                ) : plan.cancelAtPeriodEnd && plan.renewsAt ? (
+                  <>Ends {fmtDate(plan.renewsAt)} — credits you already have stay yours.</>
+                ) : (
+                  <>
+                    {plan.monthlyCredits?.toLocaleString()} credits / mo
+                    {plan.renewsAt ? <> · renews {fmtDate(plan.renewsAt)}</> : null}
+                  </>
+                )}
+              </p>
+            </div>
+            {plan.planId !== null && (
+              <button
+                type="button"
+                onClick={() => void openPortal()}
+                disabled={portalBusy}
+                className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-60"
+              >
+                {portalBusy ? "Opening…" : "Manage plan"}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {topup === "success" && (
