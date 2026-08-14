@@ -10,6 +10,8 @@ import {
   THREADS_SCOPES,
 } from "@helm/dna-marketing";
 
+import { buildMetaConnections } from "@/lib/metaPages";
+
 // Publish scopes + insights read (for engagement metrics). Adding
 // threads_manage_insights means users must RECONNECT Threads to grant it.
 const THREADS_INSIGHT_SCOPES = [...THREADS_SCOPES, "threads_manage_insights"];
@@ -110,35 +112,13 @@ const metaAdapter: OAuthAdapter = {
     );
     const list = pages.body?.data ?? [];
     if (list.length === 0) throw new Error("No Facebook Page found — create/connect a Page first.");
-    // Prefer a Page that also has an Instagram business account.
+    // Default to a Page that also has an Instagram business account. When the
+    // user granted more than one Page this is only a STARTING point — they can
+    // switch afterwards from Settings › Connections (see lib/metaPages.ts).
+    // Silently picking one used to strand people on the wrong brand account.
     const page = list.find((p) => p.instagram_business_account) ?? list[0];
 
-    const out: UpsertConnection[] = [
-      {
-        platform: "facebook",
-        provider_account_id: page.id,
-        account_name: page.name,
-        access_token: page.access_token,
-        refresh_token: null,
-        token_expires_at: null, // page tokens from a long-lived user token don't expire
-        scope: META_SCOPES.join(","),
-        metadata: { fbPageId: page.id },
-      },
-    ];
-    if (page.instagram_business_account) {
-      const ig = page.instagram_business_account;
-      out.push({
-        platform: "instagram",
-        provider_account_id: ig.id,
-        account_name: ig.username ? `@${ig.username}` : page.name,
-        access_token: page.access_token,
-        refresh_token: null,
-        token_expires_at: null,
-        scope: META_SCOPES.join(","),
-        metadata: { igUserId: ig.id, fbPageId: page.id },
-      });
-    }
-    return out;
+    return buildMetaConnections(page, userToken, META_SCOPES.join(","));
   },
 };
 

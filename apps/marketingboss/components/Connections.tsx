@@ -58,6 +58,100 @@ const PROVIDERS: {
   },
 ];
 
+type MetaPage = { id: string; name: string; instagramUsername: string | null; current: boolean };
+
+/**
+ * Page switcher for the Meta connection. A Facebook account often administers
+ * several Pages and the OAuth exchange can only default to one — without this,
+ * the wrong brand silently becomes the publishing target.
+ */
+function MetaPageSwitcher() {
+  const [open, setOpen] = useState(false);
+  const [pages, setPages] = useState<MetaPage[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function load() {
+    setOpen(true);
+    setError(null);
+    try {
+      const r = await fetch("/api/social/meta/pages", { credentials: "include" });
+      const j = (await r.json().catch(() => ({}))) as { pages?: MetaPage[]; error?: string };
+      if (!r.ok) throw new Error(j.error || "Couldn't load your Pages.");
+      setPages(j.pages ?? []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Couldn't load your Pages.");
+    }
+  }
+
+  async function choose(pageId: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const r = await fetch("/api/social/meta/pages", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pageId }),
+      });
+      const j = (await r.json().catch(() => ({}))) as { error?: string };
+      if (!r.ok) throw new Error(j.error || "Couldn't switch Pages.");
+      window.location.reload();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Couldn't switch Pages.");
+      setBusy(false);
+    }
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => void load()}
+        className="mt-1.5 text-[11px] font-medium text-boss-violet underline underline-offset-2 hover:brightness-110"
+      >
+        Posting to the wrong Page? Switch
+      </button>
+    );
+  }
+
+  return (
+    <div className="mt-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+      {error && <p className="mb-1.5 text-[11px] text-red-600">{error}</p>}
+      {pages === null && !error && <p className="text-[11px] text-slate-500">Loading your Pages…</p>}
+      {pages?.length === 0 && (
+        <p className="text-[11px] text-slate-500">
+          No Pages to switch to — reconnect Facebook &amp; Instagram, and grant access to every Page you
+          want to use.
+        </p>
+      )}
+      <div className="flex flex-col gap-1">
+        {pages?.map((p) => (
+          <button
+            key={p.id}
+            disabled={busy || p.current}
+            onClick={() => void choose(p.id)}
+            className={`flex items-center justify-between gap-2 rounded-lg border px-2.5 py-1.5 text-left text-[11px] transition disabled:cursor-not-allowed ${
+              p.current
+                ? "border-boss-violet bg-boss-violet/10 text-boss-violet"
+                : "border-slate-200 bg-white text-slate-700 hover:border-boss-violet/50"
+            }`}
+          >
+            <span className="min-w-0 truncate">
+              {p.name}
+              {p.instagramUsername ? (
+                <span className="text-slate-400"> · @{p.instagramUsername}</span>
+              ) : (
+                <span className="text-slate-400"> · no Instagram linked</span>
+              )}
+            </span>
+            <span className="shrink-0 font-semibold">{p.current ? "Current" : busy ? "…" : "Use"}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Connections({
   providersConfigured,
   statuses,
@@ -114,6 +208,7 @@ export default function Connections({
                   ))}
                 </div>
               )}
+              {prov.key === "meta" && anyConnected && <MetaPageSwitcher />}
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
