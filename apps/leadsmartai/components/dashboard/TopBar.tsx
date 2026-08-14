@@ -23,7 +23,9 @@ import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { FormEvent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { formatUserRoleLabel } from "@leadsmart/shared";
-import { Topbar, filterNavSectionsByRole } from "@repo/ui";
+import { Topbar, filterNavSectionsByRole, type NavSection } from "@repo/ui";
+import { useTranslation } from "react-i18next";
+import { translateNavSections } from "@/lib/i18n/navLabels";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { leadSmartMobileNav } from "@/nav.config";
@@ -388,9 +390,17 @@ export default function TopBar({
   /** Server-provided `user_profiles.avatar_url` — seeds the avatar likewise. */
   avatarUrl?: string | null;
 }) {
+  // Same English-keyed translation the desktop sidebar uses, so the mobile
+  // drawer doesn't stay English after the agent switches language.
+  const { t: tNav, i18n } = useTranslation("dashboard_nav");
   const navSections = useMemo(
-    () => filterNavSectionsByRole(leadSmartMobileNav, appRole),
-    [appRole]
+    () =>
+      translateNavSections(filterNavSectionsByRole(leadSmartMobileNav, appRole) as NavSection[], (s) =>
+        tNav(s, { defaultValue: s }),
+      ),
+    // `t` is stable across a language change; i18n.language is what actually moves.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [appRole, tNav, i18n.language]
   );
   const showAgentBrokerPromotion = isAgentOrBrokerProfileRole(appRole);
   const hideCommercialPricing = isAdminOrSupportRole(appRole);
