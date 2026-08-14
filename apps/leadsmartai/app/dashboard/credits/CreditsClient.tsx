@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CREDIT_TIERS, CREDIT_PACKS } from "@/lib/credits/pricing";
@@ -22,6 +24,8 @@ function fmtDate(iso: string) {
 }
 
 export default function CreditsClient() {
+  // Named `tr` — the plan rows below already bind `t` to a tier.
+  const { t: tr } = useTranslation("dashboard");
   const sp = useSearchParams();
   const topup = sp?.get("topup"); // "success" | "canceled"
   const checkout = sp?.get("checkout"); // "success" (subscription)
@@ -54,10 +58,10 @@ export default function CreditsClient() {
     try {
       const r = await fetch("/api/billing/portal", { method: "POST", credentials: "include" });
       const j = (await r.json().catch(() => ({}))) as { url?: string; error?: string };
-      if (!r.ok || !j.url) throw new Error(j.error || "Couldn't open the billing portal.");
+      if (!r.ok || !j.url) throw new Error(j.error || tr("more.credits.portalFailed"));
       window.location.href = j.url;
     } catch (e) {
-      showError(e instanceof Error ? e.message : "Couldn't open the billing portal.");
+      showError(e instanceof Error ? e.message : tr("more.credits.portalFailed"));
       setPortalBusy(false);
     }
   }
@@ -86,21 +90,21 @@ export default function CreditsClient() {
         switched?: boolean;
         message?: string;
       };
-      if (!r.ok) throw new Error(j.error || "Checkout couldn't start.");
+      if (!r.ok) throw new Error(j.error || tr("more.credits.checkoutFailed"));
 
       // Existing subscribers change plan in place (prorated) — no checkout trip.
       if (j.switched) {
-        setNotice(j.message || "Plan changed.");
+        setNotice(j.message || tr("more.credits.planChanged"));
         setBusy(null);
         await loadBalance();
         if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
 
-      if (!j.url) throw new Error(j.error || "Checkout couldn't start.");
+      if (!j.url) throw new Error(j.error || tr("more.credits.checkoutFailed"));
       window.location.href = j.url;
     } catch (e) {
-      showError(e instanceof Error ? e.message : "Checkout couldn't start.");
+      showError(e instanceof Error ? e.message : tr("more.credits.checkoutFailed"));
       setBusy(null);
     }
   }
@@ -112,13 +116,13 @@ export default function CreditsClient() {
         <div className="h-1.5 w-full" style={{ background: BRAND }} />
         <div className="flex flex-wrap items-center justify-between gap-4 p-6">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-brand-text">Credits</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-brand-text">{tr("more.credits.title")}</h1>
             <p className="mt-1 text-sm text-brand-text/60">
               Everything&apos;s included — you only spend credits on calls, video, and image generation.
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">Balance</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">{tr("more.credits.balance")}</p>
             <p className="text-3xl font-extrabold text-brand-text">
               {balance === null ? "…" : balance.toLocaleString()}
             </p>
@@ -129,7 +133,7 @@ export default function CreditsClient() {
         {plan && (
           <div className="flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 px-6 py-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">Current plan</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">{tr("more.credits.currentPlan")}</p>
               <p className="mt-0.5 text-lg font-bold text-brand-text">
                 {plan.name}
                 {plan.priceUsd !== null && (
@@ -156,7 +160,7 @@ export default function CreditsClient() {
                 disabled={portalBusy}
                 className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-60"
               >
-                {portalBusy ? "Opening…" : "Manage plan"}
+                {portalBusy ? "Opening…" : tr("more.credits.managePlan")}
               </button>
             )}
           </div>
@@ -166,7 +170,7 @@ export default function CreditsClient() {
       {topup === "success" && (
         <Banner tone="ok">Credits added — your new balance should appear in a moment.</Banner>
       )}
-      {topup === "canceled" && <Banner tone="warn">Top-up canceled — no charge was made.</Banner>}
+      {topup === "canceled" && <Banner tone="warn">{tr("more.credits.canceled")}</Banner>}
       {checkout === "success" && (
         <Banner tone="ok">Subscription updated — your monthly credits will appear shortly.</Banner>
       )}
@@ -175,7 +179,7 @@ export default function CreditsClient() {
 
       {/* Monthly plans */}
       <section>
-        <h2 className="mb-1 text-lg font-bold text-brand-text">Monthly plans</h2>
+        <h2 className="mb-1 text-lg font-bold text-brand-text">{tr("more.credits.monthlyPlans")}</h2>
         <p className="mb-4 text-sm text-gray-500">
           A credit allotment every month at the best per-credit rate. One seat, everything included.
         </p>
@@ -185,12 +189,12 @@ export default function CreditsClient() {
             // Rank by credit allotment so the button says what the change is.
             const currentTier = CREDIT_TIERS.find((x) => x.id === plan?.planId);
             const label = isCurrent
-              ? "Current plan"
+              ? tr("more.credits.currentPlan")
               : !currentTier
-                ? "Subscribe"
+                ? tr("more.credits.subscribe")
                 : t.monthlyCredits > currentTier.monthlyCredits
-                  ? "Upgrade"
-                  : "Downgrade";
+                  ? tr("more.credits.upgrade")
+                  : tr("more.credits.downgrade");
             return (
               <div
                 key={t.id}
@@ -239,7 +243,7 @@ export default function CreditsClient() {
 
       {/* Top-up packs */}
       <section>
-        <h2 className="mb-1 text-lg font-bold text-brand-text">Top-up packs</h2>
+        <h2 className="mb-1 text-lg font-bold text-brand-text">{tr("more.credits.topUpPacks")}</h2>
         <p className="mb-4 text-sm text-gray-500">
           Need more this month? Buy credits any time — no commitment. They never expire.
         </p>
