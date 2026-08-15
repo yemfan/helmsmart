@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import ShareReport from "@/components/share/ShareReport";
 
 type ReportRow = {
@@ -13,6 +15,8 @@ type ReportRow = {
 };
 
 export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [search, setSearch] = useState("");
   const [sortAsc, setSortAsc] = useState(false);
   const [origin, setOrigin] = useState("");
@@ -33,15 +37,15 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Reports</h1>
-          <p className="text-sm text-gray-500">{reports.length} generated reports</p>
+          <h1 className="text-xl font-semibold text-gray-900">{t("pages.reports.heading")}</h1>
+          <p className="text-sm text-gray-500">{t("pages.reports.count", { count: reports.length })}</p>
         </div>
         <Link href="/smart-cma-builder?save=1" className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
-          Create Report
+          {t("pages.reports.create")}
         </Link>
       </div>
 
-      <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by address or lead name..."
+      <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("pages.reports.searchPlaceholder")}
         className="w-full max-w-md rounded-lg border border-gray-300 px-3 py-2 text-sm" />
 
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
@@ -49,12 +53,12 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
           <table className="min-w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
               <tr>
-                <th className="text-left px-4 py-2.5 font-medium">Property</th>
-                <th className="text-left px-4 py-2.5 font-medium">Lead</th>
+                <th className="text-left px-4 py-2.5 font-medium">{t("pages.reports.colProperty")}</th>
+                <th className="text-left px-4 py-2.5 font-medium">{t("pages.reports.colLead")}</th>
                 <th className="text-left px-4 py-2.5 font-medium cursor-pointer hover:text-gray-900" onClick={() => setSortAsc((v) => !v)}>
-                  Date {sortAsc ? "\u25B2" : "\u25BC"}
+                  {t("pages.reports.colDate")} {sortAsc ? "\u25B2" : "\u25BC"}
                 </th>
-                <th className="text-left px-4 py-2.5 font-medium">Actions</th>
+                <th className="text-left px-4 py-2.5 font-medium">{t("pages.reports.colActions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -68,15 +72,19 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
                       {r.lead_email && <span className="block text-xs text-gray-400">{r.lead_email}</span>}
                     </td>
                     <td className="px-4 py-2.5 text-xs text-gray-500 whitespace-nowrap">
-                      {new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      {new Date(r.created_at).toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" })}
                     </td>
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-2">
-                        <Link href={reportLink} className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">Open</Link>
+                        <Link href={reportLink} className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">{t("pages.reports.open")}</Link>
                         <ShareReport
                           shareUrl={origin ? `${origin}${reportLink}` : null}
-                          subject={`Property Report — ${r.property_address ?? "your property"}`}
-                          resourceLabel={`the property report for ${r.property_address ?? "your property"}`}
+                          subject={t("pages.reports.shareSubject", {
+                            address: r.property_address ?? t("pages.reports.yourProperty"),
+                          })}
+                          resourceLabel={t("pages.reports.shareLabel", {
+                            address: r.property_address ?? t("pages.reports.yourProperty"),
+                          })}
                         />
                       </div>
                     </td>
@@ -84,7 +92,7 @@ export default function ReportsClient({ reports }: { reports: ReportRow[] }) {
                 );
               })}
               {!filtered.length && (
-                <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-400">No reports found.</td></tr>
+                <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-400">{t("pages.reports.empty")}</td></tr>
               )}
             </tbody>
           </table>

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SalesModelCard } from "@/components/sales-model/SalesModelCard";
 import {
   SALES_MODEL_ORDER,
@@ -19,6 +20,7 @@ import { saveSelectedSalesModel } from "@/lib/sales-model-storage";
  * SALES_MODEL_ORDER so it gets the prime top-left position.
  */
 export function OnboardingClient() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [picked, setPicked] = useState<SalesModelId | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -28,9 +30,7 @@ export function OnboardingClient() {
     setPicked(id);
     const ok = await saveSelectedSalesModel(undefined, id);
     if (!ok) {
-      setError(
-        "Saved locally, but couldn't sync to your account yet — your dashboard will still personalize.",
-      );
+      setError(t("pages.salesModelOnboarding.syncWarning"));
     }
     // Either way, advance — the local choice is enough to render
     // the dashboard, and any retry will reconcile next visit.
@@ -41,15 +41,13 @@ export function OnboardingClient() {
     <div className="space-y-8">
       <header className="max-w-3xl">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-          Sales Model Setup
+          {t("pages.salesModelOnboarding.eyebrow")}
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-          Choose Your Sales Model
+          {t("pages.salesModelOnboarding.heading")}
         </h1>
         <p className="mt-3 text-base leading-relaxed text-slate-600">
-          CloseBoss will personalize your dashboard, scripts, tasks, and
-          sales process based on how you want to win clients. You can change
-          your model anytime.
+          {t("pages.salesModelOnboarding.intro")}
         </p>
       </header>
 
@@ -71,9 +69,7 @@ export function OnboardingClient() {
       </div>
 
       <p className="text-xs text-slate-500">
-        Not sure? Start with the Advisor Model — it's the most flexible and
-        works well for buyers, investors, and high-trust client relationships.
-        You can switch later.
+        {t("pages.salesModelOnboarding.footnote")}
       </p>
     </div>
   );

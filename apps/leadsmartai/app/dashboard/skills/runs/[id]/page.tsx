@@ -5,6 +5,7 @@ import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getSkillRun } from "@/lib/realtyboss/skills/run";
 import { getSkill, ASSIGNEE_LABEL, type SkillAssignee } from "@/lib/realtyboss/skills/catalog";
 import { CopyButton } from "./CopyButton";
+import { getServerT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ function humanize(key: string): string {
 }
 
 export default async function SkillRunViewPage({ params }: { params: Promise<{ id: string }> }) {
+  const t = await getServerT();
   const { id } = await params;
   const ctx = await getCurrentAgentContext();
   const run = await getSkillRun(ctx.agentId, id);
@@ -26,7 +28,7 @@ export default async function SkillRunViewPage({ params }: { params: Promise<{ i
     <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
       <div>
         <Link href="/dashboard/skills" className="text-sm text-blue-600 hover:underline dark:text-blue-400">
-          ← All skills
+          {t("pages.skillRun.allSkills", { ns: "dashboard" })}
         </Link>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
@@ -40,7 +42,7 @@ export default async function SkillRunViewPage({ params }: { params: Promise<{ i
 
       {inputEntries.length > 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-3 text-xs dark:border-slate-800 dark:bg-slate-900">
-          <span className="font-medium text-slate-500 dark:text-slate-400">Inputs: </span>
+          <span className="font-medium text-slate-500 dark:text-slate-400">{t("pages.skillRun.inputs", { ns: "dashboard" })}</span>
           {inputEntries.map(([k, v], i) => (
             <span key={k} className="text-slate-600 dark:text-slate-300">
               {i > 0 ? " · " : ""}
@@ -59,7 +61,9 @@ export default async function SkillRunViewPage({ params }: { params: Promise<{ i
           }`}
         >
           <p className={`font-semibold ${run.gate.status === "pass" ? "text-emerald-700 dark:text-emerald-300" : "text-amber-800 dark:text-amber-300"}`}>
-            {run.gate.status === "pass" ? "✓ Compliance gate passed (Boss Assistant)" : "⚠ Compliance gate flagged — review before use"}
+            {t(run.gate.status === "pass" ? "pages.skillRun.gatePassed" : "pages.skillRun.gateFlagged", {
+              ns: "dashboard",
+            })}
           </p>
           {run.gate.issues.length > 0 ? (
             <ul className="mt-2 space-y-1.5 text-slate-700 dark:text-slate-300">
@@ -76,7 +80,7 @@ export default async function SkillRunViewPage({ params }: { params: Promise<{ i
 
       <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2 dark:border-slate-800">
-          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Output</span>
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{t("pages.skillRun.output", { ns: "dashboard" })}</span>
           <CopyButton text={run.output} />
         </div>
         <div className="whitespace-pre-wrap p-4 text-sm text-slate-800 dark:text-slate-200">{run.output}</div>

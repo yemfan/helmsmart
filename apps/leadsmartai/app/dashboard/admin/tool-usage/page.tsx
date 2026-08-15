@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type ToolUsageData = {
   tools: Record<string, { total: number; last7d: number; last30d: number }>;
@@ -10,6 +11,7 @@ type ToolUsageData = {
 };
 
 export default function ToolUsagePage() {
+  const { t } = useTranslation("dashboard");
   const [data, setData] = useState<ToolUsageData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,13 +20,13 @@ export default function ToolUsagePage() {
       .then((r) => r.json())
       .then((j) => {
         if (j.ok) setData(j);
-        else setError(j.error ?? "Failed to load");
+        else setError(j.error ?? t("pages.toolUsage.loadFailed"));
       })
       .catch((e: Error) => setError(e.message));
   }, []);
 
-  if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
-  if (!data) return <div className="p-6 text-gray-500">Loading usage data...</div>;
+  if (error) return <div className="p-6 text-red-600">{t("pages.toolUsage.error", { message: error })}</div>;
+  if (!data) return <div className="p-6 text-gray-500">{t("pages.toolUsage.loading")}</div>;
 
   const toolNames = Object.keys(data.tools).sort((a, b) => data.tools[b].total - data.tools[a].total);
   const dailyDays = Object.keys(data.daily).sort().reverse().slice(0, 30);
@@ -32,9 +34,12 @@ export default function ToolUsagePage() {
   return (
     <div className="space-y-8 p-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Tool Usage Report</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("pages.toolUsage.heading")}</h1>
         <p className="mt-1 text-sm text-gray-600">
-          Total events: {data.totalEvents.toLocaleString()} · Leads captured: {data.leadCount.toLocaleString()}
+          {t("pages.toolUsage.totals", {
+            events: data.totalEvents.toLocaleString(),
+            leads: data.leadCount.toLocaleString(),
+          })}
         </p>
       </div>
 
@@ -43,10 +48,10 @@ export default function ToolUsagePage() {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
             <tr>
-              <th className="px-4 py-3">Tool</th>
-              <th className="px-4 py-3 text-right">Total</th>
-              <th className="px-4 py-3 text-right">Last 7 days</th>
-              <th className="px-4 py-3 text-right">Last 30 days</th>
+              <th className="px-4 py-3">{t("pages.toolUsage.colTool")}</th>
+              <th className="px-4 py-3 text-right">{t("pages.toolUsage.colTotal")}</th>
+              <th className="px-4 py-3 text-right">{t("pages.toolUsage.col7d")}</th>
+              <th className="px-4 py-3 text-right">{t("pages.toolUsage.col30d")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -66,14 +71,14 @@ export default function ToolUsagePage() {
 
       {/* Daily breakdown */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">Daily Activity (Last 30 Days)</h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t("pages.toolUsage.dailyHeading")}</h2>
         <div className="mt-4 overflow-x-auto rounded-xl border border-gray-200">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
               <tr>
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3 text-right">Events</th>
-                <th className="px-4 py-3">Activity</th>
+                <th className="px-4 py-3">{t("pages.toolUsage.colDate")}</th>
+                <th className="px-4 py-3 text-right">{t("pages.toolUsage.colEvents")}</th>
+                <th className="px-4 py-3">{t("pages.toolUsage.colActivity")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">

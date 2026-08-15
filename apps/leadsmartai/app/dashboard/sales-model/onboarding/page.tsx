@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { redirect } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getSelectedSalesModelServer } from "@/lib/sales-model-server";
 import { OnboardingClient } from "./OnboardingClient";
 
-export const metadata: Metadata = {
-  title: "Choose Your Sales Model",
-  description:
-    "Pick a sales model to personalize your CloseBoss dashboard, scripts, tasks, and pipeline.",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.salesModelOnboarding.metaTitle", { ns: "dashboard" }),
+    description: t("pages.salesModelOnboarding.metaDescription", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 /**
  * Sales-model onboarding entry. Server component:
