@@ -635,7 +635,25 @@ export async function finalizeAvatarRender(
   const { error: upErr } = await supabaseAdmin.storage
     .from(PUBLIC_BUCKET)
     .upload(outPath, bytes, { contentType: "video/mp4", upsert: false });
-  if (upErr) throw new Error("Could not store the rendered video.");
+
+  /*
+   * Log the size and the REAL storage error. A finished render died five times
+   * here behind the message "Could not store the rendered video." — which hid
+   * the actual cause (the file exceeded a storage size limit) and made a
+   * solved, paid-for render look like a mystery.
+   *
+   * Size is the thing that varies: the base clip is ~8MB, but the Sharper pass
+   * multiplies it, so it's the upscaled renders that hit the ceiling. Say so,
+   * because turning that option off is something the agent can actually do.
+   */
+  if (upErr) {
+    const mb = Math.round(bytes.byteLength / (1024 * 1024));
+    console.error(`[avatar] storing ${mb}MB render for agent ${agentId} failed:`, upErr.message);
+    throw new Error(
+      `The finished video (${mb}MB) couldn't be saved — it may be over the storage limit. ` +
+        `Turning off “Sharper video” produces a much smaller file.`,
+    );
+  }
   const publicUrl = supabaseAdmin.storage.from(PUBLIC_BUCKET).getPublicUrl(outPath).data.publicUrl;
 
   await setAgent(agentId, { dt_avatar_video_url: publicUrl, dt_avatar_script: script.trim().slice(0, 1200) });
