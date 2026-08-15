@@ -2,17 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import type { ListingListItem } from "@/lib/listings/service";
 import type { TransactionStatus } from "@/lib/transactions/types";
 
 type StatusFilter = "all" | "active" | "pending" | "closed";
-
-const STATUS_LABEL: Record<TransactionStatus, string> = {
-  active: "Active",
-  pending: "Pending",
-  closed: "Closed",
-  terminated: "Terminated",
-};
 
 const STATUS_BADGE: Record<TransactionStatus, string> = {
   active: "bg-emerald-100 text-emerald-800",
@@ -21,18 +16,28 @@ const STATUS_BADGE: Record<TransactionStatus, string> = {
   terminated: "bg-rose-100 text-rose-800",
 };
 
-function formatPrice(n: number | null): string {
+/**
+ * Currency stays USD — these are US listings — but the LOCALE follows the
+ * agent. That is deliberate: zh-CN renders "US$1,250,000" where en-US renders
+ * "$1,250,000", and a bare "$" is ambiguous to a Chinese reader.
+ */
+function formatPrice(n: number | null, locale: string): string {
   if (n == null) return "—";
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(n);
 }
 
-function formatDate(ymd: string | null): string {
+/**
+ * These passed `undefined` for the locale, which follows the BROWSER rather
+ * than the app's language toggle — so an agent who switched to 中文 in a
+ * English-locale browser still got English dates, with nothing to point at.
+ */
+function formatDate(ymd: string | null, locale: string): string {
   if (!ymd) return "—";
-  return new Date(`${ymd}T00:00:00Z`).toLocaleDateString(undefined, {
+  return new Date(`${ymd}T00:00:00Z`).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -40,16 +45,18 @@ function formatDate(ymd: string | null): string {
   });
 }
 
-function formatRelativeShowing(iso: string | null): string {
+type Translate = (k: string, o?: Record<string, unknown>) => string;
+
+function formatRelativeShowing(iso: string | null, t: Translate, locale: string): string {
   if (!iso) return "—";
   const ms = Date.parse(iso);
   if (!Number.isFinite(ms)) return "—";
   const diffDays = Math.round((Date.now() - ms) / 86_400_000);
-  if (diffDays === 0) return "today";
-  if (diffDays === 1) return "yesterday";
-  if (diffDays > 0 && diffDays <= 30) return `${diffDays}d ago`;
-  if (diffDays < 0 && diffDays >= -30) return `in ${-diffDays}d`;
-  return new Date(ms).toLocaleDateString(undefined, {
+  if (diffDays === 0) return t("listings.today");
+  if (diffDays === 1) return t("listings.yesterday");
+  if (diffDays > 0 && diffDays <= 30) return t("listings.daysAgo", { count: diffDays });
+  if (diffDays < 0 && diffDays >= -30) return t("listings.inDays", { count: -diffDays });
+  return new Date(ms).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
   });
@@ -60,6 +67,8 @@ export default function ListingsClient({
 }: {
   listings: ListingListItem[];
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
@@ -101,41 +110,38 @@ export default function ListingsClient({
     <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Listings</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Your listing-side inventory. Rows roll up showings activity per
-            property — click an address to open the deal.
-          </p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("listings.heading")}</h1>
+          <p className="mt-1 text-sm text-slate-500">{t("listings.intro")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link
             href="/dashboard/transactions/new?type=listing_rep&focus=upload"
             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            title="Drop a signed listing agreement (RLA) PDF — we'll auto-fill the address, list price, and listing dates."
+            title={t("listings.uploadAgreementHint")}
           >
-            ⬆ Upload listing agreement
+            {t("listings.uploadAgreement")}
           </Link>
           <Link
             href="/dashboard/transactions/new?type=listing_rep"
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
           >
-            + New listing
+            {t("listings.newListing")}
           </Link>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Total" value={stats.total} />
-        <Stat label="Active" value={stats.active} tone="green" />
-        <Stat label="Showings (active)" value={stats.activeShowings} tone="blue" />
-        <Stat label="Upcoming showings" value={stats.upcoming} tone="amber" />
+        <Stat label={t("listings.statTotal")} value={stats.total} />
+        <Stat label={t("listings.statActive")} value={stats.active} tone="green" />
+        <Stat label={t("listings.statShowingsActive")} value={stats.activeShowings} tone="blue" />
+        <Stat label={t("listings.statUpcoming")} value={stats.upcoming} tone="amber" />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search address, city, state…"
+          placeholder={t("listings.searchPlaceholder")}
           className="min-w-[240px] flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
         />
         <select
@@ -143,10 +149,10 @@ export default function ListingsClient({
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         >
-          <option value="all">All listings</option>
-          <option value="active">Active</option>
-          <option value="pending">Pending</option>
-          <option value="closed">Closed</option>
+          <option value="all">{t("listings.filterAll")}</option>
+          <option value="active">{t("listings.status.active")}</option>
+          <option value="pending">{t("listings.status.pending")}</option>
+          <option value="closed">{t("listings.status.closed")}</option>
         </select>
       </div>
 
@@ -155,12 +161,12 @@ export default function ListingsClient({
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-600">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">Property</th>
-                <th className="px-3 py-2 text-left font-medium">Status</th>
-                <th className="px-3 py-2 text-right font-medium">Price</th>
-                <th className="px-3 py-2 text-left font-medium">Listed</th>
-                <th className="px-3 py-2 text-left font-medium">Showings</th>
-                <th className="px-3 py-2 text-left font-medium">Closing</th>
+                <th className="px-3 py-2 text-left font-medium">{t("listings.colProperty")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("listings.colStatus")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("listings.colPrice")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("listings.colListed")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("listings.colShowings")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("listings.colClosing")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -183,14 +189,14 @@ export default function ListingsClient({
                     <span
                       className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[l.status]}`}
                     >
-                      {STATUS_LABEL[l.status]}
+                      {t(`listings.status.${l.status}`)}
                     </span>
                   </td>
                   <td className="px-3 py-2.5 text-right text-slate-700 tabular-nums">
-                    {formatPrice(l.list_price)}
+                    {formatPrice(l.list_price, locale)}
                   </td>
                   <td className="px-3 py-2.5 text-slate-600">
-                    {formatDate(l.listing_start_date)}
+                    {formatDate(l.listing_start_date, locale)}
                   </td>
                   <td className="px-3 py-2.5 text-xs">
                     {l.showings_total === 0 ? (
@@ -198,16 +204,18 @@ export default function ListingsClient({
                     ) : (
                       <div>
                         <div className="font-medium text-slate-700 tabular-nums">
-                          {l.showings_total} total
+                          {t("listings.showingsTotal", { count: l.showings_total })}
                           {l.showings_upcoming > 0 ? (
                             <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800">
-                              {l.showings_upcoming} upcoming
+                              {t("listings.showingsUpcoming", { count: l.showings_upcoming })}
                             </span>
                           ) : null}
                         </div>
                         {l.last_showing_at ? (
                           <div className="text-[11px] text-slate-500">
-                            last: {formatRelativeShowing(l.last_showing_at)}
+                            {t("listings.lastShowing", {
+                              when: formatRelativeShowing(l.last_showing_at, t, locale),
+                            })}
                           </div>
                         ) : null}
                       </div>
@@ -215,7 +223,7 @@ export default function ListingsClient({
                   </td>
                   <td className="px-3 py-2.5 text-slate-600">
                     {/* Prefer the actual close date once recorded; fall back to scheduled. */}
-                    {formatDate(l.closing_date_actual ?? l.closing_date)}
+                    {formatDate(l.closing_date_actual ?? l.closing_date, locale)}
                   </td>
                 </tr>
               ))}
@@ -224,14 +232,13 @@ export default function ListingsClient({
                   <td colSpan={6} className="px-3 py-10 text-center text-sm text-slate-500">
                     {listings.length === 0 ? (
                       <>
-                        <div className="font-medium">No listings yet.</div>
+                        <div className="font-medium">{t("listings.emptyNone")}</div>
                         <div className="mt-1 text-[12px]">
-                          Click <strong>+ New listing</strong> to create your first
-                          listing-rep deal.
+                          {t("listings.emptyNoneHint", { action: t("listings.newListing") })}
                         </div>
                       </>
                     ) : (
-                      "No listings match your filters."
+                      t("listings.emptyFiltered")
                     )}
                   </td>
                 </tr>

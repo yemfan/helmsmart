@@ -1481,5 +1481,42 @@
     "minutesAgo": "{{count}} 分钟前",
     "hoursAgo": "{{count}} 小时前",
     "daysAgo": "{{count}} 天前"
+  },
+  "listings": {
+    "metaTitle": "房源",
+    "metaDescription": "您的在售房源——状态、带看与报价。",
+    "heading": "房源",
+    "intro": "您作为卖方代理的房源清单。每一行汇总该房源的带看情况——点击地址可打开该笔交易。",
+    "uploadAgreement": "⬆ 上传委托销售协议",
+    "uploadAgreementHint": "上传已签署的委托销售协议（RLA）PDF——我们会自动填写地址、挂牌价与挂牌日期。",
+    "newListing": "+ 新增房源",
+    "statTotal": "总计",
+    "statActive": "在售",
+    "statShowingsActive": "带看次数（在售）",
+    "statUpcoming": "即将进行的带看",
+    "searchPlaceholder": "搜索地址、城市、州…",
+    "filterAll": "全部房源",
+    "colProperty": "房源",
+    "colStatus": "状态",
+    "colPrice": "价格",
+    "colListed": "挂牌日期",
+    "colShowings": "带看",
+    "colClosing": "交割日期",
+    "showingsTotal": "共 {{count}} 次",
+    "showingsUpcoming": "{{count}} 次待进行",
+    "lastShowing": "最近一次：{{when}}",
+    "emptyNone": "还没有房源。",
+    "emptyNoneHint": "点击{{action}}创建您的第一笔卖方代理交易。",
+    "emptyFiltered": "没有符合筛选条件的房源。",
+    "status": {
+      "active": "在售",
+      "pending": "交易中",
+      "closed": "已成交",
+      "terminated": "已终止"
+    },
+    "today": "今天",
+    "yesterday": "昨天",
+    "daysAgo": "{{count}} 天前",
+    "inDays": "{{count}} 天后"
   }
 }
