@@ -671,7 +671,17 @@
       "downgrade": "降级",
       "portalFailed": "无法打开账单管理页面。",
       "checkoutFailed": "无法启动支付流程。",
-      "planChanged": "套餐已变更。"
+      "planChanged": "套餐已变更。",
+      "subtitle": "功能全部包含 —— 只有通话、视频和图片生成才消耗额度。",
+      "payg": "按量付费",
+      "paygHelp": "无需订阅 —— 随时购买额度，功能全部包含。",
+      "monthlyHelp": "每月获得固定额度，单价最划算。单人席位，功能全部包含。",
+      "teamPrompt": "带团队？",
+      "topUpHelp": "这个月不够用？随时加购额度 —— 无需承诺，且永不过期。",
+      "creditsUnit": "额度",
+      "buy": "购买",
+      "manageBilling": "管理账单与发票 →",
+      "opening": "正在打开…"
     },
     "salesModel": {
       "title": "销售模式"
@@ -680,7 +690,8 @@
       "tabs": {
         "open": "待办",
         "done": "已完成",
-        "cancelled": "已取消"
+        "cancelled": "已取消",
+        "all": "全部"
       },
       "columns": {
         "task": "任务",
@@ -688,7 +699,7 @@
         "due": "截止日期",
         "actions": "操作"
       },
-      "applyPlaybook": "套用剧本",
+      "applyPlaybook": "+ 套用剧本",
       "markedComplete": "已标记为完成。",
       "reopened": "已重新打开。",
       "cancelled": "已取消。",
@@ -709,7 +720,10 @@
       "writeOffer": "撰写报价",
       "linkedTransaction": "关联的交易",
       "linkedOpenHouse": "关联的开放日",
-      "adHocTasks": "临时任务"
+      "adHocTasks": "临时任务",
+      "title": "剧本",
+      "subtitle": "针对常见流程的精选清单。可套用到交易、开放日，也可以单独作为提醒使用。",
+      "doneRecent": "近 7 天完成"
     },
     "tools": {
       "title": "工具",

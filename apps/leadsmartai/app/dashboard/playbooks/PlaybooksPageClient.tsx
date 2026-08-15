@@ -180,10 +180,9 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
     <div className="mx-auto max-w-5xl space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">📋 Playbooks</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">📋 {tr("more.playbooks.title")}</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Curated checklists for common workflows. Apply them to transactions, open houses, or as
-            standalone reminders.
+            {tr("more.playbooks.subtitle")}
           </p>
         </div>
         <button
@@ -191,7 +190,7 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
           onClick={() => setShowPicker(true)}
           className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
         >
-          + Apply playbook
+          {tr("more.playbooks.applyPlaybook")}
         </button>
       </div>
 
@@ -199,7 +198,7 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
         <Stat label={tr("more.playbooks.dueToday")} value={String(stats.dueToday)} tone="blue" />
         <Stat label={tr("more.playbooks.overdue")} value={String(stats.overdue)} tone={stats.overdue > 0 ? "red" : "slate"} />
         <Stat label={tr("more.playbooks.thisWeek")} value={String(stats.thisWeek)} />
-        <Stat label="Done (last 7d)" value={String(stats.doneRecent)} tone="green" />
+        <Stat label={tr("more.playbooks.doneRecent")} value={String(stats.doneRecent)} tone="green" />
       </div>
 
       {actionMsg ? (

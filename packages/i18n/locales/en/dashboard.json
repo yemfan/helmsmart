@@ -671,7 +671,17 @@
       "downgrade": "Downgrade",
       "portalFailed": "Couldn't open the billing portal.",
       "checkoutFailed": "Checkout couldn't start.",
-      "planChanged": "Plan changed."
+      "planChanged": "Plan changed.",
+      "subtitle": "Everything's included — you only spend credits on calls, video, and image generation.",
+      "payg": "Pay-as-you-go",
+      "paygHelp": "No subscription — buy credits any time, everything's included.",
+      "monthlyHelp": "A credit allotment every month at the best per-credit rate. One seat, everything included.",
+      "teamPrompt": "Running a team?",
+      "topUpHelp": "Need more this month? Buy credits any time — no commitment. They never expire.",
+      "creditsUnit": "credits",
+      "buy": "Buy",
+      "manageBilling": "Manage billing & invoices →",
+      "opening": "Opening…"
     },
     "salesModel": {
       "title": "Sales Model"
@@ -680,7 +690,8 @@
       "tabs": {
         "open": "Open",
         "done": "Done",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "all": "All"
       },
       "columns": {
         "task": "Task",
@@ -688,7 +699,7 @@
         "due": "Due",
         "actions": "Actions"
       },
-      "applyPlaybook": "Apply playbook",
+      "applyPlaybook": "+ Apply playbook",
       "markedComplete": "Marked complete.",
       "reopened": "Reopened.",
       "cancelled": "Cancelled.",
@@ -709,7 +720,10 @@
       "writeOffer": "Write an offer",
       "linkedTransaction": "Linked transaction",
       "linkedOpenHouse": "Linked open house",
-      "adHocTasks": "Ad-hoc tasks"
+      "adHocTasks": "Ad-hoc tasks",
+      "title": "Playbooks",
+      "subtitle": "Curated checklists for common workflows. Apply them to transactions, open houses, or as standalone reminders.",
+      "doneRecent": "Done (last 7d)"
     },
     "tools": {
       "title": "Tools",
