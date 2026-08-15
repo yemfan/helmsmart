@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function CopyButton({ text }: { text: string }) {
+  const { t } = useTranslation("dashboard");
   const [copied, setCopied] = useState(false);
   return (
     <button
@@ -14,7 +16,7 @@ export function CopyButton({ text }: { text: string }) {
       }}
       className="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400"
     >
-      {copied ? "Copied" : "Copy"}
+      {copied ? t("pages.skillRun.copied") : t("pages.skillRun.copy")}
     </button>
   );
 }
