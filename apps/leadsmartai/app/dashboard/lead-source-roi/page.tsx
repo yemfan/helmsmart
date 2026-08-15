@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 import LeadSourceRoiPanel from "@/components/dashboard/LeadSourceRoiPanel";
 
-export const metadata: Metadata = {
-  title: "Lead-source ROI | CloseBoss",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return { title: `${t("pages.leadSourceRoi.metaTitle", { ns: "dashboard" })} | CloseBoss` };
+}
 
 /**
  * Pull-mode dashboard surface answering "which lead sources actually
@@ -16,17 +18,16 @@ export const metadata: Metadata = {
  * embeddable inside a future dashboard tab without re-doing fetch /
  * state plumbing.
  */
-export default function LeadSourceRoiPage() {
+export default async function LeadSourceRoiPage() {
+  const t = await getServerT();
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
       <header className="mb-6 max-w-2xl">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Lead-source ROI
+          {t("pages.leadSourceRoi.heading", { ns: "dashboard" })}
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Which channels are actually producing revenue. Cohort: contacts you
-          captured in the window. &quot;Closes&quot; tracks contacts whose lifecycle
-          reached past_client; revenue sums their closing prices.
+          {t("pages.leadSourceRoi.intro", { ns: "dashboard" })}
         </p>
       </header>
 

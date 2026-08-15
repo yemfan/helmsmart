@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import Link from "next/link";
 import { Activity, Inbox } from "lucide-react";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
@@ -6,13 +7,17 @@ import { countPendingDrafts } from "@/lib/drafts/service";
 import DraftsClient from "@/components/dashboard/DraftsClient";
 import RunSchedulerButton from "@/components/dashboard/RunSchedulerButton";
 
-export const metadata: Metadata = {
-  title: "Drafts · Approval queue",
-  description: "Review and approve messages before they send.",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.drafts.metaTitle", { ns: "dashboard" }),
+    description: t("pages.drafts.metaDescription", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 export default async function DraftsPage() {
+  const t = await getServerT();
   const { agentId } = await getCurrentAgentContext();
   const pending = await countPendingDrafts(agentId);
 
@@ -25,17 +30,15 @@ export default async function DraftsPage() {
           </span>
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-              Drafts
+              {t("pages.drafts.heading", { ns: "dashboard" })}
               {pending > 0 && (
                 <span className="ml-3 rounded-full bg-amber-100 px-2.5 py-0.5 align-middle text-xs font-semibold text-amber-800">
-                  {pending} pending
+                  {t("pages.drafts.pending", { ns: "dashboard", count: pending })}
                 </span>
               )}
             </h1>
             <p className="mt-1 text-sm text-slate-600">
-              Approval queue for Review-mode messages. Spec §2.4: no draft sends without your approval
-              in the first 30 days of your account — and never when you&apos;ve set the policy to
-              Review.
+              {t("pages.drafts.intro", { ns: "dashboard" })}
             </p>
           </div>
         </div>
@@ -44,7 +47,7 @@ export default async function DraftsPage() {
           className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
         >
           <Activity className="h-4 w-4" aria-hidden />
-          Activity log
+          {t("pages.drafts.activityLog", { ns: "dashboard" })}
         </Link>
       </div>
 

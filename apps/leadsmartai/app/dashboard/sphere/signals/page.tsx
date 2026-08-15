@@ -1,16 +1,21 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { Sparkles } from "lucide-react";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { listOpenSignals } from "@/lib/contacts/service";
 import SphereSignalsList from "@/components/dashboard/SphereSignalsList";
 
-export const metadata: Metadata = {
-  title: "Sphere · Signals",
-  description: "Life-event signals — refi, job changes, equity milestones. Calling list only.",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.sphereSignals.metaTitle", { ns: "dashboard" }),
+    description: t("pages.sphereSignals.metaDescription", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 export default async function SignalsPage() {
+  const t = await getServerT();
   const { agentId } = await getCurrentAgentContext();
   const signals = await listOpenSignals(agentId);
 
@@ -21,10 +26,11 @@ export default async function SignalsPage() {
           <Sparkles className="h-5 w-5" strokeWidth={2} aria-hidden />
         </span>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Signals</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            {t("pages.sphereSignals.heading", { ns: "dashboard" })}
+          </h1>
           <p className="mt-1 text-sm text-slate-600">
-            Life-event signals detected from the AVM feed and external sources. These never auto-send —
-            per spec §2.6.3, treat them as a calling list.
+            {t("pages.sphereSignals.intro", { ns: "dashboard" })}
           </p>
         </div>
       </div>
