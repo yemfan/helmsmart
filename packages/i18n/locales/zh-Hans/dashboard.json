@@ -1076,7 +1076,9 @@
     "languageNote": "生成内容使用顶部所选的语言 —— 切换到 English 后重新生成即可得到英文。",
     "voiceConsent": "我同意 CloseBoss 使用我的自我介绍视频克隆我的声音。我可以随时撤回此授权。",
     "building": "生成中…",
-    "transcribing": "正在转写并生成您的品牌资料…（大约一两分钟）"
+    "transcribing": "正在转写并生成您的品牌资料…（大约一两分钟）",
+    "cloning": "克隆中…（最多约一分钟）",
+    "recordFirst": "请先录制并生成您的自我介绍视频"
   },
   "call": {
     "call": "拨打",

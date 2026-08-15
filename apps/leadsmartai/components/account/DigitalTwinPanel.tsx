@@ -519,10 +519,10 @@ export default function DigitalTwinPanel() {
             onClick={() => void voiceAction("start", { clean: avPremium && vcClean })}
             disabled={vcBusy !== null || !vc?.configured || !vc?.consent || !vc?.hasIntroVideo}
             className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
-            title={!vc?.consent ? t("twin.cloneVoiceTitle") : !vc?.hasIntroVideo ? "Record + build your intro video first" : t("twin.cloneVoice")}
+            title={!vc?.consent ? t("twin.cloneVoiceTitle") : !vc?.hasIntroVideo ? t("twin.recordFirst") : t("twin.cloneVoice")}
           >
             {vcBusy === "start"
-              ? "Cloning… (up to a minute)"
+              ? t("twin.cloning")
               : vc?.hasClone
                 ? t("twin.recloneVoice")
                 : t("twin.cloneVoice")}
