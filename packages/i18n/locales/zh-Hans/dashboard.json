@@ -1749,6 +1749,65 @@
       "colStatus": "状态",
       "colMessage": "消息内容",
       "empty": "暂无自动化消息。"
+    },
+    "openHouseQr": {
+      "metaTitle": "开放日二维码",
+      "metaDescription": "为开放日客源采集生成二维码。",
+      "heading": "开放日二维码",
+      "openHouse": "开放日",
+      "copyLink": "复制链接",
+      "copied": "已复制！",
+      "open": "打开",
+      "signupLink": "登记链接",
+      "loadFailed": "暂时无法加载房源。"
+    },
+    "calls": {
+      "metaTitle": "通话",
+      "metaDescription": "跟踪并管理客户通话与后续跟进。",
+      "heading": "通话记录",
+      "search": "按姓名、电话或摘要搜索…",
+      "colContact": "联系人",
+      "colDirection": "呼叫方向",
+      "colDuration": "时长",
+      "colSummary": "摘要",
+      "colDate": "日期",
+      "hot": "🔥 高意向",
+      "needsFollowUp": "⚠ 需要跟进",
+      "details": "详情",
+      "close": "收起",
+      "aiSummary": "AI 摘要",
+      "transcript": "通话文字记录",
+      "recording": "录音",
+      "noDetails": "暂无更多详情。",
+      "empty": "还没有通话记录。"
+    },
+    "leadQueue": {
+      "metaTitle": "客源队列",
+      "metaDescription": "从共享队列中认领可用客源。",
+      "heading": "客源队列",
+      "empty": "当前队列中没有客源。",
+      "emptyHint": "新客源会自动出现在这里。",
+      "claim": "认领",
+      "claiming": "认领中…",
+      "merged": "该联系人已在您的名单中——已与现有记录合并。",
+      "claimed": "已认领该客源。",
+      "alreadyClaimed": "该客源已被其他经纪人认领。",
+      "networkError": "网络错误，请重试。"
+    },
+    "scanCard": {
+      "metaTitle": "扫描名片",
+      "metaDescription": "扫描名片，将联系人添加到 CloseBoss。",
+      "heading": "扫描名片",
+      "intro": "拍照或上传一张图片。",
+      "backToContacts": "← 联系人",
+      "tapToUpload": "点击拍照或上传",
+      "tapHint": "清晰、光线充足的照片识别效果最佳",
+      "cardAlt": "名片",
+      "reading": "正在识别名片…",
+      "review": "核对识别出的信息",
+      "save": "保存联系人",
+      "saving": "保存中…",
+      "saved": "联系人已保存到 CRM！"
     }
   }
 }

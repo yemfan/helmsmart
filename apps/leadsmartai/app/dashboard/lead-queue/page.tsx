@@ -1,9 +1,15 @@
 import { LeadQueueClient } from "./LeadQueueClient";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata = {
-  title: "Lead Queue | CloseBoss",
-  description: "Claim available leads from the shared queue.",
-};
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: `${t("pages.leadQueue.metaTitle", { ns: "dashboard" })} | CloseBoss`,
+    description: t("pages.leadQueue.metaDescription", { ns: "dashboard" }),
+  };
+}
 
 export default function LeadQueuePage() {
   return (

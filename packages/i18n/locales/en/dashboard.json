@@ -1749,6 +1749,65 @@
       "colStatus": "Status",
       "colMessage": "Message",
       "empty": "No automation messages yet."
+    },
+    "openHouseQr": {
+      "metaTitle": "Open House QR Codes",
+      "metaDescription": "Generate QR codes for open house lead capture.",
+      "heading": "Open House QR Codes",
+      "openHouse": "Open House",
+      "copyLink": "Copy link",
+      "copied": "Copied!",
+      "open": "Open",
+      "signupLink": "Sign-up link",
+      "loadFailed": "Unable to load properties right now."
+    },
+    "calls": {
+      "metaTitle": "Calls",
+      "metaDescription": "Track and manage client calls and follow-ups.",
+      "heading": "Call Log",
+      "search": "Search by name, phone, or summary…",
+      "colContact": "Contact",
+      "colDirection": "Direction",
+      "colDuration": "Duration",
+      "colSummary": "Summary",
+      "colDate": "Date",
+      "hot": "🔥 Hot",
+      "needsFollowUp": "⚠ Needs follow-up",
+      "details": "Details",
+      "close": "Close",
+      "aiSummary": "AI Summary",
+      "transcript": "Transcript",
+      "recording": "Recording",
+      "noDetails": "No additional details available.",
+      "empty": "No calls recorded yet."
+    },
+    "leadQueue": {
+      "metaTitle": "Lead Queue",
+      "metaDescription": "Claim available leads from the shared queue.",
+      "heading": "Lead Queue",
+      "empty": "No leads in the queue right now.",
+      "emptyHint": "New leads will appear here automatically.",
+      "claim": "Claim",
+      "claiming": "Claiming…",
+      "merged": "Already in your contacts — merged with the existing record.",
+      "claimed": "Lead claimed.",
+      "alreadyClaimed": "This lead was already claimed by another agent.",
+      "networkError": "Network error. Please try again."
+    },
+    "scanCard": {
+      "metaTitle": "Scan Business Card",
+      "metaDescription": "Scan a business card to add a contact to CloseBoss.",
+      "heading": "Scan Business Card",
+      "intro": "Take a photo or upload an image.",
+      "backToContacts": "← Contacts",
+      "tapToUpload": "Tap to take photo or upload",
+      "tapHint": "Best results with a clear, well-lit photo",
+      "cardAlt": "Business card",
+      "reading": "Reading business card…",
+      "review": "Review extracted info",
+      "save": "Save Contact",
+      "saving": "Saving…",
+      "saved": "Contact saved to CRM!"
     }
   }
 }

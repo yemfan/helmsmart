@@ -1,9 +1,15 @@
 import ScanCardClient from "./ScanCardClient";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata = {
-  title: "Scan Business Card | CloseBoss",
-  description: "Scan a business card to add a contact to CloseBoss.",
-};
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: `${t("pages.scanCard.metaTitle", { ns: "dashboard" })} | CloseBoss`,
+    description: t("pages.scanCard.metaDescription", { ns: "dashboard" }),
+  };
+}
 
 export default function ScanCardPage() {
   return (
