@@ -581,7 +581,14 @@
       "noHot": "No hot leads right now.",
       "noQuiet": "No quiet leads — everyone has recent activity.",
       "voicePanel": "Sales Assistant voice settings",
-      "unnamedLead": "Unnamed lead"
+      "unnamedLead": "Unnamed lead",
+      "hints": {
+        "inactive7": "7+ days inactive",
+        "allTime": "all time"
+      },
+      "reactivationQueue": "Reactivation queue — quiet for 7+ days",
+      "moreTools": "More outbound tools",
+      "loading": "Loading…"
     },
     "marketing": {
       "tabs": {
@@ -1063,5 +1070,80 @@
     "notConfigured": "Calling isn't configured yet — contact your admin.",
     "couldNotPlace": "Call could not be placed.",
     "twilioRejected": "Twilio rejected the call."
+  },
+  "outreach": {
+    "heading": "Run an outreach action",
+    "subtitle": "Your Sales Assistant reaches out on your behalf — pick a channel, who to reach, and go.",
+    "steps": {
+      "channel": "1 · Channel",
+      "purpose": "2 · Purpose",
+      "who": "3 · Who",
+      "subject": "4 · Subject",
+      "when": "5 · When"
+    },
+    "channel": {
+      "call": "Call",
+      "sms": "Text",
+      "email": "Email"
+    },
+    "purpose": {
+      "followUp": "Follow-up",
+      "survey": "Survey / review",
+      "promo": "Promo / announcement"
+    },
+    "who": {
+      "oneContact": "One contact",
+      "segment": "A segment",
+      "hotLeads": "Hot leads"
+    },
+    "when": {
+      "now": "Send now",
+      "later": "Schedule for later"
+    },
+    "actions": {
+      "placeCall": "Place call",
+      "sendEmail": "Send email",
+      "sendText": "Send text",
+      "schedule": "Schedule"
+    },
+    "prompts": {
+      "survey": "What should your assistant ask?",
+      "promo": "What's the announcement?",
+      "optional": "Anything to add? (optional)",
+      "yourMessage": "Your message"
+    },
+    "placeholders": {
+      "survey": "How was your home tour? Would you leave us a Google review?",
+      "surveySubject": "How was your experience?",
+      "promoSubject": "A quick update for you",
+      "followUpSubject": "Following up"
+    },
+    "unnamed": "Unnamed contact",
+    "noMatching": "No matching contacts.",
+    "noEmailContacts": "No saved contacts with an email yet",
+    "noPhoneContacts": "No saved contacts with a phone number yet",
+    "clearSelected": "Clear selected contact",
+    "comingSoon": "Coming soon",
+    "errors": {
+      "leadNoEmail": "That lead has no email on file — add one to reach them.",
+      "leadNoPhone": "That lead has no phone number on file — add one to reach them.",
+      "pickContact": "Pick a contact, or switch to a segment.",
+      "segmentEmpty": "That segment is empty right now.",
+      "noEmail": "This contact has no email on file.",
+      "noPhone": "This contact has no phone number on file.",
+      "addSubject": "Add a subject line.",
+      "addScript": "Add the script/announcement first.",
+      "addMessage": "Add a message to send.",
+      "noneToSchedule": "No reachable contacts to schedule.",
+      "scheduleFailed": "Could not schedule the action.",
+      "callFailed": "Failed to place the call.",
+      "noneInSegment": "No reachable contacts in that segment.",
+      "bulkCallFailed": "Bulk call failed.",
+      "textFailed": "Failed to send the text.",
+      "bulkSmsFailed": "Bulk SMS failed.",
+      "emailFailed": "Failed to send the email.",
+      "bulkEmailFailed": "Bulk email failed.",
+      "generic": "Something went wrong."
+    }
   }
 }
