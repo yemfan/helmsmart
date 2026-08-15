@@ -77,7 +77,13 @@ const PROFILE_SCHEMA_HINT =
   '"tagline": string (a short personal tagline)}';
 
 /** Claude distills a brand profile from the transcript. Facts-only, no invention. */
-async function extractProfile(transcript: string, agentName: string | null): Promise<BrandProfile> {
+export type ProfileLanguage = "en" | "zh-Hans";
+
+async function extractProfile(
+  transcript: string,
+  agentName: string | null,
+  language: ProfileLanguage = "en",
+): Promise<BrandProfile> {
   const client = getAnthropicClient();
   const res = await client.messages.create({
     model: "claude-sonnet-4-6",
@@ -86,6 +92,9 @@ async function extractProfile(transcript: string, agentName: string | null): Pro
       "You build a real-estate agent's brand profile from the transcript of a short intro video they recorded. " +
       "Use ONLY what they actually say — never invent credentials, stats, or a market they didn't mention. " +
       "Write the bio in first person, in their own voice. " +
+      (language === "zh-Hans"
+        ? "Write every field in Simplified Chinese (简体中文) — bio, specialties, market and tagline — even if the transcript is in English. Use natural phrasing a Chinese-speaking agent would use, not a literal translation. Keep place names in the form clients would recognise (e.g. 阿卡迪亚 Arcadia). "
+        : "Write every field in English. ") +
       PROFILE_SCHEMA_HINT,
     messages: [
       { role: "user", content: `Agent name: ${agentName ?? "(unknown)"}\n\nIntro video transcript:\n${transcript.slice(0, 6000)}` },
@@ -122,6 +131,7 @@ export async function processDigitalTwin(
   agentId: string,
   videoPath: string,
   agentName: string | null,
+  language: ProfileLanguage = "en",
 ): Promise<{ status: string; profile: BrandProfile }> {
   await setTwin(agentId, { dt_status: "processing", dt_error: null, dt_intro_video_path: videoPath });
   try {
@@ -131,7 +141,7 @@ export async function processDigitalTwin(
     const transcript = await transcribe(data.signedUrl);
     if (!transcript) throw new Error("No speech detected in the video — record yourself talking to camera.");
 
-    const profile = await extractProfile(transcript, agentName);
+    const profile = await extractProfile(transcript, agentName, language);
     await setTwin(agentId, {
       dt_status: "ready",
       dt_transcript: transcript,

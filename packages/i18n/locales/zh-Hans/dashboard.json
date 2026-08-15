@@ -581,7 +581,14 @@
       "noHot": "暂无重点客户。",
       "noQuiet": "没有沉默客户 —— 每位客户近期都有互动。",
       "voicePanel": "销售助理语音设置",
-      "unnamedLead": "未命名客户"
+      "unnamedLead": "未命名客户",
+      "hints": {
+        "inactive7": "7 天以上无互动",
+        "allTime": "累计"
+      },
+      "reactivationQueue": "唤醒队列 —— 7 天以上没有互动",
+      "moreTools": "更多外联工具",
+      "loading": "加载中…"
     },
     "marketing": {
       "tabs": {
@@ -1048,7 +1055,10 @@
       "postFailed": "视频发布失败。",
       "noAccounts": "还没有已连接、且支持视频的账号。"
     },
-    "queued": "已加入 {{count}} 个账号的发布队列 —— 几分钟内发出。"
+    "queued": "已加入 {{count}} 个账号的发布队列 —— 几分钟内发出。",
+    "intro": "录一段简短的自我介绍视频（对着镜头说说您是谁、服务哪个区域、擅长什么）。AI 会把它整理成品牌资料，用来个性化您所有由 AI 撰写的营销内容。声音和数字人形象可以稍后再做。",
+    "profileLanguage": "资料语言",
+    "profileLanguageHelp": "您的简介、服务区域、语气和专长将使用的语言。重新生成即可切换。"
   },
   "call": {
     "call": "拨打",
@@ -1063,5 +1073,80 @@
     "notConfigured": "通话功能尚未配置 —— 请联系管理员。",
     "couldNotPlace": "无法发起通话。",
     "twilioRejected": "Twilio 拒绝了这次呼叫。"
+  },
+  "outreach": {
+    "heading": "发起一次外联",
+    "subtitle": "销售助理会代您联系客户 —— 选好渠道和对象，就可以开始。",
+    "steps": {
+      "channel": "1 · 渠道",
+      "purpose": "2 · 目的",
+      "who": "3 · 对象",
+      "subject": "4 · 邮件主题",
+      "when": "5 · 时间"
+    },
+    "channel": {
+      "call": "电话",
+      "sms": "短信",
+      "email": "邮件"
+    },
+    "purpose": {
+      "followUp": "跟进",
+      "survey": "回访 / 评价",
+      "promo": "推广 / 通知"
+    },
+    "who": {
+      "oneContact": "单个联系人",
+      "segment": "某类客户",
+      "hotLeads": "重点客户"
+    },
+    "when": {
+      "now": "立即发送",
+      "later": "稍后定时发送"
+    },
+    "actions": {
+      "placeCall": "拨打电话",
+      "sendEmail": "发送邮件",
+      "sendText": "发送短信",
+      "schedule": "安排发送"
+    },
+    "prompts": {
+      "survey": "希望助理问些什么？",
+      "promo": "要通知的内容是什么？",
+      "optional": "还有什么要补充的？（选填）",
+      "yourMessage": "您的消息内容"
+    },
+    "placeholders": {
+      "survey": "这次看房体验如何？方便给我们留一条 Google 评价吗？",
+      "surveySubject": "您的体验如何？",
+      "promoSubject": "给您的一条最新消息",
+      "followUpSubject": "跟进一下"
+    },
+    "unnamed": "未命名联系人",
+    "noMatching": "没有匹配的联系人。",
+    "noEmailContacts": "还没有登记邮箱的联系人",
+    "noPhoneContacts": "还没有登记电话的联系人",
+    "clearSelected": "清除已选联系人",
+    "comingSoon": "敬请期待",
+    "errors": {
+      "leadNoEmail": "该客户没有登记邮箱 —— 请先补充后再联系。",
+      "leadNoPhone": "该客户没有登记电话 —— 请先补充后再联系。",
+      "pickContact": "请选择一个联系人，或改为选择某类客户。",
+      "segmentEmpty": "该类客户目前没有人。",
+      "noEmail": "该联系人没有登记邮箱。",
+      "noPhone": "该联系人没有登记电话。",
+      "addSubject": "请填写邮件主题。",
+      "addScript": "请先填写话术／通知内容。",
+      "addMessage": "请填写要发送的内容。",
+      "noneToSchedule": "没有可联系的对象，无法安排发送。",
+      "scheduleFailed": "安排发送失败。",
+      "callFailed": "拨打失败。",
+      "noneInSegment": "该类客户中没有可联系的人。",
+      "bulkCallFailed": "批量拨打失败。",
+      "textFailed": "短信发送失败。",
+      "bulkSmsFailed": "批量短信发送失败。",
+      "emailFailed": "邮件发送失败。",
+      "bulkEmailFailed": "批量邮件发送失败。",
+      "generic": "出了点问题。"
+    }
   }
 }

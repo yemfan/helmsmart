@@ -339,7 +339,7 @@ export default function DigitalTwinPanel() {
       const res = await fetch("/api/dashboard/digital-twin", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ videoPath, consent: true }),
+        body: JSON.stringify({ videoPath, consent: true, language: avLang }),
       });
       const b = (await res.json().catch(() => ({}))) as { ok?: boolean; profile?: Profile; error?: string };
       if (!res.ok || !b.ok || !b.profile) {
@@ -384,8 +384,7 @@ export default function DigitalTwinPanel() {
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <h2 className="text-base font-semibold text-slate-900">{t("twin.heading")}</h2>
       <p className="mt-0.5 text-sm text-slate-500">
-        Record a short intro video (talk to camera — who you are, your market, what you specialize in). AI turns it into
-        a brand profile that personalizes all your AI-written marketing. Voice + avatar come later.
+        {t("twin.intro")}
       </p>
 
       {!configured ? (
@@ -398,8 +397,7 @@ export default function DigitalTwinPanel() {
       <label className="mt-4 flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
         <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5" />
         <span className="text-[12px] text-slate-700">
-          This video and photo are of <strong>me</strong>, and I consent to CloseBoss using my likeness and voice to generate
-          marketing on my behalf. I can revoke this anytime.
+          {t("twin.consent")}
         </span>
       </label>
 
@@ -425,6 +423,17 @@ export default function DigitalTwinPanel() {
           {photoUploading ? "Uploading…" : hasPortrait ? t("twin.replacePhoto") : t("twin.usePhoto")}
         </button>
         <input ref={photoRef} type="file" accept="image/*" onChange={onPickPhoto} className="hidden" />
+        <label className="min-w-[150px]">
+          <span className="block text-[11px] font-medium text-slate-600">{t("twin.profileLanguage")}</span>
+          <select
+            value={avLang}
+            onChange={(e) => setAvLang(e.target.value === "zh-Hans" ? "zh-Hans" : "en")}
+            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm"
+          >
+            <option value="en">English</option>
+            <option value="zh-Hans">中文</option>
+          </select>
+        </label>
         <button
           type="button"
           onClick={() => void build()}

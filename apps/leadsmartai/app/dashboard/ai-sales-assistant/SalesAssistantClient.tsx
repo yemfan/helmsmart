@@ -105,9 +105,9 @@ export default function SalesAssistantClient() {
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <AssistantKpiCard label={t("assistants.sales.stats.hotLeads")} value={loading ? undefined : metrics?.hotLeads} tone="hot" />
-        <AssistantKpiCard label={t("assistants.sales.stats.quietLeads")} value={loading ? undefined : metrics?.inactive7Days} hint="7+ days inactive" tone={metrics && metrics.inactive7Days > 0 ? "warn" : undefined} />
+        <AssistantKpiCard label={t("assistants.sales.stats.quietLeads")} value={loading ? undefined : metrics?.inactive7Days} hint={t("assistants.sales.hints.inactive7")} tone={metrics && metrics.inactive7Days > 0 ? "warn" : undefined} />
         <AssistantKpiCard label={t("assistants.sales.stats.totalLeads")} value={loading ? undefined : metrics?.totalLeads} />
-        <AssistantKpiCard label={t("assistants.sales.stats.messagesSent")} value={loading ? undefined : metrics?.messagesSent} hint="all time" />
+        <AssistantKpiCard label={t("assistants.sales.stats.messagesSent")} value={loading ? undefined : metrics?.messagesSent} hint={t("assistants.sales.hints.allTime")} />
       </div>
 
       <SalesOutreachComposer
@@ -136,7 +136,7 @@ export default function SalesAssistantClient() {
           onQuickAction={quickAction}
         />
         <LeadList
-          title="Reactivation queue — quiet for 7+ days"
+          title={t("assistants.sales.reactivationQueue")}
           leads={quietLeads}
           loading={loading}
           empty={t("assistants.sales.noQuiet")}
@@ -157,7 +157,7 @@ export default function SalesAssistantClient() {
           aria-expanded={outboundOpen}
         >
           <PhoneOutgoing className="h-3.5 w-3.5" strokeWidth={2} />
-          More outbound tools
+          {t("assistants.sales.moreTools")}
           {outboundOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
         </button>
       </div>
