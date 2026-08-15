@@ -2050,6 +2050,33 @@
       "comps_one": "{{count}} comp",
       "comps_other": "{{count}} comps",
       "confidence": "confidence {{score}}"
+    },
+    "coordinator": {
+      "metaTitle": "Transaction coordinator",
+      "show": "Show",
+      "roleAll": "All",
+      "roleBuyer": "Buyer-side",
+      "roleListing": "Listing-side",
+      "roleDual": "Dual",
+      "noDeals": "No active deals.",
+      "noDealsHint": "New transactions appear here automatically once they're opened in",
+      "transactions": "Transactions",
+      "inFlight": "In-flight deals",
+      "overdueTasks": "Overdue tasks",
+      "closingThisWeek": "Closing this week",
+      "avgPast": "Avg {{days}}d past",
+      "avgToDeadline": "Avg {{days}}d to deadline",
+      "overdueCount": "{{count}} overdue",
+      "noWork": "No open work at this stage.",
+      "next": "Next:",
+      "openCount": "{{count}} open",
+      "allStage": "{{done}}/{{total}} all-stage",
+      "closingOn": "Closing {{date}}",
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "yesterday": "yesterday",
+      "daysOverdue": "{{count}}d overdue",
+      "inDays": "in {{count}}d"
     }
   }
 }

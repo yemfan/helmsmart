@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 import CoordinatorClient from "./CoordinatorClient";
 import { TransactionsViewToggle } from "../TransactionsViewToggle";
 
-export const metadata: Metadata = {
-  title: "Transaction coordinator | CloseBoss",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.coordinator.metaTitle", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 export default function CoordinatorPage() {
   return (
