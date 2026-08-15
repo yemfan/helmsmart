@@ -5,7 +5,15 @@ import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getAssistant } from "@/lib/realtyboss/team";
-import { assessTransactionHealth, fmtMilestoneDay } from "@/lib/realtyboss/transactionHealth";
+import { assessTransactionHealth } from "@/lib/realtyboss/transactionHealth";
+import {
+  happeningLine,
+  levelLabel,
+  missingLine,
+  nextLine,
+  riskLine,
+} from "@/lib/realtyboss/transactionHealthText";
+import { intlLocale } from "@/lib/i18n/locale";
 import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
 
 type TransactionItem = {
@@ -40,7 +48,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 export default function TransactionAssistantClient() {
   // Named `tr` — transaction rows already bind `t` in their maps.
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const dateLocale = intlLocale(i18n.language);
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -175,20 +184,19 @@ export default function TransactionAssistantClient() {
                 <Link key={t.id} href={`/dashboard/transactions/${t.id}`} className={`rounded-xl border p-3 transition hover:shadow-sm ${tone}`}>
                   <div className="flex items-start justify-between gap-2">
                     <p className="truncate text-sm font-semibold text-gray-900">{t.property_address}</p>
-                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${chip}`}>{h.label}</span>
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${chip}`}>{levelLabel(h.level, tr)}</span>
                   </div>
-                  <p className="mt-0.5 text-xs text-gray-600">{t.contact_name ?? "—"} · {h.happening}</p>
+                  <p className="mt-0.5 text-xs text-gray-600">{t.contact_name ?? "—"} · {happeningLine(h.happening, tr, dateLocale)}</p>
                   {h.next && (
                     <p className="mt-1.5 text-xs text-gray-700">
-                      <span className="font-medium">{tr("assistants.transaction.next")}</span> {h.next.label} · {fmtMilestoneDay(h.next.date)}
-                      {h.next.overdue ? " (overdue)" : ""}
+                      <span className="font-medium">{tr("assistants.transaction.next")}</span> {nextLine(h.next, tr, dateLocale)}
                     </p>
                   )}
-                  {h.missing && (
-                    <p className="text-xs text-amber-700"><span className="font-medium">{tr("assistants.transaction.missing")}</span> {h.missing}</p>
+                  {h.overdueTasks > 0 && (
+                    <p className="text-xs text-amber-700"><span className="font-medium">{tr("assistants.transaction.missing")}</span> {missingLine(h.overdueTasks, tr)}</p>
                   )}
                   {h.risk && (
-                    <p className="text-xs font-medium text-red-700"><span className="font-semibold">{tr("assistants.transaction.atRisk")}</span> {h.risk}</p>
+                    <p className="text-xs font-medium text-red-700"><span className="font-semibold">{tr("assistants.transaction.atRisk")}</span> {riskLine(h.risk, tr, dateLocale)}</p>
                   )}
                 </Link>
               );

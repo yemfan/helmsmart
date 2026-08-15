@@ -1061,7 +1061,13 @@
     "queued": "已加入 {{count}} 个账号的发布队列 —— 几分钟内发出。",
     "intro": "录一段简短的自我介绍视频（对着镜头说说您是谁、服务哪个区域、擅长什么）。AI 会把它整理成品牌资料，用来个性化您所有由 AI 撰写的营销内容。声音和数字人形象可以稍后再做。",
     "profileLanguage": "资料语言",
-    "profileLanguageHelp": "您的简介、服务区域、语气和专长将使用的语言。重新生成即可切换。"
+    "profileLanguageHelp": "您的简介、服务区域、语气和专长将使用的语言。重新生成即可切换。",
+    "voiceIntro": "用同一段自我介绍视频克隆您的声音 —— 不需要再录一次。我们会用它为您的 AI 内容配音；开启下方选项后，AI 前台接待也会用您的声音接听电话。",
+    "avatarIntro": "把一段脚本变成您本人的口播视频 —— 您的形象，配上您的克隆声音或任意一个预置声音。撰写脚本和试听声音都是免费的；视频渲染是单独一步，方便您先听后做。",
+    "portraitNote": "您上传的照片会作为「{{mode}}」的形象。唇形同步渲染仍会使用您的自我介绍视频，因为它需要贴合真实拍摄画面。",
+    "cleanVoice": "净化我的声音",
+    "cleanVoiceHelp": "—— 对原始音频降噪，克隆效果更清晰",
+    "voiceReady": "✓ 声音已就绪"
   },
   "call": {
     "call": "拨打",
@@ -1193,6 +1199,33 @@
       "review": "系统会写好并按合适时间排期，但在您于发布队列中审批之前不会真正发出。",
       "assisted": "推荐的省心模式。自动撰写并排期，对每条帖子做事实核查，只发布能够核实的内容 —— 其余的留给您确认。发布前您仍可随时取消。",
       "auto": "全自动且不经审核 —— 帖子会直接发到您的账号，不做任何事实核查。除非您会逐条自行审阅，否则建议选择「全自动 —— 带事实核查」。"
+    }
+  },
+  "health": {
+    "level": {
+      "on_track": "进展正常",
+      "needs_attention": "需要关注",
+      "at_risk": "存在风险"
+    },
+    "milestone": {
+      "inspection": "验房期限",
+      "appraisal": "评估",
+      "loan": "贷款条件期限",
+      "closing": "过户"
+    },
+    "status": {
+      "active": "交易托管中"
+    },
+    "pctDone": "清单完成 {{pct}}%",
+    "closes": "{{date}} 过户",
+    "closesInDays": "{{date}} 过户（还有 {{days}} 天）",
+    "overdueTasks": "{{count}} 项清单事项已逾期",
+    "overdueTasks_one": "{{count}} 项清单事项已逾期",
+    "overdueSuffix": "已逾期",
+    "risk": {
+      "milestoneOverdue": "{{milestone}}已于 {{date}} 到期，目前仍未完成。",
+      "closingSoon": "还有 {{days}} 天就要过户，但{{tasks}}。",
+      "closingSoon_one": "还有 {{days}} 天就要过户，但{{tasks}}。"
     }
   }
 }

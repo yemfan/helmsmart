@@ -495,8 +495,7 @@ export default function DigitalTwinPanel() {
           </span>
         </div>
         <p className="text-[12px] text-slate-500">
-          Clone your voice from the <strong>same intro video</strong> — no second recording. We use it to voice your AI
-          content, and (once you turn it on below) your AI receptionist answers calls in your voice.
+          {t("twin.voiceIntro")}
         </p>
 
         {vc && !vc.configured ? (
@@ -548,10 +547,10 @@ export default function DigitalTwinPanel() {
               className="h-4 w-4 rounded border-slate-300 text-violet-600 disabled:opacity-50"
             />
             <span className="inline-flex flex-wrap items-center gap-1">
-              🎙️ Clean my voice
+              🎙️ {t("twin.cleanVoice")}
               <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">{t("twin.premium")}</span>
               {avPremium ? (
-                <span className="text-slate-400">— denoise the source for a sharper clone</span>
+                <span className="text-slate-400">{t("twin.cleanVoiceHelp")}</span>
               ) : (
                 <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">
                   Upgrade to unlock
@@ -561,7 +560,7 @@ export default function DigitalTwinPanel() {
           </label>
 
           {vc?.status === "ready" && vc.hasClone ? (
-            <span className="text-[12px] font-medium text-emerald-700">✓ Voice ready</span>
+            <span className="text-[12px] font-medium text-emerald-700">{t("twin.voiceReady")}</span>
           ) : vc?.status === "processing" ? (
             <span className="text-[12px] text-slate-500">{t("twin.processing")}</span>
           ) : vc?.status === "failed" ? (
@@ -609,14 +608,11 @@ export default function DigitalTwinPanel() {
           </span>
         </div>
         <p className="text-[12px] text-slate-500">
-          Turn a script into a talking-head video of <strong>you</strong> — your face, speaking in your cloned voice
-          or any stock voice you pick. Drafting + the voice preview are free; the video render is a separate step so
-          you hear it first.
+          {t("twin.avatarIntro")}
         </p>
         {av?.hasPortrait ? (
           <p className="text-[12px] text-slate-500">
-            Your uploaded photo is the face for <strong>{t("twin.lifelikeAvatar")}</strong> renders. Lip-sync renders still use
-            your intro video, since they sync onto real footage.
+            {t("twin.portraitNote", { mode: t("twin.lifelikeAvatar") })}
           </p>
         ) : null}
 
@@ -641,17 +637,6 @@ export default function DigitalTwinPanel() {
                   placeholder={t("twin.topicPlaceholder")}
                   className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                 />
-              </label>
-              <label className="min-w-[130px]">
-                <span className="text-xs font-medium text-slate-600">{t("twin.scriptLanguage")}</span>
-                <select
-                  value={avLang}
-                  onChange={(e) => setAvLang(e.target.value === "zh-Hans" ? "zh-Hans" : "en")}
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                >
-                  <option value="en">English</option>
-                  <option value="zh-Hans">中文</option>
-                </select>
               </label>
               <label className="min-w-[130px]">
                 <span className="text-xs font-medium text-slate-600">{t("twin.scriptLanguage")}</span>

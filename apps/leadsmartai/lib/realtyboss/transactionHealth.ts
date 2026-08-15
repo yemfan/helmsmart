@@ -23,17 +23,37 @@ export type TransactionHealthInput = {
   task_overdue: number;
 };
 
+/** Stable milestone ids; callers translate them. */
+export type MilestoneKey = "inspection" | "appraisal" | "loan" | "closing";
+
+/**
+ * Health is returned as DATA, not prose. This module used to compose English
+ * sentences by concatenation ("Closing in 3 days with 5 overdue checklist
+ * items"), which no amount of UI translation could reach — and which can't be
+ * reordered for languages that put the clause the other way round. Callers now
+ * render each shape in their own language.
+ */
 export type TransactionHealth = {
   level: "on_track" | "needs_attention" | "at_risk";
-  label: string;
-  /** What's happening — one narrative line. */
-  happening: string;
+  /** What's happening — the pieces, for the caller to join. */
+  happening: {
+    /** "active" maps to an "in escrow" label; anything else is a raw status. */
+    status: string;
+    /** Checklist completion, 0-100, when there are tasks. */
+    pct: number | null;
+    closing: Date | null;
+    /** Days until closing; negative once it has passed. */
+    closingInDays: number | null;
+  };
   /** What's next — the earliest open milestone. */
-  next: { label: string; date: Date; overdue: boolean } | null;
-  /** What's missing — open checklist debt, if any. */
-  missing: string | null;
-  /** What is at risk — only set when level is at_risk. */
-  risk: string | null;
+  next: { key: MilestoneKey; date: Date; overdue: boolean } | null;
+  /** Open checklist debt. Zero when there is none. */
+  overdueTasks: number;
+  /** Why it's at risk — only set when level is at_risk. */
+  risk:
+    | { kind: "milestone_overdue"; milestone: MilestoneKey; date: Date }
+    | { kind: "closing_soon"; days: number; overdueTasks: number }
+    | null;
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -42,21 +62,21 @@ function daysUntil(d: Date): number {
   return Math.ceil((d.getTime() - Date.now()) / DAY_MS);
 }
 
-export function fmtMilestoneDay(d: Date): string {
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+export function fmtMilestoneDay(d: Date, locale = "en-US"): string {
+  return d.toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
 
 export function assessTransactionHealth(t: TransactionHealthInput): TransactionHealth {
-  const milestones: { label: string; date: string | null; done: string | null }[] = [
-    { label: "Inspection contingency", date: t.inspection_deadline, done: t.inspection_completed_at },
-    { label: "Appraisal", date: t.appraisal_deadline, done: t.appraisal_completed_at },
-    { label: "Loan contingency", date: t.loan_contingency_deadline, done: t.loan_contingency_removed_at },
-    { label: "Closing", date: t.closing_date, done: null },
+  const milestones: { key: MilestoneKey; date: string | null; done: string | null }[] = [
+    { key: "inspection", date: t.inspection_deadline, done: t.inspection_completed_at },
+    { key: "appraisal", date: t.appraisal_deadline, done: t.appraisal_completed_at },
+    { key: "loan", date: t.loan_contingency_deadline, done: t.loan_contingency_removed_at },
+    { key: "closing", date: t.closing_date, done: null },
   ];
 
   const open = milestones
     .filter((m) => m.date && !m.done)
-    .map((m) => ({ label: m.label, date: new Date(m.date as string) }))
+    .map((m) => ({ key: m.key, date: new Date(m.date as string) }))
     .sort((a, b) => a.date.getTime() - b.date.getTime());
 
   const next = open[0]
@@ -64,39 +84,37 @@ export function assessTransactionHealth(t: TransactionHealthInput): TransactionH
     : null;
   const overdueMilestones = open.filter((m) => m.date.getTime() < Date.now());
 
-  const missing =
-    t.task_overdue > 0
-      ? `${t.task_overdue} overdue checklist item${t.task_overdue === 1 ? "" : "s"}`
-      : null;
-
-  const closingSoon = next?.label === "Closing" && daysUntil(next.date) <= 3;
+  const closingSoon = next?.key === "closing" && daysUntil(next.date) <= 3;
 
   let level: TransactionHealth["level"] = "on_track";
-  let risk: string | null = null;
+  let risk: TransactionHealth["risk"] = null;
   if (overdueMilestones.length > 0) {
     level = "at_risk";
-    risk = `${overdueMilestones[0].label} passed ${fmtMilestoneDay(overdueMilestones[0].date)} and is still open.`;
+    risk = {
+      kind: "milestone_overdue",
+      milestone: overdueMilestones[0].key,
+      date: overdueMilestones[0].date,
+    };
   } else if (closingSoon && t.task_overdue > 0) {
     level = "at_risk";
-    risk = `Closing in ${daysUntil(next!.date)} day${daysUntil(next!.date) === 1 ? "" : "s"} with ${missing}.`;
+    risk = { kind: "closing_soon", days: daysUntil(next!.date), overdueTasks: t.task_overdue };
   } else if ((next && daysUntil(next.date) <= 3) || t.task_overdue > 0) {
     level = "needs_attention";
   }
 
   const pct = t.task_total > 0 ? Math.round((t.task_completed / t.task_total) * 100) : null;
   const closing = t.closing_date ? new Date(t.closing_date) : null;
-  const happeningParts = [
-    t.status === "active" ? "In escrow" : t.status,
-    pct != null ? `${pct}% of checklist done` : null,
-    closing ? `closes ${fmtMilestoneDay(closing)}${daysUntil(closing) >= 0 ? ` (${daysUntil(closing)}d)` : ""}` : null,
-  ].filter(Boolean);
 
   return {
     level,
-    label: level === "on_track" ? "On track" : level === "needs_attention" ? "Needs attention" : "At risk",
-    happening: happeningParts.join(" · "),
+    happening: {
+      status: t.status,
+      pct,
+      closing,
+      closingInDays: closing ? daysUntil(closing) : null,
+    },
     next,
-    missing,
+    overdueTasks: t.task_overdue,
     risk,
   };
 }

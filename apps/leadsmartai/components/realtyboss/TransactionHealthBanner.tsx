@@ -1,10 +1,18 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import {
   assessTransactionHealth,
-  fmtMilestoneDay,
   type TransactionHealthInput,
 } from "@/lib/realtyboss/transactionHealth";
+import {
+  happeningLine,
+  levelLabel,
+  missingLine,
+  nextLine,
+  riskLine,
+} from "@/lib/realtyboss/transactionHealthText";
+import { intlLocale } from "@/lib/i18n/locale";
 
 /**
  * Health banner for the transaction detail page — constitution:
@@ -12,6 +20,8 @@ import {
  * what's missing / what's at risk), not transaction data.
  */
 export function TransactionHealthBanner({ input }: { input: TransactionHealthInput }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const dateLocale = intlLocale(i18n.language);
   const h = assessTransactionHealth(input);
   const tone =
     h.level === "at_risk"
@@ -28,22 +38,22 @@ export function TransactionHealthBanner({ input }: { input: TransactionHealthInp
 
   return (
     <div className={`flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-xl border px-3.5 py-2.5 ${tone}`}>
-      <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${chip}`}>{h.label}</span>
-      <p className="text-sm text-slate-700">{h.happening}</p>
+      <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${chip}`}>{levelLabel(h.level, t)}</span>
+      <p className="text-sm text-slate-700">{happeningLine(h.happening, t, dateLocale)}</p>
       {h.next && (
         <p className="text-sm text-slate-700">
-          <span className="font-medium">Next:</span> {h.next.label} · {fmtMilestoneDay(h.next.date)}
-          {h.next.overdue ? " (overdue)" : ""}
+          <span className="font-medium">{t("assistants.transaction.next")}</span> {nextLine(h.next, t, dateLocale)}
         </p>
       )}
-      {h.missing && (
+      {h.overdueTasks > 0 && (
         <p className="text-sm text-amber-800">
-          <span className="font-medium">Missing:</span> {h.missing}
+          <span className="font-medium">{t("assistants.transaction.missing")}</span> {missingLine(h.overdueTasks, t)}
         </p>
       )}
       {h.risk && (
         <p className="text-sm font-medium text-red-700">
-          <span className="font-semibold">At risk:</span> {h.risk}
+          <span className="font-semibold">{t("assistants.transaction.atRisk")}</span>{" "}
+          {riskLine(h.risk, t, dateLocale)}
         </p>
       )}
     </div>

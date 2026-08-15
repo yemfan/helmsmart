@@ -1061,7 +1061,13 @@
     "queued": "Queued to {{count}} account(s) — posting within a few minutes.",
     "intro": "Record a short intro video (talk to camera — who you are, your market, what you specialize in). AI turns it into a brand profile that personalizes all your AI-written marketing. Voice + avatar come later.",
     "profileLanguage": "Profile language",
-    "profileLanguageHelp": "The language your bio, market, tone and specialties are written in. Rebuild to regenerate them."
+    "profileLanguageHelp": "The language your bio, market, tone and specialties are written in. Rebuild to regenerate them.",
+    "voiceIntro": "Clone your voice from the same intro video — no second recording. We use it to voice your AI content, and (once you turn it on below) your AI receptionist answers calls in your voice.",
+    "avatarIntro": "Turn a script into a talking-head video of you — your face, speaking in your cloned voice or any stock voice you pick. Drafting + the voice preview are free; the video render is a separate step so you hear it first.",
+    "portraitNote": "Your uploaded photo is the face for {{mode}} renders. Lip-sync renders still use your intro video, since they sync onto real footage.",
+    "cleanVoice": "Clean my voice",
+    "cleanVoiceHelp": "— denoise the source for a sharper clone",
+    "voiceReady": "✓ Voice ready"
   },
   "call": {
     "call": "Call",
@@ -1193,6 +1199,33 @@
       "review": "Your week is written and scheduled at the right times, but nothing publishes until you approve it in the post queue.",
       "assisted": "Recommended hands-off mode. Writes and schedules your week, fact-checks every post, and publishes only the ones it can verify — the rest wait for you. You can still cancel before it posts.",
       "auto": "Autopilot with NO review — posts publish to your accounts without any fact-check. Prefer “Autopilot — fact-checked” unless you review everything yourself."
+    }
+  },
+  "health": {
+    "level": {
+      "on_track": "On track",
+      "needs_attention": "Needs attention",
+      "at_risk": "At risk"
+    },
+    "milestone": {
+      "inspection": "Inspection contingency",
+      "appraisal": "Appraisal",
+      "loan": "Loan contingency",
+      "closing": "Closing"
+    },
+    "status": {
+      "active": "In escrow"
+    },
+    "pctDone": "{{pct}}% of checklist done",
+    "closes": "closes {{date}}",
+    "closesInDays": "closes {{date}} ({{days}}d)",
+    "overdueTasks": "{{count}} overdue checklist items",
+    "overdueTasks_one": "{{count}} overdue checklist item",
+    "overdueSuffix": "overdue",
+    "risk": {
+      "milestoneOverdue": "{{milestone}} passed {{date}} and is still open.",
+      "closingSoon": "Closing in {{days}} days with {{tasks}}.",
+      "closingSoon_one": "Closing in {{days}} day with {{tasks}}."
     }
   }
 }
