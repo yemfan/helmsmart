@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { generate, type GenType } from "@/lib/fal";
+import { CREDIT_COST } from "@/lib/creditCosts";
 import type { Campaign, CampaignPost } from "@/lib/campaigns";
 
 /**
@@ -25,9 +26,16 @@ export class BudgetError extends Error {
   }
 }
 
-/** fal credit cost, weighted by model. */
+/**
+ * fal credit cost, weighted by model. The numbers live in lib/creditCosts so
+ * the public pricing page quotes exactly what we charge here.
+ */
 export function creditCost(type: GenType, hasReference: boolean): number {
-  return type === "video" ? 20 : hasReference ? 2 : 1;
+  return type === "video"
+    ? CREDIT_COST.video
+    : hasReference
+      ? CREDIT_COST.edit
+      : CREDIT_COST.image;
 }
 
 function extFrom(url: string, type: GenType): { ext: string; contentType: string } {
