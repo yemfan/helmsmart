@@ -606,7 +606,10 @@
       "advanced": "高级设置",
       "customAd": "设计自定义广告",
       "comingUp": "即将发布",
-      "latestActivity": "最新动态"
+      "latestActivity": "最新动态",
+      "hints": {
+        "last30": "近 30 天"
+      }
     },
     "accountant": {
       "tabs": {
@@ -1147,6 +1150,49 @@
       "emailFailed": "邮件发送失败。",
       "bulkEmailFailed": "批量邮件发送失败。",
       "generic": "出了点问题。"
+    }
+  },
+  "social": {
+    "weeklyHeading": "本周社交帖子",
+    "notConnected": "尚未连接社交账号 —— 连接后即可自动发布。目前您可以逐条复制帖子。",
+    "postingMode": "发布方式",
+    "modes": {
+      "draftsOnly": "仅生成草稿",
+      "scheduleApprove": "排期，由我审批",
+      "autopilotChecked": "全自动 —— 带事实核查（推荐）",
+      "autopilotNoReview": "全自动 —— 不经审核"
+    },
+    "generate": "生成本周帖子",
+    "generating": "生成中…",
+    "noPosts": "还没有帖子 —— 点击「生成本周帖子」。",
+    "weekOf": "{{week}} 当周",
+    "timely": "时效内容",
+    "evergreen": "常青内容",
+    "previewFinished": "预览成品帖子",
+    "postPreview": "帖子预览",
+    "brandedImage": "品牌配图",
+    "imageIdea": "配图思路：",
+    "useOwnImage": "使用您自己的图片",
+    "uploadImage": "上传图片",
+    "signature": "署名",
+    "copyCaption": "复制文案",
+    "copied": "已复制",
+    "close": "关闭",
+    "errors": {
+      "uploadFailed": "图片上传失败。",
+      "scheduleFailed": "帖子排期失败。",
+      "generateFailed": "帖子生成失败。",
+      "autopilotFailed": "自动发布设置更新失败。",
+      "clipboard": "无法访问剪贴板。"
+    },
+    "newsletter": {
+      "heading": "您的客户通讯"
+    },
+    "modeHelp": {
+      "draftsOnly": "仅生成草稿 —— 不会自动排期，需要您自己安排每条帖子的发布时间。",
+      "review": "系统会写好并按合适时间排期，但在您于发布队列中审批之前不会真正发出。",
+      "assisted": "推荐的省心模式。自动撰写并排期，对每条帖子做事实核查，只发布能够核实的内容 —— 其余的留给您确认。发布前您仍可随时取消。",
+      "auto": "全自动且不经审核 —— 帖子会直接发到您的账号，不做任何事实核查。除非您会逐条自行审阅，否则建议选择「全自动 —— 带事实核查」。"
     }
   }
 }

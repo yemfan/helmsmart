@@ -101,7 +101,7 @@ export default function MarketingAssistantClient({
 
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <AssistantKpiCard label={t("assistants.marketing.stats.scheduled")} value={data.postsScheduled} />
-        <AssistantKpiCard label={t("assistants.marketing.stats.published")} value={data.postsPublished30d} hint="last 30 days" />
+        <AssistantKpiCard label={t("assistants.marketing.stats.published")} value={data.postsPublished30d} hint={t("assistants.marketing.hints.last30")} />
         <AssistantKpiCard label={t("assistants.marketing.stats.plansRunning")} value={data.plansActive} />
         <AssistantKpiCard label={t("assistants.marketing.stats.newLeads")} value={data.newLeadsThisMonth} />
       </div>
