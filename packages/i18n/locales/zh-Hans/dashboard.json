@@ -1286,5 +1286,29 @@
     "searchFailed": "搜索失败",
     "loadSavedFailed": "无法加载已保存的搜索",
     "scheduleFailed": "无法更新发送计划。"
+  },
+  "actionsHub": {
+    "overviewLink": "{{title}}总览",
+    "heading": "{{title}} · 可执行任务",
+    "intro": "您的{{title}}能做的全部事项，选择一项即可开始。",
+    "desc": {
+      "/dashboard/calls": "前台接待接听过的每一通电话，含录音与摘要。",
+      "/dashboard/missed-call": "未接来电，以及 AI 回访短信挽回的客户。",
+      "/dashboard/open-houses": "举办并跟进开放日；到场登记自动转为客源。",
+      "/dashboard/house-search": "为买家运行 AI 房源搜索，并将匹配结果邮件发送。",
+      "/dashboard/deep-report": "买家决策深度报告：估值、投资回报、学区、社区。",
+      "/dashboard/cma": "AI 市场比较分析，为房屋定价。",
+      "/dashboard/presentations": "基于市场比较分析生成的赢取委托演示文稿。",
+      "/dashboard/growth": "业务管道洞察——找出您的下一批机会。",
+      "/dashboard/drafts": "培育客户的消息发送前先行审核。",
+      "/dashboard/marketing/plans": "营销计划与人脉圈变现。",
+      "/dashboard/templates": "可复用的消息与营销活动模板。",
+      "/dashboard/leads/generate": "本周的 AI 客源开发建议。",
+      "/dashboard/lead-source-roi": "哪些客源渠道真正带来了收入。",
+      "/dashboard/transactions/coordinator": "跟踪每笔交易的待办事项，直到成交交割。",
+      "/dashboard/deal-coach": "针对单笔交易的 AI 教练：定价、风险、谈判话术。",
+      "/dashboard/books": "创建并跟踪发票。",
+      "/dashboard/expenses": "记录并归类支出。"
+    }
   }
 }

@@ -1286,5 +1286,29 @@
     "searchFailed": "Search failed",
     "loadSavedFailed": "Failed to load saved search",
     "scheduleFailed": "Couldn't update the schedule."
+  },
+  "actionsHub": {
+    "overviewLink": "{{title}} overview",
+    "heading": "{{title}} · Actions",
+    "intro": "Everything your {{title}} can do. Pick one to get started.",
+    "desc": {
+      "/dashboard/calls": "Every call the receptionist answered, with recordings and summaries.",
+      "/dashboard/missed-call": "Missed calls and the AI text-backs that recovered them.",
+      "/dashboard/open-houses": "Host and follow up on open houses; sign-ins become leads.",
+      "/dashboard/house-search": "Run an AI home search for a buyer and email the matches.",
+      "/dashboard/deep-report": "Buyer-decision deep report: value, ROI, schools, neighborhood.",
+      "/dashboard/cma": "AI comparative market analysis to price a home.",
+      "/dashboard/presentations": "Win-the-listing pitch deck, built from the CMA.",
+      "/dashboard/growth": "Pipeline insights — where your next opportunities are.",
+      "/dashboard/drafts": "Approve nurture messages before they send.",
+      "/dashboard/marketing/plans": "Marketing plans and sphere monetization.",
+      "/dashboard/templates": "Reusable message and campaign templates.",
+      "/dashboard/leads/generate": "AI lead-generation ideas for this week.",
+      "/dashboard/lead-source-roi": "Which lead sources actually produce revenue.",
+      "/dashboard/transactions/coordinator": "Track every deal's tasks to the closing table.",
+      "/dashboard/deal-coach": "Per-deal AI coach: pricing, risk, negotiation scripts.",
+      "/dashboard/books": "Create and track invoices.",
+      "/dashboard/expenses": "Log and categorize expenses."
+    }
   }
 }
