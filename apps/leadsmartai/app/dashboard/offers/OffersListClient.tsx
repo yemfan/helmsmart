@@ -39,7 +39,7 @@ function formatMoney(n: number | null | undefined): string {
   }).format(n);
 }
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, locale?: string): string {
   return new Date(iso).toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
@@ -154,7 +154,7 @@ export function OffersListClient({
                 </Link>
               </>
             ) : (
-              "Buyer-side offer tracker — drafts, submissions, counters, outcomes."
+              t("offers.subtitle")
             )}
           </p>
         </div>
@@ -164,7 +164,7 @@ export function OffersListClient({
             className="rounded-lg bg-[#0072ce] px-3 py-2 text-sm font-medium text-white hover:bg-[#005fa8]"
             title="Get AI-recommended terms (price, contingencies, escalation) + a cover letter for a new buyer offer."
           >
-            ✨ Build with AI
+            ✨ {t("offers.buildWithAi")}
           </Link>
           <Link
             href={
@@ -175,14 +175,14 @@ export function OffersListClient({
             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
             title="Paste an offer document — we'll parse the price, contingencies, and dates with AI."
           >
-            ⬆ Upload offer
+            ⬆ {t("offers.uploadOffer")}
           </Link>
           <Link
             href="/dashboard/contracts/review"
             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
             title="AI plain-English review of a purchase contract — key terms, deadlines, risk flags, and blank fields. Not legal advice."
           >
-            🔍 Review contract
+            🔍 {t("offers.reviewContract")}
           </Link>
           <Link
             href={
@@ -192,18 +192,18 @@ export function OffersListClient({
             }
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
           >
-            + New offer
+            + {t("offers.newOffer")}
           </Link>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-        <Stat label="Active" value={String(stats.active)} tone="blue" />
-        <Stat label="Won" value={String(stats.won)} tone="green" />
-        <Stat label="Lost" value={String(stats.lost)} tone="gray" />
-        <Stat label="Pipeline" value={formatMoney(stats.pipelineValue)} tone="blue" />
+        <Stat label={t("offers.stats.active")} value={String(stats.active)} tone="blue" />
+        <Stat label={t("offers.stats.won")} value={String(stats.won)} tone="green" />
+        <Stat label={t("offers.stats.lost")} value={String(stats.lost)} tone="gray" />
+        <Stat label={t("offers.stats.pipeline")} value={formatMoney(stats.pipelineValue)} tone="blue" />
         <Stat
-          label="Win rate"
+          label={t("offers.stats.winRate")}
           value={stats.winRate == null ? "—" : `${stats.winRate}%`}
           tone={stats.winRate != null && stats.winRate >= 50 ? "green" : "gray"}
         />
@@ -284,7 +284,7 @@ export function OffersListClient({
                         href={`/dashboard/transactions/${o.transaction_id}`}
                         className="ml-2 text-[11px] text-blue-600 hover:underline"
                       >
-                        → deal
+                        {t("offers.toDeal")}
                       </Link>
                     ) : null}
                   </td>

@@ -125,17 +125,17 @@ export default function DigitalTwinPanel() {
       });
       const b = (await res.json().catch(() => ({}))) as AvatarResp;
       if (!res.ok || !b.ok) {
-        setAvError(b.error ?? "Couldn't post the video.");
+        setAvError(b.error ?? t("twin.errors.postFailed"));
         return;
       }
       if ((b.scheduled ?? 0) > 0) {
-        setAvPublishMsg(`Queued to ${b.scheduled} account${b.scheduled === 1 ? "" : "s"} — posting within a few minutes.`);
+        setAvPublishMsg(t("twin.queued", { count: b.scheduled }));
       } else {
         setAvNeedsConnect(true);
-        setAvPublishMsg(b.error ?? "No connected video-capable accounts yet.");
+        setAvPublishMsg(b.error ?? t("twin.errors.noAccounts"));
       }
     } catch (e) {
-      setAvError(e instanceof Error ? e.message : "Network error.");
+      setAvError(e instanceof Error ? e.message : t("twin.errors.network"));
     } finally {
       setAvBusy(null);
     }
@@ -191,7 +191,7 @@ export default function DigitalTwinPanel() {
       });
       const b = (await res.json().catch(() => ({}))) as AvatarResp;
       if (!res.ok || !b.ok) {
-        setAvError(b.error ?? "Something went wrong.");
+        setAvError(b.error ?? t("twin.errors.generic"));
         return;
       }
       if (action === "draft" && b.script) setAvScript(b.script);
@@ -203,7 +203,7 @@ export default function DigitalTwinPanel() {
         setAv((s) => (s ? { ...s, videoUrl: b.videoUrl ?? s.videoUrl } : s));
       }
     } catch (e) {
-      setAvError(e instanceof Error ? e.message : "Network error.");
+      setAvError(e instanceof Error ? e.message : t("twin.errors.network"));
     } finally {
       setAvBusy(null);
     }
@@ -230,7 +230,7 @@ export default function DigitalTwinPanel() {
       });
       const b = (await res.json().catch(() => ({}))) as VoiceCloneResp;
       if (!res.ok || !b.ok) {
-        setVcError(b.error ?? "Something went wrong.");
+        setVcError(b.error ?? t("twin.errors.generic"));
         // Refresh so a failed clone shows its stored status/error.
         await loadVoice();
         return;
@@ -239,7 +239,7 @@ export default function DigitalTwinPanel() {
       // A newly-ready clone unlocks the avatar section — refresh it without a reload.
       await loadAvatar();
     } catch (e) {
-      setVcError(e instanceof Error ? e.message : "Network error.");
+      setVcError(e instanceof Error ? e.message : t("twin.errors.network"));
     } finally {
       setVcBusy(null);
     }
@@ -278,16 +278,16 @@ export default function DigitalTwinPanel() {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || uploading) return;
-    if (!file.type.startsWith("video/")) return setError("Please choose a video file.");
+    if (!file.type.startsWith("video/")) return setError(t("twin.errors.chooseVideo"));
     setError(null);
     setUploading(true);
     try {
       const path = await uploadViaStorage(file, "agent_intro_video");
       setVideoPath(path);
       setHasVideo(true);
-      setNote("Video uploaded — now build your profile.");
+      setNote(t("twin.videoUploaded"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed.");
+      setError(err instanceof Error ? err.message : t("twin.errors.uploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -302,8 +302,8 @@ export default function DigitalTwinPanel() {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file || photoUploading) return;
-    if (!file.type.startsWith("image/")) return setError("Please choose an image file.");
-    if (!consent) return setError("Please check the consent box first.");
+    if (!file.type.startsWith("image/")) return setError(t("twin.errors.chooseImage"));
+    if (!consent) return setError(t("twin.errors.consentFirst"));
     setError(null);
     setPhotoUploading(true);
     try {
@@ -315,14 +315,14 @@ export default function DigitalTwinPanel() {
       });
       const b = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (!res.ok || !b.ok) {
-        setError(b.error ?? "Couldn't save your photo.");
+        setError(b.error ?? t("twin.errors.savePhotoFailed"));
         return;
       }
       setHasPortrait(true);
       setAv((prev) => (prev ? { ...prev, hasPortrait: true } : prev));
-      setNote("Photo saved — pick “Lifelike avatar” below to have it speak.");
+      setNote(t("twin.photoSaved"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed.");
+      setError(err instanceof Error ? err.message : t("twin.errors.uploadFailed"));
     } finally {
       setPhotoUploading(false);
     }
@@ -330,8 +330,8 @@ export default function DigitalTwinPanel() {
 
   async function build() {
     if (building) return;
-    if (!consent) return setError("Please check the consent box first.");
-    if (!videoPath) return setError("Upload your intro video first.");
+    if (!consent) return setError(t("twin.errors.consentFirst"));
+    if (!videoPath) return setError(t("twin.errors.uploadIntroFirst"));
     setBuilding(true);
     setError(null);
     setNote("Transcribing + building your profile… (a minute or two)");
@@ -343,15 +343,15 @@ export default function DigitalTwinPanel() {
       });
       const b = (await res.json().catch(() => ({}))) as { ok?: boolean; profile?: Profile; error?: string };
       if (!res.ok || !b.ok || !b.profile) {
-        setError(b.error ?? "Couldn't build your profile.");
+        setError(b.error ?? t("twin.errors.buildFailed"));
         setNote(null);
         return;
       }
       setProfile({ ...EMPTY, ...b.profile });
       setStatus("ready");
-      setNote("Your brand profile is ready — edit anything, then Save.");
+      setNote(t("twin.profileReady"));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Network error.");
+      setError(e instanceof Error ? e.message : t("twin.errors.network"));
       setNote(null);
     } finally {
       setBuilding(false);
@@ -369,10 +369,10 @@ export default function DigitalTwinPanel() {
         body: JSON.stringify({ profile }),
       });
       const b = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
-      if (!res.ok || !b.ok) setError(b.error ?? "Couldn't save.");
-      else setNote("Saved.");
+      if (!res.ok || !b.ok) setError(b.error ?? t("twin.errors.saveFailed"));
+      else setNote(t("twin.errors.saved"));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Network error.");
+      setError(e instanceof Error ? e.message : t("twin.errors.network"));
     } finally {
       setSaving(false);
     }
@@ -382,7 +382,7 @@ export default function DigitalTwinPanel() {
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="text-base font-semibold text-slate-900">Your digital twin</h2>
+      <h2 className="text-base font-semibold text-slate-900">{t("twin.heading")}</h2>
       <p className="mt-0.5 text-sm text-slate-500">
         Record a short intro video (talk to camera — who you are, your market, what you specialize in). AI turns it into
         a brand profile that personalizes all your AI-written marketing. Voice + avatar come later.
@@ -410,9 +410,9 @@ export default function DigitalTwinPanel() {
           onClick={() => fileRef.current?.click()}
           disabled={uploading || !consent}
           className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-          title={consent ? "Upload your intro video" : "Check the consent box first"}
+          title={consent ? t("twin.uploadIntroTitle") : t("twin.consentFirst")}
         >
-          {uploading ? "Uploading…" : hasVideo ? "Replace intro video" : "Upload intro video"}
+          {uploading ? "Uploading…" : hasVideo ? t("twin.replaceIntro") : t("twin.uploadIntro")}
         </button>
         <input ref={fileRef} type="file" accept="video/*" onChange={onPickVideo} className="hidden" />
         <button
@@ -420,9 +420,9 @@ export default function DigitalTwinPanel() {
           onClick={() => photoRef.current?.click()}
           disabled={photoUploading || !consent}
           className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-          title={consent ? "Use a photo instead of filming yourself" : "Check the consent box first"}
+          title={consent ? t("twin.usePhotoTitle") : t("twin.consentFirst")}
         >
-          {photoUploading ? "Uploading…" : hasPortrait ? "Replace photo" : "Use a photo instead"}
+          {photoUploading ? "Uploading…" : hasPortrait ? t("twin.replacePhoto") : t("twin.usePhoto")}
         </button>
         <input ref={photoRef} type="file" accept="image/*" onChange={onPickPhoto} className="hidden" />
         <button
@@ -431,9 +431,9 @@ export default function DigitalTwinPanel() {
           disabled={building || !consent || (!videoPath && !hasVideo)}
           className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
         >
-          {building ? "Building…" : status === "ready" ? "Rebuild profile" : "Build my profile"}
+          {building ? "Building…" : status === "ready" ? t("twin.rebuildProfile") : t("twin.buildProfile")}
         </button>
-        {status === "processing" ? <span className="text-[11px] text-slate-500">Processing…</span> : null}
+        {status === "processing" ? <span className="text-[11px] text-slate-500">{t("twin.processing")}</span> : null}
       </div>
 
       {note ? <p className="mt-2 text-[12px] text-slate-600">{note}</p> : null}
@@ -443,21 +443,21 @@ export default function DigitalTwinPanel() {
       {(status === "ready" || profile.bio || profile.tagline) && (
         <div className="mt-4 space-y-3 border-t border-slate-100 pt-4">
           <label className="block">
-            <span className="text-xs font-medium text-slate-600">Bio</span>
+            <span className="text-xs font-medium text-slate-600">{t("twin.bio")}</span>
             <textarea value={profile.bio} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} rows={3} className={`${field} resize-y`} />
           </label>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
-              <span className="text-xs font-medium text-slate-600">Market</span>
+              <span className="text-xs font-medium text-slate-600">{t("twin.market")}</span>
               <input value={profile.market} onChange={(e) => setProfile({ ...profile, market: e.target.value })} className={field} />
             </label>
             <label className="block">
-              <span className="text-xs font-medium text-slate-600">Tone / voice</span>
+              <span className="text-xs font-medium text-slate-600">{t("twin.tone")}</span>
               <input value={profile.tone} onChange={(e) => setProfile({ ...profile, tone: e.target.value })} className={field} />
             </label>
           </div>
           <label className="block">
-            <span className="text-xs font-medium text-slate-600">Specialties (one per line)</span>
+            <span className="text-xs font-medium text-slate-600">{t("twin.specialties")}</span>
             <textarea
               value={profile.specialties.join("\n")}
               onChange={(e) => setProfile({ ...profile, specialties: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean).slice(0, 6) })}
@@ -466,12 +466,12 @@ export default function DigitalTwinPanel() {
             />
           </label>
           <label className="block">
-            <span className="text-xs font-medium text-slate-600">Tagline</span>
+            <span className="text-xs font-medium text-slate-600">{t("twin.tagline")}</span>
             <input value={profile.tagline} onChange={(e) => setProfile({ ...profile, tagline: e.target.value })} className={field} />
           </label>
           <div className="flex justify-end">
             <button type="button" onClick={() => void save()} disabled={saving} className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50">
-              {saving ? "Saving…" : "Save profile"}
+              {saving ? "Saving…" : t("twin.saveProfile")}
             </button>
           </div>
         </div>
@@ -480,7 +480,7 @@ export default function DigitalTwinPanel() {
       {/* Phase B — voice clone */}
       <div className="mt-5 space-y-3 border-t border-slate-100 pt-5">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-slate-900">Your AI voice</h3>
+          <h3 className="text-sm font-semibold text-slate-900">{t("twin.aiVoice")}</h3>
           <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
             Beta
           </span>
@@ -512,7 +512,7 @@ export default function DigitalTwinPanel() {
         </label>
 
         {vc && vc.consent && !vc.hasIntroVideo ? (
-          <p className="text-[12px] text-slate-500">Build your profile above first — that saves the intro video your voice is cloned from.</p>
+          <p className="text-[12px] text-slate-500">{t("twin.buildFirst")}</p>
         ) : null}
 
         <div className="flex flex-wrap items-center gap-2">
@@ -521,13 +521,13 @@ export default function DigitalTwinPanel() {
             onClick={() => void voiceAction("start", { clean: avPremium && vcClean })}
             disabled={vcBusy !== null || !vc?.configured || !vc?.consent || !vc?.hasIntroVideo}
             className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
-            title={!vc?.consent ? "Check the voice consent box first" : !vc?.hasIntroVideo ? "Record + build your intro video first" : "Clone my voice"}
+            title={!vc?.consent ? t("twin.cloneVoiceTitle") : !vc?.hasIntroVideo ? "Record + build your intro video first" : t("twin.cloneVoice")}
           >
             {vcBusy === "start"
               ? "Cloning… (up to a minute)"
               : vc?.hasClone
-                ? "Re-clone my voice"
-                : "Clone my voice"}
+                ? t("twin.recloneVoice")
+                : t("twin.cloneVoice")}
           </button>
 
           <label className={`mt-2 flex items-center gap-2 text-xs ${avPremium ? "text-slate-700" : "text-slate-400"}`}>
@@ -540,7 +540,7 @@ export default function DigitalTwinPanel() {
             />
             <span className="inline-flex flex-wrap items-center gap-1">
               🎙️ Clean my voice
-              <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">Premium</span>
+              <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">{t("twin.premium")}</span>
               {avPremium ? (
                 <span className="text-slate-400">— denoise the source for a sharper clone</span>
               ) : (
@@ -554,9 +554,9 @@ export default function DigitalTwinPanel() {
           {vc?.status === "ready" && vc.hasClone ? (
             <span className="text-[12px] font-medium text-emerald-700">✓ Voice ready</span>
           ) : vc?.status === "processing" ? (
-            <span className="text-[12px] text-slate-500">Processing…</span>
+            <span className="text-[12px] text-slate-500">{t("twin.processing")}</span>
           ) : vc?.status === "failed" ? (
-            <span className="text-[12px] text-rose-700">Clone failed</span>
+            <span className="text-[12px] text-rose-700">{t("twin.cloneFailed")}</span>
           ) : null}
         </div>
 
@@ -570,7 +570,7 @@ export default function DigitalTwinPanel() {
                 disabled={vcBusy !== null}
                 className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
               >
-                {vcBusy === "acknowledge" ? "Saving…" : "This is my voice — confirm"}
+                {vcBusy === "acknowledge" ? "Saving…" : t("twin.confirmVoice")}
               </button>
             ) : (
               <label className="flex items-center gap-2 text-sm">
@@ -580,7 +580,7 @@ export default function DigitalTwinPanel() {
                   disabled={vcBusy !== null}
                   onChange={(e) => void voiceAction("activate", { on: e.target.checked })}
                 />
-                <span className="text-slate-700">Answer phone calls in my cloned voice</span>
+                <span className="text-slate-700">{t("twin.answerCalls")}</span>
               </label>
             )}
           </div>
@@ -594,7 +594,7 @@ export default function DigitalTwinPanel() {
       {/* Phase C — talking avatar */}
       <div className="mt-5 space-y-3 border-t border-slate-100 pt-5">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-slate-900">AI avatar video</h3>
+          <h3 className="text-sm font-semibold text-slate-900">{t("twin.avatarVideo")}</h3>
           <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
             Beta
           </span>
@@ -606,7 +606,7 @@ export default function DigitalTwinPanel() {
         </p>
         {av?.hasPortrait ? (
           <p className="text-[12px] text-slate-500">
-            Your uploaded photo is the face for <strong>Lifelike avatar</strong> renders. Lip-sync renders still use
+            Your uploaded photo is the face for <strong>{t("twin.lifelikeAvatar")}</strong> renders. Lip-sync renders still use
             your intro video, since they sync onto real footage.
           </p>
         ) : null}
@@ -625,11 +625,11 @@ export default function DigitalTwinPanel() {
           <>
             <div className="flex flex-wrap items-end gap-2">
               <label className="flex-1 min-w-[200px]">
-                <span className="text-xs font-medium text-slate-600">Topic (optional)</span>
+                <span className="text-xs font-medium text-slate-600">{t("twin.topic")}</span>
                 <input
                   value={avTopic}
                   onChange={(e) => setAvTopic(e.target.value)}
-                  placeholder="e.g. a new listing, market update, just introduce myself"
+                  placeholder={t("twin.topicPlaceholder")}
                   className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                 />
               </label>
@@ -661,12 +661,12 @@ export default function DigitalTwinPanel() {
                 disabled={avBusy !== null}
                 className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
               >
-                {avBusy === "draft" ? "Writing…" : "Draft script"}
+                {avBusy === "draft" ? "Writing…" : t("twin.draftScript")}
               </button>
             </div>
 
             <label className="block">
-              <span className="text-xs font-medium text-slate-600">Script (edit freely)</span>
+              <span className="text-xs font-medium text-slate-600">{t("twin.script")}</span>
               <textarea
                 value={avScript}
                 onChange={(e) => {
@@ -676,13 +676,13 @@ export default function DigitalTwinPanel() {
                   setAvAudioPath(null);
                 }}
                 rows={4}
-                placeholder="What you'll say to camera…"
+                placeholder={t("twin.scriptPlaceholder")}
                 className="mt-1 w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
               />
             </label>
 
             <label className="block">
-              <span className="text-xs font-medium text-slate-600">Voice</span>
+              <span className="text-xs font-medium text-slate-600">{t("twin.voice")}</span>
               <select
                 value={avVoice}
                 onChange={(e) => {
@@ -696,7 +696,7 @@ export default function DigitalTwinPanel() {
                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm disabled:opacity-50"
               >
                 <option value={CLONE_VOICE_ID} disabled={!av.voiceReady}>
-                  {av.voiceReady ? "My cloned voice" : "My cloned voice — clone it above first"}
+                  {av.voiceReady ? t("twin.clonedVoice") : t("twin.clonedVoiceLocked")}
                 </option>
                 {AVATAR_PRESET_VOICES.map((v) => (
                   <option key={v.id} value={v.id}>{`${v.label} — ${v.hint}`}</option>
@@ -711,13 +711,13 @@ export default function DigitalTwinPanel() {
                 disabled={avBusy !== null || !avScript.trim()}
                 className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
               >
-                {avBusy === "preview" ? "Synthesizing…" : "Preview voice (free)"}
+                {avBusy === "preview" ? "Synthesizing…" : t("twin.previewVoice")}
               </button>
               <button
                 type="button"
                 onClick={() => void avatarAction("render")}
                 disabled={avBusy !== null || !avAudioPath}
-                title={avAudioPath ? "Render the talking-avatar video" : "Preview the voice first"}
+                title={avAudioPath ? t("twin.renderTitle") : t("twin.previewFirst")}
                 className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
               >
                 {avBusy === "render" ? "Rendering… (1–2 min)" : "Generate video (uses credits)"}
@@ -748,7 +748,7 @@ export default function DigitalTwinPanel() {
               />
               <span className="inline-flex flex-wrap items-center gap-1">
                 ✨ Sharper video
-                <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">Premium</span>
+                <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">{t("twin.premium")}</span>
                 {avPremium ? (
                   <span className="text-slate-400">— upscales &amp; restores the render</span>
                 ) : (
@@ -769,7 +769,7 @@ export default function DigitalTwinPanel() {
               />
               <span className="inline-flex flex-wrap items-center gap-1">
                 🧑‍💼 Lifelike avatar
-                <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">Premium</span>
+                <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">{t("twin.premium")}</span>
                 {avPremium ? (
                   <span className="text-slate-400">— photo-to-avatar with head motion (vs lip-sync)</span>
                 ) : (
@@ -798,12 +798,12 @@ export default function DigitalTwinPanel() {
                 {/* Post straight to social */}
                 <div className="mt-1 space-y-2 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
                   <label className="block">
-                    <span className="text-xs font-medium text-slate-600">Caption (optional)</span>
+                    <span className="text-xs font-medium text-slate-600">{t("twin.caption")}</span>
                     <textarea
                       value={avCaption}
                       onChange={(e) => setAvCaption(e.target.value)}
                       rows={2}
-                      placeholder="Leave blank to auto-write a caption from your script."
+                      placeholder={t("twin.captionPlaceholder")}
                       className="mt-1 w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                     />
                   </label>
@@ -814,7 +814,7 @@ export default function DigitalTwinPanel() {
                       disabled={avBusy !== null}
                       className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
                     >
-                      {avBusy === "publish" ? "Posting…" : "Post to Facebook / Instagram / LinkedIn"}
+                      {avBusy === "publish" ? "Posting…" : t("twin.postToSocial")}
                     </button>
                     {avNeedsConnect ? (
                       <a href="/connections" className="text-[12px] font-medium text-violet-700 underline underline-offset-2">

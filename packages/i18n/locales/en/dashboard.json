@@ -409,7 +409,15 @@
     "markAttended": "Mark attended",
     "cancel": "Cancel showing",
     "submitOffer": "Submit offer",
-    "captureFeedback": "Capture feedback"
+    "captureFeedback": "Capture feedback",
+    "subtitle": "Buyer-side property visits — schedule, track, capture feedback.",
+    "status": {
+      "scheduled": "Scheduled",
+      "attended": "Attended",
+      "cancelled": "Cancelled",
+      "no_show": "No show"
+    },
+    "filterCancelled": "Cancelled / no-show"
   },
   "offers": {
     "title": "Offers",
@@ -437,7 +445,20 @@
     "modify": "Modify",
     "markAccepted": "Mark accepted",
     "markDeclined": "Mark declined",
-    "modifyOffer": "Modify offer"
+    "modifyOffer": "Modify offer",
+    "subtitle": "Buyer-side offer tracker — drafts, submissions, counters, outcomes.",
+    "buildWithAi": "Build with AI",
+    "uploadOffer": "Upload offer",
+    "reviewContract": "Review contract",
+    "newOffer": "New offer",
+    "stats": {
+      "active": "Active",
+      "won": "Won",
+      "lost": "Lost",
+      "pipeline": "Pipeline",
+      "winRate": "Win rate"
+    },
+    "toDeal": "→ deal"
   },
   "transactions": {
     "title": "Transactions",
@@ -650,7 +671,17 @@
       "downgrade": "Downgrade",
       "portalFailed": "Couldn't open the billing portal.",
       "checkoutFailed": "Checkout couldn't start.",
-      "planChanged": "Plan changed."
+      "planChanged": "Plan changed.",
+      "subtitle": "Everything's included — you only spend credits on calls, video, and image generation.",
+      "payg": "Pay-as-you-go",
+      "paygHelp": "No subscription — buy credits any time, everything's included.",
+      "monthlyHelp": "A credit allotment every month at the best per-credit rate. One seat, everything included.",
+      "teamPrompt": "Running a team?",
+      "topUpHelp": "Need more this month? Buy credits any time — no commitment. They never expire.",
+      "creditsUnit": "credits",
+      "buy": "Buy",
+      "manageBilling": "Manage billing & invoices →",
+      "opening": "Opening…"
     },
     "salesModel": {
       "title": "Sales Model"
@@ -659,7 +690,8 @@
       "tabs": {
         "open": "Open",
         "done": "Done",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "all": "All"
       },
       "columns": {
         "task": "Task",
@@ -667,7 +699,7 @@
         "due": "Due",
         "actions": "Actions"
       },
-      "applyPlaybook": "Apply playbook",
+      "applyPlaybook": "+ Apply playbook",
       "markedComplete": "Marked complete.",
       "reopened": "Reopened.",
       "cancelled": "Cancelled.",
@@ -688,7 +720,10 @@
       "writeOffer": "Write an offer",
       "linkedTransaction": "Linked transaction",
       "linkedOpenHouse": "Linked open house",
-      "adHocTasks": "Ad-hoc tasks"
+      "adHocTasks": "Ad-hoc tasks",
+      "title": "Playbooks",
+      "subtitle": "Curated checklists for common workflows. Apply them to transactions, open houses, or as standalone reminders.",
+      "doneRecent": "Done (last 7d)"
     },
     "tools": {
       "title": "Tools",
@@ -911,6 +946,69 @@
     "cta": "Upgrade"
   },
   "twin": {
-    "scriptLanguage": "Script language"
+    "scriptLanguage": "Script language",
+    "heading": "Your digital twin",
+    "consent": "This video and photo are of me, and I consent to CloseBoss using my likeness and voice to generate marketing on my behalf. I can revoke this anytime.",
+    "uploadIntro": "Upload intro video",
+    "replaceIntro": "Replace intro video",
+    "uploadIntroTitle": "Upload your intro video",
+    "consentFirst": "Check the consent box first",
+    "usePhoto": "Use a photo instead",
+    "replacePhoto": "Replace photo",
+    "usePhotoTitle": "Use a photo instead of filming yourself",
+    "buildProfile": "Build my profile",
+    "rebuildProfile": "Rebuild profile",
+    "processing": "Processing…",
+    "bio": "Bio",
+    "market": "Market",
+    "tone": "Tone / voice",
+    "specialties": "Specialties (one per line)",
+    "tagline": "Tagline",
+    "saveProfile": "Save profile",
+    "profileReady": "Your brand profile is ready — edit anything, then Save.",
+    "videoUploaded": "Video uploaded — now build your profile.",
+    "photoSaved": "Photo saved — pick “Lifelike avatar” below to have it speak.",
+    "aiVoice": "Your AI voice",
+    "buildFirst": "Build your profile above first — that saves the intro video your voice is cloned from.",
+    "cloneVoice": "Clone my voice",
+    "recloneVoice": "Re-clone my voice",
+    "cloneVoiceTitle": "Check the voice consent box first",
+    "cloneFailed": "Clone failed",
+    "confirmVoice": "This is my voice — confirm",
+    "answerCalls": "Answer phone calls in my cloned voice",
+    "avatarVideo": "AI avatar video",
+    "lifelikeAvatar": "Lifelike avatar",
+    "sharperVideo": "Sharper video",
+    "premium": "Premium",
+    "topic": "Topic (optional)",
+    "topicPlaceholder": "e.g. a new listing, market update, just introduce myself",
+    "draftScript": "Draft script",
+    "script": "Script (edit freely)",
+    "scriptPlaceholder": "What you'll say to camera…",
+    "voice": "Voice",
+    "clonedVoice": "My cloned voice",
+    "clonedVoiceLocked": "My cloned voice — clone it above first",
+    "previewVoice": "Preview voice (free)",
+    "renderTitle": "Render the talking-avatar video",
+    "previewFirst": "Preview the voice first",
+    "caption": "Caption (optional)",
+    "captionPlaceholder": "Leave blank to auto-write a caption from your script.",
+    "postToSocial": "Post to Facebook / Instagram / LinkedIn",
+    "errors": {
+      "chooseVideo": "Please choose a video file.",
+      "chooseImage": "Please choose an image file.",
+      "consentFirst": "Please check the consent box first.",
+      "uploadIntroFirst": "Upload your intro video first.",
+      "uploadFailed": "Upload failed.",
+      "savePhotoFailed": "Couldn't save your photo.",
+      "buildFailed": "Couldn't build your profile.",
+      "saveFailed": "Couldn't save.",
+      "saved": "Saved.",
+      "network": "Network error.",
+      "generic": "Something went wrong.",
+      "postFailed": "Couldn't post the video.",
+      "noAccounts": "No connected video-capable accounts yet."
+    },
+    "queued": "Queued to {{count}} account(s) — posting within a few minutes."
   }
 }

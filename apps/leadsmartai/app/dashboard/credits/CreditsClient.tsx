@@ -142,7 +142,7 @@ export default function CreditsClient() {
               </p>
               <p className="mt-0.5 text-xs text-gray-500">
                 {plan.planId === null ? (
-                  <>No subscription — buy credits any time, everything&apos;s included.</>
+                  <>{tr("more.credits.paygHelp")}</>
                 ) : plan.cancelAtPeriodEnd && plan.renewsAt ? (
                   <>Ends {fmtDate(plan.renewsAt)} — credits you already have stay yours.</>
                 ) : (
@@ -181,7 +181,7 @@ export default function CreditsClient() {
       <section>
         <h2 className="mb-1 text-lg font-bold text-brand-text">{tr("more.credits.monthlyPlans")}</h2>
         <p className="mb-4 text-sm text-gray-500">
-          A credit allotment every month at the best per-credit rate. One seat, everything included.
+          {tr("more.credits.monthlyHelp")}
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {CREDIT_TIERS.map((t) => {
@@ -233,7 +233,7 @@ export default function CreditsClient() {
           </p>
         )}
         <p className="mt-3 text-xs text-gray-500">
-          Running a team?{" "}
+          {tr("more.credits.teamPrompt")}{" "}
           <a href="/contact?topic=team" className="font-medium underline" style={{ color: BRAND }}>
             Contact us about Brokerage
           </a>{" "}
@@ -245,13 +245,13 @@ export default function CreditsClient() {
       <section>
         <h2 className="mb-1 text-lg font-bold text-brand-text">{tr("more.credits.topUpPacks")}</h2>
         <p className="mb-4 text-sm text-gray-500">
-          Need more this month? Buy credits any time — no commitment. They never expire.
+          {tr("more.credits.topUpHelp")}
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {CREDIT_PACKS.map((p) => (
             <div key={p.id} className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <p className="text-2xl font-extrabold text-brand-text">{p.credits.toLocaleString()}</p>
-              <p className="text-xs text-gray-500">credits</p>
+              <p className="text-xs text-gray-500">{tr("more.credits.creditsUnit")}</p>
               <p className="mt-3 flex-1 text-lg font-bold text-brand-text">${p.priceUsd}</p>
               <button
                 type="button"
@@ -276,7 +276,7 @@ export default function CreditsClient() {
           className="text-xs font-medium underline hover:no-underline disabled:opacity-60"
           style={{ color: BRAND }}
         >
-          {portalBusy ? "Opening…" : "Manage billing & invoices →"}
+          {portalBusy ? tr("more.credits.opening") : tr("more.credits.manageBilling")}
         </button>
       </div>
     </div>

@@ -10,11 +10,12 @@ import type { ShowingListItem, ShowingStatus } from "@/lib/showings/types";
 
 type Filter = "all" | "upcoming" | "attended" | "cancelled";
 
-const STATUS_LABEL: Record<ShowingStatus, string> = {
-  scheduled: "Scheduled",
-  attended: "Attended",
-  cancelled: "Cancelled",
-  no_show: "No show",
+/** Keys into `dashboard:showings.status.*` — module scope has no hook. */
+const STATUS_KEY: Record<ShowingStatus, string> = {
+  scheduled: "scheduled",
+  attended: "attended",
+  cancelled: "cancelled",
+  no_show: "no_show",
 };
 
 const STATUS_BADGE: Record<ShowingStatus, string> = {
@@ -129,7 +130,7 @@ export function ShowingsListClient({
                 </Link>
               </>
             ) : (
-              "Buyer-side property visits — schedule, track, capture feedback."
+              t("showings.subtitle")
             )}
           </p>
         </div>
@@ -168,7 +169,7 @@ export function ShowingsListClient({
           <option value="all">{t("showings.filters.all")}</option>
           <option value="upcoming">{t("showings.filters.upcoming")}</option>
           <option value="attended">{t("showings.filters.attended")}</option>
-          <option value="cancelled">Cancelled / no-show</option>
+          <option value="cancelled">{t("showings.filterCancelled")}</option>
         </select>
       </div>
 
@@ -222,7 +223,7 @@ export function ShowingsListClient({
                     <span
                       className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[s.status]}`}
                     >
-                      {STATUS_LABEL[s.status]}
+                      {t(`showings.status.${STATUS_KEY[s.status]}`)}
                     </span>
                   </td>
                   <td className="px-3 py-2">
