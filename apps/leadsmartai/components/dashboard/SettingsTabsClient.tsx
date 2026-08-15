@@ -73,7 +73,7 @@ export default function SettingsTabsClient({
   return (
     <>
       <nav
-        aria-label="Settings sections"
+        aria-label={t("tips.settingsSections")}
         className="sticky top-0 z-10 -mx-4 mb-6 border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 sm:-mx-6"
       >
         <div

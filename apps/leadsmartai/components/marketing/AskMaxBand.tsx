@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 export function AskMaxBand() {
   const { t } = useTranslation("web_marketing");
   return (
-    <section aria-label="Ask Max" className="px-4 pb-6 sm:px-8">
+    <section aria-label={t("aria.askMax")} className="px-4 pb-6 sm:px-8">
       <div className="mx-auto max-w-6xl overflow-hidden rounded-3xl bg-[#0B1F44] px-6 py-10 shadow-xl ring-1 ring-white/10 sm:px-10 md:py-12">
         <div className="flex flex-col items-center gap-6 text-center md:flex-row md:justify-between md:gap-8 md:text-left">
           <div className="flex items-center gap-5">

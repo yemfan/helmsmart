@@ -289,14 +289,14 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
           <Link
             href={`/dashboard/transactions/${txn.id}/offers`}
             className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-100"
-            title="Compare offers + net-to-seller"
+            title={t("tips.compareOffers")}
           >
             📬 Offers
           </Link>
           <Link
             href="/dashboard/seller-presentation"
             className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-100"
-            title="Open the CMA + pitch builder"
+            title={t("tips.openCma")}
           >
             🎯 Presentation
           </Link>

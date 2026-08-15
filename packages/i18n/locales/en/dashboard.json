@@ -497,7 +497,9 @@
       "pipeline": "Pipeline",
       "winRate": "Win rate"
     },
-    "toDeal": "→ deal"
+    "toDeal": "→ deal",
+    "noneWaived": "None (all waived)",
+    "newPriceOptional": "New price (optional)"
   },
   "transactions": {
     "title": "Transactions",
@@ -1280,7 +1282,7 @@
     "limitReached": "Daily limit reached — resets at midnight UTC.",
     "search": "Search",
     "searching": "Searching…",
-    "savedSearches": "+ Saved searches by contact",
+    "savedSearches": "Saved searches",
     "autoSend": "Auto-send to buyer",
     "off": "Off",
     "daily": "Daily",
@@ -1288,7 +1290,14 @@
     "priceOnRequest": "Price on request",
     "searchFailed": "Search failed",
     "loadSavedFailed": "Failed to load saved search",
-    "scheduleFailed": "Couldn't update the schedule."
+    "scheduleFailed": "Couldn't update the schedule.",
+    "howIReadThis": "How I read this",
+    "noSavedSearches": "No saved searches for this contact yet.",
+    "saveToContact": "Save search to a contact",
+    "buyerFromContacts": "Buyer (from contacts)",
+    "firstName": "First name",
+    "emailAddress": "Email address",
+    "personalNote": "Personal note (optional)"
   },
   "actionsHub": {
     "overviewLink": "{{title}} overview",
@@ -1553,5 +1562,30 @@
       "consultation": "Consultation",
       "search_plan": "Search plan"
     }
+  },
+  "tips": {
+    "accountantOther": "Referral fees, vendor rebills, and anything else owed to you outside of closings.",
+    "callDoubleClick": "Double-click for full call details",
+    "removeFile": "Remove file",
+    "snooze7d": "Snooze for 7 days",
+    "offerAiTerms": "Get AI-recommended terms (price, contingencies, escalation) + a cover letter for this listing",
+    "compareOffers": "Compare offers + net-to-seller",
+    "openCma": "Open the CMA + pitch builder",
+    "moveLater": "Move to a later date",
+    "moveTaskLater": "Move task to a later date",
+    "quiet7d": "Quiet 7d+",
+    "settingsSections": "Settings sections",
+    "profilePhoto": "User profile photo",
+    "connectedSocial": "Connected social accounts",
+    "socialAutoposting": "Social auto-posting",
+    "weeklySchedule": "Weekly post schedule",
+    "tcNotifications": "Transaction Coordinator notifications",
+    "commissionDefaults": "Commission defaults",
+    "offerAiTermsBuyer": "Get AI-recommended terms (price, contingencies, escalation) + a cover letter for a new buyer offer."
+  },
+  "shell": {
+    "upgradeTitle": "Grow with AI follow-ups",
+    "upgradeBody": "Upgrade for more credits and automation.",
+    "home": "CloseBoss home"
   }
 }

@@ -83,5 +83,20 @@
     "pricing": "价格",
     "privacy_policy": "隐私政策",
     "terms_of_service": "服务条款"
+  },
+  "aria": {
+    "home": "CloseBoss 首页",
+    "linkedin": "CloseBoss 的领英主页",
+    "askMax": "问 Max"
+  },
+  "pricingCompare": {
+    "receptionist": "前台接待／代接电话服务",
+    "isa": "内勤销售专员（ISA）",
+    "tc": "交易协调员",
+    "marketing": "营销助理",
+    "allSix": "六位助理协同工作",
+    "answers": "接听来电、外拨陌生电话、评估资格并持续跟进",
+    "coordinates": "协调交易并管理账目",
+    "trained": "以顶尖经纪人的实战打法训练而成"
   }
 }

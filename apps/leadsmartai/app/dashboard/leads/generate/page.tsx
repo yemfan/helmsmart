@@ -178,7 +178,7 @@ export default async function GenerateLeadsPage() {
             </svg>
           </div>
           <div className="mb-1 flex items-center gap-2">
-            <h2 className="text-base font-semibold text-gray-900">Video ad</h2>
+            <h2 className="text-base font-semibold text-gray-900">{t("videoAd", { ns: "web_generate_leads" })}</h2>
             <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-800">
               New
             </span>

@@ -852,7 +852,7 @@ export default function ConnectClient({
                     <p className="truncate text-sm font-semibold text-gray-900">
                       {c.account_display_name ?? c.youtube_channel_title ?? "YouTube channel"}
                     </p>
-                    <p className="truncate text-xs text-gray-500">YouTube channel</p>
+                    <p className="truncate text-xs text-gray-500">{t("youtubeChannel")}</p>
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
