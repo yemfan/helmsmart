@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import { incrementSeoPageVisit } from "@/lib/seo-generator/db";
@@ -6,9 +7,32 @@ import { getGeneratedSeoPageBySlug } from "@/lib/seo-generator/service";
 import { getSiteUrl } from "@/lib/siteUrl";
 import { SeoLandingPage } from "@/components/seo/SeoLandingPage";
 
-export const dynamic = "force-dynamic";
+/*
+ * This catch-all route was `force-dynamic`, so every crawler hit ran the full
+ * pipeline against the database — and it dominated the whole instance:
+ * 1.1M PostgREST requests, 300k calls on market_geographies, 392k on
+ * seo_cluster_pages, enough to peg CPU and take the shared database down for
+ * every other app.
+ *
+ * The content is generated copy that changes on the order of days, so serving
+ * it live per request bought nothing. ISR renders once and serves everyone
+ * else from cache; a stale page is regenerated in the background rather than
+ * making a visitor wait.
+ *
+ * Safe here because this app's root layout reads no cookies() — the
+ * DYNAMIC_SERVER_USAGE trap that bites revalidate elsewhere in this monorepo
+ * doesn't apply.
+ */
+export const revalidate = 3600;
 
 const SITE_URL = getSiteUrl().replace(/\/$/, "");
+
+/**
+ * generateMetadata and the page body both need the same page. Without this
+ * they each ran the full lookup — doubling the database work for every render.
+ * React.cache dedupes them into one call per request.
+ */
+const loadSeoPage = cache(getGeneratedSeoPageBySlug);
 
 export async function generateMetadata({
   params,
@@ -16,7 +40,7 @@ export async function generateMetadata({
   params: Promise<{ seoSlug: string }>;
 }): Promise<Metadata> {
   const { seoSlug } = await params;
-  const page = await getGeneratedSeoPageBySlug(seoSlug);
+  const page = await loadSeoPage(seoSlug);
 
   if (!page) {
     return { title: "Not found | PropertyToolsAI", robots: { index: false, follow: false } };
@@ -47,7 +71,7 @@ export default async function GeneratedSeoPage({
   params: Promise<{ seoSlug: string }>;
 }) {
   const { seoSlug } = await params;
-  const page = await getGeneratedSeoPageBySlug(seoSlug);
+  const page = await loadSeoPage(seoSlug);
 
   if (!page) notFound();
 
