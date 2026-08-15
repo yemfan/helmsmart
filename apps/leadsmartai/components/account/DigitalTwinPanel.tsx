@@ -109,6 +109,10 @@ export default function DigitalTwinPanel() {
   // Which voice speaks the script. Defaults to the agent's clone; a stock
   // preset lets them make content without cloning, or in a different voice.
   const [avVoice, setAvVoice] = useState<string>(CLONE_VOICE_ID);
+  // Set once the agent picks a voice themselves. Until then loadAvatar keeps the
+  // selection in sync with clone readiness; after, their choice is never
+  // overridden by a background refresh.
+  const voiceTouched = useRef(false);
   const [vcClean, setVcClean] = useState(false);
 
   async function publishAvatar() {
@@ -670,6 +674,7 @@ export default function DigitalTwinPanel() {
               <select
                 value={avVoice}
                 onChange={(e) => {
+                  voiceTouched.current = true;
                   setAvVoice(e.target.value);
                   // Switching voice invalidates a prior preview for the same
                   // reason editing the script does — it's no longer what you heard.
