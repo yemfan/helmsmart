@@ -145,8 +145,8 @@ export default function TransactionAssistantClient() {
                   </p>
                 </div>
                 <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.risk === "high" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
-                  {a.due.getTime() < Date.now() ? "overdue · " : ""}
-                  {a.due.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  {a.due.getTime() < Date.now() ? `${tr("health.overdueSuffix")} · ` : ""}
+                  {a.due.toLocaleDateString(dateLocale, { month: "short", day: "numeric" })}
                 </span>
               </Link>
             ))}
