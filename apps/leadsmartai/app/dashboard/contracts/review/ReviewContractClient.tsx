@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ContractReview } from "@/lib/contracts/reviewContract";
 
 const MAX_PDF_BYTES = 8 * 1024 * 1024;
@@ -13,6 +14,7 @@ const SEV_BADGE: Record<"high" | "medium" | "low", string> = {
 };
 
 export function ReviewContractClient() {
+  const { t } = useTranslation("dashboard");
   const [text, setText] = useState("");
   const [pdfName, setPdfName] = useState<string | null>(null);
   const [reviewing, setReviewing] = useState(false);
@@ -46,7 +48,7 @@ export function ReviewContractClient() {
 
   function onPdf(file: File) {
     if (!file.name.toLowerCase().endsWith(".pdf") && !file.type.includes("pdf")) {
-      setError("Pick a .pdf file, or paste the text below.");
+      setError(t("pages.contractReview.needFile"));
       return;
     }
     if (file.size > MAX_PDF_BYTES) {
@@ -68,17 +70,17 @@ export function ReviewContractClient() {
           </Link>
           {" / Contract review"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">Review a contract</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.contractReview.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">
           Drop in the purchase contract (PDF) or paste the text. You&apos;ll get a plain-English
           summary, the key terms + deadlines, and flags for anything unusual or left blank —{" "}
-          <strong>to help you spot issues, not as legal advice.</strong>
+          <strong>{t("pages.contractReview.disclaimer")}</strong>
         </p>
       </div>
 
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">Contract PDF</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.contractReview.contractPdf")}</label>
           <input
             ref={fileRef}
             type="file"
@@ -105,7 +107,7 @@ export function ReviewContractClient() {
                   Selected: <strong className="font-medium text-slate-700">{pdfName}</strong>
                 </>
               ) : (
-                <>Max 8 MB. Claude reads the PDF directly.</>
+                <>{t("pages.contractReview.maxSize")}</>
               )}
             </span>
           </div>
@@ -119,12 +121,12 @@ export function ReviewContractClient() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">Paste contract text</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.contractReview.pasteHeading")}</label>
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={8}
-            placeholder="Paste the contract text…"
+            placeholder={t("pages.contractReview.pastePlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-xs leading-relaxed"
           />
         </div>
@@ -138,19 +140,19 @@ export function ReviewContractClient() {
             disabled={reviewing || !text.trim()}
             className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005fa8] disabled:opacity-50"
           >
-            {reviewing ? "Reviewing…" : "Review text"}
+            {reviewing ? t("pages.contractReview.reviewing") : t("pages.contractReview.review")}
           </button>
         </div>
       </div>
 
       {reviewing ? (
-        <p className="py-6 text-center text-sm text-slate-400">Reading the contract… this can take 20–50 seconds.</p>
+        <p className="py-6 text-center text-sm text-slate-400">{t("pages.contractReview.reading")}</p>
       ) : null}
 
       {review ? (
         <div className="space-y-4">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-sm font-semibold text-slate-900">Summary</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("pages.contractReview.summary")}</h2>
             <p className="mt-1 text-sm leading-relaxed text-slate-700">{review.summary}</p>
             {review.parties || review.property ? (
               <p className="mt-2 text-xs text-slate-500">
@@ -181,7 +183,7 @@ export function ReviewContractClient() {
 
           {review.deadlines.length > 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">Dates &amp; deadlines</h2>
+              <h2 className="text-sm font-semibold text-slate-900">{t("pages.contractReview.dates")}</h2>
               <ul className="mt-2 divide-y divide-slate-100 text-sm">
                 {review.deadlines.map((d, i) => (
                   <li key={i} className="flex items-start justify-between gap-3 py-1.5">
@@ -199,7 +201,7 @@ export function ReviewContractClient() {
           <div className="grid gap-4 sm:grid-cols-2">
             {review.keyTerms.length > 0 ? (
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="text-sm font-semibold text-slate-900">Key terms</h2>
+                <h2 className="text-sm font-semibold text-slate-900">{t("pages.contractReview.keyTerms")}</h2>
                 <dl className="mt-2 divide-y divide-slate-100 text-sm">
                   {review.keyTerms.map((t, i) => (
                     <div key={i} className="grid grid-cols-2 gap-2 py-1.5">
@@ -213,7 +215,7 @@ export function ReviewContractClient() {
 
             {review.missing.length > 0 ? (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
-                <h2 className="text-sm font-semibold text-amber-900">Blank / missing</h2>
+                <h2 className="text-sm font-semibold text-amber-900">{t("pages.contractReview.blanks")}</h2>
                 <ul className="mt-2 list-disc space-y-0.5 pl-4 text-sm text-amber-900">
                   {review.missing.map((m, i) => (
                     <li key={i}>{m}</li>
@@ -225,7 +227,7 @@ export function ReviewContractClient() {
 
           {review.questions.length > 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">Confirm with your broker / attorney</h2>
+              <h2 className="text-sm font-semibold text-slate-900">{t("pages.contractReview.confirm")}</h2>
               <ul className="mt-2 list-disc space-y-0.5 pl-4 text-sm text-slate-700">
                 {review.questions.map((q, i) => (
                   <li key={i}>{q}</li>

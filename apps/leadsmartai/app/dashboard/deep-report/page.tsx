@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 import DeepReportClient from "./DeepReportClient";
 
-export const metadata: Metadata = {
-  title: "Property Deep Report | CloseBoss",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.deepReport.metaTitle", { ns: "dashboard" }),
+  };
+}
 
 /**
  * Property Deep Report — a comprehensive buyer-decision report from just an
@@ -12,11 +16,12 @@ export const metadata: Metadata = {
  * rating, investment ROI (for rentals), schools, neighborhood, a location
  * map, and the agent's profile.
  */
-export default function DeepReportPage() {
+export default async function DeepReportPage() {
+  const t = await getServerT();
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
       <header className="mb-6 max-w-2xl">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Property Deep Report</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t("pages.deepReport.heading", { ns: "dashboard" })}</h1>
         <p className="mt-2 text-sm text-slate-600">
           Everything a buyer needs to decide — value, loan affordability, a
           deal rating, investment returns, schools, neighborhood, and a

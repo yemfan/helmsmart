@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 export function SendClient({ agent }: { agent: string }) {
+  const { t } = useTranslation("dashboard");
   const [clientName, setClientName] = useState("");
   const [propertyAddress, setPropertyAddress] = useState("");
   const [addressLat, setAddressLat] = useState<number | null>(null);
@@ -23,7 +25,7 @@ export function SendClient({ agent }: { agent: string }) {
     setError(null);
     setCopied(false);
     if (!propertyAddress.trim()) {
-      setError("Please enter a property address.");
+      setError(t("pages.send.needAddress"));
       return;
     }
 
@@ -48,14 +50,14 @@ export function SendClient({ agent }: { agent: string }) {
       setCopied(true);
     } catch (e) {
       console.error(e);
-      setError("Could not copy link to clipboard. Please copy it manually.");
+      setError(t("pages.send.copyFailed"));
     }
   }
 
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-brand-text">Send Smart Link</h1>
+        <h1 className="text-2xl font-bold text-brand-text">{t("pages.send.heading")}</h1>
         <p className="text-sm text-brand-text/80">
           Generate a personalized home value link you can paste into emails, texts, or social posts.
         </p>
@@ -71,7 +73,7 @@ export function SendClient({ agent }: { agent: string }) {
               type="text"
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
-              placeholder="e.g. Sarah Homeowner"
+              placeholder={t("pages.send.namePlaceholder")}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
@@ -87,7 +89,7 @@ export function SendClient({ agent }: { agent: string }) {
                 setAddressLat(v.lat);
                 setAddressLng(v.lng);
               }}
-              placeholder="123 Main St, City, State"
+              placeholder={t("pages.send.addressPlaceholder")}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
               disabled={loading}
             />
@@ -102,7 +104,7 @@ export function SendClient({ agent }: { agent: string }) {
               onChange={(e) => setIncludeEmailSource(e.target.checked)}
               className="h-3.5 w-3.5 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"
             />
-            <span>Tag this link with source=email</span>
+            <span>{t("pages.send.tagSource")}</span>
           </label>
           <button
             type="button"
@@ -110,7 +112,7 @@ export function SendClient({ agent }: { agent: string }) {
             disabled={!propertyAddress.trim() || loading}
             className="inline-flex items-center justify-center bg-brand-primary text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#005ca8]"
           >
-            {loading ? "Generating..." : "Generate Link"}
+            {loading ? t("pages.send.generating") : t("pages.send.generate")}
           </button>
         </div>
 
@@ -137,7 +139,7 @@ export function SendClient({ agent }: { agent: string }) {
                 onClick={handleCopy}
                 className="inline-flex items-center justify-center bg-brand-text text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-black"
               >
-                {copied ? "Copied!" : "Copy"}
+                {copied ? t("pages.send.copied") : t("pages.send.copy")}
               </button>
               <button
                 type="button"

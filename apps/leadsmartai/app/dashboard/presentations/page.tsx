@@ -2,13 +2,17 @@ import { getCurrentAgentContext } from "@/lib/dashboardService";
 import PresentationsClient from "@/app/dashboard/presentations/PresentationsClient";
 import { supabaseServer } from "@/lib/supabaseServer";
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Presentations",
-  description: "Create and manage listing and seller presentations.",
-  keywords: ["presentations", "listing", "seller presentation"],
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.presentations.metaTitle", { ns: "dashboard" }),
+    description: t("pages.presentations.metaDescription", { ns: "dashboard" }),
+    keywords: ["presentations", "listing", "seller presentation"],
+    robots: { index: false },
+  };
+}
 
 export default async function PresentationsPage() {
   const ctx = await getCurrentAgentContext();

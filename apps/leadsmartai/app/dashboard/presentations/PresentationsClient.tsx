@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import PresentationView from "@/components/presentations/PresentationView";
 import ShareReport from "@/components/share/ShareReport";
@@ -56,6 +58,8 @@ export default function PresentationsClient({
 }: {
   initialPresentations: PresentationHistoryRow[];
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [address, setAddress] = useState("");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -120,7 +124,7 @@ export default function PresentationsClient({
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
-          <h1 className="ui-page-title text-brand-text">Seller Presentation Generator</h1>
+          <h1 className="ui-page-title text-brand-text">{t("pages.presentations.heading")}</h1>
           <p className="ui-page-subtitle text-brand-text/80">
             Create a professional listing presentation (CMA + strategy + marketing plan) from an address.
           </p>
@@ -135,7 +139,7 @@ export default function PresentationsClient({
           <AddressAutocomplete
             value={address}
             onChange={setAddress}
-            placeholder="Enter property address"
+            placeholder={t("pages.presentations.addressPlaceholder")}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
         </label>
@@ -151,7 +155,7 @@ export default function PresentationsClient({
           disabled={generating || !canGenerate}
           className="w-full inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-3 text-sm font-semibold text-white hover:bg-[#005ca8] disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {generating ? "Generating..." : "Generate Presentation"}
+          {generating ? t("pages.presentations.generating") : t("pages.presentations.generate")}
         </button>
       </div>
 
@@ -168,7 +172,7 @@ export default function PresentationsClient({
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-3">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-2">
           <div>
-            <div className="ui-card-title text-brand-text">Recent Presentations</div>
+            <div className="ui-card-title text-brand-text">{t("pages.presentations.recent")}</div>
             <div className="text-xs text-slate-600 mt-1">
               Open a past presentation to preview, download, or copy the share link.
             </div>
@@ -179,9 +183,9 @@ export default function PresentationsClient({
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-slate-600">
               <tr>
-                <th className="ui-table-header text-left px-3 py-3">Property</th>
-                <th className="ui-table-header text-left px-3 py-3">Created</th>
-                <th className="ui-table-header text-left px-3 py-3">Open</th>
+                <th className="ui-table-header text-left px-3 py-3">{t("pages.presentations.colProperty")}</th>
+                <th className="ui-table-header text-left px-3 py-3">{t("pages.presentations.colCreated")}</th>
+                <th className="ui-table-header text-left px-3 py-3">{t("pages.presentations.open")}</th>
               </tr>
             </thead>
             <tbody>
@@ -194,7 +198,7 @@ export default function PresentationsClient({
                       </div>
                     </td>
                     <td className="ui-table-cell px-3 py-3 text-slate-600 whitespace-nowrap">
-                      {p.created_at ? new Date(p.created_at).toLocaleString() : "—"}
+                      {p.created_at ? new Date(p.created_at).toLocaleString(locale) : "—"}
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-2">
