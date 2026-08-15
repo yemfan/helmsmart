@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 
 import { setPlaybookAutoAction } from "./actions";
 
@@ -30,7 +31,7 @@ function Toggle({
         disabled={disabled}
         onClick={() => onChange(!checked)}
         className={`relative mt-0.5 inline-flex h-6 w-11 shrink-0 items-center rounded-full transition ${
-          checked ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
+          checked ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-700"
         } disabled:opacity-50`}
       >
         <span
@@ -48,6 +49,7 @@ function Toggle({
  * the selling playbook, and opening a buyer transaction the buying playbook.
  */
 export function AutoSettingsCard({ autoSelling, autoBuying }: { autoSelling: boolean; autoBuying: boolean }) {
+  const { t } = useTranslation("dashboard");
   const [selling, setSelling] = useState(autoSelling);
   const [buying, setBuying] = useState(autoBuying);
   const [pending, startTransition] = useTransition();
@@ -62,21 +64,19 @@ export function AutoSettingsCard({ autoSelling, autoBuying }: { autoSelling: boo
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-      <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Auto-start</h2>
-      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-        Let the AI team start a playbook automatically from your transactions. Off by default.
-      </p>
+      <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t("playbookRuns.autoHeading")}</h2>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t("playbookRuns.autoIntro")}</p>
       <div className="mt-4 space-y-4">
         <Toggle
-          label="Auto-start selling playbook"
-          hint="When you open a listing (seller) transaction — the listing agreement is signed."
+          label={t("playbookRuns.autoSellingLabel")}
+          hint={t("playbookRuns.autoSellingHint")}
           checked={selling}
           disabled={pending}
           onChange={(v) => update({ autoSelling: v })}
         />
         <Toggle
-          label="Auto-start buying playbook"
-          hint="When you open a buyer transaction — kicks off the consultation + search setup."
+          label={t("playbookRuns.autoBuyingLabel")}
+          hint={t("playbookRuns.autoBuyingHint")}
           checked={buying}
           disabled={pending}
           onChange={(v) => update({ autoBuying: v })}

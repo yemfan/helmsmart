@@ -1518,5 +1518,37 @@
     "yesterday": "yesterday",
     "daysAgo": "{{count}}d ago",
     "inDays": "in {{count}}d"
+  },
+  "playbookRuns": {
+    "metaTitle": "Playbook Runs",
+    "metaDescription": "Your stateful selling and buying engagements — each driven from prep to close by the AI team.",
+    "heading": "Playbook runs",
+    "intro": "Full-cycle selling & buying engagements your AI team runs — prepare, plan, execute, and optimize as you go. Start one from the Boss: e.g. “start the selling playbook for 123 Main St” or “start a buying playbook for John — 3b/2b in Alhambra $600k–$1M.”",
+    "emptyTitle": "No playbook runs yet",
+    "emptyHint": "Ask the Boss to start a selling playbook (after a listing is signed) or a buying playbook (after a buyer is qualified), and it will show up here.",
+    "typeSelling": "Selling",
+    "typeBuying": "Buying",
+    "meta": "Phase: {{phase}} · Updated {{updated}} · Next review {{review}}",
+    "autoHeading": "Auto-start",
+    "autoIntro": "Let the AI team start a playbook automatically from your transactions. Off by default.",
+    "autoSellingLabel": "Auto-start selling playbook",
+    "autoSellingHint": "When you open a listing (seller) transaction — the listing agreement is signed.",
+    "autoBuyingLabel": "Auto-start buying playbook",
+    "autoBuyingHint": "When you open a buyer transaction — kicks off the consultation + search setup.",
+    "status": {
+      "active": "Active",
+      "paused": "Paused",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "phase": {
+      "prepare": "Prepare",
+      "marketing_plan": "Marketing plan",
+      "property_ads": "Property ads",
+      "execute": "Execute",
+      "optimize": "Optimize",
+      "consultation": "Consultation",
+      "search_plan": "Search plan"
+    }
   }
 }
