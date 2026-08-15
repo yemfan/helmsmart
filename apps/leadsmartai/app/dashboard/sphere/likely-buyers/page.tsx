@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 import LikelyBuyersPanel from "@/components/dashboard/LikelyBuyersPanel";
 
-export const metadata: Metadata = {
-  title: "Today's likely buyers | CloseBoss",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return { title: `${t("pages.likelyBuyers.metaTitle", { ns: "dashboard" })} | CloseBoss` };
+}
 
 /**
  * Daily SOI buyer-prediction surface — the dual of /dashboard/sphere/
@@ -14,17 +16,16 @@ export const metadata: Metadata = {
  * Pure shell — the panel is a client component that fetches
  * /api/dashboard/sphere/likely-buyers.
  */
-export default function LikelyBuyersPage() {
+export default async function LikelyBuyersPage() {
+  const t = await getServerT();
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
       <header className="mb-6 max-w-2xl">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Today&apos;s likely buyers
+          {t("pages.likelyBuyers.heading", { ns: "dashboard" })}
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Past clients and sphere contacts ranked by likelihood to BUY their next
-          home in the next ~90 days. Scores are rules-based and explainable —
-          job-change and life-event signals are the strongest movers.
+          {t("pages.likelyBuyers.intro", { ns: "dashboard" })}
         </p>
       </header>
 

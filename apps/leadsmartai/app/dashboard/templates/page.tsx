@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { LayoutTemplate } from "lucide-react";
 import TemplatePickerClient from "@/components/dashboard/TemplatePickerClient";
 
-export const metadata: Metadata = {
-  title: "Message Templates",
-  description: "Browse and customize SMS and email templates for Sphere, Lead Response, and Lifecycle.",
-  keywords: ["templates", "sms", "email", "messaging"],
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.templates.metaTitle", { ns: "dashboard" }),
+    description: t("pages.templates.metaDescription", { ns: "dashboard" }),
+    keywords: ["templates", "sms", "email", "messaging"],
+    robots: { index: false },
+  };
+}
 
-export default function TemplatesPage() {
+export default async function TemplatesPage() {
+  const t = await getServerT();
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex items-start gap-3">
@@ -17,10 +22,11 @@ export default function TemplatesPage() {
           <LayoutTemplate className="h-5 w-5" strokeWidth={2} aria-hidden />
         </span>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Message Templates</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            {t("pages.templates.heading", { ns: "dashboard" })}
+          </h1>
           <p className="mt-1 text-sm text-slate-600">
-            The text of every message CloseBoss sends on your behalf. Edit any template, toggle it off,
-            or switch between review and autosend. Changes are per-agent — base templates aren&apos;t touched.
+            {t("pages.templates.intro", { ns: "dashboard" })}
           </p>
         </div>
       </div>

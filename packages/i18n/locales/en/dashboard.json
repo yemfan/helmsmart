@@ -1587,5 +1587,80 @@
     "upgradeTitle": "Grow with AI follow-ups",
     "upgradeBody": "Upgrade for more credits and automation.",
     "home": "CloseBoss home"
+  },
+  "pages": {
+    "templates": {
+      "metaTitle": "Message Templates",
+      "metaDescription": "Browse and customize SMS and email templates for Sphere, Lead Response, and Lifecycle.",
+      "heading": "Message Templates",
+      "intro": "The text of every message CloseBoss sends on your behalf. Edit any template, toggle it off, or switch between review and autosend. Changes are per-agent — base templates aren't touched."
+    },
+    "books": {
+      "metaTitle": "Books",
+      "metaDescription": "Create and track client invoices — what you've billed and what's been paid.",
+      "upgradeTitle": "Invoicing is a Pro feature",
+      "upgradeDescription": "Create and track client invoices — see what you've billed and what's been paid, all in one place."
+    },
+    "likelySellers": {
+      "metaTitle": "Today's likely sellers",
+      "heading": "Today's likely sellers",
+      "intro": "Past clients and sphere contacts ranked by likelihood to list in the next ~90 days. Scores are rules-based and explainable — every row shows the strongest factor driving its rank."
+    },
+    "likelyBuyers": {
+      "metaTitle": "Today's likely buyers",
+      "heading": "Today's likely buyers",
+      "intro": "Past clients and sphere contacts ranked by likelihood to BUY their next home in the next ~90 days. Scores are rules-based and explainable — job-change and life-event signals are the strongest movers."
+    },
+    "sphereSignals": {
+      "metaTitle": "Sphere · Signals",
+      "metaDescription": "Life-event signals — refi, job changes, equity milestones. Calling list only.",
+      "heading": "Signals",
+      "intro": "Life-event signals detected from the AVM feed and external sources. These never auto-send — treat them as a calling list."
+    },
+    "sphereImport": {
+      "metaTitle": "Import Sphere contacts"
+    },
+    "sphereContact": {
+      "metaTitle": "Sphere contact"
+    },
+    "salesModel": {
+      "metaTitle": "Sales Model",
+      "metaDescription": "Your personalized dashboard, scripts, tasks, and pipeline based on the sales model you've chosen."
+    },
+    "leadSourceRoi": {
+      "metaTitle": "Lead-source ROI",
+      "heading": "Lead-source ROI",
+      "intro": "Which channels are actually producing revenue. Cohort: contacts you captured in the window. \"Closes\" tracks contacts whose lifecycle reached past_client; revenue sums their closing prices."
+    },
+    "dealCoach": {
+      "metaTitle": "AI Deal Coach",
+      "heading": "AI Deal Coach",
+      "intro": "Tell the coach where you are on the deal and what you know about the property. It returns a prioritized action plan, pricing strategy, risk pillars, and negotiation scripts — coherent with each other, all in one place."
+    },
+    "schedulerActivity": {
+      "metaTitle": "Scheduler activity",
+      "metaDescription": "Audit log of trigger firings: created, suppressed, already-fired. Debug why a specific trigger did or didn't fire.",
+      "heading": "Scheduler activity",
+      "intro": "Every trigger the scheduler evaluates lands here — whether it created a draft or suppressed one. Use this to debug why a specific template didn't fire for a specific contact.",
+      "backToDrafts": "← Back to drafts"
+    },
+    "expenses": {
+      "metaTitle": "Expenses",
+      "metaDescription": "Track your real estate business costs for tax time — marketing, mileage, dues, and more.",
+      "upgradeTitle": "Expense tracking is a Pro feature",
+      "upgradeDescription": "Track your real estate business costs for tax time — marketing, mileage, dues, and more, with receipt capture."
+    },
+    "drafts": {
+      "metaTitle": "Drafts · Approval queue",
+      "metaDescription": "Review and approve messages before they send.",
+      "heading": "Drafts",
+      "pending": "{{count}} pending",
+      "intro": "Approval queue for Review-mode messages. No draft sends without your approval in the first 30 days of your account — and never when you've set the policy to Review.",
+      "activityLog": "Activity log"
+    },
+    "team": {
+      "metaTitle": "Team",
+      "metaDescription": "Manage your team — invite agents, see the roster, control pending invitations."
+    }
   }
 }

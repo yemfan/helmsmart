@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { redirect } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getSelectedSalesModelServer } from "@/lib/sales-model-server";
 import { loadActivitySnapshot } from "@/lib/sales-model/pipelineActivity.server";
 import { SalesModelDashboard } from "@/components/sales-model/SalesModelDashboard";
 
-export const metadata: Metadata = {
-  title: "Sales Model",
-  description:
-    "Your personalized dashboard, scripts, tasks, and pipeline based on the sales model you've chosen.",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.salesModel.metaTitle", { ns: "dashboard" }),
+    description: t("pages.salesModel.metaDescription", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 /**
  * Sales Model dashboard. Server component:

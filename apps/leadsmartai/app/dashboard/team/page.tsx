@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getTeamAccessStatus } from "@/lib/teams/access.server";
 import { getSeatUsageForTeam } from "@/lib/teams/seatLimits.server";
@@ -6,12 +7,14 @@ import { getRoster, listTeamsForAgent } from "@/lib/teams/service";
 import { TeamDashboard } from "@/components/team/TeamDashboard";
 import type { TeamRoster } from "@/lib/teams/types";
 
-export const metadata: Metadata = {
-  title: "Team",
-  description:
-    "Manage your team — invite agents, see the roster, control pending invitations.",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.team.metaTitle", { ns: "dashboard" }),
+    description: t("pages.team.metaDescription", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 /**
  * Team management page. Server component:

@@ -1587,5 +1587,80 @@
     "upgradeTitle": "用 AI 跟进推动增长",
     "upgradeBody": "升级以获得更多额度与自动化功能。",
     "home": "CloseBoss 首页"
+  },
+  "pages": {
+    "templates": {
+      "metaTitle": "消息模板",
+      "metaDescription": "浏览并自定义用于人脉圈、客户响应与生命周期的短信与邮件模板。",
+      "heading": "消息模板",
+      "intro": "CloseBoss 代您发送的每一条消息的文本。您可以编辑任意模板、将其关闭，或在人工审核与自动发送之间切换。修改仅对您本人生效——不会影响基础模板。"
+    },
+    "books": {
+      "metaTitle": "账簿",
+      "metaDescription": "创建并跟踪客户发票——已开票金额与已收款情况一目了然。",
+      "upgradeTitle": "开具发票是 Pro 版功能",
+      "upgradeDescription": "创建并跟踪客户发票——在一个地方查看已开票金额与已收款情况。"
+    },
+    "likelySellers": {
+      "metaTitle": "今日潜在卖家",
+      "heading": "今日潜在卖家",
+      "intro": "按未来约 90 天内挂牌可能性排序的老客户与人脉圈联系人。评分基于规则且可解释——每一行都会显示影响其排名的最主要因素。"
+    },
+    "likelyBuyers": {
+      "metaTitle": "今日潜在买家",
+      "heading": "今日潜在买家",
+      "intro": "按未来约 90 天内购买下一套住房可能性排序的老客户与人脉圈联系人。评分基于规则且可解释——工作变动与人生大事是最主要的驱动信号。"
+    },
+    "sphereSignals": {
+      "metaTitle": "人脉圈 · 信号",
+      "metaDescription": "人生大事信号——再融资、工作变动、房屋净值里程碑。仅作为致电名单使用。",
+      "heading": "信号",
+      "intro": "从自动估值模型数据源与外部渠道识别出的人生大事信号。这些信号绝不会自动发送消息——请将其作为致电名单使用。"
+    },
+    "sphereImport": {
+      "metaTitle": "导入人脉圈联系人"
+    },
+    "sphereContact": {
+      "metaTitle": "人脉圈联系人"
+    },
+    "salesModel": {
+      "metaTitle": "销售模式",
+      "metaDescription": "根据您选择的销售模式量身定制的面板、话术、任务与业务管道。"
+    },
+    "leadSourceRoi": {
+      "metaTitle": "客源渠道回报",
+      "heading": "客源渠道回报",
+      "intro": "哪些渠道真正带来了收入。统计口径：您在该时间窗内获取的联系人。“成交”统计生命周期已进入老客户阶段的联系人，收入为其成交价之和。"
+    },
+    "dealCoach": {
+      "metaTitle": "AI 交易教练",
+      "heading": "AI 交易教练",
+      "intro": "告诉教练这笔交易进行到哪一步，以及您对该房产的了解。它会给出一份按优先级排列的行动计划、定价策略、风险要点与谈判话术——彼此协调一致，集中呈现。"
+    },
+    "schedulerActivity": {
+      "metaTitle": "调度器活动",
+      "metaDescription": "触发器执行的审计日志：已创建、已抑制、已触发过。用于排查某个触发器为何触发或未触发。",
+      "heading": "调度器活动",
+      "intro": "调度器评估过的每一个触发器都会记录在这里——无论它创建了草稿还是抑制了草稿。可用它排查某个模板为何没有对某位联系人触发。",
+      "backToDrafts": "← 返回草稿"
+    },
+    "expenses": {
+      "metaTitle": "支出",
+      "metaDescription": "为报税记录您的房地产业务成本——营销、里程、会费等。",
+      "upgradeTitle": "支出跟踪是 Pro 版功能",
+      "upgradeDescription": "为报税记录您的房地产业务成本——营销、里程、会费等，并支持票据拍照留存。"
+    },
+    "drafts": {
+      "metaTitle": "草稿 · 审核队列",
+      "metaDescription": "在消息发送前进行审核与批准。",
+      "heading": "草稿",
+      "pending": "{{count}} 条待审核",
+      "intro": "审核模式消息的审批队列。账户开通后的前 30 天内，任何草稿都必须经您批准才会发送——若您已将策略设为“审核”，则始终需要批准。",
+      "activityLog": "活动日志"
+    },
+    "team": {
+      "metaTitle": "团队",
+      "metaDescription": "管理您的团队——邀请经纪人、查看成员名单、管理待处理的邀请。"
+    }
   }
 }
