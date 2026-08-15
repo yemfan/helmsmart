@@ -378,7 +378,46 @@
     "briefingsHelp": "设置 ☀️ 早间计划和 🌙 晚间总结每天在控制台和手机 App 中推送的时间。",
     "smartLink": "房屋估值智能链接",
     "smartLinkHelp": "分享给房主，把他们引入您的客户漏斗。",
-    "mlsImport": "MLS 数据导入"
+    "mlsImport": "MLS 数据导入",
+    "pageTitle": "设置",
+    "tabs": {
+      "voice": {
+        "label": "语气与风格",
+        "description": "CloseBoss 说话的方式。"
+      },
+      "messages": {
+        "label": "消息",
+        "description": "CloseBoss 发什么、什么时候发。"
+      },
+      "tools": {
+        "label": "数据与工具",
+        "description": "分享给客户的链接与导入工具。"
+      },
+      "channels": {
+        "label": "渠道与合规",
+        "description": "每一次发送背后的底层配置。"
+      }
+    },
+    "reviewPolicy": "审核策略",
+    "reviewPolicyHelp": "决定触发条件满足时消息是自动发送，还是先等您批准。这是「消息」中最重要的设置 —— 它影响所有渠道的每一个模板。",
+    "timing": "时间与频率",
+    "timingHelp": "适用于所有模板的规则。它们会覆盖模板自身的设置 —— 始终以最严格的规则为准。",
+    "templates": {
+      "heading": "消息模板",
+      "inLibrary": "模板库中",
+      "autosend": "自动发送",
+      "reviewFirst": "需先审核",
+      "off": "已关闭",
+      "columns": {
+        "id": "编号",
+        "template": "模板",
+        "channel": "渠道",
+        "langs": "语言",
+        "status": "状态"
+      },
+      "review": "待审核",
+      "bilingualLabel": "双语覆盖率："
+    }
   },
   "showings": {
     "title": "带看",
@@ -1010,5 +1049,19 @@
       "noAccounts": "还没有已连接、且支持视频的账号。"
     },
     "queued": "已加入 {{count}} 个账号的发布队列 —— 几分钟内发出。"
+  },
+  "call": {
+    "call": "拨打",
+    "calling": "拨号中…",
+    "ringing": "正在呼叫您的手机",
+    "failed": "呼叫失败",
+    "ariaLabel": "拨打给该联系人",
+    "title": "通过您的手机接通该联系人",
+    "noAgentPhone": "请先在「设置」中填写您的电话号码，然后再拨打。",
+    "noContactPhone": "该联系人没有登记电话号码。",
+    "badNumber": "电话号码格式不正确。",
+    "notConfigured": "通话功能尚未配置 —— 请联系管理员。",
+    "couldNotPlace": "无法发起通话。",
+    "twilioRejected": "Twilio 拒绝了这次呼叫。"
   }
 }

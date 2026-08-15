@@ -79,8 +79,8 @@ export default async function SettingsPage() {
         messages={
           <>
             <Card
-              title="Review Policy"
-              description="Control whether messages send automatically when triggers fire, or wait for your approval first. The most important setting in Messages — it affects every template across every channel."
+              title={tr("settings.reviewPolicy")}
+              description={tr("settings.reviewPolicyHelp")}
             >
               <ReviewPolicyPanel />
             </Card>
@@ -88,8 +88,8 @@ export default async function SettingsPage() {
             <TemplatesSummaryCard agentId={ctx.agentId} />
 
             <Card
-              title="Timing &amp; Frequency"
-              description="Rules that apply across every template. These override any template-level settings — the most restrictive rule always wins."
+              title={tr("settings.timing")}
+              description={tr("settings.timingHelp")}
             >
               <TimingPanel />
             </Card>
