@@ -35,13 +35,18 @@ export function PublicFooter() {
             links={[
               { label: "How it works", href: "/#how" },
               { label: "What you can make", href: "/#make" },
-              { label: "Pricing", href: "/#pricing" },
+              { label: "Pricing", href: "/pricing" },
               { label: "Sign in", href: "/login" },
             ]}
           />
           <FooterCol
-            heading="Company"
-            links={[{ label: "Get started", href: "/login" }, { label: "Contact", href: "mailto:contact@marketingbossai.com" }]}
+            heading="Learn"
+            links={[
+              { label: "Guides", href: "/guides" },
+              { label: "Compare", href: "/compare" },
+              { label: "Get started", href: "/login" },
+              { label: "Contact", href: "mailto:contact@marketingbossai.com" },
+            ]}
           />
           <FooterCol
             heading="Legal"

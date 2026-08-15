@@ -18,10 +18,17 @@ export function PublicNav() {
           </span>
         </Link>
 
-        <nav className="ml-2 hidden items-center gap-6 text-sm font-medium text-ink-3 md:flex">
-          <a href="#how" className="transition hover:text-ink">How it works</a>
-          <a href="#make" className="transition hover:text-ink">What you can make</a>
-          <a href="#pricing" className="transition hover:text-ink">Pricing</a>
+        {/*
+          Root-relative hrefs, not bare "#how". This nav renders on /guides,
+          /compare and /pricing too, where a bare fragment points at a section
+          that isn't on the page and silently does nothing.
+        */}
+        <nav className="ml-2 hidden items-center gap-5 text-sm font-medium text-ink-3 md:flex">
+          <Link href="/#how" className="transition hover:text-ink">How it works</Link>
+          <Link href="/#make" className="transition hover:text-ink">What you can make</Link>
+          <Link href="/pricing" className="transition hover:text-ink">Pricing</Link>
+          <Link href="/guides" className="transition hover:text-ink">Guides</Link>
+          <Link href="/compare" className="transition hover:text-ink">Compare</Link>
         </nav>
 
         <div className="ml-auto flex items-center gap-2">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PublicNav } from "./PublicNav";
 import { PublicFooter } from "./PublicFooter";
 import { CREDIT_PACKS, SUBSCRIPTION_PLANS, formatPrice } from "@/lib/billing";
+import { CREDIT_COST } from "@/lib/creditCosts";
 
 // New accounts start with this many free credits (profiles.credits default,
 // granted by the handle_new_user trigger). Surfaced here so visitors know they
@@ -37,10 +38,12 @@ const FEATURES = [
 
 const PLATFORMS = ["Facebook", "Instagram", "Threads", "LinkedIn", "Pinterest", "YouTube", "TikTok"];
 
+// Costs come from lib/creditCosts — the same table the generator charges
+// against — so this block can't quote a price we no longer honour.
 const PRICING = [
-  { label: "Image", credits: "1 credit", note: "each generation" },
-  { label: "Edit", credits: "2 credits", note: "refine or restyle" },
-  { label: "Video", credits: "20 credits", note: "cinematic clip" },
+  { label: "Image", credits: `${CREDIT_COST.image} credit`, note: "each generation" },
+  { label: "Edit", credits: `${CREDIT_COST.edit} credits`, note: "refine or restyle" },
+  { label: "Video", credits: `${CREDIT_COST.video} credits`, note: "cinematic clip" },
 ];
 
 export function MarketingLanding() {
