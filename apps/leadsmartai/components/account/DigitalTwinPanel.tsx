@@ -423,12 +423,20 @@ export default function DigitalTwinPanel() {
           {photoUploading ? "Uploading…" : hasPortrait ? t("twin.replacePhoto") : t("twin.usePhoto")}
         </button>
         <input ref={photoRef} type="file" accept="image/*" onChange={onPickPhoto} className="hidden" />
+        {/*
+          The ONLY language control on this panel. There used to be a second one
+          in the avatar studio below, but both wrote to the same `avLang` state —
+          so once an intro video existed and both rows were on screen, you saw
+          two dropdowns that looked independent and silently moved together.
+          One control, labelled for everything it actually governs.
+        */}
         <label className="min-w-[150px]">
-          <span className="block text-[11px] font-medium text-slate-600">{t("twin.profileLanguage")}</span>
+          <span className="block text-[11px] font-medium text-slate-600">{t("twin.aiLanguage")}</span>
           <select
             value={avLang}
             onChange={(e) => setAvLang(e.target.value === "zh-Hans" ? "zh-Hans" : "en")}
             className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm"
+            title={t("twin.aiLanguageHelp")}
           >
             <option value="en">English</option>
             <option value="zh-Hans">中文</option>
@@ -638,17 +646,7 @@ export default function DigitalTwinPanel() {
                   className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                 />
               </label>
-              <label className="min-w-[130px]">
-                <span className="text-xs font-medium text-slate-600">{t("twin.scriptLanguage")}</span>
-                <select
-                  value={avLang}
-                  onChange={(e) => setAvLang(e.target.value === "zh-Hans" ? "zh-Hans" : "en")}
-                  className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                >
-                  <option value="en">English</option>
-                  <option value="zh-Hans">中文</option>
-                </select>
-              </label>
+              {/* Language lives once, in the build row above — see the note there. */}
               <button
                 type="button"
                 onClick={() => void avatarAction("draft")}
