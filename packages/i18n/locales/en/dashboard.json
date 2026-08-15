@@ -1310,5 +1310,143 @@
       "/dashboard/books": "Create and track invoices.",
       "/dashboard/expenses": "Log and categorize expenses."
     }
+  },
+  "aiTeam": {
+    "eyebrow": "CloseBoss",
+    "heading": "Manage Your AI Team",
+    "intro": "Pause an assistant to hide its recommendations and activity from your Boss Assistant dashboard, and choose which skills each assistant works with.",
+    "loading": "Loading your AI team…",
+    "loadFailed": "Could not load your AI team.",
+    "saveFailed": "Could not save — try again.",
+    "uploadFailed": "Upload failed — try again.",
+    "removeFailed": "Could not remove — try again.",
+    "perfHeading": "Performance",
+    "perfWindow": "· last {{days}} days",
+    "callsAnswered": "Calls answered",
+    "avgMinutes": "avg {{minutes}}m",
+    "missedRecovered": "Missed calls recovered",
+    "missedHint": "text-back sent / missed",
+    "outboundCalls": "Outbound AI calls",
+    "prioritiesCompleted": "Priorities completed",
+    "prioritiesHint": "{{open}} open · {{dismissed}} dismissed",
+    "activities_one": "{{count}} activity",
+    "activities_other": "{{count}} activities",
+    "neededYou": " · {{count}} needed you",
+    "activityWindow": "activity · last 14 days",
+    "statusActive": "active",
+    "statusPaused": "paused",
+    "close": "Close",
+    "editAvatar": "Edit avatar",
+    "viewDashboard": "View dashboard",
+    "saving": "Saving…",
+    "pause": "Pause",
+    "activate": "Activate",
+    "avatar": "Avatar",
+    "uploading": "Uploading…",
+    "uploadPhoto": "Upload photo",
+    "removePhoto": "Remove photo",
+    "photoHint": "JPG/PNG/WEBP, ≤5 MB — or pick one below",
+    "skills": "Skills",
+    "role": {
+      "boss_assistant": "Captain",
+      "receptionist": "AI Receptionist",
+      "sales_assistant": "AI Sales Specialist",
+      "marketing_assistant": "AI Marketing Specialist",
+      "transaction_assistant": "AI Transaction Coordinator",
+      "accountant": "AI Financial Analyst"
+    },
+    "personality": {
+      "boss_assistant": "Calm leader, strategic, always in control.",
+      "receptionist": "Friendly, welcoming, never misses a call.",
+      "sales_assistant": "Confident, persuasive, follows up relentlessly.",
+      "marketing_assistant": "Creative, energetic, grows your business.",
+      "transaction_assistant": "Organized, detail-oriented, keeps deals moving.",
+      "accountant": "Accurate, analytical, watches every dollar."
+    },
+    "skill": {
+      "follow_up": {
+        "name": "Follow-Up",
+        "desc": "Follow up with leads on an appropriate cadence."
+      },
+      "objection_handling": {
+        "name": "Objection Handling",
+        "desc": "Handle common objections calmly."
+      },
+      "reactivation": {
+        "name": "Lead Reactivation",
+        "desc": "Warmly reconnect with old leads."
+      },
+      "speed_to_lead": {
+        "name": "Speed-to-Lead",
+        "desc": "Contact new leads immediately and attempt appointment booking."
+      },
+      "commission_tracking": {
+        "name": "Commission Tracking",
+        "desc": "Watch the commission pipeline from active deals to paid."
+      },
+      "expense_tracking": {
+        "name": "Expense Tracking",
+        "desc": "Monitor business spending by category."
+      },
+      "invoice_tracking": {
+        "name": "Invoice Tracking",
+        "desc": "Track invoices from draft through sent, overdue, and paid."
+      },
+      "payment_reminders": {
+        "name": "Payment Reminders",
+        "desc": "Chase money owed — politely and persistently."
+      },
+      "lead_generation": {
+        "name": "Lead Generation",
+        "desc": "Run campaigns and tools that bring in new leads."
+      },
+      "marketing_plans": {
+        "name": "Marketing Plans",
+        "desc": "Build and run multi-step SMS/email marketing plans."
+      },
+      "social_content": {
+        "name": "Social Content",
+        "desc": "Create and schedule social posts that keep the Realtor visible."
+      },
+      "sphere_nurture": {
+        "name": "Sphere Nurture",
+        "desc": "Keep the Realtor's sphere warm with drips and digests."
+      },
+      "buyer_qualification": {
+        "name": "Buyer Qualification",
+        "desc": "Determine buyer readiness and lead temperature."
+      },
+      "seller_qualification": {
+        "name": "Seller Qualification",
+        "desc": "Determine seller opportunity and lead temperature."
+      },
+      "faq": {
+        "name": "FAQ",
+        "desc": "Answer approved business FAQs from the knowledge base."
+      },
+      "lead_capture": {
+        "name": "Lead Capture",
+        "desc": "Capture required contact info and create/update the lead record."
+      },
+      "transfer": {
+        "name": "Transfer / Escalation",
+        "desc": "Transfer or escalate urgent calls to the Realtor."
+      },
+      "appointment_scheduling": {
+        "name": "Appointment Scheduling",
+        "desc": "Book consultations, showings, listing appointments, or demos."
+      },
+      "document_reminders": {
+        "name": "Document Reminders",
+        "desc": "Remind the Realtor or client about missing documents."
+      },
+      "transaction_deadlines": {
+        "name": "Transaction Deadline Tracking",
+        "desc": "Track important transaction dates and create alerts."
+      }
+    },
+    "barTooltip": "{{count}} on day {{day}}",
+    "metaTitle": "Manage AI Team",
+    "metaDescription": "Configure your CloseBoss AI team — pause assistants and choose their skills."
   }
 }

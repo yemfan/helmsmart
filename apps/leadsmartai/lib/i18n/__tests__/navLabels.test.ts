@@ -84,11 +84,12 @@ describe("dashboard namespace (page copy)", () => {
     // A copy-paste that never got translated reads as "translated" to the
     // parity checks above but ships English to a Chinese-speaking agent.
     // Brand names and pure punctuation are legitimately identical.
-    // Identical on purpose: a product name, an arrow glyph, and an example URL.
+    // Identical on purpose: product names, an arrow glyph, and an example URL.
     const ALLOWED = new Set([
       "topbar.askMax",
       "profile.backToDashboard",
       "branding.leadAdPlaceholder",
+      "aiTeam.eyebrow",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;
