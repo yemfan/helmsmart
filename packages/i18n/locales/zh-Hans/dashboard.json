@@ -1234,5 +1234,53 @@
       "closingSoon": "还有 {{days}} 天就要过户，但{{tasks}}。",
       "closingSoon_one": "还有 {{days}} 天就要过户，但{{tasks}}。"
     }
+  },
+  "notifications": {
+    "title": "通知",
+    "subtitle": "需要优先跟进的重点客户、可能漏接的来电，以及各环节的提醒。",
+    "hotLeads": "重点客户",
+    "hotLeadsSub": "高意向联系人",
+    "viewAll": "查看全部",
+    "noHotLeads": "暂无重点客户。客户产生互动后评级会自动更新。",
+    "missedCalls": "未接来电",
+    "missedCallsSub": "无人接听或拨号失败",
+    "callLog": "通话记录",
+    "noMissedCalls": "没有未接来电记录。",
+    "unknownCaller": "未知来电",
+    "aiCaptured": "AI 已记录详情 —— 点击查看",
+    "reminders": "提醒",
+    "remindersSub": "预约、任务与跟进",
+    "calendar": "日历",
+    "overdueTasks": "逾期任务",
+    "followUps": "跟进事项",
+    "followUpReminder": "跟进提醒",
+    "due": "截止 {{when}}",
+    "scheduled": "已安排 {{when}}",
+    "listingAlerts": "房源提醒",
+    "columns": {
+      "lead": "客户",
+      "type": "类型",
+      "property": "房源",
+      "sent": "发送时间"
+    }
+  },
+  "houseSearch": {
+    "title": "AI 找房",
+    "subtitle": "用日常语言描述买家的需求即可。助理会在网上搜索真实、在售的房源，给出缩小范围的建议，并让您把最合适的房源直接邮件发给买家。",
+    "prompt": "您的买家在找什么样的房子？",
+    "placeholder": "例如：帕萨迪纳 3 房 2 卫独立屋，120 万以下，院子大、学区好、可拎包入住",
+    "limitNote": "实时联网搜索 —— 结果最多需要一分钟。",
+    "limitReached": "已达今日次数上限 —— 于 UTC 零点重置。",
+    "search": "搜索",
+    "searching": "搜索中…",
+    "savedSearches": "+ 按联系人查看已保存的搜索",
+    "autoSend": "自动发送给买家",
+    "off": "关闭",
+    "daily": "每天",
+    "weekly": "每周",
+    "priceOnRequest": "价格面议",
+    "searchFailed": "搜索失败",
+    "loadSavedFailed": "无法加载已保存的搜索",
+    "scheduleFailed": "无法更新发送计划。"
   }
 }

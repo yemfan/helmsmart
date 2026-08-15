@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { HouseListing, HouseSearchResult } from "@/lib/house-search/types";
@@ -36,8 +38,8 @@ type HouseSearchQuota = {
   resetDate: string;
 };
 
-function money(n: number | null): string {
-  if (n == null || !Number.isFinite(n)) return "Price on request";
+function money(n: number | null, t: (k: string) => string): string {
+  if (n == null || !Number.isFinite(n)) return t("houseSearch.priceOnRequest");
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -60,6 +62,7 @@ function metaLine(l: HouseListing): string {
 }
 
 export default function HouseSearchClient() {
+  const { t } = useTranslation("dashboard");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -151,7 +154,7 @@ export default function HouseSearchClient() {
           }
         }
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Search failed");
+        setError(e instanceof Error ? e.message : t("houseSearch.searchFailed"));
       } finally {
         setLoading(false);
       }
@@ -209,7 +212,7 @@ export default function HouseSearchClient() {
         autoRunFrequency: data.search.autoRunFrequency ?? null,
       });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load saved search");
+      setError(e instanceof Error ? e.message : t("houseSearch.loadSavedFailed"));
     } finally {
       setLoading(false);
     }
@@ -232,7 +235,7 @@ export default function HouseSearchClient() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
     } catch {
       setTracked(prev);
-      setError("Couldn't update the schedule.");
+      setError(t("houseSearch.scheduleFailed"));
     }
   }, [tracked]);
 
@@ -251,15 +254,15 @@ export default function HouseSearchClient() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           rows={3}
-          placeholder="e.g. 3 bed / 2 bath single-family in Pasadena under $1.2M, big backyard, good schools, move-in ready"
+          placeholder={t("houseSearch.placeholder")}
           className="mt-2 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
           disabled={loading}
         />
         <div className="mt-3 flex items-center justify-between gap-3">
           <span className="text-xs text-slate-400">
             {quota?.reached
-              ? "Daily limit reached — resets at midnight UTC."
-              : "Searches the live web — results take up to a minute."}
+              ? t("houseSearch.limitReached")
+              : t("houseSearch.limitNote")}
           </span>
           <button
             type="button"
@@ -267,7 +270,7 @@ export default function HouseSearchClient() {
             disabled={loading || query.trim().length === 0 || quota?.reached === true}
             className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Searching…" : "Search"}
+            {loading ? t("houseSearch.searching") : t("houseSearch.search")}
           </button>
         </div>
         {error ? (
@@ -303,15 +306,15 @@ export default function HouseSearchClient() {
                 </button>
               </div>
               <div className="flex flex-wrap items-center gap-2 border-t border-emerald-200 pt-3">
-                <label className="text-xs font-semibold text-emerald-900">Auto-send to buyer</label>
+                <label className="text-xs font-semibold text-emerald-900">{t("houseSearch.autoSend")}</label>
                 <select
                   value={tracked.autoRun ? tracked.autoRunFrequency ?? "daily" : "off"}
                   onChange={(e) => void setSchedule(e.target.value as "off" | "daily" | "weekly")}
                   className="rounded-lg border border-emerald-300 bg-white px-2 py-1 text-xs font-medium text-slate-700"
                 >
-                  <option value="off">Off</option>
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
+                  <option value="off">{t("houseSearch.off")}</option>
+                  <option value="daily">{t("houseSearch.daily")}</option>
+                  <option value="weekly">{t("houseSearch.weekly")}</option>
                 </select>
                 <span className="text-xs text-emerald-800">
                   {tracked.autoRun
@@ -420,7 +423,7 @@ export default function HouseSearchClient() {
                       <div className="flex items-baseline justify-between gap-3">
                         <p className="truncate text-sm font-semibold text-slate-900">{l.address}</p>
                         <p className="shrink-0 text-sm font-bold tabular-nums text-slate-900">
-                          {money(l.price)}
+                          {money(l.price, t)}
                         </p>
                       </div>
                       {metaLine(l) ? (

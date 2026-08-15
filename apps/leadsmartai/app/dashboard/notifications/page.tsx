@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/server";
+
 import type { ReactNode } from "react";
 import { Bell, Flame, PhoneMissed } from "lucide-react";
 import { supabaseServer } from "@/lib/supabaseServer";
@@ -112,6 +114,9 @@ function EmptyRow({ children }: { children: ReactNode }) {
 }
 
 export default async function NotificationsPage() {
+  const serverT = await getServerT();
+  // Named `tr` — task and follow-up rows below bind `t` in their .map().
+  const tr = (key: string, o?: Record<string, unknown>) => serverT(key, { ns: "dashboard", ...o });
   const ctx = await getCurrentAgentContext();
   const agentId = ctx.agentId;
 
@@ -188,9 +193,9 @@ export default async function NotificationsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="ui-page-title text-brand-text">Notifications</h1>
+        <h1 className="ui-page-title text-brand-text">{tr("notifications.title")}</h1>
         <p className="ui-page-subtitle mt-1 text-brand-text/80">
-          Hot leads to prioritize, calls you may have missed, and reminders across your pipeline.
+          {tr("notifications.subtitle")}
         </p>
       </div>
 
@@ -202,14 +207,14 @@ export default async function NotificationsPage() {
               <Flame className="h-4 w-4" strokeWidth={2} aria-hidden />
             </span>
             <div>
-              <h2 className="text-sm font-semibold text-slate-900">Hot leads</h2>
-              <p className="text-xs text-slate-500">High-intent contacts</p>
+              <h2 className="text-sm font-semibold text-slate-900">{tr("notifications.hotLeads")}</h2>
+              <p className="text-xs text-slate-500">{tr("notifications.hotLeadsSub")}</p>
             </div>
             <Link
               href="/dashboard/leads?filter=hot"
               className="ml-auto text-xs font-semibold text-[#0072ce] hover:underline"
             >
-              View all
+              {tr("notifications.viewAll")}
             </Link>
           </div>
           <div className="min-h-[120px] flex-1">
@@ -232,7 +237,7 @@ export default async function NotificationsPage() {
                 ))}
               </ul>
             ) : (
-              <EmptyRow>No hot leads right now. Ratings update as leads engage.</EmptyRow>
+              <EmptyRow>{tr("notifications.noHotLeads")}</EmptyRow>
             )}
           </div>
         </section>
@@ -244,14 +249,14 @@ export default async function NotificationsPage() {
               <PhoneMissed className="h-4 w-4" strokeWidth={2} aria-hidden />
             </span>
             <div>
-              <h2 className="text-sm font-semibold text-slate-900">Missed calls</h2>
-              <p className="text-xs text-slate-500">No answer or failed dial</p>
+              <h2 className="text-sm font-semibold text-slate-900">{tr("notifications.missedCalls")}</h2>
+              <p className="text-xs text-slate-500">{tr("notifications.missedCallsSub")}</p>
             </div>
             <Link
               href="/dashboard/calls"
               className="ml-auto text-xs font-semibold text-[#0072ce] hover:underline"
             >
-              Call log
+              {tr("notifications.callLog")}
             </Link>
           </div>
           <div className="min-h-[120px] flex-1">
@@ -259,7 +264,7 @@ export default async function NotificationsPage() {
               <ul className="space-y-2 p-3">
                 {missedCalls.map((c, idx) => {
                   const leadName = leadEmbedName(c.leads);
-                  const displayName = leadName ?? c.from_phone ?? "Unknown caller";
+                  const displayName = leadName ?? c.from_phone ?? tr("notifications.unknownCaller");
                   const href =
                     c.contact_id != null
                       ? `/dashboard/leads?id=${encodeURIComponent(String(c.contact_id))}`
@@ -267,7 +272,7 @@ export default async function NotificationsPage() {
                   const summary = String(c.summary ?? "").trim();
                   const detailLine = summary
                     ? `${summary.length > 120 ? `${summary.slice(0, 119)}…` : summary} — tap to review`
-                    : "AI captured details — tap to review";
+                    : tr("notifications.aiCaptured");
                   return (
                     <li key={c.id}>
                       <Link
@@ -295,7 +300,7 @@ export default async function NotificationsPage() {
                 })}
               </ul>
             ) : (
-              <EmptyRow>No missed calls on record.</EmptyRow>
+              <EmptyRow>{tr("notifications.noMissedCalls")}</EmptyRow>
             )}
           </div>
         </section>
@@ -307,9 +312,9 @@ export default async function NotificationsPage() {
               <Bell className="h-4 w-4" strokeWidth={2} aria-hidden />
             </span>
             <div>
-              <h2 className="text-sm font-semibold text-slate-900">Reminders</h2>
+              <h2 className="text-sm font-semibold text-slate-900">{tr("notifications.reminders")}</h2>
               <p className="text-xs text-slate-500">
-                Appointments, tasks, follow-ups
+                {tr("notifications.remindersSub")}
                 {reminderCount > 0 ? ` · ${reminderCount}` : ""}
               </p>
             </div>
@@ -317,7 +322,7 @@ export default async function NotificationsPage() {
               href="/dashboard/calendar"
               className="ml-auto text-xs font-semibold text-[#0072ce] hover:underline"
             >
-              Calendar
+              {tr("notifications.calendar")}
             </Link>
           </div>
           <div className="min-h-[120px] flex-1 space-y-4 p-4">
@@ -346,7 +351,7 @@ export default async function NotificationsPage() {
             {overdueTasks.length > 0 ? (
               <div>
                 <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-                  Overdue tasks
+                  {tr("notifications.overdueTasks")}
                 </p>
                 <ul className="space-y-2">
                   {overdueTasks.slice(0, 6).map((t) => (
@@ -358,7 +363,7 @@ export default async function NotificationsPage() {
                         <p className="font-medium text-slate-900">{t.title}</p>
                         <p className="text-xs text-amber-800/90">
                           {t.lead_name ? `${t.lead_name} · ` : ""}
-                          Due {t.due_at ? new Date(t.due_at).toLocaleString() : "—"}
+                          {t.due_at ? tr("notifications.due", { when: new Date(t.due_at).toLocaleString() }) : "—"}
                         </p>
                       </Link>
                     </li>
@@ -370,7 +375,7 @@ export default async function NotificationsPage() {
             {followUps.length > 0 ? (
               <div>
                 <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-                  Follow-ups
+                  {tr("notifications.followUps")}
                 </p>
                 <ul className="space-y-2">
                   {followUps.slice(0, 8).map((f, idx) => (
@@ -388,7 +393,7 @@ export default async function NotificationsPage() {
                           <span className="mr-1.5" aria-hidden>
                             ⏰
                           </span>
-                          Follow-up Reminder
+                          {tr("notifications.followUpReminder")}
                         </p>
                         <p
                           className={
@@ -400,7 +405,7 @@ export default async function NotificationsPage() {
                           {followUpActionSubtitle(f)}
                         </p>
                         <p className="mt-2 text-[11px] text-slate-400">
-                          Scheduled {new Date(f.next_contact_at).toLocaleString()}
+                          {tr("notifications.scheduled", { when: new Date(f.next_contact_at).toLocaleString() })}
                         </p>
                       </Link>
                     </li>
@@ -430,7 +435,7 @@ export default async function NotificationsPage() {
       {notifications.length > 0 ? (
         <section className="space-y-3">
           <div>
-            <h2 className="text-base font-semibold text-slate-900">Property listing alerts</h2>
+            <h2 className="text-base font-semibold text-slate-900">{tr("notifications.listingAlerts")}</h2>
             <p className="text-sm text-slate-600">
               Automated nearby listing activity sent to your leads (email/SMS).
             </p>
@@ -440,10 +445,10 @@ export default async function NotificationsPage() {
               <table className="min-w-full text-sm">
                 <thead className="bg-slate-50 text-slate-600">
                   <tr>
-                    <th className="ui-table-header px-4 py-3 text-left">Lead</th>
-                    <th className="ui-table-header px-4 py-3 text-left">Type</th>
-                    <th className="ui-table-header px-4 py-3 text-left">Property</th>
-                    <th className="ui-table-header px-4 py-3 text-left">Sent</th>
+                    <th className="ui-table-header px-4 py-3 text-left">{tr("notifications.columns.lead")}</th>
+                    <th className="ui-table-header px-4 py-3 text-left">{tr("notifications.columns.type")}</th>
+                    <th className="ui-table-header px-4 py-3 text-left">{tr("notifications.columns.property")}</th>
+                    <th className="ui-table-header px-4 py-3 text-left">{tr("notifications.columns.sent")}</th>
                   </tr>
                 </thead>
                 <tbody>
