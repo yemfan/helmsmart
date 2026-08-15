@@ -145,10 +145,15 @@ export default function DigitalTwinPanel() {
       const res = await fetch("/api/dashboard/avatar");
       const b = (await res.json().catch(() => ({}))) as AvatarResp;
       if (b.ok) {
-        // No clone yet? Start on a stock voice rather than a selection that
-        // can only fail — they can still switch to their clone once it's ready.
-        if (!b.voiceReady) {
-          setAvVoice((v) => (v === CLONE_VOICE_ID ? (AVATAR_PRESET_VOICES[0]?.id ?? CLONE_VOICE_ID) : v));
+        /*
+         * Until the agent picks a voice themselves, the selection FOLLOWS clone
+         * readiness — in both directions. The first version of this only ever
+         * downgraded to a preset when no clone existed, and never came back: an
+         * agent whose clone failed and then succeeded kept silently previewing
+         * in a stock voice while the clone sat there ready.
+         */
+        if (!voiceTouched.current) {
+          setAvVoice(b.voiceReady ? CLONE_VOICE_ID : (AVATAR_PRESET_VOICES[0]?.id ?? CLONE_VOICE_ID));
         }
         setAv({
           configured: Boolean(b.configured),
@@ -519,10 +524,10 @@ export default function DigitalTwinPanel() {
             onClick={() => void voiceAction("start", { clean: avPremium && vcClean })}
             disabled={vcBusy !== null || !vc?.configured || !vc?.consent || !vc?.hasIntroVideo}
             className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
-            title={!vc?.consent ? t("twin.cloneVoiceTitle") : !vc?.hasIntroVideo ? "Record + build your intro video first" : t("twin.cloneVoice")}
+            title={!vc?.consent ? t("twin.cloneVoiceTitle") : !vc?.hasIntroVideo ? t("twin.recordFirst") : t("twin.cloneVoice")}
           >
             {vcBusy === "start"
-              ? "Cloning… (up to a minute)"
+              ? t("twin.cloning")
               : vc?.hasClone
                 ? t("twin.recloneVoice")
                 : t("twin.cloneVoice")}
@@ -554,7 +559,12 @@ export default function DigitalTwinPanel() {
           ) : vc?.status === "processing" ? (
             <span className="text-[12px] text-slate-500">{t("twin.processing")}</span>
           ) : vc?.status === "failed" ? (
-            <span className="text-[12px] text-rose-700">{t("twin.cloneFailed")}</span>
+            <span className="text-[12px] text-rose-700">
+              {t("twin.cloneFailed")}
+              {/* The reason is persisted in voice_clone_error but was never shown,
+                  so a failed clone read as a dead end with nothing to act on. */}
+              {vc?.error ? <span className="text-slate-500"> — {vc.error}</span> : null}
+            </span>
           ) : null}
         </div>
 

@@ -1076,7 +1076,9 @@
     "languageNote": "Written in the language set in the header — switch to 中文 and rebuild for Chinese.",
     "voiceConsent": "I consent to CloseBoss creating an AI clone of my voice from my intro video. I can revoke this anytime.",
     "building": "Building…",
-    "transcribing": "Transcribing + building your profile… (a minute or two)"
+    "transcribing": "Transcribing + building your profile… (a minute or two)",
+    "cloning": "Cloning… (up to a minute)",
+    "recordFirst": "Record + build your intro video first"
   },
   "call": {
     "call": "Call",
