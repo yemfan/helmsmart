@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AI_TEAM, type AssistantType } from "@/lib/realtyboss/team";
 import { AssistantAvatar, AssistantAvatarPicker } from "@/components/realtyboss/AssistantAvatar";
 
@@ -26,6 +27,7 @@ type Performance = {
 };
 
 export default function AiTeamClient() {
+  const { t } = useTranslation("dashboard");
   const [assistants, setAssistants] = useState<AssistantRow[]>([]);
   const [skills, setSkills] = useState<SkillRow[]>([]);
   const [perf, setPerf] = useState<Performance | null>(null);
@@ -44,11 +46,11 @@ export default function AiTeamClient() {
       setAssistants((res.assistants ?? []) as AssistantRow[]);
       setSkills((res.skills ?? []) as SkillRow[]);
     } else {
-      setError(res?.error ?? "Could not load your AI team.");
+      setError(res?.error ?? t("aiTeam.loadFailed"));
     }
     if (perfRes?.ok) setPerf(perfRes as Performance);
     setLoading(false);
-  }, []);
+  }, [t]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -67,11 +69,11 @@ export default function AiTeamClient() {
       if (res?.ok && res.assistant) {
         setAssistants((prev) => prev.map((a) => (a.type === type ? (res.assistant as AssistantRow) : a)));
       } else {
-        setError(res?.error ?? "Could not save — try again.");
+        setError(res?.error ?? t("aiTeam.saveFailed"));
       }
       setSaving(null);
     },
-    [],
+    [t],
   );
 
   const uploadAvatar = useCallback(async (type: AssistantType, file: File) => {
@@ -86,7 +88,7 @@ export default function AiTeamClient() {
     if (res?.ok && res.assistant) {
       setAssistants((prev) => prev.map((a) => (a.type === type ? (res.assistant as AssistantRow) : a)));
     } else {
-      setError(res?.error ?? "Upload failed — try again.");
+      setError(res?.error ?? t("aiTeam.uploadFailed"));
     }
     setSaving(null);
   }, []);
@@ -104,7 +106,7 @@ export default function AiTeamClient() {
     if (res?.ok && res.assistant) {
       setAssistants((prev) => prev.map((a) => (a.type === type ? (res.assistant as AssistantRow) : a)));
     } else {
-      setError(res?.error ?? "Could not remove — try again.");
+      setError(res?.error ?? t("aiTeam.removeFailed"));
     }
     setSaving(null);
   }, []);
@@ -112,12 +114,9 @@ export default function AiTeamClient() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">CloseBoss</p>
-        <h1 className="mt-0.5 text-xl font-semibold text-gray-900">Manage Your AI Team</h1>
-        <p className="text-sm text-gray-500">
-          Pause an assistant to hide its recommendations and activity from your Boss Assistant
-          dashboard, and choose which skills each assistant works with.
-        </p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">{t("aiTeam.eyebrow")}</p>
+        <h1 className="mt-0.5 text-xl font-semibold text-gray-900">{t("aiTeam.heading")}</h1>
+        <p className="text-sm text-gray-500">{t("aiTeam.intro")}</p>
       </div>
 
       {error && (
@@ -128,13 +127,35 @@ export default function AiTeamClient() {
       {perf && (
         <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-semibold text-gray-900">
-            Performance <span className="font-normal text-gray-400">· last {perf.windowDays} days</span>
+            {t("aiTeam.perfHeading")}{" "}
+            <span className="font-normal text-gray-400">
+              {t("aiTeam.perfWindow", { days: perf.windowDays })}
+            </span>
           </h2>
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <PerfStat label="Calls answered" value={perf.calls.answered} hint={perf.calls.avgDurationSeconds != null ? `avg ${Math.round(perf.calls.avgDurationSeconds / 60)}m` : undefined} />
-            <PerfStat label="Missed calls recovered" value={`${perf.calls.recovered}/${perf.calls.missed}`} hint="text-back sent / missed" />
-            <PerfStat label="Outbound AI calls" value={perf.calls.outbound} />
-            <PerfStat label="Priorities completed" value={perf.recommendations.completed} hint={`${perf.recommendations.open} open · ${perf.recommendations.dismissed} dismissed`} />
+            <PerfStat
+              label={t("aiTeam.callsAnswered")}
+              value={perf.calls.answered}
+              hint={
+                perf.calls.avgDurationSeconds != null
+                  ? t("aiTeam.avgMinutes", { minutes: Math.round(perf.calls.avgDurationSeconds / 60) })
+                  : undefined
+              }
+            />
+            <PerfStat
+              label={t("aiTeam.missedRecovered")}
+              value={`${perf.calls.recovered}/${perf.calls.missed}`}
+              hint={t("aiTeam.missedHint")}
+            />
+            <PerfStat label={t("aiTeam.outboundCalls")} value={perf.calls.outbound} />
+            <PerfStat
+              label={t("aiTeam.prioritiesCompleted")}
+              value={perf.recommendations.completed}
+              hint={t("aiTeam.prioritiesHint", {
+                open: perf.recommendations.open,
+                dismissed: perf.recommendations.dismissed,
+              })}
+            />
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             {perf.assistants
@@ -146,8 +167,8 @@ export default function AiTeamClient() {
                   <div key={a.type} className="rounded-lg border border-gray-100 p-3">
                     <p className="text-xs font-medium text-gray-900">{def?.displayName ?? a.type}</p>
                     <p className="text-[10px] text-gray-500">
-                      {a.activities} activit{a.activities === 1 ? "y" : "ies"}
-                      {a.needsAttention > 0 ? ` · ${a.needsAttention} needed you` : ""}
+                      {t("aiTeam.activities", { count: a.activities })}
+                      {a.needsAttention > 0 ? t("aiTeam.neededYou", { count: a.needsAttention }) : ""}
                     </p>
                     <div className="mt-2 flex h-8 items-end gap-0.5" aria-hidden>
                       {a.series.map((v, i) => (
@@ -155,11 +176,11 @@ export default function AiTeamClient() {
                           key={i}
                           className={`flex-1 rounded-sm ${v > 0 ? "bg-blue-500/80" : "bg-gray-100"}`}
                           style={{ height: `${Math.max(8, (v / max) * 100)}%` }}
-                          title={`${v} on day ${i + 1}`}
+                          title={t("aiTeam.barTooltip", { count: v, day: i + 1 })}
                         />
                       ))}
                     </div>
-                    <p className="mt-1 text-[10px] text-gray-400">activity · last 14 days</p>
+                    <p className="mt-1 text-[10px] text-gray-400">{t("aiTeam.activityWindow")}</p>
                   </div>
                 );
               })}
@@ -168,7 +189,7 @@ export default function AiTeamClient() {
       )}
 
       {loading ? (
-        <p className="py-8 text-center text-sm text-gray-400">Loading your AI team…</p>
+        <p className="py-8 text-center text-sm text-gray-400">{t("aiTeam.loading")}</p>
       ) : (
         <div className="space-y-4">
           {assistants.map((a) => {
@@ -185,11 +206,17 @@ export default function AiTeamClient() {
                       <div className="flex items-center gap-2">
                         <h2 className="text-sm font-semibold text-gray-900">{def?.displayName ?? a.name}</h2>
                         <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-gray-200 text-gray-600"}`}>
-                          {a.status}
+                          {t(a.status === "active" ? "aiTeam.statusActive" : "aiTeam.statusPaused")}
                         </span>
                       </div>
-                      <p className="text-xs font-medium text-gray-600">{def?.name}</p>
-                      <p className="text-[11px] text-gray-400">{def?.personality ?? def?.mission ?? ""}</p>
+                      <p className="text-xs font-medium text-gray-600">
+                        {t(`aiTeam.role.${a.type}`, { defaultValue: def?.name ?? "" })}
+                      </p>
+                      <p className="text-[11px] text-gray-400">
+                        {t(`aiTeam.personality.${a.type}`, {
+                          defaultValue: def?.personality ?? def?.mission ?? "",
+                        })}
+                      </p>
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
@@ -198,11 +225,11 @@ export default function AiTeamClient() {
                       onClick={() => setEditing((cur) => (cur === a.type ? null : a.type))}
                       className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
                     >
-                      {editing === a.type ? "Close" : "Edit avatar"}
+                      {editing === a.type ? t("aiTeam.close") : t("aiTeam.editAvatar")}
                     </button>
                     {def && def.type !== "boss_assistant" && (
                       <Link href={def.href} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-                        View dashboard
+                        {t("aiTeam.viewDashboard")}
                       </Link>
                     )}
                     <button
@@ -211,7 +238,11 @@ export default function AiTeamClient() {
                       onClick={() => void patch(a.type, { status: a.status === "active" ? "paused" : "active" })}
                       className={`rounded-lg px-3 py-1.5 text-xs font-medium shadow-sm disabled:opacity-50 ${a.status === "active" ? "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50" : "bg-gray-900 text-white hover:bg-gray-700"}`}
                     >
-                      {saving === a.type ? "Saving…" : a.status === "active" ? "Pause" : "Activate"}
+                      {saving === a.type
+                        ? t("aiTeam.saving")
+                        : a.status === "active"
+                          ? t("aiTeam.pause")
+                          : t("aiTeam.activate")}
                     </button>
                   </div>
                 </div>
@@ -219,11 +250,11 @@ export default function AiTeamClient() {
                 {editing === a.type && (
                   <div className="mt-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
                     <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                      Avatar
+                      {t("aiTeam.avatar")}
                     </p>
                     <div className="mb-3 flex items-center gap-2">
                       <label className="cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-                        {saving === a.type ? "Uploading…" : "Upload photo"}
+                        {saving === a.type ? t("aiTeam.uploading") : t("aiTeam.uploadPhoto")}
                         <input
                           type="file"
                           accept="image/png,image/jpeg,image/webp,image/gif"
@@ -243,10 +274,10 @@ export default function AiTeamClient() {
                           onClick={() => void removeAvatar(a.type)}
                           className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-500 shadow-sm hover:bg-gray-50 disabled:opacity-50"
                         >
-                          Remove photo
+                          {t("aiTeam.removePhoto")}
                         </button>
                       )}
-                      <span className="text-[10px] text-gray-400">JPG/PNG/WEBP, ≤5 MB — or pick one below</span>
+                      <span className="text-[10px] text-gray-400">{t("aiTeam.photoHint")}</span>
                     </div>
                     <AssistantAvatarPicker
                       value={a.avatar_url ? undefined : a.avatar_id}
@@ -258,7 +289,7 @@ export default function AiTeamClient() {
 
                 {configurable && (
                   <div className="mt-3 border-t border-gray-100 pt-3">
-                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-400">Skills</p>
+                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-gray-400">{t("aiTeam.skills")}</p>
                     <div className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
                       {skills
                         .filter((s) => rosterSkills.has(s.key))
@@ -279,8 +310,12 @@ export default function AiTeamClient() {
                                 className="mt-0.5"
                               />
                               <span className="min-w-0">
-                                <span className="block text-xs font-medium text-gray-900">{s.name}</span>
-                                <span className="block text-[10px] leading-snug text-gray-500">{s.description}</span>
+                                <span className="block text-xs font-medium text-gray-900">
+                                  {t(`aiTeam.skill.${s.key}.name`, { defaultValue: s.name })}
+                                </span>
+                                <span className="block text-[10px] leading-snug text-gray-500">
+                                  {t(`aiTeam.skill.${s.key}.desc`, { defaultValue: s.description })}
+                                </span>
                               </span>
                             </label>
                           );

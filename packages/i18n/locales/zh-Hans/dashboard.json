@@ -1310,5 +1310,143 @@
       "/dashboard/books": "创建并跟踪发票。",
       "/dashboard/expenses": "记录并归类支出。"
     }
+  },
+  "aiTeam": {
+    "eyebrow": "CloseBoss",
+    "heading": "管理您的 AI 团队",
+    "intro": "暂停某位助理可将其建议与动态从 Boss 助理面板中隐藏；您也可以选择每位助理启用哪些技能。",
+    "loading": "正在加载您的 AI 团队…",
+    "loadFailed": "无法加载您的 AI 团队。",
+    "saveFailed": "保存失败，请重试。",
+    "uploadFailed": "上传失败，请重试。",
+    "removeFailed": "移除失败，请重试。",
+    "perfHeading": "表现",
+    "perfWindow": "· 最近 {{days}} 天",
+    "callsAnswered": "已接听来电",
+    "avgMinutes": "平均 {{minutes}} 分钟",
+    "missedRecovered": "已挽回的未接来电",
+    "missedHint": "已发回访短信 / 未接总数",
+    "outboundCalls": "AI 外拨电话",
+    "prioritiesCompleted": "已完成的优先事项",
+    "prioritiesHint": "{{open}} 项待办 · {{dismissed}} 项已忽略",
+    "activities_other": "{{count}} 条动态",
+    "activities_one": "{{count}} 条动态",
+    "neededYou": " · {{count}} 条需要您处理",
+    "activityWindow": "动态 · 最近 14 天",
+    "statusActive": "使用中",
+    "statusPaused": "已暂停",
+    "close": "收起",
+    "editAvatar": "编辑头像",
+    "viewDashboard": "查看面板",
+    "saving": "保存中…",
+    "pause": "暂停",
+    "activate": "启用",
+    "avatar": "头像",
+    "uploading": "上传中…",
+    "uploadPhoto": "上传照片",
+    "removePhoto": "移除照片",
+    "photoHint": "JPG/PNG/WEBP，不超过 5 MB —— 或从下方选择一个",
+    "skills": "技能",
+    "role": {
+      "boss_assistant": "队长",
+      "receptionist": "AI 前台接待",
+      "sales_assistant": "AI 销售专员",
+      "marketing_assistant": "AI 营销专员",
+      "transaction_assistant": "AI 交易协调员",
+      "accountant": "AI 财务分析师"
+    },
+    "personality": {
+      "boss_assistant": "沉稳的领导者，讲策略，始终掌控全局。",
+      "receptionist": "亲切热情，从不错过任何一通来电。",
+      "sales_assistant": "自信、有说服力，跟进从不松懈。",
+      "marketing_assistant": "富有创意，充满干劲，助您做大业务。",
+      "transaction_assistant": "条理清晰，注重细节，推动交易不断向前。",
+      "accountant": "精准、善于分析，每一分钱都盯得住。"
+    },
+    "skill": {
+      "follow_up": {
+        "name": "跟进",
+        "desc": "按合适的节奏跟进潜在客户。"
+      },
+      "objection_handling": {
+        "name": "异议处理",
+        "desc": "沉着应对常见的客户异议。"
+      },
+      "reactivation": {
+        "name": "客户唤醒",
+        "desc": "以友好的方式重新联系老客户。"
+      },
+      "speed_to_lead": {
+        "name": "极速响应",
+        "desc": "新客户一到立即联系，并争取约见。"
+      },
+      "commission_tracking": {
+        "name": "佣金跟踪",
+        "desc": "从在途交易到实际到账，全程盯住佣金。"
+      },
+      "expense_tracking": {
+        "name": "支出跟踪",
+        "desc": "按类别监控业务开支。"
+      },
+      "invoice_tracking": {
+        "name": "发票跟踪",
+        "desc": "跟踪发票从草稿、已发送、逾期到已付款的全过程。"
+      },
+      "payment_reminders": {
+        "name": "付款提醒",
+        "desc": "礼貌而持续地催收应收款项。"
+      },
+      "lead_generation": {
+        "name": "客源开发",
+        "desc": "运行带来新客户的营销活动与工具。"
+      },
+      "marketing_plans": {
+        "name": "营销计划",
+        "desc": "搭建并执行多步骤的短信／邮件营销计划。"
+      },
+      "social_content": {
+        "name": "社交内容",
+        "desc": "创作并排期社交贴文，让经纪人持续保持曝光。"
+      },
+      "sphere_nurture": {
+        "name": "人脉圈培育",
+        "desc": "用滴灌消息与摘要维系经纪人的人脉圈。"
+      },
+      "buyer_qualification": {
+        "name": "买方资格评估",
+        "desc": "判断买家的成交意愿与客户热度。"
+      },
+      "seller_qualification": {
+        "name": "卖方资格评估",
+        "desc": "判断卖家的委托机会与客户热度。"
+      },
+      "faq": {
+        "name": "常见问题",
+        "desc": "依据知识库回答已审核的业务常见问题。"
+      },
+      "lead_capture": {
+        "name": "客户信息采集",
+        "desc": "采集必要的联系方式，并创建或更新客户记录。"
+      },
+      "transfer": {
+        "name": "转接／升级",
+        "desc": "将紧急来电转接或升级给经纪人。"
+      },
+      "appointment_scheduling": {
+        "name": "预约安排",
+        "desc": "预约咨询、带看、委托洽谈或产品演示。"
+      },
+      "document_reminders": {
+        "name": "文件提醒",
+        "desc": "提醒经纪人或客户补齐缺失的文件。"
+      },
+      "transaction_deadlines": {
+        "name": "交易节点跟踪",
+        "desc": "跟踪关键交易日期并生成提醒。"
+      }
+    },
+    "barTooltip": "第 {{day}} 天 {{count}} 条",
+    "metaTitle": "管理 AI 团队",
+    "metaDescription": "配置您的 CloseBoss AI 团队——暂停助理并选择他们的技能。"
   }
 }
