@@ -408,11 +408,20 @@ export default function BrandingSettingsPanel() {
 
       {/* Lead Ad — privacy policy URL override */}
       <div className="space-y-2">
+        {/*
+          No PREMIUM badge. This field was never gated — no `disabled` here, no
+          entitlement check in the PATCH route — so the badge advertised a
+          paywall that did not exist. It also contradicts the usage-based model
+          (everything included, credits are the only gate), which the avatar
+          flags were updated for and this one was missed.
+
+          It matters that it stays open to everyone: this points Meta Lead Ad
+          forms at the agent's OWN brokerage privacy policy. An agent who skips
+          it because it looks paid runs lead ads against our bundled URL, which
+          is worse for their compliance than for our revenue.
+        */}
         <label className="block text-[11px] font-medium text-gray-500">
-          {t("branding.leadAdUrl")}{" "}
-          <span className="ml-1 rounded-full bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-purple-800">
-            {t("branding.premium")}
-          </span>
+          {t("branding.leadAdUrl")}
         </label>
         <input
           type="url"
