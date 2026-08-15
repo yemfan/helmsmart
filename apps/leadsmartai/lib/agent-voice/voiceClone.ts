@@ -137,6 +137,31 @@ export async function setUseClonedVoice(agentId: string, on: boolean): Promise<V
 /** ElevenLabs rejects uploads above this, per their own error text. */
 const MAX_SAMPLE_BYTES = 11 * 1024 * 1024;
 
+/**
+ * Delete a voice we no longer reference. Best-effort by design: a re-clone that
+ * succeeded must not be reported as failed because housekeeping didn't land.
+ *
+ * Without this, every re-clone left its predecessor behind. ElevenLabs caps
+ * custom voices per plan, so orphans accumulate until cloning starts failing
+ * for EVERY agent — and that failure looks like a cloning bug rather than a
+ * quota one, which is a miserable thing to debug.
+ */
+async function deleteRemoteVoice(voiceId: string): Promise<void> {
+  const key = process.env.ELEVENLABS_API_KEY?.trim();
+  if (!key || !voiceId.trim()) return;
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/voices/${encodeURIComponent(voiceId)}`, {
+      method: "DELETE",
+      headers: { "xi-api-key": key },
+    });
+    if (!res.ok) {
+      console.warn(`[voice-clone] could not delete superseded voice ${voiceId} (${res.status})`);
+    }
+  } catch (e) {
+    console.warn("[voice-clone] delete superseded voice failed:", e instanceof Error ? e.message : e);
+  }
+}
+
 /** Bytes → whole MB, for error copy an agent can actually act on. */
 function mb(bytes: number): number {
   return Math.round(bytes / (1024 * 1024));
@@ -260,6 +285,13 @@ export async function startVoiceCloneFromTwin(
       use_cloned_voice: false,
       voice_clone_preview_acknowledged_at: null,
     });
+
+    // Retire the voice this one replaces. Only AFTER the new id is safely
+    // stored, so a failure here can never leave the agent with no voice at all.
+    const superseded = settings.voiceCloneRemoteId?.trim();
+    if (superseded && superseded !== result.remoteVoiceId) {
+      await deleteRemoteVoice(superseded);
+    }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Voice clone failed.";
     await patchClone(agentId, { voice_clone_status: "failed", voice_clone_error: msg.slice(0, 2000) });

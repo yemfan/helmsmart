@@ -109,6 +109,10 @@ export default function DigitalTwinPanel() {
   // Which voice speaks the script. Defaults to the agent's clone; a stock
   // preset lets them make content without cloning, or in a different voice.
   const [avVoice, setAvVoice] = useState<string>(CLONE_VOICE_ID);
+  // Set once the agent picks a voice themselves. Until then loadAvatar keeps the
+  // selection in sync with clone readiness; after, their choice is never
+  // overridden by a background refresh.
+  const voiceTouched = useRef(false);
   const [vcClean, setVcClean] = useState(false);
 
   async function publishAvatar() {
@@ -145,10 +149,15 @@ export default function DigitalTwinPanel() {
       const res = await fetch("/api/dashboard/avatar");
       const b = (await res.json().catch(() => ({}))) as AvatarResp;
       if (b.ok) {
-        // No clone yet? Start on a stock voice rather than a selection that
-        // can only fail — they can still switch to their clone once it's ready.
-        if (!b.voiceReady) {
-          setAvVoice((v) => (v === CLONE_VOICE_ID ? (AVATAR_PRESET_VOICES[0]?.id ?? CLONE_VOICE_ID) : v));
+        /*
+         * Until the agent picks a voice themselves, the selection FOLLOWS clone
+         * readiness — in both directions. This used to only ever downgrade to a
+         * preset when no clone existed, and never came back: an agent whose
+         * clone failed and then succeeded kept silently previewing in a stock
+         * voice while their own clone sat there ready.
+         */
+        if (!voiceTouched.current) {
+          setAvVoice(b.voiceReady ? CLONE_VOICE_ID : (AVATAR_PRESET_VOICES[0]?.id ?? CLONE_VOICE_ID));
         }
         setAv({
           configured: Boolean(b.configured),
@@ -660,6 +669,7 @@ export default function DigitalTwinPanel() {
               <select
                 value={avVoice}
                 onChange={(e) => {
+                  voiceTouched.current = true;
                   setAvVoice(e.target.value);
                   // Switching voice invalidates a prior preview for the same
                   // reason editing the script does — it's no longer what you heard.
