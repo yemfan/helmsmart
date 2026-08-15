@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
@@ -11,15 +13,12 @@ type Tab = {
   description: string;
 };
 
-const TABS: readonly Tab[] = [
-  { id: "voice", label: "Voice & Style", description: "How CloseBoss sounds." },
-  { id: "messages", label: "Messages", description: "What CloseBoss sends, and when." },
-  { id: "tools", label: "Data & Tools", description: "Links and imports you share with clients." },
-  {
-    id: "channels",
-    label: "Channels & Compliance",
-    description: "The plumbing behind every send.",
-  },
+/** Labels + descriptions resolve from `dashboard:settings.tabs.*` at render. */
+const TABS: readonly { id: SettingsTabId }[] = [
+  { id: "voice" },
+  { id: "messages" },
+  { id: "tools" },
+  { id: "channels" },
 ];
 
 const isTabId = (v: string): v is SettingsTabId =>
@@ -36,6 +35,7 @@ export default function SettingsTabsClient({
   tools: ReactNode;
   channels: ReactNode;
 }) {
+  const { t } = useTranslation("dashboard");
   // Default tab is "messages" per handoff — returning agents are usually here
   // to tune a rule, not change their personality.
   const [activeTab, setActiveTab] = useState<SettingsTabId>("messages");
@@ -95,7 +95,7 @@ export default function SettingsTabsClient({
                     : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
-                {tab.label}
+                {t(`settings.tabs.${tab.id}.label`)}
               </button>
             );
           })}
@@ -103,8 +103,8 @@ export default function SettingsTabsClient({
       </nav>
 
       <div className="mb-5">
-        <h1 className="text-xl font-semibold text-gray-900">Settings</h1>
-        <p className="mt-0.5 text-sm text-gray-500">{active.description}</p>
+        <h1 className="text-xl font-semibold text-gray-900">{t("settings.pageTitle")}</h1>
+        <p className="mt-0.5 text-sm text-gray-500">{t(`settings.tabs.${active.id}.description`)}</p>
       </div>
 
       <div className="space-y-4">{body}</div>

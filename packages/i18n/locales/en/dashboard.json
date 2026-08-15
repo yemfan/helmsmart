@@ -378,7 +378,46 @@
     "briefingsHelp": "When the ☀️ morning plan and 🌙 evening summary fire each day on your dashboard and in the mobile app.",
     "smartLink": "Home Value Smart Link",
     "smartLinkHelp": "Share with homeowners to route them into your funnel.",
-    "mlsImport": "MLS Data Import"
+    "mlsImport": "MLS Data Import",
+    "pageTitle": "Settings",
+    "tabs": {
+      "voice": {
+        "label": "Voice & Style",
+        "description": "How CloseBoss sounds."
+      },
+      "messages": {
+        "label": "Messages",
+        "description": "What CloseBoss sends, and when."
+      },
+      "tools": {
+        "label": "Data & Tools",
+        "description": "Links and imports you share with clients."
+      },
+      "channels": {
+        "label": "Channels & Compliance",
+        "description": "The plumbing behind every send."
+      }
+    },
+    "reviewPolicy": "Review Policy",
+    "reviewPolicyHelp": "Control whether messages send automatically when triggers fire, or wait for your approval first. The most important setting in Messages — it affects every template across every channel.",
+    "timing": "Timing & Frequency",
+    "timingHelp": "Rules that apply across every template. These override any template-level settings — the most restrictive rule always wins.",
+    "templates": {
+      "heading": "Message Templates",
+      "inLibrary": "In your library",
+      "autosend": "Autosend",
+      "reviewFirst": "Review first",
+      "off": "Off",
+      "columns": {
+        "id": "ID",
+        "template": "Template",
+        "channel": "Channel",
+        "langs": "Langs",
+        "status": "Status"
+      },
+      "review": "Review",
+      "bilingualLabel": "Bilingual coverage:"
+    }
   },
   "showings": {
     "title": "Showings",
