@@ -230,14 +230,45 @@ export async function previewAvatarVoice(
   return { audioUrl: data.signedUrl, audioPath };
 }
 
-async function pollFal(statusUrl: string, responseUrl: string, headers: Record<string, string>): Promise<unknown> {
-  const started = Date.now();
+/**
+ * Total wall-clock budget for ALL fal work in one render, shared across every
+ * step rather than granted per step.
+ *
+ * The route's maxDuration is 300s and Vercel SIGKILLs at that wall. A kill is
+ * not an exception — it skips `withCreditsMetered`'s refund entirely, so the
+ * agent pays full price for nothing and sees a generic error. We therefore have
+ * to fail inside our own code first; the remaining ~60s covers persisting the
+ * clip and running the refund.
+ *
+ * This budget used to be 280s PER fal call, which meant a Lifelike + Sharper
+ * render — two sequential jobs — could ask for 560s against a 300s wall and was
+ * guaranteed to be killed.
+ */
+const RENDER_BUDGET_MS = 240_000;
+
+/** Distinguishable so the route can explain the one thing the agent can act on. */
+export class RenderTimeoutError extends Error {
+  constructor() {
+    super(
+      "The video took too long to render, so it was stopped and your credits were returned. " +
+        "Turn off “Sharper video” (it doubles the work) or shorten the script, then try again.",
+    );
+    this.name = "RenderTimeoutError";
+  }
+}
+
+async function pollFal(
+  statusUrl: string,
+  responseUrl: string,
+  headers: Record<string, string>,
+  deadlineAt: number,
+): Promise<unknown> {
   for (;;) {
     const r = await fetch(statusUrl, { headers });
     const s = (await r.json().catch(() => ({}))) as { status?: string };
     if (s.status === "COMPLETED") break;
     if (s.status === "FAILED" || s.status === "ERROR") throw new Error("Avatar render failed.");
-    if (Date.now() - started > 280_000) throw new Error("Avatar render timed out.");
+    if (Date.now() > deadlineAt) throw new RenderTimeoutError();
     await new Promise((res) => setTimeout(res, 3000));
   }
   const rr = await fetch(responseUrl, { headers });
@@ -254,7 +285,7 @@ async function pollFal(statusUrl: string, responseUrl: string, headers: Record<s
  * video-upscaler. Best-effort — the caller falls back to the base video on any
  * failure, so this never blocks a render.
  */
-async function upscaleVideo(url: string): Promise<string> {
+async function upscaleVideo(url: string, deadlineAt: number): Promise<string> {
   const H = falHeaders();
   const sub = await fetch(`${FAL_QUEUE}/${FAL_UPSCALE}`, {
     method: "POST",
@@ -270,14 +301,14 @@ async function upscaleVideo(url: string): Promise<string> {
   if (!sub.ok) throw new Error(`Upscale submit ${sub.status}: ${q.detail || ""}`);
   const statusUrl = q.status_url || `${FAL_QUEUE}/${FAL_UPSCALE}/requests/${q.request_id}/status`;
   const responseUrl = q.response_url || `${FAL_QUEUE}/${FAL_UPSCALE}/requests/${q.request_id}`;
-  const out = (await pollFal(statusUrl, responseUrl, H)) as { video?: { url?: string }; url?: string };
+  const out = (await pollFal(statusUrl, responseUrl, H, deadlineAt)) as { video?: { url?: string }; url?: string };
   const outUrl = out.video?.url || out.url;
   if (!outUrl) throw new Error("Upscale returned no video.");
   return outUrl;
 }
 
 /** Extract a still portrait frame from the intro video (fal ffmpeg extract-frame). */
-async function extractPortrait(videoUrl: string): Promise<string> {
+async function extractPortrait(videoUrl: string, deadlineAt: number): Promise<string> {
   const H = falHeaders();
   const sub = await fetch(`${FAL_QUEUE}/${FAL_EXTRACT_FRAME}`, {
     method: "POST",
@@ -293,7 +324,7 @@ async function extractPortrait(videoUrl: string): Promise<string> {
   if (!sub.ok) throw new Error(`Frame extract ${sub.status}: ${q.detail || ""}`);
   const statusUrl = q.status_url || `${FAL_QUEUE}/${FAL_EXTRACT_FRAME}/requests/${q.request_id}/status`;
   const responseUrl = q.response_url || `${FAL_QUEUE}/${FAL_EXTRACT_FRAME}/requests/${q.request_id}`;
-  const out = (await pollFal(statusUrl, responseUrl, H)) as {
+  const out = (await pollFal(statusUrl, responseUrl, H, deadlineAt)) as {
     images?: { url?: string }[];
     image?: { url?: string };
   };
@@ -303,7 +334,7 @@ async function extractPortrait(videoUrl: string): Promise<string> {
 }
 
 /** Photo-to-avatar: portrait + voice → a lifelike talking video (fal Fabric). */
-async function fabricAvatar(imageUrl: string, audioUrl: string): Promise<string> {
+async function fabricAvatar(imageUrl: string, audioUrl: string, deadlineAt: number): Promise<string> {
   const H = falHeaders();
   const sub = await fetch(`${FAL_QUEUE}/${FAL_FABRIC}`, {
     method: "POST",
@@ -319,7 +350,7 @@ async function fabricAvatar(imageUrl: string, audioUrl: string): Promise<string>
   if (!sub.ok) throw new Error(`Avatar render ${sub.status}: ${q.detail || ""}`);
   const statusUrl = q.status_url || `${FAL_QUEUE}/${FAL_FABRIC}/requests/${q.request_id}/status`;
   const responseUrl = q.response_url || `${FAL_QUEUE}/${FAL_FABRIC}/requests/${q.request_id}`;
-  const out = (await pollFal(statusUrl, responseUrl, H)) as { video?: { url?: string } };
+  const out = (await pollFal(statusUrl, responseUrl, H, deadlineAt)) as { video?: { url?: string } };
   const url = out.video?.url;
   if (!url) throw new Error("Avatar render returned no video.");
   return url;
@@ -332,6 +363,10 @@ export async function renderAvatarVideo(
   options?: { sharpen?: boolean; photoAvatar?: boolean; voice?: string | null },
 ): Promise<{ videoUrl: string; sharpened?: boolean; photoAvatar?: boolean }> {
   if (!avatarConfigured()) throw new Error("Avatar isn't configured (needs FAL_KEY + ELEVENLABS_API_KEY).");
+
+  // One deadline for every fal step below. Started here rather than per call so
+  // that enabling both premium passes can't silently double the time budget.
+  const deadlineAt = Date.now() + RENDER_BUDGET_MS;
 
   const agent = await readAgent(agentId);
 
@@ -383,8 +418,8 @@ export async function renderAvatarVideo(
     // Lifelike avatar: a portrait (uploaded, or a frame pulled from the intro
     // video) + the voice → a talking avatar with head motion (Fabric), instead
     // of lipsync-on-clip.
-    const portrait = usingPortrait ? v.signedUrl : await extractPortrait(v.signedUrl);
-    resultUrl = await fabricAvatar(portrait, a.signedUrl);
+    const portrait = usingPortrait ? v.signedUrl : await extractPortrait(v.signedUrl, deadlineAt);
+    resultUrl = await fabricAvatar(portrait, a.signedUrl, deadlineAt);
   } else {
     const H = falHeaders();
     const sub = await fetch(`${FAL_QUEUE}/${LIPSYNC}`, {
@@ -401,7 +436,7 @@ export async function renderAvatarVideo(
     if (!sub.ok) throw new Error(`Render submit ${sub.status}: ${q.detail || ""}`);
     const statusUrl = q.status_url || `${FAL_QUEUE}/${LIPSYNC}/requests/${q.request_id}/status`;
     const responseUrl = q.response_url || `${FAL_QUEUE}/${LIPSYNC}/requests/${q.request_id}`;
-    const out = (await pollFal(statusUrl, responseUrl, H)) as { video?: { url?: string } };
+    const out = (await pollFal(statusUrl, responseUrl, H, deadlineAt)) as { video?: { url?: string } };
     const url = out.video?.url;
     if (!url) throw new Error("Render returned no video.");
     resultUrl = url;
@@ -411,9 +446,12 @@ export async function renderAvatarVideo(
   // clip if it fails so a render never breaks on the enhancement.
   let finalUrl = resultUrl;
   let sharpened = false;
+  // Sharing the deadline matters most here: if the base render used most of the
+  // budget, the upscale runs out of time, gets caught below, and the agent still
+  // receives the video they paid for instead of losing the whole render.
   if (options?.sharpen) {
     try {
-      finalUrl = await upscaleVideo(resultUrl);
+      finalUrl = await upscaleVideo(resultUrl, deadlineAt);
       sharpened = true;
     } catch (e) {
       console.warn("[avatar] sharpen/upscale failed, using base video:", e instanceof Error ? e.message : e);
