@@ -8,7 +8,11 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-/** Canonical subscription UI lives at /dashboard/billing. */
+/**
+ * Canonical billing UI lives at /dashboard/credits — CloseBoss moved to
+ * usage-based pricing. Points straight there rather than bouncing through
+ * /dashboard/billing, which is itself only a redirect to the same place.
+ */
 export default function AccountBillingPage() {
-  redirect("/dashboard/billing");
+  redirect("/dashboard/credits");
 }

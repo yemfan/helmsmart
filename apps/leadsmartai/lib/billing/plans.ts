@@ -2,16 +2,19 @@ import type { InternalPlan } from "./stripe-plan-map";
 
 /**
  * LeadSmart agent plan catalog — single source of truth for the
- * dashboard billing page, the upgrade modal, the marketing pricing
- * page, the Stripe checkout, and entitlement gating.
+ * upgrade modal, the marketing pricing page, the Stripe checkout, and
+ * entitlement gating.
+ *
+ * Note: the in-app billing surface is now `/dashboard/credits`
+ * (usage-based pricing), which renders `CREDIT_TIERS` / `CREDIT_PACKS`
+ * from `lib/credits/pricing.ts` — not this catalog. The display fields
+ * below (`displayName` / `tagline` / `popular`) are still served to
+ * clients by `/api/billing/subscription`.
  *
  * Derived elsewhere (so we don't fork pricing across files):
  *   - `crmStripePrices.ts`     reads `stripePriceEnvVar` / `stripePriceEnvVarAnnual` per slug
  *   - `stripe-plan-map.ts`     reads `internalPlan` per slug
  *   - `subscriptionAccess.ts`  exposes feature gating via `hasFeature`
- *   - `BillingPageClient.tsx`  renders cards from `displayName` +
- *                              `tagline` + `price`/`annualPrice` + `features` +
- *                              `popular`
  *
  * Naming aligns with the marketing pricing page v2.0 (Starter / Pro /
  * Premium / Signature / Team — see `apps/leadsmartai/app/agent/pricing/`).
@@ -51,7 +54,7 @@ export type BillingCadence = "monthly" | "annual";
 
 export type PlanDefinition = {
   slug: PlanSlug;
-  /** Card title on plan cards + dashboard billing page. */
+  /** Card title on plan cards. */
   displayName: string;
   /** One-line subtitle on plan cards. */
   tagline: string;
