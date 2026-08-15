@@ -1236,5 +1236,53 @@
       "closingSoon": "Closing in {{days}} days with {{tasks}}.",
       "closingSoon_one": "Closing in {{days}} day with {{tasks}}."
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Hot leads to prioritize, calls you may have missed, and reminders across your pipeline.",
+    "hotLeads": "Hot leads",
+    "hotLeadsSub": "High-intent contacts",
+    "viewAll": "View all",
+    "noHotLeads": "No hot leads right now. Ratings update as leads engage.",
+    "missedCalls": "Missed calls",
+    "missedCallsSub": "No answer or failed dial",
+    "callLog": "Call log",
+    "noMissedCalls": "No missed calls on record.",
+    "unknownCaller": "Unknown caller",
+    "aiCaptured": "AI captured details — tap to review",
+    "reminders": "Reminders",
+    "remindersSub": "Appointments, tasks, follow-ups",
+    "calendar": "Calendar",
+    "overdueTasks": "Overdue tasks",
+    "followUps": "Follow-ups",
+    "followUpReminder": "Follow-up Reminder",
+    "due": "Due {{when}}",
+    "scheduled": "Scheduled {{when}}",
+    "listingAlerts": "Property listing alerts",
+    "columns": {
+      "lead": "Lead",
+      "type": "Type",
+      "property": "Property",
+      "sent": "Sent"
+    }
+  },
+  "houseSearch": {
+    "title": "AI House Search",
+    "subtitle": "Describe what your buyer is looking for in plain English. The assistant searches the web for real, current listings, suggests ways to narrow the results, and lets you email the best matches straight to your buyer.",
+    "prompt": "What is your buyer looking for?",
+    "placeholder": "e.g. 3 bed / 2 bath single-family in Pasadena under $1.2M, big backyard, good schools, move-in ready",
+    "limitNote": "Searches the live web — results take up to a minute.",
+    "limitReached": "Daily limit reached — resets at midnight UTC.",
+    "search": "Search",
+    "searching": "Searching…",
+    "savedSearches": "+ Saved searches by contact",
+    "autoSend": "Auto-send to buyer",
+    "off": "Off",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "priceOnRequest": "Price on request",
+    "searchFailed": "Search failed",
+    "loadSavedFailed": "Failed to load saved search",
+    "scheduleFailed": "Couldn't update the schedule."
   }
 }
