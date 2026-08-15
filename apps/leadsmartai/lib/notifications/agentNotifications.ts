@@ -94,7 +94,12 @@ export async function upsertAgentNotificationPreferences(
 
 export type InsertInboxParams = {
   agentId: string;
-  type: "hot_lead" | "missed_call" | "reminder" | "new_lead";
+  /**
+   * Must stay in step with the `agent_inbox_notifications_type_check` CHECK —
+   * an unlisted value fails the insert, and these are written best-effort, so
+   * the failure is silent and the agent is simply never told.
+   */
+  type: "hot_lead" | "missed_call" | "reminder" | "new_lead" | "avatar_ready";
   priority: "high" | "medium" | "low";
   title: string;
   body: string;

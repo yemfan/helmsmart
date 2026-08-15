@@ -9,25 +9,37 @@ import {
   renderAvatarVideo,
 } from "@/lib/agent/avatarStudio";
 import { userHasCrmFeature, subscriptionRequiredResponse } from "@/lib/billing/subscriptionAccess";
-import { withCreditsMetered, meteringEnforced, InsufficientCreditsError } from "@/lib/credits/metering";
-import { CREDIT_COSTS } from "@/lib/credits/ledger";
+import { meteringEnforced, InsufficientCreditsError } from "@/lib/credits/metering";
+import { enqueueAvatarRender, getLatestAvatarJob } from "@/lib/agent/avatarJobs";
 
-// The lipsync render can take a couple of minutes.
 export const runtime = "nodejs";
-export const maxDuration = 300;
+/**
+ * Only the cheap steps run inline now — drafting and the voice preview. The
+ * render is queued and driven by /api/cron/avatar-renders, so nothing here
+ * waits on fal and this no longer needs the old 300s ceiling.
+ */
+export const maxDuration = 120;
 
-/** GET — current avatar-studio state (readiness + last script/video). */
+/** GET — studio state, plus the latest render job so the UI can show progress. */
 export async function GET() {
   try {
     const { agentId, userId } = await getCurrentAgentContext();
-    const [state, hasPremium] = await Promise.all([
+    const [state, hasPremium, job] = await Promise.all([
       getAvatarState(String(agentId)),
       userHasCrmFeature(String(userId), "premium_avatar").catch(() => false),
+      getLatestAvatarJob(String(agentId)).catch(() => null),
     ]);
     // Under the usage model everything's included, so the premium enhancements
     // are available to everyone (the credit balance is the gate, not the plan).
     const premiumAvatar = hasPremium || meteringEnforced();
-    return NextResponse.json({ ok: true, ...state, premiumAvatar });
+    return NextResponse.json({
+      ok: true,
+      ...state,
+      premiumAvatar,
+      job: job
+        ? { id: job.id, status: job.status, videoUrl: job.video_url, error: job.error, sharpen: job.sharpen }
+        : null,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
@@ -96,11 +108,23 @@ export async function POST(req: Request) {
         ) {
           return subscriptionRequiredResponse("premium_avatar");
         }
-        // Reserve credits around the paid render (no-op unless metering is on).
-        const out = await withCreditsMetered(String(userId), CREDIT_COSTS.twinAvatar, "twin", () =>
-          renderAvatarVideo(id, text, audioPath, { sharpen, photoAvatar, voice }),
-        );
-        return NextResponse.json({ ok: true, ...out });
+        /*
+         * Queue it; don't run it. The render used to happen inline and could
+         * outlive the function, which SIGKILLed the request and skipped the
+         * refund — the agent paid for nothing. Now this returns a job id in
+         * milliseconds and /api/cron/avatar-renders drives it to completion,
+         * notifying the agent even if they close the tab.
+         */
+        const job = await enqueueAvatarRender({
+          agentId: id,
+          userId: String(userId),
+          script: text,
+          voice,
+          audioPath,
+          sharpen,
+          photoAvatar,
+        });
+        return NextResponse.json({ ok: true, queued: true, job: { id: job.id, status: job.status } });
       }
       case "publish": {
         const caption = typeof body.caption === "string" ? body.caption : undefined;
