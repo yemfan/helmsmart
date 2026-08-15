@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getPlaybookRun, getRunTasks } from "@/lib/realtyboss/playbook-runs/service";
@@ -18,10 +20,10 @@ const ASSIGNEE_LABEL: Record<string, string> = {
 
 export const dynamic = "force-dynamic";
 
-function fmtDate(iso: string | null): string {
+function fmtDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString();
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString(locale);
 }
 
 const PHASE_LABEL: Record<string, string> = {
@@ -35,6 +37,8 @@ const PHASE_LABEL: Record<string, string> = {
 };
 
 export default async function PlaybookRunPage({ params }: { params: Promise<{ id: string }> }) {
+  const tr = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const { id } = await params;
   const ctx = await getCurrentAgentContext();
   const run = await getPlaybookRun(ctx.agentId, id);
@@ -59,20 +63,20 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{run.title}</h1>
           <span className="rounded-md bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
-            {isSelling ? "Selling" : "Buying"}
+            {isSelling ? tr("playbookRuns.typeSelling", { ns: "dashboard" }) : tr("playbookRuns.typeBuying", { ns: "dashboard" })}
           </span>
           <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
             {run.status}
           </span>
         </div>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          {def.trigger} · Started {fmtDate(run.created_at)} · Next review {fmtDate(run.next_review_at)}
+          {def.trigger} · Started {fmtDate(run.created_at, locale)} · Next review {fmtDate(run.next_review_at, locale)}
         </p>
       </div>
 
       {/* Phases */}
       <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-        <h2 className="text-sm font-semibold text-slate-900 dark:text-white">How the team runs this</h2>
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{tr("pages.playbookRunDetail.howTeamRuns", { ns: "dashboard" })}</h2>
         <ol className="mt-3 space-y-2">
           {def.phases.map((p) => (
             <li key={p.key} className="flex gap-3 text-sm">
@@ -92,7 +96,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
       {isSelling ? (
         selling.marketingPlan ? (
           <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Marketing plan</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{tr("pages.playbookRunDetail.marketingPlan", { ns: "dashboard" })}</h2>
             {selling.channels?.length ? (
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {selling.channels.map((c) => (
@@ -107,18 +111,18 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
         ) : null
       ) : (
         <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">House-searching plan</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{tr("pages.playbookRunDetail.searchPlan", { ns: "dashboard" })}</h2>
           <dl className="mt-3 grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
             <div>
-              <dt className="text-xs text-slate-500 dark:text-slate-400">Criteria</dt>
+              <dt className="text-xs text-slate-500 dark:text-slate-400">{tr("pages.playbookRunDetail.criteria", { ns: "dashboard" })}</dt>
               <dd className="text-slate-800 dark:text-slate-200">{buying.criteria ?? "—"}</dd>
             </div>
             <div>
-              <dt className="text-xs text-slate-500 dark:text-slate-400">Cadence</dt>
+              <dt className="text-xs text-slate-500 dark:text-slate-400">{tr("pages.playbookRunDetail.cadence", { ns: "dashboard" })}</dt>
               <dd className="text-slate-800 dark:text-slate-200">{buying.frequency ?? "on demand"}</dd>
             </div>
             <div>
-              <dt className="text-xs text-slate-500 dark:text-slate-400">Channel</dt>
+              <dt className="text-xs text-slate-500 dark:text-slate-400">{tr("pages.playbookRunDetail.channel", { ns: "dashboard" })}</dt>
               <dd className="text-slate-800 dark:text-slate-200">{buying.channel ?? "email"}</dd>
             </div>
           </dl>
@@ -131,7 +135,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
       {/* Ads */}
       {isSelling && selling.ads?.length ? (
         <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Custom property ads</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{tr("pages.playbookRunDetail.customAds", { ns: "dashboard" })}</h2>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
             {selling.ads.map((ad, i) => (
               <div key={i} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700">
@@ -149,7 +153,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
       {/* Artifacts */}
       {artifacts.length ? (
         <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Deliverables</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{tr("pages.playbookRunDetail.deliverables", { ns: "dashboard" })}</h2>
           <ul className="mt-2 space-y-1.5 text-sm">
             {artifacts.map((a, i) => (
               <li key={i}>
@@ -169,7 +173,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
       {/* Optimize history */}
       {optimizeNotes.length ? (
         <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Optimization history</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{tr("pages.playbookRunDetail.optimizationHistory", { ns: "dashboard" })}</h2>
           <ul className="mt-2 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
             {optimizeNotes.map((n, i) => (
               <li key={i}>{n}</li>
@@ -205,7 +209,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
                 </span>
                 <div className="min-w-0 flex-1">
                   <span className="text-slate-800 dark:text-slate-200">{t.title}</span>
-                  {t.due_at ? <span className="ml-2 text-xs text-slate-400">due {fmtDate(t.due_at)}</span> : null}
+                  {t.due_at ? <span className="ml-2 text-xs text-slate-400">due {fmtDate(t.due_at, locale)}</span> : null}
                   <div className="mt-1 flex flex-wrap items-center gap-2">
                     {m.assignee ? (
                       <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-[11px] font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
@@ -217,7 +221,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
                       </span>
                     ) : null}
                     {m.dispatch_status === "done" ? (
-                      <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">✓ Ran autonomously</span>
+                      <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">{tr("pages.playbookRunDetail.ranAutonomously", { ns: "dashboard" })}</span>
                     ) : m.exec ? (
                       <ApproveRunButton runId={run.id} taskId={t.id} />
                     ) : null}
@@ -226,7 +230,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
               </li>
             );
           })}
-          {tasks.length === 0 ? <li className="text-sm text-slate-400">No tasks yet.</li> : null}
+          {tasks.length === 0 ? <li className="text-sm text-slate-400">{tr("pages.playbookRunDetail.noTasks", { ns: "dashboard" })}</li> : null}
         </ul>
       </section>
     </div>

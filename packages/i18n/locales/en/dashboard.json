@@ -1982,6 +1982,48 @@
       "colAction": "Action",
       "buy": "Buy Lead",
       "buying": "Buying…"
+    },
+    "playbookRunDetail": {
+      "howTeamRuns": "How the team runs this",
+      "marketingPlan": "Marketing plan",
+      "searchPlan": "House-searching plan",
+      "criteria": "Criteria",
+      "cadence": "Cadence",
+      "channel": "Channel",
+      "customAds": "Custom property ads",
+      "deliverables": "Deliverables",
+      "optimizationHistory": "Optimization history",
+      "ranAutonomously": "✓ Ran autonomously",
+      "noTasks": "No tasks yet.",
+      "approveRun": "Approve & run",
+      "running": "Running…",
+      "optimizeHeading": "Optimize as we go",
+      "optimizePlaceholder": "e.g. 12 showings, no offers; feedback says kitchen feels dated and price is high vs 2 new comps.",
+      "optimize": "Optimize",
+      "optimizing": "Optimizing…"
+    },
+    "marketing": {
+      "metaTitle": "Marketing",
+      "metaDescription": "Create and manage marketing campaigns and assets.",
+      "heading": "Marketing",
+      "shareableLinks": "Shareable Links",
+      "shareableIntro": "Use these to route homeowners into your funnel.",
+      "homeValueLink": "Home Value Smart Link",
+      "copyLink": "Copy link",
+      "share": "Share",
+      "smartPropertyLinks": "Smart Property Links",
+      "marketingPlans": "Marketing Plans",
+      "marketingPlansIntro": "Create automated multi-step marketing sequences for your leads — SMS, email, tasks, and reminders.",
+      "followUpAutomation": "Follow-up Automation",
+      "pending": "Pending",
+      "sent": "Sent",
+      "status": "Status",
+      "traffic": "Traffic & Conversion (30d)",
+      "pageViews": "Page Views",
+      "conversions": "Conversions",
+      "conversionRate": "Conversion Rate",
+      "topSources": "Top Sources",
+      "noTraffic": "No traffic events yet."
     }
   }
 }

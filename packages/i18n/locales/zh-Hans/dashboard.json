@@ -1982,6 +1982,48 @@
       "colAction": "操作",
       "buy": "购买客源",
       "buying": "购买中…"
+    },
+    "playbookRunDetail": {
+      "howTeamRuns": "团队如何推进这项工作",
+      "marketingPlan": "营销计划",
+      "searchPlan": "找房方案",
+      "criteria": "筛选条件",
+      "cadence": "推进节奏",
+      "channel": "渠道",
+      "customAds": "定制房源广告",
+      "deliverables": "交付成果",
+      "optimizationHistory": "优化记录",
+      "ranAutonomously": "✓ 已自动执行",
+      "noTasks": "暂无任务。",
+      "approveRun": "批准并运行",
+      "running": "运行中…",
+      "optimizeHeading": "边做边优化",
+      "optimizePlaceholder": "例如：带看 12 次仍无报价；反馈称厨房显旧，且相比两套新可比房源价格偏高。",
+      "optimize": "优化",
+      "optimizing": "优化中…"
+    },
+    "marketing": {
+      "metaTitle": "营销",
+      "metaDescription": "创建并管理营销活动与素材。",
+      "heading": "营销",
+      "shareableLinks": "可分享链接",
+      "shareableIntro": "用这些链接把房主引入您的转化漏斗。",
+      "homeValueLink": "房屋估值智能链接",
+      "copyLink": "复制链接",
+      "share": "分享",
+      "smartPropertyLinks": "房源智能链接",
+      "marketingPlans": "营销计划",
+      "marketingPlansIntro": "为您的客户创建多步骤自动化营销序列——短信、邮件、任务与提醒。",
+      "followUpAutomation": "跟进自动化",
+      "pending": "待发送",
+      "sent": "已发送",
+      "status": "状态",
+      "traffic": "流量与转化（30 天）",
+      "pageViews": "页面浏览量",
+      "conversions": "转化次数",
+      "conversionRate": "转化率",
+      "topSources": "主要来源",
+      "noTraffic": "暂无流量事件。"
     }
   }
 }

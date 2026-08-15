@@ -3,15 +3,20 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import HomeValueSmartLinkCopyShare from "@/components/dashboard/HomeValueSmartLinkCopyShare";
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Marketing",
-  description: "Create and manage marketing campaigns and assets.",
-  keywords: ["marketing", "campaigns", "real estate marketing"],
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.marketing.metaTitle", { ns: "dashboard" }),
+    description: t("pages.marketing.metaDescription", { ns: "dashboard" }),
+    keywords: ["marketing", "campaigns", "real estate marketing"],
+    robots: { index: false },
+  };
+}
 
 export default async function MarketingPage() {
+  const t = await getServerT();
   const { agentId, userId } = await getCurrentAgentContext();
   const widgetAgentKey = agentId || userId;
 
@@ -74,7 +79,7 @@ export default async function MarketingPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="ui-page-title text-brand-text">Marketing</h1>
+        <h1 className="ui-page-title text-brand-text">{t("pages.marketing.heading", { ns: "dashboard" })}</h1>
         <p className="ui-page-subtitle text-brand-text/80">
           Share links, track email follow-ups, and manage campaign status.
         </p>
@@ -82,12 +87,12 @@ export default async function MarketingPage() {
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-5">
         <div className="space-y-2">
-          <div className="ui-card-title text-brand-text">Shareable Links</div>
-          <div className="text-xs text-brand-text/80">Use these to route homeowners into your funnel.</div>
+          <div className="ui-card-title text-brand-text">{t("pages.marketing.shareableLinks", { ns: "dashboard" })}</div>
+          <div className="text-xs text-brand-text/80">{t("pages.marketing.shareableIntro", { ns: "dashboard" })}</div>
 
           <div className="space-y-3">
             <div>
-              <div className="text-xs font-semibold text-slate-700 mb-1">Home Value Smart Link</div>
+              <div className="text-xs font-semibold text-slate-700 mb-1">{t("pages.marketing.homeValueLink", { ns: "dashboard" })}</div>
               <div className="flex gap-2 flex-wrap items-center">
                 <input
                   readOnly
@@ -105,13 +110,13 @@ export default async function MarketingPage() {
                 <HomeValueSmartLinkCopyShare relativePath={homeValueSmartLink} />
               </div>
               <div className="mt-1 text-[11px] text-slate-500">
-                The field shows the path only. <strong>Copy link</strong> and <strong>Share</strong> use this browser’s full URL (your live
+                The field shows the path only. <strong>{t("pages.marketing.copyLink", { ns: "dashboard" })}</strong> and <strong>{t("pages.marketing.share", { ns: "dashboard" })}</strong> use this browser’s full URL (your live
                 domain + <span className="font-mono">{homeValueSmartLink}</span>).
               </div>
             </div>
 
             <div>
-              <div className="text-xs font-semibold text-slate-700 mb-1">Smart Property Links</div>
+              <div className="text-xs font-semibold text-slate-700 mb-1">{t("pages.marketing.smartPropertyLinks", { ns: "dashboard" })}</div>
               <div className="text-xs text-slate-600">
                 Generate trackable “open report” links for specific clients and addresses.
               </div>
@@ -128,7 +133,7 @@ export default async function MarketingPage() {
         </div>
 
         <div className="border-t border-slate-100 pt-5 space-y-3">
-          <div className="ui-card-title text-slate-900">Marketing Plans</div>
+          <div className="ui-card-title text-slate-900">{t("pages.marketing.marketingPlans", { ns: "dashboard" })}</div>
           <p className="text-xs text-slate-600">Create automated multi-step marketing sequences for your leads — SMS, email, tasks, and reminders.</p>
           <Link
             href="/dashboard/marketing/plans"
@@ -139,18 +144,18 @@ export default async function MarketingPage() {
         </div>
 
         <div className="border-t border-slate-100 pt-5 space-y-3">
-          <div className="ui-card-title text-slate-900">Follow-up Automation</div>
+          <div className="ui-card-title text-slate-900">{t("pages.marketing.followUpAutomation", { ns: "dashboard" })}</div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <div className="ui-card-subtitle text-slate-600">Pending</div>
+              <div className="ui-card-subtitle text-slate-600">{t("pages.marketing.pending", { ns: "dashboard" })}</div>
               <div className="mt-2 text-3xl font-extrabold text-slate-900">{pendingCount ?? 0}</div>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <div className="ui-card-subtitle text-slate-600">Sent</div>
+              <div className="ui-card-subtitle text-slate-600">{t("pages.marketing.sent", { ns: "dashboard" })}</div>
               <div className="mt-2 text-3xl font-extrabold text-slate-900">{sentCount ?? 0}</div>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <div className="ui-card-subtitle text-slate-600">Status</div>
+              <div className="ui-card-subtitle text-slate-600">{t("pages.marketing.status", { ns: "dashboard" })}</div>
               <div className="mt-2 text-sm text-slate-700">
                 Emails are sent automatically on schedule.
               </div>
@@ -159,23 +164,23 @@ export default async function MarketingPage() {
         </div>
 
         <div className="border-t border-slate-100 pt-5 space-y-3">
-          <div className="ui-card-title text-slate-900">Traffic & Conversion (30d)</div>
+          <div className="ui-card-title text-slate-900">{t("pages.marketing.traffic", { ns: "dashboard" })}</div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <div className="ui-card-subtitle text-slate-600">Page Views</div>
+              <div className="ui-card-subtitle text-slate-600">{t("pages.marketing.pageViews", { ns: "dashboard" })}</div>
               <div className="mt-2 text-3xl font-extrabold text-slate-900">{trafficViews ?? 0}</div>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <div className="ui-card-subtitle text-slate-600">Conversions</div>
+              <div className="ui-card-subtitle text-slate-600">{t("pages.marketing.conversions", { ns: "dashboard" })}</div>
               <div className="mt-2 text-3xl font-extrabold text-slate-900">{trafficConversions ?? 0}</div>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-              <div className="ui-card-subtitle text-slate-600">Conversion Rate</div>
+              <div className="ui-card-subtitle text-slate-600">{t("pages.marketing.conversionRate", { ns: "dashboard" })}</div>
               <div className="mt-2 text-3xl font-extrabold text-slate-900">{conversionRate}%</div>
             </div>
           </div>
           <div className="rounded-xl border border-slate-200 bg-white p-4">
-            <div className="text-xs font-semibold text-slate-700 mb-2">Top Sources</div>
+            <div className="text-xs font-semibold text-slate-700 mb-2">{t("pages.marketing.topSources", { ns: "dashboard" })}</div>
             {topSources.length ? (
               <div className="space-y-1">
                 {topSources.map((s) => (
@@ -188,7 +193,7 @@ export default async function MarketingPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-xs text-slate-500">No traffic events yet.</div>
+              <div className="text-xs text-slate-500">{t("pages.marketing.noTraffic", { ns: "dashboard" })}</div>
             )}
           </div>
         </div>

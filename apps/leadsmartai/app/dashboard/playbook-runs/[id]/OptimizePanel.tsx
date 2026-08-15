@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 
 import { optimizeRunAction } from "./actions";
 
@@ -10,6 +11,7 @@ import { optimizeRunAction } from "./actions";
  * without the agent — this is the approval-gated review step.
  */
 export function OptimizePanel({ runId }: { runId: string }) {
+  const { t } = useTranslation("dashboard");
   const [note, setNote] = useState("");
   const [suggestions, setSuggestions] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export function OptimizePanel({ runId }: { runId: string }) {
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Optimize as we go</h3>
+      <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{t("pages.playbookRunDetail.optimizeHeading")}</h3>
       <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
         Note how it&rsquo;s going (showings, feedback, what the buyer liked). The AI proposes prioritized
         adjustments and files an approval task — nothing changes until you approve it.
@@ -40,7 +42,7 @@ export function OptimizePanel({ runId }: { runId: string }) {
         onChange={(e) => setNote(e.target.value)}
         disabled={pending}
         rows={3}
-        placeholder="e.g. 12 showings, no offers; feedback says kitchen feels dated and price is high vs 2 new comps."
+        placeholder={t("pages.playbookRunDetail.optimizePlaceholder")}
         className="mt-3 w-full rounded-lg border border-slate-200 bg-white p-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
       />
       <button
@@ -49,7 +51,7 @@ export function OptimizePanel({ runId }: { runId: string }) {
         disabled={pending}
         className="mt-3 inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
       >
-        {pending ? "Optimizing…" : "Optimize"}
+        {pending ? t("pages.playbookRunDetail.optimizing") : t("pages.playbookRunDetail.optimize")}
       </button>
 
       {error ? <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p> : null}
