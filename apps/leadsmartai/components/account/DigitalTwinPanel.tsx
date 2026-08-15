@@ -572,29 +572,23 @@ export default function DigitalTwinPanel() {
           ) : null}
         </div>
 
-        {/* Review + activate */}
-        {vc?.status === "ready" && vc.hasClone ? (
+        {/*
+          Activate-on-calls only. The "this is my voice — confirm" button used to
+          live here too, but confirming a voice you have no way to HEAR from this
+          spot is a guess: the only playback is the avatar studio's Preview. It
+          now sits next to that button, so listen-then-confirm is one motion.
+        */}
+        {vc?.status === "ready" && vc.hasClone && vc.acknowledged ? (
           <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-3">
-            {!vc.acknowledged ? (
-              <button
-                type="button"
-                onClick={() => void voiceAction("acknowledge")}
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={vc.useClonedVoice}
                 disabled={vcBusy !== null}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-              >
-                {vcBusy === "acknowledge" ? "Saving…" : t("twin.confirmVoice")}
-              </button>
-            ) : (
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={vc.useClonedVoice}
-                  disabled={vcBusy !== null}
-                  onChange={(e) => void voiceAction("activate", { on: e.target.checked })}
-                />
-                <span className="text-slate-700">{t("twin.answerCalls")}</span>
-              </label>
-            )}
+                onChange={(e) => void voiceAction("activate", { on: e.target.checked })}
+              />
+              <span className="text-slate-700">{t("twin.answerCalls")}</span>
+            </label>
           </div>
         ) : null}
 
@@ -702,6 +696,23 @@ export default function DigitalTwinPanel() {
               >
                 {avBusy === "preview" ? "Synthesizing…" : t("twin.previewVoice")}
               </button>
+              {/*
+                Sits right after Preview on purpose: this is the only place the
+                agent can actually hear their clone, so confirming it is theirs
+                belongs next to the play button, not in a separate section.
+                Disappears once confirmed, which then reveals the
+                "answer calls in my voice" toggle above.
+              */}
+              {vc?.status === "ready" && vc.hasClone && !vc.acknowledged ? (
+                <button
+                  type="button"
+                  onClick={() => void voiceAction("acknowledge")}
+                  disabled={vcBusy !== null}
+                  className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
+                >
+                  {vcBusy === "acknowledge" ? "Saving…" : t("twin.confirmVoice")}
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={() => void avatarAction("render")}
