@@ -1953,6 +1953,35 @@
       "today": "今天",
       "oneDayAgo": "1 天前",
       "daysAgo": "{{count}} 天前"
+    },
+    "skillRunner": {
+      "backToSkills": "技能",
+      "noInput": "该技能无需额外输入——直接运行即可。",
+      "output": "输出",
+      "copy": "复制",
+      "copied": "已复制"
+    },
+    "opportunities": {
+      "metaTitle": "商机",
+      "metaDescription": "跟踪成交机会与转化管道。",
+      "heading": "客源市场",
+      "available": "可购买",
+      "sold": "已售出",
+      "conversion": "转化率",
+      "revenuePerLead": "每条客源收入",
+      "location": "地区",
+      "locationPlaceholder": "例如：Austin, TX",
+      "leadType": "客源类型",
+      "all": "全部",
+      "minPrice": "最低价格",
+      "maxPrice": "最高价格",
+      "loading": "正在加载商机…",
+      "colAddress": "地址",
+      "colIntent": "意向评分",
+      "colPrice": "价格",
+      "colAction": "操作",
+      "buy": "购买客源",
+      "buying": "购买中…"
     }
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 
 type Opportunity = {
@@ -17,6 +18,7 @@ type Opportunity = {
 };
 
 export default function OpportunitiesPage() {
+  const { t } = useTranslation("dashboard");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -139,7 +141,7 @@ export default function OpportunitiesPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="ui-page-title text-brand-text">Lead Marketplace</h1>
+          <h1 className="ui-page-title text-brand-text">{t("pages.opportunities.heading")}</h1>
           <p className="ui-page-subtitle text-brand-text/80 mt-1">
             Buy exclusive leads generated from tool usage.
           </p>
@@ -152,21 +154,21 @@ export default function OpportunitiesPage() {
       {metrics ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <div className="ui-card-subtitle text-slate-500">Available</div>
+            <div className="ui-card-subtitle text-slate-500">{t("pages.opportunities.available")}</div>
             <div className="text-2xl font-bold text-slate-900">{metrics.availableCount}</div>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <div className="ui-card-subtitle text-slate-500">Sold</div>
+            <div className="ui-card-subtitle text-slate-500">{t("pages.opportunities.sold")}</div>
             <div className="text-2xl font-bold text-slate-900">{metrics.soldCount}</div>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <div className="ui-card-subtitle text-slate-500">Conversion</div>
+            <div className="ui-card-subtitle text-slate-500">{t("pages.opportunities.conversion")}</div>
             <div className="text-2xl font-bold text-slate-900">
               {(metrics.conversionRate * 100).toFixed(1)}%
             </div>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <div className="ui-card-subtitle text-slate-500">Revenue / lead</div>
+            <div className="ui-card-subtitle text-slate-500">{t("pages.opportunities.revenuePerLead")}</div>
             <div className="text-2xl font-bold text-slate-900">${Math.round(metrics.revenuePerLead).toLocaleString()}</div>
           </div>
         </div>
@@ -175,20 +177,20 @@ export default function OpportunitiesPage() {
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 space-y-3">
         <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
           <div className="flex-1">
-            <label className="block text-xs font-medium text-slate-700">Location</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.opportunities.location")}</label>
             <input
               value={location}
               onChange={(e) => {
                 setPage(1);
                 setLocation(e.target.value);
               }}
-              placeholder="e.g. Austin, TX"
+              placeholder={t("pages.opportunities.locationPlaceholder")}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             />
           </div>
 
           <div className="w-full sm:w-44">
-            <label className="block text-xs font-medium text-slate-700">Lead Type</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.opportunities.leadType")}</label>
             <select
               value={leadType}
               onChange={(e) => {
@@ -197,7 +199,7 @@ export default function OpportunitiesPage() {
               }}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
             >
-              <option value="">All</option>
+              <option value="">{t("pages.opportunities.all")}</option>
               {leadTypeOptions.map((t) => (
                 <option key={t} value={t}>
                   {t}
@@ -207,7 +209,7 @@ export default function OpportunitiesPage() {
           </div>
 
           <div className="w-full sm:w-44">
-            <label className="block text-xs font-medium text-slate-700">Min Price</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.opportunities.minPrice")}</label>
             <input
               value={minPrice}
               onChange={(e) => {
@@ -221,7 +223,7 @@ export default function OpportunitiesPage() {
           </div>
 
           <div className="w-full sm:w-44">
-            <label className="block text-xs font-medium text-slate-700">Max Price</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.opportunities.maxPrice")}</label>
             <input
               value={maxPrice}
               onChange={(e) => {
@@ -240,17 +242,17 @@ export default function OpportunitiesPage() {
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-6 text-sm text-slate-600">Loading opportunities…</div>
+          <div className="p-6 text-sm text-slate-600">{t("pages.opportunities.loading")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead className="bg-slate-50">
                 <tr>
-                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">Address</th>
-                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">Lead Type</th>
-                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">Intent Score</th>
-                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">Price</th>
-                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">Action</th>
+                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">{t("pages.opportunities.colAddress")}</th>
+                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">{t("pages.opportunities.leadType")}</th>
+                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">{t("pages.opportunities.colIntent")}</th>
+                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">{t("pages.opportunities.colPrice")}</th>
+                  <th className="ui-table-header text-left text-slate-600 px-4 py-3">{t("pages.opportunities.colAction")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -282,7 +284,7 @@ export default function OpportunitiesPage() {
                           onClick={() => handleBuy(o.id)}
                           className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-3 py-2 text-xs font-semibold text-white hover:bg-[#005ca8] disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                          {buyingId === o.id ? "Buying..." : "Buy Lead"}
+                          {buyingId === o.id ? t("pages.opportunities.buying") : t("pages.opportunities.buy")}
                         </button>
                       </td>
                     </tr>

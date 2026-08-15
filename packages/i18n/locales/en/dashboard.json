@@ -1953,6 +1953,35 @@
       "today": "today",
       "oneDayAgo": "1 day ago",
       "daysAgo": "{{count}} days ago"
+    },
+    "skillRunner": {
+      "backToSkills": "Skills",
+      "noInput": "This skill needs no extra input — just run it.",
+      "output": "Output",
+      "copy": "Copy",
+      "copied": "Copied"
+    },
+    "opportunities": {
+      "metaTitle": "Opportunities",
+      "metaDescription": "Track deal opportunities and conversion pipeline.",
+      "heading": "Lead Marketplace",
+      "available": "Available",
+      "sold": "Sold",
+      "conversion": "Conversion",
+      "revenuePerLead": "Revenue / lead",
+      "location": "Location",
+      "locationPlaceholder": "e.g. Austin, TX",
+      "leadType": "Lead Type",
+      "all": "All",
+      "minPrice": "Min Price",
+      "maxPrice": "Max Price",
+      "loading": "Loading opportunities…",
+      "colAddress": "Address",
+      "colIntent": "Intent Score",
+      "colPrice": "Price",
+      "colAction": "Action",
+      "buy": "Buy Lead",
+      "buying": "Buying…"
     }
   }
 }
