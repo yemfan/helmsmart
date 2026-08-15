@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { Copy, Check, Sparkles, Loader2, ThumbsUp, X, Eye, Download, Send, Link2, ImagePlus } from "lucide-react";
@@ -24,13 +26,12 @@ const CONNECT_HREF = "/dashboard/leads/generate/connect";
  *  component and that module is server-only). */
 export type SocialMode = "ask" | "review" | "assisted" | "auto";
 
-const MODE_HELP: Record<SocialMode, string> = {
-  ask: "Drafts only — nothing is scheduled. You schedule each post yourself.",
-  review:
-    "Your week is written and scheduled at the right times, but nothing publishes until you approve it in the post queue.",
-  assisted:
-    "Recommended hands-off mode. Writes and schedules your week, fact-checks every post, and publishes only the ones it can verify — the rest wait for you. You can still cancel before it posts.",
-  auto: "Autopilot with NO review — posts publish to your accounts without any fact-check. Prefer “Autopilot — fact-checked” unless you review everything yourself.",
+/** Help-text keys into `dashboard:social.modeHelp.*` — module scope has no hook. */
+const MODE_HELP_KEY: Record<SocialMode, string> = {
+  ask: "draftsOnly",
+  review: "review",
+  assisted: "assisted",
+  auto: "auto",
 };
 
 export type SocialRec = {
@@ -68,6 +69,7 @@ export default function WeeklySocialPosts({
   /** Signature-tier: unlocks "bring your own image" + brand kit. */
   canCustomize?: boolean;
 }) {
+  const { t } = useTranslation("dashboard");
   const [recs, setRecs] = useState<SocialRec[]>(initialRecs);
   const [mode, setMode] = useState<SocialMode>(initialMode);
   const [generating, setGenerating] = useState(false);
@@ -95,7 +97,7 @@ export default function WeeklySocialPosts({
         error?: string;
       };
       if (!res.ok || !json.ok || !json.imageUrl) {
-        setError(json.error || "Could not upload your image.");
+        setError(json.error || t("social.errors.uploadFailed"));
         return;
       }
       const imageUrl = json.imageUrl;
@@ -105,7 +107,7 @@ export default function WeeklySocialPosts({
         ),
       );
     } catch {
-      setError("Could not upload your image.");
+      setError(t("social.errors.uploadFailed"));
     } finally {
       setUploadingId(null);
     }
@@ -129,7 +131,7 @@ export default function WeeklySocialPosts({
         error?: string;
       };
       if (!res.ok || !json.ok) {
-        setError(json.error || "Could not schedule the post.");
+        setError(json.error || t("social.errors.scheduleFailed"));
         return;
       }
       // Reflect scheduled status on the card.
@@ -137,7 +139,7 @@ export default function WeeklySocialPosts({
         prev.map((r) => (r.id === rec.id ? { ...r, status: "scheduled" } : r)),
       );
     } catch {
-      setError("Could not schedule the post.");
+      setError(t("social.errors.scheduleFailed"));
     } finally {
       setSchedulingId(null);
     }
@@ -158,12 +160,12 @@ export default function WeeklySocialPosts({
         error?: string;
       };
       if (!res.ok || !json.ok) {
-        setError(json.error || "Could not generate posts.");
+        setError(json.error || t("social.errors.generateFailed"));
         return;
       }
       if (Array.isArray(json.recommendations)) setRecs(json.recommendations);
     } catch {
-      setError("Could not generate posts.");
+      setError(t("social.errors.generateFailed"));
     } finally {
       setGenerating(false);
     }
@@ -194,11 +196,11 @@ export default function WeeklySocialPosts({
       const json = (await res.json().catch(() => ({}))) as { ok?: boolean };
       if (!res.ok || !json.ok) {
         setMode(mode); // revert
-        setError("Could not update autopilot setting.");
+        setError(t("social.errors.autopilotFailed"));
       }
     } catch {
       setMode(mode);
-      setError("Could not update autopilot setting.");
+      setError(t("social.errors.autopilotFailed"));
     } finally {
       setSavingMode(false);
     }
@@ -225,7 +227,7 @@ export default function WeeklySocialPosts({
       setTimeout(() => setCopiedId((c) => (c === rec.id ? null : c)), 1800);
       if (rec.status !== "approved") setStatus(rec.id, "copied");
     } catch {
-      setError("Clipboard not available.");
+      setError(t("social.errors.clipboard"));
     }
   }
 
@@ -233,7 +235,7 @@ export default function WeeklySocialPosts({
     <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">This week&apos;s social posts</h2>
+          <h2 className="text-sm font-semibold text-gray-900">{t("social.weeklyHeading")}</h2>
           {hasConnection ? (
             <p className="text-xs text-gray-500">
               AI-drafted for you — schedule to{" "}
@@ -255,20 +257,20 @@ export default function WeeklySocialPosts({
               waits — the only mode that publishes with no human ever seeing the
               post is 'auto'. */}
           <label className="sr-only" htmlFor="social-mode">
-            Posting mode
+            {t("social.postingMode")}
           </label>
           <select
             id="social-mode"
             value={mode}
             onChange={(e) => changeMode(e.target.value as SocialMode)}
             disabled={savingMode}
-            title={MODE_HELP[mode]}
+            title={t(`social.modeHelp.${MODE_HELP_KEY[mode]}`)}
             className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:opacity-60"
           >
-            <option value="ask">Drafts only</option>
-            <option value="review">Schedule, I approve</option>
-            <option value="assisted">Autopilot — fact-checked (recommended)</option>
-            <option value="auto">Autopilot — no review</option>
+            <option value="ask">{t("social.modes.draftsOnly")}</option>
+            <option value="review">{t("social.modes.scheduleApprove")}</option>
+            <option value="assisted">{t("social.modes.autopilotChecked")}</option>
+            <option value="auto">{t("social.modes.autopilotNoReview")}</option>
           </select>
 
           {/* Generate */}
@@ -283,7 +285,7 @@ export default function WeeklySocialPosts({
             ) : (
               <Sparkles className="h-3.5 w-3.5" />
             )}
-            {generating ? "Generating…" : "Generate this week's posts"}
+            {generating ? t("social.generating") : t("social.generate")}
           </button>
         </div>
       </div>
@@ -294,7 +296,7 @@ export default function WeeklySocialPosts({
 
       {visible.length === 0 ? (
         <p className="py-6 text-center text-sm text-gray-400">
-          No posts yet — Generate this week&apos;s posts.
+          {t("social.noPosts")}
         </p>
       ) : (
         <ul className="space-y-3">
@@ -308,7 +310,7 @@ export default function WeeklySocialPosts({
                       : "bg-indigo-100 text-indigo-700"
                   }`}
                 >
-                  {rec.source_type === "timely" ? "Timely" : "Evergreen"}
+                  {rec.source_type === "timely" ? t("social.timely") : t("social.evergreen")}
                 </span>
                 {rec.status === "approved" && (
                   <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
@@ -334,12 +336,12 @@ export default function WeeklySocialPosts({
                     type="button"
                     onClick={() => setPreviewId(rec.id)}
                     className="group relative hidden shrink-0 overflow-hidden rounded-lg border border-gray-200 sm:block"
-                    title="Preview the finished post"
+                    title={t("social.previewFinished")}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={rec.imageUrl}
-                      alt="Branded post image"
+                      alt={t("social.brandedImage")}
                       loading="lazy"
                       width={96}
                       height={96}
@@ -372,7 +374,7 @@ export default function WeeklySocialPosts({
 
               {rec.image_prompt && (
                 <p className="mt-2 text-xs text-gray-400">
-                  <span className="font-medium text-gray-500">Image idea:</span> {rec.image_prompt}
+                  <span className="font-medium text-gray-500">{t("social.imageIdea")}</span> {rec.image_prompt}
                 </p>
               )}
 
@@ -402,7 +404,7 @@ export default function WeeklySocialPosts({
                   ) : (
                     <Copy className="h-3.5 w-3.5" />
                   )}
-                  {copiedId === rec.id ? "Copied" : "Copy"}
+                  {copiedId === rec.id ? t("social.copied") : "Copy"}
                 </button>
 
                 {/* Schedule to social — the glue to the real publish engine. */}
@@ -460,7 +462,7 @@ export default function WeeklySocialPosts({
         </ul>
       )}
 
-      <p className="mt-3 text-[11px] text-gray-400">Week of {weekOf}</p>
+      <p className="mt-3 text-[11px] text-gray-400">{t("social.weekOf", { week: weekOf })}</p>
 
       {/* Finished-post preview modal */}
       {previewRec && (
@@ -469,7 +471,7 @@ export default function WeeklySocialPosts({
           onClick={() => setPreviewId(null)}
           role="dialog"
           aria-modal="true"
-          aria-label="Post preview"
+          aria-label={t("social.postPreview")}
         >
           <div
             className="my-8 w-full max-w-md rounded-2xl bg-white shadow-xl"
@@ -478,7 +480,7 @@ export default function WeeklySocialPosts({
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-gray-900">Post preview</span>
+                <span className="text-sm font-semibold text-gray-900">{t("social.postPreview")}</span>
                 <span
                   className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
                     previewRec.source_type === "timely"
@@ -486,14 +488,14 @@ export default function WeeklySocialPosts({
                       : "bg-indigo-100 text-indigo-700"
                   }`}
                 >
-                  {previewRec.source_type === "timely" ? "Timely" : "Evergreen"}
+                  {previewRec.source_type === "timely" ? t("social.timely") : t("social.evergreen")}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setPreviewId(null)}
                 className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-                aria-label="Close"
+                aria-label={t("social.close")}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -506,7 +508,7 @@ export default function WeeklySocialPosts({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={previewRec.imageUrl}
-                    alt="Branded post image"
+                    alt={t("social.brandedImage")}
                     className="block aspect-square w-full object-cover"
                   />
                 </div>
@@ -528,7 +530,7 @@ export default function WeeklySocialPosts({
                 <div className="mt-4 rounded-lg border border-[#0072ce]/20 bg-[#0072ce]/[0.04] px-3 py-3">
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-[#0072ce]">Use your own image</p>
+                      <p className="text-xs font-semibold text-[#0072ce]">{t("social.useOwnImage")}</p>
                       <p className="mt-0.5 text-[11px] leading-relaxed text-gray-600">
                         Replace the branded card with your own photo. Image now; short
                         video coming soon.
@@ -545,7 +547,7 @@ export default function WeeklySocialPosts({
                       ) : (
                         <ImagePlus className="h-3.5 w-3.5" />
                       )}
-                      {uploadingId === previewRec.id ? "Uploading…" : "Upload image"}
+                      {uploadingId === previewRec.id ? "Uploading…" : t("social.uploadImage")}
                     </button>
                   </div>
                   {previewRec.image_source === "custom" && (
@@ -569,7 +571,7 @@ export default function WeeklySocialPosts({
                 </div>
               ) : (
                 <div className="mt-4 rounded-lg border border-[#0072ce]/20 bg-[#0072ce]/[0.04] px-3 py-2.5 text-[11px] leading-relaxed text-gray-600">
-                  <span className="font-semibold text-[#0072ce]">Signature</span>: swap in
+                  <span className="font-semibold text-[#0072ce]">{t("social.signature")}</span>: swap in
                   your own photo or short video and put your logo &amp; colors on every post.{" "}
                   <a href="/dashboard/billing" className="font-semibold text-[#0072ce] underline hover:no-underline">
                     Upgrade →
@@ -590,7 +592,7 @@ export default function WeeklySocialPosts({
                 ) : (
                   <Copy className="h-3.5 w-3.5" />
                 )}
-                {copiedId === previewRec.id ? "Copied" : "Copy caption"}
+                {copiedId === previewRec.id ? t("social.copied") : t("social.copyCaption")}
               </button>
 
               {previewRec.imageUrl && (

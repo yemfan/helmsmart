@@ -606,7 +606,10 @@
       "advanced": "Advanced",
       "customAd": "Design a custom ad",
       "comingUp": "Coming up",
-      "latestActivity": "Latest activity"
+      "latestActivity": "Latest activity",
+      "hints": {
+        "last30": "last 30 days"
+      }
     },
     "accountant": {
       "tabs": {
@@ -1147,6 +1150,49 @@
       "emailFailed": "Failed to send the email.",
       "bulkEmailFailed": "Bulk email failed.",
       "generic": "Something went wrong."
+    }
+  },
+  "social": {
+    "weeklyHeading": "This week's social posts",
+    "notConnected": "No social account connected — connect to auto-post. For now you can copy each post.",
+    "postingMode": "Posting mode",
+    "modes": {
+      "draftsOnly": "Drafts only",
+      "scheduleApprove": "Schedule, I approve",
+      "autopilotChecked": "Autopilot — fact-checked (recommended)",
+      "autopilotNoReview": "Autopilot — no review"
+    },
+    "generate": "Generate this week's posts",
+    "generating": "Generating…",
+    "noPosts": "No posts yet — Generate this week's posts.",
+    "weekOf": "Week of {{week}}",
+    "timely": "Timely",
+    "evergreen": "Evergreen",
+    "previewFinished": "Preview the finished post",
+    "postPreview": "Post preview",
+    "brandedImage": "Branded post image",
+    "imageIdea": "Image idea:",
+    "useOwnImage": "Use your own image",
+    "uploadImage": "Upload image",
+    "signature": "Signature",
+    "copyCaption": "Copy caption",
+    "copied": "Copied",
+    "close": "Close",
+    "errors": {
+      "uploadFailed": "Could not upload your image.",
+      "scheduleFailed": "Could not schedule the post.",
+      "generateFailed": "Could not generate posts.",
+      "autopilotFailed": "Could not update autopilot setting.",
+      "clipboard": "Clipboard not available."
+    },
+    "newsletter": {
+      "heading": "Your Client Newsletter"
+    },
+    "modeHelp": {
+      "draftsOnly": "Drafts only — nothing is scheduled. You schedule each post yourself.",
+      "review": "Your week is written and scheduled at the right times, but nothing publishes until you approve it in the post queue.",
+      "assisted": "Recommended hands-off mode. Writes and schedules your week, fact-checks every post, and publishes only the ones it can verify — the rest wait for you. You can still cancel before it posts.",
+      "auto": "Autopilot with NO review — posts publish to your accounts without any fact-check. Prefer “Autopilot — fact-checked” unless you review everything yourself."
     }
   }
 }
