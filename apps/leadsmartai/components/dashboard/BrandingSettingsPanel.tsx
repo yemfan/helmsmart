@@ -309,7 +309,7 @@ export default function BrandingSettingsPanel() {
                 onClick={() => setEditingSignature(true)}
                 className="text-xs font-medium text-blue-600 hover:text-blue-800"
               >
-                Change
+                {t("branding.change")}
               </button>
             )}
           </div>
@@ -409,9 +409,9 @@ export default function BrandingSettingsPanel() {
       {/* Lead Ad — privacy policy URL override */}
       <div className="space-y-2">
         <label className="block text-[11px] font-medium text-gray-500">
-          Lead Ad Privacy Policy URL{" "}
+          {t("branding.leadAdUrl")}{" "}
           <span className="ml-1 rounded-full bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-purple-800">
-            Premium
+            {t("branding.premium")}
           </span>
         </label>
         <input
@@ -423,14 +423,11 @@ export default function BrandingSettingsPanel() {
               leadAdPrivacyPolicyUrl: e.target.value,
             }))
           }
-          placeholder="https://yourbrokerage.com/privacy"
+          placeholder={t("branding.leadAdPlaceholder")}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         />
         <p className="text-[11px] text-gray-500">
-          Default privacy policy URL for Meta Lead Ad forms launched from
-          Generate Leads → Run Ads. Must be HTTPS. Leave blank to use
-          CloseBoss&apos;s bundled URL. You can also override this per-
-          campaign in the ad wizard.
+          {t("branding.leadAdHelp")}
         </p>
       </div>
 
