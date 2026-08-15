@@ -1266,7 +1266,10 @@
       "type": "类型",
       "property": "房源",
       "sent": "发送时间"
-    }
+    },
+    "callToday": "今天致电 {{name}}",
+    "callTomorrow": "明天致电 {{name}}",
+    "contactOn": "联系 {{name}} · {{when}}"
   },
   "houseSearch": {
     "title": "AI 找房",

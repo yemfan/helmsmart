@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
@@ -42,10 +43,10 @@ const SEVERITY_TONE: Record<InsightSeverity, { ring: string; tag: string; tagKey
   },
 };
 
-function formatGeneratedAt(iso: string | undefined): string {
+function formatGeneratedAt(iso: string | undefined, locale: string): string {
   if (!iso) return "";
   try {
-    return new Date(iso).toLocaleTimeString(undefined, {
+    return new Date(iso).toLocaleTimeString(locale, {
       hour: "numeric",
       minute: "2-digit",
     });
@@ -55,7 +56,8 @@ function formatGeneratedAt(iso: string | undefined): string {
 }
 
 export default function CoachingClient() {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [insights, setInsights] = useState<CoachingInsight[]>([]);
   const [generatedAt, setGeneratedAt] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
@@ -139,7 +141,7 @@ export default function CoachingClient() {
         </p>
         {generatedAt ? (
           <p className="mt-3 text-[11px] text-slate-400">
-            {t("more.coaching.lastRefreshed", { when: formatGeneratedAt(generatedAt) })}
+            {t("more.coaching.lastRefreshed", { when: formatGeneratedAt(generatedAt, locale) })}
           </p>
         ) : null}
       </div>
@@ -204,7 +206,7 @@ export default function CoachingClient() {
       </ul>
       {generatedAt ? (
         <p className="text-[11px] text-slate-400">
-          Refreshed {formatGeneratedAt(generatedAt)}
+          Refreshed {formatGeneratedAt(generatedAt, locale)}
         </p>
       ) : null}
     </div>

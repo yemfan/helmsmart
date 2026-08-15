@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -66,7 +67,8 @@ export default function SalesOutreachComposer({
    */
   prefill?: { contactId: string; channel: "call" | "sms" | "email"; nonce: number } | null;
 }) {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [channel, setChannel] = useState<Channel>("call");
   const [purpose, setPurpose] = useState<Purpose>("follow_up");
   const [targetMode, setTargetMode] = useState<TargetMode>("contact");
@@ -306,7 +308,7 @@ export default function SalesOutreachComposer({
         if (!res.ok || !data.ok) throw new Error(data.error || t("outreach.errors.scheduleFailed"));
         const noun = channel === "call" ? "call" : channel === "email" ? "email" : "text";
         const n = data.count ?? contactIds.length;
-        const whenLabel = new Date(scheduledIso).toLocaleString("en-US", {
+        const whenLabel = new Date(scheduledIso).toLocaleString(locale, {
           month: "short",
           day: "numeric",
           hour: "numeric",
@@ -633,7 +635,8 @@ function ChannelTab({
   disabled?: boolean;
   badge?: string;
 }) {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   return (
     <button
       type="button"

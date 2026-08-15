@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getServerT } from "@/lib/i18n/server";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import type { ReactNode } from "react";
 import { Bell, Flame, PhoneMissed } from "lucide-react";
@@ -85,7 +86,11 @@ type FollowUpReminderRow = {
 };
 
 /** Second line under “Follow-up Reminder” — e.g. “Call Mike Chen today”. */
-function followUpActionSubtitle(f: FollowUpReminderRow): string {
+function followUpActionSubtitle(
+  f: FollowUpReminderRow,
+  tr: (k: string, o?: Record<string, unknown>) => string,
+  locale: string,
+): string {
   const name = f.lead_name?.trim() || "this contact";
   const when = new Date(f.next_contact_at);
   const now = new Date();
@@ -93,20 +98,23 @@ function followUpActionSubtitle(f: FollowUpReminderRow): string {
     return `Follow up with ${name} — overdue`;
   }
   if (isSameLocalCalendarDay(when, now)) {
-    return `Call ${name} today`;
+    return tr("notifications.callToday", { name });
   }
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);
   if (isSameLocalCalendarDay(when, tomorrow)) {
-    return `Call ${name} tomorrow`;
+    return tr("notifications.callTomorrow", { name });
   }
-  return `Contact ${name} · ${when.toLocaleString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  })}`;
+  return tr("notifications.contactOn", {
+    name,
+    when: when.toLocaleString(locale, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }),
+  });
 }
 
 function EmptyRow({ children }: { children: ReactNode }) {
@@ -115,6 +123,7 @@ function EmptyRow({ children }: { children: ReactNode }) {
 
 export default async function NotificationsPage() {
   const serverT = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   // Named `tr` — task and follow-up rows below bind `t` in their .map().
   const tr = (key: string, o?: Record<string, unknown>) => serverT(key, { ns: "dashboard", ...o });
   const ctx = await getCurrentAgentContext();
@@ -229,7 +238,7 @@ export default async function NotificationsPage() {
                       <p className="text-sm font-medium text-slate-900">{l.name ?? "Lead"}</p>
                       {l.last_activity_at ? (
                         <p className="mt-0.5 text-xs text-slate-500">
-                          Last activity {new Date(l.last_activity_at).toLocaleString()}
+                          Last activity {new Date(l.last_activity_at).toLocaleString(locale)}
                         </p>
                       ) : null}
                     </Link>
@@ -292,7 +301,7 @@ export default async function NotificationsPage() {
                         </p>
                         <p className="mt-1.5 text-sm leading-snug text-slate-600">{detailLine}</p>
                         <p className="mt-2 text-[11px] text-slate-400">
-                          {new Date(c.created_at).toLocaleString()}
+                          {new Date(c.created_at).toLocaleString(locale)}
                         </p>
                       </Link>
                     </li>
@@ -340,7 +349,7 @@ export default async function NotificationsPage() {
                       <p className="font-medium text-slate-900">{ev.title}</p>
                       <p className="text-xs text-slate-600">
                         {ev.lead_name ? `${ev.lead_name} · ` : ""}
-                        {ev.starts_at ? new Date(ev.starts_at).toLocaleString() : ""}
+                        {ev.starts_at ? new Date(ev.starts_at).toLocaleString(locale) : ""}
                       </p>
                     </li>
                   ))}
@@ -363,7 +372,7 @@ export default async function NotificationsPage() {
                         <p className="font-medium text-slate-900">{t.title}</p>
                         <p className="text-xs text-amber-800/90">
                           {t.lead_name ? `${t.lead_name} · ` : ""}
-                          {t.due_at ? tr("notifications.due", { when: new Date(t.due_at).toLocaleString() }) : "—"}
+                          {t.due_at ? tr("notifications.due", { when: new Date(t.due_at).toLocaleString(locale) }) : "—"}
                         </p>
                       </Link>
                     </li>
@@ -402,10 +411,10 @@ export default async function NotificationsPage() {
                               : "mt-1.5 text-sm font-normal leading-snug text-slate-600"
                           }
                         >
-                          {followUpActionSubtitle(f)}
+                          {followUpActionSubtitle(f, tr, locale)}
                         </p>
                         <p className="mt-2 text-[11px] text-slate-400">
-                          {tr("notifications.scheduled", { when: new Date(f.next_contact_at).toLocaleString() })}
+                          {tr("notifications.scheduled", { when: new Date(f.next_contact_at).toLocaleString(locale) })}
                         </p>
                       </Link>
                     </li>
@@ -475,7 +484,7 @@ export default async function NotificationsPage() {
                         {n.property_id ? propertyMap.get(n.property_id) ?? n.property_id : "—"}
                       </td>
                       <td className="ui-table-cell whitespace-nowrap px-4 py-3 text-slate-600">
-                        {new Date(n.sent_at).toLocaleString()}
+                        {new Date(n.sent_at).toLocaleString(locale)}
                       </td>
                     </tr>
                   ))}

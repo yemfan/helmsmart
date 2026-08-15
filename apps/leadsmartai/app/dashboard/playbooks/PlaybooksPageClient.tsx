@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CalendarClock, Check, X } from "lucide-react";
@@ -37,7 +38,8 @@ type LeadInfo = { id: string; name: string | null };
 
 export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
   // Named `tr` — task rows already bind `t` to a PlaybookTaskRow.
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [tasks, setTasks] = useState<PlaybookTaskRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusTab, setStatusTab] = useState<StatusTab>("open");
@@ -169,7 +171,7 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
     );
     try {
       await patchTask(t.id, { dueDate: ymd });
-      setActionMsg(`Moved to ${formatYmd(ymd)}.`);
+      setActionMsg(`Moved to ${formatYmd(ymd, locale)}.`);
     } catch (e) {
       setActionMsg(e instanceof Error ? e.message : tr("more.playbooks.updateFailed"));
       await load();
@@ -328,7 +330,8 @@ function TaskRow({
   onCancel: () => void;
   onReschedule: (ymd: string) => void;
 }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const complete = task.completed_at != null;
   const cancelled = task.cancelled_at != null;
   const closed = complete || cancelled;
@@ -390,7 +393,7 @@ function TaskRow({
               : "text-slate-500"
         }`}
       >
-        {task.due_date ? formatYmd(task.due_date) : "—"}
+        {task.due_date ? formatYmd(task.due_date, locale) : "—"}
       </div>
       <div className="inline-flex shrink-0 items-center gap-1 pt-0.5">
         <IconButton
@@ -477,7 +480,8 @@ function DelayButton({
   currentDueDate: string | null;
   onPick: (ymd: string) => void;
 }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -564,7 +568,8 @@ function AnchorChip({
   task: PlaybookTaskRow;
   fallback?: React.ReactNode;
 }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   if (task.anchor_kind === "transaction" && task.anchor_id) {
     return (
       <a
@@ -741,10 +746,10 @@ function todayYmd(): string {
   return `${y}-${m}-${dd}`;
 }
 
-function formatYmd(ymd: string): string {
+function formatYmd(ymd: string, locale: string): string {
   const [y, m, d] = ymd.split("-");
   if (!y || !m || !d) return ymd;
-  return new Date(Number(y), Number(m) - 1, Number(d)).toLocaleDateString(undefined, {
+  return new Date(Number(y), Number(m) - 1, Number(d)).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
   });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -50,8 +51,8 @@ export type MarketingData = {
 
 const assistant = getAssistant("marketing_assistant");
 
-function fmtWhen(iso: string) {
-  return new Date(iso).toLocaleString("en-US", {
+function fmtWhen(iso: string, locale: string) {
+  return new Date(iso).toLocaleString(locale, {
     month: "short",
     day: "numeric",
     hour: "numeric",
@@ -84,7 +85,8 @@ export default function MarketingAssistantClient({
   social: SocialData;
   newsletter?: ClientNewsletter;
 }) {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   return (
     <div className="space-y-4">
@@ -237,7 +239,7 @@ export default function MarketingAssistantClient({
                     </p>
                     <p className="text-xs capitalize text-gray-500">{p.platform}</p>
                   </div>
-                  <span className="shrink-0 text-xs text-gray-400">{fmtWhen(p.scheduled_for)}</span>
+                  <span className="shrink-0 text-xs text-gray-400">{fmtWhen(p.scheduled_for, locale)}</span>
                 </li>
               ))}
             </ul>
@@ -258,7 +260,7 @@ export default function MarketingAssistantClient({
                 <li key={a.id} className="rounded-lg border border-gray-100 px-3 py-2">
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-sm text-gray-900">{a.summary}</p>
-                    <span className="shrink-0 text-xs text-gray-400">{fmtWhen(a.created_at)}</span>
+                    <span className="shrink-0 text-xs text-gray-400">{fmtWhen(a.created_at, locale)}</span>
                   </div>
                   {a.outcome && <p className="text-xs text-gray-500">{a.outcome}</p>}
                 </li>

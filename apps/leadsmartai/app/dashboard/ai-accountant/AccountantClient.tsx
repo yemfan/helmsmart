@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
 import { getAssistant } from "@/lib/realtyboss/team";
@@ -34,12 +35,12 @@ type ExpenseItem = {
 
 const assistant = getAssistant("accountant");
 
-function money(n: number): string {
-  return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+function money(n: number, locale: string): string {
+  return n.toLocaleString(locale, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
-function fmtDay(iso: string | null): string {
-  return iso ? new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—";
+function fmtDay(iso: string | null, locale: string): string {
+  return iso ? new Date(iso).toLocaleDateString(locale, { month: "short", day: "numeric" }) : "—";
 }
 
 const STATUS_CHIP: Record<string, string> = {
@@ -67,7 +68,8 @@ export default function AccountantClient({
   expensesByCategory: { category: string; total: number }[];
   recentExpenses: ExpenseItem[];
 }) {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const pipelineTotal = pipelineDeals.reduce((s, d) => s + (d.expected_net ?? 0), 0);
   const nextPayout = pipelineDeals.find((d) => d.closing_date && d.expected_net != null);
   const openReceivables = invoices.filter((i) => i.status === "sent" || i.status === "overdue");
@@ -89,20 +91,20 @@ export default function AccountantClient({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <AssistantKpiCard
           label={t("assistants.accountant.stats.pipeline")}
-          value={money(pipelineTotal)}
+          value={money(pipelineTotal, locale)}
           hint={`${pipelineDeals.length} deal${pipelineDeals.length === 1 ? "" : "s"} · expected net`}
         />
         <AssistantKpiCard
           label={t("assistants.accountant.stats.nextPayout")}
-          value={nextPayout?.expected_net != null ? money(nextPayout.expected_net) : "—"}
-          hint={nextPayout?.closing_date ? `${nextPayout.property_address} · closes ${fmtDay(nextPayout.closing_date)}` : "no closing scheduled"}
+          value={nextPayout?.expected_net != null ? money(nextPayout.expected_net, locale) : "—"}
+          hint={nextPayout?.closing_date ? `${nextPayout.property_address} · closes ${fmtDay(nextPayout.closing_date, locale)}` : "no closing scheduled"}
         />
         <AssistantKpiCard
           label={t("assistants.accountant.stats.closedThisYear")}
-          value={money(closedYtdNet)}
+          value={money(closedYtdNet, locale)}
           hint={`${closedYtdCount} closing${closedYtdCount === 1 ? "" : "s"} · net`}
         />
-        <AssistantKpiCard label={t("assistants.accountant.stats.expensesThisMonth")} value={money(expensesMonthTotal)} />
+        <AssistantKpiCard label={t("assistants.accountant.stats.expensesThisMonth")} value={money(expensesMonthTotal, locale)} />
       </div>
 
       {/* ── Commission pipeline — the real paycheck ── */}
@@ -122,7 +124,7 @@ export default function AccountantClient({
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-gray-900">{d.property_address}</p>
                   <p className="text-xs text-gray-500">
-                    {d.contact_name ?? "—"}{d.closing_date ? ` · closes ${fmtDay(d.closing_date)}` : " · no closing date"}
+                    {d.contact_name ?? "—"}{d.closing_date ? ` · closes ${fmtDay(d.closing_date, locale)}` : " · no closing date"}
                   </p>
                 </div>
                 {d.commission_missing ? (
@@ -130,7 +132,7 @@ export default function AccountantClient({
                     commission details missing
                   </span>
                 ) : (
-                  <span className="shrink-0 text-sm font-semibold text-gray-900">{money(d.expected_net ?? 0)}</span>
+                  <span className="shrink-0 text-sm font-semibold text-gray-900">{money(d.expected_net ?? 0, locale)}</span>
                 )}
               </Link>
             ))}
@@ -149,7 +151,7 @@ export default function AccountantClient({
             <div className="mb-3 flex flex-wrap gap-1.5">
               {topCategories.map((c) => (
                 <span key={c.category} className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
-                  {c.category}: {money(c.total)}
+                  {c.category}: {money(c.total, locale)}
                 </span>
               ))}
             </div>
@@ -164,9 +166,9 @@ export default function AccountantClient({
                 <div key={e.id} className="flex items-center justify-between gap-2 rounded-lg border border-gray-100 px-3 py-2">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-gray-900">{e.vendor ?? e.category}</p>
-                    <p className="text-xs text-gray-500">{e.category} · {fmtDay(e.expense_date)}</p>
+                    <p className="text-xs text-gray-500">{e.category} · {fmtDay(e.expense_date, locale)}</p>
                   </div>
-                  <span className="shrink-0 text-sm font-semibold text-gray-700">{money(e.amount || 0)}</span>
+                  <span className="shrink-0 text-sm font-semibold text-gray-700">{money(e.amount || 0, locale)}</span>
                 </div>
               ))}
             </div>
@@ -195,7 +197,7 @@ export default function AccountantClient({
                 <Link key={i.id} href="/dashboard/books" className="flex items-center justify-between gap-2 rounded-lg border border-gray-100 px-3 py-2 hover:bg-gray-50">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-gray-900">{i.invoice_number} · {i.client_name ?? "—"}</p>
-                    <p className="text-xs text-gray-500">{money(i.total || 0)}{i.due_date ? ` · due ${fmtDay(i.due_date)}` : ""}</p>
+                    <p className="text-xs text-gray-500">{money(i.total || 0, locale)}{i.due_date ? ` · due ${fmtDay(i.due_date, locale)}` : ""}</p>
                   </div>
                   <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${STATUS_CHIP[i.status] ?? "bg-gray-100 text-gray-600"}`}>
                     {i.status}

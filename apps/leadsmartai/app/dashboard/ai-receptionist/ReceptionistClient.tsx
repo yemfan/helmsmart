@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -81,8 +82,8 @@ function statusBadge(status: string, t: (k: string) => string) {
     : { label: status.replace(/_/g, " "), cls: "bg-slate-100 text-slate-600" };
 }
 
-function fmtWhen(iso: string) {
-  return new Date(iso).toLocaleString("en-US", {
+function fmtWhen(iso: string, locale: string) {
+  return new Date(iso).toLocaleString(locale, {
     month: "short",
     day: "numeric",
     hour: "numeric",
@@ -102,7 +103,8 @@ function callerPhone(c: ReceptionistCall) {
 }
 
 export default function ReceptionistClient() {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [calls, setCalls] = useState<ReceptionistCall[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<ReceptionistCall | null>(null);
@@ -207,7 +209,7 @@ export default function ReceptionistClient() {
                       title="Double-click for full call details"
                     >
                       <td className="whitespace-nowrap px-4 py-2.5 text-xs text-gray-500">
-                        {fmtWhen(c.created_at)}
+                        {fmtWhen(c.created_at, locale)}
                       </td>
                       <td className="whitespace-nowrap px-4 py-2.5 text-xs text-gray-600">
                         {callerPhone(c)}
@@ -267,7 +269,8 @@ const VOICE_TABS: { key: VoiceTab; label: string }[] = [
 ];
 
 function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [tab, setTab] = useState<VoiceTab>("inbound");
   return (
     <div
@@ -360,7 +363,8 @@ function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
 }
 
 function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: () => void }) {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const badge = statusBadge(call.status, t);
   const duration = fmtDuration(call.duration_seconds);
   return (
@@ -382,7 +386,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
             </h3>
             <p className="text-xs text-gray-500">
               {callerPhone(call)} · {call.direction === "inbound" ? "Inbound" : "Outbound"} ·{" "}
-              {fmtWhen(call.created_at)}
+              {fmtWhen(call.created_at, locale)}
             </p>
           </div>
           <button
@@ -451,7 +455,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
               <p className="mt-1 text-gray-700">
                 {call.callback.status === "scheduled" &&
                   `${call.callback.attempts} of 3 attempts placed — next one ${
-                    call.callback.next_attempt_at ? `at ${fmtWhen(call.callback.next_attempt_at)}` : "soon"
+                    call.callback.next_attempt_at ? `at ${fmtWhen(call.callback.next_attempt_at, locale)}` : "soon"
                   }. Your Receptionist keeps calling at 5, 10, and 30 minutes until they answer.`}
                 {call.callback.status === "answered" &&
                   `Reached after ${Math.max(call.callback.attempts, 1)} call-back${call.callback.attempts === 1 ? "" : "s"}.`}

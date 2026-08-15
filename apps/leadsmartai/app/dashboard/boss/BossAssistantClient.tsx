@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
@@ -143,18 +144,18 @@ const TEAM_VERB_KEYS = new Set([
 
 // ── helpers ──────────────────────────────────────────────────────────
 
-function fmtAgo(iso: string): string {
+function fmtAgo(iso: string, locale: string): string {
   const mins = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
   if (mins < 60) return `${mins}m ago`;
   const hours = Math.round(mins / 60);
   if (hours < 24) return `${hours}h ago`;
   return `${Math.round(hours / 24)}d ago`;
 }
-function fmtDay(d: Date): string {
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+function fmtDay(d: Date, locale: string): string {
+  return d.toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
-function fmtTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+function fmtTime(iso: string, locale: string): string {
+  return new Date(iso).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
 }
 
 // How many recent exchanges the thread shows before you page back in time.
@@ -163,15 +164,15 @@ function fmtTime(iso: string): string {
 const RECENT_LIMIT = 6;
 
 /** "Today" / "Yesterday" / weekday / "Aug 3" — the day-separator label. */
-function dayLabel(iso: string, tr: (k: string, o?: Record<string, unknown>) => string): string {
+function dayLabel(iso: string, tr: (k: string, o?: Record<string, unknown>) => string, locale: string): string {
   const d = new Date(iso);
   const now = new Date();
   const startOf = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
   const diffDays = Math.round((startOf(now) - startOf(d)) / 86_400_000);
   if (diffDays <= 0) return tr("boss.day.today");
   if (diffDays === 1) return tr("boss.day.yesterday");
-  if (diffDays < 7) return d.toLocaleDateString("en-US", { weekday: "long" });
-  return d.toLocaleDateString("en-US", {
+  if (diffDays < 7) return d.toLocaleDateString(locale, { weekday: "long" });
+  return d.toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
     year: d.getFullYear() === now.getFullYear() ? undefined : "numeric",
@@ -211,6 +212,7 @@ function deadlineAlerts(transactions: TransactionItem[], tr: (k: string, o?: Rec
 
 export default function BossAssistantClient({ greetingName }: { greetingName: string }) {
   const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [metrics, setMetrics] = useState<SummaryMetrics | null>(null);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [hotLeads, setHotLeads] = useState<HotLead[]>([]);
@@ -655,14 +657,14 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
             grouped by day so the thread reads as a dated history. */}
         {allInstructions.map((ins, idx) => {
           const prev = allInstructions[idx - 1];
-          const showSeparator = !prev || dayLabel(prev.created_at, tr) !== dayLabel(ins.created_at, tr);
+          const showSeparator = !prev || dayLabel(prev.created_at, tr, locale) !== dayLabel(ins.created_at, tr, locale);
           return (
             <Fragment key={ins.id}>
               {showSeparator && (
                 <div className="flex items-center gap-2 py-1" aria-hidden>
                   <span className="h-px flex-1 bg-gray-200" />
                   <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
-                    {dayLabel(ins.created_at, tr)}
+                    {dayLabel(ins.created_at, tr, locale)}
                   </span>
                   <span className="h-px flex-1 bg-gray-200" />
                 </div>
@@ -704,7 +706,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
                     {teamNames[a.type] || tr(`roster.${a.type}.name`, { defaultValue: a.name })}
                     <span className={`h-1.5 w-1.5 rounded-full ${(teamStatus[a.type] ?? "active") === "active" ? "bg-emerald-500" : "bg-gray-300"}`} />
                   </p>
-                  <p className="truncate text-[11px] text-gray-500">{latest ? `${latest.summary} · ${fmtAgo(latest.created_at)}` : tr(`roster.${a.type}.role`, { defaultValue: a.role })}</p>
+                  <p className="truncate text-[11px] text-gray-500">{latest ? `${latest.summary} · ${fmtAgo(latest.created_at, locale)}` : tr(`roster.${a.type}.role`, { defaultValue: a.role })}</p>
                 </div>
               </Link>
             );
@@ -744,7 +746,8 @@ function BossAvatar({ avatar }: { avatar: { id: string; url: string | null } | n
 }
 
 function AutopilotToggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   return (
     <button
       type="button"
@@ -834,7 +837,8 @@ function ContextStrip({
   alerts: DeadlineAlert[];
   onOpenLead: (id: string) => void;
 }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [open, setOpen] = useState<null | "hot" | "today" | "deals" | "dead">(null);
   const toggle = (k: "hot" | "today" | "deals" | "dead") => setOpen((cur) => (cur === k ? null : k));
 
@@ -852,7 +856,7 @@ function ContextStrip({
             <button key={l.id} type="button" onClick={() => onOpenLead(l.id)} className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-gray-50">
               <span className="min-w-0">
                 <span className="block truncate text-sm font-medium text-gray-900">{l.name ?? "Unnamed lead"}</span>
-                <span className="block truncate text-xs text-gray-500">{[l.ai_intent, l.source, l.last_activity_at ? `active ${fmtAgo(l.last_activity_at)}` : null].filter(Boolean).join(" · ") || "No activity yet"}</span>
+                <span className="block truncate text-xs text-gray-500">{[l.ai_intent, l.source, l.last_activity_at ? `active ${fmtAgo(l.last_activity_at, locale)}` : null].filter(Boolean).join(" · ") || "No activity yet"}</span>
               </span>
               {typeof l.engagement_score === "number" && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">{l.engagement_score}</span>}
             </button>
@@ -860,7 +864,7 @@ function ContextStrip({
           {open === "today" && (events.length ? events.map((e) => (
             <div key={e.id} className="flex items-center justify-between gap-2 px-2 py-1.5">
               <span className="min-w-0"><span className="block truncate text-sm font-medium text-gray-900">{e.title}</span>{e.lead_name && <span className="block truncate text-xs text-gray-500">{e.lead_name}</span>}</span>
-              <span className="text-xs font-medium text-blue-600">{fmtTime(e.starts_at)}</span>
+              <span className="text-xs font-medium text-blue-600">{fmtTime(e.starts_at, locale)}</span>
             </div>
           )) : <Empty>{tr("boss.metrics.noAppts")}</Empty>)}
           {open === "deals" && (deals.length ? deals.map((d) => (
@@ -872,7 +876,7 @@ function ContextStrip({
           {open === "dead" && (alerts.length ? alerts.map((a) => (
             <Link key={`${a.transactionId}-${a.label}`} href={`/dashboard/transactions/${a.transactionId}`} className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-50">
               <span className="min-w-0"><span className="block truncate text-sm font-medium text-gray-900">{a.propertyAddress}</span><span className="block text-xs text-gray-500">{a.label}</span></span>
-              <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.risk === "high" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{fmtDay(a.due)}</span>
+              <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${a.risk === "high" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{fmtDay(a.due, locale)}</span>
             </Link>
           )) : <Empty>{tr("boss.metrics.noDeadlines")}</Empty>)}
         </div>
@@ -916,7 +920,8 @@ function ProposalCard({
   onOpenLead: (() => void) | null;
   onDismiss: () => void;
 }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [handled, setHandled] = useState(false);
   return (
     <BossBubble bossName={bossName} avatar={avatar}>
@@ -963,7 +968,8 @@ function InstructionExchange({
   teamNames: Record<string, string>;
   onChanged: () => void | Promise<void>;
 }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const processing = instruction.status === "pending" || instruction.status === "processing";
   return (
     <div className="space-y-2">
@@ -1003,7 +1009,8 @@ function InstructionExchange({
 }
 
 function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamNames: Record<string, string>; onChanged: () => void | Promise<void> }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [busy, setBusy] = useState<"approve" | "dismiss" | "answer" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [answer, setAnswer] = useState("");
@@ -1096,7 +1103,8 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
 }
 
 function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onSubmit: (text: string, attachment?: CommandAttachment) => void; autopilot: boolean; pendingQuestion?: string | null; initialText?: string }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [text, setText] = useState("");
   const [attach, setAttach] = useState<CommandAttachment | null>(null);
   // Local object-URL for an instant image thumbnail (no round-trip to Storage).
@@ -1231,7 +1239,8 @@ function SettingsModal({
   onOvernight: (on: boolean) => void;
   onClose: () => void;
 }) {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const cellMode = (assignee: string, channel: Channel): "ask" | "auto" => {
     const c = cells.find((x) => x.assignee === assignee && x.channel === channel);
     if (c) return c.mode;
@@ -1311,7 +1320,8 @@ const PipelineForecastPanel = nextDynamic(() => import("@/components/dashboard/P
 const EmailEngagementPanel = nextDynamic(() => import("@/components/dashboard/EmailEngagementPanel").then((m) => m.EmailEngagementPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> });
 
 function PerformanceSection() {
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [open, setOpen] = useState(false);
   return (
     <section>

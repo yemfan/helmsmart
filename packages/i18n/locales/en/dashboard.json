@@ -1266,7 +1266,10 @@
       "type": "Type",
       "property": "Property",
       "sent": "Sent"
-    }
+    },
+    "callToday": "Call {{name}} today",
+    "callTomorrow": "Call {{name}} tomorrow",
+    "contactOn": "Contact {{name}} · {{when}}"
   },
   "houseSearch": {
     "title": "AI House Search",
