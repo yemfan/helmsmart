@@ -1518,5 +1518,37 @@
     "yesterday": "昨天",
     "daysAgo": "{{count}} 天前",
     "inDays": "{{count}} 天后"
+  },
+  "playbookRuns": {
+    "metaTitle": "剧本运行",
+    "metaDescription": "您的卖房与买房全流程业务——每一笔都由 AI 团队从准备一路推进到成交。",
+    "heading": "剧本运行",
+    "intro": "由您的 AI 团队执行的卖房与买房全周期业务——边做边准备、规划、执行与优化。可从 Boss 发起，例如“为 123 Main St 启动卖房剧本”或“为 John 启动买房剧本——阿罕布拉 3 房 2 卫，60 万至 100 万美元”。",
+    "emptyTitle": "还没有剧本运行",
+    "emptyHint": "在委托销售协议签署后请 Boss 启动卖房剧本，或在买家通过资格评估后启动买房剧本，之后就会显示在这里。",
+    "typeSelling": "卖房",
+    "typeBuying": "买房",
+    "meta": "阶段：{{phase}} · 更新于 {{updated}} · 下次复盘 {{review}}",
+    "autoHeading": "自动启动",
+    "autoIntro": "让 AI 团队根据您的交易自动启动剧本。默认关闭。",
+    "autoSellingLabel": "自动启动卖房剧本",
+    "autoSellingHint": "当您新建卖方（委托）交易时——即委托销售协议已签署。",
+    "autoBuyingLabel": "自动启动买房剧本",
+    "autoBuyingHint": "当您新建买方交易时——随即启动购房咨询与房源搜索设置。",
+    "status": {
+      "active": "进行中",
+      "paused": "已暂停",
+      "completed": "已完成",
+      "cancelled": "已取消"
+    },
+    "phase": {
+      "prepare": "准备",
+      "marketing_plan": "营销计划",
+      "property_ads": "房源广告",
+      "execute": "执行",
+      "optimize": "优化",
+      "consultation": "购房咨询",
+      "search_plan": "搜索方案"
+    }
   }
 }
