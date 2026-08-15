@@ -2024,6 +2024,32 @@
       "conversionRate": "转化率",
       "topSources": "主要来源",
       "noTraffic": "暂无流量事件。"
+    },
+    "cma": {
+      "metaTitle": "市场比较分析报告",
+      "loading": "加载中…",
+      "savedCount": "已保存 {{count}} 份",
+      "newCma": "+ 新建市场比较分析",
+      "cancel": "取消",
+      "generateHeading": "生成市场比较分析",
+      "generateIntro": "输入目标房产地址。系统会抓取可比房源、进行估值，并将快照保存到您的账户。",
+      "subjectAddress": "目标房产地址",
+      "addressPlaceholder": "示例：123 Main St, Austin, TX 78701",
+      "quotaReached": "已达每日上限，将于协调世界时午夜重置。",
+      "liveWeb": "检索近期公开成交记录——结果最多需要一分钟。",
+      "generate": "生成市场比较分析",
+      "generating": "生成中…",
+      "working": "正在联网检索近期可比成交并进行估值……这可能需要一分钟左右。",
+      "loadFailedInline": "无法加载市场比较分析：",
+      "empty": "还没有保存的市场比较分析。点击上方的「+ 新建市场比较分析」生成第一份。",
+      "loadFailed": "加载市场比较分析失败",
+      "createFailed": "创建市场比较分析失败",
+      "quotaTitle": "每日市场比较分析额度——{{date}} 重置",
+      "unlimited": "市场比较分析不限量",
+      "remaining": "今日还剩 {{remaining}} / {{limit}} 次",
+      "comps_one": "{{count}} 套可比房源",
+      "comps_other": "{{count}} 套可比房源",
+      "confidence": "置信度 {{score}}"
     }
   }
 }

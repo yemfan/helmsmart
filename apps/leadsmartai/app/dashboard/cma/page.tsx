@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 import CmaListClient from "./CmaListClient";
 
-export const metadata: Metadata = {
-  title: "CMA Reports | CloseBoss",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.cma.metaTitle", { ns: "dashboard" }),
+  };
+}
 
 /**
  * Listing-side surface — agent's saved CMAs + a "generate new" form.

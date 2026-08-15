@@ -2024,6 +2024,32 @@
       "conversionRate": "Conversion Rate",
       "topSources": "Top Sources",
       "noTraffic": "No traffic events yet."
+    },
+    "cma": {
+      "metaTitle": "CMA Reports",
+      "loading": "Loading…",
+      "savedCount": "{{count}} saved",
+      "newCma": "+ New CMA",
+      "cancel": "Cancel",
+      "generateHeading": "Generate a CMA",
+      "generateIntro": "Enter the subject property address. The engine pulls comps, runs the valuation, and saves the snapshot to your account.",
+      "subjectAddress": "Subject address",
+      "addressPlaceholder": "123 Main St, Austin, TX 78701",
+      "quotaReached": "Daily limit reached. Resets at midnight UTC.",
+      "liveWeb": "Searches recent public sales — results take up to a minute.",
+      "generate": "Generate CMA",
+      "generating": "Generating…",
+      "working": "Searching the live web for recent comparable sales, then running the valuation… this can take up to a minute.",
+      "loadFailedInline": "Couldn't load CMAs:",
+      "empty": "No CMAs saved yet. Click \"+ New CMA\" above to generate your first.",
+      "loadFailed": "Failed to load CMAs",
+      "createFailed": "Failed to create CMA",
+      "quotaTitle": "Daily CMA quota — resets {{date}}",
+      "unlimited": "Unlimited CMAs",
+      "remaining": "{{remaining}} of {{limit}} left today",
+      "comps_one": "{{count}} comp",
+      "comps_other": "{{count}} comps",
+      "confidence": "confidence {{score}}"
     }
   }
 }
