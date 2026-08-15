@@ -134,6 +134,14 @@ export async function setUseClonedVoice(agentId: string, on: boolean): Promise<V
  * Premium "Clean my voice" — ElevenLabs audio isolation to denoise/isolate the
  * voice from the sample before cloning, for a higher-fidelity clone.
  */
+/** ElevenLabs rejects uploads above this, per their own error text. */
+const MAX_SAMPLE_BYTES = 11 * 1024 * 1024;
+
+/** Bytes → whole MB, for error copy an agent can actually act on. */
+function mb(bytes: number): number {
+  return Math.round(bytes / (1024 * 1024));
+}
+
 async function isolateVoiceAudio(bytes: Buffer, mimeType: string): Promise<Buffer> {
   const key = process.env.ELEVENLABS_API_KEY?.trim();
   if (!key) throw new Error("ELEVENLABS_API_KEY is not set.");
@@ -201,6 +209,37 @@ export async function startVoiceCloneFromTwin(
       } catch (e) {
         console.warn("[voice-clone] audio isolation failed, using raw sample:", e instanceof Error ? e.message : e);
       }
+    }
+
+    /*
+     * We upload the intro VIDEO as the voice sample, and ElevenLabs caps an
+     * upload at 11MB — which almost any real recording exceeds. Cloning only
+     * appeared to work because "Clean my voice" happens to return an audio-only
+     * MP3, so the premium toggle was silently carrying the size fix. With it
+     * off, every decent-length video failed with ElevenLabs' raw wording.
+     *
+     * Isolation strips the video track, so run it as a size fallback too. It is
+     * the same call the premium path already makes — nothing new to go wrong —
+     * and it only fires when the clone would otherwise fail outright.
+     */
+    if (sampleBytes.byteLength > MAX_SAMPLE_BYTES) {
+      try {
+        sampleBytes = await isolateVoiceAudio(rawBytes, sampleMime);
+        sampleName = "intro-audio.mp3";
+        sampleMime = "audio/mpeg";
+      } catch (e) {
+        console.warn("[voice-clone] size-fallback isolation failed:", e instanceof Error ? e.message : e);
+      }
+    }
+
+    // Audio-only and still over the cap means the recording itself is simply too
+    // long. Say that, rather than passing ElevenLabs' wording straight through.
+    if (sampleBytes.byteLength > MAX_SAMPLE_BYTES) {
+      throw new Error(
+        `Your intro video is too long to clone from (${mb(sampleBytes.byteLength)}MB of audio, limit ${mb(
+          MAX_SAMPLE_BYTES,
+        )}MB). Upload a shorter one — 30–60 seconds of clear speech is plenty.`,
+      );
     }
 
     const adapter = getVoiceCloneAdapter("elevenlabs");
