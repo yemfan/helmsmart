@@ -87,13 +87,12 @@ export default function DigitalTwinPanel() {
   // Phase C — talking avatar.
   const [av, setAv] = useState<AvatarState | null>(null);
   /**
-   * Script language. Separate from the UI language on purpose: a bilingual
-   * agent may run the app in English and still want a Chinese video (or the
-   * reverse). Seeded from the UI language as the likely default.
+   * Language for everything this panel generates — the brand profile and the
+   * avatar script. Derived from the header language toggle rather than being
+   * its own control: one place to set language, not three. Switch the header
+   * to 中文 and rebuild to get Chinese output.
    */
-  const [avLang, setAvLang] = useState<"en" | "zh-Hans">(() =>
-    i18n.language === "zh-Hans" ? "zh-Hans" : "en",
-  );
+  const avLang: "en" | "zh-Hans" = i18n.language === "zh-Hans" ? "zh-Hans" : "en";
   const [avTopic, setAvTopic] = useState("");
   const [avScript, setAvScript] = useState("");
   const [avAudioUrl, setAvAudioUrl] = useState<string | null>(null);
@@ -423,25 +422,6 @@ export default function DigitalTwinPanel() {
           {photoUploading ? "Uploading…" : hasPortrait ? t("twin.replacePhoto") : t("twin.usePhoto")}
         </button>
         <input ref={photoRef} type="file" accept="image/*" onChange={onPickPhoto} className="hidden" />
-        {/*
-          The ONLY language control on this panel. There used to be a second one
-          in the avatar studio below, but both wrote to the same `avLang` state —
-          so once an intro video existed and both rows were on screen, you saw
-          two dropdowns that looked independent and silently moved together.
-          One control, labelled for everything it actually governs.
-        */}
-        <label className="min-w-[150px]">
-          <span className="block text-[11px] font-medium text-slate-600">{t("twin.aiLanguage")}</span>
-          <select
-            value={avLang}
-            onChange={(e) => setAvLang(e.target.value === "zh-Hans" ? "zh-Hans" : "en")}
-            className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm"
-            title={t("twin.aiLanguageHelp")}
-          >
-            <option value="en">English</option>
-            <option value="zh-Hans">中文</option>
-          </select>
-        </label>
         <button
           type="button"
           onClick={() => void build()}
@@ -453,6 +433,9 @@ export default function DigitalTwinPanel() {
         {status === "processing" ? <span className="text-[11px] text-slate-500">{t("twin.processing")}</span> : null}
       </div>
 
+      {/* Not a control — just says which language the generated copy comes
+          out in, since the only place to change it is the header toggle. */}
+      <p className="mt-2 text-[11px] text-slate-400">{t("twin.languageNote")}</p>
       {note ? <p className="mt-2 text-[12px] text-slate-600">{note}</p> : null}
       {error ? <p className="mt-2 text-[12px] text-rose-700">{error}</p> : null}
 
