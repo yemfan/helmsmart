@@ -258,24 +258,23 @@ export async function findStaleSeoPages(hours = 168, limit = 200): Promise<Stale
   return (data ?? []) as StaleSeoPageRow[];
 }
 
+/**
+ * Bump a page's visit counter.
+ *
+ * One atomic statement, not the SELECT-then-UPDATE this used to be. That shape
+ * cost two round trips on every view of a public page — and since these routes
+ * are uncached and crawler-facing, it was a top consumer in pg_stat_statements
+ * and helped starve the shared database. It also lost concurrent increments:
+ * two simultaneous views each read N and each wrote N+1, so the busiest pages
+ * under-counted the most.
+ *
+ * Still fire-and-forget: analytics must never delay or break a page render.
+ */
 export async function incrementSeoPageVisit(slug: string): Promise<void> {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) return;
 
-  const normalized = slug.trim().toLowerCase();
   try {
-    const { data: row, error: selErr } = await supabaseAdmin
-      .from(TABLE)
-      .select("visit_count")
-      .eq("slug", normalized)
-      .maybeSingle();
-
-    if (selErr || !row) return;
-
-    const next = Number((row as { visit_count?: number }).visit_count || 0) + 1;
-    await supabaseAdmin
-      .from(TABLE)
-      .update({ visit_count: next, last_visited_at: new Date().toISOString() })
-      .eq("slug", normalized);
+    await supabaseAdmin.rpc("increment_seo_page_visit", { p_slug: slug });
   } catch {
     /* non-blocking */
   }
