@@ -1055,7 +1055,10 @@
       "postFailed": "Couldn't post the video.",
       "noAccounts": "No connected video-capable accounts yet."
     },
-    "queued": "Queued to {{count}} account(s) — posting within a few minutes."
+    "queued": "Queued to {{count}} account(s) — posting within a few minutes.",
+    "intro": "Record a short intro video (talk to camera — who you are, your market, what you specialize in). AI turns it into a brand profile that personalizes all your AI-written marketing. Voice + avatar come later.",
+    "profileLanguage": "Profile language",
+    "profileLanguageHelp": "The language your bio, market, tone and specialties are written in. Rebuild to regenerate them."
   },
   "call": {
     "call": "Call",

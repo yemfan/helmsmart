@@ -63,7 +63,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = (await req.json().catch(() => ({}))) as { videoPath?: unknown; consent?: unknown };
+    const body = (await req.json().catch(() => ({}))) as {
+      videoPath?: unknown;
+      consent?: unknown;
+      /** Language the generated brand profile should be written in. */
+      language?: unknown;
+    };
     const consent = body.consent === true;
     if (!consent) {
       return NextResponse.json(
@@ -83,7 +88,8 @@ export async function POST(req: Request) {
     const { data: prof } = await supabaseAdmin.from("agents").select("brand_name").eq("id", agentId).maybeSingle();
     const name = (prof as { brand_name?: string | null } | null)?.brand_name ?? null;
 
-    const out = await processDigitalTwin(String(agentId), videoPath, name);
+    const language = body.language === "zh-Hans" ? "zh-Hans" : "en";
+    const out = await processDigitalTwin(String(agentId), videoPath, name, language);
     return NextResponse.json({ ok: true, ...out });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";
