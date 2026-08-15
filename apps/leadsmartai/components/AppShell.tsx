@@ -54,6 +54,7 @@ function isPlatformDashboardPath(pathname: string): boolean {
 }
 
 export default function AppShell({ children }: { children: ReactNode }) {
+  const { t } = useTranslation("web_marketing");
   const pathname = usePathname() ?? "";
   const isPublicReport = pathname.startsWith("/report/");
   const isEditorialLanding = pathname === "/landing-v3";
@@ -151,7 +152,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <Link
               href="/"
               className="flex min-w-0 items-center rounded-md transition hover:opacity-90"
-              aria-label="CloseBoss home"
+              aria-label={t("aria.home")}
             >
               <CloseBossLogo compact />
             </Link>

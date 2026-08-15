@@ -134,7 +134,7 @@ export default async function SettingsPage() {
                 captured the linked Instagram account. Replaced with a pointer
                 to the real thing. */}
             <Card
-              title="Connected social accounts"
+              title={tr("tips.connectedSocial")}
               description="Facebook, Instagram, LinkedIn and Threads are connected in one place."
             >
               <a
@@ -145,26 +145,26 @@ export default async function SettingsPage() {
               </a>
             </Card>
             <Card
-              title="Social auto-posting"
+              title={tr("tips.socialAutoposting")}
               description="Your AI team writes and publishes posts for your feed. This decides what goes out, where, how often — and who signs off."
             >
               <SocialAutopilotController />
             </Card>
             <Card
-              title="Weekly post schedule"
+              title={tr("tips.weeklySchedule")}
               description="Pick the weekdays you want a post. For each, set a time, channels, and a topic — AI researches the topic and publishes on schedule."
             >
               <WeeklyScheduleController />
             </Card>
             <LeadRoutingSettingsPanel />
             <Card
-              title="Transaction Coordinator notifications"
+              title={tr("tips.tcNotifications")}
               description="Delivery preferences for deal-level nudges: daily email digest of overdue tasks, plus a closing-window wire-fraud SMS escalation."
             >
               <TransactionNotificationsPanel />
             </Card>
             <Card
-              title="Commission defaults"
+              title={tr("tips.commissionDefaults")}
               description="Applied to new transactions + revenue analytics on /dashboard/performance. Per-deal overrides stay intact."
             >
               <CommissionDefaultsPanel />

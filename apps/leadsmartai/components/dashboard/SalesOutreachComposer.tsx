@@ -522,7 +522,7 @@ export default function SalesOutreachComposer({
       ) : (
         <div className="mb-4 flex flex-wrap gap-2">
           <SegmentChip active={segment === "hot"} onClick={() => { setSegment("hot"); resetFeedback(); }} label={t("outreach.who.hotLeads")} count={segmentCounts.hot} />
-          <SegmentChip active={segment === "quiet"} onClick={() => { setSegment("quiet"); resetFeedback(); }} label="Quiet 7d+" count={segmentCounts.quiet} tone="warn" />
+          <SegmentChip active={segment === "quiet"} onClick={() => { setSegment("quiet"); resetFeedback(); }} label={t("tips.quiet7d")} count={segmentCounts.quiet} tone="warn" />
           <SegmentChip active={segment === "all"} onClick={() => { setSegment("all"); resetFeedback(); }} label="All" count={segmentCounts.all} />
         </div>
       )}

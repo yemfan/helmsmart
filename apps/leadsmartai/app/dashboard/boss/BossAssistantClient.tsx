@@ -1208,7 +1208,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
               <span className="pl-1" aria-hidden>📎</span>
             )}
             <span className="max-w-[160px] truncate">{attach?.name ?? "Image"}</span>
-            <button type="button" onClick={clearAttach} aria-label="Remove file" className="text-gray-400 hover:text-gray-700">×</button>
+            <button type="button" onClick={clearAttach} aria-label={tr("tips.removeFile")} className="text-gray-400 hover:text-gray-700">×</button>
           </span>
         )}
         {uploadErr && <span className="text-xs text-red-600">{uploadErr}</span>}

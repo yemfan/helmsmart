@@ -83,5 +83,20 @@
     "pricing": "Pricing",
     "privacy_policy": "Privacy Policy",
     "terms_of_service": "Terms of Service"
+  },
+  "aria": {
+    "home": "CloseBoss home",
+    "linkedin": "CloseBoss on LinkedIn",
+    "askMax": "Ask Max"
+  },
+  "pricingCompare": {
+    "receptionist": "Receptionist / answering service",
+    "isa": "Inside sales agent (ISA)",
+    "tc": "Transaction coordinator",
+    "marketing": "Marketing assistant",
+    "allSix": "All six assistants, working together",
+    "answers": "Answers + cold-calls + qualifies + follows up",
+    "coordinates": "Coordinates deals + keeps the books",
+    "trained": "Trained on top-agent playbooks"
   }
 }

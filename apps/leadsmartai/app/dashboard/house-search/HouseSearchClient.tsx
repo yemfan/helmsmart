@@ -337,7 +337,7 @@ export default function HouseSearchClient() {
 
           {/* Interpretation + refinements */}
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-sm font-semibold text-slate-900">How I read this</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("houseSearch.howIReadThis")}</h2>
             <p className="mt-1 text-sm text-slate-600">{result.interpreted}</p>
             {result.criteria.length > 0 ? (
               <ul className="mt-2 flex flex-wrap gap-2">
@@ -495,6 +495,7 @@ function SavedSearchesPanel({
   onLoad: (id: string) => void;
   activeId: string | null;
 }) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [contactId, setContactId] = useState("");
   const [items, setItems] = useState<SavedSearchListItem[] | null>(null);
@@ -533,7 +534,7 @@ function SavedSearchesPanel({
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">Saved searches</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("houseSearch.savedSearches")}</h2>
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -559,7 +560,7 @@ function SavedSearchesPanel({
       </label>
       {loading ? <p className="mt-3 text-xs text-slate-500">Loading…</p> : null}
       {items && items.length === 0 ? (
-        <p className="mt-3 text-xs text-slate-500">No saved searches for this contact yet.</p>
+        <p className="mt-3 text-xs text-slate-500">{t("houseSearch.noSavedSearches")}</p>
       ) : null}
       {items && items.length > 0 ? (
         <ul className="mt-3 divide-y divide-slate-100">
@@ -605,6 +606,7 @@ function SaveToContactPanel({
   refinements: string[];
   onSaved: (t: TrackedSearch) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [contactId, setContactId] = useState("");
   const [name, setName] = useState("");
@@ -663,7 +665,7 @@ function SaveToContactPanel({
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">Save search to a contact</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("houseSearch.saveToContact")}</h2>
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -724,6 +726,7 @@ function EmailToBuyer({
   listings: HouseListing[];
   selectedIdx: Set<number>;
 }) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [contacts, setContacts] = useState<ReachableContact[]>([]);
   const [contactId, setContactId] = useState("");
@@ -821,7 +824,7 @@ function EmailToBuyer({
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block">
-          <span className="text-xs font-semibold text-slate-700">Buyer (from contacts)</span>
+          <span className="text-xs font-semibold text-slate-700">{t("houseSearch.buyerFromContacts")}</span>
           <select
             value={contactId}
             onChange={(e) => onPickContact(e.target.value)}
@@ -836,7 +839,7 @@ function EmailToBuyer({
           </select>
         </label>
         <label className="block">
-          <span className="text-xs font-semibold text-slate-700">First name</span>
+          <span className="text-xs font-semibold text-slate-700">{t("houseSearch.firstName")}</span>
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
@@ -845,7 +848,7 @@ function EmailToBuyer({
           />
         </label>
         <label className="block sm:col-span-2">
-          <span className="text-xs font-semibold text-slate-700">Email address</span>
+          <span className="text-xs font-semibold text-slate-700">{t("houseSearch.emailAddress")}</span>
           <input
             type="email"
             value={email}
@@ -855,7 +858,7 @@ function EmailToBuyer({
           />
         </label>
         <label className="block sm:col-span-2">
-          <span className="text-xs font-semibold text-slate-700">Personal note (optional)</span>
+          <span className="text-xs font-semibold text-slate-700">{t("houseSearch.personalNote")}</span>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}

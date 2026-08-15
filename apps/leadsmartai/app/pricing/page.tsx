@@ -17,6 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ConsumerPricingPage() {
   await redirectAdminSupportAwayFromCommercialPricing();
+  const t = await getServerT();
   return (
     <>
       <JsonLd
@@ -155,10 +156,10 @@ export default async function ConsumerPricingPage() {
                 A human team — per year
               </p>
               <ul className="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-400">
-                <li>Receptionist / answering service</li>
-                <li>Inside sales agent (ISA)</li>
-                <li>Transaction coordinator</li>
-                <li>Marketing assistant</li>
+                <li>{t("pricingCompare.receptionist", { ns: "web_marketing" })}</li>
+                <li>{t("pricingCompare.isa", { ns: "web_marketing" })}</li>
+                <li>{t("pricingCompare.tc", { ns: "web_marketing" })}</li>
+                <li>{t("pricingCompare.marketing", { ns: "web_marketing" })}</li>
                 <li>Bookkeeper</li>
               </ul>
               <p className="mt-5 text-3xl font-extrabold text-slate-900 dark:text-white">
@@ -174,10 +175,10 @@ export default async function ConsumerPricingPage() {
                 Your AI team — CloseBoss
               </p>
               <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
-                <li>All six assistants, working together</li>
-                <li>Answers + cold-calls + qualifies + follows up</li>
-                <li>Coordinates deals + keeps the books</li>
-                <li>Trained on top-agent playbooks</li>
+                <li>{t("pricingCompare.allSix", { ns: "web_marketing" })}</li>
+                <li>{t("pricingCompare.answers", { ns: "web_marketing" })}</li>
+                <li>{t("pricingCompare.coordinates", { ns: "web_marketing" })}</li>
+                <li>{t("pricingCompare.trained", { ns: "web_marketing" })}</li>
                 <li>24/7 — no payroll, benefits, or turnover</li>
               </ul>
               <p className="mt-5 text-3xl font-extrabold text-[#0072ce]">

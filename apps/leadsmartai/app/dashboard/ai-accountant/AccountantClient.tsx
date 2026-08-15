@@ -188,7 +188,7 @@ export default function AccountantClient({
             </h2>
             <Link href="/dashboard/books" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.allInvoices")}</Link>
           </div>
-          <p className="mb-2 text-[11px] text-gray-400">Referral fees, vendor rebills, and anything else owed to you outside of closings.</p>
+          <p className="mb-2 text-[11px] text-gray-400">{t("tips.accountantOther")}</p>
           {invoices.length === 0 ? (
             <p className="py-4 text-center text-sm text-gray-400">Nothing outstanding — commissions are tracked in the pipeline above.</p>
           ) : (

@@ -361,7 +361,7 @@ function ProfileMenu({
         <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-slate-800 to-slate-900 text-xs font-bold text-white shadow-inner shadow-white/10 ring-2 ring-slate-100">
           {avatarUrl?.trim() ? (
             // eslint-disable-next-line @next/next/no-img-element -- Supabase Storage URL
-            <img src={avatarUrl.trim()} alt="User profile photo" className="h-full w-full object-cover" />
+            <img src={avatarUrl.trim()} alt={t("tips.profilePhoto")} className="h-full w-full object-cover" />
           ) : (
             initials
           )}

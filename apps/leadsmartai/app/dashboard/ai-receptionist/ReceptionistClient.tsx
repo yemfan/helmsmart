@@ -206,7 +206,7 @@ export default function ReceptionistClient() {
                       key={c.id}
                       onDoubleClick={() => setSelected(c)}
                       className="cursor-pointer border-b border-gray-50 last:border-0 hover:bg-slate-50"
-                      title="Double-click for full call details"
+                      title={t("tips.callDoubleClick")}
                     >
                       <td className="whitespace-nowrap px-4 py-2.5 text-xs text-gray-500">
                         {fmtWhen(c.created_at, locale)}

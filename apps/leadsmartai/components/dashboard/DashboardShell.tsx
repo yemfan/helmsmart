@@ -17,12 +17,15 @@ import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 // domain stays closebossai.com for now).
 const APP_NAME = "CloseBoss";
 
-const sidebarFooter = (
-  <div className="rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-3 py-2.5 text-sm leading-snug text-white shadow-lg shadow-slate-900/25 ring-1 ring-white/10">
-    <p className="font-medium text-white/95">Grow with AI follow-ups</p>
-    <p className="mt-0.5 text-xs text-white/70">Upgrade for more credits and automation.</p>
-  </div>
-);
+function SidebarFooter() {
+  const { t } = useTranslation("dashboard");
+  return (
+    <div className="rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-3 py-2.5 text-sm leading-snug text-white shadow-lg shadow-slate-900/25 ring-1 ring-white/10">
+      <p className="font-medium text-white/95">{t("shell.upgradeTitle")}</p>
+      <p className="mt-0.5 text-xs text-white/70">{t("shell.upgradeBody")}</p>
+    </div>
+  );
+}
 
 /**
  * Build the sidebar user card. Prefer the agent's `user_profiles.full_name`
@@ -83,6 +86,7 @@ export default function AppDashboardShell({
   // the English label, so a new nav entry keeps working (it falls back to its
   // own label) until someone adds a translation for it.
   const { t, i18n } = useTranslation("dashboard_nav");
+  const { t: td } = useTranslation("dashboard");
   const navSections = useMemo(() => {
     const raw =
       navConfigOverride === "broker"
@@ -115,14 +119,14 @@ export default function AppDashboardShell({
         // Brand lockup replaces the workspace switcher; the search row
         // is omitted (⌘K / the top-bar search cover it).
         brandHeader={
-          <Link href="/dashboard" aria-label="CloseBoss home" className="flex items-center">
+          <Link href="/dashboard" aria-label={td("shell.home")} className="flex items-center">
             <CloseBossLogo compact />
           </Link>
         }
         height="stretch"
         user={sidebarUser}
         onLogout={handleLogout}
-        footer={showAgentBrokerPromotion ? sidebarFooter : undefined}
+        footer={showAgentBrokerPromotion ? <SidebarFooter /> : undefined}
       />
       {/* Right: header then scrollable content */}
       <div className="flex min-h-screen min-w-0 flex-1 flex-col">

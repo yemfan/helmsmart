@@ -114,14 +114,14 @@ export default function Footer() {
           {/* Brand — single horizontal lockup (TOM MN-002: the previous
               monogram-box + separate wordmark read as two logos). */}
           <div className="flex items-center gap-4">
-            <Link href="/" aria-label="CloseBoss home" className="inline-flex">
+            <Link href="/" aria-label={t("aria.home")} className="inline-flex">
               <CloseBossLogo />
             </Link>
             <a
               href="https://www.linkedin.com/company/maxy-investment/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="CloseBoss on LinkedIn"
+              aria-label={t("aria.linkedin")}
               className="text-slate-400 transition-colors hover:text-[#0072ce] dark:text-slate-500 dark:hover:text-[#4da3e8]"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>

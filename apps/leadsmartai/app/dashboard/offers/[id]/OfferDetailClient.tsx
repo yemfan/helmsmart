@@ -224,7 +224,7 @@ export function OfferDetailClient({
                     {!offer.inspection_contingency &&
                     !offer.appraisal_contingency &&
                     !offer.loan_contingency ? (
-                      <span className="text-slate-500 text-xs">None (all waived)</span>
+                      <span className="text-slate-500 text-xs">{t("offers.noneWaived")}</span>
                     ) : null}
                   </div>
                 }
@@ -561,7 +561,7 @@ function ActivityTimeline({
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">New price (optional)</label>
+            <label className="block text-xs font-medium text-slate-700">{t("offers.newPriceOptional")}</label>
             <input
               type="number"
               value={price}

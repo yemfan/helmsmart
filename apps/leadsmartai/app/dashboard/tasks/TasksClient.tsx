@@ -877,6 +877,7 @@ function SnoozeMenu({
   disabled?: boolean;
   onSnooze: (days: number) => void;
 }) {
+  const { t: tr } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (!open) return;
@@ -907,8 +908,8 @@ function SnoozeMenu({
         type="button"
         onClick={() => setOpen((v) => !v)}
         disabled={disabled}
-        title="Move to a later date"
-        aria-label="Move task to a later date"
+        title={tr("tips.moveLater")}
+        aria-label={tr("tips.moveTaskLater")}
         aria-haspopup="menu"
         aria-expanded={open}
         className="inline-flex h-7 w-7 items-center justify-center rounded-md text-amber-600 transition hover:bg-amber-50 hover:text-amber-700 disabled:opacity-40"

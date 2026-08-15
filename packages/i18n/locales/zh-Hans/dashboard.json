@@ -497,7 +497,9 @@
       "pipeline": "在途金额",
       "winRate": "成交率"
     },
-    "toDeal": "→ 已转为交易"
+    "toDeal": "→ 已转为交易",
+    "noneWaived": "无（全部放弃）",
+    "newPriceOptional": "新价格（可选）"
   },
   "transactions": {
     "title": "成交管理",
@@ -1280,7 +1282,7 @@
     "limitReached": "已达今日次数上限 —— 于 UTC 零点重置。",
     "search": "搜索",
     "searching": "搜索中…",
-    "savedSearches": "+ 按联系人查看已保存的搜索",
+    "savedSearches": "已保存的搜索",
     "autoSend": "自动发送给买家",
     "off": "关闭",
     "daily": "每天",
@@ -1288,7 +1290,14 @@
     "priceOnRequest": "价格面议",
     "searchFailed": "搜索失败",
     "loadSavedFailed": "无法加载已保存的搜索",
-    "scheduleFailed": "无法更新发送计划。"
+    "scheduleFailed": "无法更新发送计划。",
+    "howIReadThis": "我是这样理解的",
+    "noSavedSearches": "该联系人暂无已保存的搜索。",
+    "saveToContact": "将搜索保存到联系人",
+    "buyerFromContacts": "买家（来自联系人）",
+    "firstName": "名字",
+    "emailAddress": "电子邮箱",
+    "personalNote": "个人备注（可选）"
   },
   "actionsHub": {
     "overviewLink": "{{title}}总览",
@@ -1553,5 +1562,30 @@
       "consultation": "购房咨询",
       "search_plan": "搜索方案"
     }
+  },
+  "tips": {
+    "accountantOther": "推荐费、供应商代垫费用，以及成交之外应付给您的其他款项。",
+    "callDoubleClick": "双击查看完整通话详情",
+    "removeFile": "移除文件",
+    "snooze7d": "延后 7 天",
+    "offerAiTerms": "为该房源获取 AI 推荐条款（价格、附加条件、加价条款）以及一封说明信",
+    "compareOffers": "比较报价与卖方净收益",
+    "openCma": "打开市场比较分析与提案生成器",
+    "moveLater": "改到更晚的日期",
+    "moveTaskLater": "将任务改到更晚的日期",
+    "quiet7d": "静默 7 天以上",
+    "settingsSections": "设置分区",
+    "profilePhoto": "用户头像",
+    "connectedSocial": "已连接的社交账号",
+    "socialAutoposting": "社交自动发布",
+    "weeklySchedule": "每周发布计划",
+    "tcNotifications": "交易协调通知",
+    "commissionDefaults": "佣金默认设置",
+    "offerAiTermsBuyer": "为新的买方报价获取 AI 推荐条款（价格、附加条件、加价条款）以及一封说明信。"
+  },
+  "shell": {
+    "upgradeTitle": "用 AI 跟进推动增长",
+    "upgradeBody": "升级以获得更多额度与自动化功能。",
+    "home": "CloseBoss 首页"
   }
 }

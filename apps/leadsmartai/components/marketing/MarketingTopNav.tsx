@@ -73,7 +73,7 @@ export function MarketingTopNav({
           </div>
           <Link
             href="/"
-            aria-label="CloseBoss home"
+            aria-label={t("aria.home")}
             className="flex min-w-0 items-center"
           >
             {/* Mark-only below sm (375px iPhone SE leaves ~150px for the

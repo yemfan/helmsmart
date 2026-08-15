@@ -162,7 +162,7 @@ export function OffersListClient({
           <Link
             href="/dashboard/offers/build"
             className="rounded-lg bg-[#0072ce] px-3 py-2 text-sm font-medium text-white hover:bg-[#005fa8]"
-            title="Get AI-recommended terms (price, contingencies, escalation) + a cover letter for a new buyer offer."
+            title={t("tips.offerAiTermsBuyer")}
           >
             ✨ {t("offers.buildWithAi")}
           </Link>
