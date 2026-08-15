@@ -333,7 +333,7 @@ export default function DigitalTwinPanel() {
     if (!videoPath) return setError(t("twin.errors.uploadIntroFirst"));
     setBuilding(true);
     setError(null);
-    setNote("Transcribing + building your profile… (a minute or two)");
+    setNote(t("twin.transcribing"));
     try {
       const res = await fetch("/api/dashboard/digital-twin", {
         method: "POST",
@@ -428,7 +428,7 @@ export default function DigitalTwinPanel() {
           disabled={building || !consent || (!videoPath && !hasVideo)}
           className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
         >
-          {building ? "Building…" : status === "ready" ? t("twin.rebuildProfile") : t("twin.buildProfile")}
+          {building ? t("twin.building") : status === "ready" ? t("twin.rebuildProfile") : t("twin.buildProfile")}
         </button>
         {status === "processing" ? <span className="text-[11px] text-slate-500">{t("twin.processing")}</span> : null}
       </div>
