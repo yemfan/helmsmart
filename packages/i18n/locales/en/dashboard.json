@@ -947,7 +947,11 @@
     "remove": "Remove",
     "previewTail": "to see how it will render, or",
     "editTail": "to edit.",
-    "customizeTail": "to customize."
+    "customizeTail": "to customize.",
+    "leadAdUrl": "Lead Ad Privacy Policy URL",
+    "premium": "Premium",
+    "leadAdPlaceholder": "https://yourbrokerage.com/privacy",
+    "leadAdHelp": "Default privacy policy URL for Meta Lead Ad forms launched from Generate Leads → Run Ads. Must be HTTPS. Leave blank to use CloseBoss's bundled URL. You can also override this per-campaign in the ad wizard."
   },
   "roles": {
     "user": "Consumer",
@@ -1065,7 +1069,8 @@
     "cleanVoice": "Clean my voice",
     "cleanVoiceHelp": "— denoise the source for a sharper clone",
     "voiceReady": "✓ Voice ready",
-    "languageNote": "Written in the language set in the header — switch to 中文 and rebuild for Chinese."
+    "languageNote": "Written in the language set in the header — switch to 中文 and rebuild for Chinese.",
+    "voiceConsent": "I consent to CloseBoss creating an AI clone of my voice from my intro video. I can revoke this anytime."
   },
   "call": {
     "call": "Call",

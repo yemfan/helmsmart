@@ -505,8 +505,7 @@ export default function DigitalTwinPanel() {
             className="mt-0.5"
           />
           <span className="text-[12px] text-slate-700">
-            I consent to CloseBoss creating an AI clone of <strong>my</strong> voice from my intro video. I can revoke
-            this anytime.
+            {t("twin.voiceConsent")}
           </span>
         </label>
 

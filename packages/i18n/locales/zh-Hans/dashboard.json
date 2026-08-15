@@ -947,7 +947,11 @@
     "remove": "移除",
     "previewTail": "查看实际效果，或点击",
     "editTail": "进行编辑。",
-    "customizeTail": "进行自定义。"
+    "customizeTail": "进行自定义。",
+    "leadAdUrl": "Lead Ad 隐私政策链接",
+    "premium": "高级版",
+    "leadAdPlaceholder": "https://yourbrokerage.com/privacy",
+    "leadAdHelp": "用于「获取客户 → 投放广告」中 Meta Lead Ad 表单的默认隐私政策链接。必须是 HTTPS。留空则使用 CloseBoss 自带的链接。您也可以在广告向导中为单个广告单独设置。"
   },
   "roles": {
     "user": "普通用户",
@@ -1065,7 +1069,8 @@
     "cleanVoice": "净化我的声音",
     "cleanVoiceHelp": "—— 对原始音频降噪，克隆效果更清晰",
     "voiceReady": "✓ 声音已就绪",
-    "languageNote": "生成内容使用顶部所选的语言 —— 切换到 English 后重新生成即可得到英文。"
+    "languageNote": "生成内容使用顶部所选的语言 —— 切换到 English 后重新生成即可得到英文。",
+    "voiceConsent": "我同意 CloseBoss 使用我的自我介绍视频克隆我的声音。我可以随时撤回此授权。"
   },
   "call": {
     "call": "拨打",
