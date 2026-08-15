@@ -7,6 +7,7 @@ import {
   parseThreadsTokenExchangeResponse,
   buildThreadsLongLivedTokenUrl,
   parseThreadsLongLivedTokenResponse,
+  threadsGraphBase,
   THREADS_SCOPES,
 } from "@helm/dna-marketing";
 
@@ -154,11 +155,28 @@ const threadsAdapter: OAuthAdapter = {
     const accessToken = long.ok ? long.accessToken : parsed.accessToken;
     const expiresIn = long.ok ? long.expiresIn : 60 * 24 * 60 * 60;
 
+    // The connections UI renders "<Platform> · <account_name>", so a hardcoded
+    // "Threads" produced "Threads · Threads" — you could see that something was
+    // connected but not WHICH account, which matters when one person runs
+    // several. Ask the API who we just linked. Best-effort: a missing display
+    // name must never fail an otherwise good connection, since the token and
+    // user id are what publishing actually needs.
+    let accountName = "Threads";
+    try {
+      const me = await getJson<{ username?: string }>(
+        `${threadsGraphBase()}/me?fields=id,username&access_token=${encodeURIComponent(accessToken)}`,
+      );
+      const username = me.body?.username?.trim();
+      if (username) accountName = `@${username}`;
+    } catch {
+      /* keep the generic label */
+    }
+
     return [
       {
         platform: "threads",
         provider_account_id: parsed.userId,
-        account_name: "Threads",
+        account_name: accountName,
         access_token: accessToken,
         refresh_token: null,
         token_expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
