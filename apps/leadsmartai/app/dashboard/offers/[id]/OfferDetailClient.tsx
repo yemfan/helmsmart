@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,27 +29,27 @@ const STATUS_BADGE: Record<OfferStatus, string> = {
   expired: "bg-slate-100 text-slate-600",
 };
 
-function formatMoney(n: number | null | undefined): string {
+function formatMoney(n: number | null | undefined, locale: string): string {
   if (n == null) return "—";
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(n);
 }
 
-function formatDate(iso: string | null): string {
+function formatDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
   });
 }
 
-function formatDateTime(iso: string | null): string {
+function formatDateTime(iso: string | null, locale: string): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleString(undefined, {
+  return new Date(iso).toLocaleString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -66,7 +67,8 @@ export function OfferDetailClient({
   counters: OfferCounterRow[];
   contactName: string | null;
 }) {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const router = useRouter();
   const [offer, setOffer] = useState(initialOffer);
   const [counters, setCounters] = useState(initialCounters);
@@ -194,23 +196,23 @@ export function OfferDetailClient({
         <div className="space-y-4 md:col-span-2">
           <Card title={t("detail.offerDetail.terms")}>
             <dl className="grid grid-cols-2 gap-3 text-sm">
-              <Detail label={t("detail.offerDetail.listPrice")} value={formatMoney(offer.list_price)} />
-              <Detail label={t("detail.offerDetail.offerPrice")} value={formatMoney(offer.offer_price)} />
+              <Detail label={t("detail.offerDetail.listPrice")} value={formatMoney(offer.list_price, locale)} />
+              <Detail label={t("detail.offerDetail.offerPrice")} value={formatMoney(offer.offer_price, locale)} />
               <Detail
                 label={t("detail.offerDetail.currentPrice")}
                 value={
                   offer.current_price != null && offer.current_price !== offer.offer_price ? (
-                    <span className="font-semibold text-slate-900">{formatMoney(offer.current_price)}</span>
+                    <span className="font-semibold text-slate-900">{formatMoney(offer.current_price, locale)}</span>
                   ) : (
-                    formatMoney(offer.current_price ?? offer.offer_price)
+                    formatMoney(offer.current_price ?? offer.offer_price, locale)
                   )
                 }
               />
-              <Detail label={t("detail.offerDetail.earnestMoney")} value={formatMoney(offer.earnest_money)} />
-              <Detail label={t("detail.offerDetail.downPayment")} value={formatMoney(offer.down_payment)} />
+              <Detail label={t("detail.offerDetail.earnestMoney")} value={formatMoney(offer.earnest_money, locale)} />
+              <Detail label={t("detail.offerDetail.downPayment")} value={formatMoney(offer.down_payment, locale)} />
               <Detail label={t("detail.offerDetail.financing")} value={offer.financing_type ?? "—"} />
-              <Detail label={t("detail.offerDetail.proposedClosing")} value={formatDate(offer.closing_date_proposed)} />
-              <Detail label={t("detail.offerDetail.offerExpires")} value={formatDateTime(offer.offer_expires_at)} />
+              <Detail label={t("detail.offerDetail.proposedClosing")} value={formatDate(offer.closing_date_proposed, locale)} />
+              <Detail label={t("detail.offerDetail.offerExpires")} value={formatDateTime(offer.offer_expires_at, locale)} />
               <Detail
                 label={t("detail.offerDetail.contingencies")}
                 wide
@@ -316,10 +318,10 @@ export function OfferDetailClient({
 
           <Card title={t("detail.offerDetail.timeline")}>
             <dl className="space-y-2 text-sm">
-              <Detail label={t("detail.offerDetail.created")} value={formatDateTime(offer.created_at)} />
-              <Detail label="Submitted" value={formatDateTime(offer.submitted_at)} />
-              <Detail label="Accepted" value={formatDateTime(offer.accepted_at)} />
-              <Detail label={t("detail.offerDetail.closed")} value={formatDateTime(offer.closed_at)} />
+              <Detail label={t("detail.offerDetail.created")} value={formatDateTime(offer.created_at, locale)} />
+              <Detail label="Submitted" value={formatDateTime(offer.submitted_at, locale)} />
+              <Detail label="Accepted" value={formatDateTime(offer.accepted_at, locale)} />
+              <Detail label={t("detail.offerDetail.closed")} value={formatDateTime(offer.closed_at, locale)} />
             </dl>
           </Card>
         </div>
@@ -400,6 +402,7 @@ function buildActivity(
   offer: OfferRow,
   counters: OfferCounterRow[],
   t: (k: string) => string,
+  locale: string,
 ): ActivityEvent[] {
   const events: ActivityEvent[] = [];
   events.push({
@@ -414,7 +417,7 @@ function buildActivity(
       label: t("detail.offerDetail.submittedToAgent"),
       detail:
         offer.offer_price != null
-          ? `at ${formatMoney(offer.offer_price)}`
+          ? `at ${formatMoney(offer.offer_price, locale)}`
           : undefined,
     });
   }
@@ -427,7 +430,7 @@ function buildActivity(
         ? `Counter #${c.counter_number} from seller`
         : `Counter #${c.counter_number} sent to seller`,
       detail: [
-        c.price != null ? `at ${formatMoney(c.price)}` : null,
+        c.price != null ? `at ${formatMoney(c.price, locale)}` : null,
         c.notes ?? null,
       ]
         .filter(Boolean)
@@ -441,7 +444,7 @@ function buildActivity(
       label: "Accepted",
       detail:
         offer.current_price != null && offer.current_price !== offer.offer_price
-          ? `Final price ${formatMoney(offer.current_price)}`
+          ? `Final price ${formatMoney(offer.current_price, locale)}`
           : undefined,
     });
   }
@@ -481,8 +484,9 @@ function ActivityTimeline({
    *  rejected / withdrawn / expired). */
   disabled: boolean;
 }) {
-  const { t } = useTranslation("dashboard");
-  const events = buildActivity(offer, counters, t);
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
+  const events = buildActivity(offer, counters, t, locale);
 
   // Inline add-counter form state. Used to live in a separate
   // CounterTimeline card; folded in here so the Activity card
@@ -619,7 +623,7 @@ function ActivityTimeline({
                 ) : null}
               </div>
               <div className="shrink-0 text-right text-[11px] text-slate-500">
-                {formatDateTime(e.at)}
+                {formatDateTime(e.at, locale)}
               </div>
             </li>
           ))}

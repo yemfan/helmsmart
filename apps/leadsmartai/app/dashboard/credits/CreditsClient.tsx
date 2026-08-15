@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -19,13 +20,14 @@ type CurrentPlan = {
   status: string | null;
 };
 
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+function fmtDate(iso: string, locale: string) {
+  return new Date(iso).toLocaleDateString(locale, { year: "numeric", month: "short", day: "numeric" });
 }
 
 export default function CreditsClient() {
   // Named `tr` — the plan rows below already bind `t` to a tier.
-  const { t: tr } = useTranslation("dashboard");
+  const { t: tr, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const sp = useSearchParams();
   const topup = sp?.get("topup"); // "success" | "canceled"
   const checkout = sp?.get("checkout"); // "success" (subscription)
@@ -144,11 +146,11 @@ export default function CreditsClient() {
                 {plan.planId === null ? (
                   <>{tr("more.credits.paygHelp")}</>
                 ) : plan.cancelAtPeriodEnd && plan.renewsAt ? (
-                  <>Ends {fmtDate(plan.renewsAt)} — credits you already have stay yours.</>
+                  <>Ends {fmtDate(plan.renewsAt, locale)} — credits you already have stay yours.</>
                 ) : (
                   <>
                     {plan.monthlyCredits?.toLocaleString()} credits / mo
-                    {plan.renewsAt ? <> · renews {fmtDate(plan.renewsAt)}</> : null}
+                    {plan.renewsAt ? <> · renews {fmtDate(plan.renewsAt, locale)}</> : null}
                   </>
                 )}
               </p>

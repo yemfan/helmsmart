@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -19,7 +20,8 @@ import { SendMarketReportButton } from "@/components/marketReport/SendMarketRepo
  * click away in the contacts hub.
  */
 export default function LeadProfileClient({ leadId }: { leadId: string }) {
-  const { t } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [data, setData] = useState<LeadProfilePayload | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,7 +72,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
           <div className="min-w-0">
             <h1 className="text-2xl font-semibold text-gray-900">{p.name ?? t("detail.leadProfile.unnamed")}</h1>
             <p className="mt-0.5 text-sm text-gray-500">
-              {[p.source, `with you since ${new Date(p.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric" })}`]
+              {[p.source, `with you since ${new Date(p.created_at).toLocaleDateString(locale, { month: "long", day: "numeric" })}`]
                 .filter(Boolean)
                 .join(" · ")}
             </p>
@@ -157,7 +159,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
                     <span className="min-w-0 truncate">☐ {t.title}</span>
                     {t.due_at && (
                       <span className={`shrink-0 text-xs ${new Date(t.due_at).getTime() < Date.now() ? "font-medium text-red-600" : "text-gray-400"}`}>
-                        {new Date(t.due_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        {new Date(t.due_at).toLocaleDateString(locale, { month: "short", day: "numeric" })}
                       </span>
                     )}
                   </li>
@@ -174,7 +176,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
                   <li key={e.id} className="text-sm text-gray-700">
                     📅 {e.title}
                     <span className="block text-xs text-gray-400">
-                      {new Date(e.starts_at).toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                      {new Date(e.starts_at).toLocaleString(locale, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                     </span>
                   </li>
                 ))}

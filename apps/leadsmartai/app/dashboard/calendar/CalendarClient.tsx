@@ -57,7 +57,7 @@ const DOT_COLORS = {
 
 function dateKey(d: Date) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
 function isSameDay(a: Date, b: Date) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
-function formatTime(iso: string, locale = "en-US") { return new Date(iso).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" }); }
+function formatTime(iso: string, locale: string) { return new Date(iso).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" }); }
 
 export default function CalendarClient({ leads }: { leads: Array<{ id: string; name: string | null }> }) {
   const { t: tr, i18n } = useTranslation("dashboard");
@@ -447,7 +447,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
               <span>
                 · last received{" "}
                 <time dateTime={inboundAlias.lastReceivedAt}>
-                  {new Date(inboundAlias.lastReceivedAt).toLocaleString()}
+                  {new Date(inboundAlias.lastReceivedAt).toLocaleString(timeLocale)}
                 </time>
               </span>
             )}
@@ -653,6 +653,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       </div>
       ) : (
         <ListView
+          locale={timeLocale}
           dayMap={dayMap}
           currentMonth={currentMonth}
           today={today}
@@ -717,6 +718,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
 // dayMap is built). Re-uses the DayEntry type defined at module scope.
 
 function ListView({
+  locale,
   dayMap,
   currentMonth,
   today,
@@ -729,6 +731,8 @@ function ListView({
   nextMonth,
   goToday,
 }: {
+  /** Resolved from the language toggle by the parent — see timeLocale. */
+  locale: string;
   dayMap: Map<string, DayEntry[]>;
   currentMonth: Date;
   today: Date;
@@ -795,10 +799,10 @@ function ListView({
               >
                 <div className={`shrink-0 ${isToday ? "text-blue-700 font-semibold" : "text-gray-700"}`}>
                   <div className="text-xs uppercase tracking-wide">
-                    {date.toLocaleDateString("en-US", { weekday: "short" })}
+                    {date.toLocaleDateString(locale, { weekday: "short" })}
                   </div>
                   <div className="text-sm">
-                    {date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    {date.toLocaleDateString(locale, { month: "short", day: "numeric" })}
                     {isToday ? " · Today" : ""}
                   </div>
                 </div>

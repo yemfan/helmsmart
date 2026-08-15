@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 /**
  * Client-side bits of the connect page:
@@ -198,7 +199,8 @@ export default function ConnectClient({
   youtubeConnections: YouTubeAccountRow[];
 }) {
   const router = useRouter();
-  const { t } = useTranslation("web_generate_leads_clients");
+  const { t, i18n } = useTranslation("web_generate_leads_clients");
+  const locale = intlLocale(i18n.language);
   const [flash, setFlash] = useState<Flash | null>(() =>
     buildFlash(initialStatus, initialReason, initialCount, initialNetwork, t),
   );
@@ -365,7 +367,7 @@ export default function ConnectClient({
                         <>
                           {" · "}
                           {t("connect.meta.token_expires", {
-                            date: new Date(c.user_token_expires_at).toLocaleDateString(),
+                            date: new Date(c.user_token_expires_at).toLocaleDateString(locale),
                           })}
                         </>
                       )}
@@ -471,7 +473,7 @@ export default function ConnectClient({
                         <>
                           {" · "}
                           {t("connect.meta.token_expires", {
-                            date: new Date(c.user_token_expires_at).toLocaleDateString(),
+                            date: new Date(c.user_token_expires_at).toLocaleDateString(locale),
                           })}
                         </>
                       )}
@@ -579,7 +581,7 @@ export default function ConnectClient({
                         <>
                           {" · "}
                           {t("connect.meta.token_expires", {
-                            date: new Date(c.user_token_expires_at).toLocaleDateString(),
+                            date: new Date(c.user_token_expires_at).toLocaleDateString(locale),
                           })}
                         </>
                       )}
