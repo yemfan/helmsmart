@@ -199,14 +199,29 @@ export async function startVoiceCloneFromTwin(
 
   const { data: agent } = await supabaseAdmin
     .from("agents")
-    .select("dt_intro_video_path")
+    .select("dt_intro_video_path, dt_intro_audio_path")
     .eq("id", agentId)
     .maybeSingle();
-  const videoPath = (agent as { dt_intro_video_path?: string | null } | null)?.dt_intro_video_path?.trim();
+  const row = (agent ?? null) as { dt_intro_video_path?: string | null; dt_intro_audio_path?: string | null } | null;
+  const videoPath = row?.dt_intro_video_path?.trim();
   // Own-likeness only: must be this agent's private digital-twin capture.
   if (!videoPath || !videoPath.startsWith("digital-twin/") || !videoPath.includes(`/${agentId}`)) {
     throw new Error("Record your intro video first (My Profile → Digital Twin).");
   }
+
+  /*
+   * Prefer the audio track the browser extracted at upload time. Cloning never
+   * needed the video, and sending only the audio keeps the sample small AND
+   * completely unprocessed — the previous size workaround ran it through a
+   * denoiser, which audibly reshaped the cloned voice.
+   *
+   * Same ownership rule as the video: it has to be this agent's own capture.
+   */
+  const audioPath = row?.dt_intro_audio_path?.trim();
+  const samplePath =
+    audioPath && audioPath.startsWith("digital-twin/") && audioPath.includes(`/${agentId}`)
+      ? audioPath
+      : videoPath;
 
   await ensureRow(agentId);
   await patchClone(agentId, {
@@ -216,13 +231,14 @@ export async function startVoiceCloneFromTwin(
   });
 
   try {
-    const { data: file, error: dlErr } = await supabaseAdmin.storage.from(LEAD_MEDIA).download(videoPath);
-    if (dlErr || !file) throw new Error(dlErr?.message || "Could not read your intro video.");
+    const { data: file, error: dlErr } = await supabaseAdmin.storage.from(LEAD_MEDIA).download(samplePath);
+    if (dlErr || !file) throw new Error(dlErr?.message || "Could not read your intro recording.");
 
+    const usingExtractedAudio = samplePath !== videoPath;
     const rawBytes = Buffer.from(await file.arrayBuffer());
     let sampleBytes: Buffer = rawBytes;
-    let sampleName = videoPath.split("/").pop() || "intro.mp4";
-    let sampleMime = file.type || "video/mp4";
+    let sampleName = samplePath.split("/").pop() || (usingExtractedAudio ? "intro-audio.wav" : "intro.mp4");
+    let sampleMime = file.type || (usingExtractedAudio ? "audio/wav" : "video/mp4");
 
     // Premium "Clean my voice": best-effort isolation before cloning. Falls back
     // to the raw sample on any failure so cloning never breaks on the pass.
@@ -237,17 +253,15 @@ export async function startVoiceCloneFromTwin(
     }
 
     /*
-     * We upload the intro VIDEO as the voice sample, and ElevenLabs caps an
-     * upload at 11MB — which almost any real recording exceeds. Cloning only
-     * appeared to work because "Clean my voice" happens to return an audio-only
-     * MP3, so the premium toggle was silently carrying the size fix. With it
-     * off, every decent-length video failed with ElevenLabs' raw wording.
+     * Last-resort size fallback, for rows with no extracted audio (uploaded
+     * before that existed, or a browser that couldn't decode the container).
      *
-     * Isolation strips the video track, so run it as a size fallback too. It is
-     * the same call the premium path already makes — nothing new to go wrong —
-     * and it only fires when the clone would otherwise fail outright.
+     * Isolation gets us under ElevenLabs' 11MB cap by stripping the video, but
+     * it is a DENOISER — it reshapes the voice, and clones made this way came
+     * back sounding processed. So it now only runs when there is no better
+     * option, rather than on every oversized upload.
      */
-    if (sampleBytes.byteLength > MAX_SAMPLE_BYTES) {
+    if (!usingExtractedAudio && sampleBytes.byteLength > MAX_SAMPLE_BYTES) {
       try {
         sampleBytes = await isolateVoiceAudio(rawBytes, sampleMime);
         sampleName = "intro-audio.mp3";

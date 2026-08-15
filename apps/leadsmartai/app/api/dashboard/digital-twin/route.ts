@@ -106,7 +106,25 @@ export async function PATCH(req: Request) {
       profile?: unknown;
       consent?: unknown;
       portraitPath?: unknown;
+      introAudioPath?: unknown;
     };
+
+    /*
+     * The audio track the browser pulled out of the intro video, used as the
+     * voice-clone sample so it stays small AND unprocessed.
+     *
+     * Not consent-gated separately: it is the same recording as the intro
+     * video, which is already behind the likeness/voice consent above, and it
+     * only ever arrives alongside that upload. The ownership check is the one
+     * that matters — it must live in this agent's own digital-twin prefix.
+     */
+    if (typeof body.introAudioPath === "string" && body.introAudioPath) {
+      const introAudioPath = body.introAudioPath;
+      if (!VIDEO_PREFIX_RE.test(introAudioPath) || !introAudioPath.includes(`/${agentId}`)) {
+        return NextResponse.json({ ok: false, error: "That audio isn't yours to use." }, { status: 400 });
+      }
+      await supabaseAdmin.from("agents").update({ dt_intro_audio_path: introAudioPath }).eq("id", agentId);
+    }
 
     if (typeof body.consent === "boolean") {
       await setDigitalTwinConsent(String(agentId), body.consent);
