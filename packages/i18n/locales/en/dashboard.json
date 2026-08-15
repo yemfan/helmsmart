@@ -1062,6 +1062,8 @@
     "intro": "Record a short intro video (talk to camera — who you are, your market, what you specialize in). AI turns it into a brand profile that personalizes all your AI-written marketing. Voice + avatar come later.",
     "profileLanguage": "Profile language",
     "profileLanguageHelp": "The language your bio, market, tone and specialties are written in. Rebuild to regenerate them.",
+    "aiLanguage": "AI language",
+    "aiLanguageHelp": "Used for both your brand profile and any script we write for you.",
     "voiceIntro": "Clone your voice from the same intro video — no second recording. We use it to voice your AI content, and (once you turn it on below) your AI receptionist answers calls in your voice.",
     "avatarIntro": "Turn a script into a talking-head video of you — your face, speaking in your cloned voice or any stock voice you pick. Drafting + the voice preview are free; the video render is a separate step so you hear it first.",
     "portraitNote": "Your uploaded photo is the face for {{mode}} renders. Lip-sync renders still use your intro video, since they sync onto real footage.",
