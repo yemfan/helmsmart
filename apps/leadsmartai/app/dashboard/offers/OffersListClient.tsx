@@ -40,7 +40,7 @@ function formatMoney(n: number | null | undefined): string {
 }
 
 function formatDate(iso: string, locale?: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",

@@ -1049,5 +1049,19 @@
       "noAccounts": "还没有已连接、且支持视频的账号。"
     },
     "queued": "已加入 {{count}} 个账号的发布队列 —— 几分钟内发出。"
+  },
+  "call": {
+    "call": "拨打",
+    "calling": "拨号中…",
+    "ringing": "正在呼叫您的手机",
+    "failed": "呼叫失败",
+    "ariaLabel": "拨打给该联系人",
+    "title": "通过您的手机接通该联系人",
+    "noAgentPhone": "请先在「设置」中填写您的电话号码，然后再拨打。",
+    "noContactPhone": "该联系人没有登记电话号码。",
+    "badNumber": "电话号码格式不正确。",
+    "notConfigured": "通话功能尚未配置 —— 请联系管理员。",
+    "couldNotPlace": "无法发起通话。",
+    "twilioRejected": "Twilio 拒绝了这次呼叫。"
   }
 }

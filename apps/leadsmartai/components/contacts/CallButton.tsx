@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import { useState } from "react";
 
 /**
@@ -22,6 +24,7 @@ export function CallButton({
   contactId: string;
   hasPhone: boolean;
 }) {
+  const { t } = useTranslation("dashboard");
   const [state, setState] = useState<
     | { kind: "idle" }
     | { kind: "calling" }
@@ -51,7 +54,7 @@ export function CallButton({
       } else {
         setState({
           kind: "error",
-          message: friendlyError(json.code, json.error),
+          message: friendlyError(json.code, json.error, t),
         });
         setTimeout(() => setState({ kind: "idle" }), 6000);
       }
@@ -74,14 +77,14 @@ export function CallButton({
             ? "bg-red-50 text-red-700 ring-1 ring-red-200"
             : "bg-blue-50 text-blue-700 ring-1 ring-blue-200 hover:bg-blue-100 disabled:opacity-60",
       ].join(" ")}
-      title={state.kind === "error" ? state.message : "Bridge your phone to this contact"}
-      aria-label="Call contact"
+      title={state.kind === "error" ? state.message : t("call.title")}
+      aria-label={t("call.ariaLabel")}
     >
       <PhoneIcon />
-      {state.kind === "idle" && "Call"}
-      {state.kind === "calling" && "Calling…"}
-      {state.kind === "ringing" && "Ringing your phone"}
-      {state.kind === "error" && "Failed"}
+      {state.kind === "idle" && t("call.call")}
+      {state.kind === "calling" && t("call.calling")}
+      {state.kind === "ringing" && t("call.ringing")}
+      {state.kind === "error" && t("call.failed")}
     </button>
   );
 }
@@ -104,20 +107,24 @@ function PhoneIcon() {
   );
 }
 
-function friendlyError(code: string | undefined, fallback: string | undefined): string {
+function friendlyError(
+  code: string | undefined,
+  fallback: string | undefined,
+  t: (k: string) => string,
+): string {
   switch (code) {
     case "missing_agent_phone":
-      return "Add your phone number under Settings before placing calls.";
+      return t("call.noAgentPhone");
     case "missing_contact_phone":
-      return "This contact has no phone number on file.";
+      return t("call.noContactPhone");
     case "invalid_phone":
-      return "The phone number isn't in a valid format.";
+      return t("call.badNumber");
     case "missing_caller_id":
     case "twilio_not_configured":
-      return "Calling isn't configured yet — contact your admin.";
+      return t("call.notConfigured");
     case "twilio_api_failed":
-      return "Twilio rejected the call.";
+      return t("call.twilioRejected");
     default:
-      return fallback ?? "Call could not be placed.";
+      return fallback ?? t("call.couldNotPlace");
   }
 }

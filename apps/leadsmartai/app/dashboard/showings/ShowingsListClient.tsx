@@ -25,9 +25,9 @@ const STATUS_BADGE: Record<ShowingStatus, string> = {
   no_show: "bg-amber-100 text-amber-800",
 };
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, locale?: string): string {
   const d = new Date(iso);
-  return d.toLocaleDateString(undefined, {
+  return d.toLocaleDateString(locale, {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -35,9 +35,9 @@ function formatDate(iso: string): string {
   });
 }
 
-function formatTime(iso: string): string {
+function formatTime(iso: string, locale?: string): string {
   const d = new Date(iso);
-  return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  return d.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
 }
 
 export function ShowingsListClient({

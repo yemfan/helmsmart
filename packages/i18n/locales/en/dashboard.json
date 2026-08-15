@@ -1049,5 +1049,19 @@
       "noAccounts": "No connected video-capable accounts yet."
     },
     "queued": "Queued to {{count}} account(s) — posting within a few minutes."
+  },
+  "call": {
+    "call": "Call",
+    "calling": "Calling…",
+    "ringing": "Ringing your phone",
+    "failed": "Failed",
+    "ariaLabel": "Call contact",
+    "title": "Bridge your phone to this contact",
+    "noAgentPhone": "Add your phone number under Settings before placing calls.",
+    "noContactPhone": "This contact has no phone number on file.",
+    "badNumber": "The phone number isn't in a valid format.",
+    "notConfigured": "Calling isn't configured yet — contact your admin.",
+    "couldNotPlace": "Call could not be placed.",
+    "twilioRejected": "Twilio rejected the call."
   }
 }
