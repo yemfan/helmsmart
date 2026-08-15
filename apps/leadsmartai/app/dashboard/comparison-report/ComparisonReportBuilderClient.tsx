@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import ShareReport from "@/components/share/ShareReport";
 import {
@@ -65,6 +66,7 @@ export default function ComparisonReportBuilderClient({
 }: {
   planType: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const [clientName, setClientName] = useState("");
   const [rows, setRows] = useState<Row[]>(() => [newRow(), newRow()]);
   const [loading, setLoading] = useState(false);
@@ -207,7 +209,7 @@ export default function ComparisonReportBuilderClient({
     setError(null);
     setShareUrl(null);
     if (isFree) {
-      setError("Upgrade to Pro or Premium to generate AI comparison reports.");
+      setError(t("pages.comparisonReport.upgrade"));
       return;
     }
 
@@ -250,7 +252,7 @@ export default function ComparisonReportBuilderClient({
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">AI Property Comparison Report</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t("pages.comparisonReport.heading")}</h1>
         <p className="mt-2 text-gray-600">
           Build a client-ready comparison with executive summary, scores, and AI insights. Share a public link or
           download a PDF.
@@ -267,18 +269,18 @@ export default function ComparisonReportBuilderClient({
 
       <form onSubmit={onSubmit} className="space-y-8">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Client name</label>
+          <label className="block text-sm font-medium text-gray-700">{t("pages.comparisonReport.clientName")}</label>
           <input
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
             className="mt-1 w-full max-w-md rounded-lg border border-gray-300 px-3 py-2 text-sm"
-            placeholder="e.g. Jane Smith"
+            placeholder={t("pages.comparisonReport.clientPlaceholder")}
           />
         </div>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Properties (min. 2)</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("pages.comparisonReport.properties")}</h2>
             <button
               type="button"
               onClick={addRow}
@@ -304,7 +306,7 @@ export default function ComparisonReportBuilderClient({
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <label className="sm:col-span-2 lg:col-span-3">
-                  <span className="text-xs text-gray-500">Address</span>
+                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.address")}</span>
                   <input
                     required
                     value={row.address}
@@ -332,7 +334,7 @@ export default function ComparisonReportBuilderClient({
                       }
                     }}
                     className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-                    placeholder="123 Main St, City, ST — or paste a Zillow/Redfin/Realtor.com/Compass link"
+                    placeholder={t("pages.comparisonReport.addressPlaceholder")}
                   />
                   {detect[row.id] && (
                     <span className="mt-1 block text-[11px]">
@@ -364,7 +366,7 @@ export default function ComparisonReportBuilderClient({
                   )}
                 </label>
                 <label>
-                  <span className="text-xs text-gray-500">Price ($)</span>
+                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.price")}</span>
                   <input
                     required
                     type="number"
@@ -375,7 +377,7 @@ export default function ComparisonReportBuilderClient({
                   />
                 </label>
                 <label>
-                  <span className="text-xs text-gray-500">Sqft</span>
+                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.sqft")}</span>
                   <input
                     required
                     type="number"
@@ -386,7 +388,7 @@ export default function ComparisonReportBuilderClient({
                   />
                 </label>
                 <label>
-                  <span className="text-xs text-gray-500">Beds</span>
+                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.beds")}</span>
                   <input
                     type="number"
                     min={0}
@@ -396,7 +398,7 @@ export default function ComparisonReportBuilderClient({
                   />
                 </label>
                 <label>
-                  <span className="text-xs text-gray-500">Baths</span>
+                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.baths")}</span>
                   <input
                     type="number"
                     min={0}
@@ -407,7 +409,7 @@ export default function ComparisonReportBuilderClient({
                   />
                 </label>
                 <label>
-                  <span className="text-xs text-gray-500">Monthly rent ($) — optional</span>
+                  <span className="text-xs text-gray-500">{t("pages.comparisonReport.rent")}</span>
                   <input
                     type="number"
                     min={0}
@@ -426,7 +428,7 @@ export default function ComparisonReportBuilderClient({
         {shareUrl ? (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
             <div className="min-w-0">
-              <p className="font-semibold">Report created</p>
+              <p className="font-semibold">{t("pages.comparisonReport.created")}</p>
               <a href={shareUrl} className="mt-1 block break-all text-[#0066b3] underline" target="_blank" rel="noreferrer">
                 {shareUrl}
               </a>
@@ -444,7 +446,7 @@ export default function ComparisonReportBuilderClient({
           disabled={loading || isFree}
           className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {loading ? "Generating report…" : "Generate report & AI content"}
+          {loading ? t("pages.comparisonReport.generating") : t("pages.comparisonReport.generate")}
         </button>
       </form>
     </div>

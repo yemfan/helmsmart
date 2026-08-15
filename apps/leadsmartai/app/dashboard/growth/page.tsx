@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { AiActionGateBanner } from "@/components/entitlements/AiActionGateBanner";
 import {
   detectAiActionGate,
@@ -80,6 +82,7 @@ const PRIORITY_EMOJI: Record<OpportunityPriority, string> = {
 };
 
 export default function GrowthPage() {
+  const { t } = useTranslation("dashboard");
   const [opps, setOpps] = useState<OpportunitiesResponse | null>(null);
   const [oppLoading, setOppLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
@@ -195,7 +198,7 @@ export default function GrowthPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Growth &amp; Opportunities</h1>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("pages.growth.heading")}</h1>
           <p className="mt-1 text-sm text-slate-500">
             Claude reads your pipeline + CRM and surfaces the highest-leverage actions to take this
             week. Updated hourly; regenerate anytime.
@@ -207,7 +210,7 @@ export default function GrowthPage() {
           disabled={regenerating || oppLoading}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
         >
-          {regenerating ? "Analyzing…" : "↻ Refresh opportunities"}
+          {regenerating ? t("pages.growth.analyzing") : t("pages.growth.refresh")}
         </button>
       </div>
 
@@ -223,49 +226,49 @@ export default function GrowthPage() {
       )}
 
       <section className="space-y-3 border-t border-slate-200 pt-6">
-        <h2 className="text-sm font-semibold text-slate-900">Traffic &amp; referrals (30 days)</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.growth.traffic")}</h2>
 
         {metrics?.traffic ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat label="Page views" value={String(metrics.traffic.pageViews ?? 0)} />
+            <Stat label={t("pages.growth.pageViews")} value={String(metrics.traffic.pageViews ?? 0)} />
             <Stat
-              label="Conversions"
+              label={t("pages.growth.conversions")}
               value={String(metrics.traffic.conversions ?? 0)}
               hint={`${metrics.traffic.conversionRate ?? 0}% rate`}
               tone="green"
             />
-            <Stat label="Tool usage" value={String(metrics.traffic.toolUsage ?? 0)} />
+            <Stat label={t("pages.growth.toolUsage")} value={String(metrics.traffic.toolUsage ?? 0)} />
             <Stat
-              label="Referral signups"
+              label={t("pages.growth.referralSignups")}
               value={String(metrics.referrals?.eventsSignups ?? 0)}
               tone="blue"
             />
           </div>
         ) : (
-          <div className="text-xs text-slate-400">Metrics unavailable.</div>
+          <div className="text-xs text-slate-400">{t("pages.growth.metricsUnavailable")}</div>
         )}
 
         {metrics?.viral ? (
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-xs font-semibold text-slate-600">Viral reach</h3>
+            <h3 className="text-xs font-semibold text-slate-600">{t("pages.growth.viralReach")}</h3>
             <div className="mt-2 grid grid-cols-3 gap-3 text-center">
               <div>
                 <p className="text-xl font-bold text-slate-900">
                   {(metrics.viral.invitesPerSharer ?? 0).toFixed(1)}
                 </p>
-                <p className="text-[10px] text-slate-500">Invites / sharer</p>
+                <p className="text-[10px] text-slate-500">{t("pages.growth.invitesPerSharer")}</p>
               </div>
               <div>
                 <p className="text-xl font-bold text-slate-900">
                   {(metrics.viral.referralShare ?? 0).toFixed(1)}%
                 </p>
-                <p className="text-[10px] text-slate-500">Referral share of signups</p>
+                <p className="text-[10px] text-slate-500">{t("pages.growth.referralShare")}</p>
               </div>
               <div>
                 <p className="text-xl font-bold text-slate-900">
                   {(metrics.viral.viralCoefficientEstimate ?? 0).toFixed(2)}
                 </p>
-                <p className="text-[10px] text-slate-500">Viral K estimate</p>
+                <p className="text-[10px] text-slate-500">{t("pages.growth.viralK")}</p>
               </div>
             </div>
           </div>
@@ -273,13 +276,13 @@ export default function GrowthPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-slate-900">Referral codes</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.growth.referralCodes")}</h2>
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap gap-2">
             <input
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
-              placeholder="Code label (e.g. instagram)"
+              placeholder={t("pages.growth.codeLabelPlaceholder")}
               className="min-w-[200px] flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
             <button
@@ -288,7 +291,7 @@ export default function GrowthPage() {
               disabled={creatingCode || !newLabel.trim()}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             >
-              {creatingCode ? "Creating…" : "Create code"}
+              {creatingCode ? t("pages.growth.creating") : t("pages.growth.createCode")}
             </button>
           </div>
           {codes.length > 0 ? (
@@ -296,11 +299,11 @@ export default function GrowthPage() {
               <table className="min-w-full text-sm">
                 <thead className="bg-slate-50 text-xs text-slate-600">
                   <tr>
-                    <th className="px-3 py-2 text-left font-medium">Code</th>
-                    <th className="px-3 py-2 text-left font-medium">Label</th>
-                    <th className="px-3 py-2 text-right font-medium">Signups</th>
-                    <th className="px-3 py-2 text-right font-medium">Conversions</th>
-                    <th className="px-3 py-2 text-right font-medium">Shares</th>
+                    <th className="px-3 py-2 text-left font-medium">{t("pages.growth.colCode")}</th>
+                    <th className="px-3 py-2 text-left font-medium">{t("pages.growth.colLabel")}</th>
+                    <th className="px-3 py-2 text-right font-medium">{t("pages.growth.colSignups")}</th>
+                    <th className="px-3 py-2 text-right font-medium">{t("pages.growth.colConversions")}</th>
+                    <th className="px-3 py-2 text-right font-medium">{t("pages.growth.colShares")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -317,7 +320,7 @@ export default function GrowthPage() {
               </table>
             </div>
           ) : (
-            <p className="mt-3 text-sm text-slate-400">No referral codes yet.</p>
+            <p className="mt-3 text-sm text-slate-400">{t("pages.growth.noCodes")}</p>
           )}
         </div>
       </section>
@@ -336,10 +339,12 @@ function OpportunitiesSection({
   data: OpportunitiesResponse | null;
   regenerating: boolean;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   if (loading) {
     return (
       <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">
-        Loading opportunities…
+        {t("pages.growth.loadingOpportunities")}
       </div>
     );
   }
@@ -354,15 +359,15 @@ function OpportunitiesSection({
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
         <div className="font-semibold">
           {looksLikeCreditsIssue
-            ? "AI opportunities paused — Anthropic credits low"
+            ? t("pages.growth.errCredits")
             : looksLikeRateLimit
-              ? "AI opportunities paused — Anthropic rate limit"
-              : "Couldn't generate opportunities"}
+              ? t("pages.growth.errRateLimit")
+              : t("pages.growth.errGeneric")}
         </div>
         <p className="mt-1 text-[13px] text-amber-800">
           {looksLikeCreditsIssue ? (
             <>
-              Add credits at{" "}
+              {t("pages.growth.addCreditsPre")}{" "}
               <a
                 href="https://console.anthropic.com/settings/billing"
                 target="_blank"
@@ -371,10 +376,10 @@ function OpportunitiesSection({
               >
                 console.anthropic.com/settings/billing
               </a>
-              . Existing metrics below still work.
+              {t("pages.growth.addCreditsPost")}
             </>
           ) : looksLikeRateLimit ? (
-            "Try the refresh button again in a minute."
+            t("pages.growth.retryMinute")
           ) : (
             error
           )}
@@ -387,10 +392,11 @@ function OpportunitiesSection({
   if (!data.aiConfigured) {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-        <div className="font-medium">AI opportunities aren&apos;t enabled on this environment.</div>
+        <div className="font-medium">{t("pages.growth.aiNotConfigured")}</div>
         <div className="mt-1 text-[12px] text-amber-700">
-          Set <code className="rounded bg-amber-100 px-1 py-0.5">ANTHROPIC_API_KEY</code> in your
-          environment and redeploy.
+          {t("pages.growth.aiNotConfiguredPre")}{" "}
+          <code className="rounded bg-amber-100 px-1 py-0.5">ANTHROPIC_API_KEY</code>{" "}
+          {t("pages.growth.aiNotConfiguredHint")}
         </div>
       </div>
     );
@@ -400,16 +406,15 @@ function OpportunitiesSection({
     return (
       <div className="rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
         <div className="text-lg">✨</div>
-        <div className="mt-1 text-sm font-medium text-slate-900">Nothing urgent right now.</div>
+        <div className="mt-1 text-sm font-medium text-slate-900">{t("pages.growth.nothingUrgent")}</div>
         <p className="mt-1 text-xs text-slate-500">
-          Your pipeline looks healthy. Come back after a few more showings or closings for fresh
-          suggestions.
+          {t("pages.growth.nothingUrgentHint")}
         </p>
       </div>
     );
   }
 
-  const generatedLabel = new Date(data.generatedAtIso).toLocaleString();
+  const generatedLabel = new Date(data.generatedAtIso).toLocaleString(locale);
 
   return (
     <div className="space-y-3">
@@ -419,8 +424,8 @@ function OpportunitiesSection({
         ))}
       </div>
       <div className="text-[11px] text-slate-400">
-        Generated {generatedLabel}
-        {data.fromCache ? " (cached)" : ""}.
+        {t("pages.growth.generatedAt", { when: generatedLabel })}
+        {data.fromCache ? t("pages.growth.cached") : ""}
       </div>
     </div>
   );

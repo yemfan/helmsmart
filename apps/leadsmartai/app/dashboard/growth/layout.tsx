@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Growth & Opportunities",
-  description:
-    "AI-generated growth opportunities plus traffic + referral metrics. Claude reads your pipeline and surfaces the highest-leverage actions to take this week.",
-  keywords: ["growth", "opportunities", "AI", "referrals", "traffic"],
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.growth.metaTitle", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 export default function Layout({ children }: { children: ReactNode }) {
   return children;
