@@ -356,7 +356,7 @@ export default function BrandingSettingsPanel() {
           <div className="rounded-lg border border-gray-200 bg-white p-4">
             <div className="mb-2 flex items-center justify-between">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-                Preview — how emails will end
+                {t("branding.previewHeader")}
               </div>
               <div className="flex items-center gap-2">
                 <span
@@ -373,14 +373,14 @@ export default function BrandingSettingsPanel() {
                   onClick={() => setPreview({ kind: "idle" })}
                   className="text-[11px] text-gray-400 hover:text-gray-600"
                 >
-                  Hide
+                  {t("branding.hide")}
                 </button>
               </div>
             </div>
             <div className="rounded border border-gray-100 bg-white p-4">
               <div className="text-sm text-gray-700">
                 <em className="text-gray-400">
-                  ⋯ your email body ends here ⋯
+                  {t("branding.bodyEndsHere")}
                 </em>
               </div>
               <div
@@ -390,7 +390,7 @@ export default function BrandingSettingsPanel() {
             </div>
             <details className="mt-2">
               <summary className="cursor-pointer text-[11px] text-gray-500 hover:text-gray-700">
-                Plain-text variant (shown to email clients without HTML)
+                {t("branding.plainTextVariant")}
               </summary>
               <pre className="mt-1 whitespace-pre-wrap rounded bg-gray-50 p-2 text-[11px] text-gray-600">
 {preview.text}

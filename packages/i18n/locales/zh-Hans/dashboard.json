@@ -951,7 +951,11 @@
     "leadAdUrl": "Lead Ad 隐私政策链接",
     "premium": "高级版",
     "leadAdPlaceholder": "https://yourbrokerage.com/privacy",
-    "leadAdHelp": "用于「获取客户 → 投放广告」中 Meta Lead Ad 表单的默认隐私政策链接。必须是 HTTPS。留空则使用 CloseBoss 自带的链接。您也可以在广告向导中为单个广告单独设置。"
+    "leadAdHelp": "用于「获取客户 → 投放广告」中 Meta Lead Ad 表单的默认隐私政策链接。必须是 HTTPS。留空则使用 CloseBoss 自带的链接。您也可以在广告向导中为单个广告单独设置。",
+    "previewHeader": "预览 —— 邮件结尾的样子",
+    "hide": "隐藏",
+    "bodyEndsHere": "⋯ 邮件正文到此结束 ⋯",
+    "plainTextVariant": "纯文本版本（在不支持 HTML 的邮件客户端中显示）"
   },
   "roles": {
     "user": "普通用户",

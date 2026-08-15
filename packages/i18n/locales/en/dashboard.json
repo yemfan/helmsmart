@@ -951,7 +951,11 @@
     "leadAdUrl": "Lead Ad Privacy Policy URL",
     "premium": "Premium",
     "leadAdPlaceholder": "https://yourbrokerage.com/privacy",
-    "leadAdHelp": "Default privacy policy URL for Meta Lead Ad forms launched from Generate Leads → Run Ads. Must be HTTPS. Leave blank to use CloseBoss's bundled URL. You can also override this per-campaign in the ad wizard."
+    "leadAdHelp": "Default privacy policy URL for Meta Lead Ad forms launched from Generate Leads → Run Ads. Must be HTTPS. Leave blank to use CloseBoss's bundled URL. You can also override this per-campaign in the ad wizard.",
+    "previewHeader": "Preview — how emails will end",
+    "hide": "Hide",
+    "bodyEndsHere": "⋯ your email body ends here ⋯",
+    "plainTextVariant": "Plain-text variant (shown to email clients without HTML)"
   },
   "roles": {
     "user": "Consumer",
