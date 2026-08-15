@@ -34,6 +34,11 @@ const KINDS: Record<string, KindSpec> = {
   // Lifelike avatar when they'd rather not film an intro video. Same folder,
   // same consent gate as the video.
   agent_portrait: { bucket: "lead-media", prefix: (a) => `digital-twin/${a}` },
+  // Private — the audio track pulled out of the intro video IN THE BROWSER, so
+  // voice cloning gets a small, unprocessed sample. ElevenLabs caps uploads at
+  // 11MB and a normal intro video is ~18MB; the alternative was running the
+  // sample through a denoiser, which audibly reshaped the cloned voice.
+  agent_intro_audio: { bucket: "lead-media", prefix: (a) => `digital-twin/${a}` },
 };
 
 function extFromName(name: string): string {

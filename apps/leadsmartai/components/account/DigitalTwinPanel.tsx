@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
+import { extractVoiceSample } from "@/lib/audio/extractVoiceSample";
 import { AVATAR_PRESET_VOICES, CLONE_VOICE_ID } from "@/lib/agent/avatarVoices";
 
 /**
@@ -324,6 +325,28 @@ export default function DigitalTwinPanel() {
       setVideoPath(path);
       setHasVideo(true);
       setNote(t("twin.videoUploaded"));
+
+      /*
+       * Also send up just the audio, for voice cloning. ElevenLabs caps uploads
+       * at 11MB and an intro video is typically ~18MB, so the sample used to be
+       * squeezed under the cap by a denoiser — which reshaped the cloned voice.
+       * A minute of speech extracts to ~1-2MB, unprocessed.
+       *
+       * Best-effort and after the video is safely stored: a browser that can't
+       * decode the container must not cost the agent their upload. The server
+       * falls back to the video when this is missing.
+       */
+      try {
+        const audio = await extractVoiceSample(file);
+        const audioPath = await uploadViaStorage(audio, "agent_intro_audio");
+        await fetch("/api/dashboard/digital-twin", {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ introAudioPath: audioPath }),
+        });
+      } catch (audioErr) {
+        console.warn("[twin] audio extraction skipped:", audioErr instanceof Error ? audioErr.message : audioErr);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t("twin.errors.uploadFailed"));
     } finally {
