@@ -115,6 +115,14 @@ export const metadata: Metadata = {
   // telling Google every page is a duplicate of the homepage.
   // Individual pages should set their own canonical via generateMetadata.
   alternates: {},
+  // Pinterest site claim for closebossai.com. Unlike `alternates.canonical`
+  // above, inheriting this into every page is harmless and desirable —
+  // Pinterest only reads the claimed URL's <head>, and a claimed domain is
+  // what attributes saved Pins to the brand and unlocks Pin analytics.
+  // Public by design (it ships in the HTML); it grants nothing on its own.
+  other: {
+    "p:domain_verify": "728600cf89c1471d04068bb809df426e",
+  },
 };
 
 /**
