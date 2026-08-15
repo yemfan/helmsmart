@@ -408,10 +408,29 @@ export async function renderAvatarVideo(
     supabaseAdmin.storage.from(PRIVATE_BUCKET).createSignedUrl(likenessPath, 900),
     supabaseAdmin.storage.from(PRIVATE_BUCKET).createSignedUrl(audio, 900),
   ]);
+  /*
+   * Signing a path we just read from the agent's own row fails for storage
+   * reasons, not because the file is bad — the ownership check above already
+   * proved it's theirs. "Could not read your photo." reads as "your photo is
+   * broken" and sends agents off to re-upload something that was never wrong;
+   * one such failure was a transient storage blip on a file that signed fine
+   * a minute later. Name it as temporary, and log the real cause.
+   */
   if (vErr || !v?.signedUrl) {
-    throw new Error(usingPortrait ? "Could not read your photo." : "Could not read your intro video.");
+    console.error(
+      `[avatar] signing ${usingPortrait ? "portrait" : "intro video"} failed for agent ${agentId}:`,
+      vErr?.message ?? "no signed URL returned",
+    );
+    throw new Error(
+      usingPortrait
+        ? "Couldn't load your photo just now — that's usually temporary, not a problem with the photo. Try again in a moment."
+        : "Couldn't load your intro video just now — that's usually temporary, not a problem with the video. Try again in a moment.",
+    );
   }
-  if (aErr || !a?.signedUrl) throw new Error("Could not read the voice audio.");
+  if (aErr || !a?.signedUrl) {
+    console.error(`[avatar] signing voice audio failed for agent ${agentId}:`, aErr?.message ?? "no signed URL");
+    throw new Error("Couldn't load the voice audio just now — try the preview again in a moment.");
+  }
 
   let resultUrl: string;
   if (photoAvatar) {
