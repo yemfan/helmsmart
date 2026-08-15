@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import Link from "next/link";
 
 import LeadRoutingAdminClient from "./LeadRoutingAdminClient";
 
-export const metadata: Metadata = {
-  title: "Lead routing admin | CloseBoss",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.leadRouting.metaTitle", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 export default function LeadRoutingAdminPage() {
   return (

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import ContactPicker, { type ContactPickerValue } from "@/components/crm/ContactPicker";
 
 type BuiltOffer = {
@@ -25,6 +26,7 @@ function money(n: number | null | undefined): string {
 }
 
 export function BuildOfferClient() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [contact, setContact] = useState<ContactPickerValue | null>(null);
   const [address, setAddress] = useState("");
@@ -44,12 +46,12 @@ export function BuildOfferClient() {
   async function build() {
     setError(null);
     if (!address.trim()) {
-      setError("Enter the property address.");
+      setError(t("pages.buildOffer.needAddress"));
       return;
     }
     const lp = Number(listPrice);
     if (!Number.isFinite(lp) || lp <= 0) {
-      setError("Enter a valid list price.");
+      setError(t("pages.buildOffer.needPrice"));
       return;
     }
     setBuilding(true);
@@ -82,7 +84,7 @@ export function BuildOfferClient() {
     if (!result) return;
     setError(null);
     if (!contact?.id) {
-      setError("Pick the buyer before saving.");
+      setError(t("pages.buildOffer.needBuyer"));
       return;
     }
     setSaving(true);
@@ -112,9 +114,9 @@ export function BuildOfferClient() {
           financingType: result.financingType,
           closingDateProposed: closeDate,
           // offers POST expects "kept" booleans (true = contingency retained).
-          inspectionContingency: result.contingencies.inspection === "keep",
-          appraisalContingency: result.contingencies.appraisal === "keep",
-          loanContingency: result.contingencies.loan === "keep",
+          inspectionContingency: result.contingencies.inspection === t("pages.buildOffer.keep"),
+          appraisalContingency: result.contingencies.appraisal === t("pages.buildOffer.keep"),
+          loanContingency: result.contingencies.loan === t("pages.buildOffer.keep"),
           notes,
           submitNow: false,
         }),
@@ -138,7 +140,7 @@ export function BuildOfferClient() {
           </Link>
           {" / Build with AI"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">Build an offer with AI</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.buildOffer.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">
           Get recommended terms — price, earnest money, contingency strategy, escalation, and a
           buyer cover letter — for a competitive but sound offer. You review and save as a draft.
@@ -147,51 +149,51 @@ export function BuildOfferClient() {
 
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">Buyer *</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.buildOffer.buyer")}</label>
           <ContactPicker value={contact} onChange={setContact} helperText="Who is this offer for?" className="mt-1" />
         </div>
-        <Field label="Property address *" value={address} onChange={setAddress} placeholder="123 Main St, Los Angeles, CA" />
+        <Field label={t("pages.buildOffer.address")} value={address} onChange={setAddress} placeholder={t("pages.buildOffer.addressPlaceholder")} />
         <div className="grid grid-cols-2 gap-3">
-          <Field label="List price *" value={listPrice} onChange={setListPrice} type="number" placeholder="1250000" />
-          <Field label="Your CMA value (optional)" value={estimatedValue} onChange={setEstimatedValue} type="number" placeholder="1220000" />
-          <Field label="Buyer max budget (optional)" value={buyerMaxBudget} onChange={setBuyerMaxBudget} type="number" placeholder="1300000" />
+          <Field label={t("pages.buildOffer.listPrice")} value={listPrice} onChange={setListPrice} type="number" placeholder="1250000" />
+          <Field label={t("pages.buildOffer.cmaValue")} value={estimatedValue} onChange={setEstimatedValue} type="number" placeholder="1220000" />
+          <Field label={t("pages.buildOffer.maxBudget")} value={buyerMaxBudget} onChange={setBuyerMaxBudget} type="number" placeholder="1300000" />
           <div>
-            <label className="block text-xs font-medium text-slate-700">Financing</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.buildOffer.financing")}</label>
             <select
               value={financingType}
               onChange={(e) => setFinancingType(e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             >
               <option value="">—</option>
-              <option value="cash">Cash</option>
-              <option value="conventional">Conventional</option>
-              <option value="fha">FHA</option>
+              <option value="cash">{t("pages.buildOffer.cash")}</option>
+              <option value="conventional">{t("pages.buildOffer.conventional")}</option>
+              <option value="fha">{t("pages.buildOffer.fha")}</option>
               <option value="va">VA</option>
-              <option value="jumbo">Jumbo</option>
+              <option value="jumbo">{t("pages.buildOffer.jumbo")}</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Market</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.buildOffer.market")}</label>
             <select
               value={marketHeat}
               onChange={(e) => setMarketHeat(e.target.value as "" | "hot" | "balanced" | "cool")}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             >
               <option value="">—</option>
-              <option value="hot">Hot (seller's market)</option>
-              <option value="balanced">Balanced</option>
-              <option value="cool">Cool (buyer's market)</option>
+              <option value="hot">{t("pages.buildOffer.marketHot")}</option>
+              <option value="balanced">{t("pages.buildOffer.marketBalanced")}</option>
+              <option value="cool">{t("pages.buildOffer.marketCool")}</option>
             </select>
           </div>
-          <Field label="Competing offers (optional)" value={competingOffers} onChange={setCompetingOffers} type="number" placeholder="3" />
+          <Field label={t("pages.buildOffer.competingOffers")} value={competingOffers} onChange={setCompetingOffers} type="number" placeholder="3" />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-700">Buyer notes (optional)</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.buildOffer.buyerNotes")}</label>
           <textarea
             value={motivation}
             onChange={(e) => setMotivation(e.target.value)}
             rows={2}
-            placeholder="e.g. loves the home and will compete; or value buyer, won't overpay."
+            placeholder={t("pages.buildOffer.buyerNotesPlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
         </div>
@@ -208,7 +210,7 @@ export function BuildOfferClient() {
             disabled={building || !address.trim() || !listPrice.trim()}
             className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005fa8] disabled:opacity-50"
           >
-            {building ? "Building…" : result ? "Rebuild" : "Build with AI"}
+            {building ? "Building…" : result ? t("pages.buildOffer.rebuild") : t("pages.buildOffer.build")}
           </button>
         </div>
       </div>
@@ -216,28 +218,28 @@ export function BuildOfferClient() {
       {result ? (
         <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold text-slate-900">Recommended offer</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("pages.buildOffer.recommended")}</h2>
             <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-blue-700">
               {result.strategy}
             </span>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            <Stat label="Offer price" value={money(result.offerPrice)} highlight />
-            <Stat label="Earnest money" value={money(result.earnestMoney)} />
-            <Stat label="Down payment" value={money(result.downPayment)} />
+            <Stat label={t("pages.buildOffer.offerPrice")} value={money(result.offerPrice)} highlight />
+            <Stat label={t("pages.buildOffer.earnestMoney")} value={money(result.earnestMoney)} />
+            <Stat label={t("pages.buildOffer.downPayment")} value={money(result.downPayment)} />
             <Stat label="Financing" value={result.financingType ?? "—"} />
-            <Stat label="Escalation cap" value={money(result.escalationCap)} />
-            <Stat label="Close in" value={result.closeDays ? `${result.closeDays} days` : "—"} />
+            <Stat label={t("pages.buildOffer.escalationCap")} value={money(result.escalationCap)} />
+            <Stat label={t("pages.buildOffer.closeIn")} value={result.closeDays ? `${result.closeDays} days` : "—"} />
           </div>
           <div className="flex flex-wrap gap-2 text-[11px]">
             {(["inspection", "appraisal", "loan"] as const).map((k) => {
-              const keep = result.contingencies[k] === "keep";
+              const keep = result.contingencies[k] === t("pages.buildOffer.keep");
               return (
                 <span
                   key={k}
                   className={`rounded-full px-2 py-0.5 font-medium ${keep ? "bg-slate-100 text-slate-700" : "bg-amber-100 text-amber-800"}`}
                 >
-                  {k}: {keep ? "keep" : "WAIVE"}
+                  {k}: {keep ? t("pages.buildOffer.keep") : t("pages.buildOffer.waive")}
                 </span>
               );
             })}
@@ -245,7 +247,7 @@ export function BuildOfferClient() {
           {result.rationale ? <p className="text-sm leading-relaxed text-slate-700">{result.rationale}</p> : null}
           {result.coverLetter ? (
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Buyer cover letter</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.buildOffer.coverLetter")}</p>
               <p className="mt-1 whitespace-pre-line text-sm text-slate-700">{result.coverLetter}</p>
             </div>
           ) : null}
@@ -257,7 +259,7 @@ export function BuildOfferClient() {
               disabled={saving || !contact?.id}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             >
-              {saving ? "Saving…" : "Save as draft offer"}
+              {saving ? t("pages.buildOffer.saving") : t("pages.buildOffer.saveDraft")}
             </button>
           </div>
           <p className="text-[11px] text-slate-500">

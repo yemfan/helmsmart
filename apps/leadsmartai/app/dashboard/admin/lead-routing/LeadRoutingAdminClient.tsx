@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import {
   buildZipCoverageMap,
@@ -14,10 +16,10 @@ const SOURCE_LABEL: Record<RosterSource, { label: string; tone: string }> = {
   both: { label: "DB + ENV", tone: "bg-slate-100 text-slate-700 ring-slate-200" },
 };
 
-function formatDate(iso: string | null): string {
+function formatDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
   try {
-    return new Date(iso).toLocaleDateString(undefined, {
+    return new Date(iso).toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       year: "2-digit",
@@ -27,18 +29,22 @@ function formatDate(iso: string | null): string {
   }
 }
 
-function relativeAgo(iso: string | null): string {
-  if (!iso) return "never";
+type Translate = (k: string, o?: Record<string, unknown>) => string;
+
+function relativeAgo(iso: string | null, t: Translate, locale: string): string {
+  if (!iso) return t("pages.leadRouting.never");
   const ms = Date.parse(iso);
   if (!Number.isFinite(ms)) return iso;
   const days = Math.floor((Date.now() - ms) / 86_400_000);
-  if (days <= 0) return "today";
-  if (days === 1) return "1 day ago";
-  if (days < 30) return `${days} days ago`;
-  return formatDate(iso);
+  if (days <= 0) return t("pages.leadRouting.today");
+  if (days === 1) return t("pages.leadRouting.oneDayAgo");
+  if (days < 30) return t("pages.leadRouting.daysAgo", { count: days });
+  return formatDate(iso, locale);
 }
 
 export default function LeadRoutingAdminClient() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [roster, setRoster] = useState<RosterItem[]>([]);
   const [hasDbRules, setHasDbRules] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -170,10 +176,12 @@ function KpiStrip({
 }
 
 function RosterTable({ roster }: { roster: RosterItem[] }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   return (
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <header className="border-b border-slate-100 px-5 py-4">
-        <h2 className="text-sm font-semibold text-slate-900">Roster</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.leadRouting.roster")}</h2>
         <p className="mt-0.5 text-xs text-slate-500">
           Sorted by recent activity. Disabled rows are agents whose DB rule has{" "}
           <code className="rounded bg-slate-100 px-1 py-0.5 text-[11px]">
@@ -186,12 +194,12 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
             <tr>
-              <th className="px-4 py-2 text-left font-semibold">Agent</th>
-              <th className="px-4 py-2 text-center font-semibold">Source</th>
-              <th className="px-4 py-2 text-center font-semibold">Enrolled</th>
-              <th className="px-4 py-2 text-right font-semibold">ZIP coverage</th>
-              <th className="px-4 py-2 text-right font-semibold">Priority</th>
-              <th className="px-4 py-2 text-right font-semibold">Last assigned</th>
+              <th className="px-4 py-2 text-left font-semibold">{t("pages.leadRouting.colAgent")}</th>
+              <th className="px-4 py-2 text-center font-semibold">{t("pages.leadRouting.colSource")}</th>
+              <th className="px-4 py-2 text-center font-semibold">{t("pages.leadRouting.colEnrolled")}</th>
+              <th className="px-4 py-2 text-right font-semibold">{t("pages.leadRouting.colZip")}</th>
+              <th className="px-4 py-2 text-right font-semibold">{t("pages.leadRouting.colPriority")}</th>
+              <th className="px-4 py-2 text-right font-semibold">{t("pages.leadRouting.colLastAssigned")}</th>
               <th className="px-4 py-2 text-right font-semibold">30d</th>
             </tr>
           </thead>
@@ -225,7 +233,7 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
                 </td>
                 <td className="px-4 py-2 text-right text-xs text-slate-700">
                   {r.zipCoverage.length === 0
-                    ? <span className="text-slate-400">any ZIP</span>
+                    ? <span className="text-slate-400">{t("pages.leadRouting.anyZip")}</span>
                     : r.zipCoverage.length <= 4
                       ? r.zipCoverage.join(", ")
                       : `${r.zipCoverage.slice(0, 3).join(", ")} +${r.zipCoverage.length - 3}`}
@@ -234,7 +242,7 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
                   {r.priority}
                 </td>
                 <td className="px-4 py-2 text-right text-xs text-slate-700">
-                  {relativeAgo(r.lastAssignmentAt)}
+                  {relativeAgo(r.lastAssignmentAt, t, locale)}
                 </td>
                 <td className="px-4 py-2 text-right tabular-nums text-slate-700">
                   {r.assignmentCountLast30Days}
@@ -255,6 +263,8 @@ function ZipCoverageGrid({
   zipMap: Map<string, string[]>;
   roster: RosterItem[];
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const nameById = new Map<string, string>();
   for (const r of roster) {
     nameById.set(r.agentId, r.displayName ?? r.agentId);
@@ -264,7 +274,7 @@ function ZipCoverageGrid({
   return (
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <header className="border-b border-slate-100 px-5 py-4">
-        <h2 className="text-sm font-semibold text-slate-900">ZIP coverage</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.leadRouting.colZip")}</h2>
         <p className="mt-0.5 text-xs text-slate-500">
           Which agents are eligible for each declared ZIP. ZIPs without coverage
           fall through to the full pool.

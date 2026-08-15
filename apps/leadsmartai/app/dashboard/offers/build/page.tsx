@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { BuildOfferClient } from "./BuildOfferClient";
 
-export const metadata: Metadata = {
-  title: "Build offer with AI | CloseBoss",
-  description: "Get AI-recommended buyer offer terms — price, contingencies, escalation, and a cover letter.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.buildOffer.metaTitle", { ns: "dashboard" }),
+    description: t("pages.buildOffer.metaDescription", { ns: "dashboard" }),
+  };
+}
 
 export default function BuildOfferPage() {
   return <BuildOfferClient />;
