@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ContactPicker, { type ContactPickerValue } from "@/components/crm/ContactPicker";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 
@@ -61,34 +62,39 @@ function fmtMoney(n: number | null): string {
   }).format(n);
 }
 
-function summarize(parsed: ListingAgreementExtraction): { label: string; value: string }[] {
+type Translate = (k: string) => string;
+
+function summarize(
+  parsed: ListingAgreementExtraction,
+  t: Translate,
+): { label: string; value: string }[] {
   return [
-    { label: "Property", value: parsed.propertyAddress ?? "—" },
+    { label: t("pages.uploadListing.f.property"), value: parsed.propertyAddress ?? "—" },
     {
-      label: "City / State / ZIP",
+      label: t("pages.uploadListing.f.cityStateZip"),
       value: [parsed.city, parsed.state, parsed.zip].filter(Boolean).join(", ") || "—",
     },
-    { label: "List price", value: fmtMoney(parsed.listPrice) },
-    { label: "Listing start", value: parsed.listingStartDate ?? "—" },
-    { label: "Listing expires", value: parsed.listingExpirationDate ?? "—" },
+    { label: t("pages.uploadListing.f.listPrice"), value: fmtMoney(parsed.listPrice) },
+    { label: t("pages.uploadListing.f.listingStart"), value: parsed.listingStartDate ?? "—" },
+    { label: t("pages.uploadListing.f.listingExpires"), value: parsed.listingExpirationDate ?? "—" },
     {
-      label: "Sellers",
+      label: t("pages.uploadListing.f.sellers"),
       value: parsed.sellerNames.length ? parsed.sellerNames.join(", ") : "—",
     },
     {
-      label: "Total commission",
+      label: t("pages.uploadListing.f.totalCommission"),
       value:
         parsed.commissionTotalPct != null ? `${parsed.commissionTotalPct}%` : "—",
     },
     {
-      label: "Buyer-side commission",
+      label: t("pages.uploadListing.f.buyerCommission"),
       value:
         parsed.commissionBuyerSidePct != null
           ? `${parsed.commissionBuyerSidePct}%`
           : "—",
     },
     {
-      label: "Confidence",
+      label: t("pages.uploadListing.f.confidence"),
       value:
         parsed.confidence != null
           ? `${Math.round(parsed.confidence * 100)}%`
@@ -98,6 +104,7 @@ function summarize(parsed: ListingAgreementExtraction): { label: string; value: 
 }
 
 export function UploadListingClient() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
   const prefilledContactId = searchParams?.get("contactId") ?? "";
@@ -188,7 +195,7 @@ export function UploadListingClient() {
     setError(null);
     setParsed(null);
     if (!file.name.toLowerCase().endsWith(".pdf") && !file.type.includes("pdf")) {
-      setError("Pick a .pdf file.");
+      setError(t("pages.uploadListing.needPdf"));
       return;
     }
     if (file.size > MAX_PDF_BYTES) {
@@ -227,7 +234,7 @@ export function UploadListingClient() {
     if (!parsed) return;
     setError(null);
     if (!contact?.id) {
-      setError("Pick a seller before saving.");
+      setError(t("pages.uploadListing.needSeller"));
       return;
     }
     if (!parsed.propertyAddress) {
@@ -273,7 +280,7 @@ export function UploadListingClient() {
     }
   }
 
-  const summary = parsed ? summarize(parsed) : null;
+  const summary = parsed ? summarize(parsed, t) : null;
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
@@ -318,7 +325,7 @@ export function UploadListingClient() {
 
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">Seller *</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.uploadListing.seller")}</label>
           <ContactPicker
             value={contact}
             onChange={setContact}
@@ -353,7 +360,7 @@ export function UploadListingClient() {
               📄 Choose PDF
             </button>
             {parsing && (
-              <span className="text-xs text-slate-500">Parsing…</span>
+              <span className="text-xs text-slate-500">{t("pages.uploadListing.parsing")}</span>
             )}
             {pdfName && !parsing && (
               <span className="truncate text-xs text-slate-500">{pdfName}</span>
@@ -372,7 +379,7 @@ export function UploadListingClient() {
 
       {summary && (
         <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">Review extracted fields</h2>
+          <h2 className="text-sm font-semibold text-slate-900">{t("pages.uploadListing.review")}</h2>
           <dl className="grid gap-3 text-sm sm:grid-cols-[180px_1fr]">
             {summary.map((row) => (
               <div key={row.label} className="contents">
@@ -386,7 +393,7 @@ export function UploadListingClient() {
 
           {parsed && parsed.warnings.length > 0 && (
             <div className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
-              <div className="font-medium">Warnings</div>
+              <div className="font-medium">{t("pages.uploadListing.warnings")}</div>
               <ul className="mt-1 list-disc pl-4">
                 {parsed.warnings.map((w, i) => (
                   <li key={i}>{w}</li>
@@ -402,7 +409,7 @@ export function UploadListingClient() {
               disabled={saving}
               className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
             >
-              {saving ? "Saving…" : "Save as draft listing"}
+              {saving ? t("pages.uploadListing.saving") : t("pages.uploadListing.save")}
             </button>
             <span className="text-xs text-slate-500">
               Creates a listing-rep transaction with the parsed fields. You

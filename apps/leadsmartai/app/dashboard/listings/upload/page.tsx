@@ -1,11 +1,13 @@
+import { getServerT } from "@/lib/i18n/server";
 import { Suspense } from "react";
 import { UploadListingClient } from "./UploadListingClient";
 
-export const metadata = {
-  title: "Upload listing agreement | CloseBoss",
-  description:
-    "Drop in a signed RLA — CloseBoss extracts list price, listing dates, sellers, and commission so you don't have to retype them.",
-};
+import type { Metadata } from "next";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return { title: `${t("pages.uploadListing.metaTitle", { ns: "dashboard" })} | CloseBoss` };
+}
 
 export default function UploadListingPage() {
   return (
