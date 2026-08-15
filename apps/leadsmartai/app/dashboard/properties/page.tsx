@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { listListingsForAgent } from "@/lib/listings/service";
+import { getServerT } from "@/lib/i18n/server";
 import ListingsClient from "./ListingsClient";
 
 /**
@@ -14,12 +15,15 @@ import ListingsClient from "./ListingsClient";
  * URL kept as /dashboard/properties because the CommandPalette already
  * links there; sidebar entry is "Listings" under the Sales Assistant.
  */
-export const metadata: Metadata = {
-  title: "Listings",
-  description: "Your active listings — status, showings, and offers.",
-  keywords: ["listings", "inventory", "active"],
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("listings.metaTitle", { ns: "dashboard" }),
+    description: t("listings.metaDescription", { ns: "dashboard" }),
+    keywords: ["listings", "inventory", "active"],
+    robots: { index: false },
+  };
+}
 
 export default async function ListingsPage() {
   const { agentId } = await getCurrentAgentContext();

@@ -1481,5 +1481,42 @@
     "minutesAgo": "{{count}}m",
     "hoursAgo": "{{count}}h",
     "daysAgo": "{{count}}d"
+  },
+  "listings": {
+    "metaTitle": "Listings",
+    "metaDescription": "Your active listings — status, showings, and offers.",
+    "heading": "Listings",
+    "intro": "Your listing-side inventory. Rows roll up showings activity per property — click an address to open the deal.",
+    "uploadAgreement": "⬆ Upload listing agreement",
+    "uploadAgreementHint": "Drop a signed listing agreement (RLA) PDF — we'll auto-fill the address, list price, and listing dates.",
+    "newListing": "+ New listing",
+    "statTotal": "Total",
+    "statActive": "Active",
+    "statShowingsActive": "Showings (active)",
+    "statUpcoming": "Upcoming showings",
+    "searchPlaceholder": "Search address, city, state…",
+    "filterAll": "All listings",
+    "colProperty": "Property",
+    "colStatus": "Status",
+    "colPrice": "Price",
+    "colListed": "Listed",
+    "colShowings": "Showings",
+    "colClosing": "Closing",
+    "showingsTotal": "{{count}} total",
+    "showingsUpcoming": "{{count}} upcoming",
+    "lastShowing": "last: {{when}}",
+    "emptyNone": "No listings yet.",
+    "emptyNoneHint": "Click {{action}} to create your first listing-rep deal.",
+    "emptyFiltered": "No listings match your filters.",
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "closed": "Closed",
+      "terminated": "Terminated"
+    },
+    "today": "today",
+    "yesterday": "yesterday",
+    "daysAgo": "{{count}}d ago",
+    "inDays": "in {{count}}d"
   }
 }
