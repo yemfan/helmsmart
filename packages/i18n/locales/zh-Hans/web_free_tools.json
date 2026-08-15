@@ -3,14 +3,14 @@
     "title": "房地产免费工具 — 计算器、分析器与 AI",
     "description": "CloseBoss 的每一款免费工具汇聚一处——按揭与 ROI 计算器、资本化率与现金流分析、AI 交易分析器、Smart CMA 生成器、房屋估值工具。无需注册。",
     "og_title": "房地产免费工具 — CloseBoss",
-    "og_description": "房地产经纪人与投资者真正会用的计算器、分析器与 AI 工具。免费,无需注册。",
+    "og_description": "房地产经纪人与投资者真正会用的计算器、分析器与 AI 工具。免费，无需注册。",
     "twitter_title": "房地产免费工具 — CloseBoss",
-    "twitter_description": "计算器、AI 分析器、CMA 生成器与房屋估值工具——免费,无需注册。"
+    "twitter_description": "计算器、AI 分析器、CMA 生成器与房屋估值工具——免费，无需注册。"
   },
   "header": {
     "eyebrow": "免费工具",
     "title": "{{total}} 款房地产经纪人真正会用的免费工具。",
-    "subtitle": "计算器、AI 分析器、CMA 生成器与房屋估值工具——与付费客户在付费套餐上使用的功能相同,却完全免费、无需注册。",
+    "subtitle": "计算器、AI 分析器、CMA 生成器与房屋估值工具——与付费客户在付费套餐上使用的功能相同，却完全免费、无需注册。",
     "note": "为独立经纪人、经纪行、投资者与认真的买家打造。多数工具在 60 秒内即可完成。"
   },
   "nav_aria": "工具分类",
@@ -19,15 +19,15 @@
   "lead_magnet": {
     "eyebrow": "免费下载 · 专为房地产经纪人打造",
     "title": "每位房产经纪人都该借鉴的 5 条 AI 提示词",
-    "body": "复制、粘贴,成交更多——数秒内撰写房源文案、跟进线索、准备 CMA。提供英文与中文版本。",
+    "body": "复制、粘贴，成交更多——数秒内撰写房源文案、跟进线索、准备 CMA。提供英文与中文版本。",
     "form": {
       "first_name_placeholder": "名字",
       "email_placeholder": "邮箱",
       "language_label": "语言：",
       "submit": "把提示词发到我邮箱",
       "privacy_note": "绝不发垃圾邮件——只把提示词直接送到你的收件箱。",
-      "error_generic": "出了点问题,请重试。",
-      "error_network": "网络错误,请重试。"
+      "error_generic": "出了点问题，请重试。",
+      "error_network": "网络错误，请重试。"
     },
     "success": {
       "heading": "请查收邮箱——我们刚刚把提示词发给你了。",
@@ -60,19 +60,19 @@
       "tools": {
         "deal-analyzer": {
           "name": "AI Real Estate Deal Analyzer",
-          "description": "粘贴任意房产网址或地址——获得一页 AI 交易备忘,涵盖房况、风险、可比成交与目标价。约 30 秒。"
+          "description": "粘贴任意房产网址或地址——获得一页 AI 交易备忘，涵盖房况、风险、可比成交与目标价。约 30 秒。"
         },
         "link-analyzer": {
           "name": "AI Zillow / Redfin Link Analyzer",
-          "description": "输入一条 Zillow 或 Redfin 链接。AI 会提取房源详情、从照片中判读房况信号、可比成交基准,以及一份价格合理性判断。"
+          "description": "输入一条 Zillow 或 Redfin 链接。AI 会提取房源详情、从照片中判读房况信号、可比成交基准，以及一份价格合理性判断。"
         },
         "cma-analyzer": {
           "name": "AI CMA Analyzer",
-          "description": "自动拉取可比成交,生成含完整推理的 CMA 式价格区间,可直接分享给卖家。"
+          "description": "自动拉取可比成交，生成含完整推理的 CMA 式价格区间，可直接分享给卖家。"
         },
         "smart-cma": {
           "name": "Smart CMA Builder",
-          "description": "交互式 CMA——调整可比房源权重、推荐价格区间,并导出品牌化 PDF。每份 CMA 用时不到 5 分钟。"
+          "description": "交互式 CMA——调整可比房源权重、推荐价格区间，并导出品牌化 PDF。每份 CMA 用时不到 5 分钟。"
         },
         "investment-analyzer": {
           "name": "Property Investment Analyzer",
@@ -80,11 +80,11 @@
         },
         "rental-analyzer": {
           "name": "Rental Property Analyzer",
-          "description": "并排式出租分析,含租金估算、依据本地均值预填的支出默认值,以及压力测试方案。"
+          "description": "并排式出租分析，含租金估算、依据本地均值预填的支出默认值，以及压力测试方案。"
         },
         "report-generator": {
           "name": "Property Report Generator",
-          "description": "输入一个地址——获得一份 6 页品牌化 PDF 报告,涵盖市场背景、可比成交、估值与社区数据。"
+          "description": "输入一个地址——获得一份 6 页品牌化 PDF 报告，涵盖市场背景、可比成交、估值与社区数据。"
         }
       }
     },
@@ -94,15 +94,15 @@
       "tools": {
         "mortgage": {
           "name": "Mortgage Calculator",
-          "description": "含本金、利息、税费与保险,首付与利率可调。可为任意客户生成品牌化分享链接。"
+          "description": "含本金、利息、税费与保险，首付与利率可调。可为任意客户生成品牌化分享链接。"
         },
         "affordability": {
           "name": "Affordability Calculator",
-          "description": "基于收入的价格区间,并以负债收入比设限。向买家展示他们实际能够获批的额度。"
+          "description": "基于收入的价格区间，并以负债收入比设限。向买家展示他们实际能够获批的额度。"
         },
         "down-payment": {
           "name": "Down Payment Calculator",
-          "description": "在任意价位下,你在成交时需准备多少——首付 + 交割费用 + 储备金。"
+          "description": "在任意价位下，你在成交时需准备多少——首付 + 交割费用 + 储备金。"
         },
         "rent-vs-buy": {
           "name": "Rent vs Buy Calculator",
@@ -118,7 +118,7 @@
         },
         "arm": {
           "name": "ARM Calculator",
-          "description": "将 5/1、7/1、10/1 浮动利率贷款与固定 30 年贷款对比。含最坏情形月供,让对话有据可依。"
+          "description": "将 5/1、7/1、10/1 浮动利率贷款与固定 30 年贷款对比。含最坏情形月供，让对话有据可依。"
         }
       }
     },
@@ -142,7 +142,7 @@
     },
     "seller-tools": {
       "title": "卖家工具",
-      "blurb": "用即时房屋估值抓住卖家线索,再把地址转化为一份 CMA 和一份房源展示演示。",
+      "blurb": "用即时房屋估值抓住卖家线索，再把地址转化为一份 CMA 和一份房源展示演示。",
       "tools": {
         "home-value": {
           "name": "Home Value Estimator",
@@ -160,7 +160,7 @@
       "tools": {
         "skills-library": {
           "name": "Realtor AI Skills Library (59 prompts)",
-          "description": "59 条内置合规审查的 AI 提示词,涵盖获客、房源、买方代理、谈判与运营——每条都标注了它能带来的价值。免费浏览或下载,无需注册。"
+          "description": "59 条内置合规审查的 AI 提示词，涵盖获客、房源、买方代理、谈判与运营——每条都标注了它能带来的价值。免费浏览或下载，无需注册。"
         }
       }
     }
@@ -168,7 +168,7 @@
   "cross_sell": {
     "eyebrow": "想把它们汇入同一套 CRM?",
     "heading": "以上全部工具 + AI 跟进、语音 AI 与未接来电挽回。",
-    "body": "CloseBoss 正是承载这些工具的平台——你的 AI 销售团队,全天候驻守你的手机。每月 $79 起,含 14 天免费试用,无需信用卡。",
+    "body": "CloseBoss 正是承载这些工具的平台——你的 AI 销售团队，全天候驻守你的手机。每月 $79 起，含 14 天免费试用，无需信用卡。",
     "start_trial": "开始 14 天试用",
     "see_features": "查看全部功能",
     "items": [

@@ -17,16 +17,16 @@
     "section_label_synthetic": "内容概要",
     "section_label_by_address": "地址或房源链接",
     "placeholder": {
-      "new_listing": "例如:123 Main St, Pasadena。3 室 2 卫,$1.2M。精装翻新,步行可达 Old Town。",
-      "open_house": "例如:123 Main St,周六 1-4pm。提供轻食与咖啡,全新厨房。",
-      "price_drop": "例如:123 Main St — 从 $1.45M 调整至 $1.39M。卖家诚心出售。",
-      "just_sold": "例如:123 Main St 14 天成交,多个 offer。老客户介绍。",
-      "market_update": "例如:Pasadena 库存环比增长 18%,利率回落至 6.5% 以下,买家回归。",
-      "testimonial": "例如:Sarah 说\"Mike 把整个流程都打理得井井有条 — 不到 30 天就成交,比挂牌价低 $15k。\"",
+      "new_listing": "例如：123 Main St, Pasadena。3 室 2 卫，$1.2M。精装翻新，步行可达 Old Town。",
+      "open_house": "例如：123 Main St,周六 1-4pm。提供轻食与咖啡，全新厨房。",
+      "price_drop": "例如：123 Main St — 从 $1.45M 调整至 $1.39M。卖家诚心出售。",
+      "just_sold": "例如：123 Main St 14 天成交，多个 offer。老客户介绍。",
+      "market_update": "例如：Pasadena 库存环比增长 18%,利率回落至 6.5% 以下，买家回归。",
+      "testimonial": "例如：Sarah 说\"Mike 把整个流程都打理得井井有条 — 不到 30 天就成交，比挂牌价低 $15k。\"",
       "custom": "描述这次帖子的角度、语气和必须包含的内容。",
-      "by_address": "粘贴 Zillow / Redfin / MLS 链接,或直接输入地址。"
+      "by_address": "粘贴 Zillow / Redfin / MLS 链接，或直接输入地址。"
     },
-    "picked_subject_hint": "已锚定一条 CRM 记录。AI 仅会使用您填写的事实,如需调整请在上方编辑。"
+    "picked_subject_hint": "已锚定一条 CRM 记录。AI 仅会使用您填写的事实，如需调整请在上方编辑。"
   },
   "subject_picker": {
     "cta": {
@@ -44,9 +44,9 @@
       "default": "选择一条记录"
     },
     "empty": {
-      "new_listing": "近 60 天暂无房源,可尝试\"自定义\"主题。",
-      "open_house": "未来 21 天暂无开放日,请先安排。",
-      "price_drop": "暂无可调价的在售房源,请先添加或激活房源。",
+      "new_listing": "近 60 天暂无房源，可尝试\"自定义\"主题。",
+      "open_house": "未来 21 天暂无开放日，请先安排。",
+      "price_drop": "暂无可调价的在售房源，请先添加或激活房源。",
       "just_sold": "近 60 天暂无成交记录。",
       "default": "暂无可选记录 — 请直接撰写内容概要。"
     }
@@ -79,7 +79,7 @@
     "errors": {
       "brief_required_default": "请填写内容概要 — 地址、卖点或其他想强调的细节。",
       "brief_required_synthetic": "请说明帖子要写什么内容。",
-      "brief_required_by_address": "请先在上方粘贴地址或链接并点击查询,或在下方直接撰写内容。"
+      "brief_required_by_address": "请先在上方粘贴地址或链接并点击查询，或在下方直接撰写内容。"
     }
   },
   "caption": {
@@ -92,9 +92,9 @@
   },
   "schedule_box": {
     "publish_at": "发布时间 ({{tz}})",
-    "instagram_needs_image": "Instagram 需要附图,请先在上方添加图片。",
+    "instagram_needs_image": "Instagram 需要附图，请先在上方添加图片。",
     "future_clamp": "请选择至少 1 分钟之后的时间。",
-    "hint": "定时任务每 5 分钟扫描一次,实际发布时间可能比所选时间晚最多 5 分钟。"
+    "hint": "定时任务每 5 分钟扫描一次，实际发布时间可能比所选时间晚最多 5 分钟。"
   },
   "recurring_box": {
     "cadence": "频率",
@@ -113,7 +113,7 @@
     "time_of_day": "时间 ({{tz}})",
     "stop_after": "停止条件 (发布次数)",
     "unlimited_placeholder": "(不限)",
-    "ig_needs_image": "Instagram 的周期发布需要附图,请先在上方添加。",
+    "ig_needs_image": "Instagram 的周期发布需要附图，请先在上方添加。",
     "hint": "定时任务会在每次触发前约一小时生成定时帖子。可随时在\"周期发布\"页面暂停或取消。"
   },
   "actions": {
@@ -121,10 +121,10 @@
     "schedule": "排程",
     "create_recurring": "创建周期发布",
     "share_copy": "分享 / 复制",
-    "ig_needs_image_publish": "Instagram 帖子需要附图,请先在上方添加。"
+    "ig_needs_image_publish": "Instagram 帖子需要附图，请先在上方添加。"
   },
   "banners": {
-    "scheduled_for": "已排程,将于 {{date}} 发布",
+    "scheduled_for": "已排程，将于 {{date}} 发布",
     "view_scheduled": "查看已排程帖子 →",
     "recurring_created": "已创建周期发布 — 下次将在 {{date}} 触发",
     "manage_recurring": "管理周期发布 →",
@@ -143,8 +143,8 @@
     "with_ig_business": ",并关联一个 Instagram Business 账户。",
     "instagram_needs_image_attach": "Instagram 需要附图 — 请在上方添加后即可直接发布。",
     "instagram_publish_note": "帖子将发布到您绑定的 Instagram Business 账户。请确认文案和图片后再点击\"发布\"。",
-    "facebook_publish_note": "帖子将直接发布到已连接的 Facebook 主页。可在此管理连接:",
-    "linkedin_publish_note": "帖子将发布到您的 LinkedIn 个人动态。可在此管理连接:",
+    "facebook_publish_note": "帖子将直接发布到已连接的 Facebook 主页。可在此管理连接：",
+    "linkedin_publish_note": "帖子将发布到您的 LinkedIn 个人动态。可在此管理连接：",
     "connect_platforms_link": "连接平台",
     "share_only_note": "通过分享 / 复制将文案发送到 {{platform}}。直接发布 {{platform}} 功能即将上线。"
   }

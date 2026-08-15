@@ -4,7 +4,7 @@
     "title": "无法加载客户",
     "not_found": "未找到。"
   },
-  "demo_banner": "示例客户 — 未同步到您的 CRM。连接线索后,真实对话会显示在这里。",
+  "demo_banner": "示例客户 — 未同步到您的 CRM。连接线索后，真实对话会显示在这里。",
   "subtitle": {
     "tier_hot": "热门客户",
     "tier_normal": "客户",
@@ -23,9 +23,9 @@
       "cold": "冷",
       "pending": "待定"
     },
-    "intent": "意图: ",
-    "timeline": "时间表: ",
-    "confidence": "置信度: ",
+    "intent": "意图： ",
+    "timeline": "时间表： ",
+    "confidence": "置信度： ",
     "show_less": "收起",
     "more_reasons_one": "+{{count}} 条更多原因",
     "more_reasons_other": "+{{count}} 条更多原因"

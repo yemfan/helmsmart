@@ -1827,7 +1827,7 @@
       "metaTitle": "合同审阅",
       "metaDescription": "由 AI 以通俗语言审阅买卖合同——关键条款、时间节点、风险提示与空白项。",
       "heading": "审阅合同",
-      "disclaimer": "用于帮助您发现问题，不构成法律意见。",
+      "disclaimer": "用于帮助您发现问题，不能作为律师的意见。",
       "contractPdf": "合同 PDF",
       "maxSize": "最大 8 MB。Claude 会直接读取该 PDF。",
       "pasteHeading": "粘贴合同文本",

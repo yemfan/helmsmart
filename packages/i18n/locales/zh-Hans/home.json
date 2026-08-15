@@ -26,7 +26,7 @@
     "today": "今日",
     "today_hint": "{{day}} · 显示为本地时间",
     "priority_alerts": "优先提醒",
-    "no_alerts": "暂无优先提醒,一切都安排好了。",
+    "no_alerts": "暂无优先提醒，一切都安排好了。",
     "quick_actions": "快捷操作"
   },
   "lead_queue": {
@@ -42,7 +42,7 @@
   },
   "errors": {
     "dashboard_unavailable_title": "无法加载概览",
-    "dashboard_unavailable_body": "未收到数据,请稍后重试。",
+    "dashboard_unavailable_body": "未收到数据，请稍后重试。",
     "dashboard_update_failed": "概览更新失败",
     "agenda_unavailable": "今日日程无法加载"
   },
@@ -87,7 +87,7 @@
   },
   "team": {
     "title": "您的 AI 团队",
-    "subtitle": "您的助理,按您的方式工作。",
+    "subtitle": "您的助理，按您的方式工作。",
     "manage": "管理 AI 团队",
     "status": {
       "active": "已启用",
