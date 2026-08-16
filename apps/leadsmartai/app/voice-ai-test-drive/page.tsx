@@ -9,7 +9,7 @@ import { getServerT } from "@/lib/i18n/server";
 export const metadata: Metadata = {
   title: "Test-drive our voice AI for real estate | CloseBoss",
   description:
-    "Hear our voice AI assistant qualify a real-estate lead live. Native voice, sub-3-second response, multi-language, books showings — included with the LeadSmart CRM.",
+    "Hear our voice AI assistant qualify a real-estate lead live. Native voice, sub-3-second response, multi-language, books showings — included with the CloseBoss CRM.",
   openGraph: {
     title: "Test-drive our voice AI for real estate",
     description:
@@ -47,32 +47,20 @@ export default async function VoiceAiTestDrivePage() {
         <h3 className="text-base font-semibold text-slate-900">{t("pages.articleChrome.faq", { ns: "dashboard" })}</h3>
         <dl className="mt-4 grid gap-5 sm:grid-cols-2">
           <div>
-            <dt className="font-semibold text-slate-900">Is this really an AI on the live demo number?</dt>
-            <dd className="mt-1 text-slate-700">
-              Yes — the demo number routes to the same Twilio + OpenAI Realtime engine
-              we ship to paying agents. There&apos;s no human on the line.
-            </dd>
+            <dt className="font-semibold text-slate-900">{t("pages.voiceTestDrive.q1", { ns: "dashboard" })}</dt>
+            <dd className="mt-1 text-slate-700">{t("pages.voiceTestDrive.a1", { ns: "dashboard" })}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-slate-900">Will my contacts be sent to a third-party ISA service?</dt>
-            <dd className="mt-1 text-slate-700">
-              No. The voice AI lives inside LeadSmart — your call recordings, transcripts,
-              and contact records stay in your account, not on a separate vendor.
-            </dd>
+            <dt className="font-semibold text-slate-900">{t("pages.voiceTestDrive.q2", { ns: "dashboard" })}</dt>
+            <dd className="mt-1 text-slate-700">{t("pages.voiceTestDrive.a2", { ns: "dashboard" })}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-slate-900">How does it hand off when a caller wants a human?</dt>
-            <dd className="mt-1 text-slate-700">
-              The AI routes to you immediately — SMS + push notification with a one-line
-              summary and the caller&apos;s number. Most agents reach the lead in under 60 seconds.
-            </dd>
+            <dt className="font-semibold text-slate-900">{t("pages.voiceTestDrive.q3", { ns: "dashboard" })}</dt>
+            <dd className="mt-1 text-slate-700">{t("pages.voiceTestDrive.a3", { ns: "dashboard" })}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-slate-900">What languages does it speak?</dt>
-            <dd className="mt-1 text-slate-700">
-              English, Spanish, and Mandarin are tuned. We can enable additional languages
-              for brokerage tiers — ask during your demo.
-            </dd>
+            <dt className="font-semibold text-slate-900">{t("pages.voiceTestDrive.q4", { ns: "dashboard" })}</dt>
+            <dd className="mt-1 text-slate-700">{t("pages.voiceTestDrive.a4", { ns: "dashboard" })}</dd>
           </div>
         </dl>
       </section>

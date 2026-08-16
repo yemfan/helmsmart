@@ -7483,7 +7483,11 @@
       "relatedPages": "相关页面",
       "homeValueKeyword": "房屋价值关键词页",
       "sellHouseKeyword": "卖房关键词页",
-      "marketReportKeyword": "市场报告关键词页"
+      "marketReportKeyword": "市场报告关键词页",
+      "sellerFocusedFor": "面向卖方的本地页面：",
+      "marketSnapshot": "市场快照",
+      "medianTimeOnMarket": "在售时长中位数：",
+      "currentDirection": "当前走向："
     },
     "newsletterIssue": {
       "weeklyNewsletter": "每周简报",
@@ -7648,6 +7652,50 @@
       "cfToPlug": "把这些数字填进去，就能看到年收入、年开支，以及偿还贷款前后的年度现金流。",
       "cfFinancing": "如果这处房产要贷款，请把本金和利息的还款额也纳入分析。请使用",
       "cfCtaTitle": "评估您下一个项目的现金流"
+    },
+    "voiceTestDrive": {
+      "q1": "演示号码那头真的是 AI 吗？",
+      "a1": "是的——演示号码接的就是我们交付给付费经纪人的同一套 Twilio + OpenAI Realtime 引擎。线上没有真人。",
+      "q2": "我的联系人会被发给第三方 ISA 服务商吗？",
+      "a2": "不会。语音 AI 就跑在 CloseBoss 内部——您的通话录音、转录文本和联系人记录都留在您自己的账户里，不会落到另一家供应商那里。",
+      "q3": "如果来电者想找真人，它怎么转接？",
+      "a3": "AI 会立刻转给您——发送短信和推送通知，附上一句话摘要和来电号码。多数经纪人能在 60 秒内联系上这条线索。",
+      "q4": "它会说哪些语言？",
+      "a4": "英语、西班牙语和普通话都已调校完成。经纪公司套餐可以开通更多语种——演示时问我们即可。"
+    },
+    "homeValueLeads": {
+      "h1": "房屋估价线索",
+      "sub": "查看并导出通过您的房屋估价小工具收集到的线索。",
+      "exportCsv": "导出 CSV",
+      "loading": "正在载入线索……",
+      "empty": "还没有线索。把您的房屋估价小工具嵌到网页上，就能开始收集卖方线索。",
+      "agentId": "经纪人 ID",
+      "date": "日期"
+    },
+    "completeProfile": {
+      "h1": "完善您的 CloseBoss 资料",
+      "sub": "您是用 Google 或 Apple 登录的。请确认您的姓名，并选择您是",
+      "fullName": "全名",
+      "role": "身份",
+      "phoneNumber": "手机号",
+      "cancelNote": "如果您想中止，或者改用另一个账户，点击「取消」即可退出登录并返回首页。"
+    },
+    "helpGuides": {
+      "helpCenter": "帮助中心",
+      "guides": "指南",
+      "stepByStep": "分步操作",
+      "related": "相关内容",
+      "needHelp": "还有别的问题？",
+      "browseAll": "浏览全部指南",
+      "emailSupport": "邮件支持"
+    },
+    "bookDemo": {
+      "backToHome": "返回首页",
+      "h1": "预约演示",
+      "formAria": "预约 CloseBoss 演示",
+      "findTime": "我们来约个时间",
+      "findTimeBody": "简单说说您的业务和方便的时间，我们会联系您确认演示安排。",
+      "requestDemo": "申请演示"
     }
   }
 }

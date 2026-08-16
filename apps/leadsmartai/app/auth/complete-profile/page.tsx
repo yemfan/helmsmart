@@ -246,9 +246,8 @@ function CompleteProfileInner() {
             {cancelling ? "Signing out…" : "Cancel"}
           </button>
         </div>
-        <h1 className="text-xl font-bold text-slate-900">Complete your CloseBoss profile</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          You signed in with Google or Apple. Confirm your name, choose whether you&apos;re a{" "}
+        <h1 className="text-xl font-bold text-slate-900">{t("pages.completeProfile.h1")}</h1>
+        <p className="mt-2 text-sm text-slate-600">{t("pages.completeProfile.sub")}{" "}
           <span className="font-medium text-slate-800">consumer</span> (default) or a professional role, and add a phone
           number if you pick a professional role—we use it for account and product notifications.
         </p>
@@ -264,7 +263,7 @@ function CompleteProfileInner() {
             />
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-700">Full name</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.completeProfile.fullName")}</label>
             <input
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
@@ -274,12 +273,12 @@ function CompleteProfileInner() {
             />
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-700">Role</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.completeProfile.role")}</label>
             <select
               value={signupRole}
               onChange={(e) => setSignupRole(e.target.value)}
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              aria-label="Role"
+              aria-label={t("pages.completeProfile.role")}
             >
               {SIGNUP_ROLE_OPTIONS.map((opt) => (
                 <option key={opt.value || "none"} value={opt.value}>
@@ -289,9 +288,7 @@ function CompleteProfileInner() {
             </select>
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-700">
-              Phone number
-              {isSignupRoleAssigned(signupRole) ? (
+            <label className="block text-xs font-medium text-slate-700">{t("pages.completeProfile.phoneNumber")}{isSignupRoleAssigned(signupRole) ? (
                 <span className="text-red-600"> *</span>
               ) : (
                 <span className="font-normal text-slate-500"> (optional)</span>
@@ -320,9 +317,7 @@ function CompleteProfileInner() {
           </button>
         </form>
 
-        <p className="mt-4 text-center text-xs text-slate-500">
-          Use Cancel to sign out and return to the homepage if you need to stop or use a different account.
-        </p>
+        <p className="mt-4 text-center text-xs text-slate-500">{t("pages.completeProfile.cancelNote")}</p>
       </div>
     </div>
   );

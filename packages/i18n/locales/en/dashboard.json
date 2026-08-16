@@ -7483,7 +7483,11 @@
       "relatedPages": "Related pages",
       "homeValueKeyword": "Home value keyword page",
       "sellHouseKeyword": "Sell house keyword page",
-      "marketReportKeyword": "Market report keyword page"
+      "marketReportKeyword": "Market report keyword page",
+      "sellerFocusedFor": "Seller-focused local page for",
+      "marketSnapshot": "Market snapshot",
+      "medianTimeOnMarket": "Median time on market:",
+      "currentDirection": "Current direction:"
     },
     "newsletterIssue": {
       "weeklyNewsletter": "Weekly Newsletter",
@@ -7648,6 +7652,50 @@
       "cfToPlug": "to plug in these numbers and see annual income, annual expenses, and annual cash flow before and after debt service.",
       "cfFinancing": "If you are financing the property, include principal and interest payments in your analysis. Use the",
       "cfCtaTitle": "Evaluate cash flow on your next deal"
+    },
+    "voiceTestDrive": {
+      "q1": "Is this really an AI on the live demo number?",
+      "a1": "Yes — the demo number routes to the same Twilio + OpenAI Realtime engine we ship to paying agents. There's no human on the line.",
+      "q2": "Will my contacts be sent to a third-party ISA service?",
+      "a2": "No. The voice AI lives inside CloseBoss — your call recordings, transcripts, and contact records stay in your account, not on a separate vendor.",
+      "q3": "How does it hand off when a caller wants a human?",
+      "a3": "The AI routes to you immediately — SMS + push notification with a one-line summary and the caller's number. Most agents reach the lead in under 60 seconds.",
+      "q4": "What languages does it speak?",
+      "a4": "English, Spanish, and Mandarin are tuned. We can enable additional languages for brokerage tiers — ask during your demo."
+    },
+    "homeValueLeads": {
+      "h1": "Home Value Leads",
+      "sub": "View and export leads captured from your home value widgets.",
+      "exportCsv": "Export CSV",
+      "loading": "Loading leads...",
+      "empty": "No leads found yet. Embed your home value widget to start capturing seller leads.",
+      "agentId": "Agent ID",
+      "date": "Date"
+    },
+    "completeProfile": {
+      "h1": "Complete your CloseBoss profile",
+      "sub": "You signed in with Google or Apple. Confirm your name, choose whether you're a",
+      "fullName": "Full name",
+      "role": "Role",
+      "phoneNumber": "Phone number",
+      "cancelNote": "Use Cancel to sign out and return to the homepage if you need to stop or use a different account."
+    },
+    "helpGuides": {
+      "helpCenter": "Help center",
+      "guides": "Guides",
+      "stepByStep": "Step by step",
+      "related": "Related",
+      "needHelp": "Need help with something else?",
+      "browseAll": "Browse all guides",
+      "emailSupport": "email support"
+    },
+    "bookDemo": {
+      "backToHome": "Back to home",
+      "h1": "Schedule a Demo",
+      "formAria": "Schedule a demo with CloseBoss",
+      "findTime": "Let's find a time",
+      "findTimeBody": "Tell us a bit about your business and when works for you, and we'll reach out to confirm your demo.",
+      "requestDemo": "Request a demo"
     }
   }
 }

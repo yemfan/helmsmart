@@ -98,11 +98,9 @@ export default async function HelpGuidePage({
 
       <article className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
         <nav aria-label={t("pages.articleChrome.breadcrumb", { ns: "dashboard" })} className="mb-6 text-xs text-slate-500">
-          <Link href="/help" className="hover:text-slate-700">
-            Help center
-          </Link>
+          <Link href="/help" className="hover:text-slate-700">{t("pages.helpGuides.helpCenter", { ns: "dashboard" })}</Link>
           <span className="mx-2">/</span>
-          <span className="text-slate-700">Guides</span>
+          <span className="text-slate-700">{t("pages.helpGuides.guides", { ns: "dashboard" })}</span>
           <span className="mx-2">/</span>
           <span className="text-slate-700">{guide.title}</span>
         </nav>
@@ -126,9 +124,7 @@ export default async function HelpGuidePage({
         </div>
 
         <section className="mt-10">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-            Step by step
-          </h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">{t("pages.helpGuides.stepByStep", { ns: "dashboard" })}</h2>
           <ol className="mt-4 space-y-4">
             {guide.steps.map((step, i) => (
               <li key={i} className="flex gap-4">
@@ -148,9 +144,7 @@ export default async function HelpGuidePage({
 
         {guide.related && guide.related.length > 0 ? (
           <section className="mt-12 border-t border-slate-200 pt-8">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-              Related
-            </h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">{t("pages.helpGuides.related", { ns: "dashboard" })}</h2>
             <ul className="mt-4 space-y-2">
               {guide.related.map((r) => (
                 <li key={r.href}>
@@ -167,21 +161,16 @@ export default async function HelpGuidePage({
         ) : null}
 
         <section className="mt-16 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center">
-          <p className="text-sm text-slate-600">
-            Need help with something else?{" "}
+          <p className="text-sm text-slate-600">{t("pages.helpGuides.needHelp", { ns: "dashboard" })}{" "}
             <Link
               href="/help"
               className="font-semibold text-blue-700 hover:underline"
-            >
-              Browse all guides
-            </Link>{" "}
+            >{t("pages.helpGuides.browseAll", { ns: "dashboard" })}</Link>{" "}
             or{" "}
             <a
               href="mailto:contact@closebossai.com"
               className="font-semibold text-blue-700 hover:underline"
-            >
-              email support
-            </a>
+            >{t("pages.helpGuides.emailSupport", { ns: "dashboard" })}</a>
             .
           </p>
         </section>

@@ -105,12 +105,6 @@ const EXEMPT = new Map<string, string>([
  * the list and the assertion under it.
  */
 const PENDING = new Set([
-  "app/sell-house/[city]/[keyword]/page.tsx",
-  "app/voice-ai-test-drive/page.tsx",
-  "app/agent-home-value-leads/page.tsx",
-  "app/auth/complete-profile/page.tsx",
-  "app/help/guides/[slug]/page.tsx",
-  "app/book/page.tsx",
   "app/how-to-increase-cap-rate-on-rental-property/page.tsx",
   "app/cap-rate-calculator-how-to-use-it/page.tsx",
   "app/cap-rate-vs-roi/page.tsx",
