@@ -1670,7 +1670,15 @@
     "dealCoach": {
       "metaTitle": "AI Deal Coach",
       "heading": "AI Deal Coach",
-      "intro": "Tell the coach where you are on the deal and what you know about the property. It returns a prioritized action plan, pricing strategy, risk pillars, and negotiation scripts — coherent with each other, all in one place."
+      "intro": "Tell the coach where you are on the deal and what you know about the property. It returns a prioritized action plan, pricing strategy, risk pillars, and negotiation scripts — coherent with each other, all in one place.",
+      "stage": "Stage",
+      "marketHeat": "Market heat",
+      "ceiling": "Buyer is at or near their hard budget ceiling — surface walk-away guidance.",
+      "buyerNotes": "Buyer notes",
+      "emptyState": "Fill in the deal context and run the coach to see strategy, risks, negotiation scripts, and a prioritized action plan.",
+      "title": "AI Deal Coach",
+      "talkingPoints": "Talking points",
+      "pitfalls": "Pitfalls"
     },
     "schedulerActivity": {
       "metaTitle": "Scheduler activity",
@@ -2240,7 +2248,7 @@
       "concernsPlaceholder": "Price, condition, schools, commute…",
       "internalNotes": "Internal notes",
       "internalNotesPlaceholder": "Anything else worth remembering when the next similar property hits the market.",
-      "wouldOffer": "Would write an offer",
+      "wouldOffer": "Buyer flagged this one as would-offer.",
       "priceConcern": "Price concern",
       "locationConcern": "Location concern",
       "conditionConcern": "Condition concern",
@@ -2251,7 +2259,14 @@
         "like": "Like it",
         "maybe": "Maybe",
         "pass": "Pass"
-      }
+      },
+      "showings": "Showings",
+      "openListing": "Open listing",
+      "markBefore": "Mark the showing",
+      "markAfter": "once you've finished the visit — that unlocks the feedback form and makes the showing count toward your buyer's stats.",
+      "feedbackBefore": "Mark this showing",
+      "feedbackAfter": "to capture feedback.",
+      "clear": "Clear"
     },
     "flyer": {
       "metaTitle": "Open House Flyer Builder",
@@ -2352,7 +2367,15 @@
       "createDraft": "Create draft",
       "loading": "Loading…",
       "errRequired": "Buyer, property address, and offer price are required.",
-      "errPrice": "Offer price must be a positive number."
+      "errPrice": "Offer price must be a positive number.",
+      "offers": "Offers",
+      "sub": "Log an offer you're about to submit or have already submitted. Track counters and convert to a transaction if it's accepted.",
+      "listingUrl": "Listing URL",
+      "inspection": "Inspection",
+      "appraisal": "Appraisal",
+      "loan": "Loan",
+      "skipsDraft": "Skips the draft state and timestamps the offer as submitted now.",
+      "cancel": "Cancel"
     },
     "offersCompare": {
       "heading": "Offers on listing",
@@ -3133,6 +3156,26 @@
       "runImport": "Run import",
       "viewLeads": "View leads",
       "refresh": "Refresh"
+    },
+    "uploadListing": {
+      "transactions": "Transactions",
+      "title": "Upload listing agreement",
+      "sub": "Drop in the executed RLA PDF — list price, listing dates, sellers, and commission get extracted with AI. Review the result before saving as a draft listing.",
+      "prefilled": "Pre-filled from a forwarded listing agreement",
+      "viewSource": "view source email",
+      "uploadPdf": "Upload RLA PDF",
+      "maxSize": "Max 5 MB. If the RLA is longer, trim to the first 4-6 pages — that's where price, parties, and commission live.",
+      "createsNote": "Creates a listing-rep transaction with the parsed fields. You can adjust anything on the transaction detail page."
+    },
+    "marketing": {
+      "shareLinks": "Share links, track email follow-ups, and manage campaign status.",
+      "updateBranding": "Update Branding",
+      "pathOnly": "The field shows the path only.",
+      "fullUrlNote": "use this browser’s full URL (your live domain +",
+      "openSmartLinks": "Open Smart Link Generator",
+      "plansBlurb": "Create automated multi-step marketing sequences for your leads — SMS, email, tasks, and reminders.",
+      "openPlans": "Open Marketing Plans",
+      "autoSend": "Emails are sent automatically on schedule."
     }
   }
 }

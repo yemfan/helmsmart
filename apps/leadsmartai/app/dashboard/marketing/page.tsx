@@ -80,9 +80,7 @@ export default async function MarketingPage() {
     <div className="space-y-4">
       <div>
         <h1 className="ui-page-title text-brand-text">{t("pages.marketing.heading", { ns: "dashboard" })}</h1>
-        <p className="ui-page-subtitle text-brand-text/80">
-          Share links, track email follow-ups, and manage campaign status.
-        </p>
+        <p className="ui-page-subtitle text-brand-text/80">{t("pages.marketing.shareLinks", { ns: "dashboard" })}</p>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-5">
@@ -102,16 +100,13 @@ export default async function MarketingPage() {
                 <Link
                   href="/dashboard/settings"
                   className="text-sm font-semibold px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50"
-                >
-                  Update Branding
-                </Link>
+                >{t("pages.marketing.updateBranding", { ns: "dashboard" })}</Link>
               </div>
               <div className="mt-2">
                 <HomeValueSmartLinkCopyShare relativePath={homeValueSmartLink} />
               </div>
-              <div className="mt-1 text-[11px] text-slate-500">
-                The field shows the path only. <strong>{t("pages.marketing.copyLink", { ns: "dashboard" })}</strong> and <strong>{t("pages.marketing.share", { ns: "dashboard" })}</strong> use this browser’s full URL (your live
-                domain + <span className="font-mono">{homeValueSmartLink}</span>).
+              <div className="mt-1 text-[11px] text-slate-500">{t("pages.marketing.pathOnly", { ns: "dashboard" })}<strong>{t("pages.marketing.copyLink", { ns: "dashboard" })}</strong> and <strong>{t("pages.marketing.share", { ns: "dashboard" })}</strong> {t("pages.marketing.fullUrlNote", { ns: "dashboard" })}{" "}
+                <span className="font-mono">{homeValueSmartLink}</span>).
               </div>
             </div>
 
@@ -124,9 +119,7 @@ export default async function MarketingPage() {
                 <Link
                   href="/dashboard/send"
                   className="inline-flex items-center justify-center rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ca8]"
-                >
-                  Open Smart Link Generator
-                </Link>
+                >{t("pages.marketing.openSmartLinks", { ns: "dashboard" })}</Link>
               </div>
             </div>
           </div>
@@ -134,13 +127,11 @@ export default async function MarketingPage() {
 
         <div className="border-t border-slate-100 pt-5 space-y-3">
           <div className="ui-card-title text-slate-900">{t("pages.marketing.marketingPlans", { ns: "dashboard" })}</div>
-          <p className="text-xs text-slate-600">Create automated multi-step marketing sequences for your leads — SMS, email, tasks, and reminders.</p>
+          <p className="text-xs text-slate-600">{t("pages.marketing.plansBlurb", { ns: "dashboard" })}</p>
           <Link
             href="/dashboard/marketing/plans"
             className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
-          >
-            Open Marketing Plans
-          </Link>
+          >{t("pages.marketing.openPlans", { ns: "dashboard" })}</Link>
         </div>
 
         <div className="border-t border-slate-100 pt-5 space-y-3">
@@ -156,9 +147,7 @@ export default async function MarketingPage() {
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
               <div className="ui-card-subtitle text-slate-600">{t("pages.marketing.status", { ns: "dashboard" })}</div>
-              <div className="mt-2 text-sm text-slate-700">
-                Emails are sent automatically on schedule.
-              </div>
+              <div className="mt-2 text-sm text-slate-700">{t("pages.marketing.autoSend", { ns: "dashboard" })}</div>
             </div>
           </div>
         </div>

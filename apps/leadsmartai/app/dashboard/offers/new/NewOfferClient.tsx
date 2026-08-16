@@ -522,16 +522,11 @@ function NewOfferForm() {
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/offers" className="hover:underline">
-            Offers
-          </Link>
+          <Link href="/dashboard/offers" className="hover:underline">{t("pages.newOffer.offers")}</Link>
           {" / New"}
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.newOffer.heading")}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Log an offer you&apos;re about to submit or have already submitted. Track counters
-          and convert to a transaction if it&apos;s accepted.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.newOffer.sub")}</p>
       </div>
 
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -552,8 +547,7 @@ function NewOfferForm() {
             offer so the detail page can deep-link back. Optional — a
             blank URL just leaves the rest of the form to manual entry. */}
         <div>
-          <label className="block text-xs font-medium text-slate-700">
-            Listing URL <span className="font-normal text-slate-400">{t("pages.newOffer.optional")}</span>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.listingUrl")}<span className="font-normal text-slate-400">{t("pages.newOffer.optional")}</span>
           </label>
           <input
             type="url"
@@ -731,27 +725,21 @@ function NewOfferForm() {
                 checked={inspectionContingency}
                 onChange={(e) => setInspectionContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Inspection
-            </label>
+              />{t("pages.newOffer.inspection")}</label>
             <label className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={appraisalContingency}
                 onChange={(e) => setAppraisalContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Appraisal
-            </label>
+              />{t("pages.newOffer.appraisal")}</label>
             <label className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={loanContingency}
                 onChange={(e) => setLoanContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Loan
-            </label>
+              />{t("pages.newOffer.loan")}</label>
           </div>
           <input
             value={contingencyNotes}
@@ -780,9 +768,7 @@ function NewOfferForm() {
           />
           <span>
             <span className="font-medium text-slate-800">{t("pages.newOffer.alreadySubmitted")}</span>
-            <span className="mt-0.5 block text-[11px] text-slate-500">
-              Skips the draft state and timestamps the offer as submitted now.
-            </span>
+            <span className="mt-0.5 block text-[11px] text-slate-500">{t("pages.newOffer.skipsDraft")}</span>
           </span>
         </label>
 
@@ -792,9 +778,7 @@ function NewOfferForm() {
           <Link
             href="/dashboard/offers"
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </Link>
+          >{t("pages.newOffer.cancel")}</Link>
           <button
             type="button"
             onClick={() => void submit()}

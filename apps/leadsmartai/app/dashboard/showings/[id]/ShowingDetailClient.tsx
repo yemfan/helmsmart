@@ -145,9 +145,7 @@ export function ShowingDetailClient({
     <div className="mx-auto max-w-5xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/showings" className="hover:underline">
-            Showings
-          </Link>
+          <Link href="/dashboard/showings" className="hover:underline">{t("pages.showingDetail.showings")}</Link>
           {" / "}
           <span>{showing.property_address}</span>
         </div>
@@ -202,9 +200,7 @@ export function ShowingDetailClient({
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline"
-                    >
-                      Open listing
-                    </a>
+                    >{t("pages.showingDetail.openListing")}</a>
                   ) : null
                 }
               />
@@ -255,8 +251,7 @@ export function ShowingDetailClient({
               ))}
             </div>
             <p className="mt-2 text-[11px] text-slate-500">
-              Mark the showing <strong>{t("pages.showingDetail.attended")}</strong> once you&apos;ve finished the visit — that
-              unlocks the feedback form and makes the showing count toward your buyer&apos;s stats.
+              {t("pages.showingDetail.markBefore")} <strong>{t("pages.showingDetail.attended")}</strong>{t("pages.showingDetail.markAfter")}
             </p>
           </Card>
 
@@ -294,9 +289,7 @@ export function ShowingDetailClient({
                   >
                     📝 Create offer
                     {isHot ? (
-                      <div className="text-[11px] font-normal text-amber-700">
-                        Buyer flagged this one as would-offer.
-                      </div>
+                      <div className="text-[11px] font-normal text-amber-700">{t("pages.showingDetail.wouldOffer")}</div>
                     ) : null}
                   </Link>
                 );
@@ -390,7 +383,7 @@ function FeedbackEditor({
   if (disabled) {
     return (
       <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500">
-        Mark this showing <strong>{t("pages.showingDetail.attended")}</strong> to capture feedback.
+        {t("pages.showingDetail.feedbackBefore")} <strong>{t("pages.showingDetail.attended")}</strong>{t("pages.showingDetail.feedbackAfter")}
       </div>
     );
   }
@@ -443,9 +436,7 @@ function FeedbackEditor({
               onClick={() => onChange({ rating: null })}
               disabled={saving}
               className="ml-2 text-[11px] text-slate-500 hover:underline"
-            >
-              Clear
-            </button>
+            >{t("pages.showingDetail.clear")}</button>
           ) : null}
         </div>
       </div>

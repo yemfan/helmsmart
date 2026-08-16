@@ -1670,7 +1670,15 @@
     "dealCoach": {
       "metaTitle": "AI 交易教练",
       "heading": "AI 交易教练",
-      "intro": "告诉教练这笔交易进行到哪一步，以及您对该房产的了解。它会给出一份按优先级排列的行动计划、定价策略、风险要点与谈判话术——彼此协调一致，集中呈现。"
+      "intro": "告诉教练这笔交易进行到哪一步，以及您对该房产的了解。它会给出一份按优先级排列的行动计划、定价策略、风险要点与谈判话术——彼此协调一致，集中呈现。",
+      "stage": "阶段",
+      "marketHeat": "市场热度",
+      "ceiling": "买家已经到达或接近预算上限——请给出何时该放弃的建议。",
+      "buyerNotes": "买家备注",
+      "emptyState": "填写交易背景后运行顾问，即可看到策略、风险、谈判话术和按优先级排列的行动计划。",
+      "title": "AI 交易顾问",
+      "talkingPoints": "谈判话术",
+      "pitfalls": "需要避开的坑"
     },
     "schedulerActivity": {
       "metaTitle": "调度器活动",
@@ -2240,7 +2248,7 @@
       "concernsPlaceholder": "价格、房况、学区、通勤…",
       "internalNotes": "内部备注",
       "internalNotesPlaceholder": "下次出现类似房源时值得记住的其他信息。",
-      "wouldOffer": "有意出价",
+      "wouldOffer": "买家表示这套愿意出价。",
       "priceConcern": "价格方面的顾虑",
       "locationConcern": "位置方面的顾虑",
       "conditionConcern": "房况方面的顾虑",
@@ -2251,7 +2259,14 @@
         "like": "比较喜欢",
         "maybe": "再看看",
         "pass": "不考虑"
-      }
+      },
+      "showings": "带看",
+      "openListing": "打开房源",
+      "markBefore": "看完房后，把这次带看标记为",
+      "markAfter": "——这样才会解锁反馈表单，并计入这位买家的带看统计。",
+      "feedbackBefore": "把这次带看标记为",
+      "feedbackAfter": "后才能填写反馈。",
+      "clear": "清空"
     },
     "flyer": {
       "metaTitle": "开放日宣传单生成器",
@@ -2352,7 +2367,15 @@
       "createDraft": "创建草稿",
       "loading": "加载中…",
       "errRequired": "买家、房产地址与报价金额为必填项。",
-      "errPrice": "报价金额必须为正数。"
+      "errPrice": "报价金额必须为正数。",
+      "offers": "报价",
+      "sub": "登记一份您即将提交或已经提交的报价。跟踪还价过程，若被接受可直接转为交易。",
+      "listingUrl": "房源网址",
+      "inspection": "验房",
+      "appraisal": "评估",
+      "loan": "贷款",
+      "skipsDraft": "跳过草稿状态，直接把提交时间记为现在。",
+      "cancel": "取消"
     },
     "offersCompare": {
       "heading": "该房源的报价",
@@ -3133,6 +3156,26 @@
       "runImport": "开始导入",
       "viewLeads": "查看客源",
       "refresh": "刷新"
+    },
+    "uploadListing": {
+      "transactions": "交易",
+      "title": "上传房源委托协议",
+      "sub": "把已签署的 RLA（房源委托协议）PDF 拖进来——挂牌价、委托期限、卖方和佣金会由 AI 自动提取。保存为房源草稿前请先核对结果。",
+      "prefilled": "已根据转发的委托协议自动填写",
+      "viewSource": "查看原始邮件",
+      "uploadPdf": "上传 RLA PDF",
+      "maxSize": "最大 5 MB。如果协议更长，请只保留前 4–6 页——价格、当事人和佣金都在那几页里。",
+      "createsNote": "会用解析出的字段创建一笔卖方代理交易。任何内容都可以在交易详情页上修改。"
+    },
+    "marketing": {
+      "shareLinks": "分享链接、跟踪邮件回访，并管理营销活动状态。",
+      "updateBranding": "更新品牌设置",
+      "pathOnly": "此处只显示路径。",
+      "fullUrlNote": "会使用当前浏览器的完整网址（您的正式域名 +",
+      "openSmartLinks": "打开智能链接生成器",
+      "plansBlurb": "为您的客源创建多步骤自动营销流程——短信、邮件、待办和提醒。",
+      "openPlans": "打开营销计划",
+      "autoSend": "邮件会按排期自动发送。"
     }
   }
 }

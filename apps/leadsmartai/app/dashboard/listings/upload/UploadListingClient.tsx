@@ -286,19 +286,11 @@ export function UploadListingClient() {
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/transactions" className="hover:underline">
-            Transactions
-          </Link>
+          <Link href="/dashboard/transactions" className="hover:underline">{t("pages.uploadListing.transactions")}</Link>
           {" / Upload listing agreement"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">
-          Upload listing agreement
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Drop in the executed RLA PDF — list price, listing dates, sellers,
-          and commission get extracted with AI. Review the result before
-          saving as a draft listing.
-        </p>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.uploadListing.title")}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.uploadListing.sub")}</p>
       </div>
 
       {/* Inbound source banner — same pattern as the offer + showing
@@ -306,9 +298,7 @@ export function UploadListingClient() {
           forwarded email + back-link to the source. */}
       {inboundSource && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          <div className="font-medium">
-            Pre-filled from a forwarded listing agreement
-          </div>
+          <div className="font-medium">{t("pages.uploadListing.prefilled")}</div>
           <div className="mt-0.5 text-xs text-emerald-700">
             {inboundSource.subject ? `“${inboundSource.subject}”` : "(no subject)"}
             {inboundSource.fromHeader ? ` · from ${inboundSource.fromHeader}` : ""}
@@ -316,9 +306,7 @@ export function UploadListingClient() {
             <Link
               href={`/dashboard/inbound/${inboundSource.id}`}
               className="underline hover:text-emerald-900"
-            >
-              view source email
-            </Link>
+            >{t("pages.uploadListing.viewSource")}</Link>
           </div>
         </div>
       )}
@@ -336,9 +324,7 @@ export function UploadListingClient() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">
-            Upload RLA PDF
-          </label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.uploadListing.uploadPdf")}</label>
           <input
             ref={fileInputRef}
             type="file"
@@ -366,10 +352,7 @@ export function UploadListingClient() {
               <span className="truncate text-xs text-slate-500">{pdfName}</span>
             )}
           </div>
-          <p className="mt-1 text-xs text-slate-500">
-            Max 5 MB. If the RLA is longer, trim to the first 4-6 pages —
-            that&apos;s where price, parties, and commission live.
-          </p>
+          <p className="mt-1 text-xs text-slate-500">{t("pages.uploadListing.maxSize")}</p>
         </div>
 
         {error && (
@@ -411,10 +394,7 @@ export function UploadListingClient() {
             >
               {saving ? t("pages.uploadListing.saving") : t("pages.uploadListing.save")}
             </button>
-            <span className="text-xs text-slate-500">
-              Creates a listing-rep transaction with the parsed fields. You
-              can adjust anything on the transaction detail page.
-            </span>
+            <span className="text-xs text-slate-500">{t("pages.uploadListing.createsNote")}</span>
           </div>
         </div>
       )}

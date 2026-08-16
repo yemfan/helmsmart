@@ -124,9 +124,7 @@ export default function DealCoachPanel() {
         <h2 className="text-base font-semibold text-slate-900">{t("pages.dealCoachPanel.dealContext")}</h2>
 
         <fieldset>
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Stage
-          </legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.stage")}</legend>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
             {STAGES.map((s) => (
               <label
@@ -192,9 +190,7 @@ export default function DealCoachPanel() {
 
         <div className="grid gap-3 sm:grid-cols-2">
           <fieldset>
-            <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Market heat
-            </legend>
+            <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.marketHeat")}</legend>
             <div className="mt-1.5 inline-flex rounded-full bg-slate-100 p-0.5">
               {HEAT_OPTIONS.map((h) => (
                 <button
@@ -236,14 +232,11 @@ export default function DealCoachPanel() {
             onChange={(e) => setBudgetTight(e.target.checked)}
             className="mt-0.5"
           />
-          <span>
-            Buyer is at or near their hard budget ceiling — surface walk-away guidance.
-          </span>
+          <span>{t("pages.dealCoach.ceiling")}</span>
         </label>
 
         <div>
-          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Buyer notes <span className="font-medium text-slate-400">{t("pages.dealCoachPanel.optional")}</span>
+          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.buyerNotes")}<span className="font-medium text-slate-400">{t("pages.dealCoachPanel.optional")}</span>
           </label>
           <textarea
             value={buyerNotes}
@@ -272,16 +265,12 @@ export default function DealCoachPanel() {
       {/* OUTPUT REPORT */}
       <section className="space-y-4 lg:col-span-3">
         {!report ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center text-sm text-slate-500">
-            Fill in the deal context and run the coach to see strategy, risks, negotiation scripts, and a prioritized action plan.
-          </div>
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center text-sm text-slate-500">{t("pages.dealCoach.emptyState")}</div>
         ) : (
           <>
             {/* Headline */}
             <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-5 shadow-sm">
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                AI Deal Coach
-              </div>
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.title")}</div>
               <h2 className="mt-1 text-lg font-bold text-slate-900 sm:text-xl">{report.headline}</h2>
             </div>
 
@@ -353,9 +342,7 @@ export default function DealCoachPanel() {
                         </p>
                         {s.talkingPoints.length > 0 ? (
                           <div className="mt-3">
-                            <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                              Talking points
-                            </div>
+                            <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.dealCoach.talkingPoints")}</div>
                             <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-slate-700">
                               {s.talkingPoints.map((p, i) => (
                                 <li key={i}>{p}</li>
@@ -365,9 +352,7 @@ export default function DealCoachPanel() {
                         ) : null}
                         {s.pitfalls.length > 0 ? (
                           <div className="mt-2">
-                            <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">
-                              Pitfalls
-                            </div>
+                            <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">{t("pages.dealCoach.pitfalls")}</div>
                             <ul className="mt-1 list-disc space-y-0.5 pl-4 text-xs text-amber-900">
                               {s.pitfalls.map((p, i) => (
                                 <li key={i}>{p}</li>
