@@ -106,6 +106,13 @@ describe("dashboard namespace (page copy)", () => {
       "pages.boss.artifactCma",
       // A platform's own name — LinkedIn does not localise its wordmark.
       "pages.liondeskShutdown.linkedin",
+      /*
+       * The SMS keywords a carrier actually recognises. A reader has to type
+       * these exact letters to opt out or get help, so translating them would
+       * strand a Chinese-speaking recipient in a program they can't leave.
+       */
+      "pages.homeValueFunnel.stop",
+      "pages.homeValueFunnel.help",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;

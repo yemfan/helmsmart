@@ -369,7 +369,7 @@ function HomePageInner() {
 
           <div className="flex items-center gap-2">
             {authLoading ? (
-              <span className="text-xs text-slate-500">Checking session...</span>
+              <span className="text-xs text-slate-500">{t("pages.homeValueFunnel.checkingSession")}</span>
             ) : null}
 
             {!authLoading && (!isAuthed || userRole !== "agent") ? (
@@ -377,9 +377,7 @@ function HomePageInner() {
                 type="button"
                 onClick={() => setPricingModalOpen(true)}
                 className="text-sm font-semibold px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50"
-              >
-                Upgrade
-              </button>
+              >{t("pages.homeValueFunnel.upgrade")}</button>
             ) : null}
 
             {!authLoading && !isAuthed ? (
@@ -387,15 +385,11 @@ function HomePageInner() {
                 <Link
                   href="/login"
                   className="text-sm font-semibold px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50"
-                >
-                  Login
-                </Link>
+                >{t("pages.homeValueFunnel.login")}</Link>
                 <Link
                   href="/signup"
                   className="text-sm font-semibold px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-                >
-                  Sign Up
-                </Link>
+                >{t("pages.homeValueFunnel.signUp")}</Link>
               </>
             ) : null}
 
@@ -405,9 +399,7 @@ function HomePageInner() {
                   <Link
                     href="/dashboard"
                     className="text-sm font-semibold px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-                  >
-                    Dashboard
-                  </Link>
+                  >{t("pages.homeValueFunnel.dashboard")}</Link>
                 ) : (
                   <button
                     type="button"
@@ -423,9 +415,7 @@ function HomePageInner() {
                   type="button"
                   onClick={handleLogout}
                   className="text-sm font-semibold px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-800 hover:bg-slate-50"
-                >
-                  Logout
-                </button>
+                >{t("pages.homeValueFunnel.logout")}</button>
               </>
             ) : null}
           </div>
@@ -436,10 +426,8 @@ function HomePageInner() {
         {!authLoading ? (
           <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 rounded-2xl p-4 sm:p-5">
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-slate-900">Need more limits?</div>
-              <div className="text-xs text-slate-600 mt-1">
-                Upgrade to unlock unlimited CMA/lead access and full CRM features.
-              </div>
+              <div className="text-sm font-semibold text-slate-900">{t("pages.homeValueFunnel.needMore")}</div>
+              <div className="text-xs text-slate-600 mt-1">{t("pages.homeValueFunnel.needMoreBody")}</div>
             </div>
             <button
               type="button"
@@ -453,10 +441,8 @@ function HomePageInner() {
 
         {!authLoading && userRole !== "agent" ? (
           <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5 text-center space-y-2">
-            <h2 className="text-xl font-bold text-blue-900">Are you a real estate agent?</h2>
-            <p className="text-sm text-blue-900/80">
-              Try AI Property Tools and Sales Lead Generation & Management System for FREE
-            </p>
+            <h2 className="text-xl font-bold text-blue-900">{t("pages.homeValueFunnel.areYouAgent")}</h2>
+            <p className="text-sm text-blue-900/80">{t("pages.homeValueFunnel.tryFree")}</p>
             {upgradeMessage ? (
               <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-lg px-3 py-2 text-sm">
                 {upgradeMessage}
@@ -481,31 +467,20 @@ function HomePageInner() {
             <Link
               href="/pricing"
               className="inline-flex items-center justify-center rounded-xl bg-white border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-            >
-              See Pricing
-            </Link>
+            >{t("pages.homeValueFunnel.seePricing")}</Link>
           </div>
         ) : null}
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           <div className="space-y-6">
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
-                CloseBoss for Agents
-              </p>
-              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
-                Turn home value checks into real listing appointments.
-              </h1>
-              <p className="text-sm sm:text-base text-slate-600">
-                CloseBoss gives real estate agents a modern home value funnel, automated
-                email follow-up, and a simple CRM so you can focus on conversations, not data entry.
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">{t("pages.homeValueFunnel.forAgents")}</p>
+              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">{t("pages.homeValueFunnel.heroTitle")}</h1>
+              <p className="text-sm sm:text-base text-slate-600">{t("pages.homeValueFunnel.heroBody")}</p>
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-medium text-slate-700">
-                Start with a property address
-              </label>
+              <label className="block text-xs font-medium text-slate-700">{t("pages.homeValueFunnel.startWithAddress")}</label>
               <div className="flex flex-col sm:flex-row gap-2">
                 <AddressAutocomplete
                   value={address}
@@ -522,9 +497,7 @@ function HomePageInner() {
                   type="button"
                   onClick={handleCheckValue}
                   className="inline-flex items-center justify-center bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-700"
-                >
-                  Check My Home Value
-                </button>
+                >{t("pages.homeValueFunnel.checkMyValue")}</button>
               </div>
               {error && (
                 <p className="text-[11px] text-red-600 font-medium whitespace-pre-line">
@@ -537,42 +510,27 @@ function HomePageInner() {
               <div className="space-y-4">
                 <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 flex flex-col sm:flex-row justify-between gap-4">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Instant Estimate (Preview)
-                    </p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.homeValueFunnel.instantEstimate")}</p>
                     <p className="text-2xl font-bold text-blue-700">
                       {estimate.displayValue}
                     </p>
-                    <p className="text-xs text-slate-500">
-                      Estimated range: {estimate.displayLow} – {estimate.displayHigh}
+                    <p className="text-xs text-slate-500">{t("pages.homeValueFunnel.estimatedRange")} {estimate.displayLow} – {estimate.displayHigh}
                     </p>
                   </div>
-                  <div className="text-xs text-slate-600 max-w-xs">
-                    This is a quick, AI-assisted estimate using recent market data. Enter your
-                    email to unlock the full report and have an agent fine-tune the number.
-                  </div>
+                  <div className="text-xs text-slate-600 max-w-xs">{t("pages.homeValueFunnel.estimateNote")}</div>
                 </div>
 
                 <div className="bg-slate-900 text-slate-50 rounded-xl p-4 space-y-2">
-                  <p className="text-xs font-semibold">
-                    Full report is locked – unlock with your email.
-                  </p>
-                  <p className="text-[11px] text-slate-300">
-                    You&apos;ll see a detailed breakdown, confidence range, and next steps for
-                    selling or refinancing. Your info is sent only to the inviting agent.
-                  </p>
+                  <p className="text-xs font-semibold">{t("pages.homeValueFunnel.reportLocked")}</p>
+                  <p className="text-[11px] text-slate-300">{t("pages.homeValueFunnel.reportLockedBody")}</p>
                 </div>
               </div>
             )}
 
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-3">
               <div>
-                <h2 className="text-sm font-semibold text-slate-900">
-                  Get your mortgage rate
-                </h2>
-                <p className="text-xs text-slate-600 mt-1">
-                  See an estimated monthly payment for your address.
-                </p>
+                <h2 className="text-sm font-semibold text-slate-900">{t("pages.homeValueFunnel.getRate")}</h2>
+                <p className="text-xs text-slate-600 mt-1">{t("pages.homeValueFunnel.getRateBody")}</p>
               </div>
 
               <div className="space-y-1">
@@ -600,8 +558,7 @@ function HomePageInner() {
               </button>
 
               {mortgageResult != null ? (
-                <p className="text-xs text-slate-700">
-                  Estimated monthly payment:{" "}
+                <p className="text-xs text-slate-700">{t("pages.homeValueFunnel.estimatedPayment")}{" "}
                   <span className="font-semibold">
                     ${Math.round(mortgageResult).toLocaleString()}/mo
                   </span>
@@ -619,20 +576,12 @@ function HomePageInner() {
           <div className="space-y-4">
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 space-y-4">
               <div>
-                <h2 className="text-sm font-semibold text-slate-900">
-                  Unlock your full home value report
-                </h2>
-                <p className="text-xs text-slate-600">
-                  Share a few details so your agent can send a personalized CMA and follow up with
-                  options.
-                </p>
+                <h2 className="text-sm font-semibold text-slate-900">{t("pages.homeValueFunnel.unlockTitle")}</h2>
+                <p className="text-xs text-slate-600">{t("pages.homeValueFunnel.unlockBody")}</p>
               </div>
 
               {submitted ? (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800">
-                  Thank you! Your request has been sent. Your agent will follow up with a detailed
-                  report and next steps.
-                </div>
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800">{t("pages.homeValueFunnel.thankYou")}</div>
               ) : (
                 <form onSubmit={handleSubmitLead} className="space-y-3">
                   <div className="space-y-1">
@@ -641,7 +590,7 @@ function HomePageInner() {
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Your name"
+                      placeholder={t("pages.homeValueFunnel.yourName")}
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -657,9 +606,7 @@ function HomePageInner() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="block text-xs font-medium text-slate-700">
-                      Phone (optional)
-                    </label>
+                    <label className="block text-xs font-medium text-slate-700">{t("pages.homeValueFunnel.phoneOptional")}</label>
                     <input
                       type="tel"
                       value={phone}
@@ -686,20 +633,11 @@ function HomePageInner() {
                         className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                       />
                       <span className="text-xs text-slate-700">
-                        <span className="font-semibold text-slate-900">
-                          Yes, send me marketing text messages from CloseBoss.
-                        </span>{" "}
-                        By checking this box and providing my phone number above, I
-                        consent to receive promotional text messages from{" "}
-                        <strong>CloseBoss</strong> about real-estate services,
-                        new listings, market updates, and special offers.
-                      </span>
+                        <span className="font-semibold text-slate-900">{t("pages.homeValueFunnel.smsConsent")}</span>{" "}{t("pages.homeValueFunnel.smsConsentBody")}{" "}
+                        <strong>CloseBoss</strong> {t("pages.homeValueFunnel.smsConsentTail")}</span>
                     </label>
-                    <p className="mt-2 pl-7 text-[11px] leading-relaxed text-slate-500">
-                      Message frequency varies. Message and data rates may apply.
-                      Reply <strong>STOP</strong> to opt out at any time, or{" "}
-                      <strong>HELP</strong> for help. Consent is not a condition of
-                      any purchase. See our{" "}
+                    <p className="mt-2 pl-7 text-[11px] leading-relaxed text-slate-500">{t("pages.homeValueFunnel.smsRates")} <strong>{t("pages.homeValueFunnel.stop")}</strong> {t("pages.homeValueFunnel.toOptOut")}{" "}
+                      <strong>{t("pages.homeValueFunnel.help")}</strong> {t("pages.homeValueFunnel.forHelp")}{" "}
                       <a
                         href="/privacy"
                         target="_blank"
@@ -712,9 +650,7 @@ function HomePageInner() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-medium text-blue-600 hover:underline"
-                      >{t("pages.articleChrome.termsOfService")}</a>{" "}
-                      for details.
-                    </p>
+                      >{t("pages.articleChrome.termsOfService")}</a>{" "}{t("pages.homeValueFunnel.forDetails")}</p>
                   </div>
 
                   <button
@@ -727,22 +663,12 @@ function HomePageInner() {
                 </form>
               )}
 
-              <p className="text-[11px] text-slate-400">
-                By submitting, you agree to be contacted by your agent about your home value and
-                local market conditions. SMS is sent only if you tick the box above. No spam.
-                Unsubscribe at any time.
-              </p>
+              <p className="text-[11px] text-slate-400">{t("pages.homeValueFunnel.submitNote")}</p>
             </div>
 
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-2 text-xs text-slate-700">
-              <h3 className="text-sm font-semibold text-slate-900">
-                Built for modern listing agents
-              </h3>
-              <p>
-                CloseBoss gives you a shareable home value funnel, automated follow-up, and
-                a lightweight CRM so you can track every homeowner from first click to signed
-                listing agreement.
-              </p>
+              <h3 className="text-sm font-semibold text-slate-900">{t("pages.homeValueFunnel.builtFor")}</h3>
+              <p>{t("pages.homeValueFunnel.builtForBody")}</p>
             </div>
           </div>
         </section>
