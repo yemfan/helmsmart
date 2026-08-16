@@ -1861,6 +1861,65 @@
       "colPrice": "Price",
       "colDistance": "Distance",
       "summary": "Summary"
+    },
+    "adComposer": {
+      "metaTitle": "Ad Composer",
+      "metaDescription": "Design custom social ads from templates.",
+      "heading": "Ad Composer",
+      "template": "Template",
+      "theme": "Theme",
+      "format": "Format",
+      "content": "Content",
+      "statValue": "Stat value",
+      "statLabel": "Stat label",
+      "statLabelPlaceholder": "30-YEAR FIXED",
+      "context": "Context",
+      "headline": "Headline",
+      "title1": "Title 1 (white line)",
+      "title2": "Title 2 (gold line)",
+      "badge": "Badge chip",
+      "badgePlaceholder": "REALTORS",
+      "subtext": "Subtext",
+      "cta": "CTA button",
+      "ctaPlaceholder": "Book a demo",
+      "photoField": "Photo",
+      "adPhotos": "Ad photos",
+      "brand": "Brand",
+      "brandName": "Name shown on ad",
+      "brokerage": "Brokerage",
+      "logoNote": "Logo comes from your Branding settings.",
+      "caption": "Caption",
+      "captionSeo": "Post caption (SEO)",
+      "captionHint": "The text that posts with the image — this is what platforms index.",
+      "hashtags": "Hashtags (comma-separated)",
+      "livePreview": "Live preview",
+      "adPreview": "Ad preview",
+      "tpl": {
+        "feature": "Feature poster",
+        "featureHint": "Full capability layout",
+        "hook": "Hook",
+        "hookHint": "Viral big-text card",
+        "spotlight": "Spotlight",
+        "spotlightHint": "Bold problem / promise",
+        "photo": "Photo",
+        "photoHint": "Photo hero + overlay",
+        "bold": "Statement",
+        "boldHint": "Big headline + CTA",
+        "stat": "Stat",
+        "statHint": "Big figure / quote"
+      },
+      "themeName": {
+        "navy": "Navy",
+        "midnight": "Midnight",
+        "azure": "Azure",
+        "light": "Light"
+      },
+      "fmt": {
+        "square": "Square 1:1",
+        "portrait": "Portrait 4:5",
+        "landscape": "Landscape"
+      },
+      "intro": "Pick a template and theme, edit the copy, preview it live, then save to your pool or schedule."
     }
   }
 }

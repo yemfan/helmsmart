@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Ad Composer — pick a template + theme + format, edit every field, watch a live
@@ -15,24 +16,25 @@ type Template = "bold" | "photo" | "stat" | "spotlight" | "feature" | "hook";
 type Theme = "navy" | "midnight" | "azure" | "light";
 type Format = "square" | "portrait" | "landscape";
 
-const TEMPLATES: { key: Template; label: string; hint: string }[] = [
-  { key: "feature", label: "Feature poster", hint: "Full capability layout" },
-  { key: "hook", label: "Hook", hint: "Viral big-text card" },
-  { key: "spotlight", label: "Spotlight", hint: "Bold problem / promise" },
-  { key: "photo", label: "Photo", hint: "Photo hero + overlay" },
-  { key: "bold", label: "Statement", hint: "Big headline + CTA" },
-  { key: "stat", label: "Stat", hint: "Big figure / quote" },
+// Labels are translation keys: this list is module scope and cannot hold a hook.
+const TEMPLATES: { key: Template; labelKey: string; hintKey: string }[] = [
+  { key: "feature", labelKey: "pages.adComposer.tpl.feature", hintKey: "pages.adComposer.tpl.featureHint" },
+  { key: "hook", labelKey: "pages.adComposer.tpl.hook", hintKey: "pages.adComposer.tpl.hookHint" },
+  { key: "spotlight", labelKey: "pages.adComposer.tpl.spotlight", hintKey: "pages.adComposer.tpl.spotlightHint" },
+  { key: "photo", labelKey: "pages.adComposer.tpl.photo", hintKey: "pages.adComposer.tpl.photoHint" },
+  { key: "bold", labelKey: "pages.adComposer.tpl.bold", hintKey: "pages.adComposer.tpl.boldHint" },
+  { key: "stat", labelKey: "pages.adComposer.tpl.stat", hintKey: "pages.adComposer.tpl.statHint" },
 ];
-const THEMES: { key: Theme; label: string; swatch: string }[] = [
-  { key: "navy", label: "Navy", swatch: "#0B1F44" },
-  { key: "midnight", label: "Midnight", swatch: "#05070d" },
-  { key: "azure", label: "Azure", swatch: "#0a84e0" },
-  { key: "light", label: "Light", swatch: "#eef2f7" },
+const THEMES: { key: Theme; labelKey: string; swatch: string }[] = [
+  { key: "navy", labelKey: "pages.adComposer.themeName.navy", swatch: "#0B1F44" },
+  { key: "midnight", labelKey: "pages.adComposer.themeName.midnight", swatch: "#05070d" },
+  { key: "azure", labelKey: "pages.adComposer.themeName.azure", swatch: "#0a84e0" },
+  { key: "light", labelKey: "pages.adComposer.themeName.light", swatch: "#eef2f7" },
 ];
-const FORMATS: { key: Format; label: string }[] = [
-  { key: "square", label: "Square 1:1" },
-  { key: "portrait", label: "Portrait 4:5" },
-  { key: "landscape", label: "Landscape" },
+const FORMATS: { key: Format; labelKey: string }[] = [
+  { key: "square", labelKey: "pages.adComposer.fmt.square" },
+  { key: "portrait", labelKey: "pages.adComposer.fmt.portrait" },
+  { key: "landscape", labelKey: "pages.adComposer.fmt.landscape" },
 ];
 
 type Fields = {
@@ -83,6 +85,7 @@ function useDebounced<T>(value: T, ms: number): T {
 }
 
 export default function AdComposerClient({ canCustomize }: { canCustomize: boolean }) {
+  const { t: tr } = useTranslation("dashboard");
   const [f, setF] = useState<Fields>(EMPTY);
   const [photos, setPhotos] = useState<{ id: string; url: string }[]>([]);
   const [busy, setBusy] = useState(false);
@@ -189,7 +192,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
     <div className="grid gap-6 lg:grid-cols-[1fr_minmax(320px,420px)]">
       {/* ---- editor ---- */}
       <div className="space-y-5">
-        <Section title="Template">
+        <Section title={tr("pages.adComposer.template")}>
           <div className="flex flex-wrap gap-2">
             {TEMPLATES.map((t) => (
               <button
@@ -200,15 +203,15 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
                   f.template === t.key ? "border-[#0072ce] bg-blue-50" : "border-gray-200 hover:border-gray-300"
                 }`}
               >
-                <div className="font-semibold text-gray-900">{t.label}</div>
-                <div className="text-xs text-gray-500">{t.hint}</div>
+                <div className="font-semibold text-gray-900">{tr(t.labelKey)}</div>
+                <div className="text-xs text-gray-500">{tr(t.hintKey)}</div>
               </button>
             ))}
           </div>
         </Section>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <Section title="Theme">
+          <Section title={tr("pages.adComposer.theme")}>
             <div className="flex flex-wrap gap-2">
               {THEMES.map((t) => (
                 <button
@@ -220,12 +223,12 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
                   }`}
                 >
                   <span className="h-4 w-4 rounded-full border border-black/10" style={{ background: t.swatch }} />
-                  {t.label}
+                  {tr(t.labelKey)}
                 </button>
               ))}
             </div>
           </Section>
-          <Section title="Format">
+          <Section title={tr("pages.adComposer.format")}>
             <div className="flex flex-wrap gap-2">
               {FORMATS.map((t) => (
                 <button
@@ -236,40 +239,40 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
                     f.format === t.key ? "border-[#0072ce] bg-blue-50" : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  {t.label}
+                  {tr(t.labelKey)}
                 </button>
               ))}
             </div>
           </Section>
         </div>
 
-        <Section title="Content">
+        <Section title={tr("pages.adComposer.content")}>
           <div className="space-y-3">
             {isStat ? (
               <>
-                <Field label="Stat value" value={f.statValue} onChange={(v) => set("statValue", v)} placeholder="6.9%" />
-                <Field label="Stat label" value={f.statLabel} onChange={(v) => set("statLabel", v)} placeholder="30-YEAR FIXED" />
-                <Field label="Context" value={f.statContext} onChange={(v) => set("statContext", v)} />
+                <Field label={tr("pages.adComposer.statValue")} value={f.statValue} onChange={(v) => set("statValue", v)} placeholder="6.9%" />
+                <Field label={tr("pages.adComposer.statLabel")} value={f.statLabel} onChange={(v) => set("statLabel", v)} placeholder={tr("pages.adComposer.statLabelPlaceholder")} />
+                <Field label={tr("pages.adComposer.context")} value={f.statContext} onChange={(v) => set("statContext", v)} />
               </>
             ) : (
               <>
-                <Field label={usesAccent ? "Title 1 (white line)" : "Headline"} value={f.headline} onChange={(v) => set("headline", v)} />
+                <Field label={usesAccent ? tr("pages.adComposer.title1") : tr("pages.adComposer.headline")} value={f.headline} onChange={(v) => set("headline", v)} />
                 {usesAccent && (
-                  <Field label="Title 2 (gold line)" value={f.headlineAccent} onChange={(v) => set("headlineAccent", v)} />
+                  <Field label={tr("pages.adComposer.title2")} value={f.headlineAccent} onChange={(v) => set("headlineAccent", v)} />
                 )}
-                {usesBadge && <Field label="Badge chip" value={f.badge} onChange={(v) => set("badge", v)} placeholder="REALTORS" />}
-                <Field label="Subtext" value={f.subhead} onChange={(v) => set("subhead", v)} textarea />
-                <Field label="CTA button" value={f.ctaText} onChange={(v) => set("ctaText", v)} placeholder="Book a demo" />
+                {usesBadge && <Field label={tr("pages.adComposer.badge")} value={f.badge} onChange={(v) => set("badge", v)} placeholder={tr("pages.adComposer.badgePlaceholder")} />}
+                <Field label={tr("pages.adComposer.subtext")} value={f.subhead} onChange={(v) => set("subhead", v)} textarea />
+                <Field label={tr("pages.adComposer.cta")} value={f.ctaText} onChange={(v) => set("ctaText", v)} placeholder={tr("pages.adComposer.ctaPlaceholder")} />
               </>
             )}
           </div>
         </Section>
 
         {usesPhoto && (
-          <Section title="Photo">
+          <Section title={tr("pages.adComposer.photoField")}>
             {photos.length === 0 ? (
               <p className="text-sm text-gray-500">
-                No photos in your pool yet — add some in <span className="font-medium">Ad photos</span> above.
+                No photos in your pool yet — add some in <span className="font-medium">{tr("pages.adComposer.adPhotos")}</span> above.
               </p>
             ) : (
               <div className="flex flex-wrap gap-2">
@@ -300,18 +303,18 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
           </Section>
         )}
 
-        <Section title="Brand">
+        <Section title={tr("pages.adComposer.brand")}>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Name shown on ad" value={f.agentName} onChange={(v) => set("agentName", v)} />
-            <Field label="Brokerage" value={f.brokerage} onChange={(v) => set("brokerage", v)} />
+            <Field label={tr("pages.adComposer.brandName")} value={f.agentName} onChange={(v) => set("agentName", v)} />
+            <Field label={tr("pages.adComposer.brokerage")} value={f.brokerage} onChange={(v) => set("brokerage", v)} />
           </div>
-          <p className="mt-1.5 text-xs text-gray-400">Logo comes from your Branding settings.</p>
+          <p className="mt-1.5 text-xs text-gray-400">{tr("pages.adComposer.logoNote")}</p>
         </Section>
 
-        <Section title="Post caption (SEO)">
+        <Section title={tr("pages.adComposer.captionSeo")}>
           <div className="space-y-3">
-            <Field label="Caption" value={f.caption} onChange={(v) => set("caption", v)} textarea placeholder="The text that posts with the image — this is what platforms index." />
-            <Field label="Hashtags (comma-separated)" value={f.hashtags} onChange={(v) => set("hashtags", v)} />
+            <Field label={tr("pages.adComposer.caption")} value={f.caption} onChange={(v) => set("caption", v)} textarea placeholder={tr("pages.adComposer.captionHint")} />
+            <Field label={tr("pages.adComposer.hashtags")} value={f.hashtags} onChange={(v) => set("hashtags", v)} />
           </div>
         </Section>
 
@@ -339,10 +342,10 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
 
       {/* ---- live preview ---- */}
       <div className="lg:sticky lg:top-4 lg:self-start">
-        <div className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Live preview</div>
+        <div className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">{tr("pages.adComposer.livePreview")}</div>
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={previewUrl} alt="Ad preview" className="mx-auto w-full max-w-[380px] rounded-lg" />
+          <img src={previewUrl} alt={tr("pages.adComposer.adPreview")} className="mx-auto w-full max-w-[380px] rounded-lg" />
         </div>
       </div>
     </div>

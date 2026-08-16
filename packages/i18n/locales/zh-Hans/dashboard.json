@@ -1861,6 +1861,65 @@
       "colPrice": "成交价",
       "colDistance": "距离",
       "summary": "摘要"
+    },
+    "adComposer": {
+      "metaTitle": "广告编辑器",
+      "metaDescription": "基于模板设计定制社交广告。",
+      "heading": "广告编辑器",
+      "template": "模板",
+      "theme": "主题",
+      "format": "尺寸",
+      "content": "内容",
+      "statValue": "数据数值",
+      "statLabel": "数据说明",
+      "statLabelPlaceholder": "30 年固定利率",
+      "context": "补充说明",
+      "headline": "标题",
+      "title1": "第一行标题（白色）",
+      "title2": "第二行标题（金色）",
+      "badge": "角标文字",
+      "badgePlaceholder": "地产经纪人",
+      "subtext": "副文案",
+      "cta": "行动按钮",
+      "ctaPlaceholder": "预约演示",
+      "photoField": "照片",
+      "adPhotos": "广告照片",
+      "brand": "品牌",
+      "brandName": "广告上显示的名称",
+      "brokerage": "所属经纪公司",
+      "logoNote": "标识取自您的品牌设置。",
+      "caption": "配文",
+      "captionSeo": "发布配文（SEO）",
+      "captionHint": "随图片一同发布的文字——平台正是据此建立索引。",
+      "hashtags": "话题标签（用逗号分隔）",
+      "livePreview": "实时预览",
+      "adPreview": "广告预览",
+      "tpl": {
+        "feature": "功能海报",
+        "featureHint": "完整功能版式",
+        "hook": "钩子",
+        "hookHint": "大字爆款卡片",
+        "spotlight": "聚焦",
+        "spotlightHint": "醒目痛点／承诺",
+        "photo": "照片",
+        "photoHint": "照片主视觉 + 叠加文字",
+        "bold": "主张",
+        "boldHint": "大标题 + 行动按钮",
+        "stat": "数据",
+        "statHint": "大数字／引言"
+      },
+      "themeName": {
+        "navy": "藏青",
+        "midnight": "午夜",
+        "azure": "蔚蓝",
+        "light": "浅色"
+      },
+      "fmt": {
+        "square": "方形 1:1",
+        "portrait": "竖版 4:5",
+        "landscape": "横版"
+      },
+      "intro": "选择模板与主题，编辑文案，实时预览，然后保存到素材库或安排发布。"
     }
   }
 }
