@@ -2294,6 +2294,38 @@
       "inspection": "验房",
       "offer_one": "{{count}} 份报价",
       "saleOfHome": "售出现有住房"
+    },
+    "newShowing": {
+      "metaTitle": "安排带看",
+      "heading": "安排带看",
+      "buyer": "买家 *",
+      "address": "房产地址 *",
+      "addressHint": "开始输入地址——或粘贴 Zillow／Redfin／Realtor.com／Compass 链接",
+      "city": "城市",
+      "state": "州",
+      "zip": "邮编",
+      "lookingUp": "正在查询房源…",
+      "date": "日期 *",
+      "time": "时间 *",
+      "duration": "时长（分钟）",
+      "mls": "MLS 编号",
+      "mlsPlaceholder": "ML12345678",
+      "listingUrl": "房源链接",
+      "urlPlaceholder": "粘贴 Zillow、Redfin、Realtor.com 或 Compass 链接…",
+      "accessNotes": "进门说明",
+      "accessPlaceholder": "例如：密码锁 1234、大门已开、走侧门",
+      "listingAgent": "卖方经纪人联系方式",
+      "name": "姓名",
+      "email": "邮箱",
+      "phone": "电话",
+      "notes": "备注",
+      "schedule": "安排带看",
+      "scheduling": "安排中…",
+      "loading": "加载中…",
+      "errRequired": "买家、房产地址与日期时间为必填项。",
+      "lookupFailed": "无法自动核验房源状态——如已知，请手动填写 MLS 编号。",
+      "noMls": "该地址暂无 MLS 状态记录——可能未公开挂牌，或尚未进入我们的缓存。",
+      "serviceDown": "无法连接房源服务——请手动填写。"
     }
   }
 }

@@ -2294,6 +2294,38 @@
       "contingencies": "Contingencies",
       "inspection": "Inspection",
       "saleOfHome": "Sale of home"
+    },
+    "newShowing": {
+      "metaTitle": "Schedule Showing",
+      "heading": "Schedule showing",
+      "buyer": "Buyer *",
+      "address": "Property address *",
+      "addressHint": "Start typing the address — or paste a Zillow/Redfin/Realtor.com/Compass link",
+      "city": "City",
+      "state": "State",
+      "zip": "ZIP",
+      "lookingUp": "Looking up listing…",
+      "date": "Date *",
+      "time": "Time *",
+      "duration": "Duration (min)",
+      "mls": "MLS #",
+      "mlsPlaceholder": "ML12345678",
+      "listingUrl": "Listing URL",
+      "urlPlaceholder": "Paste a Zillow, Redfin, Realtor.com, or Compass link…",
+      "accessNotes": "Access notes",
+      "accessPlaceholder": "Lockbox 1234, gate open, side door",
+      "listingAgent": "Listing agent contact",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "notes": "Notes",
+      "schedule": "Schedule showing",
+      "scheduling": "Scheduling…",
+      "loading": "Loading…",
+      "errRequired": "Buyer, property address, and date+time are required.",
+      "lookupFailed": "Couldn't auto-verify listing status — fill in MLS # manually if you have it.",
+      "noMls": "No MLS status on file for this address — could be off-market or just not in our cache yet.",
+      "serviceDown": "Couldn't reach property service — proceed manually."
     }
   }
 }
