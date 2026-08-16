@@ -4603,6 +4603,55 @@
       "weeksAgo": "{{n}} 周前",
       "monthsAgo": "{{n}} 个月前",
       "yearsAgo": "{{n}} 年前"
+    },
+    "overview": {
+      "totalLeads": "客源总数",
+      "hotLeads": "热门客源",
+      "messagesSent": "已发消息",
+      "quietLeads": "沉睡客源",
+      "todaysSchedule": "今日安排",
+      "viewCalendar": "查看日历",
+      "noAppointments": "今天没有预约。",
+      "openTasks": "待办事项",
+      "viewAll": "查看全部",
+      "noTasks": "没有待办事项。",
+      "quickActions": "快捷操作",
+      "addContact": "添加联系人",
+      "scanCard": "扫描名片",
+      "createFlyer": "制作宣传单",
+      "sellerPresentation": "卖方提案",
+      "welcomeBack": "欢迎回来",
+      "goodMorning": "早上好",
+      "goodAfternoon": "下午好",
+      "goodEvening": "晚上好"
+    },
+    "mlsImport": {
+      "title": "MLS CSV 导入",
+      "added": "新增房源：",
+      "updated": "更新房源：",
+      "soldInserted": "写入成交快照：",
+      "soldSkipped": "跳过成交快照：",
+      "skippedRows": "跳过的行："
+    },
+    "coachingPage": {
+      "title": "教练",
+      "sub": "这一周哪里需要您花心思。每张卡片都是从 CloseBoss 里已有的数据实时算出来的——不需要额外设置。"
+    },
+    "dashboardError": {
+      "title": "仪表盘加载失败",
+      "tryAgain": "重试"
+    },
+    "houseSearchPage": {
+      "title": "AI 找房",
+      "sub": "用大白话描述您的买家想要什么样的房子。助理会到网上搜索真实、在售的房源，建议如何缩小范围，并让您把最合适的几套直接邮件发给买家。"
+    },
+    "marketingPlansTabs": {
+      "sphereTitle": "人脉圈价值",
+      "sphereSub": "老客户和人脉圈按卖房+买房的综合可能性排序。最大的机会通常是持有年限接近高点、又出现换工作或人生事件信号的联系人——他们很快既要卖，也要买。"
+    },
+    "transactionsToggle": {
+      "list": "列表",
+      "board": "看板"
     }
   }
 }

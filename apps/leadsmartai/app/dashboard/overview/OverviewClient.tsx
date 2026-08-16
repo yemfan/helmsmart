@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { UsageMeter } from "@/components/dashboard/UsageMeter";
 import { ReferAFriendCard } from "@/components/referrals/ReferAFriendCard";
 import BriefingsCard from "@/components/dashboard/BriefingsCard";
@@ -13,6 +15,8 @@ type DigestMetrics = { leads_contacted: number; sms_sent: number; emails_sent: n
 type DigestInsight = { key: string; label: string; message: string; tone: string };
 
 export default function OverviewClient({ greetingName, planType }: { greetingName: string; planType: string }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [stats, setStats] = useState<Stats | null>(null);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -71,17 +75,22 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
   // different string than the browser. Seed with a clock-independent default
   // so SSR and the first client render agree, then fill in after mount.
   const [clock, setClock] = useState<{ greeting: string; dateLabel: string }>({
-    greeting: "Welcome back",
+    greeting: t("pages.overview.welcomeBack"),
     dateLabel: "",
   });
   useEffect(() => {
     const d = new Date();
     const h = d.getHours();
     setClock({
-      greeting: h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening",
-      dateLabel: d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }),
+      greeting:
+        h < 12
+          ? t("pages.overview.goodMorning")
+          : h < 17
+            ? t("pages.overview.goodAfternoon")
+            : t("pages.overview.goodEvening"),
+      dateLabel: d.toLocaleDateString(locale, { weekday: "long", month: "long", day: "numeric" }),
     });
-  }, []);
+  }, [t, locale]);
 
   const overdueTasks = tasks.filter((t) => t.due_at && new Date(t.due_at).getTime() < Date.now());
   const urgentTasks = tasks.filter((t) => t.priority === "urgent" || t.priority === "high");
@@ -124,19 +133,19 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
       {stats && (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Link href="/dashboard/leads" className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:bg-gray-50 transition">
-            <p className="text-xs text-gray-500">Total Leads</p>
+            <p className="text-xs text-gray-500">{t("pages.overview.totalLeads")}</p>
             <p className="mt-1 text-2xl font-bold text-gray-900">{stats.totalLeads}</p>
           </Link>
           <Link href="/dashboard/leads?filter=hot" className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:bg-gray-50 transition">
-            <p className="text-xs text-gray-500">Hot Leads</p>
+            <p className="text-xs text-gray-500">{t("pages.overview.hotLeads")}</p>
             <p className="mt-1 text-2xl font-bold text-red-600">{stats.hotLeads}</p>
           </Link>
           <Link href="/dashboard/inbox" className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:bg-gray-50 transition">
-            <p className="text-xs text-gray-500">Messages Sent</p>
+            <p className="text-xs text-gray-500">{t("pages.overview.messagesSent")}</p>
             <p className="mt-1 text-2xl font-bold text-gray-900">{stats.messagesSent}</p>
           </Link>
           <Link href="/dashboard/leads?filter=inactive" className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:bg-gray-50 transition">
-            <p className="text-xs text-gray-500">Quiet Leads</p>
+            <p className="text-xs text-gray-500">{t("pages.overview.quietLeads")}</p>
             <p className="mt-1 text-2xl font-bold text-amber-600">{stats.inactiveLeads}</p>
             <p className="text-[10px] text-gray-400">7+ days inactive</p>
           </Link>
@@ -148,11 +157,11 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
         {/* Today's Appointments */}
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-gray-900">Today&apos;s Schedule</h2>
-            <Link href="/dashboard/calendar" className="text-xs font-medium text-blue-600 hover:text-blue-800">View calendar</Link>
+            <h2 className="text-sm font-semibold text-gray-900">{t("pages.overview.todaysSchedule")}</h2>
+            <Link href="/dashboard/calendar" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("pages.overview.viewCalendar")}</Link>
           </div>
           {events.length === 0 ? (
-            <p className="text-sm text-gray-400 py-4 text-center">No appointments today.</p>
+            <p className="text-sm text-gray-400 py-4 text-center">{t("pages.overview.noAppointments")}</p>
           ) : (
             <div className="space-y-2">
               {events.map((e) => (
@@ -161,7 +170,7 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
                     <p className="text-sm font-medium text-gray-900">{e.title}</p>
                     {e.lead_name && <p className="text-xs text-gray-500">{e.lead_name}</p>}
                   </div>
-                  <span className="text-xs font-medium text-blue-600">{new Date(e.starts_at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</span>
+                  <span className="text-xs font-medium text-blue-600">{new Date(e.starts_at).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" })}</span>
                 </div>
               ))}
             </div>
@@ -171,11 +180,11 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
         {/* Open Tasks */}
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-gray-900">Open Tasks</h2>
-            <Link href="/dashboard/tasks" className="text-xs font-medium text-blue-600 hover:text-blue-800">View all</Link>
+            <h2 className="text-sm font-semibold text-gray-900">{t("pages.overview.openTasks")}</h2>
+            <Link href="/dashboard/tasks" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("pages.overview.viewAll")}</Link>
           </div>
           {tasks.length === 0 ? (
-            <p className="text-sm text-gray-400 py-4 text-center">No open tasks.</p>
+            <p className="text-sm text-gray-400 py-4 text-center">{t("pages.overview.noTasks")}</p>
           ) : (
             <div className="space-y-2">
               {tasks.slice(0, 5).map((t) => (
@@ -186,7 +195,7 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
                       {t.lead_name && <span>{t.lead_name} &middot; </span>}
                       {t.due_at ? (
                         <span className={new Date(t.due_at).getTime() < Date.now() ? "text-red-600" : ""}>
-                          {new Date(t.due_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                          {new Date(t.due_at).toLocaleDateString(locale, { month: "short", day: "numeric" })}
                         </span>
                       ) : "No due date"}
                     </p>
@@ -203,20 +212,12 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
 
       {/* Quick Actions */}
       <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 className="text-sm font-semibold text-gray-900 mb-3">Quick Actions</h2>
+        <h2 className="text-sm font-semibold text-gray-900 mb-3">{t("pages.overview.quickActions")}</h2>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <Link href="/dashboard/leads/add" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100 transition">
-            Add Contact
-          </Link>
-          <Link href="/dashboard/contacts/scan" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100 transition">
-            Scan Card
-          </Link>
-          <Link href="/dashboard/open-houses/flyer" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100 transition">
-            Create Flyer
-          </Link>
-          <Link href="/dashboard/seller-presentation" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100 transition">
-            Seller Presentation
-          </Link>
+          <Link href="/dashboard/leads/add" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100 transition">{t("pages.overview.addContact")}</Link>
+          <Link href="/dashboard/contacts/scan" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100 transition">{t("pages.overview.scanCard")}</Link>
+          <Link href="/dashboard/open-houses/flyer" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100 transition">{t("pages.overview.createFlyer")}</Link>
+          <Link href="/dashboard/seller-presentation" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100 transition">{t("pages.overview.sellerPresentation")}</Link>
         </div>
       </div>
 

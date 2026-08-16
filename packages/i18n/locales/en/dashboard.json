@@ -4603,6 +4603,55 @@
       "weeksAgo": "{{n}}w ago",
       "monthsAgo": "{{n}}mo ago",
       "yearsAgo": "{{n}}y ago"
+    },
+    "overview": {
+      "totalLeads": "Total Leads",
+      "hotLeads": "Hot Leads",
+      "messagesSent": "Messages Sent",
+      "quietLeads": "Quiet Leads",
+      "todaysSchedule": "Today's Schedule",
+      "viewCalendar": "View calendar",
+      "noAppointments": "No appointments today.",
+      "openTasks": "Open Tasks",
+      "viewAll": "View all",
+      "noTasks": "No open tasks.",
+      "quickActions": "Quick Actions",
+      "addContact": "Add Contact",
+      "scanCard": "Scan Card",
+      "createFlyer": "Create Flyer",
+      "sellerPresentation": "Seller Presentation",
+      "welcomeBack": "Welcome back",
+      "goodMorning": "Good morning",
+      "goodAfternoon": "Good afternoon",
+      "goodEvening": "Good evening"
+    },
+    "mlsImport": {
+      "title": "MLS CSV Import",
+      "added": "Properties added:",
+      "updated": "Properties updated:",
+      "soldInserted": "Sold snapshots inserted:",
+      "soldSkipped": "Sold snapshots skipped:",
+      "skippedRows": "Skipped rows:"
+    },
+    "coachingPage": {
+      "title": "Coaching",
+      "sub": "Where your week needs your attention. Each card is pulled live from data already in CloseBoss — no extra setup."
+    },
+    "dashboardError": {
+      "title": "Dashboard couldn't load",
+      "tryAgain": "Try again"
+    },
+    "houseSearchPage": {
+      "title": "AI House Search",
+      "sub": "Describe what your buyer is looking for in plain English. The assistant searches the web for real, current listings, suggests ways to narrow the results, and lets you email the best matches straight to your buyer."
+    },
+    "marketingPlansTabs": {
+      "sphereTitle": "Sphere monetization",
+      "sphereSub": "Past clients and sphere ranked by combined seller + buyer likelihood. The biggest opportunities are usually contacts near peak ownership tenure with a job-change or life-event signal — they're about to sell AND buy."
+    },
+    "transactionsToggle": {
+      "list": "List",
+      "board": "Board"
     }
   }
 }

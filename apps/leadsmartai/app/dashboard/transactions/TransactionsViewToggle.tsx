@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 /**
  * Shared View toggle for the Transactions section. List and Board are
@@ -8,6 +9,7 @@ import Link from "next/link";
  * consistent across the app.
  */
 export function TransactionsViewToggle({ current }: { current: "list" | "board" }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="inline-flex shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white text-xs font-medium">
       <Link
@@ -16,18 +18,14 @@ export function TransactionsViewToggle({ current }: { current: "list" | "board" 
           current === "list" ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
         }`}
         aria-current={current === "list" ? "page" : undefined}
-      >
-        List
-      </Link>
+      >{t("pages.transactionsToggle.list")}</Link>
       <Link
         href="/dashboard/transactions/coordinator"
         className={`px-3 py-1 transition ${
           current === "board" ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
         }`}
         aria-current={current === "board" ? "page" : undefined}
-      >
-        Board
-      </Link>
+      >{t("pages.transactionsToggle.board")}</Link>
     </div>
   );
 }

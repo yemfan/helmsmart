@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import MarketingPlansClient from "./MarketingPlansClient";
 import SphereMonetizationPanel from "@/components/dashboard/SphereMonetizationPanel";
 
@@ -13,6 +14,7 @@ import SphereMonetizationPanel from "@/components/dashboard/SphereMonetizationPa
  * /dashboard/sphere/monetization page redirects to this tab.
  */
 export default function MarketingPlansTabs({ initialTab }: { initialTab: "plans" | "sphere" }) {
+  const { t } = useTranslation("dashboard");
   const [tab, setTab] = useState<"plans" | "sphere">(initialTab);
 
   return (
@@ -45,14 +47,8 @@ export default function MarketingPlansTabs({ initialTab }: { initialTab: "plans"
       ) : (
         <div>
           <header className="mb-5 max-w-2xl">
-            <h2 className="text-lg font-semibold tracking-tight text-slate-900">
-              Sphere monetization
-            </h2>
-            <p className="mt-1 text-sm text-slate-600">
-              Past clients and sphere ranked by combined seller + buyer likelihood. The biggest
-              opportunities are usually contacts near peak ownership tenure with a job-change or
-              life-event signal — they&apos;re about to sell AND buy.
-            </p>
+            <h2 className="text-lg font-semibold tracking-tight text-slate-900">{t("pages.marketingPlansTabs.sphereTitle")}</h2>
+            <p className="mt-1 text-sm text-slate-600">{t("pages.marketingPlansTabs.sphereSub")}</p>
             <div className="mt-3 flex flex-wrap gap-3 text-xs">
               <Link
                 href="/dashboard/sphere/likely-sellers"
