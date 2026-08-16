@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Status =
   | { kind: "idle" }
@@ -38,6 +39,7 @@ function formatUsPhone(input: string): string {
  * footer — same standard as our IDX consumer form.
  */
 export default function VoiceAiDemoRequestForm() {
+  const { t } = useTranslation("dashboard");
   const [name, setName] = useState("");
   const [brokerage, setBrokerage] = useState("");
   const [phone, setPhone] = useState("");
@@ -100,7 +102,7 @@ export default function VoiceAiDemoRequestForm() {
         id="request-callback"
         className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 sm:p-8"
       >
-        <h3 className="text-lg font-semibold text-emerald-900">You&apos;re on the list.</h3>
+        <h3 className="text-lg font-semibold text-emerald-900">{t("pages.voiceDemo.onTheList")}</h3>
         <p className="mt-1 text-sm text-emerald-900/80">
           {intent === "hear_it"
             ? "We'll have the AI give you a call shortly. Pick up to hear how it qualifies a real-estate lead."
@@ -116,37 +118,29 @@ export default function VoiceAiDemoRequestForm() {
       className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
     >
       <header>
-        <h3 className="text-xl font-bold text-slate-900 sm:text-2xl">Or have it call you.</h3>
-        <p className="mt-1 text-sm text-slate-600">
-          We&apos;ll dial you within minutes so you hear the AI from the receiving end —
-          the same experience your leads will have.
-        </p>
+        <h3 className="text-xl font-bold text-slate-900 sm:text-2xl">{t("pages.voiceDemo.callYou")}</h3>
+        <p className="mt-1 text-sm text-slate-600">{t("pages.voiceDemo.callYouSub")}</p>
       </header>
 
       <form onSubmit={submit} className="mt-6 grid gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
-          Your name
-          <input
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">{t("pages.voiceDemo.yourName")}<input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Alex Rivera"
+            placeholder={t("pages.voiceDemo.namePlaceholder")}
             className="rounded-xl border border-slate-300 px-4 py-3 text-sm font-normal normal-case text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
-          Brokerage <span className="font-medium text-slate-400">(optional)</span>
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">{t("pages.voiceDemo.brokerage")}<span className="font-medium text-slate-400">(optional)</span>
           <input
             value={brokerage}
             onChange={(e) => setBrokerage(e.target.value)}
-            placeholder="Greenfield Realty"
+            placeholder={t("pages.voiceDemo.brokeragePlaceholder")}
             className="rounded-xl border border-slate-300 px-4 py-3 text-sm font-normal normal-case text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
-          Phone
-          <input
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">{t("pages.voiceDemo.phone")}<input
             value={phone}
             onChange={(e) => setPhone(formatUsPhone(e.target.value))}
             placeholder="(555) 123-4567"
@@ -155,9 +149,7 @@ export default function VoiceAiDemoRequestForm() {
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
-          Email
-          <input
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-slate-700">{t("pages.voiceDemo.email")}<input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="alex@greenfield.com"
@@ -167,9 +159,7 @@ export default function VoiceAiDemoRequestForm() {
         </label>
 
         <fieldset className="sm:col-span-2">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-700">
-            What you want
-          </legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-700">{t("pages.voiceDemo.whatYouWant")}</legend>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
             {(
               [
@@ -215,11 +205,7 @@ export default function VoiceAiDemoRequestForm() {
             onChange={(e) => setConsent(e.target.checked)}
             className="mt-0.5"
           />
-          <span>
-            I agree to receive calls and texts from CloseBoss at the number provided,
-            including via automated systems, for the purpose of demoing the voice AI.
-            Consent is not a condition of any purchase. Reply STOP to unsubscribe.
-          </span>
+          <span>{t("pages.voiceDemo.consent")}</span>
         </label>
 
         {status.kind === "error" ? (

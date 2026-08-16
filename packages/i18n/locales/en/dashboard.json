@@ -1736,7 +1736,25 @@
       "heading": "Drafts",
       "pending": "{{count}} pending",
       "intro": "Approval queue for Review-mode messages. No draft sends without your approval in the first 30 days of your account — and never when you've set the policy to Review.",
-      "activityLog": "Activity log"
+      "activityLog": "Activity log",
+      "selectDraft": "Select a draft.",
+      "noDrafts": "No drafts waiting.",
+      "openContact": "open a contact",
+      "subject": "Subject",
+      "body": "Body",
+      "reject": "Reject",
+      "reason": "Reason (optional, internal only)",
+      "reasonPlaceholder": "e.g. Already texted them this morning",
+      "cancel": "Cancel",
+      "triggerContext": "Trigger context",
+      "created": "Created {{date}}",
+      "approved": "· Approved {{date}}",
+      "rejected": "· Rejected {{date}}",
+      "earliestSend": " Earliest send: {{date}}.",
+      "rejectedReason": "Rejected reason: {{reason}}",
+      "rejectedNoReason": "Rejected without a reason.",
+      "sent": "Sent {{date}}",
+      "sendFailed": "Send failed — check provider logs."
     },
     "team": {
       "metaTitle": "Team",
@@ -3846,6 +3864,59 @@
       "revert": "Revert to base",
       "preview": "Preview",
       "previewNote": "Preview uses a mocked past-client contact. Multiple archetypes will be added here as product defines them."
+    },
+    "voiceDemo": {
+      "onTheList": "You're on the list.",
+      "callYou": "Or have it call you.",
+      "callYouSub": "We'll dial you within minutes so you hear the AI from the receiving end — the same experience your leads will have.",
+      "yourName": "Your name",
+      "namePlaceholder": "Alex Rivera",
+      "brokerage": "Brokerage",
+      "brokeragePlaceholder": "Greenfield Realty",
+      "phone": "Phone",
+      "email": "Email",
+      "whatYouWant": "What you want",
+      "consent": "I agree to receive calls and texts from CloseBoss at the number provided, including via automated systems, for the purpose of demoing the voice AI. Consent is not a condition of any purchase. Reply STOP to unsubscribe."
+    },
+    "leadDrawer": {
+      "leadProfile": "Lead profile",
+      "close": "Close",
+      "closePanel": "Close panel",
+      "assistantHandling": "AI Sales Assistant is handling follow-ups",
+      "nextBestAction": "Next best action",
+      "whatYouKnow": "What you know",
+      "openFollowUps": "Open follow-ups",
+      "storySoFar": "Story so far",
+      "noInteractions": "No interactions yet — your AI team will log calls, texts, and follow-ups here.",
+      "openFullProfile": "Open full profile",
+      "conversations": "Conversations",
+      "unnamed": "Unnamed lead",
+      "withYouSince": "with you since {{date}}"
+    },
+    "teamBreakdown": {
+      "title": "Member breakdown",
+      "agent": "Agent",
+      "contacts": "Contacts",
+      "hotLeads": "Hot leads",
+      "tasks30d": "Tasks 30d",
+      "openTasks": "Open tasks",
+      "activeDeals": "Active deals",
+      "closedYtd": "Closed YTD",
+      "empty": "No team members yet.",
+      "owner": "Owner",
+      "teamTotal": "Team total"
+    },
+    "transactionNotifications": {
+      "dailyDigest": "Daily task digest",
+      "frequency": "Digest frequency",
+      "frequencyHint": "Daily emails, a weekly Monday summary, or off.",
+      "daily": "Daily",
+      "weeklyMonday": "Weekly (Monday)",
+      "off": "Off",
+      "wireFraud": "Wire-fraud SMS alert",
+      "wireFraudHint": "Texts you 24-48h before closing if the wire-verification task is still incomplete. This is a fraud-prevention alert — turning it off is strongly discouraged.",
+      "growthDigest": "Weekly growth digest",
+      "growthDigestHint": "Monday-morning email with the top 3 AI-generated growth opportunities for your week. Only sends when you have 2+ opportunities, so dormant weeks stay quiet."
     }
   }
 }

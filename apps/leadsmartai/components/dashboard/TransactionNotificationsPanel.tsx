@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Preferences = {
   transactionDigestEnabled: boolean;
@@ -21,6 +22,7 @@ type Preferences = {
  * Loads + saves via /api/dashboard/settings/transaction-notifications.
  */
 export function TransactionNotificationsPanel() {
+  const { t } = useTranslation("dashboard");
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
@@ -75,7 +77,7 @@ export function TransactionNotificationsPanel() {
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <div className="text-sm font-medium text-slate-900">Daily task digest</div>
+          <div className="text-sm font-medium text-slate-900">{t("pages.transactionNotifications.dailyDigest")}</div>
           <p className="mt-0.5 text-xs text-slate-500">
             Email summary of overdue + upcoming-72h transaction tasks. Sent at ~8am Pacific.
           </p>
@@ -89,10 +91,8 @@ export function TransactionNotificationsPanel() {
 
       <div className="flex items-start justify-between gap-4 border-t border-slate-100 pt-4">
         <div className="min-w-0">
-          <div className="text-sm font-medium text-slate-900">Digest frequency</div>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Daily emails, a weekly Monday summary, or off.
-          </p>
+          <div className="text-sm font-medium text-slate-900">{t("pages.transactionNotifications.frequency")}</div>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.transactionNotifications.frequencyHint")}</p>
         </div>
         <select
           value={prefs.transactionDigestFrequency}
@@ -104,19 +104,16 @@ export function TransactionNotificationsPanel() {
           disabled={saving || !prefs.transactionDigestEnabled}
           className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm disabled:opacity-50"
         >
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly (Monday)</option>
-          <option value="off">Off</option>
+          <option value="daily">{t("pages.transactionNotifications.daily")}</option>
+          <option value="weekly">{t("pages.transactionNotifications.weeklyMonday")}</option>
+          <option value="off">{t("pages.transactionNotifications.off")}</option>
         </select>
       </div>
 
       <div className="flex items-start justify-between gap-4 border-t border-slate-100 pt-4">
         <div className="min-w-0">
-          <div className="text-sm font-medium text-slate-900">Wire-fraud SMS alert</div>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Texts you 24-48h before closing if the wire-verification task is still incomplete.
-            This is a fraud-prevention alert — turning it off is strongly discouraged.
-          </p>
+          <div className="text-sm font-medium text-slate-900">{t("pages.transactionNotifications.wireFraud")}</div>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.transactionNotifications.wireFraudHint")}</p>
         </div>
         <Toggle
           checked={prefs.wireFraudSmsEnabled}
@@ -127,11 +124,8 @@ export function TransactionNotificationsPanel() {
 
       <div className="flex items-start justify-between gap-4 border-t border-slate-100 pt-4">
         <div className="min-w-0">
-          <div className="text-sm font-medium text-slate-900">Weekly growth digest</div>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Monday-morning email with the top 3 AI-generated growth opportunities for your week.
-            Only sends when you have 2+ opportunities, so dormant weeks stay quiet.
-          </p>
+          <div className="text-sm font-medium text-slate-900">{t("pages.transactionNotifications.growthDigest")}</div>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.transactionNotifications.growthDigestHint")}</p>
         </div>
         <Toggle
           checked={prefs.growthDigestEnabled}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   MemberBreakdownRow,
   MemberMetrics,
@@ -19,6 +20,7 @@ import type {
  *   4. Agent id asc
  */
 export function TeamBreakdownPanel({ teamId }: { teamId: string }) {
+  const { t } = useTranslation("dashboard");
   const [breakdown, setBreakdown] = useState<TeamBreakdown | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -45,9 +47,7 @@ export function TeamBreakdownPanel({ teamId }: { teamId: string }) {
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm">
       <header>
-        <h2 className="text-base font-semibold text-slate-900">
-          Member breakdown
-        </h2>
+        <h2 className="text-base font-semibold text-slate-900">{t("pages.teamBreakdown.title")}</h2>
         <p className="mt-0.5 text-xs text-slate-500">
           Who&apos;s driving what · sorted by closed deals year-to-date
         </p>
@@ -57,17 +57,13 @@ export function TeamBreakdownPanel({ teamId }: { teamId: string }) {
         <table className="min-w-full text-left text-sm">
           <thead>
             <tr className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-              <Th>Agent</Th>
-              <Th align="right">Contacts</Th>
-              <Th align="right">Hot leads</Th>
-              <Th align="right" className="hidden md:table-cell">
-                Tasks 30d
-              </Th>
-              <Th align="right" className="hidden md:table-cell">
-                Open tasks
-              </Th>
-              <Th align="right">Active deals</Th>
-              <Th align="right">Closed YTD</Th>
+              <Th>{t("pages.teamBreakdown.agent")}</Th>
+              <Th align="right">{t("pages.teamBreakdown.contacts")}</Th>
+              <Th align="right">{t("pages.teamBreakdown.hotLeads")}</Th>
+              <Th align="right" className="hidden md:table-cell">{t("pages.teamBreakdown.tasks30d")}</Th>
+              <Th align="right" className="hidden md:table-cell">{t("pages.teamBreakdown.openTasks")}</Th>
+              <Th align="right">{t("pages.teamBreakdown.activeDeals")}</Th>
+              <Th align="right">{t("pages.teamBreakdown.closedYtd")}</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -75,9 +71,7 @@ export function TeamBreakdownPanel({ teamId }: { teamId: string }) {
               <SkeletonRows />
             ) : !breakdown || breakdown.rows.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-6 text-center text-xs text-slate-500">
-                  No team members yet.
-                </td>
+                <td colSpan={7} className="py-6 text-center text-xs text-slate-500">{t("pages.teamBreakdown.empty")}</td>
               </tr>
             ) : (
               <>
@@ -95,6 +89,7 @@ export function TeamBreakdownPanel({ teamId }: { teamId: string }) {
 }
 
 function Row({ row }: { row: MemberBreakdownRow }) {
+  const { t } = useTranslation("dashboard");
   return (
     <tr className="text-slate-800">
       <td className="py-2.5 pr-3">
@@ -103,9 +98,7 @@ function Row({ row }: { row: MemberBreakdownRow }) {
             Agent {shortenId(row.agentId)}
           </span>
           {row.role === "owner" ? (
-            <span className="rounded-full bg-blue-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-blue-700 ring-1 ring-blue-200">
-              Owner
-            </span>
+            <span className="rounded-full bg-blue-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-blue-700 ring-1 ring-blue-200">{t("pages.teamBreakdown.owner")}</span>
           ) : null}
         </div>
       </td>
@@ -126,11 +119,10 @@ function Row({ row }: { row: MemberBreakdownRow }) {
 }
 
 function TotalsRow({ totals }: { totals: MemberMetrics }) {
+  const { t } = useTranslation("dashboard");
   return (
     <tr className="bg-slate-50/60 text-slate-900 font-semibold">
-      <td className="py-2.5 pr-3 text-xs uppercase tracking-wider text-slate-500">
-        Team total
-      </td>
+      <td className="py-2.5 pr-3 text-xs uppercase tracking-wider text-slate-500">{t("pages.teamBreakdown.teamTotal")}</td>
       <Td align="right">{totals.contactsTotal}</Td>
       <Td align="right">{totals.leadsHot}</Td>
       <Td align="right" className="hidden md:table-cell">

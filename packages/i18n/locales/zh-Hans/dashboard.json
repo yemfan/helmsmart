@@ -1736,7 +1736,25 @@
       "heading": "草稿",
       "pending": "{{count}} 条待审核",
       "intro": "审核模式消息的审批队列。账户开通后的前 30 天内，任何草稿都必须经您批准才会发送——若您已将策略设为“审核”，则始终需要批准。",
-      "activityLog": "活动日志"
+      "activityLog": "活动日志",
+      "selectDraft": "请选择一份草稿。",
+      "noDrafts": "没有待处理的草稿。",
+      "openContact": "打开一位联系人",
+      "subject": "主题",
+      "body": "正文",
+      "reject": "驳回",
+      "reason": "原因（选填，仅内部可见）",
+      "reasonPlaceholder": "例如：今天上午已经发过短信了",
+      "cancel": "取消",
+      "triggerContext": "触发背景",
+      "created": "创建于 {{date}}",
+      "approved": "· 批准于 {{date}}",
+      "rejected": "· 驳回于 {{date}}",
+      "earliestSend": " 最早发送时间：{{date}}。",
+      "rejectedReason": "驳回原因：{{reason}}",
+      "rejectedNoReason": "驳回时未填写原因。",
+      "sent": "已发送 {{date}}",
+      "sendFailed": "发送失败——请检查服务商日志。"
     },
     "team": {
       "metaTitle": "团队",
@@ -3846,6 +3864,59 @@
       "revert": "恢复为原始模板",
       "preview": "预览",
       "previewNote": "预览使用的是一位模拟的老客户。等产品确定后，这里会加入更多典型客户类型。"
+    },
+    "voiceDemo": {
+      "onTheList": "已经把您加入名单。",
+      "callYou": "也可以让它打给您。",
+      "callYouSub": "我们会在几分钟内拨给您，让您以接听方的身份听听 AI——和您的客户听到的完全一样。",
+      "yourName": "您的姓名",
+      "namePlaceholder": "张伟",
+      "brokerage": "所属经纪公司",
+      "brokeragePlaceholder": "示例地产公司",
+      "phone": "电话",
+      "email": "邮箱",
+      "whatYouWant": "您想要什么",
+      "consent": "我同意 CloseBoss 通过我提供的号码向我拨打电话和发送短信（包括使用自动系统），用于演示语音 AI。同意与否不影响任何购买。回复 STOP 即可退订。"
+    },
+    "leadDrawer": {
+      "leadProfile": "客源档案",
+      "close": "关闭",
+      "closePanel": "关闭面板",
+      "assistantHandling": "AI 销售助理正在负责跟进",
+      "nextBestAction": "下一步最该做的",
+      "whatYouKnow": "已知信息",
+      "openFollowUps": "待办跟进",
+      "storySoFar": "来龙去脉",
+      "noInteractions": "还没有互动记录——通话、短信和跟进都会记录在这里。",
+      "openFullProfile": "打开完整档案",
+      "conversations": "会话记录",
+      "unnamed": "未命名客源",
+      "withYouSince": "自 {{date}} 起跟进"
+    },
+    "teamBreakdown": {
+      "title": "成员明细",
+      "agent": "经纪人",
+      "contacts": "联系人",
+      "hotLeads": "热门客源",
+      "tasks30d": "近 30 天待办",
+      "openTasks": "未完成待办",
+      "activeDeals": "在办交易",
+      "closedYtd": "年初至今成交",
+      "empty": "还没有团队成员。",
+      "owner": "所有者",
+      "teamTotal": "团队合计"
+    },
+    "transactionNotifications": {
+      "dailyDigest": "每日待办摘要",
+      "frequency": "摘要频率",
+      "frequencyHint": "每日邮件、每周一汇总，或关闭。",
+      "daily": "每日",
+      "weeklyMonday": "每周（周一）",
+      "off": "关闭",
+      "wireFraud": "电汇诈骗短信提醒",
+      "wireFraudHint": "如果成交前 24–48 小时电汇信息核验待办仍未完成，会给您发短信提醒。这是一项防诈骗提醒——强烈建议不要关闭。",
+      "growthDigest": "每周增长摘要",
+      "growthDigestHint": "周一早上发送邮件，列出本周由 AI 找出的三个最值得抓的机会。只有在您有 2 个以上机会时才发送，清闲的一周不会打扰您。"
     }
   }
 }
