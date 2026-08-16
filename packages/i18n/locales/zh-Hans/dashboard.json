@@ -3972,6 +3972,69 @@
       "meansAutosend": "每条消息在触发的那一刻就直接发出。您可以事后在历史记录里看到。",
       "sphere": "人脉圈：",
       "recommended": "推荐"
+    },
+    "sendRecommendations": {
+      "title": "发送房源",
+      "close": "关闭",
+      "subject": "主题",
+      "note": "给联系人的留言",
+      "noFavorites": "还没有可以快速选取的收藏房源。",
+      "remove": "移除",
+      "includeSignature": "附上我的邮件签名",
+      "sent": "已发送——联系人稍后就会收到邮件。",
+      "cancel": "取消"
+    },
+    "sphereDrip": {
+      "title": "人脉圈滴灌节奏",
+      "enable": "为我的账号开启人脉圈滴灌",
+      "enableHint": "开启后，每日定时任务会自动把符合条件的联系人加入名单，每小时的发送流程会推进节奏。草稿仍遵守您的审核策略。",
+      "optOutWins": "您同时也在试点白名单中。即使这样，保存为关闭仍会跳过您——您明确的关闭选择优先。",
+      "pilotNote": "您目前是通过试点白名单（环境变量）加入的。保存本表单即可固定您的选择——保存之后，环境变量的改动不会再影响您。",
+      "notes": "备注",
+      "notesPlaceholder": "写点将来的自己需要知道的事。",
+      "saved": "已保存。",
+      "sourceTip": "当前加入状态的来源",
+      "lastUpdated": "最近更新 {{date}}"
+    },
+    "supportChat": {
+      "support": "客服",
+      "closeChat": "关闭客服对话",
+      "openChat": "打开客服对话",
+      "title": "客户支持",
+      "yourName": "您的姓名",
+      "yourEmail": "您的邮箱",
+      "subject": "主题（选填）",
+      "describeIssue": "请在下方描述您的问题或需求。"
+    },
+    "cookieConsent": {
+      "title": "closebossai.com 的 Cookie",
+      "privacy": "隐私政策",
+      "categories": "Cookie 类别",
+      "acceptAll": "全部接受",
+      "essentialOnly": "仅必要 Cookie",
+      "saveChoices": "保存选择",
+      "customize": "自定义",
+      "settings": "Cookie 设置"
+    },
+    "emailEngagement": {
+      "title": "邮件互动情况",
+      "sent": "已发送",
+      "openRate": "打开率",
+      "clickThrough": "点击率",
+      "bounced": "退信",
+      "empty": "还没有邮件记录",
+      "emptyHint": "通过 AI 邮件层发出邮件后，打开和点击数据会显示在这里。我们通过 Resend 的 webhook 统计——不塞跟踪像素。",
+      "timeRange": "时间范围"
+    },
+    "leadRoutingSettings": {
+      "title": "IDX 客源分配",
+      "intro": "加入 IDX 来源客源的轮流分配池，并登记您服务的邮编，这些区域的客源会优先分给您。",
+      "includeMe": "把我加入轮流分配池",
+      "includeHint": "开启后，新的 IDX 客源会在所有已加入的经纪人之间轮流分配。系统按最久未分配的顺序挑选。",
+      "zipCoverage": "覆盖邮编",
+      "zipHint": "5 位邮编，用逗号或空格分隔。留空则接收任何邮编的客源。系统会清洗列表——无效值会被丢弃。",
+      "saved": "已保存。",
+      "noZips": "未填写邮编——可以接收任何区域的客源。"
     }
   }
 }

@@ -3972,6 +3972,69 @@
       "meansAutosend": "Every message sends the moment its trigger fires. You'll see them in your history after the fact.",
       "sphere": "Sphere:",
       "recommended": "Recommended"
+    },
+    "sendRecommendations": {
+      "title": "Send properties",
+      "close": "Close",
+      "subject": "Subject",
+      "note": "Note to contact",
+      "noFavorites": "No favorites to quick-pick from yet.",
+      "remove": "Remove",
+      "includeSignature": "Include my email signature",
+      "sent": "Sent — the contact will get the email shortly.",
+      "cancel": "Cancel"
+    },
+    "sphereDrip": {
+      "title": "Sphere drip cadence",
+      "enable": "Enable sphere drip for my account",
+      "enableHint": "When on, the daily cron auto-enrolls eligible contacts and the hourly send pipeline advances the cadence. Drafts honor your review policy.",
+      "optOutWins": "You're also in the pilot allowlist. Saving this off will still skip you — your explicit opt-out wins.",
+      "pilotNote": "You're currently enrolled via the pilot allowlist (env). Save this form to lock in your preference — once saved, env changes won't affect you.",
+      "notes": "Notes",
+      "notesPlaceholder": "Anything you want future-you to know.",
+      "saved": "Saved.",
+      "sourceTip": "Source of the current enrollment status",
+      "lastUpdated": "Last updated {{date}}"
+    },
+    "supportChat": {
+      "support": "Support",
+      "closeChat": "Close support chat",
+      "openChat": "Open support chat",
+      "title": "Customer Support",
+      "yourName": "Your name",
+      "yourEmail": "Your email",
+      "subject": "Subject (optional)",
+      "describeIssue": "Start by describing your question or issue below."
+    },
+    "cookieConsent": {
+      "title": "Cookies on closebossai.com",
+      "privacy": "Privacy Policy",
+      "categories": "Cookie categories",
+      "acceptAll": "Accept all",
+      "essentialOnly": "Essential only",
+      "saveChoices": "Save choices",
+      "customize": "Customize",
+      "settings": "Cookie settings"
+    },
+    "emailEngagement": {
+      "title": "Email engagement",
+      "sent": "Sent",
+      "openRate": "Open rate",
+      "clickThrough": "Click-through",
+      "bounced": "Bounced",
+      "empty": "No email activity yet",
+      "emptyHint": "Once you send mail through the AI Email layer, opens and clicks will appear here. We track via Resend webhooks — no pixel cruft.",
+      "timeRange": "Time range"
+    },
+    "leadRoutingSettings": {
+      "title": "IDX lead routing",
+      "intro": "Opt into the round-robin pool for inbound IDX leads, and declare which ZIPs you serve so leads in those areas come to you first.",
+      "includeMe": "Include me in the round-robin pool",
+      "includeHint": "When on, new IDX leads will be assigned to you in rotation with other enrolled agents. The picker uses least-recently-assigned ordering.",
+      "zipCoverage": "ZIP coverage",
+      "zipHint": "Comma- or space-separated 5-digit ZIPs. Leave blank to receive leads from any ZIP. The list is sanitized — junk values are dropped.",
+      "saved": "Saved.",
+      "noZips": "No ZIPs entered — eligible for leads in any area."
     }
   }
 }

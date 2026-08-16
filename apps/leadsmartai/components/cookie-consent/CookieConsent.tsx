@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 /**
  * Cookie consent banner — per TOM validation report recommendation.
@@ -219,6 +220,7 @@ export function useCookieConsent(): ConsentContextValue {
  * it.
  */
 function CookieConsentBanner() {
+  const { t } = useTranslation("dashboard");
   const { state, acceptAll, rejectAll, save } = useCookieConsent();
   const [expanded, setExpanded] = useState(false);
   const [analytics, setAnalytics] = useState(state?.categories.analytics ?? false);
@@ -254,16 +256,12 @@ function CookieConsentBanner() {
             <h2
               id="cookie-consent-title"
               className="text-sm font-semibold text-slate-900"
-            >
-              Cookies on closebossai.com
-            </h2>
+            >{t("pages.cookieConsent.title")}</h2>
             <p id="cookie-consent-description" className="mt-1 text-xs leading-relaxed text-slate-600">
               We use strictly necessary cookies so the site works. Optional cookies help us
               measure and improve the product. You can change your mind any time from the
               footer &ldquo;Cookie settings&rdquo; link.{" "}
-              <Link href="/privacy" className="text-[#0072ce] underline">
-                Privacy Policy
-              </Link>
+              <Link href="/privacy" className="text-[#0072ce] underline">{t("pages.cookieConsent.privacy")}</Link>
               .
             </p>
           </div>
@@ -271,7 +269,7 @@ function CookieConsentBanner() {
 
         {expanded ? (
           <fieldset className="mt-4 space-y-2.5 rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <legend className="sr-only">Cookie categories</legend>
+            <legend className="sr-only">{t("pages.cookieConsent.categories")}</legend>
             <Category
               name="Strictly necessary"
               description="Keeps you signed in, remembers preferences, prevents CSRF. Always on — required for the site to function."
@@ -299,32 +297,24 @@ function CookieConsentBanner() {
             type="button"
             onClick={acceptAll}
             className="flex-1 rounded-lg bg-[#0072ce] px-3 py-2 text-xs font-semibold text-white hover:bg-[#005ca8]"
-          >
-            Accept all
-          </button>
+          >{t("pages.cookieConsent.acceptAll")}</button>
           <button
             type="button"
             onClick={rejectAll}
             className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50"
-          >
-            Essential only
-          </button>
+          >{t("pages.cookieConsent.essentialOnly")}</button>
           {expanded ? (
             <button
               type="button"
               onClick={() => save({ analytics, marketing })}
               className="flex-1 rounded-lg border border-slate-900 bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
-            >
-              Save choices
-            </button>
+            >{t("pages.cookieConsent.saveChoices")}</button>
           ) : (
             <button
               type="button"
               onClick={() => setExpanded(true)}
               className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 hover:bg-slate-50"
-            >
-              Customize
-            </button>
+            >{t("pages.cookieConsent.customize")}</button>
           )}
         </div>
       </div>
@@ -371,6 +361,7 @@ function Category({
  * "Cookie settings" should appear in the site chrome.
  */
 export function CookieSettingsLink({ className }: { className?: string }) {
+  const { t } = useTranslation("dashboard");
   const { reopen, ready } = useCookieConsent();
   if (!ready) return null;
   return (
@@ -380,8 +371,6 @@ export function CookieSettingsLink({ className }: { className?: string }) {
       className={
         className ?? "text-xs font-medium text-slate-600 hover:text-[#0072ce] hover:underline"
       }
-    >
-      Cookie settings
-    </button>
+    >{t("pages.cookieConsent.settings")}</button>
   );
 }

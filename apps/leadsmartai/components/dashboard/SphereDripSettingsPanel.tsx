@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 /**
  * Per-agent sphere-drip toggle. Pairs with the both_high cadence
@@ -44,6 +46,8 @@ const SOURCE_TONE: Record<EffectivePrefs["source"], { label: string; tone: strin
 };
 
 export default function SphereDripSettingsPanel() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -120,9 +124,7 @@ export default function SphereDripSettingsPanel() {
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <header className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">
-            Sphere drip cadence
-          </h2>
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.sphereDrip.title")}</h2>
           <p className="mt-0.5 text-xs text-slate-600">
             Auto-enrolls high-leverage past clients and sphere contacts (the
             &ldquo;both-high&rdquo; cohort) into a 6-touch nurture cadence over ~30 days.
@@ -148,35 +150,21 @@ export default function SphereDripSettingsPanel() {
                 className="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
               />
               <span>
-                <span className="text-sm font-semibold text-slate-900">
-                  Enable sphere drip for my account
-                </span>
-                <span className="mt-0.5 block text-xs text-slate-600">
-                  When on, the daily cron auto-enrolls eligible contacts and the
-                  hourly send pipeline advances the cadence. Drafts honor your
-                  review policy.
-                </span>
+                <span className="text-sm font-semibold text-slate-900">{t("pages.sphereDrip.enable")}</span>
+                <span className="mt-0.5 block text-xs text-slate-600">{t("pages.sphereDrip.enableHint")}</span>
               </span>
             </label>
 
             {prefs?.inEnvAllowlist && prefs.source === "db" && !enabledDraft ? (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                You&apos;re also in the pilot allowlist. Saving this off will
-                still skip you — your explicit opt-out wins.
-              </div>
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">{t("pages.sphereDrip.optOutWins")}</div>
             ) : null}
 
             {prefs?.source === "env" ? (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                You&apos;re currently enrolled via the pilot allowlist (env).
-                Save this form to lock in your preference — once saved, env
-                changes won&apos;t affect you.
-              </div>
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">{t("pages.sphereDrip.pilotNote")}</div>
             ) : null}
 
             <div>
-              <label htmlFor="drip-notes" className="block text-sm font-semibold text-slate-900">
-                Notes <span className="font-normal text-slate-400">(optional)</span>
+              <label htmlFor="drip-notes" className="block text-sm font-semibold text-slate-900">{t("pages.sphereDrip.notes")}<span className="font-normal text-slate-400">(optional)</span>
               </label>
               <p className="mt-0.5 text-xs text-slate-500">
                 Free-text reminder for yourself — e.g.{" "}
@@ -188,7 +176,7 @@ export default function SphereDripSettingsPanel() {
                 onChange={(e) => setNotesDraft(e.target.value)}
                 rows={3}
                 maxLength={500}
-                placeholder="Anything you want future-you to know."
+                placeholder={t("pages.sphereDrip.notesPlaceholder")}
                 className="mt-2 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
               />
             </div>
@@ -198,10 +186,10 @@ export default function SphereDripSettingsPanel() {
                 {error ? (
                   <span className="text-rose-600">{error}</span>
                 ) : savedAt && Date.now() - savedAt < 4000 ? (
-                  <span className="text-emerald-600">Saved.</span>
+                  <span className="text-emerald-600">{t("pages.sphereDrip.saved")}</span>
                 ) : prefs?.updatedAt ? (
                   <span className="text-slate-400">
-                    Last updated {formatDate(prefs.updatedAt)}
+                    {t("pages.sphereDrip.lastUpdated", { date: formatDate(prefs.updatedAt, locale) })}
                   </span>
                 ) : null}
               </div>
@@ -222,20 +210,21 @@ export default function SphereDripSettingsPanel() {
 }
 
 function SourcePill({ source }: { source: EffectivePrefs["source"] }) {
+  const { t } = useTranslation("dashboard");
   const meta = SOURCE_TONE[source];
   return (
     <span
       className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ${meta.tone}`}
-      title="Source of the current enrollment status"
+      title={t("pages.sphereDrip.sourceTip")}
     >
       {meta.label}
     </span>
   );
 }
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, locale: string): string {
   try {
-    return new Date(iso).toLocaleString(undefined, {
+    return new Date(iso).toLocaleString(locale, {
       month: "short",
       day: "numeric",
       hour: "numeric",

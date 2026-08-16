@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Eye, Send, Trash2, X } from "lucide-react";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 
@@ -45,6 +46,7 @@ type Props = {
  * — full listing search inside the composer is a follow-up.
  */
 export default function SendRecommendationsButton({ contactId, contactFirstName }: Props) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [picked, setPicked] = useState<ListingInput[]>([]);
@@ -161,8 +163,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800"
       >
-        <Send className="h-3.5 w-3.5" aria-hidden /> Send properties
-      </button>
+        <Send className="h-3.5 w-3.5" aria-hidden />{t("pages.sendRecommendations.title")}</button>
 
       {open && (
         <div
@@ -179,7 +180,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                aria-label="Close"
+                aria-label={t("pages.sendRecommendations.close")}
                 className="inline-flex h-7 w-7 items-center justify-center rounded text-gray-400 hover:bg-gray-100"
               >
                 <X className="h-4 w-4" />
@@ -190,7 +191,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
               {/* Composer */}
               <div className="space-y-3">
                 <label className="block">
-                  <span className="text-xs font-medium text-gray-600">Subject</span>
+                  <span className="text-xs font-medium text-gray-600">{t("pages.sendRecommendations.subject")}</span>
                   <input
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
@@ -198,7 +199,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                   />
                 </label>
                 <label className="block">
-                  <span className="text-xs font-medium text-gray-600">Note to contact</span>
+                  <span className="text-xs font-medium text-gray-600">{t("pages.sendRecommendations.note")}</span>
                   <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
@@ -217,9 +218,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                   </h3>
                 </div>
                 {favorites.length === 0 ? (
-                  <div className="rounded border border-dashed border-gray-200 p-3 text-center text-xs text-gray-500">
-                    No favorites to quick-pick from yet.
-                  </div>
+                  <div className="rounded border border-dashed border-gray-200 p-3 text-center text-xs text-gray-500">{t("pages.sendRecommendations.noFavorites")}</div>
                 ) : (
                   <ul className="grid gap-2 sm:grid-cols-2">
                     {favorites.map((f) => {
@@ -287,7 +286,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                           onClick={() =>
                             setPicked((prev) => prev.filter((x) => x.propertyId !== p.propertyId))
                           }
-                          aria-label="Remove"
+                          aria-label={t("pages.sendRecommendations.remove")}
                           className="inline-flex h-6 w-6 items-center justify-center rounded text-red-600 hover:bg-red-50"
                         >
                           <Trash2 className="h-3 w-3" />
@@ -307,9 +306,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                       checked={!suppressSignature}
                       onChange={(e) => setSuppressSignature(!e.target.checked)}
                       className="h-3.5 w-3.5 accent-gray-900"
-                    />
-                    Include my email signature
-                  </label>
+                    />{t("pages.sendRecommendations.includeSignature")}</label>
                   <button
                     type="button"
                     onClick={loadSignaturePreview}
@@ -344,9 +341,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                 </div>
               )}
               {result && "ok" in result && (
-                <div className="rounded border border-emerald-200 bg-emerald-50 p-2 text-xs text-emerald-800">
-                  Sent — the contact will get the email shortly.
-                </div>
+                <div className="rounded border border-emerald-200 bg-emerald-50 p-2 text-xs text-emerald-800">{t("pages.sendRecommendations.sent")}</div>
               )}
             </div>
 
@@ -355,9 +350,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                 type="button"
                 onClick={() => setOpen(false)}
                 className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700"
-              >
-                Cancel
-              </button>
+              >{t("pages.sendRecommendations.cancel")}</button>
               <button
                 type="button"
                 onClick={send}
