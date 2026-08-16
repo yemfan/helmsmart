@@ -3272,7 +3272,14 @@
       "upgradeToUnlock": "升级后解锁",
       "needFaceFirst": "请先在上方上传您的自我介绍视频或照片——生成数字人需要您的面部。",
       "downloadVideo": "下载视频",
-      "connectAccounts": "连接账号"
+      "connectAccounts": "连接账号",
+      "renderSharpening": "正在提升视频清晰度……",
+      "renderRendering": "正在生成视频……",
+      "renderDuration": "通常需要 1–3 分钟",
+      "renderDurationSharper": "，开启「更清晰视频」后会更久",
+      "renderCloseHint": "。您可以关闭本页面——视频完成后我们会立即通知您。",
+      "renderFailed": "视频没有生成完成。",
+      "renderCreditsReturned": "您的额度已退回。"
     },
     "houseSearch": {
       "whatLookingFor": "您的买家在找什么样的房子？",

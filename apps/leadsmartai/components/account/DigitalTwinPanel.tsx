@@ -782,17 +782,21 @@ export default function DigitalTwinPanel() {
                 />
                 <p className="text-[12px] leading-relaxed text-violet-900">
                   <strong>
-                    {avJob?.status === "upscaling" ? "Sharpening your video…" : "Rendering your video…"}
+                    {avJob?.status === "upscaling"
+                      ? t("pages.digitalTwin.renderSharpening")
+                      : t("pages.digitalTwin.renderRendering")}
                   </strong>{" "}
-                  This usually takes 1–3 minutes{avJob?.sharpen ? ", longer with Sharper video" : ""}. You can
-                  close this page — we&rsquo;ll notify you the moment it&rsquo;s ready.
+                  {t("pages.digitalTwin.renderDuration")}
+                  {avJob?.sharpen ? t("pages.digitalTwin.renderDurationSharper") : ""}
+                  {t("pages.digitalTwin.renderCloseHint")}
                 </p>
               </div>
             ) : null}
 
             {avJob?.status === "failed" ? (
               <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-800">
-                {avJob.error ?? "The render didn't finish."} Your credits were returned.
+                {avJob.error ?? t("pages.digitalTwin.renderFailed")}{" "}
+                {t("pages.digitalTwin.renderCreditsReturned")}
               </p>
             ) : null}
 

@@ -3272,7 +3272,14 @@
       "upgradeToUnlock": "Upgrade to unlock",
       "needFaceFirst": "Upload your intro video or a photo above first — the avatar needs your face.",
       "downloadVideo": "Download video",
-      "connectAccounts": "Connect accounts"
+      "connectAccounts": "Connect accounts",
+      "renderSharpening": "Sharpening your video…",
+      "renderRendering": "Rendering your video…",
+      "renderDuration": "This usually takes 1–3 minutes",
+      "renderDurationSharper": ", longer with Sharper video",
+      "renderCloseHint": ". You can close this page — we’ll notify you the moment it’s ready.",
+      "renderFailed": "The render didn't finish.",
+      "renderCreditsReturned": "Your credits were returned."
     },
     "houseSearch": {
       "whatLookingFor": "What is your buyer looking for?",
