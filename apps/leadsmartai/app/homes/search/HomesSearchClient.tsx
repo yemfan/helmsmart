@@ -143,9 +143,7 @@ export default function HomesSearchClient({
         onSubmit={onSubmit}
         className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
       >
-        <label htmlFor="homes-q" className="text-sm font-semibold text-slate-900">
-          Describe your ideal home
-        </label>
+        <label htmlFor="homes-q" className="text-sm font-semibold text-slate-900">{t("pages.homesSearch.describeIdeal")}</label>
         <textarea
           id="homes-q"
           value={query}
@@ -172,59 +170,40 @@ export default function HomesSearchClient({
           </button>
         </div>
         {usage && usage.tier === "anonymous" && !usage.reached ? (
-          <p className="mt-2 text-[11px] text-slate-400">
-            You get 1 free AI search per day. Create a free account for 5 a day —
-            more on a paid plan.
-          </p>
+          <p className="mt-2 text-[11px] text-slate-400">{t("pages.homesSearch.oneFreePerDay")}</p>
         ) : null}
         {usage && usage.tier === "free" && !usage.reached && usage.remaining != null ? (
           <p className="mt-2 text-[11px] text-slate-400">
-            {usage.remaining} of {usage.limit} free searches left today. Upgrade for
-            unlimited.
-          </p>
+            {usage.remaining} of {usage.limit} {t("pages.homesSearch.freeLeft")}</p>
         ) : null}
       </form>
 
       {rateLimited?.reason === "anon_limit" ? (
         <div className="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-5 text-sm text-slate-800">
-          <p className="text-base font-semibold text-slate-900">
-            You&apos;ve used today&apos;s free search
-          </p>
+          <p className="text-base font-semibold text-slate-900">{t("pages.homesSearch.usedTodays")}</p>
           <p className="mt-1 text-slate-700">{rateLimited.message}</p>
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <Link
               href={SIGNUP_HREF}
               className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
-            >
-              Create free account
-            </Link>
-            <Link href={SIGNIN_HREF} className="text-sm font-semibold text-blue-700 hover:underline">
-              Sign in
-            </Link>
+            >{t("pages.homesSearch.createAccount")}</Link>
+            <Link href={SIGNIN_HREF} className="text-sm font-semibold text-blue-700 hover:underline">{t("pages.homesSearch.signIn")}</Link>
           </div>
-          <p className="mt-3 text-xs text-slate-500">
-            Or come back tomorrow — your free search resets daily.
-          </p>
+          <p className="mt-3 text-xs text-slate-500">{t("pages.homesSearch.comeBackTomorrow")}</p>
         </div>
       ) : null}
 
       {rateLimited?.reason === "free_limit" ? (
         <div className="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-5 text-sm text-slate-800">
-          <p className="text-base font-semibold text-slate-900">
-            You&apos;ve hit today&apos;s free searches
-          </p>
+          <p className="text-base font-semibold text-slate-900">{t("pages.homesSearch.hitLimit")}</p>
           <p className="mt-1 text-slate-700">{rateLimited.message}</p>
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <Link
               href={UPGRADE_HREF}
               className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
-            >
-              Upgrade
-            </Link>
+            >{t("pages.homesSearch.upgrade")}</Link>
           </div>
-          <p className="mt-3 text-xs text-slate-500">
-            Or come back tomorrow — your free searches reset daily.
-          </p>
+          <p className="mt-3 text-xs text-slate-500">{t("pages.homesSearch.comeBackTomorrowPl")}</p>
         </div>
       ) : null}
 
@@ -240,7 +219,7 @@ export default function HomesSearchClient({
         <>
           {/* Interpretation + refinement chips */}
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-sm font-semibold text-slate-900">How we read this</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("pages.homesSearch.howWeRead")}</h2>
             <p className="mt-1 text-sm text-slate-600">{result.interpreted}</p>
             {result.criteria.length > 0 ? (
               <ul className="mt-2 flex flex-wrap gap-2">
@@ -257,9 +236,7 @@ export default function HomesSearchClient({
 
             {result.refinements.length > 0 ? (
               <div className="mt-4 border-t border-slate-100 pt-4">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Narrow your search
-                </h3>
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.homesSearch.narrowSearch")}</h3>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {result.refinements.map((r) => (
                     <button
@@ -285,10 +262,7 @@ export default function HomesSearchClient({
 
           {/* Listings */}
           {result.listings.length === 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
-              No real listings matched. Try loosening the criteria or searching a
-              wider area.
-            </div>
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">{t("pages.homesSearch.noMatches")}</div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {result.listings.map((l, i) => (
@@ -300,20 +274,14 @@ export default function HomesSearchClient({
           {/* Lead-capture CTA */}
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex sm:items-center sm:justify-between">
             <div>
-              <div className="text-sm font-semibold text-slate-900">
-                Want help with any of these homes?
-              </div>
-              <p className="mt-1 text-xs text-slate-600">
-                Connect with a local agent for a tour, a private list, or quick answers.
-              </p>
+              <div className="text-sm font-semibold text-slate-900">{t("pages.homesSearch.wantHelp")}</div>
+              <p className="mt-1 text-xs text-slate-600">{t("pages.homesSearch.connectBody")}</p>
             </div>
             <button
               type="button"
               onClick={() => openLead(null)}
               className="mt-3 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 sm:mt-0"
-            >
-              Connect with a local agent
-            </button>
+            >{t("pages.homesSearch.connectAgent")}</button>
           </section>
 
           {/* Sources + disclaimer */}
@@ -382,6 +350,7 @@ function ListingCard({
   listing: HouseListing;
   onConnect: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const meta = metaLine(listing);
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -406,9 +375,7 @@ function ListingCard({
           type="button"
           onClick={onConnect}
           className="text-xs font-semibold text-slate-700 hover:text-slate-900 hover:underline"
-        >
-          Ask an agent
-        </button>
+        >{t("pages.homesSearch.askAnAgent")}</button>
       </div>
     </div>
   );

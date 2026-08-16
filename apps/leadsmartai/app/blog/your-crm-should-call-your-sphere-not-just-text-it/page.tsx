@@ -40,60 +40,46 @@ export const metadata: Metadata = {
   },
 };
 
-const SECTIONS: Array<{ heading: string; body: ReactNode }> = [
+type Translate = (key: string, opts?: Record<string, unknown>) => string;
+
+/*
+ * Bodies are functions of the translator, not JSX constants. A module-scope
+ * constant cannot hold a hook, and these paragraphs carry inline emphasis that
+ * would be lost if they collapsed to plain strings — so the emphasised
+ * fragments keep their own keys and Chinese puts the stress where it belongs.
+ */
+const SECTIONS: Array<{ headingKey: string; body: (t: Translate) => ReactNode }> = [
   {
-    heading: "Texting isn't following up",
-    body: (
+    headingKey: "pages.callYourSphere.h1Section",
+    body: (t) => (
       <>
-        Every CRM on the market ends at the same place: an SMS sequence and an
-        email drip. They&apos;ll &ldquo;nurture&rdquo; your sphere with a happy
-        birthday text and a monthly newsletter. But the deal goes to the agent
-        who has the <em>conversation</em> — and conversations happen on the
-        phone. The problem was never that you didn&apos;t care; it&apos;s that
-        calling 300 past clients by hand is impossible, so it never happens.
+        {t("pages.callYourSphere.everyCrmEnds", { ns: "dashboard" })} <em>{t("pages.callYourSphere.conversationWord", { ns: "dashboard" })}</em>{" "}
+        {t("pages.callYourSphere.endsTail", { ns: "dashboard" })}
       </>
     ),
   },
   {
-    heading: "So your AI picks up the phone — both ways",
-    body: (
+    headingKey: "pages.callYourSphere.h2Section",
+    body: (t) => (
       <>
-        CloseBoss is the CRM that actually calls. Inbound, your{" "}
-        <strong>AI Receptionist</strong> answers every call live, 24/7,
-        qualifies the caller, books the appointment, and texts back the second a
-        call goes unanswered. Outbound — and this is the part no other CRM does
-        — it <strong>places real voice calls to your sphere and leads</strong>:
-        check-ins, just-listed updates, price-drop alerts, follow-up. In a
-        natural voice, from your number, logged to the contact automatically.
+        {t("pages.callYourSphere.actuallyCalls", { ns: "dashboard" })}{" "}
+        <strong>{t("pages.callYourSphere.receptionist", { ns: "dashboard" })}</strong> {t("pages.callYourSphere.answersLive", { ns: "dashboard" })}{" "}
+        <strong>{t("pages.callYourSphere.placesRealCalls", { ns: "dashboard" })}</strong>{t("pages.callYourSphere.outboundTail", { ns: "dashboard" })}
       </>
     ),
   },
   {
-    heading: "It's not a tool you operate — it's a team you command",
-    body: (
+    headingKey: "pages.callYourSphere.h3Section",
+    body: (t) => (
       <>
-        You&apos;re the boss. You give one instruction to your{" "}
-        <strong>Boss Assistant</strong> and it figures out who handles it and
-        puts the team to work: the Receptionist on the phones, the Sales
-        Assistant on follow-up, Marketing on the pipeline, the Transaction
-        Assistant coordinating the deal, the Accountant on the books. You
-        finally own a team — without the payroll.
+        {t("pages.callYourSphere.youreTheBoss", { ns: "dashboard" })}{" "}
+        <strong>{t("pages.callYourSphere.bossAssistant", { ns: "dashboard" })}</strong> {t("pages.callYourSphere.figuresOut", { ns: "dashboard" })}
       </>
     ),
   },
   {
-    heading: "One command, the whole job — with the artifacts to show for it",
-    body: (
-      <>
-        Say &ldquo;set up Saturday&apos;s open house,&rdquo; &ldquo;build a
-        seller presentation for 123 Main St,&rdquo; or &ldquo;find and show
-        homes to the Garcias,&rdquo; and the team does the research and every
-        step — then hands you finished deliverables: an AI CMA, a branded
-        listing presentation, a Property Deep Report with affordability and
-        investment ROI, a curated buyer lineup, a net-to-seller sheet. You
-        review and send.
-      </>
-    ),
+    headingKey: "pages.callYourSphere.h4Section",
+    body: (t) => <>{t("pages.callYourSphere.sayExample", { ns: "dashboard" })}</>,
   },
 ];
 
@@ -163,18 +149,14 @@ export default async function CallYourSpherePost() {
         <nav aria-label={t("pages.articleChrome.breadcrumb", { ns: "dashboard" })} className="mb-6 text-xs text-slate-500 dark:text-slate-400">
           <Link href="/" className="hover:text-slate-700 dark:hover:text-slate-200">{t("pages.articleChrome.home", { ns: "dashboard" })}</Link>
           <span className="mx-2">/</span>
-          <Link href="/blog" className="hover:text-slate-700 dark:hover:text-slate-200">
-            Blog
-          </Link>
+          <Link href="/blog" className="hover:text-slate-700 dark:hover:text-slate-200">{t("pages.callYourSphere.blog", { ns: "dashboard" })}</Link>
           <span className="mx-2">/</span>
-          <span className="text-slate-700 dark:text-slate-300">Call your sphere</span>
+          <span className="text-slate-700 dark:text-slate-300">{t("pages.callYourSphere.crumb", { ns: "dashboard" })}</span>
         </nav>
 
         <header>
           <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-wider">
-            <span className="inline-flex items-center rounded-full bg-blue-600/10 px-2.5 py-1 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
-              AI &amp; automation
-            </span>
+            <span className="inline-flex items-center rounded-full bg-blue-600/10 px-2.5 py-1 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">{t("pages.callYourSphere.category", { ns: "dashboard" })}</span>
             <span className="text-slate-500 dark:text-slate-400">
               {post?.readTime ?? "5 min"} read
             </span>
@@ -182,10 +164,7 @@ export default async function CallYourSpherePost() {
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl dark:text-white">
             {TITLE}
           </h1>
-          <p className="mt-4 text-base leading-7 text-slate-600 md:text-lg dark:text-slate-300">
-            Agents lose deals to whoever picks up the phone first. So why does
-            every CRM stop at a text message?
-          </p>
+          <p className="mt-4 text-base leading-7 text-slate-600 md:text-lg dark:text-slate-300">{t("pages.callYourSphere.subtitle", { ns: "dashboard" })}</p>
           <p className="mt-6 text-xs text-slate-500 dark:text-slate-400">
             June 23, 2026 · Michael Ye
           </p>
@@ -193,36 +172,29 @@ export default async function CallYourSpherePost() {
 
         <div className="mt-10 space-y-10">
           {SECTIONS.map((s) => (
-            <section key={s.heading}>
+            <section key={s.headingKey}>
               <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">
-                {s.heading}
+                {t(s.headingKey, { ns: "dashboard" })}
               </h2>
               <p className="mt-3 text-base leading-7 text-slate-600 dark:text-slate-300">
-                {s.body}
+                {s.body(t)}
               </p>
             </section>
           ))}
         </div>
 
         <div className="mt-12 rounded-2xl bg-gradient-to-br from-[#0072ce] via-[#4F46E5] to-[#7c3aed] p-8 text-center text-white">
-          <h2 className="text-2xl font-bold">Stop texting. Start closing.</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-white/90">
-            Put an AI team to work — one that answers the phone and calls your
-            sphere. You give the order; they do the rest.
-          </p>
+          <h2 className="text-2xl font-bold">{t("pages.callYourSphere.ctaTitle", { ns: "dashboard" })}</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-white/90">{t("pages.callYourSphere.ctaBody", { ns: "dashboard" })}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
               href="/onboarding"
               className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-[#0072ce] shadow-lg transition hover:bg-slate-50"
-            >
-              Hire your AI team
-            </Link>
+            >{t("pages.callYourSphere.hireTeam", { ns: "dashboard" })}</Link>
             <Link
               href="/features"
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20"
-            >
-              See how it works
-            </Link>
+            >{t("pages.callYourSphere.seeHow", { ns: "dashboard" })}</Link>
           </div>
         </div>
       </article>
