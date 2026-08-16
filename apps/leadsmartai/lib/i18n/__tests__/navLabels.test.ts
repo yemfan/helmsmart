@@ -104,6 +104,8 @@ describe("dashboard namespace (page copy)", () => {
       "pages.calendarBooking.urlPlaceholder",
       // The acronym an agent says out loud in both languages.
       "pages.boss.artifactCma",
+      // A platform's own name — LinkedIn does not localise its wordmark.
+      "pages.liondeskShutdown.linkedin",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;
