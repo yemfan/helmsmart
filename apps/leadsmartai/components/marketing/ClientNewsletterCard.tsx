@@ -50,8 +50,7 @@ export default function ClientNewsletterCard({
         </span>
       </div>
 
-      <p className="mb-4 text-sm text-gray-600">
-        Share this link — your clients get a weekly, {you}-branded housing
+      <p className="mb-4 text-sm text-gray-600">{t("pages.dashFragments.shareThisLink")} {you}-branded housing
         briefing, sent for you every week.
       </p>
 

@@ -699,6 +699,7 @@ function StagePipeline({
 }
 
 function TaskDueBadge({ dueDate, completed }: { dueDate: string | null; completed: boolean }) {
+  const { t } = useTranslation("dashboard");
   if (!dueDate) return null;
   const d = daysUntil(dueDate);
   if (d == null) return null;
@@ -709,8 +710,7 @@ function TaskDueBadge({ dueDate, completed }: { dueDate: string | null; complete
   if (d < 0) {
     return (
       <span className="rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-700">
-        {-d}d overdue
-      </span>
+        {-d}{t("pages.dashFragments.dOverdue")}</span>
     );
   }
   if (d <= 3) {
@@ -944,7 +944,7 @@ function SellerUpdateInlineToggle({
       }`}
     >
       <span aria-hidden>📧</span>
-      <span>Weekly update {enabled ? "on" : "off"}</span>
+      <span>{t("pages.dashFragments.weeklyUpdate")} {enabled ? "on" : "off"}</span>
     </button>
   );
 }

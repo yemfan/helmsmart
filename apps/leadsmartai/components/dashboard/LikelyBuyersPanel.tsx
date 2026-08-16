@@ -135,8 +135,7 @@ export default function LikelyBuyersPanel(props: { defaultLimit?: number } = {})
             ))}
           </ul>
         ) : error ? (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Couldn&apos;t load likely buyers: {error}
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadBuyers")} {error}
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
@@ -165,8 +164,7 @@ export default function LikelyBuyersPanel(props: { defaultLimit?: number } = {})
                     </div>
                     <p className="mt-0.5 truncate text-xs text-slate-600">{r.topReason}</p>
                     {r.closingAddress ? (
-                      <p className="mt-0.5 truncate text-[11px] text-slate-400">
-                        Currently at {r.closingAddress}
+                      <p className="mt-0.5 truncate text-[11px] text-slate-400">{t("pages.dashFragments.currentlyAt")} {r.closingAddress}
                       </p>
                     ) : null}
                   </div>

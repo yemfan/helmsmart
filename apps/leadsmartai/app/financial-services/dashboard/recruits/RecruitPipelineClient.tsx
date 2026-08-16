@@ -177,8 +177,7 @@ export default function RecruitPipelineClient() {
 
                     <div className="mt-3 flex items-center justify-between">
                       <span className="text-[11px] text-slate-400">
-                        {r.daysInStage}d in stage
-                      </span>
+                        {r.daysInStage}{t("pages.dashFragments.dInStage")}</span>
                       {r.flag === "stalled" && (
                         <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-800">{t("pages.financialServices.stalled")}</span>
                       )}

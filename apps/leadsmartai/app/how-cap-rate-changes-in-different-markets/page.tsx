@@ -111,11 +111,8 @@ export default function HowCapRateChangesInDifferentMarketsPage() {
           <li>{t("pages.capRateMarkets.m1")}</li>
           <li>{t("pages.capRateMarkets.m2")}</li>
           <li>{t("pages.capRateMarkets.m3")}</li>
-          <li>
-            Using the{" "}
-            <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-            to analyze new listings and compare them to past deals.
-          </li>
+          <li>{t("pages.dashFragments.usingThe")}{" "}
+            <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.dashFragments.analyzeNewListings")}</li>
         </ul>
         <p>{t("pages.capRateMarkets.monitorClose")}</p>
       </section>

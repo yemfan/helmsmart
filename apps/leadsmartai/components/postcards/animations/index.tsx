@@ -212,6 +212,7 @@ function AnniversaryScene(props: SceneProps) {
 // ── Holiday seasonal (snow in winter, leaves in fall, else generic) ──
 
 function HolidayScene(props: SceneProps) {
+  const { t } = useTranslation("dashboard");
   const month = new Date().getMonth();
   // Dec-Feb → snow, Sep-Nov → leaves, else → warm glow
   const season: "snow" | "leaves" | "glow" =
@@ -271,8 +272,7 @@ function HolidayScene(props: SceneProps) {
         <h1
           className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"
           style={{ animation: "pc-fade-in-down 900ms ease-out both" }}
-        >
-          Warm wishes, {props.recipientName || "friend"}
+        >{t("pages.dashFragments.warmWishesTo", { name: props.recipientName || t("pages.dashFragments.friend") })}
         </h1>
         <p
           className="mt-2 text-slate-600"

@@ -155,8 +155,7 @@ export function ShowingDetailClient({
         <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
           <span>{formatDateTime(showing.scheduled_at, locale)}</span>
           <span className="text-slate-400">·</span>
-          <span>
-            With{" "}
+          <span>{t("pages.dashFragments.withWord")}{" "}
             <Link
               href={`/dashboard/showings?contactId=${encodeURIComponent(showing.contact_id)}`}
               className="text-blue-600 hover:underline"

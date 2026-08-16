@@ -22,7 +22,7 @@ export default function AppError({
             ? error.message
             : "A client error occurred. Try again, or open the site in a private window."}
         </p>
-        {error.digest ? <p className="mt-2 font-mono text-xs text-slate-400">Ref: {error.digest}</p> : null}
+        {error.digest ? <p className="mt-2 font-mono text-xs text-slate-400">{t("pages.dashFragments.ref")} {error.digest}</p> : null}
         <button
           type="button"
           onClick={() => reset()}

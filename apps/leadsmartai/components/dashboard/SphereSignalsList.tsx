@@ -54,12 +54,8 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
     return (
       <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-500">
         <div className="font-medium text-gray-700">{t("pages.sphereSignals.empty")}</div>
-        <p className="mt-1">
-          Signals fire automatically when the detection batch runs — refi activity, job changes,
-          equity milestones crossed. You can also{" "}
-          <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">{t("pages.sphereSignals.openContact")}</Link>{" "}
-          and add a signal manually.
-        </p>
+        <p className="mt-1">{t("pages.dashFragments.signalsFire")}{" "}
+          <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">{t("pages.sphereSignals.openContact")}</Link>{" "}{t("pages.dashFragments.addSignalManually")}</p>
       </div>
     );
   }

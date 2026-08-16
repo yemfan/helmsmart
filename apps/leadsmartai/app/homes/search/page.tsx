@@ -53,14 +53,8 @@ export default async function HomesSearchPage(props: {
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
       <header className="mb-6 max-w-2xl">
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-          Find your next home
-        </h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Describe what you&apos;re looking for in plain English. We search the
-          live web for real, current listings and link you straight to the
-          source.
-        </p>
+        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">{t("pages.dashFragments.findNextHome", { ns: "dashboard" })}</h1>
+        <p className="mt-1 text-sm text-slate-600">{t("pages.dashFragments.findNextHomeBody", { ns: "dashboard" })}</p>
       </header>
 
       <HomesSearchClient initialQuery={initialQuery} initialParams={initialParams} />

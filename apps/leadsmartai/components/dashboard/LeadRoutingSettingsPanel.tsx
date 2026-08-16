@@ -117,8 +117,7 @@ export default function LeadRoutingSettingsPanel() {
             <p className="mt-0.5 text-xs text-slate-600">{t("pages.leadRoutingSettings.intro")}</p>
           </div>
           {updatedAt ? (
-            <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">
-              Saved {formatDate(updatedAt)}
+            <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">{t("pages.dashFragments.saved")} {formatDate(updatedAt)}
             </span>
           ) : null}
         </div>

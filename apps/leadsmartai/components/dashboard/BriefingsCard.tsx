@@ -435,8 +435,9 @@ function TaskItem({
           without this click. */}
       {t.status === "awaiting_approval" && t.draft_body && (
         <div className="mt-1.5 rounded-lg border border-[#D4A017]/30 bg-[#D4A017]/5 p-2.5">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8a6a0e]">
-            Draft {t.draft_channel === "sms" ? "text" : "email"}
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8a6a0e]">{tr("pages.dashFragments.draftChannelOf", {
+              channel: tr(t.draft_channel === "sms" ? "pages.dashFragments.channelText" : "pages.dashFragments.channelEmail"),
+            })}
             {t.execution_note && !t.execution_note.startsWith("to:") ? ` · ${t.execution_note}` : ""}
           </p>
           {t.draft_subject && (
@@ -507,8 +508,7 @@ function TaskItem({
             <a
               href={t.artifact_url}
               className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B1F44] hover:underline"
-            >
-              View {ARTIFACT_LABEL[t.artifact_type ?? ""] ?? "result"} →
+            >{tr("pages.dashFragments.view")} {ARTIFACT_LABEL[t.artifact_type ?? ""] ?? "result"} →
             </a>
           )}
         </div>

@@ -344,8 +344,7 @@ export default function AuthModal({
             ) : null}
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-slate-700">
-                Email{mode === "signup" ? <span className="text-red-600"> *</span> : null}
+              <label className="block text-xs font-medium text-slate-700">{t("pages.dashFragments.emailLabel")}{mode === "signup" ? <span className="text-red-600"> *</span> : null}
               </label>
               <input
                 type="email"
@@ -363,8 +362,7 @@ export default function AuthModal({
                 (name / email / password) to protect conversion. */}
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-slate-700">
-                Password{mode === "signup" ? <span className="text-red-600"> *</span> : null}
+              <label className="block text-xs font-medium text-slate-700">{t("pages.dashFragments.passwordLabel")}{mode === "signup" ? <span className="text-red-600"> *</span> : null}
               </label>
               <input
                 type="password"

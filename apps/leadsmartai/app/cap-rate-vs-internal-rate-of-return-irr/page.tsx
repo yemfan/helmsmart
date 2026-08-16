@@ -112,9 +112,7 @@ export default function CapRateVsInternalRateOfReturnIRRPage() {
           <li>{t("pages.capRateVsIrr.ib2")}</li>
           <li>{t("pages.capRateVsIrr.ib3")}</li>
         </ul>
-        <p>
-          A common workflow is to use cap rate and cash-on-cash return to narrow the field, then run
-          detailed IRR projections for the top contenders using tools like the{" "}
+        <p>{t("pages.dashFragments.irrWorkflow")}{" "}
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>
           .
         </p>

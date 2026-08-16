@@ -93,110 +93,24 @@ const EXEMPT = new Map<string, string>([
     // out as tofu boxes in every social preview, which is worse than English.
     "OG image: next/og default font has no CJK glyphs",
   ],
+  [
+    "app/dashboard/ai-sales-assistant/SalesAssistantClient.tsx",
+    /*
+     * The English here is a system prompt sent to the voice model, not copy on
+     * a screen. Translating it because the AGENT'S dashboard is in Chinese
+     * would make the assistant greet English-speaking CALLERS in Chinese —
+     * the language of a call belongs to whoever picks up, not to the UI.
+     */
+    "Voice system prompt: model input, and the caller chooses the language",
+  ],
 ]);
 
 /*
- * Marketing and article pages that now carry i18n chrome but whose body copy
- * is still being worked through. Same contract as before: these files may
- * contain English, everything else may not, and the second assertion fails the
- * moment one comes clean - so the list can only shrink.
- *
- * Delete an entry when its page is finished. When the list is empty, delete
- * the list and the assertion under it.
+ * There used to be a PENDING list here — pages carrying i18n chrome whose body
+ * copy was still being worked through. It peaked at 236 files and is now
+ * empty, so it is gone along with the assertion that kept it shrinking. The
+ * contract is simply that no internationalised file contains English.
  */
-const PENDING = new Set([
-  "app/dashboard/comparison-report/ComparisonReportBuilderClient.tsx",
-  "app/dashboard/contracts/review/ReviewContractClient.tsx",
-  "app/dashboard/marketing/plans/MarketingPlansClient.tsx",
-  "app/dashboard/playbook-runs/[id]/page.tsx",
-  "app/dashboard/skills/[id]/SkillRunner.tsx",
-  "app/dashboard/transactions/new/NewTransactionClient.tsx",
-  "app/dashboard/transactions/[id]/TransactionDetailClient.tsx",
-  "app/data/reports/[slug]/page.tsx",
-  "app/demo/drafts/page.tsx",
-  "app/financial-services/dashboard/_components/ComingSoon.tsx",
-  "app/financial-services/page.tsx",
-  "app/global-error.tsx",
-  "app/homes/search/page.tsx",
-  "app/how-cap-rate-changes-in-different-markets/page.tsx",
-  "app/newsletter/unsubscribe/page.tsx",
-  "app/offer-extend/[token]/page.tsx",
-  "app/team/accept/[token]/page.tsx",
-  "app/unauthorized/page.tsx",
-  "components/AuthModal.tsx",
-  "components/comparison-report/ComparisonReportClient.tsx",
-  "components/crm/CsvImportModal.tsx",
-  "components/dashboard/BriefingsCard.tsx",
-  "components/dashboard/LikelyBuyersPanel.tsx",
-  "components/dashboard/MissedCallSettingsForm.tsx",
-  "components/dashboard/SocialAutopilotController.tsx",
-  "components/dashboard/SphereMonetizationPanel.tsx",
-  "components/dashboard/SphereSignalsList.tsx",
-  "components/dashboard/VoiceCallTimelinePanel.tsx",
-  "components/marketing/PostQueue.tsx",
-  "components/marketing/WeeklySocialPosts.tsx",
-  "components/sales-model/PipelineView.tsx",
-  "components/sales-model/ScriptGenerator.tsx",
-  "app/admin/lead-queue/AdminLeadQueueClient.tsx",
-  "app/admin/seller-updates/SellerUpdateLogClient.tsx",
-  "app/cap-rate-vs-internal-rate-of-return-irr/page.tsx",
-  "app/client/tracker/page.tsx",
-  "app/contact/ContactForm.tsx",
-  "app/dashboard/admin/tool-usage/layout.tsx",
-  "app/dashboard/ai-accountant/AccountantClient.tsx",
-  "app/dashboard/ai-receptionist/ReceptionistClient.tsx",
-  "app/dashboard/ai-sales-assistant/SalesAssistantClient.tsx",
-  "app/dashboard/calls/CallsClient.tsx",
-  "app/dashboard/cma/CmaListClient.tsx",
-  "app/dashboard/coaching/CoachingClient.tsx",
-  "app/dashboard/error.tsx",
-  "app/dashboard/lead-queue/LeadQueueClient.tsx",
-  "app/dashboard/leads/[id]/LeadProfileClient.tsx",
-  "app/dashboard/offers/[id]/OfferDetailClient.tsx",
-  "app/dashboard/open-houses/flyer/FlyerBuilderClient.tsx",
-  "app/dashboard/opportunities/page.tsx",
-  "app/dashboard/settings/MlsCsvImportClient.tsx",
-  "app/dashboard/showings/new/NewShowingClient.tsx",
-  "app/dashboard/showings/[id]/ShowingDetailClient.tsx",
-  "app/dashboard/skills/page.tsx",
-  "app/dashboard/transactions/coordinator/CoordinatorClient.tsx",
-  "app/demo/contacts/page.tsx",
-  "app/demo/page.tsx",
-  "app/error.tsx",
-  "app/financial-services/dashboard/fna/FnaGeneratorClient.tsx",
-  "app/financial-services/dashboard/recruits/RecruitPipelineClient.tsx",
-  "app/loan-broker/pricing/page.client.tsx",
-  "app/result/[id]/page.tsx",
-  "app/support/dashboard/page.tsx",
-  "components/AppShell.tsx",
-  "components/cma/CmaShareView.tsx",
-  "components/consent/SmsConsentNotice.tsx",
-  "components/crm/ReengagementPanel.tsx",
-  "components/dashboard/AgentVoiceSettingsPanel.tsx",
-  "components/dashboard/AiChatPanel.tsx",
-  "components/dashboard/AISuggestedPropertiesPanel.tsx",
-  "components/dashboard/BooksClient.tsx",
-  "components/dashboard/BossOnboardingCard.tsx",
-  "components/dashboard/DealCoachPanel.tsx",
-  "components/dashboard/EmailEngagementPanel.tsx",
-  "components/dashboard/ExpensesClient.tsx",
-  "components/dashboard/LeadRoutingSettingsPanel.tsx",
-  "components/dashboard/LikelySellersPanel.tsx",
-  "components/dashboard/MissedCallSettingsPanel.tsx",
-  "components/dashboard/RunSchedulerButton.tsx",
-  "components/dashboard/SalesOutreachComposer.tsx",
-  "components/dashboard/SchedulerActivityClient.tsx",
-  "components/dashboard/SphereDripSettingsPanel.tsx",
-  "components/dashboard/TemplatePickerClient.tsx",
-  "components/marketing/ClientNewsletterCard.tsx",
-  "components/onboarding/SetupWizard.tsx",
-  "components/postcards/animations/index.tsx",
-  "components/realtyboss/LeadProfileDrawer.tsx",
-  "components/realtyboss/RunCard.tsx",
-  "components/sales-model/AiEmailModal.tsx",
-  "components/sales-model/SalesModelCard.tsx",
-  "components/team/TeamBreakdownPanel.tsx",
-]);
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
@@ -243,7 +157,14 @@ function isCopy(raw: string): boolean {
    * call whose arguments span lines. Each was a real false positive, not a
    * hypothetical — the alternative is a scan that cries wolf and gets ignored.
    */
-  if (/^(?:as|satisfies) [A-Z]/.test(t)) return false;
+  if (/^(?:as|satisfies) (?:const\b|[A-Z])/.test(t)) return false;
+  /*
+   * Declaration keywords, all lowercase and none of which open English copy
+   * the way `for` and `if` do — `new`, `case`, `class` and `type` are left out
+   * deliberately, because "new listings", "case study" and "Class A
+   * properties" are all real copy in this app.
+   */
+  if (/^(?:export|import|static|default|throw|break|continue|enum|interface)\b/.test(t)) return false;
   // `for` and `if` open English sentences too ("for best fit"), so the
   // statement rejection demands the paren that a keyword would carry.
   if (/^(?:if|for|while|switch|catch)\s*\(/.test(t)) return false;
@@ -271,7 +192,6 @@ function isCopy(raw: string): boolean {
 describe("residual English", () => {
   it("does not linger in files that are already internationalised", () => {
     const findings: string[] = [];
-    const pending: string[] = [];
     for (const root of SCAN) {
       for (const file of walk(join(ROOT, root))) {
         const src = readFileSync(file, "utf8");
@@ -288,17 +208,13 @@ describe("residual English", () => {
           for (const m of body.matchAll(re)) {
             if (!isCopy(m[1])) continue;
             const rel = relative(ROOT, file).split(sep).join("/");
-            const where = `${rel}:${at(m.index ?? 0)}`;
-            (PENDING.has(rel) ? pending : findings).push(
-              `${where}  ${m[1].replace(/\s+/g, " ").trim().slice(0, 80)}`,
+            findings.push(
+              `${rel}:${at(m.index ?? 0)}  ${m[1].replace(/\s+/g, " ").trim().slice(0, 80)}`,
             );
           }
         }
       }
     }
     expect(findings, `\n${findings.join("\n")}\n`).toEqual([]);
-    // The list only shrinks: a file that comes clean must leave it.
-    const clean = [...PENDING].filter((f) => !pending.some((x) => x.startsWith(`${f}:`)));
-    expect(clean, `\nTranslated — remove from PENDING:\n${clean.join("\n")}\n`).toEqual([]);
   });
 });

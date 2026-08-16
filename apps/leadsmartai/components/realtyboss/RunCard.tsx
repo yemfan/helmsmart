@@ -172,7 +172,7 @@ export default function RunCard({
         )
       )}
       {run.status === "failed" && run.error && (
-        <p className="text-xs text-red-600">Run failed: {run.error}</p>
+        <p className="text-xs text-red-600">{t("pages.dashFragments.runFailed")} {run.error}</p>
       )}
       {run.status === "budget_exceeded" && (
         <p className="text-xs text-amber-700">{t("pages.runCard.stoppedAtBudget")}</p>

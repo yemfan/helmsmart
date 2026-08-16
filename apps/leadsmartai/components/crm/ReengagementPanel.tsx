@@ -124,7 +124,7 @@ export function ReengagementPanel({ isAdmin }: { isAdmin: boolean }) {
       {message ? <p className="mt-3 text-sm text-emerald-800">{message}</p> : null}
 
       <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-        <div className="font-medium text-slate-900">Active campaigns: {status?.campaignCount ?? "—"}</div>
+        <div className="font-medium text-slate-900">{t("pages.dashFragments.activeCampaigns")} {status?.campaignCount ?? "—"}</div>
         {status?.campaigns?.length ? (
           <ul className="mt-2 list-inside list-disc text-xs text-slate-600">
             {status.campaigns.map((c) => (

@@ -314,8 +314,7 @@ export default function SocialAutopilotController() {
               <option value="">1 (spread out)</option>
               {[1, 2, 3, 4, 5].map((n) => (
                 <option key={n} value={n}>
-                  {n} per day
-                </option>
+                  {n} {t("pages.dashFragments.perDay")}</option>
               ))}
             </select>
           </label>
@@ -366,8 +365,7 @@ export default function SocialAutopilotController() {
             <option value="">{t("pages.socialAutopilot.defaultTime")}</option>
             {Array.from({ length: 24 }, (_, h) => (
               <option key={h} value={h}>
-                {formatLocalHour(h)} your time
-              </option>
+                {formatLocalHour(h)} {t("pages.dashFragments.yourTime")}</option>
             ))}
           </select>
         </label>

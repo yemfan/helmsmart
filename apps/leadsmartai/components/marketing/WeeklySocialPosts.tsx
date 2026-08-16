@@ -237,13 +237,11 @@ export default function WeeklySocialPosts({
         <div>
           <h2 className="text-sm font-semibold text-gray-900">{t("social.weeklyHeading")}</h2>
           {hasConnection ? (
-            <p className="text-xs text-gray-500">
-              AI-drafted for you — schedule to{" "}
+            <p className="text-xs text-gray-500">{t("pages.dashFragments.aiDraftedSchedule")}{" "}
               <span className="font-medium text-gray-700">{platformsLabel}</span>, or copy to post yourself.
             </p>
           ) : (
-            <p className="text-xs text-gray-500">
-              No social account connected —{" "}
+            <p className="text-xs text-gray-500">{t("pages.dashFragments.noSocialAccount")}{" "}
               <Link href={CONNECT_HREF} className="font-medium text-[#0072ce] underline hover:no-underline">{t("pages.weeklySocial.connectToAutoPost")}</Link>
               . For now you can copy each post.
             </p>

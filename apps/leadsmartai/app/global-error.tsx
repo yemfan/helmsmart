@@ -18,13 +18,13 @@ export default function GlobalError({
     <html lang="en">
       <body className="min-h-screen bg-slate-50 px-4 py-16 font-sans text-slate-900">
         <div className="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
-          <h1 className="text-xl font-bold">CloseBoss — can&apos;t load this page</h1>
+          <h1 className="text-xl font-bold">{t("pages.dashFragments.cantLoadPage")}</h1>
           <p className="mt-3 text-sm text-slate-600">
             {error.message?.trim()
               ? error.message
               : "Please refresh or try again in a few minutes. If it keeps happening, contact support."}
           </p>
-          {error.digest ? <p className="mt-2 font-mono text-xs text-slate-400">Ref: {error.digest}</p> : null}
+          {error.digest ? <p className="mt-2 font-mono text-xs text-slate-400">{t("pages.dashFragments.ref")} {error.digest}</p> : null}
           <button
             type="button"
             onClick={() => reset()}

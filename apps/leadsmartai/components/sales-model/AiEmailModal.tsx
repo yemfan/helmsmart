@@ -361,8 +361,7 @@ export function AiEmailModal({
                       ? "Regenerate draft"
                       : "Generate draft with AI"}
                 </button>
-                <span className="text-xs text-slate-500">
-                  Drafts use your{" "}
+                <span className="text-xs text-slate-500">{t("pages.dashFragments.draftsUseYour")}{" "}
                   <span className="font-medium text-slate-700">{model.name}</span> tone.
                 </span>
               </div>

@@ -233,8 +233,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
                   </div>
                   <div>
                     <dt className="text-slate-500">{t("pages.comparisonReportView.dimensions")}</dt>
-                    <dd className="text-slate-700">
-                      Financial {score.breakdown.financial} · Location {score.breakdown.location} · Property{" "}
+                    <dd className="text-slate-700">{t("pages.dashFragments.financial")} {score.breakdown.financial} · Location {score.breakdown.location} · Property{" "}
                       {score.breakdown.property} · Market {score.breakdown.market}
                     </dd>
                   </div>
@@ -277,8 +276,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
               <a
                 href={`tel:${String(agent.phone).replace(/\D/g, "")}`}
                 className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-              >
-                Call {agent.phone}
+              >{t("pages.dashFragments.call")} {agent.phone}
               </a>
             ) : null}
             {agent.email ? (

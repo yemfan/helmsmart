@@ -159,8 +159,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
               >{t("pages.leadDrawer.openFullProfile")}</Link>
               <Link href="/dashboard/inbox" className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">{t("pages.leadDrawer.conversations")}</Link>
               {p.phone && (
-                <a href={`tel:${p.phone}`} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">
-                  Call {p.first_name ?? ""}
+                <a href={`tel:${p.phone}`} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">{t("pages.dashFragments.call")} {p.first_name ?? ""}
                 </a>
               )}
             </div>

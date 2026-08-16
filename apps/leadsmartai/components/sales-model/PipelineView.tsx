@@ -34,8 +34,7 @@ export function PipelineView({
     >
       <header className="mb-4">
         <h2 className="text-base font-semibold text-slate-900">{t("pages.misc.pipeline")}</h2>
-        <p className="mt-1 text-sm text-slate-600">
-          The path a lead takes from first touch to closed deal under the{" "}
+        <p className="mt-1 text-sm text-slate-600">{t("pages.dashFragments.pathALeadTakes")}{" "}
           <span className="font-medium text-slate-800">{model.name}</span>.
         </p>
       </header>
@@ -55,8 +54,7 @@ export function PipelineView({
                     : "border-slate-200 bg-slate-50",
                 ].join(" ")}
               >
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 tabular-nums">
-                  Step {idx + 1}
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 tabular-nums">{t("pages.dashFragments.step")} {idx + 1}
                 </span>
                 <span
                   className={[

@@ -170,7 +170,8 @@ async function resolveAddress(
   }
 }
 
-function ConfirmationPage({ outcome, locale }: { outcome: ExtendOutcome; locale: string }) {
+async function ConfirmationPage({ outcome, locale }: { outcome: ExtendOutcome; locale: string }) {
+  const t = await getServerT();
   if (outcome.kind === "ok") {
     const whenLabel = new Date(outcome.newExpiresAtIso).toLocaleString(locale, {
       weekday: "short",
@@ -183,10 +184,9 @@ function ConfirmationPage({ outcome, locale }: { outcome: ExtendOutcome; locale:
       <div className="mx-auto max-w-md space-y-5 px-4 py-10">
         <div className="rounded-2xl border border-green-200 bg-green-50 p-5 text-center shadow-sm">
           <div className="text-4xl">✅</div>
-          <h1 className="mt-3 text-xl font-semibold text-slate-900">Offer extended</h1>
+          <h1 className="mt-3 text-xl font-semibold text-slate-900">{t("pages.dashFragments.offerExtended", { ns: "dashboard" })}</h1>
           <p className="mt-2 text-sm text-slate-700">{outcome.address}</p>
-          <p className="mt-1 text-sm text-slate-700">
-            New expiration: <strong>{whenLabel}</strong>
+          <p className="mt-1 text-sm text-slate-700">{t("pages.dashFragments.newExpiration", { ns: "dashboard" })} <strong>{whenLabel}</strong>
           </p>
         </div>
         <a

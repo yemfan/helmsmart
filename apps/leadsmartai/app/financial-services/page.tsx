@@ -147,12 +147,10 @@ export default async function FinancialServicesLandingPage() {
             <div className="lg:col-span-7">
               {theme.partnerName && (
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur">
-                  <BadgeCheck className="h-3.5 w-3.5" />
-                  Built for {theme.partnerName} producers
+                  <BadgeCheck className="h-3.5 w-3.5" />{t("pages.dashFragments.builtFor", { ns: "dashboard" })} {theme.partnerName} producers
                 </div>
               )}
-              <h1 className="text-4xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl">
-                The AI platform built for{" "}
+              <h1 className="text-4xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl">{t("pages.dashFragments.aiPlatformFor", { ns: "dashboard" })}{" "}
                 <span className={theme.accentText}>{t("pages.fsMarketing.heroTail", { ns: "dashboard" })}</span> — not real estate, not retail.
               </h1>
               <p className="mt-5 max-w-2xl text-lg leading-7 text-white/80">{t("pages.fsMarketing.heroSub", { ns: "dashboard" })}</p>

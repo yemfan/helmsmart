@@ -285,9 +285,7 @@ function EmptyState({ outcome }: { outcome: FiringOutcomeFilter }) {
         <p className="mt-1">
           Each time the scheduler runs, every (contact × template) evaluation lands here — created,
           suppressed, already fired, and errors. Run the scheduler from the{" "}
-          <Link href="/dashboard/drafts" className="text-brand-accent-text hover:underline">{t("pages.scheduler.draftsPage")}</Link>{" "}
-          to populate this feed.
-        </p>
+          <Link href="/dashboard/drafts" className="text-brand-accent-text hover:underline">{t("pages.scheduler.draftsPage")}</Link>{" "}{t("pages.dashFragments.toPopulateFeed")}</p>
       </div>
     );
   }

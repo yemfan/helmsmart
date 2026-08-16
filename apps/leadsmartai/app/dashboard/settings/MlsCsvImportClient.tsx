@@ -113,8 +113,7 @@ export default function MlsCsvImportClient() {
 
             {result.errors?.length ? (
               <details className="mt-2">
-                <summary className="cursor-pointer text-[11px] text-gray-500">
-                  Show import errors ({result.errors.length})
+                <summary className="cursor-pointer text-[11px] text-gray-500">{t("pages.dashFragments.showImportErrors")}{result.errors.length})
                 </summary>
                 <div className="mt-2 overflow-auto max-h-48 rounded-lg border border-gray-200 bg-gray-50 p-3">
                   <pre className="text-[11px] whitespace-pre-wrap">

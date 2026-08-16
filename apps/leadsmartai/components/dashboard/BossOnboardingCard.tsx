@@ -159,8 +159,7 @@ export function BossOnboardingCard({ checklist }: Props) {
           <div>
             <p className="text-sm font-semibold text-white">Boss · your AI chief of staff</p>
             <p className="text-xs text-slate-300">
-              {checklist.doneCount} of {checklist.total} steps set up
-            </p>
+              {checklist.doneCount} of {checklist.total} {t("pages.dashFragments.stepsSetUp")}</p>
           </div>
         </div>
         <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/15">

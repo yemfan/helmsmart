@@ -172,9 +172,7 @@ export default function AccountantClient({
         {/* ── Receivables — the side story (referral fees, rebills) ── */}
         <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">
-              Receivables
-              {overdueReceivables.length > 0 && (
+            <h2 className="text-sm font-semibold text-gray-900">{t("pages.dashFragments.receivables")}{overdueReceivables.length > 0 && (
                 <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
                   {overdueReceivables.length} overdue
                 </span>

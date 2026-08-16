@@ -165,8 +165,7 @@ export default function PostQueue() {
             {awaiting.length > 0 ? (
               <>
                 <span className="font-medium text-amber-700">
-                  {awaiting.length} post{awaiting.length === 1 ? "" : "s"} waiting for your OK
-                </span>{" "}
+                  {awaiting.length} post{awaiting.length === 1 ? "" : "s"} {t("pages.dashFragments.waitingForOk")}</span>{" "}
                 — nothing publishes until you approve it.
               </>
             ) : pending.length > 0 ? (
@@ -250,8 +249,7 @@ export default function PostQueue() {
             )}
 
             {item.status === "failed" && item.last_error && (
-              <p className="mt-1.5 text-[11px] text-red-700">
-                Failed after {item.attempt_count} attempt
+              <p className="mt-1.5 text-[11px] text-red-700">{t("pages.dashFragments.failedAfter")} {item.attempt_count} attempt
                 {item.attempt_count === 1 ? "" : "s"}: {item.last_error}
               </p>
             )}

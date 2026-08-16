@@ -159,8 +159,7 @@ export default function SphereMonetizationPanel(
             ))}
           </ul>
         ) : error ? (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Couldn&apos;t load monetization view: {error}
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadMonetization")} {error}
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
@@ -335,8 +334,7 @@ function DripBadge({ enrollment }: { enrollment: EnrollmentInfo }) {
           ? `In sphere drip — step ${enrollment.currentStep} of ${enrollment.totalSteps} (next due ${enrollment.nextDueAt})`
           : `In sphere drip — step ${enrollment.currentStep} of ${enrollment.totalSteps}`
       }
-    >
-      Drip {stepLabel}
+    >{t("pages.dashFragments.drip")} {stepLabel}
       {dueLabel ? <span className="font-normal normal-case text-indigo-500"> · {dueLabel}</span> : null}
     </span>
   );

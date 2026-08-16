@@ -421,6 +421,7 @@ function Kpi(props: { label: string; value: string }) {
 }
 
 function RiskCard({ label, pillar }: { label: string; pillar: RiskPillar }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="rounded-xl border border-slate-100 bg-slate-50/60 p-3">
       <div className="flex items-center justify-between">
@@ -434,7 +435,7 @@ function RiskCard({ label, pillar }: { label: string; pillar: RiskPillar }) {
         </span>
       </div>
       <p className="mt-2 text-xs leading-relaxed text-slate-700">{pillar.notes}</p>
-      <div className="mt-1 text-[10px] text-slate-400">Score {pillar.score}/100</div>
+      <div className="mt-1 text-[10px] text-slate-400">{t("pages.dashFragments.scoreOutOf", { score: pillar.score })}</div>
     </div>
   );
 }

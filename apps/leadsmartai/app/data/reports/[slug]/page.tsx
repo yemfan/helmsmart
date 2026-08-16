@@ -114,8 +114,7 @@ export default async function ResearchReportPage({ params }: Props) {
             {report.title}
           </h1>
           {report.dek && <p className="text-lg leading-relaxed text-slate-600">{report.dek}</p>}
-          <p className="text-xs text-slate-500">
-            Published {formatDate(report.published_date, locale)} · Grounded in the cited sources below —
+          <p className="text-xs text-slate-500">{t("pages.dashFragments.published", { ns: "dashboard" })} {formatDate(report.published_date, locale)} · Grounded in the cited sources below —
             quote them with confidence.
           </p>
         </header>
@@ -136,8 +135,7 @@ export default async function ResearchReportPage({ params }: Props) {
                       target="_blank"
                       rel="noopener"
                       className="mt-1 inline-block text-xs text-[#0072ce] hover:underline"
-                    >
-                      Source: {src.publisher || src.title}
+                    >{t("pages.dashFragments.source", { ns: "dashboard" })} {src.publisher || src.title}
                     </a>
                   )}
                 </div>

@@ -69,9 +69,7 @@ export function ReviewContractClient() {
           {" / Contract review"}
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.contractReview.heading")}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Drop in the purchase contract (PDF) or paste the text. You&apos;ll get a plain-English
-          summary, the key terms + deadlines, and flags for anything unusual or left blank —{" "}
+        <p className="mt-1 text-sm text-slate-500">{t("pages.dashFragments.contractReviewBody")}{" "}
           <strong>{t("pages.contractReview.disclaimer")}</strong>
         </p>
       </div>
@@ -161,7 +159,7 @@ export function ReviewContractClient() {
 
           {review.flags.length > 0 ? (
             <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="text-sm font-semibold text-slate-900">Flags to review ({review.flags.length})</h2>
+              <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.flagsToReview")}{review.flags.length})</h2>
               <ul className="mt-2 space-y-2">
                 {review.flags.map((f, i) => (
                   <li key={i} className="rounded-lg border border-slate-100 p-3">

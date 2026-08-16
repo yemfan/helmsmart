@@ -179,8 +179,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <Link href="/contact" className="hover:text-slate-900">{t("pages.appShell.contact")}</Link>
             <span aria-hidden className="hidden sm:inline">·</span>
             <span className="block w-full sm:inline sm:w-auto">
-              © {new Date().getFullYear()} CloseBoss (formerly LeadSmart AI)
-            </span>
+              © {new Date().getFullYear()} {t("pages.dashFragments.formerlyLeadSmart")}</span>
           </div>
         </footer>
       </div>

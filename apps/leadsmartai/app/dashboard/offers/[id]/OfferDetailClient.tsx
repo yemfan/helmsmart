@@ -151,8 +151,7 @@ export function OfferDetailClient({
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{offer.property_address}</h1>
         <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
-          <span>
-            Buyer:{" "}
+          <span>{t("pages.dashFragments.buyer")}{" "}
             <Link
               href={`/dashboard/offers?contactId=${encodeURIComponent(offer.contact_id)}`}
               className="text-blue-600 hover:underline"

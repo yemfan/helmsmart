@@ -215,7 +215,7 @@ export default function MarketingPlansClient() {
                 </label>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">Day {step.delay_days}</span>
+                    <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">{t("pages.dashFragments.day")} {step.delay_days}</span>
                     <span className="rounded bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">{CHANNEL_LABELS[step.channel] ?? step.channel}</span>
                     <span className={`rounded px-2 py-0.5 text-xs font-medium ${step.status === "executed" ? "bg-green-50 text-green-700" : step.status === "failed" ? "bg-red-50 text-red-700" : "bg-gray-50 text-gray-500"}`}>{step.status}</span>
                   </div>
@@ -236,7 +236,7 @@ export default function MarketingPlansClient() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">{t("pages.marketingPlans.heading")}</h1>
-          <p className="text-sm text-gray-500">{plans.length} total plans</p>
+          <p className="text-sm text-gray-500">{plans.length} {t("pages.dashFragments.totalPlans")}</p>
         </div>
       </div>
 

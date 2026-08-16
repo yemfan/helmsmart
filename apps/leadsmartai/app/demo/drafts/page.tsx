@@ -34,11 +34,8 @@ export default async function DemoDrafts() {
         <div className="flex items-start gap-2 text-xs leading-5 text-blue-900 dark:text-blue-100">
           <Sparkles className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
           <p>
-            <span className="font-semibold">{t("pages.demoPages.whyHere", { ns: "dashboard" })}</span>{" "}
-            you&apos;re on{" "}
-            <span className="font-semibold">{t("pages.demoPages.requireApproval", { ns: "dashboard" })}</span>{" "}
-            policy, so every AI-drafted reply lands here before it ships.
-            Most agents move to{" "}
+            <span className="font-semibold">{t("pages.demoPages.whyHere", { ns: "dashboard" })}</span>{" "}{t("pages.dashFragments.youreOn", { ns: "dashboard" })}{" "}
+            <span className="font-semibold">{t("pages.demoPages.requireApproval", { ns: "dashboard" })}</span>{" "}{t("pages.dashFragments.policySoDrafts", { ns: "dashboard" })}{" "}
             <span className="font-semibold">{t("pages.demoPages.autoSend", { ns: "dashboard" })}</span>{t("pages.demoPages.autoSendHint", { ns: "dashboard" })}</p>
         </div>
       </section>

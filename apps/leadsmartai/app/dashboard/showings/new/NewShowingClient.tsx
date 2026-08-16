@@ -830,7 +830,7 @@ function NewShowingForm() {
                 )}
                 {listingUrlDetected.status === "failed" && (
                   <span className="text-amber-700">
-                    {listingUrlDetected.label} detected, but{" "}
+                    {listingUrlDetected.label} {t("pages.dashFragments.detectedBut")}{" "}
                     {listingUrlDetected.note?.toLowerCase()}
                   </span>
                 )}

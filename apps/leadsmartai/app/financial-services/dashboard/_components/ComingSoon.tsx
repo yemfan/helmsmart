@@ -36,13 +36,11 @@ export default function ComingSoon({
             <Icon className="h-7 w-7 text-indigo-600" />
           </div>
 
-          <span className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-800">
-            Available in {availability}
+          <span className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-800">{t("pages.dashFragments.availableIn")} {availability}
           </span>
 
           <h2 className="mt-4 text-xl font-semibold tracking-tight text-slate-900">
-            {title} ships during the pilot
-          </h2>
+            {title} {t("pages.dashFragments.shipsDuringPilot")}</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
             {description}
           </p>

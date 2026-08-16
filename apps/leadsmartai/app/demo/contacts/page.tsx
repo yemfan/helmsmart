@@ -53,8 +53,7 @@ export default async function DemoContacts() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{t("pages.demoPages.contacts", { ns: "dashboard" })}</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {total} total · {hot} hot · {escalated} escalated to you
-          </p>
+            {total} total · {hot} hot · {escalated} {t("pages.dashFragments.escalatedToYou", { ns: "dashboard" })}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <DemoDisabledButton label={t("pages.demoPages.importCsv", { ns: "dashboard" })} variant="ghost" />

@@ -113,7 +113,7 @@ export default function CmaShareView({
                 <span className="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-700">
                   {b.label}
                 </span>
-                <span className="text-xs text-slate-500">~{b.dom} days on market</span>
+                <span className="text-xs text-slate-500">~{b.dom} {t("pages.dashFragments.daysOnMarketLower")}</span>
                 <span className="text-base font-bold tabular-nums text-slate-900">{money(b.price)}</span>
               </li>
             ))}

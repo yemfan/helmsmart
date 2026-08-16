@@ -239,8 +239,7 @@ export default function AgentVoiceSettingsPanel() {
             </>
           ) : null}
         </p>
-        <p className="text-[11px] text-gray-600">
-          Disclosure sample (always included on calls):{" "}
+        <p className="text-[11px] text-gray-600">{t("pages.dashFragments.disclosureSample")}{" "}
           <span className="italic text-gray-800">{VOICE_BILINGUAL_GREETING_EN}</span>
         </p>
         {activePreset ? (

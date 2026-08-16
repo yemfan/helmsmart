@@ -420,8 +420,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
 
           {call.textback_sent && (
             <section>
-              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                Text-back sent{call.textback_status ? ` · ${call.textback_status}` : ""}
+              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{t("pages.dashFragments.textBackSent")}{call.textback_status ? ` · ${call.textback_status}` : ""}
               </h4>
               <p className="mt-1 whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-xs text-gray-700">
                 {call.textback_message ?? "Message body unavailable."}

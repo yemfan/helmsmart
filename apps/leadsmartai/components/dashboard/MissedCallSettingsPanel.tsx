@@ -228,8 +228,7 @@ export default function MissedCallSettingsPanel() {
           rows={4}
           className="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         />
-        <p className="mt-1 text-xs text-gray-500">
-          Tokens:{" "}
+        <p className="mt-1 text-xs text-gray-500">{t("pages.dashFragments.tokens")}{" "}
           <code className="rounded bg-gray-100 px-1">{"{{caller_name}}"}</code>,{" "}
           <code className="rounded bg-gray-100 px-1">{"{{agent_first_name}}"}</code>,{" "}
           <code className="rounded bg-gray-100 px-1">{"{{agent_brand}}"}</code>

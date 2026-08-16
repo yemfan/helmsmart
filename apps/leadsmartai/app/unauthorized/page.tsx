@@ -35,11 +35,8 @@ export default async function UnauthorizedPage() {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-800">
           <ShieldAlert className="h-6 w-6" aria-hidden />
         </div>
-        <h1 className="mt-5 text-xl font-bold text-slate-900">You don’t have access</h1>
-        <p className="mt-3 text-sm leading-relaxed text-slate-600">
-          This page is restricted to authorized staff or roles. If you believe this is a mistake, contact your
-          administrator or sign in with the correct account.
-        </p>
+        <h1 className="mt-5 text-xl font-bold text-slate-900">{t("pages.dashFragments.noAccess", { ns: "dashboard" })}</h1>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">{t("pages.dashFragments.noAccessBody", { ns: "dashboard" })}</p>
         <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:justify-center">
           <Link
             href={href}

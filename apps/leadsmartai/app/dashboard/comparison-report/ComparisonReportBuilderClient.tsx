@@ -288,7 +288,7 @@ export default function ComparisonReportBuilderClient({
           {rows.map((row, idx) => (
             <div key={row.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-800">Property {idx + 1}</span>
+                <span className="text-sm font-semibold text-gray-800">{t("pages.dashFragments.property")} {idx + 1}</span>
                 {rows.length > 2 ? (
                   <button
                     type="button"
@@ -351,7 +351,7 @@ export default function ComparisonReportBuilderClient({
                       )}
                       {detect[row.id]!.status === "failed" && (
                         <span className="text-amber-700">
-                          {detect[row.id]!.label} detected, but{" "}
+                          {detect[row.id]!.label} {t("pages.dashFragments.detectedBut")}{" "}
                           {detect[row.id]!.note?.toLowerCase()}
                         </span>
                       )}

@@ -46,10 +46,7 @@ export function SkillRunner({
     <div className="space-y-5">
       {inputKeys.length > 0 ? (
         <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Your name, brokerage, {assigneeLabel.toLowerCase()} voice, market, and compliance are filled in
-            automatically. Just provide the specifics:
-          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{t("pages.dashFragments.yourNameBrokerage")} {assigneeLabel.toLowerCase()} {t("pages.dashFragments.voiceMarketCompliance")}</p>
           {inputKeys.map((k) => (
             <div key={k}>
               <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-300">{humanize(k)}</label>

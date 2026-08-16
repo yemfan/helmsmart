@@ -58,8 +58,7 @@ export function EmailEngagementPanel() {
       <header className="flex items-baseline justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-slate-900">{t("pages.emailEngagement.title")}</h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Last {days} days · opens & clicks across outbound mail
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.dashFragments.last")} {days} days · opens & clicks across outbound mail
           </p>
         </div>
         <RangeSelect value={days} onChange={setDays} />

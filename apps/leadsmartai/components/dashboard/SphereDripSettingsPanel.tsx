@@ -166,8 +166,7 @@ export default function SphereDripSettingsPanel() {
             <div>
               <label htmlFor="drip-notes" className="block text-sm font-semibold text-slate-900">{t("pages.sphereDrip.notes")}<span className="font-normal text-slate-400">(optional)</span>
               </label>
-              <p className="mt-0.5 text-xs text-slate-500">
-                Free-text reminder for yourself — e.g.{" "}
+              <p className="mt-0.5 text-xs text-slate-500">{t("pages.dashFragments.freeTextReminder")}{" "}
                 <em>&ldquo;paused for vacation, resume Aug 15&rdquo;</em>.
               </p>
               <textarea

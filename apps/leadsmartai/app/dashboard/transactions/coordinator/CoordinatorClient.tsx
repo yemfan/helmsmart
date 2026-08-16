@@ -53,6 +53,7 @@ function daysFromTodayLabel(iso: string | null, t: Translate, locale: string): s
 }
 
 export default function CoordinatorClient() {
+  const { t } = useTranslation("dashboard");
   const [board, setBoard] = useState<CoordinatorBoard | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -103,8 +104,7 @@ export default function CoordinatorClient() {
 
   if (error || !board) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        Couldn&apos;t load the coordinator board: {error ?? "unknown error"}
+      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadCoordinator")} {error ?? "unknown error"}
       </div>
     );
   }

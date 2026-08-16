@@ -102,8 +102,7 @@ export default function TemplatePickerClient() {
   }
   if (!items.length) {
     return (
-      <div className="rounded-xl border border-dashed border-amber-200 bg-amber-50 p-6 text-sm text-amber-900">
-        The template library hasn&apos;t been seeded yet. Run{" "}
+      <div className="rounded-xl border border-dashed border-amber-200 bg-amber-50 p-6 text-sm text-amber-900">{t("pages.dashFragments.templateNotSeeded")}{" "}
         <code className="font-mono">node scripts/seed-message-templates.mjs</code> (with
         SUPABASE_SERVICE_ROLE_KEY set) to load the 20 templates from the handoff JSON.
       </div>

@@ -113,8 +113,7 @@ export default async function DemoOverview() {
               {DEMO_KPIS.weeklyResponseTimeSec}
               <span className="text-base font-medium text-slate-500"> sec</span>
             </p>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              This week, AI + manual replies combined.{" "}
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t("pages.dashFragments.thisWeekCombined", { ns: "dashboard" })}{" "}
               <span className="font-semibold text-emerald-600">
                 ↓ 12s vs last week
               </span>

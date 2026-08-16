@@ -61,8 +61,7 @@ export default function ClientTrackerPage() {
           onChange={(e) => setLeadId(e.target.value)}
         >
           {leads.map((l) => (
-            <option key={l.id} value={l.id}>
-              Deal {l.id}
+            <option key={l.id} value={l.id}>{t("pages.dashFragments.deal")} {l.id}
             </option>
           ))}
         </select>

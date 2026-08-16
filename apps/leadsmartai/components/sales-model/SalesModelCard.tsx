@@ -71,8 +71,7 @@ export function SalesModelCard({
         {model.description}
       </p>
 
-      <p className="mt-3 text-xs italic text-slate-500">
-        Inspired by {model.inspiredBy.replace(/^Inspired by\s+/i, "")}.
+      <p className="mt-3 text-xs italic text-slate-500">{t("pages.dashFragments.inspiredBy")} {model.inspiredBy.replace(/^Inspired by\s+/i, "")}.
       </p>
 
       <div className="mt-5 space-y-3">

@@ -94,8 +94,7 @@ function Row({ row }: { row: MemberBreakdownRow }) {
     <tr className="text-slate-800">
       <td className="py-2.5 pr-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">
-            Agent {shortenId(row.agentId)}
+          <span className="text-sm font-medium">{t("pages.dashFragments.agentLabel")} {shortenId(row.agentId)}
           </span>
           {row.role === "owner" ? (
             <span className="rounded-full bg-blue-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-blue-700 ring-1 ring-blue-200">{t("pages.teamBreakdown.owner")}</span>

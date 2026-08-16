@@ -43,8 +43,7 @@ export function SmsConsentNotice({
   // English-only for accuracy). Translated consent copy points at the
   // same English documents.
   const termsBlock = (
-    <>
-      See our{" "}
+    <>{t("pages.dashFragments.seeOur")}{" "}
       <Link href="/privacy" className="underline" target="_blank">{t("pages.misc.privacyPolicy")}</Link>{" "}
       and{" "}
       <Link href="/terms" className="underline" target="_blank">{t("pages.misc.terms")}</Link>

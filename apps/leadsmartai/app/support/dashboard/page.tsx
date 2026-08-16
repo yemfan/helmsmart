@@ -44,7 +44,7 @@ export default async function SupportDashboardPage() {
                 </div>
                 <div className="text-right text-sm">
                   <div className="font-medium text-gray-700">{ticket.priority}</div>
-                  <div className="text-gray-400">Unread {ticket.unread}</div>
+                  <div className="text-gray-400">{t("pages.dashFragments.unread", { ns: "dashboard" })} {ticket.unread}</div>
                 </div>
               </div>
             ))}

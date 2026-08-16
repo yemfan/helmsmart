@@ -586,7 +586,7 @@ export default function FlyerBuilderClient({
           {/* Photos */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-gray-500">Photos ({photos.length}/4)</span>
+              <span className="text-xs font-medium text-gray-500">{tr("pages.dashFragments.photosCount")}{photos.length}/4)</span>
               {photos.length < 4 && (
                 <button
                   type="button"

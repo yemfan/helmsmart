@@ -127,7 +127,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
             </div>
           </dl>
           {typeof buying.matchCount === "number" ? (
-            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{buying.matchCount} matches so far.</p>
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{buying.matchCount} {tr("pages.dashFragments.matchesSoFar", { ns: "dashboard" })}</p>
           ) : null}
         </section>
       )}
@@ -187,7 +187,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
       {/* Tasks */}
       <section className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Tasks ({openTasks.length} open)</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{tr("pages.dashFragments.tasksCount", { ns: "dashboard" })}{openTasks.length} open)</h2>
           <Link href="/dashboard/tasks" className="text-xs text-blue-600 hover:underline dark:text-blue-400">
             Open task board →
           </Link>

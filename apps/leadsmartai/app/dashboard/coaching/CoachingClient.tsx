@@ -204,8 +204,7 @@ export default function CoachingClient() {
         ))}
       </ul>
       {generatedAt ? (
-        <p className="text-[11px] text-slate-400">
-          Refreshed {formatGeneratedAt(generatedAt, locale)}
+        <p className="text-[11px] text-slate-400">{t("pages.dashFragments.refreshed")} {formatGeneratedAt(generatedAt, locale)}
         </p>
       ) : null}
     </div>

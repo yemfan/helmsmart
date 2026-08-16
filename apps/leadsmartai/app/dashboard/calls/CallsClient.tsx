@@ -46,7 +46,7 @@ export default function CallsClient({ calls: initialCalls }: { calls: CallRow[] 
     <div className="space-y-4">
       <div>
         <h1 className="text-xl font-semibold text-gray-900">{t("pages.calls.heading")}</h1>
-        <p className="text-sm text-gray-500">{calls.length} total calls</p>
+        <p className="text-sm text-gray-500">{calls.length} {t("pages.dashFragments.totalCalls")}</p>
       </div>
 
       <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("pages.calls.search")}

@@ -996,8 +996,7 @@ function ContactTabBody({
             ) : null}
 
             <div>
-              <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">
-                SMS thread {tab.threadLoading ? "(loading…)" : ""}
+              <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">{t("pages.dashFragments.smsThread")} {tab.threadLoading ? "(loading…)" : ""}
               </label>
               <div ref={threadRef} className="space-y-1.5 rounded-lg border border-gray-100 bg-gray-50/60 p-2 max-h-44 overflow-y-auto">
                 {tab.thread.length === 0 && !tab.threadLoading && (

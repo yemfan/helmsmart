@@ -221,8 +221,7 @@ export default function MissedCallSettingsForm() {
           rows={4}
           className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         />
-        <p className="mt-1 text-xs text-slate-500">
-          Tokens:{" "}
+        <p className="mt-1 text-xs text-slate-500">{t("pages.dashFragments.tokens")}{" "}
           <code className="rounded bg-slate-100 px-1">{"{{caller_name}}"}</code>,{" "}
           <code className="rounded bg-slate-100 px-1">{"{{agent_first_name}}"}</code>,{" "}
           <code className="rounded bg-slate-100 px-1">{"{{agent_brand}}"}</code>
@@ -295,9 +294,7 @@ export default function MissedCallSettingsForm() {
               </span>{" "}
               call-back{callbackPerDay * callbackDays === 1 ? "" : "s"} total
               ({callbackPerDay}/day × {callbackDays} day
-              {callbackDays === 1 ? "" : "s"}), {callbackInterval} minutes apart.
-              The ladder stops the moment the caller is reached.
-            </p>
+              {callbackDays === 1 ? "" : "s"}), {callbackInterval} {t("pages.dashFragments.minutesApart")}</p>
           </>
         )}
       </div>

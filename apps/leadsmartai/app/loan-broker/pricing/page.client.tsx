@@ -127,8 +127,7 @@ export default function LoanBrokerPricingClientPage() {
           <h1 className="text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">{t("pages.loanBroker.pricingTitle")}</h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-gray-600 md:text-lg">{t("pages.loanBroker.pricingSub")}</p>
           {currentPlan && (
-            <div className="mt-4 inline-flex rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white">
-              Current plan: {currentPlan.replace(/_/g, " ")}
+            <div className="mt-4 inline-flex rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white">{t("pages.dashFragments.currentPlan")} {currentPlan.replace(/_/g, " ")}
             </div>
           )}
         </div>

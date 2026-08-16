@@ -23,7 +23,7 @@ export default function DashboardError({
           : "Something went wrong loading this page. Try again, or sign out and back in."}
       </p>
       {error.digest ? (
-        <p className="mt-2 font-mono text-xs text-red-700/80">Digest: {error.digest}</p>
+        <p className="mt-2 font-mono text-xs text-red-700/80">{t("pages.dashFragments.digest")} {error.digest}</p>
       ) : null}
       <button
         type="button"

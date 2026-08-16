@@ -584,8 +584,7 @@ export default function SalesOutreachComposer({
       </div>
 
       {overCap && (
-        <p className="mt-2 text-[11px] text-slate-400">
-          Batches are capped at {MAX_BULK} — this reaches the first {MAX_BULK} of {segmentCount}.
+        <p className="mt-2 text-[11px] text-slate-400">{t("pages.dashFragments.batchesCappedAt")} {MAX_BULK} — this reaches the first {MAX_BULK} of {segmentCount}.
         </p>
       )}
       {feedback && (

@@ -186,10 +186,7 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
     >
       <header className="mb-4">
         <h2 className="text-base font-semibold text-slate-900">{t("pages.scriptGenerator.title")}</h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Describe the situation — the AI figures out what kind of message
-          you need (DM reply, follow-up, objection, appointment, opener) and
-          writes it in your{" "}
+        <p className="mt-1 text-sm text-slate-600">{t("pages.dashFragments.describeSituation")}{" "}
           <span className="font-medium text-slate-800">{model.name}</span> tone.
         </p>
       </header>
@@ -248,8 +245,7 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
           </span>
         ) : null}
         {detectedLabel ? (
-          <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 ring-1 ring-inset ring-slate-200">
-            Read as: {detectedLabel}
+          <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 ring-1 ring-inset ring-slate-200">{t("pages.dashFragments.readAs")} {detectedLabel}
           </span>
         ) : null}
       </div>

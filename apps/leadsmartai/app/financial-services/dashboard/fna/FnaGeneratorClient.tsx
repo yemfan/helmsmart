@@ -273,8 +273,7 @@ export default function FnaGeneratorClient() {
             <article id="fna-report" className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
               <header className="border-b border-slate-100 pb-5">
                 <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600">{t("pages.fsMarketing.fna")}</p>
-                <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
-                  Prepared for {form.clientName}
+                <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{t("pages.dashFragments.preparedFor")} {form.clientName}
                 </h1>
                 <p className="mt-1 text-xs text-slate-500">
                   {t("pages.fsMarketing.generatedOn", { date: new Date().toLocaleDateString(locale) })} ·{" "}

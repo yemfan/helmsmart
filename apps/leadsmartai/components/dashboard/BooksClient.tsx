@@ -293,9 +293,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
           onClick={() => setShowForm((v) => !v)}
           className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
         >
-          {showForm ? <ChevronUp className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-          New invoice
-        </button>
+          {showForm ? <ChevronUp className="h-4 w-4" /> : <Plus className="h-4 w-4" />}{t("pages.dashFragments.newInvoice")}</button>
       </div>
 
       {/* Stats */}

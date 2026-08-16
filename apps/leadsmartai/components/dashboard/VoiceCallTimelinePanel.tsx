@@ -78,8 +78,7 @@ export default function VoiceCallTimelinePanel({ contactId }: { contactId: strin
           ))}
         </ul>
       ) : error ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-          Couldn&apos;t load voice calls: {error}
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">{t("pages.dashFragments.couldntLoadVoiceCalls")} {error}
         </div>
       ) : calls.length === 0 ? (
         <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-600">{t("pages.voiceCallTimeline.empty")}</div>
@@ -121,8 +120,7 @@ function CallRow({ entry }: { entry: VoiceCallEntry }) {
           ) : null}
         </div>
         {entry.errorCode ? (
-          <div className="mt-0.5 text-[11px] text-red-700">
-            Twilio error code {entry.errorCode}
+          <div className="mt-0.5 text-[11px] text-red-700">{t("pages.dashFragments.twilioErrorCode")} {entry.errorCode}
           </div>
         ) : null}
       </div>

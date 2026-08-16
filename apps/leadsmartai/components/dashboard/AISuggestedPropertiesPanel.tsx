@@ -191,8 +191,7 @@ export default function AISuggestedPropertiesPanel({
               {state.context.favoriteCount} favorites
             </span>
             <span className="rounded bg-gray-50 px-1.5 py-0.5">
-              {state.context.savedSearchCount} saved searches
-            </span>
+              {state.context.savedSearchCount} {t("pages.dashFragments.savedSearches")}</span>
             {state.context.usedLlm && (
               <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-indigo-700">{t("pages.aiSuggestedProperties.rationale")}</span>
             )}
