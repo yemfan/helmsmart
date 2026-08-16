@@ -2593,6 +2593,57 @@
       "maxPerDayHint": "短信与邮件合并计算。硬性上限——模板无法覆盖。",
       "pauseOnReply": "联系人回复后暂停触发的天数",
       "pauseOnReplyHint": "让您有时间接手对话，避免 AI 抢在您前面回复。"
+    },
+    "voiceSettings": {
+      "enabled": "已启用前台接待",
+      "disabledHint": "——AI 将不会接听来电",
+      "phone": "前台接待电话号码",
+      "phonePlaceholder": "+1 (626) 555-1234 —— 客户拨打的号码",
+      "businessName": "公司名称",
+      "businessNamePlaceholder": "例如：顶峰地产",
+      "businessNameZh": "公司名称（中文）",
+      "receptionistName": "前台接待姓名",
+      "receptionistNamePlaceholder": "例如：Maria（可选）",
+      "timezone": "时区",
+      "greeting": "自定义问候语（可选）",
+      "greetingPlaceholder": "留空则根据您的公司名称自动生成",
+      "knowledge": "前台接待需要了解的信息",
+      "officeHours": "营业时间",
+      "open": "营业",
+      "closed": "休息",
+      "outOfMinutes": "AI 语音分钟数用尽时",
+      "save": "保存",
+      "saving": "保存中…"
+    },
+    "socialAutopilot": {
+      "whereToPost": "发布到哪些平台",
+      "whatToPost": "发布什么内容",
+      "howOften": "发布频率",
+      "postsPerWeek": "每周发布数",
+      "post_other": "条帖子",
+      "maxPerDay": "每日上限",
+      "daysToPost": "发布的星期",
+      "timeOfDay": "发布时间",
+      "defaultTime": "默认（太平洋时间上午 9 点／东部时间中午 12 点）",
+      "whoApproves": "由谁审核帖子",
+      "saved": "已保存。",
+      "loadFailed": "无法加载您的发布设置。",
+      "saveFailed": "保存失败，请重试。",
+      "dow": {
+        "mon": "周一",
+        "tue": "周二",
+        "wed": "周三",
+        "thu": "周四",
+        "fri": "周五",
+        "sat": "周六",
+        "sun": "周日"
+      },
+      "approval": {
+        "manual": "每条帖子都由我审核",
+        "boss": "由 Boss 助理审核",
+        "auto": "全自动发布"
+      },
+      "post_one": "条帖子"
     }
   }
 }

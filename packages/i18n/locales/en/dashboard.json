@@ -2593,6 +2593,57 @@
       "maxPerDayHint": "Across SMS and email combined. Hard cap — no template overrides.",
       "pauseOnReply": "Pause triggers for (days) after a contact replies",
       "pauseOnReplyHint": "Gives you time to take over the conversation without the AI talking over you."
+    },
+    "voiceSettings": {
+      "enabled": "Receptionist enabled",
+      "disabledHint": "— calls won't be answered by the AI",
+      "phone": "Receptionist phone number",
+      "phonePlaceholder": "+1 (626) 555-1234 — the number customers call",
+      "businessName": "Business name",
+      "businessNamePlaceholder": "e.g. Summit Realty",
+      "businessNameZh": "Business name (Chinese)",
+      "receptionistName": "Receptionist name",
+      "receptionistNamePlaceholder": "e.g. Maria (optional)",
+      "timezone": "Timezone",
+      "greeting": "Custom greeting (optional)",
+      "greetingPlaceholder": "Leave blank to auto-generate from your business name",
+      "knowledge": "What the receptionist should know",
+      "officeHours": "Office hours",
+      "open": "Open",
+      "closed": "Closed",
+      "outOfMinutes": "When you run out of AI voice minutes",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "socialAutopilot": {
+      "whereToPost": "Where to post",
+      "whatToPost": "What to post about",
+      "howOften": "How often",
+      "postsPerWeek": "Posts per week",
+      "post_one": "post",
+      "post_other": "posts",
+      "maxPerDay": "Max per day",
+      "daysToPost": "Days to post",
+      "timeOfDay": "Time of day",
+      "defaultTime": "Default (9am PT / noon ET)",
+      "whoApproves": "Who approves posts",
+      "saved": "Saved.",
+      "loadFailed": "Could not load your posting settings.",
+      "saveFailed": "Could not save that. Try again.",
+      "dow": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      },
+      "approval": {
+        "manual": "I approve every post",
+        "boss": "Boss Assistant approves",
+        "auto": "Full autopilot"
+      }
     }
   }
 }

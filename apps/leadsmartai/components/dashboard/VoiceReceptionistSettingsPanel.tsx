@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DEFAULT_RECEPTIONIST_CONFIG,
   type ReceptionistConfig,
@@ -20,6 +21,7 @@ const FIELD =
 const LABEL = "block text-[11px] font-medium text-gray-500 mb-1";
 
 export default function VoiceReceptionistSettingsPanel() {
+  const { t } = useTranslation("dashboard");
   const [settings, setSettings] = useState<ReceptionistConfig>(defaults);
   const [saved, setSaved] = useState<ReceptionistConfig>(defaults);
   const [hours, setHours] = useState<BusinessHours | null>(null);
@@ -124,19 +126,19 @@ export default function VoiceReceptionistSettingsPanel() {
           onChange={(e) => update("enabled", e.target.checked)}
           className="h-4 w-4 rounded border-gray-300"
         />
-        <span>Receptionist enabled</span>
+        <span>{t("pages.voiceSettings.enabled")}</span>
         {!settings.enabled && (
-          <span className="text-[11px] text-amber-600">— calls won&apos;t be answered by the AI</span>
+          <span className="text-[11px] text-amber-600">{t("pages.voiceSettings.disabledHint")}</span>
         )}
       </label>
 
       <div>
-        <span className={LABEL}>Receptionist phone number</span>
+        <span className={LABEL}>{t("pages.voiceSettings.phone")}</span>
         <input
           className={FIELD}
           value={settings.phoneNumber}
           onChange={(e) => update("phoneNumber", e.target.value)}
-          placeholder="+1 (626) 555-1234 — the number customers call"
+          placeholder={t("pages.voiceSettings.phonePlaceholder")}
         />
         <p className="mt-1 text-[11px] text-gray-400">
           Calls to this number route to this receptionist. Point the number&apos;s inbound webhook
@@ -146,16 +148,16 @@ export default function VoiceReceptionistSettingsPanel() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <span className={LABEL}>Business name</span>
+          <span className={LABEL}>{t("pages.voiceSettings.businessName")}</span>
           <input
             className={FIELD}
             value={settings.businessName}
             onChange={(e) => update("businessName", e.target.value)}
-            placeholder="e.g. Summit Realty"
+            placeholder={t("pages.voiceSettings.businessNamePlaceholder")}
           />
         </div>
         <div>
-          <span className={LABEL}>Business name (Chinese)</span>
+          <span className={LABEL}>{t("pages.voiceSettings.businessNameZh")}</span>
           <input
             className={FIELD}
             value={settings.businessNameZh}
@@ -164,16 +166,16 @@ export default function VoiceReceptionistSettingsPanel() {
           />
         </div>
         <div>
-          <span className={LABEL}>Receptionist name</span>
+          <span className={LABEL}>{t("pages.voiceSettings.receptionistName")}</span>
           <input
             className={FIELD}
             value={settings.agentName}
             onChange={(e) => update("agentName", e.target.value)}
-            placeholder="e.g. Maria (optional)"
+            placeholder={t("pages.voiceSettings.receptionistNamePlaceholder")}
           />
         </div>
         <div>
-          <span className={LABEL}>Timezone</span>
+          <span className={LABEL}>{t("pages.voiceSettings.timezone")}</span>
           <input
             className={FIELD}
             value={settings.timezone}
@@ -184,17 +186,17 @@ export default function VoiceReceptionistSettingsPanel() {
       </div>
 
       <div>
-        <span className={LABEL}>Custom greeting (optional)</span>
+        <span className={LABEL}>{t("pages.voiceSettings.greeting")}</span>
         <input
           className={FIELD}
           value={settings.greeting}
           onChange={(e) => update("greeting", e.target.value)}
-          placeholder="Leave blank to auto-generate from your business name"
+          placeholder={t("pages.voiceSettings.greetingPlaceholder")}
         />
       </div>
 
       <div>
-        <span className={LABEL}>What the receptionist should know</span>
+        <span className={LABEL}>{t("pages.voiceSettings.knowledge")}</span>
         <textarea
           className={`${FIELD} min-h-[120px]`}
           value={settings.extraNotes}
@@ -204,7 +206,7 @@ export default function VoiceReceptionistSettingsPanel() {
       </div>
 
       <div>
-        <span className={LABEL}>Office hours</span>
+        <span className={LABEL}>{t("pages.voiceSettings.officeHours")}</span>
         <div className="space-y-1.5">
           {DAY_KEYS.map((d) => {
             const dh = displayHours[d];
@@ -219,7 +221,7 @@ export default function VoiceReceptionistSettingsPanel() {
                     onChange={(e) => setDay(d, e.target.checked ? dh ?? { open: "09:00", close: "17:00" } : null)}
                     className="h-3.5 w-3.5 rounded border-gray-300"
                   />
-                  {open ? "Open" : "Closed"}
+                  {open ? t("pages.voiceSettings.open") : t("pages.voiceSettings.closed")}
                 </label>
                 {open && dh ? (
                   <div className="flex items-center gap-1.5">
@@ -252,7 +254,7 @@ export default function VoiceReceptionistSettingsPanel() {
       </div>
 
       <div>
-        <span className={LABEL}>When you run out of AI voice minutes</span>
+        <span className={LABEL}>{t("pages.voiceSettings.outOfMinutes")}</span>
         <div className="space-y-1.5">
           <label className="flex items-start gap-2 text-sm text-gray-800">
             <input
@@ -300,7 +302,7 @@ export default function VoiceReceptionistSettingsPanel() {
           disabled={!isDirty || saving}
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-opacity disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save"}
+          {saving ? t("pages.voiceSettings.saving") : t("pages.voiceSettings.save")}
         </button>
         {message && <span className="text-xs font-medium text-green-600">{message}</span>}
         {error && <span className="text-xs font-medium text-red-600">{error}</span>}
