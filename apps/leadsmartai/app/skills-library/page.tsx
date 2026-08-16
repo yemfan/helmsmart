@@ -43,32 +43,22 @@ export default async function SkillsLibraryPage() {
         <p className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
           <Sparkles size={14} aria-hidden /> Free · No signup
         </p>
-        <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-slate-900 md:text-5xl dark:text-white">
-          The Realtor AI Skills Library
-        </h1>
+        <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-slate-900 md:text-5xl dark:text-white">{t("pages.skillsLibraryPage.h1", { ns: "dashboard" })}</h1>
         <p className="mx-auto mt-4 max-w-2xl text-base text-slate-600 md:text-lg dark:text-slate-300">
-          {count} ready-to-run AI skills for real estate agents — each with the value it captures and a
-          compliance-baked prompt (Fair Housing, advertising, RESPA). Wire the placeholders to your data and drop them
-          into any AI.
-        </p>
+          {count} {t("pages.skillsLibraryPage.sub", { ns: "dashboard" })}</p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <a
             href="/skills-library/download"
             className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-blue-700 md:text-base"
           >
-            <Download size={18} aria-hidden /> Download the library (Markdown)
-          </a>
+            <Download size={18} aria-hidden /> {t("pages.skillsLibraryPage.downloadMd", { ns: "dashboard" })}</a>
           <Link
             href="/start-free"
             className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-          >
-            Have the AI run them for you
-          </Link>
+          >{t("pages.skillsLibraryPage.haveAiRun", { ns: "dashboard" })}</Link>
         </div>
         <p className="mx-auto mt-4 flex max-w-xl items-center justify-center gap-1.5 text-xs text-slate-400">
-          <ShieldCheck size={14} aria-hidden /> Not legal advice — templates with compliance guardrails; you and your
-          broker review every output.
-        </p>
+          <ShieldCheck size={14} aria-hidden /> {t("pages.skillsLibraryPage.notLegalAdvice", { ns: "dashboard" })}</p>
       </div>
 
       {/* Pillars + skills */}
@@ -106,18 +96,11 @@ export default async function SkillsLibraryPage() {
 
       {/* Bottom CTA */}
       <div className="mt-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 p-8 text-center text-white">
-        <h2 className="font-heading text-2xl font-bold">Don&rsquo;t just prompt — deploy the team.</h2>
-        <p className="mx-auto mt-2 max-w-xl text-sm text-white/90">
-          CloseBoss runs this whole library for you — assigned to your AI Receptionist, Sales, Marketing, Transaction,
-          and Accounting assistants, with a Boss Assistant running the compliance gate on every output.
-        </p>
+        <h2 className="font-heading text-2xl font-bold">{t("pages.skillsLibraryPage.dontJustPrompt", { ns: "dashboard" })}</h2>
+        <p className="mx-auto mt-2 max-w-xl text-sm text-white/90">{t("pages.skillsLibraryPage.runsWholeLibrary", { ns: "dashboard" })}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link href="/start-free" className="rounded-xl bg-white px-6 py-3 text-sm font-bold text-blue-700 transition hover:bg-slate-50">
-            Start free
-          </Link>
-          <a href="/skills-library/download" className="rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
-            Download the library
-          </a>
+          <Link href="/start-free" className="rounded-xl bg-white px-6 py-3 text-sm font-bold text-blue-700 transition hover:bg-slate-50">{t("pages.skillsLibraryPage.startFree", { ns: "dashboard" })}</Link>
+          <a href="/skills-library/download" className="rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20">{t("pages.skillsLibraryPage.downloadLibrary", { ns: "dashboard" })}</a>
         </div>
       </div>
     </div>

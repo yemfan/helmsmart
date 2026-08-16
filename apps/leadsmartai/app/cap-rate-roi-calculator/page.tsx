@@ -97,20 +97,13 @@ export default function CapRateRoiCalculator() {
           />
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">
-        Cap Rate &amp; ROI Calculator
-      </h1>
-      <p className="text-gray-600 mb-8">
-        Calculate capitalization rate and simple cash-on-cash ROI for a rental
-        property.
-      </p>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.capRateRoiCalculator.h1")}</h1>
+      <p className="text-gray-600 mb-8">{t("pages.capRateRoiCalculator.sub")}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Property &amp; financing
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.capRateRoiCalculator.propertyFinancing")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="Purchase price ($)"
@@ -131,7 +124,7 @@ export default function CapRateRoiCalculator() {
                 min={0}
               />
               <InputField
-                label="Vacancy rate (%)"
+                label={t("pages.capRateRoiCalculator.vacancyRate")}
                 value={vacancyRate}
                 onChange={setVacancyRate}
                 min={0}
@@ -189,7 +182,7 @@ export default function CapRateRoiCalculator() {
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-24">
             <ResultCard
-              title="Cap rate & ROI"
+              title={t("pages.capRateRoiCalculator.resultsAria")}
               value={`${results.capRate.toFixed(2)}% cap`}
               details={`NOI: $${results.noi.toLocaleString(undefined, {
                 maximumFractionDigits: 0,
@@ -211,21 +204,9 @@ export default function CapRateRoiCalculator() {
       </div>
 
       <section className="mt-12 max-w-3xl space-y-3 text-sm text-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Combine cap rate and cash-on-cash ROI
-        </h2>
-        <p>
-          This calculator blends traditional cap rate with first-year cash-on-cash ROI
-          by layering financing costs on top of NOI. It shows how leverage, interest
-          rates, and down payment size impact actual investor returns compared to the
-          unlevered cap rate.
-        </p>
-        <p>
-          Use it when evaluating loan options, comparing all-cash purchases to financed
-          deals, or presenting investment opportunities to partners. The tool helps
-          clarify how much of the return comes from property performance versus
-          financing structure.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateRoiCalculator.explainTitle")}</h2>
+        <p>{t("pages.capRateRoiCalculator.explainA")}</p>
+        <p>{t("pages.capRateRoiCalculator.explainB")}</p>
       </section>
     </div>
   );

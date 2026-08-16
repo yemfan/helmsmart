@@ -307,10 +307,7 @@ function SignupForm() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-sm bg-white border border-gray-200 rounded-xl shadow-sm p-6 space-y-5">
         {hasSession ? (
-          <p className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-left text-[11px] font-medium text-sky-950">
-            You&apos;re signed in — we filled this form from your account. Update anything below and save (no new
-            password needed).
-          </p>
+          <p className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-left text-[11px] font-medium text-sky-950">{t("pages.signupPage.prefilled")}</p>
         ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -368,7 +365,7 @@ function SignupForm() {
           ) : null}
           {!hasSession ? (
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-gray-700">Password</label>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.signupPage.password")}</label>
               <input
                 type="password"
                 value={password}
@@ -403,8 +400,7 @@ function SignupForm() {
                 onChange={(e) => setAcceptTerms(e.target.checked)}
                 className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-blue-600"
               />
-              <span className="text-[11px] leading-relaxed text-slate-600">
-                I agree to the{" "}
+              <span className="text-[11px] leading-relaxed text-slate-600">{t("pages.signupPage.iAgree")}{" "}
                 <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">{t("pages.articleChrome.termsOfService")}</Link>{" "}
                 and{" "}
                 <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">{t("pages.articleChrome.privacyPolicy")}</Link>
@@ -439,17 +435,13 @@ function SignupForm() {
                 disabled={loading || prefillLoading}
                 onClick={() => void handleOAuth("google")}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Continue with Google
-              </button>
+              >{t("pages.signupPage.continueGoogle")}</button>
               <button
                 type="button"
                 disabled={loading || prefillLoading}
                 onClick={() => void handleOAuth("apple")}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Continue with Apple
-              </button>
+              >{t("pages.signupPage.continueApple")}</button>
             </div>
           </>
         ) : null}
@@ -458,21 +450,14 @@ function SignupForm() {
           {hasSession ? (
             <>
               <span className="block">
-                <Link href="/dashboard" className="text-blue-700 font-semibold">
-                  Go to dashboard
-                </Link>
+                <Link href="/dashboard" className="text-blue-700 font-semibold">{t("pages.signupPage.goToDashboard")}</Link>
                 {" · "}
-                <Link href="/agent-signup" className="text-blue-700 font-semibold">
-                  Start agent setup
-                </Link>
+                <Link href="/agent-signup" className="text-blue-700 font-semibold">{t("pages.signupPage.startAgentSetup")}</Link>
               </span>
             </>
           ) : (
-            <>
-              Already have an account?{" "}
-              <a className="text-blue-700 font-semibold" href="/login">
-                Log in
-              </a>
+            <>{t("pages.signupPage.alreadyHaveAccount")}{" "}
+              <a className="text-blue-700 font-semibold" href="/login">{t("pages.signupPage.logIn")}</a>
             </>
           )}
         </p>

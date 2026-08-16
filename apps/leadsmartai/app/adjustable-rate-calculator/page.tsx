@@ -103,12 +103,8 @@ export default function AdjustableRateCalculator() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">
-        Adjustable Rate Mortgage (ARM) Calculator
-      </h1>
-      <p className="text-gray-600 mb-8">
-        Estimate initial and adjusted payments when your rate changes.
-      </p>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.armCalculator.h1")}</h1>
+      <p className="text-gray-600 mb-8">{t("pages.armCalculator.sub")}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
@@ -119,7 +115,7 @@ export default function AdjustableRateCalculator() {
               <InputField label="Down payment ($)" value={downPayment} onChange={setDownPayment} min={0} />
               <InputField label={t("pages.articleChrome.loanTermYears")} value={loanTerm} onChange={setLoanTerm} min={1} max={30} />
               <InputField
-                label="Initial interest rate (%)"
+                label={t("pages.armCalculator.initialRate")}
                 value={initialRate}
                 onChange={setInitialRate}
                 min={0.1}
@@ -127,14 +123,14 @@ export default function AdjustableRateCalculator() {
                 step={0.125}
               />
               <InputField
-                label="Adjustment interval (years)"
+                label={t("pages.armCalculator.adjustmentInterval")}
                 value={adjustmentInterval}
                 onChange={setAdjustmentInterval}
                 min={1}
                 max={30}
               />
               <InputField
-                label="Maximum rate (%)"
+                label={t("pages.armCalculator.maxRate")}
                 value={maxRate}
                 onChange={setMaxRate}
                 min={0.1}
@@ -151,7 +147,7 @@ export default function AdjustableRateCalculator() {
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-24">
             <ResultCard
-              title="ARM results"
+              title={t("pages.armCalculator.resultsAria")}
               value={`$${initialMonthlyPayment.toFixed(2)}`}
               details={`Initial monthly payment: $${initialMonthlyPayment.toFixed(2)}\nAdjusted monthly payment (after rate change): $${adjustedMonthlyPayment.toFixed(2)}\nTotal interest over loan term: $${totalInterest.toFixed(2)}`}
             />

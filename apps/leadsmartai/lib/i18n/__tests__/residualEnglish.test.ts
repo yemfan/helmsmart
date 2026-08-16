@@ -79,6 +79,22 @@ const COPY_ATTRS = /\b(?:placeholder|title|label|aria-label|alt)="([^"]+)"/g;
  */
 const JSX_TEXT = /(?:^|[^=])[>}]([^<>{}]+)(?=[<{])/g;
 
+/**
+ * Files that stay English on purpose, with the reason.
+ *
+ * Distinct from PENDING: nothing here is waiting to be translated, so these
+ * are exempt permanently rather than tracked down to zero. Adding one is a
+ * decision, not a deferral — say why, or translate the file instead.
+ */
+const EXEMPT = new Map<string, string>([
+  [
+    "app/opengraph-image.tsx",
+    // next/og renders with a Latin-only default font. Chinese here would come
+    // out as tofu boxes in every social preview, which is worse than English.
+    "OG image: next/og default font has no CJK glyphs",
+  ],
+]);
+
 /*
  * Marketing and article pages that now carry i18n chrome but whose body copy
  * is still being worked through. Same contract as before: these files may
@@ -89,22 +105,11 @@ const JSX_TEXT = /(?:^|[^=])[>}]([^<>{}]+)(?=[<{])/g;
  * the list and the assertion under it.
  */
 const PENDING = new Set([
-  "app/landing/home-value/page.tsx",
-  "app/landing/mortgage-calculator/page.tsx",
-  "app/opengraph-image.tsx",
-  "app/signup/page.tsx",
-  "app/skills-library/page.tsx",
-  "app/cap-rate-roi-calculator/page.tsx",
-  "app/how-to-buy-investment-property/page.tsx",
-  "app/how-to-calculate-cap-rate/page.tsx",
-  "app/how-to-evaluate-rental-cash-flow/page.tsx",
-  "app/roi-calculator/page.tsx",
   "app/sell-house/[city]/[keyword]/page.tsx",
   "app/voice-ai-test-drive/page.tsx",
   "app/agent-home-value-leads/page.tsx",
   "app/auth/complete-profile/page.tsx",
   "app/help/guides/[slug]/page.tsx",
-  "app/adjustable-rate-calculator/page.tsx",
   "app/book/page.tsx",
   "app/how-to-increase-cap-rate-on-rental-property/page.tsx",
   "app/cap-rate-calculator-how-to-use-it/page.tsx",
@@ -329,6 +334,7 @@ describe("residual English", () => {
       for (const file of walk(join(ROOT, root))) {
         const src = readFileSync(file, "utf8");
         if (!/useTranslation|getServerT/.test(src)) continue;
+        if (EXEMPT.has(relative(ROOT, file).split(sep).join("/"))) continue;
         /*
          * Scan the whole file, not line by line: a text node that wraps has no
          * `>text<` on any single line, so a per-line scan reports it clean.

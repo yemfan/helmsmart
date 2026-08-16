@@ -33,11 +33,7 @@ export default function HowToBuyInvestmentPropertyPage() {
       <h1 className="text-3xl font-bold text-blue-600 mb-3">
         {title}
       </h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Buying an investment property is very different from buying a primary residence.
-        This guide walks through a simple, repeatable process you can use to find,
-        analyze, and finance rental properties using the calculators in CloseBoss.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.howToGuides.buyIntro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
@@ -61,9 +57,7 @@ export default function HowToBuyInvestmentPropertyPage() {
         <h2 className="text-xl font-semibold text-gray-900">
           2. Run quick numbers on potential deals
         </h2>
-        <p>
-          As you browse listings, plug rough numbers into these tools to screen deals:
-        </p>
+        <p>{t("pages.howToGuides.buyScreen")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
             <Link
@@ -88,10 +82,7 @@ export default function HowToBuyInvestmentPropertyPage() {
             – combine cash flow, NOI, cap rate, and simple cash‑on‑cash ROI in one view.
           </li>
         </ul>
-        <p>
-          These calculators help you quickly eliminate properties that obviously do not
-          work on paper, so you can focus your time on a smaller set of promising deals.
-        </p>
+        <p>{t("pages.howToGuides.buyEliminate")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
@@ -105,38 +96,20 @@ export default function HowToBuyInvestmentPropertyPage() {
           to see how your payment changes if rates move up or down, and adjust property
           taxes, insurance, maintenance, and vacancy in the cash‑flow tools.
         </p>
-        <p>
-          Aim for a margin of safety: the deal should still make sense if rents are a
-          bit lower, expenses are a bit higher, or interest rates change before you
-          lock your loan.
-        </p>
+        <p>{t("pages.howToGuides.buyMargin")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
           4. Work with local professionals
         </h2>
-        <p>
-          Calculators are powerful for screening and comparing deals, but successful
-          investing also depends on local knowledge. Partner with an agent, lender, and
-          property manager who understand rents, tenant expectations, and typical
-          expenses in your market.
-        </p>
-        <p>
-          Bring your calculator outputs to these conversations. They help you ask
-          better questions and validate assumptions before you submit offers or commit
-          to financing.
-        </p>
+        <p>{t("pages.howToGuides.buyLocal")}</p>
+        <p>{t("pages.howToGuides.buyBring")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Next steps
-        </h2>
-        <p className="mb-3">
-          Ready to analyze your first or next investment property? Start by running a
-          few scenarios in the calculators below:
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.howToGuides.buyNextSteps")}</h2>
+        <p className="mb-3">{t("pages.howToGuides.buyReady")}</p>
         <div className="flex flex-wrap gap-3">
           <Link
             href="/cash-flow-calculator"
