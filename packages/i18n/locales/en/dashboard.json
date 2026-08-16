@@ -2326,6 +2326,33 @@
       "lookupFailed": "Couldn't auto-verify listing status — fill in MLS # manually if you have it.",
       "noMls": "No MLS status on file for this address — could be off-market or just not in our cache yet.",
       "serviceDown": "Couldn't reach property service — proceed manually."
+    },
+    "newTransaction": {
+      "metaTitle": "New transaction",
+      "dealType": "Deal type",
+      "listingSide": "Listing side",
+      "dualAgent": "Dual agent",
+      "seller": "Seller *",
+      "buyer": "Buyer *",
+      "address": "Property address *",
+      "addressHint": "Start typing — Google will autocomplete the full address",
+      "city": "City",
+      "state": "State",
+      "zip": "ZIP",
+      "listPrice": "List price",
+      "purchasePrice": "Purchase price",
+      "listingStart": "Listing start date",
+      "closingDate": "Closing date",
+      "notes": "Notes",
+      "loading": "Loading…",
+      "errRequired": "Contact and property address are required.",
+      "rlaPdf": "Signed RLA PDF",
+      "rpaPdf": "Ratified contract PDF",
+      "optional": "(optional)",
+      "reading": "Reading contract…",
+      "readingHint": "15-40 seconds for most PDFs.",
+      "warnings": "Extractor warnings:",
+      "buyerSide": "Buyer side"
     }
   }
 }

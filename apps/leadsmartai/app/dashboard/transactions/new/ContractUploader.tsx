@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 
@@ -64,6 +65,7 @@ type Props =
  * We don't show the raw JSON; the form becomes the source of truth.
  */
 export function ContractUploader(props: Props) {
+  const { t } = useTranslation("dashboard");
   const kind: UploadKind = props.kind ?? "purchase";
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
@@ -117,8 +119,8 @@ export function ContractUploader(props: Props) {
   return (
     <div className="space-y-2">
       <label className="block text-xs font-medium text-slate-700">
-        {kind === "listing" ? "Signed RLA PDF" : "Ratified contract PDF"}{" "}
-        <span className="font-normal text-slate-400">(optional)</span>
+        {kind === "listing" ? t("pages.newTransaction.rlaPdf") : t("pages.newTransaction.rpaPdf")}{" "}
+        <span className="font-normal text-slate-400">{t("pages.newTransaction.optional")}</span>
       </label>
       <div
         onDragOver={(e) => {
@@ -147,8 +149,8 @@ export function ContractUploader(props: Props) {
         <div className="min-w-0">
           {loading ? (
             <div className="text-slate-700">
-              <div className="font-medium">Reading contract…</div>
-              <div className="text-[11px] text-slate-500">15-40 seconds for most PDFs.</div>
+              <div className="font-medium">{t("pages.newTransaction.reading")}</div>
+              <div className="text-[11px] text-slate-500">{t("pages.newTransaction.readingHint")}</div>
             </div>
           ) : justExtracted ? (
             <div className="text-slate-700">
@@ -205,7 +207,7 @@ export function ContractUploader(props: Props) {
 
       {justExtracted?.warnings.length ? (
         <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-          <div className="font-medium">Extractor warnings:</div>
+          <div className="font-medium">{t("pages.newTransaction.warnings")}</div>
           <ul className="mt-1 list-disc pl-5">
             {justExtracted.warnings.map((w, i) => (
               <li key={i}>{w}</li>

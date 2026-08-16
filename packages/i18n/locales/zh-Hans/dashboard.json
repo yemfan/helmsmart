@@ -2326,6 +2326,33 @@
       "lookupFailed": "无法自动核验房源状态——如已知，请手动填写 MLS 编号。",
       "noMls": "该地址暂无 MLS 状态记录——可能未公开挂牌，或尚未进入我们的缓存。",
       "serviceDown": "无法连接房源服务——请手动填写。"
+    },
+    "newTransaction": {
+      "metaTitle": "新建交易",
+      "dealType": "交易类型",
+      "listingSide": "卖方代理",
+      "dualAgent": "双方代理",
+      "seller": "卖家 *",
+      "buyer": "买家 *",
+      "address": "房产地址 *",
+      "addressHint": "开始输入——Google 会自动补全完整地址",
+      "city": "城市",
+      "state": "州",
+      "zip": "邮编",
+      "listPrice": "挂牌价",
+      "purchasePrice": "成交价",
+      "listingStart": "挂牌开始日期",
+      "closingDate": "交割日期",
+      "notes": "备注",
+      "loading": "加载中…",
+      "errRequired": "联系人与房产地址为必填项。",
+      "rlaPdf": "已签署的委托销售协议 PDF",
+      "rpaPdf": "已生效的买卖合同 PDF",
+      "optional": "（可选）",
+      "reading": "正在读取合同…",
+      "readingHint": "多数 PDF 需要 15–40 秒。",
+      "warnings": "识别提示：",
+      "buyerSide": "买方代理"
     }
   }
 }

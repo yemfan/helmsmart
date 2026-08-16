@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AddressAutocomplete, {
   type AddressAutocompleteValue,
 } from "@/components/AddressAutocomplete";
@@ -22,6 +23,7 @@ import { ContractUploader, type RlaUploadResult, type RpaUploadResult } from "./
 type TxType = "buyer_rep" | "listing_rep" | "dual";
 
 function NewTransactionForm() {
+  const { t: tr } = useTranslation("dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
   const prefilledContactId = searchParams?.get("contactId") ?? "";
@@ -327,7 +329,7 @@ function NewTransactionForm() {
   async function submit() {
     setError(null);
     if (!contact?.id || !propertyAddress.trim()) {
-      setError("Contact and property address are required.");
+      setError(tr("pages.newTransaction.errRequired"));
       return;
     }
     setSubmitting(true);
@@ -530,7 +532,7 @@ function NewTransactionForm() {
             to a side yet. */}
         {!typePinnedFromUrl ? (
           <div>
-            <label className="block text-xs font-medium text-slate-700">Deal type</label>
+            <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.dealType")}</label>
             <div className="mt-1 flex gap-2">
               {(["buyer_rep", "listing_rep", "dual"] as const).map((t) => (
                 <button
@@ -543,7 +545,7 @@ function NewTransactionForm() {
                       : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                   }`}
                 >
-                  {t === "buyer_rep" ? "Buyer side" : t === "listing_rep" ? "Listing side" : "Dual agent"}
+                  {t === "buyer_rep" ? tr("pages.newTransaction.buyerSide") : t === "listing_rep" ? tr("pages.newTransaction.listingSide") : tr("pages.newTransaction.dualAgent")}
                 </button>
               ))}
             </div>
@@ -552,7 +554,7 @@ function NewTransactionForm() {
 
         <div>
           <label className="block text-xs font-medium text-slate-700">
-            {isListing ? "Seller *" : "Buyer *"}
+            {isListing ? tr("pages.newTransaction.seller") : tr("pages.newTransaction.buyer")}
           </label>
           <ContactPicker
             // Re-key when contactInitialId changes so the picker
@@ -573,7 +575,7 @@ function NewTransactionForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">Property address *</label>
+          <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.address")}</label>
           <AddressAutocomplete
             value={propertyAddress}
             onChange={setPropertyAddress}
@@ -588,7 +590,7 @@ function NewTransactionForm() {
               setAddressNote("Loading from records…");
               void applyListPriceFromWarehouse(val.formattedAddress);
             }}
-            placeholder="Start typing — Google will autocomplete the full address"
+            placeholder={tr("pages.newTransaction.addressHint")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
           {addressNote ? (
@@ -598,7 +600,7 @@ function NewTransactionForm() {
 
         <div className="grid grid-cols-3 gap-3">
           <div className="col-span-2">
-            <label className="block text-xs font-medium text-slate-700">City</label>
+            <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.city")}</label>
             <input
               value={city}
               onChange={(e) => setCity(e.target.value)}
@@ -606,7 +608,7 @@ function NewTransactionForm() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">State</label>
+            <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.state")}</label>
             <input
               value={state}
               onChange={(e) => setStateValue(e.target.value.toUpperCase())}
@@ -618,7 +620,7 @@ function NewTransactionForm() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">ZIP</label>
+            <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.zip")}</label>
             <input
               value={zip}
               onChange={(e) => setZip(e.target.value)}
@@ -628,7 +630,7 @@ function NewTransactionForm() {
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-700">
-              {isListing ? "List price" : "Purchase price"}
+              {isListing ? tr("pages.newTransaction.listPrice") : tr("pages.newTransaction.purchasePrice")}
             </label>
             <input
               type="number"
@@ -641,7 +643,7 @@ function NewTransactionForm() {
 
         {isListing && (
           <div>
-            <label className="block text-xs font-medium text-slate-700">Listing start date</label>
+            <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.listingStart")}</label>
             <input
               type="date"
               value={listingStartDate}
@@ -679,7 +681,7 @@ function NewTransactionForm() {
               </p>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-700">Closing date</label>
+              <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.closingDate")}</label>
               <input
                 type="date"
                 value={closingDate}
@@ -694,7 +696,7 @@ function NewTransactionForm() {
         )}
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">Notes</label>
+          <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.notes")}</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
@@ -727,8 +729,9 @@ function NewTransactionForm() {
 }
 
 export function NewTransactionClient() {
+  const { t: tr } = useTranslation("dashboard");
   return (
-    <Suspense fallback={<div className="text-sm text-slate-500">Loading…</div>}>
+    <Suspense fallback={<div className="text-sm text-slate-500">{tr("pages.newTransaction.loading")}</div>}>
       <NewTransactionForm />
     </Suspense>
   );
