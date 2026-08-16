@@ -270,14 +270,10 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
           </button>
         )}
         {inv.status === "draft" && !inv.client_email && (
-          <button type="button" onClick={() => void changeStatus(inv.id, "sent")} disabled={busyId === inv.id} className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50">
-            Mark sent
-          </button>
+          <button type="button" onClick={() => void changeStatus(inv.id, "sent")} disabled={busyId === inv.id} className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50">{t("pages.books.markSent")}</button>
         )}
         {inv.status !== "paid" && inv.status !== "void" && (
-          <button type="button" onClick={() => void changeStatus(inv.id, "paid")} disabled={busyId === inv.id} className="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">
-            Mark paid
-          </button>
+          <button type="button" onClick={() => void changeStatus(inv.id, "paid")} disabled={busyId === inv.id} className="rounded-md bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{t("pages.books.markPaid")}</button>
         )}
       </div>
     </li>
@@ -289,9 +285,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
         <div>
           <div className="text-xs text-slate-500">{t("pages.books.breadcrumb")}</div>
           <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-slate-900">
-            <Receipt className="h-6 w-6 text-blue-600" strokeWidth={2} />
-            Books
-          </h1>
+            <Receipt className="h-6 w-6 text-blue-600" strokeWidth={2} />{t("pages.books.books")}</h1>
           <p className="mt-1 text-sm text-slate-500">{t("pages.books.intro")}</p>
         </div>
         <button
@@ -437,8 +431,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
               ))}
             </div>
             <button type="button" onClick={addLine} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-blue-700 hover:underline">
-              <Plus className="h-3.5 w-3.5" /> Add line
-            </button>
+              <Plus className="h-3.5 w-3.5" />{t("pages.books.addLine")}</button>
           </div>
 
           {/* Totals */}

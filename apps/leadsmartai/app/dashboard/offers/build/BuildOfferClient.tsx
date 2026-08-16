@@ -135,16 +135,11 @@ export function BuildOfferClient() {
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/offers" className="hover:underline">
-            Offers
-          </Link>
+          <Link href="/dashboard/offers" className="hover:underline">{t("pages.buildOffer.offers")}</Link>
           {" / Build with AI"}
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.buildOffer.heading")}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Get recommended terms — price, earnest money, contingency strategy, escalation, and a
-          buyer cover letter — for a competitive but sound offer. You review and save as a draft.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.buildOffer.sub")}</p>
       </div>
 
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -201,9 +196,7 @@ export function BuildOfferClient() {
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
         <div className="flex items-center justify-end gap-2 pt-1">
-          <Link href="/dashboard/offers" className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
-            Cancel
-          </Link>
+          <Link href="/dashboard/offers" className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">{t("pages.buildOffer.cancel")}</Link>
           <button
             type="button"
             onClick={() => void build()}
@@ -263,7 +256,7 @@ export function BuildOfferClient() {
             </button>
           </div>
           <p className="text-[11px] text-slate-500">
-            Saving creates a <strong>draft</strong> offer you can edit before submitting.
+            {t("pages.buildOffer.draftBefore")} <strong>draft</strong>{t("pages.buildOffer.draftAfter")}
           </p>
         </div>
       ) : null}

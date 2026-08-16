@@ -858,9 +858,7 @@ function GuideTabBody({
           onClick={() => send(input)}
           disabled={loading || !input.trim()}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
-        >
-          Send
-        </button>
+        >{t("pages.aiChatPanel.send")}</button>
       </div>
     </>
   );
@@ -928,9 +926,7 @@ function ContactTabBody({
         {tab.contact ? (
           <>
             <div>
-              <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">
-                What do you want to say?
-              </label>
+              <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">{t("pages.aiChatPanel.whatToSay")}</label>
               <textarea
                 value={tab.prompt}
                 onChange={(e) => updateTab(tab.tabId, { prompt: e.target.value })}
@@ -950,9 +946,7 @@ function ContactTabBody({
 
             {tab.draft ? (
               <div>
-                <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">
-                  Draft (editable)
-                </label>
+                <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-gray-500">{t("pages.aiChatPanel.draftEditable")}</label>
                 <textarea
                   value={tab.draft}
                   onChange={(e) => updateTab(tab.tabId, { draft: e.target.value })}
@@ -1007,9 +1001,7 @@ function ContactTabBody({
               </label>
               <div ref={threadRef} className="space-y-1.5 rounded-lg border border-gray-100 bg-gray-50/60 p-2 max-h-44 overflow-y-auto">
                 {tab.thread.length === 0 && !tab.threadLoading && (
-                  <p className="px-1 py-2 text-center text-[11px] text-gray-400">
-                    No messages yet.
-                  </p>
+                  <p className="px-1 py-2 text-center text-[11px] text-gray-400">{t("pages.aiChatPanel.noMessages")}</p>
                 )}
                 {tab.thread.map((m) => {
                   const badge = m.direction === "outbound" ? statusBadge(m.twilio_status) : null;
@@ -1050,9 +1042,7 @@ function ContactTabBody({
             </div>
           </>
         ) : (
-          <p className="px-2 py-6 text-center text-xs text-gray-400">
-            Pick a contact above to start drafting an SMS.
-          </p>
+          <p className="px-2 py-6 text-center text-xs text-gray-400">{t("pages.aiChatPanel.pickContact")}</p>
         )}
       </div>
     </div>
@@ -1142,7 +1132,7 @@ function AutoPilotSwitch({
       className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${
         checked ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-700"
       }`}
-      title="Auto Pilot — auto-send drafts and auto-reply to inbound SMS for this contact."
+      title={t("pages.aiChatPanel.autoPilotHint")}
     >
       <input
         type="checkbox"

@@ -1634,7 +1634,11 @@
       "paid": "Paid",
       "send": "Send",
       "resend": "Resend",
-      "needLineItem": "Add at least one line item with a description."
+      "needLineItem": "Add at least one line item with a description.",
+      "markSent": "Mark sent",
+      "markPaid": "Mark paid",
+      "books": "Books",
+      "addLine": "Add line"
     },
     "likelySellers": {
       "metaTitle": "Today's likely sellers",
@@ -2946,7 +2950,13 @@
       "chineseSimplified": "Chinese (Simplified)",
       "bilingualGreeting": "Bilingual inbound greeting (English + Chinese)",
       "customVoice": "Custom voice (future)",
-      "preview": "Preview (Twilio playback)"
+      "preview": "Preview (Twilio playback)",
+      "intro": "Choose the voice for your CloseBoss phone assistant. Calls use Twilio speech today; OpenAI and ElevenLabs presets map to Amazon Polly voices until native TTS is connected. Assistant disclosure scripts are unchanged.",
+      "defaultLanguage": "Default language (when bilingual is off)",
+      "cloneBefore": "Voice cloning will use",
+      "cloneAfter": "columns on your agent row. Not available yet — preset voices only.",
+      "englishLabel": "English:",
+      "futureVoiceId": "Future OpenAI Realtime voice id:"
     },
     "aiChatPanel": {
       "open": "Open CloseBoss",
@@ -2966,7 +2976,13 @@
       "askPlaceholder": "Ask CloseBoss…",
       "pickDifferent": "Pick a different contact",
       "noMatches": "No contacts match.",
-      "autoPilot": "Auto Pilot"
+      "autoPilot": "Auto Pilot",
+      "send": "Send",
+      "whatToSay": "What do you want to say?",
+      "draftEditable": "Draft (editable)",
+      "noMessages": "No messages yet.",
+      "pickContact": "Pick a contact above to start drafting an SMS.",
+      "autoPilotHint": "Auto Pilot — auto-send drafts and auto-reply to inbound SMS for this contact."
     },
     "comparisonReportView": {
       "yourAgent": "Your agent",
@@ -3271,6 +3287,34 @@
       "generatedLink": "Generated link",
       "openLink": "Open Link",
       "copied": "Link copied to clipboard. Paste it into your email or message to the client."
+    },
+    "transactionDetail": {
+      "transactions": "Transactions",
+      "daysToClose": "Days to close",
+      "listingTools": "Listing tools",
+      "add": "Add",
+      "addCounterparty": "Add counterparty",
+      "counterpartyHint": "Title, lender, inspector, insurance — add them here so you don't hunt through texts."
+    },
+    "credits": {
+      "everythingIncluded": "Everything's included — you only spend credits on calls, video, and image generation.",
+      "creditsAdded": "Credits added — your new balance should appear in a moment.",
+      "subUpdated": "Subscription updated — your monthly credits will appear shortly.",
+      "switchingNote": "Switching plans only bills the difference for the rest of your billing period. Downgrades keep the credits you've already been given.",
+      "contactBrokerage": "Contact us about Brokerage"
+    },
+    "buildOffer": {
+      "offers": "Offers",
+      "sub": "Get recommended terms — price, earnest money, contingency strategy, escalation, and a buyer cover letter — for a competitive but sound offer. You review and save as a draft.",
+      "cancel": "Cancel",
+      "draftBefore": "Saving creates a",
+      "draftAfter": "offer you can edit before submitting."
+    },
+    "transactionsList": {
+      "sub": "Every deal from mutual acceptance through close — deadlines, tasks, counterparties in one place.",
+      "newTransaction": "New transaction",
+      "type": "Type:",
+      "emptyHint": "Create one for a buyer who just had an offer accepted, or for any active deal you want to track in one place."
     }
   }
 }

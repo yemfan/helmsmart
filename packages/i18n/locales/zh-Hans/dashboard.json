@@ -1634,7 +1634,11 @@
       "paid": "已付款",
       "send": "发送",
       "resend": "重新发送",
-      "needLineItem": "请至少添加一条带说明的明细项。"
+      "needLineItem": "请至少添加一条带说明的明细项。",
+      "markSent": "标记为已发送",
+      "markPaid": "标记为已付款",
+      "books": "账目",
+      "addLine": "添加一行"
     },
     "likelySellers": {
       "metaTitle": "今日潜在卖家",
@@ -2946,7 +2950,13 @@
       "chineseSimplified": "简体中文",
       "bilingualGreeting": "双语来电问候（英文 + 中文）",
       "customVoice": "自定义语音（后续推出）",
-      "preview": "试听（Twilio 播放）"
+      "preview": "试听（Twilio 播放）",
+      "intro": "为您的 CloseBoss 电话助理选择声音。目前通话使用 Twilio 语音；在接入原生 TTS 之前，OpenAI 和 ElevenLabs 预设会映射到 Amazon Polly 的声音。助理的身份告知话术不受影响。",
+      "defaultLanguage": "默认语言（关闭双语时使用）",
+      "cloneBefore": "语音克隆会使用您经纪人记录上的",
+      "cloneAfter": "字段。目前尚未开放——只能使用预设声音。",
+      "englishLabel": "英语：",
+      "futureVoiceId": "未来的 OpenAI Realtime 声音 ID："
     },
     "aiChatPanel": {
       "open": "打开 CloseBoss",
@@ -2966,7 +2976,13 @@
       "askPlaceholder": "向 CloseBoss 提问…",
       "pickDifferent": "换一位联系人",
       "noMatches": "没有匹配的联系人。",
-      "autoPilot": "自动驾驶"
+      "autoPilot": "自动驾驶",
+      "send": "发送",
+      "whatToSay": "您想说什么？",
+      "draftEditable": "草稿（可编辑）",
+      "noMessages": "还没有消息。",
+      "pickContact": "请先在上方选择一位联系人，再开始拟写短信。",
+      "autoPilotHint": "自动驾驶——针对这位联系人自动发送草稿，并自动回复其来信短信。"
     },
     "comparisonReportView": {
       "yourAgent": "您的经纪人",
@@ -3271,6 +3287,34 @@
       "generatedLink": "生成的链接",
       "openLink": "打开链接",
       "copied": "链接已复制。粘贴到给客户的邮件或消息中即可。"
+    },
+    "transactionDetail": {
+      "transactions": "交易",
+      "daysToClose": "距成交天数",
+      "listingTools": "房源工具",
+      "add": "添加",
+      "addCounterparty": "添加对接方",
+      "counterpartyHint": "产权公司、贷款经纪、验房师、保险——都记在这里，省得回头翻聊天记录找。"
+    },
+    "credits": {
+      "everythingIncluded": "功能全都包含在内——只有通话、视频和图片生成才会消耗额度。",
+      "creditsAdded": "额度已充值——新的余额稍后就会显示。",
+      "subUpdated": "订阅已更新——每月额度稍后就会到账。",
+      "switchingNote": "切换方案只按本计费周期剩余时间补差价。降级不会收回已经发放给您的额度。",
+      "contactBrokerage": "咨询经纪公司方案"
+    },
+    "buildOffer": {
+      "offers": "报价",
+      "sub": "获取推荐条款——价格、定金、附加条件策略、加价条款，以及一封买家自荐信——帮您做出既有竞争力又稳妥的报价。您核对后保存为草稿。",
+      "cancel": "取消",
+      "draftBefore": "保存后会创建一份",
+      "draftAfter": "报价，提交前都可以修改。"
+    },
+    "transactionsList": {
+      "sub": "从双方接受到成交的每一笔交易——截止日期、待办事项和对接方都集中在一处。",
+      "newTransaction": "新建交易",
+      "type": "类型：",
+      "emptyHint": "买家刚有报价被接受时可以建一笔，或者把任何想集中跟踪的在办交易都放进来。"
     }
   }
 }

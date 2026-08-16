@@ -204,9 +204,7 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
       <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <div className="text-xs text-slate-500">
-            <Link href="/dashboard/transactions" className="hover:underline">
-              Transactions
-            </Link>
+            <Link href="/dashboard/transactions" className="hover:underline">{t("pages.transactionDetail.transactions")}</Link>
             {" / "}
             <span>{txn.property_address}</span>
           </div>
@@ -225,9 +223,7 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
 
         <div className="flex items-center gap-4">
           <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center shadow-sm">
-            <div className="text-[11px] uppercase tracking-wide text-slate-500">
-              Days to close
-            </div>
+            <div className="text-[11px] uppercase tracking-wide text-slate-500">{t("pages.transactionDetail.daysToClose")}</div>
             <div className="mt-1 text-2xl font-semibold text-slate-900">
               {(() => {
                 const d = daysUntil(txn.closing_date);
@@ -283,9 +279,7 @@ export function TransactionDetailClient({ initial }: { initial: Bundle }) {
           components, not nav links. Buyer-rep deals skip the strip. */}
       {txn.transaction_type === "listing_rep" || txn.transaction_type === "dual" ? (
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs">
-          <span className="mr-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-            Listing tools
-          </span>
+          <span className="mr-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.transactionDetail.listingTools")}</span>
           <Link
             href={`/dashboard/transactions/${txn.id}/offers`}
             className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-100"
@@ -540,9 +534,7 @@ function StageBlock({
                   onClick={() => void submitAdd()}
                   disabled={!newTitle.trim()}
                   className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
-                >
-                  Add
-                </button>
+                >{tr("pages.transactionDetail.add")}</button>
               </div>
             </div>
           ) : null}
@@ -831,16 +823,12 @@ function CounterpartiesBlockBody({
             onClick={() => void submit()}
             disabled={!form.name.trim()}
             className="w-full rounded-lg bg-slate-900 py-1.5 text-xs font-medium text-white disabled:opacity-50"
-          >
-            Add counterparty
-          </button>
+          >{t("pages.transactionDetail.addCounterparty")}</button>
         </div>
       ) : null}
 
       {counterparties.length === 0 ? (
-        <p className="mt-3 text-xs text-slate-500">
-          Title, lender, inspector, insurance — add them here so you don&apos;t hunt through texts.
-        </p>
+        <p className="mt-3 text-xs text-slate-500">{t("pages.transactionDetail.counterpartyHint")}</p>
       ) : (
         <ul className="mt-3 space-y-2 text-sm">
           {counterparties.map((cp) => (

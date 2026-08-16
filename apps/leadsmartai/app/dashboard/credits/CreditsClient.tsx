@@ -119,9 +119,7 @@ export default function CreditsClient() {
         <div className="flex flex-wrap items-center justify-between gap-4 p-6">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-brand-text">{tr("more.credits.title")}</h1>
-            <p className="mt-1 text-sm text-brand-text/60">
-              Everything&apos;s included — you only spend credits on calls, video, and image generation.
-            </p>
+            <p className="mt-1 text-sm text-brand-text/60">{tr("pages.credits.everythingIncluded")}</p>
           </div>
           <div className="text-right">
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">{tr("more.credits.balance")}</p>
@@ -170,11 +168,11 @@ export default function CreditsClient() {
       </div>
 
       {topup === "success" && (
-        <Banner tone="ok">Credits added — your new balance should appear in a moment.</Banner>
+        <Banner tone="ok">{tr("pages.credits.creditsAdded")}</Banner>
       )}
       {topup === "canceled" && <Banner tone="warn">{tr("more.credits.canceled")}</Banner>}
       {checkout === "success" && (
-        <Banner tone="ok">Subscription updated — your monthly credits will appear shortly.</Banner>
+        <Banner tone="ok">{tr("pages.credits.subUpdated")}</Banner>
       )}
       {notice && <Banner tone="ok">{notice}</Banner>}
       {error && <Banner tone="err">{error}</Banner>}
@@ -229,16 +227,11 @@ export default function CreditsClient() {
           })}
         </div>
         {plan?.planId && (
-          <p className="mt-3 text-xs text-gray-500">
-            Switching plans only bills the difference for the rest of your billing period. Downgrades keep
-            the credits you&apos;ve already been given.
-          </p>
+          <p className="mt-3 text-xs text-gray-500">{tr("pages.credits.switchingNote")}</p>
         )}
         <p className="mt-3 text-xs text-gray-500">
           {tr("more.credits.teamPrompt")}{" "}
-          <a href="/contact?topic=team" className="font-medium underline" style={{ color: BRAND }}>
-            Contact us about Brokerage
-          </a>{" "}
+          <a href="/contact?topic=team" className="font-medium underline" style={{ color: BRAND }}>{tr("pages.credits.contactBrokerage")}</a>{" "}
           for multiple agents + pooled credits.
         </p>
       </section>
