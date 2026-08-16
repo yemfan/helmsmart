@@ -68,11 +68,8 @@ export default function HowToIncreaseCapRateOnRentalPropertyPage() {
           <li>{t("pages.increaseCapRate.s1i2")}</li>
           <li>{t("pages.increaseCapRate.s1i3")}</li>
         </ul>
-        <p>
-          Even modest rent increases can meaningfully raise NOI. Use the{" "}
-          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
-          to see how different rent scenarios impact your income and cap rate.
-        </p>
+        <p>{t("pages.articleLinks.modestRentIncreases")}{" "}
+          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}{t("pages.articleLinks.toSeeRentScenarios")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
@@ -84,13 +81,8 @@ export default function HowToIncreaseCapRateOnRentalPropertyPage() {
           <li>{t("pages.increaseCapRate.s2i3")}</li>
           <li>{t("pages.increaseCapRate.s2i4")}</li>
         </ul>
-        <p>
-          Because most of this revenue has low incremental expenses, it can flow directly to NOI,
-          making it a powerful way to increase cap rate. The{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
-          can help you see the cumulative effect of multiple small income streams on your overall
-          returns.
-        </p>
+        <p>{t("pages.articleLinks.lowIncrementalExpenses")}{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}{t("pages.articleLinks.cumulativeEffect")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
@@ -132,12 +124,8 @@ export default function HowToIncreaseCapRateOnRentalPropertyPage() {
         <h3 className="text-lg font-semibold text-gray-900">{t("pages.increaseCapRate.q2")}</h3>
         <p>{t("pages.increaseCapRate.a2")}</p>
         <h3 className="text-lg font-semibold text-gray-900">{t("pages.increaseCapRate.q3")}</h3>
-        <p>
-          Many improvements happen over one to three years as leases turn over, renovations are
-          completed, and expense changes take effect. Modeling different timelines in tools like the{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
-          can help you set realistic expectations.
-        </p>
+        <p>{t("pages.articleLinks.improvementsOverYears")}{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}{t("pages.articleLinks.realisticExpectations")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">

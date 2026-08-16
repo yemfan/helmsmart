@@ -79,12 +79,8 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">{t("pages.whatIsCapRate.stepByStep")}</h2>
-        <p>
-          To calculate cap rate on any rental property, you can follow a straightforward process.
-          These are the same steps you&apos;ll see inside the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-          in CloseBoss.
-        </p>
+        <p>{t("pages.articleLinks.sameStepsInside")}{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.articleLinks.inCloseBoss")}</p>
         <h3 className="text-lg font-semibold text-gray-900">1. Estimate gross rental income</h3>
         <p>
           Start with how much rent the property will collect in one year. For example, if the
@@ -132,12 +128,8 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
         <h2 className="text-xl font-semibold text-gray-900">{t("pages.whatIsCapRate.vsRoi")}</h2>
         <p>{t("pages.whatIsCapRate.vsRoiBody")}</p>
         <p>{t("pages.whatIsCapRate.vsRoiExample")}</p>
-        <p>
-          For a deeper analysis that includes financing and long-term returns, you can pair cap rate
-          with cash-on-cash return or use tools like the{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
-          in CloseBoss.
-        </p>
+        <p>{t("pages.articleLinks.deeperAnalysis")}{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}{t("pages.articleLinks.inCloseBoss")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">

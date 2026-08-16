@@ -176,8 +176,7 @@ export function JobsClient({ jobs }: { jobs: CronJob[] }) {
         <div>
           <h1 className="text-xl font-semibold text-slate-900">{t("pages.adminPages.cronMonitor")}</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {jobs.length} scheduled jobs
-            {runningCount > 0 && ` · ${runningCount} running`}
+            {jobs.length} {t("pages.dashFragments.scheduledJobs")}{runningCount > 0 && ` · ${runningCount} running`}
             {successCount > 0 && ` · ${successCount} ✓`}
             {errorCount > 0 && ` · ${errorCount} errors`}
           </p>
@@ -221,10 +220,8 @@ export function JobsClient({ jobs }: { jobs: CronJob[] }) {
         )}
       </div>
 
-      <p className="text-xs text-slate-400">
-        All schedules are UTC. Jobs are triggered with{" "}
-        <code className="rounded bg-slate-100 px-1">CRON_SECRET</code> auth automatically.
-      </p>
+      <p className="text-xs text-slate-400">{t("pages.dashFragments.allSchedulesUtc")}{" "}
+        <code className="rounded bg-slate-100 px-1">CRON_SECRET</code> {t("pages.dashFragments.authAutomatically")}</p>
     </div>
   );
 }

@@ -120,15 +120,9 @@ export default function CapRateVsCashOnCashReturnPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsCoc.calcTitle")}</h2>
-        <p>
-          Doing these calculations by hand is valuable once or twice, but it quickly becomes tedious
-          when you are screening dozens of properties. That&apos;s why many investors use tools
-          like the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-          and the{" "}
-          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
-          in CloseBoss to model cap rate, cash on cash return, and long-term ROI in one view.
-        </p>
+        <p>{t("pages.articleLinks.byHandTedious")}{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.articleLinks.andThe")}{" "}
+          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}{t("pages.articleLinks.inOneView")}</p>
         <p>{t("pages.capRateVsCoc.calcBody")}</p>
       </section>
 

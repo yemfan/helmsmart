@@ -144,11 +144,10 @@ export default function CreditsClient() {
                 {plan.planId === null ? (
                   <>{tr("more.credits.paygHelp")}</>
                 ) : plan.cancelAtPeriodEnd && plan.renewsAt ? (
-                  <>Ends {fmtDate(plan.renewsAt, locale)} — credits you already have stay yours.</>
+                  <>{tr("pages.dashFragments.ends")} {fmtDate(plan.renewsAt, locale)}{tr("pages.dashFragments.creditsStayYours")}</>
                 ) : (
                   <>
-                    {plan.monthlyCredits?.toLocaleString()} credits / mo
-                    {plan.renewsAt ? <> · renews {fmtDate(plan.renewsAt, locale)}</> : null}
+                    {plan.monthlyCredits?.toLocaleString()} {tr("pages.dashFragments.creditsPerMo")}{plan.renewsAt ? <> · {tr("pages.dashFragments.renews")} {fmtDate(plan.renewsAt, locale)}</> : null}
                   </>
                 )}
               </p>
@@ -210,8 +209,7 @@ export default function CreditsClient() {
                   <span className="text-base font-normal text-gray-500">/mo</span>
                 </p>
                 <p className="mt-1 text-sm font-semibold text-gray-700">
-                  {t.monthlyCredits.toLocaleString()} credits / mo
-                </p>
+                  {t.monthlyCredits.toLocaleString()} {tr("pages.dashFragments.creditsPerMo")}</p>
                 <p className="mt-1 flex-1 text-xs text-gray-500">{t.blurb}</p>
                 <button
                   type="button"
@@ -231,9 +229,7 @@ export default function CreditsClient() {
         )}
         <p className="mt-3 text-xs text-gray-500">
           {tr("more.credits.teamPrompt")}{" "}
-          <a href="/contact?topic=team" className="font-medium underline" style={{ color: BRAND }}>{tr("pages.credits.contactBrokerage")}</a>{" "}
-          for multiple agents + pooled credits.
-        </p>
+          <a href="/contact?topic=team" className="font-medium underline" style={{ color: BRAND }}>{tr("pages.credits.contactBrokerage")}</a>{" "}{tr("pages.dashFragments.forMultipleAgents")}</p>
       </section>
 
       {/* Top-up packs */}

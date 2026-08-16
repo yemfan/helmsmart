@@ -239,8 +239,7 @@ export default async function NotificationsPage() {
                     >
                       <p className="text-sm font-medium text-slate-900">{l.name ?? "Lead"}</p>
                       {l.last_activity_at ? (
-                        <p className="mt-0.5 text-xs text-slate-500">
-                          Last activity {new Date(l.last_activity_at).toLocaleString(locale)}
+                        <p className="mt-0.5 text-xs text-slate-500">{t("pages.dashFragments.lastActivity", { ns: "dashboard" })} {new Date(l.last_activity_at).toLocaleString(locale)}
                         </p>
                       ) : null}
                     </Link>
@@ -423,15 +422,12 @@ export default async function NotificationsPage() {
             ) : null}
 
             {reminderCount === 0 ? (
-              <p className="py-6 text-center text-sm text-slate-500">
-                No upcoming reminders.{" "}
+              <p className="py-6 text-center text-sm text-slate-500">{t("pages.dashFragments.noUpcoming", { ns: "dashboard" })}{" "}
                 <Link href="/dashboard/tasks" className="font-semibold text-[#0072ce] hover:underline">{t("pages.notifications.tasks", { ns: "dashboard" })}</Link>{" "}
                 and{" "}
                 <Link href="/dashboard/calendar" className="font-semibold text-[#0072ce] hover:underline">
                   calendar
-                </Link>{" "}
-                will show here.
-              </p>
+                </Link>{" "}{t("pages.dashFragments.willShowHere", { ns: "dashboard" })}</p>
             ) : null}
           </div>
         </section>

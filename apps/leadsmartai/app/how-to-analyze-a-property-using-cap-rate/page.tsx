@@ -74,11 +74,8 @@ export default function HowToAnalyzeAPropertyUsingCapRatePage() {
           <li>{t("pages.analyzeWithCapRate.f2")}</li>
           <li>{t("pages.analyzeWithCapRate.f3")}</li>
         </ul>
-        <p>
-          The result is your estimated NOI. For quick analysis, you can plug these numbers into the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-          to avoid doing the math by hand.
-        </p>
+        <p>{t("pages.articleLinks.resultIsNoi")}{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.articleLinks.avoidMathByHand")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
@@ -110,13 +107,11 @@ export default function HowToAnalyzeAPropertyUsingCapRatePage() {
         <p>{t("pages.analyzeWithCapRate.s5Body")}</p>
         <p>{t("pages.analyzeWithCapRate.nextLayer")}</p>
         <ul className="list-disc list-inside space-y-1">
-          <li>
-            Detailed cash-flow projections using the{" "}
+          <li>{t("pages.articleLinks.detailedProjections")}{" "}
             <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>
             .
           </li>
-          <li>
-            Financing scenarios and long-term ROI in the{" "}
+          <li>{t("pages.articleLinks.financingScenarios")}{" "}
             <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>
             .
           </li>

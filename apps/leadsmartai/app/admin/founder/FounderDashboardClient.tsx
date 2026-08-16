@@ -216,8 +216,7 @@ export function FounderDashboardClient() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-              <p className="mt-2 text-xs text-gray-500">
-                Current MRR (canonical):{" "}
+              <p className="mt-2 text-xs text-gray-500">{t("pages.dashFragments.currentMrr")}{" "}
                 <span className="font-medium text-gray-700">{fmtMoney(revenue?.currentMrr ?? overview.mrr)}</span>
               </p>
             </SectionCard>
@@ -238,8 +237,7 @@ export function FounderDashboardClient() {
           </div>
 
           <SectionCard title={t("pages.adminPages.funnelWindow")}>
-            <p className="mb-4 text-xs text-gray-500">
-              Window: {funnel?.windowDays ?? "—"} days · Cumulative state: onboarded {funnel?.cumulative.onboarded ?? "—"}
+            <p className="mb-4 text-xs text-gray-500">{t("pages.dashFragments.window")} {funnel?.windowDays ?? "—"} days · Cumulative state: onboarded {funnel?.cumulative.onboarded ?? "—"}
               , first reply {funnel?.cumulative.firstReply ?? "—"}, first AI {funnel?.cumulative.firstAi ?? "—"}
             </p>
             <div className="h-[300px] w-full">
@@ -256,7 +254,7 @@ export function FounderDashboardClient() {
           </SectionCard>
 
           <SectionCard title="Feature usage (usage_events)">
-            <p className="mb-4 text-xs text-gray-500">Window: {usage?.windowDays ?? "—"} days</p>
+            <p className="mb-4 text-xs text-gray-500">{t("pages.dashFragments.window")} {usage?.windowDays ?? "—"} days</p>
             {usage && usage.breakdown.length === 0 ? (
               <p className="text-sm text-gray-600">{t("pages.adminPages.noUsageEvents")}</p>
             ) : (

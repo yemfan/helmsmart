@@ -20,8 +20,7 @@ export default async function DemoCalendar() {
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{t("pages.demoPages.calendar", { ns: "dashboard" })}</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             This week · {DEMO_EVENTS.length} upcoming events ·{" "}
-            {DEMO_DEALS.length} active deals
-          </p>
+            {DEMO_DEALS.length} {t("pages.dashFragments.activeDeals", { ns: "dashboard" })}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <DemoDisabledButton label={t("pages.demoPages.connectGoogle", { ns: "dashboard" })} variant="ghost" />
@@ -50,8 +49,7 @@ export default async function DemoCalendar() {
                   <p className="text-sm font-semibold text-slate-900 dark:text-white">
                     {event.title}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    With {event.contactName}
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{t("pages.dashFragments.with", { ns: "dashboard" })} {event.contactName}
                   </p>
                 </div>
               </li>
@@ -78,8 +76,7 @@ export default async function DemoCalendar() {
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                   {deal.property} · ${Math.round(deal.price / 1000)}K
                 </p>
-                <p className="mt-1.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                  Next: {deal.nextMilestone}{" "}
+                <p className="mt-1.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300">{t("pages.dashFragments.next", { ns: "dashboard" })} {deal.nextMilestone}{" "}
                   <span className="text-slate-400">
                     · in {deal.daysToMilestone} day
                     {deal.daysToMilestone === 1 ? "" : "s"}

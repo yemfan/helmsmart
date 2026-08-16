@@ -134,20 +134,11 @@ export default async function CapRateVsRoiPage() {
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsRoi.cocTitle")}</h2>
-        <p>
-          Many investors also rely on{" "}
-          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.capRateVsRoi.cocLink")}</Link>{" "}
-          alongside cap rate and ROI. Cash-on-cash return measures your annual pre-tax cash flow
-          divided by your total cash invested and focuses on the income portion of your returns in
-          the early years of a deal.
-        </p>
-        <p>
-          A common workflow is to use the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.capRateVsRoi.capCalc")}</Link>{" "}
-          to screen deals, then switch to the{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.capRateVsRoi.analyzer")}</Link>{" "}
-          or ROI-focused tools to model financing, cash-on-cash, and long-term ROI in more detail.
-        </p>
+        <p>{t("pages.articleLinks.manyAlsoRelyOn")}{" "}
+          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.capRateVsRoi.cocLink")}</Link>{" "}{t("pages.articleLinks.cocMeasures")}</p>
+        <p>{t("pages.articleLinks.commonWorkflow")}{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.capRateVsRoi.capCalc")}</Link>{" "}{t("pages.articleLinks.toScreenThenSwitch")}{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.capRateVsRoi.analyzer")}</Link>{" "}{t("pages.articleLinks.orRoiFocused")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">

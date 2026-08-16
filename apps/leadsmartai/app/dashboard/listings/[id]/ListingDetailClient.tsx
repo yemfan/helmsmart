@@ -470,8 +470,7 @@ export function ListingDetailClient({
                 the consolidated 3-card grid below. */}
             <p className="mt-0.5 text-[12px] text-slate-500">
               {listing.contactName ? (
-                <>
-                  Seller:{" "}
+                <>{t("pages.dashFragments.seller")}{" "}
                   <span className="font-medium text-slate-700">
                     {listing.contactName}
                   </span>
@@ -479,8 +478,7 @@ export function ListingDetailClient({
               ) : (
                 <span className="text-slate-400">{t("pages.listingDetail.sellerNotSet")}</span>
               )}
-              <span className="mx-1.5 text-slate-300">·</span>
-              Created {formatRelative(listing.created_at)}
+              <span className="mx-1.5 text-slate-300">·</span>{t("pages.dashFragments.created")} {formatRelative(listing.created_at)}
             </p>
           </div>
           <span
@@ -634,8 +632,7 @@ export function ListingDetailClient({
       <section>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-baseline gap-3">
-            <h2 className="text-sm font-semibold text-slate-900">
-              Offers ({offers.length})
+            <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.offers")}{offers.length})
             </h2>
             {offers.length > 1 ? (
               <button

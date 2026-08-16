@@ -375,8 +375,7 @@ export default function HouseSearchClient() {
                   onClick={onRefine}
                   disabled={checkedRefinements.size === 0}
                   className="mt-3 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Refine search ({checkedRefinements.size})
+                >{t("pages.dashFragments.refineSearch")}{checkedRefinements.size})
                 </button>
               </div>
             ) : null}
@@ -795,9 +794,7 @@ function EmailToBuyer({
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">
-          Email {selectedListings.length} listing{selectedListings.length === 1 ? "" : "s"} to buyer
-        </h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.email")} {selectedListings.length} listing{selectedListings.length === 1 ? "" : "s"} {t("pages.dashFragments.toBuyer")}</h2>
         <button
           type="button"
           onClick={() => setOpen(false)}

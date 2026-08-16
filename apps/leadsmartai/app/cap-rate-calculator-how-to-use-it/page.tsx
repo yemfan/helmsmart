@@ -73,11 +73,8 @@ export default function CapRateCalculatorHowToUseItPage() {
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateCalcHowTo.s3Title")}</h2>
         <p>{t("pages.capRateCalcHowTo.s3Body")}</p>
-        <p>
-          For example, in the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-          on CloseBoss, you can enter:
-        </p>
+        <p>{t("pages.articleLinks.forExampleIn")}{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.articleLinks.onCloseBossEnter")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>{t("pages.capRateCalcHowTo.s3i1")}</li>
           <li>{t("pages.capRateCalcHowTo.s3i2")}</li>
@@ -109,8 +106,7 @@ export default function CapRateCalculatorHowToUseItPage() {
           <li>{t("pages.capRateCalcHowTo.s5i3")}</li>
           <li>{t("pages.capRateCalcHowTo.s5i4")}</li>
         </ul>
-        <p>
-          In the CloseBoss{" "}
+        <p>{t("pages.articleLinks.inTheCloseBoss")}{" "}
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>
           , these outputs are displayed clearly so you can see both the underlying NOI and the final
           cap rate percentage.
@@ -147,12 +143,8 @@ export default function CapRateCalculatorHowToUseItPage() {
         <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateCalcHowTo.q2")}</h3>
         <p>{t("pages.capRateCalcHowTo.a2")}</p>
         <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateCalcHowTo.q3")}</h3>
-        <p>
-          Yes. The cap rate math is the same. For larger properties with more complex expenses, you
-          may just have more expense line items to enter. The{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
-          is especially helpful for multifamily and mixed-use deals.
-        </p>
+        <p>{t("pages.articleLinks.sameCapRateMath")}{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}{t("pages.articleLinks.especiallyMultifamily")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">

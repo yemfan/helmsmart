@@ -92,12 +92,8 @@ export default function CapRateFormulaExplainedForBeginnersPage() {
           Cap Rate = $18,000 ÷ $300,000 = 0.06, or 6%
         </p>
         <p>{t("pages.capRateFormula.step3Result")}</p>
-        <p>
-          You can also skip the manual math by using the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-          in CloseBoss: enter rent, expenses, and price, and it instantly computes NOI and cap
-          rate for you.
-        </p>
+        <p>{t("pages.articleLinks.skipManualMath")}{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.articleLinks.instantlyComputes")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">

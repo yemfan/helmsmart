@@ -150,13 +150,10 @@ export default function CapRateExampleForRentalPropertyPage() {
           <li>What if you raise rent to $2,450 over the first year to match nearby comps?</li>
           <li>{t("pages.capRateExample.s7i1")}</li>
         </ul>
-        <p>
-          You can quickly model these changes in the{" "}
+        <p>{t("pages.articleLinks.quicklyModel")}{" "}
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
           and{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
-          to see how they impact NOI, cap rate, and overall returns.
-        </p>
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}{t("pages.articleLinks.toSeeImpact")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">

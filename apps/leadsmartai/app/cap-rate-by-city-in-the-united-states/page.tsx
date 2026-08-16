@@ -87,11 +87,8 @@ export default function CapRateByCityInTheUnitedStatesPage() {
           <li>{t("pages.capRateByCity.r1")}</li>
           <li>Review recent sales comps and compute NOI ÷ sale price for comparable properties.</li>
           <li>{t("pages.capRateByCity.r2")}</li>
-          <li>
-            Use tools like{" "}
-            <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-            to analyze individual deals against those ranges.
-          </li>
+          <li>{t("pages.articleLinks.useToolsLike")}{" "}
+            <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.articleLinks.againstThoseRanges")}</li>
         </ul>
         <p>{t("pages.capRateByCity.researchClose")}</p>
       </section>
@@ -107,12 +104,8 @@ export default function CapRateByCityInTheUnitedStatesPage() {
           <li>
             <span className="font-semibold">{t("pages.capRateByCity.s3Label")}</span>{t("pages.capRateByCity.s3")}</li>
         </ul>
-        <p>
-          The{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
-          can help you compare deals across different cities by standardizing assumptions and
-          showing cash flow, cap rate, and ROI side by side.
-        </p>
+        <p>{t("pages.articleLinks.the")}{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}{t("pages.articleLinks.standardizeAcrossCities")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">

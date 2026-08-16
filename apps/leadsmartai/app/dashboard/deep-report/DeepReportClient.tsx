@@ -217,9 +217,7 @@ export default function DeepReportClient() {
         </div>
         {quota?.reached ? (
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            <span>
-              You&rsquo;ve used all {quota.limit} Deep Report{quota.limit === 1 ? "" : "s"} for today. Resets at midnight UTC.
-            </span>
+            <span>{t("pages.dashFragments.usedAll")} {quota.limit} {t("pages.dashFragments.deepReport")}{quota.limit === 1 ? "" : "s"} {t("pages.dashFragments.forTodayResets")}</span>
             <Link href="/agent/pricing" className="shrink-0 font-semibold text-amber-900 underline hover:text-amber-950">
               Upgrade for more →
             </Link>

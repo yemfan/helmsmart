@@ -370,7 +370,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
         <div>
           <h1 className="text-xl font-semibold text-gray-900">{tr("calendar.title")}</h1>
           <p className="text-sm text-gray-500">
-            {monthStats.events} appointments &middot; {monthStats.tasks} tasks &middot; {monthStats.followups} follow-ups &middot; {monthStats.drafts} drafts
+            {monthStats.events} {tr("pages.dashFragments.appointments")} {monthStats.tasks} {tr("pages.dashFragments.tasksSep")} {monthStats.followups} {tr("pages.dashFragments.followUps")} {monthStats.drafts} {tr("pages.dashFragments.drafts")}
           </p>
         </div>
         <button onClick={() => setShowAdd((v) => !v)} className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800">

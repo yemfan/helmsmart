@@ -222,13 +222,12 @@ function ListingCard({ listing }: { listing: ListingSummary }) {
 }
 
 function ShowingsCard({ items }: { items: ShowingItem[] }) {
-  const { i18n } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
   if (items.length === 0) return null;
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">
-        Showings ({items.length})
+      <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.showings")}{items.length})
       </h2>
       <ul className="mt-2 space-y-2">
         {items.map((s) => (
@@ -264,13 +263,12 @@ function ShowingsCard({ items }: { items: ShowingItem[] }) {
 }
 
 function OffersCard({ items }: { items: OfferItem[] }) {
-  const { i18n } = useTranslation("dashboard");
+  const { t, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
   if (items.length === 0) return null;
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">
-        Offers ({items.length})
+      <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.offers")}{items.length})
       </h2>
       <ul className="mt-2 space-y-2">
         {items.map((o) => (
@@ -278,8 +276,7 @@ function OffersCard({ items }: { items: OfferItem[] }) {
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="font-medium text-slate-900">{o.propertyAddress}</div>
-                <div className="mt-0.5 text-[11px] text-slate-500">
-                  Submitted {formatDate(o.submittedAt, locale)}
+                <div className="mt-0.5 text-[11px] text-slate-500">{t("pages.dashFragments.submitted")} {formatDate(o.submittedAt, locale)}
                   {o.acceptedAt ? ` · Accepted ${formatDate(o.acceptedAt, locale)}` : ""}
                 </div>
               </div>

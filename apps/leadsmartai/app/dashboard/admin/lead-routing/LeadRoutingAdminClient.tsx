@@ -105,8 +105,7 @@ export default function LeadRoutingAdminClient() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        Couldn&apos;t load routing roster: {error}
+      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadRoster")} {error}
       </div>
     );
   }
@@ -120,14 +119,10 @@ export default function LeadRoutingAdminClient() {
       />
 
       {!hasDbRules && roster.length > 0 ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          No DB rules yet — pool is currently driven by the{" "}
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.noDbRules")}{" "}
           <code className="rounded bg-white/50 px-1 py-0.5 text-[12px]">
             IDX_ROUND_ROBIN_AGENT_IDS
-          </code>{" "}
-          env allowlist. Each agent can take over their slot by enrolling from
-          their settings page.
-        </div>
+          </code>{" "}{t("pages.dashFragments.envAllowlist")}</div>
       ) : null}
 
       {roster.length === 0 ? (
@@ -180,8 +175,7 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <header className="border-b border-slate-100 px-5 py-4">
         <h2 className="text-sm font-semibold text-slate-900">{t("pages.leadRouting.roster")}</h2>
-        <p className="mt-0.5 text-xs text-slate-500">
-          Sorted by recent activity. Disabled rows are agents whose DB rule has{" "}
+        <p className="mt-0.5 text-xs text-slate-500">{t("pages.dashFragments.sortedByActivity")}{" "}
           <code className="rounded bg-slate-100 px-1 py-0.5 text-[11px]">
             in_round_robin = false
           </code>

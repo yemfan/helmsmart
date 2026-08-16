@@ -112,8 +112,7 @@ export function ListingOfferDetailClient({
           <Link
             href={`/dashboard/transactions/${transaction.id}/offers`}
             className="hover:underline"
-          >
-            Offers on {transaction.property_address}
+          >{t("pages.dashFragments.offersOn")} {transaction.property_address}
           </Link>
           {" / "}
           <span>{offer.buyer_name ?? "(unknown buyer)"}</span>
@@ -123,8 +122,7 @@ export function ListingOfferDetailClient({
         </h1>
         <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
           {offer.buyer_agent_name ? (
-            <span>
-              Agent: {offer.buyer_agent_name}
+            <span>{t("pages.dashFragments.agent")} {offer.buyer_agent_name}
               {offer.buyer_brokerage ? ` · ${offer.buyer_brokerage}` : ""}
             </span>
           ) : null}
@@ -381,7 +379,7 @@ function CounterTimeline({
                 <div className="text-[11px] text-slate-500">{formatDateTime(c.created_at, locale)}</div>
               </div>
               {c.price != null ? (
-                <div className="mt-1 tabular-nums text-slate-700">Price: {formatMoney(c.price, locale)}</div>
+                <div className="mt-1 tabular-nums text-slate-700">{t("pages.dashFragments.price")} {formatMoney(c.price, locale)}</div>
               ) : null}
               {c.notes ? <div className="mt-1 text-slate-600">{c.notes}</div> : null}
             </li>

@@ -110,17 +110,17 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
         <div className="flex flex-wrap gap-2">
           {overdueTasks.length > 0 && (
             <Link href="/dashboard/tasks" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700 hover:bg-red-100">
-              {overdueTasks.length} overdue task{overdueTasks.length > 1 ? "s" : ""}
+              {overdueTasks.length} {t("pages.dashFragments.overdueTask")}{overdueTasks.length > 1 ? "s" : ""}
             </Link>
           )}
           {unread > 0 && (
             <Link href="/dashboard/inbox" className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700 hover:bg-blue-100">
-              {unread} unread message{unread > 1 ? "s" : ""}
+              {unread} {t("pages.dashFragments.unreadMessage")}{unread > 1 ? "s" : ""}
             </Link>
           )}
           {urgentTasks.length > 0 && (
             <Link href="/dashboard/tasks" className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700 hover:bg-amber-100">
-              {urgentTasks.length} urgent task{urgentTasks.length > 1 ? "s" : ""}
+              {urgentTasks.length} {t("pages.dashFragments.urgentTask")}{urgentTasks.length > 1 ? "s" : ""}
             </Link>
           )}
         </div>

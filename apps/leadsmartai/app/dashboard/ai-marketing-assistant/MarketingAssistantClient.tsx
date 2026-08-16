@@ -115,9 +115,7 @@ export default function MarketingAssistantClient({
           className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
           aria-expanded={knowledgeOpen}
         >
-          <BookOpen className="h-3.5 w-3.5" strokeWidth={2} />
-          Brand &amp; knowledge
-          {knowledgeOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          <BookOpen className="h-3.5 w-3.5" strokeWidth={2} />{t("pages.dashFragments.brandKnowledge")}{knowledgeOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
         </button>
       </div>
 
@@ -207,8 +205,7 @@ export default function MarketingAssistantClient({
             >{t("pages.marketingAssistant.openScheduler")}</Link>
           </div>
           {data.upcomingPosts.length === 0 ? (
-            <p className="py-6 text-center text-sm text-gray-400">
-              Nothing scheduled — a quiet calendar means a quiet pipeline.{" "}
+            <p className="py-6 text-center text-sm text-gray-400">{t("pages.dashFragments.nothingScheduled")}{" "}
               <Link href="/dashboard/leads/generate" className="text-blue-600 hover:underline">{t("pages.marketingAssistant.schedulePost")}</Link>
               .
             </p>
@@ -254,11 +251,8 @@ export default function MarketingAssistantClient({
       </div>
 
       {/* Hand-off note — constitution: a team, with clear lanes */}
-      <p className="text-xs text-gray-400">
-        Your Marketing Assistant creates demand; leads it generates are handed to your{" "}
-        <Link href="/dashboard/ai-sales-assistant" className="text-gray-500 underline-offset-2 hover:underline">{t("pages.marketingAssistant.salesAssistant")}</Link>{" "}
-        to convert.
-      </p>
+      <p className="text-xs text-gray-400">{t("pages.dashFragments.marketingCreates")}{" "}
+        <Link href="/dashboard/ai-sales-assistant" className="text-gray-500 underline-offset-2 hover:underline">{t("pages.marketingAssistant.salesAssistant")}</Link>{" "}{t("pages.dashFragments.toConvert")}</p>
     </div>
   );
 }
