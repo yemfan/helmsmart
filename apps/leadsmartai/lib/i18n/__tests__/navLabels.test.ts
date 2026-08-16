@@ -113,6 +113,8 @@ describe("dashboard namespace (page copy)", () => {
        */
       "pages.homeValueFunnel.stop",
       "pages.homeValueFunnel.help",
+      "pages.smsOptIn.stop",
+      "pages.smsOptIn.help",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;

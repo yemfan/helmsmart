@@ -213,26 +213,17 @@ function LoginPageInner() {
             type="button"
             onClick={handleCancel}
             className="text-sm font-medium text-gray-600 hover:text-gray-900"
-          >
-            Cancel
-          </button>
+          >{t("pages.loginPage.cancel")}</button>
         </div>
         {reason === "trial" ? (
-          <p className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2.5 text-center text-[11px] font-medium text-sky-950">
-            Sign in to continue. Next, we’ll open secure Stripe checkout for your Pro free trial (card on file; you are
-            not charged until the trial ends).
-          </p>
+          <p className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2.5 text-center text-[11px] font-medium text-sky-950">{t("pages.loginPage.trialNotice")}</p>
         ) : null}
         {reason === "checkout" ? (
-          <p className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2.5 text-center text-[11px] font-medium text-sky-950">
-            Sign in to continue to checkout. We’ll return you to pricing right after.
-          </p>
+          <p className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2.5 text-center text-[11px] font-medium text-sky-950">{t("pages.loginPage.checkoutNotice")}</p>
         ) : null}
         {oauthError ? (
           <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-center text-[11px] font-medium text-red-800">
-            {oauthProvider === "apple" ? "Apple" : "Google"} sign-in could not be completed. This can happen if the sign-in window was open
-            too long or was opened in a different browser tab. Please try again.
-          </p>
+            {oauthProvider === "apple" ? "Apple" : "Google"} {t("pages.loginPage.signInFailed")}</p>
         ) : null}
 
         {/* Create account leads — new visitors should start here (Zillow-style).
@@ -241,14 +232,12 @@ function LoginPageInner() {
           <a
             href="/signup"
             className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
-          >
-            Create your free account
-          </a>
-          <p className="text-[11px] text-gray-500">Meet Max and your AI real estate team in minutes.</p>
+          >{t("pages.loginPage.createAccount")}</a>
+          <p className="text-[11px] text-gray-500">{t("pages.loginPage.meetMax")}</p>
         </div>
         <div className="flex items-center gap-3">
           <span className="h-px flex-1 bg-gray-200" />
-          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">or sign in</span>
+          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">{t("pages.loginPage.orSignIn")}</span>
           <span className="h-px flex-1 bg-gray-200" />
         </div>
 
@@ -265,7 +254,7 @@ function LoginPageInner() {
             />
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">Password</label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.loginPage.password")}</label>
             <input
               type="password"
               value={password}
@@ -286,9 +275,7 @@ function LoginPageInner() {
               <Link
                 href="/forgot-password"
                 className="text-xs font-semibold text-blue-700 hover:underline"
-              >
-                Forgot password?
-              </Link>
+              >{t("pages.loginPage.forgotPassword")}</Link>
             </div>
           </div>
           {resetNotice ? (
@@ -320,25 +307,18 @@ function LoginPageInner() {
             disabled={loading}
             onClick={() => void handleOAuth("google")}
             className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Continue with Google
-          </button>
+          >{t("pages.loginPage.continueGoogle")}</button>
           <button
             type="button"
             disabled={loading}
             onClick={() => void handleOAuth("apple")}
             className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-900 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Continue with Apple
-          </button>
+          >{t("pages.loginPage.continueApple")}</button>
         </div>
         <div className="text-[11px] text-gray-500 text-center space-y-2">
           {!sessionUser ? (
-            <p>
-              Real estate agent?{" "}
-              <a className="text-blue-700 font-semibold" href="/agent-signup">
-                Start free as agent
-              </a>
+            <p>{t("pages.loginPage.areYouAgent")}{" "}
+              <a className="text-blue-700 font-semibold" href="/agent-signup">{t("pages.loginPage.startFreeAgent")}</a>
             </p>
           ) : null}
         </div>

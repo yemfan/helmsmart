@@ -33,14 +33,8 @@ export default async function HomesIndexPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <header className="mb-8 max-w-2xl">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Find a home you&apos;ll love
-        </h1>
-        <p className="mt-3 text-base text-slate-600">
-          Describe what you&apos;re looking for in plain English — our AI searches
-          the live web for real, current listings and links you straight to the
-          source.
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{t("pages.homesIndex.h1", { ns: "dashboard" })}</h1>
+        <p className="mt-3 text-base text-slate-600">{t("pages.homesIndex.sub", { ns: "dashboard" })}</p>
       </header>
 
       {/* Natural-language search — a plain GET form so the shell stays static. */}
@@ -49,9 +43,7 @@ export default async function HomesIndexPage() {
         method="get"
         className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row"
       >
-        <label htmlFor="homes-q" className="sr-only">
-          Describe the home you want
-        </label>
+        <label htmlFor="homes-q" className="sr-only">{t("pages.homesIndex.describeHome", { ns: "dashboard" })}</label>
         <input
           id="homes-q"
           name="q"
@@ -62,16 +54,12 @@ export default async function HomesIndexPage() {
         <button
           type="submit"
           className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-        >
-          Search homes
-        </button>
+        >{t("pages.homesIndex.searchHomes", { ns: "dashboard" })}</button>
       </form>
 
       <section className="mt-10">
-        <h2 className="text-lg font-semibold text-slate-900">Popular markets</h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Browse by city to see what&apos;s on the market right now.
-        </p>
+        <h2 className="text-lg font-semibold text-slate-900">{t("pages.homesIndex.popularMarkets", { ns: "dashboard" })}</h2>
+        <p className="mt-1 text-sm text-slate-600">{t("pages.homesIndex.browseByCity", { ns: "dashboard" })}</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {POPULAR_CITIES.map((c) => {
             const q = `Homes for sale in ${c.city}, ${c.state}`;
@@ -94,31 +82,22 @@ export default async function HomesIndexPage() {
 
       <section className="mt-12 grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 sm:grid-cols-3">
         <div>
-          <div className="text-sm font-semibold text-slate-900">Search in plain English</div>
-          <p className="mt-1 text-xs text-slate-600">
-            Skip the checkboxes. Describe the home you want and let AI find real,
-            current listings that fit.
-          </p>
+          <div className="text-sm font-semibold text-slate-900">{t("pages.homesIndex.plainEnglish", { ns: "dashboard" })}</div>
+          <p className="mt-1 text-xs text-slate-600">{t("pages.homesIndex.plainEnglishBody", { ns: "dashboard" })}</p>
         </div>
         <div>
-          <div className="text-sm font-semibold text-slate-900">Connect with a local agent</div>
-          <p className="mt-1 text-xs text-slate-600">
-            Talk to an agent in seconds — schedule a tour or get fast answers about
-            any listing.
-          </p>
+          <div className="text-sm font-semibold text-slate-900">{t("pages.homesIndex.connectAgent", { ns: "dashboard" })}</div>
+          <p className="mt-1 text-xs text-slate-600">{t("pages.homesIndex.connectAgentBody", { ns: "dashboard" })}</p>
         </div>
         <div>
-          <div className="text-sm font-semibold text-slate-900">Free to try</div>
-          <p className="mt-1 text-xs text-slate-600">
-            One free AI search a day, no strings. Create a free account for 5 a
-            day — unlimited on a paid plan. No spam, ever.
-          </p>
+          <div className="text-sm font-semibold text-slate-900">{t("pages.homesIndex.freeToTry", { ns: "dashboard" })}</div>
+          <p className="mt-1 text-xs text-slate-600">{t("pages.homesIndex.freeToTryBody", { ns: "dashboard" })}</p>
         </div>
       </section>
 
       <footer className="mt-12 border-t border-slate-200 pt-6 pb-10 text-[11px] leading-relaxed text-slate-500">
         <p>{HOUSE_SEARCH_DISCLAIMER}</p>
-        <p className="mt-2">Equal Housing Opportunity.</p>
+        <p className="mt-2">{t("pages.homesIndex.equalHousing", { ns: "dashboard" })}</p>
       </footer>
     </main>
   );

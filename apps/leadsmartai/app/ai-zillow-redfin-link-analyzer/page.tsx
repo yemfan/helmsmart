@@ -404,9 +404,7 @@ export default async function AIZillowRedfinLinkAnalyzerPage() {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="bg-white shadow rounded-xl p-6 border border-gray-100">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          AI Zillow / Redfin Link Analyzer
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t("pages.linkAnalyzer.h1")}</h1>
         <p className="text-sm text-gray-600 mb-4">
           Paste a Zillow or Redfin listing URL to generate an AI‑style
           investment snapshot including value, rent, cash flow, cap rate, ROI,
@@ -417,7 +415,7 @@ export default async function AIZillowRedfinLinkAnalyzerPage() {
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://www.zillow.com/... or https://www.redfin.com/home/..."
+            placeholder={t("pages.linkAnalyzer.urlPlaceholder")}
             className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
@@ -463,8 +461,7 @@ export default async function AIZillowRedfinLinkAnalyzerPage() {
                 target="_blank"
                 rel="noreferrer"
                 className="mt-2 inline-flex text-xs text-blue-600 hover:underline"
-              >
-                View Listing ({property.platform === "zillow" ? "Zillow" : "Redfin"})
+              >{t("pages.linkAnalyzer.viewListing")}{property.platform === "zillow" ? "Zillow" : "Redfin"})
               </a>
             </div>
             {property.imageUrl ? (
@@ -481,37 +478,25 @@ export default async function AIZillowRedfinLinkAnalyzerPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white shadow rounded-lg p-4 border border-gray-100">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                Estimated Value
-              </h3>
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{t("pages.linkAnalyzer.estimatedValue")}</h3>
               <p className="text-2xl font-bold text-blue-700">
                 ${metrics.estimatedValue.toLocaleString()}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
-                Currently assuming list price as value; connect to AVM later.
-              </p>
+              <p className="text-xs text-gray-500 mt-1">{t("pages.linkAnalyzer.valueNote")}</p>
             </div>
             <div className="bg-white shadow rounded-lg p-4 border border-gray-100">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                Rent Estimate
-              </h3>
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{t("pages.linkAnalyzer.rentEstimate")}</h3>
               <p className="text-xl font-semibold text-gray-900">
                 ${metrics.rentEstimate.toLocaleString()} / mo
               </p>
-              <p className="text-xs text-gray-500 mt-1">
-                Simple percentage of value; replace with live rental data.
-              </p>
+              <p className="text-xs text-gray-500 mt-1">{t("pages.linkAnalyzer.rentNote")}</p>
             </div>
             <div
               className={`shadow rounded-lg p-4 border ${scoreColor} flex flex-col justify-between`}
             >
               <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wide mb-1">
-                  Deal Score
-                </h3>
-                <p className="text-xs opacity-80">
-                  Combines cap rate, cash flow, and ROI into a quick rating.
-                </p>
+                <h3 className="text-xs font-semibold uppercase tracking-wide mb-1">{t("pages.linkAnalyzer.dealScore")}</h3>
+                <p className="text-xs opacity-80">{t("pages.linkAnalyzer.dealScoreNote")}</p>
               </div>
               <div className="mt-3 flex items-baseline gap-2">
                 <span className="text-3xl font-bold">
@@ -523,9 +508,7 @@ export default async function AIZillowRedfinLinkAnalyzerPage() {
           </div>
 
           <div className="bg-white shadow rounded-xl p-6 border border-gray-100">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">
-              Investment Metrics
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">{t("pages.linkAnalyzer.investmentMetrics")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-sm">
               <MetricCard
                 label={t("pages.articleChrome.capRate", { ns: "dashboard" })}
@@ -538,12 +521,12 @@ export default async function AIZillowRedfinLinkAnalyzerPage() {
                 tooltip="Monthly Cash Flow = Rent – Mortgage – Operating Expenses"
               />
               <MetricCard
-                label="Annual Cash Flow"
+                label={t("pages.linkAnalyzer.annualCashFlow")}
                 value={`$${metrics.annualCashFlow.toFixed(0)}`}
                 tooltip="Annual Cash Flow = Monthly Cash Flow × 12"
               />
               <MetricCard
-                label="ROI (Year 1 est.)"
+                label={t("pages.linkAnalyzer.roiYear1")}
                 value={`${metrics.roi.toFixed(1)}%`}
                 tooltip="Approximate ROI including cash flow plus simple appreciation."
               />
@@ -552,9 +535,7 @@ export default async function AIZillowRedfinLinkAnalyzerPage() {
 
           {aiSummary && (
             <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-sm text-blue-900">
-              <h2 className="text-sm font-semibold mb-2">
-                AI Investment Summary
-              </h2>
+              <h2 className="text-sm font-semibold mb-2">{t("pages.linkAnalyzer.aiSummary")}</h2>
               <p>{aiSummary}</p>
             </div>
           )}
@@ -563,9 +544,7 @@ export default async function AIZillowRedfinLinkAnalyzerPage() {
             <button
               onClick={handleDownloadPdf}
               className="inline-flex items-center bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Download PDF Report
-            </button>
+            >{t("pages.linkAnalyzer.downloadPdf")}</button>
           </div>
         </div>
       )}
