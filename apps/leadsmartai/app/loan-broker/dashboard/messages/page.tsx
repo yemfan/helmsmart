@@ -1,9 +1,9 @@
-import { getServerT } from "@/lib/i18n/server";
-
 "use client";
 
-export default async function BrokerMessagesPage() {
-  const t = await getServerT();
+import { useTranslation } from "react-i18next";
+
+export default function BrokerMessagesPage() {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="space-y-4">
       <div>

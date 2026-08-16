@@ -1,8 +1,8 @@
- "use client";
+"use client";
 
 import { useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
-import { getServerT } from "@/lib/i18n/server";
 
 type Comparable = {
   address: string;
@@ -33,8 +33,8 @@ type InvestmentMetrics = {
   roi: number;
 };
 
-export default async function PropertyReportPage() {
-  const t = await getServerT();
+export default function PropertyReportPage() {
+  const { t } = useTranslation("dashboard");
   const params = useParams<{ slug: string }>();
   const slug = params?.slug ?? "";
 

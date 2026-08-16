@@ -1,6 +1,6 @@
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { useTranslation } from "react-i18next";
+import { getServerT } from "@/lib/i18n/server";
 
 type ChannelStatus = {
   sms: {
@@ -63,7 +63,7 @@ async function loadChannelStatus(_agentId: string): Promise<ChannelStatus> {
 }
 
 export default async function ChannelsCard({ agentId: _agentId }: { agentId: string }) {
-  const { t } = useTranslation("dashboard");
+  const t = await getServerT("dashboard");
   const s = await loadChannelStatus(_agentId);
 
   return (

@@ -3,7 +3,6 @@ import { getServerT, getServerLocale } from "@/lib/i18n/server";
 import { intlLocale } from "@/lib/i18n/locale";
 
 import type { ReactNode } from "react";
-import { useTranslation } from "react-i18next";
 import { Bell, Flame, PhoneMissed } from "lucide-react";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -123,7 +122,6 @@ function EmptyRow({ children }: { children: ReactNode }) {
 }
 
 export default async function NotificationsPage() {
-  const { t } = useTranslation("dashboard");
   const serverT = await getServerT();
   const locale = intlLocale(await getServerLocale());
   // Named `tr` — task and follow-up rows below bind `t` in their .map().
@@ -239,7 +237,7 @@ export default async function NotificationsPage() {
                     >
                       <p className="text-sm font-medium text-slate-900">{l.name ?? "Lead"}</p>
                       {l.last_activity_at ? (
-                        <p className="mt-0.5 text-xs text-slate-500">{t("pages.dashFragments.lastActivity", { ns: "dashboard" })} {new Date(l.last_activity_at).toLocaleString(locale)}
+                        <p className="mt-0.5 text-xs text-slate-500">{tr("pages.dashFragments.lastActivity", { ns: "dashboard" })} {new Date(l.last_activity_at).toLocaleString(locale)}
                         </p>
                       ) : null}
                     </Link>
@@ -297,7 +295,7 @@ export default async function NotificationsPage() {
                         <p className="font-semibold leading-snug text-slate-900">
                           <span className="mr-1.5" aria-hidden>
                             📞
-                          </span>{t("pages.notifications.missedCall", { ns: "dashboard" })}<span className="font-semibold">{displayName}</span>
+                          </span>{tr("pages.notifications.missedCall", { ns: "dashboard" })}<span className="font-semibold">{displayName}</span>
                         </p>
                         <p className="mt-1.5 text-sm leading-snug text-slate-600">{detailLine}</p>
                         <p className="mt-2 text-[11px] text-slate-400">
@@ -337,7 +335,7 @@ export default async function NotificationsPage() {
           <div className="min-h-[120px] flex-1 space-y-4 p-4">
             {appointments.length > 0 ? (
               <div>
-                <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">{t("pages.notifications.appointments", { ns: "dashboard" })}</p>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">{tr("pages.notifications.appointments", { ns: "dashboard" })}</p>
                 <ul className="space-y-2">
                   {appointments.slice(0, 6).map((ev) => (
                     <li
@@ -422,12 +420,12 @@ export default async function NotificationsPage() {
             ) : null}
 
             {reminderCount === 0 ? (
-              <p className="py-6 text-center text-sm text-slate-500">{t("pages.dashFragments.noUpcoming", { ns: "dashboard" })}{" "}
-                <Link href="/dashboard/tasks" className="font-semibold text-[#0072ce] hover:underline">{t("pages.notifications.tasks", { ns: "dashboard" })}</Link>{" "}
+              <p className="py-6 text-center text-sm text-slate-500">{tr("pages.dashFragments.noUpcoming", { ns: "dashboard" })}{" "}
+                <Link href="/dashboard/tasks" className="font-semibold text-[#0072ce] hover:underline">{tr("pages.notifications.tasks", { ns: "dashboard" })}</Link>{" "}
                 and{" "}
                 <Link href="/dashboard/calendar" className="font-semibold text-[#0072ce] hover:underline">
                   calendar
-                </Link>{" "}{t("pages.dashFragments.willShowHere", { ns: "dashboard" })}</p>
+                </Link>{" "}{tr("pages.dashFragments.willShowHere", { ns: "dashboard" })}</p>
             ) : null}
           </div>
         </section>
@@ -438,7 +436,7 @@ export default async function NotificationsPage() {
         <section className="space-y-3">
           <div>
             <h2 className="text-base font-semibold text-slate-900">{tr("notifications.listingAlerts")}</h2>
-            <p className="text-sm text-slate-600">{t("pages.notifications.nearbyActivity", { ns: "dashboard" })}</p>
+            <p className="text-sm text-slate-600">{tr("pages.notifications.nearbyActivity", { ns: "dashboard" })}</p>
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="overflow-x-auto">

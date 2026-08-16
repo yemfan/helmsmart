@@ -14,7 +14,7 @@ import FavoritesPanel from "./FavoritesPanel";
 import SendRecommendationsButton from "./SendRecommendationsButton";
 import AISuggestedPropertiesPanel from "./AISuggestedPropertiesPanel";
 import VoiceCallTimelinePanel from "./VoiceCallTimelinePanel";
-import { useTranslation } from "react-i18next";
+import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { intlLocale } from "@/lib/i18n/locale";
 
 /**
@@ -22,15 +22,15 @@ import { intlLocale } from "@/lib/i18n/locale";
  * will be wired in a follow-up once the trigger scheduler exists. For now this
  * renders the current state and flags triggers as "inherits agent default".
  */
-export default function SphereContactProfile({
+export default async function SphereContactProfile({
   contact,
   templates,
 }: {
   contact: ContactView;
   templates: TemplateWithOverride[];
 }) {
-  const { t, i18n } = useTranslation("dashboard");
-  const locale = intlLocale(i18n.language);
+  const t = await getServerT("dashboard");
+  const locale = intlLocale(await getServerLocale());
   const applicableTemplates = templates.filter(
     (t) =>
       t.category === "sphere" &&
@@ -237,9 +237,9 @@ export default function SphereContactProfile({
   );
 }
 
-function EquityCard({ contact }: { contact: ContactView }) {
-  const { t, i18n } = useTranslation("dashboard");
-  const locale = intlLocale(i18n.language);
+async function EquityCard({ contact }: { contact: ContactView }) {
+  const t = await getServerT("dashboard");
+  const locale = intlLocale(await getServerLocale());
   if (
     contact.avmCurrent === null ||
     contact.closingPrice === null ||

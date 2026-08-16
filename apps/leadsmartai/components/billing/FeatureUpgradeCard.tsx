@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Lock, ArrowRight } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Server-rendered "this feature needs a higher plan" gate. Used by pages
@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
  * user lands on an upgrade prompt instead of the gated UI. Enforcement lives in
  * the page/route; this is just the presentation.
  */
-export default function FeatureUpgradeCard({
+export default async function FeatureUpgradeCard({
   title,
   description,
   requiredPlan,
@@ -17,7 +17,7 @@ export default function FeatureUpgradeCard({
   description: string;
   requiredPlan: string;
 }) {
-  const { t } = useTranslation("dashboard");
+  const t = await getServerT("dashboard");
   return (
     <div className="mx-auto mt-10 max-w-lg rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">

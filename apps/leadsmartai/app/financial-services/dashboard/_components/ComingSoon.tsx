@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Shared empty-state for routes that are scaffolded for the GFI pitch
@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
  * passes its own title/description/icon + a clear "Available in pilot
  * week X" framing so execs see the roadmap baked in.
  */
-export default function ComingSoon({
+export default async function ComingSoon({
   icon: Icon,
   title,
   description,
@@ -22,7 +22,7 @@ export default function ComingSoon({
   /** Optional list of capabilities the feature will ship with. */
   bulletPoints?: string[];
 }) {
-  const { t } = useTranslation("dashboard");
+  const t = await getServerT("dashboard");
   return (
     <div className="space-y-6">
       <header>
