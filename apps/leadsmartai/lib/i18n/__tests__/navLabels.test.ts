@@ -95,6 +95,7 @@ describe("dashboard namespace (page copy)", () => {
       "pages.newOpenHouse.mlsPlaceholder",
       "pages.newOpenHouse.urlPlaceholder",
       "pages.newListingOffer.agentEmailPlaceholder",
+      "pages.importFile.emailPlaceholder",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;
