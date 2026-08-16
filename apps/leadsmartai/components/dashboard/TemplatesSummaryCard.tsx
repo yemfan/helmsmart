@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { getServerT } from "@/lib/i18n/server";
 import { getTemplateSummaryForAgent } from "@/lib/agent-messaging/template-summary";
+import { useTranslation } from "react-i18next";
 
 export default async function TemplatesSummaryCard({ agentId }: { agentId: string }) {
+  const { t } = useTranslation("dashboard");
   const serverT = await getServerT();
   // Named `tr` — template rows below bind `t` in their .map().
   const tr = (key: string) => serverT(key, { ns: "dashboard" });
@@ -27,7 +29,7 @@ export default async function TemplatesSummaryCard({ agentId }: { agentId: strin
             <StatBox n={summary.total} label={tr("settings.templates.inLibrary")} />
             <StatBox n={summary.autosend} label={tr("settings.templates.autosend")} tone="accent" />
             <StatBox n={summary.review} label={tr("settings.templates.reviewFirst")} tone="muted" />
-            <StatBox n={summary.off} label="Off" tone="muted" />
+            <StatBox n={summary.off} label={t("pages.labels.off")} tone="muted" />
           </div>
 
           <div className="mt-4 divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200">

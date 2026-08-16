@@ -689,8 +689,8 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                         {entry.leadName && <span>{entry.leadName} &middot; </span>}
                         {formatTime(entry.time, timeLocale)}
                         {entry.priority && entry.priority !== "normal" && <span className="ml-1 capitalize text-amber-600">{entry.priority}</span>}
-                        {entry.overdue && <span className="ml-1 text-red-600">Overdue</span>}
-                        {entry.status === "done" && <span className="ml-1 text-green-600">Done</span>}
+                        {entry.overdue && <span className="ml-1 text-red-600">{tr("tasks.chart.overdue")}</span>}
+                        {entry.status === "done" && <span className="ml-1 text-green-600">{tr("tasks.status.done")}</span>}
                       </p>
                     </div>
                   </div>
@@ -822,8 +822,8 @@ function ListView({
                             {entry.priority && entry.priority !== "normal" && (
                               <span className="ml-1 capitalize text-amber-600">{entry.priority}</span>
                             )}
-                            {entry.overdue && <span className="ml-1 text-red-600">Overdue</span>}
-                            {entry.status === "done" && <span className="ml-1 text-green-600">Done</span>}
+                            {entry.overdue && <span className="ml-1 text-red-600">{tr("tasks.chart.overdue")}</span>}
+                            {entry.status === "done" && <span className="ml-1 text-green-600">{tr("tasks.status.done")}</span>}
                           </p>
                         </div>
                       </div>

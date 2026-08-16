@@ -1185,7 +1185,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
           placeholder={pendingQuestion ? tr("boss.composer.answer") : autopilot ? tr("boss.composer.autopilot") : tr("boss.composer.ask")}
           className="max-h-[120px] min-h-[38px] flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
         />
-        <button type="button" onClick={send} disabled={!text.trim()} className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" aria-label="Send">↑</button>
+        <button type="button" onClick={send} disabled={!text.trim()} className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" aria-label={tr("pages.labels.send")}>↑</button>
       </div>
 
       {/* Add a file — attach an image to post, or a spreadsheet to import from */}
@@ -1251,7 +1251,7 @@ function SettingsModal({
       <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900">{tr("boss.approvals.title")}</h2>
-          <button type="button" onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-gray-700">✕</button>
+          <button type="button" onClick={onClose} aria-label={tr("pages.labels.close")} className="text-gray-400 hover:text-gray-700">✕</button>
         </div>
         <p className="mt-1 text-xs text-gray-500">{tr("boss.approvals.subtitle")}</p>
 
@@ -1306,7 +1306,7 @@ function SettingsModal({
           >
             ⏸ Pause all autonomy
           </button>
-          <button type="button" onClick={onClose} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Done</button>
+          <button type="button" onClick={onClose} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">{tr("tasks.status.done")}</button>
         </div>
       </div>
     </div>

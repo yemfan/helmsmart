@@ -236,7 +236,7 @@ export function OfferDetailClient({
             </dl>
           </Card>
 
-          <Card title="Status">
+          <Card title={t("pages.labels.status")}>
             <div className="flex flex-wrap gap-2">
               {(
                 ["draft", "submitted", "countered", "accepted", "rejected", "withdrawn", "expired"] as OfferStatus[]
@@ -319,8 +319,8 @@ export function OfferDetailClient({
           <Card title={t("detail.offerDetail.timeline")}>
             <dl className="space-y-2 text-sm">
               <Detail label={t("detail.offerDetail.created")} value={formatDateTime(offer.created_at, locale)} />
-              <Detail label="Submitted" value={formatDateTime(offer.submitted_at, locale)} />
-              <Detail label="Accepted" value={formatDateTime(offer.accepted_at, locale)} />
+              <Detail label={t("pages.labels.submitted")} value={formatDateTime(offer.submitted_at, locale)} />
+              <Detail label={t("pages.labels.accepted")} value={formatDateTime(offer.accepted_at, locale)} />
               <Detail label={t("detail.offerDetail.closed")} value={formatDateTime(offer.closed_at, locale)} />
             </dl>
           </Card>

@@ -413,7 +413,7 @@ function CounterTimeline({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Notes</label>
+            <label className="block text-xs font-medium text-slate-700">{t("detail.offerDetail.notes")}</label>
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

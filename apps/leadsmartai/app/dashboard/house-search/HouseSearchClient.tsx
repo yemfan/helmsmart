@@ -544,7 +544,7 @@ function SavedSearchesPanel({
         </button>
       </div>
       <label className="mt-2 block">
-        <span className="text-xs font-semibold text-slate-700">Contact</span>
+        <span className="text-xs font-semibold text-slate-700">{t("tasks.columns.contact")}</span>
         <select
           value={contactId}
           onChange={(e) => void load(e.target.value)}
@@ -676,7 +676,7 @@ function SaveToContactPanel({
       </div>
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block">
-          <span className="text-xs font-semibold text-slate-700">Contact</span>
+          <span className="text-xs font-semibold text-slate-700">{t("tasks.columns.contact")}</span>
           <select
             value={contactId}
             onChange={(e) => setContactId(e.target.value)}
@@ -691,7 +691,7 @@ function SaveToContactPanel({
           </select>
         </label>
         <label className="block">
-          <span className="text-xs font-semibold text-slate-700">Name</span>
+          <span className="text-xs font-semibold text-slate-700">{t("detail.transaction.name")}</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}

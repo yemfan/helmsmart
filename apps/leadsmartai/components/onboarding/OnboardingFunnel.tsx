@@ -5,6 +5,7 @@ import { BrandCheck } from "@/components/brand/BrandCheck";
 import { CloseBossLogo } from "@/components/brand/CloseBossLogo";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { buildDemoLeads, randomIncomingSnippet } from "./demoLeads";
 import { clearOnboarding, loadOnboarding, saveOnboarding, stepToProgress } from "./storage";
 import type { DemoLead, LeadFocus, OnboardingProfile, OnboardingStep, PriceRangeId } from "./types";
@@ -105,6 +106,7 @@ export default function OnboardingFunnel({
    */
   fallback?: React.ReactNode;
 } = {}) {
+  const { t } = useTranslation("dashboard");
   const [hydrated, setHydrated] = useState(false);
   const [step, setStep] = useState<OnboardingStep>(1);
   const [profile, setProfile] = useState<Partial<OnboardingProfile>>({});
@@ -305,7 +307,7 @@ export default function OnboardingFunnel({
             }}
           >
             <div>
-              <label className="block text-xs font-semibold text-slate-300">Full name</label>
+              <label className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.fullName")}</label>
               <input
                 name="fullName"
                 value={profile.fullName ?? ""}
@@ -313,11 +315,11 @@ export default function OnboardingFunnel({
                 required
                 autoComplete="name"
                 className="mt-1.5 w-full rounded-xl border border-white/15 bg-slate-950/50 px-4 py-3 text-white placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
-                placeholder="Jordan Martinez"
+                placeholder={t("pages.onboardingFunnel.namePlaceholder")}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300">Work email</label>
+              <label className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.workEmail")}</label>
               <input
                 name="email"
                 type="email"
@@ -352,7 +354,7 @@ export default function OnboardingFunnel({
     return (
       <Shell step={2}>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur-md sm:p-8">
-          <h1 className="font-heading text-2xl font-bold sm:text-3xl">Quick setup</h1>
+          <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.quickSetup")}</h1>
           <p className="mt-2 text-sm text-slate-300">We&apos;ll tune the demo to your market and price band.</p>
           <form
             className="mt-8 space-y-6"
@@ -368,17 +370,17 @@ export default function OnboardingFunnel({
             }}
           >
             <div>
-              <label className="block text-xs font-semibold text-slate-300">Primary city / farm area</label>
+              <label className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.primaryCity")}</label>
               <input
                 name="city"
                 defaultValue={profile.city ?? ""}
                 required
                 className="mt-1.5 w-full rounded-xl border border-white/15 bg-slate-950/50 px-4 py-3 text-white placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
-                placeholder="e.g. Austin, TX"
+                placeholder={t("pages.onboardingFunnel.cityPlaceholder")}
               />
             </div>
             <div>
-              <span className="block text-xs font-semibold text-slate-300">Pipeline focus</span>
+              <span className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.pipelineFocus")}</span>
               <div className="mt-2 grid gap-2">
                 {FOCUS_OPTIONS.map((o) => (
                   <label
@@ -401,7 +403,7 @@ export default function OnboardingFunnel({
               </div>
             </div>
             <div>
-              <span className="block text-xs font-semibold text-slate-300">Typical deal size</span>
+              <span className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.dealSize")}</span>
               <div className="mt-2 flex flex-wrap gap-2">
                 {PRICE_OPTIONS.map((o) => (
                   <label key={o.id} className="cursor-pointer">
@@ -450,7 +452,7 @@ export default function OnboardingFunnel({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-40" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
             </span>
-            <span className="text-xs font-bold uppercase tracking-wide">Live system simulation</span>
+            <span className="text-xs font-bold uppercase tracking-wide">{t("pages.onboardingFunnel.simulation")}</span>
           </div>
           <h1 className="font-heading text-xl font-bold text-white sm:text-2xl">
             Turning on your AI lead desk…
@@ -499,7 +501,7 @@ export default function OnboardingFunnel({
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-xl backdrop-blur-md sm:p-6">
             <div className="flex items-center justify-between gap-2">
-              <h1 className="font-heading text-xl font-bold sm:text-2xl">New leads</h1>
+              <h1 className="font-heading text-xl font-bold sm:text-2xl">{t("pages.onboardingFunnel.newLeads")}</h1>
               <span className="rounded-full bg-rose-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-200">
                 {demoLeads.length} waiting
               </span>
@@ -628,7 +630,7 @@ export default function OnboardingFunnel({
                 }, 650);
               }}
             >
-              <label className="sr-only">Reply</label>
+              <label className="sr-only">{t("pages.oneWord.reply")}</label>
               <textarea
                 value={replyDraft}
                 onChange={(e) => setReplyDraft(e.target.value)}
@@ -657,7 +659,7 @@ export default function OnboardingFunnel({
     return (
       <Shell step={6}>
         <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-b from-rose-950/80 to-slate-950/90 p-6 shadow-2xl sm:p-8">
-          <p className="text-center text-xs font-bold uppercase tracking-widest text-rose-300">Leads are waiting</p>
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-rose-300">{t("pages.onboardingFunnel.leadsWaiting")}</p>
           <h1 className="mt-3 text-center font-heading text-2xl font-bold leading-tight sm:text-3xl">
             2 more conversations are queued in your territory
           </h1>
@@ -666,7 +668,7 @@ export default function OnboardingFunnel({
             so none of these slip while you&apos;re in appointments.
           </p>
           <div className="mx-auto mt-8 max-w-sm rounded-xl border border-white/10 bg-black/30 p-4 text-sm text-slate-200">
-            <p className="font-semibold text-white">What you unlocked in this preview</p>
+            <p className="font-semibold text-white">{t("pages.onboardingFunnel.unlocked")}</p>
             <ul className="mt-3 space-y-2 text-xs text-slate-300">
               <li className="flex items-start gap-2">
                 <BrandCheck tone="primary" />
@@ -813,7 +815,7 @@ export default function OnboardingFunnel({
       <Shell step={7}>
         <div className="space-y-6">
           <div className="text-center">
-            <h1 className="font-heading text-2xl font-bold sm:text-3xl">Choose how you scale</h1>
+            <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.chooseScale")}</h1>
             <p className="mt-2 text-sm text-slate-400">
               Every paid plan includes a 14-day free trial. Cancel anytime.
               <br />
@@ -955,7 +957,7 @@ export default function OnboardingFunnel({
     return (
       <Shell step={8}>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center shadow-xl backdrop-blur-md sm:p-10">
-          <h1 className="font-heading text-2xl font-bold sm:text-3xl">Finish setup in the real app</h1>
+          <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.finishSetup")}</h1>
           <p className="mx-auto mt-3 max-w-md text-sm text-slate-300">
             Create your agent profile (phone + password), then start your trial or upgrade from pricing. Your preview
             preferences aren&apos;t lost — we passed your email to signup.

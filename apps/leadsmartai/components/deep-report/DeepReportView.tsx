@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 import { downloadComparisonReportPdf } from "@/components/comparison-report/downloadComparisonPdf";
 import ShareReport from "@/components/share/ShareReport";
@@ -61,6 +62,7 @@ export default function DeepReportView({
   /** Public share URL (dashboard only) → enables the full Share menu. */
   shareUrl?: string | null;
 }) {
+  const { t } = useTranslation("dashboard");
   const ref = useRef<HTMLDivElement>(null);
   const onDownload = useCallback(async () => {
     if (ref.current) await downloadComparisonReportPdf(ref.current, "property-deep-report.pdf");
@@ -110,7 +112,7 @@ export default function DeepReportView({
 
         {/* Hero: address + deal rating */}
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Property Deep Report</div>
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.deepReportView.title")}</div>
           <div className="mt-1 flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
             <div>
               <div className="text-2xl font-bold text-slate-900">{p.address}</div>
@@ -121,7 +123,7 @@ export default function DeepReportView({
                 {r.dealRating.grade}
               </div>
               <div className="text-xs">
-                <div className="font-semibold text-slate-700">Deal rating</div>
+                <div className="font-semibold text-slate-700">{t("pages.deepReportView.dealRating")}</div>
                 {r.dealRating.score != null ? <div className="text-slate-500">{r.dealRating.score}/100</div> : null}
               </div>
             </div>
@@ -131,14 +133,14 @@ export default function DeepReportView({
 
         {/* Location map */}
         {r.locationMap ? (
-          <Card title="Location">
+          <Card title={t("pages.labels.location")}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={r.locationMap.dataUrl} alt="Location map" className="w-full rounded-xl border border-slate-200" />
+            <img src={r.locationMap.dataUrl} alt={t("pages.deepReportView.locationMap")} className="w-full rounded-xl border border-slate-200" />
           </Card>
         ) : null}
 
         {/* Value */}
-        <Card title="Estimated value">
+        <Card title={t("pages.deepReportView.estValue")}>
           <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl bg-slate-200">
             {[
               ["Low", r.estimate.low, "text-slate-700"],
@@ -154,7 +156,7 @@ export default function DeepReportView({
         </Card>
 
         {/* Property details */}
-        <Card title="Property details">
+        <Card title={t("pages.deepReportView.propertyDetails")}>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {detail("Beds", p.beds != null ? String(p.beds) : "—")}
             {detail("Baths", p.baths != null ? String(p.baths) : "—")}
@@ -167,27 +169,27 @@ export default function DeepReportView({
         </Card>
 
         {/* Affordability */}
-        <Card title="Loan affordability">
+        <Card title={t("pages.deepReportView.loanAffordability")}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1 text-sm">
-              <Row label="Price" value={money(a.price)} />
+              <Row label={t("pages.labels.price")} value={money(a.price)} />
               <Row label={`Down payment (${a.assumptions.downPct}%)`} value={money(a.downPayment)} />
-              <Row label="Loan amount" value={money(a.loanAmount)} />
+              <Row label={t("pages.deepReportView.loanAmount")} value={money(a.loanAmount)} />
               <Row label={`P&I (${a.assumptions.ratePct}% / ${a.assumptions.termYears}yr)`} value={`${money(a.principalInterest)}/mo`} />
-              <Row label="Property tax" value={`${money(a.taxesMonthly)}/mo`} />
-              <Row label="Insurance" value={`${money(a.insuranceMonthly)}/mo`} />
-              <Row label="HOA" value={`${money(a.hoaMonthly)}/mo`} />
-              <Row label="Mello-Roos" value={`${money(a.melloRoosMonthly)}/mo`} />
+              <Row label={t("pages.deepReportView.propertyTax")} value={`${money(a.taxesMonthly)}/mo`} />
+              <Row label={t("pages.labels.insurance")} value={`${money(a.insuranceMonthly)}/mo`} />
+              <Row label={t("pages.labels.hoa")} value={`${money(a.hoaMonthly)}/mo`} />
+              <Row label={t("pages.labels.melloRoos")} value={`${money(a.melloRoosMonthly)}/mo`} />
             </div>
             <div className="flex flex-col justify-center gap-3 rounded-xl bg-emerald-50 p-4">
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">Total monthly (PITI)</div>
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">{t("pages.deepReportView.totalMonthly")}</div>
                 <div className="text-2xl font-extrabold text-emerald-800">{money(a.totalMonthly)}</div>
               </div>
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">Income needed</div>
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">{t("pages.deepReportView.incomeNeeded")}</div>
                 <div className="text-lg font-bold text-emerald-800">{money(a.incomeNeededAnnual)}/yr</div>
-                <div className="text-[11px] text-emerald-700">at a 28% housing ratio</div>
+                <div className="text-[11px] text-emerald-700">{t("pages.deepReportView.housingRatio")}</div>
               </div>
             </div>
           </div>
@@ -195,7 +197,7 @@ export default function DeepReportView({
 
         {/* Investment */}
         {inv ? (
-          <Card title="Investment returns">
+          <Card title={t("pages.deepReportView.investmentReturns")}>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {detail("Est. rent", `${money(inv.rentMonthly)}/mo`)}
               {detail("Cash flow", `${money(inv.monthlyCashFlow)}/mo`)}
@@ -210,14 +212,14 @@ export default function DeepReportView({
 
         {/* Neighborhood */}
         {r.neighborhood ? (
-          <Card title="Neighborhood">
+          <Card title={t("pages.labels.neighborhood")}>
             <p className="whitespace-pre-wrap text-sm text-slate-700">{r.neighborhood}</p>
           </Card>
         ) : null}
 
         {/* Schools */}
         {r.schools.length ? (
-          <Card title="Schools">
+          <Card title={t("pages.labels.schools")}>
             <table className="w-full text-sm">
               <tbody>
                 {r.schools.map((s, i) => (
@@ -236,7 +238,7 @@ export default function DeepReportView({
         {/* Comps */}
         <Card title={`Comparable sales (${r.comps.length})`}>
           {r.comps.length === 0 ? (
-            <p className="text-sm text-slate-500">No comparable sales found.</p>
+            <p className="text-sm text-slate-500">{t("pages.deepReportView.noComps")}</p>
           ) : (
             <table className="w-full text-sm">
               <tbody>

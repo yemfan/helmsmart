@@ -227,7 +227,7 @@ export function BuildOfferClient() {
             <Stat label={t("pages.buildOffer.offerPrice")} value={money(result.offerPrice)} highlight />
             <Stat label={t("pages.buildOffer.earnestMoney")} value={money(result.earnestMoney)} />
             <Stat label={t("pages.buildOffer.downPayment")} value={money(result.downPayment)} />
-            <Stat label="Financing" value={result.financingType ?? "—"} />
+            <Stat label={t("pages.labels.financing")} value={result.financingType ?? "—"} />
             <Stat label={t("pages.buildOffer.escalationCap")} value={money(result.escalationCap)} />
             <Stat label={t("pages.buildOffer.closeIn")} value={result.closeDays ? `${result.closeDays} days` : "—"} />
           </div>

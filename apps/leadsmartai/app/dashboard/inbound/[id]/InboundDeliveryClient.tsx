@@ -390,7 +390,7 @@ function ExtractionView({
     <dl className="grid gap-3 text-sm sm:grid-cols-[180px_1fr]">
       <Field label={t("pages.inbound.f.requester")} value={s.requesterName} />
       <Field label={t("pages.inbound.f.phone")} value={s.requesterPhone} />
-      <Field label="Email" value={s.requesterEmail} />
+      <Field label={t("pages.labels.emailAddress")} value={s.requesterEmail} />
       <Field label={t("pages.uploadOffer.f.property")} value={s.propertyAddress} />
       <Field
         label={t("pages.uploadOffer.f.cityStateZip")}

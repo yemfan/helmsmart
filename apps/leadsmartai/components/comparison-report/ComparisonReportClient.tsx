@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import type { ComparisonReportRow } from "@/lib/comparisonReportTypes";
 import { downloadComparisonReportPdf } from "./downloadComparisonPdf";
 
@@ -14,6 +16,7 @@ function fmtMoney(n: number) {
 }
 
 export default function ComparisonReportClient({ report }: { report: ComparisonReportRow }) {
+  const { t, i18n } = useTranslation("dashboard");
   const printRef = useRef<HTMLDivElement>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -60,7 +63,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(json.error ?? "Failed to send");
+        throw new Error(json.error ?? t("pages.comparisonReportView.sendFailed"));
       }
       setFormStatus("sent");
       setFormName("");
@@ -68,11 +71,11 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
       setFormMessage("");
     } catch (err: any) {
       setFormStatus("error");
-      setFormError(err?.message ?? "Could not send");
+      setFormError(err?.message ?? t("pages.comparisonReportView.couldNotSend"));
     }
   }
 
-  const created = new Date(report.created_at).toLocaleDateString("en-US", {
+  const created = new Date(report.created_at).toLocaleDateString(intlLocale(i18n.language), {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -82,14 +85,14 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       {/* Toolbar — hidden when printing via browser if user uses print */}
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4 print:hidden">
-        <p className="text-sm text-slate-500">Prepared {created}</p>
+        <p className="text-sm text-slate-500">{t("pages.comparisonReportView.prepared", { date: created })}</p>
         <button
           type="button"
           onClick={onDownloadPdf}
           disabled={pdfLoading}
           className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-blue-700 disabled:opacity-60"
         >
-          {pdfLoading ? "Preparing PDF…" : "Download PDF"}
+          {pdfLoading ? t("pages.comparisonReportView.preparingPdf") : t("pages.comparisonReportView.downloadPdf")}
         </button>
       </div>
 
@@ -101,14 +104,14 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
         {/* Header */}
         <header className="border-b border-slate-200 pb-10">
           <p className="text-xs font-semibold uppercase tracking-wider text-[#0066b3]">
-            AI Property Comparison Report
+            {t("pages.comparisonReportView.eyebrow")}
           </p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            Prepared for {report.client_name}
+            {t("pages.comparisonReportView.preparedFor", { name: report.client_name })}
           </h1>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             <div>
-              <p className="text-xs font-semibold uppercase text-slate-500">Your agent</p>
+              <p className="text-xs font-semibold uppercase text-slate-500">{t("pages.comparisonReportView.yourAgent")}</p>
               <div className="mt-2 flex items-center gap-3">
                 {agent.photo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -121,11 +124,11 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
                 ) : null}
                 <div className="min-w-0">
                   <p className="text-lg font-semibold text-slate-900">
-                    {agent.display_name ?? "Your real estate professional"}
+                    {agent.display_name ?? t("pages.comparisonReportView.fallbackAgent")}
                   </p>
                   {agent.brokerage ? <p className="text-slate-600">{agent.brokerage}</p> : null}
                   {agent.license_number ? (
-                    <p className="text-xs text-slate-500">Lic #{agent.license_number}</p>
+                    <p className="text-xs text-slate-500">{t("pages.comparisonReportView.license", { number: agent.license_number })}</p>
                   ) : null}
                   {(agent.phone || agent.email) ? (
                     <p className="mt-0.5 text-xs text-slate-500">
@@ -137,31 +140,31 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
             </div>
             <div className="text-sm text-slate-600">
               <p>
-                <span className="font-medium text-slate-800">Report date:</span> {created}
+                <span className="font-medium text-slate-800">{t("pages.comparisonReportView.reportDate")}</span> {created}
               </p>
-              <p className="mt-1 text-xs text-slate-400">Reference ID: {report.id}</p>
+              <p className="mt-1 text-xs text-slate-400">{t("pages.comparisonReportView.referenceId", { id: report.id })}</p>
             </div>
           </div>
         </header>
 
         {/* Executive summary */}
         <section className="mt-12 space-y-4">
-          <h2 className="text-xl font-bold text-slate-900">Executive summary</h2>
+          <h2 className="text-xl font-bold text-slate-900">{t("pages.comparisonReportView.execSummary")}</h2>
           <p className="text-lg leading-relaxed text-slate-700">{r.executive_summary}</p>
         </section>
 
         {/* Comparison table */}
         <section className="mt-14 space-y-6">
-          <h2 className="text-xl font-bold text-slate-900">Comparison overview</h2>
+          <h2 className="text-xl font-bold text-slate-900">{t("pages.comparisonReportView.overview")}</h2>
           <div className="overflow-x-auto rounded-xl border border-slate-200">
             <table className="min-w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50">
-                  <th className="px-4 py-3 font-semibold text-slate-700">Property</th>
-                  <th className="px-4 py-3 font-semibold text-slate-700">Price</th>
-                  <th className="px-4 py-3 font-semibold text-slate-700">$/sqft</th>
-                  <th className="px-4 py-3 font-semibold text-slate-700">Est. ROI / yr</th>
-                  <th className="px-4 py-3 font-semibold text-slate-700">Score</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700">{t("pages.comparisonReportView.colProperty")}</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700">{t("pages.comparisonReportView.colPrice")}</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700">{t("pages.comparisonReportView.colPerSqft")}</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700">{t("pages.comparisonReportView.estRoi")}</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700">{t("pages.comparisonReportView.colScore")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -205,7 +208,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
 
         {/* Property breakdown */}
         <section className="mt-14 space-y-8">
-          <h2 className="text-xl font-bold text-slate-900">Property breakdown</h2>
+          <h2 className="text-xl font-bold text-slate-900">{t("pages.comparisonReportView.breakdown")}</h2>
           <div className="space-y-8">
             {r.scored.map(({ property: p, score }) => (
               <div
@@ -217,21 +220,21 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
                 <h3 className="font-semibold text-slate-900">{p.address}</h3>
                 <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
                   <div>
-                    <dt className="text-slate-500">List / price</dt>
+                    <dt className="text-slate-500">{t("pages.comparisonReportView.listPrice")}</dt>
                     <dd className="font-medium text-slate-900">{fmtMoney(p.price)}</dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Size</dt>
+                    <dt className="text-slate-500">{t("pages.comparisonReportView.size")}</dt>
                     <dd className="font-medium text-slate-900">
                       {p.sqft.toLocaleString()} sqft · {p.beds} bd / {p.baths} ba
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Investment score</dt>
+                    <dt className="text-slate-500">{t("pages.comparisonReportView.investmentScore")}</dt>
                     <dd className="font-medium text-slate-900">{score.total} / 100</dd>
                   </div>
                   <div>
-                    <dt className="text-slate-500">Dimensions</dt>
+                    <dt className="text-slate-500">{t("pages.comparisonReportView.dimensions")}</dt>
                     <dd className="text-slate-700">
                       Financial {score.breakdown.financial} · Location {score.breakdown.location} · Property{" "}
                       {score.breakdown.property} · Market {score.breakdown.market}
@@ -245,11 +248,11 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
 
         {/* AI insight */}
         <section className="mt-14 space-y-6 rounded-xl border border-blue-100 bg-gradient-to-b from-blue-50/80 to-white p-6 sm:p-8">
-          <h2 className="text-xl font-bold text-slate-900">AI recommendation</h2>
+          <h2 className="text-xl font-bold text-slate-900">{t("pages.comparisonReportView.aiRecommendation")}</h2>
           <p className="leading-relaxed text-slate-800">{r.best_property_explanation}</p>
           <div className="grid gap-6 sm:grid-cols-2">
             <div>
-              <h3 className="text-xs font-bold uppercase text-emerald-700">Pros</h3>
+              <h3 className="text-xs font-bold uppercase text-emerald-700">{t("pages.comparisonReportView.pros")}</h3>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-700">
                 {r.pros.map((x) => (
                   <li key={x}>{x}</li>
@@ -257,7 +260,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
               </ul>
             </div>
             <div>
-              <h3 className="text-xs font-bold uppercase text-amber-800">Cons</h3>
+              <h3 className="text-xs font-bold uppercase text-amber-800">{t("pages.comparisonReportView.cons")}</h3>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-700">
                 {r.cons.map((x) => (
                   <li key={x}>{x}</li>
@@ -269,7 +272,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
 
         {/* Contact CTA */}
         <section className="mt-14 border-t border-slate-200 pt-10 print:break-inside-avoid">
-          <h2 className="text-xl font-bold text-slate-900">Contact your agent</h2>
+          <h2 className="text-xl font-bold text-slate-900">{t("pages.comparisonReportView.contactAgent")}</h2>
           <p className="mt-2 text-slate-600">
             Questions about this comparison? Reach out directly or send a message below.
           </p>
@@ -295,14 +298,14 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
               onClick={() => setFormOpen((v) => !v)}
               className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
             >
-              {formOpen ? "Close form" : "Message form"}
+              {formOpen ? t("pages.comparisonReportView.closeForm") : t("pages.comparisonReportView.messageForm")}
             </button>
           </div>
 
           {formOpen ? (
             <form onSubmit={submitInquiry} className="mt-8 max-w-lg space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-6">
               <div>
-                <label className="block text-xs font-medium text-slate-600">Your name</label>
+                <label className="block text-xs font-medium text-slate-600">{t("pages.comparisonReportView.yourName")}</label>
                 <input
                   required
                   value={formName}
@@ -311,7 +314,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600">Your email</label>
+                <label className="block text-xs font-medium text-slate-600">{t("pages.comparisonReportView.yourEmail")}</label>
                 <input
                   required
                   type="email"
@@ -321,7 +324,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-600">Message (optional)</label>
+                <label className="block text-xs font-medium text-slate-600">{t("pages.comparisonReportView.message")}</label>
                 <textarea
                   value={formMessage}
                   onChange={(e) => setFormMessage(e.target.value)}
@@ -331,14 +334,14 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
               </div>
               {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
               {formStatus === "sent" ? (
-                <p className="text-sm font-medium text-emerald-700">Message sent. Your agent will follow up soon.</p>
+                <p className="text-sm font-medium text-emerald-700">{t("pages.comparisonReportView.sent")}</p>
               ) : null}
               <button
                 type="submit"
                 disabled={formStatus === "sending"}
                 className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
               >
-                {formStatus === "sending" ? "Sending…" : "Send message"}
+                {formStatus === "sending" ? t("pages.comparisonReportView.sending") : t("pages.comparisonReportView.sendMessage")}
               </button>
             </form>
           ) : null}

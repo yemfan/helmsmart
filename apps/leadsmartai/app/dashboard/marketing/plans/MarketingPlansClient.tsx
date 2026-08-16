@@ -199,7 +199,7 @@ export default function MarketingPlansClient() {
               {p.status === "draft" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "approve")} className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">{t("pages.marketingPlans.approve")}</button>}
               {p.status === "approved" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "start")} className="rounded-lg bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50">{t("pages.marketingPlans.start")}</button>}
               {p.status === "active" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "pause")} className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">{t("pages.marketingPlans.pause")}</button>}
-              {["draft", "approved", "active", "paused"].includes(p.status) && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "cancel")} className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50">Cancel</button>}
+              {["draft", "approved", "active", "paused"].includes(p.status) && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "cancel")} className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50">{t("more.playbooks.cancel")}</button>}
             </div>
           </div>
         </div>

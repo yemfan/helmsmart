@@ -18,10 +18,23 @@ const ROOT = join(__dirname, "..", "..", "..");
 const SCAN = ["app", "components"];
 
 /** Proper nouns that are correct as-is in every language. */
-const ALLOWED = new Set(["MAXY Investment Inc."]);
+const ALLOWED = new Set([
+  "MAXY Investment Inc.",
+  "CloseBoss",
+  "Pinterest",
+  "TikTok",
+  "YouTube",
+  "Pro",
+  "Premium",
+]);
 
 const COPY_ATTRS = /\b(?:placeholder|title|label|aria-label|alt)="([^"]+)"/g;
-const JSX_TEXT = />([^<>{}]+)</g;
+/**
+ * The `[^=]` guard is the price of accepting one-word copy: an arrow function
+ * returning a generic — `(id: string) => Promise<void>` — reads as `>Promise<`
+ * to a regex, and there are a dozen of those in the calendar alone.
+ */
+const JSX_TEXT = /(?:^|[^=])>([^<>{}]+)</g;
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
@@ -42,10 +55,18 @@ const blankComments = (s: string) =>
 
 function isCopy(raw: string): boolean {
   const t = raw.trim();
-  if (t.length < 6 || ALLOWED.has(t)) return false;
+  if (ALLOWED.has(t)) return false;
   if (/[{}<>$`]/.test(t)) return false; // interpolated or markup — not a literal
   if (!/^[A-Za-z][A-Za-z0-9 ,.'’!?:%()/&+-]*$/.test(t)) return false;
-  return t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length >= 2;
+  const words = t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length;
+  /*
+   * One-word copy counts too. Requiring two words hid every Save, Cancel,
+   * Done, Notes and Paid in the app — 42 of them, on pages that were otherwise
+   * fully translated. A single word only counts when it is capitalised, which
+   * is what separates a button label from an identifier in `=> value <`.
+   */
+  if (words === 1) return t.length >= 3 && /^[A-Z]/.test(t);
+  return words >= 2 && t.length >= 6;
 }
 
 describe("residual English", () => {

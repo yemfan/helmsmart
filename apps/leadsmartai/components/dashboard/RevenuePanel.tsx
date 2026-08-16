@@ -226,7 +226,7 @@ export function RevenuePanel() {
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-600">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">Closed</th>
+                <th className="px-3 py-2 text-left font-medium">{t("detail.offerDetail.closed")}</th>
                 <th className="px-3 py-2 text-left font-medium">{t("pages.revenuePanel.colProperty")}</th>
                 <th className="px-3 py-2 text-left font-medium">{t("pages.revenuePanel.colClient")}</th>
                 <th className="px-3 py-2 text-right font-medium">{t("pages.revenuePanel.colPrice")}</th>

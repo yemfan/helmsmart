@@ -438,6 +438,7 @@ function OpportunityCard({
   opp: GrowthOpportunity;
   regenerating: boolean;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div
       className={`rounded-xl border bg-white p-4 shadow-sm ${regenerating ? "opacity-70" : ""}`}
@@ -459,7 +460,7 @@ function OpportunityCard({
 
       <p className="mt-2 text-[13px] leading-5 text-slate-700">{opp.insight}</p>
       <p className="mt-2 text-[13px] leading-5 text-slate-900">
-        <span className="font-medium">Action:</span> {opp.action}
+        <span className="font-medium">{t("pages.oneWord.action")}</span> {opp.action}
       </p>
 
       {Array.isArray(opp.context) && opp.context.length > 0 ? (

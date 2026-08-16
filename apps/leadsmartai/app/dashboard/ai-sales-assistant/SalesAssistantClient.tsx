@@ -278,7 +278,7 @@ function LeadList({
                     type="button"
                     onClick={() => onQuickAction(l.id, "call")}
                     aria-label={`Call ${l.name ?? "lead"}`}
-                    title="Call"
+                    title={t("pages.labels.call")}
                     className="rounded-md border border-gray-200 p-1.5 text-gray-500 transition hover:bg-blue-50 hover:text-blue-600"
                   >
                     <Phone className="h-3.5 w-3.5" strokeWidth={2} />
@@ -287,7 +287,7 @@ function LeadList({
                     type="button"
                     onClick={() => onQuickAction(l.id, "sms")}
                     aria-label={`Text ${l.name ?? "lead"}`}
-                    title="SMS"
+                    title={t("pages.labels.sms")}
                     className="rounded-md border border-gray-200 p-1.5 text-gray-500 transition hover:bg-blue-50 hover:text-blue-600"
                   >
                     <MessageSquare className="h-3.5 w-3.5" strokeWidth={2} />
@@ -296,7 +296,7 @@ function LeadList({
                     type="button"
                     onClick={() => onQuickAction(l.id, "email")}
                     aria-label={`Email ${l.name ?? "lead"}`}
-                    title="Email"
+                    title={t("pages.labels.emailChannel")}
                     className="rounded-md border border-gray-200 p-1.5 text-gray-500 transition hover:bg-blue-50 hover:text-blue-600"
                   >
                     <Mail className="h-3.5 w-3.5" strokeWidth={2} />

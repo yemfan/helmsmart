@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type GuideMessage = { role: "user" | "assistant"; content: string };
 
@@ -133,6 +134,7 @@ function clampToViewport(p: PanelPosition): PanelPosition {
 }
 
 export function AiChatPanel() {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
 
   // Allow other surfaces (Boss Assistant's "Ask your Boss Assistant…"
@@ -563,7 +565,7 @@ export function AiChatPanel() {
       <button
         onClick={() => setOpen(true)}
         className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-blue-100 transition-transform hover:scale-105 hover:ring-blue-200"
-        aria-label="Open CloseBoss"
+        aria-label={t("pages.aiChatPanel.open")}
       >
         <img
           src="/ai-assistant-mascot.png"
@@ -608,7 +610,7 @@ export function AiChatPanel() {
           </span>
           <div className="min-w-0">
             <p className="truncate text-sm font-bold">CloseBoss</p>
-            <p className="truncate text-[11px] opacity-80">Guide + per-contact SMS drafting</p>
+            <p className="truncate text-[11px] opacity-80">{t("pages.aiChatPanel.subtitle")}</p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
@@ -628,7 +630,7 @@ export function AiChatPanel() {
           <button
             onClick={() => setOpen(false)}
             className="inline-flex h-7 w-7 items-center justify-center rounded text-xl leading-none text-white/80 hover:bg-white/10 hover:text-white"
-            aria-label="Close CloseBoss"
+            aria-label={t("pages.aiChatPanel.close")}
           >
             &times;
           </button>
@@ -640,7 +642,7 @@ export function AiChatPanel() {
         <>
           <div className="flex items-center gap-1 overflow-x-auto border-b border-gray-200 bg-gray-50 px-2 py-1">
             <TabPill
-              label="AI Guide"
+              label={t("pages.aiChatPanel.guideTab")}
               active={activeTabId === "guide"}
               onClick={() => setActiveTabId("guide")}
             />
@@ -658,8 +660,8 @@ export function AiChatPanel() {
               type="button"
               onClick={openNewContactTab}
               className="ml-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-blue-50 hover:text-blue-600"
-              aria-label="New contact tab"
-              title="New contact tab"
+              aria-label={t("pages.aiChatPanel.newContactTab")}
+              title={t("pages.aiChatPanel.newContactTab")}
             >
               +
             </button>
@@ -685,7 +687,7 @@ export function AiChatPanel() {
               onPickContact={onPickContact}
             />
           ) : (
-            <div className="flex-1 p-4 text-sm text-gray-500">Tab not found.</div>
+            <div className="flex-1 p-4 text-sm text-gray-500">{t("pages.aiChatPanel.tabNotFound")}</div>
           )}
 
           {/* Resize handles — right edge, bottom edge, and bottom-right corner.
@@ -693,24 +695,24 @@ export function AiChatPanel() {
               resize cursors, so it's discoverable like a normal window. */}
           <div
             onPointerDown={startResize("e")}
-            title="Drag to resize width"
-            aria-label="Resize width"
+            title={t("pages.aiChatPanel.dragWidth")}
+            aria-label={t("pages.aiChatPanel.resizeWidth")}
             className={`absolute right-0 top-14 bottom-4 w-1.5 cursor-ew-resize touch-none rounded-full transition-colors ${
               resizing ? "bg-blue-400/70" : "bg-gray-200/60 hover:bg-blue-300/70"
             }`}
           />
           <div
             onPointerDown={startResize("s")}
-            title="Drag to resize height"
-            aria-label="Resize height"
+            title={t("pages.aiChatPanel.dragHeight")}
+            aria-label={t("pages.aiChatPanel.resizeHeight")}
             className={`absolute bottom-0 left-3 right-4 h-1.5 cursor-ns-resize touch-none rounded-full transition-colors ${
               resizing ? "bg-blue-400/70" : "bg-gray-200/60 hover:bg-blue-300/70"
             }`}
           />
           <div
             onPointerDown={startResize("se")}
-            title="Drag to resize"
-            aria-label="Resize panel"
+            title={t("pages.aiChatPanel.dragPanel")}
+            aria-label={t("pages.aiChatPanel.resizePanel")}
             className={`absolute bottom-0 right-0 h-4 w-4 cursor-nwse-resize touch-none ${
               resizing ? "bg-blue-200/50" : "hover:bg-blue-200/40"
             }`}
@@ -739,6 +741,7 @@ function TabPill({
   onClose?: () => void;
   tone?: "autopilot";
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div
       className={`group inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition ${
@@ -765,8 +768,8 @@ function TabPill({
           className={`ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[11px] leading-none ${
             active ? "text-white/80 hover:bg-white/20" : "text-gray-400 hover:bg-gray-200"
           }`}
-          aria-label="Close tab"
-          title="Close tab"
+          aria-label={t("pages.aiChatPanel.closeTab")}
+          title={t("pages.aiChatPanel.closeTab")}
         >
           &times;
         </button>
@@ -793,12 +796,13 @@ function GuideTabBody({
   scrollRef: React.RefObject<HTMLDivElement | null>;
   quickPrompts: string[];
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <>
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-4 min-h-0">
         {messages.length === 0 && !loading && (
           <div className="space-y-2">
-            <p className="text-sm text-gray-500">Try asking:</p>
+            <p className="text-sm text-gray-500">{t("pages.aiChatPanel.tryAsking")}</p>
             {quickPrompts.map((q) => (
               <button
                 key={q}
@@ -846,7 +850,7 @@ function GuideTabBody({
               send(input);
             }
           }}
-          placeholder="Ask CloseBoss..."
+          placeholder={t("pages.aiChatPanel.askPlaceholder")}
           className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
           disabled={loading}
         />
@@ -878,6 +882,7 @@ function ContactTabBody({
   toggleAutoPilot: (tab: ContactTab, next: boolean) => void;
   onPickContact: (tabId: string, contact: ContactOption) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const threadRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight;
@@ -907,7 +912,7 @@ function ContactTabBody({
                 type="button"
                 onClick={() => updateTab(tab.tabId, { contact: null, draft: "", thread: [] })}
                 className="text-xs text-gray-400 hover:text-gray-700"
-                title="Pick a different contact"
+                title={t("pages.aiChatPanel.pickDifferent")}
               >
                 change
               </button>
@@ -1056,6 +1061,7 @@ function ContactTabBody({
 
 // ── Contact picker (typeahead) ────────────────────────────────────
 function ContactPicker({ onPick }: { onPick: (c: ContactOption) => void }) {
+  const { t } = useTranslation("dashboard");
   const [q, setQ] = useState("");
   const [results, setResults] = useState<ContactOption[]>([]);
   const [loading, setLoading] = useState(false);
@@ -1097,7 +1103,7 @@ function ContactPicker({ onPick }: { onPick: (c: ContactOption) => void }) {
         <div className="absolute left-0 right-0 z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
           {loading && <div className="px-3 py-2 text-xs text-gray-500">Searching…</div>}
           {!loading && results.length === 0 && (
-            <div className="px-3 py-2 text-xs text-gray-500">No contacts match.</div>
+            <div className="px-3 py-2 text-xs text-gray-500">{t("pages.aiChatPanel.noMatches")}</div>
           )}
           {results.map((c) => (
             <button
@@ -1130,6 +1136,7 @@ function AutoPilotSwitch({
   checked: boolean;
   onChange: (next: boolean) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <label
       className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${
@@ -1144,7 +1151,7 @@ function AutoPilotSwitch({
         className="sr-only"
       />
       <span aria-hidden>{checked ? "🛫" : "✈️"}</span>
-      <span>Auto Pilot</span>
+      <span>{t("pages.aiChatPanel.autoPilot")}</span>
     </label>
   );
 }

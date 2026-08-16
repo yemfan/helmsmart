@@ -121,7 +121,7 @@ export default function AgentVoiceSettingsPanel() {
       </p>
 
       <div className="space-y-1">
-        <span className="block text-[11px] font-medium text-gray-500">Provider</span>
+        <span className="block text-[11px] font-medium text-gray-500">{t("pages.oneWord.provider")}</span>
         <div className="flex flex-wrap gap-2">
           {(["openai", "elevenlabs"] as const).map((p) => (
             <label
@@ -199,7 +199,7 @@ export default function AgentVoiceSettingsPanel() {
             }))
           }
         >
-          <option value="en">English</option>
+          <option value="en">{t("pages.oneWord.english")}</option>
           <option value="zh">{t("pages.agentVoice.chineseSimplified")}</option>
         </select>
       </div>

@@ -258,13 +258,14 @@ function Stepper({
   min: number;
   max: number;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="mt-1 inline-flex items-center rounded-lg border border-gray-300 bg-white">
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
-        aria-label="Decrement"
+        aria-label={t("pages.labels.decrement")}
         className="px-3 py-2 text-gray-600 disabled:opacity-30"
       >
         −
@@ -274,7 +275,7 @@ function Stepper({
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
-        aria-label="Increment"
+        aria-label={t("pages.labels.increment")}
         className="px-3 py-2 text-gray-600 disabled:opacity-30"
       >
         +

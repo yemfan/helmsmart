@@ -254,12 +254,12 @@ function ReceivedCard({
 
       {row.pros ? (
         <div className="mt-2 rounded bg-green-50 px-2 py-1 text-xs text-green-800">
-          <strong>Worked:</strong> {row.pros}
+          <strong>{t("pages.oneWord.worked")}</strong> {row.pros}
         </div>
       ) : null}
       {row.cons ? (
         <div className="mt-1 rounded bg-amber-50 px-2 py-1 text-xs text-amber-800">
-          <strong>Concerns:</strong> {row.cons}
+          <strong>{t("pages.oneWord.concerns")}</strong> {row.cons}
         </div>
       ) : null}
       {row.price_feedback ? (

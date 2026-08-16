@@ -749,8 +749,8 @@ function NewListingOfferForm({
         <div className="text-xs font-medium text-slate-700">{t("pages.offersCompare.colContingencies")}</div>
         <div className="flex flex-wrap gap-4 text-sm">
           <Check label={t("pages.offersCompare.inspection")} checked={inspectionContingency} onChange={setInspectionContingency} />
-          <Check label="Appraisal" checked={appraisalContingency} onChange={setAppraisalContingency} />
-          <Check label="Loan" checked={loanContingency} onChange={setLoanContingency} />
+          <Check label={t("pages.labels.appraisal")} checked={appraisalContingency} onChange={setAppraisalContingency} />
+          <Check label={t("pages.labels.loan")} checked={loanContingency} onChange={setLoanContingency} />
           <Check
             label={t("pages.offersCompare.saleOfHome")}
             checked={saleOfHomeContingency}
@@ -760,7 +760,7 @@ function NewListingOfferForm({
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-slate-700">Notes</label>
+        <label className="block text-xs font-medium text-slate-700">{t("detail.offerDetail.notes")}</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}

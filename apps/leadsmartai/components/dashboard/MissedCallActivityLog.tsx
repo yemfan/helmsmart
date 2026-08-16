@@ -94,15 +94,15 @@ export default function MissedCallActivityLog() {
     <div className="space-y-4">
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Calls" value={stats.total} tone="slate" />
-        <Stat label="Missed" value={stats.missed} tone="amber" />
+        <Stat label={t("pages.labels.calls")} value={stats.total} tone="slate" />
+        <Stat label={t("pages.labels.missed")} value={stats.missed} tone="amber" />
         <Stat label={t("pages.missedCallLog.autoTextsSent")} value={stats.textbacks} tone="emerald" />
         <Stat label={t("pages.missedCallLog.missedNoText")} value={stats.missedNoTextback} tone="red" />
       </div>
 
       {/* Filter chips */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        <FilterChip value="all" current={filter} onClick={setFilter} label="All" />
+        <FilterChip value="all" current={filter} onClick={setFilter} label={t("pages.labels.all")} />
         <FilterChip value="missed" current={filter} onClick={setFilter} label={t("pages.missedCallLog.missedOnly")} />
         <FilterChip
           value="with_textback"

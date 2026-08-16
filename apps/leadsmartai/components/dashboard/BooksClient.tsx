@@ -493,7 +493,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
           {paidInvoices.length > 0 && (
             <section>
               <h2 className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
-                <span>Paid</span>
+                <span>{t("pages.books.paid")}</span>
                 <span className="tabular-nums text-emerald-600">{formatMoney(paidTotal)}</span>
               </h2>
               <ul className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

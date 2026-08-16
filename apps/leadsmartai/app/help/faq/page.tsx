@@ -56,7 +56,7 @@ export default async function HelpFaqPage() {
       />
 
       <div className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
-        <nav aria-label="Breadcrumb" className="mb-6 text-xs text-slate-500">
+        <nav aria-label={t("pages.labels.breadcrumb", { ns: "dashboard" })} className="mb-6 text-xs text-slate-500">
           <Link href="/help" className="hover:text-slate-700">
             {th("faq_page.breadcrumb_help")}
           </Link>

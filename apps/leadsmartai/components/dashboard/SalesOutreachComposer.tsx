@@ -433,9 +433,9 @@ export default function SalesOutreachComposer({
       {/* 1 · Channel */}
       <Step label={t("outreach.steps.channel")} />
       <div className="mb-4 flex gap-2">
-        <ChannelTab active={channel === "call"} onClick={() => { setChannel("call"); resetFeedback(); }} icon={PhoneOutgoing} label="Call" />
-        <ChannelTab active={channel === "sms"} onClick={() => { setChannel("sms"); resetFeedback(); }} icon={MessageSquare} label="SMS" />
-        <ChannelTab active={channel === "email"} onClick={() => { setChannel("email"); resetFeedback(); }} icon={Mail} label="Email" />
+        <ChannelTab active={channel === "call"} onClick={() => { setChannel("call"); resetFeedback(); }} icon={PhoneOutgoing} label={t("pages.labels.call")} />
+        <ChannelTab active={channel === "sms"} onClick={() => { setChannel("sms"); resetFeedback(); }} icon={MessageSquare} label={t("pages.labels.sms")} />
+        <ChannelTab active={channel === "email"} onClick={() => { setChannel("email"); resetFeedback(); }} icon={Mail} label={t("pages.labels.emailChannel")} />
       </div>
 
       {/* 2 · Purpose */}
@@ -523,7 +523,7 @@ export default function SalesOutreachComposer({
         <div className="mb-4 flex flex-wrap gap-2">
           <SegmentChip active={segment === "hot"} onClick={() => { setSegment("hot"); resetFeedback(); }} label={t("outreach.who.hotLeads")} count={segmentCounts.hot} />
           <SegmentChip active={segment === "quiet"} onClick={() => { setSegment("quiet"); resetFeedback(); }} label={t("tips.quiet7d")} count={segmentCounts.quiet} tone="warn" />
-          <SegmentChip active={segment === "all"} onClick={() => { setSegment("all"); resetFeedback(); }} label="All" count={segmentCounts.all} />
+          <SegmentChip active={segment === "all"} onClick={() => { setSegment("all"); resetFeedback(); }} label={t("pages.labels.all")} count={segmentCounts.all} />
         </div>
       )}
 
