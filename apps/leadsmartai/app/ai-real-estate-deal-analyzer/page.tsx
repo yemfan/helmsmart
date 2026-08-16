@@ -212,13 +212,8 @@ function AiRealEstateDealAnalyzerPageInner() {
           />
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">
-        AI Real Estate Deal Analyzer
-      </h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Analyze rental property investments instantly. Estimate cash flow,
-        cap rate, and ROI based on your assumptions.
-      </p>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.dealAnalyzer.h1")}</h1>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.dealAnalyzer.sub")}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <InputForm
@@ -264,9 +259,7 @@ function InputForm({
     <div className="space-y-6">
       {/* Property Address */}
       <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Property Address
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t("pages.dealAnalyzer.propertyAddress")}</h2>
         <div className="space-y-3">
           <input
             type="text"
@@ -279,21 +272,14 @@ function InputForm({
             type="button"
             onClick={onAnalyze}
             className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
-          >
-            Analyze Property
-          </button>
+          >{t("pages.dealAnalyzer.analyzeProperty")}</button>
         </div>
-        <p className="text-xs text-gray-500">
-          Address lookup will be enabled in a future update. For now, this
-          field is stored in your analysis only.
-        </p>
+        <p className="text-xs text-gray-500">{t("pages.dealAnalyzer.addressNote")}</p>
       </div>
 
       {/* Property Details */}
       <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Property Details
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t("pages.dealAnalyzer.propertyDetails")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <LabeledNumberInput
             label="Purchase Price ($)"
@@ -302,20 +288,20 @@ function InputForm({
             min={0}
           />
           <LabeledNumberInput
-            label="Bedrooms"
+            label={t("pages.dealAnalyzer.bedrooms")}
             value={inputs.bedrooms}
             onChange={onChange("bedrooms")}
             min={0}
           />
           <LabeledNumberInput
-            label="Bathrooms"
+            label={t("pages.dealAnalyzer.bathrooms")}
             value={inputs.bathrooms}
             onChange={onChange("bathrooms")}
             min={0}
             step={0.5}
           />
           <LabeledNumberInput
-            label="Square Feet"
+            label={t("pages.dealAnalyzer.squareFeet")}
             value={inputs.squareFeet}
             onChange={onChange("squareFeet")}
             min={0}
@@ -331,19 +317,17 @@ function InputForm({
 
       {/* Financing */}
       <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Financing
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t("pages.dealAnalyzer.financing")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <LabeledNumberInput
-            label="Down Payment (%)"
+            label={t("pages.dealAnalyzer.downPayment")}
             value={inputs.downPaymentPercent}
             onChange={onChange("downPaymentPercent")}
             min={0}
             max={100}
           />
           <LabeledNumberInput
-            label="Interest Rate (%)"
+            label={t("pages.dealAnalyzer.interestRate")}
             value={inputs.interestRate}
             onChange={onChange("interestRate")}
             min={0}
@@ -351,7 +335,7 @@ function InputForm({
             step={0.1}
           />
           <LabeledNumberInput
-            label="Loan Term (years)"
+            label={t("pages.dealAnalyzer.loanTerm")}
             value={inputs.loanTermYears}
             onChange={onChange("loanTermYears")}
             min={5}
@@ -362,9 +346,7 @@ function InputForm({
 
       {/* Rental Income */}
       <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Rental Income
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t("pages.dealAnalyzer.rentalIncome")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <LabeledNumberInput
             label="Monthly Rent ($)"
@@ -383,12 +365,10 @@ function InputForm({
 
       {/* Operating Expenses */}
       <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Operating Expenses
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t("pages.dealAnalyzer.operatingExpenses")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <LabeledNumberInput
-            label="Property Tax (%)"
+            label={t("pages.dealAnalyzer.propertyTax")}
             value={inputs.propertyTaxPercent}
             onChange={onChange("propertyTaxPercent")}
             min={0}
@@ -401,21 +381,21 @@ function InputForm({
             min={0}
           />
           <LabeledNumberInput
-            label="Maintenance (%)"
+            label={t("pages.dealAnalyzer.maintenance")}
             value={inputs.maintenancePercent}
             onChange={onChange("maintenancePercent")}
             min={0}
             max={30}
           />
           <LabeledNumberInput
-            label="Property Management (%)"
+            label={t("pages.dealAnalyzer.management")}
             value={inputs.managementPercent}
             onChange={onChange("managementPercent")}
             min={0}
             max={30}
           />
           <LabeledNumberInput
-            label="Vacancy (%)"
+            label={t("pages.dealAnalyzer.vacancy")}
             value={inputs.vacancyPercent}
             onChange={onChange("vacancyPercent")}
             min={0}
@@ -430,16 +410,12 @@ function InputForm({
           type="button"
           onClick={onAnalyze}
           className="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
-        >
-          Analyze Deal
-        </button>
+        >{t("pages.dealAnalyzer.analyzeDeal")}</button>
         <button
           type="button"
           onClick={onReset}
           className="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-        >
-          Reset Inputs
-        </button>
+        >{t("pages.dealAnalyzer.resetInputs")}</button>
         <button
           type="button"
           onClick={() => {
@@ -448,9 +424,7 @@ function InputForm({
             );
           }}
           className="inline-flex items-center justify-center rounded-md border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
-        >
-          Share This Analysis
-        </button>
+        >{t("pages.dealAnalyzer.shareAnalysis")}</button>
       </div>
     </div>
   );
@@ -474,12 +448,10 @@ function ResultsPanel({ inputs, results }: ResultsPanelProps) {
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 space-y-5">
-      <h2 className="text-lg font-semibold text-gray-900 mb-2">
-        Deal Results
-      </h2>
+      <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.dealAnalyzer.dealResults")}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <MetricCard
-          label="Monthly Mortgage Payment"
+          label={t("pages.dealAnalyzer.monthlyMortgage")}
           value={
             isFinite(monthlyMortgage)
               ? `$${monthlyMortgage.toFixed(0)}`
@@ -487,7 +459,7 @@ function ResultsPanel({ inputs, results }: ResultsPanelProps) {
           }
         />
         <MetricCard
-          label="Total Monthly Expenses"
+          label={t("pages.dealAnalyzer.totalMonthly")}
           value={`$${totalMonthlyExpenses.toFixed(0)}`}
           hint="Includes operating expenses and mortgage."
         />
@@ -507,7 +479,7 @@ function ResultsPanel({ inputs, results }: ResultsPanelProps) {
           value={`${capRate.toFixed(2)}%`}
         />
         <MetricCard
-          label="Cash on Cash Return"
+          label={t("pages.dealAnalyzer.cashOnCash")}
           value={
             isFinite(cashOnCashReturn)
               ? `${cashOnCashReturn.toFixed(2)}%`
@@ -515,7 +487,7 @@ function ResultsPanel({ inputs, results }: ResultsPanelProps) {
           }
         />
         <MetricCard
-          label="Price to Rent Ratio"
+          label={t("pages.dealAnalyzer.priceToRent")}
           value={
             isFinite(priceToRentRatio)
               ? priceToRentRatio.toFixed(1)
@@ -524,8 +496,7 @@ function ResultsPanel({ inputs, results }: ResultsPanelProps) {
           hint="Purchase price ÷ annual rent."
         />
       </div>
-      <p className="mt-2 text-xs text-gray-500">
-        Calculations are based on your current assumptions for{" "}
+      <p className="mt-2 text-xs text-gray-500">{t("pages.dealAnalyzer.basedOn")}{" "}
         <span className="font-semibold">
           {inputs.address || "this property"}
         </span>
@@ -540,70 +511,42 @@ type InvestmentSummaryProps = {
 };
 
 function InvestmentSummary({ results }: InvestmentSummaryProps) {
+  const { t } = useTranslation("dashboard");
   const { monthlyCashFlow, capRate, cashOnCashReturn } = results;
 
-  let summary = "";
-  const bullets: string[] = [];
+  /*
+   * Keys, chosen by the same branches. Composing the verdict from literals
+   * made it English regardless of the reader's language, and a scan that reads
+   * JSX could never have seen it.
+   */
+  const summaryKey =
+    monthlyCashFlow > 0
+      ? "cfPositive"
+      : monthlyCashFlow < 0
+        ? "cfNegative"
+        : "cfBreakEven";
+  const bulletKeys: string[] = [];
 
-  if (monthlyCashFlow > 0) {
-    summary =
-      "This property appears to generate positive cash flow based on the assumptions provided.";
-  } else if (monthlyCashFlow < 0) {
-    summary =
-      "This property appears to generate negative cash flow under the current assumptions.";
-  } else {
-    summary =
-      "This property appears to break even on cash flow with the current assumptions.";
-  }
+  if (capRate >= 7) bulletKeys.push("capHigh");
+  else if (capRate <= 4 && capRate > 0) bulletKeys.push("capLow");
+  else if (capRate === 0) bulletKeys.push("capNone");
+  else bulletKeys.push("capMid");
 
-  if (capRate >= 7) {
-    bullets.push(
-      "The cap rate is above average for many rental markets, suggesting a potentially strong income-producing asset."
-    );
-  } else if (capRate <= 4 && capRate > 0) {
-    bullets.push(
-      "The cap rate is relatively low, which may indicate a premium price, lower income, or a market focused more on appreciation than cash flow."
-    );
-  } else if (capRate === 0) {
-    bullets.push(
-      "Cap rate could not be calculated. Check your purchase price and NOI assumptions."
-    );
-  } else {
-    bullets.push(
-      "The cap rate is in a moderate range; compare it to similar properties in the same area for better context."
-    );
-  }
+  if (cashOnCashReturn > 10) bulletKeys.push("cocStrong");
+  else if (cashOnCashReturn > 0 && cashOnCashReturn <= 5) bulletKeys.push("cocModest");
 
-  if (cashOnCashReturn > 10) {
-    bullets.push(
-      "Cash-on-cash return looks strong relative to the amount of cash invested, given your current down payment assumptions."
-    );
-  } else if (cashOnCashReturn > 0 && cashOnCashReturn <= 5) {
-    bullets.push(
-      "Cash-on-cash return is modest. Consider whether appreciation or value-add improvements could justify the investment."
-    );
-  }
-
-  bullets.push(
-    "Investors should verify local rental demand, property condition, and market trends before making any final decision."
-  );
+  bulletKeys.push("verifyLocally");
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 space-y-3 text-sm text-gray-700">
-      <h2 className="text-lg font-semibold text-gray-900">
-        AI Investment Summary
-      </h2>
-      <p>{summary}</p>
+      <h2 className="text-lg font-semibold text-gray-900">{t("pages.dealAnalyzer.aiSummary")}</h2>
+      <p>{t(`pages.dealAnalyzer.${summaryKey}`)}</p>
       <ul className="list-disc list-inside space-y-1">
-        {bullets.map((item, idx) => (
-          <li key={idx}>{item}</li>
+        {bulletKeys.map((key) => (
+          <li key={key}>{t(`pages.dealAnalyzer.${key}`)}</li>
         ))}
       </ul>
-      <p className="mt-2 text-xs text-gray-500">
-        This summary is generated from simple rules based on cash flow and
-        returns. It is not financial advice. Always perform full due
-        diligence or consult a professional advisor.
-      </p>
+      <p className="mt-2 text-xs text-gray-500">{t("pages.dealAnalyzer.notAdvice")}</p>
     </div>
   );
 }

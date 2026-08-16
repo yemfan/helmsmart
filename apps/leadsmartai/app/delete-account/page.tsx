@@ -17,129 +17,68 @@ export default async function DeleteAccountPage() {
   const t = await getServerT();
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-3xl font-bold text-slate-900 mb-2">
-        Delete your LeadSmart account
-      </h1>
-      <p className="text-sm text-slate-500 mb-8">
-        This page explains how to permanently delete your CloseBoss account and
-        the personal data associated with it. You can request deletion from inside
-        the mobile app or from this page — both paths reach the same workflow.
-      </p>
+      <h1 className="text-3xl font-bold text-slate-900 mb-2">{t("pages.deleteAccount.h1", { ns: "dashboard" })}</h1>
+      <p className="text-sm text-slate-500 mb-8">{t("pages.deleteAccount.intro", { ns: "dashboard" })}</p>
 
       <section className="mb-10 rounded-lg border border-slate-200 bg-slate-50 p-5">
-        <h2 className="text-lg font-semibold text-slate-900 mb-2">
-          From the LeadSmart mobile app
-        </h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-2">{t("pages.deleteAccount.fromApp", { ns: "dashboard" })}</h2>
         <ol className="list-decimal list-inside space-y-2 text-sm text-slate-700">
-          <li>Open the LeadSmart app and sign in.</li>
-          <li>
-            Go to the <strong>Settings</strong> tab.
+          <li>{t("pages.deleteAccount.step1", { ns: "dashboard" })}</li>
+          <li>{t("pages.deleteAccount.step2", { ns: "dashboard" })} <strong>{t("pages.deleteAccount.settings", { ns: "dashboard" })}</strong> tab.
+          </li>
+          <li>{t("pages.deleteAccount.step3", { ns: "dashboard" })} <strong>{t("pages.deleteAccount.deleteAccount", { ns: "dashboard" })}</strong>.
           </li>
           <li>
-            Scroll to the bottom and tap <strong>Delete account</strong>.
-          </li>
-          <li>
-            Confirm by typing <code>DELETE</code> and tapping the red
-            confirmation button.
+            {t("pages.deleteAccount.confirmByTyping", { ns: "dashboard" })} <code>DELETE</code> {t("pages.deleteAccount.andTapping", { ns: "dashboard" })}
           </li>
         </ol>
-        <p className="mt-3 text-sm text-slate-600">
-          Your sign-in credentials are revoked immediately. You will be returned
-          to the login screen and will no longer be able to access your account.
-        </p>
+        <p className="mt-3 text-sm text-slate-600">{t("pages.deleteAccount.immediate", { ns: "dashboard" })}</p>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-lg font-semibold text-slate-900 mb-2">
-          If you no longer have the app installed
-        </h2>
-        <p className="text-sm text-slate-700 mb-3">
-          Send an email to{" "}
+        <h2 className="text-lg font-semibold text-slate-900 mb-2">{t("pages.deleteAccount.noApp", { ns: "dashboard" })}</h2>
+        <p className="text-sm text-slate-700 mb-3">{t("pages.deleteAccount.sendEmail", { ns: "dashboard" })}{" "}
           <a
             href="mailto:contact@closebossai.com?subject=Account%20deletion%20request"
             className="text-[#0072ce] hover:underline"
           >
             contact@closebossai.com
-          </a>{" "}
-          from the address associated with your LeadSmart account, with the
-          subject line <strong>&ldquo;Account deletion request&rdquo;</strong>.
+          </a>{" "}{t("pages.deleteAccount.fromAddress", { ns: "dashboard" })} <strong>&ldquo;Account deletion request&rdquo;</strong>.
           We will confirm receipt and complete the deletion within five business
           days.
         </p>
-        <p className="text-sm text-slate-700">
-          We may ask one verification question (e.g. the brokerage you signed up
-          with, or the date you created your account) before processing the
-          request — this protects you against someone else requesting deletion
-          on your behalf.
-        </p>
+        <p className="text-sm text-slate-700">{t("pages.deleteAccount.verification", { ns: "dashboard" })}</p>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-lg font-semibold text-slate-900 mb-2">
-          What gets deleted
-        </h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-2">{t("pages.deleteAccount.whatDeleted", { ns: "dashboard" })}</h2>
         <ul className="list-disc list-inside space-y-2 text-sm text-slate-700">
-          <li>
-            Your sign-in credentials (email, password hash, OAuth identity
-            links).
-          </li>
-          <li>
-            Your agent profile — name, phone, brokerage, photo, service areas,
-            branding preferences.
-          </li>
-          <li>
-            Lead records, conversations (SMS and email), tasks, calendar
-            events, reminders, posts, and notes attributed to your account.
-          </li>
-          <li>Push notification tokens and device records.</li>
-          <li>
-            Integration links to third-party services (Zillow, Realtor.com,
-            Follow Up Boss, Facebook Lead Ads, LinkedIn, etc.). The third
-            parties retain whatever data they hold under their own policies —
-            you must contact them separately to remove that data.
-          </li>
+          <li>{t("pages.deleteAccount.d1", { ns: "dashboard" })}</li>
+          <li>{t("pages.deleteAccount.d2", { ns: "dashboard" })}</li>
+          <li>{t("pages.deleteAccount.d3", { ns: "dashboard" })}</li>
+          <li>{t("pages.deleteAccount.d4", { ns: "dashboard" })}</li>
+          <li>{t("pages.deleteAccount.d5", { ns: "dashboard" })}</li>
         </ul>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-lg font-semibold text-slate-900 mb-2">
-          What we keep, and for how long
-        </h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-2">{t("pages.deleteAccount.whatKept", { ns: "dashboard" })}</h2>
         <ul className="list-disc list-inside space-y-2 text-sm text-slate-700">
           <li>
-            <strong>Billing and tax records</strong> required by law (invoices,
-            payment receipts) — retained for the period required by applicable
-            tax regulation, typically seven years. These records do not contain
-            CRM lead data.
-          </li>
+            <strong>{t("pages.deleteAccount.k1", { ns: "dashboard" })}</strong> {t("pages.deleteAccount.k1Body", { ns: "dashboard" })}</li>
           <li>
-            <strong>Aggregated and de-identified usage statistics</strong> used
-            to operate and improve the Service. These contain no personal
-            identifiers after deletion.
-          </li>
+            <strong>{t("pages.deleteAccount.k2", { ns: "dashboard" })}</strong> {t("pages.deleteAccount.k2Body", { ns: "dashboard" })}</li>
           <li>
-            <strong>Backup snapshots</strong> for up to 30 days after deletion,
-            after which they are overwritten on the normal backup-rotation
-            schedule.
-          </li>
+            <strong>{t("pages.deleteAccount.k3", { ns: "dashboard" })}</strong> {t("pages.deleteAccount.k3Body", { ns: "dashboard" })}</li>
         </ul>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-lg font-semibold text-slate-900 mb-2">
-          Timing
-        </h2>
-        <p className="text-sm text-slate-700">
-          Your account is locked and your credentials revoked immediately when
-          you confirm deletion in the app (or when we verify an email request).
-          Hard deletion of the underlying data completes within 30 days. After
-          that, no copy of your CRM data remains outside the retention
-          categories listed above.
-        </p>
+        <h2 className="text-lg font-semibold text-slate-900 mb-2">{t("pages.deleteAccount.timing", { ns: "dashboard" })}</h2>
+        <p className="text-sm text-slate-700">{t("pages.deleteAccount.timingBody", { ns: "dashboard" })}</p>
       </section>
 
-      <div className="mt-12 border-t border-slate-200 pt-6 text-sm text-slate-500">
-        See also our{" "}
+      <div className="mt-12 border-t border-slate-200 pt-6 text-sm text-slate-500">{t("pages.deleteAccount.seeAlso", { ns: "dashboard" })}{" "}
         <Link href="/privacy" className="text-[#0072ce] hover:underline">{t("pages.articleChrome.privacyPolicy", { ns: "dashboard" })}</Link>{" "}
         and{" "}
         <Link href="/terms" className="text-[#0072ce] hover:underline">{t("pages.articleChrome.termsOfService", { ns: "dashboard" })}</Link>
