@@ -21,9 +21,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <p>
-          MAXY Investment Inc., a Texas corporation, doing business as CloseBoss AI
-          (&ldquo;CloseBoss,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or
-          &ldquo;our&rdquo;) operates the website closebossai.com and provides AI-assisted
+          CloseBoss is a service of MAXY Investment Inc., a Texas corporation. In
+          this Privacy Policy, &ldquo;CloseBoss,&rdquo; &ldquo;we,&rdquo;
+          &ldquo;us,&rdquo; and &ldquo;our&rdquo; refer to MAXY Investment Inc.,
+          which operates the website closebossai.com and provides AI-assisted
           lead management, CRM, SMS follow-up, email automation, and related services (the
           &ldquo;Service&rdquo;). This Privacy Policy explains what information we collect,
           how we use and share it, and the choices you have.
