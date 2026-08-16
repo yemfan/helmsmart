@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { LocaleId } from "@/lib/locales/registry";
 
 /**
@@ -36,6 +37,7 @@ export function TranslationToggle({
   /** Display label for the target. Defaults to "English". */
   targetLabel?: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const [state, setState] = useState<
     | { kind: "idle" }
     | { kind: "loading" }
@@ -84,9 +86,7 @@ export function TranslationToggle({
           type="button"
           onClick={() => setState({ kind: "idle" })}
           className="mt-1 text-[11px] font-medium text-slate-500 hover:text-slate-800"
-        >
-          Hide translation
-        </button>
+        >{t("pages.misc.hideTranslation")}</button>
       </div>
     );
   }
@@ -101,9 +101,7 @@ export function TranslationToggle({
             void translate();
           }}
           className="font-medium text-slate-600 hover:text-slate-900 underline"
-        >
-          Retry
-        </button>
+        >{t("pages.misc.retry")}</button>
       </div>
     );
   }

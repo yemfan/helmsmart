@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import BuyerOutreachDraftModal from "@/components/dashboard/BuyerOutreachDraftModal";
 import type {
@@ -50,6 +51,7 @@ const FILTERS: { value: LabelFilter; label: string }[] = [
  * about their NEXT home.
  */
 export default function LikelyBuyersPanel(props: { defaultLimit?: number } = {}) {
+  const { t } = useTranslation("dashboard");
   const limit = props.defaultLimit ?? 25;
 
   const [rows, setRows] = useState<LikelyBuyerRow[]>([]);
@@ -98,7 +100,7 @@ export default function LikelyBuyersPanel(props: { defaultLimit?: number } = {})
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <header className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Today&apos;s likely buyers</h2>
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.misc.likelyBuyers")}</h2>
           <p className="mt-0.5 text-xs text-slate-600">
             Past clients + sphere ranked by likelihood to BUY their next home in the next ~90 days. Job-change and life-event signals weigh heaviest.
           </p>
@@ -173,9 +175,7 @@ export default function LikelyBuyersPanel(props: { defaultLimit?: number } = {})
                   type="button"
                   onClick={() => setDraftFor({ id: r.contactId, name: r.fullName })}
                   className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                >
-                  Draft message
-                </button>
+                >{t("pages.misc.draftMessage")}</button>
               </li>
             ))}
           </ul>

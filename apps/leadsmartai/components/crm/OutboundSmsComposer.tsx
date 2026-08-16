@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function OutboundSmsComposer({
   leadId,
@@ -14,6 +15,7 @@ export function OutboundSmsComposer({
   defaultBody?: string;
   onSent?: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [body, setBody] = useState(defaultBody);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -43,8 +45,8 @@ export function OutboundSmsComposer({
   return (
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-5 py-4">
-        <h2 className="text-base font-semibold text-slate-900">Send SMS</h2>
-        <p className="text-xs text-slate-500 mt-0.5">Uses your Twilio number; delivery updates sync when configured.</p>
+        <h2 className="text-base font-semibold text-slate-900">{t("pages.misc.sendSms")}</h2>
+        <p className="text-xs text-slate-500 mt-0.5">{t("pages.misc.twilioNote")}</p>
       </div>
       <div className="space-y-3 p-5">
         <textarea

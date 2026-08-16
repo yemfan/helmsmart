@@ -1,6 +1,7 @@
 "use client";
 
 import { PICKABLE_AVATARS, avatarUrl } from "@/lib/realtyboss/avatars";
+import { useTranslation } from "react-i18next";
 
 /** A single circular avatar — a custom uploaded photo (`url`) when present,
  *  otherwise the built-in persona for `id`. */
@@ -51,10 +52,11 @@ export function AssistantAvatarPicker({
   size?: number;
   disabled?: boolean;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div
       role="radiogroup"
-      aria-label="Choose an avatar"
+      aria-label={t("pages.misc.chooseAvatar")}
       className="grid gap-2"
       style={{ gridTemplateColumns: `repeat(5, ${size}px)` }}
     >

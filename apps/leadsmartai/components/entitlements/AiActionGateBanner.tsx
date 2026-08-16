@@ -2,6 +2,7 @@
 
 import { emitLeadsmartUpgradePrompt } from "@/lib/funnel/emitUpgradePrompt";
 import type { AiActionGateReason } from "@/lib/entitlements/aiActionGate";
+import { useTranslation } from "react-i18next";
 
 /**
  * Inline banner shown when an AI endpoint returns HTTP 402 — every AI
@@ -24,6 +25,7 @@ export function AiActionGateBanner({
   reason: AiActionGateReason;
   className?: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const isLimit = reason === "ai_usage_limit_reached";
   const title = isLimit
     ? "You've hit your AI limit for this period"
@@ -56,9 +58,7 @@ export function AiActionGateBanner({
         <a
           href="/agent/pricing"
           className="rounded-md border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-medium text-amber-900 hover:bg-amber-100"
-        >
-          Compare plans
-        </a>
+        >{t("pages.misc.comparePlans")}</a>
       </div>
     </div>
   );

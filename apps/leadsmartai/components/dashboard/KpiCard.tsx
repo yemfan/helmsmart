@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 type KpiCardProps = {
@@ -45,6 +46,7 @@ function Sparkline({ points }: { points: number[] }) {
 }
 
 export function KpiCard({ label, value, subtext, trend, deltaPct, spark, className }: KpiCardProps) {
+  const { t } = useTranslation("dashboard");
   const hasDelta = deltaPct != null && Number.isFinite(deltaPct);
   const up = (deltaPct ?? 0) >= 0;
   const hasSpark = Array.isArray(spark) && spark.length > 1;
@@ -74,7 +76,7 @@ export function KpiCard({ label, value, subtext, trend, deltaPct, spark, classNa
         >
           <span aria-hidden>{up ? "▲" : "▼"}</span>
           <span>{Math.abs(deltaPct as number).toFixed(0)}%</span>
-          <span className="font-normal text-gray-400">vs prev period</span>
+          <span className="font-normal text-gray-400">{t("pages.misc.vsPrevPeriod")}</span>
         </div>
       ) : subtext ? (
         <div className="mt-1 text-xs text-gray-400">{subtext}</div>

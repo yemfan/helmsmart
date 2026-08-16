@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { AgentSignupForm } from "@/components/agent-signup/AgentSignupForm";
 import type { SignupOverlayPrefill } from "@/lib/hooks/useSignupProfilePrefill";
@@ -18,6 +19,7 @@ export default function AgentSignupModal({
   onClose: () => void;
   overlayPrefill?: SignupOverlayPrefill | null;
 }) {
+  const { t } = useTranslation("dashboard");
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -41,7 +43,7 @@ export default function AgentSignupModal({
           type="button"
           onClick={onClose}
           className="absolute right-3 top-3 z-10 rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
-          aria-label="Close"
+          aria-label={t("pages.misc.close")}
         >
           <X className="h-4 w-4" strokeWidth={2} aria-hidden />
         </button>
@@ -52,9 +54,7 @@ export default function AgentSignupModal({
               <div className="py-8 text-center text-sm text-slate-500">Loading form…</div>
             }
           >
-            <span id="agent-signup-modal-title" className="sr-only">
-              Create your agent account
-            </span>
+            <span id="agent-signup-modal-title" className="sr-only">{t("pages.misc.createAgentAccount")}</span>
             <AgentSignupForm
               layout="dialog"
               overlayPrefill={overlayPrefill ?? null}

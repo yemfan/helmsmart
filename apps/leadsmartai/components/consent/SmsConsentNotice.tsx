@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { getLocale, type LocaleId } from "@/lib/locales/registry";
+import { useTranslation } from "react-i18next";
 
 /**
  * Renders the SMS TCPA consent disclosure text in one or more languages.
@@ -36,6 +37,7 @@ export function SmsConsentNotice({
   languages?: readonly LocaleId[];
   className?: string;
 }) {
+  const { t } = useTranslation("dashboard");
   // Keep the "Privacy" / "Terms" links in English only — the legal
   // pages themselves stay English (product decision: legal docs are
   // English-only for accuracy). Translated consent copy points at the
@@ -43,13 +45,9 @@ export function SmsConsentNotice({
   const termsBlock = (
     <>
       See our{" "}
-      <Link href="/privacy" className="underline" target="_blank">
-        Privacy Policy
-      </Link>{" "}
+      <Link href="/privacy" className="underline" target="_blank">{t("pages.misc.privacyPolicy")}</Link>{" "}
       and{" "}
-      <Link href="/terms" className="underline" target="_blank">
-        Terms
-      </Link>
+      <Link href="/terms" className="underline" target="_blank">{t("pages.misc.terms")}</Link>
       .
     </>
   );

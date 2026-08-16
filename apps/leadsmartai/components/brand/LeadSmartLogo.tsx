@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   className?: string;
@@ -15,12 +16,13 @@ type Props = {
  * (avoids sporadic blank logos when the image optimizer or edge cache misbehaves on some routes/deploys).
  */
 export function LeadSmartLogo({ className, compact, priority }: Props) {
+  const { t } = useTranslation("dashboard");
   const isPriority = priority ?? !compact;
 
   return (
     <Image
       src="/images/lslogoh.png"
-      alt="LeadSmart AI"
+      alt={t("pages.misc.logoAlt")}
       width={540}
       height={162}
       sizes="(max-width: 640px) 220px, (max-width: 1024px) 280px, 360px"

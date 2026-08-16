@@ -2,6 +2,7 @@
 
 import { importLibrary, setOptions } from "@googlemaps/js-api-loader";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export type AddressAutocompleteValue = {
   formattedAddress: string;
@@ -102,6 +103,7 @@ export default function AddressAutocomplete({
   className,
   disabled,
 }: Props) {
+  const { t } = useTranslation("dashboard");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   /** When set, we just applied this normalized string from a suggestion — don't re-fetch/reopen the dropdown. Cleared when the user types. */
@@ -415,9 +417,7 @@ export default function AddressAutocomplete({
               </span>
             </button>
           ))}
-          <div className="border-t border-slate-100 px-3 py-1 text-[10px] text-slate-400">
-            Powered by Google
-          </div>
+          <div className="border-t border-slate-100 px-3 py-1 text-[10px] text-slate-400">{t("pages.misc.poweredByGoogle")}</div>
         </div>
       ) : null}
     </div>

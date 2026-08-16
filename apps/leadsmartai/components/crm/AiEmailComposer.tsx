@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function AiEmailComposer({
   leadId,
@@ -16,6 +17,7 @@ export function AiEmailComposer({
   defaultBody?: string;
   onSent?: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [subject, setSubject] = useState(defaultSubject);
   const [body, setBody] = useState(defaultBody);
   const [loading, setLoading] = useState(false);
@@ -46,14 +48,14 @@ export function AiEmailComposer({
   return (
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-5 py-4">
-        <h2 className="text-base font-semibold text-slate-900">Send email</h2>
+        <h2 className="text-base font-semibold text-slate-900">{t("pages.misc.sendEmail")}</h2>
       </div>
       <div className="space-y-3 p-5">
         <input
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900"
-          placeholder="Subject"
+          placeholder={t("pages.misc.subject")}
         />
         <textarea
           value={body}
