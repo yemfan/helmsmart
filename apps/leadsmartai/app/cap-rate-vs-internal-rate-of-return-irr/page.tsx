@@ -49,121 +49,68 @@ export default function CapRateVsInternalRateOfReturnIRRPage() {
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Cap rate and internal rate of return (IRR) are both core metrics in real estate investing,
-        but they answer very different questions. Cap rate is a snapshot of current income relative
-        to price; IRR is a full-picture view of returns over time. Understanding how they work
-        together helps you move from quick screening to deep investment analysis.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.capRateVsIrr.intro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">{t("pages.articleChrome.whatIsCapRate")}</h2>
-        <p>
-          Cap rate compares a property&apos;s net operating income (NOI) to its value. It tells you
-          the unlevered income yield you could expect in year one if you bought the property all
-          cash at today&apos;s price.
-        </p>
+        <p>{t("pages.capRateVsIrr.capDef")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cap Rate = Net Operating Income (NOI) ÷ Purchase Price or Value
         </p>
-        <p>
-          Cap rate is most useful for quickly comparing properties and understanding how the market
-          prices income in different locations and asset types.
-        </p>
+        <p>{t("pages.capRateVsIrr.capUse")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">What is internal rate of return (IRR)?</h2>
-        <p>
-          IRR is a more comprehensive metric that looks at the entire sequence of cash flows over
-          the life of an investment. It is the discount rate that sets the net present value (NPV)
-          of all cash in and cash out to zero.
-        </p>
-        <p>
-          In practical terms, IRR answers the question: &quot;What annualized rate of return will I
-          earn on my invested capital, considering all cash flows and the sale of the property at
-          the end of the holding period?&quot;
-        </p>
-        <p>
-          IRR calculations include:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsIrr.irrTitle")}</h2>
+        <p>{t("pages.capRateVsIrr.irrDef")}</p>
+        <p>{t("pages.capRateVsIrr.irrPractical")}</p>
+        <p>{t("pages.capRateVsIrr.irrIncludes")}</p>
         <ul className="list-disc list-inside space-y-1">
-          <li>Initial investment (down payment, closing costs, upfront CapEx).</li>
-          <li>Annual cash flow after debt service.</li>
-          <li>Net sale proceeds at exit (sale price minus selling costs and remaining loan).</li>
+          <li>{t("pages.capRateVsIrr.irr1")}</li>
+          <li>{t("pages.capRateVsIrr.irr2")}</li>
+          <li>{t("pages.capRateVsIrr.irr3")}</li>
         </ul>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Cap rate vs IRR: snapshot vs full timeline
-        </h2>
-        <p>
-          The biggest difference between cap rate and IRR is time. Cap rate looks at a single year
-          of income relative to value. IRR looks at the entire investment timeline, including how
-          long you hold the property and what happens when you sell.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsIrr.snapshotTitle")}</h2>
+        <p>{t("pages.capRateVsIrr.snapshotBody")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
-            <span className="font-semibold">Cap rate:</span> Year-one NOI ÷ price, no financing, no
+            <span className="font-semibold">{t("pages.capRateVsIrr.capLabel")}</span> Year-one NOI ÷ price, no financing, no
             sale.
           </li>
           <li>
-            <span className="font-semibold">IRR:</span> All cash flows (in and out) across years,
-            including financing and exit.
-          </li>
+            <span className="font-semibold">{t("pages.capRateVsIrr.irrLabel")}</span>{t("pages.capRateVsIrr.irrBullet")}</li>
         </ul>
-        <p>
-          Because IRR accounts for timing and growth, two properties with the same cap rate today
-          can have very different IRRs depending on rent growth, value-add potential, and exit
-          pricing.
-        </p>
+        <p>{t("pages.capRateVsIrr.becauseIrr")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Example: same cap rate, different IRRs
-        </h2>
-        <p>
-          Imagine two properties, both purchased at a 6% cap rate with similar financing. Property A
-          is in a stable market with flat rents. Property B is in an emerging area where you expect
-          rent growth and value-add improvements.
-        </p>
-        <p>
-          In year one, both properties show the same cap rate. But over a 10-year hold:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsIrr.exampleTitle")}</h2>
+        <p>{t("pages.capRateVsIrr.exampleBody")}</p>
+        <p>{t("pages.capRateVsIrr.exampleYear1")}</p>
         <ul className="list-disc list-inside space-y-1">
-          <li>Property A&apos;s rents and NOI grow slowly; its sale price grows modestly.</li>
-          <li>
-            Property B&apos;s rents and NOI grow faster; you also invest in upgrades that justify
-            higher rents and a higher exit price.
-          </li>
+          <li>{t("pages.capRateVsIrr.exA")}</li>
+          <li>{t("pages.capRateVsIrr.exB")}</li>
         </ul>
-        <p>
-          When you run a full IRR analysis, Property B may show a much higher IRR even though the
-          starting cap rates were identical. IRR captures that difference in growth and value
-          creation; cap rate does not.
-        </p>
+        <p>{t("pages.capRateVsIrr.exampleClose")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          When to focus on cap rate vs when to focus on IRR
-        </h2>
-        <p>
-          In practice, investors use both metrics at different stages:
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">Cap rate is best for:</h3>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsIrr.whenTitle")}</h2>
+        <p>{t("pages.capRateVsIrr.whenBody")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsIrr.capBestFor")}</h3>
         <ul className="list-disc list-inside space-y-1">
-          <li>Screening and ranking many deals quickly.</li>
-          <li>Comparing properties in the same market and asset class.</li>
-          <li>Understanding how the market prices income today.</li>
+          <li>{t("pages.capRateVsIrr.cb1")}</li>
+          <li>{t("pages.capRateVsIrr.cb2")}</li>
+          <li>{t("pages.capRateVsIrr.cb3")}</li>
         </ul>
-        <h3 className="text-lg font-semibold text-gray-900 mt-4">IRR is best for:</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mt-4">{t("pages.capRateVsIrr.irrBestFor")}</h3>
         <ul className="list-disc list-inside space-y-1">
-          <li>Evaluating the total return of a specific business plan.</li>
-          <li>Comparing deals with different hold periods and exit strategies.</li>
-          <li>Weighing real estate investments against other asset classes.</li>
+          <li>{t("pages.capRateVsIrr.ib1")}</li>
+          <li>{t("pages.capRateVsIrr.ib2")}</li>
+          <li>{t("pages.capRateVsIrr.ib3")}</li>
         </ul>
         <p>
           A common workflow is to use cap rate and cash-on-cash return to narrow the field, then run
@@ -174,44 +121,18 @@ export default function CapRateVsInternalRateOfReturnIRRPage() {
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Frequently asked questions about cap rate vs IRR
-        </h2>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Is a higher cap rate always better than a lower one if IRR is the same?
-        </h3>
-        <p>
-          Not necessarily. A higher cap rate often indicates more income today but may also signal
-          higher risk or weaker growth. If two deals have similar IRRs, you may prefer the one with
-          more stable income or lower risk, even if its cap rate is a bit lower.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Can a low cap rate deal produce a high IRR?
-        </h3>
-        <p>
-          Yes. A property purchased at a low cap rate in a strong growth market, or one with
-          significant value-add potential, can deliver a high IRR over time due to rent growth,
-          equity buildup, and a strong sale price at exit.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Do lenders care more about cap rate or IRR?
-        </h3>
-        <p>
-          Lenders focus more on NOI, cap rate, and debt service coverage ratios because those
-          determine the property&apos;s ability to support debt. IRR is more of an investor-facing
-          metric for evaluating whether a deal meets your return targets.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsIrr.faqTitle")}</h2>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsIrr.q1")}</h3>
+        <p>{t("pages.capRateVsIrr.a1")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsIrr.q2")}</h3>
+        <p>{t("pages.capRateVsIrr.a2")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsIrr.q3")}</h3>
+        <p>{t("pages.capRateVsIrr.a3")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Use cap rate and IRR together for smarter decisions
-        </h2>
-        <p className="mb-3">
-          Cap rate and IRR are not competitors—they complement each other. Cap rate helps you
-          quickly assess income relative to price today, while IRR shows how a deal performs over
-          its full life. Using both gives you a more complete, professional view of each investment.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.capRateVsIrr.ctaTitle")}</h2>
+        <p className="mb-3">{t("pages.capRateVsIrr.ctaBody")}</p>
         <div className="flex flex-wrap gap-3 mb-4">
           <Link
             href="/cap-rate-calculator"
@@ -220,9 +141,7 @@ export default function CapRateVsInternalRateOfReturnIRRPage() {
           <Link
             href="/roi-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open ROI &amp; IRR Calculator
-          </Link>
+          >{t("pages.capRateVsIrr.openRoiIrr")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"

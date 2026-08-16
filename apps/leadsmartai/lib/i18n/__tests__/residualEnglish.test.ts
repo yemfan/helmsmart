@@ -75,7 +75,6 @@ const JSX_TEXT = /(?:^|[^=])>([^<>{}]+)</g;
 const PENDING = new Set([
   "app/blog/why-real-estate-crms-keep-failing-solo-agents/page.tsx",
   "app/blog/liondesk-shutdown-what-agents-should-do-next/page.tsx",
-  "app/cap-rate-vs-internal-rate-of-return-irr/page.tsx",
   "app/ai-cma-analyzer/page.tsx",
   "app/how-to-analyze-a-property-using-cap-rate/page.tsx",
   "app/how-to-increase-cap-rate-on-rental-property/page.tsx",
