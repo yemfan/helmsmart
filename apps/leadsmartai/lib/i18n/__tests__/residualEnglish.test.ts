@@ -77,8 +77,6 @@ const PENDING = new Set([
   "app/how-cap-rate-changes-in-different-markets/page.tsx",
   "app/blog/why-real-estate-crms-keep-failing-solo-agents/page.tsx",
   "app/blog/liondesk-shutdown-what-agents-should-do-next/page.tsx",
-  "app/cap-rate-by-city-in-the-united-states/page.tsx",
-  "app/cap-rate-formula-explained-for-beginners/page.tsx",
   "app/cap-rate-vs-internal-rate-of-return-irr/page.tsx",
   "app/ai-cma-analyzer/page.tsx",
   "app/how-to-analyze-a-property-using-cap-rate/page.tsx",
