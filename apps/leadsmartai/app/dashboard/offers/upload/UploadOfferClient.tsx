@@ -314,17 +314,11 @@ export function UploadOfferClient() {
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/offers" className="hover:underline">
-            Offers
-          </Link>
+          <Link href="/dashboard/offers" className="hover:underline">{t("pages.uploadOffer.offers")}</Link>
           {" / Upload"}
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.uploadOffer.heading")}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Drop in the offer PDF (or paste the text) — price, contingencies,
-          dates, and key terms get extracted with AI. You review the result
-          before saving.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.uploadOffer.blurb")}</p>
       </div>
 
       {/* Banner shown when prefill arrived from a forwarded email.
@@ -334,9 +328,7 @@ export function UploadOfferClient() {
           against the source email. */}
       {inboundSource && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          <div className="font-medium">
-            Pre-filled from a forwarded email
-          </div>
+          <div className="font-medium">{t("pages.uploadOffer.prefilled")}</div>
           <div className="mt-0.5 text-xs text-emerald-700">
             {inboundSource.subject ? `“${inboundSource.subject}”` : "(no subject)"}
             {inboundSource.fromHeader ? ` · from ${inboundSource.fromHeader}` : ""}
@@ -344,9 +336,7 @@ export function UploadOfferClient() {
             <Link
               href={`/dashboard/inbound/${inboundSource.id}`}
               className="underline hover:text-emerald-900"
-            >
-              view source email
-            </Link>
+            >{t("pages.uploadOffer.viewSource")}</Link>
           </div>
         </div>
       )}
@@ -369,9 +359,7 @@ export function UploadOfferClient() {
             matches the rest of the form (raw <input type="file"> is
             ugly across browsers). */}
         <div>
-          <label className="block text-xs font-medium text-slate-700">
-            Upload offer PDF
-          </label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.uploadOffer.uploadPdf")}</label>
           <input
             ref={fileInputRef}
             type="file"
@@ -395,8 +383,7 @@ export function UploadOfferClient() {
             </button>
             <span className="text-[11px] text-slate-500">
               {pdfName ? (
-                <>
-                  Selected: <strong className="font-medium text-slate-700">{pdfName}</strong>
+                <>{t("pages.uploadOffer.selected")}<strong className="font-medium text-slate-700">{pdfName}</strong>
                 </>
               ) : (
                 <>{t("pages.uploadOffer.maxSize")}</>
@@ -413,9 +400,7 @@ export function UploadOfferClient() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">
-            Paste offer document text
-          </label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.uploadOffer.pasteText")}</label>
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -436,9 +421,7 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
           <Link
             href="/dashboard/offers"
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </Link>
+          >{t("pages.uploadOffer.cancel")}</Link>
           <button
             type="button"
             onClick={() => void runParse()}
@@ -479,8 +462,7 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
             </button>
           </div>
           <p className="text-[11px] text-slate-500">
-            Saving creates an offer in <strong>draft</strong>. You can edit any
-            field on the next page before flipping to “submitted.”
+            {t("pages.uploadOffer.draftBefore")} <strong>{t("pages.uploadOffer.draftWord")}</strong>{t("pages.uploadOffer.draftAfter")}
           </p>
         </div>
       ) : null}

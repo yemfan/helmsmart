@@ -408,9 +408,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.videoAd")}</h2>
-            <p className="text-[11px] text-slate-500">
-              Pull the photos + facts from the listing, then (soon) generate a cinematic video ad.
-            </p>
+            <p className="text-[11px] text-slate-500">{t("pages.listingAd.pullBlurb")}</p>
           </div>
           <button
             type="button"
@@ -455,9 +453,8 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
         ) : null}
 
         {source ? (
-          <p className="mb-3 text-[11px] text-slate-500">
-            Source: <span className="font-medium">{source === "mls_url" ? t("pages.listingAd.mlsPull") : t("pages.listingAd.manual")}</span>
-            {confidence != null ? <> · confidence {Math.round(confidence * 100)}%</> : null}
+          <p className="mb-3 text-[11px] text-slate-500">{t("pages.listingAd.source")}<span className="font-medium">{source === "mls_url" ? t("pages.listingAd.mlsPull") : t("pages.listingAd.manual")}</span>
+            {confidence != null ? <> · {t("pages.listingAd.confidence", { pct: Math.round(confidence * 100) })}</> : null}
             {savedAt ? (
             <> {t("pages.listingAd.updatedAt", { date: new Date(savedAt).toLocaleDateString(locale) })}</>
           ) : null}
@@ -522,16 +519,12 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                     type="button"
                     onClick={selectAllPhotos}
                     className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
-                  >
-                    Select all
-                  </button>
+                  >{t("pages.listingAd.selectAll")}</button>
                   <button
                     type="button"
                     onClick={clearPhotoSelection}
                     className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
-                  >
-                    Clear
-                  </button>
+                  >{t("pages.listingAd.clear")}</button>
                 </>
               )}
               <button
@@ -629,9 +622,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.cinematicClips")}</h3>
-              <p className="text-[11px] text-slate-500">
-                Animate your selected photos into cinematic motion clips (the raw material for the video ad).
-              </p>
+              <p className="text-[11px] text-slate-500">{t("pages.listingAd.animateBlurb")}</p>
             </div>
             <button
               type="button"
@@ -674,9 +665,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           </div>
 
           {generating ? (
-            <p className="mt-2 text-[11px] text-slate-500">
-              Rendering cinematic motion — this can take a couple minutes per photo.
-            </p>
+            <p className="mt-2 text-[11px] text-slate-500">{t("pages.listingAd.rendering")}</p>
           ) : null}
           {clipNote ? <p className="mt-2 text-[12px] text-slate-600">{clipNote}</p> : null}
 
@@ -694,9 +683,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               ))}
             </div>
           ) : (
-            <p className="mt-2 text-[11px] text-slate-400">
-              No clips yet. Generate them above, then build the branded ad below.
-            </p>
+            <p className="mt-2 text-[11px] text-slate-400">{t("pages.listingAd.noClips")}</p>
           )}
         </div>
 
@@ -705,9 +692,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.videoAd")}</h3>
-              <p className="text-[11px] text-slate-500">
-                Stitch the clips into one video tour + an AI caption — ready to post.
-              </p>
+              <p className="text-[11px] text-slate-500">{t("pages.listingAd.stitchBlurb")}</p>
             </div>
             <button
               type="button"
@@ -772,10 +757,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.scriptVoiceover")}</h3>
-              <p className="text-[11px] text-slate-500">
-                Let AI write a narration, then speak it over your video — in your cloned voice if you&apos;ve set one
-                up, otherwise a professional voice.
-              </p>
+              <p className="text-[11px] text-slate-500">{t("pages.listingAd.narrationBlurb")}</p>
             </div>
             <button
               type="button"

@@ -1892,7 +1892,18 @@
         "loan": "贷款附加条件",
         "otherContingencies": "其他附加条件",
         "notes": "备注"
-      }
+      },
+      "offers": "报价",
+      "blurb": "把报价 PDF 拖进来（或直接粘贴文字）——价格、附加条件、日期和关键条款会由 AI 自动提取。保存前您可以先核对结果。",
+      "prefilled": "已根据转发的邮件自动填写",
+      "viewSource": "查看原始邮件",
+      "uploadPdf": "上传报价 PDF",
+      "selected": "已选择：",
+      "pasteText": "粘贴报价文件内容",
+      "cancel": "取消",
+      "draftBefore": "保存后会创建一份状态为",
+      "draftWord": "草稿",
+      "draftAfter": "的报价。您可以在下一页修改任意字段，之后再改为“已提交”。"
     },
     "cmaDetail": {
       "metaTitle": "市场比较分析报告",
@@ -2039,7 +2050,18 @@
         "thu": "周四",
         "fri": "周五",
         "sat": "周六"
-      }
+      },
+      "openHouses": "开放日",
+      "afterSaving": "保存后会生成二维码和签到网址，可以在门口分享给来访者。",
+      "listingUrlHint": "在签到页上显示为“查看房源”——访客可以保存这个链接。",
+      "recurring": "系列活动",
+      "recurringHint": "一次创建多场开放日——每场一行，各自有独立的签到网址。",
+      "anchorHint": "起始时间——重复规律从这里往后推。",
+      "willCreate": "将创建",
+      "willCreateAfter_one": "场开放日（最多 26 场）。",
+      "willCreateAfter_other": "场开放日（最多 26 场）。",
+      "copiedToAll": "主持人备注和房屋信息会复制到系列中的每一场。",
+      "cancel": "取消"
     },
     "openHouseDetail": {
       "metaTitle": "开放日",
@@ -2058,7 +2080,17 @@
       "colSignedIn": "登记时间",
       "willReceive": "将收到感谢信与回访",
       "notOptedIn": "未同意接收",
-      "followUp": "跟进自动化"
+      "followUp": "跟进自动化",
+      "openHouses": "开放日",
+      "flyerNote": "打印宣传单贴在门口，或分享链接／iPad 签到台用于电子签到。",
+      "flyerIncludes": "包含二维码、房屋信息、日期与时间，以及您的联系方式。",
+      "open": "打开",
+      "kioskNote": "供门口 iPad 使用的全屏签到页。可添加到主屏幕，作为 PWA 安装。",
+      "cancelledNote": "已取消的活动在公开网址上会返回 404——适合停用旧的二维码。",
+      "seriesNote": "这场开放日属于一个系列中的一次。取消整个系列会把本次及之后每一次都标记为取消；已过去的场次保留原有数据。",
+      "cancelSeries": "取消本次及系列中之后的所有场次",
+      "noSignIns": "还没有人签到。有人扫码或访问链接后，就会显示在这里。",
+      "followUpNote": "选择接收信息的访客会在 24 小时内收到感谢邮件，并在第 3 天收到一条回访短信。已有经纪人陪同的访客只做记录，不会收到任何营销联络——这是行业规矩。"
     },
     "marketingPlans": {
       "loading": "加载中…",
@@ -2171,7 +2203,18 @@
       "notes": "备注",
       "notesPlaceholder": "其他希望卖方了解的报价信息",
       "record": "登记报价",
-      "recording": "登记中…"
+      "recording": "登记中…",
+      "recordOffer": "登记报价",
+      "recordOfferSub": "记录报价条款，方便您和卖方并排比较。必填项只有报价金额，其余内容有助于判断，可以留空。",
+      "buyer": "买方",
+      "priceFinancing": "价格与贷款",
+      "timing": "时间安排",
+      "contingencies": "附加条件",
+      "inspection": "验房",
+      "appraisal": "评估",
+      "loan": "贷款",
+      "saleOfHome": "需先卖掉现有住房",
+      "cancel": "取消"
     },
     "showingDetail": {
       "metaTitle": "带看",
@@ -2346,7 +2389,17 @@
       "contingencies": "附加条件",
       "inspection": "验房",
       "offer_one": "{{count}} 份报价",
-      "saleOfHome": "售出现有住房"
+      "saleOfHome": "售出现有住房",
+      "transactions": "交易",
+      "adjustNote": "针对本套房源调整。卖方让利按每份报价单独计算。",
+      "nonNegative": "所有数值都必须是非负数。",
+      "noOffersBefore": "还没有登记任何报价。第一份报价到手时，点击",
+      "noOffersAfter": "。",
+      "strongestNet": "净收益最高",
+      "accept": "接受",
+      "view": "查看",
+      "sellerNote": "给卖方的说明",
+      "aiReadNote": "用大白话说明哪份报价最有优势、以及为什么（卖方净收益、成交把握、时间线），并附一段可以直接转发给卖方的简短说明。"
     },
     "newShowing": {
       "metaTitle": "安排带看",
@@ -2739,7 +2792,17 @@
       "needPhotoToAnimate": "请至少选择一张要生成动画的照片。",
       "updatedAt": "· 更新于 {{date}}",
       "voicedVersion": "带配音的视频广告",
-      "voicedHint": "在上方发布时，实际发布的就是这个带配音的版本。"
+      "voicedHint": "在上方发布时，实际发布的就是这个带配音的版本。",
+      "pullBlurb": "从房源中抓取照片和信息，之后（即将上线）生成电影感的视频广告。",
+      "source": "来源：",
+      "selectAll": "全选",
+      "clear": "清空",
+      "animateBlurb": "把您选中的照片变成有电影运镜感的动态片段（视频广告的素材）。",
+      "rendering": "正在渲染运镜效果——每张照片可能需要几分钟。",
+      "noClips": "还没有片段。请先在上方生成，然后在下方制作品牌广告。",
+      "stitchBlurb": "把片段拼成一支看房视频，并配上 AI 文案——可以直接发布。",
+      "narrationBlurb": "让 AI 写一段解说词，再配音到您的视频上——如果您克隆过自己的声音就用您的声音，否则使用专业配音。",
+      "confidence": "置信度 {{pct}}%"
     },
     "contactHealth": {
       "heading": "联系人资料完整度",
@@ -3001,6 +3064,27 @@
       "needFaceFirst": "请先在上方上传您的自我介绍视频或照片——生成数字人需要您的面部。",
       "downloadVideo": "下载视频",
       "connectAccounts": "连接账号"
+    },
+    "houseSearch": {
+      "whatLookingFor": "您的买家在找什么样的房子？",
+      "savedAs": "已保存为",
+      "detach": "取消关联",
+      "refine": "细化搜索条件",
+      "noMatches": "没有匹配的真实房源。可以试着放宽条件。",
+      "close": "关闭",
+      "open": "打开",
+      "cancel": "取消"
+    },
+    "connect": {
+      "pinterestBlurb": "自动把 Pin 发布到您 Pinterest 企业账号的图板上——房源照片、社区指南、品牌卡片都可以。",
+      "pinterestConnect": "连接 Pinterest 企业账号即可排期发布 Pin。新的 Pin 会发到您的第一个图板。",
+      "pinterestRevoke": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 Pinterest 账号设置中移除该应用。",
+      "tiktokBlurb": "把您的视频——房源导览、数字人片段——直接发到 TikTok。在您的 TikTok 应用通过内容发布审核前，新视频默认为私密。",
+      "tiktokConnect": "连接 TikTok 账号即可发布视频。在应用通过审核前，发布的内容是私密的（只有您自己能看到）。",
+      "tiktokRevoke": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 TikTok 账号设置中移除该应用。",
+      "youtubeBlurb": "把您的视频——房源导览、数字人片段——上传到您的 YouTube 频道。竖版短片会作为 Shorts 发布。",
+      "youtubeConnect": "连接 YouTube 频道即可上传视频。竖版视频会作为 Shorts 发布。",
+      "youtubeRevoke": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 Google 账号设置中移除访问权限。"
     }
   }
 }

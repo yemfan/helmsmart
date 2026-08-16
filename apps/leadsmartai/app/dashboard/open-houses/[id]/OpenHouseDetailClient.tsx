@@ -171,9 +171,7 @@ export function OpenHouseDetailClient({
     <div className="mx-auto max-w-6xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/open-houses" className="hover:underline">
-            Open Houses
-          </Link>
+          <Link href="/dashboard/open-houses" className="hover:underline">{t("pages.openHouseDetail.openHouses")}</Link>
           {" / "}
           <span>{oh.property_address}</span>
         </div>
@@ -205,9 +203,7 @@ export function OpenHouseDetailClient({
         <div className="space-y-4 md:col-span-1">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-sm font-semibold text-slate-900">{t("pages.openHouseDetail.visitorSignIn")}</h2>
-            <p className="mt-1 text-xs text-slate-500">
-              Print the flyer for the door, or share the link / iPad kiosk for digital sign-in.
-            </p>
+            <p className="mt-1 text-xs text-slate-500">{t("pages.openHouseDetail.flyerNote")}</p>
 
             <Link
               href={`/dashboard/open-houses/flyer?openHouseId=${oh.id}`}
@@ -215,9 +211,7 @@ export function OpenHouseDetailClient({
             >
               🖨️ Print open-house flyer
             </Link>
-            <p className="mt-1 text-[11px] text-slate-500">
-              Includes the QR code, property details, date / time, and your contact info.
-            </p>
+            <p className="mt-1 text-[11px] text-slate-500">{t("pages.openHouseDetail.flyerIncludes")}</p>
 
             <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-2 text-center font-mono text-[11px] text-slate-700 break-all">
               {publicUrl}
@@ -235,9 +229,7 @@ export function OpenHouseDetailClient({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-              >
-                Open
-              </a>
+              >{t("pages.openHouseDetail.open")}</a>
             </div>
             <a
               href={`/oh/${oh.signin_slug}/kiosk`}
@@ -247,9 +239,7 @@ export function OpenHouseDetailClient({
             >
               📱 Open iPad kiosk
             </a>
-            <p className="mt-1 text-[11px] text-slate-500">
-              Full-screen sign-in for the iPad at the door. Add to Home Screen to install as a PWA.
-            </p>
+            <p className="mt-1 text-[11px] text-slate-500">{t("pages.openHouseDetail.kioskNote")}</p>
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -271,9 +261,7 @@ export function OpenHouseDetailClient({
                 </button>
               ))}
             </div>
-            <p className="mt-2 text-[11px] text-slate-500">
-              Cancelled events return 404 on the public URL — good for retiring old QR codes.
-            </p>
+            <p className="mt-2 text-[11px] text-slate-500">{t("pages.openHouseDetail.cancelledNote")}</p>
           </div>
 
           {oh.host_notes ? (
@@ -286,17 +274,12 @@ export function OpenHouseDetailClient({
           {oh.recurrence_group_id ? (
             <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-4">
               <h3 className="text-sm font-semibold text-purple-900">{t("pages.openHouseDetail.recurring")}</h3>
-              <p className="mt-1 text-[11px] text-purple-700">
-                This open house is one occurrence in a series. Cancelling the series marks this
-                one + every future one as cancelled; past ones keep their data.
-              </p>
+              <p className="mt-1 text-[11px] text-purple-700">{t("pages.openHouseDetail.seriesNote")}</p>
               <button
                 type="button"
                 onClick={() => void onCancelSeries()}
                 className="mt-2 w-full rounded-lg border border-purple-300 bg-white px-3 py-2 text-xs font-medium text-purple-800 hover:bg-purple-100"
-              >
-                Cancel this + all future in series
-              </button>
+              >{t("pages.openHouseDetail.cancelSeries")}</button>
             </div>
           ) : null}
 
@@ -322,10 +305,7 @@ export function OpenHouseDetailClient({
             </div>
 
             {visitors.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-500">
-                No sign-ins yet. Once someone taps the QR or visits the link, they&apos;ll
-                appear here.
-              </p>
+              <p className="mt-3 text-sm text-slate-500">{t("pages.openHouseDetail.noSignIns")}</p>
             ) : (
               <div className="mt-3 overflow-x-auto">
                 <table className="min-w-full text-sm">
@@ -407,11 +387,7 @@ export function OpenHouseDetailClient({
 
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <h3 className="text-sm font-semibold text-slate-900">{t("pages.openHouseDetail.followUp")}</h3>
-            <p className="mt-1 text-xs text-slate-500">
-              Visitors who opted in get a thank-you email within 24h and a check-in SMS on day
-              3. Agented visitors are captured for your records but never receive outreach
-              (ethics).
-            </p>
+            <p className="mt-1 text-xs text-slate-500">{t("pages.openHouseDetail.followUpNote")}</p>
             <ul className="mt-3 space-y-1 text-[12px] text-slate-600">
               <li>
                 📧{" "}

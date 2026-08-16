@@ -244,9 +244,7 @@ export default function HouseSearchClient() {
       {/* Query */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-start justify-between gap-3">
-          <label htmlFor="hs-query" className="text-sm font-semibold text-slate-900">
-            What is your buyer looking for?
-          </label>
+          <label htmlFor="hs-query" className="text-sm font-semibold text-slate-900">{t("pages.houseSearch.whatLookingFor")}</label>
           {quota ? <QuotaPill quota={quota} /> : null}
         </div>
         <textarea
@@ -293,17 +291,14 @@ export default function HouseSearchClient() {
           {tracked ? (
             <div className="space-y-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span>
-                  Saved as <strong>{tracked.name}</strong> · {tracked.runCount} run{tracked.runCount === 1 ? "" : "s"}.
+                <span>{t("pages.houseSearch.savedAs")}<strong>{tracked.name}</strong> · {tracked.runCount} run{tracked.runCount === 1 ? "" : "s"}.
                   New searches &amp; refinements are added to its history.
                 </span>
                 <button
                   type="button"
                   onClick={() => setTracked(null)}
                   className="shrink-0 text-xs font-semibold text-emerald-800 underline hover:text-emerald-950"
-                >
-                  Detach
-                </button>
+                >{t("pages.houseSearch.detach")}</button>
               </div>
               <div className="flex flex-wrap items-center gap-2 border-t border-emerald-200 pt-3">
                 <label className="text-xs font-semibold text-emerald-900">{t("houseSearch.autoSend")}</label>
@@ -354,9 +349,7 @@ export default function HouseSearchClient() {
 
             {result.refinements.length > 0 ? (
               <div className="mt-4 border-t border-slate-100 pt-4">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Refine the search
-                </h3>
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.houseSearch.refine")}</h3>
                 <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {result.refinements.map((r) => (
                     <label key={r.id} className="flex items-center gap-2 text-sm text-slate-700">
@@ -399,9 +392,7 @@ export default function HouseSearchClient() {
             </header>
 
             {result.listings.length === 0 ? (
-              <div className="px-5 py-8 text-center text-sm text-slate-500">
-                No real listings matched. Try loosening the criteria.
-              </div>
+              <div className="px-5 py-8 text-center text-sm text-slate-500">{t("pages.houseSearch.noMatches")}</div>
             ) : (
               <ul className="divide-y divide-slate-100">
                 {result.listings.map((l, i) => (
@@ -539,9 +530,7 @@ function SavedSearchesPanel({
           type="button"
           onClick={() => setOpen(false)}
           className="text-xs font-semibold text-slate-500 hover:text-slate-700"
-        >
-          Close
-        </button>
+        >{t("pages.houseSearch.close")}</button>
       </div>
       <label className="mt-2 block">
         <span className="text-xs font-semibold text-slate-700">{t("tasks.columns.contact")}</span>
@@ -580,9 +569,7 @@ function SavedSearchesPanel({
                 type="button"
                 onClick={() => onLoad(s.id)}
                 className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-              >
-                Open
-              </button>
+              >{t("pages.houseSearch.open")}</button>
             </li>
           ))}
         </ul>
@@ -670,9 +657,7 @@ function SaveToContactPanel({
           type="button"
           onClick={() => setOpen(false)}
           className="text-xs font-semibold text-slate-500 hover:text-slate-700"
-        >
-          Cancel
-        </button>
+        >{t("pages.houseSearch.cancel")}</button>
       </div>
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="block">
@@ -817,9 +802,7 @@ function EmailToBuyer({
           type="button"
           onClick={() => setOpen(false)}
           className="text-xs font-semibold text-slate-500 hover:text-slate-700"
-        >
-          Cancel
-        </button>
+        >{t("pages.houseSearch.cancel")}</button>
       </div>
 
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -207,14 +207,8 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
           </Link>
           {" / Record offer"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
-          Record offer
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Capture the offer terms so you and the seller can compare side-by-side.
-          Required: offer price. Everything else helps with the decision but can
-          be left blank.
-        </p>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{t("pages.newListingOffer.recordOffer")}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.newListingOffer.recordOfferSub")}</p>
       </div>
 
       {/* Upload section — drop a signed RPA PDF and Claude extracts
@@ -283,9 +277,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
       <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         {/* ── Buyer ───────────────────────────────────────────── */}
         <fieldset className="space-y-3">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Buyer
-          </legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.newListingOffer.buyer")}</legend>
           <div className="grid grid-cols-2 gap-3">
             <Field label={t("pages.newListingOffer.buyerName")}>
               <input
@@ -336,9 +328,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
 
         {/* ── Price + financing ───────────────────────────────── */}
         <fieldset className="space-y-3">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Price + financing
-          </legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.newListingOffer.priceFinancing")}</legend>
           <div className="grid grid-cols-3 gap-3">
             <Field label={t("pages.newListingOffer.offerPrice")}>
               <input
@@ -413,9 +403,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
 
         {/* ── Timing ──────────────────────────────────────────── */}
         <fieldset className="space-y-3">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Timing
-          </legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.newListingOffer.timing")}</legend>
           <div className="grid grid-cols-2 gap-3">
             <Field label={t("pages.newListingOffer.proposedClosing")}>
               <input
@@ -438,9 +426,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
 
         {/* ── Contingencies ───────────────────────────────────── */}
         <fieldset className="space-y-3">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Contingencies
-          </legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.newListingOffer.contingencies")}</legend>
           <div className="flex flex-wrap gap-4 text-sm">
             <label className="inline-flex items-center gap-2">
               <input
@@ -448,36 +434,28 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
                 checked={inspectionContingency}
                 onChange={(e) => setInspectionContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Inspection
-            </label>
+              />{t("pages.newListingOffer.inspection")}</label>
             <label className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={appraisalContingency}
                 onChange={(e) => setAppraisalContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Appraisal
-            </label>
+              />{t("pages.newListingOffer.appraisal")}</label>
             <label className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={loanContingency}
                 onChange={(e) => setLoanContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Loan
-            </label>
+              />{t("pages.newListingOffer.loan")}</label>
             <label className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={saleOfHomeContingency}
                 onChange={(e) => setSaleOfHomeContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Sale of home
-            </label>
+              />{t("pages.newListingOffer.saleOfHome")}</label>
           </div>
           <Field label={t("pages.newListingOffer.otherContingencies")}>
             <input
@@ -506,9 +484,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
           <Link
             href={`/dashboard/listings/${encodeURIComponent(listing.id)}`}
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </Link>
+          >{t("pages.newListingOffer.cancel")}</Link>
           <button
             type="button"
             onClick={() => void submit()}

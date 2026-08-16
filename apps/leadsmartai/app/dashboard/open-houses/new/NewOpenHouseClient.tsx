@@ -271,15 +271,11 @@ export function NewOpenHouseClient() {
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/open-houses" className="hover:underline">
-            Open Houses
-          </Link>
+          <Link href="/dashboard/open-houses" className="hover:underline">{t("pages.newOpenHouse.openHouses")}</Link>
           {" / New"}
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.newOpenHouse.heading")}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          After saving, you&apos;ll get a QR code and a sign-in URL to share at the door.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.newOpenHouse.afterSaving")}</p>
       </div>
 
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -355,9 +351,7 @@ export function NewOpenHouseClient() {
             placeholder={t("pages.newOpenHouse.urlPlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
-          <p className="mt-1 text-[11px] text-slate-500">
-            Shown on the sign-in page as &quot;View listing&quot; — visitors can save the link.
-          </p>
+          <p className="mt-1 text-[11px] text-slate-500">{t("pages.newOpenHouse.listingUrlHint")}</p>
         </div>
 
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
@@ -369,13 +363,9 @@ export function NewOpenHouseClient() {
               onChange={(e) => setIsRecurring(e.target.checked)}
               className="h-4 w-4 rounded border-slate-300"
             />
-            <label htmlFor="recurring-toggle" className="text-sm font-medium text-slate-800">
-              Recurring series
-            </label>
+            <label htmlFor="recurring-toggle" className="text-sm font-medium text-slate-800">{t("pages.newOpenHouse.recurring")}</label>
           </div>
-          <p className="mt-1 text-[11px] text-slate-500">
-            Create N open houses at once — one row per occurrence, each with its own sign-in URL.
-          </p>
+          <p className="mt-1 text-[11px] text-slate-500">{t("pages.newOpenHouse.recurringHint")}</p>
         </div>
 
         {!isRecurring ? (
@@ -421,9 +411,7 @@ export function NewOpenHouseClient() {
                   onChange={(e) => setDate(e.target.value)}
                   className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
                 />
-                <p className="mt-1 text-[11px] text-slate-500">
-                  Anchor — pattern walks forward from here.
-                </p>
+                <p className="mt-1 text-[11px] text-slate-500">{t("pages.newOpenHouse.anchorHint")}</p>
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-700">
@@ -482,8 +470,8 @@ export function NewOpenHouseClient() {
               </div>
             </div>
             <div className="rounded-md bg-blue-50 px-3 py-2 text-xs text-blue-800">
-              Will create <strong>{projectedCount}</strong> open house
-              {projectedCount === 1 ? "" : "s"} (capped at 26).
+              {t("pages.newOpenHouse.willCreate")} <strong>{projectedCount}</strong>{" "}
+              {t("pages.newOpenHouse.willCreateAfter", { count: projectedCount })}
             </div>
           </div>
         )}
@@ -497,9 +485,7 @@ export function NewOpenHouseClient() {
             placeholder={t("pages.newOpenHouse.hostNotesPlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
-          <p className="mt-1 text-[11px] text-slate-500">
-            Host notes + property details are copied to every occurrence in the series.
-          </p>
+          <p className="mt-1 text-[11px] text-slate-500">{t("pages.newOpenHouse.copiedToAll")}</p>
         </div>
 
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
@@ -508,9 +494,7 @@ export function NewOpenHouseClient() {
           <Link
             href="/dashboard/open-houses"
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </Link>
+          >{t("pages.newOpenHouse.cancel")}</Link>
           <button
             type="button"
             onClick={() => void submit()}

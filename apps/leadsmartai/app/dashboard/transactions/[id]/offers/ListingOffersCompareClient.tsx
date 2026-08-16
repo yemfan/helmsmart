@@ -238,9 +238,7 @@ export function ListingOffersCompareClient({
     <div className="mx-auto max-w-6xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/transactions" className="hover:underline">
-            Transactions
-          </Link>
+          <Link href="/dashboard/transactions" className="hover:underline">{t("pages.offersCompare.transactions")}</Link>
           {" / "}
           <Link
             href={`/dashboard/transactions/${transaction.id}`}
@@ -276,9 +274,7 @@ export function ListingOffersCompareClient({
 
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="text-sm font-semibold text-slate-900">{t("pages.offersCompare.assumptions")}</h2>
-        <p className="mt-0.5 text-xs text-slate-500">
-          Adjust for this listing. Seller concessions come from each offer individually.
-        </p>
+        <p className="mt-0.5 text-xs text-slate-500">{t("pages.offersCompare.adjustNote")}</p>
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <AssumptionInput
             label={t("pages.offersCompare.commissionPct")}
@@ -306,9 +302,7 @@ export function ListingOffersCompareClient({
           />
         </div>
         {!assumptionsValid ? (
-          <p className="mt-2 text-xs text-red-600">
-            All values must be non-negative numbers.
-          </p>
+          <p className="mt-2 text-xs text-red-600">{t("pages.offersCompare.nonNegative")}</p>
         ) : null}
       </div>
 
@@ -339,7 +333,7 @@ export function ListingOffersCompareClient({
 
       {offers.length === 0 && !showAdd ? (
         <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-500">
-          No offers recorded yet. Click <strong>+ Record offer</strong> when the first one lands.
+          {t("pages.offersCompare.noOffersBefore")} <strong>+ Record offer</strong>{t("pages.offersCompare.noOffersAfter")}
         </div>
       ) : null}
 
@@ -411,9 +405,7 @@ export function ListingOffersCompareClient({
                           {formatMoney(o.net)}
                         </div>
                         {isStrongestNet ? (
-                          <div className="text-[10px] font-medium uppercase tracking-wide text-green-700">
-                            Strongest net
-                          </div>
+                          <div className="text-[10px] font-medium uppercase tracking-wide text-green-700">{t("pages.offersCompare.strongestNet")}</div>
                         ) : null}
                       </td>
                       <td className="px-3 py-2 text-slate-600">
@@ -469,16 +461,12 @@ export function ListingOffersCompareClient({
                             type="button"
                             onClick={() => void acceptWithConfirmation(o.id)}
                             className="rounded-lg bg-green-600 px-2 py-1 text-[11px] font-medium text-white hover:bg-green-700"
-                          >
-                            Accept
-                          </button>
+                          >{t("pages.offersCompare.accept")}</button>
                         ) : (
                           <Link
                             href={`/dashboard/listing-offers/${o.id}`}
                             className="text-[11px] text-blue-600 hover:underline"
-                          >
-                            View
-                          </Link>
+                          >{t("pages.offersCompare.view")}</Link>
                         )}
                       </td>
                     </tr>
@@ -538,19 +526,14 @@ export function ListingOffersCompareClient({
               ) : null}
               {summary.sellerNote ? (
                 <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                    Note for the seller
-                  </p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.offersCompare.sellerNote")}</p>
                   <p className="mt-1 text-sm text-slate-700">{summary.sellerNote}</p>
                 </div>
               ) : null}
               <p className="text-[10px] italic text-slate-400">{summary.disclaimer}</p>
             </div>
           ) : (
-            <p className="mt-2 text-xs text-slate-500">
-              Get a plain-English read on which offer is strongest and why (net to seller, certainty
-              of close, timeline) — plus a short note you can forward to the seller.
-            </p>
+            <p className="mt-2 text-xs text-slate-500">{t("pages.offersCompare.aiReadNote")}</p>
           )}
         </div>
       ) : null}
@@ -776,9 +759,7 @@ function NewListingOfferForm({
           type="button"
           onClick={onCancel}
           className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
-          Cancel
-        </button>
+        >{t("pages.offersCompare.cancel")}</button>
         <button
           type="button"
           onClick={() => void submit()}

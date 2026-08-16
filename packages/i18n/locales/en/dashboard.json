@@ -1892,7 +1892,18 @@
         "loan": "Loan contingency",
         "otherContingencies": "Other contingencies",
         "notes": "Notes"
-      }
+      },
+      "offers": "Offers",
+      "blurb": "Drop in the offer PDF (or paste the text) — price, contingencies, dates, and key terms get extracted with AI. You review the result before saving.",
+      "prefilled": "Pre-filled from a forwarded email",
+      "viewSource": "view source email",
+      "uploadPdf": "Upload offer PDF",
+      "selected": "Selected:",
+      "pasteText": "Paste offer document text",
+      "cancel": "Cancel",
+      "draftBefore": "Saving creates an offer in",
+      "draftWord": "draft",
+      "draftAfter": ". You can edit any field on the next page before flipping to “submitted.”"
     },
     "cmaDetail": {
       "metaTitle": "CMA Report",
@@ -2039,7 +2050,18 @@
         "thu": "Thu",
         "fri": "Fri",
         "sat": "Sat"
-      }
+      },
+      "openHouses": "Open Houses",
+      "afterSaving": "After saving, you'll get a QR code and a sign-in URL to share at the door.",
+      "listingUrlHint": "Shown on the sign-in page as “View listing” — visitors can save the link.",
+      "recurring": "Recurring series",
+      "recurringHint": "Create N open houses at once — one row per occurrence, each with its own sign-in URL.",
+      "anchorHint": "Anchor — pattern walks forward from here.",
+      "willCreate": "Will create",
+      "willCreateAfter_one": "open house (capped at 26).",
+      "willCreateAfter_other": "open houses (capped at 26).",
+      "copiedToAll": "Host notes + property details are copied to every occurrence in the series.",
+      "cancel": "Cancel"
     },
     "openHouseDetail": {
       "metaTitle": "Open House",
@@ -2058,7 +2080,17 @@
       "colSignedIn": "Signed in",
       "willReceive": "Will receive thank-you + check-in",
       "notOptedIn": "Not opted in",
-      "followUp": "Follow-up automation"
+      "followUp": "Follow-up automation",
+      "openHouses": "Open Houses",
+      "flyerNote": "Print the flyer for the door, or share the link / iPad kiosk for digital sign-in.",
+      "flyerIncludes": "Includes the QR code, property details, date / time, and your contact info.",
+      "open": "Open",
+      "kioskNote": "Full-screen sign-in for the iPad at the door. Add to Home Screen to install as a PWA.",
+      "cancelledNote": "Cancelled events return 404 on the public URL — good for retiring old QR codes.",
+      "seriesNote": "This open house is one occurrence in a series. Cancelling the series marks this one + every future one as cancelled; past ones keep their data.",
+      "cancelSeries": "Cancel this + all future in series",
+      "noSignIns": "No sign-ins yet. Once someone taps the QR or visits the link, they'll appear here.",
+      "followUpNote": "Visitors who opted in get a thank-you email within 24h and a check-in SMS on day 3. Agented visitors are captured for your records but never receive outreach (ethics)."
     },
     "marketingPlans": {
       "loading": "Loading…",
@@ -2171,7 +2203,18 @@
       "notes": "Notes",
       "notesPlaceholder": "Anything else the seller should know about this offer",
       "record": "Record offer",
-      "recording": "Recording…"
+      "recording": "Recording…",
+      "recordOffer": "Record offer",
+      "recordOfferSub": "Capture the offer terms so you and the seller can compare side-by-side. Required: offer price. Everything else helps with the decision but can be left blank.",
+      "buyer": "Buyer",
+      "priceFinancing": "Price + financing",
+      "timing": "Timing",
+      "contingencies": "Contingencies",
+      "inspection": "Inspection",
+      "appraisal": "Appraisal",
+      "loan": "Loan",
+      "saleOfHome": "Sale of home",
+      "cancel": "Cancel"
     },
     "showingDetail": {
       "metaTitle": "Showing",
@@ -2346,7 +2389,17 @@
       "concessions": "Seller concessions",
       "contingencies": "Contingencies",
       "inspection": "Inspection",
-      "saleOfHome": "Sale of home"
+      "saleOfHome": "Sale of home",
+      "transactions": "Transactions",
+      "adjustNote": "Adjust for this listing. Seller concessions come from each offer individually.",
+      "nonNegative": "All values must be non-negative numbers.",
+      "noOffersBefore": "No offers recorded yet. Click",
+      "noOffersAfter": "when the first one lands.",
+      "strongestNet": "Strongest net",
+      "accept": "Accept",
+      "view": "View",
+      "sellerNote": "Note for the seller",
+      "aiReadNote": "Get a plain-English read on which offer is strongest and why (net to seller, certainty of close, timeline) — plus a short note you can forward to the seller."
     },
     "newShowing": {
       "metaTitle": "Schedule Showing",
@@ -2739,7 +2792,17 @@
       "needPhotoToAnimate": "Select at least one photo to animate.",
       "updatedAt": "· updated {{date}}",
       "voicedVersion": "Video ad with voiceover",
-      "voicedHint": "This voiced version is what gets posted when you publish above."
+      "voicedHint": "This voiced version is what gets posted when you publish above.",
+      "pullBlurb": "Pull the photos + facts from the listing, then (soon) generate a cinematic video ad.",
+      "source": "Source:",
+      "selectAll": "Select all",
+      "clear": "Clear",
+      "animateBlurb": "Animate your selected photos into cinematic motion clips (the raw material for the video ad).",
+      "rendering": "Rendering cinematic motion — this can take a couple minutes per photo.",
+      "noClips": "No clips yet. Generate them above, then build the branded ad below.",
+      "stitchBlurb": "Stitch the clips into one video tour + an AI caption — ready to post.",
+      "narrationBlurb": "Let AI write a narration, then speak it over your video — in your cloned voice if you've set one up, otherwise a professional voice.",
+      "confidence": "confidence {{pct}}%"
     },
     "contactHealth": {
       "heading": "Contact health",
@@ -3001,6 +3064,27 @@
       "needFaceFirst": "Upload your intro video or a photo above first — the avatar needs your face.",
       "downloadVideo": "Download video",
       "connectAccounts": "Connect accounts"
+    },
+    "houseSearch": {
+      "whatLookingFor": "What is your buyer looking for?",
+      "savedAs": "Saved as",
+      "detach": "Detach",
+      "refine": "Refine the search",
+      "noMatches": "No real listings matched. Try loosening the criteria.",
+      "close": "Close",
+      "open": "Open",
+      "cancel": "Cancel"
+    },
+    "connect": {
+      "pinterestBlurb": "Auto-publish Pins — listing photos, neighborhood guides, branded cards — to a board on your Pinterest business account.",
+      "pinterestConnect": "Connect a Pinterest business account to schedule Pins. New Pins post to your first board.",
+      "pinterestRevoke": "Disconnecting removes the token stored here. To fully revoke, remove the app in your Pinterest account settings.",
+      "tiktokBlurb": "Post your videos — listing tours, avatar clips — straight to TikTok. New videos start private until your TikTok app passes the Content Posting audit.",
+      "tiktokConnect": "Connect a TikTok account to post videos. Until your app is audited, posts are private (only you see them).",
+      "tiktokRevoke": "Disconnecting removes the token stored here. To fully revoke, remove the app in your TikTok account settings.",
+      "youtubeBlurb": "Upload your videos — listing tours, avatar clips — to your YouTube channel. Vertical clips land as Shorts.",
+      "youtubeConnect": "Connect a YouTube channel to upload videos. Vertical videos post as Shorts.",
+      "youtubeRevoke": "Disconnecting removes the token stored here. To fully revoke, remove access in your Google account settings."
     }
   }
 }
