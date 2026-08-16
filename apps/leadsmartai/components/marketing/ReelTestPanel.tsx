@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Create & post a video reel manually — render a vertical video (AI-generated
@@ -24,6 +25,7 @@ const PLATFORM_LABEL: Record<Platform, string> = {
 };
 
 export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean }) {
+  const { t } = useTranslation("dashboard");
   const [phase, setPhase] = useState<Phase>("idle");
   const [reelId, setReelId] = useState<string | null>(null);
   const [mp4Url, setMp4Url] = useState<string | null>(null);
@@ -141,11 +143,8 @@ export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean 
     <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-gray-900">Create a video reel</h3>
-          <p className="mt-0.5 text-sm text-gray-500">
-            Render a vertical video, preview it, then post it to your connected Facebook, Instagram, and
-            LinkedIn accounts — on demand, whenever you want a reel out.
-          </p>
+          <h3 className="text-base font-semibold text-gray-900">{t("pages.reelPanel.title")}</h3>
+          <p className="mt-0.5 text-sm text-gray-500">{t("pages.reelPanel.intro")}</p>
         </div>
         {canCustomize && (phase === "idle" || phase === "error" || phase === "done") ? (
           <button
@@ -159,9 +158,7 @@ export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean 
       </div>
 
       {!canCustomize ? (
-        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Video reels are a Signature feature. Upgrade to render and post video.
-        </div>
+        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{t("pages.reelPanel.signatureOnly")}</div>
       ) : (
         <div className="mt-4 space-y-3">
           {/* Content source */}
@@ -169,11 +166,11 @@ export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean 
             <div className="flex flex-wrap gap-4 text-sm">
               <label className="flex items-center gap-2">
                 <input type="radio" checked={useAi} onChange={() => setUseAi(true)} />
-                <span className="text-gray-700">AI brand reel (fresh copy)</span>
+                <span className="text-gray-700">{t("pages.reelPanel.aiBrandReel")}</span>
               </label>
               <label className="flex items-center gap-2">
                 <input type="radio" checked={!useAi} onChange={() => setUseAi(false)} />
-                <span className="text-gray-700">Quick sample</span>
+                <span className="text-gray-700">{t("pages.reelPanel.quickSample")}</span>
               </label>
             </div>
           ) : null}
@@ -181,9 +178,7 @@ export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean 
           {phase === "rendering" ? (
             <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
               Rendering on the cloud… {Math.round(progress * 100)}%
-              <span className="mt-1 block text-xs text-gray-400">
-                This takes about a minute or two — you can leave this open.
-              </span>
+              <span className="mt-1 block text-xs text-gray-400">{t("pages.reelPanel.takesAMinute")}</span>
             </div>
           ) : null}
 
@@ -197,11 +192,9 @@ export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean 
           {phase === "rendered" ? (
             <div className="space-y-3">
               <div>
-                <p className="mb-1.5 text-sm font-medium text-gray-700">Post to</p>
+                <p className="mb-1.5 text-sm font-medium text-gray-700">{t("pages.reelPanel.postTo")}</p>
                 {targets.length === 0 ? (
-                  <p className="text-sm text-amber-700">
-                    No connected video accounts. Connect Facebook, Instagram, or LinkedIn first.
-                  </p>
+                  <p className="text-sm text-amber-700">{t("pages.reelPanel.noAccounts")}</p>
                 ) : (
                   <div className="flex flex-wrap gap-4 text-sm">
                     {targets.map((p) => (
@@ -219,10 +212,8 @@ export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean 
                   onClick={publish}
                   disabled={selected.size === 0}
                   className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50"
-                >
-                  Publish now
-                </button>
-                <span className="text-xs text-gray-400">Posts the video live to the selected accounts.</span>
+                >{t("pages.reelPanel.publishNow")}</button>
+                <span className="text-xs text-gray-400">{t("pages.reelPanel.publishHint")}</span>
               </div>
             </div>
           ) : null}
@@ -231,16 +222,14 @@ export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean 
 
           {phase === "done" && results ? (
             <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-              <p className="mb-2 text-sm font-medium text-gray-700">Publish results</p>
+              <p className="mb-2 text-sm font-medium text-gray-700">{t("pages.reelPanel.results")}</p>
               <ul className="space-y-1 text-sm">
                 {results.map((r) => (
                   <li key={r.platform} className="flex items-center gap-2">
                     <span className={r.ok ? "text-emerald-600" : "text-red-600"}>{r.ok ? "✓" : "✗"}</span>
                     <span className="capitalize text-gray-700">{r.platform}</span>
                     {r.ok && r.url ? (
-                      <a href={r.url} target="_blank" rel="noreferrer" className="text-[#0072ce] underline">
-                        View post
-                      </a>
+                      <a href={r.url} target="_blank" rel="noreferrer" className="text-[#0072ce] underline">{t("pages.reelPanel.viewPost")}</a>
                     ) : (
                       <span className="text-gray-500">{r.error}</span>
                     )}

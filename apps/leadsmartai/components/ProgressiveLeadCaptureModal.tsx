@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Stage = "email" | "name" | "phone" | "done";
 
@@ -27,6 +28,7 @@ export default function ProgressiveLeadCaptureModal(props: {
   source?: string;
   onUnlocked?: (info: { leadId: string; reportLink: string }) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [stage, setStage] = useState<Stage>("email");
   const [leadId, setLeadId] = useState<string | null>(null);
   const [reportLink, setReportLink] = useState<string | null>(null);
@@ -171,21 +173,17 @@ export default function ProgressiveLeadCaptureModal(props: {
               props.onClose();
               reset();
             }}
-          >
-            Close
-          </button>
+          >{t("pages.leadCapture.close")}</button>
         </div>
 
         <div className="p-5 space-y-3">
           {stage === "email" ? (
             <>
-              <div className="text-sm text-slate-700">
-                Enter your email to unlock the full report.
-              </div>
+              <div className="text-sm text-slate-700">{t("pages.leadCapture.enterEmail")}</div>
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder={t("pages.leadCapture.email")}
                 inputMode="email"
                 className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -202,13 +200,11 @@ export default function ProgressiveLeadCaptureModal(props: {
 
           {stage === "name" ? (
             <>
-              <div className="text-sm text-slate-700">
-                Enter your name to personalize your report.
-              </div>
+              <div className="text-sm text-slate-700">{t("pages.leadCapture.enterName")}</div>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Name"
+                placeholder={t("pages.leadCapture.name")}
                 className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <div className="flex gap-2">
@@ -217,9 +213,7 @@ export default function ProgressiveLeadCaptureModal(props: {
                   className={`flex-1 inline-flex items-center justify-center rounded-xl bg-white px-4 py-3 text-sm font-semibold border border-slate-200 hover:bg-slate-50 ${
                     reportLink ? "" : "pointer-events-none opacity-60"
                   }`}
-                >
-                  View report
-                </a>
+                >{t("pages.leadCapture.viewReport")}</a>
                 <button
                   type="button"
                   onClick={captureName}
@@ -234,9 +228,7 @@ export default function ProgressiveLeadCaptureModal(props: {
 
           {stage === "phone" ? (
             <>
-              <div className="text-sm text-slate-700">
-                Get instant updates via SMS (optional, but recommended).
-              </div>
+              <div className="text-sm text-slate-700">{t("pages.leadCapture.smsOptional")}</div>
               <input
                 value={phone}
                 onChange={(e) => setPhone(formatUsPhone(e.target.value))}
@@ -258,43 +250,31 @@ export default function ProgressiveLeadCaptureModal(props: {
                   onClick={() => capturePhone(true)}
                   disabled={loading}
                   className="w-full inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  Talk to an agent
-                </button>
+                >{t("pages.leadCapture.talkToAgent")}</button>
                 <button
                   type="button"
                   onClick={() => setStage("done")}
                   className="w-full inline-flex items-center justify-center rounded-xl bg-white px-4 py-3 text-sm font-semibold border border-slate-200 hover:bg-slate-50"
-                >
-                  Skip for now
-                </button>
+                >{t("pages.leadCapture.skip")}</button>
               </div>
             </>
           ) : null}
 
           {stage === "done" ? (
             <>
-              <div className="text-sm font-semibold text-emerald-700">
-                You&apos;re all set.
-              </div>
-              <div className="text-sm text-slate-700">
-                Your full report is unlocked. You can view it anytime below.
-              </div>
+              <div className="text-sm font-semibold text-emerald-700">{t("pages.leadCapture.allSet")}</div>
+              <div className="text-sm text-slate-700">{t("pages.leadCapture.unlocked")}</div>
               <a
                 href={reportLink ?? "#"}
                 className={`w-full inline-flex items-center justify-center rounded-xl bg-white px-4 py-3 text-sm font-semibold border border-slate-200 hover:bg-slate-50 ${
                   reportLink ? "" : "pointer-events-none opacity-60"
                 }`}
-              >
-                View your report
-              </a>
+              >{t("pages.leadCapture.viewYourReport")}</a>
             </>
           ) : null}
 
           {error ? <p className="text-xs text-red-600 font-medium">{error}</p> : null}
-          <p className="text-[11px] text-slate-500">
-            We save your progress at each step. No spam.
-          </p>
+          <p className="text-[11px] text-slate-500">{t("pages.leadCapture.noSpam")}</p>
         </div>
       </div>
     </div>
