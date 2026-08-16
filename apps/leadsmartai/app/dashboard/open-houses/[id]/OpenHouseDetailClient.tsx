@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { PlaybooksPanel } from "@/components/dashboard/PlaybooksPanel";
 import type {
   OpenHouseRow,
@@ -34,8 +36,8 @@ const TIMELINE_TONE: Record<VisitorTimeline, string> = {
   just_looking: "bg-slate-100 text-slate-500",
 };
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
+function formatDate(iso: string, locale: string): string {
+  return new Date(iso).toLocaleDateString(locale, {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -43,16 +45,16 @@ function formatDate(iso: string): string {
   });
 }
 
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString(undefined, {
+function formatTime(iso: string, locale: string): string {
+  return new Date(iso).toLocaleTimeString(locale, {
     hour: "numeric",
     minute: "2-digit",
   });
 }
 
-function formatMoney(n: number | null): string {
+function formatMoney(n: number | null, locale: string): string {
   if (n == null) return "—";
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
@@ -66,6 +68,8 @@ export function OpenHouseDetailClient({
   openHouse: OpenHouseRow;
   visitors: OpenHouseVisitorRow[];
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const router = useRouter();
   const [oh, setOH] = useState(initialOH);
   const [visitors] = useState(initialVisitors);
@@ -99,7 +103,7 @@ export function OpenHouseDetailClient({
         return;
       }
       setOH(body.openHouse);
-      setMsg({ tone: "ok", text: "Saved." });
+      setMsg({ tone: "ok", text: t("pages.openHouseDetail.saved") });
     } catch (e) {
       setMsg({ tone: "err", text: e instanceof Error ? e.message : "Network error." });
     } finally {
@@ -157,7 +161,7 @@ export function OpenHouseDetailClient({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      setMsg({ tone: "err", text: "Couldn't copy — long-press the URL field to copy manually." });
+      setMsg({ tone: "err", text: t("pages.openHouseDetail.copyFailed") });
     }
   }
 
@@ -175,9 +179,9 @@ export function OpenHouseDetailClient({
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{oh.property_address}</h1>
         <div className="mt-1 text-sm text-slate-600">
-          {formatDate(oh.start_at)} · {formatTime(oh.start_at)} – {formatTime(oh.end_at)}
+          {formatDate(oh.start_at, locale)} · {formatTime(oh.start_at, locale)} – {formatTime(oh.end_at, locale)}
           {locationLine ? ` · ${locationLine}` : ""}
-          {oh.list_price ? ` · ${formatMoney(oh.list_price)}` : ""}
+          {oh.list_price ? ` · ${formatMoney(oh.list_price, locale)}` : ""}
         </div>
       </div>
 
@@ -200,7 +204,7 @@ export function OpenHouseDetailClient({
             iPad kiosk button + Copy link cover the digital paths. */}
         <div className="space-y-4 md:col-span-1">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-sm font-semibold text-slate-900">Visitor sign-in</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("pages.openHouseDetail.visitorSignIn")}</h2>
             <p className="mt-1 text-xs text-slate-500">
               Print the flyer for the door, or share the link / iPad kiosk for digital sign-in.
             </p>
@@ -224,7 +228,7 @@ export function OpenHouseDetailClient({
                 onClick={() => void copyUrl()}
                 className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
               >
-                {copied ? "Copied ✓" : "Copy link"}
+                {copied ? t("pages.openHouseDetail.copied") : t("pages.openHouseDetail.copyLink")}
               </button>
               <a
                 href={publicUrl}
@@ -249,7 +253,7 @@ export function OpenHouseDetailClient({
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-slate-900">Status</h3>
+            <h3 className="text-sm font-semibold text-slate-900">{t("pages.openHouseDetail.status")}</h3>
             <div className="mt-2 flex flex-wrap gap-2">
               {(["scheduled", "completed", "cancelled"] as OpenHouseStatus[]).map((s) => (
                 <button
@@ -274,14 +278,14 @@ export function OpenHouseDetailClient({
 
           {oh.host_notes ? (
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h3 className="text-sm font-semibold text-slate-900">Host notes</h3>
+              <h3 className="text-sm font-semibold text-slate-900">{t("pages.openHouseDetail.hostNotes")}</h3>
               <p className="mt-2 whitespace-pre-line text-sm text-slate-700">{oh.host_notes}</p>
             </div>
           ) : null}
 
           {oh.recurrence_group_id ? (
             <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-4">
-              <h3 className="text-sm font-semibold text-purple-900">↻ Recurring series</h3>
+              <h3 className="text-sm font-semibold text-purple-900">{t("pages.openHouseDetail.recurring")}</h3>
               <p className="mt-1 text-[11px] text-purple-700">
                 This open house is one occurrence in a series. Cancelling the series marks this
                 one + every future one as cancelled; past ones keep their data.
@@ -327,11 +331,11 @@ export function OpenHouseDetailClient({
                 <table className="min-w-full text-sm">
                   <thead className="text-xs text-slate-600">
                     <tr>
-                      <th className="px-2 py-1.5 text-left font-medium">Name + contact</th>
-                      <th className="px-2 py-1.5 text-left font-medium">Timeline</th>
-                      <th className="px-2 py-1.5 text-left font-medium">Agented?</th>
-                      <th className="px-2 py-1.5 text-center font-medium">Consent</th>
-                      <th className="px-2 py-1.5 text-left font-medium">Signed in</th>
+                      <th className="px-2 py-1.5 text-left font-medium">{t("pages.openHouseDetail.colNameContact")}</th>
+                      <th className="px-2 py-1.5 text-left font-medium">{t("pages.openHouseDetail.colTimeline")}</th>
+                      <th className="px-2 py-1.5 text-left font-medium">{t("pages.openHouseDetail.colAgented")}</th>
+                      <th className="px-2 py-1.5 text-center font-medium">{t("pages.openHouseDetail.colConsent")}</th>
+                      <th className="px-2 py-1.5 text-left font-medium">{t("pages.openHouseDetail.colSignedIn")}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -380,13 +384,13 @@ export function OpenHouseDetailClient({
                         </td>
                         <td className="px-2 py-2 text-center">
                           {v.marketing_consent ? (
-                            <span title="Will receive thank-you + check-in">✅</span>
+                            <span title={t("pages.openHouseDetail.willReceive")}>✅</span>
                           ) : (
-                            <span className="text-slate-300" title="Not opted in">—</span>
+                            <span className="text-slate-300" title={t("pages.openHouseDetail.notOptedIn")}>—</span>
                           )}
                         </td>
                         <td className="px-2 py-2 whitespace-nowrap text-[11px] text-slate-500">
-                          {new Date(v.created_at).toLocaleString(undefined, {
+                          {new Date(v.created_at).toLocaleString(locale, {
                             month: "short",
                             day: "numeric",
                             hour: "numeric",
@@ -402,7 +406,7 @@ export function OpenHouseDetailClient({
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-slate-900">Follow-up automation</h3>
+            <h3 className="text-sm font-semibold text-slate-900">{t("pages.openHouseDetail.followUp")}</h3>
             <p className="mt-1 text-xs text-slate-500">
               Visitors who opted in get a thank-you email within 24h and a check-in SMS on day
               3. Agented visitors are captured for your records but never receive outreach

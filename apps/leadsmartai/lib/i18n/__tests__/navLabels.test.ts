@@ -90,6 +90,9 @@ describe("dashboard namespace (page copy)", () => {
       "profile.backToDashboard",
       "branding.leadAdPlaceholder",
       "aiTeam.eyebrow",
+      // Format examples, not copy: an MLS number and a bare URL scheme.
+      "pages.newOpenHouse.mlsPlaceholder",
+      "pages.newOpenHouse.urlPlaceholder",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;
