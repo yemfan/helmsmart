@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export type OpenHouseVisitorLogRow = {
   id: string;
@@ -38,6 +40,8 @@ export function OpenHouseVisitorLogClient({
   error: string | null;
   cutoffIso: string;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [filter, setFilter] = useState<FilterMode>("all");
   const [q, setQ] = useState("");
 
@@ -85,7 +89,7 @@ export function OpenHouseVisitorLogClient({
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Open-house visitors</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">{t("pages.adminPages.openHouseVisitors")}</h1>
         <p className="mt-1 text-sm text-slate-500">
           Recent sign-ins since{" "}
           <code className="rounded bg-slate-100 px-1 py-0.5 text-[11px]">{cutoffIso}</code>{" "}
@@ -100,11 +104,11 @@ export function OpenHouseVisitorLogClient({
       ) : null}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-        <Stat label="Total sign-ins" value={summary.total} />
-        <Stat label="Opted-in" value={summary.optedIn} tone="green" />
-        <Stat label="Already agented" value={summary.agented} />
-        <Stat label="Thank-yous sent" value={summary.thankYouSent} tone="blue" />
-        <Stat label="Check-ins sent" value={summary.checkInSent} tone="blue" />
+        <Stat label={t("pages.adminPages.totalSignIns")} value={summary.total} />
+        <Stat label={t("pages.adminPages.optedIn")} value={summary.optedIn} tone="green" />
+        <Stat label={t("pages.adminPages.alreadyAgented")} value={summary.agented} />
+        <Stat label={t("pages.adminPages.thankYousSent")} value={summary.thankYouSent} tone="blue" />
+        <Stat label={t("pages.adminPages.checkInsSent")} value={summary.checkInSent} tone="blue" />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -119,9 +123,9 @@ export function OpenHouseVisitorLogClient({
           onChange={(e) => setFilter(e.target.value as FilterMode)}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         >
-          <option value="all">All visitors</option>
-          <option value="opted_in">Opted-in only</option>
-          <option value="agented">Already agented</option>
+          <option value="all">{t("pages.adminPages.allVisitors")}</option>
+          <option value="opted_in">{t("pages.adminPages.optedInOnly")}</option>
+          <option value="agented">{t("pages.adminPages.alreadyAgented")}</option>
           <option value="thank_you_pending">Thank-you overdue (opted-in, not sent, ≥2h)</option>
           <option value="check_in_pending">Check-in overdue (opted-in, not sent, ≥72h)</option>
         </select>
@@ -132,20 +136,20 @@ export function OpenHouseVisitorLogClient({
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-600">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">Signed in</th>
-                <th className="px-3 py-2 text-left font-medium">Visitor</th>
-                <th className="px-3 py-2 text-left font-medium">Property</th>
-                <th className="px-3 py-2 text-left font-medium">Agent</th>
-                <th className="px-3 py-2 text-center font-medium">Opted-in</th>
-                <th className="px-3 py-2 text-center font-medium">Thank-you</th>
-                <th className="px-3 py-2 text-center font-medium">Check-in</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminPages.signedIn")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminPages.visitor")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminCommon.property")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminCommon.agent")}</th>
+                <th className="px-3 py-2 text-center font-medium">{t("pages.adminPages.optedIn")}</th>
+                <th className="px-3 py-2 text-center font-medium">{t("pages.adminPages.thankYou")}</th>
+                <th className="px-3 py-2 text-center font-medium">{t("pages.adminPages.checkIn")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filtered.map((r) => (
                 <tr key={r.id} className="align-top">
                   <td className="whitespace-nowrap px-3 py-2 text-[12px] text-slate-700">
-                    {new Date(r.createdAt).toLocaleString()}
+                    {new Date(r.createdAt).toLocaleString(locale)}
                   </td>
                   <td className="px-3 py-2">
                     <div className="text-slate-900">
@@ -155,9 +159,7 @@ export function OpenHouseVisitorLogClient({
                       {[r.visitorEmail, r.visitorPhone].filter(Boolean).join(" · ") || "—"}
                     </div>
                     {r.isBuyerAgented ? (
-                      <div className="mt-0.5 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
-                        Already agented
-                      </div>
+                      <div className="mt-0.5 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">{t("pages.adminPages.alreadyAgented")}</div>
                     ) : null}
                   </td>
                   <td className="px-3 py-2">
@@ -175,14 +177,14 @@ export function OpenHouseVisitorLogClient({
                   </td>
                   <td className="px-3 py-2 text-center">
                     {r.marketingConsent ? (
-                      <span title="Will receive follow-ups">✅</span>
+                      <span title={t("pages.adminPages.willReceive")}>✅</span>
                     ) : (
                       <span className="text-slate-300">—</span>
                     )}
                   </td>
                   <td className="px-3 py-2 text-center text-[11px] text-slate-600">
                     {r.thankYouSentAt ? (
-                      new Date(r.thankYouSentAt).toLocaleDateString()
+                      new Date(r.thankYouSentAt).toLocaleDateString(locale)
                     ) : !r.marketingConsent || r.isBuyerAgented ? (
                       <span className="text-slate-300">n/a</span>
                     ) : (
@@ -191,7 +193,7 @@ export function OpenHouseVisitorLogClient({
                   </td>
                   <td className="px-3 py-2 text-center text-[11px] text-slate-600">
                     {r.checkInSentAt ? (
-                      new Date(r.checkInSentAt).toLocaleDateString()
+                      new Date(r.checkInSentAt).toLocaleDateString(locale)
                     ) : !r.marketingConsent || r.isBuyerAgented || !r.visitorPhone ? (
                       <span className="text-slate-300">n/a</span>
                     ) : (
@@ -202,9 +204,7 @@ export function OpenHouseVisitorLogClient({
               ))}
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-400">
-                    No matching rows.
-                  </td>
+                  <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-400">{t("pages.adminCommon.noMatchingRows")}</td>
                 </tr>
               ) : null}
             </tbody>

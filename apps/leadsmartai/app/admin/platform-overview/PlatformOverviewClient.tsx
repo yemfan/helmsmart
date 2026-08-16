@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { SectionCard } from "@/components/dashboard/SectionCard";
@@ -44,6 +45,7 @@ const PRESETS: DatePresetButton[] = [
 type PlatformOverviewPayload = { success: true } & PlatformOverviewResponse;
 
 export function PlatformOverviewClient() {
+  const { t } = useTranslation("dashboard");
   const [range, setRange] = useState<DateRange>(getPresetDateRange("30d"));
 
   const { data, loading, error } = useDashboardData<PlatformOverviewPayload>(
@@ -53,9 +55,7 @@ export function PlatformOverviewClient() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center p-6 text-sm text-gray-500">
-        Loading platform overview...
-      </div>
+      <div className="flex min-h-[400px] items-center justify-center p-6 text-sm text-gray-500">{t("pages.adminPages.loadingOverview")}</div>
     );
   }
 
@@ -81,42 +81,42 @@ export function PlatformOverviewClient() {
   return (
     <DashboardShell
       className="min-h-0 bg-transparent p-0"
-      title="Platform Overview"
+      title={t("pages.adminPages.platformOverview")}
       subtitle="Business performance across PropertyToolsAI and LeadSmart AI."
       kpiGridClassName="md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
       kpis={
         <>
           <KpiCard
-            label="Total Visitors"
+            label={t("pages.adminPages.totalVisitors")}
             value={data.kpis.visitors.toLocaleString()}
             deltaPct={deltaPct(data.kpis.visitors, prev.visitors)}
             spark={trends.visitors}
           />
           <KpiCard
-            label="Tool Usage"
+            label={t("pages.adminPages.toolUsage")}
             value={data.kpis.toolUsage.toLocaleString()}
             deltaPct={deltaPct(data.kpis.toolUsage, prev.toolUsage)}
             spark={trends.toolUsage}
           />
           <KpiCard
-            label="Leads Captured"
+            label={t("pages.adminPages.leadsCaptured")}
             value={data.kpis.leadsCaptured.toLocaleString()}
             deltaPct={deltaPct(data.kpis.leadsCaptured, prev.leadsCaptured)}
             spark={trends.leadsCaptured}
           />
           <KpiCard
-            label="Qualified Leads"
+            label={t("pages.adminPages.qualifiedLeads")}
             value={data.kpis.qualifiedLeads.toLocaleString()}
             deltaPct={deltaPct(data.kpis.qualifiedLeads, prev.qualifiedLeads)}
             spark={trends.qualifiedLeads}
           />
           <KpiCard
-            label="Paying Agents"
+            label={t("pages.adminPages.payingAgents")}
             value={String(data.kpis.payingAgents)}
             deltaPct={deltaPct(data.kpis.payingAgents, prev.payingAgents)}
           />
           <KpiCard
-            label="Revenue"
+            label={t("pages.adminPages.revenue")}
             value={`$${data.kpis.revenue.toLocaleString()}`}
             deltaPct={deltaPct(data.kpis.revenue, prev.revenue)}
           />
@@ -142,23 +142,23 @@ export function PlatformOverviewClient() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-        <SectionCard title="PropertyToolsAI Performance">
+        <SectionCard title={t("pages.adminPages.ptPerformance")}>
           <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-3">
               <div className="rounded-xl bg-gray-50 p-4">
-                <div className="text-sm text-gray-500">Traffic</div>
+                <div className="text-sm text-gray-500">{t("pages.adminPages.traffic")}</div>
                 <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                   {data.propertyTools.traffic.toLocaleString()}
                 </div>
               </div>
               <div className="rounded-xl bg-gray-50 p-4">
-                <div className="text-sm text-gray-500">Lead Conversion</div>
+                <div className="text-sm text-gray-500">{t("pages.adminPages.leadConversion")}</div>
                 <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                   {data.propertyTools.conversionRate}%
                 </div>
               </div>
               <div className="rounded-xl bg-gray-50 p-4">
-                <div className="text-sm text-gray-500">Premium Upgrades</div>
+                <div className="text-sm text-gray-500">{t("pages.adminPages.premiumUpgrades")}</div>
                 <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                   {data.propertyTools.premiumUpgrades}
                 </div>
@@ -166,7 +166,7 @@ export function PlatformOverviewClient() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-900">Top Tools</h3>
+              <h3 className="text-sm font-semibold text-gray-900">{t("pages.adminPages.topTools")}</h3>
               <div className="mt-3 space-y-3">
                 {data.propertyTools.topTools.map((tool) => (
                   <div key={tool.name} className="flex items-center justify-between rounded-xl border p-4">
@@ -183,7 +183,7 @@ export function PlatformOverviewClient() {
             </div>
 
             <div>
-              <h3 className="text-sm font-semibold text-gray-900">Top Landing Pages</h3>
+              <h3 className="text-sm font-semibold text-gray-900">{t("pages.adminPages.topLandingPages")}</h3>
               <div className="mt-3 space-y-3">
                 {data.propertyTools.topPages.map((page) => (
                   <div key={page.page} className="flex items-center justify-between rounded-xl border p-4">
@@ -196,34 +196,34 @@ export function PlatformOverviewClient() {
           </div>
         </SectionCard>
 
-        <SectionCard title="LeadSmart AI Performance">
+        <SectionCard title={t("pages.adminPages.lsPerformance")}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-xl bg-gray-50 p-4">
-              <div className="text-sm text-gray-500">Active Agents</div>
+              <div className="text-sm text-gray-500">{t("pages.adminPages.activeAgents")}</div>
               <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                 {data.leadSmart.activeAgents}
               </div>
             </div>
             <div className="rounded-xl bg-gray-50 p-4">
-              <div className="text-sm text-gray-500">Lead Assignments</div>
+              <div className="text-sm text-gray-500">{t("pages.adminPages.leadAssignments")}</div>
               <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                 {data.leadSmart.leadAssignments}
               </div>
             </div>
             <div className="rounded-xl bg-gray-50 p-4">
-              <div className="text-sm text-gray-500">Follow-Up Rate</div>
+              <div className="text-sm text-gray-500">{t("pages.adminPages.followUpRate")}</div>
               <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                 {data.leadSmart.followUpRate}%
               </div>
             </div>
             <div className="rounded-xl bg-gray-50 p-4">
-              <div className="text-sm text-gray-500">Close Rate</div>
+              <div className="text-sm text-gray-500">{t("pages.adminPages.closeRate")}</div>
               <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                 {data.leadSmart.closeRate}%
               </div>
             </div>
             <div className="rounded-xl bg-gray-50 p-4 md:col-span-2">
-              <div className="text-sm text-gray-500">MRR</div>
+              <div className="text-sm text-gray-500">{t("pages.adminPages.mrr")}</div>
               <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                 ${data.leadSmart.mrr.toLocaleString()}
               </div>
@@ -232,7 +232,7 @@ export function PlatformOverviewClient() {
         </SectionCard>
       </div>
 
-      <SectionCard title="Funnel Overview">
+      <SectionCard title={t("pages.adminPages.funnelOverview")}>
         <div className="grid gap-5">
           {data.funnel.map((item) => (
             <FunnelBar key={item.stage} label={item.stage} value={item.value} max={maxFunnel} />
@@ -241,16 +241,16 @@ export function PlatformOverviewClient() {
       </SectionCard>
 
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <SectionCard title="Support / Operations">
+        <SectionCard title={t("pages.adminPages.supportOps")}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-xl bg-gray-50 p-4">
-              <div className="text-sm text-gray-500">Open Tickets</div>
+              <div className="text-sm text-gray-500">{t("pages.adminPages.openTickets")}</div>
               <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                 {data.support.openTickets}
               </div>
             </div>
             <div className="rounded-xl bg-gray-50 p-4">
-              <div className="text-sm text-gray-500">Urgent Tickets</div>
+              <div className="text-sm text-gray-500">{t("pages.adminPages.urgentTickets")}</div>
               <div className="mt-2 text-2xl font-semibold tabular-nums text-gray-900">
                 {data.support.urgentTickets}
               </div>
@@ -258,10 +258,10 @@ export function PlatformOverviewClient() {
           </div>
 
           <div className="mt-6">
-            <h3 className="text-sm font-semibold text-gray-900">Issue Categories</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t("pages.adminPages.issueCategories")}</h3>
             <div className="mt-3 space-y-3">
               {data.support.categories.length === 0 ? (
-                <p className="text-sm text-gray-500">No support tickets in this period.</p>
+                <p className="text-sm text-gray-500">{t("pages.adminPages.noTickets")}</p>
               ) : (
                 data.support.categories.map((item) => (
                   <div key={item.label} className="flex items-center justify-between rounded-xl border p-4">
@@ -274,10 +274,10 @@ export function PlatformOverviewClient() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Alerts / Insights">
+        <SectionCard title={t("pages.adminPages.alertsInsights")}>
           <div className="space-y-3">
             {data.alerts.length === 0 ? (
-              <div className="text-sm text-gray-500">No alerts right now.</div>
+              <div className="text-sm text-gray-500">{t("pages.adminPages.noAlerts")}</div>
             ) : (
               data.alerts.map((alert, idx) => (
                 <div key={idx} className="rounded-xl border bg-gray-50 p-4">

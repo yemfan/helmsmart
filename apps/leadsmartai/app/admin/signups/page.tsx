@@ -5,6 +5,8 @@ import {
   type SignupRow,
 } from "@/lib/admin/signupSources";
 import type { Metadata } from "next";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export const metadata: Metadata = {
   title: "Signups by Source | LeadSmart AI",
@@ -14,10 +16,10 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-function fmtDate(iso: string | null): string {
+function fmtDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
   try {
-    return new Date(iso).toLocaleDateString(undefined, {
+    return new Date(iso).toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -33,6 +35,8 @@ function pct(n: number, total: number): string {
 }
 
 export default async function AdminSignupsPage() {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   await requireRole(["admin"]);
 
   const { data } = await supabaseServer
@@ -49,7 +53,7 @@ export default async function AdminSignupsPage() {
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
           LeadSmart AI · Admin
         </p>
-        <h1 className="text-2xl font-bold text-slate-900">Signups by source</h1>
+        <h1 className="text-2xl font-bold text-slate-900">{t("pages.adminPages.signupsBySource", { ns: "dashboard" })}</h1>
         <p className="mt-1 text-sm text-slate-500">
           Where new agent accounts come from. Attribution is captured going
           forward — accounts created before tracking show as “Unknown”.
@@ -75,17 +79,17 @@ export default async function AdminSignupsPage() {
       {/* By source */}
       <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-100 px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900">By source</h2>
+          <h2 className="text-sm font-semibold text-slate-900">{t("pages.adminPages.bySource", { ns: "dashboard" })}</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
-                <th className="px-4 py-2 font-medium">Source</th>
-                <th className="px-4 py-2 text-right font-medium">Signups</th>
-                <th className="px-4 py-2 text-right font-medium">Share</th>
-                <th className="px-4 py-2 text-right font-medium">Paid</th>
-                <th className="px-4 py-2 text-right font-medium">Conv.</th>
+                <th className="px-4 py-2 font-medium">{t("pages.adminCommon.source", { ns: "dashboard" })}</th>
+                <th className="px-4 py-2 text-right font-medium">{t("pages.adminPages.signups", { ns: "dashboard" })}</th>
+                <th className="px-4 py-2 text-right font-medium">{t("pages.adminPages.share", { ns: "dashboard" })}</th>
+                <th className="px-4 py-2 text-right font-medium">{t("pages.adminPages.paid", { ns: "dashboard" })}</th>
+                <th className="px-4 py-2 text-right font-medium">{t("pages.adminPages.conv", { ns: "dashboard" })}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -104,9 +108,7 @@ export default async function AdminSignupsPage() {
               ))}
               {summary.bySource.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
-                    No signups yet.
-                  </td>
+                  <td colSpan={5} className="px-4 py-6 text-center text-slate-400">{t("pages.adminPages.noSignups", { ns: "dashboard" })}</td>
                 </tr>
               )}
             </tbody>
@@ -117,24 +119,24 @@ export default async function AdminSignupsPage() {
       {/* Recent signups */}
       <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-100 px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900">Recent signups</h2>
+          <h2 className="text-sm font-semibold text-slate-900">{t("pages.adminPages.recentSignups", { ns: "dashboard" })}</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
-                <th className="px-4 py-2 font-medium">Date</th>
-                <th className="px-4 py-2 font-medium">Account</th>
-                <th className="px-4 py-2 font-medium">Source</th>
-                <th className="px-4 py-2 font-medium">Medium</th>
-                <th className="px-4 py-2 font-medium">Campaign</th>
-                <th className="px-4 py-2 font-medium">Plan</th>
+                <th className="px-4 py-2 font-medium">{t("pages.adminPages.date", { ns: "dashboard" })}</th>
+                <th className="px-4 py-2 font-medium">{t("pages.adminPages.account", { ns: "dashboard" })}</th>
+                <th className="px-4 py-2 font-medium">{t("pages.adminCommon.source", { ns: "dashboard" })}</th>
+                <th className="px-4 py-2 font-medium">{t("pages.adminPages.medium", { ns: "dashboard" })}</th>
+                <th className="px-4 py-2 font-medium">{t("pages.adminPages.campaign", { ns: "dashboard" })}</th>
+                <th className="px-4 py-2 font-medium">{t("pages.adminPages.plan", { ns: "dashboard" })}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {summary.recent.map((r, i) => (
                 <tr key={i}>
-                  <td className="whitespace-nowrap px-4 py-2.5 text-slate-500">{fmtDate(r.created_at)}</td>
+                  <td className="whitespace-nowrap px-4 py-2.5 text-slate-500">{fmtDate(r.created_at, locale)}</td>
                   <td className="px-4 py-2.5 text-slate-800">{r.brand_name || "—"}</td>
                   <td className="px-4 py-2.5 text-slate-700">{r.source}</td>
                   <td className="px-4 py-2.5 text-slate-500">{r.medium || "—"}</td>
@@ -144,9 +146,7 @@ export default async function AdminSignupsPage() {
               ))}
               {summary.recent.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
-                    No signups yet.
-                  </td>
+                  <td colSpan={6} className="px-4 py-6 text-center text-slate-400">{t("pages.adminPages.noSignups", { ns: "dashboard" })}</td>
                 </tr>
               )}
             </tbody>

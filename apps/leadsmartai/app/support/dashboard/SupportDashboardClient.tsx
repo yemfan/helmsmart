@@ -18,18 +18,20 @@ import {
   supportWorkload,
 } from "@/lib/platform-dashboard-demo-data";
 import { AlertCircle, Send, Shield, Tag, UserPlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function SupportDashboardClient() {
+  const { t } = useTranslation("dashboard");
   return (
     <DashboardShell
-      title="System support dashboard"
+      title={t("pages.supportDash.title")}
       subtitle="Queue triage, active conversation handling, and team operations in a single view."
       kpis={supportKpis.map((k) => (
         <KpiCard key={k.label} label={k.label} value={k.value} subtext={kpiSubtext(k)} />
       ))}
     >
         <section className="grid gap-6 xl:grid-cols-12">
-          <SectionCard title="Ticket queue" className="xl:col-span-8">
+          <SectionCard title={t("pages.supportDash.ticketQueue")} className="xl:col-span-8">
             <DashboardTable
               columns={[
                 { key: "name", header: "Name" },
@@ -42,18 +44,18 @@ export default function SupportDashboardClient() {
             />
           </SectionCard>
 
-          <SectionCard title="Quick actions" className="xl:col-span-4">
+          <SectionCard title={t("pages.supportDash.quickActions")} className="xl:col-span-4">
             <div className="grid grid-cols-2 gap-2">
-              <ActionButton variant="secondary" className="justify-center" leftIcon={<UserPlus className="h-4 w-4" />}>Assign to me</ActionButton>
-              <ActionButton variant="secondary" className="justify-center" leftIcon={<AlertCircle className="h-4 w-4" />}>Mark urgent</ActionButton>
-              <ActionButton variant="primary" className="justify-center" leftIcon={<Shield className="h-4 w-4" />}>Resolve</ActionButton>
-              <ActionButton variant="secondary" className="justify-center" leftIcon={<Tag className="h-4 w-4" />}>Tag</ActionButton>
+              <ActionButton variant="secondary" className="justify-center" leftIcon={<UserPlus className="h-4 w-4" />}>{t("pages.supportDash.assignToMe")}</ActionButton>
+              <ActionButton variant="secondary" className="justify-center" leftIcon={<AlertCircle className="h-4 w-4" />}>{t("pages.supportDash.markUrgent")}</ActionButton>
+              <ActionButton variant="primary" className="justify-center" leftIcon={<Shield className="h-4 w-4" />}>{t("pages.supportDash.resolve")}</ActionButton>
+              <ActionButton variant="secondary" className="justify-center" leftIcon={<Tag className="h-4 w-4" />}>{t("pages.supportDash.tag")}</ActionButton>
             </div>
           </SectionCard>
         </section>
 
         <section className="grid gap-6 xl:grid-cols-12">
-          <SectionCard title="Active conversation" className="xl:col-span-8">
+          <SectionCard title={t("pages.supportDash.activeConversation")} className="xl:col-span-8">
             <div className="-m-5 divide-y divide-slate-100">
               <div className="max-h-[380px] space-y-4 overflow-y-auto px-5 py-5">
                 {supportThread.map((m, i) => (
@@ -70,17 +72,17 @@ export default function SupportDashboardClient() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                   <textarea
                     rows={3}
-                    placeholder="Type reply..."
+                    placeholder={t("pages.supportDash.typeReply")}
                     className="min-h-[88px] flex-1 resize-none rounded-xl border border-slate-200/90 bg-white px-3 py-2 text-sm text-slate-800 outline-none ring-emerald-500/20 placeholder:text-slate-400 focus:border-emerald-300 focus:ring-2"
                     readOnly
                   />
-                  <ActionButton variant="primary" className="h-11 shrink-0 sm:w-36" leftIcon={<Send className="h-4 w-4" />}>Send</ActionButton>
+                  <ActionButton variant="primary" className="h-11 shrink-0 sm:w-36" leftIcon={<Send className="h-4 w-4" />}>{t("pages.supportDash.send")}</ActionButton>
                 </div>
               </div>
             </div>
           </SectionCard>
 
-          <SectionCard title="Internal notes" className="xl:col-span-4">
+          <SectionCard title={t("pages.supportDash.internalNotes")} className="xl:col-span-4">
             <ul className="space-y-2 text-sm text-slate-700">
               {supportNotes.map((n, i) => (
                 <li key={i} className="rounded-xl border border-slate-100 bg-amber-50/40 px-3 py-2 ring-1 ring-amber-100/60">{n}</li>
@@ -95,7 +97,7 @@ export default function SupportDashboardClient() {
         </section>
 
         <section className="grid gap-6 xl:grid-cols-12">
-          <SectionCard title="Issue trends" className="xl:col-span-8">
+          <SectionCard title={t("pages.supportDash.issueTrends")} className="xl:col-span-8">
             <div className="relative h-48">
               <div className="absolute inset-0 flex items-end gap-2">
                 {supportTrends.map((w) => (
@@ -111,7 +113,7 @@ export default function SupportDashboardClient() {
             </div>
           </SectionCard>
 
-          <SectionCard title="Team workload" className="xl:col-span-4">
+          <SectionCard title={t("pages.supportDash.teamWorkload")} className="xl:col-span-4">
             <ul className="space-y-3">
               {supportWorkload.map((w) => (
                 <li key={w.agent} className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/60 px-3 py-2.5">

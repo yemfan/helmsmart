@@ -1,6 +1,7 @@
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { SectionCard } from "@/components/dashboard/SectionCard";
+import { getServerT } from "@/lib/i18n/server";
 
 const tickets = [
   { name: "Michael Ye", subject: "Billing question", priority: "high", unread: 2 },
@@ -13,23 +14,24 @@ export const metadata = {
   description: "Tickets, conversations, and operations for platform support.",
 };
 
-export default function SupportDashboardPage() {
+export default async function SupportDashboardPage() {
+  const t = await getServerT();
   return (
     <DashboardShell
-      title="System Support Dashboard"
+      title={t("pages.supportDash.title", { ns: "dashboard" })}
       subtitle="Resolve issues faster and keep the platform running smoothly."
       kpis={
         <>
-          <KpiCard label="Open Tickets" value="24" subtext="+4 today" />
-          <KpiCard label="Urgent Tickets" value="3" subtext="Need immediate review" />
-          <KpiCard label="Waiting on Support" value="11" subtext="SLA at risk" />
-          <KpiCard label="Avg Response Time" value="4m" subtext="Last 24 hours" />
-          <KpiCard label="Resolved Today" value="17" subtext="Strong pace" />
+          <KpiCard label={t("pages.supportDash.openTickets", { ns: "dashboard" })} value="24" subtext="+4 today" />
+          <KpiCard label={t("pages.supportDash.urgentTickets", { ns: "dashboard" })} value="3" subtext="Need immediate review" />
+          <KpiCard label={t("pages.supportDash.waiting", { ns: "dashboard" })} value="11" subtext="SLA at risk" />
+          <KpiCard label={t("pages.supportDash.avgResponse", { ns: "dashboard" })} value="4m" subtext="Last 24 hours" />
+          <KpiCard label={t("pages.supportDash.resolvedToday", { ns: "dashboard" })} value="17" subtext="Strong pace" />
         </>
       }
     >
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <SectionCard title="Ticket Queue">
+        <SectionCard title={t("pages.supportDash.ticketQueue", { ns: "dashboard" })}>
           <div className="space-y-3">
             {tickets.map((ticket) => (
               <div
@@ -49,67 +51,51 @@ export default function SupportDashboardPage() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Quick Actions">
+        <SectionCard title={t("pages.supportDash.quickActions", { ns: "dashboard" })}>
           <div className="grid gap-3">
-            <button className="rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white">
-              Assign to Me
-            </button>
-            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">
-              Mark Urgent
-            </button>
-            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">
-              Mark Resolved
-            </button>
-            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">
-              Tag as Billing / Bug
-            </button>
+            <button className="rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white">{t("pages.supportDash.assignToMe", { ns: "dashboard" })}</button>
+            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">{t("pages.supportDash.markUrgent", { ns: "dashboard" })}</button>
+            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">{t("pages.supportDash.markResolved", { ns: "dashboard" })}</button>
+            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">{t("pages.supportDash.tagBilling", { ns: "dashboard" })}</button>
           </div>
         </SectionCard>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <SectionCard title="Active Conversation">
+        <SectionCard title={t("pages.supportDash.activeConversation", { ns: "dashboard" })}>
           <div className="space-y-3">
-            <div className="rounded-xl border bg-gray-50 p-4 text-sm text-gray-700">
-              Customer: The Home Value tool is not loading on my page.
-            </div>
-            <div className="rounded-xl bg-gray-900 p-4 text-sm text-white">
-              Support: Thanks for reporting this. Can you share the page URL?
-            </div>
+            <div className="rounded-xl border bg-gray-50 p-4 text-sm text-gray-700">{t("pages.supportDash.sampleCustomer", { ns: "dashboard" })}</div>
+            <div className="rounded-xl bg-gray-900 p-4 text-sm text-white">{t("pages.supportDash.sampleSupport", { ns: "dashboard" })}</div>
             <textarea
               rows={4}
               className="w-full resize-none rounded-2xl border px-4 py-3 text-sm outline-none focus:border-gray-400"
-              placeholder="Write reply..."
+              placeholder={t("pages.supportDash.writeReply", { ns: "dashboard" })}
             />
           </div>
         </SectionCard>
 
-        <SectionCard title="Internal Notes">
+        <SectionCard title={t("pages.supportDash.internalNotes", { ns: "dashboard" })}>
           <div className="space-y-3">
-            <div className="rounded-xl bg-yellow-50 p-4 text-sm text-yellow-900">
-              Possible regression after latest deploy.
-            </div>
-            <div className="rounded-xl bg-gray-50 p-4 text-sm text-gray-700">
-              Customer is high-value agent account.
-            </div>
+            <div className="rounded-xl bg-yellow-50 p-4 text-sm text-yellow-900">{t("pages.supportDash.sampleNote1", { ns: "dashboard" })}</div>
+            <div className="rounded-xl bg-gray-50 p-4 text-sm text-gray-700">{t("pages.supportDash.sampleNote2", { ns: "dashboard" })}</div>
           </div>
         </SectionCard>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-        <SectionCard title="Issue Trends">
+        <SectionCard title={t("pages.supportDash.issueTrends", { ns: "dashboard" })}>
           <ul className="space-y-3 text-sm text-gray-700">
             <li>4 reports for Home Value tool today</li>
             <li>2 billing issues since last deploy</li>
-            <li>Login issue volume flat</li>
+            <li>{t("pages.supportDash.loginFlat", { ns: "dashboard" })}</li>
           </ul>
         </SectionCard>
 
-        <SectionCard title="Team Workload">
+        <SectionCard title={t("pages.supportDash.teamWorkload", { ns: "dashboard" })}>
           <ul className="space-y-3 text-sm text-gray-700">
-            <li>Ava - 6 active tickets</li>
-            <li>David - 4 active tickets</li>
-            <li>Jess - 3 urgent tickets handled today</li>
+            <li>{t("pages.supportDash.workload1", { ns: "dashboard" })}</li>
+            <li>{t("pages.supportDash.workload2", { ns: "dashboard" })}</li>
+            <li>{t("pages.supportDash.workload3", { ns: "dashboard" })}</li>
           </ul>
         </SectionCard>
       </div>

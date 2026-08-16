@@ -1,5 +1,6 @@
 import RolePortalHub from "@/components/portals/RolePortalHub";
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Admin Portal",
@@ -8,11 +9,12 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export default function AdminPortalPage() {
+export default async function AdminPortalPage() {
+  const t = await getServerT();
   return (
     <RolePortalHub
       eyebrow="LeadSmart AI"
-      title="Admin portal"
+      title={t("pages.adminPages.portal", { ns: "dashboard" })}
       description="Platform administration and operational tools. Open the full dashboard for day-to-day work."
       links={[
         { href: "/admin/platform-overview", label: "Platform overview", description: "Cross-product KPIs, funnel, and ops" },

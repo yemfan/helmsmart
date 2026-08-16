@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Bar,
   BarChart,
@@ -77,6 +78,7 @@ function formatMetricsApiError(j: MetricsApiError, fallback: string): string {
 }
 
 export function FounderDashboardClient() {
+  const { t } = useTranslation("dashboard");
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [overview, setOverview] = useState<OverviewPayload | null>(null);
@@ -137,20 +139,16 @@ export function FounderDashboardClient() {
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <header className="space-y-1">
-        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Admin</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Founder analytics</h1>
-        <p className="max-w-2xl text-sm text-gray-600">
-          Live SaaS metrics from billing, funnel tables, and append-only usage / subscription events. MRR is sourced
-          from <span className="font-medium text-gray-800">billing_subscriptions</span>; charts use the same APIs as
+        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">{t("pages.adminCommon.admin")}</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{t("pages.adminPages.founderAnalytics")}</h1>
+        <p className="max-w-2xl text-sm text-gray-600">{t("pages.adminPages.founderSub")}<span className="font-medium text-gray-800">billing_subscriptions</span>; charts use the same APIs as
           your product integrations.
         </p>
         <button
           type="button"
           onClick={() => void load()}
           className="mt-3 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50"
-        >
-          Refresh
-        </button>
+        >{t("pages.adminCommon.refresh")}</button>
       </header>
 
       {err ? (
@@ -162,14 +160,14 @@ export function FounderDashboardClient() {
       ) : overview ? (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <KpiCard label="MRR" value={fmtMoney(overview.mrr)} subtext="Active + trialing rows" />
+            <KpiCard label={t("pages.adminPages.mrr")} value={fmtMoney(overview.mrr)} subtext="Active + trialing rows" />
             <KpiCard
-              label="Paying subscriptions"
+              label={t("pages.adminPages.payingSubs")}
               value={String(overview.payingSubscriptions)}
               subtext="Rows in billing_subscriptions"
             />
             <KpiCard
-              label="Distinct paying users"
+              label={t("pages.adminPages.distinctPaying")}
               value={String(overview.payingUsersDistinct)}
               subtext="Unique profile ids on paying rows"
             />
@@ -179,7 +177,7 @@ export function FounderDashboardClient() {
               subtext="Distinct users in usage_events"
             />
             <KpiCard
-              label="Activation rate"
+              label={t("pages.adminPages.activationRate")}
               value={fmtPct(overview.activation.rate)}
               subtext={`${overview.activation.activatedWithin7dOfOnboarding} / ${overview.activation.onboarded} onboarded (7d reply)`}
             />
@@ -194,14 +192,14 @@ export function FounderDashboardClient() {
               subtext={`${overview.churn.churnedUsers} churned users · ${overview.churn.payingUsersNow} paying now`}
             />
             <KpiCard
-              label="New paying (funnel)"
+              label={t("pages.adminPages.newPaying")}
               value={String(overview.newPayingUsersInWindow)}
               subtext={`subscription_active_crm · ${overview.scope.usageAndConversionWindowDays}d`}
             />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <SectionCard title="MRR trend (from subscription events)">
+            <SectionCard title={t("pages.adminPages.mrrTrend")}>
               {revenue?.seriesNote ? (
                 <p className="mb-4 text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
                   {revenue.seriesNote}
@@ -224,7 +222,7 @@ export function FounderDashboardClient() {
               </p>
             </SectionCard>
 
-            <SectionCard title="Users">
+            <SectionCard title={t("pages.adminPages.users")}>
               <div className="h-[280px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={mauUsersData} layout="vertical" margin={{ left: 8 }}>
@@ -239,7 +237,7 @@ export function FounderDashboardClient() {
             </SectionCard>
           </div>
 
-          <SectionCard title="Funnel — distinct users by event (window)">
+          <SectionCard title={t("pages.adminPages.funnelWindow")}>
             <p className="mb-4 text-xs text-gray-500">
               Window: {funnel?.windowDays ?? "—"} days · Cumulative state: onboarded {funnel?.cumulative.onboarded ?? "—"}
               , first reply {funnel?.cumulative.firstReply ?? "—"}, first AI {funnel?.cumulative.firstAi ?? "—"}
@@ -260,7 +258,7 @@ export function FounderDashboardClient() {
           <SectionCard title="Feature usage (usage_events)">
             <p className="mb-4 text-xs text-gray-500">Window: {usage?.windowDays ?? "—"} days</p>
             {usage && usage.breakdown.length === 0 ? (
-              <p className="text-sm text-gray-600">No usage events yet. AI drafts and other surfaces write here.</p>
+              <p className="text-sm text-gray-600">{t("pages.adminPages.noUsageEvents")}</p>
             ) : (
               <div className="h-[320px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -284,7 +282,7 @@ export function FounderDashboardClient() {
           </SectionCard>
 
           {revenue && revenue.mrrByPlan.length > 0 ? (
-            <SectionCard title="MRR by plan">
+            <SectionCard title={t("pages.adminPages.mrrByPlan")}>
               <ul className="divide-y divide-gray-100 text-sm">
                 {revenue.mrrByPlan.map((row) => (
                   <li key={row.plan} className="flex justify-between py-2">
