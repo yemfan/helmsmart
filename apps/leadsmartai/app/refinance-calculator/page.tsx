@@ -58,10 +58,8 @@ export default function RefinanceCalculator() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">Refinance Calculator</h1>
-      <p className="text-gray-600 mb-8">
-        Compare your current loan to a new rate. See monthly savings and break-even.
-      </p>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.refinanceCalculator.h1")}</h1>
+      <p className="text-gray-600 mb-8">{t("pages.refinanceCalculator.sub")}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
@@ -75,7 +73,7 @@ export default function RefinanceCalculator() {
                 min={1000}
               />
               <InputField
-                label="Current interest rate (%)"
+                label={t("pages.refinanceCalculator.currentRate")}
                 value={currentRate}
                 onChange={setCurrentRate}
                 min={0.1}
@@ -83,7 +81,7 @@ export default function RefinanceCalculator() {
                 step={0.125}
               />
               <InputField
-                label="New interest rate (%)"
+                label={t("pages.refinanceCalculator.newRate")}
                 value={newRate}
                 onChange={setNewRate}
                 min={0.1}
@@ -91,7 +89,7 @@ export default function RefinanceCalculator() {
                 step={0.125}
               />
               <InputField
-                label="Remaining loan term (years)"
+                label={t("pages.refinanceCalculator.remainingTerm")}
                 value={remainingTermYears}
                 onChange={setRemainingTermYears}
                 min={1}
@@ -115,7 +113,7 @@ export default function RefinanceCalculator() {
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-24">
             <ResultCard
-              title="Refinance results"
+              title={t("pages.refinanceCalculator.resultsAria")}
               value={`$${paymentAfter.toFixed(2)}`}
               details={`Monthly payment before: $${paymentBefore.toFixed(
                 2,
@@ -130,58 +128,26 @@ export default function RefinanceCalculator() {
       </div>
 
       <section className="mt-12 max-w-3xl space-y-3 text-sm text-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Understand your refinance savings
-        </h2>
-        <p>
-          This refinance calculator compares your current mortgage payment to a new
-          interest rate so you can see potential monthly savings and your break-even
-          point. Enter your remaining balance, current rate, new rate, and term to
-          estimate whether a refinance makes financial sense for your situation.
-        </p>
-        <p>
-          Lenders, agents, and homeowners can use this tool to model different rate
-          scenarios, closing costs, and payoff timelines. It is especially useful when
-          deciding between rate-and-term refinances, cash-out options, or staying with
-          an existing loan.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.refinanceCalculator.understandTitle")}</h2>
+        <p>{t("pages.refinanceCalculator.understandA")}</p>
+        <p>{t("pages.refinanceCalculator.understandB")}</p>
       </section>
 
       <section className="mt-16 max-w-4xl space-y-6 text-sm text-gray-700 text-left">
-        <h2 className="text-2xl font-semibold text-gray-900">
-          People also ask about refinancing a mortgage
-        </h2>
+        <h2 className="text-2xl font-semibold text-gray-900">{t("pages.refinanceCalculator.peopleAsk")}</h2>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How can a refinance calculator show if refinancing is worth it?
-          </h3>
-          <p className="text-gray-600">
-            A refinance calculator compares your current mortgage payment to a new loan with
-            a different interest rate or term so you can see your monthly savings and total
-            interest savings.
-            It also helps you estimate how long it will take to recoup your closing costs.
-            You can come back to this{" "}
+          <h3 className="text-lg font-semibold">{t("pages.refinanceCalculator.q1")}</h3>
+          <p className="text-gray-600">{t("pages.refinanceCalculator.a1")}{" "}
             <Link
               href="/refinance-calculator"
               className="text-blue-600 underline"
-            >
-              Refinance Calculator
-            </Link>{" "}
-            anytime to test new scenarios.
-          </p>
+            >{t("pages.refinanceCalculator.h1")}</Link>{" "}{t("pages.refinanceCalculator.anytime")}</p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            When does it usually make sense to refinance my mortgage?
-          </h3>
-          <p className="text-gray-600">
-            Refinancing often makes sense when you can meaningfully lower your interest rate,
-            shorten your term, or remove mortgage insurance without extending your break-even
-            point too far into the future.
-            This tool lets you compare your current payment to a new one and see how long it
-            takes to break even. You can also estimate new payments with our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.refinanceCalculator.q2")}</h3>
+          <p className="text-gray-600">{t("pages.refinanceCalculator.a2")}{" "}
             <Link
               href="/mortgage-calculator"
               className="text-blue-600 underline"
@@ -191,40 +157,21 @@ export default function RefinanceCalculator() {
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How do refinance closing costs affect my savings?
-          </h3>
-          <p className="text-gray-600">
-            Refinance closing costs reduce your net benefit because you pay them upfront or
-            roll them into the new loan balance.
-            If your monthly savings are small or you plan to move soon, you may not recover
-            those costs. You can estimate fees in more detail with a{" "}
+          <h3 className="text-lg font-semibold">{t("pages.refinanceCalculator.q3")}</h3>
+          <p className="text-gray-600">{t("pages.refinanceCalculator.a3")}{" "}
             <Link
               href="/closing-cost-estimator"
               className="text-blue-600 underline"
-            >
-              Closing Cost Estimator
-            </Link>{" "}
-            and then plug them back into this refinance calculator.
-          </p>
+            >{t("pages.refinanceCalculator.closingEstimator")}</Link>{" "}{t("pages.refinanceCalculator.a3Tail")}</p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            Should I refinance to a shorter loan term or just lower my payment?
-          </h3>
-          <p className="text-gray-600">
-            Refinancing into a shorter term, like 15 years, usually raises your payment but
-            dramatically lowers your total interest, while refinancing to a similar or longer
-            term focuses on lowering your monthly payment and improving cash flow.
-            You can model both options with the{" "}
+          <h3 className="text-lg font-semibold">{t("pages.refinanceCalculator.q4")}</h3>
+          <p className="text-gray-600">{t("pages.refinanceCalculator.a4")}{" "}
             <Link
               href="/refinance-calculator"
               className="text-blue-600 underline"
-            >
-              Refinance Calculator
-            </Link>{" "}
-            and compare them with new-purchase scenarios in the{" "}
+            >{t("pages.refinanceCalculator.h1")}</Link>{" "}{t("pages.refinanceCalculator.a4Tail")}{" "}
             <Link
               href="/mortgage-calculator"
               className="text-blue-600 underline"
@@ -234,45 +181,25 @@ export default function RefinanceCalculator() {
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How does my credit score impact refinance rates and savings?
-          </h3>
-          <p className="text-gray-600">
-            Your credit score helps lenders decide what refinance interest rate and terms
-            to offer you, which directly affects your monthly payment and potential savings.
-            Higher scores usually unlock lower rates and better break-even periods. You can
-            use this{" "}
+          <h3 className="text-lg font-semibold">{t("pages.refinanceCalculator.q5")}</h3>
+          <p className="text-gray-600">{t("pages.refinanceCalculator.a5")}{" "}
             <Link
               href="/refinance-calculator"
               className="text-blue-600 underline"
-            >
-              Refinance Calculator
-            </Link>{" "}
-            to test how different rates would change your payment and total interest.
-          </p>
+            >{t("pages.refinanceCalculator.h1")}</Link>{" "}{t("pages.refinanceCalculator.a5Tail")}</p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            Is it better to refinance or just pay extra toward my current mortgage?
-          </h3>
-          <p className="text-gray-600">
-            Paying extra principal each month can shorten your payoff schedule and reduce
-            interest without any closing costs, while refinancing can lower your rate or
-            payment but adds fees.
-            The best choice depends on your goals, timeline, and available cash. You can
-            review extra payment impact with a{" "}
+          <h3 className="text-lg font-semibold">{t("pages.refinanceCalculator.q6")}</h3>
+          <p className="text-gray-600">{t("pages.refinanceCalculator.a6")}{" "}
             <Link
               href="/mortgage-calculator"
               className="text-blue-600 underline"
-            >{t("pages.articleChrome.amortizationCalculator")}</Link>{" "}
-            and compare that to potential savings here in the{" "}
+            >{t("pages.articleChrome.amortizationCalculator")}</Link>{" "}{t("pages.refinanceCalculator.a6Tail")}{" "}
             <Link
               href="/refinance-calculator"
               className="text-blue-600 underline"
-            >
-              Refinance Calculator
-            </Link>
+            >{t("pages.refinanceCalculator.h1")}</Link>
             .
           </p>
         </article>
