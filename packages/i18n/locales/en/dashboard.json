@@ -2462,7 +2462,14 @@
       "errRequired": "Buyer, property address, and date+time are required.",
       "lookupFailed": "Couldn't auto-verify listing status — fill in MLS # manually if you have it.",
       "noMls": "No MLS status on file for this address — could be off-market or just not in our cache yet.",
-      "serviceDown": "Couldn't reach property service — proceed manually."
+      "serviceDown": "Couldn't reach property service — proceed manually.",
+      "showings": "Showings",
+      "sub": "Log a property visit with a buyer. After the showing, capture their feedback for your file + next-steps conversation.",
+      "prefilled": "Pre-filled from a forwarded showing request",
+      "viewSource": "view source email",
+      "pickSuggestion": "Pick from the suggestions to auto-fill, or enter address parts below:",
+      "copyFromShowingTime": "Copy from ShowingTime / CSS confirmation. Saved on this showing only.",
+      "cancel": "Cancel"
     },
     "newTransaction": {
       "metaTitle": "New transaction",
@@ -2898,7 +2905,13 @@
       "buyerName": "Buyer name (optional)",
       "showingDate": "Showing date",
       "submittedAt": "Submitted: {{date}}",
-      "requestedAt": "Requested {{date}}"
+      "requestedAt": "Requested {{date}}",
+      "intro": "Request and collect candid feedback from buyer agents who showed this listing. Shared link — no login needed for them.",
+      "noFeedbackBefore": "No feedback yet. Click",
+      "noFeedbackAfter": "after a buyer agent shows the listing.",
+      "consideringOffer": "Considering an offer",
+      "delete": "Delete",
+      "pendingNote": "This creates a pending request. The “Send request” button emails the form link to the buyer agent."
     },
     "missedCallLog": {
       "autoTextsSent": "Auto-texts sent",
@@ -3176,6 +3189,43 @@
       "plansBlurb": "Create automated multi-step marketing sequences for your leads — SMS, email, tasks, and reminders.",
       "openPlans": "Open Marketing Plans",
       "autoSend": "Emails are sent automatically on schedule."
+    },
+    "addContact": {
+      "viewAll": "View all",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "property": "Property / address",
+      "notes": "Notes",
+      "createAnyway": "Create anyway if duplicate"
+    },
+    "leadProfile": {
+      "assistantHandling": "AI Sales Assistant handling follow-ups",
+      "text": "Text",
+      "email": "Email",
+      "conversations": "Conversations",
+      "fullRecord": "Full record",
+      "nothingOpen": "Nothing open — your AI team will flag the next touch.",
+      "noInteractions": "No interactions yet — your AI team will log calls, texts, and follow-ups here."
+    },
+    "pricing": {
+      "theMath": "The math",
+      "humanVsAi": "A human team vs your AI team",
+      "hiringAddsUp": "Hiring even a partial team adds up fast — and you'd still have to manage it. Your AI team does the same jobs for the price of a tool.",
+      "humanPerYear": "A human team — per year",
+      "plusBenefits": "Plus benefits, training, and turnover — and you manage all of it.",
+      "yourAiTeam": "Your AI team — CloseBoss",
+      "virtuallyFree": "The whole team — virtually free next to one human hire."
+    },
+    "landing": {
+      "meetTeam": "Meet your AI team",
+      "oneTeam": "One AI team.",
+      "teamSub": "A specialist for every step of the deal — from the first call to the closing table. They work together, around the clock, so you can focus on your clients.",
+      "teamAlt": "Meet the CloseBoss AI real estate team — Emma, Chris, Ruby, Oliver, Grace, and Max",
+      "hireFree": "Hire Your AI Team Free",
+      "whatIs": "What is CloseBoss AI?",
+      "whatIsSub": "Common questions about CloseBoss AI — the AI real estate team at closebossai.com.",
+      "sixSpecialists": "Six specialists."
     }
   }
 }

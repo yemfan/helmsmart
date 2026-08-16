@@ -2462,7 +2462,14 @@
       "errRequired": "买家、房产地址与日期时间为必填项。",
       "lookupFailed": "无法自动核验房源状态——如已知，请手动填写 MLS 编号。",
       "noMls": "该地址暂无 MLS 状态记录——可能未公开挂牌，或尚未进入我们的缓存。",
-      "serviceDown": "无法连接房源服务——请手动填写。"
+      "serviceDown": "无法连接房源服务——请手动填写。",
+      "showings": "带看",
+      "sub": "记录一次陪买家看房。看完后录入他们的反馈，既留档也方便下一步沟通。",
+      "prefilled": "已根据转发的带看请求自动填写",
+      "viewSource": "查看原始邮件",
+      "pickSuggestion": "从建议中选择即可自动填写，或在下方分项填写地址：",
+      "copyFromShowingTime": "从 ShowingTime／CSS 的确认信息中复制。仅保存在这次带看记录上。",
+      "cancel": "取消"
     },
     "newTransaction": {
       "metaTitle": "新建交易",
@@ -2898,7 +2905,13 @@
       "buyerName": "买家姓名（可选）",
       "showingDate": "带看日期",
       "submittedAt": "提交于：{{date}}",
-      "requestedAt": "请求于 {{date}}"
+      "requestedAt": "请求于 {{date}}",
+      "intro": "向看过这套房的买方经纪人征集真实反馈。对方通过共享链接填写，无需登录。",
+      "noFeedbackBefore": "还没有反馈。买方经纪人带看之后，点击",
+      "noFeedbackAfter": "。",
+      "consideringOffer": "正在考虑出价",
+      "delete": "删除",
+      "pendingNote": "这会创建一条待发送的请求。点击“发送请求”按钮，才会把表单链接邮件发给买方经纪人。"
     },
     "missedCallLog": {
       "autoTextsSent": "已发送自动短信",
@@ -3176,6 +3189,43 @@
       "plansBlurb": "为您的客源创建多步骤自动营销流程——短信、邮件、待办和提醒。",
       "openPlans": "打开营销计划",
       "autoSend": "邮件会按排期自动发送。"
+    },
+    "addContact": {
+      "viewAll": "查看全部",
+      "name": "姓名",
+      "email": "邮箱",
+      "phone": "电话",
+      "property": "房源／地址",
+      "notes": "备注",
+      "createAnyway": "即使重复也仍然创建"
+    },
+    "leadProfile": {
+      "assistantHandling": "AI 销售助理正在负责跟进",
+      "text": "发短信",
+      "email": "发邮件",
+      "conversations": "会话记录",
+      "fullRecord": "完整档案",
+      "nothingOpen": "暂无待办——需要联系时，您的 AI 团队会提醒您。",
+      "noInteractions": "还没有互动记录——通话、短信和跟进都会记录在这里。"
+    },
+    "pricing": {
+      "theMath": "算一笔账",
+      "humanVsAi": "真人团队 vs 您的 AI 团队",
+      "hiringAddsUp": "哪怕只招半个团队，成本也会迅速累加——而且您还得管理他们。您的 AI 团队做同样的活，花的只是一个软件的钱。",
+      "humanPerYear": "真人团队——每年",
+      "plusBenefits": "还要加上福利、培训和人员流动——而且全都得您来管。",
+      "yourAiTeam": "您的 AI 团队——CloseBoss",
+      "virtuallyFree": "整个团队的成本，跟雇一个真人比几乎可以忽略不计。"
+    },
+    "landing": {
+      "meetTeam": "认识您的 AI 团队",
+      "oneTeam": "一支 AI 团队。",
+      "teamSub": "从第一通电话到成交签约，每个环节都有专人负责。他们全天候协作，您只需专心服务客户。",
+      "teamAlt": "认识 CloseBoss AI 房产团队——Emma、Chris、Ruby、Oliver、Grace 和 Max",
+      "hireFree": "免费雇用您的 AI 团队",
+      "whatIs": "什么是 CloseBoss AI？",
+      "whatIsSub": "关于 CloseBoss AI 的常见问题——closebossai.com 上的 AI 房产团队。",
+      "sixSpecialists": "六位专才。"
     }
   }
 }

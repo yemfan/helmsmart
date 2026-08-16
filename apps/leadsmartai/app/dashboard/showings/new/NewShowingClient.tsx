@@ -600,16 +600,11 @@ function NewShowingForm() {
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/showings" className="hover:underline">
-            Showings
-          </Link>
+          <Link href="/dashboard/showings" className="hover:underline">{t("pages.newShowing.showings")}</Link>
           {" / New"}
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.newShowing.heading")}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Log a property visit with a buyer. After the showing, capture their feedback
-          for your file + next-steps conversation.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.newShowing.sub")}</p>
       </div>
 
       {/* Banner shown when prefill arrived from a forwarded showing-
@@ -618,9 +613,7 @@ function NewShowingForm() {
           the review page so they can compare against the source. */}
       {inboundSource && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          <div className="font-medium">
-            Pre-filled from a forwarded showing request
-          </div>
+          <div className="font-medium">{t("pages.newShowing.prefilled")}</div>
           <div className="mt-0.5 text-xs text-emerald-700">
             {inboundSource.subject ? `“${inboundSource.subject}”` : "(no subject)"}
             {inboundSource.fromHeader ? ` · from ${inboundSource.fromHeader}` : ""}
@@ -628,9 +621,7 @@ function NewShowingForm() {
             <Link
               href={`/dashboard/inbound/${inboundSource.id}`}
               className="underline hover:text-emerald-900"
-            >
-              view source email
-            </Link>
+            >{t("pages.newShowing.viewSource")}</Link>
           </div>
         </div>
       )}
@@ -705,10 +696,7 @@ function NewShowingForm() {
               data. */}
           {!addressVerified && propertyAddress.trim().length > 4 ? (
             <div className="mt-2 space-y-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-              <p className="text-[11px] text-slate-600">
-                Pick from the suggestions to auto-fill, or enter address
-                parts below:
-              </p>
+              <p className="text-[11px] text-slate-600">{t("pages.newShowing.pickSuggestion")}</p>
               <div className="grid grid-cols-4 gap-2">
                 <input
                   value={city}
@@ -859,9 +847,7 @@ function NewShowingForm() {
             placeholder={t("pages.newShowing.accessPlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
-          <p className="mt-1 text-[11px] text-slate-500">
-            Copy from ShowingTime / CSS confirmation. Saved on this showing only.
-          </p>
+          <p className="mt-1 text-[11px] text-slate-500">{t("pages.newShowing.copyFromShowingTime")}</p>
         </div>
 
         <div className="space-y-3 rounded-lg bg-slate-50 p-3">
@@ -911,9 +897,7 @@ function NewShowingForm() {
           <Link
             href="/dashboard/showings"
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </Link>
+          >{t("pages.newShowing.cancel")}</Link>
           <button
             type="button"
             onClick={() => void submit()}

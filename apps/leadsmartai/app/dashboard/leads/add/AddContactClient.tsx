@@ -138,9 +138,7 @@ export function AddContactClient() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-gray-700">{t("pages.addContact.availableLeads")}</h2>
-            <Link href="/dashboard/lead-queue" className="text-xs font-medium text-blue-600 hover:underline">
-              View all
-            </Link>
+            <Link href="/dashboard/lead-queue" className="text-xs font-medium text-blue-600 hover:underline">{t("pages.addContact.viewAll")}</Link>
           </div>
 
           {claimFeedback && (
@@ -188,17 +186,13 @@ export function AddContactClient() {
 
       {/* Manual Add Form */}
       <div className="space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-        <label className="block text-sm font-medium text-gray-800">
-          Name
-          <input
+        <label className="block text-sm font-medium text-gray-800">{t("pages.addContact.name")}<input
             className="mt-1 w-full min-h-[44px] rounded-xl border border-gray-300 px-3 text-base"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-gray-800">
-          Email
-          <input
+        <label className="block text-sm font-medium text-gray-800">{t("pages.addContact.email")}<input
             className="mt-1 w-full min-h-[44px] rounded-xl border border-gray-300 px-3 text-base"
             inputMode="email"
             autoCapitalize="off"
@@ -206,26 +200,20 @@ export function AddContactClient() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-gray-800">
-          Phone
-          <input
+        <label className="block text-sm font-medium text-gray-800">{t("pages.addContact.phone")}<input
             className="mt-1 w-full min-h-[44px] rounded-xl border border-gray-300 px-3 text-base"
             inputMode="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-gray-800">
-          Property / address
-          <input
+        <label className="block text-sm font-medium text-gray-800">{t("pages.addContact.property")}<input
             className="mt-1 w-full min-h-[44px] rounded-xl border border-gray-300 px-3 text-base"
             value={property_address}
             onChange={(e) => setPropertyAddress(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-gray-800">
-          Notes
-          <textarea
+        <label className="block text-sm font-medium text-gray-800">{t("pages.addContact.notes")}<textarea
             className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-base"
             rows={4}
             value={notes}
@@ -237,9 +225,7 @@ export function AddContactClient() {
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
         <label className="flex items-center gap-2 text-sm text-gray-700">
-          <input type="checkbox" checked={forceCreate} onChange={(e) => setForceCreate(e.target.checked)} />
-          Create anyway if duplicate
-        </label>
+          <input type="checkbox" checked={forceCreate} onChange={(e) => setForceCreate(e.target.checked)} />{t("pages.addContact.createAnyway")}</label>
 
         <button
           type="button"

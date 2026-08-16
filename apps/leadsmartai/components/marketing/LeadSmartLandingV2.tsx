@@ -438,26 +438,19 @@ export default function LeadSmartLandingV2() {
         >
           <div className="mx-auto max-w-6xl">
             <RevealSection className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-                Meet your AI team
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">{t("pages.landing.meetTeam")}</p>
               <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-                Six specialists.{" "}
-                <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">
-                  One AI team.
-                </span>
+                {t("pages.landing.sixSpecialists")}{" "}
+                <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">{t("pages.landing.oneTeam")}</span>
               </h2>
-              <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">
-                A specialist for every step of the deal — from the first call to the closing
-                table. They work together, around the clock, so you can focus on your clients.
-              </p>
+              <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">{t("pages.landing.teamSub")}</p>
             </RevealSection>
 
             {/* The team lineup */}
             <RevealSection delay={100} className="mt-10">
               <Image
                 src="/brand/closeboss/ai-team.png"
-                alt="Meet the CloseBoss AI real estate team — Emma, Chris, Ruby, Oliver, Grace, and Max"
+                alt={t("pages.landing.teamAlt")}
                 width={1536}
                 height={1024}
                 sizes="(max-width: 896px) 100vw, 896px"
@@ -510,9 +503,7 @@ export default function LeadSmartLandingV2() {
                 <Button
                   href={PRIMARY_CTA_HREF}
                   className="min-h-[48px] px-7 text-base shadow-floating hover:shadow-overlay"
-                >
-                  Hire Your AI Team Free
-                </Button>
+                >{t("pages.landing.hireFree")}</Button>
               </MagneticButton>
             </RevealSection>
           </div>
@@ -1232,6 +1223,7 @@ const HOME_FAQ: { q: string; a: string }[] = [
 ];
 
 function FaqSection() {
+  const { t } = useTranslation("dashboard");
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -1244,12 +1236,8 @@ function FaqSection() {
   return (
     <section id="faq" className="px-6 py-16 md:py-20">
       <div className="mx-auto max-w-3xl">
-        <h2 className="font-heading text-2xl font-bold text-slate-900 dark:text-white md:text-3xl">
-          What is CloseBoss AI?
-        </h2>
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          Common questions about CloseBoss AI — the AI real estate team at closebossai.com.
-        </p>
+        <h2 className="font-heading text-2xl font-bold text-slate-900 dark:text-white md:text-3xl">{t("pages.landing.whatIs")}</h2>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t("pages.landing.whatIsSub")}</p>
         <dl className="mt-8 space-y-4">
           {HOME_FAQ.map((f) => (
             <div

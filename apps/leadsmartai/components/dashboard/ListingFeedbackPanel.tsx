@@ -35,6 +35,7 @@ type FetchResponse = {
  * and delete a stale row.
  */
 export function ListingFeedbackPanel({ transactionId }: { transactionId: string }) {
+  const { t } = useTranslation("dashboard");
   const [rows, setRows] = useState<ListingFeedbackRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -116,10 +117,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
           <h2 className="text-sm font-semibold text-slate-900">
             💬 Buyer-agent feedback
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Request and collect candid feedback from buyer agents who showed this listing.
-            Shared link — no login needed for them.
-          </p>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.listingFeedback.intro")}</p>
         </div>
         <button
           type="button"
@@ -204,8 +202,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
 
           {rows.length === 0 ? (
             <p className="text-xs text-slate-500">
-              No feedback yet. Click <strong>+ Add request</strong> after a buyer agent shows the
-              listing.
+              {t("pages.listingFeedback.noFeedbackBefore")} <strong>+ Add request</strong>{t("pages.listingFeedback.noFeedbackAfter")}
             </p>
           ) : null}
         </div>
@@ -268,9 +265,7 @@ function ReceivedCard({
         </div>
       ) : null}
       {row.would_offer === true ? (
-        <div className="mt-1 inline-flex items-center gap-1 rounded bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
-          Considering an offer
-        </div>
+        <div className="mt-1 inline-flex items-center gap-1 rounded bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">{t("pages.listingFeedback.consideringOffer")}</div>
       ) : null}
       {row.notes ? (
         <p className="mt-2 text-xs text-slate-600">{row.notes}</p>
@@ -280,9 +275,7 @@ function ReceivedCard({
         type="button"
         onClick={onDelete}
         className="mt-2 text-[10px] text-red-500 hover:underline"
-      >
-        Delete
-      </button>
+      >{t("pages.listingFeedback.delete")}</button>
     </li>
   );
 }
@@ -329,9 +322,7 @@ function PendingCard({
             type="button"
             onClick={onDelete}
             className="rounded-lg border border-red-200 bg-white px-3 py-1 text-[11px] text-red-600 hover:bg-red-50"
-          >
-            Delete
-          </button>
+          >{t("pages.listingFeedback.delete")}</button>
         </div>
       </div>
     </li>
@@ -434,10 +425,7 @@ function AddRequestForm({
       >
         {saving ? "Adding…" : "Add request"}
       </button>
-      <p className="text-[11px] text-slate-500">
-        This creates a pending request. The &quot;Send request&quot; button emails the form link to
-        the buyer agent.
-      </p>
+      <p className="text-[11px] text-slate-500">{t("pages.listingFeedback.pendingNote")}</p>
     </div>
   );
 }

@@ -138,23 +138,14 @@ export default async function ConsumerPricingPage() {
       <section className="px-6 py-16 md:py-20">
         <div className="mx-auto max-w-5xl">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              The math
-            </p>
-            <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-              A human team vs your AI team
-            </h2>
-            <p className="mt-4 text-base text-slate-600 dark:text-slate-400">
-              Hiring even a partial team adds up fast — and you&apos;d still have to manage it.
-              Your AI team does the same jobs for the price of a tool.
-            </p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">{t("pages.pricing.theMath", { ns: "dashboard" })}</p>
+            <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">{t("pages.pricing.humanVsAi", { ns: "dashboard" })}</h2>
+            <p className="mt-4 text-base text-slate-600 dark:text-slate-400">{t("pages.pricing.hiringAddsUp", { ns: "dashboard" })}</p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             <div className="rounded-2xl border border-slate-200 bg-white p-7 dark:border-slate-800 dark:bg-slate-900">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                A human team — per year
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.pricing.humanPerYear", { ns: "dashboard" })}</p>
               <ul className="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-400">
                 <li>{t("pricingCompare.receptionist", { ns: "web_marketing" })}</li>
                 <li>{t("pricingCompare.isa", { ns: "web_marketing" })}</li>
@@ -165,15 +156,11 @@ export default async function ConsumerPricingPage() {
               <p className="mt-5 text-3xl font-extrabold text-slate-900 dark:text-white">
                 $100k+<span className="text-base font-semibold text-slate-500">/yr</span>
               </p>
-              <p className="mt-1 text-xs text-slate-500">
-                Plus benefits, training, and turnover — and you manage all of it.
-              </p>
+              <p className="mt-1 text-xs text-slate-500">{t("pages.pricing.plusBenefits", { ns: "dashboard" })}</p>
             </div>
 
             <div className="rounded-2xl border-2 border-[#0072ce] bg-gradient-to-br from-[#0072ce]/5 to-transparent p-7 dark:bg-slate-900">
-              <p className="text-xs font-semibold uppercase tracking-wider text-[#0072ce]">
-                Your AI team — CloseBoss
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#0072ce]">{t("pages.pricing.yourAiTeam", { ns: "dashboard" })}</p>
               <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
                 <li>{t("pricingCompare.allSix", { ns: "web_marketing" })}</li>
                 <li>{t("pricingCompare.answers", { ns: "web_marketing" })}</li>
@@ -184,9 +171,7 @@ export default async function ConsumerPricingPage() {
               <p className="mt-5 text-3xl font-extrabold text-[#0072ce]">
                 From $79<span className="text-base font-semibold text-slate-500">/mo</span>
               </p>
-              <p className="mt-1 text-xs text-slate-500">
-                The whole team — virtually free next to one human hire.
-              </p>
+              <p className="mt-1 text-xs text-slate-500">{t("pages.pricing.virtuallyFree", { ns: "dashboard" })}</p>
             </div>
           </div>
         </div>
