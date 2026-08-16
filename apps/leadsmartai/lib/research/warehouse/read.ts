@@ -12,6 +12,47 @@ import { geoSlug, stateSlug } from "./slug";
  * The tables are populated by the apps/propertytoolsai pipeline; read-only here.
  */
 
+/**
+ * Hard ceiling on any single warehouse round-trip.
+ *
+ * Every helper below already degrades to an empty result when a query errors.
+ * This makes a SLOW warehouse degrade the same way a BROKEN one does, which is
+ * the property the build actually depends on: these tables back the prerendered
+ * traffic-SEO pages, and Next gives each page 60s to export. Without a ceiling,
+ * one unresponsive query fails the whole build — on 2026-08-15 that took
+ * /home-value/los-angeles-ca over 60s and blocked every deploy of BOTH apps
+ * sharing this warehouse (see #1274 for the load that caused it).
+ *
+ * 8s is ~25x the healthy p50 for these queries, so it only fires in a genuine
+ * outage. Override with WAREHOUSE_READ_TIMEOUT_MS if the warehouse grows.
+ */
+const WAREHOUSE_READ_TIMEOUT_MS = Number(
+  process.env.WAREHOUSE_READ_TIMEOUT_MS ?? 8000,
+);
+
+/**
+ * Run a warehouse query under the timeout, returning `[]` on error, abort, or
+ * timeout. `.abortSignal()` cancels the in-flight fetch rather than just
+ * abandoning it, so a stalled build doesn't pile up connections against an
+ * already-struggling instance.
+ */
+async function runQuery<T>(
+  build: (
+    signal: AbortSignal,
+  ) => PromiseLike<{ data: unknown; error: unknown }>,
+): Promise<T[]> {
+  try {
+    const { data, error } = await build(
+      AbortSignal.timeout(WAREHOUSE_READ_TIMEOUT_MS),
+    );
+    if (error || !data) return [];
+    return data as T[];
+  } catch {
+    // AbortSignal.timeout rejects rather than resolving in some transports.
+    return [];
+  }
+}
+
 export type LatestMetric = {
   metric: string;
   value: number | null;
@@ -41,17 +82,23 @@ export async function getLatestMetrics(
   geoLevel: GeoLevel,
   geoCode: string,
 ): Promise<LatestMetric[]> {
-  const { data, error } = await supabaseServer
-    .from("market_metrics")
-    .select("metric, value, unit, period, source")
-    .eq("geo_level", geoLevel)
-    .eq("geo_code", geoCode)
-    .order("period", { ascending: false });
-
-  if (error || !data) return [];
+  // Bounded: this pulled EVERY historical row for the geography (all metrics x
+  // all periods) just to keep the newest of each. Newest-period-first + a cap
+  // well above (metrics x recent periods) returns the same answer for any
+  // currently-published metric, without a scan that grows forever.
+  const data = await runQuery<LatestMetric>((signal) =>
+    supabaseServer
+      .from("market_metrics")
+      .select("metric, value, unit, period, source")
+      .eq("geo_level", geoLevel)
+      .eq("geo_code", geoCode)
+      .order("period", { ascending: false })
+      .limit(600)
+      .abortSignal(signal),
+  );
 
   const seen = new Map<string, LatestMetric>();
-  for (const row of data as LatestMetric[]) {
+  for (const row of data) {
     if (!seen.has(row.metric)) seen.set(row.metric, row);
   }
   return Array.from(seen.values());
@@ -67,18 +114,19 @@ export async function getMetricSeries(
   metric: string,
   months = 13,
 ): Promise<SeriesPoint[]> {
-  const { data, error } = await supabaseServer
-    .from("market_metrics")
-    .select("period, value")
-    .eq("geo_level", geoLevel)
-    .eq("geo_code", geoCode)
-    .eq("metric", metric)
-    .order("period", { ascending: false })
-    .limit(months);
+  const data = await runQuery<SeriesPoint>((signal) =>
+    supabaseServer
+      .from("market_metrics")
+      .select("period, value")
+      .eq("geo_level", geoLevel)
+      .eq("geo_code", geoCode)
+      .eq("metric", metric)
+      .order("period", { ascending: false })
+      .limit(months)
+      .abortSignal(signal),
+  );
 
-  if (error || !data) return [];
-
-  return (data as SeriesPoint[])
+  return data
     .slice()
     .reverse()
     .map((r) => ({ period: r.period, value: r.value }));
@@ -91,15 +139,15 @@ export async function getMetricSeries(
 export async function listActiveGeographies(
   geoLevel: GeoLevel,
 ): Promise<ActiveGeography[]> {
-  const { data, error } = await supabaseServer
-    .from("market_geographies")
-    .select("geo_level, geo_code, geo_name, state, size_rank")
-    .eq("geo_level", geoLevel)
-    .eq("active", true)
-    .order("size_rank", { ascending: true, nullsFirst: false });
-
-  if (error || !data) return [];
-  return data as ActiveGeography[];
+  return runQuery<ActiveGeography>((signal) =>
+    supabaseServer
+      .from("market_geographies")
+      .select("geo_level, geo_code, geo_name, state, size_rank")
+      .eq("geo_level", geoLevel)
+      .eq("active", true)
+      .order("size_rank", { ascending: true, nullsFirst: false })
+      .abortSignal(signal),
+  );
 }
 
 /**
@@ -109,16 +157,16 @@ export async function listActiveGeographies(
 export async function listMetrosForState(
   stateCode: string,
 ): Promise<ActiveGeography[]> {
-  const { data, error } = await supabaseServer
-    .from("market_geographies")
-    .select("geo_level, geo_code, geo_name, state, size_rank")
-    .eq("geo_level", "metro")
-    .eq("active", true)
-    .eq("state", stateCode.toUpperCase())
-    .order("size_rank", { ascending: true, nullsFirst: false });
-
-  if (error || !data) return [];
-  return data as ActiveGeography[];
+  return runQuery<ActiveGeography>((signal) =>
+    supabaseServer
+      .from("market_geographies")
+      .select("geo_level, geo_code, geo_name, state, size_rank")
+      .eq("geo_level", "metro")
+      .eq("active", true)
+      .eq("state", stateCode.toUpperCase())
+      .order("size_rank", { ascending: true, nullsFirst: false })
+      .abortSignal(signal),
+  );
 }
 
 /**
@@ -161,15 +209,20 @@ export async function listMarketSitemapEntries(): Promise<
 
     // Newest period per (geo_level, geo_code) — one pass over recent rows.
     const latestByKey = new Map<string, string>();
-    const { data } = await supabaseServer
-      .from("market_metrics")
-      .select("geo_level, geo_code, period")
-      .in("geo_level", ["national", "state", "metro"])
-      .order("period", { ascending: false })
-      .limit(50000);
-    for (const row of (data as
-      | { geo_level: string; geo_code: string; period: string }[]
-      | null) ?? []) {
+    const data = await runQuery<{
+      geo_level: string;
+      geo_code: string;
+      period: string;
+    }>((signal) =>
+      supabaseServer
+        .from("market_metrics")
+        .select("geo_level, geo_code, period")
+        .in("geo_level", ["national", "state", "metro"])
+        .order("period", { ascending: false })
+        .limit(50000)
+        .abortSignal(signal),
+    );
+    for (const row of data) {
       const key = `${row.geo_level}:${row.geo_code}`;
       if (!latestByKey.has(key)) latestByKey.set(key, row.period);
     }

@@ -9,16 +9,15 @@ import {
   getMetroSnapshot,
   getNearbyMetros,
   getRelatedMetroLinks,
-  listTrafficMetros,
 } from "@/lib/trafficMetros";
 
-// Render dynamically (root layout reads cookies() -> dynamic tree; `revalidate`
-// here would throw DYNAMIC_SERVER_USAGE / 500 in prod). generateStaticParams only
-// supplies known slugs for the largest metros; the long tail resolves on request.
-export async function generateStaticParams() {
-  const metros = await listTrafficMetros();
-  return metros.slice(0, 60).map((m) => ({ city: m.slug }));
-}
+// Render on demand — NOT static/ISR, matching the [keyword] child route.
+// The root layout reads cookies() -> this tree is dynamic regardless, so the old
+// generateStaticParams prerendered 60 metros whose output production never
+// served, at the cost of a warehouse round-trip each. Those prerenders blew
+// Next's 60s-per-page export budget when the shared database slowed on
+// 2026-08-15 and blocked every deploy of both apps. See the home-value route.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

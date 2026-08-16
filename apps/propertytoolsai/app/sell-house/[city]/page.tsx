@@ -15,9 +15,15 @@ import {
 // ISR: warehouse figures refresh daily; long tail renders on demand + cached.
 export const revalidate = 86400;
 
+// Prebuild only the largest metros — every prebuilt page is a warehouse
+// round-trip inside Next's 60s-per-page export budget against a database shared
+// with leadsmartai, and blowing that budget blocked all deploys on 2026-08-15.
+// The long tail already rendered on demand + cached by ISR. See home-value.
+const PRERENDERED_METROS = 12;
+
 export async function generateStaticParams() {
   const metros = await listTrafficMetros();
-  return metros.slice(0, 60).map((m) => ({ city: m.slug }));
+  return metros.slice(0, PRERENDERED_METROS).map((m) => ({ city: m.slug }));
 }
 
 export async function generateMetadata({
