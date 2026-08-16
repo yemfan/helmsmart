@@ -2416,7 +2416,14 @@
       "likelyDuplicate": "疑似重复",
       "cancel": "取消",
       "viewContacts": "查看联系人",
-      "importAnother": "再导入一个"
+      "importAnother": "再导入一个",
+      "readingFile": "正在读取 {{name}}……",
+      "savingN": "正在保存 {{count}} 位联系人……",
+      "likelyDupes": "疑似重复 {{count}} 条",
+      "truncated": "只显示找到的前 {{shown}} 条（共 {{total}} 条）——先保存这些，再把文件拆开导入其余部分",
+      "saveN": "保存 {{count}} 位联系人",
+      "savedNofM": "已保存 {{total}} 位中的 {{saved}} 位联系人",
+      "aFile": "文件"
     },
     "newOffer": {
       "metaTitle": "新建报价",
@@ -2692,7 +2699,19 @@
       "pausedAfter": "状态，您可以先在 Meta 广告管理工具中检查，再开始花钱。",
       "cancel": "取消",
       "createAnother": "再建一个",
-      "backToGenerate": "返回获客渠道"
+      "backToGenerate": "返回获客渠道",
+      "noPages": "尚未连接任何 Facebook 主页。",
+      "radiusAround": "每个邮编周边半径：{{miles}} 英里",
+      "approximately": "大约有",
+      "peopleMatch": "人符合这些定向条件。",
+      "differentAngle": "换个角度试试（{{n}}/{{total}}）",
+      "privacyUrl": "隐私政策网址",
+      "privacyNote": "（Meta 要求必须提供；留空则使用 CloseBoss 的默认地址）",
+      "mustBeHttps": "必须是 HTTPS。可以在以下位置为所有广告系列设置默认值：",
+      "runForDays": "投放时长：{{days}} {{unit}}",
+      "dayOne": "天",
+      "dayOther": "天",
+      "campaignCreated": "广告系列已创建"
     },
     "dealCoachPanel": {
       "dealContext": "交易背景",
@@ -3150,7 +3169,12 @@
       "createAccount": "创建经纪人账号",
       "viewPlans": "查看全部方案与价格",
       "alreadyRegistered": "已经注册过？登录",
-      "restart": "重新开始预览（会清除已保存的进度）"
+      "restart": "重新开始预览（会清除已保存的进度）",
+      "stepOfEight": "第 {{step}} 步，共 8 步",
+      "alreadyHaveAccount": "已经有账号了？",
+      "scoreN": "评分 {{score}}",
+      "profilesMatched": "与 {{city}} 匹配的真实客户画像",
+      "teamPrice": "团队版——每个团队 {{price}}"
     },
     "deepReportView": {
       "title": "房产深度报告",
@@ -3827,7 +3851,17 @@
       "messageHint": "动画播完后显示。写得亲切、通用即可——不要在正文里写具体名字。",
       "takesSeconds": "批量较大时可能需要 10–30 秒。",
       "emailSent": "邮件已发送",
-      "smsSent": "短信已发送"
+      "smsSent": "短信已发送",
+      "sendToN": "向 {{count}} {{unit}}寄明信片",
+      "person": "位联系人",
+      "people": "位联系人",
+      "recipientsN": "收件人（{{count}}）",
+      "haveEmail": "（{{count}} 位有邮箱）",
+      "havePhone": "（{{count}} 位有手机号）",
+      "sendingN": "正在寄出 {{count}} 张明信片……",
+      "sentNofM": "已寄出 {{total}} 张中的 {{ok}} 张",
+      "notDelivered": "未送达（{{count}}）",
+      "sendN": "寄出 {{count}} 张明信片"
     },
     "authModal": {
       "close": "关闭",
@@ -4333,7 +4367,14 @@
       "vsLastYear": "同比去年",
       "vsLastMonth": "环比上月",
       "curious": "想知道这对您的房子意味着什么？",
-      "disclaimer": "本报告仅供一般参考，不是评估报告，也不构成报价。市场行情随时变化；如需了解您这套房子的最新数据，请联系您的经纪人。"
+      "disclaimer": "本报告仅供一般参考，不是评估报告，也不构成报价。市场行情随时变化；如需了解您这套房子的最新数据，请联系您的经纪人。",
+      "cityUpdate": "{{city}} 市场动态",
+      "snapshotIntro": "这是 {{geo}} 市场当下的一个快照——房屋价值、成交价，以及房子卖得有多快。",
+      "dataAsOf": "数据截至 {{date}} · ",
+      "sourceLine": "数据来源：{{source}}",
+      "talkTo": "联系 {{name}}",
+      "yourAgent": "您的经纪人",
+      "callNumber": "拨打 {{phone}}"
     },
     "sendMarketReport": {
       "title": "发送市场报告",

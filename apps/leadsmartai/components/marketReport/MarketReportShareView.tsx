@@ -92,10 +92,9 @@ export default function MarketReportShareView({
           className="text-[11px] font-semibold uppercase tracking-wide"
           style={{ color: BRAND }}
         >{t("pages.marketReportShare.title")}</div>
-        <h1 className="mt-1 text-2xl font-bold text-slate-900">{cityLabel} Market Update</h1>
+        <h1 className="mt-1 text-2xl font-bold text-slate-900">{t("pages.marketReportShare.cityUpdate", { city: cityLabel })}</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Here&apos;s a quick snapshot of what&apos;s happening in the {snapshot.geoName} market
-          right now — home values, prices, and how fast homes are selling.
+          {t("pages.marketReportShare.snapshotIntro", { geo: snapshot.geoName })}
         </p>
       </section>
 
@@ -132,7 +131,8 @@ export default function MarketReportShareView({
 
       {/* Data provenance */}
       <p className="text-xs text-slate-500">
-        {asOf ? `Data as of ${asOf} · ` : ""}Source: {snapshot.source}
+        {asOf ? t("pages.marketReportShare.dataAsOf", { date: asOf }) : ""}
+        {t("pages.marketReportShare.sourceLine", { source: snapshot.source })}
       </p>
 
       {/* CTA */}
@@ -154,7 +154,7 @@ export default function MarketReportShareView({
                   className="rounded-xl px-4 py-2 text-sm font-medium text-white"
                   style={{ backgroundColor: BRAND }}
                 >
-                  Talk to {agent.name ?? "your agent"}
+                  {t("pages.marketReportShare.talkTo", { name: agent.name ?? t("pages.marketReportShare.yourAgent") })}
                 </a>
               ) : null}
               {agent.phone ? (
@@ -162,7 +162,7 @@ export default function MarketReportShareView({
                   href={`tel:${agent.phone.replace(/[^0-9+]/g, "")}`}
                   className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
                 >
-                  Call {agent.phone}
+                  {t("pages.marketReportShare.callNumber", { phone: agent.phone })}
                 </a>
               ) : null}
             </div>

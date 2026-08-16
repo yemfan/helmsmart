@@ -2416,7 +2416,14 @@
       "likelyDuplicate": "Likely duplicate",
       "cancel": "Cancel",
       "viewContacts": "View Contacts",
-      "importAnother": "Import another"
+      "importAnother": "Import another",
+      "readingFile": "Reading {{name}}...",
+      "savingN": "Saving {{count}} contacts...",
+      "likelyDupes": "{{count}} likely duplicates",
+      "truncated": "showing the first {{shown}} of {{total}} found — save these, then split the file to import the rest",
+      "saveN": "Save {{count}} contacts",
+      "savedNofM": "Saved {{saved}} of {{total}} contacts",
+      "aFile": "file"
     },
     "newOffer": {
       "metaTitle": "New Offer",
@@ -2692,7 +2699,19 @@
       "pausedAfter": "state so you can review in Meta Ads Manager before money starts moving.",
       "cancel": "Cancel",
       "createAnother": "Create another",
-      "backToGenerate": "Back to Generate Leads"
+      "backToGenerate": "Back to Generate Leads",
+      "noPages": "No Facebook Pages connected.",
+      "radiusAround": "Radius around each ZIP: {{miles}} mi",
+      "approximately": "Approximately",
+      "peopleMatch": "people match these targeting filters.",
+      "differentAngle": "Try a different angle ({{n}}/{{total}})",
+      "privacyUrl": "Privacy policy URL",
+      "privacyNote": "(Meta requires one — leave blank to use CloseBoss's default)",
+      "mustBeHttps": "Must be HTTPS. Set a default for all your campaigns in",
+      "runForDays": "Run for: {{days}} {{unit}}",
+      "dayOne": "day",
+      "dayOther": "days",
+      "campaignCreated": "Campaign created"
     },
     "dealCoachPanel": {
       "dealContext": "Deal context",
@@ -3150,7 +3169,12 @@
       "createAccount": "Create agent account",
       "viewPlans": "View all plans & pricing",
       "alreadyRegistered": "Already registered? Log in",
-      "restart": "Restart preview (clears saved progress)"
+      "restart": "Restart preview (clears saved progress)",
+      "stepOfEight": "Step {{step}} of 8",
+      "alreadyHaveAccount": "Already have an account?",
+      "scoreN": "Score {{score}}",
+      "profilesMatched": "Realistic lead profiles matched to {{city}}",
+      "teamPrice": "Team — {{price}} per team"
     },
     "deepReportView": {
       "title": "Property Deep Report",
@@ -3827,7 +3851,17 @@
       "messageHint": "Shown after the animation. Keep it warm + generic — no names inline.",
       "takesSeconds": "This can take 10-30 seconds for large batches.",
       "emailSent": "Email sent",
-      "smsSent": "SMS sent"
+      "smsSent": "SMS sent",
+      "sendToN": "Send postcard to {{count}} {{unit}}",
+      "person": "person",
+      "people": "people",
+      "recipientsN": "Recipients ({{count}})",
+      "haveEmail": "({{count}} have email)",
+      "havePhone": "({{count}} have phone)",
+      "sendingN": "Sending {{count}} postcards…",
+      "sentNofM": "Sent {{ok}} of {{total}} postcards",
+      "notDelivered": "Not delivered ({{count}})",
+      "sendN": "Send {{count}} postcards"
     },
     "authModal": {
       "close": "Close",
@@ -4333,7 +4367,14 @@
       "vsLastYear": "vs last year",
       "vsLastMonth": "vs last month",
       "curious": "Curious what this means for your home?",
-      "disclaimer": "This report is for general information only and is not an appraisal or an offer. Market conditions change; contact your agent for the most current numbers on your specific home."
+      "disclaimer": "This report is for general information only and is not an appraisal or an offer. Market conditions change; contact your agent for the most current numbers on your specific home.",
+      "cityUpdate": "{{city}} Market Update",
+      "snapshotIntro": "Here's a quick snapshot of what's happening in the {{geo}} market right now — home values, prices, and how fast homes are selling.",
+      "dataAsOf": "Data as of {{date}} · ",
+      "sourceLine": "Source: {{source}}",
+      "talkTo": "Talk to {{name}}",
+      "yourAgent": "your agent",
+      "callNumber": "Call {{phone}}"
     },
     "sendMarketReport": {
       "title": "Send market report",

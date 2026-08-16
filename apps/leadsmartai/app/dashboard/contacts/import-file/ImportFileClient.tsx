@@ -279,7 +279,7 @@ export default function ImportFileClient() {
           <div className="mx-auto flex items-center justify-center gap-3">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
             <span className="text-sm text-gray-700">
-              Reading {fileName ?? "file"}...
+              {t("pages.importFile.readingFile", { name: fileName ?? t("pages.importFile.aFile") })}
             </span>
           </div>
           <p className="mt-3 text-xs text-gray-500">{t("pages.importFile.takesSeconds")}</p>
@@ -313,7 +313,7 @@ export default function ImportFileClient() {
           <div className="mx-auto flex items-center justify-center gap-3">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
             <span className="text-sm text-gray-700">
-              Saving {selectedCount} contact{selectedCount === 1 ? "" : "s"}...
+              {t("pages.importFile.savingN", { count: selectedCount })}
             </span>
           </div>
         </div>
@@ -447,14 +447,12 @@ function ReviewTable(props: {
           </span>
           {duplicateCount > 0 && (
             <span className="rounded-full bg-yellow-50 px-2.5 py-0.5 text-xs font-medium text-yellow-800 ring-1 ring-yellow-200">
-              {duplicateCount} likely duplicate
-              {duplicateCount === 1 ? "" : "s"}
+              {t("pages.importFile.likelyDupes", { count: duplicateCount })}
             </span>
           )}
           {truncated && (
             <span className="text-xs text-gray-500">
-              showing the first {rows.length} of {totalExtracted} found — save these,
-              then split the file to import the rest
+              {t("pages.importFile.truncated", { shown: rows.length, total: totalExtracted })}
             </span>
           )}
         </div>
@@ -628,7 +626,7 @@ function ReviewTable(props: {
           disabled={selectedCount === 0}
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
         >
-          Save {selectedCount} contact{selectedCount === 1 ? "" : "s"}
+          {t("pages.importFile.saveN", { count: selectedCount })}
         </button>
       </div>
     </div>
@@ -689,7 +687,7 @@ function DoneSummary({
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-900">
-            Saved {result.inserted + result.merged} of {total} contacts
+            {t("pages.importFile.savedNofM", { saved: result.inserted + result.merged, total })}
           </p>
           <p className="text-xs text-gray-500">
             {result.inserted} added · {result.merged} merged ·{" "}

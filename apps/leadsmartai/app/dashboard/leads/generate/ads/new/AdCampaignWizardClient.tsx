@@ -554,8 +554,7 @@ export default function AdCampaignWizardClient() {
         {connectionsLoading ? (
           <p className="text-sm text-gray-500">{t("pages.adWizard.loadingConnections")}</p>
         ) : connections.length === 0 ? (
-          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
-            No Facebook Pages connected.{" "}
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">{t("pages.adWizard.noPages")}{" "}
             <Link
               href="/dashboard/leads/generate/connect"
               className="font-medium underline hover:text-amber-700"
@@ -635,7 +634,7 @@ export default function AdCampaignWizardClient() {
           {zipCodes.trim() && (
             <div className="mt-3">
               <label className="block text-xs font-medium text-gray-700">
-                Radius around each ZIP: {radiusMiles} mi
+                {t("pages.adWizard.radiusAround", { miles: radiusMiles })}
               </label>
               <input
                 type="range"
@@ -694,13 +693,11 @@ export default function AdCampaignWizardClient() {
               <p className="mt-1 text-red-800">{audienceEstimateError}</p>
             ) : audienceEstimate ? (
               audienceEstimate.lower != null && audienceEstimate.upper != null ? (
-                <p className="mt-1">
-                  Approximately{" "}
+                <p className="mt-1">{t("pages.adWizard.approximately")}{" "}
                   <span className="font-semibold">
                     {formatRangeShort(audienceEstimate.lower)} –{" "}
                     {formatRangeShort(audienceEstimate.upper)}
-                  </span>{" "}
-                  people match these targeting filters.{" "}
+                  </span>{" "}{t("pages.adWizard.peopleMatch")}{" "}
                   {!audienceEstimate.ready && (
                     <span className="text-blue-700">
                       (Initial estimate — Meta refines this as the campaign runs.)
@@ -775,8 +772,10 @@ export default function AdCampaignWizardClient() {
                         onClick={cycleSuggestVariant}
                         className="rounded-md border border-purple-300 bg-white px-2.5 py-1 text-xs font-medium text-purple-700 hover:bg-purple-50"
                       >
-                        Try a different angle ({suggestVariantIndex + 1}/
-                        {suggestVariants.length})
+                        {t("pages.adWizard.differentAngle", {
+                          n: suggestVariantIndex + 1,
+                          total: suggestVariants.length,
+                        })}
                       </button>
                     )}
                   </div>
@@ -818,11 +817,8 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Privacy policy URL{" "}
-                <span className="text-gray-400">
-                  (Meta requires one — leave blank to use CloseBoss&apos;s default)
-                </span>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.privacyUrl")}{" "}
+                <span className="text-gray-400">{t("pages.adWizard.privacyNote")}</span>
               </label>
               <input
                 type="url"
@@ -831,8 +827,7 @@ export default function AdCampaignWizardClient() {
                 placeholder={t("pages.adWizard.privacyPlaceholder")}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
-              <p className="mt-1 text-[11px] text-gray-500">
-                Must be HTTPS. Set a default for all your campaigns in{" "}
+              <p className="mt-1 text-[11px] text-gray-500">{t("pages.adWizard.mustBeHttps")}{" "}
                 <a
                   href="/dashboard/settings"
                   target="_blank"
@@ -940,7 +935,10 @@ export default function AdCampaignWizardClient() {
 
             <div>
               <label className="block text-xs font-medium text-gray-700">
-                Run for: {durationDays} {durationDays === 1 ? "day" : "days"}
+                {t("pages.adWizard.runForDays", {
+                  days: durationDays,
+                  unit: t(durationDays === 1 ? "pages.adWizard.dayOne" : "pages.adWizard.dayOther"),
+                })}
               </label>
               <input
                 type="range"
@@ -1064,8 +1062,7 @@ function DoneState({
           </svg>
         </div>
         <div>
-          <h2 className="text-base font-semibold text-emerald-900">
-            Campaign created{result.status === "active" ? t("pages.adWizard.andLive") : t("pages.adWizard.andPaused")}
+          <h2 className="text-base font-semibold text-emerald-900">{t("pages.adWizard.campaignCreated")}{result.status === "active" ? t("pages.adWizard.andLive") : t("pages.adWizard.andPaused")}
           </h2>
           <p className="text-sm text-emerald-800">
             {result.status === "active"

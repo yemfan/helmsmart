@@ -41,7 +41,7 @@ function ProgressBar({ step }: { step: OnboardingStep }) {
     <div className="mb-8">
       <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-500">
         <span>
-          Step {step} of 8
+          {t("pages.onboardingFunnel.stepOfEight", { step })}
         </span>
         <span>{pct}%</span>
       </div>
@@ -335,7 +335,7 @@ export default function OnboardingFunnel({
             </button>
           </form>
           <p className="mt-6 text-center text-xs text-slate-500">
-            Already have an account?{" "}
+            {t("pages.onboardingFunnel.alreadyHaveAccount")}{" "}
             <Link href="/login?redirect=/dashboard" className="font-semibold text-sky-400 hover:underline">{t("pages.onboardingFunnel.logIn")}</Link>
           </p>
         </div>
@@ -575,7 +575,7 @@ export default function OnboardingFunnel({
                   </p>
                 </div>
                 <span className="ml-auto rounded-full bg-emerald-500/20 px-2 py-1 text-[10px] font-bold text-emerald-200">
-                  Score {lead.score}
+                  {t("pages.onboardingFunnel.scoreN", { score: lead.score })}
                 </span>
               </div>
             </div>
@@ -659,7 +659,7 @@ export default function OnboardingFunnel({
             <ul className="mt-3 space-y-2 text-xs text-slate-300">
               <li className="flex items-start gap-2">
                 <BrandCheck tone="primary" />
-                <span>Realistic lead profiles matched to {fullProfile.city}</span>
+                <span>{t("pages.onboardingFunnel.profilesMatched", { city: fullProfile.city })}</span>
               </li>
               <li className="flex items-start gap-2">
                 <BrandCheck tone="success" />
@@ -902,7 +902,7 @@ export default function OnboardingFunnel({
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-white">
-                  Team — {cadence === "annual" ? "$249/mo" : "$299/mo"} per team
+                  {t("pages.onboardingFunnel.teamPrice", { price: cadence === "annual" ? "$249/mo" : "$299/mo" })}
                 </p>
                 <p className="mt-0.5 text-xs text-slate-400">
                   Up to 5 seats · round-robin routing · Top Producer Track for every member.
