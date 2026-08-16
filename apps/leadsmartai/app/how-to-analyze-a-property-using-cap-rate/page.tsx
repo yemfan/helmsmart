@@ -49,54 +49,30 @@ export default function HowToAnalyzeAPropertyUsingCapRatePage() {
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Cap rate is one of the fastest ways to analyze a rental property, but only if you follow a
-        clear process. Instead of guessing whether a deal looks good, you can use cap rate to
-        quantify income relative to price and compare properties side by side. This guide walks you
-        through that process step by step.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.analyzeWithCapRate.intro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 1: Gather the key inputs for cap rate
-        </h2>
-        <p>
-          To analyze a property using cap rate, you need three main ingredients: potential rental
-          income, realistic operating expenses, and a purchase price or value. Without these, any
-          cap rate calculation is just a guess.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.analyzeWithCapRate.s1Title")}</h2>
+        <p>{t("pages.analyzeWithCapRate.s1Body")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
-            <span className="font-semibold">Income:</span> market rent, current rent roll, and any
-            additional income (parking, storage, laundry, etc.).
-          </li>
+            <span className="font-semibold">{t("pages.analyzeWithCapRate.incomeLabel")}</span>{t("pages.analyzeWithCapRate.income")}</li>
           <li>
-            <span className="font-semibold">Expenses:</span> property taxes, insurance, maintenance,
-            landlord-paid utilities, management, HOA dues, and vacancy/repair reserves.
-          </li>
+            <span className="font-semibold">{t("pages.analyzeWithCapRate.expensesLabel")}</span>{t("pages.analyzeWithCapRate.expenses")}</li>
           <li>
-            <span className="font-semibold">Price:</span> asking price, your planned offer price, or
-            your estimate of fair market value.
-          </li>
+            <span className="font-semibold">{t("pages.analyzeWithCapRate.priceLabel")}</span>{t("pages.analyzeWithCapRate.price")}</li>
         </ul>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 2: Estimate net operating income (NOI)
-        </h2>
-        <p>
-          Net operating income is the property&apos;s annual income after operating expenses, before
-          mortgage payments and income taxes. It is the backbone of the cap rate formula.
-        </p>
-        <p>
-          A simple framework:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.analyzeWithCapRate.s2Title")}</h2>
+        <p>{t("pages.analyzeWithCapRate.s2Body")}</p>
+        <p>{t("pages.analyzeWithCapRate.framework")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>Start with potential rent: monthly rent × 12.</li>
-          <li>Subtract a vacancy allowance (for example, 5%–8%).</li>
-          <li>Add other recurring income (parking, storage, etc.).</li>
-          <li>Subtract realistic operating expenses.</li>
+          <li>{t("pages.analyzeWithCapRate.f1")}</li>
+          <li>{t("pages.analyzeWithCapRate.f2")}</li>
+          <li>{t("pages.analyzeWithCapRate.f3")}</li>
         </ul>
         <p>
           The result is your estimated NOI. For quick analysis, you can plug these numbers into the{" "}
@@ -106,12 +82,8 @@ export default function HowToAnalyzeAPropertyUsingCapRatePage() {
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 3: Calculate cap rate for the property
-        </h2>
-        <p>
-          Once you have NOI and a price, calculating cap rate is straightforward:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.analyzeWithCapRate.s3Title")}</h2>
+        <p>{t("pages.analyzeWithCapRate.s3Body")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cap Rate = Net Operating Income (NOI) ÷ Purchase Price or Value
         </p>
@@ -123,35 +95,20 @@ export default function HowToAnalyzeAPropertyUsingCapRatePage() {
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 4: Compare cap rate to your targets and market data
-        </h2>
-        <p>
-          A cap rate number only becomes meaningful when you compare it to something: your target
-          range and the typical range for similar properties in the same area.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.analyzeWithCapRate.s4Title")}</h2>
+        <p>{t("pages.analyzeWithCapRate.s4Body")}</p>
         <ul className="list-disc list-inside space-y-1">
-          <li>Ask local brokers and property managers what cap rates are common for similar assets.</li>
+          <li>{t("pages.analyzeWithCapRate.s4i1")}</li>
           <li>Look at recent sales comps and compute NOI ÷ sale price.</li>
-          <li>Define your own minimum acceptable cap rate based on your goals and risk tolerance.</li>
+          <li>{t("pages.analyzeWithCapRate.s4i2")}</li>
         </ul>
-        <p>
-          If your calculated cap rate is much lower than local norms, the property may be
-          overpriced—or the income may be under-optimized. If it is much higher, you may have found
-          an opportunity or a property with hidden risks that require deeper due diligence.
-        </p>
+        <p>{t("pages.analyzeWithCapRate.s4Close")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 5: Use cap rate as a filter, not the final decision
-        </h2>
-        <p>
-          Cap rate is excellent for quickly filtering and ranking potential deals, but it should not
-          be the only decision-maker. After a property passes your cap rate filter, move on to
-          deeper analysis.
-        </p>
-        <p>That next layer often includes:</p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.analyzeWithCapRate.s5Title")}</h2>
+        <p>{t("pages.analyzeWithCapRate.s5Body")}</p>
+        <p>{t("pages.analyzeWithCapRate.nextLayer")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
             Detailed cash-flow projections using the{" "}
@@ -163,18 +120,13 @@ export default function HowToAnalyzeAPropertyUsingCapRatePage() {
             <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>
             .
           </li>
-          <li>Physical inspections, lease reviews, and local market research.</li>
+          <li>{t("pages.analyzeWithCapRate.inspections")}</li>
         </ul>
-        <p>
-          Cap rate helps you avoid spending that time on properties that clearly do not meet your
-          basic income requirements.
-        </p>
+        <p>{t("pages.analyzeWithCapRate.s5Close")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Example: analyzing a rental property using cap rate
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.analyzeWithCapRate.exampleTitle")}</h2>
         <p>
           Imagine a small rental listed at $280,000. Market rent is $2,100 per month, with tenants
           paying utilities.
@@ -196,44 +148,18 @@ export default function HowToAnalyzeAPropertyUsingCapRatePage() {
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Frequently asked questions about analyzing properties with cap rate
-        </h2>
-        <h3 className="text-lg font-semibold text-gray-900">
-          How many properties should I analyze before buying?
-        </h3>
-        <p>
-          Many investors analyze dozens of properties on paper—often 20 to 50 or more—before making
-          an offer. Cap rate makes this practical by giving you a quick way to eliminate the clear
-          &quot;no&quot; deals early.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Should I use current rent or market rent in my analysis?
-        </h3>
-        <p>
-          For initial screening, it is helpful to look at both. Use current rent to see how the
-          property performs today and market rent to understand upside potential and what cap rate
-          might be achievable after you implement your plan.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          How does cap rate fit with my &quot;buy box&quot;?
-        </h3>
-        <p>
-          Your buy box is your set of criteria for acceptable deals—location, price range, property
-          type, and minimum returns. Many investors set a minimum cap rate (for example, &quot;I
-          only look at properties at 6% cap or higher in this market&quot;) as part of that buy box.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.analyzeWithCapRate.faqTitle")}</h2>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.analyzeWithCapRate.q1")}</h3>
+        <p>{t("pages.analyzeWithCapRate.a1")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.analyzeWithCapRate.q2")}</h3>
+        <p>{t("pages.analyzeWithCapRate.a2")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.analyzeWithCapRate.q3")}</h3>
+        <p>{t("pages.analyzeWithCapRate.a3")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Turn cap rate analysis into a repeatable process
-        </h2>
-        <p className="mb-3">
-          The more properties you analyze with cap rate, the more intuitive your sense of &quot;good
-          enough&quot; becomes. Over time, you will be able to glance at a listing, estimate NOI,
-          and know within minutes whether it belongs in your buy box.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.analyzeWithCapRate.ctaTitle")}</h2>
+        <p className="mb-3">{t("pages.analyzeWithCapRate.ctaBody")}</p>
         <div className="flex flex-wrap gap-3 mb-4">
           <Link
             href="/cap-rate-calculator"
