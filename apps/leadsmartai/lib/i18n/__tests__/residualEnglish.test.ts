@@ -90,12 +90,10 @@ const JSX_TEXT = /(?:^|[^=])[>}]([^<>{}]+)(?=[<{])/g;
  */
 const PENDING = new Set([
   "app/home-value/[city]/page.tsx",
-  "app/switch-from/page.tsx",
   "app/open-house-signup/page.tsx",
   "app/sell-house/[city]/page.tsx",
   "app/blog/your-crm-should-call-your-sphere-not-just-text-it/page.tsx",
   "app/homes/search/HomesSearchClient.tsx",
-  "app/switch-from/[slug]/page.tsx",
   "app/ai-zillow-redfin-link-analyzer/page.tsx",
   "app/how-to-compare-rent-vs-buy/page.tsx",
   "app/sms/page.tsx",

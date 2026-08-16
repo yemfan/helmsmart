@@ -25,6 +25,7 @@ export async function generateMetadata({
 }: {
   params: Promise<RouteParams>;
 }): Promise<Metadata> {
+  const t = await getServerT();
   const { slug } = await params;
   const source = getSwitchSource(slug);
   if (!source) {
@@ -33,7 +34,7 @@ export async function generateMetadata({
   const title = `Switch from ${source.name} to CloseBoss`;
   return {
     title,
-    description: source.heroSubhead,
+    description: t(source.heroSubhead, { ns: "dashboard" }),
     keywords: [
       `${source.name} alternative`,
       `${source.name} replacement`,
@@ -44,14 +45,14 @@ export async function generateMetadata({
     alternates: { canonical: `/switch-from/${source.slug}` },
     openGraph: {
       title,
-      description: source.heroSubhead,
+      description: t(source.heroSubhead, { ns: "dashboard" }),
       url: `/switch-from/${source.slug}`,
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
       title,
-      description: source.heroSubhead,
+      description: t(source.heroSubhead, { ns: "dashboard" }),
     },
   };
 }
@@ -75,24 +76,24 @@ export default async function SwitchFromPage({
         "@type": "WebPage",
         name: `Switch from ${source.name} to CloseBoss`,
         url,
-        description: source.heroSubhead,
+        description: t(source.heroSubhead, { ns: "dashboard" }),
       },
       {
         "@type": "HowTo",
         name: `How to migrate from ${source.name} to CloseBoss`,
-        description: `Step-by-step migration from ${source.name} to CloseBoss — export contacts, import to LeadSmart, optionally use concierge migration.`,
+        description: `Step-by-step migration from ${source.name} to CloseBoss — export contacts, import to CloseBoss, optionally use concierge migration.`,
         totalTime: "PT30M",
-        step: source.migrationSteps.map((text, i) => ({
+        step: source.migrationSteps.map((key, i) => ({
           "@type": "HowToStep",
           position: i + 1,
-          text: text.replace(/<SOURCE>/g, source.name),
+          text: t(key, { ns: "dashboard" }).replace(/<SOURCE>/g, source.name),
         })),
       },
       {
         "@type": "FAQPage",
         mainEntity: source.faq.map((entry) => ({
           "@type": "Question",
-          name: entry.q,
+          name: t(entry.q, { ns: "dashboard" }),
           acceptedAnswer: { "@type": "Answer", text: entry.a },
         })),
       },
@@ -111,9 +112,7 @@ export default async function SwitchFromPage({
         <nav aria-label={t("pages.articleChrome.breadcrumb", { ns: "dashboard" })} className="mb-6 text-xs text-slate-500 dark:text-slate-400">
           <Link href="/" className="hover:text-slate-700 dark:hover:text-slate-200">{t("pages.articleChrome.home", { ns: "dashboard" })}</Link>
           <span className="mx-2">/</span>
-          <Link href="/switch-from" className="hover:text-slate-700 dark:hover:text-slate-200">
-            Switch from
-          </Link>
+          <Link href="/switch-from" className="hover:text-slate-700 dark:hover:text-slate-200">{t("pages.switchFromPages.switchFromSlug", { ns: "dashboard" })}</Link>
           <span className="mx-2">/</span>
           <span className="text-slate-700 dark:text-slate-300">{source.name}</span>
         </nav>
@@ -125,7 +124,7 @@ export default async function SwitchFromPage({
               className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400"
             />
             <p className="text-sm leading-6 text-amber-800 dark:text-amber-200">
-              {source.urgencyBanner}
+              {t(source.urgencyBanner, { ns: "dashboard" })}
             </p>
           </div>
         ) : null}
@@ -135,10 +134,10 @@ export default async function SwitchFromPage({
             CRM Migration · {source.name} → CloseBoss
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl dark:text-white">
-            {source.heroHeadline}
+            {t(source.heroHeadline, { ns: "dashboard" })}
           </h1>
           <p className="mt-4 text-base leading-7 text-slate-600 md:text-lg dark:text-slate-300">
-            {source.heroSubhead}
+            {t(source.heroSubhead, { ns: "dashboard" })}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
@@ -155,21 +154,19 @@ export default async function SwitchFromPage({
             </a>
           </div>
           {source.companionPost ? (
-            <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">
-              Related context →{" "}
+            <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">{t("pages.switchFromPages.relatedContext", { ns: "dashboard" })}{" "}
               <Link
                 href={source.companionPost.href}
                 className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
               >
-                {source.companionPost.label}
+                {t(source.companionPost.label, { ns: "dashboard" })}
               </Link>
             </p>
           ) : null}
         </header>
 
         <section className="mt-12">
-          <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">
-            Why agents are leaving {source.name}
+          <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">{t("pages.switchFromPages.whyLeaving", { ns: "dashboard" })} {source.name}
           </h2>
           <ul className="mt-5 space-y-4">
             {source.painPoints.map((point) => (
@@ -178,10 +175,10 @@ export default async function SwitchFromPage({
                 className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
               >
                 <h3 className="text-base font-semibold text-slate-900 dark:text-white">
-                  {point.title}
+                  {t(point.title, { ns: "dashboard" })}
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                  {point.body}
+                  {t(point.body, { ns: "dashboard" })}
                 </p>
               </li>
             ))}
@@ -189,24 +186,20 @@ export default async function SwitchFromPage({
         </section>
 
         <section className="mt-12">
-          <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">
-            Where LeadSmart wins
-          </h2>
+          <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">{t("pages.switchFromPages.whereWeWin", { ns: "dashboard" })}</h2>
           <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
             {source.name}: {source.priceRange} · CloseBoss: $79 / mo starting · See the full table on the{" "}
             <Link
               href="/agent/compare"
               className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
-            >
-              comparison page
-            </Link>
+            >{t("pages.switchFromPages.comparisonPage", { ns: "dashboard" })}</Link>
             .
           </p>
           <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800">
             <table className="w-full text-sm">
               <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:bg-slate-900 dark:text-slate-400">
                 <tr>
-                  <th className="px-4 py-3">Feature</th>
+                  <th className="px-4 py-3">{t("pages.switchFromPages.feature", { ns: "dashboard" })}</th>
                   <th className="px-4 py-3">{source.name}</th>
                   <th className="px-4 py-3 text-blue-700 dark:text-blue-300">CloseBoss</th>
                 </tr>
@@ -215,13 +208,13 @@ export default async function SwitchFromPage({
                 {source.comparisonWins.map((row) => (
                   <tr key={row.feature}>
                     <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">
-                      {row.feature}
+                      {t(row.feature, { ns: "dashboard" })}
                     </td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                      {row.them}
+                      {t(row.them, { ns: "dashboard" })}
                     </td>
                     <td className="px-4 py-3 font-semibold text-blue-700 dark:text-blue-300">
-                      {row.us}
+                      {t(row.us, { ns: "dashboard" })}
                     </td>
                   </tr>
                 ))}
@@ -231,18 +224,12 @@ export default async function SwitchFromPage({
         </section>
 
         <section className="mt-12">
-          <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">
-            How to migrate yourself — in under an hour
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-            Most agents migrate in a single sitting. If you&apos;d rather have
-            us do it for you,{" "}
+          <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">{t("pages.switchFromPages.migrateYourself", { ns: "dashboard" })}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{t("pages.switchFromPages.singleSitting", { ns: "dashboard" })}{" "}
             <a
               href="#concierge"
               className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
-            >
-              skip to concierge migration
-            </a>
+            >{t("pages.switchFromPages.skipToConcierge", { ns: "dashboard" })}</a>
             .
           </p>
           <ol className="mt-6 space-y-4">
@@ -255,7 +242,7 @@ export default async function SwitchFromPage({
                   {i + 1}
                 </span>
                 <p className="flex-1 text-base leading-7 text-slate-700 dark:text-slate-200">
-                  {step.replace(/<SOURCE>/g, source.name)}
+                  {t(step, { ns: "dashboard" }).replace(/<SOURCE>/g, source.name)}
                 </p>
               </li>
             ))}
@@ -268,18 +255,13 @@ export default async function SwitchFromPage({
         >
           <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-blue-300">
             <span className="inline-flex items-center rounded-full bg-blue-600 px-2.5 py-1 text-white">
-              <Sparkles className="mr-1 h-3 w-3" aria-hidden />
-              Free through 2026
-            </span>
-            <span>Concierge migration</span>
+              <Sparkles className="mr-1 h-3 w-3" aria-hidden />{t("pages.switchFromPages.freeThrough", { ns: "dashboard" })}</span>
+            <span>{t("pages.switchFromPages.conciergeMigration", { ns: "dashboard" })}</span>
           </div>
-          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl dark:text-white">
-            We&apos;ll move your data for you.
-          </h2>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-slate-700 dark:text-slate-200">
-            For agents migrating from {source.name}, we&apos;ll personally
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl dark:text-white">{t("pages.switchFromPages.weMoveYourData", { ns: "dashboard" })}</h2>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-slate-700 dark:text-slate-200">{t("pages.switchFromPages.forAgentsFrom", { ns: "dashboard" })} {source.name}, we&apos;ll personally
             import your contacts, rebuild your most-used sequences, and
-            cut you over to LeadSmart within 5 business days. Free with
+            cut you over to CloseBoss within 5 business days. Free with
             a 3-month commitment to Pro tier or higher.
           </p>
           <ul className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -287,12 +269,12 @@ export default async function SwitchFromPage({
               {
                 icon: Download,
                 title: "Data import + dedupe",
-                body: "We pull your contacts, deals, and notes into LeadSmart — duplicates merged, custom fields preserved.",
+                body: "We pull your contacts, deals, and notes into CloseBoss — duplicates merged, custom fields preserved.",
               },
               {
                 icon: Sparkles,
                 title: "Sequence rebuild",
-                body: "Your three most-used drip sequences re-implemented in LeadSmart's template library with your copy + cadence.",
+                body: "Your three most-used drip sequences re-implemented in CloseBoss's template library with your copy + cadence.",
               },
               {
                 icon: Calendar,
@@ -328,16 +310,12 @@ export default async function SwitchFromPage({
             <Link
               href={`/contact?topic=concierge-migration&from=${source.slug}`}
               className="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-            >
-              Request concierge migration
-              <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+            >{t("pages.switchFromPages.requestConcierge", { ns: "dashboard" })}<ArrowRight className="ml-2 h-4 w-4" aria-hidden />
             </Link>
             <Link
               href="/start-free"
               className="inline-flex items-center justify-center rounded-md border border-blue-200 bg-white px-5 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 dark:border-blue-900/50 dark:bg-slate-900 dark:text-blue-300 dark:hover:bg-slate-900/70"
-            >
-              Or just start the free trial
-            </Link>
+            >{t("pages.switchFromPages.orStartTrial", { ns: "dashboard" })}</Link>
           </div>
         </section>
 
@@ -347,10 +325,10 @@ export default async function SwitchFromPage({
             {source.faq.map((entry, i) => (
               <div key={i}>
                 <h3 className="text-base font-semibold text-slate-900 dark:text-white">
-                  {entry.q}
+                  {t(entry.q, { ns: "dashboard" })}
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                  {entry.a}
+                  {t(entry.a, { ns: "dashboard" })}
                 </p>
               </div>
             ))}
@@ -358,14 +336,11 @@ export default async function SwitchFromPage({
         </section>
 
         <section className="mt-12 border-t border-slate-200 pt-8 text-center dark:border-slate-800">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Looking at another CRM?{" "}
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t("pages.switchFromPages.anotherCrm", { ns: "dashboard" })}{" "}
             <Link
               href="/switch-from"
               className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
-            >
-              See all migration guides
-            </Link>
+            >{t("pages.switchFromPages.seeAllGuides", { ns: "dashboard" })}</Link>
           </p>
         </section>
       </article>
