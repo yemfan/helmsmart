@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import Link from "next/link";
 import type { Contact, ContactSignal } from "@/lib/contacts/types";
 
 export type SignalWithContact = ContactSignal & { contact: Contact };
 
 export default function SphereSignalsList({ signals: initial }: { signals: SignalWithContact[] }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [signals, setSignals] = useState(initial);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -49,13 +53,11 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
   if (!signals.length) {
     return (
       <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-500">
-        <div className="font-medium text-gray-700">No open life-event signals.</div>
+        <div className="font-medium text-gray-700">{t("pages.sphereSignals.empty")}</div>
         <p className="mt-1">
           Signals fire automatically when the detection batch runs — refi activity, job changes,
           equity milestones crossed. You can also{" "}
-          <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">
-            open a contact
-          </Link>{" "}
+          <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">{t("pages.sphereSignals.openContact")}</Link>{" "}
           and add a signal manually.
         </p>
       </div>
@@ -97,7 +99,7 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
                   <div className="mt-1 text-xs text-gray-500">{s.suggestedAction}</div>
                 )}
                 <div className="mt-1 flex items-center gap-3 text-[10px] uppercase tracking-wide text-gray-400">
-                  <span>Detected {new Date(s.detectedAt).toLocaleDateString()}</span>
+                  <span>{t("pages.sphereProfile.detected", { date: new Date(s.detectedAt).toLocaleDateString(locale) })}</span>
                   {s.contact.phone && <span>· {s.contact.phone}</span>}
                 </div>
               </div>
@@ -106,9 +108,7 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
                   <a
                     href={`tel:${s.contact.phone.replace(/[^+\d]/g, "")}`}
                     className="rounded-lg bg-brand-accent px-3 py-2 text-center text-xs font-medium text-white"
-                  >
-                    Call
-                  </a>
+                  >{t("pages.sphereSignals.call")}</a>
                 )}
                 {!s.acknowledgedAt && (
                   <button
@@ -116,7 +116,7 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
                     onClick={() => void acknowledge(s.id)}
                     disabled={pendingId === s.id}
                     className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                    title="Mark as seen without dismissing"
+                    title={t("pages.sphereSignals.markSeen")}
                   >
                     {pendingId === s.id ? "…" : "Acknowledge"}
                   </button>

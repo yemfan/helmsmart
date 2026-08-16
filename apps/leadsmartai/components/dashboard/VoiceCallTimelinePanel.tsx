@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   describeStatus,
@@ -27,6 +28,7 @@ const TONE_CLASSES: Record<StatusTone, string> = {
  * recording" (when recording is enabled) and "transcript" (when wired).
  */
 export default function VoiceCallTimelinePanel({ contactId }: { contactId: string }) {
+  const { t } = useTranslation("dashboard");
   const [calls, setCalls] = useState<VoiceCallEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,10 +67,8 @@ export default function VoiceCallTimelinePanel({ contactId }: { contactId: strin
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-5">
       <header className="mb-3">
-        <h2 className="text-sm font-semibold text-gray-900">Voice calls</h2>
-        <p className="mt-0.5 text-xs text-gray-600">
-          AI-handled and outbound demo calls with this contact. Timeline collapses Twilio status transitions into one row per call.
-        </p>
+        <h2 className="text-sm font-semibold text-gray-900">{t("pages.voiceCallTimeline.title")}</h2>
+        <p className="mt-0.5 text-xs text-gray-600">{t("pages.voiceCallTimeline.sub")}</p>
       </header>
 
       {loading ? (
@@ -82,9 +82,7 @@ export default function VoiceCallTimelinePanel({ contactId }: { contactId: strin
           Couldn&apos;t load voice calls: {error}
         </div>
       ) : calls.length === 0 ? (
-        <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-600">
-          No voice calls logged for this contact yet.
-        </div>
+        <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-6 text-center text-xs text-slate-600">{t("pages.voiceCallTimeline.empty")}</div>
       ) : (
         <ol className="divide-y divide-slate-100">
           {calls.map((c) => (
@@ -99,6 +97,7 @@ export default function VoiceCallTimelinePanel({ contactId }: { contactId: strin
 }
 
 function CallRow({ entry }: { entry: VoiceCallEntry }) {
+  const { t } = useTranslation("dashboard");
   const desc = describeStatus(entry.status);
   return (
     <div className="flex items-start justify-between gap-3 text-sm">
@@ -110,7 +109,7 @@ function CallRow({ entry }: { entry: VoiceCallEntry }) {
             {desc.label}
           </span>
           {entry.hasRecording ? (
-            <span className="text-[10px] font-medium text-slate-500" title="Recording available">
+            <span className="text-[10px] font-medium text-slate-500" title={t("pages.voiceCallTimeline.recording")}>
               ● Rec
             </span>
           ) : null}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * CloseBoss — editorial rebuild (prototype route: /landing-v3).
@@ -47,17 +48,17 @@ export default function LeadSmartEditorialLanding() {
 // ---------- NAV + MASTHEAD ----------
 
 function Nav() {
+  const { t } = useTranslation("dashboard");
   return (
     <nav className="ed-nav">
-      <div className="ed-nav-logo">
-        LeadSmart<em> ai</em>
+      <div className="ed-nav-logo">CloseBoss<em> ai</em>
       </div>
       <div className="ed-nav-links">
-        <a href="#problem">The problem</a>
-        <a href="#how">How it works</a>
-        <a href="#features">Features</a>
-        <a href="#pricing">Pricing</a>
-        <a href="/login">Sign in</a>
+        <a href="#problem">{t("pages.editorialLanding.navProblem")}</a>
+        <a href="#how">{t("pages.editorialLanding.navHowItWorks")}</a>
+        <a href="#features">{t("pages.editorialLanding.navFeatures")}</a>
+        <a href="#pricing">{t("pages.editorialLanding.navPricing")}</a>
+        <a href="/login">{t("pages.editorialLanding.navSignIn")}</a>
       </div>
     </nav>
   );
@@ -77,31 +78,21 @@ function Masthead() {
 // ---------- HERO ----------
 
 function Hero() {
+  const { t } = useTranslation("dashboard");
   return (
     <section className="ed-hero">
       <div>
         <SectionLabel num="01" category="For solo agents, 1–10 deals / month" />
         <h1 className="ed-headline">
-          Stop <em>losing</em> leads
-          <br />
-          in the first 5 minutes.
+          {t("pages.editorialLanding.heroBefore")} <em>{t("pages.editorialLanding.heroEm")}</em> {t("pages.editorialLanding.heroAfter")}
           <span className="ed-headline-flourish">—</span>
         </h1>
-        <p className="ed-subheadline">
-          CloseBoss texts and emails every new buyer and seller inquiry in under 60 seconds — in
-          your voice, on your number — then hands the warm ones back to you ready to tour.
-        </p>
+        <p className="ed-subheadline">{t("pages.editorialLanding.heroSub")}</p>
         <div className="ed-cta-row">
-          <a href="/signup" className="ed-btn ed-btn-primary">
-            Start 14-day free trial
-          </a>
-          <a href="#demo" className="ed-btn ed-btn-secondary">
-            Watch 90-second demo
-          </a>
+          <a href="/signup" className="ed-btn ed-btn-primary">{t("pages.editorialLanding.ctaTrial")}</a>
+          <a href="#demo" className="ed-btn ed-btn-secondary">{t("pages.editorialLanding.ctaDemo")}</a>
         </div>
-        <div className="ed-trust-line">
-          No credit card <span className="ed-sep">·</span> Works with Zillow, Realtor, FUB, IDX
-        </div>
+        <div className="ed-trust-line">{t("pages.editorialLanding.noCard")}<span className="ed-sep">·</span>{t("pages.editorialLanding.worksWith")}</div>
         <div className="ed-logo-strip">
           <div className="ed-logo-strip-label">
             {/* TODO: swap wordmarks for permissioned SVGs */}
@@ -126,6 +117,7 @@ function Hero() {
 }
 
 function PhoneMockup() {
+  const { t } = useTranslation("dashboard");
   const [visibleStep, setVisibleStep] = useState(0);
   const messagesRef = useRef<HTMLDivElement | null>(null);
 
@@ -154,65 +146,52 @@ function PhoneMockup() {
         <div className="ed-sms-messages" ref={messagesRef}>
           {visibleStep >= 1 && (
             <>
-              <div className="ed-sms-ts">Today 0:00</div>
+              <div className="ed-sms-ts">{t("pages.editorialLanding.demoTime")}</div>
               <div className="ed-sms-bubble ed-alert">
-                <strong>New lead from Zillow:</strong> Sarah M., 555-0147, interested in 2418 Oakhurst Dr.
-              </div>
+                <strong>{t("pages.editorialLanding.demoLeadLabel")}</strong>{t("pages.editorialLanding.demoLead")}</div>
             </>
           )}
           {visibleStep >= 2 && (
             <>
               <div className="ed-sms-ts">0:22</div>
-              <div className="ed-sms-bubble ed-outbound">
-                Hi Sarah, this is Mark with Windermere — saw you asked about 2418 Oakhurst. Are you
-                hoping to tour this weekend or just gathering info for now?
-              </div>
+              <div className="ed-sms-bubble ed-outbound">{t("pages.editorialLanding.demoAgent1")}</div>
             </>
           )}
           {visibleStep >= 3 && (
             <>
               <div className="ed-sms-ts">2:04</div>
-              <div className="ed-sms-bubble ed-inbound">
-                This weekend, if possible. Saturday afternoon?
-              </div>
+              <div className="ed-sms-bubble ed-inbound">{t("pages.editorialLanding.demoBuyer")}</div>
             </>
           )}
           {visibleStep >= 4 && (
             <>
               <div className="ed-sms-ts">2:06</div>
-              <div className="ed-sms-bubble ed-outbound">
-                Perfect — I have 1pm or 3:30pm open. I&apos;ll send a calendar hold. Quick thing: are
-                you already working with a lender, or should I introduce you to someone?
-              </div>
+              <div className="ed-sms-bubble ed-outbound">{t("pages.editorialLanding.demoAgent2")}</div>
             </>
           )}
           {visibleStep >= 5 && (
             <div className="ed-sms-system-card">
               <div className="ed-sms-system-head">
                 <span className="ed-sms-system-icon">✓</span>
-                <span className="ed-sms-system-title">Tour requested</span>
+                <span className="ed-sms-system-title">{t("pages.editorialLanding.tourRequested")}</span>
               </div>
               <div className="ed-sms-system-body">Sarah M. · Sat 1:00pm · Oakhurst Dr.</div>
               <div className="ed-sms-system-actions">
-                <button type="button" className="ed-sms-btn-primary">
-                  Confirm
-                </button>
-                <button type="button" className="ed-sms-btn-secondary">
-                  Reschedule
-                </button>
+                <button type="button" className="ed-sms-btn-primary">{t("pages.editorialLanding.confirm")}</button>
+                <button type="button" className="ed-sms-btn-secondary">{t("pages.editorialLanding.reschedule")}</button>
               </div>
             </div>
           )}
           {visibleStep >= 6 && (
             <div className="ed-sms-score-chip">
               <div className="ed-sms-score-top">
-                <span className="ed-sms-score-label">Lead score</span>
+                <span className="ed-sms-score-label">{t("pages.editorialLanding.leadScore")}</span>
                 <span className="ed-sms-score-hot">Hot · 92/100</span>
               </div>
               <div className="ed-sms-score-pills">
-                <span>Weekend-ready</span>
-                <span>Zillow origin</span>
-                <span>Pre-qual asked</span>
+                <span>{t("pages.editorialLanding.weekendReady")}</span>
+                <span>{t("pages.editorialLanding.zillowOrigin")}</span>
+                <span>{t("pages.editorialLanding.prequalAsked")}</span>
               </div>
             </div>
           )}
@@ -223,12 +202,11 @@ function PhoneMockup() {
 }
 
 function QuoteCard() {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="ed-quote-card">
       <div className="ed-quote-mark">&ldquo;</div>
-      <p className="ed-quote-text">
-        I closed three deals in my trial that would have ghosted me in week one.
-      </p>
+      <p className="ed-quote-text">{t("pages.editorialLanding.quote")}</p>
       <div className="ed-quote-divider" />
       <div className="ed-quote-meta">Mara Tran · Windermere · Seattle</div>
     </div>
@@ -238,13 +216,14 @@ function QuoteCard() {
 // ---------- DEMO ----------
 
 function DemoSection() {
+  const { t } = useTranslation("dashboard");
   return (
     <section className="ed-demo" id="demo">
       <SectionLabel num="02" category="Ninety seconds · Real product · No mockups" />
       <h2 className="ed-section-headline">
-        Watch LeadSmart turn a cold Zillow inquiry into a <em>Saturday tour.</em>
+        {t("pages.editorialLanding.videoBefore")} <em>{t("pages.editorialLanding.videoEm")}</em>
       </h2>
-      <div className="ed-video" role="button" aria-label="Play demo video">
+      <div className="ed-video" role="button" aria-label={t("pages.editorialLanding.playDemo")}>
         <span className="ed-video-runtime">01:30</span>
         <span className="ed-video-play" aria-hidden>
           <span className="ed-video-triangle" />
@@ -254,15 +233,15 @@ function DemoSection() {
       <div className="ed-proof-chips">
         <ProofChip
           number="<60s"
-          label="First reply, median"
+          label={t("pages.editorialLanding.firstReply")}
           hint="Median first-reply time across 30-day trial users."
         />
         <ProofChip
           number="+42%"
-          label="Reply rate lift"
+          label={t("pages.editorialLanding.replyLift")}
           hint="Measured against the agent's prior 30-day average."
         />
-        <ProofChip number="Zillow · FUB · IDX" label="Works with your stack" />
+        <ProofChip number="Zillow · FUB · IDX" label={t("pages.editorialLanding.yourStack")} />
       </div>
     </section>
   );
@@ -280,6 +259,7 @@ function ProofChip({ number, label, hint }: { number: string; label: string; hin
 // ---------- PROBLEM ----------
 
 function ProblemSection() {
+  const { t } = useTranslation("dashboard");
   return (
     <section className="ed-problem" id="problem">
       <div className="ed-container">
@@ -287,31 +267,18 @@ function ProblemSection() {
           <div>
             <div className="ed-problem-dek">№ 03 · The problem</div>
             <h2 className="ed-problem-headline">
-              You don&apos;t have
-              <br />a traffic <em>problem.</em>
+              {t("pages.editorialLanding.problemBefore")} {t("pages.editorialLanding.problemMid")} <em>{t("pages.editorialLanding.problemEm")}</em>
             </h2>
           </div>
           <div className="ed-problem-body">
-            <p>
-              Every agent we talk to has tried the same playbook. More Zillow spend. Facebook lead gen.
-              Two IDX sites. A landing page that converts at 3%. The leads come in — and then what?
-            </p>
+            <p>{t("pages.editorialLanding.problemP1")}</p>
             <p className="ed-problem-pull">
               {/* [INVENTED] — cite or replace before launch */}
               The first agent to reply wins roughly half the time. The second agent wins a quarter.
               Everyone after that is fighting for scraps.
             </p>
-            <p>
-              The problem isn&apos;t that your leads are bad. It&apos;s that by the time you see the
-              Zillow alert, they&apos;ve already heard back from someone else. They filled out four
-              forms on a Saturday morning; they&apos;re touring with whoever texted them first.
-            </p>
-            <p>
-              LeadSmart closes that five-minute window. Every new inquiry gets a reply in your voice,
-              on your number, before you&apos;ve finished your coffee. The warm ones come back to you.
-              The tire-kickers stay in a drip. You spend your day on the three people who are actually
-              going to close.
-            </p>
+            <p>{t("pages.editorialLanding.problemP2")}</p>
+            <p>{t("pages.editorialLanding.problemP3")}</p>
           </div>
         </div>
       </div>
@@ -322,6 +289,7 @@ function ProblemSection() {
 // ---------- HOW IT WORKS ----------
 
 function HowItWorksSection() {
+  const { t } = useTranslation("dashboard");
   const steps = [
     {
       num: "I",
@@ -357,7 +325,7 @@ function HowItWorksSection() {
       <div className="ed-container">
         <SectionLabel num="04" category="How it works" />
         <h2 className="ed-section-headline">
-          Four steps, <em>none of them yours.</em>
+          {t("pages.editorialLanding.howBefore")} <em>{t("pages.editorialLanding.howEm")}</em>
         </h2>
         <div className="ed-how-steps">
           {steps.map((s) => (
@@ -379,19 +347,19 @@ function HowItWorksSection() {
 // ---------- FEATURES ----------
 
 function FeaturesSection() {
+  const { t } = useTranslation("dashboard");
   return (
     <section className="ed-features" id="features">
       <div className="ed-container">
         <SectionLabel num="05" category="Features" />
         <h2 className="ed-section-headline">
-          Built for the way agents <em>actually work.</em>
+          {t("pages.editorialLanding.featuresBefore")} <em>{t("pages.editorialLanding.featuresEm")}</em>
         </h2>
 
         <FeatureRow
           index="Feature one"
           title={
-            <>
-              Instant AI <em>follow-up</em>
+            <>{t("pages.editorialLanding.instantAi")}<em>follow-up</em>
             </>
           }
           body="Every new lead gets a personalized text and email in under 60 seconds — referencing the exact property, their search criteria, and the source. Sent from your number, in your voice."
@@ -404,8 +372,7 @@ function FeaturesSection() {
           reverse
           index="Feature two"
           title={
-            <>
-              Lead scoring that reads <em>intent.</em>
+            <>{t("pages.editorialLanding.scoringThat")}<em>intent.</em>
             </>
           }
           body="Behavioral signals, message sentiment, tour requests, and pre-qualification language combine into a single score. You see the three leads most likely to close — and the reasons why."
@@ -418,7 +385,7 @@ function FeaturesSection() {
           index="Feature three"
           title={
             <>
-              A pipeline that <em>stays honest.</em>
+              {t("pages.editorialLanding.pipelineBefore")} <em>{t("pages.editorialLanding.pipelineEm")}</em>
             </>
           }
           body="Every lead, every tour, every offer — one view. Status updates automatically as the conversation progresses. No more opening a spreadsheet on Sunday night."
@@ -432,7 +399,7 @@ function FeaturesSection() {
           index="Feature four"
           title={
             <>
-              Works with <em>what you already use.</em>
+              {t("pages.editorialLanding.stackBefore")} <em>{t("pages.editorialLanding.stackEm")}</em>
             </>
           }
           body="Zillow, Realtor.com, Follow Up Boss, kvCORE, Sierra Interactive, your IDX, Facebook Lead Ads. Native integrations or Zapier. Setup takes fifteen minutes."
@@ -578,6 +545,7 @@ function IntegrationsVisual() {
 // ---------- TESTIMONIALS ----------
 
 function TestimonialsSection() {
+  const { t } = useTranslation("dashboard");
   const testimonials = [
     { text: "I closed three deals in my trial that would have ghosted me in week one.", name: "Mara Tran", role: "Windermere · Seattle" },
     // [INVENTED] — replace before launch
@@ -590,7 +558,7 @@ function TestimonialsSection() {
       <div className="ed-container">
         <SectionLabel num="06" category="From the field" />
         <h2 className="ed-section-headline" style={{ maxWidth: 760 }}>
-          What agents who closed <em>actually say.</em>
+          {t("pages.editorialLanding.testimonialsBefore")} <em>{t("pages.editorialLanding.testimonialsEm")}</em>
         </h2>
         <div className="ed-testimonials-grid">
           {testimonials.map((t) => (
@@ -613,6 +581,7 @@ function TestimonialsSection() {
 // ---------- PRICING ----------
 
 function PricingSection() {
+  const { t } = useTranslation("dashboard");
   const tiers = [
     {
       // Internal plan key stays "free" (DB plan_type, Stripe price keys,
@@ -670,7 +639,7 @@ function PricingSection() {
       <div className="ed-container">
         <SectionLabel num="07" category="Pricing" />
         <h2 className="ed-section-headline">
-          Simple pricing, <em>no contracts.</em>
+          {t("pages.editorialLanding.pricingBefore")} <em>{t("pages.editorialLanding.pricingEm")}</em>
         </h2>
         <div className="ed-pricing-sub">14-day trial on Pro and Elite · Cancel anytime</div>
         <div className="ed-pricing-table">
@@ -703,6 +672,7 @@ function PricingSection() {
 // ---------- FAQ ----------
 
 function FAQSection() {
+  const { t } = useTranslation("dashboard");
   const [openIndex, setOpenIndex] = useState(0);
   const faqs = [
     {
@@ -731,7 +701,7 @@ function FAQSection() {
       <div className="ed-container">
         <SectionLabel num="08" category="Common questions" />
         <h2 className="ed-section-headline">
-          The questions agents <em>actually ask.</em>
+          {t("pages.editorialLanding.faqBefore")} <em>{t("pages.editorialLanding.faqEm")}</em>
         </h2>
         <div className="ed-faq-list">
           {faqs.map((item, i) => {
@@ -762,12 +732,13 @@ function FAQSection() {
 // ---------- FINAL CTA ----------
 
 function FinalCTA() {
+  const { t } = useTranslation("dashboard");
   return (
     <section className="ed-final">
       <div className="ed-container">
         <SectionLabel num="09" category="Start now" center />
         <h2 className="ed-final-headline">
-          Stop losing leads <em>tomorrow morning.</em>
+          {t("pages.editorialLanding.finalBefore")} <em>{t("pages.editorialLanding.finalEm")}</em>
         </h2>
         <p className="ed-final-sub">
           {/* [INVENTED] — rewrite before launch */}
@@ -775,12 +746,8 @@ function FinalCTA() {
           price in your first month, you&apos;ll have lost nothing.
         </p>
         <div className="ed-final-cta-row">
-          <a href="/signup" className="ed-btn ed-btn-primary">
-            Start 14-day free trial
-          </a>
-          <a href="#pricing" className="ed-btn ed-btn-secondary">
-            See pricing
-          </a>
+          <a href="/signup" className="ed-btn ed-btn-primary">{t("pages.editorialLanding.ctaTrial")}</a>
+          <a href="#pricing" className="ed-btn ed-btn-secondary">{t("pages.editorialLanding.seePricing")}</a>
         </div>
       </div>
     </section>
@@ -790,21 +757,18 @@ function FinalCTA() {
 // ---------- FOOTER ----------
 
 function Footer() {
+  const { t } = useTranslation("dashboard");
   return (
     <footer className="ed-footer">
       <div className="ed-container">
         <div className="ed-footer-top">
           <div>
-            <div className="ed-footer-brand">
-              LeadSmart<em> ai</em>
+            <div className="ed-footer-brand">CloseBoss<em> ai</em>
             </div>
-            <div className="ed-footer-tagline">
-              AI-powered lead follow-up, scoring, and pipeline management. Built for real estate agents
-              who close.
-            </div>
+            <div className="ed-footer-tagline">{t("pages.editorialLanding.footerBlurb")}</div>
           </div>
           <FooterCol
-            title="Product"
+            title={t("pages.editorialLanding.footerProduct")}
             items={[
               { label: "Features", href: "#features" },
               { label: "Pricing", href: "#pricing" },
@@ -813,7 +777,7 @@ function Footer() {
             ]}
           />
           <FooterCol
-            title="Free tools"
+            title={t("pages.editorialLanding.footerFreeTools")}
             items={[
               { label: "Mortgage calculator", href: "/mortgage-calculator" },
               { label: "Affordability calculator", href: "/affordability-calculator" },
@@ -822,7 +786,7 @@ function Footer() {
             ]}
           />
           <FooterCol
-            title="Company"
+            title={t("pages.editorialLanding.footerCompany")}
             items={[
               { label: "About", href: "/about" },
               { label: "Contact", href: "/contact" },
@@ -830,7 +794,7 @@ function Footer() {
             ]}
           />
           <FooterCol
-            title="Legal"
+            title={t("pages.editorialLanding.footerLegal")}
             items={[
               { label: "Privacy", href: "/privacy" },
               { label: "Terms", href: "/terms" },
@@ -839,7 +803,7 @@ function Footer() {
         </div>
         <div className="ed-footer-bottom">
           <span>© 2026 CloseBoss · All rights reserved</span>
-          <span>Made for agents who close</span>
+          <span>{t("pages.editorialLanding.madeForAgents")}</span>
         </div>
       </div>
     </footer>

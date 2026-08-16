@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { RefreshCw, Send, Sparkles } from "lucide-react";
 
 type Candidate = {
@@ -53,6 +54,7 @@ export default function AISuggestedPropertiesPanel({
   contactId,
   contactFirstName,
 }: Props) {
+  const { t } = useTranslation("dashboard");
   const [state, setState] = useState<
     | { kind: "closed" }
     | { kind: "loading" }
@@ -156,13 +158,8 @@ export default function AISuggestedPropertiesPanel({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-            <Sparkles className="h-4 w-4 text-indigo-500" aria-hidden />
-            AI-suggested properties
-          </h2>
-          <p className="mt-0.5 text-xs text-gray-500">
-            Listings that match this contact&apos;s favorites, saved searches,
-            and recent activity. Review + send with one click.
-          </p>
+            <Sparkles className="h-4 w-4 text-indigo-500" aria-hidden />{t("pages.aiSuggestedProperties.title")}</h2>
+          <p className="mt-0.5 text-xs text-gray-500">{t("pages.aiSuggestedProperties.sub")}</p>
         </div>
         <button
           type="button"
@@ -197,17 +194,12 @@ export default function AISuggestedPropertiesPanel({
               {state.context.savedSearchCount} saved searches
             </span>
             {state.context.usedLlm && (
-              <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-indigo-700">
-                LLM rationale
-              </span>
+              <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-indigo-700">{t("pages.aiSuggestedProperties.rationale")}</span>
             )}
           </div>
 
           {state.candidates.length === 0 ? (
-            <div className="mt-3 rounded border border-dashed border-gray-200 p-4 text-center text-xs text-gray-500">
-              No candidates to suggest yet — contact needs favorites or a
-              saved search to seed the recommender.
-            </div>
+            <div className="mt-3 rounded border border-dashed border-gray-200 p-4 text-center text-xs text-gray-500">{t("pages.aiSuggestedProperties.empty")}</div>
           ) : (
             <>
               <ul className="mt-3 grid gap-2 sm:grid-cols-2">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function PaywallModal(props: {
   open: boolean;
@@ -11,6 +12,7 @@ export default function PaywallModal(props: {
   /** When set, dialog closes first, then this runs (e.g. `startCheckout` → Stripe). */
   onPrimaryClick?: () => void | Promise<void>;
 }) {
+  const { t } = useTranslation("dashboard");
   useEffect(() => {
     if (!props.open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -34,7 +36,7 @@ export default function PaywallModal(props: {
       <button
         type="button"
         className="absolute inset-0 z-0 cursor-pointer border-0 bg-transparent p-0"
-        aria-label="Close dialog"
+        aria-label={t("pages.paywallModal.closeDialog")}
         onClick={props.onClose}
       />
       <div
@@ -46,9 +48,7 @@ export default function PaywallModal(props: {
       >
         <div className="flex items-start justify-between gap-3 border-b border-slate-100 p-5">
           <div className="min-w-0">
-            <div id="leadsmart-paywall-title" className="text-sm font-semibold text-slate-900">
-              Upgrade to continue
-            </div>
+            <div id="leadsmart-paywall-title" className="text-sm font-semibold text-slate-900">{t("pages.paywallModal.title")}</div>
             <div className="text-xs text-slate-600 mt-1">
               {props.message ?? "You’ve reached your free limit. Upgrade to continue."}
             </div>
@@ -57,9 +57,7 @@ export default function PaywallModal(props: {
             type="button"
             className="text-sm font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50"
             onClick={props.onClose}
-          >
-            Close
-          </button>
+          >{t("pages.paywallModal.close")}</button>
         </div>
         <div className="p-5 space-y-3">
           {props.onPrimaryClick ? (
@@ -79,9 +77,7 @@ export default function PaywallModal(props: {
               {props.ctaLabel ?? "Start Free Trial"}
             </a>
           )}
-          <p className="text-[11px] text-slate-500">
-            Unlock CRM, alerts, dashboard insights, and higher usage limits.
-          </p>
+          <p className="text-[11px] text-slate-500">{t("pages.paywallModal.sub")}</p>
         </div>
       </div>
     </div>
