@@ -2709,6 +2709,45 @@
       "withPhone": "With phone",
       "withBirthday": "With birthday",
       "withPurchaseDate": "With home purchase date"
+    },
+    "aiEmailPanel": {
+      "heading": "AI email assistant",
+      "inbound": "Inbound: POST to <code>/api/ai-email/process-inbound</code> with Bearer <code>AI_EMAIL_INBOUND_SECRET</code> in production.",
+      "outbound": "Outbound: Resend when <code>RESEND_API_KEY</code> is set; optional <code>RESEND_FROM_EMAIL</code>.",
+      "draftOnly": "Draft-only: set <code>EMAIL_AI_DRAFT_ONLY=true</code> to log replies without delivering.",
+      "notify": "Hot / human-needed threads can notify the assigned agent (same pipeline as SMS when enabled)."
+    },
+    "calendarBooking": {
+      "heading": "Calendar & booking",
+      "loading": "Loading schedule…",
+      "noneScheduled": "None scheduled.",
+      "cancel": "Cancel",
+      "newAppointment": "New appointment",
+      "title": "Title",
+      "notes": "Notes (optional)",
+      "add": "Add appointment",
+      "saving": "Saving…",
+      "noneSaved": "None saved yet.",
+      "saveBookingLink": "Save booking link",
+      "urlPlaceholder": "https://…",
+      "labelOptional": "Label (optional)",
+      "saveLink": "Save link",
+      "savedAt": "Saved {{date}}"
+    },
+    "outboundCall": {
+      "needSurvey": "Add the survey questions first.",
+      "needAnnouncement": "Add the announcement message first.",
+      "purpose": {
+        "followUp": "Follow-up",
+        "survey": "Survey / review",
+        "promo": "Promo / announcement"
+      },
+      "heading": "AI Concierge",
+      "clearContact": "Clear selected contact",
+      "noMatches": "No matching contacts.",
+      "leadName": "Lead name (optional)",
+      "leadNamePlaceholder": "e.g. Hong Yang",
+      "phone": "Phone number"
     }
   }
 }

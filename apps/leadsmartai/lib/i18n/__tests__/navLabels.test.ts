@@ -101,6 +101,7 @@ describe("dashboard namespace (page copy)", () => {
       "pages.adWizard.sitePlaceholder",
       "pages.adWizard.privacyPlaceholder",
       "pages.books.clientEmailPlaceholder",
+      "pages.calendarBooking.urlPlaceholder",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;

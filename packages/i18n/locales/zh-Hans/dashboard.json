@@ -2709,6 +2709,45 @@
       "withPhone": "有电话",
       "withBirthday": "有生日",
       "withPurchaseDate": "有购房日期"
+    },
+    "aiEmailPanel": {
+      "heading": "AI 邮件助理",
+      "inbound": "接收：生产环境中向 <code>/api/ai-email/process-inbound</code> 发送 POST 请求，并携带 Bearer <code>AI_EMAIL_INBOUND_SECRET</code>。",
+      "outbound": "发送：设置了 <code>RESEND_API_KEY</code> 时通过 Resend 发送；<code>RESEND_FROM_EMAIL</code> 可选。",
+      "draftOnly": "仅生成草稿：设置 <code>EMAIL_AI_DRAFT_ONLY=true</code>，回复只记录不实际投递。",
+      "notify": "高意向／需人工处理的会话可通知负责的经纪人（启用后与短信走同一条通道）。"
+    },
+    "calendarBooking": {
+      "heading": "日历与预约",
+      "loading": "正在加载日程…",
+      "noneScheduled": "暂无安排。",
+      "cancel": "取消",
+      "newAppointment": "新建预约",
+      "title": "标题",
+      "notes": "备注（可选）",
+      "add": "添加预约",
+      "saving": "保存中…",
+      "noneSaved": "尚未保存任何内容。",
+      "saveBookingLink": "保存预约链接",
+      "urlPlaceholder": "https://…",
+      "labelOptional": "标签（可选）",
+      "saveLink": "保存链接",
+      "savedAt": "保存于 {{date}}"
+    },
+    "outboundCall": {
+      "needSurvey": "请先填写调查问题。",
+      "needAnnouncement": "请先填写通知内容。",
+      "purpose": {
+        "followUp": "跟进",
+        "survey": "调查／评价",
+        "promo": "推广／通知"
+      },
+      "heading": "AI 礼宾助理",
+      "clearContact": "清除所选联系人",
+      "noMatches": "没有匹配的联系人。",
+      "leadName": "客户姓名（可选）",
+      "leadNamePlaceholder": "例如：杨红",
+      "phone": "电话号码"
     }
   }
 }
