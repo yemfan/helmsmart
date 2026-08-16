@@ -1920,6 +1920,38 @@
         "landscape": "横版"
       },
       "intro": "选择模板与主题，编辑文案，实时预览，然后保存到素材库或安排发布。"
+    },
+    "inbound": {
+      "metaTitle": "转发的邮件",
+      "email": "邮件",
+      "from": "发件人",
+      "subject": "主题",
+      "attachments": "附件",
+      "retry": "🔁 重新识别",
+      "retrying": "识别中…",
+      "run": "▶️ 开始识别",
+      "running": "运行中…",
+      "pickParty": "选择买家／卖家，准备好后保存。",
+      "waived": "已放弃",
+      "kept": "保留",
+      "openOfferUpload": "在报价上传中打开 →",
+      "openListingUpload": "在委托协议上传中打开 →",
+      "openShowingForm": "在带看表单中打开 →",
+      "openUpload": "在上传页面中打开 →",
+      "f": {
+        "requester": "申请人",
+        "phone": "电话",
+        "email": "邮箱",
+        "requestedDate": "申请日期",
+        "requestedTime": "申请时间",
+        "notes": "备注",
+        "confidence": "置信度",
+        "warnings": "提示"
+      },
+      "breadcrumbCalendar": "日历",
+      "breadcrumbForwarded": " / 转发的邮件 / ",
+      "noSubject": "（无主题）",
+      "forwardedAt": "转发于 {{when}} · 归类为"
     }
   }
 }

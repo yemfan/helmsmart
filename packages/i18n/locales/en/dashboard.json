@@ -1920,6 +1920,38 @@
         "landscape": "Landscape"
       },
       "intro": "Pick a template and theme, edit the copy, preview it live, then save to your pool or schedule."
+    },
+    "inbound": {
+      "metaTitle": "Forwarded email",
+      "email": "Email",
+      "from": "From",
+      "subject": "Subject",
+      "attachments": "Attachments",
+      "retry": "🔁 Retry extraction",
+      "retrying": "Retrying…",
+      "run": "▶️ Run extraction",
+      "running": "Running…",
+      "pickParty": "Pick the buyer / seller and save when you're ready.",
+      "waived": "WAIVED",
+      "kept": "kept",
+      "openOfferUpload": "Open in offer upload →",
+      "openListingUpload": "Open in listing upload →",
+      "openShowingForm": "Open in showing form →",
+      "openUpload": "Open in upload →",
+      "f": {
+        "requester": "Requester",
+        "phone": "Phone",
+        "email": "Email",
+        "requestedDate": "Requested date",
+        "requestedTime": "Requested time",
+        "notes": "Notes",
+        "confidence": "Confidence",
+        "warnings": "Warnings"
+      },
+      "breadcrumbCalendar": "Calendar",
+      "breadcrumbForwarded": " / Forwarded emails / ",
+      "noSubject": "(no subject)",
+      "forwardedAt": "Forwarded {{when}} · classified as"
     }
   }
 }
