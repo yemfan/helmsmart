@@ -49,186 +49,90 @@ export default function HowCapRateChangesInDifferentMarketsPage() {
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Cap rate is not a fixed number. It changes from city to city, neighborhood to neighborhood,
-        and year to year as markets move through different phases. As an investor, understanding how
-        and why cap rates change helps you interpret prices, spot opportunities, and manage risk
-        over the full real estate cycle.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.capRateMarkets.intro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          The forces that move cap rates between markets
-        </h2>
-        <p>
-          Cap rates vary across markets because supply, demand, and risk are not uniform everywhere.
-          Some of the key drivers include:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMarkets.forces")}</h2>
+        <p>{t("pages.capRateMarkets.forcesBody")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
-            <span className="font-semibold">Local economic strength:</span> Job growth, population
-            trends, and industry mix influence both rents and investor confidence.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.d1Label")}</span>{t("pages.capRateMarkets.d1")}</li>
           <li>
-            <span className="font-semibold">Supply constraints:</span> Markets with limited new
-            construction or strict zoning often sustain lower cap rates due to persistent demand.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.d2Label")}</span>{t("pages.capRateMarkets.d2")}</li>
           <li>
-            <span className="font-semibold">Risk perception:</span> Higher crime, weaker schools, or
-            volatile industries can push cap rates higher to compensate for perceived risk.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.d3Label")}</span>{t("pages.capRateMarkets.d3")}</li>
           <li>
-            <span className="font-semibold">Capital flows:</span> When more capital flows into a
-            market (from institutions or individuals), competition for deals can compress cap rates.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.d4Label")}</span>{t("pages.capRateMarkets.d4")}</li>
         </ul>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          How cap rates move over the real estate cycle
-        </h2>
-        <p>
-          Within a single market, cap rates also move over time as part of broader economic and real
-          estate cycles.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMarkets.cycle")}</h2>
+        <p>{t("pages.capRateMarkets.cycleBody")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
-            <span className="font-semibold">Expansion:</span> Strong rent growth, low vacancies, and
-            cheap capital often lead to cap rate compression as investors bid up prices.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.c1Label")}</span>{t("pages.capRateMarkets.c1")}</li>
           <li>
-            <span className="font-semibold">Peak:</span> Cap rates may reach historically low levels
-            as optimism and pricing stretch, sometimes ahead of fundamentals.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.c2Label")}</span>{t("pages.capRateMarkets.c2")}</li>
           <li>
-            <span className="font-semibold">Downturn:</span> Rising vacancies, slower rent growth,
-            or tighter credit can cause cap rates to expand, putting downward pressure on values.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.c3Label")}</span>{t("pages.capRateMarkets.c3")}</li>
           <li>
-            <span className="font-semibold">Recovery:</span> As conditions stabilize and improve,
-            cap rates may compress again, especially in markets with strong long-term demand.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.c4Label")}</span>{t("pages.capRateMarkets.c4")}</li>
         </ul>
-        <p>
-          Understanding where a market sits in this cycle helps you interpret whether today&apos;s
-          cap rates are aggressive, conservative, or somewhere in between.
-        </p>
+        <p>{t("pages.capRateMarkets.cycleClose")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          The relationship between interest rates and cap rates
-        </h2>
-        <p>
-          Interest rates are another major factor in how cap rates change across markets. While the
-          relationship is not perfectly one-to-one, higher borrowing costs generally put upward
-          pressure on cap rates, and lower borrowing costs can support lower cap rates.
-        </p>
-        <p>
-          Investors often think in terms of a &quot;spread&quot; between cap rates and interest
-          rates. If that spread becomes too tight, leveraged returns may no longer justify the risk,
-          and buyers may start demanding higher cap rates (lower prices) to restore acceptable
-          yields.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMarkets.rates")}</h2>
+        <p>{t("pages.capRateMarkets.ratesBody")}</p>
+        <p>{t("pages.capRateMarkets.spread")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          How changing cap rates impact existing owners vs new buyers
-        </h2>
-        <p>
-          Cap rate movements affect investors differently depending on whether they already own
-          property in a market or are looking to buy.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMarkets.ownersVsBuyers")}</h2>
+        <p>{t("pages.capRateMarkets.ownersVsBuyersBody")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
-            <span className="font-semibold">Existing owners in a compressing market:</span> Benefit
-            from rising values as cap rates fall, even if NOI is flat or only slowly rising.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.o1Label")}</span>{t("pages.capRateMarkets.o1")}</li>
           <li>
-            <span className="font-semibold">New buyers in a compressing market:</span> Face tougher
-            competition and lower initial yields, making deals harder to pencil out.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.o2Label")}</span>{t("pages.capRateMarkets.o2")}</li>
           <li>
-            <span className="font-semibold">Existing owners in an expanding market:</span> May see
-            values decline even if NOI holds steady, especially if cap rates move sharply higher.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMarkets.o3Label")}</span>{t("pages.capRateMarkets.o3")}</li>
           <li>
-            <span className="font-semibold">New buyers in an expanding market:</span> Can sometimes
-            acquire properties at higher cap rates (lower prices), but may face more operational
-            risk and financing challenges.</li>
+            <span className="font-semibold">{t("pages.capRateMarkets.o4Label")}</span>{t("pages.capRateMarkets.o4")}</li>
         </ul>
-        <p>
-          This is why many investors track cap rate trends and spreads across multiple markets, not
-          just the current level in a single city.
-        </p>
+        <p>{t("pages.capRateMarkets.trackTrends")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Practical ways to monitor cap rate changes
-        </h2>
-        <p>
-          You do not need institutional research tools to keep an eye on cap rate movements. Some
-          practical habits include:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMarkets.monitor")}</h2>
+        <p>{t("pages.capRateMarkets.monitorBody")}</p>
         <ul className="list-disc list-inside space-y-1">
-          <li>Regularly reviewing sales comps and broker reports in your target markets.</li>
-          <li>Talking with property managers and lenders about what they are seeing in deals.</li>
-          <li>Tracking your own underwriting over time to see how cap rate assumptions shift.</li>
+          <li>{t("pages.capRateMarkets.m1")}</li>
+          <li>{t("pages.capRateMarkets.m2")}</li>
+          <li>{t("pages.capRateMarkets.m3")}</li>
           <li>
             Using the{" "}
             <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
             to analyze new listings and compare them to past deals.
           </li>
         </ul>
-        <p>
-          Over time, you will build an internal sense of what &quot;normal,&quot; &quot;hot,&quot;
-          and &quot;soft&quot; cap rate levels look like in each of your focus markets.
-        </p>
+        <p>{t("pages.capRateMarkets.monitorClose")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Frequently asked questions about changing cap rates
-        </h2>
-        <h3 className="text-lg font-semibold text-gray-900">
-          How quickly can cap rates change in a given market?
-        </h3>
-        <p>
-          Cap rates can move gradually over years or shift more quickly during periods of rapid
-          change—such as interest rate shocks, major employer moves, or sudden changes in investor
-          sentiment. That is why it is important to stay current rather than relying on outdated
-          rules of thumb.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Should I try to time markets based on cap rate trends?
-        </h3>
-        <p>
-          Perfectly timing cap rate cycles is difficult. Instead, many investors focus on buying
-          properties with strong fundamentals and value-add opportunities, while staying aware of
-          where cap rates sit relative to historical ranges in each market.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          How do changing cap rates affect my refinance plans?
-        </h3>
-        <p>
-          If cap rates compress between acquisition and refinance, your property&apos;s value may be
-          higher than expected, supporting a larger loan or cash-out refi. If cap rates expand, your
-          appraised value may come in lower, limiting how much you can borrow.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMarkets.faqTitle")}</h2>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateMarkets.q1")}</h3>
+        <p>{t("pages.capRateMarkets.a1")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateMarkets.q2")}</h3>
+        <p>{t("pages.capRateMarkets.a2")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateMarkets.q3")}</h3>
+        <p>{t("pages.capRateMarkets.a3")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Use cap rate trends to sharpen your strategy
-        </h2>
-        <p className="mb-3">
-          Cap rate levels and trends are like a market temperature gauge. They do not make decisions
-          for you, but they tell you how hot or cold different markets are and help you calibrate
-          your risk and return expectations before you commit capital.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.capRateMarkets.ctaTitle")}</h2>
+        <p className="mb-3">{t("pages.capRateMarkets.ctaBody")}</p>
         <div className="flex flex-wrap gap-3 mb-4">
           <Link
             href="/cap-rate-calculator"
