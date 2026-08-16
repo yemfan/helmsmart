@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import type {
   DealCoachAction,
@@ -55,6 +56,7 @@ function fmtMoney(n: number | undefined | null): string {
  * from a real `offers/{id}` row when embedded in the offer-detail page.
  */
 export default function DealCoachPanel() {
+  const { t } = useTranslation("dashboard");
   const [stage, setStage] = useState<DealStage>("drafting");
   const [propertyAddress, setPropertyAddress] = useState("");
   const [listPrice, setListPrice] = useState("");
@@ -119,7 +121,7 @@ export default function DealCoachPanel() {
         onSubmit={submit}
         className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2"
       >
-        <h2 className="text-base font-semibold text-slate-900">Deal context</h2>
+        <h2 className="text-base font-semibold text-slate-900">{t("pages.dealCoachPanel.dealContext")}</h2>
 
         <fieldset>
           <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -151,36 +153,36 @@ export default function DealCoachPanel() {
         </fieldset>
 
         <Input
-          label="Property address"
+          label={t("pages.dealCoachPanel.address")}
           value={propertyAddress}
           onChange={setPropertyAddress}
-          placeholder="123 Elm St, Austin, TX"
+          placeholder={t("pages.dealCoachPanel.addressPlaceholder")}
         />
 
         <div className="grid gap-3 sm:grid-cols-2">
           <Input
-            label="List price"
+            label={t("pages.dealCoachPanel.listPrice")}
             type="number"
             value={listPrice}
             onChange={setListPrice}
             placeholder="950000"
           />
           <Input
-            label="Buyer max budget"
+            label={t("pages.dealCoachPanel.maxBudget")}
             type="number"
             value={budgetMax}
             onChange={setBudgetMax}
             placeholder="1000000"
           />
           <Input
-            label="Comparables median"
+            label={t("pages.dealCoachPanel.compsMedian")}
             type="number"
             value={comparablesMedian}
             onChange={setComparablesMedian}
             placeholder="935000"
           />
           <Input
-            label="Days on market"
+            label={t("pages.dealCoachPanel.daysOnMarket")}
             type="number"
             value={daysOnMarket}
             onChange={setDaysOnMarket}
@@ -211,7 +213,7 @@ export default function DealCoachPanel() {
             </div>
           </fieldset>
           <Input
-            label="Competing offers"
+            label={t("pages.dealCoachPanel.competingOffers")}
             type="number"
             value={competingOfferCount}
             onChange={setCompetingOfferCount}
@@ -220,7 +222,7 @@ export default function DealCoachPanel() {
         </div>
 
         <Input
-          label="Hours since your last action"
+          label={t("pages.dealCoachPanel.hoursSince")}
           type="number"
           value={hoursSinceLastAgentAction}
           onChange={setHoursSinceLastAgentAction}
@@ -241,13 +243,13 @@ export default function DealCoachPanel() {
 
         <div>
           <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Buyer notes <span className="font-medium text-slate-400">(optional)</span>
+            Buyer notes <span className="font-medium text-slate-400">{t("pages.dealCoachPanel.optional")}</span>
           </label>
           <textarea
             value={buyerNotes}
             onChange={(e) => setBuyerNotes(e.target.value)}
             rows={3}
-            placeholder="e.g. Buyer relocating from Boston, has school start deadline of Aug 15."
+            placeholder={t("pages.dealCoachPanel.contextPlaceholder")}
             className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -257,7 +259,7 @@ export default function DealCoachPanel() {
           disabled={loading}
           className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? "Running coach…" : "Run AI Deal Coach"}
+          {loading ? t("pages.dealCoachPanel.running") : t("pages.dealCoachPanel.run")}
         </button>
 
         {error ? (
@@ -284,7 +286,7 @@ export default function DealCoachPanel() {
             </div>
 
             {/* Action plan */}
-            <SectionCard title="Do this next" subtitle="Prioritized — top items first.">
+            <SectionCard title={t("pages.dealCoachPanel.doNext")} subtitle="Prioritized — top items first.">
               <ol className="space-y-2">
                 {report.actionPlan.actions.map((a) => (
                   <li
@@ -310,11 +312,11 @@ export default function DealCoachPanel() {
 
             {/* Strategy */}
             {report.strategy ? (
-              <SectionCard title="Pricing strategy">
+              <SectionCard title={t("pages.dealCoachPanel.pricingStrategy")}>
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <Kpi label="Recommended" value={fmtMoney(report.strategy.recommendedPrice)} />
-                  <Kpi label="Strategy" value={report.strategy.strategy} />
-                  <Kpi label="Confidence" value={`${report.strategy.confidence}%`} />
+                  <Kpi label={t("pages.dealCoachPanel.recommended")} value={fmtMoney(report.strategy.recommendedPrice)} />
+                  <Kpi label={t("pages.dealCoachPanel.strategy")} value={report.strategy.strategy} />
+                  <Kpi label={t("pages.dealCoachPanel.confidence")} value={`${report.strategy.confidence}%`} />
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-slate-700">
                   {report.strategy.reasoning}
@@ -324,11 +326,11 @@ export default function DealCoachPanel() {
 
             {/* Risks */}
             {report.risks ? (
-              <SectionCard title="Risk pillars">
+              <SectionCard title={t("pages.dealCoachPanel.riskPillars")}>
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <RiskCard label="Overpay" pillar={report.risks.overpay} />
-                  <RiskCard label="Appraisal" pillar={report.risks.appraisal} />
-                  <RiskCard label="Market" pillar={report.risks.market} />
+                  <RiskCard label={t("pages.dealCoachPanel.overpay")} pillar={report.risks.overpay} />
+                  <RiskCard label={t("pages.dealCoachPanel.appraisal")} pillar={report.risks.appraisal} />
+                  <RiskCard label={t("pages.dealCoachPanel.market")} pillar={report.risks.market} />
                 </div>
               </SectionCard>
             ) : null}
@@ -336,7 +338,7 @@ export default function DealCoachPanel() {
             {/* Negotiation scripts */}
             {report.negotiation ? (
               <SectionCard
-                title="Negotiation scripts"
+                title={t("pages.dealCoachPanel.scripts")}
                 subtitle="Three scenarios — adapt the wording to your buyer's voice."
               >
                 <div className="space-y-4">

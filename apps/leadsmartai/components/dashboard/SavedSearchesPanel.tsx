@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { Bell, BellOff, Edit2, Plus, Trash2, X } from "lucide-react";
 import type {
   AlertFrequency,
@@ -20,6 +22,8 @@ type Props = {
  * editing (sqft, lot size, keywords) is a follow-up.
  */
 export default function SavedSearchesPanel({ contactId }: Props) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [searches, setSearches] = useState<SavedSearch[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +68,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
     <section className="rounded-xl border border-gray-200 bg-white p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">Saved searches</h2>
+          <h2 className="text-sm font-semibold text-gray-900">{t("pages.savedSearches.heading")}</h2>
           <p className="mt-0.5 text-xs text-gray-500">
             When new listings match these criteria, the contact gets an
             alert email and the signal feeds into their engagement score.
@@ -75,8 +79,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
           onClick={() => setEditingId("new")}
           className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
         >
-          <Plus className="h-3 w-3" aria-hidden /> Add search
-        </button>
+          <Plus className="h-3 w-3" aria-hidden />{t("pages.savedSearches.add")}</button>
       </div>
 
       {error && (
@@ -86,10 +89,10 @@ export default function SavedSearchesPanel({ contactId }: Props) {
       )}
 
       {loading ? (
-        <div className="mt-3 text-xs text-gray-400">Loading…</div>
+        <div className="mt-3 text-xs text-gray-400">{t("pages.savedSearches.loading")}</div>
       ) : searches.length === 0 && editingId !== "new" ? (
         <div className="mt-3 rounded border border-dashed border-gray-200 p-4 text-center text-xs text-gray-500">
-          No saved searches yet. Click <span className="font-medium">Add search</span> to
+          No saved searches yet. Click <span className="font-medium">{t("pages.savedSearches.add")}</span> to
           start alerting this contact when matching listings come on market.
         </div>
       ) : (
@@ -123,7 +126,9 @@ export default function SavedSearchesPanel({ contactId }: Props) {
                   </div>
                   {s.lastAlertedAt && (
                     <div className="mt-0.5 text-[10px] text-gray-400">
-                      Last alerted {new Date(s.lastAlertedAt).toLocaleDateString()}
+                      {t("pages.savedSearches.lastAlerted", {
+                    date: new Date(s.lastAlertedAt).toLocaleDateString(locale),
+                  })}
                     </div>
                   )}
                 </div>
@@ -131,7 +136,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
                   <button
                     type="button"
                     onClick={() => setEditingId(s.id)}
-                    aria-label="Edit"
+                    aria-label={t("pages.savedSearches.edit")}
                     className="inline-flex h-7 w-7 items-center justify-center rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
                   >
                     <Edit2 className="h-3 w-3" />
@@ -139,7 +144,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
                   <button
                     type="button"
                     onClick={() => archive(s.id)}
-                    aria-label="Archive"
+                    aria-label={t("pages.savedSearches.archive")}
                     className="inline-flex h-7 w-7 items-center justify-center rounded border border-gray-200 bg-white text-red-600 hover:bg-red-50"
                   >
                     <Trash2 className="h-3 w-3" />
@@ -213,6 +218,7 @@ type SearchFormProps =
   | { initial?: never; contactId: string; onCancel: () => void; onSaved: () => void };
 
 function SearchForm(props: SearchFormProps) {
+  const { t } = useTranslation("dashboard");
   const isEdit = "initial" in props && props.initial !== undefined;
   const seed = isEdit ? props.initial : null;
   const [name, setName] = useState(seed?.name ?? "");
@@ -270,12 +276,12 @@ function SearchForm(props: SearchFormProps) {
     <form onSubmit={submit} className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-          {isEdit ? "Edit saved search" : "New saved search"}
+          {isEdit ? t("pages.savedSearches.editHeading") : t("pages.savedSearches.newHeading")}
         </span>
         <button
           type="button"
           onClick={props.onCancel}
-          aria-label="Cancel"
+          aria-label={t("pages.savedSearches.cancel")}
           className="inline-flex h-6 w-6 items-center justify-center rounded text-gray-400 hover:bg-gray-200"
         >
           <X className="h-3.5 w-3.5" />
@@ -283,28 +289,28 @@ function SearchForm(props: SearchFormProps) {
       </div>
 
       <label className="block">
-        <span className="text-[11px] font-medium text-gray-600">Name</span>
+        <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.name")}</span>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          placeholder="e.g., 3bd under $1.2M in Monterey Park"
+          placeholder={t("pages.savedSearches.namePlaceholder")}
           className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
         />
       </label>
 
       <div className="grid grid-cols-2 gap-3">
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">City</span>
+          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.city")}</span>
           <input
             value={criteria.city ?? ""}
             onChange={(e) => set("city", e.target.value)}
-            placeholder="Monterey Park"
+            placeholder={t("pages.savedSearches.cityPlaceholder")}
             className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">State</span>
+          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.state")}</span>
           <input
             value={criteria.state ?? ""}
             onChange={(e) => set("state", e.target.value.toUpperCase().slice(0, 2))}
@@ -313,7 +319,7 @@ function SearchForm(props: SearchFormProps) {
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">ZIP</span>
+          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.zip")}</span>
           <input
             value={criteria.zip ?? ""}
             onChange={(e) => set("zip", e.target.value.slice(0, 5))}
@@ -322,7 +328,7 @@ function SearchForm(props: SearchFormProps) {
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">Property type</span>
+          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.propertyType")}</span>
           <select
             value={criteria.propertyType ?? "any"}
             onChange={(e) =>
@@ -330,15 +336,15 @@ function SearchForm(props: SearchFormProps) {
             }
             className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
           >
-            <option value="any">Any</option>
-            <option value="single_family">Single family</option>
-            <option value="condo">Condo</option>
-            <option value="townhouse">Townhouse</option>
-            <option value="multi_family">Multi-family</option>
+            <option value="any">{t("pages.savedSearches.any")}</option>
+            <option value="single_family">{t("pages.savedSearches.singleFamily")}</option>
+            <option value="condo">{t("pages.savedSearches.condo")}</option>
+            <option value="townhouse">{t("pages.savedSearches.townhouse")}</option>
+            <option value="multi_family">{t("pages.savedSearches.multiFamily")}</option>
           </select>
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">Price min</span>
+          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.priceMin")}</span>
           <input
             type="number"
             value={criteria.priceMin ?? ""}
@@ -348,7 +354,7 @@ function SearchForm(props: SearchFormProps) {
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">Price max</span>
+          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.priceMax")}</span>
           <input
             type="number"
             value={criteria.priceMax ?? ""}
@@ -358,7 +364,7 @@ function SearchForm(props: SearchFormProps) {
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">Beds min</span>
+          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.bedsMin")}</span>
           <input
             type="number"
             value={criteria.bedsMin ?? ""}
@@ -368,7 +374,7 @@ function SearchForm(props: SearchFormProps) {
           />
         </label>
         <label className="block">
-          <span className="text-[11px] font-medium text-gray-600">Baths min</span>
+          <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.bathsMin")}</span>
           <input
             type="number"
             step="0.5"
@@ -381,15 +387,15 @@ function SearchForm(props: SearchFormProps) {
       </div>
 
       <label className="block">
-        <span className="text-[11px] font-medium text-gray-600">Alert frequency</span>
+        <span className="text-[11px] font-medium text-gray-600">{t("pages.savedSearches.alertFrequency")}</span>
         <select
           value={frequency}
           onChange={(e) => setFrequency(e.target.value as AlertFrequency)}
           className="mt-0.5 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm"
         >
-          <option value="instant">Instant (as soon as a listing matches)</option>
-          <option value="daily">Daily digest</option>
-          <option value="weekly">Weekly digest</option>
+          <option value="instant">{t("pages.savedSearches.instant")}</option>
+          <option value="daily">{t("pages.savedSearches.dailyDigest")}</option>
+          <option value="weekly">{t("pages.savedSearches.weeklyDigest")}</option>
           <option value="never">Paused (save criteria, don&apos;t email)</option>
         </select>
       </label>
