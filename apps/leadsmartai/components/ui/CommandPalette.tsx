@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 
 const COMMANDS = [
@@ -22,6 +23,7 @@ const COMMANDS = [
 ];
 
 export function CommandPalette() {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -100,7 +102,7 @@ export function CommandPalette() {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setSelectedIdx(0); }}
             onKeyDown={handleKeyDown}
-            placeholder="Search pages... (Esc to close)"
+            placeholder={t("pages.commandPalette.searchPlaceholder")}
             className="flex-1 text-sm bg-transparent outline-none placeholder-gray-400"
           />
           <kbd className="hidden sm:inline-block text-[10px] text-gray-400 border border-gray-200 rounded px-1.5 py-0.5">
@@ -109,7 +111,7 @@ export function CommandPalette() {
         </div>
         <div className="max-h-[320px] overflow-y-auto py-2">
           {filtered.length === 0 ? (
-            <p className="px-4 py-6 text-sm text-gray-400 text-center">No matching pages.</p>
+            <p className="px-4 py-6 text-sm text-gray-400 text-center">{t("pages.commandPalette.noMatches")}</p>
           ) : (
             filtered.map((cmd, i) => (
               <button
@@ -126,9 +128,9 @@ export function CommandPalette() {
           )}
         </div>
         <div className="border-t border-gray-100 px-4 py-2 flex gap-4 text-[10px] text-gray-400">
-          <span><kbd className="border border-gray-200 rounded px-1">↑↓</kbd> Navigate</span>
-          <span><kbd className="border border-gray-200 rounded px-1">↵</kbd> Open</span>
-          <span><kbd className="border border-gray-200 rounded px-1">Esc</kbd> Close</span>
+          <span><kbd className="border border-gray-200 rounded px-1">↑↓</kbd>{t("pages.commandPalette.navigate")}</span>
+          <span><kbd className="border border-gray-200 rounded px-1">↵</kbd>{t("pages.commandPalette.open")}</span>
+          <span><kbd className="border border-gray-200 rounded px-1">Esc</kbd>{t("pages.commandPalette.close")}</span>
         </div>
       </div>
     </div>

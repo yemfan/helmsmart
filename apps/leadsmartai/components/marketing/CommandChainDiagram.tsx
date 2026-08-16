@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowDown,
   CheckCircle2,
@@ -151,6 +152,7 @@ const COMMANDS: Command[] = [
 ];
 
 export default function CommandChainDiagram() {
+  const { t } = useTranslation("dashboard");
   const [activeId, setActiveId] = useState(COMMANDS[0].id);
   const active = COMMANDS.find((c) => c.id === activeId) ?? COMMANDS[0];
 
@@ -184,30 +186,26 @@ export default function CommandChainDiagram() {
         <div className="w-full max-w-md rounded-2xl border-2 border-[#0072ce] bg-white p-4 shadow-sm dark:bg-slate-900">
           <div className="flex items-center justify-between gap-3">
             <p className="inline-flex items-center gap-2 font-heading text-sm font-bold text-slate-900 dark:text-white">
-              <Crown size={16} className="text-[#0072ce]" aria-hidden /> You, the Realtor
-            </p>
-            <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0072ce]">
-              The boss
-            </span>
+              <Crown size={16} className="text-[#0072ce]" aria-hidden />{t("pages.commandChain.youTheRealtor")}</p>
+            <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0072ce]">{t("pages.commandChain.theBoss")}</span>
           </div>
           <div className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-sm italic text-slate-700 dark:bg-slate-800 dark:text-slate-200">
             {active.command}
           </div>
         </div>
 
-        <Connector label="one command" />
+        <Connector label={t("pages.commandChain.oneCommand")} />
 
         {/* Boss Assistant */}
         <div className="rounded-full border border-violet-300 bg-violet-50 px-6 py-3 text-center shadow-sm dark:border-violet-700 dark:bg-violet-900/30">
           <p className="inline-flex items-center gap-2 font-heading text-sm font-bold text-violet-900 dark:text-violet-200">
-            <House size={16} aria-hidden /> Boss Assistant
-          </p>
+            <House size={16} aria-hidden />{t("pages.commandChain.bossAssistant")}</p>
           <p className="text-[11px] text-violet-700/80 dark:text-violet-300/80">
             plans it · assigns the right teammates · reports back
           </p>
         </div>
 
-        <Connector label="delegates to" fan />
+        <Connector label={t("pages.commandChain.delegatesTo")} fan />
 
         {/* The team — assigned members light up */}
         <div className="grid w-full grid-cols-2 gap-2.5 sm:grid-cols-5">
@@ -245,9 +243,7 @@ export default function CommandChainDiagram() {
 
         {/* What the assigned team runs — processes + artifacts */}
         <div className="mt-6 w-full rounded-2xl border border-slate-200 bg-slate-50/70 p-5 dark:border-slate-800 dark:bg-slate-900/40">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            What happens next — automatically
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("pages.commandChain.whatHappens")}</p>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
             {active.steps.map((s) => (
               <li key={s} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
@@ -258,9 +254,7 @@ export default function CommandChainDiagram() {
           </ul>
 
           <div className="mt-5 border-t border-slate-200 pt-4 dark:border-slate-700">
-            <p className="text-xs font-semibold uppercase tracking-wider text-[#0072ce]">
-              What you get — ready to hand over
-            </p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#0072ce]">{t("pages.commandChain.whatYouGet")}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {active.artifacts.map((a) => (
                 <span

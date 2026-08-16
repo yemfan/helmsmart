@@ -45,6 +45,8 @@ const ALLOWED = new Set([
   "Signature",
   "Team",
   "PDF",
+  // The key cap, not a word: it is printed on the keyboard the same way here.
+  "Esc",
 ]);
 
 const COPY_ATTRS = /\b(?:placeholder|title|label|aria-label|alt)="([^"]+)"/g;

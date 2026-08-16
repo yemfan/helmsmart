@@ -4153,6 +4153,57 @@
       "noneForAnchor": "No playbooks available for this anchor.",
       "cancel": "Cancel",
       "leadBound": "This playbook is lead-bound — every task will be linked to the contact you pick."
+    },
+    "growthCapture": {
+      "thanks": "Thanks — we'll follow up with next steps.",
+      "email": "Email",
+      "continueCta": "Continue",
+      "tellMore": "Tell us a bit more",
+      "cityZip": "City or ZIP (optional)",
+      "phone": "Phone (optional)",
+      "name": "Name (optional)"
+    },
+    "adPhotos": {
+      "title": "Ad photos",
+      "intro": "Upload lifestyle or brand photos. Your Marketing Assistant rotates them into branded photo ads — your logo, a headline, and a CTA overlaid — and schedules them with your other posts.",
+      "signatureOnly": "Custom photo ads are a Signature feature. Upgrade to upload your own brand photos.",
+      "drop": "Drag photos here, or click to upload",
+      "empty": "No photos yet. Upload a few and they’ll start rotating into your posts.",
+      "removeAlt": "Remove photo",
+      "remove": "Remove"
+    },
+    "commandChain": {
+      "youTheRealtor": "You, the Realtor",
+      "theBoss": "The boss",
+      "oneCommand": "one command",
+      "bossAssistant": "Boss Assistant",
+      "delegatesTo": "delegates to",
+      "whatHappens": "What happens next — automatically",
+      "whatYouGet": "What you get — ready to hand over"
+    },
+    "postQueue": {
+      "title": "Post queue",
+      "empty": "No posts yet. Once your weekly plan runs, each post shows up here with its publish time.",
+      "heldClaim": "Boss Assistant held this — it couldn't verify a claim:",
+      "approveAnyway": "Approve anyway only if you know the claim is true.",
+      "reschedule": "Reschedule",
+      "cancel": "Cancel",
+      "recentlyPosted": "Recently posted"
+    },
+    "commandPalette": {
+      "searchPlaceholder": "Search pages… (Esc to close)",
+      "noMatches": "No matching pages.",
+      "navigate": "Navigate",
+      "open": "Open",
+      "close": "Close"
+    },
+    "csvImport": {
+      "title": "Import Contacts from CSV",
+      "sub": "Upload a CSV file with contact data. Supported columns: Name, Email, Phone, Address, City, State, Zip, Notes.",
+      "limits": "Max 5 MB, up to 10,000 rows",
+      "cancel": "Cancel",
+      "started": "Import started",
+      "done": "Done"
     }
   }
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 /**
  * The post queue: what's about to go out, when, and to where — with the gate.
@@ -39,6 +41,8 @@ const PLATFORM_LABEL: Record<string, string> = {
 };
 
 export default function PostQueue() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [pending, setPending] = useState<QueueItem[]>([]);
   const [recent, setRecent] = useState<QueueItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -156,7 +160,7 @@ export default function PostQueue() {
     <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">Post queue</h2>
+          <h2 className="text-sm font-semibold text-gray-900">{t("pages.postQueue.title")}</h2>
           <p className="text-xs text-gray-500">
             {awaiting.length > 0 ? (
               <>
@@ -189,10 +193,7 @@ export default function PostQueue() {
       )}
 
       {pending.length === 0 && recent.length === 0 && (
-        <p className="text-xs text-gray-500">
-          No posts yet. Once your weekly plan runs, each post shows up here with its
-          publish time.
-        </p>
+        <p className="text-xs text-gray-500">{t("pages.postQueue.empty")}</p>
       )}
 
       <ul className="space-y-2">
@@ -213,7 +214,7 @@ export default function PostQueue() {
                 {PLATFORM_LABEL[item.platform] ?? item.platform}
                 {item.accountName ? ` — ${item.accountName}` : ""}
               </span>
-              <span className="text-xs text-gray-500">{fmtWhen(item.scheduled_for)}</span>
+              <span className="text-xs text-gray-500">{fmtWhen(item.scheduled_for, locale)}</span>
             </div>
 
             <p className="line-clamp-3 whitespace-pre-wrap text-xs text-gray-800">
@@ -225,9 +226,7 @@ export default function PostQueue() {
                 bare "flagged" the reader has to reverse-engineer. */}
             {item.review_verdict === "flagged" && (
               <div className="mt-2 rounded-md border border-amber-200 bg-amber-50 p-2">
-                <p className="text-[11px] font-semibold text-amber-900">
-                  Boss Assistant held this — it couldn&apos;t verify a claim:
-                </p>
+                <p className="text-[11px] font-semibold text-amber-900">{t("pages.postQueue.heldClaim")}</p>
                 <ul className="mt-1 space-y-1">
                   {(item.review_issues ?? []).map((iss, n) => (
                     <li key={n} className="text-[11px] text-amber-900">
@@ -239,9 +238,7 @@ export default function PostQueue() {
                     </li>
                   ))}
                 </ul>
-                <p className="mt-1 text-[10px] text-amber-700">
-                  Approve anyway only if you know the claim is true.
-                </p>
+                <p className="mt-1 text-[10px] text-amber-700">{t("pages.postQueue.approveAnyway")}</p>
               </div>
             )}
 
@@ -276,9 +273,7 @@ export default function PostQueue() {
                   onClick={() => reschedule(item)}
                   disabled={busyId !== null}
                   className="rounded-md border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
-                >
-                  Reschedule
-                </button>
+                >{t("pages.postQueue.reschedule")}</button>
               )}
               {item.status !== "posting" && (
                 <button
@@ -286,9 +281,7 @@ export default function PostQueue() {
                   onClick={() => act(item.id, "cancel")}
                   disabled={busyId !== null}
                   className="rounded-md border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-60"
-                >
-                  Cancel
-                </button>
+                >{t("pages.postQueue.cancel")}</button>
               )}
             </div>
           </li>
@@ -297,7 +290,7 @@ export default function PostQueue() {
 
       {recent.length > 0 && (
         <div className="mt-4 border-t border-gray-100 pt-3">
-          <h3 className="mb-1.5 text-xs font-semibold text-gray-700">Recently posted</h3>
+          <h3 className="mb-1.5 text-xs font-semibold text-gray-700">{t("pages.postQueue.recentlyPosted")}</h3>
           <ul className="space-y-1">
             {recent.map((item) => (
               <li key={item.id} className="flex items-center gap-2 text-[11px] text-gray-500">
@@ -307,7 +300,7 @@ export default function PostQueue() {
                 </span>
                 <span className="truncate">{item.caption.split("\n")[0]}</span>
                 <span className="ml-auto shrink-0">
-                  {item.published_at ? fmtWhen(item.published_at) : ""}
+                  {item.published_at ? fmtWhen(item.published_at, locale) : ""}
                 </span>
               </li>
             ))}
@@ -334,9 +327,9 @@ function StatusChip({ status }: { status: QueueItem["status"] }) {
 }
 
 /** "Mon, Jul 20, 9:00 AM" in the reader's own timezone — slots are stored UTC. */
-function fmtWhen(iso: string): string {
+function fmtWhen(iso: string, locale: string): string {
   try {
-    return new Date(iso).toLocaleString(undefined, {
+    return new Date(iso).toLocaleString(locale, {
       weekday: "short",
       month: "short",
       day: "numeric",

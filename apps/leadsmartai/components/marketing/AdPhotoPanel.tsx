@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { createClient } from "@/lib/supabase/client";
 
@@ -19,6 +20,7 @@ const MAX_BYTES = 8 * 1024 * 1024;
 const ACCEPT = "image/png,image/jpeg,image/webp";
 
 export default function AdPhotoPanel({ canCustomize }: { canCustomize: boolean }) {
+  const { t } = useTranslation("dashboard");
   const [photos, setPhotos] = useState<AdPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -122,11 +124,8 @@ export default function AdPhotoPanel({ canCustomize }: { canCustomize: boolean }
     <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-gray-900">Ad photos</h3>
-          <p className="mt-0.5 text-sm text-gray-500">
-            Upload lifestyle or brand photos. Your Marketing Assistant rotates them into branded photo
-            ads — your logo, a headline, and a CTA overlaid — and schedules them with your other posts.
-          </p>
+          <h3 className="text-base font-semibold text-gray-900">{t("pages.adPhotos.title")}</h3>
+          <p className="mt-0.5 text-sm text-gray-500">{t("pages.adPhotos.intro")}</p>
         </div>
         {canCustomize ? (
           <button
@@ -141,9 +140,7 @@ export default function AdPhotoPanel({ canCustomize }: { canCustomize: boolean }
       </div>
 
       {!canCustomize ? (
-        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Custom photo ads are a Signature feature. Upgrade to upload your own brand photos.
-        </div>
+        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{t("pages.adPhotos.signatureOnly")}</div>
       ) : (
         <>
           <input
@@ -174,7 +171,7 @@ export default function AdPhotoPanel({ canCustomize }: { canCustomize: boolean }
               dragOver ? "border-[#0072ce] bg-blue-50" : "border-gray-300 bg-gray-50 hover:border-[#0072ce]"
             }`}
           >
-            <span className="text-sm font-medium text-gray-700">Drag photos here, or click to upload</span>
+            <span className="text-sm font-medium text-gray-700">{t("pages.adPhotos.drop")}</span>
             <span className="mt-1 text-xs text-gray-400">PNG, JPG, or WebP · up to 8MB each</span>
           </div>
 
@@ -184,7 +181,7 @@ export default function AdPhotoPanel({ canCustomize }: { canCustomize: boolean }
             {loading ? (
               <p className="text-sm text-gray-400">Loading…</p>
             ) : photos.length === 0 ? (
-              <p className="text-sm text-gray-400">No photos yet. Upload a few and they’ll start rotating into your posts.</p>
+              <p className="text-sm text-gray-400">{t("pages.adPhotos.empty")}</p>
             ) : (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 {photos.map((p) => (
@@ -194,11 +191,9 @@ export default function AdPhotoPanel({ canCustomize }: { canCustomize: boolean }
                     <button
                       type="button"
                       onClick={() => remove(p.id)}
-                      aria-label="Remove photo"
+                      aria-label={t("pages.adPhotos.removeAlt")}
                       className="absolute right-1.5 top-1.5 rounded-full bg-black/55 px-2 py-0.5 text-xs font-semibold text-white opacity-0 transition group-hover:opacity-100 hover:bg-black/75"
-                    >
-                      Remove
-                    </button>
+                    >{t("pages.adPhotos.remove")}</button>
                   </div>
                 ))}
               </div>
