@@ -2697,7 +2697,11 @@
       "dailyDigest": "Daily digest",
       "cityPlaceholder": "Monterey Park",
       "weeklyDigest": "Weekly digest",
-      "lastAlerted": "Last alerted {{date}}"
+      "lastAlerted": "Last alerted {{date}}",
+      "intro": "When new listings match these criteria, the contact gets an alert email and the signal feeds into their engagement score.",
+      "emptyBefore": "No saved searches yet. Click",
+      "emptyAfter": "to start alerting this contact when matching listings come on market.",
+      "paused": "Paused (save criteria, don't email)"
     },
     "revenuePanel": {
       "loading": "Loading revenue…",
@@ -2791,7 +2795,12 @@
         "manual": "I approve every post",
         "boss": "Boss Assistant approves",
         "auto": "Full autopilot"
-      }
+      },
+      "letAiRun": "Let AI run my social media",
+      "letAiRunSub": "The AI decides how often to post, which of your connected accounts to use, which topics to cover, and what time to publish — and re-plans every week. Your approval setting below still applies.",
+      "onNotice": "AI automation is on, so the settings below are being chosen for you each week. Turn it off to set them yourself — your choices are kept.",
+      "marketNews": "Include one market-news post each week",
+      "approvalScope": "Applies to social posts only. Live calls and text replies can't wait for approval, so they're governed by their own settings on each assistant."
     },
     "listingAd": {
       "videoAd": "Video ad",
@@ -3315,6 +3324,34 @@
       "newTransaction": "New transaction",
       "type": "Type:",
       "emptyHint": "Create one for a buyer who just had an offer accepted, or for any active deal you want to track in one place."
+    },
+    "outreachComposer": {
+      "intro": "Your Sales Assistant reaches out on your behalf — pick a channel, who to reach, and go.",
+      "oneContact": "One contact",
+      "aSegment": "A segment",
+      "sendNow": "Send now",
+      "scheduleLater": "Schedule for later"
+    },
+    "leadRouting": {
+      "noAgents": "No agents in the routing pool yet.",
+      "active": "Active",
+      "off": "Off",
+      "coverageNote": "Which agents are eligible for each declared ZIP. ZIPs without coverage fall through to the full pool.",
+      "title": "IDX lead-routing pool",
+      "sub": "Roster of every agent in the round-robin pool — DB rules and the env allowlist combined. Sorted by recent activity so you can see at a glance who's hot and who's idle.",
+      "editsOn": "Each agent edits their own rule on",
+      "settingsPage": "their settings page"
+    },
+    "accountant": {
+      "ready": "Your AI Accountant is ready — when a deal goes under contract, its expected commission shows up here.",
+      "commissionMissing": "commission details missing",
+      "noExpenses": "No expenses logged yet — track them and your AI Accountant keeps the categories clean for tax time.",
+      "nothingOutstanding": "Nothing outstanding — commissions are tracked in the pipeline above."
+    },
+    "calendarPage": {
+      "connect": "Connect",
+      "all": "All",
+      "nothingScheduled": "Nothing scheduled this month."
     }
   }
 }

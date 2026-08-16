@@ -60,11 +60,7 @@ const JSX_TEXT = /(?:^|[^=])>([^<>{}]+)</g;
  */
 const PENDING = new Set([
   "app/contact/page.tsx",
-  "app/dashboard/admin/lead-routing/LeadRoutingAdminClient.tsx",
-  "app/dashboard/admin/lead-routing/page.tsx",
-  "app/dashboard/ai-accountant/AccountantClient.tsx",
   "app/dashboard/ai-sales-assistant/SalesAssistantClient.tsx",
-  "app/dashboard/calendar/CalendarClient.tsx",
   "app/dashboard/calls/CallsClient.tsx",
   "app/dashboard/cma/CmaListClient.tsx",
   "app/dashboard/cma/[id]/CmaDetailClient.tsx",
@@ -106,9 +102,6 @@ const PENDING = new Set([
   "components/dashboard/MissedCallActivityLog.tsx",
   "components/dashboard/OutboundCallPanel.tsx",
   "components/dashboard/RevenuePanel.tsx",
-  "components/dashboard/SalesOutreachComposer.tsx",
-  "components/dashboard/SavedSearchesPanel.tsx",
-  "components/dashboard/SocialAutopilotController.tsx",
   "components/dashboard/TemplatesSummaryCard.tsx",
   "components/dashboard/TopBar.tsx",
   "components/dashboard/VoiceReceptionistSettingsPanel.tsx",
@@ -131,6 +124,14 @@ function walk(dir: string, out: string[] = []): string[] {
  */
 const blankComments = (s: string) =>
   s.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " ")).replace(/^(\s*)\/\/.*$/gm, "$1");
+
+/**
+ * A <code> block is a sample the reader retypes, not copy — the setup steps on
+ * the calendar page show a literal Gmail filter, and translating it would give
+ * a Chinese-speaking agent a search that matches nothing.
+ */
+const blankCode = (s: string) =>
+  s.replace(/<code\b[^>]*>[\s\S]*?<\/code>/g, (m) => m.replace(/[^\n]/g, " "));
 
 function isCopy(raw: string): boolean {
   // A wrapped paragraph carries its indentation with it; compare on one line.
@@ -162,7 +163,7 @@ describe("residual English", () => {
          * `>text<` on any single line, so a per-line scan reports it clean.
          * Line numbers come from counting newlines up to the match offset.
          */
-        const body = blankComments(src);
+        const body = blankCode(blankComments(src));
         const at = (offset: number) => body.slice(0, offset).split("\n").length;
         for (const re of [JSX_TEXT, COPY_ATTRS]) {
           for (const m of body.matchAll(re)) {

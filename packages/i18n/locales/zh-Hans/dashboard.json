@@ -2697,7 +2697,11 @@
       "dailyDigest": "每日摘要",
       "cityPlaceholder": "蒙特利公园",
       "weeklyDigest": "每周摘要",
-      "lastAlerted": "上次提醒 {{date}}"
+      "lastAlerted": "上次提醒 {{date}}",
+      "intro": "当有新房源符合这些条件时，联系人会收到提醒邮件，这个行为也会计入他们的互动评分。",
+      "emptyBefore": "还没有保存的搜索条件。点击",
+      "emptyAfter": "，符合条件的房源上市时就会提醒这位联系人。",
+      "paused": "已暂停（保留条件，不发邮件）"
     },
     "revenuePanel": {
       "loading": "正在加载收入数据…",
@@ -2791,7 +2795,12 @@
         "boss": "由 Boss 助理审核",
         "auto": "全自动发布"
       },
-      "post_one": "条帖子"
+      "post_one": "条帖子",
+      "letAiRun": "让 AI 打理我的社交媒体",
+      "letAiRunSub": "由 AI 决定发布频率、使用哪些已连接的账号、覆盖哪些话题、什么时间发布——并且每周重新规划。下方的审批设置依然有效。",
+      "onNotice": "AI 自动化已开启，下面这些设置每周由 AI 替您决定。关闭后即可自行设置——您原本的选择会保留。",
+      "marketNews": "每周包含一条市场行情帖",
+      "approvalScope": "仅适用于社交帖子。实时通话和短信回复等不了审批，因此由每位助理各自的设置来管。"
     },
     "listingAd": {
       "videoAd": "视频广告",
@@ -3315,6 +3324,34 @@
       "newTransaction": "新建交易",
       "type": "类型：",
       "emptyHint": "买家刚有报价被接受时可以建一笔，或者把任何想集中跟踪的在办交易都放进来。"
+    },
+    "outreachComposer": {
+      "intro": "销售助理会代表您主动联系客户——选好渠道和联系对象，就可以开始了。",
+      "oneContact": "单个联系人",
+      "aSegment": "某个客户分组",
+      "sendNow": "立即发送",
+      "scheduleLater": "稍后定时发送"
+    },
+    "leadRouting": {
+      "noAgents": "分配池中还没有经纪人。",
+      "active": "已启用",
+      "off": "已关闭",
+      "coverageNote": "每个已登记邮编分别由哪些经纪人接单。没有覆盖的邮编会落回整个分配池。",
+      "title": "IDX 客源分配池",
+      "sub": "轮流分配池中所有经纪人的名单——合并了数据库规则和环境变量白名单。按最近活跃度排序，谁在忙谁在闲一目了然。",
+      "editsOn": "每位经纪人可以在",
+      "settingsPage": "自己的设置页"
+    },
+    "accountant": {
+      "ready": "AI 会计已就绪——交易一旦签约，预计佣金就会显示在这里。",
+      "commissionMissing": "缺少佣金信息",
+      "noExpenses": "还没有记录支出——记下来，AI 会计会帮您把类别整理好，报税时省事。",
+      "nothingOutstanding": "没有待收款项——佣金都在上方的流程里跟踪。"
+    },
+    "calendarPage": {
+      "connect": "连接",
+      "all": "全部",
+      "nothingScheduled": "本月没有安排。"
     }
   }
 }

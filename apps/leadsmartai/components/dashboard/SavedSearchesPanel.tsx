@@ -69,10 +69,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold text-gray-900">{t("pages.savedSearches.heading")}</h2>
-          <p className="mt-0.5 text-xs text-gray-500">
-            When new listings match these criteria, the contact gets an
-            alert email and the signal feeds into their engagement score.
-          </p>
+          <p className="mt-0.5 text-xs text-gray-500">{t("pages.savedSearches.intro")}</p>
         </div>
         <button
           type="button"
@@ -92,8 +89,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
         <div className="mt-3 text-xs text-gray-400">{t("pages.savedSearches.loading")}</div>
       ) : searches.length === 0 && editingId !== "new" ? (
         <div className="mt-3 rounded border border-dashed border-gray-200 p-4 text-center text-xs text-gray-500">
-          No saved searches yet. Click <span className="font-medium">{t("pages.savedSearches.add")}</span> to
-          start alerting this contact when matching listings come on market.
+          {t("pages.savedSearches.emptyBefore")} <span className="font-medium">{t("pages.savedSearches.add")}</span>{t("pages.savedSearches.emptyAfter")}
         </div>
       ) : (
         <ul className="mt-3 divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200">
@@ -396,7 +392,7 @@ function SearchForm(props: SearchFormProps) {
           <option value="instant">{t("pages.savedSearches.instant")}</option>
           <option value="daily">{t("pages.savedSearches.dailyDigest")}</option>
           <option value="weekly">{t("pages.savedSearches.weeklyDigest")}</option>
-          <option value="never">Paused (save criteria, don&apos;t email)</option>
+          <option value="never">{t("pages.savedSearches.paused")}</option>
         </select>
       </label>
 
@@ -418,9 +414,7 @@ function SearchForm(props: SearchFormProps) {
           type="button"
           onClick={props.onCancel}
           className="rounded border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-600"
-        >
-          Cancel
-        </button>
+        >{t("pages.savedSearches.cancel")}</button>
       </div>
     </form>
   );

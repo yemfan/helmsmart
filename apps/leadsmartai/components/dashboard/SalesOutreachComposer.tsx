@@ -426,9 +426,7 @@ export default function SalesOutreachComposer({
         <Send className="h-4 w-4 text-blue-600" strokeWidth={2} />
         <h2 className="text-sm font-semibold text-slate-900">{t("outreach.heading")}</h2>
       </div>
-      <p className="mb-4 text-xs text-slate-500">
-        Your Sales Assistant reaches out on your behalf — pick a channel, who to reach, and go.
-      </p>
+      <p className="mb-4 text-xs text-slate-500">{t("pages.outreachComposer.intro")}</p>
 
       {/* 1 · Channel */}
       <Step label={t("outreach.steps.channel")} />
@@ -457,12 +455,8 @@ export default function SalesOutreachComposer({
       {/* 3 · Who */}
       <Step label={t("outreach.steps.who")} />
       <div className="mb-2 flex gap-2">
-        <button type="button" onClick={() => { setTargetMode("contact"); resetFeedback(); }} className={chip(targetMode === "contact")}>
-          One contact
-        </button>
-        <button type="button" onClick={() => { setTargetMode("segment"); resetFeedback(); }} className={chip(targetMode === "segment")}>
-          A segment
-        </button>
+        <button type="button" onClick={() => { setTargetMode("contact"); resetFeedback(); }} className={chip(targetMode === "contact")}>{t("pages.outreachComposer.oneContact")}</button>
+        <button type="button" onClick={() => { setTargetMode("segment"); resetFeedback(); }} className={chip(targetMode === "segment")}>{t("pages.outreachComposer.aSegment")}</button>
       </div>
 
       {targetMode === "contact" ? (
@@ -556,13 +550,9 @@ export default function SalesOutreachComposer({
       <Step label={`${channel === "email" ? "6" : "5"} · When`} />
       <div className="mb-2 flex flex-wrap items-center gap-2">
         <button type="button" onClick={() => { setScheduleMode(false); resetFeedback(); }} className={chip(!scheduleMode)}>
-          <Send className="h-3.5 w-3.5" strokeWidth={2} />
-          Send now
-        </button>
+          <Send className="h-3.5 w-3.5" strokeWidth={2} />{t("pages.outreachComposer.sendNow")}</button>
         <button type="button" onClick={() => { setScheduleMode(true); resetFeedback(); }} className={chip(scheduleMode)}>
-          <Clock className="h-3.5 w-3.5" strokeWidth={2} />
-          Schedule for later
-        </button>
+          <Clock className="h-3.5 w-3.5" strokeWidth={2} />{t("pages.outreachComposer.scheduleLater")}</button>
         {scheduleMode && (
           <input
             type="datetime-local"

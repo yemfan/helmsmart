@@ -131,9 +131,7 @@ export default function LeadRoutingAdminClient() {
       ) : null}
 
       {roster.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-600">
-          No agents in the routing pool yet.
-        </div>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-600">{t("pages.leadRouting.noAgents")}</div>
       ) : (
         <RosterTable roster={roster} />
       )}
@@ -222,13 +220,9 @@ function RosterTable({ roster }: { roster: RosterItem[] }) {
                 </td>
                 <td className="px-4 py-2 text-center text-xs">
                   {r.inRoundRobin ? (
-                    <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
-                      Active
-                    </span>
+                    <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">{t("pages.leadRouting.active")}</span>
                   ) : (
-                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 ring-1 ring-slate-200">
-                      Off
-                    </span>
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 ring-1 ring-slate-200">{t("pages.leadRouting.off")}</span>
                   )}
                 </td>
                 <td className="px-4 py-2 text-right text-xs text-slate-700">
@@ -275,10 +269,7 @@ function ZipCoverageGrid({
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <header className="border-b border-slate-100 px-5 py-4">
         <h2 className="text-sm font-semibold text-slate-900">{t("pages.leadRouting.colZip")}</h2>
-        <p className="mt-0.5 text-xs text-slate-500">
-          Which agents are eligible for each declared ZIP. ZIPs without coverage
-          fall through to the full pool.
-        </p>
+        <p className="mt-0.5 text-xs text-slate-500">{t("pages.leadRouting.coverageNote")}</p>
       </header>
       <ul className="divide-y divide-slate-100">
         {entries.map(([zip, agentIds]) => (

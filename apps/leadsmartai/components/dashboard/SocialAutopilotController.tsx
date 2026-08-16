@@ -193,22 +193,13 @@ export default function SocialAutopilotController() {
           className="mt-0.5 h-4 w-4 shrink-0 accent-[#0072ce]"
         />
         <span className="min-w-0">
-          <span className="block text-sm font-semibold text-gray-900">
-            Let AI run my social media
-          </span>
-          <span className="mt-0.5 block text-xs text-gray-600">
-            The AI decides how often to post, which of your connected accounts to use,
-            which topics to cover, and what time to publish — and re-plans every week.
-            Your approval setting below still applies.
-          </span>
+          <span className="block text-sm font-semibold text-gray-900">{t("pages.socialAutopilot.letAiRun")}</span>
+          <span className="mt-0.5 block text-xs text-gray-600">{t("pages.socialAutopilot.letAiRunSub")}</span>
         </span>
       </label>
 
       {aiOn && (
-        <p className="-mt-3 text-[11px] text-gray-500">
-          AI automation is on, so the settings below are being chosen for you each week.
-          Turn it off to set them yourself — your choices are kept.
-        </p>
+        <p className="-mt-3 text-[11px] text-gray-500">{t("pages.socialAutopilot.onNotice")}</p>
       )}
 
       {/* ── Where ───────────────────────────────────────────────────── */}
@@ -286,9 +277,7 @@ export default function SocialAutopilotController() {
             onChange={() => save({ includeTimely: !config.includeTimely })}
             className="h-4 w-4 accent-[#0072ce]"
           />
-          <span className="text-xs text-gray-700">
-            Include one market-news post each week
-          </span>
+          <span className="text-xs text-gray-700">{t("pages.socialAutopilot.marketNews")}</span>
         </label>
       </section>
 
@@ -424,10 +413,7 @@ export default function SocialAutopilotController() {
       {error && <p className="text-xs text-red-600">{error}</p>}
       {saved && <p className="text-xs text-green-700">{t("pages.socialAutopilot.saved")}</p>}
 
-      <p className="text-[11px] text-gray-500">
-        Applies to social posts only. Live calls and text replies can&apos;t wait for
-        approval, so they&apos;re governed by their own settings on each assistant.
-      </p>
+      <p className="text-[11px] text-gray-500">{t("pages.socialAutopilot.approvalScope")}</p>
     </div>
   );
 }
