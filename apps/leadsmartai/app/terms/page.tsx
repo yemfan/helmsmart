@@ -22,10 +22,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
       <>
         <p>
           These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of
-          closebossai.com and the CloseBoss Service (the &ldquo;Service&rdquo;)
-          provided by MAXY Investment Inc., a Texas corporation, which operates
-          CloseBoss (&ldquo;CloseBoss,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo;
-          or &ldquo;our&rdquo;). By creating an account, starting a
+          closebossai.com and the CloseBoss service (the &ldquo;Service&rdquo;).
+          CloseBoss is a product of MAXY Investment Inc., a Texas corporation
+          (referred to in these Terms as &ldquo;CloseBoss,&rdquo; &ldquo;we,&rdquo;
+          &ldquo;us,&rdquo; or &ldquo;our&rdquo;). By creating an account, starting a
           trial, or otherwise using the Service, you agree to these Terms and our{" "}
           <Link href="/privacy" className="text-[#0072ce] hover:underline">
             Privacy Policy
