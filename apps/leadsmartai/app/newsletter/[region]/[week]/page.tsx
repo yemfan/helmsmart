@@ -15,6 +15,8 @@ import {
   coerceState,
   type DigestItem,
 } from "@/lib/newsletter/generateDigest";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export const dynamic = "force-dynamic";
 
@@ -22,11 +24,11 @@ type Props = { params: Promise<{ region: string; week: string }> };
 
 const WEEK_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-function formatWeek(d: string): string {
+function formatWeek(d: string, locale: string): string {
   const dt = new Date(`${d}T00:00:00Z`);
   return Number.isNaN(dt.getTime())
     ? d
-    : dt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+    : dt.toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
 }
 
 async function loadIssue(
@@ -56,7 +58,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       /* fall back to U.S. */
     }
   }
-  const weekLabel = WEEK_RE.test(week) ? formatWeek(week) : week;
+  const locale = intlLocale(await getServerLocale());
+  const weekLabel = WEEK_RE.test(week) ? formatWeek(week, locale) : week;
   const title = `${regionName} Housing & Rates — Week of ${weekLabel} | CloseBoss`;
   const description = `The week of ${weekLabel} in mortgage rates and the housing market, in plain English — paired with the latest ${regionName} market snapshot. Every figure linked to its source.`;
 
@@ -75,13 +78,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function NewsletterIssuePage({ params }: Props) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const { region, week } = await params;
   const issue = await loadIssue(region, week);
   if (!issue) notFound();
 
   const { digest, region: reg, weekOf } = issue;
   const base = getSiteUrl();
-  const weekLabel = formatWeek(weekOf);
+  const weekLabel = formatWeek(weekOf, locale);
   const rawItems = Array.isArray(digest.items) ? digest.items : [];
   const sources = Array.isArray(digest.sources) ? digest.sources : [];
 
@@ -285,8 +290,8 @@ export default async function NewsletterIssuePage({ params }: Props) {
 
         {/* Sources */}
         {sources.length > 0 && (
-          <section aria-label="Sources" className="space-y-3">
-            <h2 className="text-xl font-bold text-slate-900">Sources</h2>
+          <section aria-label={t("pages.articleChrome.sources", { ns: "dashboard" })} className="space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">{t("pages.articleChrome.sources", { ns: "dashboard" })}</h2>
             <ul className="space-y-1 text-sm">
               {sources.map((sc, i) => (
                 <li key={i} className="flex gap-2">

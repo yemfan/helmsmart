@@ -1,6 +1,8 @@
- "use client";
+"use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 type Lead = {
   name: string;
@@ -16,6 +18,8 @@ type LeadsResponse = {
 };
 
 export default function AgentHomeValueLeadsPage() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,10 +113,10 @@ export default function AgentHomeValueLeadsPage() {
             <table className="min-w-full text-xs border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-left text-gray-600">
-                  <th className="px-3 py-2 font-semibold">Name</th>
-                  <th className="px-3 py-2 font-semibold">Address</th>
-                  <th className="px-3 py-2 font-semibold">Email</th>
-                  <th className="px-3 py-2 font-semibold">Phone</th>
+                  <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.name", { ns: "dashboard" })}</th>
+                  <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.address", { ns: "dashboard" })}</th>
+                  <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.email", { ns: "dashboard" })}</th>
+                  <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.phone", { ns: "dashboard" })}</th>
                   <th className="px-3 py-2 font-semibold">Agent ID</th>
                   <th className="px-3 py-2 font-semibold">Date</th>
                 </tr>
@@ -131,7 +135,7 @@ export default function AgentHomeValueLeadsPage() {
                     <td className="px-3 py-2">{lead.phone}</td>
                     <td className="px-3 py-2">{lead.agent_id}</td>
                     <td className="px-3 py-2">
-                      {new Date(lead.timestamp).toLocaleString()}
+                      {new Date(lead.timestamp).toLocaleString(locale)}
                     </td>
                   </tr>
                 ))}

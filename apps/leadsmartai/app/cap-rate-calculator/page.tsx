@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
 import JsonLd from "../../components/JsonLd";
 
 export default function CapRateCalculator() {
+  const { t } = useTranslation("dashboard");
   const [purchasePrice, setPurchasePrice] = useState<number>(400000);
   const [annualRent, setAnnualRent] = useState<number>(28800);
   const [vacancyRate, setVacancyRate] = useState<number>(5);
@@ -58,11 +60,9 @@ export default function CapRateCalculator() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">Cap Rate Calculator</h1>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.capRateCalculator")}</h1>
       <p className="text-gray-600 mb-8">
         Calculate capitalization rate from NOI and purchase price.
       </p>
@@ -84,9 +84,7 @@ export default function CapRateCalculator() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>
@@ -133,9 +131,7 @@ export default function CapRateCalculator() {
             to its purchase price or value, expressed as a percentage.
             It is important because it helps investors quickly compare the income potential and
             risk profile of different properties. You can calculate it instantly with this{" "}
-            <Link href="/cap-rate-calculator" className="text-blue-600 underline">
-              Cap Rate Calculator
-            </Link>
+            <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>
         </article>
@@ -150,9 +146,7 @@ export default function CapRateCalculator() {
             mortgage payments.
             This calculator helps you estimate NOI and cap rate at the same time, and you can
             analyze detailed cash flow with our{" "}
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
             .
           </p>
         </article>
@@ -167,9 +161,7 @@ export default function CapRateCalculator() {
             Lower cap rates are typical in strong, supply-constrained markets where investors are
             willing to accept lower yields for more stability. You can compare cap rates across
             deals and then analyze overall returns with our{" "}
-            <Link href="/property-investment-analyzer" className="text-blue-600 underline">
-              Property Investment Analyzer
-            </Link>
+            <Link href="/property-investment-analyzer" className="text-blue-600 underline">{t("pages.articleChrome.propertyAnalyzer")}</Link>
             .
           </p>
         </article>
@@ -183,13 +175,9 @@ export default function CapRateCalculator() {
             purchase price, but your real return also depends on your loan terms and cash invested.
             To see the full picture, combine cap rate from this tool with cash-on-cash and ROI
             metrics from our{" "}
-            <Link href="/roi-calculator" className="text-blue-600 underline">
-              ROI Calculator
-            </Link>{" "}
+            <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>{" "}
             and{" "}
-            <Link href="/property-investment-analyzer" className="text-blue-600 underline">
-              Property Investment Analyzer
-            </Link>
+            <Link href="/property-investment-analyzer" className="text-blue-600 underline">{t("pages.articleChrome.propertyAnalyzer")}</Link>
             .
           </p>
         </article>
@@ -204,28 +192,20 @@ export default function CapRateCalculator() {
             secondary markets show higher caps.
             Use this calculator to evaluate individual properties and compare them to recent sales
             or broker guidance. Then check projected cash flow with our{" "}
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
             .
           </p>
         </article>
 
         <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-4">Related Calculators</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("pages.articleChrome.relatedCalculators")}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>
-            <Link href="/roi-calculator" className="text-blue-600 underline">
-              ROI Calculator
-            </Link>
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
+            <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>
             <Link href="/property-investment-analyzer" className="text-blue-600 underline">
               Investment Analyzer
             </Link>
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
           </div>
         </div>
       </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
@@ -28,6 +29,7 @@ function balanceAfterPayments(
 }
 
 export default function AdjustableRateCalculator() {
+  const { t } = useTranslation("dashboard");
   const [homePrice, setHomePrice] = useState<number>(400000);
   const [downPayment, setDownPayment] = useState<number>(80000);
   const [loanTerm, setLoanTerm] = useState<number>(30);
@@ -99,9 +101,7 @@ export default function AdjustableRateCalculator() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-2">
         Adjustable Rate Mortgage (ARM) Calculator
@@ -113,11 +113,11 @@ export default function AdjustableRateCalculator() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Loan details</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("pages.articleChrome.loanDetails")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField label="Home price ($)" value={homePrice} onChange={setHomePrice} min={1000} />
               <InputField label="Down payment ($)" value={downPayment} onChange={setDownPayment} min={0} />
-              <InputField label="Loan term (years)" value={loanTerm} onChange={setLoanTerm} min={1} max={30} />
+              <InputField label={t("pages.articleChrome.loanTermYears")} value={loanTerm} onChange={setLoanTerm} min={1} max={30} />
               <InputField
                 label="Initial interest rate (%)"
                 value={initialRate}

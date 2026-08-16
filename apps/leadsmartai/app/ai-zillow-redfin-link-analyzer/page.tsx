@@ -1,6 +1,7 @@
  "use client";
 
 import { useMemo, useState } from "react";
+import { getServerT } from "@/lib/i18n/server";
 
 type Platform = "zillow" | "redfin";
 
@@ -51,7 +52,8 @@ type DealScore = {
   color: "green" | "yellow" | "red";
 };
 
-export default function AIZillowRedfinLinkAnalyzerPage() {
+export default async function AIZillowRedfinLinkAnalyzerPage() {
+  const t = await getServerT();
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -526,12 +528,12 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-sm">
               <MetricCard
-                label="Cap Rate"
+                label={t("pages.articleChrome.capRate", { ns: "dashboard" })}
                 value={`${metrics.capRate.toFixed(1)}%`}
                 tooltip="Cap Rate = (NOI ÷ Value) × 100"
               />
               <MetricCard
-                label="Monthly Cash Flow"
+                label={t("pages.articleChrome.monthlyCashFlow", { ns: "dashboard" })}
                 value={`$${metrics.monthlyCashFlow.toFixed(0)}`}
                 tooltip="Monthly Cash Flow = Rent – Mortgage – Operating Expenses"
               />

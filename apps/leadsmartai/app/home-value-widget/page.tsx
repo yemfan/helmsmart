@@ -1,6 +1,7 @@
  "use client";
 
 import { useState } from "react";
+import { getServerT } from "@/lib/i18n/server";
 
 type WidgetStep = "address" | "email" | "done";
 
@@ -10,7 +11,8 @@ type EstimateResult = {
   high: number;
 };
 
-export default function HomeValueWidgetPage() {
+export default async function HomeValueWidgetPage() {
+  const t = await getServerT();
   const [step, setStep] = useState<WidgetStep>("address");
   const [address, setAddress] = useState("");
   const [name, setName] = useState("");
@@ -184,7 +186,7 @@ export default function HomeValueWidgetPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
+              placeholder={t("pages.articleChrome.email", { ns: "dashboard" })}
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input

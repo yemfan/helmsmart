@@ -17,6 +17,7 @@ import {
   type FeatureIcon,
 } from "@/lib/marketing/features";
 import { getSiteUrl } from "@/lib/siteUrl";
+import { getServerT } from "@/lib/i18n/server";
 
 const PRIMARY_CTA_HREF = "/onboarding";
 const BRAND = "#0072ce";
@@ -65,6 +66,7 @@ export default async function FeatureDetailPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const t = await getServerT();
   const { slug } = await params;
   const feature = getFeaturePageBySlug(slug);
   if (!feature) return notFound();
@@ -124,7 +126,7 @@ export default async function FeatureDetailPage({
         </div>
         <div className="relative mx-auto max-w-3xl text-center">
           {/* Breadcrumb (visible, matches BreadcrumbList schema) */}
-          <nav className="mb-6 text-sm text-slate-500 dark:text-slate-400" aria-label="Breadcrumb">
+          <nav className="mb-6 text-sm text-slate-500 dark:text-slate-400" aria-label={t("pages.articleChrome.breadcrumb", { ns: "dashboard" })}>
             <Link href="/features" className="hover:text-[#0072ce] hover:underline">
               Features
             </Link>
@@ -212,9 +214,7 @@ export default async function FeatureDetailPage({
       {/* ── FAQ ── */}
       <section className="px-6 py-18 md:py-20">
         <div className="mx-auto max-w-3xl">
-          <h2 className="text-center font-heading text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">
-            Frequently asked questions
-          </h2>
+          <h2 className="text-center font-heading text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">{t("pages.articleChrome.faqLong", { ns: "dashboard" })}</h2>
           <dl className="mt-10 space-y-4">
             {feature.faqs.map((f) => (
               <div

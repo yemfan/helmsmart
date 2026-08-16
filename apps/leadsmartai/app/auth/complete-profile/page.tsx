@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fullNameFromUserMetadata } from "@/lib/auth/canonicalUserContact";
 import {
@@ -31,6 +32,7 @@ export default function CompleteProfilePage() {
 }
 
 function CompleteProfileInner() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextRaw = searchParams?.get("next") ?? "/";
@@ -253,7 +255,7 @@ function CompleteProfileInner() {
 
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-700">Email</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.articleChrome.email")}</label>
             <input
               type="email"
               value={email}

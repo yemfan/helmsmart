@@ -1,3 +1,5 @@
+import { getServerT } from "@/lib/i18n/server";
+
 /**
  * Sources / E-E-A-T link-out block shared by every Data Center market page.
  * Links to the primary public providers our warehouse is built from — the same
@@ -22,9 +24,10 @@ const SOURCES = [
   },
 ];
 
-export default function DataSources() {
+export default async function DataSources() {
+  const t = await getServerT();
   return (
-    <section aria-label="Sources" className="space-y-3 border-t border-slate-200 pt-8">
+    <section aria-label={t("pages.articleChrome.sources", { ns: "dashboard" })} className="space-y-3 border-t border-slate-200 pt-8">
       <h2 className="text-lg font-bold text-slate-900">Sources &amp; methodology</h2>
       <p className="text-sm text-slate-500">
         Every figure on this page is drawn from authoritative public housing and

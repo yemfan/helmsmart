@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import RequireAuthGate from "../../components/RequireAuthGate";
 
@@ -43,6 +44,7 @@ type CalculatedResults = {
 };
 
 function AiRealEstateDealAnalyzerPageInner() {
+  const { t } = useTranslation("dashboard");
   const [inputs, setInputs] = useState<Inputs>({
     address: "",
     purchasePrice: 350_000,
@@ -208,9 +210,7 @@ function AiRealEstateDealAnalyzerPageInner() {
             strokeWidth={2}
             d="M15 19l-7-7 7-7"
           />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-2">
         AI Real Estate Deal Analyzer
@@ -259,6 +259,7 @@ function InputForm({
   onAnalyze,
   onReset,
 }: InputFormProps) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="space-y-6">
       {/* Property Address */}
@@ -320,7 +321,7 @@ function InputForm({
             min={0}
           />
           <LabeledNumberInput
-            label="Year Built"
+            label={t("pages.articleChrome.yearBuilt")}
             value={inputs.yearBuilt ?? ""}
             onChange={onChange("yearBuilt")}
             min={1800}
@@ -461,6 +462,7 @@ type ResultsPanelProps = {
 };
 
 function ResultsPanel({ inputs, results }: ResultsPanelProps) {
+  const { t } = useTranslation("dashboard");
   const {
     monthlyMortgage,
     totalMonthlyExpenses,
@@ -490,7 +492,7 @@ function ResultsPanel({ inputs, results }: ResultsPanelProps) {
           hint="Includes operating expenses and mortgage."
         />
         <MetricCard
-          label="Monthly Cash Flow"
+          label={t("pages.articleChrome.monthlyCashFlow")}
           value={`$${monthlyCashFlow.toFixed(0)}`}
           highlight={
             monthlyCashFlow > 0
@@ -501,7 +503,7 @@ function ResultsPanel({ inputs, results }: ResultsPanelProps) {
           }
         />
         <MetricCard
-          label="Cap Rate"
+          label={t("pages.articleChrome.capRate")}
           value={`${capRate.toFixed(2)}%`}
         />
         <MetricCard

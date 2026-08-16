@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { sendPasswordResetEmail } from "@/lib/auth/sendPasswordResetEmail";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
@@ -20,6 +21,7 @@ export default function LoginPage() {
 }
 
 function LoginPageInner() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const { user: sessionUser } = useAuth();
   const searchParams = useSearchParams();
@@ -252,7 +254,7 @@ function LoginPageInner() {
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">Email</label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.email")}</label>
             <input
               type="email"
               value={email}

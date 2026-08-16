@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
 import JsonLd from "../../components/JsonLd";
 
 export default function CashFlowCalculator() {
+  const { t } = useTranslation("dashboard");
   const [monthlyRent, setMonthlyRent] = useState<number>(2500);
   const [monthlyMortgage, setMonthlyMortgage] = useState<number>(1800);
   const [propertyTax, setPropertyTax] = useState<number>(400);
@@ -65,11 +67,9 @@ export default function CashFlowCalculator() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">Cash Flow Calculator</h1>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.cashFlowCalculator")}</h1>
       <p className="text-gray-600 mb-8">
         Estimate monthly and annual cash flow from rental property.
       </p>
@@ -92,9 +92,7 @@ export default function CashFlowCalculator() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>
@@ -140,9 +138,7 @@ export default function CashFlowCalculator() {
             lose each month and year after you subtract realistic expenses from rental income.
             It helps you see whether a deal produces positive or negative cash flow before you move
             forward. You can pair these results with returns from our{" "}
-            <Link href="/property-investment-analyzer" className="text-blue-600 underline">
-              Property Investment Analyzer
-            </Link>{" "}
+            <Link href="/property-investment-analyzer" className="text-blue-600 underline">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
             to evaluate overall performance.
           </p>
         </article>
@@ -158,9 +154,7 @@ export default function CashFlowCalculator() {
             This calculator lets you break out key expenses so you can see how each line item
             affects your net income. You can then convert net operating income into returns using
             our{" "}
-            <Link href="/cap-rate-calculator" className="text-blue-600 underline">
-              Cap Rate Calculator
-            </Link>
+            <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>
         </article>
@@ -174,9 +168,7 @@ export default function CashFlowCalculator() {
             each year, which can significantly lower annual cash flow.
             In this tool you can model vacancy in months per year so you can stress-test deals in
             softer markets. For longer-term projections, you can also model returns in our{" "}
-            <Link href="/property-investment-analyzer" className="text-blue-600 underline">
-              Property Investment Analyzer
-            </Link>
+            <Link href="/property-investment-analyzer" className="text-blue-600 underline">{t("pages.articleChrome.propertyAnalyzer")}</Link>
             .
           </p>
         </article>
@@ -190,13 +182,9 @@ export default function CashFlowCalculator() {
             returns also come from loan paydown and property appreciation.
             A property with modest cash flow may still produce strong overall ROI when you factor in
             equity growth. You can combine cash flow from this tool with return metrics from our{" "}
-            <Link href="/roi-calculator" className="text-blue-600 underline">
-              ROI Calculator
-            </Link>{" "}
+            <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>{" "}
             and{" "}
-            <Link href="/cap-rate-calculator" className="text-blue-600 underline">
-              Cap Rate Calculator
-            </Link>
+            <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>
         </article>
@@ -210,32 +198,22 @@ export default function CashFlowCalculator() {
             mortgage payment, which is a major driver of cash flow.
             Lower rates or longer terms usually improve monthly cash flow but change your total
             interest paid. You can estimate payments with our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
             or{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Loan Amortization Calculator
-            </Link>{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.amortizationCalculator")}</Link>{" "}
             and plug those numbers back into this cash flow tool.
           </p>
         </article>
 
         <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-4">Related Calculators</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("pages.articleChrome.relatedCalculators")}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/cap-rate-calculator" className="text-blue-600 underline">
-              Cap Rate Calculator
-            </Link>
-            <Link href="/roi-calculator" className="text-blue-600 underline">
-              ROI Calculator
-            </Link>
+            <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
+            <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>
             <Link href="/property-investment-analyzer" className="text-blue-600 underline">
               Investment Analyzer
             </Link>
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
           </div>
         </div>
       </section>

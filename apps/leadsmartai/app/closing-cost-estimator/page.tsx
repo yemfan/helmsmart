@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
 import JsonLd from "../../components/JsonLd";
 
 export default function ClosingCostEstimator() {
+  const { t } = useTranslation("dashboard");
   const [homePrice, setHomePrice] = useState<number>(400000);
   const [loanAmount, setLoanAmount] = useState<number>(320000);
   const [originationPercent, setOriginationPercent] = useState<number>(1);
@@ -60,9 +62,7 @@ export default function ClosingCostEstimator() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-2">Closing Cost Estimator</h1>
       <p className="text-gray-600 mb-8">
@@ -86,9 +86,7 @@ export default function ClosingCostEstimator() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>
@@ -152,9 +150,7 @@ export default function ClosingCostEstimator() {
             can be higher in certain markets or for specific loan programs.
             This calculator shows your closing costs as both a dollar amount and a percentage of
             the home price so you can plan alongside your{" "}
-            <Link href="/down-payment-calculator" className="text-blue-600 underline">
-              Down Payment Calculator
-            </Link>
+            <Link href="/down-payment-calculator" className="text-blue-600 underline">{t("pages.articleChrome.downPaymentCalculator")}</Link>
             .
           </p>
         </article>
@@ -170,9 +166,7 @@ export default function ClosingCostEstimator() {
             This tool lets you break out key components like origination, title, appraisal,
             inspection, and &quot;other&quot; fees so you can compare quotes from different
             lenders. You can then factor them into your overall budget with the{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
             .
           </p>
         </article>
@@ -186,13 +180,9 @@ export default function ClosingCostEstimator() {
             a lender credit, though this may increase your interest rate or total amount financed.
             Use this estimator to see the dollar impact, and then model how rolling costs into the
             loan changes your payment with our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
             or{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Loan Amortization Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.amortizationCalculator")}</Link>
             .
           </p>
         </article>
@@ -222,25 +212,17 @@ export default function ClosingCostEstimator() {
               Closing Cost Estimator
             </Link>{" "}
             together with our{" "}
-            <Link href="/affordability-calculator" className="text-blue-600 underline">
-              Affordability Calculator
-            </Link>{" "}
+            <Link href="/affordability-calculator" className="text-blue-600 underline">{t("pages.articleChrome.affordabilityCalculator")}</Link>{" "}
             to see the full picture.
           </p>
         </article>
 
         <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-4">Related Calculators</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("pages.articleChrome.relatedCalculators")}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>
-            <Link href="/down-payment-calculator" className="text-blue-600 underline">
-              Down Payment Calculator
-            </Link>
-            <Link href="/affordability-calculator" className="text-blue-600 underline">
-              Affordability Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
+            <Link href="/down-payment-calculator" className="text-blue-600 underline">{t("pages.articleChrome.downPaymentCalculator")}</Link>
+            <Link href="/affordability-calculator" className="text-blue-600 underline">{t("pages.articleChrome.affordabilityCalculator")}</Link>
             <Link href="/refinance-calculator" className="text-blue-600 underline">
               Refinance Calculator
             </Link>

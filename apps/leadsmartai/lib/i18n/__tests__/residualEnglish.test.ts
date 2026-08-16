@@ -63,6 +63,65 @@ const COPY_ATTRS = /\b(?:placeholder|title|label|aria-label|alt)="([^"]+)"/g;
  */
 const JSX_TEXT = /(?:^|[^=])>([^<>{}]+)</g;
 
+/*
+ * Marketing and article pages that now carry i18n chrome but whose body copy
+ * is still being worked through. Same contract as before: these files may
+ * contain English, everything else may not, and the second assertion fails the
+ * moment one comes clean - so the list can only shrink.
+ *
+ * Delete an entry when its page is finished. When the list is empty, delete
+ * the list and the assertion under it.
+ */
+const PENDING = new Set([
+"app/adjustable-rate-calculator/page.tsx",
+  "app/affordability-calculator/page.tsx",
+  "app/agent-home-value-leads/page.tsx",
+  "app/ai-cma-analyzer/page.tsx",
+  "app/ai-real-estate-deal-analyzer/page.tsx",
+  "app/ai-zillow-redfin-link-analyzer/page.tsx",
+  "app/auth/complete-profile/page.tsx",
+  "app/blog/liondesk-shutdown-what-agents-should-do-next/page.tsx",
+  "app/blog/why-real-estate-crms-keep-failing-solo-agents/page.tsx",
+  "app/blog/your-crm-should-call-your-sphere-not-just-text-it/page.tsx",
+  "app/cap-rate-calculator/page.tsx",
+  "app/cap-rate-roi-calculator/page.tsx",
+  "app/cap-rate-vs-cash-on-cash-return/page.tsx",
+  "app/cap-rate-vs-gross-rent-multiplier/page.tsx",
+  "app/cap-rate-vs-internal-rate-of-return-irr/page.tsx",
+  "app/cash-flow-calculator/page.tsx",
+  "app/closing-cost-estimator/page.tsx",
+  "app/data/_components/DataSources.tsx",
+  "app/data/markets/[state]/[metro]/page.tsx",
+  "app/data/markets/[state]/page.tsx",
+  "app/data/page.tsx",
+  "app/data/reports/[slug]/page.tsx",
+  "app/down-payment-calculator/page.tsx",
+  "app/features/[slug]/page.tsx",
+  "app/forgot-password/page.tsx",
+  "app/help/guides/[slug]/page.tsx",
+  "app/home-value/[city]/page.tsx",
+  "app/home-value-widget/page.tsx",
+  "app/how-cap-rate-affects-property-value/page.tsx",
+  "app/login/page.tsx",
+  "app/market-report/[city]/page.tsx",
+  "app/mortgage-calculator/page.tsx",
+  "app/newsletter/[region]/[week]/page.tsx",
+  "app/oh/[slug]/kiosk/KioskClient.tsx",
+  "app/oh/[slug]/OpenHouseSigninClient.tsx",
+  "app/property/[slug]/page.tsx",
+  "app/property-investment-analyzer/page.tsx",
+  "app/refinance-calculator/page.tsx",
+  "app/rental-property-analyzer/page.tsx",
+  "app/rent-vs-buy-calculator/page.tsx",
+  "app/roi-calculator/page.tsx",
+  "app/sell-house/[city]/page.tsx",
+  "app/signup/page.tsx",
+  "app/smart-cma-builder/page.tsx",
+  "app/switch-from/[slug]/page.tsx",
+  "app/voice-ai-test-drive/page.tsx",
+  "app/what-is-cap-rate-in-real-estate-investing/page.tsx",
+]);
+
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
@@ -108,6 +167,7 @@ function isCopy(raw: string): boolean {
 describe("residual English", () => {
   it("does not linger in files that are already internationalised", () => {
     const findings: string[] = [];
+    const pending: string[] = [];
     for (const root of SCAN) {
       for (const file of walk(join(ROOT, root))) {
         const src = readFileSync(file, "utf8");
@@ -122,12 +182,18 @@ describe("residual English", () => {
         for (const re of [JSX_TEXT, COPY_ATTRS]) {
           for (const m of body.matchAll(re)) {
             if (!isCopy(m[1])) continue;
-            const where = `${relative(ROOT, file).split(sep).join("/")}:${at(m.index ?? 0)}`;
-            findings.push(`${where}  ${m[1].replace(/\s+/g, " ").trim().slice(0, 80)}`);
+            const rel = relative(ROOT, file).split(sep).join("/");
+            const where = `${rel}:${at(m.index ?? 0)}`;
+            (PENDING.has(rel) ? pending : findings).push(
+              `${where}  ${m[1].replace(/\s+/g, " ").trim().slice(0, 80)}`,
+            );
           }
         }
       }
     }
     expect(findings, `\n${findings.join("\n")}\n`).toEqual([]);
+    // The list only shrinks: a file that comes clean must leave it.
+    const clean = [...PENDING].filter((f) => !pending.some((x) => x.startsWith(`${f}:`)));
+    expect(clean, `\nTranslated — remove from PENDING:\n${clean.join("\n")}\n`).toEqual([]);
   });
 });

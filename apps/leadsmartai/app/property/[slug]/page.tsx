@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
+import { getServerT } from "@/lib/i18n/server";
 
 type Comparable = {
   address: string;
@@ -32,7 +33,8 @@ type InvestmentMetrics = {
   roi: number;
 };
 
-export default function PropertyReportPage() {
+export default async function PropertyReportPage() {
+  const t = await getServerT();
   const params = useParams<{ slug: string }>();
   const slug = params?.slug ?? "";
 
@@ -425,16 +427,14 @@ export default function PropertyReportPage() {
       </div>
 
       <div className="bg-white shadow rounded-xl p-6 border border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">
-          Comparable Sales
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">{t("pages.articleChrome.comparableSales", { ns: "dashboard" })}</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full text-xs border-collapse">
             <thead>
               <tr className="bg-gray-50 text-left text-gray-600">
-                <th className="px-3 py-2 font-semibold">Address</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.address", { ns: "dashboard" })}</th>
                 <th className="px-3 py-2 font-semibold">Sale Price</th>
-                <th className="px-3 py-2 font-semibold">Sqft</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.sqft", { ns: "dashboard" })}</th>
                 <th className="px-3 py-2 font-semibold">Price/Sqft</th>
                 <th className="px-3 py-2 font-semibold">Distance</th>
               </tr>
@@ -471,17 +471,13 @@ export default function PropertyReportPage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
           <div className="bg-gray-50 rounded-lg p-3 text-center">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">
-              Cap Rate
-            </p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide">{t("pages.articleChrome.capRate", { ns: "dashboard" })}</p>
             <p className="text-lg font-semibold text-gray-900">
               {investmentMetrics.capRate.toFixed(1)}%
             </p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3 text-center">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">
-              Monthly Cash Flow
-            </p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide">{t("pages.articleChrome.monthlyCashFlow", { ns: "dashboard" })}</p>
             <p className="text-lg font-semibold text-gray-900">
               ${investmentMetrics.monthlyCashFlow.toFixed(0)}
             </p>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { PublicOpenHouseInfo } from "@/lib/open-houses/publicService";
 
 /**
@@ -54,6 +55,7 @@ const SESSION_KEY = (slug: string) => `oh-kiosk-session:${slug}`;
 const RESET_MS = 4000;
 
 export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
+  const { t } = useTranslation("dashboard");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -228,7 +230,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
             />
             <div className="grid grid-cols-2 gap-4">
               <KioskInput
-                label="Email"
+                label={t("pages.articleChrome.email")}
                 value={email}
                 onChange={setEmail}
                 type="email"
@@ -236,7 +238,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
                 inputMode="email"
               />
               <KioskInput
-                label="Phone"
+                label={t("pages.articleChrome.phone")}
                 value={phone}
                 onChange={setPhone}
                 type="tel"

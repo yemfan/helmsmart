@@ -4,6 +4,7 @@ import VoiceAiComparisonTable from "@/components/marketing/voice-ai/VoiceAiCompa
 import VoiceAiDemoRequestForm from "@/components/marketing/voice-ai/VoiceAiDemoRequestForm";
 import VoiceAiHero from "@/components/marketing/voice-ai/VoiceAiHero";
 import VoiceAiSampleTranscripts from "@/components/marketing/voice-ai/VoiceAiSampleTranscripts";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Test-drive our voice AI for real estate | CloseBoss",
@@ -30,7 +31,8 @@ export const metadata: Metadata = {
  * Server-rendered (with one client form island) so it's fast + SEO-friendly.
  * Hits the same Twilio + OpenAI Realtime engine the production CRM uses.
  */
-export default function VoiceAiTestDrivePage() {
+export default async function VoiceAiTestDrivePage() {
+  const t = await getServerT();
   return (
     <main className="mx-auto max-w-6xl space-y-12 px-4 py-10 sm:px-6 sm:py-14">
       <VoiceAiHero />
@@ -42,7 +44,7 @@ export default function VoiceAiTestDrivePage() {
       <VoiceAiDemoRequestForm />
 
       <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm text-slate-700">
-        <h3 className="text-base font-semibold text-slate-900">FAQ</h3>
+        <h3 className="text-base font-semibold text-slate-900">{t("pages.articleChrome.faq", { ns: "dashboard" })}</h3>
         <dl className="mt-4 grid gap-5 sm:grid-cols-2">
           <div>
             <dt className="font-semibold text-slate-900">Is this really an AI on the live demo number?</dt>

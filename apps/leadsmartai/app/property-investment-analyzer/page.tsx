@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
 import JsonLd from "../../components/JsonLd";
 
 export default function PropertyInvestmentAnalyzer() {
+  const { t } = useTranslation("dashboard");
   const [purchasePrice, setPurchasePrice] = useState<number>(350000);
   const [monthlyRent, setMonthlyRent] = useState<number>(2600);
   const [monthlyExpenses, setMonthlyExpenses] = useState<number>(600);
@@ -52,13 +54,9 @@ export default function PropertyInvestmentAnalyzer() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">
-        Property Investment Analyzer
-      </h1>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.propertyAnalyzer")}</h1>
       <p className="text-gray-600 mb-8">
         Analyze rental property cash flow, cap rate, and simple ROI based on your assumptions.
       </p>
@@ -99,9 +97,7 @@ export default function PropertyInvestmentAnalyzer() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>
@@ -157,13 +153,9 @@ export default function PropertyInvestmentAnalyzer() {
             assumptions.
             It brings together monthly numbers and long-term performance so you can compare deals
             side by side. You can use this tool along with our{" "}
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>{" "}
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
             and{" "}
-            <Link href="/cap-rate-calculator" className="text-blue-600 underline">
-              Cap Rate Calculator
-            </Link>
+            <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>
         </article>
@@ -176,16 +168,12 @@ export default function PropertyInvestmentAnalyzer() {
             For a solid analysis you&apos;ll want purchase price, down payment or equity invested,
             mortgage payment, rent, operating expenses, expected vacancy, and a hold period.
             You can estimate loan payments with our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
             and then plug those into this{" "}
             <Link
               href="/property-investment-analyzer"
               className="text-blue-600 underline"
-            >
-              Property Investment Analyzer
-            </Link>
+            >{t("pages.articleChrome.propertyAnalyzer")}</Link>
             .
           </p>
         </article>
@@ -200,9 +188,7 @@ export default function PropertyInvestmentAnalyzer() {
             invested.
             This analyzer shows both so you can see how leverage affects your returns. You can also
             run quick cap rate checks using our{" "}
-            <Link href="/cap-rate-calculator" className="text-blue-600 underline">
-              Cap Rate Calculator
-            </Link>
+            <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>
         </article>
@@ -216,9 +202,7 @@ export default function PropertyInvestmentAnalyzer() {
             assumptions for rent growth, expenses, and vacancy.
             Then compare metrics like monthly cash flow, cap rate, and cash-on-cash return across
             deals. For quick screening, you can also use the{" "}
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>{" "}
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
             before diving deeper here.
           </p>
         </article>
@@ -233,13 +217,9 @@ export default function PropertyInvestmentAnalyzer() {
             Higher rates or shorter terms increase the payment and reduce cash flow, while lower
             rates or longer terms improve monthly numbers but can change total interest paid. You
             can model different loans with our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
             or{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Loan Amortization Calculator
-            </Link>{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.amortizationCalculator")}</Link>{" "}
             and then bring those payments into this analyzer.
           </p>
         </article>
@@ -253,32 +233,20 @@ export default function PropertyInvestmentAnalyzer() {
             today, while others prioritize appreciation and long-term equity growth.
             This analyzer helps you balance monthly income against overall returns so you can choose
             deals that match your goals. You can also isolate pure cash flow in the{" "}
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>{" "}
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
             or long-term returns in the{" "}
-            <Link href="/roi-calculator" className="text-blue-600 underline">
-              ROI Calculator
-            </Link>
+            <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>
             .
           </p>
         </article>
 
         <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-4">Related Calculators</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("pages.articleChrome.relatedCalculators")}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>
-            <Link href="/cap-rate-calculator" className="text-blue-600 underline">
-              Cap Rate Calculator
-            </Link>
-            <Link href="/roi-calculator" className="text-blue-600 underline">
-              ROI Calculator
-            </Link>
-            <Link href="/rent-vs-buy-calculator" className="text-blue-600 underline">
-              Rent vs Buy Calculator
-            </Link>
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
+            <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
+            <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>
+            <Link href="/rent-vs-buy-calculator" className="text-blue-600 underline">{t("pages.articleChrome.rentVsBuyCalculator")}</Link>
           </div>
         </div>
       </section>

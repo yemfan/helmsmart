@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
@@ -14,6 +15,7 @@ function pmt(principal: number, annualRate: number, years: number): number {
 }
 
 export default function ROICalculator() {
+  const { t } = useTranslation("dashboard");
   const [purchasePrice, setPurchasePrice] = useState<number>(300000);
   const [downPayment, setDownPayment] = useState<number>(90000);
   const [interestRate, setInterestRate] = useState<number>(6.5);
@@ -84,11 +86,9 @@ export default function ROICalculator() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">ROI Calculator</h1>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.roiCalculator")}</h1>
       <p className="text-gray-600 mb-8">
         Estimate return on investment including rent, expenses, and appreciation.
       </p>
@@ -100,8 +100,8 @@ export default function ROICalculator() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField label="Purchase price ($)" value={purchasePrice} onChange={setPurchasePrice} min={1000} />
               <InputField label="Down payment ($)" value={downPayment} onChange={setDownPayment} min={0} />
-              <InputField label="Interest rate (%)" value={interestRate} onChange={setInterestRate} min={0.1} max={30} step={0.125} />
-              <InputField label="Loan term (years)" value={loanTerm} onChange={setLoanTerm} min={1} max={30} />
+              <InputField label={t("pages.articleChrome.interestRate")} value={interestRate} onChange={setInterestRate} min={0.1} max={30} step={0.125} />
+              <InputField label={t("pages.articleChrome.loanTermYears")} value={loanTerm} onChange={setLoanTerm} min={1} max={30} />
               <InputField label="Annual rent ($)" value={annualRent} onChange={setAnnualRent} min={0} />
               <InputField label="Annual expenses ($)" value={annualExpenses} onChange={setAnnualExpenses} min={0} />
               <InputField label="Appreciation (%/yr)" value={appreciationPercent} onChange={setAppreciationPercent} min={-10} max={20} step={0.5} />
@@ -111,9 +111,7 @@ export default function ROICalculator() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>

@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { sendPasswordResetEmail } from "@/lib/auth/sendPasswordResetEmail";
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation("dashboard");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +42,7 @@ export default function ForgotPasswordPage() {
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">Email</label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.email")}</label>
             <input
               type="email"
               required

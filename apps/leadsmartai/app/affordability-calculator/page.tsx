@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
@@ -21,6 +22,7 @@ function pmt(principal: number, annualRate: number, years: number): number {
 }
 
 export default function AffordabilityCalculator() {
+  const { t } = useTranslation("dashboard");
   const [annualIncome, setAnnualIncome] = useState<number>(120000);
   const [monthlyDebts, setMonthlyDebts] = useState<number>(500);
   const [downPayment, setDownPayment] = useState<number>(60000);
@@ -62,11 +64,9 @@ export default function AffordabilityCalculator() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">Affordability Calculator</h1>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.affordabilityCalculator")}</h1>
       <p className="text-gray-600 mb-8">
         See how much home you can afford. Uses a 36% debt-to-income ratio.
       </p>
@@ -95,7 +95,7 @@ export default function AffordabilityCalculator() {
                 min={0}
               />
               <InputField
-                label="Interest rate (%)"
+                label={t("pages.articleChrome.interestRate")}
                 value={interestRate}
                 onChange={setInterestRate}
                 min={0.1}
@@ -103,7 +103,7 @@ export default function AffordabilityCalculator() {
                 step={0.125}
               />
               <InputField
-                label="Loan term (years)"
+                label={t("pages.articleChrome.loanTermYears")}
                 value={loanTerm}
                 onChange={setLoanTerm}
                 min={1}
@@ -114,9 +114,7 @@ export default function AffordabilityCalculator() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>
@@ -170,9 +168,7 @@ export default function AffordabilityCalculator() {
             income, existing monthly debts, down payment, and current mortgage rates.
             It applies common debt-to-income guidelines to convert your budget into a target
             housing payment and home price. You can then test specific payments with our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
             .
           </p>
         </article>
@@ -186,9 +182,7 @@ export default function AffordabilityCalculator() {
             monthly income and that all debts stay below 36–43%.
             This calculator helps you stay within those ranges by limiting how much of your income
             can go toward housing. For more detail, you can also run scenarios in our{" "}
-            <Link href="/affordability-calculator" className="text-blue-600 underline">
-              Affordability Calculator
-            </Link>
+            <Link href="/affordability-calculator" className="text-blue-600 underline">{t("pages.articleChrome.affordabilityCalculator")}</Link>
             .
           </p>
         </article>
@@ -203,9 +197,7 @@ export default function AffordabilityCalculator() {
             A smaller down payment may keep you in budget but can add mortgage insurance and
             increase your overall costs. You can experiment with different down payment levels
             using our{" "}
-            <Link href="/down-payment-calculator" className="text-blue-600 underline">
-              Down Payment Calculator
-            </Link>{" "}
+            <Link href="/down-payment-calculator" className="text-blue-600 underline">{t("pages.articleChrome.downPaymentCalculator")}</Link>{" "}
             and then plug the results into this affordability tool.
           </p>
         </article>
@@ -220,9 +212,7 @@ export default function AffordabilityCalculator() {
             When reviewing your results, remember to factor in HOA dues, mortgage insurance, and
             utilities for a full housing budget. You can see how these costs affect cash flow with
             our{" "}
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
             .
           </p>
         </article>
@@ -237,9 +227,7 @@ export default function AffordabilityCalculator() {
             However, you should also consider your net (take-home) pay and lifestyle expenses when
             deciding what payment feels comfortable. You can cross-check your preferred payment in
             our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
             .
           </p>
         </article>
@@ -253,32 +241,20 @@ export default function AffordabilityCalculator() {
             turn changes your monthly payment and maximum price.
             Higher scores usually unlock lower rates and better affordability. You can see how rate
             changes move your payment by testing different rates in our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
             or{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Loan Amortization Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.amortizationCalculator")}</Link>
             .
           </p>
         </article>
 
         <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-4">Related Calculators</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("pages.articleChrome.relatedCalculators")}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>
-            <Link href="/down-payment-calculator" className="text-blue-600 underline">
-              Down Payment Calculator
-            </Link>
-            <Link href="/rent-vs-buy-calculator" className="text-blue-600 underline">
-              Rent vs Buy Calculator
-            </Link>
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
+            <Link href="/down-payment-calculator" className="text-blue-600 underline">{t("pages.articleChrome.downPaymentCalculator")}</Link>
+            <Link href="/rent-vs-buy-calculator" className="text-blue-600 underline">{t("pages.articleChrome.rentVsBuyCalculator")}</Link>
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
           </div>
         </div>
       </section>

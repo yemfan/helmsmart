@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getGuide, HELP_GUIDES } from "@/lib/help/guides";
+import { getServerT } from "@/lib/i18n/server";
 
 type RouteParams = { slug: string };
 
@@ -49,6 +50,7 @@ export default async function HelpGuidePage({
 }: {
   params: Promise<RouteParams>;
 }) {
+  const t = await getServerT();
   const { slug } = await params;
   const guide = getGuide(slug);
   if (!guide) notFound();
@@ -95,7 +97,7 @@ export default async function HelpGuidePage({
       />
 
       <article className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
-        <nav aria-label="Breadcrumb" className="mb-6 text-xs text-slate-500">
+        <nav aria-label={t("pages.articleChrome.breadcrumb", { ns: "dashboard" })} className="mb-6 text-xs text-slate-500">
           <Link href="/help" className="hover:text-slate-700">
             Help center
           </Link>

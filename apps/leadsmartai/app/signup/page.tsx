@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/components/AuthProvider";
 import { SmsConsentNotice, composeConsentVersion } from "@/components/consent/SmsConsentNotice";
 import { useSignupProfilePrefill, type SignupPrefillConsumer } from "@/lib/hooks/useSignupProfilePrefill";
@@ -23,6 +24,7 @@ import { evaluatePassword, PasswordStrength } from "@/components/auth/PasswordSt
 const CONSENT_LANGUAGES = ["en", "zh"] as const;
 
 function SignupForm() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
   const { openAgentSignup } = useAuth();
@@ -313,7 +315,7 @@ function SignupForm() {
 
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">Name</label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.name")}</label>
             <input
               type="text"
               value={fullName}
@@ -324,7 +326,7 @@ function SignupForm() {
             />
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">Email</label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.email")}</label>
             <input
               type="email"
               value={email}
@@ -337,7 +339,7 @@ function SignupForm() {
             />
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">Phone</label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.articleChrome.phone")}</label>
             <input
               type="tel"
               inputMode="tel"
@@ -403,13 +405,9 @@ function SignupForm() {
               />
               <span className="text-[11px] leading-relaxed text-slate-600">
                 I agree to the{" "}
-                <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">
-                  Terms of Service
-                </Link>{" "}
+                <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">{t("pages.articleChrome.termsOfService")}</Link>{" "}
                 and{" "}
-                <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">
-                  Privacy Policy
-                </Link>
+                <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">{t("pages.articleChrome.privacyPolicy")}</Link>
                 .
               </span>
             </label>

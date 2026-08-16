@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import JsonLd from "../../components/JsonLd";
+import { useTranslation } from "react-i18next";
 
 export default function WhatIsCapRateInRealEstateInvestingPage() {
+  const { t } = useTranslation("dashboard");
   const title = "What Is Cap Rate in Real Estate Investing?";
   const url = "https://closebossai.com/what-is-cap-rate-in-real-estate-investing";
 
@@ -60,9 +62,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
       <p className="text-gray-600 mb-8 max-w-3xl">
@@ -73,7 +73,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
       </p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">What is cap rate?</h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.articleChrome.whatIsCapRate")}</h2>
         <p>
           At its core, cap rate is a simple percentage that compares a property&apos;s net operating
           income (NOI) to its purchase price or current market value. It answers the question:
@@ -103,9 +103,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
         <p>
           To calculate cap rate on any rental property, you can follow a straightforward process.
           These are the same steps you&apos;ll see inside the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
-            Cap Rate Calculator
-          </Link>{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
           in CloseBoss.
         </p>
         <h3 className="text-lg font-semibold text-gray-900">1. Estimate gross rental income</h3>
@@ -182,9 +180,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
         <p>
           For a deeper analysis that includes financing and long-term returns, you can pair cap rate
           with cash-on-cash return or use tools like the{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
-            Property Investment Analyzer
-          </Link>{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
           in CloseBoss.
         </p>
       </section>
@@ -274,7 +270,7 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">Frequently asked questions</h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.articleChrome.faqLong")}</h2>
         <h3 className="text-lg font-semibold text-gray-900">
           Is a high cap rate always better?
         </h3>
@@ -323,20 +319,13 @@ export default function WhatIsCapRateInRealEstateInvestingPage() {
           <Link
             href="/cap-rate-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Open Cap Rate Calculator
-          </Link>
+          >{t("pages.articleChrome.openCapRate")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Investment Analyzer
-          </Link>
+          >{t("pages.articleChrome.openAnalyzer")}</Link>
         </div>
-        <p className="font-semibold">
-          Try our free real estate investment calculator at closebossai.com to quickly analyze
-          your property deals.
-        </p>
+        <p className="font-semibold">{t("pages.articleChrome.footerCta")}</p>
       </section>
     </div>
   );

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { getPost } from "@/lib/blog/posts";
+import { getServerT } from "@/lib/i18n/server";
 
 const SLUG = "why-real-estate-crms-keep-failing-solo-agents";
 const SITE_URL = "https://closebossai.com";
@@ -156,7 +157,8 @@ const PILLARS: Array<{ title: string; body: ReactNode; href?: string }> = [
   },
 ];
 
-export default function CrmProblemsPost() {
+export default async function CrmProblemsPost() {
+  const t = await getServerT();
   const post = getPost(SLUG);
   const url = `${SITE_URL}/blog/${SLUG}`;
 
@@ -188,10 +190,8 @@ export default function CrmProblemsPost() {
       />
 
       <article className="mx-auto max-w-3xl px-4 py-12 md:px-6 md:py-16">
-        <nav aria-label="Breadcrumb" className="mb-6 text-xs text-slate-500 dark:text-slate-400">
-          <Link href="/" className="hover:text-slate-700 dark:hover:text-slate-200">
-            Home
-          </Link>
+        <nav aria-label={t("pages.articleChrome.breadcrumb", { ns: "dashboard" })} className="mb-6 text-xs text-slate-500 dark:text-slate-400">
+          <Link href="/" className="hover:text-slate-700 dark:hover:text-slate-200">{t("pages.articleChrome.home", { ns: "dashboard" })}</Link>
           <span className="mx-2">/</span>
           <Link href="/blog" className="hover:text-slate-700 dark:hover:text-slate-200">
             Blog

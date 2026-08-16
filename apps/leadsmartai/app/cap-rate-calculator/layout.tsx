@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Cap Rate Calculator",
@@ -6,8 +7,9 @@ export const metadata: Metadata = {
   keywords: ["cap rate calculator", "NOI", "capitalization rate", "rental property", "real estate investing"],
 };
 
-export default function CapRateCalculatorLayout({
+export default async function CapRateCalculatorLayout({
   children,
 }: { children: React.ReactNode }) {
+  const t = await getServerT();
   return children;
 }

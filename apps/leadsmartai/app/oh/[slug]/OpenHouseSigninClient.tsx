@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { PublicOpenHouseInfo } from "@/lib/open-houses/publicService";
 import type {
   VisitorBuyerStatus,
@@ -15,6 +16,7 @@ import type {
  * in another visitor" to reset and hand off to the next person.
  */
 export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
+  const { t } = useTranslation("dashboard");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -226,7 +228,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Email</label>
+            <label className="block text-sm font-medium text-slate-700">{t("pages.articleChrome.email")}</label>
             <input
               type="email"
               value={email}
@@ -238,7 +240,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Phone</label>
+            <label className="block text-sm font-medium text-slate-700">{t("pages.articleChrome.phone")}</label>
             <input
               type="tel"
               value={phone}

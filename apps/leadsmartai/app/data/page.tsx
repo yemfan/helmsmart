@@ -4,6 +4,8 @@ import JsonLd from "@/components/JsonLd";
 import { getSiteUrl } from "@/lib/siteUrl";
 import { listResearchReports } from "@/lib/research/db";
 import type { ResearchReportRow } from "@/lib/research/types";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export const dynamic = "force-dynamic";
 
@@ -34,14 +36,16 @@ function kindLabel(kind: string): string {
       : "Report";
 }
 
-function formatDate(d: string): string {
+function formatDate(d: string, locale: string): string {
   const dt = new Date(`${d}T00:00:00Z`);
   return Number.isNaN(dt.getTime())
     ? d
-    : dt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+    : dt.toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
 }
 
 export default async function DataCenterPage() {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   let reports: ResearchReportRow[] = [];
   if (process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) {
     try {
@@ -78,13 +82,11 @@ export default async function DataCenterPage() {
               CloseBoss
             </Link>
             <span className="mx-2 text-slate-400">/</span>
-            <span className="text-slate-600">Data Center</span>
+            <span className="text-slate-600">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</span>
           </nav>
 
           <div className="max-w-3xl">
-            <p className="mb-4 inline-flex rounded-full border border-slate-200/90 bg-white px-3 py-1 text-xs font-medium uppercase tracking-[0.15em] text-slate-600 shadow-sm ring-1 ring-slate-900/[0.03]">
-              Data Center
-            </p>
+            <p className="mb-4 inline-flex rounded-full border border-slate-200/90 bg-white px-3 py-1 text-xs font-medium uppercase tracking-[0.15em] text-slate-600 shadow-sm ring-1 ring-slate-900/[0.03]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</p>
             <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-5xl">
               Market intelligence for real estate pros
             </h1>
@@ -125,7 +127,7 @@ export default async function DataCenterPage() {
                       {kindLabel(r.kind)}
                     </span>
                     <span className="text-slate-500">
-                      {r.period_label ?? formatDate(r.published_date)}
+                      {r.period_label ?? formatDate(r.published_date, locale)}
                     </span>
                   </div>
                   <h3 className="mt-3 text-lg font-semibold leading-snug tracking-tight text-slate-900">

@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import RequireAuthGate from "../../components/RequireAuthGate";
+import { intlLocale } from "@/lib/i18n/locale";
 
 type PropertyInputs = {
   address: string;
@@ -75,6 +77,8 @@ export default function AiCmaAnalyzerPage() {
 }
 
 function AiCmaAnalyzerPageInner() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [inputs, setInputs] = useState<PropertyInputs>({
     address: "",
     bedrooms: 3,
@@ -200,9 +204,7 @@ function AiCmaAnalyzerPageInner() {
             strokeWidth={2}
             d="M15 19l-7-7 7-7"
           />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       {/*
        * Demo banner — TVR-011 / BF-034. The Comparable Sales table
@@ -261,7 +263,7 @@ function AiCmaAnalyzerPageInner() {
             </h2>
             <div className="space-y-3">
               <label className="block text-sm">
-                <span className="text-gray-700">Address</span>
+                <span className="text-gray-700">{t("pages.articleChrome.address")}</span>
                 <input
                   type="text"
                   className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -321,7 +323,7 @@ function AiCmaAnalyzerPageInner() {
                 min={0}
               />
               <NumberInput
-                label="Year Built"
+                label={t("pages.articleChrome.yearBuilt")}
                 value={inputs.yearBuilt ?? ""}
                 onChange={(v) =>
                   setInputs((prev) => ({ ...prev, yearBuilt: v }))
@@ -384,9 +386,7 @@ function AiCmaAnalyzerPageInner() {
           {/* Comparable Sales Table */}
           <section className="bg-white shadow-md rounded-lg p-6 space-y-4">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Comparable Sales
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("pages.articleChrome.comparableSales")}</h2>
               <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">
                 Sample data
               </span>
@@ -395,10 +395,10 @@ function AiCmaAnalyzerPageInner() {
               <table className="min-w-full text-xs sm:text-sm border-collapse">
                 <thead>
                   <tr className="bg-gray-50 text-left text-gray-600">
-                    <th className="px-3 py-2 font-semibold">Address</th>
-                    <th className="px-3 py-2 font-semibold">Beds</th>
-                    <th className="px-3 py-2 font-semibold">Baths</th>
-                    <th className="px-3 py-2 font-semibold">Sqft</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.address")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.beds")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.baths")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.sqft")}</th>
                     <th className="px-3 py-2 font-semibold">Sold Price</th>
                     <th className="px-3 py-2 font-semibold">
                       Price per Sqft
@@ -421,10 +421,10 @@ function AiCmaAnalyzerPageInner() {
                         <td className="px-3 py-2">{comp.beds}</td>
                         <td className="px-3 py-2">{comp.baths}</td>
                         <td className="px-3 py-2">
-                          {comp.sqft.toLocaleString()}
+                          {comp.sqft.toLocaleString(locale)}
                         </td>
                         <td className="px-3 py-2">
-                          ${comp.soldPrice.toLocaleString()}
+                          ${comp.soldPrice.toLocaleString(locale)}
                         </td>
                         <td className="px-3 py-2">
                           ${ppsf.toFixed(0)}/sqft
@@ -432,7 +432,7 @@ function AiCmaAnalyzerPageInner() {
                         <td className="px-3 py-2">
                           {new Date(
                             comp.soldDate
-                          ).toLocaleDateString()}
+                          ).toLocaleDateString(locale)}
                         </td>
                       </tr>
                     );

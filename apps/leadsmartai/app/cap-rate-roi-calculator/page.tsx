@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
@@ -14,6 +15,7 @@ function pmt(principal: number, annualRate: number, years: number): number {
 }
 
 export default function CapRateRoiCalculator() {
+  const { t } = useTranslation("dashboard");
   const [purchasePrice, setPurchasePrice] = useState<number>(400000);
   const [downPayment, setDownPayment] = useState<number>(80000);
   const [annualRent, setAnnualRent] = useState<number>(28800);
@@ -93,9 +95,7 @@ export default function CapRateRoiCalculator() {
             strokeWidth={2}
             d="M15 19l-7-7 7-7"
           />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-2">
         Cap Rate &amp; ROI Calculator
@@ -163,7 +163,7 @@ export default function CapRateRoiCalculator() {
                 min={0}
               />
               <InputField
-                label="Interest rate (%)"
+                label={t("pages.articleChrome.interestRate")}
                 value={interestRate}
                 onChange={setInterestRate}
                 min={0.1}
@@ -171,7 +171,7 @@ export default function CapRateRoiCalculator() {
                 step={0.125}
               />
               <InputField
-                label="Loan term (years)"
+                label={t("pages.articleChrome.loanTermYears")}
                 value={loanTerm}
                 onChange={setLoanTerm}
                 min={1}
@@ -182,9 +182,7 @@ export default function CapRateRoiCalculator() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>

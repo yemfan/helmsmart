@@ -28,6 +28,7 @@ import {
 import Sparkline from "../../_components/Sparkline";
 import StatGrid from "../../_components/StatGrid";
 import DataSources from "../../_components/DataSources";
+import { getServerT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +86,7 @@ function changeLine(
 }
 
 export default async function StatePage({ params }: Props) {
+  const t = await getServerT();
   const { state } = await params;
   const geo = await resolveState(state);
   if (!geo) notFound();
@@ -162,9 +164,7 @@ export default async function StatePage({ params }: Props) {
             CloseBoss
           </Link>
           <span className="text-slate-400 mx-2">/</span>
-          <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            Data Center
-          </Link>
+          <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</Link>
           <span className="text-slate-400 mx-2">/</span>
           <Link href="/data/markets" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
             Markets

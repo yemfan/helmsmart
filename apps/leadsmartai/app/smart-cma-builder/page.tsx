@@ -1,6 +1,7 @@
- "use client";
+"use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import PaywallModal from "@/components/PaywallModal";
@@ -54,6 +55,7 @@ export default function SmartCmaBuilderPage() {
 }
 
 function SmartCmaBuilderPageInner() {
+  const { t } = useTranslation("dashboard");
   const searchParams = useSearchParams();
   const initialAddress = searchParams?.get("address") ?? "";
   const queryLeadId = searchParams?.get("contact_id") ?? null;
@@ -494,22 +496,22 @@ function SmartCmaBuilderPageInner() {
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
             <LabeledInput
-              label="Beds"
+              label={t("pages.articleChrome.beds", { ns: "dashboard" })}
               value={beds ?? ""}
               onChange={(v) => setBeds(v ? Number(v) || 0 : undefined)}
             />
             <LabeledInput
-              label="Baths"
+              label={t("pages.articleChrome.baths", { ns: "dashboard" })}
               value={baths ?? ""}
               onChange={(v) => setBaths(v ? Number(v) || 0 : undefined)}
             />
             <LabeledInput
-              label="Sqft"
+              label={t("pages.articleChrome.sqft", { ns: "dashboard" })}
               value={sqft ?? ""}
               onChange={(v) => setSqft(v ? Number(v) || 0 : undefined)}
             />
             <LabeledInput
-              label="Year Built"
+              label={t("pages.articleChrome.yearBuilt", { ns: "dashboard" })}
               value={yearBuilt ?? ""}
               onChange={(v) =>
                 setYearBuilt(v ? Number(v) || new Date().getFullYear() : undefined)
@@ -613,9 +615,7 @@ function SmartCmaBuilderPageInner() {
 
           <div className="bg-white shadow rounded-xl p-6 border border-gray-100">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Comparable Sales
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("pages.articleChrome.comparableSales", { ns: "dashboard" })}</h2>
               <span className="text-xs text-gray-500">
                 {data.comps.length} comps used (last 6 months, ~0.5 mi)
               </span>
@@ -624,12 +624,12 @@ function SmartCmaBuilderPageInner() {
               <table className="min-w-full text-xs border-collapse">
                 <thead>
                   <tr className="bg-gray-50 text-left text-gray-600">
-                    <th className="px-3 py-2 font-semibold">Address</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.address", { ns: "dashboard" })}</th>
                     <th className="px-3 py-2 font-semibold">Sold Price</th>
-                    <th className="px-3 py-2 font-semibold">Sqft</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.sqft", { ns: "dashboard" })}</th>
                     <th className="px-3 py-2 font-semibold">Price/Sqft</th>
-                    <th className="px-3 py-2 font-semibold">Beds</th>
-                    <th className="px-3 py-2 font-semibold">Baths</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.beds", { ns: "dashboard" })}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.baths", { ns: "dashboard" })}</th>
                     <th className="px-3 py-2 font-semibold">Distance</th>
                     <th className="px-3 py-2 font-semibold">Sold Date</th>
                   </tr>

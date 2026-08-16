@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
@@ -14,6 +15,7 @@ function pmt(principal: number, annualRate: number, years: number): number {
 }
 
 export default function MortgageCalculator() {
+  const { t } = useTranslation("dashboard");
   const [homePrice, setHomePrice] = useState<number>(300000);
   const [downPayment, setDownPayment] = useState<number>(60000);
   const [loanTerm, setLoanTerm] = useState<number>(30);
@@ -55,11 +57,9 @@ export default function MortgageCalculator() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">Mortgage Calculator</h1>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.mortgageCalculator")}</h1>
       <p className="text-gray-600 mb-8">
         Estimate your monthly mortgage payment, total interest, and total cost.
       </p>
@@ -67,19 +67,19 @@ export default function MortgageCalculator() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Loan details</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.articleChrome.loanDetails")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField label="Home price ($)" value={homePrice} onChange={setHomePrice} min={1000} />
               <InputField label="Down payment ($)" value={downPayment} onChange={setDownPayment} min={0} />
               <InputField
-                label="Loan term (years)"
+                label={t("pages.articleChrome.loanTermYears")}
                 value={loanTerm}
                 onChange={setLoanTerm}
                 min={1}
                 max={30}
               />
               <InputField
-                label="Interest rate (%)"
+                label={t("pages.articleChrome.interestRate")}
                 value={interestRate}
                 onChange={setInterestRate}
                 min={0.1}
@@ -91,9 +91,7 @@ export default function MortgageCalculator() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>
@@ -142,9 +140,7 @@ export default function MortgageCalculator() {
               the price, down payment, interest rate, and loan term you enter.
               It lets you quickly compare different scenarios before you talk to a lender or make
               an offer. You can experiment with those inputs anytime using our{" "}
-              <Link href="/mortgage-calculator" className="text-blue-600 hover:underline">
-                Mortgage Calculator
-              </Link>
+              <Link href="/mortgage-calculator" className="text-blue-600 hover:underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
               .
             </p>
           </div>
@@ -161,9 +157,7 @@ export default function MortgageCalculator() {
               <Link
                 href="/mortgage-calculator"
                 className="text-blue-600 hover:underline"
-              >
-                Loan Amortization Calculator
-              </Link>
+              >{t("pages.articleChrome.amortizationCalculator")}</Link>
               .
             </p>
           </div>
@@ -180,9 +174,7 @@ export default function MortgageCalculator() {
               <Link
                 href="/down-payment-calculator"
                 className="text-blue-600 hover:underline"
-              >
-                Down Payment Calculator
-              </Link>
+              >{t("pages.articleChrome.downPaymentCalculator")}</Link>
               .
             </p>
           </div>
@@ -196,9 +188,7 @@ export default function MortgageCalculator() {
               full PITI payment: principal, interest, property taxes, and homeowners insurance.
               Your real monthly housing cost may also include mortgage insurance and HOA dues, so
               be sure to add those amounts when using the{" "}
-              <Link href="/mortgage-calculator" className="text-blue-600 hover:underline">
-                Mortgage Calculator
-              </Link>
+              <Link href="/mortgage-calculator" className="text-blue-600 hover:underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
               .
             </p>
           </div>
@@ -234,13 +224,9 @@ export default function MortgageCalculator() {
               <Link
                 href="/affordability-calculator"
                 className="text-blue-600 hover:underline"
-              >
-                Affordability Calculator
-              </Link>{" "}
+              >{t("pages.articleChrome.affordabilityCalculator")}</Link>{" "}
               and then test exact payments in the{" "}
-              <Link href="/mortgage-calculator" className="text-blue-600 hover:underline">
-                Mortgage Calculator
-              </Link>
+              <Link href="/mortgage-calculator" className="text-blue-600 hover:underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
               .
             </p>
           </div>
@@ -254,16 +240,12 @@ export default function MortgageCalculator() {
               trade-off between a higher payment and much lower total interest.
               Shorter terms pay off the loan faster, while longer terms keep monthly payments
               lower. You can switch terms in the{" "}
-              <Link href="/mortgage-calculator" className="text-blue-600 hover:underline">
-                Mortgage Calculator
-              </Link>{" "}
+              <Link href="/mortgage-calculator" className="text-blue-600 hover:underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
               and review the payoff pattern using the{" "}
               <Link
                 href="/mortgage-calculator"
                 className="text-blue-600 hover:underline"
-              >
-                Loan Amortization Calculator
-              </Link>
+              >{t("pages.articleChrome.amortizationCalculator")}</Link>
               .
             </p>
           </div>
@@ -277,9 +259,7 @@ export default function MortgageCalculator() {
               mortgage payment and total interest over time.
               Higher rates push more of each payment toward interest, while lower rates help you
               build equity faster. You can see the impact instantly by adjusting the rate in our{" "}
-              <Link href="/mortgage-calculator" className="text-blue-600 hover:underline">
-                Mortgage Calculator
-              </Link>
+              <Link href="/mortgage-calculator" className="text-blue-600 hover:underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
               .
             </p>
           </div>
@@ -296,31 +276,23 @@ export default function MortgageCalculator() {
               <Link
                 href="/rent-vs-buy-calculator"
                 className="text-blue-600 hover:underline"
-              >
-                Rent vs Buy Calculator
-              </Link>
+              >{t("pages.articleChrome.rentVsBuyCalculator")}</Link>
               .
             </p>
           </div>
         </div>
 
         <div className="mt-10">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">
-            Related Calculators
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">{t("pages.articleChrome.relatedCalculators")}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link
               href="/affordability-calculator"
               className="block rounded-lg border border-gray-200 bg-white px-3 py-2 text-center text-sm font-medium text-blue-600 hover:border-blue-400 hover:bg-blue-50"
-            >
-              Affordability Calculator
-            </Link>
+            >{t("pages.articleChrome.affordabilityCalculator")}</Link>
             <Link
               href="/down-payment-calculator"
               className="block rounded-lg border border-gray-200 bg-white px-3 py-2 text-center text-sm font-medium text-blue-600 hover:border-blue-400 hover:bg-blue-50"
-            >
-              Down Payment Calculator
-            </Link>
+            >{t("pages.articleChrome.downPaymentCalculator")}</Link>
             <Link
               href="/refinance-calculator"
               className="block rounded-lg border border-gray-200 bg-white px-3 py-2 text-center text-sm font-medium text-blue-600 hover:border-blue-400 hover:bg-blue-50"
@@ -330,9 +302,7 @@ export default function MortgageCalculator() {
             <Link
               href="/rent-vs-buy-calculator"
               className="block rounded-lg border border-gray-200 bg-white px-3 py-2 text-center text-sm font-medium text-blue-600 hover:border-blue-400 hover:bg-blue-50"
-            >
-              Rent vs Buy Calculator
-            </Link>
+            >{t("pages.articleChrome.rentVsBuyCalculator")}</Link>
           </div>
         </div>
       </section>

@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import JsonLd from "../../components/JsonLd";
+import { useTranslation } from "react-i18next";
 
 export default function CapRateVsCashOnCashReturnPage() {
+  const { t } = useTranslation("dashboard");
   const title = "Cap Rate vs Cash on Cash Return: Which Metric Should Real Estate Investors Use?";
   const url = "https://closebossai.com/cap-rate-vs-cash-on-cash-return";
 
@@ -44,9 +46,7 @@ export default function CapRateVsCashOnCashReturnPage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
       <p className="text-gray-600 mb-8 max-w-3xl">
@@ -57,7 +57,7 @@ export default function CapRateVsCashOnCashReturnPage() {
       </p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">What is cap rate?</h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.articleChrome.whatIsCapRate")}</h2>
         <p>
           Cap rate (capitalization rate) measures a property&apos;s net operating income (NOI)
           relative to its purchase price or current value. It assumes an all-cash purchase and
@@ -167,13 +167,9 @@ export default function CapRateVsCashOnCashReturnPage() {
           Doing these calculations by hand is valuable once or twice, but it quickly becomes tedious
           when you are screening dozens of properties. That&apos;s why many investors use tools
           like the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
-            Cap Rate Calculator
-          </Link>{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
           and the{" "}
-          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">
-            Cash Flow Calculator
-          </Link>{" "}
+          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
           in CloseBoss to model cap rate, cash on cash return, and long-term ROI in one view.
         </p>
         <p>
@@ -184,7 +180,7 @@ export default function CapRateVsCashOnCashReturnPage() {
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">Frequently asked questions</h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.articleChrome.faqLong")}</h2>
         <h3 className="text-lg font-semibold text-gray-900">
           What is the main difference between cap rate and cash on cash return?
         </h3>
@@ -224,26 +220,17 @@ export default function CapRateVsCashOnCashReturnPage() {
           <Link
             href="/cap-rate-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Open Cap Rate Calculator
-          </Link>
+          >{t("pages.articleChrome.openCapRate")}</Link>
           <Link
             href="/cash-flow-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Cash Flow Calculator
-          </Link>
+          >{t("pages.articleChrome.openCashFlow")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Investment Analyzer
-          </Link>
+          >{t("pages.articleChrome.openAnalyzer")}</Link>
         </div>
-        <p className="font-semibold">
-          Try our free real estate investment calculator at closebossai.com to quickly analyze
-          your property deals.
-        </p>
+        <p className="font-semibold">{t("pages.articleChrome.footerCta")}</p>
       </section>
     </div>
   );

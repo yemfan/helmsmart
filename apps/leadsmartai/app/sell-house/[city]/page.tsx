@@ -11,6 +11,8 @@ import {
   getRelatedMetroLinks,
   listTrafficMetros,
 } from "@/lib/trafficMetros";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 // Render dynamically (root layout reads cookies() -> dynamic tree; `revalidate`
 // here would throw DYNAMIC_SERVER_USAGE / 500 in prod). generateStaticParams only
@@ -36,11 +38,11 @@ export async function generateMetadata({
   });
 }
 
-function fmtDate(period: string | null): string | null {
+function fmtDate(period: string | null, locale: string): string | null {
   if (!period) return null;
   const d = new Date(period);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  return d.toLocaleDateString(locale, { month: "long", year: "numeric" });
 }
 
 export default async function SellHouseCityPage({
@@ -48,6 +50,8 @@ export default async function SellHouseCityPage({
 }: {
   params: Promise<{ city: string }>;
 }) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const p = await params;
   const city = await getMetroBySlug(p.city);
   if (!city) return notFound();
@@ -57,7 +61,7 @@ export default async function SellHouseCityPage({
     (page) => !page.href.endsWith(`/sell-house/${city.slug}`),
   );
   const keywords = getPageKeywords("sell-house", city.slug);
-  const asOf = fmtDate(market.period);
+  const asOf = fmtDate(market.period, locale);
   const domText =
     market.medianDaysOnMarket !== null ? `${Math.round(market.medianDaysOnMarket)} days` : "varies";
 
@@ -86,10 +90,10 @@ export default async function SellHouseCityPage({
               </li>
             )}
             {market.typicalValue !== null && (
-              <li>Typical home value: ${Math.round(market.typicalValue).toLocaleString()}</li>
+              <li>Typical home value: ${Math.round(market.typicalValue).toLocaleString(locale)}</li>
             )}
             {market.inventory !== null && (
-              <li>Homes currently for sale: {Math.round(market.inventory).toLocaleString()}</li>
+              <li>Homes currently for sale: {Math.round(market.inventory).toLocaleString(locale)}</li>
             )}
           </ul>
           <p className="mt-3 text-sm text-slate-700">
@@ -104,7 +108,7 @@ export default async function SellHouseCityPage({
               </span>
             ))}
           </div>
-          <h3 className="mt-5 text-base font-semibold text-slate-900">FAQ</h3>
+          <h3 className="mt-5 text-base font-semibold text-slate-900">{t("pages.articleChrome.faq", { ns: "dashboard" })}</h3>
           <dl className="mt-2 space-y-4 text-sm text-slate-700">
             <div>
               <dt className="font-semibold text-slate-900">How fast can I sell in {city.city}?</dt>

@@ -10,6 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { getSwitchSource, SWITCH_SOURCES } from "@/lib/marketing/switch-from";
+import { getServerT } from "@/lib/i18n/server";
 
 const SITE_URL = "https://closebossai.com";
 
@@ -60,6 +61,7 @@ export default async function SwitchFromPage({
 }: {
   params: Promise<RouteParams>;
 }) {
+  const t = await getServerT();
   const { slug } = await params;
   const source = getSwitchSource(slug);
   if (!source) notFound();
@@ -106,10 +108,8 @@ export default async function SwitchFromPage({
       />
 
       <article className="mx-auto max-w-4xl px-4 py-12 md:px-6 md:py-16">
-        <nav aria-label="Breadcrumb" className="mb-6 text-xs text-slate-500 dark:text-slate-400">
-          <Link href="/" className="hover:text-slate-700 dark:hover:text-slate-200">
-            Home
-          </Link>
+        <nav aria-label={t("pages.articleChrome.breadcrumb", { ns: "dashboard" })} className="mb-6 text-xs text-slate-500 dark:text-slate-400">
+          <Link href="/" className="hover:text-slate-700 dark:hover:text-slate-200">{t("pages.articleChrome.home", { ns: "dashboard" })}</Link>
           <span className="mx-2">/</span>
           <Link href="/switch-from" className="hover:text-slate-700 dark:hover:text-slate-200">
             Switch from
@@ -342,9 +342,7 @@ export default async function SwitchFromPage({
         </section>
 
         <section className="mt-12 border-t border-slate-200 pt-8 dark:border-slate-800">
-          <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">
-            Frequently asked questions
-          </h2>
+          <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">{t("pages.articleChrome.faqLong", { ns: "dashboard" })}</h2>
           <div className="mt-6 space-y-6">
             {source.faq.map((entry, i) => (
               <div key={i}>

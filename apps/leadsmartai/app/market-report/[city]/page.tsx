@@ -11,6 +11,8 @@ import {
   getRelatedMetroLinks,
   listTrafficMetros,
 } from "@/lib/trafficMetros";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 // Render dynamically (root layout reads cookies() -> dynamic tree; `revalidate`
 // here would throw DYNAMIC_SERVER_USAGE / 500 in prod). generateStaticParams only
@@ -36,11 +38,11 @@ export async function generateMetadata({
   });
 }
 
-function fmtDate(period: string | null): string | null {
+function fmtDate(period: string | null, locale: string): string | null {
   if (!period) return null;
   const d = new Date(period);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  return d.toLocaleDateString(locale, { month: "long", year: "numeric" });
 }
 
 export default async function MarketReportCityPage({
@@ -48,6 +50,8 @@ export default async function MarketReportCityPage({
 }: {
   params: Promise<{ city: string }>;
 }) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const p = await params;
   const city = await getMetroBySlug(p.city);
   if (!city) return notFound();
@@ -57,7 +61,7 @@ export default async function MarketReportCityPage({
     (page) => !page.href.endsWith(`/market-report/${city.slug}`),
   );
   const keywords = getPageKeywords("market-report", city.slug);
-  const asOf = fmtDate(market.period);
+  const asOf = fmtDate(market.period, locale);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
@@ -89,7 +93,7 @@ export default async function MarketReportCityPage({
             <Metric label="Median Days on Market" value={`${Math.round(market.medianDaysOnMarket)} days`} />
           )}
           {market.inventory !== null && (
-            <Metric label="Homes for Sale" value={Math.round(market.inventory).toLocaleString()} />
+            <Metric label="Homes for Sale" value={Math.round(market.inventory).toLocaleString(locale)} />
           )}
         </div>
       )}
@@ -118,7 +122,7 @@ export default async function MarketReportCityPage({
               </span>
             ))}
           </div>
-          <h3 className="mt-5 text-base font-semibold text-slate-900">FAQ</h3>
+          <h3 className="mt-5 text-base font-semibold text-slate-900">{t("pages.articleChrome.faq", { ns: "dashboard" })}</h3>
           <dl className="mt-2 space-y-4 text-sm text-slate-700">
             <div>
               <dt className="font-semibold text-slate-900">How often should I check the {city.city} market report?</dt>

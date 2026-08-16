@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
@@ -14,6 +15,7 @@ function pmt(principal: number, annualRate: number, years: number): number {
 }
 
 export default function RefinanceCalculator() {
+  const { t } = useTranslation("dashboard");
   const [currentBalance, setCurrentBalance] = useState<number>(250000);
   const [currentRate, setCurrentRate] = useState<number>(6.5);
   const [newRate, setNewRate] = useState<number>(5.25);
@@ -54,9 +56,7 @@ export default function RefinanceCalculator() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-2">Refinance Calculator</h1>
       <p className="text-gray-600 mb-8">
@@ -66,7 +66,7 @@ export default function RefinanceCalculator() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Loan details</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.articleChrome.loanDetails")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="Current loan balance ($)"
@@ -108,9 +108,7 @@ export default function RefinanceCalculator() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>
@@ -187,9 +185,7 @@ export default function RefinanceCalculator() {
             <Link
               href="/mortgage-calculator"
               className="text-blue-600 underline"
-            >
-              Mortgage Calculator
-            </Link>
+            >{t("pages.articleChrome.mortgageCalculator")}</Link>
             .
           </p>
         </article>
@@ -232,9 +228,7 @@ export default function RefinanceCalculator() {
             <Link
               href="/mortgage-calculator"
               className="text-blue-600 underline"
-            >
-              Mortgage Calculator
-            </Link>
+            >{t("pages.articleChrome.mortgageCalculator")}</Link>
             .
           </p>
         </article>
@@ -271,9 +265,7 @@ export default function RefinanceCalculator() {
             <Link
               href="/mortgage-calculator"
               className="text-blue-600 underline"
-            >
-              Loan Amortization Calculator
-            </Link>{" "}
+            >{t("pages.articleChrome.amortizationCalculator")}</Link>{" "}
             and compare that to potential savings here in the{" "}
             <Link
               href="/refinance-calculator"
@@ -286,32 +278,24 @@ export default function RefinanceCalculator() {
         </article>
 
         <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-4">Related Calculators</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("pages.articleChrome.relatedCalculators")}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link
               href="/mortgage-calculator"
               className="text-blue-600 underline"
-            >
-              Mortgage Calculator
-            </Link>
+            >{t("pages.articleChrome.mortgageCalculator")}</Link>
             <Link
               href="/mortgage-calculator"
               className="text-blue-600 underline"
-            >
-              Loan Amortization Calculator
-            </Link>
+            >{t("pages.articleChrome.amortizationCalculator")}</Link>
             <Link
               href="/affordability-calculator"
               className="text-blue-600 underline"
-            >
-              Affordability Calculator
-            </Link>
+            >{t("pages.articleChrome.affordabilityCalculator")}</Link>
             <Link
               href="/cash-flow-calculator"
               className="text-blue-600 underline"
-            >
-              Cash Flow Calculator
-            </Link>
+            >{t("pages.articleChrome.cashFlowCalculator")}</Link>
           </div>
         </div>
       </section>

@@ -4,6 +4,7 @@ import JsonLd from "../../components/JsonLd";
 import Link from "next/link";
 import ResultCard from "../../components/ResultCard";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import RequireAuthGate from "../../components/RequireAuthGate";
 
 type PropertyData = {
@@ -111,6 +112,7 @@ export default function RentalPropertyAnalyzerPage() {
 }
 
 function RentalPropertyAnalyzerPageInner() {
+  const { t } = useTranslation("dashboard");
   const [address, setAddress] = useState("");
   const [zip, setZip] = useState("");
   const [propertyData, setPropertyData] =
@@ -507,9 +509,7 @@ function RentalPropertyAnalyzerPageInner() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-2">Rental Property Analyzer</h1>
       <p className="text-gray-600 mb-8">
@@ -657,7 +657,7 @@ function RentalPropertyAnalyzerPageInner() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <MetricCard
-          label="Monthly Cash Flow"
+          label={t("pages.articleChrome.monthlyCashFlow")}
           value={`$${metrics.monthlyCashFlow.toFixed(0)}`}
           tooltip="Monthly Cash Flow = Rent – Mortgage – Operating Expenses"
           highlight={
@@ -681,7 +681,7 @@ function RentalPropertyAnalyzerPageInner() {
           }
         />
         <MetricCard
-          label="Cap Rate"
+          label={t("pages.articleChrome.capRate")}
           value={`${metrics.capRate.toFixed(1)}%`}
           tooltip="Cap Rate = (Annual NOI ÷ Property Value) × 100"
         />
@@ -726,10 +726,10 @@ function RentalPropertyAnalyzerPageInner() {
           <table className="min-w-full text-xs border-collapse">
             <thead>
               <tr className="bg-gray-50 text-left text-gray-600">
-                <th className="px-3 py-2 font-semibold">Address</th>
-                <th className="px-3 py-2 font-semibold">Beds</th>
-                <th className="px-3 py-2 font-semibold">Baths</th>
-                <th className="px-3 py-2 font-semibold">Sqft</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.address")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.beds")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.baths")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.sqft")}</th>
                 <th className="px-3 py-2 font-semibold">Rent</th>
                 <th className="px-3 py-2 font-semibold">Rent/Sqft</th>
                 <th className="px-3 py-2 font-semibold">Distance</th>
