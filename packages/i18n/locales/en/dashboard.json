@@ -1657,7 +1657,18 @@
       "intro": "Life-event signals detected from the AVM feed and external sources. These never auto-send — treat them as a calling list."
     },
     "sphereImport": {
-      "metaTitle": "Import Sphere contacts"
+      "metaTitle": "Import Sphere contacts",
+      "title": "Import Sphere contacts",
+      "sub": "Upload a CSV. Columns are matched by name — First name, Last name, Email, Phone, Closing date, Closing price, Relationship, Tag, and Language are all recognized.",
+      "confirmAll": "Confirm opt-in for all included",
+      "uncheckAll": "Uncheck all opt-ins",
+      "include": "Include",
+      "name": "Name",
+      "relationship": "Relationship",
+      "closing": "Closing",
+      "emailPhone": "Email / Phone",
+      "warnings": "Warnings",
+      "csvOptIn": "CSV indicated opt-in — still requires explicit confirmation"
     },
     "sphereContact": {
       "metaTitle": "Sphere contact"
@@ -3788,6 +3799,53 @@
       "takesSeconds": "This can take 10-30 seconds for large batches.",
       "emailSent": "Email sent",
       "smsSent": "SMS sent"
+    },
+    "authModal": {
+      "close": "Close",
+      "dialogLabel": "Sign in or create account",
+      "login": "Login",
+      "signUp": "Sign Up",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "forgotPassword": "Forgot password?",
+      "notNow": "Not now",
+      "continueGoogle": "Continue with Google",
+      "continueApple": "Continue with Apple"
+    },
+    "scheduler": {
+      "scheduler": "Scheduler",
+      "contacts": "Contacts",
+      "created": "Created",
+      "previewOnly": "Preview only",
+      "suppressed": "Suppressed",
+      "alreadyFired": "Already fired",
+      "errors": "Errors",
+      "colContact": "Contact",
+      "colTemplate": "Template",
+      "colPeriod": "Period",
+      "colOutcome": "Outcome",
+      "colWhen": "When",
+      "range": "Range",
+      "firedAt": "Fired at:",
+      "noActivity": "No scheduler activity yet.",
+      "draftsPage": "drafts page",
+      "noMatches": "No firings match the current filter.",
+      "justNow": "just now",
+      "minsAgo": "{{n}}m ago",
+      "hrsAgo": "{{n}}h ago",
+      "daysAgo": "{{n}}d ago"
+    },
+    "templatePicker": {
+      "noMatches": "No templates match.",
+      "selectOne": "Select a template to edit.",
+      "needsReview": "Invented — needs product review",
+      "edit": "Edit",
+      "subject": "Subject",
+      "body": "Body",
+      "placeholders": "Placeholders",
+      "revert": "Revert to base",
+      "preview": "Preview",
+      "previewNote": "Preview uses a mocked past-client contact. Multiple archetypes will be added here as product defines them."
     }
   }
 }

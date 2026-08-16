@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   TemplateCategory,
   TemplateChannel,
@@ -21,6 +22,7 @@ const CATEGORY_LABEL: Record<TemplateCategory, string> = {
 };
 
 export default function TemplatePickerClient() {
+  const { t } = useTranslation("dashboard");
   const [items, setItems] = useState<TemplateWithOverride[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -195,7 +197,7 @@ export default function TemplatePickerClient() {
             );
           })}
           {!visible.length && (
-            <div className="p-6 text-center text-sm text-gray-400">No templates match.</div>
+            <div className="p-6 text-center text-sm text-gray-400">{t("pages.templatePicker.noMatches")}</div>
           )}
         </div>
       </aside>
@@ -204,7 +206,7 @@ export default function TemplatePickerClient() {
         {selected ? (
           <TemplateDetail template={selected} onUpdate={applyUpdate} />
         ) : (
-          <div className="p-6 text-sm text-gray-500">Select a template to edit.</div>
+          <div className="p-6 text-sm text-gray-500">{t("pages.templatePicker.selectOne")}</div>
         )}
       </main>
     </div>
@@ -253,6 +255,7 @@ function TemplateDetail({
   template: TemplateWithOverride;
   onUpdate: (next: TemplateWithOverride) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [subject, setSubject] = useState(template.effectiveSubject ?? "");
   const [body, setBody] = useState(template.effectiveBody);
   const [status, setStatus] = useState<TemplateStatus>(template.effectiveStatus);
@@ -374,9 +377,7 @@ function TemplateDetail({
                 {CATEGORY_LABEL[template.category]}
               </span>
               {template.source === "invented" && (
-                <span className="rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] text-amber-700">
-                  Invented — needs product review
-                </span>
+                <span className="rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] text-amber-700">{t("pages.templatePicker.needsReview")}</span>
               )}
             </div>
             <h2 className="mt-1 text-lg font-semibold text-gray-900">{template.name}</h2>
@@ -390,11 +391,11 @@ function TemplateDetail({
 
       <div className="grid flex-1 grid-cols-1 divide-gray-100 lg:grid-cols-2 lg:divide-x">
         <section className="flex flex-col gap-3 p-4">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Edit</div>
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.templatePicker.edit")}</div>
 
           {template.channel === "email" && (
             <label className="block">
-              <span className="text-[11px] font-medium text-gray-500">Subject</span>
+              <span className="text-[11px] font-medium text-gray-500">{t("pages.templatePicker.subject")}</span>
               <input
                 type="text"
                 value={subject}
@@ -406,7 +407,7 @@ function TemplateDetail({
 
           <label className="block flex-1">
             <span className="flex items-center justify-between text-[11px] font-medium text-gray-500">
-              <span>Body</span>
+              <span>{t("pages.templatePicker.body")}</span>
               {template.channel === "sms" && (
                 <span className={overLimit ? "text-red-600" : "text-gray-400"}>
                   {length} / {maxChars ?? "—"}
@@ -423,7 +424,7 @@ function TemplateDetail({
 
           {template.placeholders.length > 0 && (
             <div>
-              <span className="text-[11px] font-medium text-gray-500">Placeholders</span>
+              <span className="text-[11px] font-medium text-gray-500">{t("pages.templatePicker.placeholders")}</span>
               <div className="mt-1 flex flex-wrap gap-1">
                 {template.placeholders.map((p) => (
                   <span
@@ -452,9 +453,7 @@ function TemplateDetail({
                 onClick={() => void revert()}
                 disabled={saving}
                 className="rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-600 hover:bg-gray-50"
-              >
-                Revert to base
-              </button>
+              >{t("pages.templatePicker.revert")}</button>
             )}
             {message && <span className="text-sm text-green-700">{message}</span>}
             {error && <span className="text-sm text-red-600">{error}</span>}
@@ -463,7 +462,7 @@ function TemplateDetail({
 
         <section className="flex flex-col p-4">
           <div className="flex items-center justify-between">
-            <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Preview</div>
+            <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.templatePicker.preview")}</div>
             <div className="inline-flex rounded-md border border-gray-200 bg-gray-50 p-0.5 text-xs">
               {(["rendered", "raw"] as const).map((m) => (
                 <button
@@ -495,10 +494,7 @@ function TemplateDetail({
               />
             )}
           </div>
-          <div className="mt-2 text-[11px] text-gray-400">
-            Preview uses a mocked past-client contact. Multiple archetypes will be added here as product
-            defines them.
-          </div>
+          <div className="mt-2 text-[11px] text-gray-400">{t("pages.templatePicker.previewNote")}</div>
         </section>
       </div>
     </div>
@@ -516,11 +512,12 @@ function PreviewPane({
   body: string;
   mono?: boolean;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className={`space-y-2 ${mono ? "font-mono text-xs" : "text-sm"}`}>
       {channel === "email" && subject !== null && (
         <div className="border-b border-gray-200 pb-2">
-          <div className="text-[10px] uppercase tracking-wide text-gray-400">Subject</div>
+          <div className="text-[10px] uppercase tracking-wide text-gray-400">{t("pages.templatePicker.subject")}</div>
           <div className="text-gray-900">{subject || <span className="text-gray-400 italic">(empty)</span>}</div>
         </div>
       )}

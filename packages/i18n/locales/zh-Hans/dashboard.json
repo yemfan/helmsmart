@@ -1657,7 +1657,18 @@
       "intro": "从自动估值模型数据源与外部渠道识别出的人生大事信号。这些信号绝不会自动发送消息——请将其作为致电名单使用。"
     },
     "sphereImport": {
-      "metaTitle": "导入人脉圈联系人"
+      "metaTitle": "导入人脉圈联系人",
+      "title": "导入人脉圈联系人",
+      "sub": "上传一个 CSV 文件。系统按列名匹配——First name、Last name、Email、Phone、Closing date、Closing price、Relationship、Tag 和 Language 都能识别。",
+      "confirmAll": "为所有勾选的联系人确认已获同意",
+      "uncheckAll": "取消全部同意勾选",
+      "include": "导入",
+      "name": "姓名",
+      "relationship": "关系",
+      "closing": "成交",
+      "emailPhone": "邮箱／电话",
+      "warnings": "提示",
+      "csvOptIn": "CSV 中标记为已同意——仍需您明确确认"
     },
     "sphereContact": {
       "metaTitle": "人脉圈联系人"
@@ -3788,6 +3799,53 @@
       "takesSeconds": "批量较大时可能需要 10–30 秒。",
       "emailSent": "邮件已发送",
       "smsSent": "短信已发送"
+    },
+    "authModal": {
+      "close": "关闭",
+      "dialogLabel": "登录或注册",
+      "login": "登录",
+      "signUp": "注册",
+      "name": "姓名",
+      "namePlaceholder": "您的姓名",
+      "forgotPassword": "忘记密码？",
+      "notNow": "暂不",
+      "continueGoogle": "使用 Google 继续",
+      "continueApple": "使用 Apple 继续"
+    },
+    "scheduler": {
+      "scheduler": "定时任务",
+      "contacts": "联系人",
+      "created": "已创建",
+      "previewOnly": "仅预览",
+      "suppressed": "已拦截",
+      "alreadyFired": "已触发过",
+      "errors": "错误",
+      "colContact": "联系人",
+      "colTemplate": "模板",
+      "colPeriod": "周期",
+      "colOutcome": "结果",
+      "colWhen": "时间",
+      "range": "时间范围",
+      "firedAt": "触发时间：",
+      "noActivity": "还没有定时任务记录。",
+      "draftsPage": "草稿页",
+      "noMatches": "没有符合当前筛选条件的触发记录。",
+      "justNow": "刚刚",
+      "minsAgo": "{{n}} 分钟前",
+      "hrsAgo": "{{n}} 小时前",
+      "daysAgo": "{{n}} 天前"
+    },
+    "templatePicker": {
+      "noMatches": "没有匹配的模板。",
+      "selectOne": "选择一个模板进行编辑。",
+      "needsReview": "自动生成——待产品确认",
+      "edit": "编辑",
+      "subject": "主题",
+      "body": "正文",
+      "placeholders": "占位符",
+      "revert": "恢复为原始模板",
+      "preview": "预览",
+      "previewNote": "预览使用的是一位模拟的老客户。等产品确定后，这里会加入更多典型客户类型。"
     }
   }
 }

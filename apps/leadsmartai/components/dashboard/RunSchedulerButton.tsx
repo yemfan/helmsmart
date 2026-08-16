@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type FiringOutcome =
   | "created_draft"
@@ -37,6 +38,7 @@ type Result = {
 };
 
 export default function RunSchedulerButton() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [pending, setPending] = useState<null | "preview" | "commit">(null);
   const [result, setResult] = useState<Result | null>(null);
@@ -70,7 +72,7 @@ export default function RunSchedulerButton() {
     <div className="rounded-xl border border-gray-200 bg-white p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-gray-900">Scheduler</div>
+          <div className="text-sm font-semibold text-gray-900">{t("pages.scheduler.scheduler")}</div>
           <div className="mt-0.5 text-xs text-gray-500">
             Walk every sphere contact and fire date- and threshold-based triggers (anniversary,
             equity, dormancy, quarterly). Respects agent-of-record + opt-in guards per spec §2.8.
@@ -102,12 +104,12 @@ export default function RunSchedulerButton() {
       {result && (
         <div className="mt-3 space-y-2">
           <div className="flex flex-wrap gap-2 text-xs">
-            <Chip label="Contacts" value={result.contacts} />
-            <Chip label="Created" value={result.counts.created} tone="green" />
-            <Chip label="Preview only" value={result.counts.dryRun} />
-            <Chip label="Suppressed" value={result.counts.suppressed} tone="amber" />
-            <Chip label="Already fired" value={result.counts.alreadyFired} />
-            <Chip label="Errors" value={result.counts.errors} tone={result.counts.errors ? "red" : undefined} />
+            <Chip label={t("pages.scheduler.contacts")} value={result.contacts} />
+            <Chip label={t("pages.scheduler.created")} value={result.counts.created} tone="green" />
+            <Chip label={t("pages.scheduler.previewOnly")} value={result.counts.dryRun} />
+            <Chip label={t("pages.scheduler.suppressed")} value={result.counts.suppressed} tone="amber" />
+            <Chip label={t("pages.scheduler.alreadyFired")} value={result.counts.alreadyFired} />
+            <Chip label={t("pages.scheduler.errors")} value={result.counts.errors} tone={result.counts.errors ? "red" : undefined} />
           </div>
 
           {result.firings.length > 0 && (
@@ -119,10 +121,10 @@ export default function RunSchedulerButton() {
                 <table className="w-full text-[11px]">
                   <thead className="sticky top-0 bg-gray-50">
                     <tr>
-                      <Th>Contact</Th>
-                      <Th>Template</Th>
-                      <Th>Period</Th>
-                      <Th>Outcome</Th>
+                      <Th>{t("pages.scheduler.colContact")}</Th>
+                      <Th>{t("pages.scheduler.colTemplate")}</Th>
+                      <Th>{t("pages.scheduler.colPeriod")}</Th>
+                      <Th>{t("pages.scheduler.colOutcome")}</Th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { fullNameFromUserMetadata } from "@/lib/auth/canonicalUserContact";
 import { sendPasswordResetEmail } from "@/lib/auth/sendPasswordResetEmail";
@@ -26,6 +27,7 @@ export default function AuthModal({
   initialMode?: Mode;
   onAuthenticated?: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
@@ -283,7 +285,7 @@ export default function AuthModal({
       <button
         type="button"
         className="absolute inset-0 z-0 cursor-pointer border-0 bg-slate-900/40 p-0 backdrop-blur-sm"
-        aria-label="Close"
+        aria-label={t("pages.authModal.close")}
         onClick={() => !loading && onClose()}
       />
 
@@ -292,14 +294,14 @@ export default function AuthModal({
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-label="Sign in or create account"
+        aria-label={t("pages.authModal.dialogLabel")}
       >
         <button
           type="button"
           onClick={() => !loading && onClose()}
           disabled={loading}
           className="absolute right-3 top-3 z-10 rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
-          aria-label="Close"
+          aria-label={t("pages.authModal.close")}
         >
           <X className="h-4 w-4" strokeWidth={2} aria-hidden />
         </button>
@@ -313,9 +315,7 @@ export default function AuthModal({
                   ? "bg-white border-slate-300 text-slate-900"
                   : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-white"
               }`}
-            >
-              Login
-            </button>
+            >{t("pages.authModal.login")}</button>
             <button
               type="button"
               onClick={() => setMode("signup")}
@@ -324,22 +324,19 @@ export default function AuthModal({
                   ? "bg-white border-slate-300 text-slate-900"
                   : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-white"
               }`}
-            >
-              Sign Up
-            </button>
+            >{t("pages.authModal.signUp")}</button>
           </div>
 
           <form onSubmit={submit} className="space-y-3">
             {mode === "signup" ? (
               <div className="space-y-1">
-                <label className="block text-xs font-medium text-slate-700">
-                  Name<span className="text-red-600"> *</span>
+                <label className="block text-xs font-medium text-slate-700">{t("pages.authModal.name")}<span className="text-red-600"> *</span>
                 </label>
                 <input
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Your name"
+                  placeholder={t("pages.authModal.namePlaceholder")}
                   autoComplete="name"
                   required
                 />
@@ -393,9 +390,7 @@ export default function AuthModal({
                     href="/forgot-password"
                     onClick={() => onClose()}
                     className="text-xs font-semibold text-blue-700 underline underline-offset-2 hover:text-blue-800"
-                  >
-                    Forgot password?
-                  </Link>
+                  >{t("pages.authModal.forgotPassword")}</Link>
                 </div>
               ) : null}
             </div>
@@ -431,9 +426,7 @@ export default function AuthModal({
               disabled={loading}
               onClick={onClose}
               className="w-full inline-flex items-center justify-center rounded-xl bg-white border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              Not now
-            </button>
+            >{t("pages.authModal.notNow")}</button>
           </form>
 
           <div className="flex items-center gap-3">
@@ -448,17 +441,13 @@ export default function AuthModal({
               disabled={loading}
               onClick={() => void signInWithOAuth("google")}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Continue with Google
-            </button>
+            >{t("pages.authModal.continueGoogle")}</button>
             <button
               type="button"
               disabled={loading}
               onClick={() => void signInWithOAuth("apple")}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              Continue with Apple
-            </button>
+            >{t("pages.authModal.continueApple")}</button>
           </div>
         </div>
       </div>
