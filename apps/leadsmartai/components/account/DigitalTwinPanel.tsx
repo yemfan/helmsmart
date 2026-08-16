@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
+import { extractVoiceSample } from "@/lib/audio/extractVoiceSample";
 import { AVATAR_PRESET_VOICES, CLONE_VOICE_ID } from "@/lib/agent/avatarVoices";
 
 /**
@@ -38,6 +39,15 @@ type AvatarState = {
   videoUrl: string | null;
 };
 
+/** A queued or in-flight render. `status` mirrors avatar_render_jobs.status. */
+type AvatarJob = {
+  id: string;
+  status: "queued" | "rendering" | "upscaling" | "done" | "failed";
+  videoUrl?: string | null;
+  error?: string | null;
+  sharpen?: boolean;
+};
+
 type AvatarResp = Partial<AvatarState> & {
   ok?: boolean;
   error?: string | null;
@@ -46,6 +56,7 @@ type AvatarResp = Partial<AvatarState> & {
   scheduled?: number;
   premiumAvatar?: boolean;
   sharpened?: boolean;
+  job?: AvatarJob | null;
 };
 
 function toVoiceState(b: VoiceCloneResp): VoiceCloneState {
@@ -113,6 +124,10 @@ export default function DigitalTwinPanel() {
   // selection in sync with clone readiness; after, their choice is never
   // overridden by a background refresh.
   const voiceTouched = useRef(false);
+  // The background render. Rendering happens server-side now, so this is the
+  // only thing tying the page to a job it no longer owns — closing the tab
+  // doesn't cancel it, and the agent is notified either way.
+  const [avJob, setAvJob] = useState<AvatarJob | null>(null);
   const [vcClean, setVcClean] = useState(false);
 
   async function publishAvatar() {
@@ -169,6 +184,7 @@ export default function DigitalTwinPanel() {
         });
         if (b.script) setAvScript(b.script);
         setAvPremium(Boolean(b.premiumAvatar));
+        setAvJob(b.job ?? null);
       }
     } catch {
       /* best-effort */
@@ -207,9 +223,9 @@ export default function DigitalTwinPanel() {
         setAvAudioUrl(b.audioUrl ?? null);
         setAvAudioPath(b.audioPath ?? null);
       }
-      if (action === "render" && b.videoUrl) {
-        setAv((s) => (s ? { ...s, videoUrl: b.videoUrl ?? s.videoUrl } : s));
-      }
+      // Render no longer returns a video — it returns a queued job. Adopt it so
+      // the poll below starts immediately rather than after the next refresh.
+      if (action === "render" && b.job) setAvJob(b.job);
     } catch (e) {
       setAvError(e instanceof Error ? e.message : t("twin.errors.network"));
     } finally {
@@ -282,6 +298,21 @@ export default function DigitalTwinPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /*
+   * Follow a render that's running on the server. This is a convenience, not
+   * the delivery mechanism — the job completes and notifies whether or not this
+   * page is open, so the poll only exists to update the panel live for someone
+   * who stayed. Stops the moment the job reaches a terminal state.
+   */
+  const jobActive =
+    avJob?.status === "queued" || avJob?.status === "rendering" || avJob?.status === "upscaling";
+  useEffect(() => {
+    if (!jobActive) return;
+    const timer = setInterval(() => void loadAvatar(), 8000);
+    return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobActive]);
+
   async function onPickVideo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
@@ -294,6 +325,28 @@ export default function DigitalTwinPanel() {
       setVideoPath(path);
       setHasVideo(true);
       setNote(t("twin.videoUploaded"));
+
+      /*
+       * Also send up just the audio, for voice cloning. ElevenLabs caps uploads
+       * at 11MB and an intro video is typically ~18MB, so the sample used to be
+       * squeezed under the cap by a denoiser — which reshaped the cloned voice.
+       * A minute of speech extracts to ~1-2MB, unprocessed.
+       *
+       * Best-effort and after the video is safely stored: a browser that can't
+       * decode the container must not cost the agent their upload. The server
+       * falls back to the video when this is missing.
+       */
+      try {
+        const audio = await extractVoiceSample(file);
+        const audioPath = await uploadViaStorage(audio, "agent_intro_audio");
+        await fetch("/api/dashboard/digital-twin", {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ introAudioPath: audioPath }),
+        });
+      } catch (audioErr) {
+        console.warn("[twin] audio extraction skipped:", audioErr instanceof Error ? audioErr.message : audioErr);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t("twin.errors.uploadFailed"));
     } finally {
@@ -708,13 +761,40 @@ export default function DigitalTwinPanel() {
               <button
                 type="button"
                 onClick={() => void avatarAction("render")}
-                disabled={avBusy !== null || !avAudioPath}
+                disabled={avBusy !== null || !avAudioPath || jobActive}
                 title={avAudioPath ? t("twin.renderTitle") : t("twin.previewFirst")}
                 className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
               >
-                {avBusy === "render" ? "Rendering… (1–2 min)" : "Generate video (uses credits)"}
+                {avBusy === "render" ? "Queueing…" : "Generate video (uses credits)"}
               </button>
             </div>
+
+            {/*
+              The render runs on the server now, so this is a progress report on
+              something we no longer own — deliberately says the tab can be
+              closed, because the whole point of the change is that it can be.
+            */}
+            {jobActive ? (
+              <div className="flex items-start gap-3 rounded-lg border border-violet-200 bg-violet-50 p-3">
+                <span
+                  aria-hidden
+                  className="mt-1 size-3 shrink-0 animate-pulse rounded-full bg-violet-500"
+                />
+                <p className="text-[12px] leading-relaxed text-violet-900">
+                  <strong>
+                    {avJob?.status === "upscaling" ? "Sharpening your video…" : "Rendering your video…"}
+                  </strong>{" "}
+                  This usually takes 1–3 minutes{avJob?.sharpen ? ", longer with Sharper video" : ""}. You can
+                  close this page — we&rsquo;ll notify you the moment it&rsquo;s ready.
+                </p>
+              </div>
+            ) : null}
+
+            {avJob?.status === "failed" ? (
+              <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-800">
+                {avJob.error ?? "The render didn't finish."} Your credits were returned.
+              </p>
+            ) : null}
 
             {/*
               Render stays gated on an approved preview so nobody spends credits

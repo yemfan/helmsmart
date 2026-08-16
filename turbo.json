@@ -27,6 +27,7 @@
         "FAL_*",
         "SCRAPINGBEE_API_KEY",
         "SCRAPER_API_KEY",
+        "WAREHOUSE_READ_TIMEOUT_MS",
         "YOUTUBE_*",
         "ELEVENLABS_*",
         "META_*",

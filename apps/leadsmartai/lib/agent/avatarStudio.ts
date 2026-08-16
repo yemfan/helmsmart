@@ -492,6 +492,174 @@ export async function renderAvatarVideo(
   return { videoUrl: publicUrl, sharpened, photoAvatar };
 }
 
+/* ── Background-render primitives ──────────────────────────────────────────
+ *
+ * renderAvatarVideo above BLOCKS until fal finishes, which is why it can't
+ * outlive a 300s function. These split the same work into steps that each
+ * return immediately, so `lib/agent/avatarJobs.ts` can drive a render across
+ * many cron ticks and a single clip may take as long as fal needs.
+ *
+ * renderAvatarVideo is deliberately left in place: the Boss tool, the action
+ * registry and the weekly scheduler still call it, and their renders are
+ * unattended anyway. Only the interactive studio path moved to jobs.
+ */
+
+export type FalHandle = { requestId: string; statusUrl: string; responseUrl: string };
+
+/** Submit to a fal queue endpoint and return its handle. Never waits. */
+async function submitFal(model: string, body: unknown): Promise<FalHandle> {
+  const H = falHeaders();
+  const sub = await fetch(`${FAL_QUEUE}/${model}`, { method: "POST", headers: H, body: JSON.stringify(body) });
+  const q = (await sub.json().catch(() => ({}))) as {
+    request_id?: string;
+    status_url?: string;
+    response_url?: string;
+    detail?: string;
+  };
+  if (!sub.ok || !q.request_id) throw new Error(`fal submit ${sub.status}: ${q.detail || "no request id"}`);
+  return {
+    requestId: q.request_id,
+    statusUrl: q.status_url || `${FAL_QUEUE}/${model}/requests/${q.request_id}/status`,
+    responseUrl: q.response_url || `${FAL_QUEUE}/${model}/requests/${q.request_id}`,
+  };
+}
+
+/**
+ * ONE status check. Returns immediately with whatever fal says right now —
+ * this is the call that makes the wall-clock ceiling go away.
+ */
+export async function pollFalOnce(
+  handle: Pick<FalHandle, "statusUrl" | "responseUrl">,
+): Promise<{ state: "running" | "done" | "failed"; videoUrl?: string }> {
+  const H = falHeaders();
+  const r = await fetch(handle.statusUrl, { headers: H });
+  const s = (await r.json().catch(() => ({}))) as { status?: string };
+  if (s.status === "FAILED" || s.status === "ERROR") return { state: "failed" };
+  if (s.status !== "COMPLETED") return { state: "running" };
+
+  const rr = await fetch(handle.responseUrl, { headers: H });
+  const out = (await rr.json().catch(() => ({}))) as { video?: { url?: string }; url?: string };
+  const videoUrl = out.video?.url || out.url;
+  return videoUrl ? { state: "done", videoUrl } : { state: "failed" };
+}
+
+/**
+ * Everything cheap and synchronous: consent, likeness/audio resolution, signed
+ * URLs, and the fal submit. Returns the handle to poll later.
+ *
+ * Throws the same friendly errors as the inline path, so a job that fails here
+ * fails for a reason the agent can act on.
+ */
+export async function submitAvatarRender(
+  agentId: string,
+  text: string,
+  audioPath: string | null,
+  options?: { photoAvatar?: boolean; voice?: string | null },
+): Promise<FalHandle> {
+  if (!avatarConfigured()) throw new Error("Avatar isn't configured (needs FAL_KEY + ELEVENLABS_API_KEY).");
+
+  const agent = await readAgent(agentId);
+  if (!agent?.dt_consent) throw new Error("Consent to AI use of your likeness first (Digital Twin).");
+
+  const photoAvatar = Boolean(options?.photoAvatar);
+  const videoPath = ownPath(agent?.dt_intro_video_path, agentId);
+  const portraitPath = ownPath(agent?.dt_portrait_path, agentId);
+  if (!videoPath && !(photoAvatar && portraitPath)) {
+    throw new Error(
+      photoAvatar
+        ? "Add a photo or record your intro video first (Digital Twin)."
+        : "Record your intro video first (Digital Twin). A photo alone can only make a Lifelike avatar.",
+    );
+  }
+
+  let audio = audioPath?.trim() || "";
+  if (!audio || !audio.startsWith(`digital-twin/${agentId}/`)) {
+    audio = (await previewAvatarVoice(agentId, text, options?.voice)).audioPath;
+  }
+
+  const likenessPath = photoAvatar && portraitPath ? portraitPath : videoPath!;
+  const usingPortrait = likenessPath === portraitPath;
+
+  const [{ data: v, error: vErr }, { data: a, error: aErr }] = await Promise.all([
+    supabaseAdmin.storage.from(PRIVATE_BUCKET).createSignedUrl(likenessPath, 3600),
+    supabaseAdmin.storage.from(PRIVATE_BUCKET).createSignedUrl(audio, 3600),
+  ]);
+  if (vErr || !v?.signedUrl) {
+    console.error(`[avatar] signing likeness failed for agent ${agentId}:`, vErr?.message ?? "no signed URL");
+    throw new Error(
+      usingPortrait
+        ? "Couldn't load your photo just now — that's usually temporary, not a problem with the photo. Try again in a moment."
+        : "Couldn't load your intro video just now — that's usually temporary, not a problem with the video. Try again in a moment.",
+    );
+  }
+  if (aErr || !a?.signedUrl) {
+    console.error(`[avatar] signing voice audio failed for agent ${agentId}:`, aErr?.message ?? "no signed URL");
+    throw new Error("Couldn't load the voice audio just now — try the preview again in a moment.");
+  }
+
+  if (photoAvatar) {
+    /*
+     * Fabric needs a still. An uploaded portrait is already one; otherwise we
+     * grab a frame from the intro video. Frame extraction is ffmpeg, not
+     * generation — seconds, not minutes — so it's the one step still waited on
+     * inline, under a short bound. If it ever exceeds that, something is wrong
+     * and failing fast beats occupying the drain.
+     */
+    const portrait = usingPortrait
+      ? v.signedUrl
+      : await extractPortrait(v.signedUrl, Date.now() + 60_000);
+    return submitFal(FAL_FABRIC, { image_url: portrait, audio_url: a.signedUrl, resolution: "720p" });
+  }
+  return submitFal(LIPSYNC, { video_url: v.signedUrl, audio_url: a.signedUrl, sync_mode: "loop" });
+}
+
+/** Submit the optional Sharper pass over a finished base clip. Never waits. */
+export async function submitAvatarUpscale(videoUrl: string): Promise<FalHandle> {
+  return submitFal(FAL_UPSCALE, { video_url: videoUrl });
+}
+
+/**
+ * Copy the finished fal clip into our public bucket and record it on the agent.
+ * Split out so the drain can finalize whichever URL it ended up with — the
+ * upscaled one, or the base clip when the upscale failed.
+ */
+export async function finalizeAvatarRender(
+  agentId: string,
+  script: string,
+  falVideoUrl: string,
+): Promise<{ videoUrl: string }> {
+  const dl = await fetch(falVideoUrl);
+  if (!dl.ok) throw new Error("Could not download the rendered video.");
+  const bytes = Buffer.from(await dl.arrayBuffer());
+  const outPath = `avatars/${agentId}/${crypto.randomUUID()}.mp4`;
+  const { error: upErr } = await supabaseAdmin.storage
+    .from(PUBLIC_BUCKET)
+    .upload(outPath, bytes, { contentType: "video/mp4", upsert: false });
+
+  /*
+   * Log the size and the REAL storage error. A finished render died five times
+   * here behind the message "Could not store the rendered video." — which hid
+   * the actual cause (the file exceeded a storage size limit) and made a
+   * solved, paid-for render look like a mystery.
+   *
+   * Size is the thing that varies: the base clip is ~8MB, but the Sharper pass
+   * multiplies it, so it's the upscaled renders that hit the ceiling. Say so,
+   * because turning that option off is something the agent can actually do.
+   */
+  if (upErr) {
+    const mb = Math.round(bytes.byteLength / (1024 * 1024));
+    console.error(`[avatar] storing ${mb}MB render for agent ${agentId} failed:`, upErr.message);
+    throw new Error(
+      `The finished video (${mb}MB) couldn't be saved — it may be over the storage limit. ` +
+        `Turning off “Sharper video” produces a much smaller file.`,
+    );
+  }
+  const publicUrl = supabaseAdmin.storage.from(PUBLIC_BUCKET).getPublicUrl(outPath).data.publicUrl;
+
+  await setAgent(agentId, { dt_avatar_video_url: publicUrl, dt_avatar_script: script.trim().slice(0, 1200) });
+  return { videoUrl: publicUrl };
+}
+
 /** Claude writes a social caption for the talking-head clip from its script. */
 async function draftAvatarCaption(script: string, name: string | null): Promise<string> {
   try {
