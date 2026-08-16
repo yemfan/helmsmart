@@ -80,7 +80,6 @@ const PENDING = new Set([
   "app/cap-rate-by-city-in-the-united-states/page.tsx",
   "app/cap-rate-formula-explained-for-beginners/page.tsx",
   "app/cap-rate-vs-internal-rate-of-return-irr/page.tsx",
-  "app/what-is-cap-rate-in-real-estate-investing/page.tsx",
   "app/ai-cma-analyzer/page.tsx",
   "app/how-to-analyze-a-property-using-cap-rate/page.tsx",
   "app/how-to-increase-cap-rate-on-rental-property/page.tsx",
