@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { BrandCheck, toneAt } from "@/components/brand/BrandCheck";
 import { PRICING_TRIAL_CHECKOUT_PATH, loginUrl } from "@/lib/loginUrl";
@@ -80,6 +81,7 @@ export default function PricingModal({
   open: boolean;
   onClose: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
 
   const [loading, setLoading] = useState<PlanKey | null>(null);
@@ -258,10 +260,8 @@ export default function PricingModal({
       <div className="w-full max-w-5xl bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
         <div className="p-5 border-b border-slate-100 flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-slate-900">Upgrade your plan</div>
-            <div className="text-xs text-slate-600 mt-1">
-              Grow faster with unlimited lead generation and agent-ready automation.
-            </div>
+            <div className="text-sm font-semibold text-slate-900">{t("pages.pricingModal.title")}</div>
+            <div className="text-xs text-slate-600 mt-1">{t("pages.pricingModal.sub")}</div>
             {leadUsage?.limit != null ? (
               <div className="text-[11px] text-slate-500 mt-2">
                 Leads: {leadUsage.count}/{leadUsage.limit} ({leadsPct}%)
@@ -278,9 +278,7 @@ export default function PricingModal({
             type="button"
             className="text-sm font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50"
             onClick={onClose}
-          >
-            Close
-          </button>
+          >{t("pages.pricingModal.close")}</button>
         </div>
 
         <div className="p-5 space-y-5">
@@ -292,15 +290,11 @@ export default function PricingModal({
 
           {/* Lead/CMA reached messages */}
           {leadUsage?.limit != null && leadsPct >= 100 ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
-              You’ve reached your CMA or Lead limit. Upgrade to Premium for unlimited access.
-            </div>
+            <div className="rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">{t("pages.pricingModal.limitBoth")}</div>
           ) : null}
 
           {cmaUsage?.reached ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
-              You’ve reached your CMA limit. Upgrade to Premium for unlimited access.
-            </div>
+            <div className="rounded-xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">{t("pages.pricingModal.limitCma")}</div>
           ) : null}
 
           {/* Plans */}
@@ -315,9 +309,7 @@ export default function PricingModal({
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">{p.title}</div>
                   {p.highlighted ? (
-                    <span className="inline-flex items-center rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1">
-                      Most Popular
-                    </span>
+                    <span className="inline-flex items-center rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1">{t("pages.pricingModal.mostPopular")}</span>
                   ) : null}
                 </div>
 
@@ -360,16 +352,14 @@ export default function PricingModal({
                     Pro lead cap is {leadUsage.limit}. Upgrade to Premium for unlimited access.
                   </div>
                 ) : p.key === "pro" ? (
-                  <div className="mt-3 text-[11px] text-amber-700 font-medium">
-                    Upgrade to Premium for unlimited growth.
-                  </div>
+                  <div className="mt-3 text-[11px] text-amber-700 font-medium">{t("pages.pricingModal.upgradeCta")}</div>
                 ) : null}
               </div>
             ))}
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-            <p className="font-medium text-slate-900">Need more?</p>
+            <p className="font-medium text-slate-900">{t("pages.pricingModal.needMore")}</p>
             <p className="mt-1 text-slate-600">
               <strong>Signature</strong> ($399/mo) adds bilingual English / 中文 AI, Sphere
               Intelligence Pro, white-glove onboarding, and concierge support.{" "}

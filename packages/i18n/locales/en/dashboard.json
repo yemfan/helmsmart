@@ -3917,6 +3917,61 @@
       "wireFraudHint": "Texts you 24-48h before closing if the wire-verification task is still incomplete. This is a fraud-prevention alert — turning it off is strongly discouraged.",
       "growthDigest": "Weekly growth digest",
       "growthDigestHint": "Monday-morning email with the top 3 AI-generated growth opportunities for your week. Only sends when you have 2+ opportunities, so dormant weeks stay quiet."
+    },
+    "demoShell": {
+      "workspace": "Demo workspace",
+      "readyForReal": "Ready to use this for real?",
+      "startTrialSub": "Start a 14-day free trial — your real workspace, no credit card.",
+      "startTrial": "Start free trial",
+      "sandboxMode": "Sandbox mode.",
+      "sandboxNote": "You're looking at fake data — buttons that send messages, create deals, or change settings are disabled. Click freely.",
+      "aboutDemo": "About this demo",
+      "disabledTip": "Disabled in sandbox mode. Start a free trial to use this for real.",
+      "demo": "Demo"
+    },
+    "videoEditor": {
+      "title": "Turn a video into a branded reel",
+      "intro": "Upload a clip. We add a branded intro, your logo watermark, and a CTA outro, crop it to 9:16, and post it as a reel.",
+      "signatureOnly": "Video editing is a Signature feature. Upgrade to turn clips into branded reels.",
+      "aiWrites": "Let AI write the hook & caption from the video",
+      "cutSilence": "Cut dead air & long silences (tightens the edit)",
+      "aiWatchNote": "AI will watch the clip and write the intro hook, caption, and CTA for you.",
+      "introHook": "Intro hook",
+      "ctaOutro": "CTA (outro)",
+      "postCaption": "Post caption (optional)",
+      "captionPlaceholder": "Defaults to the hook."
+    },
+    "pricingModal": {
+      "title": "Upgrade your plan",
+      "sub": "Grow faster with unlimited lead generation and agent-ready automation.",
+      "close": "Close",
+      "limitBoth": "You’ve reached your CMA or Lead limit. Upgrade to Premium for unlimited access.",
+      "limitCma": "You’ve reached your CMA limit. Upgrade to Premium for unlimited access.",
+      "mostPopular": "Most Popular",
+      "upgradeCta": "Upgrade to Premium for unlimited growth.",
+      "needMore": "Need more?"
+    },
+    "pipelineForecast": {
+      "empty": "No active or pending deals in the pipeline. New transactions show up here as soon as they're opened.",
+      "byMonth": "Forecast by month",
+      "noScheduled": "No deals with scheduled close dates.",
+      "bySide": "Pipeline by side",
+      "bySideSub": "Where your in-flight commission is concentrated.",
+      "type": "Type",
+      "deals": "Deals",
+      "ifAllClose": "If all close",
+      "expected": "Expected (weighted)"
+    },
+    "reviewPolicy": {
+      "reviewEach": "Review each one",
+      "autosendAll": "Autosend everything",
+      "perCategory": "Let me pick per category",
+      "policyByCategory": "Policy by category",
+      "whatThisMeans": "What this means right now",
+      "meansReview": "Every message from every trigger becomes a draft. You'll get a notification, tap approve, and it sends.",
+      "meansAutosend": "Every message sends the moment its trigger fires. You'll see them in your history after the fact.",
+      "sphere": "Sphere:",
+      "recommended": "Recommended"
     }
   }
 }

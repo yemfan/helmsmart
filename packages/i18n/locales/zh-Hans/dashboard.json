@@ -3917,6 +3917,61 @@
       "wireFraudHint": "如果成交前 24–48 小时电汇信息核验待办仍未完成，会给您发短信提醒。这是一项防诈骗提醒——强烈建议不要关闭。",
       "growthDigest": "每周增长摘要",
       "growthDigestHint": "周一早上发送邮件，列出本周由 AI 找出的三个最值得抓的机会。只有在您有 2 个以上机会时才发送，清闲的一周不会打扰您。"
+    },
+    "demoShell": {
+      "workspace": "演示工作区",
+      "readyForReal": "想正式用起来了吗？",
+      "startTrialSub": "开始 14 天免费试用——真实的工作区，无需信用卡。",
+      "startTrial": "开始免费试用",
+      "sandboxMode": "沙盒模式。",
+      "sandboxNote": "您看到的是模拟数据——发消息、建交易、改设置的按钮都已停用。可以随便点。",
+      "aboutDemo": "关于这个演示",
+      "disabledTip": "沙盒模式下已停用。开始免费试用即可实际使用。",
+      "demo": "演示"
+    },
+    "videoEditor": {
+      "title": "把视频做成品牌短片",
+      "intro": "上传一段素材。我们会加上品牌片头、您的 Logo 水印和行动号召片尾，裁成 9:16，然后作为短视频发布。",
+      "signatureOnly": "视频剪辑属于 Signature 版功能。升级后即可把素材做成品牌短片。",
+      "aiWrites": "让 AI 根据视频写开场白和文案",
+      "cutSilence": "剪掉冷场和长时间静音（让节奏更紧凑）",
+      "aiWatchNote": "AI 会看完这段视频，替您写好开场白、文案和行动号召。",
+      "introHook": "开场白",
+      "ctaOutro": "行动号召（片尾）",
+      "postCaption": "帖子文案（选填）",
+      "captionPlaceholder": "留空则使用开场白。"
+    },
+    "pricingModal": {
+      "title": "升级您的方案",
+      "sub": "用不限量的获客和面向经纪人的自动化，跑得更快。",
+      "close": "关闭",
+      "limitBoth": "您的 CMA 或客源额度已用完。升级到 Premium 即可不限量使用。",
+      "limitCma": "您的 CMA 额度已用完。升级到 Premium 即可不限量使用。",
+      "mostPopular": "最受欢迎",
+      "upgradeCta": "升级到 Premium，增长不设上限。",
+      "needMore": "还需要更多？"
+    },
+    "pipelineForecast": {
+      "empty": "流程中没有在办或待处理的交易。新建交易后会立刻显示在这里。",
+      "byMonth": "按月预测",
+      "noScheduled": "没有已排定成交日期的交易。",
+      "bySide": "按代理方划分",
+      "bySideSub": "看看您在办的佣金集中在哪一侧。",
+      "type": "类型",
+      "deals": "交易数",
+      "ifAllClose": "全部成交则为",
+      "expected": "预期（按概率加权）"
+    },
+    "reviewPolicy": {
+      "reviewEach": "每条都要我审核",
+      "autosendAll": "全部自动发送",
+      "perCategory": "我按类别分别设置",
+      "policyByCategory": "按类别设置策略",
+      "whatThisMeans": "当前设置意味着什么",
+      "meansReview": "所有触发产生的消息都会变成草稿。您会收到通知，点一下批准就发出。",
+      "meansAutosend": "每条消息在触发的那一刻就直接发出。您可以事后在历史记录里看到。",
+      "sphere": "人脉圈：",
+      "recommended": "推荐"
     }
   }
 }

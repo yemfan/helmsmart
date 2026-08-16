@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 type MonthlyBucket = {
@@ -59,6 +60,7 @@ function formatMoney(n: number | null | undefined): string {
  * a listing-heavy agent and unusual for a buyer-rep agent.
  */
 export function PipelineForecastPanel() {
+  const { t } = useTranslation("dashboard");
   const [data, setData] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -115,9 +117,7 @@ export function PipelineForecastPanel() {
       <KpiStrip data={data} />
 
       {!hasAny ? (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
-          No active or pending deals in the pipeline. New transactions show up here as soon as they&apos;re opened.
-        </div>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">{t("pages.pipelineForecast.empty")}</div>
       ) : (
         <>
           <ForecastByMonthChart buckets={data.byMonth} />
@@ -165,6 +165,7 @@ function KpiStrip({ data }: { data: ForecastData }) {
 }
 
 function ForecastByMonthChart({ buckets }: { buckets: MonthlyBucket[] }) {
+  const { t } = useTranslation("dashboard");
   const visible = buckets.filter((b) => b.month !== "no-date");
   const noDate = buckets.find((b) => b.month === "no-date");
 
@@ -172,7 +173,7 @@ function ForecastByMonthChart({ buckets }: { buckets: MonthlyBucket[] }) {
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <header className="mb-3 flex items-baseline justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900">Forecast by month</h3>
+          <h3 className="text-sm font-semibold text-slate-900">{t("pages.pipelineForecast.byMonth")}</h3>
           <p className="text-[11px] text-slate-500">
             Bars show gross commission scheduled by close-date month. Darker overlay = weighted by close-date proximity.
           </p>
@@ -201,9 +202,7 @@ function ForecastByMonthChart({ buckets }: { buckets: MonthlyBucket[] }) {
           </ResponsiveContainer>
         </div>
       ) : (
-        <p className="py-6 text-center text-xs text-slate-500">
-          No deals with scheduled close dates.
-        </p>
+        <p className="py-6 text-center text-xs text-slate-500">{t("pages.pipelineForecast.noScheduled")}</p>
       )}
 
       {noDate ? (
@@ -221,6 +220,7 @@ function TypeBreakdownTable({
 }: {
   byType: ForecastData["byType"];
 }) {
+  const { t } = useTranslation("dashboard");
   const rows = [
     { key: "buyer_rep" as const, label: "Buyer-rep", data: byType.buyer_rep },
     { key: "listing_rep" as const, label: "Listing-rep", data: byType.listing_rep },
@@ -230,16 +230,16 @@ function TypeBreakdownTable({
   return (
     <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
       <header className="border-b border-slate-100 px-4 py-3">
-        <h3 className="text-sm font-semibold text-slate-900">Pipeline by side</h3>
-        <p className="text-[11px] text-slate-500">Where your in-flight commission is concentrated.</p>
+        <h3 className="text-sm font-semibold text-slate-900">{t("pages.pipelineForecast.bySide")}</h3>
+        <p className="text-[11px] text-slate-500">{t("pages.pipelineForecast.bySideSub")}</p>
       </header>
       <table className="w-full text-sm">
         <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
           <tr>
-            <th className="px-4 py-2 text-left font-semibold">Type</th>
-            <th className="px-4 py-2 text-right font-semibold">Deals</th>
-            <th className="px-4 py-2 text-right font-semibold">If all close</th>
-            <th className="px-4 py-2 text-right font-semibold">Expected (weighted)</th>
+            <th className="px-4 py-2 text-left font-semibold">{t("pages.pipelineForecast.type")}</th>
+            <th className="px-4 py-2 text-right font-semibold">{t("pages.pipelineForecast.deals")}</th>
+            <th className="px-4 py-2 text-right font-semibold">{t("pages.pipelineForecast.ifAllClose")}</th>
+            <th className="px-4 py-2 text-right font-semibold">{t("pages.pipelineForecast.expected")}</th>
           </tr>
         </thead>
         <tbody>

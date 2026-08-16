@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 
@@ -35,6 +36,7 @@ function readDuration(file: File): Promise<number> {
 }
 
 export default function VideoEditorPanel({ canCustomize }: { canCustomize: boolean }) {
+  const { t } = useTranslation("dashboard");
   const [file, setFile] = useState<File | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
   const [hook, setHook] = useState("New listing just dropped");
@@ -106,17 +108,12 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
   return (
     <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div>
-        <h3 className="text-base font-semibold text-gray-900">Turn a video into a branded reel</h3>
-        <p className="mt-0.5 text-sm text-gray-500">
-          Upload a clip. We add a branded intro, your logo watermark, and a CTA outro, crop it to
-          9:16, and post it as a reel.
-        </p>
+        <h3 className="text-base font-semibold text-gray-900">{t("pages.videoEditor.title")}</h3>
+        <p className="mt-0.5 text-sm text-gray-500">{t("pages.videoEditor.intro")}</p>
       </div>
 
       {!canCustomize ? (
-        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Video editing is a Signature feature. Upgrade to turn clips into branded reels.
-        </div>
+        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{t("pages.videoEditor.signatureOnly")}</div>
       ) : (
         <div className="mt-4 space-y-3">
           <input
@@ -138,30 +135,26 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
               Auto‑captions (burn subtitles into the video)
             </label>
             <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" checked={aiCopy} onChange={(e) => setAiCopy(e.target.checked)} className="h-4 w-4" />
-              Let AI write the hook &amp; caption from the video
-            </label>
+              <input type="checkbox" checked={aiCopy} onChange={(e) => setAiCopy(e.target.checked)} className="h-4 w-4" />{t("pages.videoEditor.aiWrites")}</label>
             <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" checked={silenceCut} onChange={(e) => setSilenceCut(e.target.checked)} className="h-4 w-4" />
-              Cut dead air &amp; long silences (tightens the edit)
-            </label>
+              <input type="checkbox" checked={silenceCut} onChange={(e) => setSilenceCut(e.target.checked)} className="h-4 w-4" />{t("pages.videoEditor.cutSilence")}</label>
           </div>
 
           {aiCopy ? (
-            <p className="text-xs text-gray-500">AI will watch the clip and write the intro hook, caption, and CTA for you.</p>
+            <p className="text-xs text-gray-500">{t("pages.videoEditor.aiWatchNote")}</p>
           ) : (
             <>
               <label className="block">
-                <span className="mb-1 block text-xs font-medium text-gray-600">Intro hook</span>
+                <span className="mb-1 block text-xs font-medium text-gray-600">{t("pages.videoEditor.introHook")}</span>
                 <input type="text" value={hook} onChange={(e) => setHook(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]" />
               </label>
               <label className="block">
-                <span className="mb-1 block text-xs font-medium text-gray-600">CTA (outro)</span>
+                <span className="mb-1 block text-xs font-medium text-gray-600">{t("pages.videoEditor.ctaOutro")}</span>
                 <input type="text" value={cta} onChange={(e) => setCta(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]" />
               </label>
               <label className="block">
-                <span className="mb-1 block text-xs font-medium text-gray-600">Post caption (optional)</span>
-                <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={2} placeholder="Defaults to the hook." className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]" />
+                <span className="mb-1 block text-xs font-medium text-gray-600">{t("pages.videoEditor.postCaption")}</span>
+                <textarea value={caption} onChange={(e) => setCaption(e.target.value)} rows={2} placeholder={t("pages.videoEditor.captionPlaceholder")} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-[#0072ce] focus:outline-none focus:ring-1 focus:ring-[#0072ce]" />
               </label>
             </>
           )}

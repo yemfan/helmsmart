@@ -42,6 +42,8 @@ const ALLOWED = new Set([
   "Pro",
   "Premium",
   "Elite",
+  "Signature",
+  "Team",
   "PDF",
 ]);
 
