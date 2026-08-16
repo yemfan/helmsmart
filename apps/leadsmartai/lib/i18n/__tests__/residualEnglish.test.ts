@@ -47,6 +47,8 @@ const ALLOWED = new Set([
   "PDF",
   // The key cap, not a word: it is printed on the keyboard the same way here.
   "Esc",
+  // Max is an AI employee on the team, not the adjective.
+  "Max",
 ]);
 
 const COPY_ATTRS = /\b(?:placeholder|title|label|aria-label|alt)="([^"]+)"/g;

@@ -4204,6 +4204,90 @@
       "cancel": "Cancel",
       "started": "Import started",
       "done": "Done"
+    },
+    "briefingSchedule": {
+      "morning": "Morning briefing",
+      "evening": "Evening summary",
+      "timezone": "Timezone",
+      "tzPlaceholder": "e.g. Europe/Berlin",
+      "tzHint": "IANA timezone — your briefing fires at the times above in this zone.",
+      "saved": "Saved."
+    },
+    "generateCma": {
+      "button": "Generate CMA",
+      "title": "Generate CMA for this contact",
+      "sub": "The report will be saved and linked to this contact.",
+      "subjectAddress": "Subject address",
+      "limitReached": "Daily limit reached. Resets at midnight UTC.",
+      "cancel": "Cancel"
+    },
+    "localSeoForm": {
+      "intro": "Get a fast estimate and personalized next steps.",
+      "address": "Property address",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "submitted": "Submitted! We will follow up shortly."
+    },
+    "exitIntent": {
+      "close": "Close",
+      "closeDialog": "Close dialog",
+      "headline": "Want 3 free buyer leads?",
+      "sub": "Drop your email and we'll send details.",
+      "done": "You're in — check your inbox soon.",
+      "email": "Email"
+    },
+    "serviceAreas": {
+      "state": "State",
+      "county": "County",
+      "allCities": "I serve all cities in this county",
+      "city": "City",
+      "add": "Add service area",
+      "hint": "Pick a state, then a county, then either name a city or check “all cities” to cover the whole county."
+    },
+    "runCard": {
+      "stoppedAtBudget": "Stopped at the run budget — partial work above.",
+      "missionAccomplished": "Mission accomplished.",
+      "fiveStars": "five stars",
+      "deliveredBy": "Delivered by",
+      "edit": "Edit"
+    },
+    "draftModal": {
+      "buyerTitle": "AI buyer-outreach draft",
+      "equityTitle": "AI equity-update draft",
+      "close": "Close",
+      "smsDraft": "SMS draft",
+      "emailSubject": "Email subject",
+      "emailBody": "Email body"
+    },
+    "commissionDefaults": {
+      "intro": "Applied to new transactions as defaults. Each deal can override per-transaction (for referral deals, bonus splits, flat-fee arrangements). Re-running the math uses the values already on the deal — editing these never retro-changes closed deals.",
+      "buyerSide": "Buyer-side commission",
+      "listingSide": "Listing-side commission",
+      "brokerageSplit": "Brokerage split (your share)",
+      "referralFee": "Default referral fee"
+    },
+    "compliance": {
+      "title": "Compliance",
+      "sub": "Behaviors that are enforced automatically and can't be overridden. Real-estate messaging is more legally sensitive than most SaaS allows for.",
+      "alwaysOn": "Always on",
+      "legalNoticeLabel": "Legal notice.",
+      "legalNotice": "These guardrails implement the spec's compliance requirements but do not constitute legal advice. If you send messaging at scale or operate in multiple states, have your own counsel review the behavior before you rely on it.",
+      "stopLabel": "STOP / HELP handling (bilingual)",
+      "stopDesc": "STOP, UNSUBSCRIBE, CANCEL, QUIT, END (English) and 停止, 退订, 取消 (Chinese) suppress all future messages permanently. HELP and 帮助 return your contact info. Inherits from 10DLC registration.",
+      "firstSmsLabel": "First-SMS opt-out disclosure",
+      "firstSmsDesc": "First SMS to any new contact appends “Reply STOP to opt out” — or the Chinese equivalent if the contact's language preference is Chinese. Suppressed on subsequent messages in the same thread.",
+      "agentOfRecordLabel": "Agent-of-record check for equity messages",
+      "agentOfRecordDesc": "Templates with home value estimates (EQ-01, EM-01, EM-02) only send if you represented the contact on that specific property. Prevents steering and dual-agency accusations.",
+      "avmLabel": "California AVM disclosure (AB 2863)",
+      "avmDesc": "If your registered state is California, required disclosure language auto-appends to AVM email variants. SMS variants are suppressed in regulated states — the disclosure doesn't fit in 160 chars.",
+      "draftWindowLabel": "30-day draft-only window for new agents",
+      "draftWindowDesc": "In your first 30 days, every template defaults to Review mode regardless of your policy setting. Autosend becomes available on day 31.",
+      "anniversaryLabel": "Anniversary opt-in required on import",
+      "anniversaryDesc": "Past-client imports require you to confirm each contact has consented to SMS. The anniversary_opt_in flag defaults to false. No anniversary trigger fires without explicit opt-in.",
+      "source28": "Per spec §2.8",
+      "source28Legal": "Per spec §2.8 — NEEDS LEGAL REVIEW",
+      "source24": "Per spec §2.4"
     }
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function formatUsPhone(input: string) {
   const digits = input.replace(/\D/g, "").slice(0, 10);
@@ -21,6 +22,7 @@ export default function LocalSeoLeadForm({
   addressHint?: string;
   city?: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -85,27 +87,25 @@ export default function LocalSeoLeadForm({
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-      <p className="mt-1 text-sm text-slate-600">
-        Get a fast estimate and personalized next steps.
-      </p>
+      <p className="mt-1 text-sm text-slate-600">{t("pages.localSeoForm.intro")}</p>
       <form onSubmit={onSubmit} className="mt-4 space-y-3">
         <input
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-          placeholder="Property address"
+          placeholder={t("pages.localSeoForm.address")}
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           required
         />
         <input
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-          placeholder="Name"
+          placeholder={t("pages.localSeoForm.name")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
         <input
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-          placeholder="Email"
+          placeholder={t("pages.localSeoForm.email")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -113,7 +113,7 @@ export default function LocalSeoLeadForm({
         />
         <input
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-          placeholder="Phone (optional)"
+          placeholder={t("pages.localSeoForm.phone")}
           value={phone}
           onChange={(e) => setPhone(formatUsPhone(e.target.value))}
         />
@@ -125,7 +125,7 @@ export default function LocalSeoLeadForm({
         </button>
       </form>
       {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
-      {ok && <p className="mt-2 text-xs text-emerald-700">Submitted! We will follow up shortly.</p>}
+      {ok && <p className="mt-2 text-xs text-emerald-700">{t("pages.localSeoForm.submitted")}</p>}
     </div>
   );
 }

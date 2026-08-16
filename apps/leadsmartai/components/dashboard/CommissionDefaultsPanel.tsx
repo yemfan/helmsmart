@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Preferences = {
   commissionBuyerPct: number;
@@ -16,6 +17,7 @@ type Preferences = {
  * "Save." Values clamp to sane ranges server-side.
  */
 export function CommissionDefaultsPanel() {
+  const { t } = useTranslation("dashboard");
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
@@ -66,15 +68,11 @@ export function CommissionDefaultsPanel() {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-slate-500">
-        Applied to new transactions as defaults. Each deal can override per-transaction (for
-        referral deals, bonus splits, flat-fee arrangements). Re-running the math uses the
-        values already on the deal — editing these never retro-changes closed deals.
-      </p>
+      <p className="text-xs text-slate-500">{t("pages.commissionDefaults.intro")}</p>
 
       <div className="grid grid-cols-2 gap-3">
         <PctInput
-          label="Buyer-side commission"
+          label={t("pages.commissionDefaults.buyerSide")}
           value={prefs.commissionBuyerPct}
           onBlur={(v) => void save({ commissionBuyerPct: v })}
           disabled={saving}
@@ -82,7 +80,7 @@ export function CommissionDefaultsPanel() {
           hint="Typical buyer-side commission is 2.5–3.0%, negotiated as offer of cooperation."
         />
         <PctInput
-          label="Listing-side commission"
+          label={t("pages.commissionDefaults.listingSide")}
           value={prefs.commissionListingPct}
           onBlur={(v) => void save({ commissionListingPct: v })}
           disabled={saving}
@@ -90,7 +88,7 @@ export function CommissionDefaultsPanel() {
           hint="Typical listing commission is 2.5–3.0%."
         />
         <PctInput
-          label="Brokerage split (your share)"
+          label={t("pages.commissionDefaults.brokerageSplit")}
           value={prefs.brokerageSplitPct}
           onBlur={(v) => void save({ brokerageSplitPct: v })}
           disabled={saving}
@@ -98,7 +96,7 @@ export function CommissionDefaultsPanel() {
           hint="70 = 70/30 favoring you. 100 if solo on your own license."
         />
         <PctInput
-          label="Default referral fee"
+          label={t("pages.commissionDefaults.referralFee")}
           value={prefs.referralFeePct}
           onBlur={(v) => void save({ referralFeePct: v })}
           disabled={saving}

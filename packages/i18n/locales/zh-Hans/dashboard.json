@@ -4204,6 +4204,90 @@
       "cancel": "取消",
       "started": "已开始导入",
       "done": "完成"
+    },
+    "briefingSchedule": {
+      "morning": "早间简报",
+      "evening": "晚间总结",
+      "timezone": "时区",
+      "tzPlaceholder": "例如：Asia/Shanghai",
+      "tzHint": "IANA 时区名称——简报会按这个时区在上面设定的时间发出。",
+      "saved": "已保存。"
+    },
+    "generateCma": {
+      "button": "生成 CMA",
+      "title": "为这位联系人生成 CMA",
+      "sub": "报告会被保存，并关联到这位联系人。",
+      "subjectAddress": "目标房屋地址",
+      "limitReached": "今日次数已用完，UTC 零点重置。",
+      "cancel": "取消"
+    },
+    "localSeoForm": {
+      "intro": "快速获取估值和为您量身定制的下一步建议。",
+      "address": "房屋地址",
+      "name": "姓名",
+      "email": "邮箱",
+      "phone": "电话（选填）",
+      "submitted": "已提交！我们会尽快与您联系。"
+    },
+    "exitIntent": {
+      "close": "关闭",
+      "closeDialog": "关闭对话框",
+      "headline": "想要 3 条免费买家客源吗？",
+      "sub": "留下邮箱，我们把详情发给您。",
+      "done": "已登记——请注意查收邮件。",
+      "email": "邮箱"
+    },
+    "serviceAreas": {
+      "state": "州",
+      "county": "县",
+      "allCities": "本县所有城市我都服务",
+      "city": "城市",
+      "add": "添加服务区域",
+      "hint": "先选州，再选县，然后填一个城市名，或勾选“所有城市”覆盖整个县。"
+    },
+    "runCard": {
+      "stoppedAtBudget": "已达到本次运行的预算上限——上方是已完成的部分。",
+      "missionAccomplished": "任务完成。",
+      "fiveStars": "五星",
+      "deliveredBy": "交付人",
+      "edit": "编辑"
+    },
+    "draftModal": {
+      "buyerTitle": "AI 买家联络草稿",
+      "equityTitle": "AI 净值更新草稿",
+      "close": "关闭",
+      "smsDraft": "短信草稿",
+      "emailSubject": "邮件主题",
+      "emailBody": "邮件正文"
+    },
+    "commissionDefaults": {
+      "intro": "作为新建交易的默认值。每笔交易都可以单独覆盖（转介交易、奖金分成、固定收费等情况）。重算时使用的是该交易上已有的数值——修改这里的默认值绝不会回头改动已成交的交易。",
+      "buyerSide": "买方佣金",
+      "listingSide": "卖方佣金",
+      "brokerageSplit": "与经纪公司分成（您的比例）",
+      "referralFee": "默认转介费"
+    },
+    "compliance": {
+      "title": "合规",
+      "sub": "这些行为由系统自动执行，无法关闭。房地产相关的消息发送，在法律上比一般 SaaS 敏感得多。",
+      "alwaysOn": "始终开启",
+      "legalNoticeLabel": "法律提示。",
+      "legalNotice": "这些护栏实现的是规范中的合规要求，但不能作为律师的意见。如果您大规模发送消息，或在多个州开展业务，请在依赖这些行为之前，让您自己的法律顾问先行审核。",
+      "stopLabel": "STOP / HELP 关键词处理（双语）",
+      "stopDesc": "STOP、UNSUBSCRIBE、CANCEL、QUIT、END（英文）以及停止、退订、取消（中文）会永久屏蔽之后的所有消息。HELP 和帮助会回复您的联系方式。沿用 10DLC 注册配置。",
+      "firstSmsLabel": "首条短信的退订说明",
+      "firstSmsDesc": "发给新联系人的第一条短信会自动附上“回复 STOP 退订”——如果该联系人的语言偏好是中文，则附中文版本。同一会话的后续消息不再重复。",
+      "agentOfRecordLabel": "净值类消息的代理身份核查",
+      "agentOfRecordDesc": "含房屋估值的模板（EQ-01、EM-01、EM-02）只有在您确实代理过该联系人这套房产时才会发出。避免引导性推介和双重代理指控。",
+      "avmLabel": "加州 AVM 估值披露（AB 2863）",
+      "avmDesc": "如果您注册的州是加州，法规要求的披露文字会自动附加到 AVM 邮件版本上。在有此类监管的州，短信版本会被屏蔽——160 个字符放不下这段披露。",
+      "draftWindowLabel": "新经纪人前 30 天仅出草稿",
+      "draftWindowDesc": "开通后的前 30 天，无论您的策略如何设置，所有模板都默认走审核模式。第 31 天起才可以自动发送。",
+      "anniversaryLabel": "导入时必须确认纪念日提醒已获同意",
+      "anniversaryDesc": "导入老客户时，需要您逐一确认对方已同意接收短信。anniversary_opt_in 默认为 false。未明确同意，纪念日触发不会发出任何消息。",
+      "source28": "依据规范 §2.8",
+      "source28Legal": "依据规范 §2.8——需法律审核",
+      "source24": "依据规范 §2.4"
     }
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { describeSendFailure, type EquitySendCheckFailure } from "@/lib/spherePrediction/equitySendCheck";
 
@@ -50,6 +51,7 @@ export default function EquityMessageDraftModal(props: {
   contactName: string | null;
   onClose: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [channel, setChannel] = useState<Channel>("sms");
   const [draft, setDraft] = useState<DraftState | null>(null);
   const [loading, setLoading] = useState(false);
@@ -167,9 +169,7 @@ export default function EquityMessageDraftModal(props: {
       <div className="flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
         <header className="flex items-start justify-between gap-3 border-b border-slate-100 p-5">
           <div className="min-w-0">
-            <div className="text-base font-semibold text-slate-900">
-              AI equity-update draft
-            </div>
+            <div className="text-base font-semibold text-slate-900">{t("pages.draftModal.equityTitle")}</div>
             <div className="mt-0.5 truncate text-xs text-slate-600">
               {props.contactName ?? "Contact"} · review and copy — not auto-sent
             </div>
@@ -178,9 +178,7 @@ export default function EquityMessageDraftModal(props: {
             type="button"
             onClick={props.onClose}
             className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-slate-50"
-          >
-            Close
-          </button>
+          >{t("pages.draftModal.close")}</button>
         </header>
 
         <div className="border-b border-slate-100 px-5 py-3">
@@ -214,9 +212,7 @@ export default function EquityMessageDraftModal(props: {
           ) : draft ? (
             channel === "sms" ? (
               <>
-                <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  SMS draft
-                </label>
+                <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.draftModal.smsDraft")}</label>
                 <textarea
                   value={draft.sms}
                   onChange={(e) => patch("sms", e.target.value)}
@@ -229,17 +225,13 @@ export default function EquityMessageDraftModal(props: {
               </>
             ) : (
               <>
-                <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Email subject
-                </label>
+                <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.draftModal.emailSubject")}</label>
                 <input
                   value={draft.emailSubject}
                   onChange={(e) => patch("emailSubject", e.target.value)}
                   className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <label className="mt-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Email body
-                </label>
+                <label className="mt-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.draftModal.emailBody")}</label>
                 <textarea
                   value={draft.emailBody}
                   onChange={(e) => patch("emailBody", e.target.value)}
