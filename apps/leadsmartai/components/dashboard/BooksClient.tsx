@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, Receipt, ChevronDown, ChevronUp, Search, User2, X } from "lucide-react";
 import { formatMoney, computeTotals } from "@/lib/books/money";
@@ -34,6 +35,7 @@ function formatSentAt(iso: string | null | undefined): string {
 }
 
 export default function BooksClient({ initialInvoices }: { initialInvoices: InvoiceRow[] }) {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [showForm, setShowForm] = useState(initialInvoices.length === 0);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -160,7 +162,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
       .map((l) => ({ description: l.description.trim(), quantity: Number(l.quantity) || 0, unitPrice: Number(l.unitPrice) || 0 }))
       .filter((l) => l.description);
     if (cleanLines.length === 0) {
-      setError("Add at least one line item with a description.");
+      setError(t("pages.books.needLineItem"));
       return;
     }
     setCreating(true);
@@ -264,7 +266,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
         </a>
         {inv.client_email && inv.status !== "paid" && inv.status !== "void" && (
           <button type="button" onClick={() => void sendInvoice(inv.id)} disabled={busyId === inv.id} className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50">
-            {busyId === inv.id ? "…" : inv.status === "draft" ? "Send" : "Resend"}
+            {busyId === inv.id ? "…" : inv.status === "draft" ? t("pages.books.send") : t("pages.books.resend")}
           </button>
         )}
         {inv.status === "draft" && !inv.client_email && (
@@ -285,12 +287,12 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
     <div className="mx-auto max-w-3xl space-y-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-xs text-slate-500">Dashboard / Books</div>
+          <div className="text-xs text-slate-500">{t("pages.books.breadcrumb")}</div>
           <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-slate-900">
             <Receipt className="h-6 w-6 text-blue-600" strokeWidth={2} />
             Books
           </h1>
-          <p className="mt-1 text-sm text-slate-500">Create and track client invoices.</p>
+          <p className="mt-1 text-sm text-slate-500">{t("pages.books.intro")}</p>
         </div>
         <button
           type="button"
@@ -304,18 +306,18 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
-        <Stat label="Invoices" value={String(initialInvoices.length)} tone="slate" />
-        <Stat label="Outstanding" value={formatMoney(outstanding)} tone="amber" />
-        <Stat label="Paid" value={formatMoney(paidTotal)} tone="emerald" />
+        <Stat label={t("pages.books.kpiInvoices")} value={String(initialInvoices.length)} tone="slate" />
+        <Stat label={t("pages.books.kpiOutstanding")} value={formatMoney(outstanding)} tone="amber" />
+        <Stat label={t("pages.books.kpiPaid")} value={formatMoney(paidTotal)} tone="emerald" />
       </div>
 
       {/* Create form */}
       {showForm && (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-sm font-semibold text-slate-900">New invoice</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-900">{t("pages.books.newInvoice")}</h2>
 
           <div ref={contactBoxRef} className="relative mb-3">
-            <span className="mb-1 block text-[11px] font-medium text-slate-500">Bill to a contact (optional)</span>
+            <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.books.billTo")}</span>
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" strokeWidth={2} />
               <input
@@ -327,13 +329,13 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                   setContactOpen(true);
                 }}
                 onFocus={() => setContactOpen(true)}
-                placeholder="Search your contacts by name or email…"
+                placeholder={t("pages.books.searchContacts")}
               />
               {contactId && (
                 <button
                   type="button"
                   onClick={clearContact}
-                  aria-label="Clear contact"
+                  aria-label={t("pages.books.clearContact")}
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
                 >
                   <X className="h-4 w-4" strokeWidth={2} />
@@ -343,7 +345,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
             {contactOpen && contacts.length > 0 && (
               <div className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
                 {filteredContacts.length === 0 ? (
-                  <div className="px-3 py-2 text-xs text-slate-400">No matching contacts.</div>
+                  <div className="px-3 py-2 text-xs text-slate-400">{t("pages.books.noMatches")}</div>
                 ) : (
                   filteredContacts.map((c) => (
                     <button
@@ -367,36 +369,36 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <span className="mb-1 block text-[11px] font-medium text-slate-500">Client name</span>
-              <input className={input} value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="e.g. Hong Yang" />
+              <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.books.clientName")}</span>
+              <input className={input} value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder={t("pages.books.clientNamePlaceholder")} />
             </div>
             <div>
-              <span className="mb-1 block text-[11px] font-medium text-slate-500">Client email (optional)</span>
-              <input className={input} value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="client@email.com" />
+              <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.books.clientEmail")}</span>
+              <input className={input} value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder={t("pages.books.clientEmailPlaceholder")} />
             </div>
             <div>
-              <span className="mb-1 block text-[11px] font-medium text-slate-500">Due date (optional)</span>
+              <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.books.dueDate")}</span>
               <input type="date" className={input} value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
             </div>
             <div>
-              <span className="mb-1 block text-[11px] font-medium text-slate-500">Tax rate %</span>
+              <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.books.taxRate")}</span>
               <input className={input} value={taxPct} onChange={(e) => setTaxPct(e.target.value)} inputMode="decimal" placeholder="0" />
             </div>
           </div>
 
           <div className="mt-3">
-            <span className="mb-1 block text-[11px] font-medium text-slate-500">Payment link (optional)</span>
+            <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.books.paymentLink")}</span>
             <input
               className={input}
               value={paymentUrl}
               onChange={(e) => setPaymentUrl(e.target.value)}
-              placeholder="https://… your Stripe/PayPal/Venmo link — shown as a Pay button"
+              placeholder={t("pages.books.paymentLinkPlaceholder")}
             />
           </div>
 
           {/* Line items */}
           <div className="mt-4">
-            <span className="mb-1 block text-[11px] font-medium text-slate-500">Line items</span>
+            <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.books.lineItems")}</span>
             <div className="space-y-2">
               {lines.map((l, i) => (
                 <div key={i} className="flex items-center gap-2">
@@ -404,21 +406,21 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                     className={`${input} flex-1`}
                     value={l.description}
                     onChange={(e) => setLine(i, { description: e.target.value })}
-                    placeholder="Description"
+                    placeholder={t("pages.books.description")}
                   />
                   <input
                     className={`${input} w-16 text-right`}
                     value={l.quantity}
                     onChange={(e) => setLine(i, { quantity: e.target.value })}
                     inputMode="decimal"
-                    placeholder="Qty"
+                    placeholder={t("pages.books.qty")}
                   />
                   <input
                     className={`${input} w-24 text-right`}
                     value={l.unitPrice}
                     onChange={(e) => setLine(i, { unitPrice: e.target.value })}
                     inputMode="decimal"
-                    placeholder="Price"
+                    placeholder={t("pages.books.price")}
                   />
                   <span className="w-24 text-right text-sm text-slate-600">
                     {formatMoney((Number(l.quantity) || 0) * (Number(l.unitPrice) || 0))}
@@ -427,7 +429,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
                     type="button"
                     onClick={() => removeLine(i)}
                     className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-rose-600"
-                    aria-label="Remove line"
+                    aria-label={t("pages.books.removeLine")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -441,14 +443,14 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
 
           {/* Totals */}
           <div className="mt-4 ml-auto w-full max-w-[16rem] space-y-1 text-sm">
-            <Row label="Subtotal" value={formatMoney(totals.subtotal)} />
+            <Row label={t("pages.books.subtotal")} value={formatMoney(totals.subtotal)} />
             <Row label={`Tax (${Number(taxPct) || 0}%)`} value={formatMoney(totals.taxAmount)} />
-            <Row label="Total" value={formatMoney(totals.total)} bold />
+            <Row label={t("pages.books.total")} value={formatMoney(totals.total)} bold />
           </div>
 
           <div className="mt-3">
-            <span className="mb-1 block text-[11px] font-medium text-slate-500">Notes (optional)</span>
-            <textarea className={`${input} min-h-[60px]`} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Payment terms, thank-you note, etc." />
+            <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.books.notes")}</span>
+            <textarea className={`${input} min-h-[60px]`} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("pages.books.notesPlaceholder")} />
           </div>
 
           <div className="mt-4 flex items-center gap-3">
@@ -458,7 +460,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
               disabled={creating}
               className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
             >
-              {creating ? "Creating…" : "Create invoice"}
+              {creating ? t("pages.books.creating") : t("pages.books.create")}
             </button>
             {error && <span className="text-xs font-medium text-rose-600">{error}</span>}
           </div>
@@ -472,7 +474,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
       {/* Invoice list */}
       {initialInvoices.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
-          <p className="text-sm text-slate-500">No invoices yet. Create your first one above.</p>
+          <p className="text-sm text-slate-500">{t("pages.books.emptyAll")}</p>
         </div>
       ) : (
         <div className="space-y-5">
@@ -483,7 +485,7 @@ export default function BooksClient({ initialInvoices }: { initialInvoices: Invo
             </ul>
           ) : (
             <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center">
-              <p className="text-sm text-slate-500">No outstanding invoices — you&apos;re all caught up.</p>
+              <p className="text-sm text-slate-500">{t("pages.books.emptyOutstanding")}</p>
             </div>
           )}
 

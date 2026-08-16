@@ -100,6 +100,7 @@ describe("dashboard namespace (page copy)", () => {
       "pages.newShowing.mlsPlaceholder",
       "pages.adWizard.sitePlaceholder",
       "pages.adWizard.privacyPlaceholder",
+      "pages.books.clientEmailPlaceholder",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, Wallet, ChevronUp, Receipt as ReceiptIcon } from "lucide-react";
 import { formatMoney } from "@/lib/books/money";
@@ -33,6 +34,7 @@ export default function ExpensesClient({
   monthTotals: ExpenseTotals;
   yearTotals: ExpenseTotals;
 }) {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [showForm, setShowForm] = useState(initialExpenses.length === 0);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -66,7 +68,7 @@ export default function ExpensesClient({
   async function logExpense() {
     const amt = Number(amount);
     if (!Number.isFinite(amt) || amt <= 0) {
-      setError("Enter an amount greater than zero.");
+      setError(t("pages.expenses.needAmount"));
       return;
     }
     setSaving(true);
@@ -117,7 +119,7 @@ export default function ExpensesClient({
     <div className="mx-auto max-w-3xl space-y-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-xs text-slate-500">Dashboard / Expenses</div>
+          <div className="text-xs text-slate-500">{t("pages.expenses.breadcrumb")}</div>
           <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-slate-900">
             <Wallet className="h-6 w-6 text-blue-600" strokeWidth={2} />
             Expenses
@@ -138,29 +140,29 @@ export default function ExpensesClient({
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
-        <Stat label="This month" value={formatMoney(monthTotals.total)} tone="blue" />
-        <Stat label="Year to date" value={formatMoney(yearTotals.total)} tone="emerald" />
-        <Stat label="Top category" value={topCategory} tone="slate" small />
+        <Stat label={t("pages.expenses.thisMonth")} value={formatMoney(monthTotals.total)} tone="blue" />
+        <Stat label={t("pages.expenses.yearToDate")} value={formatMoney(yearTotals.total)} tone="emerald" />
+        <Stat label={t("pages.expenses.topCategory")} value={topCategory} tone="slate" small />
       </div>
 
       {/* Log form */}
       {showForm && (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-sm font-semibold text-slate-900">Log a business expense</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-900">{t("pages.expenses.logHeading")}</h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <span className="mb-1 block text-[11px] font-medium text-slate-500">Amount</span>
+              <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.expenses.amount")}</span>
               <input
                 className={input}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 inputMode="decimal"
-                placeholder="e.g. 49.99"
+                placeholder={t("pages.expenses.amountPlaceholder")}
                 autoFocus
               />
             </div>
             <div>
-              <span className="mb-1 block text-[11px] font-medium text-slate-500">Category</span>
+              <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.expenses.category")}</span>
               <select className={input} value={category} onChange={(e) => setCategory(e.target.value)}>
                 {EXPENSE_CATEGORIES.map((c) => (
                   <option key={c} value={c}>
@@ -170,21 +172,21 @@ export default function ExpensesClient({
               </select>
             </div>
             <div>
-              <span className="mb-1 block text-[11px] font-medium text-slate-500">Date</span>
+              <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.expenses.date")}</span>
               <input type="date" className={input} value={expenseDate} onChange={(e) => setExpenseDate(e.target.value)} />
             </div>
             <div>
-              <span className="mb-1 block text-[11px] font-medium text-slate-500">Vendor / payee (optional)</span>
-              <input className={input} value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder="e.g. Canva, Shell, NAR" />
+              <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.expenses.vendor")}</span>
+              <input className={input} value={vendor} onChange={(e) => setVendor(e.target.value)} placeholder={t("pages.expenses.vendorPlaceholder")} />
             </div>
           </div>
           <div className="mt-3">
-            <span className="mb-1 block text-[11px] font-medium text-slate-500">Notes (optional)</span>
+            <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.expenses.notes")}</span>
             <textarea
               className={`${input} min-h-[56px]`}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="What was this for? e.g. Listing photos for 123 Oak St"
+              placeholder={t("pages.expenses.notesPlaceholder")}
             />
           </div>
           <div className="mt-4 flex items-center gap-3">
@@ -194,7 +196,7 @@ export default function ExpensesClient({
               disabled={saving}
               className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
             >
-              {saving ? "Saving…" : "Log expense"}
+              {saving ? t("pages.expenses.saving") : t("pages.expenses.log")}
             </button>
             {error && <span className="text-xs font-medium text-rose-600">{error}</span>}
           </div>
@@ -229,7 +231,7 @@ export default function ExpensesClient({
       {/* Expense list */}
       {initialExpenses.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
-          <p className="text-sm text-slate-500">No expenses yet. Log your first one above.</p>
+          <p className="text-sm text-slate-500">{t("pages.expenses.empty")}</p>
         </div>
       ) : (
         <ul className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -265,7 +267,7 @@ export default function ExpensesClient({
                 onClick={() => void removeExpense(ex.id)}
                 disabled={busyId === ex.id}
                 className="shrink-0 rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-rose-600 disabled:opacity-50"
-                aria-label="Delete expense"
+                aria-label={t("pages.expenses.deleteExpense")}
               >
                 <Trash2 className="h-4 w-4" />
               </button>
