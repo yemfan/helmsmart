@@ -76,7 +76,6 @@ const PENDING = new Set([
   "app/blog/why-real-estate-crms-keep-failing-solo-agents/page.tsx",
   "app/blog/liondesk-shutdown-what-agents-should-do-next/page.tsx",
   "app/ai-cma-analyzer/page.tsx",
-  "app/how-to-increase-cap-rate-on-rental-property/page.tsx",
   "app/home-value-funnel/page.tsx",
   "app/cap-rate-for-multifamily-investments/page.tsx",
   "app/cap-rate-vs-gross-rent-multiplier/page.tsx",
