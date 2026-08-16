@@ -1729,7 +1729,25 @@
     },
     "team": {
       "metaTitle": "团队",
-      "metaDescription": "管理您的团队——邀请经纪人、查看成员名单、管理待处理的邀请。"
+      "metaDescription": "管理您的团队——邀请经纪人、查看成员名单、管理待处理的邀请。",
+      "title": "团队",
+      "owner": "所有者",
+      "member": "成员",
+      "requestSeats": "申请更多席位",
+      "teamFeature": "团队功能",
+      "requiresBefore": "团队功能需要",
+      "requiresAfter": "方案，含最多 10 个席位、整个团队在仪表盘上的汇总数据，以及成员之间的轮流分配客源。",
+      "createTeam": "创建您的团队",
+      "createSub": "把经纪人集中到一处。作为所有者，您可以和自己的数据一起看到他们的成交流程、客源和业绩。成员的日常使用不受影响。",
+      "namePlaceholder": "例如：湾区房产团队",
+      "members": "成员",
+      "remove": "移除",
+      "invite": "邀请成员",
+      "inviteSub": "把生成的链接发给您想邀请的经纪人。他们用同一个邮箱登录并接受邀请即可。",
+      "copyLink": "复制这个链接直接发给对方。链接 14 天后失效。",
+      "pendingInvites": "待接受的邀请",
+      "revoke": "撤销",
+      "expires": "有效期至 {{date}}"
     },
     "reports": {
       "metaTitle": "报告",
@@ -3529,6 +3547,37 @@
     },
     "supportDashboard": {
       "replyToCustomer": "回复客户"
+    },
+    "adminBilling": {
+      "title": "订阅与账单",
+      "sub": "管理方案、账单状态、月度经常性收入和付款问题。",
+      "mrr": "月度经常性收入",
+      "active": "生效中",
+      "trialing": "试用中",
+      "pastDue": "已逾期",
+      "canceled": "已取消",
+      "incomplete": "未完成",
+      "searchPlaceholder": "按姓名、邮箱、角色搜索…",
+      "allStatus": "全部状态",
+      "allRoles": "全部角色",
+      "consumer": "普通用户",
+      "agent": "经纪人",
+      "loanBroker": "贷款经纪",
+      "refresh": "刷新",
+      "colUser": "用户",
+      "colRole": "角色",
+      "colPlan": "方案",
+      "colStatus": "状态",
+      "colMonthly": "月费",
+      "colPeriodEnd": "本期结束",
+      "colActions": "操作",
+      "loading": "正在加载账单记录…",
+      "empty": "没有找到账单记录。",
+      "planConsumerFree": "普通用户 Free",
+      "planConsumerPremium": "普通用户 Premium",
+      "planAgentStarter": "经纪人 Starter",
+      "planAgentPro": "经纪人 Pro",
+      "planLoanBrokerPro": "贷款经纪 Pro"
     }
   }
 }

@@ -1729,7 +1729,25 @@
     },
     "team": {
       "metaTitle": "Team",
-      "metaDescription": "Manage your team — invite agents, see the roster, control pending invitations."
+      "metaDescription": "Manage your team — invite agents, see the roster, control pending invitations.",
+      "title": "Team",
+      "owner": "Owner",
+      "member": "Member",
+      "requestSeats": "Request more seats",
+      "teamFeature": "Team feature",
+      "requiresBefore": "Teams require the",
+      "requiresAfter": "plan, which includes up to 10 seats, roster-wide rollups across the dashboard, and round-robin lead routing across your members.",
+      "createTeam": "Create your team",
+      "createSub": "Bring agents together under one roof. As the owner, you'll see their pipelines, leads, and performance alongside your own. Members continue to operate normally.",
+      "namePlaceholder": "e.g. Bay Area Brokerage",
+      "members": "Members",
+      "remove": "Remove",
+      "invite": "Invite a member",
+      "inviteSub": "Send the generated link to the agent you'd like to invite. They sign in with the same email and accept the invitation.",
+      "copyLink": "Copy this link and send it directly. It expires in 14 days.",
+      "pendingInvites": "Pending invites",
+      "revoke": "Revoke",
+      "expires": "Expires {{date}}"
     },
     "reports": {
       "metaTitle": "Reports",
@@ -3529,6 +3547,37 @@
     },
     "supportDashboard": {
       "replyToCustomer": "Reply to customer"
+    },
+    "adminBilling": {
+      "title": "Subscription & Billing",
+      "sub": "Manage plans, billing status, MRR, and payment issues.",
+      "mrr": "MRR",
+      "active": "Active",
+      "trialing": "Trialing",
+      "pastDue": "Past Due",
+      "canceled": "Canceled",
+      "incomplete": "Incomplete",
+      "searchPlaceholder": "Search by name, email, role…",
+      "allStatus": "All Status",
+      "allRoles": "All Roles",
+      "consumer": "Consumer",
+      "agent": "Agent",
+      "loanBroker": "Loan Broker",
+      "refresh": "Refresh",
+      "colUser": "User",
+      "colRole": "Role",
+      "colPlan": "Plan",
+      "colStatus": "Status",
+      "colMonthly": "Monthly",
+      "colPeriodEnd": "Period End",
+      "colActions": "Actions",
+      "loading": "Loading billing records…",
+      "empty": "No billing records found.",
+      "planConsumerFree": "Consumer Free",
+      "planConsumerPremium": "Consumer Premium",
+      "planAgentStarter": "Agent Starter",
+      "planAgentPro": "Agent Pro",
+      "planLoanBrokerPro": "Loan Broker Pro"
     }
   }
 }

@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import {
   createTeam,
   inviteMember,
@@ -38,6 +40,7 @@ export function TeamDashboard({
   access: TeamAccessStatus;
   seatUsage: SeatUsageProps | null;
 }) {
+  const { t } = useTranslation("dashboard");
   if (!roster) {
     return access.canCreate ? (
       <CreateTeamCard />
@@ -50,21 +53,15 @@ export function TeamDashboard({
     <div className="space-y-6">
       <header className="flex items-baseline justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Team
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t("pages.team.title")}</p>
           <h1 className="mt-1 text-2xl font-semibold text-slate-900">
             {roster.team.name}
           </h1>
         </div>
         {isOwner ? (
-          <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-200">
-            Owner
-          </span>
+          <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-200">{t("pages.team.owner")}</span>
         ) : (
-          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
-            Member
-          </span>
+          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">{t("pages.team.member")}</span>
         )}
       </header>
 
@@ -89,6 +86,7 @@ export function TeamDashboard({
 // ── Seat usage banner ───────────────────────────────────────────
 
 function SeatUsageBanner({ usage }: { usage: SeatUsageProps }) {
+  const { t } = useTranslation("dashboard");
   const capLabel = usage.cap == null ? "∞" : String(usage.cap);
   const ratio =
     usage.cap == null || usage.cap === 0 ? 0 : Math.min(1, usage.used / usage.cap);
@@ -125,9 +123,7 @@ function SeatUsageBanner({ usage }: { usage: SeatUsageProps }) {
         <Link
           href="/dashboard/billing"
           className="rounded-md border border-amber-300 bg-white px-2.5 py-1 text-xs font-semibold text-amber-800 hover:bg-amber-100"
-        >
-          Request more seats
-        </Link>
+        >{t("pages.team.requestSeats")}</Link>
       ) : null}
     </div>
   );
@@ -140,22 +136,19 @@ function UpgradeRequiredCard({
 }: {
   reason: TeamAccessStatus["reason"];
 }) {
+  const { t } = useTranslation("dashboard");
   const isPlanIssue = reason === "team_access_not_enabled";
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm">
       <header>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-          Team feature
-        </p>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{t("pages.team.teamFeature")}</p>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">
           {isPlanIssue ? "Upgrade to start a team" : "Subscription not found"}
         </h1>
         <p className="mt-2 max-w-xl text-sm text-slate-600">
           {isPlanIssue ? (
             <>
-              Teams require the <strong>Elite</strong> plan, which includes up to
-              10 seats, roster-wide rollups across the dashboard, and round-robin
-              lead routing across your members.
+              {t("pages.team.requiresBefore")} <strong>Elite</strong>{t("pages.team.requiresAfter")}
             </>
           ) : (
             "We couldn't find an active subscription for your account. Reach out to support if this looks wrong."
@@ -177,18 +170,15 @@ function UpgradeRequiredCard({
 // ── Create team ──────────────────────────────────────────────────
 
 function CreateTeamCard() {
+  const { t } = useTranslation("dashboard");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm">
       <header>
-        <h1 className="text-2xl font-semibold text-slate-900">Create your team</h1>
-        <p className="mt-2 max-w-xl text-sm text-slate-600">
-          Bring agents together under one roof. As the owner, you&apos;ll see
-          their pipelines, leads, and performance alongside your own. Members
-          continue to operate normally.
-        </p>
+        <h1 className="text-2xl font-semibold text-slate-900">{t("pages.team.createTeam")}</h1>
+        <p className="mt-2 max-w-xl text-sm text-slate-600">{t("pages.team.createSub")}</p>
       </header>
       <form
         className="mt-5 flex flex-wrap items-center gap-3"
@@ -205,7 +195,7 @@ function CreateTeamCard() {
           name="name"
           required
           maxLength={80}
-          placeholder="e.g. Bay Area Brokerage"
+          placeholder={t("pages.team.namePlaceholder")}
           className="w-full max-w-sm rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
         <button
@@ -234,10 +224,10 @@ function RosterCard({
   isOwner: boolean;
   members: TeamMembership[];
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm">
-      <h2 className="text-base font-semibold text-slate-900">
-        Members <span className="text-slate-400">· {members.length}</span>
+      <h2 className="text-base font-semibold text-slate-900">{t("pages.team.members")}<span className="text-slate-400">· {members.length}</span>
       </h2>
       <ul className="mt-3 divide-y divide-slate-100">
         {members.map((m) => (
@@ -265,6 +255,7 @@ function RosterCard({
 }
 
 function RemoveMemberButton({ teamId, agentId }: { teamId: string; agentId: string }) {
+  const { t } = useTranslation("dashboard");
   const [pending, startTransition] = useTransition();
   return (
     <form
@@ -280,9 +271,7 @@ function RemoveMemberButton({ teamId, agentId }: { teamId: string; agentId: stri
         type="submit"
         disabled={pending}
         className="rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-red-300 hover:bg-red-50 hover:text-red-700 disabled:opacity-60"
-      >
-        Remove
-      </button>
+      >{t("pages.team.remove")}</button>
     </form>
   );
 }
@@ -296,6 +285,7 @@ function InviteCard({
   teamId: string;
   pendingInvites: TeamInvite[];
 }) {
+  const { t, i18n } = useTranslation("dashboard");
   const [lastInvite, setLastInvite] = useState<{
     email: string;
     rawToken: string;
@@ -305,11 +295,8 @@ function InviteCard({
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm">
-      <h2 className="text-base font-semibold text-slate-900">Invite a member</h2>
-      <p className="mt-1 text-sm text-slate-600">
-        Send the generated link to the agent you&apos;d like to invite. They
-        sign in with the same email and accept the invitation.
-      </p>
+      <h2 className="text-base font-semibold text-slate-900">{t("pages.team.invite")}</h2>
+      <p className="mt-1 text-sm text-slate-600">{t("pages.team.inviteSub")}</p>
       <form
         className="mt-4 flex flex-wrap items-center gap-3"
         action={(formData) => {
@@ -351,9 +338,7 @@ function InviteCard({
           <p className="font-medium text-emerald-800">
             Invite for {lastInvite.email} ready
           </p>
-          <p className="mt-1 text-xs text-emerald-700">
-            Copy this link and send it directly. It expires in 14 days.
-          </p>
+          <p className="mt-1 text-xs text-emerald-700">{t("pages.team.copyLink")}</p>
           <code className="mt-2 block break-all rounded bg-white px-2 py-1.5 text-[11px] text-emerald-900 ring-1 ring-emerald-200">
             {acceptUrl(lastInvite.rawToken)}
           </code>
@@ -362,16 +347,14 @@ function InviteCard({
 
       {pendingInvites.length > 0 ? (
         <div className="mt-5">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Pending invites
-          </h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.team.pendingInvites")}</h3>
           <ul className="mt-2 divide-y divide-slate-100">
             {pendingInvites.map((inv) => (
               <li key={inv.id} className="flex items-center gap-3 py-2.5">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm text-slate-800">{inv.invitedEmail}</p>
                   <p className="text-xs text-slate-500">
-                    Expires {new Date(inv.expiresAt).toLocaleDateString()}
+                    {t("pages.team.expires", { date: new Date(inv.expiresAt).toLocaleDateString(intlLocale(i18n.language)) })}
                   </p>
                 </div>
                 <RevokeInviteButton teamId={teamId} inviteId={inv.id} />
@@ -385,6 +368,7 @@ function InviteCard({
 }
 
 function RevokeInviteButton({ teamId, inviteId }: { teamId: string; inviteId: string }) {
+  const { t } = useTranslation("dashboard");
   const [pending, startTransition] = useTransition();
   return (
     <form
@@ -400,9 +384,7 @@ function RevokeInviteButton({ teamId, inviteId }: { teamId: string; inviteId: st
         type="submit"
         disabled={pending}
         className="rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:border-red-300 hover:bg-red-50 hover:text-red-700 disabled:opacity-60"
-      >
-        Revoke
-      </button>
+      >{t("pages.team.revoke")}</button>
     </form>
   );
 }

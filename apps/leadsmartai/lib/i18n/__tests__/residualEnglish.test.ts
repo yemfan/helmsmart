@@ -41,6 +41,7 @@ const ALLOWED = new Set([
   "YouTube",
   "Pro",
   "Premium",
+  "Elite",
   "PDF",
 ]);
 
