@@ -49,110 +49,65 @@ export default function CapRateCalculatorHowToUseItPage() {
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        A cap rate calculator turns a pile of numbers—rents, taxes, insurance, maintenance—into a
-        single percentage you can use to compare rental properties. Used correctly, it helps you
-        screen deals in minutes and focus your time on the most promising opportunities. This guide
-        explains how to use a cap rate calculator step by step.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.capRateCalcHowTo.intro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 1: Gather the inputs your calculator needs
-        </h2>
-        <p>
-          Most cap rate calculators—including the one in CloseBoss—ask for the same core
-          inputs:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateCalcHowTo.s1Title")}</h2>
+        <p>{t("pages.capRateCalcHowTo.s1Body")}</p>
         <ul className="list-disc list-inside space-y-1">
-          <li>Purchase price or estimated property value.</li>
-          <li>Monthly or annual rent (per unit or total).</li>
-          <li>Expected vacancy rate.</li>
-          <li>Other income (parking, storage, laundry, etc.).</li>
-          <li>Operating expenses (taxes, insurance, maintenance, utilities, management, HOA).</li>
+          <li>{t("pages.capRateCalcHowTo.s1i1")}</li>
+          <li>{t("pages.capRateCalcHowTo.s1i2")}</li>
+          <li>{t("pages.capRateCalcHowTo.s1i3")}</li>
+          <li>{t("pages.capRateCalcHowTo.s1i4")}</li>
+          <li>{t("pages.capRateCalcHowTo.s1i5")}</li>
         </ul>
-        <p>
-          The more accurate these numbers are, the more reliable your cap rate result will be. When
-          in doubt, lean on conservative estimates for income and realistic, not optimistic,
-          estimates for expenses.
-        </p>
+        <p>{t("pages.capRateCalcHowTo.s1Close")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 2: Enter purchase price or property value
-        </h2>
-        <p>
-          Start by entering the price you expect to pay for the property or its current market
-          value. This is the denominator in the cap rate formula.
-        </p>
-        <p>
-          If you are analyzing a listing, use the asking price at first. Later, you can adjust the
-          price field to test different offer amounts and see how they affect cap rate.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateCalcHowTo.s2Title")}</h2>
+        <p>{t("pages.capRateCalcHowTo.s2Body")}</p>
+        <p>{t("pages.capRateCalcHowTo.s2Tip")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 3: Enter rent and other income
-        </h2>
-        <p>
-          Next, enter the rent you expect the property to generate. Some calculators let you input
-          rent per unit; others ask for total rent. If you have additional income sources (parking,
-          storage, laundry), include those as separate fields or add them to a &quot;other
-          income&quot; line.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateCalcHowTo.s3Title")}</h2>
+        <p>{t("pages.capRateCalcHowTo.s3Body")}</p>
         <p>
           For example, in the{" "}
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
           on CloseBoss, you can enter:
         </p>
         <ul className="list-disc list-inside space-y-1">
-          <li>Monthly rent.</li>
-          <li>Other monthly income.</li>
-          <li>Vacancy percentage.</li>
+          <li>{t("pages.capRateCalcHowTo.s3i1")}</li>
+          <li>{t("pages.capRateCalcHowTo.s3i2")}</li>
+          <li>{t("pages.capRateCalcHowTo.s3i3")}</li>
         </ul>
-        <p>
-          The calculator will convert these to annual amounts and apply your vacancy assumption
-          automatically to estimate effective gross income.
-        </p>
+        <p>{t("pages.capRateCalcHowTo.s3Close")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 4: Enter operating expenses accurately
-        </h2>
-        <p>
-          Operating expenses are everything you pay to keep the property running (excluding your
-          mortgage). In most calculators, you&apos;ll see fields for:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateCalcHowTo.s4Title")}</h2>
+        <p>{t("pages.capRateCalcHowTo.s4Body")}</p>
         <ul className="list-disc list-inside space-y-1">
-          <li>Property taxes.</li>
-          <li>Landlord insurance.</li>
-          <li>Maintenance and repairs.</li>
-          <li>Utilities you pay (water, trash, common area electricity).</li>
-          <li>Property management fees.</li>
-          <li>HOA dues, if applicable.</li>
+          <li>{t("pages.capRateCalcHowTo.s4i1")}</li>
+          <li>{t("pages.capRateCalcHowTo.s4i2")}</li>
+          <li>{t("pages.capRateCalcHowTo.s4i3")}</li>
+          <li>{t("pages.capRateCalcHowTo.s4i4")}</li>
+          <li>{t("pages.capRateCalcHowTo.s4i5")}</li>
+          <li>{t("pages.capRateCalcHowTo.s4i6")}</li>
         </ul>
-        <p>
-          If you are not sure of exact numbers, you can start with rules of thumb or estimates from
-          local property managers and then refine them later. The key is to avoid unrealistically
-          low expenses, which can make cap rate look better than it really is.
-        </p>
+        <p>{t("pages.capRateCalcHowTo.s4Close")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 5: Let the calculator compute NOI and cap rate
-        </h2>
-        <p>
-          Once you have entered income, vacancy, expenses, and price, the calculator will:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateCalcHowTo.s5Title")}</h2>
+        <p>{t("pages.capRateCalcHowTo.s5Body")}</p>
         <ul className="list-disc list-inside space-y-1">
-          <li>Convert monthly inputs to annual figures.</li>
-          <li>Apply vacancy to find effective gross income.</li>
-          <li>Subtract operating expenses to compute net operating income (NOI).</li>
-          <li>Divide NOI by price to calculate cap rate.</li>
+          <li>{t("pages.capRateCalcHowTo.s5i1")}</li>
+          <li>{t("pages.capRateCalcHowTo.s5i2")}</li>
+          <li>{t("pages.capRateCalcHowTo.s5i3")}</li>
+          <li>{t("pages.capRateCalcHowTo.s5i4")}</li>
         </ul>
         <p>
           In the CloseBoss{" "}
@@ -163,69 +118,35 @@ export default function CapRateCalculatorHowToUseItPage() {
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 6: Interpret the cap rate result in context
-        </h2>
-        <p>
-          A calculator can give you a cap rate number, but you still need to interpret it. Ask
-          yourself:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateCalcHowTo.s6Title")}</h2>
+        <p>{t("pages.capRateCalcHowTo.s6Body")}</p>
         <ul className="list-disc list-inside space-y-1">
-          <li>How does this cap rate compare to other properties I&apos;ve analyzed?</li>
-          <li>Is it above, below, or within typical ranges for this neighborhood?</li>
-          <li>Does it meet my minimum target cap rate for this market?</li>
+          <li>{t("pages.capRateCalcHowTo.s6i1")}</li>
+          <li>{t("pages.capRateCalcHowTo.s6i2")}</li>
+          <li>{t("pages.capRateCalcHowTo.s6i3")}</li>
         </ul>
-        <p>
-          Remember that a &quot;good&quot; cap rate depends on the city, property type, and risk
-          profile. Use your calculator results as a starting point for comparison, not as the only
-          decision factor.
-        </p>
+        <p>{t("pages.capRateCalcHowTo.s6Close")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Step 7: Run scenarios to see how changes affect cap rate
-        </h2>
-        <p>
-          One of the biggest advantages of a cap rate calculator is how easy it makes &quot;what
-          if&quot; analysis. Try adjusting:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateCalcHowTo.s7Title")}</h2>
+        <p>{t("pages.capRateCalcHowTo.s7Body")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>Rent up or down by $100–$200 per month.</li>
-          <li>Vacancy from 5% to 8%.</li>
-          <li>Management from 0% (self-manage) to 8%–10%.</li>
-          <li>Purchase price based on a lower or higher offer.</li>
+          <li>{t("pages.capRateCalcHowTo.s7i1")}</li>
+          <li>{t("pages.capRateCalcHowTo.s7i2")}</li>
+          <li>{t("pages.capRateCalcHowTo.s7i3")}</li>
         </ul>
-        <p>
-          As you tweak these numbers, watch how NOI and cap rate move. This helps you see what
-          really drives the deal and where you need to negotiate or improve operations to hit your
-          targets.
-        </p>
+        <p>{t("pages.capRateCalcHowTo.s7Close")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Frequently asked questions about using a cap rate calculator
-        </h2>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Do I include my mortgage payment in a cap rate calculator?
-        </h3>
-        <p>
-          No. Cap rate is based on NOI, which excludes mortgage payments. A cap rate calculator is
-          focused on the property&apos;s income relative to value, not your financing. To analyze
-          financing, pair cap rate with cash-on-cash and ROI tools.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          How accurate does my data need to be?
-        </h3>
-        <p>
-          Early in the process, rough but conservative estimates are fine. As you get closer to
-          making an offer, you should refine your inputs with actual bills, quotes, and rent comps
-          so your calculator output reflects reality as closely as possible.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Can I use the same calculator for single-family, small multifamily, and larger buildings?
-        </h3>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateCalcHowTo.faqTitle")}</h2>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateCalcHowTo.q1")}</h3>
+        <p>{t("pages.capRateCalcHowTo.a1")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateCalcHowTo.q2")}</h3>
+        <p>{t("pages.capRateCalcHowTo.a2")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateCalcHowTo.q3")}</h3>
         <p>
           Yes. The cap rate math is the same. For larger properties with more complex expenses, you
           may just have more expense line items to enter. The{" "}
@@ -235,14 +156,8 @@ export default function CapRateCalculatorHowToUseItPage() {
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Make cap rate analysis part of your standard workflow
-        </h2>
-        <p className="mb-3">
-          Once you know how to use a cap rate calculator, you can run quick numbers on every
-          potential deal you see. Over time, this habit gives you a deep feel for what good, fair,
-          and bad deals look like in your target markets.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.capRateCalcHowTo.ctaTitle")}</h2>
+        <p className="mb-3">{t("pages.capRateCalcHowTo.ctaBody")}</p>
         <div className="flex flex-wrap gap-3 mb-4">
           <Link
             href="/cap-rate-calculator"
