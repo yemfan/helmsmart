@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Form-only variant of the missed-call text-back configuration —
@@ -36,6 +37,7 @@ const DEFAULT_TEMPLATE =
   "Hey {{caller_name}} — {{agent_first_name}} here. Sorry I missed your call. What's the best way I can help? Happy to text or set up a quick call back.";
 
 export default function MissedCallSettingsForm() {
+  const { t } = useTranslation("dashboard");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -150,13 +152,8 @@ export default function MissedCallSettingsForm() {
     <div className="space-y-5">
       {/* Forwarding phone */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-          Your personal mobile number
-        </label>
-        <p className="mt-1 text-xs text-slate-500">
-          Inbound calls to your Twilio number forward here. Also used by
-          click-to-call when you initiate outbound calls from the CRM.
-        </p>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.mobileNumber")}</label>
+        <p className="mt-1 text-xs text-slate-500">{t("pages.missedCall.mobileHint")}</p>
         <input
           type="tel"
           value={forwardingPhone}
@@ -176,22 +173,15 @@ export default function MissedCallSettingsForm() {
           className="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
         />
         <label htmlFor="missed-call-form-enabled" className="flex-1 cursor-pointer">
-          <span className="text-sm font-semibold text-slate-900">
-            Enable missed-call text-back
-          </span>
-          <p className="mt-0.5 text-xs text-slate-600">
-            When you don&apos;t pick up an inbound call, automatically send the
-            caller an SMS so they don&apos;t drop off the lead funnel.
-          </p>
+          <span className="text-sm font-semibold text-slate-900">{t("pages.missedCall.enableTextBack")}</span>
+          <p className="mt-0.5 text-xs text-slate-600">{t("pages.missedCall.textBackHint")}</p>
         </label>
       </div>
 
       {/* Ring timeout + AI toggle */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Ring timeout (seconds)
-          </label>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.ringTimeout")}</label>
           <input
             type="number"
             min={5}
@@ -202,15 +192,10 @@ export default function MissedCallSettingsForm() {
             }
             className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           />
-          <p className="mt-1 text-xs text-slate-500">
-            How long to ring your phone before the system considers it missed.
-            5–60 seconds.
-          </p>
+          <p className="mt-1 text-xs text-slate-500">{t("pages.missedCall.ringTimeoutHint")}</p>
         </div>
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-            AI personalization
-          </label>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.aiPersonalization")}</label>
           <div className="mt-1 flex items-start gap-2 rounded-lg border border-slate-200 bg-white p-2.5">
             <input
               id="missed-call-form-ai"
@@ -222,20 +207,14 @@ export default function MissedCallSettingsForm() {
             <label
               htmlFor="missed-call-form-ai"
               className="flex-1 cursor-pointer text-xs text-slate-700"
-            >
-              When the caller is a known contact, draft the SMS via AI in your
-              sales-model tone instead of the template below. Falls back to the
-              template if AI is unavailable.
-            </label>
+            >{t("pages.missedCall.aiHint")}</label>
           </div>
         </div>
       </div>
 
       {/* Template */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-          Template (used when caller is unknown, or when AI is off/unavailable)
-        </label>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.templateLabel")}</label>
         <textarea
           value={messageTemplate}
           onChange={(e) => setMessageTemplate(e.target.value)}
@@ -261,12 +240,8 @@ export default function MissedCallSettingsForm() {
             className="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
           />
           <label htmlFor="missed-call-form-callback" className="flex-1 cursor-pointer">
-            <span className="text-sm font-semibold text-slate-900">Call Back</span>
-            <p className="mt-0.5 text-xs text-slate-600">
-              When a text-back doesn&apos;t reach the caller, your AI Receptionist
-              calls them back automatically. If it still can&apos;t reach them after
-              every attempt, it adds a task for you to call back manually.
-            </p>
+            <span className="text-sm font-semibold text-slate-900">{t("pages.missedCall.callBack")}</span>
+            <p className="mt-0.5 text-xs text-slate-600">{t("pages.missedCall.callBackHint")}</p>
           </label>
         </div>
 
@@ -274,9 +249,7 @@ export default function MissedCallSettingsForm() {
           <>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Retry every (minutes)
-                </label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.retryEvery")}</label>
                 <input
                   type="number"
                   min={5}
@@ -289,9 +262,7 @@ export default function MissedCallSettingsForm() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Times per day
-                </label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.timesPerDay")}</label>
                 <input
                   type="number"
                   min={1}
@@ -304,9 +275,7 @@ export default function MissedCallSettingsForm() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  For how many days
-                </label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.missedCall.forHowManyDays")}</label>
                 <input
                   type="number"
                   min={1}
@@ -344,7 +313,7 @@ export default function MissedCallSettingsForm() {
           {saving ? "Saving…" : "Save settings"}
         </button>
         {savedAt && !error ? (
-          <span className="text-xs font-medium text-emerald-700">Saved.</span>
+          <span className="text-xs font-medium text-emerald-700">{t("pages.missedCall.saved")}</span>
         ) : null}
         {error ? (
           <span className="text-xs font-medium text-red-700">{error}</span>

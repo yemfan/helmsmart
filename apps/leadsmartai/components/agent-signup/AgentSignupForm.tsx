@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   useSignupProfilePrefill,
   type SignupOverlayPrefill,
@@ -40,6 +41,7 @@ export function AgentSignupForm({
   onClose,
   onSuccess,
 }: AgentSignupFormProps) {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams?.get("redirect") ?? null;
@@ -336,16 +338,11 @@ export function AgentSignupForm({
         <h1 className="text-xl font-bold text-gray-900">
           {signedInAgentFlow ? "Complete agent setup" : START_FREE_AS_AGENT_LABEL}
         </h1>
-        <p className="text-xs text-gray-600">Get access to the agent portal and CMA tools.</p>
+        <p className="text-xs text-gray-600">{t("pages.agentSignup.intro")}</p>
         {showSignedInPrefillBanner && signedInAgentFlow ? (
-          <p className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-[11px] font-medium text-sky-950">
-            You&apos;re signed in — we filled this form from your account. Finish the fields below to activate your
-            agent profile (no new password needed).
-          </p>
+          <p className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-[11px] font-medium text-sky-950">{t("pages.agentSignup.signedInPrefilled")}</p>
         ) : signedInAgentFlow ? (
-          <p className="text-[11px] text-gray-500">
-            You&apos;re signed in — no password needed to save your agent profile.
-          </p>
+          <p className="text-[11px] text-gray-500">{t("pages.agentSignup.signedInNoPassword")}</p>
         ) : null}
         <p className="pt-2 text-[11px] text-gray-500">
           Prefer a 2-minute interactive preview first?{" "}
@@ -353,15 +350,13 @@ export function AgentSignupForm({
             href="/onboarding"
             className="font-semibold text-blue-700 hover:underline"
             onClick={() => onClose?.()}
-          >
-            Guided onboarding
-          </Link>
+          >{t("pages.agentSignup.guidedOnboarding")}</Link>
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
         <fieldset className="space-y-2">
-          <legend className="block text-xs font-medium text-gray-700">Account type</legend>
+          <legend className="block text-xs font-medium text-gray-700">{t("pages.agentSignup.accountType")}</legend>
           <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-x-5 sm:gap-y-2">
             <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-800">
               <input
@@ -370,9 +365,7 @@ export function AgentSignupForm({
                 checked={accountType === "agent"}
                 onChange={() => setAccountType("agent")}
                 className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              Real estate agent
-            </label>
+              />{t("pages.agentSignup.realEstateAgent")}</label>
             <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-800">
               <input
                 type="radio"
@@ -380,15 +373,12 @@ export function AgentSignupForm({
                 checked={accountType === "loan_broker"}
                 onChange={() => setAccountType("loan_broker")}
                 className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              Loan broker
-            </label>
+              />{t("pages.agentSignup.loanBroker")}</label>
           </div>
         </fieldset>
 
         <div className="space-y-1">
-          <label className="block text-xs font-medium text-gray-700">
-            Name<span className="text-red-600"> *</span>
+          <label className="block text-xs font-medium text-gray-700">{t("pages.agentSignup.name")}<span className="text-red-600"> *</span>
           </label>
           <input
             type="text"
@@ -401,15 +391,14 @@ export function AgentSignupForm({
         </div>
 
         <div className="space-y-1">
-          <label className="block text-xs font-medium text-gray-700">
-            Phone<span className="text-red-600"> *</span>
+          <label className="block text-xs font-medium text-gray-700">{t("pages.agentSignup.phone")}<span className="text-red-600"> *</span>
           </label>
           <input
             type="tel"
             inputMode="tel"
             value={phone}
             onChange={(e) => setPhone(formatUsPhoneInput(e.target.value))}
-            placeholder="For lead alerts and follow-ups"
+            placeholder={t("pages.agentSignup.phoneHint")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             disabled={prefillLoading}
@@ -417,7 +406,7 @@ export function AgentSignupForm({
         </div>
 
         <div className="space-y-1">
-          <label className="block text-xs font-medium text-gray-700">License number</label>
+          <label className="block text-xs font-medium text-gray-700">{t("pages.agentSignup.license")}</label>
           <input
             type="text"
             value={licenseNumber}
@@ -428,7 +417,7 @@ export function AgentSignupForm({
         </div>
 
         <div className="space-y-1">
-          <label className="block text-xs font-medium text-gray-700">Brokerage</label>
+          <label className="block text-xs font-medium text-gray-700">{t("pages.agentSignup.brokerage")}</label>
           <input
             type="text"
             value={brokerage}
@@ -439,8 +428,7 @@ export function AgentSignupForm({
         </div>
 
         <div className="space-y-1">
-          <label className="block text-xs font-medium text-gray-700">
-            Email<span className="text-red-600"> *</span>
+          <label className="block text-xs font-medium text-gray-700">{t("pages.agentSignup.email")}<span className="text-red-600"> *</span>
           </label>
           <input
             type="email"
@@ -456,8 +444,7 @@ export function AgentSignupForm({
 
         {!signedInAgentFlow ? (
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">
-              Password<span className="text-red-600"> *</span>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.agentSignup.password")}<span className="text-red-600"> *</span>
             </label>
             <input
               type="password"
@@ -494,13 +481,9 @@ export function AgentSignupForm({
             />
             <span className="text-[11px] leading-relaxed text-slate-600">
               I agree to the{" "}
-              <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">
-                Terms of Service
-              </Link>{" "}
+              <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">{t("pages.agentSignup.terms")}</Link>{" "}
               and{" "}
-              <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">
-                Privacy Policy
-              </Link>
+              <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">{t("pages.agentSignup.privacy")}</Link>
               .
             </span>
           </label>
@@ -521,9 +504,7 @@ export function AgentSignupForm({
 
       <p className="text-[11px] text-gray-500 text-center">
         Prefer regular user signup?{" "}
-        <a className="text-blue-700 font-semibold" href="/signup" onClick={() => onClose?.()}>
-          Sign up here
-        </a>
+        <a className="text-blue-700 font-semibold" href="/signup" onClick={() => onClose?.()}>{t("pages.agentSignup.signUpHere")}</a>
       </p>
     </div>
   );
