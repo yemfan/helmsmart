@@ -331,12 +331,8 @@ export default async function FeaturesPage() {
       <section className="border-t border-slate-200/80 bg-slate-50/70 px-6 py-20 dark:border-slate-800 dark:bg-slate-900/30 md:py-24">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">
-              Explore the team
-            </p>
-            <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-              A closer look at what each one does
-            </h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">{t("pages.features.exploreTeam", { ns: "dashboard" })}</p>
+            <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">{t("pages.features.closerLook", { ns: "dashboard" })}</h2>
           </div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURE_PAGES.map((f) => {
@@ -356,9 +352,7 @@ export default async function FeaturesPage() {
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                     {f.eyebrow}.
                   </p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#0072ce] dark:text-[#4da3e8]">
-                    Learn more
-                    <ArrowRight size={14} className="transition group-hover:translate-x-0.5" aria-hidden />
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#0072ce] dark:text-[#4da3e8]">{t("pages.features.learnMore", { ns: "dashboard" })}<ArrowRight size={14} className="transition group-hover:translate-x-0.5" aria-hidden />
                   </span>
                 </Link>
               );

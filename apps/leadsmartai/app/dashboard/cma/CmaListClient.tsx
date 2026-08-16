@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Component, type ReactNode, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { i18n } from "@/lib/i18n/client";
 import { intlLocale } from "@/lib/i18n/locale";
 
 import AddressAutocomplete from "@/components/AddressAutocomplete";
@@ -25,13 +26,13 @@ class CmaErrorBoundary extends Component<{ children: ReactNode }, { failed: bool
     if (this.state.failed) {
       return (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Something went wrong rendering this view.{" "}
+          {i18n.t("pages.cmaList.renderError", { ns: "dashboard" })}{" "}
           <button
             type="button"
             onClick={() => window.location.reload()}
             className="font-semibold underline"
           >
-            Reload
+            {i18n.t("pages.cmaList.reload", { ns: "dashboard" })}
           </button>
         </div>
       );

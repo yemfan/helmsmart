@@ -54,9 +54,7 @@ export function ContactHealthPanel() {
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-5 py-4">
         <h2 className="text-base font-semibold text-slate-900">{t("pages.contactHealth.heading")}</h2>
-        <p className="mt-1 text-xs text-slate-500">
-          Field coverage for your active leads (merged records excluded).
-        </p>
+        <p className="mt-1 text-xs text-slate-500">{t("pages.contactHealth.fieldCoverage")}</p>
       </div>
       <div className="grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
         <Metric label={t("pages.contactHealth.total")} value={String(summary.totalContacts)} />

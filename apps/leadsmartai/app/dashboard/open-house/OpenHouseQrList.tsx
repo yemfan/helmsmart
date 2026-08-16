@@ -42,8 +42,7 @@ export default function OpenHouseQrList({
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-2">
         <h1 className="text-2xl font-bold text-brand-text">{t("pages.openHouseQr.heading")}</h1>
         <p className="text-sm text-brand-text/80">
-          Print these QR codes for each property. Scanning opens the mobile sign-up form and
-          records the visitor as an <span className="font-semibold">{t("pages.openHouseQr.openHouse")}</span> lead.
+          {t("pages.openHouseQr.printBefore")} <span className="font-semibold">{t("pages.openHouseQr.openHouse")}</span>{t("pages.openHouseQr.printAfter")}
         </p>
       </div>
 
@@ -98,10 +97,7 @@ export default function OpenHouseQrList({
                 </div>
               </div>
 
-              <div className="text-[11px] text-slate-500">
-                Visitors can sign up using this QR code. Their details will be saved to
-                CloseBoss as a new lead.
-              </div>
+              <div className="text-[11px] text-slate-500">{t("pages.openHouseQr.visitorNote")}</div>
             </div>
           );
         })}

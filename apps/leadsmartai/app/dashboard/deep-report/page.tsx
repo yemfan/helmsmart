@@ -22,11 +22,7 @@ export default async function DeepReportPage() {
     <main className="mx-auto max-w-5xl px-4 py-8">
       <header className="mb-6 max-w-2xl">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">{t("pages.deepReport.heading", { ns: "dashboard" })}</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Everything a buyer needs to decide — value, loan affordability, a
-          deal rating, investment returns, schools, neighborhood, and a
-          location map — from an address and how they plan to use it.
-        </p>
+        <p className="mt-2 text-sm text-slate-600">{t("pages.deepReport.pageSub", { ns: "dashboard" })}</p>
       </header>
       <DeepReportClient />
     </main>

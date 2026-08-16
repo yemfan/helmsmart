@@ -134,10 +134,7 @@ export default function OutboundCallPanel() {
     <div className="space-y-4">
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-slate-900">{t("pages.outboundCall.heading")}</h2>
-        <p className="mt-0.5 mb-4 text-xs text-slate-500">
-          Lucy dials the lead from your receptionist number, opens by disclosing she&apos;s an AI
-          assistant, and follows up on your behalf — then logs the call below in Inbound &amp; outbound activity.
-        </p>
+        <p className="mt-0.5 mb-4 text-xs text-slate-500">{t("pages.outboundCall.intro")}</p>
 
         {/* Purpose picker */}
         <div className="mb-3 flex flex-wrap gap-2">
@@ -164,9 +161,7 @@ export default function OutboundCallPanel() {
 
         {/* Contact picker */}
         <div ref={boxRef} className="relative mb-3">
-          <span className="mb-1 block text-[11px] font-medium text-slate-500">
-            Call a contact
-          </span>
+          <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.outboundCall.callContact")}</span>
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" strokeWidth={2} />
             <input
@@ -273,10 +268,7 @@ export default function OutboundCallPanel() {
         </div>
       </div>
 
-      <p className="text-xs text-slate-400">
-        Outbound calls go out from your receptionist number and require Retell calling credits.
-        Need to reach several people at once? Select multiple contacts to call them in one batch.
-      </p>
+      <p className="text-xs text-slate-400">{t("pages.outboundCall.creditsNote")}</p>
     </div>
   );
 }

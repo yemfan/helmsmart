@@ -92,9 +92,7 @@ export default function CallsClient({ calls: initialCalls }: { calls: CallRow[] 
                         {expandedId === c.id ? t("pages.calls.close") : t("pages.calls.details")}
                       </button>
                       {c.lead_name && (
-                        <a href={`tel:${c.from_phone.replace(/\D/g, "")}`} className="ml-2 rounded-lg bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700">
-                          Call Back
-                        </a>
+                        <a href={`tel:${c.from_phone.replace(/\D/g, "")}`} className="ml-2 rounded-lg bg-green-600 px-3 py-1 text-xs font-medium text-white hover:bg-green-700">{t("pages.callsPage.callBack")}</a>
                       )}
                     </td>
                   </tr>

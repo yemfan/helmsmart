@@ -270,9 +270,7 @@ export function RevenuePanel() {
               ))}
               {data.closedDeals.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-3 py-8 text-center text-sm text-slate-500">
-                    No closed deals in this period.
-                  </td>
+                  <td colSpan={8} className="px-3 py-8 text-center text-sm text-slate-500">{t("pages.revenue.noClosed")}</td>
                 </tr>
               ) : null}
             </tbody>

@@ -47,7 +47,7 @@ export default async function SkillRunPage({ params }: { params: Promise<{ id: s
 
       {!enabled ? (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300">
-          This skill is turned off. Turn it on from <Link href="/dashboard/skills" className="underline">{t("pages.skillRunner.backToSkills", { ns: "dashboard" })}</Link> to run it.
+          {t("pages.skillRunner.offBefore", { ns: "dashboard" })} <Link href="/dashboard/skills" className="underline">{t("pages.skillRunner.backToSkills", { ns: "dashboard" })}</Link>{t("pages.skillRunner.offAfter", { ns: "dashboard" })}
         </div>
       ) : (
         <SkillRunner skillId={skill.id} inputKeys={inputKeys} assigneeLabel={ASSIGNEE_LABEL[assignee]} />

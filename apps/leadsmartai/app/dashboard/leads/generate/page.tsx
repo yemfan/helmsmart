@@ -179,17 +179,10 @@ export default async function GenerateLeadsPage() {
           </div>
           <div className="mb-1 flex items-center gap-2">
             <h2 className="text-base font-semibold text-gray-900">{t("videoAd", { ns: "web_generate_leads" })}</h2>
-            <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-800">
-              New
-            </span>
+            <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-800">{t("pages.generateLeads.isNew", { ns: "dashboard" })}</span>
           </div>
-          <p className="text-sm text-gray-600">
-            Turn a listing&apos;s photos into a cinematic video ad — AI animates the shots, stitches them, and writes the
-            caption. Then post to Facebook, Instagram, or LinkedIn.
-          </p>
-          <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 group-hover:gap-1.5">
-            Pick a listing
-            <svg
+          <p className="text-sm text-gray-600">{t("pages.generateLeads.videoAdBlurb", { ns: "dashboard" })}</p>
+          <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 group-hover:gap-1.5">{t("pages.generateLeads.pickListing", { ns: "dashboard" })}<svg
               className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
               fill="none"
               viewBox="0 0 24 24"

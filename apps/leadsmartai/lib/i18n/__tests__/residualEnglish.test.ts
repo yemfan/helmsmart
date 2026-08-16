@@ -26,9 +26,15 @@ import { describe, expect, it } from "vitest";
 const ROOT = join(__dirname, "..", "..", "..");
 const SCAN = ["app", "components"];
 
-/** Proper nouns that are correct as-is in every language. */
+/**
+ * Proper nouns that are correct as-is in every language — plus the company's
+ * postal address, which has to stay in the form the US post office reads no
+ * matter who is looking at the page.
+ */
 const ALLOWED = new Set([
   "MAXY Investment Inc.",
+  "Sugar Land, TX 77479",
+  "United States",
   "CloseBoss",
   "Pinterest",
   "TikTok",
@@ -45,61 +51,6 @@ const COPY_ATTRS = /\b(?:placeholder|title|label|aria-label|alt)="([^"]+)"/g;
  * to a regex, and there are a dozen of those in the calendar alone.
  */
 const JSX_TEXT = /(?:^|[^=])>([^<>{}]+)</g;
-
-/*
- * Files the widened scan newly exposed, not yet worked through. Widening the
- * predicate turned one failing assertion into 332, and holding the whole batch
- * back until every one is fixed would mean a long-lived branch and a red gate
- * in the meantime. So the backlog is explicit and enumerated instead: these
- * files may still contain English, everything else may not, and the second
- * assertion below fails the moment a file here comes clean — which is the only
- * thing that keeps the list shrinking rather than rotting.
- *
- * Delete an entry when its file is translated. When the list is empty, delete
- * the list.
- */
-const PENDING = new Set([
-  "app/contact/page.tsx",
-  "app/dashboard/ai-sales-assistant/SalesAssistantClient.tsx",
-  "app/dashboard/calls/CallsClient.tsx",
-  "app/dashboard/cma/CmaListClient.tsx",
-  "app/dashboard/cma/page.tsx",
-  "app/dashboard/contacts/scan/ScanCardClient.tsx",
-  "app/dashboard/contracts/review/ReviewContractClient.tsx",
-  "app/dashboard/deep-report/DeepReportClient.tsx",
-  "app/dashboard/deep-report/page.tsx",
-  "app/dashboard/growth/page.tsx",
-  "app/dashboard/lead-queue/LeadQueueClient.tsx",
-  "app/dashboard/leads/generate/page.tsx",
-  "app/dashboard/listing-offers/[id]/ListingOfferDetailClient.tsx",
-  "app/dashboard/marketing/plans/MarketingPlansClient.tsx",
-  "app/dashboard/offers/[id]/OfferDetailClient.tsx",
-  "app/dashboard/open-house/OpenHouseQrList.tsx",
-  "app/dashboard/open-houses/OpenHousesListClient.tsx",
-  "app/dashboard/open-houses/flyer/FlyerBuilderClient.tsx",
-  "app/dashboard/playbook-runs/[id]/OptimizePanel.tsx",
-  "app/dashboard/playbook-runs/[id]/page.tsx",
-  "app/dashboard/playbooks/PlaybooksPageClient.tsx",
-  "app/dashboard/settings/page.tsx",
-  "app/dashboard/skills/SkillsManager.tsx",
-  "app/dashboard/skills/[id]/page.tsx",
-  "app/dashboard/tasks/TasksClient.tsx",
-  "app/dashboard/transactions/coordinator/page.tsx",
-  "app/features/page.tsx",
-  "app/free-tools/PromptsLeadMagnet.tsx",
-  "components/AppShell.tsx",
-  "components/comparison-report/ComparisonReportClient.tsx",
-  "components/crm/ContactHealthPanel.tsx",
-  "components/dashboard/BrandingSettingsPanel.tsx",
-  "components/dashboard/DealReviewPanel.tsx",
-  "components/dashboard/LeadCalendarBookingPanel.tsx",
-  "components/dashboard/MissedCallActivityLog.tsx",
-  "components/dashboard/OutboundCallPanel.tsx",
-  "components/dashboard/RevenuePanel.tsx",
-  "components/dashboard/TemplatesSummaryCard.tsx",
-  "components/dashboard/TopBar.tsx",
-  "components/support/SupportDashboard.tsx",
-]);
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
@@ -146,7 +97,6 @@ function isCopy(raw: string): boolean {
 describe("residual English", () => {
   it("does not linger in files that are already internationalised", () => {
     const findings: string[] = [];
-    const pending: string[] = [];
     for (const root of SCAN) {
       for (const file of walk(join(ROOT, root))) {
         const src = readFileSync(file, "utf8");
@@ -162,21 +112,11 @@ describe("residual English", () => {
           for (const m of body.matchAll(re)) {
             if (!isCopy(m[1])) continue;
             const where = `${relative(ROOT, file).split(sep).join("/")}:${at(m.index ?? 0)}`;
-            const rel = relative(ROOT, file).split(sep).join("/");
-            (PENDING.has(rel) ? pending : findings).push(
-              `${where}  ${m[1].replace(/\s+/g, " ").trim().slice(0, 80)}`,
-            );
+            findings.push(`${where}  ${m[1].replace(/\s+/g, " ").trim().slice(0, 80)}`);
           }
         }
       }
     }
     expect(findings, `\n${findings.join("\n")}\n`).toEqual([]);
-    /*
-     * And the list only shrinks. Without this the allowlist rots: a file gets
-     * translated, nobody removes its entry, and the next English string added
-     * to it lands in a hole the guard is told to ignore.
-     */
-    const clean = [...PENDING].filter((f) => !pending.some((p) => p.startsWith(`${f}:`)));
-    expect(clean, `\nTranslated — remove from PENDING:\n${clean.join("\n")}\n`).toEqual([]);
   });
 });

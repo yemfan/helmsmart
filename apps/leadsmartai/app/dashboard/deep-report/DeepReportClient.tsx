@@ -198,9 +198,7 @@ export default function DeepReportClient() {
             </div>
           ) : null}
           {showLoan && report ? (
-            <p className="mt-2 text-xs text-slate-400">
-              Affordability updates instantly below — no new report needed.
-            </p>
+            <p className="mt-2 text-xs text-slate-400">{t("pages.deepReport.instantUpdate")}</p>
           ) : null}
         </div>
 

@@ -33,10 +33,7 @@ export function OptimizePanel({ runId }: { runId: string }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
       <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{t("pages.playbookRunDetail.optimizeHeading")}</h3>
-      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-        Note how it&rsquo;s going (showings, feedback, what the buyer liked). The AI proposes prioritized
-        adjustments and files an approval task — nothing changes until you approve it.
-      </p>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t("pages.optimizePanel.intro")}</p>
       <textarea
         value={note}
         onChange={(e) => setNote(e.target.value)}
@@ -58,9 +55,7 @@ export function OptimizePanel({ runId }: { runId: string }) {
 
       {suggestions ? (
         <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/50 dark:bg-emerald-950/30">
-          <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">
-            Proposed adjustments — filed as an approval task
-          </p>
+          <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">{t("pages.optimizePanel.proposed")}</p>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700 dark:text-slate-300">
             {suggestions.map((s, i) => (
               <li key={i}>{s}</li>

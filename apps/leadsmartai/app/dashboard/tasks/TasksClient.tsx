@@ -221,9 +221,7 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
             );
           })}
           {!isDrilled && hasAnyDrill && (
-            <p className="pt-1 text-[10px] text-gray-400">
-              Click a slice for details
-            </p>
+            <p className="pt-1 text-[10px] text-gray-400">{tr("pages.tasksPage.clickSlice")}</p>
           )}
         </div>
       </div>
@@ -798,13 +796,12 @@ export default function TasksClient({
  * nothing (the absence of a chip = "I made this myself").
  */
 function SourceChip({ task }: { task: TaskRow }) {
+  const { t: tr } = useTranslation("dashboard");
   if (task.source === "manual") return null;
   if (task.source === "briefing") {
     return (
       <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700">
-        <span aria-hidden>☀️</span>
-        Morning briefing
-      </span>
+        <span aria-hidden>☀️</span>{tr("pages.tasksPage.morningBriefing")}</span>
     );
   }
   // Playbook + coaching share the same shape (template title + section).

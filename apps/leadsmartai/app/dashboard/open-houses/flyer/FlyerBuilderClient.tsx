@@ -506,15 +506,11 @@ export default function FlyerBuilderClient({
           <p className="text-sm text-gray-500">{tr("pages.flyer.flyerIntro")}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button onClick={() => setProperty(null)} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-            Start Over
-          </button>
+          <button onClick={() => setProperty(null)} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{tr("pages.flyerBuilder.startOver")}</button>
           <button onClick={() => void saveFlyer(false)} disabled={saving} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">
             {saving ? tr("pages.flyer.saving") : tr("pages.flyer.save")}
           </button>
-          <button onClick={() => void saveFlyer(true)} disabled={saving} className="rounded-lg border border-blue-300 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50">
-            Save & Set as Default
-          </button>
+          <button onClick={() => void saveFlyer(true)} disabled={saving} className="rounded-lg border border-blue-300 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50">{tr("pages.flyerBuilder.saveDefault")}</button>
           <button onClick={() => void downloadPdf()} disabled={generating} className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
             {generating ? tr("pages.flyer.generatingPdf") : tr("pages.flyer.download")}
           </button>
@@ -596,9 +592,7 @@ export default function FlyerBuilderClient({
                   type="button"
                   onClick={() => photoInputRef.current?.click()}
                   className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
-                >
-                  Upload Photo
-                </button>
+                >{tr("pages.flyerBuilder.uploadPhoto")}</button>
               )}
             </div>
             <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => { onPhotoUpload(e.target.files); e.target.value = ""; }} />

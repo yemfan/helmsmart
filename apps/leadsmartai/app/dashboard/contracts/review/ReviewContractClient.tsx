@@ -65,9 +65,7 @@ export function ReviewContractClient() {
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/transactions" className="hover:underline">
-            Transactions
-          </Link>
+          <Link href="/dashboard/transactions" className="hover:underline">{t("pages.reviewContract.transactions")}</Link>
           {" / Contract review"}
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.contractReview.heading")}</h1>
@@ -103,8 +101,7 @@ export function ReviewContractClient() {
             </button>
             <span className="text-[11px] text-slate-500">
               {pdfName ? (
-                <>
-                  Selected: <strong className="font-medium text-slate-700">{pdfName}</strong>
+                <>{t("pages.reviewContract.selected")}<strong className="font-medium text-slate-700">{pdfName}</strong>
                 </>
               ) : (
                 <>{t("pages.contractReview.maxSize")}</>

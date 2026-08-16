@@ -101,10 +101,7 @@ export function OpenHousesListClient({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">{t("pages.openHouses.heading")}</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Schedule events, share a QR-code sign-in at the door, and auto-follow-up with
-            visitors. No paper sheets.
-          </p>
+          <p className="mt-1 text-sm text-slate-500">{t("pages.openHouses.intro")}</p>
         </div>
         <Link
           href="/dashboard/open-houses/new"
@@ -210,7 +207,7 @@ export function OpenHousesListClient({
                       <>
                         <div className="font-medium">{t("pages.openHouses.empty")}</div>
                         <div className="mt-1 text-[12px]">
-                          Click <strong>{t("pages.openHouses.schedule")}</strong> to create your first event.
+                          {t("pages.openHouses.emptyBefore")} <strong>{t("pages.openHouses.schedule")}</strong>{t("pages.openHouses.emptyAfter")}
                         </div>
                       </>
                     ) : (

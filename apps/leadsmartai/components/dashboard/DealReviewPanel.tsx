@@ -27,6 +27,7 @@ type ReviewResponse = {
 };
 
 export function DealReviewPanel({ transactionId }: { transactionId: string }) {
+  const { t } = useTranslation("dashboard");
   const [resp, setResp] = useState<ReviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
@@ -79,10 +80,7 @@ export function DealReviewPanel({ transactionId }: { transactionId: string }) {
           <h2 className="text-sm font-semibold text-slate-900">
             🧠 AI deal review
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Post-mortem on this closed deal — timeline, stall points, and what to repeat
-            or change next time.
-          </p>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.dealReview.intro")}</p>
         </div>
         {resp ? (
           <button
@@ -97,9 +95,7 @@ export function DealReviewPanel({ transactionId }: { transactionId: string }) {
       </div>
 
       {loading && !resp ? (
-        <div className="mt-6 rounded-lg bg-slate-50 p-6 text-center text-sm text-slate-500">
-          Generating your deal review. This takes about 15 seconds the first time.
-        </div>
+        <div className="mt-6 rounded-lg bg-slate-50 p-6 text-center text-sm text-slate-500">{t("pages.dealReview.generating")}</div>
       ) : gate ? (
         <AiActionGateBanner reason={gate.reason} className="mt-4" />
       ) : error ? (
@@ -170,9 +166,7 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
           {resp.fromCache ? " (cached)" : ""}
         </span>
         {resp.usedFallback ? (
-          <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-700">
-            AI unavailable — baseline rules used
-          </span>
+          <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-700">{t("pages.dealReview.aiUnavailable")}</span>
         ) : null}
         {!resp.aiConfigured ? (
           <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">

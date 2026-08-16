@@ -182,9 +182,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
                       <td className="max-w-[200px] px-4 py-3">
                         <div className="font-medium text-slate-900">{p.address}</div>
                         {isBest ? (
-                          <span className="mt-1 inline-block rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
-                            Recommended
-                          </span>
+                          <span className="mt-1 inline-block rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-bold uppercase text-white">{t("pages.comparisonReportView.recommended")}</span>
                         ) : null}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3">{fmtMoney(p.price)}</td>
@@ -273,9 +271,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
         {/* Contact CTA */}
         <section className="mt-14 border-t border-slate-200 pt-10 print:break-inside-avoid">
           <h2 className="text-xl font-bold text-slate-900">{t("pages.comparisonReportView.contactAgent")}</h2>
-          <p className="mt-2 text-slate-600">
-            Questions about this comparison? Reach out directly or send a message below.
-          </p>
+          <p className="mt-2 text-slate-600">{t("pages.comparisonReportView.questions")}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             {agent.phone ? (
               <a
@@ -289,9 +285,7 @@ export default function ComparisonReportClient({ report }: { report: ComparisonR
               <a
                 href={`mailto:${agent.email}`}
                 className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-              >
-                Email agent
-              </a>
+              >{t("pages.comparisonReportView.emailAgent")}</a>
             ) : null}
             <button
               type="button"

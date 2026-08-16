@@ -1875,7 +1875,8 @@
       "nothingUrgent": "Nothing urgent right now.",
       "nothingUrgentHint": "Your pipeline looks healthy. Come back after a few more showings or closings for fresh suggestions.",
       "generatedAt": "Generated {{when}}",
-      "cached": " (cached)"
+      "cached": " (cached)",
+      "claudeReads": "Claude reads your pipeline + CRM and surfaces the highest-leverage actions to take this week. Updated hourly; regenerate anytime."
     },
     "uploadOffer": {
       "metaTitle": "Upload offer",
@@ -2155,7 +2156,8 @@
       "view": "View",
       "emptyFiltered": "No plans match your filters.",
       "empty": "No marketing plans yet.",
-      "availableTemplates": "Available Templates"
+      "availableTemplates": "Available Templates",
+      "useTemplate": "Use this template"
     },
     "listingOffer": {
       "metaTitle": "Listing offer",
@@ -2883,7 +2885,8 @@
       "withEmail": "With email",
       "withPhone": "With phone",
       "withBirthday": "With birthday",
-      "withPurchaseDate": "With home purchase date"
+      "withPurchaseDate": "With home purchase date",
+      "fieldCoverage": "Field coverage for your active leads (merged records excluded)."
     },
     "aiEmailPanel": {
       "heading": "AI email assistant",
@@ -2907,7 +2910,10 @@
       "urlPlaceholder": "https://…",
       "labelOptional": "Label (optional)",
       "saveLink": "Save link",
-      "savedAt": "Saved {{date}}"
+      "savedAt": "Saved {{date}}",
+      "storedNote": "Appointments and scheduling links are stored on this lead and update last activity (same as mobile).",
+      "upcoming": "Upcoming appointments",
+      "bookingLinks": "Booking links"
     },
     "outboundCall": {
       "needSurvey": "Add the survey questions first.",
@@ -2922,7 +2928,10 @@
       "noMatches": "No matching contacts.",
       "leadName": "Lead name (optional)",
       "leadNamePlaceholder": "e.g. Hong Yang",
-      "phone": "Phone number"
+      "phone": "Phone number",
+      "intro": "Lucy dials the lead from your receptionist number, opens by disclosing she's an AI assistant, and follows up on your behalf — then logs the call below in Inbound & outbound activity.",
+      "callContact": "Call a contact",
+      "creditsNote": "Outbound calls go out from your receptionist number and require Retell calling credits. Need to reach several people at once? Select multiple contacts to call them in one batch."
     },
     "dealReview": {
       "executionScore": "Execution score:",
@@ -2930,7 +2939,10 @@
       "stalled": "Where it stalled",
       "vsOthers": "Vs your other deals",
       "doDifferently": "Do differently next time",
-      "generatedAt": "Generated {{date}}"
+      "generatedAt": "Generated {{date}}",
+      "intro": "Post-mortem on this closed deal — timeline, stall points, and what to repeat or change next time.",
+      "generating": "Generating your deal review. This takes about 15 seconds the first time.",
+      "aiUnavailable": "AI unavailable — baseline rules used"
     },
     "listingFeedback": {
       "agentName": "Buyer agent name",
@@ -2951,7 +2963,10 @@
       "autoTextsSent": "Auto-texts sent",
       "missedNoText": "Missed, no text",
       "missedOnly": "Missed only",
-      "withAutoText": "With auto-text"
+      "withAutoText": "With auto-text",
+      "textSent": "Text sent",
+      "noAutoText": "No auto-text",
+      "showBody": "Show auto-text body"
     },
     "greetingAutomation": {
       "heading": "Greeting automation",
@@ -3037,7 +3052,10 @@
       "sending": "Sending…",
       "sendMessage": "Send message",
       "sendFailed": "Failed to send",
-      "couldNotSend": "Could not send"
+      "couldNotSend": "Could not send",
+      "recommended": "Recommended",
+      "questions": "Questions about this comparison? Reach out directly or send a message below.",
+      "emailAgent": "Email agent"
     },
     "onboardingFunnel": {
       "fullName": "Full name",
@@ -3391,6 +3409,126 @@
       "routingNote": "Calls to this number route to this receptionist. Point the number's inbound webhook at /api/retell/inbound; saved in E.164 (e.g. +16265551234).",
       "kbHint": "Business hours, services, pricing, address, and FAQs. Also say what to do with callers — e.g. take a message, collect their name + number, or offer a call-back. The receptionist uses this to answer questions.",
       "hoursHint": "The AI books 30-minute appointments within these hours. Defaults to Mon–Fri 9–5 until you set them."
+    },
+    "scanCard": {
+      "retake": "Retake",
+      "scanAnother": "Scan Another",
+      "viewContacts": "View Contacts"
+    },
+    "generateLeads": {
+      "isNew": "New",
+      "videoAdBlurb": "Turn a listing's photos into a cinematic video ad — AI animates the shots, stitches them, and writes the caption. Then post to Facebook, Instagram, or LinkedIn.",
+      "pickListing": "Pick a listing"
+    },
+    "offerDetail": {
+      "offers": "Offers",
+      "createsBuyerRep": "Creates a buyer-rep deal pre-filled with this offer's price + close date.",
+      "cancel": "Cancel"
+    },
+    "flyerBuilder": {
+      "startOver": "Start Over",
+      "saveDefault": "Save & Set as Default",
+      "uploadPhoto": "Upload Photo"
+    },
+    "openHouses": {
+      "intro": "Schedule events, share a QR-code sign-in at the door, and auto-follow-up with visitors. No paper sheets.",
+      "emptyBefore": "Click",
+      "emptyAfter": "to create your first event."
+    },
+    "playbooksPage": {
+      "cancelled": "Cancelled",
+      "tomorrow": "Tomorrow",
+      "nextWeek": "Next week"
+    },
+    "features": {
+      "exploreTeam": "Explore the team",
+      "closerLook": "A closer look at what each one does",
+      "learnMore": "Learn more"
+    },
+    "appShell": {
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "contact": "Contact"
+    },
+    "salesAssistant": {
+      "voiceTitle": "Your Sales Assistant's voice & knowledge",
+      "voiceSub": "Used on its outbound lead calls — follow-ups and reactivations. Separate from your Receptionist's knowledge base, so each assistant speaks from its own brief."
+    },
+    "cmaPage": {
+      "title": "Comparative Market Analysis",
+      "sub": "Pull comps, run a value range, and save the snapshot for the seller. The valuation engine + comps come from the property-data side; this view stores and presents them per agent."
+    },
+    "reviewContract": {
+      "transactions": "Transactions",
+      "selected": "Selected:"
+    },
+    "leadQueue": {
+      "loading": "Loading queue...",
+      "refresh": "Refresh"
+    },
+    "openHouseQr": {
+      "printBefore": "Print these QR codes for each property. Scanning opens the mobile sign-up form and records the visitor as an",
+      "printAfter": "lead.",
+      "visitorNote": "Visitors can sign up using this QR code. Their details will be saved to CloseBoss as a new lead."
+    },
+    "optimizePanel": {
+      "intro": "Note how it’s going (showings, feedback, what the buyer liked). The AI proposes prioritized adjustments and files an approval task — nothing changes until you approve it.",
+      "proposed": "Proposed adjustments — filed as an approval task"
+    },
+    "skillRunner": {
+      "offBefore": "This skill is turned off. Turn it on from",
+      "offAfter": "to run it."
+    },
+    "tasksPage": {
+      "clickSlice": "Click a slice for details",
+      "morningBriefing": "Morning briefing"
+    },
+    "coordinator": {
+      "title": "Transaction coordinator",
+      "sub": "One column per stage of the deal. Cards show transactions with open work at that stage, sorted overdue-first. Click a card to jump to the deal."
+    },
+    "branding": {
+      "signatureHint": "HTML format. Leave blank to use the default signature (name, brand, email, phone, photo, logo — composed from your profile).",
+      "cancel": "Cancel"
+    },
+    "templatesSummary": {
+      "intro": "Text of every message CloseBoss sends on your behalf. Edit any template, toggle it off, or add bilingual variants.",
+      "notSeeded": "The template library hasn't been seeded yet. Once seeded you'll see status counts and your most-used templates here."
+    },
+    "callsPage": {
+      "callBack": "Call Back"
+    },
+    "cmaList": {
+      "reload": "Reload",
+      "renderError": "Something went wrong rendering this view."
+    },
+    "deepReport": {
+      "instantUpdate": "Affordability updates instantly below — no new report needed.",
+      "pageSub": "Everything a buyer needs to decide — value, loan affordability, a deal rating, investment returns, schools, neighborhood, and a location map — from an address and how they plan to use it."
+    },
+    "listingOfferDetail": {
+      "cancel": "Cancel"
+    },
+    "playbookRun": {
+      "you": "You"
+    },
+    "settingsPage": {
+      "manageConnected": "Manage connected accounts"
+    },
+    "skillsManager": {
+      "validators": "validators + oversight"
+    },
+    "promptsLeadMagnet": {
+      "english": "English"
+    },
+    "revenue": {
+      "noClosed": "No closed deals in this period."
+    },
+    "topbar": {
+      "upgrade": "Upgrade"
+    },
+    "supportDashboard": {
+      "replyToCustomer": "Reply to customer"
     }
   }
 }

@@ -427,9 +427,7 @@ function CounterTimeline({
               type="button"
               onClick={() => setAdding(false)}
               className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Cancel
-            </button>
+            >{t("pages.listingOfferDetail.cancel")}</button>
             <button
               type="button"
               onClick={() => void submit()}

@@ -325,10 +325,7 @@ export default function BrandingSettingsPanel() {
               rows={6}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono"
             />
-            <p className="text-[11px] text-gray-500">
-              HTML format. Leave blank to use the default signature (name, brand,
-              email, phone, photo, logo — composed from your profile).
-            </p>
+            <p className="text-[11px] text-gray-500">{t("pages.branding.signatureHint")}</p>
             <button
               type="button"
               onClick={() => {
@@ -337,9 +334,7 @@ export default function BrandingSettingsPanel() {
                 setPreview({ kind: "idle" });
               }}
               className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
+            >{t("pages.branding.cancel")}</button>
           </div>
         ) : (
           <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50/60 p-4 text-xs text-gray-500">

@@ -199,10 +199,7 @@ export default function GrowthPage() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">{t("pages.growth.heading")}</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Claude reads your pipeline + CRM and surfaces the highest-leverage actions to take this
-            week. Updated hourly; regenerate anytime.
-          </p>
+          <p className="mt-1 text-sm text-slate-500">{t("pages.growth.claudeReads", { ns: "dashboard" })}</p>
         </div>
         <button
           type="button"

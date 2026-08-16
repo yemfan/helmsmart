@@ -168,13 +168,9 @@ export default function MissedCallActivityLog() {
                     title={
                       ev.textback_status ? `SMS status: ${ev.textback_status}` : undefined
                     }
-                  >
-                    Text sent
-                  </span>
+                  >{t("pages.missedCallLog.textSent")}</span>
                 ) : ev.status === "missed" ? (
-                  <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700 ring-1 ring-inset ring-amber-200">
-                    No auto-text
-                  </span>
+                  <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700 ring-1 ring-inset ring-amber-200">{t("pages.missedCallLog.noAutoText")}</span>
                 ) : null}
               </div>
 
@@ -183,9 +179,7 @@ export default function MissedCallActivityLog() {
                   can expand to see the actual SMS that went out. */}
               {ev.textback_sent && ev.textback_message && (
                 <details className="ml-9 mt-2">
-                  <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 hover:text-slate-900">
-                    Show auto-text body
-                  </summary>
+                  <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 hover:text-slate-900">{t("pages.missedCallLog.showBody")}</summary>
                   <blockquote className="mt-2 rounded-lg border-l-2 border-emerald-300 bg-emerald-50/50 px-3 py-2 text-xs leading-relaxed text-slate-700">
                     {ev.textback_message}
                     {ev.textback_sent_at && (

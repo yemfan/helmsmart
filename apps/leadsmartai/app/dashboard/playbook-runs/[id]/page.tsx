@@ -216,9 +216,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
                         {ASSIGNEE_LABEL[m.assignee] ?? m.assignee}
                       </span>
                     ) : m.owner === "agent" ? (
-                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                        You
-                      </span>
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">{tr("pages.playbookRun.you", { ns: "dashboard" })}</span>
                     ) : null}
                     {m.dispatch_status === "done" ? (
                       <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">{tr("pages.playbookRunDetail.ranAutonomously", { ns: "dashboard" })}</span>

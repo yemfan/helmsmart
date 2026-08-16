@@ -110,9 +110,7 @@ export function LeadQueueClient() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20 text-gray-400">
-        Loading queue...
-      </div>
+      <div className="flex items-center justify-center py-20 text-gray-400">{t("pages.leadQueue.loading")}</div>
     );
   }
 
@@ -128,9 +126,7 @@ export function LeadQueueClient() {
         <button
           onClick={() => { setLoading(true); fetchQueue(); }}
           className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Refresh
-        </button>
+        >{t("pages.leadQueue.refresh")}</button>
       </div>
 
       {/* Shows only when the agent is at/near their max-leads cap —

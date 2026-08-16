@@ -193,9 +193,7 @@ export default function ScanCardClient() {
               type="button"
               onClick={reset}
               className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Retake
-            </button>
+            >{t("pages.scanCard.retake")}</button>
           </div>
         </div>
       )}
@@ -214,16 +212,12 @@ export default function ScanCardClient() {
               type="button"
               onClick={reset}
               className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-            >
-              Scan Another
-            </button>
+            >{t("pages.scanCard.scanAnother")}</button>
             <button
               type="button"
               onClick={() => router.push("/dashboard/contacts")}
               className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              View Contacts
-            </button>
+            >{t("pages.scanCard.viewContacts")}</button>
           </div>
         </div>
       )}

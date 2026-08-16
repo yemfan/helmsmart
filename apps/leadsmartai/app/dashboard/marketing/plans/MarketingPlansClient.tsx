@@ -397,17 +397,15 @@ export default function MarketingPlansClient() {
       <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <h3 className="text-sm font-semibold text-gray-900 mb-3">{t("pages.marketingPlans.availableTemplates")}</h3>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {templates.map((t) => (
-            <div key={t.key} className="rounded-lg border border-gray-100 bg-gray-50 p-3">
-              <p className="text-sm font-medium text-gray-900">{t.title}</p>
-              <p className="mt-1 text-xs text-gray-500">{t.description}</p>
+          {templates.map((tpl) => (
+            <div key={tpl.key} className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+              <p className="text-sm font-medium text-gray-900">{tpl.title}</p>
+              <p className="mt-1 text-xs text-gray-500">{tpl.description}</p>
               <button
                 type="button"
-                onClick={() => { setShowCreate(true); setTemplateKey(t.key); }}
+                onClick={() => { setShowCreate(true); setTemplateKey(tpl.key); }}
                 className="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800"
-              >
-                Use this template
-              </button>
+              >{t("pages.marketingPlans.useTemplate")}</button>
             </div>
           ))}
         </div>

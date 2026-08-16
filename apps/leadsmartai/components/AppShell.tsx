@@ -172,17 +172,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
         </main>
         <footer className="border-t border-slate-200/80 bg-white py-4 text-center text-xs text-slate-500">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 sm:px-6">
-            <Link href="/terms" className="hover:text-slate-900">
-              Terms of Service
-            </Link>
+            <Link href="/terms" className="hover:text-slate-900">{t("pages.appShell.terms")}</Link>
             <span aria-hidden>·</span>
-            <Link href="/privacy" className="hover:text-slate-900">
-              Privacy Policy
-            </Link>
+            <Link href="/privacy" className="hover:text-slate-900">{t("pages.appShell.privacy")}</Link>
             <span aria-hidden>·</span>
-            <Link href="/contact" className="hover:text-slate-900">
-              Contact
-            </Link>
+            <Link href="/contact" className="hover:text-slate-900">{t("pages.appShell.contact")}</Link>
             <span aria-hidden className="hidden sm:inline">·</span>
             <span className="block w-full sm:inline sm:w-auto">
               © {new Date().getFullYear()} CloseBoss (formerly LeadSmart AI)

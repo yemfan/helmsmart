@@ -205,13 +205,8 @@ function SalesVoiceSettingsModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <h3 className="mb-1 text-sm font-semibold text-gray-900">
-            Your Sales Assistant&apos;s voice &amp; knowledge
-          </h3>
-          <p className="mb-4 text-xs text-gray-500">
-            Used on its outbound lead calls — follow-ups and reactivations. Separate from your
-            Receptionist&apos;s knowledge base, so each assistant speaks from its own brief.
-          </p>
+          <h3 className="mb-1 text-sm font-semibold text-gray-900">{t("pages.salesAssistant.voiceTitle")}</h3>
+          <p className="mb-4 text-xs text-gray-500">{t("pages.salesAssistant.voiceSub")}</p>
           <AssistantCallSettings
             type="sales_assistant"
             knowledgePlaceholder="Current listings to mention, neighborhoods you specialize in, financing partners, what makes you different…"
