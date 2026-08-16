@@ -4035,6 +4035,72 @@
       "zipHint": "Comma- or space-separated 5-digit ZIPs. Leave blank to receive leads from any ZIP. The list is sanitized — junk values are dropped.",
       "saved": "Saved.",
       "noZips": "No ZIPs entered — eligible for leads in any area."
+    },
+    "sphereMonetization": {
+      "title": "Sphere monetization",
+      "intro": "Past clients + sphere with their seller-side AND buyer-side scores side-by-side. The combined score surfaces the highest-leverage contacts overall.",
+      "dripDoneTip": "Sphere drip cadence completed",
+      "dripDone": "Drip done",
+      "dripExitedTip": "Removed from sphere drip",
+      "dripExited": "Drip exited",
+      "dripPausedTip": "Sphere drip paused",
+      "dripPaused": "Drip paused",
+      "overdueDays": "{{n}}d overdue",
+      "overdueOne": "1d overdue",
+      "dueToday": "due today",
+      "dueTomorrow": "due tmrw",
+      "dueInDays": "due in {{n}}d",
+      "dueOn": "due {{date}}"
+    },
+    "idxCapture": {
+      "close": "Close",
+      "allSet": "You're all set.",
+      "agentWillReach": "A local agent will reach out shortly. We'll also send updates by email.",
+      "keepBrowsing": "Keep browsing",
+      "email": "Email",
+      "name": "Name (optional)",
+      "consent": "I agree to receive automated text messages about this property and similar homes from CloseBoss and its agents at the number above. Msg & data rates may apply; message frequency varies. Consent is not a condition of purchase. Reply STOP to unsubscribe, HELP for help.",
+      "privacyNote": "We respect your privacy. No spam — just listings that match what you're looking for."
+    },
+    "accountMenu": {
+      "signedInAs": "Signed in as",
+      "home": "Home",
+      "profile": "My Profile",
+      "settings": "My Settings",
+      "billing": "Billing & Subscription",
+      "logOut": "Log out",
+      "photoAlt": "User profile photo",
+      "account": "Account"
+    },
+    "assistantCall": {
+      "voiceName": "Voice name",
+      "voicePlaceholder": "e.g. Sophie",
+      "voiceHint": "The name this assistant uses on its calls. Leave blank to use your account voice name.",
+      "knowledgeBase": "Knowledge base",
+      "greeting": "Greeting",
+      "greetingPlaceholder": "Hello! Thank you for calling. How can I help you today?",
+      "greetingHint": "The first thing callers hear when your Receptionist answers."
+    },
+    "referAFriend": {
+      "likeIt": "Like it?",
+      "headline": "Refer a friend — get 20,000 free AI tokens",
+      "bonusWallet": "Your bonus wallet",
+      "tokensAvailable": "tokens available",
+      "copied": "Copied",
+      "copyLink": "Copy link",
+      "share": "Share",
+      "yourCode": "Your code:"
+    },
+    "vsl": {
+      "videoAlt": "CloseBoss demo video",
+      "label": "CloseBoss Demo",
+      "headline": "Turn Online Traffic into Closed Deals — Automatically",
+      "sub": "Watch the full workflow: lead capture, AI qualification, instant follow-up, agent dashboard, and deal conversion.",
+      "playVideo": "Play video",
+      "play60": "Play 60-Second Demo",
+      "missingEnv": "Set or MP4/Vimeo env vars (see docs/VSL.md).",
+      "missingEnvBefore": "Set",
+      "missingEnvAfter": "or MP4/Vimeo env vars (see docs/VSL.md)."
     }
   }
 }

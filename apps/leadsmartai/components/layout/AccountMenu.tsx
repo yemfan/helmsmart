@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { formatUserRoleLabel } from "@leadsmart/shared";
 import { useAuth } from "@/components/AuthProvider";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
@@ -34,6 +35,7 @@ function isProfessionalUser(role: string | null | undefined, hasAgentRecord: boo
 }
 
 export default function AccountMenu() {
+  const { t } = useTranslation("dashboard");
   const { user, loading } = useAuth();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -197,7 +199,7 @@ export default function AccountMenu() {
       }
     >
       <div className="border-b border-gray-100 px-4 py-3">
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Signed in as</p>
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.accountMenu.signedInAs")}</p>
         <p className="mt-1 break-all text-sm font-semibold text-gray-900">{email || "Your account"}</p>
         {me ? (
           <p className="mt-1 text-xs text-gray-600">{formatUserRoleLabel(me.role)}</p>
@@ -209,33 +211,25 @@ export default function AccountMenu() {
           role="menuitem"
           className="block px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-50"
           onClick={() => setOpen(false)}
-        >
-          Home
-        </Link>
+        >{t("pages.accountMenu.home")}</Link>
         <Link
           href="/account/profile"
           role="menuitem"
           className="block px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-50"
           onClick={() => setOpen(false)}
-        >
-          My Profile
-        </Link>
+        >{t("pages.accountMenu.profile")}</Link>
         <Link
           href="/dashboard/settings"
           role="menuitem"
           className="block px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-50"
           onClick={() => setOpen(false)}
-        >
-          My Settings
-        </Link>
+        >{t("pages.accountMenu.settings")}</Link>
         <Link
           href="/dashboard/billing"
           role="menuitem"
           className="block px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-50"
           onClick={() => setOpen(false)}
-        >
-          Billing &amp; Subscription
-        </Link>
+        >{t("pages.accountMenu.billing")}</Link>
       </div>
       <div className="border-t border-gray-100 py-1">
         <button
@@ -243,9 +237,7 @@ export default function AccountMenu() {
           role="menuitem"
           className="block w-full px-4 py-2.5 text-left text-sm font-semibold text-red-700 hover:bg-red-50"
           onClick={() => void onLogout()}
-        >
-          Log out
-        </button>
+        >{t("pages.accountMenu.logOut")}</button>
       </div>
     </div>
   );
@@ -263,12 +255,12 @@ export default function AccountMenu() {
         <span className="relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-xs font-bold text-blue-800">
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- Supabase Storage URL
-            <img src={avatarUrl} alt="User profile photo" className="h-full w-full object-cover" />
+            <img src={avatarUrl} alt={t("pages.accountMenu.photoAlt")} className="h-full w-full object-cover" />
           ) : (
             initial
           )}
         </span>
-        <span className="hidden min-w-0 truncate sm:block">Account</span>
+        <span className="hidden min-w-0 truncate sm:block">{t("pages.accountMenu.account")}</span>
         <svg className="h-4 w-4 shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>

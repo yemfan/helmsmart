@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export type IdxLeadAction =
   | "favorite"
@@ -67,6 +68,7 @@ export default function IdxLeadCaptureModal(props: {
   context: IdxLeadContext;
   onCaptured?: (info: { leadId: string }) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const copy = ACTION_COPY[props.context.action];
   const requiresPhone =
     props.context.action === "schedule_tour" || props.context.action === "contact_agent";
@@ -149,25 +151,19 @@ export default function IdxLeadCaptureModal(props: {
             type="button"
             onClick={props.onClose}
             className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-slate-50"
-          >
-            Close
-          </button>
+          >{t("pages.idxCapture.close")}</button>
         </div>
 
         <div className="space-y-3 p-5">
           {done ? (
             <>
-              <div className="text-sm font-semibold text-emerald-700">You&apos;re all set.</div>
-              <p className="text-sm text-slate-700">
-                A local agent will reach out shortly. We&apos;ll also send updates by email.
-              </p>
+              <div className="text-sm font-semibold text-emerald-700">{t("pages.idxCapture.allSet")}</div>
+              <p className="text-sm text-slate-700">{t("pages.idxCapture.agentWillReach")}</p>
               <button
                 type="button"
                 onClick={props.onClose}
                 className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
-              >
-                Keep browsing
-              </button>
+              >{t("pages.idxCapture.keepBrowsing")}</button>
             </>
           ) : (
             <>
@@ -175,14 +171,14 @@ export default function IdxLeadCaptureModal(props: {
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder={t("pages.idxCapture.email")}
                 inputMode="email"
                 className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Name (optional)"
+                placeholder={t("pages.idxCapture.name")}
                 className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
@@ -200,12 +196,7 @@ export default function IdxLeadCaptureModal(props: {
                     onChange={(e) => setSmsConsent(e.target.checked)}
                     className="mt-0.5"
                   />
-                  <span>
-                    I agree to receive automated text messages about this property and similar
-                    homes from CloseBoss and its agents at the number above. Msg &amp; data rates
-                    may apply; message frequency varies. Consent is not a condition of purchase.
-                    Reply STOP to unsubscribe, HELP for help.
-                  </span>
+                  <span>{t("pages.idxCapture.consent")}</span>
                 </label>
               ) : null}
               <button
@@ -216,9 +207,7 @@ export default function IdxLeadCaptureModal(props: {
               >
                 {loading ? "Saving..." : copy.cta}
               </button>
-              <p className="text-[11px] text-slate-500">
-                We respect your privacy. No spam — just listings that match what you&apos;re looking for.
-              </p>
+              <p className="text-[11px] text-slate-500">{t("pages.idxCapture.privacyNote")}</p>
             </>
           )}
           {error ? <p className="text-xs font-medium text-red-600">{error}</p> : null}

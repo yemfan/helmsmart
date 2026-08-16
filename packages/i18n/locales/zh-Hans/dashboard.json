@@ -4035,6 +4035,72 @@
       "zipHint": "5 位邮编，用逗号或空格分隔。留空则接收任何邮编的客源。系统会清洗列表——无效值会被丢弃。",
       "saved": "已保存。",
       "noZips": "未填写邮编——可以接收任何区域的客源。"
+    },
+    "sphereMonetization": {
+      "title": "人脉圈价值",
+      "intro": "老客户和人脉圈，卖方和买方两侧的评分并排显示。综合评分能直接找出最值得投入的联系人。",
+      "dripDoneTip": "人脉圈滴灌节奏已跑完",
+      "dripDone": "滴灌完成",
+      "dripExitedTip": "已移出人脉圈滴灌",
+      "dripExited": "已退出滴灌",
+      "dripPausedTip": "人脉圈滴灌已暂停",
+      "dripPaused": "滴灌已暂停",
+      "overdueDays": "逾期 {{n}} 天",
+      "overdueOne": "逾期 1 天",
+      "dueToday": "今天到期",
+      "dueTomorrow": "明天到期",
+      "dueInDays": "{{n}} 天后到期",
+      "dueOn": "{{date}} 到期"
+    },
+    "idxCapture": {
+      "close": "关闭",
+      "allSet": "都办好了。",
+      "agentWillReach": "当地经纪人稍后会联系您。我们也会通过邮件发送更新。",
+      "keepBrowsing": "继续浏览",
+      "email": "邮箱",
+      "name": "姓名（选填）",
+      "consent": "我同意 CloseBoss 及其经纪人通过上方号码，就本套房源及类似房源向我发送自动短信。可能产生短信和流量费用；发送频率不定。同意与否不影响购买。回复 STOP 退订，回复 HELP 获取帮助。",
+      "privacyNote": "我们尊重您的隐私。不发垃圾信息——只发符合您需求的房源。"
+    },
+    "accountMenu": {
+      "signedInAs": "当前登录",
+      "home": "首页",
+      "profile": "我的资料",
+      "settings": "我的设置",
+      "billing": "账单与订阅",
+      "logOut": "退出登录",
+      "photoAlt": "用户头像",
+      "account": "账号"
+    },
+    "assistantCall": {
+      "voiceName": "语音名称",
+      "voicePlaceholder": "例如：小晴",
+      "voiceHint": "这位助理在通话中使用的名字。留空则使用您账号的语音名称。",
+      "knowledgeBase": "知识库",
+      "greeting": "问候语",
+      "greetingPlaceholder": "您好！感谢来电，请问有什么可以帮您？",
+      "greetingHint": "接待助理接起电话时，来电者听到的第一句话。"
+    },
+    "referAFriend": {
+      "likeIt": "用着还行？",
+      "headline": "推荐给朋友——赠送 20,000 个 AI 额度",
+      "bonusWallet": "您的奖励钱包",
+      "tokensAvailable": "个额度可用",
+      "copied": "已复制",
+      "copyLink": "复制链接",
+      "share": "分享",
+      "yourCode": "您的推荐码："
+    },
+    "vsl": {
+      "videoAlt": "CloseBoss 演示视频",
+      "label": "CloseBoss 演示",
+      "headline": "把线上流量自动变成成交",
+      "sub": "完整流程一次看完：获取客源、AI 甄别、即时跟进、经纪人后台，以及最终成交。",
+      "playVideo": "播放视频",
+      "play60": "播放 60 秒演示",
+      "missingEnv": "请设置 MP4 或 Vimeo 环境变量（见 docs/VSL.md）。",
+      "missingEnvBefore": "请设置",
+      "missingEnvAfter": "或 MP4／Vimeo 环境变量（见 docs/VSL.md）。"
     }
   }
 }

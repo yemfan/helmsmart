@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { trackLandingEvent } from "@/lib/marketing/landingTrack";
 
@@ -30,6 +31,7 @@ export default function VslSection({
   secondaryCtaHref = "#pricing",
   trustText = "No setup required • Works in minutes • Built for agents and brokers",
 }: VslSectionProps) {
+  const { t } = useTranslation("dashboard");
   const [isPlaying, setIsPlaying] = useState(false);
 
   const hasSource = Boolean(videoIdOrUrl?.trim());
@@ -66,7 +68,7 @@ export default function VslSection({
         <iframe
           className="absolute inset-0 h-full w-full rounded-2xl"
           src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(idOrUrl)}?autoplay=1&rel=0&modestbranding=1`}
-          title="CloseBoss demo video"
+          title={t("pages.vsl.videoAlt")}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />
@@ -78,7 +80,7 @@ export default function VslSection({
         <iframe
           className="absolute inset-0 h-full w-full rounded-2xl"
           src={`https://player.vimeo.com/video/${encodeURIComponent(idOrUrl)}?autoplay=1&dnt=1`}
-          title="CloseBoss demo video"
+          title={t("pages.vsl.videoAlt")}
           allow="autoplay; fullscreen; picture-in-picture"
           allowFullScreen
         />
@@ -112,35 +114,25 @@ export default function VslSection({
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_45%)]" />
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
-                  <div className="mb-6 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.2em] text-white/80">
-                    CloseBoss Demo
-                  </div>
+                  <div className="mb-6 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.2em] text-white/80">{t("pages.vsl.label")}</div>
 
-                  <h3 className="max-w-3xl font-heading text-2xl font-semibold md:text-4xl">
-                    Turn Online Traffic into Closed Deals — Automatically
-                  </h3>
+                  <h3 className="max-w-3xl font-heading text-2xl font-semibold md:text-4xl">{t("pages.vsl.headline")}</h3>
 
-                  <p className="mt-4 max-w-2xl text-sm text-white/80 md:text-base">
-                    Watch the full workflow: lead capture, AI qualification, instant follow-up, agent dashboard, and
-                    deal conversion.
-                  </p>
+                  <p className="mt-4 max-w-2xl text-sm text-white/80 md:text-base">{t("pages.vsl.sub")}</p>
 
                   <button
                     type="button"
                     onClick={hasSource ? emitPlay : undefined}
                     disabled={!hasSource}
                     className="mt-8 inline-flex items-center gap-3 rounded-full bg-white px-6 py-4 font-semibold text-slate-900 shadow-lg transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label="Play video"
+                    aria-label={t("pages.vsl.playVideo")}
                   >
                     <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white">
                       ▶
-                    </span>
-                    Play 60-Second Demo
-                  </button>
+                    </span>{t("pages.vsl.play60")}</button>
                   {!hasSource ? (
                     <p className="mt-4 max-w-md text-xs text-amber-200/90">
-                      Set <code className="rounded bg-white/10 px-1">NEXT_PUBLIC_VSL_YOUTUBE_ID</code> or MP4/Vimeo env
-                      vars (see docs/VSL.md).
+                      {t("pages.vsl.missingEnvBefore")} <code className="rounded bg-white/10 px-1">NEXT_PUBLIC_VSL_YOUTUBE_ID</code> {t("pages.vsl.missingEnvAfter")}
                     </p>
                   ) : null}
                 </div>
