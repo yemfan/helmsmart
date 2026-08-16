@@ -17,9 +17,18 @@ import {
 // Safe here because the root layout is static (no cookies()/headers()).
 export const revalidate = 86400;
 
+// Prebuild only the handful of metros big enough to be worth a cold-start
+// saving. Every prebuilt page is a warehouse round-trip inside Next's
+// 60s-per-page export budget, against a database shared with leadsmartai —
+// on 2026-08-15 that budget was blown on /home-value/los-angeles-ca and every
+// deploy of BOTH apps was blocked. The remaining ~3,000 places already rendered
+// on demand and were cached by ISR, so this only changes WHEN the first render
+// happens, never whether the page exists or what it says.
+const PRERENDERED_METROS = 12;
+
 export async function generateStaticParams() {
   const metros = await listTrafficMetros();
-  return metros.slice(0, 60).map((m) => ({ city: m.slug }));
+  return metros.slice(0, PRERENDERED_METROS).map((m) => ({ city: m.slug }));
 }
 
 export async function generateMetadata({
