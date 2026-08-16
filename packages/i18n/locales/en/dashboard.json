@@ -2003,7 +2003,13 @@
       "unreliable": "This CMA didn't return a reliable value, so sharing, emailing, and PDF export are disabled to protect your client relationship. Regenerate it with a more complete address to produce a sendable report.",
       "scenarios": "Three list-price scenarios with projected days on market.",
       "noComps": "No comps available for this property.",
-      "sources": "Where the comps and market data came from — verify before relying on the estimate."
+      "sources": "Where the comps and market data came from — verify before relying on the estimate.",
+      "couldntLoad": "Couldn't load this CMA: {{reason}}",
+      "notFound": "not found",
+      "savedLine": "Saved {{date}} · {{count}} comps",
+      "confidenceSuffix": " · confidence {{score}}",
+      "comparableSales": "Comparable sales ({{count}})",
+      "sourcesN": "Sources ({{count}})"
     },
     "adComposer": {
       "metaTitle": "Ad Composer",
@@ -2176,7 +2182,12 @@
       "seriesNote": "This open house is one occurrence in a series. Cancelling the series marks this one + every future one as cancelled; past ones keep their data.",
       "cancelSeries": "Cancel this + all future in series",
       "noSignIns": "No sign-ins yet. Once someone taps the QR or visits the link, they'll appear here.",
-      "followUpNote": "Visitors who opted in get a thank-you email within 24h and a check-in SMS on day 3. Agented visitors are captured for your records but never receive outreach (ethics)."
+      "followUpNote": "Visitors who opted in get a thank-you email within 24h and a check-in SMS on day 3. Agented visitors are captured for your records but never receive outreach (ethics).",
+      "visitorsN": "Visitors ({{count}})",
+      "optedInN": "{{count}} opted-in for follow-up",
+      "yes": "Yes",
+      "thankYouSent": "{{sent}}/{{total}} thank-you emails sent",
+      "checkInsSent": "{{sent}}/{{total}} day-3 check-ins sent"
     },
     "marketingPlans": {
       "loading": "Loading…",
@@ -3034,7 +3045,15 @@
       "noFeedbackAfter": "after a buyer agent shows the listing.",
       "consideringOffer": "Considering an offer",
       "delete": "Delete",
-      "pendingNote": "This creates a pending request. The “Send request” button emails the form link to the buyer agent."
+      "pendingNote": "This creates a pending request. The “Send request” button emails the form link to the buyer agent.",
+      "averageAcross": "average across {{count}} responses",
+      "receivedN": "Received ({{count}})",
+      "pendingN": "Pending ({{count}})",
+      "showingOn": "Showing: {{date}}",
+      "priceVerdict": "Price: {{verdict}}",
+      "priceTooHigh": "Too high",
+      "priceAboutRight": "About right",
+      "priceBargain": "Bargain"
     },
     "missedCallLog": {
       "autoTextsSent": "Auto-texts sent",
@@ -3304,7 +3323,11 @@
       "suggestedContact": "Suggested contact",
       "useThisContact": "Use this contact",
       "differentPerson": "Different person",
-      "saveDraft": "Save as a draft"
+      "saveDraft": "Save as a draft",
+      "looksLike": "Looks like",
+      "fromYourCrm": "from your CRM. Forwarded offers sometimes come from a TC or assistant — confirm before applying.",
+      "prefilled": "Open the upload flow with these fields pre-filled.",
+      "buyerIsSetTo": "Buyer is set to"
     },
     "importWizard": {
       "sub": "Upload a spreadsheet, map columns, preview duplicates, then finalize. Uses the same normalization, dedupe, enrichment, and CRM save path as manual entry.",
@@ -3314,7 +3337,12 @@
       "preview": "Preview",
       "runImport": "Run import",
       "viewLeads": "View leads",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "rowsAndDupes": "{{total}} rows · {{dupes}} likely duplicates (by email/phone/address rules)",
+      "inserted": "Inserted: {{count}}",
+      "merged": "Merged: {{count}}",
+      "skipped": "Skipped: {{count}}",
+      "errors": "Errors: {{count}}"
     },
     "uploadListing": {
       "transactions": "Transactions",
@@ -3379,7 +3407,16 @@
       "handedToTeam": "Handed to your team — see below.",
       "haveBossHandle": "Have Boss handle it",
       "beMoreSpecific": "Send a more specific instruction and I'll take it from there.",
-      "answering": "Answering:"
+      "answering": "Answering:",
+      "teamFinished": "Your team finished {{count}} tasks while you were away",
+      "needsYou": "{{count}} need you",
+      "draftChannel": "Draft {{channel}}",
+      "channelText": "text",
+      "channelEmail": "email",
+      "viewArtifact": "View {{kind}} →",
+      "artifactCma": "CMA",
+      "artifactPresentation": "presentation",
+      "artifactResult": "result"
     },
     "offersList": {
       "offersFor": "Offers for",
@@ -3830,7 +3867,14 @@
       "equity": "Equity",
       "equityHint": "No closing or AVM on file. Equity triggers require both.",
       "detected": "Detected {{date}}",
-      "avm": "AVM {{date}}"
+      "avm": "AVM {{date}}",
+      "optedOutSms": "Opted out of SMS",
+      "optedOutEmail": "Opted out of email",
+      "optedOutBoth": "Opted out of SMS and email",
+      "inherits": "Inherits: {{status}}",
+      "timelinePending": "Per-contact SMS / email history lands here once the send-log integration is wired. Pulls from",
+      "scopedToContact": "scoped to this contact.",
+      "paidEquity": "Paid {{price}} · equity {{equity}}"
     },
     "reelPanel": {
       "title": "Create a video reel",
@@ -4741,7 +4785,12 @@
       "assistantSub": "Plain-language help for process questions — not legal or tax advice.",
       "assistantPlaceholder": "e.g. What happens after we go under contract?",
       "agentRole": "Agent",
-      "youRole": "You"
+      "youRole": "You",
+      "matchExplainer": "This page only shows a deal when your login email matches a lead in CloseBoss. Your",
+      "isSeparate": "(leads, pipeline, tools) is separate —",
+      "noMatchExplainer": "We match your login email to a contact on a lead. Ask your agent to add this exact email to your lead in CloseBoss, then refresh. If you expected the agent CRM instead, use",
+      "aiScore": "AI score {{score}}",
+      "timelineSignal": "Timeline signal: {{hint}}"
     },
     "demoPages": {
       "greeting": "Good morning, Demo Agent",
@@ -5229,7 +5278,15 @@
       "letter": "Letter",
       "defaultMargins": "default margins",
       "backgroundGraphics": "Background graphics",
-      "keepColors": "enabled to keep brand colors."
+      "keepColors": "enabled to keep brand colors.",
+      "briefDate": "Integration brief · {{date}}",
+      "carrier": "Carrier",
+      "phase3Hold": "Highest regulatory + liability complexity. Held until the pilot proves out and {{partner}}'s principal/OSJ is committed to running the compliance review with us.",
+      "shortcutLabel": "The {{partner}}-specific shortcut",
+      "leveragePoint": "{{partner}} brings a leverage point",
+      "transamerica": "Transamerica's internal tools (TransACT, their illustration platform) are theoretically more accessible to us through {{partner}}'s existing carrier relationship than they are to any random CRM vendor. If {{partner}}'s leadership has executive contacts inside Transamerica's tech relations team, they can request that CloseBoss AI be approved as an integration partner for {{partner}}-affiliated producers.",
+      "verbatimAnswer": "“Yes — and the gating factor is vendor agreements, not code. We have a 3-phase plan: NIPR + iPipeline read-only in pilot Phase 2A, WinFlex illustration submission in 2B, and e-app in Phase 3. The Phase 2B and 3 work moves dramatically faster if {{partner}} introduces us to their Transamerica relationship — that's one of the things being a pilot partner actually gets you.”",
+      "confidentialFor": "Confidential — prepared for {{partner}} leadership."
     },
     "competitorComparison": {
       "brief": "Competitor comparison — optimized for print or save-as-PDF.",
@@ -5931,7 +5988,11 @@
       "metrosIn": "Metro areas in {{geo}}",
       "noMetrosIn": "No individual metro areas are tracked in {{geo}} yet.",
       "otherMetrosIn": "Other metros in {{geo}}",
-      "notEnoughData": "Not enough data to chart {{label}} yet."
+      "notEnoughData": "Not enough data to chart {{label}} yet.",
+      "deletionLogged": "We have logged your request. Any CloseBoss-held data linked to your Facebook account will be removed within 30 days, as described in our",
+      "deletionSettings": "settings, or contact us at",
+      "deletionQuestions": "Questions? Email",
+      "deletionWithCode": "with your reference code."
     },
     "warehouseMetrics": {
       "zhvi": {
@@ -5980,6 +6041,12 @@
       },
       "dayOne": "day",
       "dayOther": "days"
+    },
+    "contractUploader": {
+      "filledFrom": "✓ Filled from {{filename}}",
+      "confidenceNote": "Confidence {{pct}}%. Review the fields below and adjust anything the extractor got wrong.",
+      "nothingStored": "We read the PDF with Claude and pre-fill the form. Nothing is stored — the PDF is dropped as soon as the fields come back.",
+      "tunedFor": "Extraction is tuned for {{form}} forms; other state forms still work but may need a quick review."
     }
   }
 }

@@ -129,7 +129,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
   if (error || !cma) {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        Couldn&apos;t load this CMA: {error ?? "not found"}
+        {t("pages.cmaDetail.couldntLoad", { reason: error ?? t("pages.cmaDetail.notFound") })}
         <div className="mt-2">
           <Link href="/dashboard/cma" className="font-semibold text-slate-700 hover:underline">
             ← Back to CMAs
@@ -162,8 +162,13 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
             <p className="text-sm text-slate-600">{cma.subjectAddress}</p>
           ) : null}
           <p className="mt-1 text-xs text-slate-400">
-            Saved {formatDate(cma.createdAt, locale)} · {cma.compCount} comp{cma.compCount === 1 ? "" : "s"}
-            {cma.confidenceScore != null ? ` · confidence ${cma.confidenceScore}` : ""}
+            {t("pages.cmaDetail.savedLine", {
+              date: formatDate(cma.createdAt, locale),
+              count: cma.compCount,
+            })}
+            {cma.confidenceScore != null
+              ? t("pages.cmaDetail.confidenceSuffix", { score: cma.confidenceScore })
+              : ""}
           </p>
         </div>
         {valuationOk ? (
@@ -249,7 +254,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <header className="border-b border-slate-100 px-5 py-4">
           <h2 className="text-sm font-semibold text-slate-900">
-            Comparable sales ({cma.snapshot.comps.length})
+            {t("pages.cmaDetail.comparableSales", { count: cma.snapshot.comps.length })}
           </h2>
           <p className="mt-0.5 text-xs text-slate-500">
             Sold within ~3 miles of the subject in the last ~12 months.
@@ -324,7 +329,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       {cma.snapshot.sources && cma.snapshot.sources.length > 0 ? (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-900">
-            Sources ({cma.snapshot.sources.length})
+            {t("pages.cmaDetail.sourcesN", { count: cma.snapshot.sources.length })}
           </h2>
           <p className="mt-0.5 text-xs text-slate-500">{t("pages.cmaDetail.sources")}</p>
           <ul className="mt-3 space-y-1.5">

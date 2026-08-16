@@ -151,7 +151,7 @@ export default async function ConsumerPricingPage() {
                 <li>{t("pricingCompare.isa", { ns: "web_marketing" })}</li>
                 <li>{t("pricingCompare.tc", { ns: "web_marketing" })}</li>
                 <li>{t("pricingCompare.marketing", { ns: "web_marketing" })}</li>
-                <li>{t("pages.oneWord.bookkeeper")}</li>
+                <li>{t("pages.oneWord.bookkeeper", { ns: "dashboard" })}</li>
               </ul>
               <p className="mt-5 text-3xl font-extrabold text-slate-900 dark:text-white">
                 $100k+<span className="text-base font-semibold text-slate-500">/yr</span>

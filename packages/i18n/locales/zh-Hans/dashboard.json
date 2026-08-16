@@ -2003,7 +2003,13 @@
       "unreliable": "这份 CMA 没有得出可靠的估值，因此分享、发邮件和导出 PDF 都已停用，以免影响您和客户的关系。请用更完整的地址重新生成，才能得到可以发出去的报告。",
       "scenarios": "三档挂牌价方案，以及各自预计的在售天数。",
       "noComps": "这套房源没有可比成交记录。",
-      "sources": "可比房源和市场数据的来源——采信估值前请先核对。"
+      "sources": "可比房源和市场数据的来源——采信估值前请先核对。",
+      "couldntLoad": "无法载入这份 CMA：{{reason}}",
+      "notFound": "未找到",
+      "savedLine": "保存于 {{date}} · {{count}} 套可比房源",
+      "confidenceSuffix": " · 置信度 {{score}}",
+      "comparableSales": "可比成交（{{count}}）",
+      "sourcesN": "数据来源（{{count}}）"
     },
     "adComposer": {
       "metaTitle": "广告编辑器",
@@ -2176,7 +2182,12 @@
       "seriesNote": "这场开放日属于一个系列中的一次。取消整个系列会把本次及之后每一次都标记为取消；已过去的场次保留原有数据。",
       "cancelSeries": "取消本次及系列中之后的所有场次",
       "noSignIns": "还没有人签到。有人扫码或访问链接后，就会显示在这里。",
-      "followUpNote": "选择接收信息的访客会在 24 小时内收到感谢邮件，并在第 3 天收到一条回访短信。已有经纪人陪同的访客只做记录，不会收到任何营销联络——这是行业规矩。"
+      "followUpNote": "选择接收信息的访客会在 24 小时内收到感谢邮件，并在第 3 天收到一条回访短信。已有经纪人陪同的访客只做记录，不会收到任何营销联络——这是行业规矩。",
+      "visitorsN": "到访者（{{count}}）",
+      "optedInN": "{{count}} 位同意后续联系",
+      "yes": "是",
+      "thankYouSent": "感谢邮件已发送 {{sent}}/{{total}}",
+      "checkInsSent": "第 3 天回访已发送 {{sent}}/{{total}}"
     },
     "marketingPlans": {
       "loading": "加载中…",
@@ -3034,7 +3045,15 @@
       "noFeedbackAfter": "。",
       "consideringOffer": "正在考虑出价",
       "delete": "删除",
-      "pendingNote": "这会创建一条待发送的请求。点击“发送请求”按钮，才会把表单链接邮件发给买方经纪人。"
+      "pendingNote": "这会创建一条待发送的请求。点击“发送请求”按钮，才会把表单链接邮件发给买方经纪人。",
+      "averageAcross": "{{count}} 份反馈的平均分",
+      "receivedN": "已收到（{{count}}）",
+      "pendingN": "待反馈（{{count}}）",
+      "showingOn": "看房日期：{{date}}",
+      "priceVerdict": "价格：{{verdict}}",
+      "priceTooHigh": "偏高",
+      "priceAboutRight": "差不多合适",
+      "priceBargain": "很划算"
     },
     "missedCallLog": {
       "autoTextsSent": "已发送自动短信",
@@ -3304,7 +3323,11 @@
       "suggestedContact": "推荐匹配的联系人",
       "useThisContact": "就用这位联系人",
       "differentPerson": "换一个人",
-      "saveDraft": "存为草稿"
+      "saveDraft": "存为草稿",
+      "looksLike": "看起来是",
+      "fromYourCrm": "，来自您的 CRM。转发过来的报价有时是交易协调员或助理发的——套用之前请先确认。",
+      "prefilled": "打开上传流程，这些字段会预先填好。",
+      "buyerIsSetTo": "买方已设为"
     },
     "importWizard": {
       "sub": "上传表格、匹配列、预览重复项，然后完成导入。清洗、查重、补全和写入 CRM 的流程与手动录入完全一致。",
@@ -3314,7 +3337,12 @@
       "preview": "预览",
       "runImport": "开始导入",
       "viewLeads": "查看客源",
-      "refresh": "刷新"
+      "refresh": "刷新",
+      "rowsAndDupes": "共 {{total}} 行 · 疑似重复 {{dupes}} 条（按邮箱／电话／地址规则判定）",
+      "inserted": "新增：{{count}}",
+      "merged": "合并：{{count}}",
+      "skipped": "跳过：{{count}}",
+      "errors": "错误：{{count}}"
     },
     "uploadListing": {
       "transactions": "交易",
@@ -3379,7 +3407,16 @@
       "handedToTeam": "已交给您的团队——详见下方。",
       "haveBossHandle": "交给 Boss 处理",
       "beMoreSpecific": "把指令说得再具体一些，剩下的交给我。",
-      "answering": "正在回答："
+      "answering": "正在回答：",
+      "teamFinished": "您不在的时候，团队完成了 {{count}} 项任务",
+      "needsYou": "{{count}} 项需要您处理",
+      "draftChannel": "{{channel}}草稿",
+      "channelText": "短信",
+      "channelEmail": "邮件",
+      "viewArtifact": "查看{{kind}} →",
+      "artifactCma": "CMA",
+      "artifactPresentation": "演示文稿",
+      "artifactResult": "结果"
     },
     "offersList": {
       "offersFor": "报价——",
@@ -3830,7 +3867,14 @@
       "equity": "房屋净值",
       "equityHint": "没有成交记录，也没有 AVM 估值。净值类触发条件两者都需要。",
       "detected": "发现于 {{date}}",
-      "avm": "AVM 估值 {{date}}"
+      "avm": "AVM 估值 {{date}}",
+      "optedOutSms": "已退订短信",
+      "optedOutEmail": "已退订邮件",
+      "optedOutBoth": "已退订短信和邮件",
+      "inherits": "继承自：{{status}}",
+      "timelinePending": "接通发送日志之后，这位联系人的短信／邮件往来记录会显示在这里。数据来自",
+      "scopedToContact": "，仅限这位联系人。",
+      "paidEquity": "买入价 {{price}} · 净值 {{equity}}"
     },
     "reelPanel": {
       "title": "制作短视频",
@@ -4741,7 +4785,12 @@
       "assistantSub": "用大白话解答流程问题——不能作为律师或税务师的意见。",
       "assistantPlaceholder": "例如：签约之后接下来会发生什么？",
       "agentRole": "经纪人",
-      "youRole": "我"
+      "youRole": "我",
+      "matchExplainer": "只有当您的登录邮箱与 CloseBoss 里的某条线索对得上时，这个页面才会显示交易。您的",
+      "isSeparate": "（线索、管道、工具）是另一套——",
+      "noMatchExplainer": "我们靠您的登录邮箱去匹配线索上的联系人。请让您的经纪人把这个邮箱原样加到 CloseBoss 里您对应的线索上，然后刷新本页。如果您本来要找的是经纪人 CRM，请使用",
+      "aiScore": "AI 评分 {{score}}",
+      "timelineSignal": "时间线信号：{{hint}}"
     },
     "demoPages": {
       "greeting": "早上好，演示经纪人",
@@ -5229,7 +5278,15 @@
       "letter": "Letter 纸张",
       "defaultMargins": "默认页边距",
       "backgroundGraphics": "背景图形",
-      "keepColors": "，以保留品牌配色。"
+      "keepColors": "，以保留品牌配色。",
+      "briefDate": "集成方案说明 · {{date}}",
+      "carrier": "险企",
+      "phase3Hold": "监管和责任的复杂度最高。要等试点跑出结果、并且 {{partner}} 的负责人／OSJ 确认愿意和我们一起走完合规审查之后，才会启动。",
+      "shortcutLabel": "{{partner}} 独有的捷径",
+      "leveragePoint": "{{partner}} 手上有一个撬动点，",
+      "transamerica": "Transamerica 的内部工具（TransACT、他们的演示平台）理论上通过 {{partner}} 已有的险企关系更容易对接到，比任何一家普通 CRM 供应商都容易。如果 {{partner}} 的管理层在 Transamerica 技术合作团队里有高层联系人，就可以提出让 CloseBoss AI 成为面向 {{partner}} 旗下营销员的认证集成合作方。",
+      "verbatimAnswer": "「可以——而且卡点在供应商协议，不在代码。我们有一个三阶段计划：试点第 2A 阶段接入 NIPR 和 iPipeline 的只读数据，第 2B 阶段做 WinFlex 演示提交，第 3 阶段做电子投保。如果 {{partner}} 把我们引荐给他们的 Transamerica 关系人，2B 和第 3 阶段会推进得快得多——这正是做试点合作方能实实在在拿到的东西之一。」",
+      "confidentialFor": "机密文件——专为 {{partner}} 管理层准备。"
     },
     "competitorComparison": {
       "brief": "竞品对比——已针对打印或另存为 PDF 优化。",
@@ -5931,7 +5988,11 @@
       "metrosIn": "{{geo}} 的都市区",
       "noMetrosIn": "{{geo}} 目前还没有单独跟踪的都市区。",
       "otherMetrosIn": "{{geo}} 的其他都市区",
-      "notEnoughData": "{{label}}的数据还不够，暂时无法绘图。"
+      "notEnoughData": "{{label}}的数据还不够，暂时无法绘图。",
+      "deletionLogged": "我们已经记录了您的请求。与您 Facebook 账户关联的、由 CloseBoss 保存的数据，将在 30 天内删除，具体见我们的",
+      "deletionSettings": "设置中重试，或通过以下方式联系我们：",
+      "deletionQuestions": "还有疑问？请发邮件至",
+      "deletionWithCode": "，并附上您的查询编号。"
     },
     "warehouseMetrics": {
       "zhvi": {
@@ -5980,6 +6041,12 @@
       },
       "dayOne": "天",
       "dayOther": "天"
+    },
+    "contractUploader": {
+      "filledFrom": "✓ 已从 {{filename}} 填入",
+      "confidenceNote": "置信度 {{pct}}%。请核对下面的字段，把提取错的地方改过来。",
+      "nothingStored": "我们用 Claude 读取这份 PDF 并预填表单。不会保存任何内容——字段一返回，PDF 就丢弃了。",
+      "tunedFor": "提取针对 {{form}} 表格做过调优；其他州的表格同样能用，但可能需要快速核对一遍。"
     }
   }
 }

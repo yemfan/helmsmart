@@ -109,8 +109,8 @@ export default function ClientDashboardPage() {
         <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-950">
           <p className="font-semibold">{t("pages.clientPortal.portalLabel")}</p>
           <p className="mt-1 leading-relaxed">
-            This page only shows a deal when your login email matches a lead in CloseBoss. Your{" "}
-            <span className="font-medium">{t("pages.clientPortal.agentWorkspace")}</span> (leads, pipeline, tools) is separate —{" "}
+            {t("pages.clientPortal.matchExplainer", { ns: "dashboard" })}{" "}
+            <span className="font-medium">{t("pages.clientPortal.agentWorkspace")}</span> {t("pages.clientPortal.isSeparate", { ns: "dashboard" })}{" "}
             <Link
               href={resolveRoleHomePath(meApi?.role ?? null, Boolean(meApi?.has_agent_record))}
               className="font-semibold text-sky-900 underline underline-offset-2 hover:text-sky-950"
@@ -145,8 +145,7 @@ export default function ClientDashboardPage() {
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
           <p className="font-semibold mb-1">{t("pages.clientPortal.noDeal")}</p>
           <p className="leading-relaxed">
-            We match your login email to a contact on a lead. Ask your agent to add this exact email to your
-            lead in CloseBoss, then refresh. If you expected the agent CRM instead, use{" "}
+            {t("pages.clientPortal.noMatchExplainer", { ns: "dashboard" })}{" "}
             <Link href="/dashboard/overview" className="font-semibold underline underline-offset-2">{t("pages.clientPortal.overview")}</Link>
             .
           </p>
@@ -164,7 +163,7 @@ export default function ClientDashboardPage() {
               </span>
               {dash.deal.aiScore != null && (
                 <span className="rounded-full bg-blue-50 text-blue-800 px-2 py-0.5 font-medium">
-                  AI score {dash.deal.aiScore}
+                  {t("pages.clientPortal.aiScore", { ns: "dashboard", score: dash.deal.aiScore })}
                 </span>
               )}
             </div>
@@ -172,7 +171,7 @@ export default function ClientDashboardPage() {
               <p className="text-sm text-slate-600 border-l-2 border-blue-200 pl-3">{dash.deal.agentNote}</p>
             )}
             {dash.deal.timelineHint && (
-              <p className="text-xs text-slate-500">Timeline signal: {dash.deal.timelineHint}</p>
+              <p className="text-xs text-slate-500">{t("pages.clientPortal.timelineSignal", { ns: "dashboard", hint: dash.deal.timelineHint })}</p>
             )}
           </section>
 

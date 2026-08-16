@@ -103,7 +103,7 @@ export default async function ResearchReportPage({ params }: Props) {
           <span className="mx-2 text-slate-400">/</span>
           <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</Link>
           <span className="mx-2 text-slate-400">/</span>
-          <span className="text-slate-600">{t("pages.dataCenterPages.report")}</span>
+          <span className="text-slate-600">{t("pages.dataCenterPages.report", { ns: "dashboard" })}</span>
         </nav>
 
         <header className="space-y-3">
@@ -121,7 +121,7 @@ export default async function ResearchReportPage({ params }: Props) {
         </header>
 
         {keyStats.length > 0 && (
-          <section aria-label={t("pages.dataCenterPages.keyStatsAria")} className="grid gap-3 sm:grid-cols-2">
+          <section aria-label={t("pages.dataCenterPages.keyStatsAria", { ns: "dashboard" })} className="grid gap-3 sm:grid-cols-2">
             {keyStats.map((stat, i) => {
               const src = sourceForStat(report, stat.sourceIndex);
               return (
@@ -147,7 +147,7 @@ export default async function ResearchReportPage({ params }: Props) {
         )}
 
         {dataTable && (
-          <section aria-label={t("pages.dataCenterPages.dataTableAria")} className="space-y-2">
+          <section aria-label={t("pages.dataCenterPages.dataTableAria", { ns: "dashboard" })} className="space-y-2">
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-left">
@@ -176,7 +176,7 @@ export default async function ResearchReportPage({ params }: Props) {
           </section>
         )}
 
-        <section aria-label={t("pages.dataCenterPages.analysisAria")} className="space-y-8">
+        <section aria-label={t("pages.dataCenterPages.analysisAria", { ns: "dashboard" })} className="space-y-8">
           {sections.map((sec, i) => (
             <div key={i} className="border-t border-slate-200 pt-8 first:border-t-0 first:pt-0">
               {sec.heading && (
@@ -214,7 +214,7 @@ export default async function ResearchReportPage({ params }: Props) {
         {sources.length > 0 && (
           <section aria-label={t("pages.articleChrome.sources", { ns: "dashboard" })} className="space-y-3 border-t border-slate-200 pt-8">
             <h2 className="text-lg font-bold tracking-tight text-slate-900">{t("pages.articleChrome.sources", { ns: "dashboard" })}</h2>
-            <p className="text-sm text-slate-500">{t("pages.dataCenterPages.citation")}</p>
+            <p className="text-sm text-slate-500">{t("pages.dataCenterPages.citation", { ns: "dashboard" })}</p>
             <ol className="space-y-2 text-sm">
               {sources.map((src, i) => (
                 <li key={i} className="flex gap-2">

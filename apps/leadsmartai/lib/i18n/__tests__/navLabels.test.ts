@@ -102,6 +102,8 @@ describe("dashboard namespace (page copy)", () => {
       "pages.adWizard.privacyPlaceholder",
       "pages.books.clientEmailPlaceholder",
       "pages.calendarBooking.urlPlaceholder",
+      // The acronym an agent says out loud in both languages.
+      "pages.boss.artifactCma",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;

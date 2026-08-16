@@ -155,11 +155,10 @@ export function ContractUploader(props: Props) {
           ) : justExtracted ? (
             <div className="text-slate-700">
               <div className="font-medium text-green-700">
-                ✓ Filled from {justExtracted.filename}
+                {t("pages.contractUploader.filledFrom", { filename: justExtracted.filename })}
               </div>
               <div className="text-[11px] text-slate-500">
-                Confidence {Math.round(justExtracted.confidence * 100)}%. Review the fields below
-                and adjust anything the extractor got wrong.
+                {t("pages.contractUploader.confidenceNote", { pct: Math.round(justExtracted.confidence * 100) })}
               </div>
             </div>
           ) : (
@@ -170,11 +169,9 @@ export function ContractUploader(props: Props) {
                   : "Drop a ratified purchase agreement here, or click to pick"}
               </div>
               <div className="text-[11px] text-slate-500">
-                We read the PDF with Claude and pre-fill the form. Nothing is stored — the PDF
-                is dropped as soon as the fields come back.{" "}
+                {t("pages.contractUploader.nothingStored")}{" "}
                 <span className="text-slate-400">
-                  Extraction is tuned for {kind === "listing" ? "CAR RLA" : "CAR RPA"} forms;
-                  other state forms still work but may need a quick review.
+                  {t("pages.contractUploader.tunedFor", { form: kind === "listing" ? "CAR RLA" : "CAR RPA" })}
                 </span>
               </div>
             </div>

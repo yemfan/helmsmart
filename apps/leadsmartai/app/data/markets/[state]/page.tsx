@@ -180,13 +180,13 @@ export default async function StatePage({ params }: Props) {
           <span className="text-slate-400 mx-2">/</span>
           <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</Link>
           <span className="text-slate-400 mx-2">/</span>
-          <Link href="/data/markets" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.dataCenterPages.markets")}</Link>
+          <Link href="/data/markets" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.dataCenterPages.markets", { ns: "dashboard" })}</Link>
           <span className="text-slate-400 mx-2">/</span>
           <span className="text-slate-600">{geo.geo_name}</span>
         </nav>
 
         <header className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">{t("pages.dataCenterPages.stateTitle")}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">{t("pages.dataCenterPages.stateTitle", { ns: "dashboard" })}</p>
           <h1 className="text-4xl font-bold leading-tight text-slate-900">
             {t("pages.dataCenterPages.stateHeroTitle", { ns: "dashboard", geo: geo.geo_name })}
           </h1>
@@ -216,14 +216,14 @@ export default async function StatePage({ params }: Props) {
           )}
         </header>
 
-        <section aria-label={t("pages.dataCenterPages.latestAria")} className="space-y-4">
-          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.latestTitle")}</h2>
+        <section aria-label={t("pages.dataCenterPages.latestAria", { ns: "dashboard" })} className="space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.latestTitle", { ns: "dashboard" })}</h2>
           <StatGrid metrics={metrics} />
         </section>
 
         {insightLines.length > 0 && (
-          <section aria-label={t("pages.dataCenterPages.trendsAria")} className="space-y-3">
-            <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.trendsTitle")}</h2>
+          <section aria-label={t("pages.dataCenterPages.trendsAria", { ns: "dashboard" })} className="space-y-3">
+            <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.trendsTitle", { ns: "dashboard" })}</h2>
             <p className="max-w-2xl text-sm leading-relaxed text-slate-600">
               {t("pages.dataCenterPages.stateTrendsBody", { ns: "dashboard", geo: geo.geo_name })}
             </p>
@@ -238,7 +238,7 @@ export default async function StatePage({ params }: Props) {
           </section>
         )}
 
-        <section aria-label={t("pages.dataCenterPages.chartsAria")} className="space-y-4">
+        <section aria-label={t("pages.dataCenterPages.chartsAria", { ns: "dashboard" })} className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-900">
             13-month trends — the story behind your pricing
           </h2>
@@ -260,11 +260,11 @@ export default async function StatePage({ params }: Props) {
           </div>
         </section>
 
-        <section aria-label={t("pages.dataCenterPages.metrosAria")} className="space-y-4">
+        <section aria-label={t("pages.dataCenterPages.metrosAria", { ns: "dashboard" })} className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-900">
             {t("pages.dataCenterPages.metrosIn", { ns: "dashboard", geo: geo.geo_name })}
           </h2>
-          <p className="max-w-2xl text-sm leading-relaxed text-slate-600">{t("pages.dataCenterPages.allLocal")}</p>
+          <p className="max-w-2xl text-sm leading-relaxed text-slate-600">{t("pages.dataCenterPages.allLocal", { ns: "dashboard" })}</p>
           {metros.length === 0 ? (
             <p className="text-sm text-slate-500">
               {t("pages.dataCenterPages.noMetrosIn", { ns: "dashboard", geo: geo.geo_name })}
@@ -274,8 +274,8 @@ export default async function StatePage({ params }: Props) {
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-left">
                   <tr>
-                    <th className="px-4 py-2 font-semibold text-slate-700">{t("pages.dataCenterPages.metroArea")}</th>
-                    <th className="px-4 py-2 font-semibold text-slate-700">{t("pages.dataCenterPages.typicalValue")}</th>
+                    <th className="px-4 py-2 font-semibold text-slate-700">{t("pages.dataCenterPages.metroArea", { ns: "dashboard" })}</th>
+                    <th className="px-4 py-2 font-semibold text-slate-700">{t("pages.dataCenterPages.typicalValue", { ns: "dashboard" })}</th>
                   </tr>
                 </thead>
                 <tbody>

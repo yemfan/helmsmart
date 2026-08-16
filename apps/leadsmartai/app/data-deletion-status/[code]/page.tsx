@@ -39,21 +39,19 @@ export default async function DataDeletionStatusPage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="text-2xl font-semibold text-slate-900">{t("pages.dataCenterPages.deletionTitle")}</h1>
+      <h1 className="text-2xl font-semibold text-slate-900">{t("pages.dataCenterPages.deletionTitle", { ns: "dashboard" })}</h1>
 
       {isValidShape ? (
         <>
-          <p className="mt-3 text-sm text-slate-600">{t("pages.dataCenterPages.deletionReceived")}</p>
+          <p className="mt-3 text-sm text-slate-600">{t("pages.dataCenterPages.deletionReceived", { ns: "dashboard" })}</p>
           <code className="mt-2 block rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-mono text-slate-900">
             {decodeURIComponent(code)}
           </code>
 
           <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-            <p className="text-sm font-semibold text-emerald-900">{t("pages.dataCenterPages.deletionPending")}</p>
+            <p className="text-sm font-semibold text-emerald-900">{t("pages.dataCenterPages.deletionPending", { ns: "dashboard" })}</p>
             <p className="mt-1 text-sm text-emerald-800">
-              We have logged your request. Any CloseBoss-held data linked to
-              your Facebook account will be removed within 30 days, as
-              described in our{" "}
+              {t("pages.dataCenterPages.deletionLogged", { ns: "dashboard" })}{" "}
               <a
                 href="/privacy"
                 className="underline hover:text-emerald-900"
@@ -64,8 +62,8 @@ export default async function DataDeletionStatusPage({ params }: PageProps) {
         </>
       ) : (
         <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-          <p className="text-sm font-semibold text-amber-900">{t("pages.dataCenterPages.deletionUnknown")}</p>
-          <p className="mt-1 text-sm text-amber-800">{t("pages.dataCenterPages.deletionUnknownBody")}<em>{t("pages.dataCenterPages.deletionAppsLink")}</em> settings, or contact us at{" "}
+          <p className="text-sm font-semibold text-amber-900">{t("pages.dataCenterPages.deletionUnknown", { ns: "dashboard" })}</p>
+          <p className="mt-1 text-sm text-amber-800">{t("pages.dataCenterPages.deletionUnknownBody", { ns: "dashboard" })}<em>{t("pages.dataCenterPages.deletionAppsLink", { ns: "dashboard" })}</em>{t("pages.dataCenterPages.deletionSettings", { ns: "dashboard" })}{" "}
             <a
               href="mailto:contact@closebossai.com"
               className="underline hover:text-amber-900"
@@ -78,14 +76,14 @@ export default async function DataDeletionStatusPage({ params }: PageProps) {
       )}
 
       <p className="mt-8 text-xs text-slate-500">
-        Questions? Email{" "}
+        {t("pages.dataCenterPages.deletionQuestions", { ns: "dashboard" })}{" "}
         <a
           href="mailto:contact@closebossai.com"
           className="underline hover:text-slate-700"
         >
           contact@closebossai.com
-        </a>{" "}
-        with your reference code.
+        </a>
+        {t("pages.dataCenterPages.deletionWithCode", { ns: "dashboard" })}
       </p>
     </div>
   );

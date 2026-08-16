@@ -13,17 +13,17 @@ export default async function TemplatesSummaryCard({ agentId }: { agentId: strin
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <h2 className="text-sm font-semibold text-gray-900">{tr("settings.templates.heading")}</h2>
-      <p className="mt-0.5 text-xs text-gray-500">{t("pages.templatesSummary.intro")}</p>
+      <p className="mt-0.5 text-xs text-gray-500">{t("pages.templatesSummary.intro", { ns: "dashboard" })}</p>
 
       {summary.fallback ? (
-        <div className="mt-4 rounded-lg border border-dashed border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{t("pages.templatesSummary.notSeeded")}</div>
+        <div className="mt-4 rounded-lg border border-dashed border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">{t("pages.templatesSummary.notSeeded", { ns: "dashboard" })}</div>
       ) : (
         <>
           <div className="mt-4 grid grid-cols-4 gap-2">
             <StatBox n={summary.total} label={tr("settings.templates.inLibrary")} />
             <StatBox n={summary.autosend} label={tr("settings.templates.autosend")} tone="accent" />
             <StatBox n={summary.review} label={tr("settings.templates.reviewFirst")} tone="muted" />
-            <StatBox n={summary.off} label={t("pages.labels.off")} tone="muted" />
+            <StatBox n={summary.off} label={t("pages.labels.off", { ns: "dashboard" })} tone="muted" />
           </div>
 
           <div className="mt-4 divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200">

@@ -12,10 +12,11 @@ const REACTION_EMOJI: Record<string, string> = {
   pass: "👎",
 };
 
-const PRICE_LABEL: Record<string, string> = {
-  too_high: "Too high",
-  about_right: "About right",
-  bargain: "Bargain",
+/** Keys, not copy: a constant cannot hold a hook, so it resolves at render. */
+const PRICE_LABEL_KEY: Record<string, string> = {
+  too_high: "pages.listingFeedback.priceTooHigh",
+  about_right: "pages.listingFeedback.priceAboutRight",
+  bargain: "pages.listingFeedback.priceBargain",
 };
 
 type FetchResponse = {
@@ -164,7 +165,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
                 ⭐ {avgRating} / 5
               </span>
               <span className="ml-2 text-xs text-slate-500">
-                average across {received.length} response{received.length === 1 ? "" : "s"}
+                {t("pages.listingFeedback.averageAcross", { count: received.length })}
               </span>
             </div>
           ) : null}
@@ -172,7 +173,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
           {received.length > 0 ? (
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Received ({received.length})
+                {t("pages.listingFeedback.receivedN", { count: received.length })}
               </h3>
               <ul className="mt-2 space-y-2">
                 {received.map((r) => (
@@ -185,7 +186,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
           {pending.length > 0 ? (
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Pending ({pending.length})
+                {t("pages.listingFeedback.pendingN", { count: pending.length })}
               </h3>
               <ul className="mt-2 space-y-2">
                 {pending.map((r) => (
@@ -231,7 +232,7 @@ function ReceivedCard({
             ) : null}
           </div>
           <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
-            {row.showing_date ? <span>Showing: {row.showing_date}</span> : null}
+            {row.showing_date ? <span>{t("pages.listingFeedback.showingOn", { date: row.showing_date })}</span> : null}
             {row.submitted_at ? (
               <span>{t("pages.listingFeedback.submittedAt", { date: new Date(row.submitted_at).toLocaleDateString(locale) })}</span>
             ) : null}
@@ -261,7 +262,7 @@ function ReceivedCard({
       ) : null}
       {row.price_feedback ? (
         <div className="mt-1 inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 text-[11px] text-slate-700">
-          Price: {PRICE_LABEL[row.price_feedback]}
+          {t("pages.listingFeedback.priceVerdict", { verdict: t(PRICE_LABEL_KEY[row.price_feedback] ?? "") })}
         </div>
       ) : null}
       {row.would_offer === true ? (

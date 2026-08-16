@@ -108,10 +108,10 @@ export default function CarrierIntegrationClient() {
           <div className="flex items-start justify-between gap-6">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/60">
-                Integration brief · {today}
+                {t("pages.carrierIntegration.briefDate", { date: today })}
               </p>
               <h1 className="mt-1 text-[24pt] font-semibold leading-[1.05] tracking-tight">
-                Carrier{" "}
+                {t("pages.carrierIntegration.carrier")}{" "}
                 <span className={theme.accentText}>{t("pages.carrierIntegration.planTail")}</span>
               </h1>
               <p className="mt-2 max-w-[5.5in] text-[11pt] leading-snug text-white/85">{t("pages.carrierIntegration.intro")}</p>
@@ -198,7 +198,7 @@ export default function CarrierIntegrationClient() {
               </span>
             </div>
             <p className="mt-2 text-[10pt] text-slate-700">
-              Highest regulatory + liability complexity. Held until the pilot proves out and {partnerLabel}&apos;s principal/OSJ is committed to running the compliance review with us.
+              {t("pages.carrierIntegration.phase3Hold", { partner: partnerLabel })}
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-[10pt] text-slate-700">
               <li>{t("pages.carrierIntegration.p3Item1")}</li>
@@ -230,14 +230,14 @@ export default function CarrierIntegrationClient() {
           {/* GFI-specific shortcut */}
           <div className="avoid-break rounded-xl bg-slate-900 px-5 py-4 text-white">
             <p className="text-[8.5pt] font-semibold uppercase tracking-wider text-white/60">
-              The {partnerLabel}-specific shortcut
+              {t("pages.carrierIntegration.shortcutLabel", { partner: partnerLabel })}
             </p>
             <h2 className="mt-1.5 text-[14pt] font-semibold leading-snug">
-              {partnerLabel} brings a leverage point{" "}
+              {t("pages.carrierIntegration.leveragePoint", { partner: partnerLabel })}{" "}
               <span className={theme.accentText}>{t("pages.carrierIntegration.noOtherAgency")}</span>
             </h2>
             <p className="mt-2 text-[9.5pt] leading-snug text-white/85">
-              Transamerica&apos;s internal tools (TransACT, their illustration platform) are theoretically more accessible to us through {partnerLabel}&apos;s existing carrier relationship than they are to any random CRM vendor. If {partnerLabel}&apos;s leadership has executive contacts inside Transamerica&apos;s tech relations team, they can request that LeadSmart AI be approved as an integration partner for {partnerLabel}-affiliated producers.
+              {t("pages.carrierIntegration.transamerica", { partner: partnerLabel })}
             </p>
             <div
               className={`mt-3 rounded-lg border border-white/15 bg-white/5 px-4 py-3 ${theme.accentText}`}
@@ -277,7 +277,7 @@ export default function CarrierIntegrationClient() {
           <div className="avoid-break rounded-xl border-2 border-dashed border-slate-300 bg-slate-50/60 px-5 py-4">
             <p className="text-[8.5pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.carrierIntegration.verbatim")}</p>
             <p className="mt-2 text-[10pt] leading-snug text-slate-800">
-              &quot;Yes — and the gating factor is vendor agreements, not code. We have a 3-phase plan: NIPR + iPipeline read-only in pilot Phase 2A, WinFlex illustration submission in 2B, and e-app in Phase 3. The Phase 2B and 3 work moves dramatically faster if {partnerLabel} introduces us to their Transamerica relationship — that&apos;s one of the things being a pilot partner actually gets you.&quot;
+              {t("pages.carrierIntegration.verbatimAnswer", { partner: partnerLabel })}
             </p>
           </div>
         </section>
@@ -289,7 +289,7 @@ export default function CarrierIntegrationClient() {
               <p>closebossai.com · pilot inquiries welcome</p>
             </div>
             <p className="text-right text-[7.5pt] text-slate-400">
-              Confidential — prepared for {partnerLabel} leadership.
+              {t("pages.carrierIntegration.confidentialFor", { partner: partnerLabel })}
             </p>
           </div>
         </footer>

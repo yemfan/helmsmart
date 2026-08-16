@@ -187,7 +187,7 @@ export default function InboundDeliveryClient({
         <section className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-blue-900">{t("pages.inboundDelivery.suggestedContact")}</h2>
           <p className="mt-1 text-sm text-blue-900">
-            Looks like{" "}
+            {t("pages.inboundDelivery.looksLike")}{" "}
             <span className="font-semibold">
               {current.matched_contact.name ?? current.matched_contact.email ?? "—"}
             </span>
@@ -199,8 +199,7 @@ export default function InboundDeliveryClient({
                 </span>
               </>
             ) : null}{" "}
-            from your CRM. Forwarded offers sometimes come from a TC or
-            assistant — confirm before applying.
+            {t("pages.inboundDelivery.fromYourCrm")}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
             <button
@@ -236,10 +235,10 @@ export default function InboundDeliveryClient({
         <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-emerald-900">{t("pages.inboundDelivery.saveDraft")}</h2>
           <p className="mt-1 text-sm text-emerald-800">
-            Open the upload flow with these fields pre-filled.{" "}
+            {t("pages.inboundDelivery.prefilled")}{" "}
             {useSuggestedContact && current.matched_contact ? (
               <>
-                Buyer is set to{" "}
+                {t("pages.inboundDelivery.buyerIsSetTo")}{" "}
                 <span className="font-semibold">
                   {current.matched_contact.name ?? current.matched_contact.email}
                 </span>

@@ -90,8 +90,13 @@ export default function SphereContactProfile({
               )}
               {(contact.doNotContactSms || contact.doNotContactEmail) && (
                 <span className="rounded border border-red-200 bg-red-50 px-1.5 py-0.5 text-[10px] text-red-700">
-                  Opted out {contact.doNotContactSms && "SMS"}{" "}
-                  {contact.doNotContactEmail && "email"}
+                  {t(
+                    contact.doNotContactSms && contact.doNotContactEmail
+                      ? "pages.sphereProfile.optedOutBoth"
+                      : contact.doNotContactSms
+                        ? "pages.sphereProfile.optedOutSms"
+                        : "pages.sphereProfile.optedOutEmail",
+                  )}
                 </span>
               )}
             </div>
@@ -196,7 +201,7 @@ export default function SphereContactProfile({
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <span className="text-[10px] uppercase tracking-wide text-gray-500">
-                    Inherits: {tpl.effectiveStatus}
+                    {t("pages.sphereProfile.inherits", { status: tpl.effectiveStatus })}
                   </span>
                   <GenerateDraftButton contactId={contact.id} templateId={tpl.id} />
                   <Link
@@ -224,8 +229,8 @@ export default function SphereContactProfile({
       <section className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-5">
         <h2 className="text-sm font-semibold text-gray-700">{t("pages.sphereProfile.messageTimeline")}</h2>
         <p className="mt-0.5 text-xs text-gray-500">
-          Per-contact SMS / email history lands here once the send-log integration is wired. Pulls from{" "}
-          <code className="font-mono">communications</code> scoped to this contact.
+          {t("pages.sphereProfile.timelinePending")}{" "}
+          <code className="font-mono">communications</code>{t("pages.sphereProfile.scopedToContact")}
         </p>
       </section>
     </div>
@@ -265,7 +270,10 @@ function EquityCard({ contact }: { contact: ContactView }) {
         </span>
       </div>
       <div className="mt-1 text-xs text-gray-500">
-        Paid {currencyFormat(contact.closingPrice)} · equity {currencyFormat(contact.equityDelta)}
+        {t("pages.sphereProfile.paidEquity", {
+          price: currencyFormat(contact.closingPrice),
+          equity: currencyFormat(contact.equityDelta),
+        })}
       </div>
     </div>
   );

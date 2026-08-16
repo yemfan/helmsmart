@@ -297,10 +297,10 @@ export function OpenHouseDetailClient({
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-slate-900">
-                Visitors ({visitors.length})
+                {t("pages.openHouseDetail.visitorsN", { count: visitors.length })}
               </h2>
               <span className="text-[11px] text-slate-500">
-                {visitors.filter((v) => v.marketing_consent).length} opted-in for follow-up
+                {t("pages.openHouseDetail.optedInN", { count: visitors.filter((v) => v.marketing_consent).length })}
               </span>
             </div>
 
@@ -353,7 +353,7 @@ export function OpenHouseDetailClient({
                         <td className="px-2 py-2 text-[12px] text-slate-600">
                           {v.is_buyer_agented ? (
                             <span>
-                              Yes
+                              {t("pages.openHouseDetail.yes")}
                               {v.buyer_agent_name ? (
                                 <span className="text-[10px] text-slate-500"> · {v.buyer_agent_name}</span>
                               ) : null}
@@ -391,15 +391,17 @@ export function OpenHouseDetailClient({
             <ul className="mt-3 space-y-1 text-[12px] text-slate-600">
               <li>
                 📧{" "}
-                {visitors.filter((v) => v.thank_you_sent_at).length}/
-                {visitors.filter((v) => v.marketing_consent && !v.is_buyer_agented).length} thank-you
-                emails sent
+                {t("pages.openHouseDetail.thankYouSent", {
+                  sent: visitors.filter((v) => v.thank_you_sent_at).length,
+                  total: visitors.filter((v) => v.marketing_consent && !v.is_buyer_agented).length,
+                })}
               </li>
               <li>
                 📱{" "}
-                {visitors.filter((v) => v.check_in_sent_at).length}/
-                {visitors.filter((v) => v.marketing_consent && !v.is_buyer_agented).length} day-3
-                check-ins sent
+                {t("pages.openHouseDetail.checkInsSent", {
+                  sent: visitors.filter((v) => v.check_in_sent_at).length,
+                  total: visitors.filter((v) => v.marketing_consent && !v.is_buyer_agented).length,
+                })}
               </li>
             </ul>
           </div>

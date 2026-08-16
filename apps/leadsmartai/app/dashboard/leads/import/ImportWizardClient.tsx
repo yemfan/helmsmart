@@ -325,7 +325,7 @@ export function ImportWizardClient() {
           <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step3")}</h2>
           {stats ? (
             <p className="mt-1 text-sm text-gray-600">
-              {stats.total} rows · {stats.likelyDuplicates} likely duplicates (by email/phone/address rules)
+              {t("pages.importWizard.rowsAndDupes", { total: stats.total, dupes: stats.likelyDuplicates })}
             </p>
           ) : null}
           <div className="mt-4 overflow-x-auto">
@@ -367,10 +367,10 @@ export function ImportWizardClient() {
         <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step4")}</h2>
           <ul className="mt-2 list-disc pl-5 text-sm text-gray-700">
-            <li>Inserted: {summary.inserted}</li>
-            <li>Merged: {summary.merged}</li>
-            <li>Skipped: {summary.skipped}</li>
-            <li>Errors: {summary.errors}</li>
+            <li>{t("pages.importWizard.inserted", { count: summary.inserted })}</li>
+            <li>{t("pages.importWizard.merged", { count: summary.merged })}</li>
+            <li>{t("pages.importWizard.skipped", { count: summary.skipped })}</li>
+            <li>{t("pages.importWizard.errors", { count: summary.errors })}</li>
           </ul>
           <Link href="/dashboard/leads" className="mt-4 inline-block text-sm font-medium text-gray-900 underline">{t("pages.importWizard.viewLeads")}</Link>
         </section>

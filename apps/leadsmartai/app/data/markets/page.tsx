@@ -100,30 +100,30 @@ export default async function MarketsIndexPage() {
           <span className="text-slate-400 mx-2">/</span>
           <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</Link>
           <span className="text-slate-400 mx-2">/</span>
-          <span className="text-slate-600">{t("pages.dataCenterPages.markets")}</span>
+          <span className="text-slate-600">{t("pages.dataCenterPages.markets", { ns: "dashboard" })}</span>
         </nav>
 
         <header className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">{t("pages.dataCenterPages.marketsTitle")}</p>
-          <h1 className="text-4xl font-bold leading-tight text-slate-900">{t("pages.dataCenterPages.marketsH1")}</h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-slate-600">{t("pages.dataCenterPages.marketsBody")}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">{t("pages.dataCenterPages.marketsTitle", { ns: "dashboard" })}</p>
+          <h1 className="text-4xl font-bold leading-tight text-slate-900">{t("pages.dataCenterPages.marketsH1", { ns: "dashboard" })}</h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-slate-600">{t("pages.dataCenterPages.marketsBody", { ns: "dashboard" })}</p>
         </header>
 
-        <section aria-label={t("pages.dataCenterPages.nationalAria")} className="space-y-4">
+        <section aria-label={t("pages.dataCenterPages.nationalAria", { ns: "dashboard" })} className="space-y-4">
           <div className="flex items-baseline justify-between gap-4">
-            <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.nationalTitle")}</h2>
+            <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.nationalTitle", { ns: "dashboard" })}</h2>
             {periodLabel && (
               <span className="text-sm text-slate-500">As of {periodLabel}</span>
             )}
           </div>
-          <p className="max-w-2xl text-sm leading-relaxed text-slate-600">{t("pages.dataCenterPages.nationalBody")}</p>
+          <p className="max-w-2xl text-sm leading-relaxed text-slate-600">{t("pages.dataCenterPages.nationalBody", { ns: "dashboard" })}</p>
           <StatGrid metrics={national} />
         </section>
 
-        <section aria-label={t("pages.dataCenterPages.statesAria")} className="space-y-4">
-          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.statesTitle")}</h2>
+        <section aria-label={t("pages.dataCenterPages.statesAria", { ns: "dashboard" })} className="space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.statesTitle", { ns: "dashboard" })}</h2>
           {states.length === 0 ? (
-            <p className="text-sm text-slate-500">{t("pages.dataCenterPages.statesRefreshing")}</p>
+            <p className="text-sm text-slate-500">{t("pages.dataCenterPages.statesRefreshing", { ns: "dashboard" })}</p>
           ) : (
             <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
               {states.map((s) => (
@@ -140,10 +140,10 @@ export default async function MarketsIndexPage() {
           )}
         </section>
 
-        <section aria-label={t("pages.dataCenterPages.topMetrosAria")} className="space-y-4">
-          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.topMetrosTitle")}</h2>
+        <section aria-label={t("pages.dataCenterPages.topMetrosAria", { ns: "dashboard" })} className="space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.topMetrosTitle", { ns: "dashboard" })}</h2>
           {topMetros.length === 0 ? (
-            <p className="text-sm text-slate-500">{t("pages.dataCenterPages.metrosRefreshing")}</p>
+            <p className="text-sm text-slate-500">{t("pages.dataCenterPages.metrosRefreshing", { ns: "dashboard" })}</p>
           ) : (
             <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {topMetros.map((m) => (

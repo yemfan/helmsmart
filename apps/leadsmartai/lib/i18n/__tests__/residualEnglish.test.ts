@@ -156,28 +156,17 @@ const PENDING = new Set([
   "app/voice-ai-test-drive/page.tsx",
   "app/agent-home-value-leads/page.tsx",
   "app/auth/complete-profile/page.tsx",
-  "app/financial-services/carrier-integration/CarrierIntegrationClient.tsx",
   "app/help/guides/[slug]/page.tsx",
   "app/adjustable-rate-calculator/page.tsx",
   "app/book/page.tsx",
   "app/how-to-increase-cap-rate-on-rental-property/page.tsx",
   "app/cap-rate-calculator-how-to-use-it/page.tsx",
   "app/cap-rate-vs-roi/page.tsx",
-  "app/dashboard/boss/BossAssistantClient.tsx",
-  "app/dashboard/leads/import/ImportWizardClient.tsx",
-  "app/dashboard/open-houses/[id]/OpenHouseDetailClient.tsx",
   "app/newsletter/a/[token]/page.tsx",
-  "components/dashboard/ListingFeedbackPanel.tsx",
-  "components/dashboard/SphereContactProfile.tsx",
   "app/cap-rate-by-city-in-the-united-states/page.tsx",
-  "app/client/dashboard/page.tsx",
   "app/dashboard/admin/lead-routing/LeadRoutingAdminClient.tsx",
   "app/dashboard/ai-marketing-assistant/MarketingAssistantClient.tsx",
-  "app/dashboard/cma/[id]/CmaDetailClient.tsx",
   "app/dashboard/credits/CreditsClient.tsx",
-  "app/dashboard/inbound/[id]/InboundDeliveryClient.tsx",
-  "app/dashboard/transactions/new/ContractUploader.tsx",
-  "app/data-deletion-status/[code]/page.tsx",
   "app/how-to-analyze-a-property-using-cap-rate/page.tsx",
   "app/result/[id]/page.tsx",
   "app/what-is-cap-rate-in-real-estate-investing/page.tsx",
@@ -265,7 +254,6 @@ const PENDING = new Set([
   "app/dashboard/ai-accountant/AccountantClient.tsx",
   "app/dashboard/ai-receptionist/ReceptionistClient.tsx",
   "app/dashboard/ai-sales-assistant/SalesAssistantClient.tsx",
-  "app/dashboard/ai-transaction-assistant/TransactionAssistantClient.tsx",
   "app/dashboard/calls/CallsClient.tsx",
   "app/dashboard/cma/CmaListClient.tsx",
   "app/dashboard/error.tsx",
@@ -289,7 +277,6 @@ const PENDING = new Set([
   "components/AppShell.tsx",
   "components/cma/CmaShareView.tsx",
   "components/consent/SmsConsentNotice.tsx",
-  "components/cookie-consent/CookieConsent.tsx",
   "components/crm/ReengagementPanel.tsx",
   "components/dashboard/AgentVoiceSettingsPanel.tsx",
   "components/dashboard/AiChatPanel.tsx",
@@ -368,6 +355,12 @@ function isCopy(raw: string): boolean {
   if (/^(?:if|for|while|switch|catch)\s*\(/.test(t)) return false;
   if (/^(?:return|const|let|var|function|else|try|await|typeof)\b/.test(t)) return false;
   if (/^[a-z][A-Za-z0-9]*\(/.test(t)) return false;
+  /*
+   * A statement boundary: `> horizon) continue; alerts.push(`. Prose uses
+   * semicolons too, but a prose semicolon is followed by a word — never by an
+   * identifier that immediately calls or dereferences something.
+   */
+  if (/;\s*[a-z_$][\w$]*[.(]/.test(t)) return false;
   if (/[{}<>$`]/.test(t)) return false; // interpolated or markup — not a literal
   if (!/^[A-Za-z][A-Za-z0-9 ,.'’!?:;%()/&+—–-]*$/.test(t)) return false;
   const words = t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length;

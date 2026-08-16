@@ -595,10 +595,10 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           )}
           {teamDigest && (
             <p className="mt-2 border-t border-gray-100 pt-2 text-xs text-gray-600">
-              <span className="font-semibold text-gray-800">Your team finished {teamDigest.total} task{teamDigest.total === 1 ? "" : "s"} while you were away</span> — {teamDigest.line}.
+              <span className="font-semibold text-gray-800">{tr("pages.boss.teamFinished", { count: teamDigest.total })}</span> — {teamDigest.line}.
               {teamDigest.needsYou > 0 && (
                 <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700">
-                  {teamDigest.needsYou} need{teamDigest.needsYou === 1 ? "s" : ""} you
+                  {tr("pages.boss.needsYou", { count: teamDigest.needsYou })}
                 </span>
               )}
             </p>
@@ -1050,7 +1050,10 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
       {t.status === "awaiting_approval" && t.draft_body && (
         <div className="mt-1.5 rounded-lg border border-amber-200 bg-amber-50/50 p-2.5">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8a6a0e]">
-            Draft {t.draft_channel === "sms" ? "text" : "email"}{t.execution_note && !t.execution_note.startsWith("to:") ? ` · ${t.execution_note}` : ""}
+            {tr("pages.boss.draftChannel", {
+              channel: tr(t.draft_channel === "sms" ? "pages.boss.channelText" : "pages.boss.channelEmail"),
+            })}
+            {t.execution_note && !t.execution_note.startsWith("to:") ? ` · ${t.execution_note}` : ""}
           </p>
           {t.draft_subject && <p className="mt-1 text-xs font-medium text-gray-800">{t.draft_subject}</p>}
           <p className="mt-1 whitespace-pre-wrap text-xs text-gray-700">{t.draft_body}</p>
@@ -1089,7 +1092,15 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
           {t.execution_note && <p className="text-[11px] text-gray-500">{t.execution_note}</p>}
           {t.artifact_url && (
             <a href={t.artifact_url} className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 hover:underline">
-              View {t.artifact_type === "cma" ? "CMA" : t.artifact_type === "presentation" ? "presentation" : "result"} →
+              {tr("pages.boss.viewArtifact", {
+                kind: tr(
+                  t.artifact_type === "cma"
+                    ? "pages.boss.artifactCma"
+                    : t.artifact_type === "presentation"
+                      ? "pages.boss.artifactPresentation"
+                      : "pages.boss.artifactResult",
+                ),
+              })}
             </a>
           )}
         </div>
