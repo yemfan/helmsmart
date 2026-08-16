@@ -177,9 +177,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
 
   if (!canCustomize) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        The Ad Composer is a Signature feature. Upgrade to design custom ads.
-      </div>
+      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">{tr("pages.adComposer.signatureOnly")}</div>
     );
   }
 
@@ -272,7 +270,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
           <Section title={tr("pages.adComposer.photoField")}>
             {photos.length === 0 ? (
               <p className="text-sm text-gray-500">
-                No photos in your pool yet — add some in <span className="font-medium">{tr("pages.adComposer.adPhotos")}</span> above.
+                {tr("pages.adComposer.noPhotosBefore")} <span className="font-medium">{tr("pages.adComposer.adPhotos")}</span>{tr("pages.adComposer.noPhotosAfter")}
               </p>
             ) : (
               <div className="flex flex-wrap gap-2">
@@ -282,9 +280,7 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
                   className={`flex h-16 w-16 items-center justify-center rounded-lg border text-xs ${
                     !f.photoUrl ? "border-[#0072ce] bg-blue-50" : "border-gray-200"
                   }`}
-                >
-                  None
-                </button>
+                >{tr("pages.adComposer.none")}</button>
                 {photos.map((p) => (
                   <button
                     key={p.id}
@@ -325,15 +321,9 @@ export default function AdComposerClient({ canCustomize }: { canCustomize: boole
         )}
 
         <div className="flex flex-wrap gap-3 border-t border-gray-100 pt-4">
-          <button type="button" disabled={busy} onClick={() => save({ schedule: false })} className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50">
-            Save to pool
-          </button>
-          <button type="button" disabled={busy} onClick={() => save({ schedule: true, publishNow: false })} className="rounded-lg border border-[#0072ce] px-4 py-2 text-sm font-semibold text-[#0072ce] hover:bg-blue-50 disabled:opacity-50">
-            Queue for approval
-          </button>
-          <button type="button" disabled={busy} onClick={() => save({ schedule: true, publishNow: true })} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">
-            Publish now
-          </button>
+          <button type="button" disabled={busy} onClick={() => save({ schedule: false })} className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50">{tr("pages.adComposer.saveToPool")}</button>
+          <button type="button" disabled={busy} onClick={() => save({ schedule: true, publishNow: false })} className="rounded-lg border border-[#0072ce] px-4 py-2 text-sm font-semibold text-[#0072ce] hover:bg-blue-50 disabled:opacity-50">{tr("pages.adComposer.queueForApproval")}</button>
+          <button type="button" disabled={busy} onClick={() => save({ schedule: true, publishNow: true })} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">{tr("pages.adComposer.publishNow")}</button>
           <Link href="/dashboard/ai-marketing-assistant" className="ml-auto self-center text-sm text-gray-500 hover:text-gray-700">
             ← Back
           </Link>

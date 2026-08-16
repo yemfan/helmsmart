@@ -1991,7 +1991,14 @@
         "portrait": "竖版 4:5",
         "landscape": "横版"
       },
-      "intro": "选择模板与主题，编辑文案，实时预览，然后保存到素材库或安排发布。"
+      "intro": "选择模板与主题，编辑文案，实时预览，然后保存到素材库或安排发布。",
+      "signatureOnly": "广告设计器属于 Signature 版功能。升级后即可设计自定义广告。",
+      "noPhotosBefore": "您的素材池里还没有照片——请先在上方的",
+      "noPhotosAfter": "中添加。",
+      "none": "无",
+      "saveToPool": "存入素材池",
+      "queueForApproval": "提交待审",
+      "publishNow": "立即发布"
     },
     "inbound": {
       "metaTitle": "转发的邮件",
@@ -2496,7 +2503,13 @@
       "reading": "正在读取合同…",
       "readingHint": "多数 PDF 需要 15–40 秒。",
       "warnings": "识别提示：",
-      "buyerSide": "买方代理"
+      "buyerSide": "买方代理",
+      "prefilledNote": "买方、地址、价格和日期已自动填写。在下方上传已签署的 RPA（购房合同），即可自动提取附加条件和成交细节。",
+      "rlaSigned": "委托协议签署／MLS 上线日。以此推算上市前和营销的各项截止日期。",
+      "mutualAcceptance": "双方接受日",
+      "anchorsDeadlines": "所有附加条件的截止日期都从这一天推算。",
+      "autoFills30": "留空则自动设为双方接受日 + 30 天。",
+      "cancel": "取消"
     },
     "listingDetail": {
       "metaTitle": "房源详情",
@@ -3226,6 +3239,38 @@
       "whatIs": "什么是 CloseBoss AI？",
       "whatIsSub": "关于 CloseBoss AI 的常见问题——closebossai.com 上的 AI 房产团队。",
       "sixSpecialists": "六位专才。"
+    },
+    "boss": {
+      "todaysPriorities": "今天的优先事项",
+      "nothingUrgent": "没有紧急事项——团队都处理好了。告诉我您想让他们做什么。",
+      "handedToTeam": "已交给您的团队——详见下方。",
+      "haveBossHandle": "交给 Boss 处理",
+      "beMoreSpecific": "把指令说得再具体一些，剩下的交给我。",
+      "answering": "正在回答："
+    },
+    "offersList": {
+      "offersFor": "报价——",
+      "clearFilter": "清除筛选",
+      "uploadHint": "粘贴一份报价文件——价格、附加条件和日期会由 AI 解析出来。",
+      "reviewHint": "用大白话解读购房合同——关键条款、截止日期、风险提示和未填写的空白项。不能作为律师的意见。",
+      "emptyBefore": "点击",
+      "emptyAfter": "登记第一份报价。"
+    },
+    "opportunities": {
+      "buyExclusive": "购买由工具使用行为产生的独家客源。",
+      "dynamicPricing": "价格根据意向评分和使用频率动态浮动。",
+      "noMatches": "没有符合筛选条件的客源。",
+      "goToPricing": "前往价格页",
+      "prev": "上一页",
+      "next": "下一页"
+    },
+    "send": {
+      "blurb": "生成一条个性化的房屋估值链接，可以直接粘贴到邮件、短信或社交帖子里。",
+      "clientName": "客户姓名（选填）",
+      "propertyAddress": "房屋地址",
+      "generatedLink": "生成的链接",
+      "openLink": "打开链接",
+      "copied": "链接已复制。粘贴到给客户的邮件或消息中即可。"
     }
   }
 }

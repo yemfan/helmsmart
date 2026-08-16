@@ -58,17 +58,13 @@ export function SendClient({ agent }: { agent: string }) {
     <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-bold text-brand-text">{t("pages.send.heading")}</h1>
-        <p className="text-sm text-brand-text/80">
-          Generate a personalized home value link you can paste into emails, texts, or social posts.
-        </p>
+        <p className="text-sm text-brand-text/80">{t("pages.send.blurb")}</p>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1">
-            <label className="block text-xs font-semibold text-brand-text">
-              Client name (optional)
-            </label>
+            <label className="block text-xs font-semibold text-brand-text">{t("pages.send.clientName")}</label>
             <input
               type="text"
               value={clientName}
@@ -78,9 +74,7 @@ export function SendClient({ agent }: { agent: string }) {
             />
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-semibold text-brand-text">
-              Property address
-            </label>
+            <label className="block text-xs font-semibold text-brand-text">{t("pages.send.propertyAddress")}</label>
             <AddressAutocomplete
               value={propertyAddress}
               onChange={setPropertyAddress}
@@ -124,9 +118,7 @@ export function SendClient({ agent }: { agent: string }) {
 
         {generatedLink && (
           <div className="space-y-2 mt-2">
-            <label className="block text-xs font-semibold text-brand-text">
-              Generated link
-            </label>
+            <label className="block text-xs font-semibold text-brand-text">{t("pages.send.generatedLink")}</label>
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
@@ -145,14 +137,10 @@ export function SendClient({ agent }: { agent: string }) {
                 type="button"
                 onClick={() => generatedLink && window.open(generatedLink, "_blank")}
                 className="inline-flex items-center justify-center bg-white text-brand-text border border-gray-300 text-xs font-semibold px-4 py-2 rounded-lg hover:bg-brand-surface"
-              >
-                Open Link
-              </button>
+              >{t("pages.send.openLink")}</button>
             </div>
             {copied && (
-              <p className="text-[11px] text-brand-success">
-                Link copied to clipboard. Paste it into your email or message to the client.
-              </p>
+              <p className="text-[11px] text-brand-success">{t("pages.send.copied")}</p>
             )}
           </div>
         )}

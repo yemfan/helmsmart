@@ -147,11 +147,8 @@ export function OffersListClient({
           <h1 className="text-2xl font-semibold text-slate-900">{t("offers.title")}</h1>
           <p className="mt-1 text-sm text-slate-500">
             {contactFilterName ? (
-              <>
-                Offers for <strong>{contactFilterName}</strong>.{" "}
-                <Link href="/dashboard/offers" className="text-blue-600 hover:underline">
-                  Clear filter
-                </Link>
+              <>{t("pages.offersList.offersFor")}<strong>{contactFilterName}</strong>.{" "}
+                <Link href="/dashboard/offers" className="text-blue-600 hover:underline">{t("pages.offersList.clearFilter")}</Link>
               </>
             ) : (
               t("offers.subtitle")
@@ -173,14 +170,14 @@ export function OffersListClient({
                 : "/dashboard/offers/upload"
             }
             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            title="Paste an offer document — we'll parse the price, contingencies, and dates with AI."
+            title={t("pages.offersList.uploadHint")}
           >
             ⬆ {t("offers.uploadOffer")}
           </Link>
           <Link
             href="/dashboard/contracts/review"
             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            title="AI plain-English review of a purchase contract — key terms, deadlines, risk flags, and blank fields. Not legal advice."
+            title={t("pages.offersList.reviewHint")}
           >
             🔍 {t("offers.reviewContract")}
           </Link>
@@ -308,7 +305,7 @@ export function OffersListClient({
                       <>
                         <div className="font-medium">{t("offers.empty")}</div>
                         <div className="mt-1 text-[12px]">
-                          Click <strong>+ New offer</strong> to log the first one.
+                          {t("pages.offersList.emptyBefore")} <strong>+ New offer</strong>{t("pages.offersList.emptyAfter")}
                         </div>
                       </>
                     ) : (

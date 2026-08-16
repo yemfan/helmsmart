@@ -502,10 +502,7 @@ function NewTransactionForm() {
         {offerBanner ? (
           <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
             <div className="font-medium">{offerBanner}</div>
-            <div className="mt-0.5 text-[11px] text-emerald-700">
-              Buyer, address, price, and dates are prefilled. Upload the signed RPA below to
-              extract contingencies + closing details automatically.
-            </div>
+            <div className="mt-0.5 text-[11px] text-emerald-700">{tr("pages.newTransaction.prefilledNote")}</div>
           </div>
         ) : null}
       </div>
@@ -650,9 +647,7 @@ function NewTransactionForm() {
               onChange={(e) => setListingStartDate(e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
-            <p className="mt-1 text-[11px] text-slate-500">
-              RLA signed / MLS go-live. Anchors pre-list + marketing deadlines.
-            </p>
+            <p className="mt-1 text-[11px] text-slate-500">{tr("pages.newTransaction.rlaSigned")}</p>
           </div>
         )}
 
@@ -667,18 +662,14 @@ function NewTransactionForm() {
         {(!isListing || fromListing) && (
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-700">
-                Mutual acceptance
-              </label>
+              <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.mutualAcceptance")}</label>
               <input
                 type="date"
                 value={mutualAcceptanceDate}
                 onChange={(e) => setMutualAcceptanceDate(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
               />
-              <p className="mt-1 text-[11px] text-slate-500">
-                Anchors all contingency deadlines.
-              </p>
+              <p className="mt-1 text-[11px] text-slate-500">{tr("pages.newTransaction.anchorsDeadlines")}</p>
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-700">{tr("pages.newTransaction.closingDate")}</label>
@@ -688,9 +679,7 @@ function NewTransactionForm() {
                 onChange={(e) => setClosingDate(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
               />
-              <p className="mt-1 text-[11px] text-slate-500">
-                Auto-fills to mutual acceptance + 30 days if left blank.
-              </p>
+              <p className="mt-1 text-[11px] text-slate-500">{tr("pages.newTransaction.autoFills30")}</p>
             </div>
           </div>
         )}
@@ -711,9 +700,7 @@ function NewTransactionForm() {
           <Link
             href={breadcrumbHref}
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </Link>
+          >{tr("pages.newTransaction.cancel")}</Link>
           <button
             type="button"
             onClick={() => void submit()}

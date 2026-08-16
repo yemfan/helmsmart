@@ -142,13 +142,9 @@ export default function OpportunitiesPage() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="ui-page-title text-brand-text">{t("pages.opportunities.heading")}</h1>
-          <p className="ui-page-subtitle text-brand-text/80 mt-1">
-            Buy exclusive leads generated from tool usage.
-          </p>
+          <p className="ui-page-subtitle text-brand-text/80 mt-1">{t("pages.opportunities.buyExclusive", { ns: "dashboard" })}</p>
         </div>
-        <div className="text-xs text-slate-500">
-          Pricing is dynamic based on intent score + usage frequency.
-        </div>
+        <div className="text-xs text-slate-500">{t("pages.opportunities.dynamicPricing", { ns: "dashboard" })}</div>
       </div>
 
       {metrics ? (
@@ -258,9 +254,7 @@ export default function OpportunitiesPage() {
               <tbody>
                 {opportunities.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-4 py-6 text-sm text-slate-600">
-                      No available opportunities match your filters.
-                    </td>
+                    <td colSpan={5} className="px-4 py-6 text-sm text-slate-600">{t("pages.opportunities.noMatches", { ns: "dashboard" })}</td>
                   </tr>
                 ) : (
                   opportunities.map((o) => (
@@ -299,9 +293,7 @@ export default function OpportunitiesPage() {
       {buyError ? (
         <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl p-3">
           {buyError}{" "}
-          <Link className="text-brand-primary font-semibold underline" href="/agent/pricing">
-            Go to pricing
-          </Link>
+          <Link className="text-brand-primary font-semibold underline" href="/agent/pricing">{t("pages.opportunities.goToPricing", { ns: "dashboard" })}</Link>
         </div>
       ) : null}
 
@@ -315,17 +307,13 @@ export default function OpportunitiesPage() {
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             className="text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            Prev
-          </button>
+          >{t("pages.opportunities.prev", { ns: "dashboard" })}</button>
           <button
             type="button"
             disabled={opportunities.length < pageSize}
             onClick={() => setPage((p) => p + 1)}
             className="text-xs font-semibold px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
+          >{t("pages.opportunities.next", { ns: "dashboard" })}</button>
         </div>
       </div>
     </div>

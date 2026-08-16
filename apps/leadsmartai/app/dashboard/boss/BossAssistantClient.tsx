@@ -607,9 +607,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
         {/* Today's priorities — the proposals the recommendations engine surfaced */}
         {recommendations.length > 0 && (
-          <p className="px-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-            Today&apos;s priorities
-          </p>
+          <p className="px-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{tr("pages.boss.todaysPriorities")}</p>
         )}
         {recommendations.map((r) => (
           <ProposalCard
@@ -684,7 +682,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
         {recommendations.length === 0 && allInstructions.length === 0 && !loading && (
           <BossBubble bossName={bossName} avatar={bossAvatar}>
-            <p className="text-sm text-gray-600">Nothing urgent — your team has things under control. Tell me what you&apos;d like done.</p>
+            <p className="text-sm text-gray-600">{tr("pages.boss.nothingUrgent")}</p>
           </BossBubble>
         )}
 
@@ -930,7 +928,7 @@ function ProposalCard({
       {(rec.summary || rec.reason) && <p className="mt-0.5 text-xs text-gray-500">{[rec.summary, rec.reason].filter(Boolean).join(" — ")}</p>}
       {rec.expected_outcome && <p className="mt-0.5 text-xs font-medium text-[#8a6a0e]">→ {rec.expected_outcome}</p>}
       {handled ? (
-        <p className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-700"><span aria-hidden>✓</span> Handed to your team — see below.</p>
+        <p className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-700"><span aria-hidden>✓</span>{tr("pages.boss.handedToTeam")}</p>
       ) : (
         <div className="mt-2 flex flex-wrap gap-2">
           {/* Most proposals point at a page to review/act on (a transaction,
@@ -946,9 +944,7 @@ function ProposalCard({
               {rec.recommended_action && rec.recommended_action.length > 3 ? rec.recommended_action : tr("boss.open")}
             </Link>
           ) : (
-            <button type="button" onClick={() => { setHandled(true); onHandle(); }} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
-              Have Boss handle it
-            </button>
+            <button type="button" onClick={() => { setHandled(true); onHandle(); }} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">{tr("pages.boss.haveBossHandle")}</button>
           )}
           <button type="button" onClick={onDismiss} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-400 hover:bg-gray-50">{tr("boss.notNow")}</button>
         </div>
@@ -1001,7 +997,7 @@ function InstructionExchange({
         // Vague/non-actionable ask → one clarifying question, no no-op task card.
         <BossBubble bossName={bossName} avatar={avatar}>
           <p className="text-sm text-gray-700">{instruction.clarification}</p>
-          <p className="mt-1 text-xs text-gray-400">Send a more specific instruction and I&apos;ll take it from there.</p>
+          <p className="mt-1 text-xs text-gray-400">{tr("pages.boss.beMoreSpecific")}</p>
         </BossBubble>
       ) : null}
     </div>
@@ -1165,8 +1161,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-2">
       {pendingQuestion ? (
-        <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50/60 px-2.5 py-1.5 text-[11px] text-amber-900">
-          Answering: <span className="font-medium">{pendingQuestion}</span>
+        <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50/60 px-2.5 py-1.5 text-[11px] text-amber-900">{tr("pages.boss.answering")}<span className="font-medium">{pendingQuestion}</span>
         </div>
       ) : (
         <div className="mb-2 flex flex-wrap gap-1.5">

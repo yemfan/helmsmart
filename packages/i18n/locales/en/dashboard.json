@@ -1991,7 +1991,14 @@
         "portrait": "Portrait 4:5",
         "landscape": "Landscape"
       },
-      "intro": "Pick a template and theme, edit the copy, preview it live, then save to your pool or schedule."
+      "intro": "Pick a template and theme, edit the copy, preview it live, then save to your pool or schedule.",
+      "signatureOnly": "The Ad Composer is a Signature feature. Upgrade to design custom ads.",
+      "noPhotosBefore": "No photos in your pool yet — add some in",
+      "noPhotosAfter": "above.",
+      "none": "None",
+      "saveToPool": "Save to pool",
+      "queueForApproval": "Queue for approval",
+      "publishNow": "Publish now"
     },
     "inbound": {
       "metaTitle": "Forwarded email",
@@ -2496,7 +2503,13 @@
       "reading": "Reading contract…",
       "readingHint": "15-40 seconds for most PDFs.",
       "warnings": "Extractor warnings:",
-      "buyerSide": "Buyer side"
+      "buyerSide": "Buyer side",
+      "prefilledNote": "Buyer, address, price, and dates are prefilled. Upload the signed RPA below to extract contingencies + closing details automatically.",
+      "rlaSigned": "RLA signed / MLS go-live. Anchors pre-list + marketing deadlines.",
+      "mutualAcceptance": "Mutual acceptance",
+      "anchorsDeadlines": "Anchors all contingency deadlines.",
+      "autoFills30": "Auto-fills to mutual acceptance + 30 days if left blank.",
+      "cancel": "Cancel"
     },
     "listingDetail": {
       "metaTitle": "Listing details",
@@ -3226,6 +3239,38 @@
       "whatIs": "What is CloseBoss AI?",
       "whatIsSub": "Common questions about CloseBoss AI — the AI real estate team at closebossai.com.",
       "sixSpecialists": "Six specialists."
+    },
+    "boss": {
+      "todaysPriorities": "Today's priorities",
+      "nothingUrgent": "Nothing urgent — your team has things under control. Tell me what you'd like done.",
+      "handedToTeam": "Handed to your team — see below.",
+      "haveBossHandle": "Have Boss handle it",
+      "beMoreSpecific": "Send a more specific instruction and I'll take it from there.",
+      "answering": "Answering:"
+    },
+    "offersList": {
+      "offersFor": "Offers for",
+      "clearFilter": "Clear filter",
+      "uploadHint": "Paste an offer document — we'll parse the price, contingencies, and dates with AI.",
+      "reviewHint": "AI plain-English review of a purchase contract — key terms, deadlines, risk flags, and blank fields. Not legal advice.",
+      "emptyBefore": "Click",
+      "emptyAfter": "to log the first one."
+    },
+    "opportunities": {
+      "buyExclusive": "Buy exclusive leads generated from tool usage.",
+      "dynamicPricing": "Pricing is dynamic based on intent score + usage frequency.",
+      "noMatches": "No available opportunities match your filters.",
+      "goToPricing": "Go to pricing",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "send": {
+      "blurb": "Generate a personalized home value link you can paste into emails, texts, or social posts.",
+      "clientName": "Client name (optional)",
+      "propertyAddress": "Property address",
+      "generatedLink": "Generated link",
+      "openLink": "Open Link",
+      "copied": "Link copied to clipboard. Paste it into your email or message to the client."
     }
   }
 }
