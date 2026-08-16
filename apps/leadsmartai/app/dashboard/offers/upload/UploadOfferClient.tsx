@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ContactPicker, { type ContactPickerValue } from "@/components/crm/ContactPicker";
 import type { FinancingType } from "@/lib/offers/types";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
@@ -43,19 +44,21 @@ function formatMoneyOrDash(n: number | null): string {
   }).format(n);
 }
 
-function summarize(parsed: ParsedOffer): { label: string; value: string }[] {
+type Translate = (k: string) => string;
+
+function summarize(parsed: ParsedOffer, t: Translate): { label: string; value: string }[] {
   return [
-    { label: "Property", value: parsed.propertyAddress ?? "—" },
-    { label: "City / State / ZIP", value: [parsed.city, parsed.state, parsed.zip].filter(Boolean).join(", ") || "—" },
-    { label: "List price", value: formatMoneyOrDash(parsed.listPrice) },
-    { label: "Offer price", value: formatMoneyOrDash(parsed.offerPrice) },
-    { label: "Earnest money", value: formatMoneyOrDash(parsed.earnestMoney) },
-    { label: "Down payment", value: formatMoneyOrDash(parsed.downPayment) },
-    { label: "Financing", value: parsed.financingType ?? "—" },
-    { label: "Proposed closing", value: parsed.closingDateProposed ?? "—" },
-    { label: "Offer expires", value: parsed.offerExpiresAt ?? "—" },
+    { label: t("pages.uploadOffer.f.property"), value: parsed.propertyAddress ?? "—" },
+    { label: t("pages.uploadOffer.f.cityStateZip"), value: [parsed.city, parsed.state, parsed.zip].filter(Boolean).join(", ") || "—" },
+    { label: t("pages.uploadOffer.f.listPrice"), value: formatMoneyOrDash(parsed.listPrice) },
+    { label: t("pages.uploadOffer.f.offerPrice"), value: formatMoneyOrDash(parsed.offerPrice) },
+    { label: t("pages.uploadOffer.f.earnestMoney"), value: formatMoneyOrDash(parsed.earnestMoney) },
+    { label: t("pages.uploadOffer.f.downPayment"), value: formatMoneyOrDash(parsed.downPayment) },
+    { label: t("pages.uploadOffer.f.financing"), value: parsed.financingType ?? "—" },
+    { label: t("pages.uploadOffer.f.proposedClosing"), value: parsed.closingDateProposed ?? "—" },
+    { label: t("pages.uploadOffer.f.offerExpires"), value: parsed.offerExpiresAt ?? "—" },
     {
-      label: "Inspection contingency",
+      label: t("pages.uploadOffer.f.inspection"),
       value:
         parsed.inspectionContingency == null
           ? "—"
@@ -64,7 +67,7 @@ function summarize(parsed: ParsedOffer): { label: string; value: string }[] {
             : "kept",
     },
     {
-      label: "Appraisal contingency",
+      label: t("pages.uploadOffer.f.appraisal"),
       value:
         parsed.appraisalContingency == null
           ? "—"
@@ -73,7 +76,7 @@ function summarize(parsed: ParsedOffer): { label: string; value: string }[] {
             : "kept",
     },
     {
-      label: "Loan contingency",
+      label: t("pages.uploadOffer.f.loan"),
       value:
         parsed.loanContingency == null
           ? "—"
@@ -81,12 +84,13 @@ function summarize(parsed: ParsedOffer): { label: string; value: string }[] {
             ? "WAIVED"
             : "kept",
     },
-    { label: "Other contingencies", value: parsed.contingencyNotes ?? "—" },
-    { label: "Notes", value: parsed.notes ?? "—" },
+    { label: t("pages.uploadOffer.f.otherContingencies"), value: parsed.contingencyNotes ?? "—" },
+    { label: t("pages.uploadOffer.f.notes"), value: parsed.notes ?? "—" },
   ];
 }
 
 export function UploadOfferClient() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
   const prefilledContactId = searchParams?.get("contactId") ?? "";
@@ -176,7 +180,7 @@ export function UploadOfferClient() {
     setError(null);
     setParsed(null);
     if (!file.name.toLowerCase().endsWith(".pdf") && !file.type.includes("pdf")) {
-      setError("Pick a .pdf file. For other formats, paste the text into the box below instead.");
+      setError(t("pages.uploadOffer.needPdf"));
       return;
     }
     if (file.size > MAX_PDF_BYTES) {
@@ -214,7 +218,7 @@ export function UploadOfferClient() {
     setError(null);
     setParsed(null);
     if (!text.trim()) {
-      setError("Paste the offer text first.");
+      setError(t("pages.uploadOffer.needText"));
       return;
     }
     if (text.length > MAX_INPUT_CHARS) {
@@ -251,15 +255,15 @@ export function UploadOfferClient() {
     if (!parsed) return;
     setError(null);
     if (!contact?.id) {
-      setError("Pick a buyer before saving.");
+      setError(t("pages.uploadOffer.needBuyer"));
       return;
     }
     if (!parsed.propertyAddress) {
-      setError("AI couldn't extract a property address. Use + New offer to enter manually.");
+      setError(t("pages.uploadOffer.noAddress"));
       return;
     }
     if (parsed.offerPrice == null || parsed.offerPrice <= 0) {
-      setError("AI couldn't extract a valid offer price. Use + New offer to enter manually.");
+      setError(t("pages.uploadOffer.noPrice"));
       return;
     }
     setSaving(true);
@@ -315,7 +319,7 @@ export function UploadOfferClient() {
           </Link>
           {" / Upload"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">Upload offer</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.uploadOffer.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">
           Drop in the offer PDF (or paste the text) — price, contingencies,
           dates, and key terms get extracted with AI. You review the result
@@ -349,7 +353,7 @@ export function UploadOfferClient() {
 
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">Buyer *</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.uploadOffer.buyer")}</label>
           <ContactPicker
             value={contact}
             onChange={setContact}
@@ -395,7 +399,7 @@ export function UploadOfferClient() {
                   Selected: <strong className="font-medium text-slate-700">{pdfName}</strong>
                 </>
               ) : (
-                <>Max 5 MB. Claude reads the PDF directly — no need to paste text below.</>
+                <>{t("pages.uploadOffer.maxSize")}</>
               )}
             </span>
           </div>
@@ -441,7 +445,7 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
             disabled={parsing || !text.trim()}
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
           >
-            {parsing ? "Parsing…" : parsed ? "Re-parse" : "Parse with AI"}
+            {parsing ? "Parsing…" : parsed ? t("pages.uploadOffer.reparse") : t("pages.uploadOffer.parse")}
           </button>
         </div>
       </div>
@@ -449,14 +453,14 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
       {parsed ? (
         <div className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Extracted fields</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("pages.uploadOffer.extracted")}</h2>
             <p className="mt-1 text-[11px] text-slate-500">
               Review each field. The contingency rows show what the document says — “WAIVED” means the contract waives that contingency. Anything missing comes back as “—”; the new offer will use the form defaults for those.
             </p>
           </div>
 
           <dl className="divide-y divide-slate-100 text-sm">
-            {summarize(parsed).map((row) => (
+            {summarize(parsed, t).map((row) => (
               <div key={row.label} className="grid grid-cols-3 gap-3 py-1.5">
                 <dt className="col-span-1 text-slate-500">{row.label}</dt>
                 <dd className="col-span-2 text-slate-900">{row.value}</dd>
@@ -471,7 +475,7 @@ Tip: if you don't have a PDF, open the document, Cmd+A to select all, Cmd+C to c
               disabled={saving || !contact?.id || !parsed.propertyAddress || parsed.offerPrice == null}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             >
-              {saving ? "Saving…" : "Save as draft"}
+              {saving ? t("pages.uploadOffer.saving") : t("pages.uploadOffer.save")}
             </button>
           </div>
           <p className="text-[11px] text-slate-500">
