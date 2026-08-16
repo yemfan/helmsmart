@@ -73,9 +73,7 @@ export default function DownPaymentCalculator() {
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.downPaymentCalculator")}</h1>
-      <p className="text-gray-600 mb-8">
-        See your down payment, loan amount, and monthly payment. Down payment is capped by savings.
-      </p>
+      <p className="text-gray-600 mb-8">{t("pages.downPaymentCalculator.sub")}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
@@ -84,7 +82,7 @@ export default function DownPaymentCalculator() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField label="Home price ($)" value={homePrice} onChange={setHomePrice} min={1000} />
               <InputField
-                label="Down payment (%)"
+                label={t("pages.downPaymentCalculator.downPaymentPct")}
                 value={downPaymentPercent}
                 onChange={setDownPaymentPercent}
                 min={0}
@@ -122,7 +120,7 @@ export default function DownPaymentCalculator() {
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-24">
             <ResultCard
-              title="Down payment results"
+              title={t("pages.downPaymentCalculator.resultsAria")}
               value={`$${downPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
               details={`Down payment amount: $${downPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nRemaining loan amount: $${remainingLoanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nMonthly payment (incl. tax, insurance, HOA): $${monthlyPayment.toFixed(2)}`}
             />
@@ -131,99 +129,47 @@ export default function DownPaymentCalculator() {
       </div>
 
       <section className="mt-12 max-w-3xl space-y-3 text-sm text-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Plan your down payment strategy
-        </h2>
-        <p>
-          This down payment calculator shows how much cash you will need upfront based on
-          the home price and target percentage. It also estimates the resulting loan
-          amount and approximate monthly payment, including taxes, insurance, and HOA
-          fees when provided.
-        </p>
-        <p>
-          Buyers can use this tool to compare conventional, FHA, and low-down-payment
-          options, or to set savings goals before entering the market. Agents can embed
-          the calculator in buyer guides to help clients understand how down payment size
-          impacts loan terms and affordability.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.downPaymentCalculator.explainTitle")}</h2>
+        <p>{t("pages.downPaymentCalculator.explainA")}</p>
+        <p>{t("pages.downPaymentCalculator.explainB")}</p>
       </section>
 
       <section className="mt-16 max-w-4xl space-y-6 text-sm text-gray-700 text-left">
-        <h2 className="text-2xl font-semibold text-gray-900">
-          People also ask about down payments
-        </h2>
+        <h2 className="text-2xl font-semibold text-gray-900">{t("pages.downPaymentCalculator.peopleAsk")}</h2>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How much should I put down on a house?
-          </h3>
-          <p className="text-gray-600">
-            How much you should put down depends on your budget, loan options, and goals, but many
-            buyers aim for 20% to avoid mortgage insurance while others use lower down payments to
-            get into a home sooner.
-            This calculator shows how different down payment percentages change your loan amount
-            and monthly payment so you can choose a strategy that fits your finances. You can also
-            check total affordability with our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.downPaymentCalculator.q1")}</h3>
+          <p className="text-gray-600">{t("pages.downPaymentCalculator.a1")}{" "}
             <Link href="/affordability-calculator" className="text-blue-600 underline">{t("pages.articleChrome.affordabilityCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How does my down payment affect my monthly mortgage payment?
-          </h3>
-          <p className="text-gray-600">
-            A larger down payment reduces your loan amount, which usually lowers your principal and
-            interest payment and may remove mortgage insurance.
-            A smaller down payment keeps more cash in your pocket but can increase your monthly
-            costs. You can see this trade-off by adjusting the percentage here and then reviewing
-            the payment breakdown in our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.downPaymentCalculator.q2")}</h3>
+          <p className="text-gray-600">{t("pages.downPaymentCalculator.a2")}{" "}
             <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            Can I buy a home with less than 20% down?
-          </h3>
-          <p className="text-gray-600">
-            Yes, many loan programs allow down payments as low as 3–5% for qualified buyers, and
-            some government-backed loans require even less.
-            These programs may involve mortgage insurance or slightly higher rates, which this
-            calculator helps you factor into your monthly payment. You can compare those payments
-            against renting using our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.downPaymentCalculator.q3")}</h3>
+          <p className="text-gray-600">{t("pages.downPaymentCalculator.a3")}{" "}
             <Link href="/rent-vs-buy-calculator" className="text-blue-600 underline">{t("pages.articleChrome.rentVsBuyCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How long will it take me to save for my target down payment?
-          </h3>
-          <p className="text-gray-600">
-            The time it takes to save depends on your target amount and how much you can set aside
-            monthly; this calculator helps you see how different targets change your loan and
-            payment.
-            Once you pick a realistic down payment goal here, you can plug the resulting loan into
-            the{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
-            to confirm that the payment still fits your budget.
-          </p>
+          <h3 className="text-lg font-semibold">{t("pages.downPaymentCalculator.q4")}</h3>
+          <p className="text-gray-600">{t("pages.downPaymentCalculator.a4")}{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}{t("pages.downPaymentCalculator.a4Tail")}</p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            Should I use my savings for a bigger down payment or keep more cash on hand?
-          </h3>
-          <p className="text-gray-600">
-            Putting more savings into your down payment lowers your monthly housing cost but leaves
-            you with less cash for emergencies, repairs, or other investments.
-            The right balance depends on your risk tolerance and financial goals. You can test
-            different down payment and payment combinations here, then see how they affect overall
-            affordability with our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.downPaymentCalculator.q5")}</h3>
+          <p className="text-gray-600">{t("pages.downPaymentCalculator.a5")}{" "}
             <Link href="/affordability-calculator" className="text-blue-600 underline">{t("pages.articleChrome.affordabilityCalculator")}</Link>
             .
           </p>
@@ -234,9 +180,7 @@ export default function DownPaymentCalculator() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
             <Link href="/affordability-calculator" className="text-blue-600 underline">{t("pages.articleChrome.affordabilityCalculator")}</Link>
-            <Link href="/closing-cost-estimator" className="text-blue-600 underline">
-              Closing Cost Estimator
-            </Link>
+            <Link href="/closing-cost-estimator" className="text-blue-600 underline">{t("pages.downPaymentCalculator.closingCostEstimator")}</Link>
             <Link href="/rent-vs-buy-calculator" className="text-blue-600 underline">{t("pages.articleChrome.rentVsBuyCalculator")}</Link>
           </div>
         </div>

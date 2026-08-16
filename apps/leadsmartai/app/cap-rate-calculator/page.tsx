@@ -63,18 +63,16 @@ export default function CapRateCalculator() {
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.capRateCalculator")}</h1>
-      <p className="text-gray-600 mb-8">
-        Calculate capitalization rate from NOI and purchase price.
-      </p>
+      <p className="text-gray-600 mb-8">{t("pages.capRateCalculator.sub")}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Property & income</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.capRateCalculator.propertyIncome")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField label="Purchase price ($)" value={purchasePrice} onChange={setPurchasePrice} min={1000} />
               <InputField label="Annual rent ($)" value={annualRent} onChange={setAnnualRent} min={0} />
-              <InputField label="Vacancy rate (%)" value={vacancyRate} onChange={setVacancyRate} min={0} max={50} step={1} />
+              <InputField label={t("pages.capRateCalculator.vacancyRate")} value={vacancyRate} onChange={setVacancyRate} min={0} max={50} step={1} />
               <InputField label="Property tax ($/yr)" value={propertyTax} onChange={setPropertyTax} min={0} />
               <InputField label="Insurance ($/yr)" value={insurance} onChange={setInsurance} min={0} />
               <InputField label="Maintenance ($/yr)" value={maintenance} onChange={setMaintenance} min={0} />
@@ -91,7 +89,7 @@ export default function CapRateCalculator() {
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-24">
             <ResultCard
-              title="Cap rate"
+              title={t("pages.capRateCalculator.capRateAria")}
               value={`${results.capRate.toFixed(2)}%`}
               details={`NOI: $${results.noi.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nEffective income: $${results.effectiveIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nTotal expenses: $${results.totalExpenses.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nCap rate: ${results.capRate.toFixed(2)}%`}
             />
@@ -100,81 +98,41 @@ export default function CapRateCalculator() {
       </div>
 
       <section className="mt-12 max-w-3xl space-y-3 text-sm text-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900">
-          What is a good cap rate?
-        </h2>
-        <p>
-          The cap rate calculator converts net operating income (NOI) and purchase price
-          into a capitalization rate, a core metric for comparing rental investments. It
-          adjusts for vacancy and common operating expenses to approximate stabilized
-          NOI.
-        </p>
-        <p>
-          Investors and brokers can use this tool to benchmark properties against local
-          market cap rates and risk profiles. Higher cap rates often indicate more risk
-          and potentially higher returns, while lower cap rates are typical in premium,
-          supply-constrained locations.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateCalculator.explainTitle")}</h2>
+        <p>{t("pages.capRateCalculator.explainA")}</p>
+        <p>{t("pages.capRateCalculator.explainB")}</p>
       </section>
 
       <section className="mt-16 max-w-4xl space-y-6 text-sm text-gray-700 text-left">
-        <h2 className="text-2xl font-semibold text-gray-900">
-          People also ask about cap rate
-        </h2>
+        <h2 className="text-2xl font-semibold text-gray-900">{t("pages.capRateCalculator.peopleAsk")}</h2>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            What is cap rate and why is it important?
-          </h3>
-          <p className="text-gray-600">
-            Cap rate, or capitalization rate, is a ratio of a property&apos;s net operating income
-            to its purchase price or value, expressed as a percentage.
-            It is important because it helps investors quickly compare the income potential and
-            risk profile of different properties. You can calculate it instantly with this{" "}
+          <h3 className="text-lg font-semibold">{t("pages.capRateCalculator.q1")}</h3>
+          <p className="text-gray-600">{t("pages.capRateCalculator.a1")}{" "}
             <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How do I calculate net operating income (NOI) for cap rate?
-          </h3>
-          <p className="text-gray-600">
-            To calculate NOI, subtract all reasonable operating expenses—such as taxes, insurance,
-            maintenance, and management—from your effective rental income, but do not subtract
-            mortgage payments.
-            This calculator helps you estimate NOI and cap rate at the same time, and you can
-            analyze detailed cash flow with our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.capRateCalculator.q2")}</h3>
+          <p className="text-gray-600">{t("pages.capRateCalculator.a2")}{" "}
             <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            Is a higher cap rate always better for investors?
-          </h3>
-          <p className="text-gray-600">
-            A higher cap rate is not always better, because it often reflects higher risk, weaker
-            locations, or more intensive management.
-            Lower cap rates are typical in strong, supply-constrained markets where investors are
-            willing to accept lower yields for more stability. You can compare cap rates across
-            deals and then analyze overall returns with our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.capRateCalculator.q3")}</h3>
+          <p className="text-gray-600">{t("pages.capRateCalculator.a3")}{" "}
             <Link href="/property-investment-analyzer" className="text-blue-600 underline">{t("pages.articleChrome.propertyAnalyzer")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How does financing affect cap rate and my real return?
-          </h3>
-          <p className="text-gray-600">
-            Traditional cap rate calculations ignore financing and are based only on NOI and
-            purchase price, but your real return also depends on your loan terms and cash invested.
-            To see the full picture, combine cap rate from this tool with cash-on-cash and ROI
-            metrics from our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.capRateCalculator.q4")}</h3>
+          <p className="text-gray-600">{t("pages.capRateCalculator.a4")}{" "}
             <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>{" "}
             and{" "}
             <Link href="/property-investment-analyzer" className="text-blue-600 underline">{t("pages.articleChrome.propertyAnalyzer")}</Link>
@@ -183,15 +141,8 @@ export default function CapRateCalculator() {
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            What is a good cap rate for my market?
-          </h3>
-          <p className="text-gray-600">
-            A &quot;good&quot; cap rate depends on your market, asset type, and risk tolerance—core
-            properties in top-tier markets often trade at lower cap rates, while value-add deals in
-            secondary markets show higher caps.
-            Use this calculator to evaluate individual properties and compare them to recent sales
-            or broker guidance. Then check projected cash flow with our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.capRateCalculator.q5")}</h3>
+          <p className="text-gray-600">{t("pages.capRateCalculator.a5")}{" "}
             <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
             .
           </p>
@@ -202,9 +153,7 @@ export default function CapRateCalculator() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
             <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>
-            <Link href="/property-investment-analyzer" className="text-blue-600 underline">
-              Investment Analyzer
-            </Link>
+            <Link href="/property-investment-analyzer" className="text-blue-600 underline">{t("pages.capRateCalculator.investmentAnalyzer")}</Link>
             <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
           </div>
         </div>

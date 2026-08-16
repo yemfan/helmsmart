@@ -90,17 +90,11 @@ const JSX_TEXT = /(?:^|[^=])[>}]([^<>{}]+)(?=[<{])/g;
  */
 const PENDING = new Set([
   "app/mortgage-calculator/page.tsx",
-  "app/closing-cost-estimator/page.tsx",
   "app/market-report/[city]/page.tsx",
   "app/property-investment-analyzer/page.tsx",
-  "app/rent-vs-buy-calculator/page.tsx",
   "app/agent/dashboard/page.tsx",
   "app/oh/[slug]/OpenHouseSigninClient.tsx",
-  "app/cash-flow-calculator/page.tsx",
-  "app/affordability-calculator/page.tsx",
   "app/home-value/[city]/page.tsx",
-  "app/cap-rate-calculator/page.tsx",
-  "app/down-payment-calculator/page.tsx",
   "app/switch-from/page.tsx",
   "app/open-house-signup/page.tsx",
   "app/sell-house/[city]/page.tsx",

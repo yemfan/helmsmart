@@ -70,14 +70,12 @@ export default function RentVsBuyCalculator() {
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.rentVsBuyCalculator")}</h1>
-      <p className="text-gray-600 mb-8">
-        Compare total costs over your planned stay. Buying builds equity; this compares out-of-pocket costs.
-      </p>
+      <p className="text-gray-600 mb-8">{t("pages.rentVsBuy.sub")}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Assumptions</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.rentVsBuy.assumptions")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="Monthly rent ($)"
@@ -98,7 +96,7 @@ export default function RentVsBuyCalculator() {
                 min={0}
               />
               <InputField
-                label="Mortgage rate (%)"
+                label={t("pages.rentVsBuy.mortgageRate")}
                 value={mortgageRate}
                 onChange={setMortgageRate}
                 min={0.1}
@@ -106,7 +104,7 @@ export default function RentVsBuyCalculator() {
                 step={0.125}
               />
               <InputField
-                label="Property tax rate (% per year)"
+                label={t("pages.rentVsBuy.propertyTaxRate")}
                 value={propertyTaxRate}
                 onChange={setPropertyTaxRate}
                 min={0}
@@ -114,7 +112,7 @@ export default function RentVsBuyCalculator() {
                 step={0.1}
               />
               <InputField
-                label="Expected appreciation (% per year)"
+                label={t("pages.rentVsBuy.appreciation")}
                 value={expectedAppreciation}
                 onChange={setExpectedAppreciation}
                 min={-5}
@@ -122,7 +120,7 @@ export default function RentVsBuyCalculator() {
                 step={0.5}
               />
               <InputField
-                label="Years planning to stay"
+                label={t("pages.rentVsBuy.yearsStaying")}
                 value={yearsToStay}
                 onChange={setYearsToStay}
                 min={1}
@@ -141,7 +139,7 @@ export default function RentVsBuyCalculator() {
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-24">
             <ResultCard
-              title="Comparison"
+              title={t("pages.rentVsBuy.comparisonAria")}
               value={recommendation}
               details={`Total cost renting (${yearsToStay} yrs): $${totalCostRenting.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nTotal cost buying (${yearsToStay} yrs): $${totalCostBuying.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nRecommendation: ${recommendation}`}
             />
@@ -150,38 +148,17 @@ export default function RentVsBuyCalculator() {
       </div>
 
       <section className="mt-12 max-w-3xl space-y-3 text-sm text-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Decide whether to rent or buy
-        </h2>
-        <p>
-          This rent vs buy calculator compares the total cost of renting to the total
-          cost of owning over your expected time horizon. It considers rent, home price,
-          down payment, mortgage rate, property taxes, and how long you plan to stay in
-          the property.
-        </p>
-        <p>
-          Use the results to see which option may be more cost-effective in your market,
-          and to discuss trade-offs like equity build-up, maintenance responsibilities,
-          and flexibility. Investors and first-time buyers can quickly test scenarios for
-          different neighborhoods or price points.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.rentVsBuy.explainTitle")}</h2>
+        <p>{t("pages.rentVsBuy.explainA")}</p>
+        <p>{t("pages.rentVsBuy.explainB")}</p>
       </section>
 
       <section className="mt-16 max-w-4xl space-y-6 text-sm text-gray-700 text-left">
-        <h2 className="text-2xl font-semibold text-gray-900">
-          People also ask about renting vs buying
-        </h2>
+        <h2 className="text-2xl font-semibold text-gray-900">{t("pages.rentVsBuy.peopleAsk")}</h2>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How does a rent vs buy calculator help me decide?
-          </h3>
-          <p className="text-gray-600">
-            A rent vs buy calculator compares the total cost of renting versus owning a home over a
-            set number of years.
-            It adds up rent, mortgage payments, taxes, insurance, and other costs to show which
-            option may be cheaper or better for building wealth. You can refine ownership costs
-            with our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.rentVsBuy.q1")}</h3>
+          <p className="text-gray-600">{t("pages.rentVsBuy.a1")}{" "}
             <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
             and{" "}
             <Link href="/affordability-calculator" className="text-blue-600 underline">{t("pages.articleChrome.affordabilityCalculator")}</Link>
@@ -190,28 +167,16 @@ export default function RentVsBuyCalculator() {
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How long do I need to stay in a home for buying to beat renting?
-          </h3>
-          <p className="text-gray-600">
-            Buying typically becomes more attractive the longer you stay because closing costs and
-            upfront expenses are spread over more years while you build equity.
-            This calculator lets you change your expected years in the home to see the break-even
-            point where owning may outperform renting. You can cross-check payments in our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.rentVsBuy.q2")}</h3>
+          <p className="text-gray-600">{t("pages.rentVsBuy.a2")}{" "}
             <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            What costs should I include when comparing rent vs buy?
-          </h3>
-          <p className="text-gray-600">
-            When buying, include mortgage payments, property taxes, homeowners insurance, HOA dues,
-            maintenance, and potential repairs.
-            For rentals, include rent, renter&apos;s insurance, and any utilities you pay
-            separately. For investment properties, you can also analyze cash flow with our{" "}
+          <h3 className="text-lg font-semibold">{t("pages.rentVsBuy.q3")}</h3>
+          <p className="text-gray-600">{t("pages.rentVsBuy.a3")}{" "}
             <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
             and{" "}
             <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
@@ -220,35 +185,19 @@ export default function RentVsBuyCalculator() {
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How does home price appreciation affect renting vs buying?
-          </h3>
-          <p className="text-gray-600">
-            If home prices appreciate over time, buying can build equity and net worth faster than
-            renting, where payments never create an asset.
-            In flat or declining markets, renting may be safer in the short term. You can adjust
-            appreciation assumptions in this tool and compare long-term returns in our{" "}
-            <Link href="/property-investment-analyzer" className="text-blue-600 underline">
-              Investment Analyzer
-            </Link>
+          <h3 className="text-lg font-semibold">{t("pages.rentVsBuy.q4")}</h3>
+          <p className="text-gray-600">{t("pages.rentVsBuy.a4")}{" "}
+            <Link href="/property-investment-analyzer" className="text-blue-600 underline">{t("pages.rentVsBuy.investmentAnalyzer")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            What if I don&apos;t have a large down payment yet?
-          </h3>
-          <p className="text-gray-600">
-            You can still compare renting and buying with lower down payment programs, but you may
-            pay mortgage insurance or slightly higher rates.
-            Use the{" "}
+          <h3 className="text-lg font-semibold">{t("pages.rentVsBuy.q5")}</h3>
+          <p className="text-gray-600">{t("pages.rentVsBuy.a5")}{" "}
             <Link href="/down-payment-calculator" className="text-blue-600 underline">{t("pages.articleChrome.downPaymentCalculator")}</Link>{" "}
             and{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
-            to see how different down payments change your owning costs before deciding whether to
-            keep renting or buy.
-          </p>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}{t("pages.rentVsBuy.a5Tail")}</p>
         </article>
 
         <div className="mt-12">
