@@ -7469,6 +7469,90 @@
       "whenBuying": "When are you looking to buy?",
       "sendListings": "Send me similar listings and follow-up info.",
       "replyStop": "You can reply STOP anytime."
+    },
+    "keywordPages": {
+      "marketReportFor": "Local market report content for",
+      "seoPageFor": "Local SEO page for",
+      "typicalValue": "Typical Value",
+      "annualTrend": "Annual Trend",
+      "daysOnMarket": "Days on Market",
+      "sellerInsight": "Seller insight",
+      "the": "The",
+      "marketIsCurrently": "market is currently",
+      "nearbyLinks": "Nearby city links",
+      "relatedPages": "Related pages",
+      "homeValueKeyword": "Home value keyword page",
+      "sellHouseKeyword": "Sell house keyword page",
+      "marketReportKeyword": "Market report keyword page"
+    },
+    "newsletterIssue": {
+      "weeklyNewsletter": "Weekly Newsletter",
+      "weekOf": "Week of",
+      "snapshotAria": "Regional market snapshot",
+      "marketSnapshot": "market snapshot",
+      "dataFor": "Market data for",
+      "beingRefreshed": "is being refreshed. Check back soon.",
+      "thisWeekAria": "This week in housing",
+      "thisWeek": "This week in housing",
+      "whatItMeans": "What it means for you:",
+      "provenance": "CloseBoss publishes this briefing weekly. Numbers are pulled from the cited public sources; the",
+      "provenanceTail": "snapshot comes from the CloseBoss Data Center."
+    },
+    "homeValueWidget": {
+      "h1": "What's My Home Worth?",
+      "sub": "Get an instant home value estimate and have a local agent follow up with a personalized report.",
+      "addressPlaceholder": "Enter property address",
+      "estimatedValue": "Estimated Home Value",
+      "estimatedRange": "Estimated range:",
+      "unlockNote": "Enter your email to unlock your full home value report and have a local expert follow up.",
+      "nameOptional": "Name (optional)",
+      "phoneOptional": "Phone (optional)",
+      "thankYou": "Thank you! Your home value report request has been sent. An agent will follow up with a detailed CMA.",
+      "poweredBy": "Powered by CloseBoss"
+    },
+    "analyzeRental": {
+      "intro": "A solid rental property analysis helps you avoid bad deals and move quickly on great ones. This guide shows you how to evaluate income, expenses, financing, and returns using the calculators in CloseBoss.",
+      "s1": "Begin by estimating realistic monthly rent and other income (parking, storage, pet fees). Then list out all operating expenses: property taxes, insurance, utilities you pay, HOA dues, maintenance, management fees, and an allowance for vacancy and repairs.",
+      "useThe": "Use the",
+      "toInput": "to input these assumptions and see annual income, annual expenses, and resulting cash flow.",
+      "s2": "Net operating income (NOI) is your annual income minus annual operating expenses, before debt service. It is a key number lenders and investors use to compare deals. Divide NOI by the purchase price to get the capitalization rate, or cap rate.",
+      "plugSame": "Plug the same income and expense assumptions into the",
+      "sideBySide": "to see NOI and cap rate side by side. This helps you compare the property to other opportunities in your target market.",
+      "s3": "Once a property looks good on an unlevered basis, analyze it with realistic loan terms. Use the",
+      "feedInto": "to understand your monthly principal and interest payment, then feed that into the",
+      "ctaTitle": "Analyze your next rental deal"
+    },
+    "onboardingPage": {
+      "getStarted": "Get started with CloseBoss",
+      "noJsBody": "Our interactive onboarding tour requires JavaScript. To continue without JavaScript, you can create an account directly and skip the preview.",
+      "createAccount": "Create account",
+      "seePricing": "See pricing",
+      "questions": "Questions?",
+      "onboarding": "Onboarding",
+      "h1": "Get your first AI-qualified leads in 10 minutes.",
+      "sub": "Tell us your market, preview AI-qualified leads for your area, then unlock full CRM and automation. No credit card required for the preview."
+    },
+    "hoaTracker": {
+      "h1": "HOA Fee Tracker",
+      "sub": "Project total HOA costs over time with annual increases.",
+      "assumptions": "HOA assumptions",
+      "annualIncrease": "Annual increase (%)",
+      "years": "Years",
+      "projectionAria": "HOA projection",
+      "explainTitle": "Understand long-term HOA costs",
+      "explainA": "The HOA fee tracker projects how much you will pay in homeowners association dues over time, including expected annual increases. It calculates the total HOA cost over your ownership period and highlights how rising fees affect long-term affordability.",
+      "explainB": "Buyers, condo owners, and townhome investors can use this calculator to factor HOA charges into overall housing costs, compare communities, and anticipate the impact of regular fee increases on cash flow and net returns."
+    },
+    "growthSeoTool": {
+      "notFound": "Page not found.",
+      "runNumbersFor": "Run numbers for the",
+      "marketCompare": "market — compare scenarios, estimate payments, and plan your next move. Built for buyers, sellers, and investors.",
+      "whyUseIn": "Why use this in",
+      "localizedFor": "Localized framing for",
+      "buyersComparing": "buyers comparing financing options.",
+      "shareable": "Shareable results you can send to your agent or lender.",
+      "mobileFirst": "Mobile-first — run it on the go during tours.",
+      "open": "Open"
     }
   }
 }

@@ -36,7 +36,7 @@ export default async function GrowthSeoPage({ params }: Props) {
   if (!t || !c) {
     return (
       <div className="max-w-lg mx-auto px-4 py-10">
-        <p>Page not found.</p>
+        <p>{tr("pages.growthSeoTool.notFound", { ns: "dashboard" })}</p>
         <Link href="/" className="text-blue-700 text-sm">{tr("pages.articleChrome.home", { ns: "dashboard" })}</Link>
       </div>
     );
@@ -55,26 +55,22 @@ export default async function GrowthSeoPage({ params }: Props) {
           <h1 className="text-2xl font-bold mt-1 leading-tight">
             {t.name} in {c.city}, {c.state}
           </h1>
-          <p className="text-slate-600 mt-3 text-sm leading-relaxed">
-            Run numbers for the {c.city} market — compare scenarios, estimate payments, and plan your next
-            move. Built for buyers, sellers, and investors.
-          </p>
+          <p className="text-slate-600 mt-3 text-sm leading-relaxed">{tr("pages.growthSeoTool.runNumbersFor", { ns: "dashboard" })} {c.city} {tr("pages.growthSeoTool.marketCompare", { ns: "dashboard" })}</p>
         </header>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 text-sm text-slate-700">
-          <h2 className="font-bold text-slate-900">Why use this in {c.city}?</h2>
+          <h2 className="font-bold text-slate-900">{tr("pages.growthSeoTool.whyUseIn", { ns: "dashboard" })} {c.city}?</h2>
           <ul className="list-disc pl-5 space-y-2">
-            <li>Localized framing for {c.state} buyers comparing financing options.</li>
-            <li>Shareable results you can send to your agent or lender.</li>
-            <li>Mobile-first — run it on the go during tours.</li>
+            <li>{tr("pages.growthSeoTool.localizedFor", { ns: "dashboard" })} {c.state} {tr("pages.growthSeoTool.buyersComparing", { ns: "dashboard" })}</li>
+            <li>{tr("pages.growthSeoTool.shareable", { ns: "dashboard" })}</li>
+            <li>{tr("pages.growthSeoTool.mobileFirst", { ns: "dashboard" })}</li>
           </ul>
         </section>
 
         <Link
           href={toolHref}
           className="flex w-full items-center justify-center rounded-2xl bg-blue-600 text-white font-semibold py-3 text-sm"
-        >
-          Open {t.name} →
+        >{tr("pages.growthSeoTool.open", { ns: "dashboard" })} {t.name} →
         </Link>
 
         <ProgressiveLeadCapture

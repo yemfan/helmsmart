@@ -7469,6 +7469,90 @@
       "whenBuying": "您打算什么时候买？",
       "sendListings": "请给我发送类似房源和后续信息。",
       "replyStop": "您随时可以回复 STOP 退订。"
+    },
+    "keywordPages": {
+      "marketReportFor": "本地市场报告内容：",
+      "seoPageFor": "本地 SEO 页面：",
+      "typicalValue": "典型价值",
+      "annualTrend": "年度走势",
+      "daysOnMarket": "在售天数",
+      "sellerInsight": "卖方洞察",
+      "the": "",
+      "marketIsCurrently": "市场目前处于",
+      "nearbyLinks": "邻近城市链接",
+      "relatedPages": "相关页面",
+      "homeValueKeyword": "房屋价值关键词页",
+      "sellHouseKeyword": "卖房关键词页",
+      "marketReportKeyword": "市场报告关键词页"
+    },
+    "newsletterIssue": {
+      "weeklyNewsletter": "每周简报",
+      "weekOf": "本周：",
+      "snapshotAria": "地区市场快照",
+      "marketSnapshot": "市场快照",
+      "dataFor": "以下地区的市场数据正在更新：",
+      "beingRefreshed": "，请稍后再来查看。",
+      "thisWeekAria": "本周住房市场",
+      "thisWeek": "本周住房市场",
+      "whatItMeans": "这对您意味着什么：",
+      "provenance": "CloseBoss 每周发布这份简报。文中数字取自所引用的公开数据源；",
+      "provenanceTail": "的快照来自 CloseBoss 数据中心。"
+    },
+    "homeValueWidget": {
+      "h1": "我的房子值多少钱？",
+      "sub": "立刻获取房屋估价，并由本地经纪人跟进，送上一份定制报告。",
+      "addressPlaceholder": "输入房产地址",
+      "estimatedValue": "预估房屋价值",
+      "estimatedRange": "估值区间：",
+      "unlockNote": "留下邮箱即可解锁完整的房屋估价报告，并由本地专业人士跟进。",
+      "nameOptional": "姓名（选填）",
+      "phoneOptional": "电话（选填）",
+      "thankYou": "谢谢！您的房屋估价报告请求已发送。经纪人会带着一份详细的 CMA 与您联系。",
+      "poweredBy": "由 CloseBoss 提供支持"
+    },
+    "analyzeRental": {
+      "intro": "一份扎实的出租房产分析，能帮您避开糟糕的项目，也能让您在遇到好项目时快速出手。这份指南会教您怎样用 CloseBoss 里的计算器评估收入、开支、融资和回报。",
+      "s1": "先估出合乎实际的月租金和其他收入（车位、储物、宠物费）。然后把所有运营开支列出来：房产税、保险、由您承担的水电燃气、HOA 费用、维护费、物业管理费，以及空置和维修的预留。",
+      "useThe": "用",
+      "toInput": "把这些假设填进去，就能看到年收入、年开支和由此得出的现金流。",
+      "s2": "净营运收入（NOI）是您的年收入减去年运营开支，在偿还贷款之前。它是贷款机构和投资人用来比较项目的关键数字。用 NOI 除以买入价，就得到资本化率。",
+      "plugSame": "把同样的收入和开支假设代入",
+      "sideBySide": "，就能并排看到 NOI 和资本化率。这能帮您把这处房产和目标市场里的其他机会做比较。",
+      "s3": "当一处房产在不加杠杆的情况下看着不错之后，再用切合实际的贷款条件来分析它。用",
+      "feedInto": "算清每月的本息还款额，然后把它代入",
+      "ctaTitle": "分析您的下一个出租房项目"
+    },
+    "onboardingPage": {
+      "getStarted": "开始使用 CloseBoss",
+      "noJsBody": "我们的互动式引导流程需要 JavaScript。如果不想启用 JavaScript，您可以跳过预览，直接创建账户继续。",
+      "createAccount": "创建账户",
+      "seePricing": "查看定价",
+      "questions": "有疑问？",
+      "onboarding": "引导设置",
+      "h1": "10 分钟内拿到您的第一批 AI 筛选线索。",
+      "sub": "告诉我们您所在的市场，先预览一批为您所在区域筛选的 AI 线索，然后解锁完整的 CRM 和自动化功能。预览无需信用卡。"
+    },
+    "hoaTracker": {
+      "h1": "HOA 费用追踪器",
+      "sub": "把 HOA 费用连同每年的涨幅一起推算到未来。",
+      "assumptions": "HOA 假设条件",
+      "annualIncrease": "每年涨幅（%）",
+      "years": "年数",
+      "projectionAria": "HOA 推算结果",
+      "explainTitle": "看懂长期的 HOA 成本",
+      "explainA": "HOA 费用追踪器会推算您在业主协会费用上一共要付多少，并把预期的每年涨幅算进去。它会算出您整个持有期内的 HOA 总成本，并突出显示费用上涨如何影响长期承受力。",
+      "explainB": "买家、公寓业主和联排投资人可以用它把 HOA 费用纳入整体住房成本、比较不同社区，并预判定期涨费对现金流和净回报的影响。"
+    },
+    "growthSeoTool": {
+      "notFound": "页面不存在。",
+      "runNumbersFor": "为",
+      "marketCompare": "市场算一算——比较不同情景、估算月供、规划下一步。为买家、卖家和投资人打造。",
+      "whyUseIn": "为什么在这里用它：",
+      "localizedFor": "针对",
+      "buyersComparing": "买家比较融资方案而做的本地化呈现。",
+      "shareable": "结果可分享，能直接发给您的经纪人或贷款机构。",
+      "mobileFirst": "移动优先——看房途中随时可以算。",
+      "open": "打开"
     }
   }
 }

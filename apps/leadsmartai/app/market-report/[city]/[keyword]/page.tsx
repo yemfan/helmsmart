@@ -55,8 +55,7 @@ export default async function MarketReportKeywordPage({
     <main className="mx-auto max-w-5xl px-4 py-10">
       <TrafficTracker pagePath={`/market-report/${city.slug}/${p.keyword}`} city={city.city} source="seo_market_report_keyword" />
       <h1 className="text-3xl font-bold text-slate-900">{keyword}</h1>
-      <p className="mt-2 text-slate-700">
-        Local market report content for {city.city}, {city.state}, built for long-tail SEO intent.
+      <p className="mt-2 text-slate-700">{t("pages.keywordPages.marketReportFor", { ns: "dashboard" })} {city.city}, {city.state}, built for long-tail SEO intent.
       </p>
 
       {(market.typicalValue !== null ||
@@ -64,31 +63,30 @@ export default async function MarketReportKeywordPage({
         market.medianDaysOnMarket !== null) && (
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           {market.typicalValue !== null && (
-            <Metric label="Typical Value" value={formatCurrency(market.typicalValue)} />
+            <Metric label={t("pages.keywordPages.typicalValue", { ns: "dashboard" })} value={formatCurrency(market.typicalValue)} />
           )}
           {market.yoyChangePct !== null && (
             <Metric
-              label="Annual Trend"
+              label={t("pages.keywordPages.annualTrend", { ns: "dashboard" })}
               value={`${market.yoyChangePct > 0 ? "+" : ""}${market.yoyChangePct}%`}
             />
           )}
           {market.medianDaysOnMarket !== null && (
-            <Metric label="Days on Market" value={`${Math.round(market.medianDaysOnMarket)}`} />
+            <Metric label={t("pages.keywordPages.daysOnMarket", { ns: "dashboard" })} value={`${Math.round(market.medianDaysOnMarket)}`} />
           )}
         </div>
       )}
 
       <section className="mt-8 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Seller insight</h2>
-          <p className="mt-2 text-sm text-slate-700">
-            The {city.city} market is currently <span className="font-semibold">{market.trend}</span>
+          <h2 className="text-xl font-semibold text-slate-900">{t("pages.keywordPages.sellerInsight", { ns: "dashboard" })}</h2>
+          <p className="mt-2 text-sm text-slate-700">{t("pages.keywordPages.the", { ns: "dashboard" })} {city.city} {t("pages.keywordPages.marketIsCurrently", { ns: "dashboard" })} <span className="font-semibold">{market.trend}</span>
             {market.medianDaysOnMarket !== null
               ? `, with market speed around ${Math.round(market.medianDaysOnMarket)} days`
               : ""}
             .
           </p>
-          <h3 className="mt-4 text-base font-semibold text-slate-900">Nearby city links</h3>
+          <h3 className="mt-4 text-base font-semibold text-slate-900">{t("pages.keywordPages.nearbyLinks", { ns: "dashboard" })}</h3>
           <div className="mt-2 flex flex-wrap gap-3 text-sm">
             {nearby.map((n) => (
               <a key={n.slug} href={`/market-report/${n.slug}/${p.keyword}`} className="text-blue-700 hover:underline">
@@ -96,10 +94,10 @@ export default async function MarketReportKeywordPage({
               </a>
             ))}
           </div>
-          <h3 className="mt-4 text-base font-semibold text-slate-900">Related pages</h3>
+          <h3 className="mt-4 text-base font-semibold text-slate-900">{t("pages.keywordPages.relatedPages", { ns: "dashboard" })}</h3>
           <div className="mt-2 flex flex-wrap gap-3 text-sm">
-            <a href={`/home-value/${city.slug}/${p.keyword}`} className="text-blue-700 hover:underline">Home value keyword page</a>
-            <a href={`/sell-house/${city.slug}/${p.keyword}`} className="text-blue-700 hover:underline">Sell house keyword page</a>
+            <a href={`/home-value/${city.slug}/${p.keyword}`} className="text-blue-700 hover:underline">{t("pages.keywordPages.homeValueKeyword", { ns: "dashboard" })}</a>
+            <a href={`/sell-house/${city.slug}/${p.keyword}`} className="text-blue-700 hover:underline">{t("pages.keywordPages.sellHouseKeyword", { ns: "dashboard" })}</a>
           </div>
         </article>
         <LocalSeoLeadForm title={`Get ${city.city} Market Report`} source="seo_market_report_keyword" city={city.city} />

@@ -33,58 +33,32 @@ export default function HowToAnalyzeRentalPropertyPage() {
       <h1 className="text-3xl font-bold text-blue-600 mb-3">
         {title}
       </h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        A solid rental property analysis helps you avoid bad deals and move quickly on
-        great ones. This guide shows you how to evaluate income, expenses, financing,
-        and returns using the calculators in CloseBoss.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.analyzeRental.intro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
           1. Start with gross income and operating expenses
         </h2>
-        <p>
-          Begin by estimating realistic monthly rent and other income (parking, storage,
-          pet fees). Then list out all operating expenses: property taxes, insurance,
-          utilities you pay, HOA dues, maintenance, management fees, and an allowance
-          for vacancy and repairs.
-        </p>
-        <p>
-          Use the{" "}
-          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
-          to input these assumptions and see annual income, annual expenses, and
-          resulting cash flow.
-        </p>
+        <p>{t("pages.analyzeRental.s1")}</p>
+        <p>{t("pages.analyzeRental.useThe")}{" "}
+          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}{t("pages.analyzeRental.toInput")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
           2. Calculate NOI and cap rate
         </h2>
-        <p>
-          Net operating income (NOI) is your annual income minus annual operating
-          expenses, before debt service. It is a key number lenders and investors use to
-          compare deals. Divide NOI by the purchase price to get the capitalization
-          rate, or cap rate.
-        </p>
-        <p>
-          Plug the same income and expense assumptions into the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-          to see NOI and cap rate side by side. This helps you compare the property to
-          other opportunities in your target market.
-        </p>
+        <p>{t("pages.analyzeRental.s2")}</p>
+        <p>{t("pages.analyzeRental.plugSame")}{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.analyzeRental.sideBySide")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">
           3. Layer in financing and long‑term returns
         </h2>
-        <p>
-          Once a property looks good on an unlevered basis, analyze it with realistic
-          loan terms. Use the{" "}
-          <Link href="/mortgage-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
-          to understand your monthly principal and interest payment, then feed that into
-          the{" "}
+        <p>{t("pages.analyzeRental.s3")}{" "}
+          <Link href="/mortgage-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}{t("pages.analyzeRental.feedInto")}{" "}
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
           or{" "}
           <Link href="/roi-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.roiCalculator")}</Link>{" "}
@@ -98,9 +72,7 @@ export default function HowToAnalyzeRentalPropertyPage() {
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Analyze your next rental deal
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.analyzeRental.ctaTitle")}</h2>
         <p className="mb-3">
           Use this simple workflow on every property you consider: estimate income and
           expenses, calculate NOI and cap rate, then model financing and long‑term ROI.
