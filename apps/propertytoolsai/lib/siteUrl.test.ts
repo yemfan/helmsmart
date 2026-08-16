@@ -13,6 +13,7 @@ describe("getSiteUrl / getOAuthRedirectOrigin", () => {
   afterEach(() => {
     process.env = originalEnv;
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   it("normalizes NEXT_PUBLIC_SITE_URL without scheme", async () => {
@@ -23,7 +24,8 @@ describe("getSiteUrl / getOAuthRedirectOrigin", () => {
 
   it("getOAuthRedirectOrigin uses window when env unset (client)", async () => {
     vi.stubGlobal("window", { location: { origin: "http://localhost:3001" } });
-    process.env.NODE_ENV = "development";
+    // NODE_ENV is typed readonly, so a plain assignment does not typecheck.
+    vi.stubEnv("NODE_ENV", "development");
     const { getOAuthRedirectOrigin } = await import("./siteUrl");
     expect(getOAuthRedirectOrigin()).toBe("http://localhost:3001");
   });
