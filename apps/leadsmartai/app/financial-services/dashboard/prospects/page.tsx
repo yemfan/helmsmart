@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { Users } from "lucide-react";
 import ComingSoon from "../_components/ComingSoon";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Prospects · LeadSmart AI",
   robots: { index: false },
 };
 
-export default function ProspectsPage() {
+export default async function ProspectsPage() {
+  const t = await getServerT();
   return (
     <ComingSoon
       icon={Users}
-      title="Prospects"
+      title={t("pages.financialServices.navProspects", { ns: "dashboard" })}
       description="Every inbound lead from your funnels, with AI nurture status, intent score, and next-best action."
       availability="Pilot week 1"
       bulletPoints={[

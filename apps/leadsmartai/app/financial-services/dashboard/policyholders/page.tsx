@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { Briefcase } from "lucide-react";
 import ComingSoon from "../_components/ComingSoon";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Policyholders · LeadSmart AI",
   robots: { index: false },
 };
 
-export default function PolicyholdersPage() {
+export default async function PolicyholdersPage() {
+  const t = await getServerT();
   return (
     <ComingSoon
       icon={Briefcase}
-      title="Policyholders"
+      title={t("pages.financialServices.navPolicyholders", { ns: "dashboard" })}
       description="Your book of business — every active policy, carrier, anniversary, and beneficiary in one place."
       availability="Pilot week 4"
       bulletPoints={[

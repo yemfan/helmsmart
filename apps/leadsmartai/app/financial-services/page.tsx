@@ -15,6 +15,7 @@ import {
   Users,
 } from "lucide-react";
 import { getFinancialServicesTheme } from "@/lib/financial-services/theme";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "LeadSmart AI for Financial Services Agencies",
@@ -107,7 +108,8 @@ const FAQ = [
   },
 ];
 
-export default function FinancialServicesLandingPage() {
+export default async function FinancialServicesLandingPage() {
+  const t = await getServerT();
   const theme = getFinancialServicesTheme();
 
   return (
@@ -126,17 +128,15 @@ export default function FinancialServicesLandingPage() {
             )}
           </Link>
           <nav className="hidden gap-6 text-sm text-slate-600 md:flex">
-            <a href="#how" className="hover:text-slate-900">How it works</a>
-            <a href="#features" className="hover:text-slate-900">Features</a>
-            <a href="#compare" className="hover:text-slate-900">Why us</a>
-            <Link href="/financial-services/pricing" className="hover:text-slate-900">Pricing</Link>
+            <a href="#how" className="hover:text-slate-900">{t("pages.fsMarketing.howItWorks", { ns: "dashboard" })}</a>
+            <a href="#features" className="hover:text-slate-900">{t("pages.fsMarketing.features", { ns: "dashboard" })}</a>
+            <a href="#compare" className="hover:text-slate-900">{t("pages.fsMarketing.whyUs", { ns: "dashboard" })}</a>
+            <Link href="/financial-services/pricing" className="hover:text-slate-900">{t("pages.fsMarketing.pricing", { ns: "dashboard" })}</Link>
           </nav>
           <Link
             href="/login?redirect=/financial-services/dashboard"
             className={`hidden rounded-full px-4 py-2 text-sm font-semibold text-white md:inline-flex ${theme.ctaBg}`}
-          >
-            Sign in
-          </Link>
+          >{t("pages.fsMarketing.signIn", { ns: "dashboard" })}</Link>
         </div>
       </header>
 
@@ -153,37 +153,26 @@ export default function FinancialServicesLandingPage() {
               )}
               <h1 className="text-4xl font-semibold tracking-tight text-white md:text-5xl lg:text-6xl">
                 The AI platform built for{" "}
-                <span className={theme.accentText}>financial services producers</span> — not real estate, not retail.
+                <span className={theme.accentText}>{t("pages.fsMarketing.heroTail", { ns: "dashboard" })}</span> — not real estate, not retail.
               </h1>
-              <p className="mt-5 max-w-2xl text-lg leading-7 text-white/80">
-                Capture leads. Nurture them with AI in under five minutes. Generate a polished
-                Financial Needs Analysis in 60 seconds. Track your recruit pipeline alongside
-                your client pipeline — in one workspace.
-              </p>
+              <p className="mt-5 max-w-2xl text-lg leading-7 text-white/80">{t("pages.fsMarketing.heroSub", { ns: "dashboard" })}</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/financial-services/dashboard"
                   className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-black/20 ${theme.ctaBg}`}
-                >
-                  See the demo dashboard <ArrowRight className="h-4 w-4" />
+                >{t("pages.fsMarketing.seeDemo", { ns: "dashboard" })}<ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
                   href="#how"
                   className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 py-3 text-sm font-semibold text-white backdrop-blur hover:bg-white/10"
-                >
-                  How it works
-                </a>
+                >{t("pages.fsMarketing.howItWorks", { ns: "dashboard" })}</a>
               </div>
-              <p className="mt-4 text-xs text-white/60">
-                Pilot-ready for IMOs and MLM financial services agencies. Compliance reviewed.
-              </p>
+              <p className="mt-4 text-xs text-white/60">{t("pages.fsMarketing.pilotReady", { ns: "dashboard" })}</p>
             </div>
 
             <div className="lg:col-span-5">
               <div className="rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur">
-                <p className="text-xs font-semibold uppercase tracking-wider text-white/60">
-                  Pilot benchmarks
-                </p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-white/60">{t("pages.fsMarketing.benchmarks", { ns: "dashboard" })}</p>
                 <div className="mt-3 space-y-4">
                   {KPI_BAR.map((kpi) => (
                     <div key={kpi.label} className="border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
@@ -204,12 +193,8 @@ export default function FinancialServicesLandingPage() {
       {/* How it works */}
       <section id="how" className="border-y border-slate-100 bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-            From inbound to issued policy — one workspace
-          </h2>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
-            Designed around how producers actually work — and how upline leaders actually grow teams.
-          </p>
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">{t("pages.fsMarketing.inboundToIssued", { ns: "dashboard" })}</h2>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">{t("pages.fsMarketing.designedAround", { ns: "dashboard" })}</p>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {HOW_IT_WORKS.map((step) => (
               <div key={step.num} className="rounded-2xl border border-slate-200 bg-white p-6">
@@ -226,12 +211,8 @@ export default function FinancialServicesLandingPage() {
       <section id="features" className="bg-white">
         <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
           <div className="max-w-3xl">
-            <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-              Every tool a producer needs — and every tool an upline asks for
-            </h2>
-            <p className="mt-3 text-base leading-7 text-slate-600">
-              Built from day one for IUL, annuity, term life, and recruiting workflows.
-            </p>
+            <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">{t("pages.fsMarketing.everyTool", { ns: "dashboard" })}</h2>
+            <p className="mt-3 text-base leading-7 text-slate-600">{t("pages.fsMarketing.builtDayOne", { ns: "dashboard" })}</p>
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
@@ -248,15 +229,13 @@ export default function FinancialServicesLandingPage() {
       {/* Comparison */}
       <section id="compare" className="border-y border-slate-100 bg-slate-50">
         <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-            What producers use today vs. what they actually need
-          </h2>
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">{t("pages.fsMarketing.todayVsNeed", { ns: "dashboard" })}</h2>
           <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white">
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-100 text-xs font-semibold uppercase tracking-wider text-slate-600">
                 <tr>
-                  <th className="px-5 py-3">Today&apos;s stack</th>
-                  <th className="px-5 py-3">Where it falls short</th>
+                  <th className="px-5 py-3">{t("pages.fsMarketing.todaysStack", { ns: "dashboard" })}</th>
+                  <th className="px-5 py-3">{t("pages.fsMarketing.fallsShort", { ns: "dashboard" })}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -277,13 +256,8 @@ export default function FinancialServicesLandingPage() {
         <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
           <div className="grid gap-10 lg:grid-cols-2">
             <div>
-              <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-                Start with a low-risk pilot
-              </h2>
-              <p className="mt-3 text-base leading-7 text-slate-600">
-                We propose a 90-day pilot with one MD&apos;s team (10–25 agents). Free platform access,
-                weekly metric reads, and a written decision framework at day 90: expand, extend, or exit.
-              </p>
+              <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">{t("pages.fsMarketing.lowRiskPilot", { ns: "dashboard" })}</h2>
+              <p className="mt-3 text-base leading-7 text-slate-600">{t("pages.fsMarketing.pilotProposal", { ns: "dashboard" })}</p>
               <ul className="mt-6 space-y-3">
                 {[
                   "Platform free for the pilot cohort for 90 days",
@@ -303,26 +277,24 @@ export default function FinancialServicesLandingPage() {
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-8">
               <div className="flex items-center gap-3">
                 <Timer className={`h-5 w-5 ${theme.accentIcon}`} />
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Pilot timeline
-                </p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.fsMarketing.pilotTimeline", { ns: "dashboard" })}</p>
               </div>
               <div className="mt-6 space-y-5 text-sm">
                 <div>
                   <p className="font-semibold text-slate-900">Week 0 · Agreement + scope</p>
-                  <p className="text-slate-600">Pick MD, cohort, baselines.</p>
+                  <p className="text-slate-600">{t("pages.fsMarketing.pilotStep1", { ns: "dashboard" })}</p>
                 </div>
                 <div>
                   <p className="font-semibold text-slate-900">Week 1–2 · Compliance + onboarding</p>
-                  <p className="text-slate-600">Templates reviewed by principal/OSJ. Cohort onboarded.</p>
+                  <p className="text-slate-600">{t("pages.fsMarketing.pilotStep2", { ns: "dashboard" })}</p>
                 </div>
                 <div>
                   <p className="font-semibold text-slate-900">Week 3–8 · Active pilot</p>
-                  <p className="text-slate-600">Daily ops support. Weekly metric reads. Template iteration.</p>
+                  <p className="text-slate-600">{t("pages.fsMarketing.pilotStep3", { ns: "dashboard" })}</p>
                 </div>
                 <div>
                   <p className="font-semibold text-slate-900">Week 9–12 · Measurement + decision</p>
-                  <p className="text-slate-600">Joint review at day 90. Expand / extend / exit.</p>
+                  <p className="text-slate-600">{t("pages.fsMarketing.pilotStep4", { ns: "dashboard" })}</p>
                 </div>
               </div>
             </div>
@@ -333,9 +305,7 @@ export default function FinancialServicesLandingPage() {
       {/* FAQ */}
       <section className="border-t border-slate-100 bg-slate-50">
         <div className="mx-auto max-w-4xl px-4 py-16 md:px-6 md:py-20">
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-            Common questions from agency leaders
-          </h2>
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">{t("pages.fsMarketing.commonQuestions", { ns: "dashboard" })}</h2>
           <div className="mt-10 space-y-6">
             {FAQ.map((item) => (
               <details key={item.q} className="group rounded-2xl border border-slate-200 bg-white p-6">
@@ -352,25 +322,18 @@ export default function FinancialServicesLandingPage() {
       {/* Final CTA */}
       <section className={`${theme.heroBg}`}>
         <div className="mx-auto max-w-4xl px-4 py-16 text-center md:px-6 md:py-20">
-          <h2 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">
-            Ready to see it in your producers&apos; hands?
-          </h2>
-          <p className="mt-4 text-base leading-7 text-white/80">
-            A 30-minute walkthrough with your MD and one of your top producers. We show, you ask hard questions.
-          </p>
+          <h2 className="text-3xl font-semibold tracking-tight text-white md:text-4xl">{t("pages.fsMarketing.readyToSee", { ns: "dashboard" })}</h2>
+          <p className="mt-4 text-base leading-7 text-white/80">{t("pages.fsMarketing.walkthrough", { ns: "dashboard" })}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               href="/financial-services/dashboard"
               className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-black/20 ${theme.ctaBg}`}
-            >
-              Open the live demo <ArrowRight className="h-4 w-4" />
+            >{t("pages.fsMarketing.openDemo", { ns: "dashboard" })}<ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/support"
               className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur hover:bg-white/10"
-            >
-              Talk to founder
-            </Link>
+            >{t("pages.fsMarketing.talkFounder", { ns: "dashboard" })}</Link>
           </div>
         </div>
       </section>

@@ -36,6 +36,7 @@ const ALLOWED = new Set([
   "Sugar Land, TX 77479",
   "United States",
   "CloseBoss",
+  "CloseBoss AI",
   "Pinterest",
   "TikTok",
   "YouTube",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { MessageSquare, Mail, ShieldCheck, Filter } from "lucide-react";
 import {
   FS_TEMPLATES,
@@ -21,6 +22,7 @@ const CATEGORIES: { id: FsTemplateCategory; label: string }[] = [
 ];
 
 export default function TemplatesClient() {
+  const { t } = useTranslation("dashboard");
   const [channel, setChannel] = useState<"all" | FsTemplateChannel>("all");
   const [category, setCategory] = useState<"all" | FsTemplateCategory>("all");
 
@@ -46,13 +48,8 @@ export default function TemplatesClient() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-            Templates
-          </h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Pre-built AI templates for prospect intake, FNA follow-up, annual reviews, and recruiting.
-            All compliance-reviewed before send.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{t("pages.financialServices.templates")}</h1>
+          <p className="mt-1 text-sm text-slate-600">{t("pages.financialServices.templatesSub")}</p>
         </div>
         <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-1 py-1 text-xs">
           <Filter className="ml-2 h-3.5 w-3.5 text-slate-400" />
@@ -76,7 +73,7 @@ export default function TemplatesClient() {
 
       <div className="flex flex-wrap gap-2">
         <CategoryChip
-          label="All"
+          label={t("pages.financialServices.all")}
           active={category === "all"}
           onClick={() => setCategory("all")}
         />
@@ -108,7 +105,7 @@ export default function TemplatesClient() {
 
       {filtered.length === 0 && (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center">
-          <p className="text-sm text-slate-500">No templates match your filters.</p>
+          <p className="text-sm text-slate-500">{t("pages.financialServices.noTemplates")}</p>
         </div>
       )}
     </div>
@@ -141,6 +138,8 @@ function CategoryChip({
 }
 
 function TemplateCard({ t }: { t: FsTemplate }) {
+  // The prop is already `t`, so the translator binds as `tr` here.
+  const { t: tr } = useTranslation("dashboard");
   const Icon = t.channel === "sms" ? MessageSquare : Mail;
   return (
     <article className="rounded-2xl border border-slate-200 bg-white p-5">
@@ -160,9 +159,7 @@ function TemplateCard({ t }: { t: FsTemplate }) {
           </div>
         </div>
         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
-          <ShieldCheck className="h-3 w-3" />
-          Compliance-OK
-        </span>
+          <ShieldCheck className="h-3 w-3" />{tr("pages.financialServices.complianceOk")}</span>
       </header>
 
       <pre className="mt-4 whitespace-pre-wrap rounded-xl bg-slate-50 p-4 text-xs leading-6 text-slate-700">

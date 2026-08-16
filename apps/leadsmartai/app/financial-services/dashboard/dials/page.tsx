@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { Phone } from "lucide-react";
 import ComingSoon from "../_components/ComingSoon";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Dials · LeadSmart AI",
   robots: { index: false },
 };
 
-export default function DialsPage() {
+export default async function DialsPage() {
+  const t = await getServerT();
   return (
     <ComingSoon
       icon={Phone}
-      title="Dials"
+      title={t("pages.financialServices.navDials", { ns: "dashboard" })}
       description="Outbound call queue with AI prep notes, click-to-dial, and post-call disposition logging."
       availability="Pilot week 3"
       bulletPoints={[

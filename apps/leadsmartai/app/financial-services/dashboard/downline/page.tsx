@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { Users } from "lucide-react";
 import ComingSoon from "../_components/ComingSoon";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Downline · LeadSmart AI",
   robots: { index: false },
 };
 
-export default function DownlinePage() {
+export default async function DownlinePage() {
+  const t = await getServerT();
   return (
     <ComingSoon
       icon={Users}
-      title="Downline"
+      title={t("pages.financialServices.navDownline", { ns: "dashboard" })}
       description="Your full hierarchy — every associate under you, their pipeline, their production, their licensing status."
       availability="Pilot week 2"
       bulletPoints={[

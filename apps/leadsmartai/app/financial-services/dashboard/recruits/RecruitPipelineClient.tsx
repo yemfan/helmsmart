@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, Search, Users } from "lucide-react";
 
 /**
@@ -82,6 +83,7 @@ const SEED_RECRUITS: RecruitCard[] = [
 ];
 
 export default function RecruitPipelineClient() {
+  const { t } = useTranslation("dashboard");
   const [filter, setFilter] = useState("");
   const [recruits] = useState(SEED_RECRUITS);
 
@@ -106,12 +108,8 @@ export default function RecruitPipelineClient() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-            Recruit pipeline
-          </h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Track recruits from initial interest through licensed and producing. Roll-up by upline.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{t("pages.financialServices.recruitPipeline")}</h1>
+          <p className="mt-1 text-sm text-slate-600">{t("pages.financialServices.recruitSub")}</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="relative">
@@ -128,9 +126,7 @@ export default function RecruitPipelineClient() {
             type="button"
             className="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500"
           >
-            <Plus className="h-4 w-4" />
-            Add recruit
-          </button>
+            <Plus className="h-4 w-4" />{t("pages.financialServices.addRecruit")}</button>
         </div>
       </header>
 
@@ -184,14 +180,10 @@ export default function RecruitPipelineClient() {
                         {r.daysInStage}d in stage
                       </span>
                       {r.flag === "stalled" && (
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-800">
-                          Stalled
-                        </span>
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-800">{t("pages.financialServices.stalled")}</span>
                       )}
                       {r.flag === "hot" && (
-                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-800">
-                          Hot
-                        </span>
+                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-800">{t("pages.financialServices.hot")}</span>
                       )}
                     </div>
                   </article>
@@ -200,7 +192,7 @@ export default function RecruitPipelineClient() {
                 {(byStage.get(s.id) ?? []).length === 0 && (
                   <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white/50 py-8 text-center">
                     <Users className="h-5 w-5 text-slate-300" />
-                    <p className="mt-1 text-xs text-slate-400">No recruits yet</p>
+                    <p className="mt-1 text-xs text-slate-400">{t("pages.financialServices.noRecruits")}</p>
                   </div>
                 )}
               </div>

@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Shared empty-state for routes that are scaffolded for the GFI pitch
@@ -21,6 +22,7 @@ export default function ComingSoon({
   /** Optional list of capabilities the feature will ship with. */
   bulletPoints?: string[];
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="space-y-6">
       <header>
@@ -59,10 +61,7 @@ export default function ComingSoon({
             </ul>
           )}
 
-          <p className="mt-6 text-xs text-slate-500">
-            Cohort feedback during weeks 1-2 of the pilot shapes the final spec
-            for this feature.
-          </p>
+          <p className="mt-6 text-xs text-slate-500">{t("pages.financialServices.cohortFeedback")}</p>
         </div>
       </section>
     </div>

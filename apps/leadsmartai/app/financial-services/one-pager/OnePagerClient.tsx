@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
 import {
   ArrowRight,
@@ -13,6 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { getFinancialServicesTheme } from "@/lib/financial-services/theme";
+import { intlLocale } from "@/lib/i18n/locale";
 
 /**
  * Executive one-pager for forwarding to GFI leadership.
@@ -24,6 +26,8 @@ import { getFinancialServicesTheme } from "@/lib/financial-services/theme";
  * Shareable URL: /financial-services/one-pager?print=1 auto-opens the print dialog.
  */
 export default function OnePagerClient() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const theme = getFinancialServicesTheme();
   const params = useSearchParams();
 
@@ -34,7 +38,7 @@ export default function OnePagerClient() {
   }, [params]);
 
   const partnerLabel = theme.partnerName || "Financial Services";
-  const today = new Date().toLocaleDateString("en-US", {
+  const today = new Date().toLocaleDateString(locale, {
     year: "numeric",
     month: "long",
   });
@@ -66,17 +70,13 @@ export default function OnePagerClient() {
 
       {/* Toolbar (screen only) */}
       <div className="no-print mx-auto flex max-w-[8.5in] items-center justify-between gap-3 px-2 pt-6 pb-3">
-        <p className="text-sm text-slate-600">
-          Executive brief — optimized for print or save-as-PDF.
-        </p>
+        <p className="text-sm text-slate-600">{t("pages.fsMarketing.execBrief")}</p>
         <button
           type="button"
           onClick={() => window.print()}
           className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-slate-800"
         >
-          <Printer className="h-4 w-4" />
-          Save as PDF
-        </button>
+          <Printer className="h-4 w-4" />{t("pages.fsMarketing.saveAsPdf")}</button>
       </div>
 
       <article
@@ -94,15 +94,10 @@ export default function OnePagerClient() {
                 LeadSmart&nbsp;AI for{" "}
                 <span className={theme.accentText}>{partnerLabel}</span>
               </h1>
-              <p className="mt-2 max-w-[5in] text-[11pt] leading-snug text-white/85">
-                Purpose-built AI workspace for the way MLM financial-services
-                agencies actually grow — recruit, nurture, sit, close.
-              </p>
+              <p className="mt-2 max-w-[5in] text-[11pt] leading-snug text-white/85">{t("pages.fsMarketing.purposeBuilt")}</p>
             </div>
             <div className="hidden text-right text-[9pt] leading-tight text-white/70 sm:block">
-              <p className="font-semibold uppercase tracking-wider text-white/80">
-                Prepared for
-              </p>
+              <p className="font-semibold uppercase tracking-wider text-white/80">{t("pages.fsMarketing.preparedFor")}</p>
               <p className="mt-0.5">{partnerLabel} Leadership</p>
             </div>
           </div>
@@ -134,13 +129,11 @@ export default function OnePagerClient() {
           </p>
 
           {/* What it does — 4 cards in 2x2 */}
-          <h2 className="mt-5 text-[11pt] font-semibold uppercase tracking-wider text-slate-500">
-            What the platform does today
-          </h2>
+          <h2 className="mt-5 text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.fsMarketing.whatItDoes")}</h2>
           <div className="mt-2 grid grid-cols-2 gap-3">
             <FeatureCard
               icon={Bot}
-              title="AI nurture in under 5 minutes"
+              title={t("pages.fsMarketing.nurture5")}
               body="Every inbound prospect gets an SMS or email reply within minutes, in the producer's voice, with state-appropriate disclosures auto-appended."
               accentBg={
                 theme.partnerName === "GFI" ? "bg-amber-50" : "bg-indigo-50"
@@ -151,7 +144,7 @@ export default function OnePagerClient() {
             />
             <FeatureCard
               icon={Sparkles}
-              title="Financial Needs Analysis in 60 seconds"
+              title={t("pages.fsMarketing.fna60")}
               body="Producer types in client facts → polished, agent-branded FNA with DIME, retirement gap, and coverage recommendation, ready for the kitchen-table sit."
               accentBg={
                 theme.partnerName === "GFI" ? "bg-amber-50" : "bg-indigo-50"
@@ -162,7 +155,7 @@ export default function OnePagerClient() {
             />
             <FeatureCard
               icon={Network}
-              title="Recruit pipeline + downline view"
+              title={t("pages.fsMarketing.recruitDownline")}
               body="Interest → BPM → License → First Sale → Promotion, with hierarchy and recruit-fit scoring built in — MDs see their downline without a spreadsheet."
               accentBg={
                 theme.partnerName === "GFI" ? "bg-amber-50" : "bg-indigo-50"
@@ -173,7 +166,7 @@ export default function OnePagerClient() {
             />
             <FeatureCard
               icon={ShieldCheck}
-              title="Compliance-aware by design"
+              title={t("pages.fsMarketing.complianceAware")}
               body="TCPA opt-in audit · supervised review queue for AI drafts · state-disclosure injection · audit-ready communications archive."
               accentBg={
                 theme.partnerName === "GFI" ? "bg-amber-50" : "bg-indigo-50"
@@ -187,15 +180,13 @@ export default function OnePagerClient() {
           {/* Metrics + Pilot side-by-side */}
           <div className="mt-5 grid grid-cols-5 gap-4">
             <div className="col-span-3">
-              <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">
-                The four numbers we expect to move
-              </h2>
+              <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.fsMarketing.fourNumbers")}</h2>
               <table className="mt-2 w-full border-collapse text-[9.5pt]">
                 <thead>
                   <tr className="border-b border-slate-200 text-left text-[8.5pt] font-semibold uppercase tracking-wider text-slate-500">
-                    <th className="py-1.5">Metric</th>
-                    <th className="py-1.5">Baseline</th>
-                    <th className="py-1.5 text-right">Pilot target</th>
+                    <th className="py-1.5">{t("pages.fsMarketing.metric")}</th>
+                    <th className="py-1.5">{t("pages.fsMarketing.baseline")}</th>
+                    <th className="py-1.5 text-right">{t("pages.fsMarketing.pilotTarget")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -244,17 +235,14 @@ export default function OnePagerClient() {
                 >
                   90-day pilot · zero cost
                 </p>
-                <p className="mt-1.5 text-[9.5pt] font-semibold text-slate-900">
-                  One MD&apos;s team, 10–25 producers.
-                </p>
+                <p className="mt-1.5 text-[9.5pt] font-semibold text-slate-900">{t("pages.fsMarketing.oneMdTeam")}</p>
                 <ul className="mt-2 space-y-1.5 text-[9pt] leading-[1.4] text-slate-700">
-                  <PilotPoint>Platform free for 90 days</PilotPoint>
-                  <PilotPoint>Compliance review of templates wk 1</PilotPoint>
-                  <PilotPoint>Weekly metric reads with the MD</PilotPoint>
-                  <PilotPoint>
-                    Day 90 decision: <strong>expand · extend · exit</strong>
+                  <PilotPoint>{t("pages.fsMarketing.freeFor90")}</PilotPoint>
+                  <PilotPoint>{t("pages.fsMarketing.complianceWk1")}</PilotPoint>
+                  <PilotPoint>{t("pages.fsMarketing.weeklyReads")}</PilotPoint>
+                  <PilotPoint>{t("pages.fsMarketing.day90Decision")}<strong>expand · extend · exit</strong>
                   </PilotPoint>
-                  <PilotPoint>No contracts, no setup fees</PilotPoint>
+                  <PilotPoint>{t("pages.fsMarketing.noContracts")}</PilotPoint>
                 </ul>
               </div>
             </div>
@@ -263,7 +251,7 @@ export default function OnePagerClient() {
           {/* What we're not */}
           <div className="mt-5 rounded-xl bg-slate-50 px-4 py-3 text-[9.5pt] leading-snug text-slate-700 ring-1 ring-slate-200">
             <p>
-              <strong className="text-slate-900">What we&apos;re not.</strong>{" "}
+              <strong className="text-slate-900">{t("pages.fsMarketing.whatWereNot")}</strong>{" "}
               We don&apos;t replace TransACT, WinFlex, iPipeline, or any carrier
               tool — producers keep those for illustrations, e-application, and
               policy administration. LeadSmart AI handles the pre-sale and
@@ -276,9 +264,7 @@ export default function OnePagerClient() {
           {/* Why us / why now */}
           <div className="mt-5 grid grid-cols-2 gap-5">
             <div>
-              <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">
-                Why us, why now
-              </h2>
+              <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.fsMarketing.whyUsWhyNow")}</h2>
               <p className="mt-2 text-[9.5pt] leading-snug text-slate-700">
                 The underlying LeadSmart AI platform powers{" "}
                 <strong>3,400+ active producers</strong> in adjacent verticals
@@ -291,14 +277,12 @@ export default function OnePagerClient() {
               </p>
             </div>
             <div>
-              <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">
-                The next step
-              </h2>
+              <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.fsMarketing.nextStep")}</h2>
               <p className="mt-2 text-[9.5pt] leading-snug text-slate-700">
                 A 30-minute working session with one of your MDs and one of
                 your producers. We show the live workspace, you ask the hard
                 questions, and we decide together if a pilot fits.{" "}
-                <strong>No deck, no slideware, no pressure.</strong>
+                <strong>{t("pages.fsMarketing.noDeck")}</strong>
               </p>
               <div
                 className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[9pt] font-semibold text-white ${
@@ -331,11 +315,9 @@ export default function OnePagerClient() {
         </footer>
       </article>
 
-      <div className="no-print mx-auto max-w-[8.5in] px-2 py-4 text-center text-xs text-slate-500">
-        Tip: in the print dialog, choose <strong>Letter</strong> size with{" "}
-        <strong>default margins</strong> for best fit. Make sure{" "}
-        <strong>Background graphics</strong> is enabled to keep brand colors.
-      </div>
+      <div className="no-print mx-auto max-w-[8.5in] px-2 py-4 text-center text-xs text-slate-500">{t("pages.fsMarketing.printTip")}<strong>{t("pages.fsMarketing.letter")}</strong> size with{" "}
+        <strong>{t("pages.fsMarketing.defaultMargins")}</strong> for best fit. Make sure{" "}
+        <strong>{t("pages.fsMarketing.backgroundGraphics")}</strong>{t("pages.fsMarketing.keepBrandColors")}</div>
     </>
   );
 }
