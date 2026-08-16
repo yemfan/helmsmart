@@ -194,11 +194,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
 
       {!valuationOk ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
-          <span className="font-semibold">{t("pages.cmaDetail.unavailable")}</span> This CMA
-          didn&apos;t return a reliable value, so sharing, emailing, and PDF
-          export are disabled to protect your client relationship. Regenerate it
-          with a more complete address to produce a sendable report.
-        </div>
+          <span className="font-semibold">{t("pages.cmaDetail.unavailable")}</span>{t("pages.cmaDetail.unreliable")}</div>
       ) : null}
 
       {cma.snapshot.disclaimer ? (
@@ -232,9 +228,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <header className="border-b border-slate-100 px-5 py-4">
           <h2 className="text-sm font-semibold text-slate-900">{t("pages.cmaDetail.strategies")}</h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Three list-price scenarios with projected days on market.
-          </p>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.cmaDetail.scenarios")}</p>
         </header>
         <ul className="divide-y divide-slate-100">
           {bands.map((b) => (
@@ -262,9 +256,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
           </p>
         </header>
         {cma.snapshot.comps.length === 0 ? (
-          <div className="px-5 py-6 text-center text-sm text-slate-500">
-            No comps available for this property.
-          </div>
+          <div className="px-5 py-6 text-center text-sm text-slate-500">{t("pages.cmaDetail.noComps")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -334,9 +326,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
           <h2 className="text-sm font-semibold text-slate-900">
             Sources ({cma.snapshot.sources.length})
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Where the comps and market data came from — verify before relying on the estimate.
-          </p>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.cmaDetail.sources")}</p>
           <ul className="mt-3 space-y-1.5">
             {cma.snapshot.sources.map((s, i) => (
               <li key={`${s.url}-${i}`} className="truncate text-sm">

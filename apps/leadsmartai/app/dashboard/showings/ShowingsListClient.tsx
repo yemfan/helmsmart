@@ -123,11 +123,8 @@ export function ShowingsListClient({
           <h1 className="text-2xl font-semibold text-slate-900">{t("showings.title")}</h1>
           <p className="mt-1 text-sm text-slate-500">
             {contactFilterName ? (
-              <>
-                Showing visits for <strong>{contactFilterName}</strong>.{" "}
-                <Link href="/dashboard/showings" className="text-blue-600 hover:underline">
-                  Clear filter
-                </Link>
+              <>{t("pages.showingsList.visitsFor")}<strong>{contactFilterName}</strong>.{" "}
+                <Link href="/dashboard/showings" className="text-blue-600 hover:underline">{t("pages.showingsList.clearFilter")}</Link>
               </>
             ) : (
               t("showings.subtitle")
@@ -243,7 +240,7 @@ export function ShowingsListClient({
                       <>
                         <div className="font-medium">{t("showings.empty")}</div>
                         <div className="mt-1 text-[12px]">
-                          Click <strong>{t("showings.schedule")}</strong> to log a buyer&apos;s first property visit.
+                          {t("pages.showingsList.emptyBefore")} <strong>{t("showings.schedule")}</strong>{t("pages.showingsList.emptyAfter")}
                         </div>
                       </>
                     ) : (

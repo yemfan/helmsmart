@@ -121,12 +121,8 @@ export default function ExpensesClient({
         <div>
           <div className="text-xs text-slate-500">{t("pages.expenses.breadcrumb")}</div>
           <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold text-slate-900">
-            <Wallet className="h-6 w-6 text-blue-600" strokeWidth={2} />
-            Expenses
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Track your business costs for tax time — marketing, mileage, dues, and more.
-          </p>
+            <Wallet className="h-6 w-6 text-blue-600" strokeWidth={2} />{t("pages.expenses.title")}</h1>
+          <p className="mt-1 text-sm text-slate-500">{t("pages.expenses.intro")}</p>
         </div>
         <button
           type="button"
@@ -206,9 +202,7 @@ export default function ExpensesClient({
       {/* Year-to-date by category — what tax time cares about */}
       {yearTotals.byCategory.length > 0 && (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-3 text-sm font-semibold text-slate-900">
-            Year to date by category
-          </h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-900">{t("pages.expenses.ytdByCategory")}</h2>
           <ul className="space-y-2.5">
             {yearTotals.byCategory.map((c) => (
               <li key={c.category}>
@@ -251,8 +245,7 @@ export default function ExpensesClient({
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-700 hover:underline"
                     >
-                      <ReceiptIcon className="h-3.5 w-3.5" /> Receipt
-                    </a>
+                      <ReceiptIcon className="h-3.5 w-3.5" />{t("pages.expenses.receipt")}</a>
                   )}
                 </div>
                 <p className="mt-0.5 truncate text-xs text-slate-500">

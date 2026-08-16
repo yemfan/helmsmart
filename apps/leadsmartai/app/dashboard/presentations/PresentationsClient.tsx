@@ -125,17 +125,13 @@ export default function PresentationsClient({
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
           <h1 className="ui-page-title text-brand-text">{t("pages.presentations.heading")}</h1>
-          <p className="ui-page-subtitle text-brand-text/80">
-            Create a professional listing presentation (CMA + strategy + marketing plan) from an address.
-          </p>
+          <p className="ui-page-subtitle text-brand-text/80">{t("pages.presentations.intro")}</p>
         </div>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">
         <label className="block space-y-2">
-          <span className="ui-card-subtitle block text-slate-700">
-            Property Address
-          </span>
+          <span className="ui-card-subtitle block text-slate-700">{t("pages.presentations.propertyAddress")}</span>
           <AddressAutocomplete
             value={address}
             onChange={setAddress}
@@ -173,9 +169,7 @@ export default function PresentationsClient({
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-2">
           <div>
             <div className="ui-card-title text-brand-text">{t("pages.presentations.recent")}</div>
-            <div className="text-xs text-slate-600 mt-1">
-              Open a past presentation to preview, download, or copy the share link.
-            </div>
+            <div className="text-xs text-slate-600 mt-1">{t("pages.presentations.openPast")}</div>
           </div>
         </div>
 
@@ -219,9 +213,7 @@ export default function PresentationsClient({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="px-3 py-6 text-sm text-slate-600">
-                    No presentations yet.
-                  </td>
+                  <td colSpan={3} className="px-3 py-6 text-sm text-slate-600">{t("pages.presentations.empty")}</td>
                 </tr>
               )}
             </tbody>

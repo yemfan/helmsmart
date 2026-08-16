@@ -114,10 +114,7 @@ export default function VoiceReceptionistSettingsPanel() {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-gray-600">
-        How your AI phone receptionist introduces itself and what it knows about your business.
-        Applied to every inbound call on your receptionist number.
-      </p>
+      <p className="text-xs text-gray-600">{t("pages.voiceReceptionist.intro")}</p>
 
       <label className="flex items-center gap-2 text-sm text-gray-800">
         <input
@@ -140,10 +137,7 @@ export default function VoiceReceptionistSettingsPanel() {
           onChange={(e) => update("phoneNumber", e.target.value)}
           placeholder={t("pages.voiceSettings.phonePlaceholder")}
         />
-        <p className="mt-1 text-[11px] text-gray-400">
-          Calls to this number route to this receptionist. Point the number&apos;s inbound webhook
-          at /api/retell/inbound; saved in E.164 (e.g. +16265551234).
-        </p>
+        <p className="mt-1 text-[11px] text-gray-400">{t("pages.voiceReceptionist.routingNote")}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -201,7 +195,7 @@ export default function VoiceReceptionistSettingsPanel() {
           className={`${FIELD} min-h-[120px]`}
           value={settings.extraNotes}
           onChange={(e) => update("extraNotes", e.target.value)}
-          placeholder="Business hours, services, pricing, address, and FAQs. Also say what to do with callers — e.g. take a message, collect their name + number, or offer a call-back. The receptionist uses this to answer questions."
+          placeholder={t("pages.voiceReceptionist.kbHint")}
         />
       </div>
 
@@ -248,9 +242,7 @@ export default function VoiceReceptionistSettingsPanel() {
             );
           })}
         </div>
-        <p className="mt-1 text-[11px] text-gray-400">
-          The AI books 30-minute appointments within these hours. Defaults to Mon–Fri 9–5 until you set them.
-        </p>
+        <p className="mt-1 text-[11px] text-gray-400">{t("pages.voiceReceptionist.hoursHint")}</p>
       </div>
 
       <div>

@@ -3,6 +3,7 @@ import { getServerT, getServerLocale } from "@/lib/i18n/server";
 import { intlLocale } from "@/lib/i18n/locale";
 
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Bell, Flame, PhoneMissed } from "lucide-react";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -122,6 +123,7 @@ function EmptyRow({ children }: { children: ReactNode }) {
 }
 
 export default async function NotificationsPage() {
+  const { t } = useTranslation("dashboard");
   const serverT = await getServerT();
   const locale = intlLocale(await getServerLocale());
   // Named `tr` — task and follow-up rows below bind `t` in their .map().
@@ -296,8 +298,7 @@ export default async function NotificationsPage() {
                         <p className="font-semibold leading-snug text-slate-900">
                           <span className="mr-1.5" aria-hidden>
                             📞
-                          </span>
-                          Missed Call: <span className="font-semibold">{displayName}</span>
+                          </span>{t("pages.notifications.missedCall")}<span className="font-semibold">{displayName}</span>
                         </p>
                         <p className="mt-1.5 text-sm leading-snug text-slate-600">{detailLine}</p>
                         <p className="mt-2 text-[11px] text-slate-400">
@@ -337,9 +338,7 @@ export default async function NotificationsPage() {
           <div className="min-h-[120px] flex-1 space-y-4 p-4">
             {appointments.length > 0 ? (
               <div>
-                <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-                  Appointments
-                </p>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">{t("pages.notifications.appointments")}</p>
                 <ul className="space-y-2">
                   {appointments.slice(0, 6).map((ev) => (
                     <li
@@ -426,9 +425,7 @@ export default async function NotificationsPage() {
             {reminderCount === 0 ? (
               <p className="py-6 text-center text-sm text-slate-500">
                 No upcoming reminders.{" "}
-                <Link href="/dashboard/tasks" className="font-semibold text-[#0072ce] hover:underline">
-                  Tasks
-                </Link>{" "}
+                <Link href="/dashboard/tasks" className="font-semibold text-[#0072ce] hover:underline">{t("pages.notifications.tasks")}</Link>{" "}
                 and{" "}
                 <Link href="/dashboard/calendar" className="font-semibold text-[#0072ce] hover:underline">
                   calendar
@@ -445,9 +442,7 @@ export default async function NotificationsPage() {
         <section className="space-y-3">
           <div>
             <h2 className="text-base font-semibold text-slate-900">{tr("notifications.listingAlerts")}</h2>
-            <p className="text-sm text-slate-600">
-              Automated nearby listing activity sent to your leads (email/SMS).
-            </p>
+            <p className="text-sm text-slate-600">{t("pages.notifications.nearbyActivity")}</p>
           </div>
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="overflow-x-auto">

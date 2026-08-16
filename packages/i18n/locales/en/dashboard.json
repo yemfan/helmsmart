@@ -1713,7 +1713,11 @@
       "saving": "Saving…",
       "empty": "No expenses yet. Log your first one above.",
       "deleteExpense": "Delete expense",
-      "needAmount": "Enter an amount greater than zero."
+      "needAmount": "Enter an amount greater than zero.",
+      "title": "Expenses",
+      "intro": "Track your business costs for tax time — marketing, mileage, dues, and more.",
+      "ytdByCategory": "Year to date by category",
+      "receipt": "Receipt"
     },
     "drafts": {
       "metaTitle": "Drafts · Approval queue",
@@ -1936,7 +1940,11 @@
       "colSold": "Sold",
       "colPrice": "Price",
       "colDistance": "Distance",
-      "summary": "Summary"
+      "summary": "Summary",
+      "unreliable": "This CMA didn't return a reliable value, so sharing, emailing, and PDF export are disabled to protect your client relationship. Regenerate it with a more complete address to produce a sendable report.",
+      "scenarios": "Three list-price scenarios with projected days on market.",
+      "noComps": "No comps available for this property.",
+      "sources": "Where the comps and market data came from — verify before relying on the estimate."
     },
     "adComposer": {
       "metaTitle": "Ad Composer",
@@ -3352,6 +3360,37 @@
       "connect": "Connect",
       "all": "All",
       "nothingScheduled": "Nothing scheduled this month."
+    },
+    "comparisonBuilder": {
+      "intro": "Build a client-ready comparison with executive summary, scores, and AI insights. Share a public link or download a PDF.",
+      "requiresBefore": "This feature requires",
+      "requiresAfter": ".",
+      "viewPlans": "View plans",
+      "remove": "Remove"
+    },
+    "notifications": {
+      "missedCall": "Missed Call:",
+      "appointments": "Appointments",
+      "tasks": "Tasks",
+      "nearbyActivity": "Automated nearby listing activity sent to your leads (email/SMS)."
+    },
+    "presentations": {
+      "intro": "Create a professional listing presentation (CMA + strategy + marketing plan) from an address.",
+      "propertyAddress": "Property Address",
+      "openPast": "Open a past presentation to preview, download, or copy the share link.",
+      "empty": "No presentations yet."
+    },
+    "showingsList": {
+      "visitsFor": "Showing visits for",
+      "clearFilter": "Clear filter",
+      "emptyBefore": "Click",
+      "emptyAfter": "to log a buyer's first property visit."
+    },
+    "voiceReceptionist": {
+      "intro": "How your AI phone receptionist introduces itself and what it knows about your business. Applied to every inbound call on your receptionist number.",
+      "routingNote": "Calls to this number route to this receptionist. Point the number's inbound webhook at /api/retell/inbound; saved in E.164 (e.g. +16265551234).",
+      "kbHint": "Business hours, services, pricing, address, and FAQs. Also say what to do with callers — e.g. take a message, collect their name + number, or offer a call-back. The receptionist uses this to answer questions.",
+      "hoursHint": "The AI books 30-minute appointments within these hours. Defaults to Mon–Fri 9–5 until you set them."
     }
   }
 }

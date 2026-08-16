@@ -1713,7 +1713,11 @@
       "saving": "保存中…",
       "empty": "还没有支出记录。请在上方记录第一笔。",
       "deleteExpense": "删除该笔支出",
-      "needAmount": "请输入大于零的金额。"
+      "needAmount": "请输入大于零的金额。",
+      "title": "支出",
+      "intro": "记录您的经营成本，报税时用得上——营销费、车程、会费等等。",
+      "ytdByCategory": "年初至今按类别统计",
+      "receipt": "收据"
     },
     "drafts": {
       "metaTitle": "草稿 · 审核队列",
@@ -1936,7 +1940,11 @@
       "colSold": "成交日期",
       "colPrice": "成交价",
       "colDistance": "距离",
-      "summary": "摘要"
+      "summary": "摘要",
+      "unreliable": "这份 CMA 没有得出可靠的估值，因此分享、发邮件和导出 PDF 都已停用，以免影响您和客户的关系。请用更完整的地址重新生成，才能得到可以发出去的报告。",
+      "scenarios": "三档挂牌价方案，以及各自预计的在售天数。",
+      "noComps": "这套房源没有可比成交记录。",
+      "sources": "可比房源和市场数据的来源——采信估值前请先核对。"
     },
     "adComposer": {
       "metaTitle": "广告编辑器",
@@ -3352,6 +3360,37 @@
       "connect": "连接",
       "all": "全部",
       "nothingScheduled": "本月没有安排。"
+    },
+    "comparisonBuilder": {
+      "intro": "生成可直接发给客户的对比报告，含内容摘要、评分和 AI 分析。可分享公开链接或下载 PDF。",
+      "requiresBefore": "此功能需要",
+      "requiresAfter": "。",
+      "viewPlans": "查看方案",
+      "remove": "移除"
+    },
+    "notifications": {
+      "missedCall": "未接来电：",
+      "appointments": "预约",
+      "tasks": "待办",
+      "nearbyActivity": "自动发给客源的周边房源动态（邮件／短信）。"
+    },
+    "presentations": {
+      "intro": "输入一个地址，即可生成专业的房源提案（CMA + 定价策略 + 营销方案）。",
+      "propertyAddress": "房屋地址",
+      "openPast": "打开过往提案即可预览、下载或复制分享链接。",
+      "empty": "还没有提案。"
+    },
+    "showingsList": {
+      "visitsFor": "带看记录——",
+      "clearFilter": "清除筛选",
+      "emptyBefore": "点击",
+      "emptyAfter": "，记录这位买家的第一次看房。"
+    },
+    "voiceReceptionist": {
+      "intro": "设置您的 AI 电话接待员如何自我介绍，以及它了解您业务的哪些信息。适用于打进接待号码的每一通电话。",
+      "routingNote": "拨打这个号码的来电会转到这位接待员。请把该号码的来电 webhook 指向 /api/retell/inbound；保存格式为 E.164（例如 +16265551234）。",
+      "kbHint": "营业时间、服务项目、价格、地址和常见问题。也请说明该如何处理来电——比如留言、记下姓名和电话，或者安排回拨。接待员会依据这些内容回答问题。",
+      "hoursHint": "AI 只在这个时间段内安排 30 分钟的预约。未设置前默认为周一至周五 9:00–17:00。"
     }
   }
 }

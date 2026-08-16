@@ -253,16 +253,11 @@ export default function ComparisonReportBuilderClient({
     <div className="mx-auto max-w-4xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">{t("pages.comparisonReport.heading")}</h1>
-        <p className="mt-2 text-gray-600">
-          Build a client-ready comparison with executive summary, scores, and AI insights. Share a public link or
-          download a PDF.
-        </p>
+        <p className="mt-2 text-gray-600">{t("pages.comparisonBuilder.intro")}</p>
         {isFree ? (
           <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            This feature requires <strong>Pro</strong> or <strong>Premium</strong>.{" "}
-            <Link href="/agent/pricing" className="font-semibold underline">
-              View plans
-            </Link>
+            {t("pages.comparisonBuilder.requiresBefore")} <strong>Pro</strong> or <strong>Premium</strong>{t("pages.comparisonBuilder.requiresAfter")}{" "}
+            <Link href="/agent/pricing" className="font-semibold underline">{t("pages.comparisonBuilder.viewPlans")}</Link>
           </div>
         ) : null}
       </div>
@@ -299,9 +294,7 @@ export default function ComparisonReportBuilderClient({
                     type="button"
                     onClick={() => removeRow(row.id)}
                     className="rounded-lg border border-red-200 bg-white px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
-                  >
-                    Remove
-                  </button>
+                  >{t("pages.comparisonBuilder.remove")}</button>
                 ) : null}
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
