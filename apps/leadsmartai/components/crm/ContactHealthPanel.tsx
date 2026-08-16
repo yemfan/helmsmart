@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Summary = {
   totalContacts: number;
@@ -12,6 +13,7 @@ type Summary = {
 };
 
 export function ContactHealthPanel() {
+  const { t } = useTranslation("dashboard");
   const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState("");
 
@@ -51,18 +53,18 @@ export function ContactHealthPanel() {
   return (
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-100 px-5 py-4">
-        <h2 className="text-base font-semibold text-slate-900">Contact health</h2>
+        <h2 className="text-base font-semibold text-slate-900">{t("pages.contactHealth.heading")}</h2>
         <p className="mt-1 text-xs text-slate-500">
           Field coverage for your active leads (merged records excluded).
         </p>
       </div>
       <div className="grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
-        <Metric label="Total contacts" value={String(summary.totalContacts)} />
-        <Metric label="Avg completeness" value={`${summary.avgCompletenessScore}/100`} />
-        <Metric label="With email" value={`${summary.withEmailPct}%`} />
-        <Metric label="With phone" value={`${summary.withPhonePct}%`} />
-        <Metric label="With birthday" value={`${summary.withBirthdayPct}%`} />
-        <Metric label="With home purchase date" value={`${summary.withHomePurchaseDatePct}%`} />
+        <Metric label={t("pages.contactHealth.total")} value={String(summary.totalContacts)} />
+        <Metric label={t("pages.contactHealth.avgCompleteness")} value={`${summary.avgCompletenessScore}/100`} />
+        <Metric label={t("pages.contactHealth.withEmail")} value={`${summary.withEmailPct}%`} />
+        <Metric label={t("pages.contactHealth.withPhone")} value={`${summary.withPhonePct}%`} />
+        <Metric label={t("pages.contactHealth.withBirthday")} value={`${summary.withBirthdayPct}%`} />
+        <Metric label={t("pages.contactHealth.withPurchaseDate")} value={`${summary.withHomePurchaseDatePct}%`} />
       </div>
     </section>
   );
