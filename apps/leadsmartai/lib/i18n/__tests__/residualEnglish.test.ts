@@ -8,10 +8,19 @@ import { describe, expect, it } from "vitest";
  * were still rendering from them — headings, form labels, tooltips, and a
  * module-scope JSX constant in the sidebar itself.
  *
- * The check is deliberately narrow: JSX text nodes and copy-carrying
- * attributes, two words or more, no interpolation. That found real strings and
- * nothing spurious, which matters more than catching everything — a scan that
- * cries wolf gets ignored, and then it protects nothing.
+ * The check covers JSX text nodes and copy-carrying attributes with no
+ * interpolation. It has been widened twice, each time after the narrower
+ * version reported a page clean that was still visibly English:
+ *
+ *   - one-word copy (Save, Cancel, Done) — 42 strings the two-word rule hid;
+ *   - text nodes wrapped across source lines — 285 strings, and the worst of
+ *     the three, because a paragraph long enough to wrap is a paragraph long
+ *     enough to matter. Help text and explainers are almost all of it.
+ *
+ * The cost of widening is false positives, so both widenings are paid for by a
+ * specific guard: capitalisation for single words, and a `[^=]` lookbehind for
+ * arrow functions. A scan that cries wolf gets ignored, and then it protects
+ * nothing.
  */
 
 const ROOT = join(__dirname, "..", "..", "..");
@@ -54,10 +63,11 @@ const blankComments = (s: string) =>
   s.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " ")).replace(/^(\s*)\/\/.*$/gm, "$1");
 
 function isCopy(raw: string): boolean {
-  const t = raw.trim();
+  // A wrapped paragraph carries its indentation with it; compare on one line.
+  const t = raw.replace(/\s+/g, " ").trim();
   if (ALLOWED.has(t)) return false;
   if (/[{}<>$`]/.test(t)) return false; // interpolated or markup — not a literal
-  if (!/^[A-Za-z][A-Za-z0-9 ,.'’!?:%()/&+-]*$/.test(t)) return false;
+  if (!/^[A-Za-z][A-Za-z0-9 ,.'’!?:;%()/&+—–-]*$/.test(t)) return false;
   const words = t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length;
   /*
    * One-word copy counts too. Requiring two words hid every Save, Cancel,
@@ -76,16 +86,20 @@ describe("residual English", () => {
       for (const file of walk(join(ROOT, root))) {
         const src = readFileSync(file, "utf8");
         if (!/useTranslation|getServerT/.test(src)) continue;
-        blankComments(src)
-          .split("\n")
-          .forEach((line, i) => {
-            const hits: string[] = [];
-            for (const m of line.matchAll(JSX_TEXT)) if (isCopy(m[1])) hits.push(m[1].trim());
-            for (const m of line.matchAll(COPY_ATTRS)) if (isCopy(m[1])) hits.push(m[1].trim());
-            for (const h of hits) {
-              findings.push(`${relative(ROOT, file).split(sep).join("/")}:${i + 1}  ${h.slice(0, 80)}`);
-            }
-          });
+        /*
+         * Scan the whole file, not line by line: a text node that wraps has no
+         * `>text<` on any single line, so a per-line scan reports it clean.
+         * Line numbers come from counting newlines up to the match offset.
+         */
+        const body = blankComments(src);
+        const at = (offset: number) => body.slice(0, offset).split("\n").length;
+        for (const re of [JSX_TEXT, COPY_ATTRS]) {
+          for (const m of body.matchAll(re)) {
+            if (!isCopy(m[1])) continue;
+            const where = `${relative(ROOT, file).split(sep).join("/")}:${at(m.index ?? 0)}`;
+            findings.push(`${where}  ${m[1].replace(/\s+/g, " ").trim().slice(0, 80)}`);
+          }
+        }
       }
     }
     expect(findings, `\n${findings.join("\n")}\n`).toEqual([]);

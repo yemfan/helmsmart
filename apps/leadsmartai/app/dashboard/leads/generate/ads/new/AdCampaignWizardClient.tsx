@@ -528,13 +528,8 @@ export default function AdCampaignWizardClient() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">
-            New Lead Ad Campaign
-          </h1>
-          <p className="text-sm text-gray-500">
-            Launch a Meta Lead Ad. Leads land directly in your CRM tagged with
-            the campaign source.
-          </p>
+          <h1 className="text-xl font-semibold text-gray-900">{t("pages.adWizard.newCampaign")}</h1>
+          <p className="text-sm text-gray-500">{t("pages.adWizard.newCampaignSub")}</p>
         </div>
         <Link
           href="/dashboard/leads/generate"
@@ -570,9 +565,7 @@ export default function AdCampaignWizardClient() {
           </div>
         ) : (
           <>
-            <label className="block text-xs font-medium text-gray-700">
-              Page
-            </label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.page")}</label>
             <select
               value={connectionId ?? ""}
               onChange={(e) => setConnectionId(e.target.value || null)}
@@ -589,9 +582,7 @@ export default function AdCampaignWizardClient() {
 
             {connectionId && (
               <div className="mt-3">
-                <label className="block text-xs font-medium text-gray-700">
-                  Ad account
-                </label>
+                <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.adAccount")}</label>
                 {adAccountsLoading ? (
                   <p className="mt-1 text-sm text-gray-500">{t("pages.adWizard.loadingAdAccounts")}</p>
                 ) : accountsError ? (
@@ -599,9 +590,7 @@ export default function AdCampaignWizardClient() {
                     {accountsError}
                   </p>
                 ) : adAccounts.length === 0 ? (
-                  <p className="mt-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                    No ad accounts found under this Page&apos;s Business Manager. Create one in Meta Business Settings.
-                  </p>
+                  <p className="mt-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">{t("pages.adWizard.noAdAccounts")}</p>
                 ) : (
                   <select
                     value={adAccountId ?? ""}
@@ -632,9 +621,7 @@ export default function AdCampaignWizardClient() {
           subtitle="Real-estate ads are HOUSING-restricted by Meta — only broad geo + age targeting allowed."
         >
           <div>
-            <label className="block text-xs font-medium text-gray-700">
-              ZIP codes (comma-separated)
-            </label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.zips")}</label>
             <textarea
               value={zipCodes}
               onChange={(e) => setZipCodes(e.target.value)}
@@ -642,9 +629,7 @@ export default function AdCampaignWizardClient() {
               placeholder="90210, 90211, 90212"
               className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Optional. Leave blank to target the entire US. Up to 50 zips.
-            </p>
+            <p className="mt-1 text-xs text-gray-500">{t("pages.adWizard.zipsHint")}</p>
           </div>
 
           {zipCodes.trim() && (
@@ -666,9 +651,7 @@ export default function AdCampaignWizardClient() {
 
           <div className="mt-3 grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Min age
-              </label>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.minAge")}</label>
               <input
                 type="number"
                 min={18}
@@ -681,9 +664,7 @@ export default function AdCampaignWizardClient() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Max age
-              </label>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.maxAge")}</label>
               <input
                 type="number"
                 min={18}
@@ -727,15 +708,10 @@ export default function AdCampaignWizardClient() {
                   )}
                 </p>
               ) : (
-                <p className="mt-1 text-blue-700">
-                  No estimate available — usually means the filters are too
-                  narrow. Try expanding the radius or adding ZIPs.
-                </p>
+                <p className="mt-1 text-blue-700">{t("pages.adWizard.noEstimate")}</p>
               )
             ) : (
-              <p className="mt-1 text-blue-700">
-                Pick a connection + ad account above to see an estimate.
-              </p>
+              <p className="mt-1 text-blue-700">{t("pages.adWizard.pickToEstimate")}</p>
             )}
           </div>
         </Section>
@@ -750,8 +726,7 @@ export default function AdCampaignWizardClient() {
         >
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Campaign name <span className="text-gray-400">{t("pages.adWizard.internalLabel")}</span>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.campaignName")}<span className="text-gray-400">{t("pages.adWizard.internalLabel")}</span>
               </label>
               <input
                 value={campaignName}
@@ -763,9 +738,7 @@ export default function AdCampaignWizardClient() {
 
             <div>
               <div className="flex items-center justify-between">
-                <label className="block text-xs font-medium text-gray-700">
-                  Ad body
-                </label>
+                <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.adBody")}</label>
                 <button
                   type="button"
                   onClick={() => {
@@ -779,9 +752,7 @@ export default function AdCampaignWizardClient() {
               </div>
               {showSuggest && (
                 <div className="mt-1 rounded-lg border border-purple-200 bg-purple-50/60 p-3 space-y-2">
-                  <label className="block text-[11px] font-medium text-purple-900">
-                    Brief — what's the campaign promoting?
-                  </label>
+                  <label className="block text-[11px] font-medium text-purple-900">{t("pages.adWizard.brief")}</label>
                   <textarea
                     value={suggestBrief}
                     onChange={(e) => setSuggestBrief(e.target.value)}
@@ -824,8 +795,7 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Headline <span className="text-gray-400">{t("pages.adWizard.headlineLimit")}</span>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.headline")}<span className="text-gray-400">{t("pages.adWizard.headlineLimit")}</span>
               </label>
               <input
                 value={adHeadline}
@@ -837,8 +807,7 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Landing URL <span className="text-gray-400">{t("pages.adWizard.thankYouHint")}</span>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.landingUrl")}<span className="text-gray-400">{t("pages.adWizard.thankYouHint")}</span>
               </label>
               <input
                 value={landingUrl}
@@ -880,15 +849,11 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Image
-              </label>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.image")}</label>
               {libraryLoading ? (
                 <p className="mt-1 text-sm text-gray-500">{t("pages.adWizard.loadingLibrary")}</p>
               ) : library.length === 0 ? (
-                <p className="mt-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                  Your media library is empty. Upload an image first — Meta requires one for Lead Ad creatives.
-                </p>
+                <p className="mt-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">{t("pages.adWizard.emptyLibrary")}</p>
               ) : (
                 <div className="mt-1 grid grid-cols-3 gap-2 sm:grid-cols-4">
                   {library.map((m) => (
@@ -920,9 +885,7 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Lead form questions
-              </label>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.formQuestions")}</label>
               <p className="text-xs text-gray-500 mt-0.5 mb-2">
                 Tick the fields you want each lead to fill in. Fewer = higher
                 conversion; more = better-qualified leads.
@@ -1001,9 +964,7 @@ export default function AdCampaignWizardClient() {
                   ${dailyBudget * durationDays}
                 </span>
               </div>
-              <p className="mt-0.5 text-xs text-gray-500">
-                Meta bills you directly. CloseBoss never touches your ad spend.
-              </p>
+              <p className="mt-0.5 text-xs text-gray-500">{t("pages.adWizard.metaBills")}</p>
             </div>
 
             <label className="flex items-start gap-2 rounded-lg border border-gray-200 px-3 py-2.5">
@@ -1014,12 +975,9 @@ export default function AdCampaignWizardClient() {
                 className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               <div className="text-sm">
-                <span className="font-medium text-gray-900">
-                  Launch immediately
-                </span>
+                <span className="font-medium text-gray-900">{t("pages.adWizard.launchNow")}</span>
                 <p className="text-xs text-gray-500">
-                  Default is to create in <strong>{t("pages.adWizard.paused")}</strong> state so you can
-                  review in Meta Ads Manager before money starts moving.
+                  {t("pages.adWizard.pausedBefore")} <strong>{t("pages.adWizard.paused")}</strong> {t("pages.adWizard.pausedAfter")}
                 </p>
               </div>
             </label>
@@ -1028,9 +986,7 @@ export default function AdCampaignWizardClient() {
               <Link
                 href="/dashboard/leads/generate"
                 className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </Link>
+              >{t("pages.adWizard.cancel")}</Link>
               <button
                 type="button"
                 onClick={launch}
@@ -1150,16 +1106,12 @@ function DoneState({
           type="button"
           onClick={onAnother}
           className="rounded-lg border border-emerald-300 bg-white px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50"
-        >
-          Create another
-        </button>
+        >{t("pages.adWizard.createAnother")}</button>
         <button
           type="button"
           onClick={onBack}
           className="rounded-lg border border-emerald-300 bg-white px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50"
-        >
-          Back to Generate Leads
-        </button>
+        >{t("pages.adWizard.backToGenerate")}</button>
       </div>
     </div>
   );

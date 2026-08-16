@@ -244,9 +244,7 @@ export default function WeeklySocialPosts({
           ) : (
             <p className="text-xs text-gray-500">
               No social account connected —{" "}
-              <Link href={CONNECT_HREF} className="font-medium text-[#0072ce] underline hover:no-underline">
-                connect to auto-post
-              </Link>
+              <Link href={CONNECT_HREF} className="font-medium text-[#0072ce] underline hover:no-underline">{t("pages.weeklySocial.connectToAutoPost")}</Link>
               . For now you can copy each post.
             </p>
           )}
@@ -313,20 +311,14 @@ export default function WeeklySocialPosts({
                   {rec.source_type === "timely" ? t("social.timely") : t("social.evergreen")}
                 </span>
                 {rec.status === "approved" && (
-                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
-                    Ready to post
-                  </span>
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700">{t("pages.weeklySocial.readyToPost")}</span>
                 )}
                 {rec.status === "copied" && (
-                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
-                    Copied
-                  </span>
+                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">{t("pages.weeklySocial.copied")}</span>
                 )}
                 {rec.status === "scheduled" && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-medium text-[#0072ce]">
-                    <Check className="h-3 w-3" />
-                    Scheduled
-                  </span>
+                    <Check className="h-3 w-3" />{t("pages.weeklySocial.scheduled")}</span>
                 )}
               </div>
 
@@ -389,9 +381,7 @@ export default function WeeklySocialPosts({
                         : "border border-[#0072ce]/30 bg-[#0072ce]/5 text-[#0072ce] hover:bg-[#0072ce]/10"
                     }`}
                   >
-                    <Eye className="h-3.5 w-3.5" />
-                    Preview
-                  </button>
+                    <Eye className="h-3.5 w-3.5" />{t("pages.weeklySocial.preview")}</button>
                 )}
 
                 <button
@@ -413,14 +403,10 @@ export default function WeeklySocialPosts({
                     href={CONNECT_HREF}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-[#0072ce]/30 bg-[#0072ce]/5 px-2.5 py-1 text-xs font-medium text-[#0072ce] hover:bg-[#0072ce]/10"
                   >
-                    <Link2 className="h-3.5 w-3.5" />
-                    Connect an account
-                  </Link>
+                    <Link2 className="h-3.5 w-3.5" />{t("pages.weeklySocial.connectAccount")}</Link>
                 ) : rec.status === "scheduled" ? (
                   <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#0072ce]/20 bg-[#0072ce]/5 px-2.5 py-1 text-xs font-medium text-[#0072ce]">
-                    <Check className="h-3.5 w-3.5" />
-                    Scheduled
-                  </span>
+                    <Check className="h-3.5 w-3.5" />{t("pages.weeklySocial.scheduled")}</span>
                 ) : (
                   <button
                     type="button"
@@ -443,9 +429,7 @@ export default function WeeklySocialPosts({
                     onClick={() => setStatus(rec.id, "approved")}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100"
                   >
-                    <ThumbsUp className="h-3.5 w-3.5" />
-                    Approve
-                  </button>
+                    <ThumbsUp className="h-3.5 w-3.5" />{t("pages.weeklySocial.approve")}</button>
                 )}
 
                 <button
@@ -453,9 +437,7 @@ export default function WeeklySocialPosts({
                   onClick={() => setStatus(rec.id, "dismissed")}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-500 hover:bg-gray-50"
                 >
-                  <X className="h-3.5 w-3.5" />
-                  Dismiss
-                </button>
+                  <X className="h-3.5 w-3.5" />{t("pages.weeklySocial.dismiss")}</button>
               </div>
             </li>
           ))}
@@ -531,10 +513,7 @@ export default function WeeklySocialPosts({
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-[#0072ce]">{t("social.useOwnImage")}</p>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-gray-600">
-                        Replace the branded card with your own photo. Image now; short
-                        video coming soon.
-                      </p>
+                      <p className="mt-0.5 text-[11px] leading-relaxed text-gray-600">{t("pages.weeklySocial.replaceCard")}</p>
                     </div>
                     <button
                       type="button"
@@ -552,9 +531,7 @@ export default function WeeklySocialPosts({
                   </div>
                   {previewRec.image_source === "custom" && (
                     <p className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700">
-                      <Check className="h-3 w-3" />
-                      Using your uploaded image
-                    </p>
+                      <Check className="h-3 w-3" />{t("pages.weeklySocial.usingUpload")}</p>
                   )}
                   <input
                     ref={fileInputRef}
@@ -601,18 +578,14 @@ export default function WeeklySocialPosts({
                   download
                   className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
                 >
-                  <Download className="h-3.5 w-3.5" />
-                  Download image
-                </a>
+                  <Download className="h-3.5 w-3.5" />{t("pages.weeklySocial.downloadImage")}</a>
               )}
 
               <button
                 type="button"
                 onClick={() => setPreviewId(null)}
                 className="ml-auto inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-50"
-              >
-                Close
-              </button>
+              >{t("pages.weeklySocial.close")}</button>
             </div>
           </div>
         </div>

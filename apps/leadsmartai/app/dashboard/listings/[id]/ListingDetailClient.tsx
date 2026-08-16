@@ -453,9 +453,7 @@ export function ListingDetailClient({
     <main id="main-content" className="mx-auto max-w-5xl space-y-5 px-4 py-8">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/properties" className="hover:underline">
-            Listings
-          </Link>
+          <Link href="/dashboard/properties" className="hover:underline">{t("pages.listingDetail.listings")}</Link>
           {" / "}
           <span className="truncate">{listing.property_address}</span>
         </div>
@@ -507,19 +505,14 @@ export function ListingDetailClient({
             >
               Open contracted deal →
             </Link>
-            <span className="ml-2 text-[11px] text-blue-700">
-              Closing date, contingencies, and escrow tasks live on the deal page.
-            </span>
+            <span className="ml-2 text-[11px] text-blue-700">{t("pages.listingDetail.dealPageNote")}</span>
           </div>
         ) : canPromote ? (
           <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="text-sm text-emerald-900">
                 <span className="font-medium">{t("pages.listingDetail.offerAccepted")}</span>
-                <span className="ml-2 text-[11px] text-emerald-700">
-                  Mark under contract — spawns a deal so closing + contingencies
-                  get tracked separately.
-                </span>
+                <span className="ml-2 text-[11px] text-emerald-700">{t("pages.listingDetail.markUnderContract")}</span>
               </div>
               <button
                 type="button"
@@ -654,9 +647,7 @@ export function ListingDetailClient({
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
                 title={t("pages.listingDetail.rankHint")}
-              >
-                Strongest first
-              </button>
+              >{t("pages.listingDetail.strongestFirst")}</button>
             ) : null}
             {offerActionError ? (
               <span className="text-[11px] text-rose-700">{offerActionError}</span>
@@ -670,7 +661,7 @@ export function ListingDetailClient({
 
         {offers.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
-            No offers yet. Click <strong>{t("pages.listingDetail.addOffer")}</strong> to record one.
+            {t("pages.listingDetail.noOffersBefore")} <strong>{t("pages.listingDetail.addOffer")}</strong> {t("pages.listingDetail.noOffersAfter")}
           </div>
         ) : (
           <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -678,27 +669,13 @@ export function ListingDetailClient({
               <table className="min-w-full text-sm">
                 <thead className="bg-slate-50 text-xs text-slate-600">
                   <tr>
-                    <SortableTh field="buyer" sortBy={sortBy} onClick={clickSort}>
-                      Buyer
-                    </SortableTh>
-                    <SortableTh field="status" sortBy={sortBy} onClick={clickSort}>
-                      Status
-                    </SortableTh>
-                    <SortableTh field="price" sortBy={sortBy} onClick={clickSort} align="right">
-                      Price
-                    </SortableTh>
-                    <SortableTh field="financing" sortBy={sortBy} onClick={clickSort}>
-                      Financing
-                    </SortableTh>
-                    <SortableTh field="closing" sortBy={sortBy} onClick={clickSort}>
-                      Closing
-                    </SortableTh>
-                    <SortableTh field="contingencies" sortBy={sortBy} onClick={clickSort} align="center">
-                      Cont.
-                    </SortableTh>
-                    <SortableTh field="earnest" sortBy={sortBy} onClick={clickSort} align="right">
-                      EMD
-                    </SortableTh>
+                    <SortableTh field="buyer" sortBy={sortBy} onClick={clickSort}>{t("pages.listingDetail.buyer")}</SortableTh>
+                    <SortableTh field="status" sortBy={sortBy} onClick={clickSort}>{t("pages.listingDetail.status")}</SortableTh>
+                    <SortableTh field="price" sortBy={sortBy} onClick={clickSort} align="right">{t("pages.listingDetail.price")}</SortableTh>
+                    <SortableTh field="financing" sortBy={sortBy} onClick={clickSort}>{t("pages.listingDetail.financing")}</SortableTh>
+                    <SortableTh field="closing" sortBy={sortBy} onClick={clickSort}>{t("pages.listingDetail.closing")}</SortableTh>
+                    <SortableTh field="contingencies" sortBy={sortBy} onClick={clickSort} align="center">{t("pages.listingDetail.contingencies")}</SortableTh>
+                    <SortableTh field="earnest" sortBy={sortBy} onClick={clickSort} align="right">{t("pages.listingDetail.emd")}</SortableTh>
                     <th className="px-3 py-2 text-right font-medium">{t("pages.listingDetail.actions")}</th>
                   </tr>
                 </thead>
@@ -746,9 +723,7 @@ export function ListingDetailClient({
                           <td className="px-3 py-2.5">
                             <div className="flex flex-wrap items-center gap-1">
                               {o.is_cash ? (
-                                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
-                                  Cash
-                                </span>
+                                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">{t("pages.listingDetail.cash")}</span>
                               ) : (
                                 <span className="text-slate-700">
                                   {o.financing_type ?? "—"}
@@ -825,9 +800,7 @@ export function ListingDetailClient({
                             <td colSpan={8} className="px-3 py-3">
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                  <label className="block text-xs font-medium text-slate-700">
-                                    Counter price
-                                  </label>
+                                  <label className="block text-xs font-medium text-slate-700">{t("pages.listingDetail.counterPrice")}</label>
                                   <input
                                     type="number"
                                     value={counterPrice}
@@ -839,9 +812,7 @@ export function ListingDetailClient({
                                   />
                                 </div>
                                 <div>
-                                  <label className="block text-xs font-medium text-slate-700">
-                                    Notes
-                                  </label>
+                                  <label className="block text-xs font-medium text-slate-700">{t("pages.listingDetail.notes")}</label>
                                   <input
                                     value={counterNotes}
                                     onChange={(e) => setCounterNotes(e.target.value)}
@@ -855,9 +826,7 @@ export function ListingDetailClient({
                                   type="button"
                                   onClick={() => setCounterFormForOfferId(null)}
                                   className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                                >
-                                  Cancel
-                                </button>
+                                >{t("pages.listingDetail.cancel")}</button>
                                 <button
                                   type="button"
                                   onClick={() => void recordCounter(o.id)}
