@@ -192,9 +192,7 @@ export default async function MetroPage({ params }: Props) {
           <span className="text-slate-400 mx-2">/</span>
           <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</Link>
           <span className="text-slate-400 mx-2">/</span>
-          <Link href="/data/markets" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            Markets
-          </Link>
+          <Link href="/data/markets" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.dataCenterPages.markets")}</Link>
           <span className="text-slate-400 mx-2">/</span>
           <Link
             href={`/data/markets/${geoSlug(stateGeo)}`}
@@ -207,9 +205,7 @@ export default async function MetroPage({ params }: Props) {
         </nav>
 
         <header className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">
-            Metro market data for agents
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">{t("pages.dataCenterPages.metroTitle")}</p>
           <h1 className="text-4xl font-bold leading-tight text-slate-900">
             {metroGeo.geo_name} housing market — data for agents
           </h1>
@@ -222,9 +218,7 @@ export default async function MetroPage({ params }: Props) {
                 <strong>{comparePhrase(vsState)}</strong> the {stName} state average
                 {isNum(vsNational) && (
                   <>
-                    {" "}and <strong>{comparePhrase(vsNational)}</strong> the U.S. typical
-                    value
-                  </>
+                    {" "}and <strong>{comparePhrase(vsNational)}</strong>{t("pages.dataCenterPages.usTypical")}</>
                 )}
                 .
               </>
@@ -235,18 +229,14 @@ export default async function MetroPage({ params }: Props) {
           )}
         </header>
 
-        <section aria-label="Latest metrics" className="space-y-4">
-          <h2 className="text-2xl font-bold text-slate-900">
-            Latest snapshot — quote these in your CMA
-          </h2>
+        <section aria-label={t("pages.dataCenterPages.latestAria")} className="space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.latestTitle")}</h2>
           <StatGrid metrics={metrics} />
         </section>
 
         {insightLines.length > 0 && (
-          <section aria-label="Trends and insights" className="space-y-3">
-            <h2 className="text-2xl font-bold text-slate-900">
-              What to tell your buyers and sellers
-            </h2>
+          <section aria-label={t("pages.dataCenterPages.trendsAria")} className="space-y-3">
+            <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.trendsTitle")}</h2>
             <p className="max-w-2xl text-sm leading-relaxed text-slate-600">
               Ready-to-use talking points for your next {metroGeo.geo_name} listing
               appointment or buyer consult — each is the current figure with its trend.
@@ -262,7 +252,7 @@ export default async function MetroPage({ params }: Props) {
           </section>
         )}
 
-        <section aria-label="Trend charts" className="space-y-4">
+        <section aria-label={t("pages.dataCenterPages.chartsAria")} className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-900">
             13-month trends — the story behind your pricing
           </h2>
@@ -285,7 +275,7 @@ export default async function MetroPage({ params }: Props) {
         </section>
 
         {otherInState.length > 0 && (
-          <section aria-label="Other metros in this state" className="space-y-4">
+          <section aria-label={t("pages.dataCenterPages.otherMetrosAria")} className="space-y-4">
             <h2 className="text-2xl font-bold text-slate-900">
               Other metros in {stName}
             </h2>

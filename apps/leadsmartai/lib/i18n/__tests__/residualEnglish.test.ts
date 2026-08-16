@@ -101,7 +101,6 @@ const PENDING = new Set([
   "app/open-house-signup/page.tsx",
   "app/affordability-calculator/page.tsx",
   "app/ai-zillow-redfin-link-analyzer/page.tsx",
-  "app/data/markets/page.tsx",
   "app/down-payment-calculator/page.tsx",
   "app/homes/page.tsx",
   "app/market-report/[city]/page.tsx",
@@ -111,13 +110,10 @@ const PENDING = new Set([
   "app/switch-from/page.tsx",
   "app/switch-from/[slug]/page.tsx",
   "app/blog/page.tsx",
-  "app/data/markets/[state]/page.tsx",
   "app/login/page.tsx",
   "app/sms/page.tsx",
-  "app/data/page.tsx",
   "app/how-to-compare-rent-vs-buy/page.tsx",
   "app/newsletter/page.tsx",
-  "app/data/markets/[state]/[metro]/page.tsx",
   "app/features/[slug]/page.tsx",
   "app/hoa-fee-tracker/page.tsx",
   "app/home-value/[city]/page.tsx",
@@ -139,11 +135,9 @@ const PENDING = new Set([
   "app/signup/page.tsx",
   "app/adjustable-rate-calculator/page.tsx",
   "app/book/page.tsx",
-  "app/data-deletion-status/[code]/page.tsx",
   "app/help/guides/[slug]/page.tsx",
   "app/how-to-calculate-cap-rate/page.tsx",
   "app/auth/complete-profile/page.tsx",
-  "app/data/reports/[slug]/page.tsx",
   "app/how-to-evaluate-rental-cash-flow/page.tsx",
   "app/sell-house/[city]/[keyword]/page.tsx",
   "app/how-to-analyze-rental-property/page.tsx",
@@ -154,14 +148,11 @@ const PENDING = new Set([
   "app/report/[id]/not-found.tsx",
   "app/result/[id]/page.tsx",
   "app/cma/[id]/page.tsx",
-  "app/data/_components/DataSources.tsx",
   "app/homes/search/page.tsx",
   "app/newsletter/unsubscribe/page.tsx",
   "app/offer-extend/[token]/page.tsx",
   "app/team/accept/[token]/page.tsx",
   "app/unauthorized/page.tsx",
-  "app/data/_components/Sparkline.tsx",
-  "app/data/_components/StatGrid.tsx",
   "app/global-error.tsx",
   "app/newsletter/a/[token]/page.tsx",
 ]);
@@ -195,6 +186,13 @@ function isCopy(raw: string): boolean {
   // A wrapped paragraph carries its indentation with it; compare on one line.
   const t = raw.replace(/\s+/g, " ").trim();
   if (ALLOWED.has(t)) return false;
+  /*
+   * A blank line inside the match means the `>` and the `<` belong to
+   * different statements, not to one text node: `endX > W - 90;` followed by
+   * a blank line and `return (` reads as copy once the whitespace collapses.
+   * Wrapped copy carries single newlines, never an empty line.
+   */
+  if (/\n\s*\n/.test(raw)) return false;
   if (/[{}<>$`]/.test(t)) return false; // interpolated or markup — not a literal
   if (!/^[A-Za-z][A-Za-z0-9 ,.'’!?:;%()/&+—–-]*$/.test(t)) return false;
   const words = t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length;

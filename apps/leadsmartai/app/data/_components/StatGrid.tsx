@@ -22,9 +22,7 @@ export default async function StatGrid({ metrics }: { metrics: LatestMetric[] })
 
   if (ordered.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500">
-        Market data for this area is being refreshed. Check back soon.
-      </div>
+      <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500">{t("pages.dataCenterPages.areaRefreshing")}</div>
     );
   }
 

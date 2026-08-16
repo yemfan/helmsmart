@@ -166,17 +166,13 @@ export default async function StatePage({ params }: Props) {
           <span className="text-slate-400 mx-2">/</span>
           <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</Link>
           <span className="text-slate-400 mx-2">/</span>
-          <Link href="/data/markets" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            Markets
-          </Link>
+          <Link href="/data/markets" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.dataCenterPages.markets")}</Link>
           <span className="text-slate-400 mx-2">/</span>
           <span className="text-slate-600">{geo.geo_name}</span>
         </nav>
 
         <header className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">
-            State market data for agents
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">{t("pages.dataCenterPages.stateTitle")}</p>
           <h1 className="text-4xl font-bold leading-tight text-slate-900">
             {geo.geo_name} housing market — data for agents
           </h1>
@@ -201,18 +197,14 @@ export default async function StatePage({ params }: Props) {
           )}
         </header>
 
-        <section aria-label="Latest metrics" className="space-y-4">
-          <h2 className="text-2xl font-bold text-slate-900">
-            Latest snapshot — quote these in your CMA
-          </h2>
+        <section aria-label={t("pages.dataCenterPages.latestAria")} className="space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.latestTitle")}</h2>
           <StatGrid metrics={metrics} />
         </section>
 
         {insightLines.length > 0 && (
-          <section aria-label="Trends and insights" className="space-y-3">
-            <h2 className="text-2xl font-bold text-slate-900">
-              What to tell your buyers and sellers
-            </h2>
+          <section aria-label={t("pages.dataCenterPages.trendsAria")} className="space-y-3">
+            <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.trendsTitle")}</h2>
             <p className="max-w-2xl text-sm leading-relaxed text-slate-600">
               Drop these lines straight into a listing presentation or a pricing
               conversation — each one is the current {geo.geo_name} figure with its
@@ -229,7 +221,7 @@ export default async function StatePage({ params }: Props) {
           </section>
         )}
 
-        <section aria-label="Trend charts" className="space-y-4">
+        <section aria-label={t("pages.dataCenterPages.chartsAria")} className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-900">
             13-month trends — the story behind your pricing
           </h2>
@@ -251,14 +243,11 @@ export default async function StatePage({ params }: Props) {
           </div>
         </section>
 
-        <section aria-label="Metros in this state" className="space-y-4">
+        <section aria-label={t("pages.dataCenterPages.metrosAria")} className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-900">
             Metro areas in {geo.geo_name}
           </h2>
-          <p className="max-w-2xl text-sm leading-relaxed text-slate-600">
-            All real estate is local — drill into your client&apos;s metro for the
-            numbers that actually move a pricing conversation.
-          </p>
+          <p className="max-w-2xl text-sm leading-relaxed text-slate-600">{t("pages.dataCenterPages.allLocal")}</p>
           {metros.length === 0 ? (
             <p className="text-sm text-slate-500">
               No individual metro areas are tracked in {geo.geo_name} yet.
@@ -268,8 +257,8 @@ export default async function StatePage({ params }: Props) {
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-left">
                   <tr>
-                    <th className="px-4 py-2 font-semibold text-slate-700">Metro area</th>
-                    <th className="px-4 py-2 font-semibold text-slate-700">Typical home value</th>
+                    <th className="px-4 py-2 font-semibold text-slate-700">{t("pages.dataCenterPages.metroArea")}</th>
+                    <th className="px-4 py-2 font-semibold text-slate-700">{t("pages.dataCenterPages.typicalValue")}</th>
                   </tr>
                 </thead>
                 <tbody>

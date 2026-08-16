@@ -28,13 +28,8 @@ export default async function DataSources() {
   const t = await getServerT();
   return (
     <section aria-label={t("pages.articleChrome.sources", { ns: "dashboard" })} className="space-y-3 border-t border-slate-200 pt-8">
-      <h2 className="text-lg font-bold text-slate-900">Sources &amp; methodology</h2>
-      <p className="text-sm text-slate-500">
-        Every figure on this page is drawn from authoritative public housing and
-        mortgage data, refreshed monthly — so you can quote it in a listing
-        appointment or CMA and back it with a link when a client pushes back. Home
-        values shown as ZHVI are a smoothed typical-value index, not raw sale prices.
-      </p>
+      <h2 className="text-lg font-bold text-slate-900">{t("pages.dataCenterPages.sourcesTitle")}</h2>
+      <p className="text-sm text-slate-500">{t("pages.dataCenterPages.sourcesBody")}</p>
       <ul className="space-y-2 text-sm">
         {SOURCES.map((s) => (
           <li key={s.url} className="flex gap-2">

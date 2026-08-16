@@ -100,47 +100,30 @@ export default async function MarketsIndexPage() {
           <span className="text-slate-400 mx-2">/</span>
           <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</Link>
           <span className="text-slate-400 mx-2">/</span>
-          <span className="text-slate-600">Markets</span>
+          <span className="text-slate-600">{t("pages.dataCenterPages.markets")}</span>
         </nav>
 
         <header className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">
-            Local market data for agents
-          </p>
-          <h1 className="text-4xl font-bold leading-tight text-slate-900">
-            Local housing market data — by state &amp; metro
-          </h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-slate-600">
-            The hard numbers behind your pricing conversations. Pull up home values,
-            sale prices, inventory, and days on market for any state or major metro —
-            refreshed monthly from authoritative public data — and walk into every
-            listing appointment ready to tell your buyers and sellers exactly where
-            the market stands. Pick a market to see the trend and how it compares to
-            the nation.
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">{t("pages.dataCenterPages.marketsTitle")}</p>
+          <h1 className="text-4xl font-bold leading-tight text-slate-900">{t("pages.dataCenterPages.marketsH1")}</h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-slate-600">{t("pages.dataCenterPages.marketsBody")}</p>
         </header>
 
-        <section aria-label="National snapshot" className="space-y-4">
+        <section aria-label={t("pages.dataCenterPages.nationalAria")} className="space-y-4">
           <div className="flex items-baseline justify-between gap-4">
-            <h2 className="text-2xl font-bold text-slate-900">
-              The national picture — your baseline
-            </h2>
+            <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.nationalTitle")}</h2>
             {periodLabel && (
               <span className="text-sm text-slate-500">As of {periodLabel}</span>
             )}
           </div>
-          <p className="max-w-2xl text-sm leading-relaxed text-slate-600">
-            Start here to frame the conversation, then drill into your client&apos;s
-            market to show how local conditions diverge from the headlines they&apos;ve
-            been reading.
-          </p>
+          <p className="max-w-2xl text-sm leading-relaxed text-slate-600">{t("pages.dataCenterPages.nationalBody")}</p>
           <StatGrid metrics={national} />
         </section>
 
-        <section aria-label="States" className="space-y-4">
-          <h2 className="text-2xl font-bold text-slate-900">Browse by state</h2>
+        <section aria-label={t("pages.dataCenterPages.statesAria")} className="space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.statesTitle")}</h2>
           {states.length === 0 ? (
-            <p className="text-sm text-slate-500">State data is being refreshed.</p>
+            <p className="text-sm text-slate-500">{t("pages.dataCenterPages.statesRefreshing")}</p>
           ) : (
             <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
               {states.map((s) => (
@@ -157,10 +140,10 @@ export default async function MarketsIndexPage() {
           )}
         </section>
 
-        <section aria-label="Top metros" className="space-y-4">
-          <h2 className="text-2xl font-bold text-slate-900">Top metro areas</h2>
+        <section aria-label={t("pages.dataCenterPages.topMetrosAria")} className="space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.topMetrosTitle")}</h2>
           {topMetros.length === 0 ? (
-            <p className="text-sm text-slate-500">Metro data is being refreshed.</p>
+            <p className="text-sm text-slate-500">{t("pages.dataCenterPages.metrosRefreshing")}</p>
           ) : (
             <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {topMetros.map((m) => (
