@@ -78,8 +78,6 @@ const PENDING = new Set([
   "app/ai-cma-analyzer/page.tsx",
   "app/how-to-increase-cap-rate-on-rental-property/page.tsx",
   "app/home-value-funnel/page.tsx",
-  "app/cap-rate-vs-cash-on-cash-return/page.tsx",
-  "app/cap-rate-example-for-rental-property/page.tsx",
   "app/cap-rate-for-multifamily-investments/page.tsx",
   "app/cap-rate-vs-gross-rent-multiplier/page.tsx",
   "app/why-cap-rate-matters-for-real-estate-investors/page.tsx",

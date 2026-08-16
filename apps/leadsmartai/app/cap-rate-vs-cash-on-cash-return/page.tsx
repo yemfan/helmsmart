@@ -49,51 +49,28 @@ export default function CapRateVsCashOnCashReturnPage() {
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Cap rate and cash on cash return are two of the most practical metrics rental property
-        investors use. They are closely related, but they focus on different parts of the deal.
-        Knowing when to use each one will help you compare properties effectively and choose
-        financing strategies that match your goals.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.capRateVsCoc.intro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
         <h2 className="text-xl font-semibold text-gray-900">{t("pages.articleChrome.whatIsCapRate")}</h2>
-        <p>
-          Cap rate (capitalization rate) measures a property&apos;s net operating income (NOI)
-          relative to its purchase price or current value. It assumes an all-cash purchase and
-          ignores financing.
-        </p>
+        <p>{t("pages.capRateVsCoc.capDef")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cap Rate = Net Operating Income (NOI) ÷ Purchase Price or Value
         </p>
-        <p>
-          Investors use cap rate to compare similar properties, understand local pricing, and
-          quickly decide whether a deal deserves deeper analysis. It tells you about the property
-          itself, not your specific loan or down payment.
-        </p>
+        <p>{t("pages.capRateVsCoc.capUse")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">What is cash on cash return?</h2>
-        <p>
-          Cash on cash return focuses on your actual invested cash. It compares annual pre-tax cash
-          flow to the total cash you put into the deal, including down payment, closing costs, and
-          initial repairs.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsCoc.cocTitle")}</h2>
+        <p>{t("pages.capRateVsCoc.cocDef")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cash on Cash Return = Annual Pre-Tax Cash Flow ÷ Total Cash Invested
         </p>
-        <p>
-          Annual pre-tax cash flow is the money that hits your pocket each year after all operating
-          expenses and debt service (mortgage payments), but before income taxes. This metric
-          highlights how efficiently your invested dollars are generating cash in the near term.
-        </p>
+        <p>{t("pages.capRateVsCoc.cocFlow")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Example: cap rate and cash on cash return on the same property
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsCoc.exampleTitle")}</h2>
         <p>
           Imagine a rental property with a purchase price of $300,000 and net operating income of
           $21,000. The cap rate is:
@@ -101,9 +78,7 @@ export default function CapRateVsCashOnCashReturnPage() {
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cap Rate = $21,000 ÷ $300,000 = 7%
         </p>
-        <p>
-          Now consider an investor who buys this property with a 25% down payment and financing:
-        </p>
+        <p>{t("pages.capRateVsCoc.exampleBody")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>Down payment: 25% of $300,000 = $75,000</li>
           <li>Closing costs and initial repairs: $10,000</li>
@@ -116,53 +91,35 @@ export default function CapRateVsCashOnCashReturnPage() {
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Annual Cash Flow = NOI $21,000 – Debt Service $15,000 = $6,000
         </p>
-        <p>
-          Cash on cash return is then:
-        </p>
+        <p>{t("pages.capRateVsCoc.cocIs")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cash on Cash = $6,000 ÷ $85,000 ≈ 7.1%
         </p>
-        <p>
-          In this example, cap rate and cash on cash return are similar. But small changes in loan
-          terms, closing costs, or cash flow can cause cash on cash to diverge significantly from
-          cap rate, even when the property&apos;s NOI and price stay the same.
-        </p>
+        <p>{t("pages.capRateVsCoc.exampleClose")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          When to use cap rate vs when to use cash on cash return
-        </h2>
-        <p>
-          In practice, most investors use both metrics together. Each shines at a different stage of
-          your analysis.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">Cap rate is best for:</h3>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsCoc.whenTitle")}</h2>
+        <p>{t("pages.capRateVsCoc.whenBody")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsCoc.capBest")}</h3>
         <ul className="list-disc list-inside space-y-1">
-          <li>Scanning a large number of deals quickly.</li>
-          <li>Comparing similar properties in the same market.</li>
-          <li>Understanding typical income yields for a neighborhood or asset type.</li>
-          <li>Estimating value using the income approach.</li>
+          <li>{t("pages.capRateVsCoc.cb1")}</li>
+          <li>{t("pages.capRateVsCoc.cb2")}</li>
+          <li>{t("pages.capRateVsCoc.cb3")}</li>
+          <li>{t("pages.capRateVsCoc.cb4")}</li>
         </ul>
-        <h3 className="text-lg font-semibold text-gray-900 mt-4">
-          Cash on cash return is best for:
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mt-4">{t("pages.capRateVsCoc.cocBest")}</h3>
         <ul className="list-disc list-inside space-y-1">
-          <li>Evaluating how your specific financing terms affect returns.</li>
-          <li>Comparing different down payment and loan options on the same property.</li>
-          <li>Setting minimum return thresholds for the cash you invest.</li>
-          <li>Monitoring portfolio performance year by year.</li>
+          <li>{t("pages.capRateVsCoc.ob1")}</li>
+          <li>{t("pages.capRateVsCoc.ob2")}</li>
+          <li>{t("pages.capRateVsCoc.ob3")}</li>
+          <li>{t("pages.capRateVsCoc.ob4")}</li>
         </ul>
-        <p>
-          Together, these metrics help you avoid overpaying, choose the right leverage, and build a
-          portfolio that matches your appetite for risk and cash flow.
-        </p>
+        <p>{t("pages.capRateVsCoc.together")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Using calculators to compare cap rate and cash on cash return
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsCoc.calcTitle")}</h2>
         <p>
           Doing these calculations by hand is valuable once or twice, but it quickly becomes tedious
           when you are screening dozens of properties. That&apos;s why many investors use tools
@@ -172,50 +129,22 @@ export default function CapRateVsCashOnCashReturnPage() {
           <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
           in CloseBoss to model cap rate, cash on cash return, and long-term ROI in one view.
         </p>
-        <p>
-          By adjusting purchase price, expenses, down payment, and interest rate, you can instantly
-          see how cap rate and cash on cash respond—and which deals still make sense under more
-          conservative assumptions.
-        </p>
+        <p>{t("pages.capRateVsCoc.calcBody")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
         <h2 className="text-xl font-semibold text-gray-900">{t("pages.articleChrome.faqLong")}</h2>
-        <h3 className="text-lg font-semibold text-gray-900">
-          What is the main difference between cap rate and cash on cash return?
-        </h3>
-        <p>
-          Cap rate measures a property&apos;s income relative to its value and assumes an all-cash
-          purchase. Cash on cash return measures how much pre-tax cash flow you earn relative to the
-          actual cash you invest after financing, including your down payment and closing costs.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Is a higher cash on cash return always better?
-        </h3>
-        <p>
-          Not always. Very high cash on cash returns can come from aggressive leverage, risky
-          markets, or deferred maintenance. You should balance cash on cash with cap rate, long-term
-          ROI, risk, and your own comfort with leverage.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Can a property have a good cap rate but poor cash on cash return?
-        </h3>
-        <p>
-          Yes. If financing costs are high, or if you invest a large amount of cash relative to the
-          cash flow produced, cash on cash return can be weak even when the property&apos;s cap rate
-          looks solid. That&apos;s why you should never rely on a single metric.
-        </p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsCoc.q1")}</h3>
+        <p>{t("pages.capRateVsCoc.a1")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsCoc.q2")}</h3>
+        <p>{t("pages.capRateVsCoc.a2")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsCoc.q3")}</h3>
+        <p>{t("pages.capRateVsCoc.a3")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Compare cap rate and cash on cash on your next deal
-        </h2>
-        <p className="mb-3">
-          Smart investors think in terms of both the property and the capital they invest. Cap rate
-          tells you about the income yield of the asset; cash on cash return tells you how hard your
-          dollars are working after financing.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.capRateVsCoc.ctaTitle")}</h2>
+        <p className="mb-3">{t("pages.capRateVsCoc.ctaBody")}</p>
         <div className="flex flex-wrap gap-3 mb-4">
           <Link
             href="/cap-rate-calculator"
