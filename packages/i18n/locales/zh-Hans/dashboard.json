@@ -2314,7 +2314,15 @@
       "mergeExisting": "合并到现有记录",
       "createAnyway": "仍然新建",
       "firstErrors": "首批错误：",
-      "selectAtLeastOne": "请至少选择一位联系人后再保存。"
+      "selectAtLeastOne": "请至少选择一位联系人后再保存。",
+      "title": "从文件 AI 导入",
+      "sub": "上传 PDF、图片或文本文件。AI 会提取联系人，您核对后保存。",
+      "takesSeconds": "视文件大小，通常需要 5–30 秒。",
+      "dropFile": "把文件拖到这里，或点击选择",
+      "likelyDuplicate": "疑似重复",
+      "cancel": "取消",
+      "viewContacts": "查看联系人",
+      "importAnother": "再导入一个"
     },
     "newOffer": {
       "metaTitle": "新建报价",
@@ -3085,6 +3093,46 @@
       "youtubeBlurb": "把您的视频——房源导览、数字人片段——上传到您的 YouTube 频道。竖版短片会作为 Shorts 发布。",
       "youtubeConnect": "连接 YouTube 频道即可上传视频。竖版视频会作为 Shorts 发布。",
       "youtubeRevoke": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 Google 账号设置中移除访问权限。"
+    },
+    "marketingAssistant": {
+      "kbTitle": "营销助理的知识库",
+      "kbSub": "它写的每一句话都以此为依据——帖子文案、营销计划、培育内容。这是它自己的资料，与接待助理和销售助理的知识库互相独立。",
+      "studioSub": "自定义广告设计、品牌照片和短视频——都是可选的。即使不用这些，您的助理也会自动发布精选设计。",
+      "templateSub": "选择模板和主题，修改文案，实时预览，然后保存或排期。",
+      "openScheduler": "打开排期",
+      "schedulePost": "排期发布",
+      "noActivity": "还没有动态。营销助理开始发布内容和培育客户后，工作记录会显示在这里。",
+      "salesAssistant": "销售助理"
+    },
+    "receptionist": {
+      "inboundTitle": "接待助理的声音与知识",
+      "inboundSub": "设置接待助理接听来电时如何问候，以及它接电话时掌握哪些信息。团队中每位助理都有自己独立的知识库。",
+      "outboundTitle": "外呼声音与知识",
+      "outboundSub": "设置接待助理拨出电话时的声音——包括回拨，以及您从“发起通话”开始的电话。留空则沿用上方的来电知识库。",
+      "automationSub": "转接号码、未接来电自动短信模板、AI 个性化，以及短信联系不上时的自动回拨节奏。",
+      "callReason": "来电事由",
+      "whatItDid": "接待助理做了什么",
+      "callbackSchedule": "回拨安排"
+    },
+    "inboundDelivery": {
+      "showBody": "显示邮件正文预览",
+      "aiExtraction": "AI 提取结果",
+      "noExtractor": "这类邮件还没有对应的结构化提取器——请查看上方邮件正文并手动处理。",
+      "notRunYet": "这封邮件还没有运行过提取。",
+      "suggestedContact": "推荐匹配的联系人",
+      "useThisContact": "就用这位联系人",
+      "differentPerson": "换一个人",
+      "saveDraft": "存为草稿"
+    },
+    "importWizard": {
+      "sub": "上传表格、匹配列、预览重复项，然后完成导入。清洗、查重、补全和写入 CRM 的流程与手动录入完全一致。",
+      "skipDupes": "跳过疑似重复项",
+      "mergeExisting": "合并到已有记录",
+      "createAnyway": "仍然新建记录",
+      "preview": "预览",
+      "runImport": "开始导入",
+      "viewLeads": "查看客源",
+      "refresh": "刷新"
     }
   }
 }

@@ -2314,7 +2314,15 @@
       "mergeExisting": "Merge into existing",
       "createAnyway": "Create anyway",
       "firstErrors": "First errors:",
-      "selectAtLeastOne": "Select at least one contact to save."
+      "selectAtLeastOne": "Select at least one contact to save.",
+      "title": "AI Import from File",
+      "sub": "Upload a PDF, image, or text file. AI extracts contacts; you review and save.",
+      "takesSeconds": "This usually takes 5–30 seconds depending on file size.",
+      "dropFile": "Drop a file here, or click to browse",
+      "likelyDuplicate": "Likely duplicate",
+      "cancel": "Cancel",
+      "viewContacts": "View Contacts",
+      "importAnother": "Import another"
     },
     "newOffer": {
       "metaTitle": "New Offer",
@@ -3085,6 +3093,46 @@
       "youtubeBlurb": "Upload your videos — listing tours, avatar clips — to your YouTube channel. Vertical clips land as Shorts.",
       "youtubeConnect": "Connect a YouTube channel to upload videos. Vertical videos post as Shorts.",
       "youtubeRevoke": "Disconnecting removes the token stored here. To fully revoke, remove access in your Google account settings."
+    },
+    "marketingAssistant": {
+      "kbTitle": "Your Marketing Assistant's knowledge base",
+      "kbSub": "Grounds everything it writes — post captions, plans, nurture copy. Its own brief, separate from your Receptionist's and Sales Assistant's.",
+      "studioSub": "Custom ad designer, brand photos, and video reels — optional. Your assistant posts curated designs automatically without any of this.",
+      "templateSub": "Pick a template + theme, edit the copy, preview live, then save or schedule.",
+      "openScheduler": "Open scheduler",
+      "schedulePost": "Schedule a post",
+      "noActivity": "No activity yet. Once your Marketing Assistant starts publishing and nurturing, its work shows up here.",
+      "salesAssistant": "Sales Assistant"
+    },
+    "receptionist": {
+      "inboundTitle": "Your Receptionist's voice & knowledge",
+      "inboundSub": "How your Receptionist greets callers and what it knows when it answers your phone. Each assistant on your team has its own knowledge base.",
+      "outboundTitle": "Outbound voice & knowledge",
+      "outboundSub": "How your Receptionist sounds when it places calls — call-backs and the calls you start from “Place a call.” Leave blank to reuse the inbound knowledge base above.",
+      "automationSub": "Forward number, missed-call text-back template, AI personalization, and the auto call-back ladder for callers you don't reach by text.",
+      "callReason": "Call reason",
+      "whatItDid": "What your Receptionist did",
+      "callbackSchedule": "Call-back schedule"
+    },
+    "inboundDelivery": {
+      "showBody": "Show body preview",
+      "aiExtraction": "AI extraction",
+      "noExtractor": "No structured extractor for this intent yet — review the email body above and act manually.",
+      "notRunYet": "Extraction hasn't run yet for this delivery.",
+      "suggestedContact": "Suggested contact",
+      "useThisContact": "Use this contact",
+      "differentPerson": "Different person",
+      "saveDraft": "Save as a draft"
+    },
+    "importWizard": {
+      "sub": "Upload a spreadsheet, map columns, preview duplicates, then finalize. Uses the same normalization, dedupe, enrichment, and CRM save path as manual entry.",
+      "skipDupes": "Skip likely duplicates",
+      "mergeExisting": "Merge into existing",
+      "createAnyway": "Create new rows anyway",
+      "preview": "Preview",
+      "runImport": "Run import",
+      "viewLeads": "View leads",
+      "refresh": "Refresh"
     }
   }
 }

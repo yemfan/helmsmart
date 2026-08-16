@@ -318,27 +318,16 @@ function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
 
         {tab === "inbound" && (
           <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-1 text-sm font-semibold text-gray-900">
-              Your Receptionist&apos;s voice &amp; knowledge
-            </h3>
-            <p className="mb-4 text-xs text-gray-500">
-              How your Receptionist greets callers and what it knows when it answers your
-              phone. Each assistant on your team has its own knowledge base.
-            </p>
+            <h3 className="mb-1 text-sm font-semibold text-gray-900">{t("pages.receptionist.inboundTitle")}</h3>
+            <p className="mb-4 text-xs text-gray-500">{t("pages.receptionist.inboundSub")}</p>
             <ReceptionistVoiceForm />
           </section>
         )}
 
         {tab === "outbound" && (
           <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-1 text-sm font-semibold text-gray-900">
-              Outbound voice &amp; knowledge
-            </h3>
-            <p className="mb-4 text-xs text-gray-500">
-              How your Receptionist sounds when it places calls — call-backs and the calls
-              you start from &ldquo;Place a call.&rdquo; Leave blank to reuse the inbound
-              knowledge base above.
-            </p>
+            <h3 className="mb-1 text-sm font-semibold text-gray-900">{t("pages.receptionist.outboundTitle")}</h3>
+            <p className="mb-4 text-xs text-gray-500">{t("pages.receptionist.outboundSub")}</p>
             <AssistantCallSettings
               type="receptionist"
               knowledgePlaceholder="What to mention on outbound calls — current listings, your specialties, financing partners, what makes you different…"
@@ -350,10 +339,7 @@ function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
         {tab === "missed" && (
           <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <h3 className="mb-1 text-sm font-semibold text-gray-900">{t("assistants.receptionist.missedCallSettings")}</h3>
-            <p className="mb-4 text-xs text-gray-500">
-              Forward number, missed-call text-back template, AI personalization, and the
-              auto call-back ladder for callers you don&apos;t reach by text.
-            </p>
+            <p className="mb-4 text-xs text-gray-500">{t("pages.receptionist.automationSub")}</p>
             <MissedCallSettingsForm />
           </section>
         )}
@@ -408,17 +394,13 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
 
         <div className="mt-4 space-y-4 text-sm">
           <section>
-            <h4 className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-              Call reason
-            </h4>
+            <h4 className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{t("pages.receptionist.callReason")}</h4>
             <p className="mt-1 whitespace-pre-wrap text-gray-700">{call.reason}</p>
           </section>
 
           {call.actions.length > 0 && (
             <section>
-              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                What your Receptionist did
-              </h4>
+              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{t("pages.receptionist.whatItDid")}</h4>
               <ul className="mt-1 space-y-1">
                 {call.actions.map((a, i) => (
                   <li key={`${a.kind}-${i}`} className="flex items-center gap-2 text-gray-700">
@@ -449,9 +431,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
 
           {call.callback && (
             <section>
-              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                Call-back schedule
-              </h4>
+              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{t("pages.receptionist.callbackSchedule")}</h4>
               <p className="mt-1 text-gray-700">
                 {call.callback.status === "scheduled" &&
                   `${call.callback.attempts} of 3 attempts placed — next one ${

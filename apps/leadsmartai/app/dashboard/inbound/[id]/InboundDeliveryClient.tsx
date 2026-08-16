@@ -123,9 +123,7 @@ export default function InboundDeliveryClient({
         </dl>
         {current.text_preview && (
           <details className="group">
-            <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 hover:text-slate-900">
-              Show body preview
-            </summary>
+            <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 hover:text-slate-900">{t("pages.inboundDelivery.showBody")}</summary>
             <pre className="mt-2 max-h-80 overflow-y-auto whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-slate-700">
               {current.text_preview}
             </pre>
@@ -136,19 +134,14 @@ export default function InboundDeliveryClient({
       {/* ── Extraction ───────────────────────────────────────────── */}
       <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-700">
-            AI extraction
-          </h2>
+          <h2 className="text-sm font-semibold text-slate-700">{t("pages.inboundDelivery.aiExtraction")}</h2>
           <ExtractionStatusPill status={current.extraction_status} />
         </div>
 
         {current.extraction_status === "extracted" && current.extraction ? (
           <ExtractionView extraction={current.extraction} />
         ) : current.extraction_status === "skipped" ? (
-          <p className="text-sm text-slate-500">
-            No structured extractor for this intent yet — review the email
-            body above and act manually.
-          </p>
+          <p className="text-sm text-slate-500">{t("pages.inboundDelivery.noExtractor")}</p>
         ) : current.extraction_status === "failed" ? (
           <div className="space-y-2">
             <p className="text-sm text-rose-700">
@@ -165,9 +158,7 @@ export default function InboundDeliveryClient({
           </div>
         ) : (
           <div className="space-y-2">
-            <p className="text-sm text-slate-500">
-              Extraction hasn&apos;t run yet for this delivery.
-            </p>
+            <p className="text-sm text-slate-500">{t("pages.inboundDelivery.notRunYet")}</p>
             <button
               type="button"
               onClick={runExtraction}
@@ -194,9 +185,7 @@ export default function InboundDeliveryClient({
           match — they'll just pick manually as before. */}
       {current.matched_contact && (
         <section className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-blue-900">
-            Suggested contact
-          </h2>
+          <h2 className="text-sm font-semibold text-blue-900">{t("pages.inboundDelivery.suggestedContact")}</h2>
           <p className="mt-1 text-sm text-blue-900">
             Looks like{" "}
             <span className="font-semibold">
@@ -222,9 +211,7 @@ export default function InboundDeliveryClient({
                   ? "bg-blue-600 text-white"
                   : "bg-white text-blue-700 ring-1 ring-blue-200 hover:bg-blue-100"
               }`}
-            >
-              Use this contact
-            </button>
+            >{t("pages.inboundDelivery.useThisContact")}</button>
             <button
               type="button"
               onClick={() => setUseSuggestedContact(false)}
@@ -233,9 +220,7 @@ export default function InboundDeliveryClient({
                   ? "bg-slate-700 text-white"
                   : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100"
               }`}
-            >
-              Different person
-            </button>
+            >{t("pages.inboundDelivery.differentPerson")}</button>
             <Link
               href={`/dashboard/contacts/${current.matched_contact.id}`}
               className="ml-auto text-blue-700 hover:underline"
@@ -249,9 +234,7 @@ export default function InboundDeliveryClient({
       {/* ── Apply CTA ────────────────────────────────────────────── */}
       {current.extraction_status === "extracted" && applyHref && (
         <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-emerald-900">
-            Save as a draft
-          </h2>
+          <h2 className="text-sm font-semibold text-emerald-900">{t("pages.inboundDelivery.saveDraft")}</h2>
           <p className="mt-1 text-sm text-emerald-800">
             Open the upload flow with these fields pre-filled.{" "}
             {useSuggestedContact && current.matched_contact ? (

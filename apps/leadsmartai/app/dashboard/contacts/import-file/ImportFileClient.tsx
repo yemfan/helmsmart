@@ -250,13 +250,8 @@ export default function ImportFileClient() {
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">
-            AI Import from File
-          </h1>
-          <p className="text-sm text-gray-500">
-            Upload a PDF, image, or text file. AI extracts contacts; you review
-            and save.
-          </p>
+          <h1 className="text-xl font-semibold text-gray-900">{t("pages.importFile.title")}</h1>
+          <p className="text-sm text-gray-500">{t("pages.importFile.sub")}</p>
         </div>
         <Link
           href="/dashboard/contacts"
@@ -287,9 +282,7 @@ export default function ImportFileClient() {
               Reading {fileName ?? "file"}...
             </span>
           </div>
-          <p className="mt-3 text-xs text-gray-500">
-            This usually takes 5–30 seconds depending on file size.
-          </p>
+          <p className="mt-3 text-xs text-gray-500">{t("pages.importFile.takesSeconds")}</p>
         </div>
       )}
 
@@ -344,6 +337,7 @@ function DropZone({
   fileRef: React.RefObject<HTMLInputElement | null>;
   onFile: (file: File) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [dragOver, setDragOver] = useState(false);
 
   return (
@@ -379,9 +373,7 @@ function DropZone({
           d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
         />
       </svg>
-      <span className="mt-3 text-sm font-semibold text-gray-700">
-        Drop a file here, or click to browse
-      </span>
+      <span className="mt-3 text-sm font-semibold text-gray-700">{t("pages.importFile.dropFile")}</span>
       <span className="mt-1 text-xs text-gray-500">
         PDF · JPEG / PNG / WEBP · TXT / VCF / MD &nbsp;·&nbsp; up to 20 MB
       </span>
@@ -522,9 +514,7 @@ function ReviewTable(props: {
                       <span
                         className="inline-flex w-fit items-center rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-medium text-yellow-800"
                         title={`Match score ${r.duplicateScore?.toFixed(2) ?? "—"}`}
-                      >
-                        Likely duplicate
-                      </span>
+                      >{t("pages.importFile.likelyDuplicate")}</span>
                     )}
                   </div>
                 </td>
@@ -631,9 +621,7 @@ function ReviewTable(props: {
           type="button"
           onClick={onCancel}
           className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Cancel
-        </button>
+        >{t("pages.importFile.cancel")}</button>
         <button
           type="button"
           onClick={onSave}
@@ -725,16 +713,12 @@ function DoneSummary({
           type="button"
           onClick={onViewContacts}
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800"
-        >
-          View Contacts
-        </button>
+        >{t("pages.importFile.viewContacts")}</button>
         <button
           type="button"
           onClick={onAnother}
           className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Import another
-        </button>
+        >{t("pages.importFile.importAnother")}</button>
       </div>
     </div>
   );
