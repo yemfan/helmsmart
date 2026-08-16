@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AddressAutocomplete, {
   type AddressAutocompleteValue,
 } from "@/components/AddressAutocomplete";
@@ -65,6 +66,7 @@ type ListingDetectState =
  */
 
 function NewOfferForm() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
   const prefilledContactId = searchParams?.get("contactId") ?? "";
@@ -453,12 +455,12 @@ function NewOfferForm() {
   async function submit() {
     setError(null);
     if (!contact?.id || !propertyAddress.trim() || !offerPrice.trim()) {
-      setError("Buyer, property address, and offer price are required.");
+      setError(t("pages.newOffer.errRequired"));
       return;
     }
     const priceNum = Number(offerPrice);
     if (!Number.isFinite(priceNum) || priceNum <= 0) {
-      setError("Offer price must be a positive number.");
+      setError(t("pages.newOffer.errPrice"));
       return;
     }
     setSubmitting(true);
@@ -525,7 +527,7 @@ function NewOfferForm() {
           </Link>
           {" / New"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">New offer</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.newOffer.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">
           Log an offer you&apos;re about to submit or have already submitted. Track counters
           and convert to a transaction if it&apos;s accepted.
@@ -534,7 +536,7 @@ function NewOfferForm() {
 
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">Buyer *</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.buyer")}</label>
           <ContactPicker
             value={contact}
             onChange={setContact}
@@ -551,7 +553,7 @@ function NewOfferForm() {
             blank URL just leaves the rest of the form to manual entry. */}
         <div>
           <label className="block text-xs font-medium text-slate-700">
-            Listing URL <span className="font-normal text-slate-400">(optional)</span>
+            Listing URL <span className="font-normal text-slate-400">{t("pages.newOffer.optional")}</span>
           </label>
           <input
             type="url"
@@ -560,7 +562,7 @@ function NewOfferForm() {
               setListingUrl(e.target.value);
               void detectListingUrl(e.target.value);
             }}
-            placeholder="Paste Zillow / Redfin / Realtor / Compass URL"
+            placeholder={t("pages.newOffer.urlPlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
           {listingUrlDetected ? (
@@ -583,7 +585,7 @@ function NewOfferForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">Property address *</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.address")}</label>
 
           {/* Recent-addresses quick-pick was removed once the
               ?showingId prefill landed — that path covers the
@@ -607,7 +609,7 @@ function NewOfferForm() {
               setPrefillNote("Loading list price from records…");
               void applyListPriceFromWarehouse(val.formattedAddress);
             }}
-            placeholder="Start typing — Google will autocomplete the full address"
+            placeholder={t("pages.newOffer.addressHint")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
           {(city || state || zip) ? (
@@ -624,7 +626,7 @@ function NewOfferForm() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">List price</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.listPrice")}</label>
             <input
               type="number"
               value={listPrice}
@@ -633,7 +635,7 @@ function NewOfferForm() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Offer price *</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.offerPrice")}</label>
             <input
               type="number"
               value={offerPrice}
@@ -645,7 +647,7 @@ function NewOfferForm() {
 
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">Earnest money</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.earnestMoney")}</label>
             <input
               type="number"
               value={earnestMoney}
@@ -665,7 +667,7 @@ function NewOfferForm() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Down payment</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.downPayment")}</label>
             <input
               type="number"
               value={downPayment}
@@ -682,26 +684,26 @@ function NewOfferForm() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Financing</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.financing")}</label>
             <select
               value={financingType}
               onChange={(e) => setFinancingType(e.target.value as FinancingType | "")}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             >
               <option value="">—</option>
-              <option value="cash">Cash</option>
-              <option value="conventional">Conventional</option>
-              <option value="fha">FHA</option>
+              <option value="cash">{t("pages.newOffer.cash")}</option>
+              <option value="conventional">{t("pages.newOffer.conventional")}</option>
+              <option value="fha">{t("pages.newOffer.fha")}</option>
               <option value="va">VA</option>
-              <option value="jumbo">Jumbo</option>
-              <option value="other">Other</option>
+              <option value="jumbo">{t("pages.newOffer.jumbo")}</option>
+              <option value="other">{t("pages.newOffer.other")}</option>
             </select>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">Proposed closing</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.proposedClosing")}</label>
             <input
               type="date"
               value={closingDateProposed}
@@ -710,7 +712,7 @@ function NewOfferForm() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Offer expires</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.offerExpires")}</label>
             <input
               type="datetime-local"
               value={offerExpiresAt}
@@ -721,7 +723,7 @@ function NewOfferForm() {
         </div>
 
         <div className="space-y-2 rounded-lg bg-slate-50 p-3">
-          <div className="text-xs font-medium text-slate-700">Contingencies</div>
+          <div className="text-xs font-medium text-slate-700">{t("pages.newOffer.contingencies")}</div>
           <div className="flex flex-wrap gap-4 text-sm">
             <label className="inline-flex items-center gap-2">
               <input
@@ -754,13 +756,13 @@ function NewOfferForm() {
           <input
             value={contingencyNotes}
             onChange={(e) => setContingencyNotes(e.target.value)}
-            placeholder="Other contingencies (sale-of-home, short-sale approval, etc.)"
+            placeholder={t("pages.newOffer.otherContingencies")}
             className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">Notes</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newOffer.notes")}</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
@@ -777,7 +779,7 @@ function NewOfferForm() {
             className="mt-0.5 h-4 w-4"
           />
           <span>
-            <span className="font-medium text-slate-800">Already submitted to listing agent</span>
+            <span className="font-medium text-slate-800">{t("pages.newOffer.alreadySubmitted")}</span>
             <span className="mt-0.5 block text-[11px] text-slate-500">
               Skips the draft state and timestamps the offer as submitted now.
             </span>
@@ -799,7 +801,7 @@ function NewOfferForm() {
             disabled={submitting || !contact?.id || !propertyAddress.trim() || !offerPrice.trim()}
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
           >
-            {submitting ? "Creating…" : submitNow ? "Create + submit" : "Create draft"}
+            {submitting ? "Creating…" : submitNow ? t("pages.newOffer.createSubmit") : t("pages.newOffer.createDraft")}
           </button>
         </div>
       </div>
@@ -851,8 +853,9 @@ function PctChips({
 }
 
 export function NewOfferClient() {
+  const { t } = useTranslation("dashboard");
   return (
-    <Suspense fallback={<div className="text-sm text-slate-500">Loading…</div>}>
+    <Suspense fallback={<div className="text-sm text-slate-500">{t("pages.newOffer.loading")}</div>}>
       <NewOfferForm />
     </Suspense>
   );

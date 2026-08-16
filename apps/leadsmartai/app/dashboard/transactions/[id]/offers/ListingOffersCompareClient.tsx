@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DEFAULT_NET_TO_SELLER_ASSUMPTIONS,
   computeNetToSeller,
@@ -54,6 +55,7 @@ export function ListingOffersCompareClient({
   transaction: TransactionSummary;
   initialOffers: ListingOfferCompareItem[];
 }) {
+  const { t } = useTranslation("dashboard");
   const [offers, setOffers] = useState(initialOffers);
   const [showAdd, setShowAdd] = useState(false);
   const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
@@ -248,7 +250,7 @@ export function ListingOffersCompareClient({
           </Link>
           {" / Offers"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">Offers on listing</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.offersCompare.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">
           {transaction.property_address}
           {transaction.city || transaction.state
@@ -273,31 +275,31 @@ export function ListingOffersCompareClient({
       ) : null}
 
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-900">Net-to-seller assumptions</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.offersCompare.assumptions")}</h2>
         <p className="mt-0.5 text-xs text-slate-500">
           Adjust for this listing. Seller concessions come from each offer individually.
         </p>
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <AssumptionInput
-            label="Commission %"
+            label={t("pages.offersCompare.commissionPct")}
             value={commissionPct}
             onChange={setCommissionPct}
             suffix="%"
           />
           <AssumptionInput
-            label="Title + escrow %"
+            label={t("pages.offersCompare.titleEscrowPct")}
             value={titleEscrowPct}
             onChange={setTitleEscrowPct}
             suffix="%"
           />
           <AssumptionInput
-            label="Transfer tax %"
+            label={t("pages.offersCompare.transferTaxPct")}
             value={transferTaxPct}
             onChange={setTransferTaxPct}
             suffix="%"
           />
           <AssumptionInput
-            label="Other flat costs"
+            label={t("pages.offersCompare.otherFlat")}
             value={otherCostsFlat}
             onChange={setOtherCostsFlat}
             suffix="$"
@@ -320,7 +322,7 @@ export function ListingOffersCompareClient({
           onClick={() => setShowAdd((v) => !v)}
           className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
         >
-          {showAdd ? "Cancel" : "+ Record offer"}
+          {showAdd ? t("pages.offersCompare.cancel") : t("pages.offersCompare.recordOffer")}
         </button>
       </div>
 
@@ -347,15 +349,15 @@ export function ListingOffersCompareClient({
             <table className="min-w-full text-sm">
               <thead className="bg-slate-50 text-xs text-slate-600">
                 <tr>
-                  <th className="px-3 py-2 text-left font-medium">Buyer + agent</th>
-                  <th className="px-3 py-2 text-right font-medium">Price</th>
-                  <th className="px-3 py-2 text-right font-medium">Net to seller</th>
-                  <th className="px-3 py-2 text-left font-medium">Financing</th>
-                  <th className="px-3 py-2 text-center font-medium">Contingencies</th>
-                  <th className="px-3 py-2 text-right font-medium">Concessions</th>
-                  <th className="px-3 py-2 text-left font-medium">Close</th>
-                  <th className="px-3 py-2 text-left font-medium">Status</th>
-                  <th className="px-3 py-2 text-center font-medium">Actions</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("pages.offersCompare.colBuyerAgent")}</th>
+                  <th className="px-3 py-2 text-right font-medium">{t("pages.offersCompare.colPrice")}</th>
+                  <th className="px-3 py-2 text-right font-medium">{t("pages.offersCompare.colNet")}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("pages.offersCompare.financing")}</th>
+                  <th className="px-3 py-2 text-center font-medium">{t("pages.offersCompare.colContingencies")}</th>
+                  <th className="px-3 py-2 text-right font-medium">{t("pages.offersCompare.colConcessions")}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("pages.offersCompare.colClose")}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("pages.offersCompare.colStatus")}</th>
+                  <th className="px-3 py-2 text-center font-medium">{t("pages.offersCompare.colActions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -421,9 +423,7 @@ export function ListingOffersCompareClient({
                           <span className="text-slate-400">—</span>
                         )}
                         {o.is_cash ? (
-                          <div className="text-[10px] font-medium uppercase tracking-wide text-green-700">
-                            Cash
-                          </div>
+                          <div className="text-[10px] font-medium uppercase tracking-wide text-green-700">{t("pages.offersCompare.cash")}</div>
                         ) : null}
                       </td>
                       <td className="px-3 py-2 text-center tabular-nums">
@@ -493,14 +493,14 @@ export function ListingOffersCompareClient({
       {offers.length > 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-sm font-semibold text-slate-900">AI summary &amp; recommendation</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("pages.offersCompare.aiSummary")}</h2>
             <button
               type="button"
               onClick={() => void summarize()}
               disabled={summarizing}
               className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#005fa8] disabled:opacity-50"
             >
-              {summarizing ? "Analyzing…" : summary ? "Refresh" : "Summarize & recommend"}
+              {summarizing ? "Analyzing…" : summary ? t("pages.offersCompare.refresh") : t("pages.offersCompare.summarize")}
             </button>
           </div>
           {summaryErr ? <p className="mt-2 text-xs text-red-600">{summaryErr}</p> : null}
@@ -604,6 +604,7 @@ function NewListingOfferForm({
   onCreated: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [buyerName, setBuyerName] = useState("");
   const [buyerAgentName, setBuyerAgentName] = useState("");
   const [buyerAgentEmail, setBuyerAgentEmail] = useState("");
@@ -672,45 +673,45 @@ function NewListingOfferForm({
 
   return (
     <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h3 className="text-sm font-semibold text-slate-900">Record incoming offer</h3>
+      <h3 className="text-sm font-semibold text-slate-900">{t("pages.offersCompare.recordIncoming")}</h3>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-        <Field label="Buyer name" value={buyerName} onChange={setBuyerName} placeholder="Jane Buyer" />
+        <Field label={t("pages.offersCompare.buyerName")} value={buyerName} onChange={setBuyerName} placeholder={t("pages.offersCompare.buyerNamePlaceholder")} />
         <Field
-          label="Buyer's agent"
+          label={t("pages.offersCompare.buyersAgent")}
           value={buyerAgentName}
           onChange={setBuyerAgentName}
-          placeholder="Pat Buyer-Rep"
+          placeholder={t("pages.offersCompare.agentPlaceholder")}
         />
         <Field
-          label="Agent email"
+          label={t("pages.offersCompare.agentEmail")}
           value={buyerAgentEmail}
           onChange={setBuyerAgentEmail}
           type="email"
-          placeholder="pat@brokerage.com"
+          placeholder={t("pages.offersCompare.agentEmailPlaceholder")}
         />
         <Field
-          label="Offer price *"
+          label={t("pages.offersCompare.offerPrice")}
           value={offerPrice}
           onChange={setOfferPrice}
           type="number"
           placeholder="1250000"
         />
         <Field
-          label="Earnest money"
+          label={t("pages.offersCompare.earnestMoney")}
           value={earnestMoney}
           onChange={setEarnestMoney}
           type="number"
           placeholder="30000"
         />
         <Field
-          label="Down payment"
+          label={t("pages.offersCompare.downPayment")}
           value={downPayment}
           onChange={setDownPayment}
           type="number"
           placeholder="250000"
         />
         <div>
-          <label className="block text-xs font-medium text-slate-700">Financing</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.offersCompare.financing")}</label>
           <select
             value={financingType}
             onChange={(e) =>
@@ -721,22 +722,22 @@ function NewListingOfferForm({
             className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
           >
             <option value="">—</option>
-            <option value="cash">Cash</option>
-            <option value="conventional">Conventional</option>
-            <option value="fha">FHA</option>
+            <option value="cash">{t("pages.offersCompare.cash")}</option>
+            <option value="conventional">{t("pages.offersCompare.conventional")}</option>
+            <option value="fha">{t("pages.offersCompare.fha")}</option>
             <option value="va">VA</option>
-            <option value="jumbo">Jumbo</option>
-            <option value="other">Other</option>
+            <option value="jumbo">{t("pages.offersCompare.jumbo")}</option>
+            <option value="other">{t("pages.offersCompare.other")}</option>
           </select>
         </div>
         <Field
-          label="Proposed close"
+          label={t("pages.offersCompare.proposedClose")}
           value={closingDateProposed}
           onChange={setClosingDateProposed}
           type="date"
         />
         <Field
-          label="Seller concessions"
+          label={t("pages.offersCompare.concessions")}
           value={sellerConcessions}
           onChange={setSellerConcessions}
           type="number"
@@ -745,13 +746,13 @@ function NewListingOfferForm({
       </div>
 
       <div className="space-y-1 rounded-lg bg-slate-50 p-3">
-        <div className="text-xs font-medium text-slate-700">Contingencies</div>
+        <div className="text-xs font-medium text-slate-700">{t("pages.offersCompare.colContingencies")}</div>
         <div className="flex flex-wrap gap-4 text-sm">
-          <Check label="Inspection" checked={inspectionContingency} onChange={setInspectionContingency} />
+          <Check label={t("pages.offersCompare.inspection")} checked={inspectionContingency} onChange={setInspectionContingency} />
           <Check label="Appraisal" checked={appraisalContingency} onChange={setAppraisalContingency} />
           <Check label="Loan" checked={loanContingency} onChange={setLoanContingency} />
           <Check
-            label="Sale of home"
+            label={t("pages.offersCompare.saleOfHome")}
             checked={saleOfHomeContingency}
             onChange={setSaleOfHomeContingency}
           />
