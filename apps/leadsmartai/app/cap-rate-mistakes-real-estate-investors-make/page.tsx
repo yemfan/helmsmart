@@ -49,125 +49,50 @@ export default function CapRateMistakesRealEstateInvestorsMakePage() {
         </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Cap rate is simple to calculate, but easy to misuse. Small mistakes in your assumptions can
-        make a property look far better—or worse—than it really is. By understanding the most common
-        errors investors make with cap rate, you can avoid costly missteps and use this metric the
-        way professionals do.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.capRateMistakes.intro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Mistake 1: Underestimating operating expenses
-        </h2>
-        <p>
-          One of the biggest cap rate mistakes is using unrealistically low expense numbers. If you
-          underestimate taxes, insurance, maintenance, or management, you&apos;ll overstate net
-          operating income (NOI) and show a cap rate that&apos;s higher than reality.
-        </p>
-        <p>
-          To avoid this, use actual historical expenses when possible, and when you don&apos;t have
-          them, estimate conservatively. Talk with local property managers and other investors to
-          understand typical expense ratios in your market.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMistakes.m1Title")}</h2>
+        <p>{t("pages.capRateMistakes.m1a")}</p>
+        <p>{t("pages.capRateMistakes.m1b")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">Mistake 2: Ignoring vacancy and credit loss</h2>
-        <p>
-          Assuming 100% occupancy and perfect rent collection will inflate your effective income and
-          NOI. In the real world, tenants move out, and some rents go unpaid.
-        </p>
-        <p>
-          A better approach is to apply a reasonable vacancy and credit loss percentage based on
-          local norms—often 5%–8% for stable markets, and potentially higher in more volatile areas.
-          The{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-          in CloseBoss lets you explicitly include a vacancy assumption in your analysis.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMistakes.m2Title")}</h2>
+        <p>{t("pages.capRateMistakes.m2a")}</p>
+        <p>{t("pages.capRateMistakes.m2b")}{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}{t("pages.capRateMistakes.m2c")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Mistake 3: Comparing different property types and markets directly
-        </h2>
-        <p>
-          A 5% cap rate on a Class A apartment in a top-tier city is not comparable to a 7% cap rate
-          on a small building in a weak market. Cap rates must be compared within the same asset
-          class and local market to be meaningful.
-        </p>
-        <p>
-          When you compare apples to oranges, you can be tempted to chase higher cap rates without
-          realizing you&apos;re also taking on much more risk. Always anchor your comparisons to
-          recent sales and typical ranges for similar properties in the same area.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMistakes.m3Title")}</h2>
+        <p>{t("pages.capRateMistakes.m3a")}</p>
+        <p>{t("pages.capRateMistakes.m3b")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Mistake 4: Relying only on pro forma numbers
-        </h2>
-        <p>
-          Pro forma numbers—projected income and expenses—are useful, but they can be optimistic.
-          Some listings highlight &quot;pro forma cap rate&quot; based on future rent increases or
-          best-case expense reductions, not current performance.
-        </p>
-        <p>
-          To protect yourself, calculate both the current cap rate based on in-place income and
-          expenses, and the pro forma cap rate based on your realistic business plan. This gives you
-          a clearer view of what you&apos;re actually buying today versus what you hope to create.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMistakes.m4Title")}</h2>
+        <p>{t("pages.capRateMistakes.m4a")}</p>
+        <p>{t("pages.capRateMistakes.m4b")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Mistake 5: Treating cap rate as the only metric that matters
-        </h2>
-        <p>
-          Cap rate is powerful, but incomplete. It doesn&apos;t include your financing, tax
-          benefits, appreciation, or the timing of cash flows. Investors who focus only on cap rate
-          risk missing deals where long-term growth or debt paydown make the overall return profile
-          very attractive.
-        </p>
-        <p>
-          That&apos;s why professional investors combine cap rate with cash-on-cash return, long-term
-          ROI, and{" "}
-          <Link href="/roi-calculator" className="text-blue-600 hover:text-blue-700">
-            IRR-style analysis
-          </Link>{" "}
-          to see the full picture before making a decision.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMistakes.m5Title")}</h2>
+        <p>{t("pages.capRateMistakes.m5a")}</p>
+        <p>{t("pages.capRateMistakes.m5b")}{" "}
+          <Link href="/roi-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.capRateMistakes.irrLink")}</Link>{" "}{t("pages.capRateMistakes.m5c")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Mistake 6: Ignoring upcoming capital expenditures (CapEx)
-        </h2>
-        <p>
-          Cap rate is based on current NOI and typically does not include major one-time projects
-          like roof replacements, HVAC systems, or structural repairs. If you ignore these, you
-          might buy a property that looks fine on paper but requires large cash injections soon
-          after closing.
-        </p>
-        <p>
-          During due diligence, identify major upcoming CapEx and factor it into your overall
-          returns and reserves. You can keep cap rate focused on ongoing operations while still
-          making informed decisions about big-ticket items.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMistakes.m6Title")}</h2>
+        <p>{t("pages.capRateMistakes.m6a")}</p>
+        <p>{t("pages.capRateMistakes.m6b")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Mistake 7: Not stress-testing cap rate with different scenarios
-        </h2>
-        <p>
-          A single cap rate calculation assumes your estimates are exactly right, which they rarely
-          are. Failing to stress-test vacancy, rent levels, and expenses can leave you exposed if
-          reality is a little worse than your model.
-        </p>
-        <p>
-          A more resilient approach is to run &quot;base case,&quot; &quot;downside,&quot; and
-          &quot;upside&quot; scenarios using tools like the{" "}
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMistakes.m7Title")}</h2>
+        <p>{t("pages.capRateMistakes.m7a")}</p>
+        <p>{t("pages.capRateMistakes.m7b")}{" "}
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>
           . This shows you how cap rate and cash flow change if rents come in lower or expenses come
           in higher than expected.
@@ -175,44 +100,18 @@ export default function CapRateMistakesRealEstateInvestorsMakePage() {
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Frequently asked questions about cap rate mistakes
-        </h2>
-        <h3 className="text-lg font-semibold text-gray-900">
-          How can I quickly sanity-check a cap rate I see in a listing?
-        </h3>
-        <p>
-          Ask how the seller or broker calculated it: what NOI they used, what vacancy and expenses
-          they assumed, and whether numbers are actual or pro forma. Then plug more conservative
-          assumptions into your own calculator to see if the deal still holds up.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Is it a mistake to ignore low cap rate deals completely?
-        </h3>
-        <p>
-          Not necessarily. Low cap rate deals can make sense in strong markets with excellent growth
-          prospects, or when you have a clear plan to raise NOI. The mistake is dismissing or
-          accepting them without understanding the trade-offs.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          What&apos;s the best way to build good habits around cap rate?
-        </h3>
-        <p>
-          Analyze many deals using consistent assumptions, track your estimates versus actual
-          performance, and refine your rules of thumb over time. Using structured tools for
-          cap-rate and cash-flow analysis makes it easier to avoid emotional decisions.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMistakes.faqTitle")}</h2>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateMistakes.q1")}</h3>
+        <p>{t("pages.capRateMistakes.a1")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateMistakes.q2")}</h3>
+        <p>{t("pages.capRateMistakes.a2")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateMistakes.q3")}</h3>
+        <p>{t("pages.capRateMistakes.a3")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Use cap rate the way professionals do
-        </h2>
-        <p className="mb-3">
-          Cap rate is only dangerous when it&apos;s used carelessly. When you base it on realistic
-          numbers, compare it properly, and pair it with deeper cash-flow analysis, it becomes one
-          of the most useful tools in your investing toolkit.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.capRateMistakes.ctaTitle")}</h2>
+        <p className="mb-3">{t("pages.capRateMistakes.ctaBody")}</p>
         <div className="flex flex-wrap gap-3 mb-4">
           <Link
             href="/cap-rate-calculator"
