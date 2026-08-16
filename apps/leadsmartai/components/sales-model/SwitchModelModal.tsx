@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   SALES_MODEL_ORDER,
   salesModels,
@@ -30,6 +31,7 @@ export function SwitchModelModal({
   onClose: () => void;
   onConfirm: (next: SalesModelId) => Promise<{ ok: boolean; error?: string }>;
 }) {
+  const { t } = useTranslation("dashboard");
   const [picked, setPicked] = useState<SalesModelId>(currentModel);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,13 +85,8 @@ export function SwitchModelModal({
     >
       <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-slate-900/10">
         <div className="border-b border-slate-200 px-6 py-4">
-          <h2 id="switch-model-title" className="text-lg font-semibold text-slate-900">
-            Switch sales model
-          </h2>
-          <p className="mt-1 text-sm text-slate-600">
-            Switching will personalize your dashboard, AI tone, scripts, tasks,
-            and pipeline. You can change it again anytime.
-          </p>
+          <h2 id="switch-model-title" className="text-lg font-semibold text-slate-900">{t("pages.switchModel.title")}</h2>
+          <p className="mt-1 text-sm text-slate-600">{t("pages.switchModel.sub")}</p>
         </div>
 
         <div className="max-h-[55vh] space-y-2 overflow-y-auto px-6 py-4">
@@ -123,14 +120,10 @@ export function SwitchModelModal({
                       {m.name}
                     </span>
                     {m.recommended ? (
-                      <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
-                        Recommended
-                      </span>
+                      <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700">{t("pages.switchModel.recommended")}</span>
                     ) : null}
                     {id === currentModel ? (
-                      <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">
-                        Current
-                      </span>
+                      <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{t("pages.switchModel.current")}</span>
                     ) : null}
                   </div>
                   <p className="mt-1 text-xs text-slate-600">{m.description}</p>
@@ -152,9 +145,7 @@ export function SwitchModelModal({
             onClick={onClose}
             disabled={busy}
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50"
-          >
-            Cancel
-          </button>
+          >{t("pages.switchModel.cancel")}</button>
           <button
             type="button"
             onClick={handleConfirm}

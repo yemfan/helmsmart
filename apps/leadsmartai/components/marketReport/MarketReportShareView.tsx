@@ -1,5 +1,6 @@
 import type { MarketReportSnapshot } from "@/lib/marketReport/service";
 import { formatPeriod } from "@/lib/research/warehouse/format";
+import { useTranslation } from "react-i18next";
 
 /**
  * Read-only, client-facing render of a frozen market-report snapshot — used by
@@ -54,6 +55,7 @@ export default function MarketReportShareView({
   agent: MarketReportShareAgent | null;
   cityLabel: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const asOf = formatPeriod(snapshot.asOfPeriod);
   const contactBits = agent
     ? [agent.phone, agent.email].filter(Boolean)
@@ -89,9 +91,7 @@ export default function MarketReportShareView({
         <div
           className="text-[11px] font-semibold uppercase tracking-wide"
           style={{ color: BRAND }}
-        >
-          Market Update
-        </div>
+        >{t("pages.marketReportShare.title")}</div>
         <h1 className="mt-1 text-2xl font-bold text-slate-900">{cityLabel} Market Update</h1>
         <p className="mt-2 text-sm text-slate-600">
           Here&apos;s a quick snapshot of what&apos;s happening in the {snapshot.geoName} market
@@ -116,12 +116,12 @@ export default function MarketReportShareView({
               <div className="mt-1 space-y-0.5 text-[11px]">
                 {stat.yoyPct != null ? (
                   <div className={toneClass(stat.yoyPct)}>
-                    {pct(stat.yoyPct)} <span className="text-slate-400">vs last year</span>
+                    {pct(stat.yoyPct)} <span className="text-slate-400">{t("pages.marketReportShare.vsLastYear")}</span>
                   </div>
                 ) : null}
                 {stat.momPct != null ? (
                   <div className={toneClass(stat.momPct)}>
-                    {pct(stat.momPct)} <span className="text-slate-400">vs last month</span>
+                    {pct(stat.momPct)} <span className="text-slate-400">{t("pages.marketReportShare.vsLastMonth")}</span>
                   </div>
                 ) : null}
               </div>
@@ -140,9 +140,7 @@ export default function MarketReportShareView({
         <Card>
           <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div className="text-sm font-semibold text-slate-900">
-                Curious what this means for your home?
-              </div>
+              <div className="text-sm font-semibold text-slate-900">{t("pages.marketReportShare.curious")}</div>
               <p className="mt-0.5 text-xs text-slate-600">
                 {agent.name
                   ? `${agent.name} can walk you through it — no pressure.`
@@ -172,10 +170,7 @@ export default function MarketReportShareView({
         </Card>
       ) : null}
 
-      <p className="text-[11px] leading-relaxed text-slate-400">
-        This report is for general information only and is not an appraisal or an offer. Market
-        conditions change; contact your agent for the most current numbers on your specific home.
-      </p>
+      <p className="text-[11px] leading-relaxed text-slate-400">{t("pages.marketReportShare.disclaimer")}</p>
     </div>
   );
 }

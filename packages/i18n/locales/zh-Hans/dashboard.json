@@ -4323,6 +4323,55 @@
       "tapToCall": "点击拨打",
       "nativeVoice": "原生语音——不是在文字上外挂一层",
       "languages": "英语 + 西班牙语 + 普通话"
+    },
+    "marketReportShare": {
+      "title": "市场动态",
+      "vsLastYear": "同比去年",
+      "vsLastMonth": "环比上月",
+      "curious": "想知道这对您的房子意味着什么？",
+      "disclaimer": "本报告仅供一般参考，不是评估报告，也不构成报价。市场行情随时变化；如需了解您这套房子的最新数据，请联系您的经纪人。"
+    },
+    "sendMarketReport": {
+      "title": "发送市场报告",
+      "close": "关闭",
+      "email": "邮件",
+      "text": "短信",
+      "needContact": "请先为这位联系人填写邮箱或电话，才能发送报告。"
+    },
+    "subscribeForm": {
+      "email": "邮箱",
+      "region": "地区",
+      "states": "各州",
+      "topMetros": "主要都市区",
+      "freeBriefing": "每周免费简报。不发垃圾邮件——随时可以退订。"
+    },
+    "scriptGenerator": {
+      "ariaLabel": "话术生成器",
+      "title": "话术生成器",
+      "describe": "描述一下情况",
+      "placeholder": "例如：我有一位买家叫 Mary，想约她第一次面谈，但她说利率太高、房价在跌，想再等等。",
+      "hint": "写清楚客户的名字、您希望这条消息达成什么，以及对方提到过的情况（顾虑、时间安排等）。"
+    },
+    "switchModel": {
+      "title": "切换销售模式",
+      "sub": "切换后，仪表盘、AI 语气、话术、待办和成交流程都会随之调整。之后随时可以再改。",
+      "recommended": "推荐",
+      "current": "当前",
+      "cancel": "取消"
+    },
+    "cmaShare": {
+      "title": "同类房源市场分析（CMA）",
+      "strategies": "挂牌策略",
+      "noComps": "未找到可比成交房源。",
+      "sources": "数据来源"
+    },
+    "reengagement": {
+      "title": "客户唤醒活动",
+      "sub": "针对沉睡客源的 AI 个性化短信或邮件唤醒，附带定时跟进序列。配置好定时任务后，每天也会自动运行。",
+      "adminRun": "管理员：为所有经纪人运行一次（定时任务会自动执行）",
+      "empty": "还没有活动——初始化即可添加一个三步的沉睡客源短信序列。",
+      "subBefore": "针对沉睡客源的 AI 个性化短信或邮件唤醒，附带定时跟进序列。设置好",
+      "subAfter": "后，每天也会通过定时任务自动运行。"
     }
   }
 }

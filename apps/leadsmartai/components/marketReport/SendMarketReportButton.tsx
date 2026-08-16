@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AiEmailComposer } from "@/components/crm/AiEmailComposer";
 import { OutboundSmsComposer } from "@/components/crm/OutboundSmsComposer";
@@ -30,6 +31,7 @@ export function SendMarketReportButton({
   /** Only used to phrase the subject/body; the server re-matches by contact. */
   city?: string | null;
 }) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -114,14 +116,12 @@ export function SendMarketReportButton({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-              <div className="text-sm font-semibold text-slate-900">Send market report</div>
+              <div className="text-sm font-semibold text-slate-900">{t("pages.sendMarketReport.title")}</div>
               <button
                 type="button"
                 onClick={close}
                 className="text-sm text-slate-500 hover:text-slate-800"
-              >
-                Close
-              </button>
+              >{t("pages.sendMarketReport.close")}</button>
             </div>
 
             {canEmail && canSms ? (
@@ -132,18 +132,14 @@ export function SendMarketReportButton({
                   className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
                     channel === "email" ? "bg-slate-900 text-white" : "text-slate-600"
                   }`}
-                >
-                  Email
-                </button>
+                >{t("pages.sendMarketReport.email")}</button>
                 <button
                   type="button"
                   onClick={() => setChannel("sms")}
                   className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
                     channel === "sms" ? "bg-slate-900 text-white" : "text-slate-600"
                   }`}
-                >
-                  Text
-                </button>
+                >{t("pages.sendMarketReport.text")}</button>
               </div>
             ) : null}
 
@@ -163,9 +159,7 @@ export function SendMarketReportButton({
                 onSent={close}
               />
             ) : (
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
-                Add an email or phone number for this contact to send the report.
-              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">{t("pages.sendMarketReport.needContact")}</div>
             )}
           </div>
         </div>

@@ -4323,6 +4323,55 @@
       "tapToCall": "Tap to call",
       "nativeVoice": "Native voice — not a text bolt-on",
       "languages": "English + Spanish + Mandarin"
+    },
+    "marketReportShare": {
+      "title": "Market Update",
+      "vsLastYear": "vs last year",
+      "vsLastMonth": "vs last month",
+      "curious": "Curious what this means for your home?",
+      "disclaimer": "This report is for general information only and is not an appraisal or an offer. Market conditions change; contact your agent for the most current numbers on your specific home."
+    },
+    "sendMarketReport": {
+      "title": "Send market report",
+      "close": "Close",
+      "email": "Email",
+      "text": "Text",
+      "needContact": "Add an email or phone number for this contact to send the report."
+    },
+    "subscribeForm": {
+      "email": "Email",
+      "region": "Region",
+      "states": "States",
+      "topMetros": "Top metros",
+      "freeBriefing": "Free weekly briefing. No spam — unsubscribe anytime."
+    },
+    "scriptGenerator": {
+      "ariaLabel": "Script generator",
+      "title": "Script Generator",
+      "describe": "Describe the situation",
+      "placeholder": "e.g. I have a buyer named Mary. I want to set an initial appointment, but she said interest rates are too high and prices are falling, so she wants to wait.",
+      "hint": "Include the lead's name, what you want from this message, and any context they've shared (objections, timeline, etc.)."
+    },
+    "switchModel": {
+      "title": "Switch sales model",
+      "sub": "Switching will personalize your dashboard, AI tone, scripts, tasks, and pipeline. You can change it again anytime.",
+      "recommended": "Recommended",
+      "current": "Current",
+      "cancel": "Cancel"
+    },
+    "cmaShare": {
+      "title": "Comparative Market Analysis",
+      "strategies": "Listing strategies",
+      "noComps": "No comparable sales found.",
+      "sources": "Sources"
+    },
+    "reengagement": {
+      "title": "Re-engagement campaigns",
+      "sub": "AI-personalized SMS or email revivals for cold leads, with a timed follow-up sequence. Daily job also runs via cron when is set.",
+      "adminRun": "Admin: run for all agents (scheduled cron does this automatically)",
+      "empty": "No campaigns yet — bootstrap to add a 3-step cold-lead SMS sequence.",
+      "subBefore": "AI-personalized SMS or email revivals for cold leads, with a timed follow-up sequence. Daily job also runs via cron when",
+      "subAfter": "is set."
     }
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { RegionOption } from "@/lib/newsletter/regions";
 
 /**
@@ -25,6 +26,7 @@ export default function SubscribeForm({
   /** Agent display name for the agent-branded success copy. */
   agentName?: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const [email, setEmail] = useState("");
   const [slug, setSlug] = useState(defaultSlug);
   const [status, setStatus] = useState<Status>("idle");
@@ -100,9 +102,7 @@ export default function SubscribeForm({
       <div className="grid gap-3 sm:grid-cols-[1fr,auto]">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block">
-            <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500">
-              Email
-            </span>
+            <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500">{t("pages.subscribeForm.email")}</span>
             <input
               type="email"
               required
@@ -114,9 +114,7 @@ export default function SubscribeForm({
             />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500">
-              Region
-            </span>
+            <span className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500">{t("pages.subscribeForm.region")}</span>
             <select
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
@@ -124,7 +122,7 @@ export default function SubscribeForm({
             >
               {national && <option value={national.slug}>{national.name}</option>}
               {groupedStates.length > 0 && (
-                <optgroup label="States">
+                <optgroup label={t("pages.subscribeForm.states")}>
                   {groupedStates.map((r) => (
                     <option key={`state-${r.code}`} value={r.slug}>
                       {r.name}
@@ -133,7 +131,7 @@ export default function SubscribeForm({
                 </optgroup>
               )}
               {groupedMetros.length > 0 && (
-                <optgroup label="Top metros">
+                <optgroup label={t("pages.subscribeForm.topMetros")}>
                   {groupedMetros.map((r) => (
                     <option key={`metro-${r.code}`} value={r.slug}>
                       {r.name}
@@ -157,9 +155,7 @@ export default function SubscribeForm({
       {status === "error" && message && (
         <p className="mt-3 text-sm text-red-600">{message}</p>
       )}
-      <p className="mt-3 text-xs text-slate-400">
-        Free weekly briefing. No spam — unsubscribe anytime.
-      </p>
+      <p className="mt-3 text-xs text-slate-400">{t("pages.subscribeForm.freeBriefing")}</p>
     </form>
   );
 }
