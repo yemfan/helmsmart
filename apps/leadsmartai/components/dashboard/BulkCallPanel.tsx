@@ -138,10 +138,7 @@ export default function BulkCallPanel() {
         <Users className="h-4 w-4 text-slate-500" strokeWidth={2} />
         <h2 className="text-sm font-semibold text-slate-900">{t("pages.bulkCall.title")}</h2>
       </div>
-      <p className="mt-0.5 mb-3 text-xs text-slate-500">
-        Select contacts and Lucy calls each one (up to {MAX_BULK} per batch). Each call discloses
-        it&apos;s an AI and is logged below in Inbound &amp; outbound activity.
-      </p>
+      <p className="mt-0.5 mb-3 text-xs text-slate-500">{t("pages.dashFragments.lucyCalls")} {MAX_BULK} {t("pages.dashFragments.perBatchDiscloses")}</p>
 
       {/* Purpose picker */}
       <div className="mb-2 flex flex-wrap gap-2">
@@ -251,8 +248,7 @@ export default function BulkCallPanel() {
       )}
 
       {atCap && (
-        <p className="mt-2 text-[11px] font-medium text-amber-600">
-          Batch limit reached ({MAX_BULK}). Clear some to pick others.
+        <p className="mt-2 text-[11px] font-medium text-amber-600">{t("pages.dashFragments.batchLimit")}{MAX_BULK}). Clear some to pick others.
         </p>
       )}
 

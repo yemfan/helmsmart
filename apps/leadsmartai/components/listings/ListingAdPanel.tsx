@@ -506,10 +506,9 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
         {/* Photos */}
         <div className="mt-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs font-medium text-slate-600">
-              Photos ({facts.photoUrls.length})
+            <span className="text-xs font-medium text-slate-600">{t("pages.dashFragments.photos")}{facts.photoUrls.length})
               {facts.photoUrls.length > 0 && (
-                <span className="ml-1 text-slate-400">· {photosToAnimate.length} selected for video</span>
+                <span className="ml-1 text-slate-400">· {photosToAnimate.length} {t("pages.dashFragments.selectedForVideo")}</span>
               )}
             </span>
             <div className="flex items-center gap-2">
@@ -656,7 +655,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               {photosToAnimate.length > 0 ? (
                 <>
                   {photosToAnimate.length} clip{photosToAnimate.length === 1 ? "" : "s"} × {clipSeconds}s ≈{" "}
-                  <span className="font-semibold text-slate-700">~{estSeconds}s video</span>
+                  <span className="font-semibold text-slate-700">~{estSeconds}{t("pages.dashFragments.sVideo")}</span>
                 </>
               ) : (
                 "Select photos above to set the length"

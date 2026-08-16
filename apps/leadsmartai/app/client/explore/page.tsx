@@ -113,10 +113,9 @@ export default function ClientExplorePage() {
           >
             <div className="font-semibold text-slate-900">{h.address}</div>
             {h.ai_score != null && (
-              <div className="text-xs font-bold text-blue-700">AI score: {h.ai_score}</div>
+              <div className="text-xs font-bold text-blue-700">{t("pages.dashFragments.aiScore")} {h.ai_score}</div>
             )}
-            <div className="text-xs text-slate-500">
-              Insights: {Object.keys(h.insights ?? {}).length ? JSON.stringify(h.insights) : "Add notes with your agent"}
+            <div className="text-xs text-slate-500">{t("pages.dashFragments.insights")} {Object.keys(h.insights ?? {}).length ? JSON.stringify(h.insights) : "Add notes with your agent"}
             </div>
           </div>
         ))}

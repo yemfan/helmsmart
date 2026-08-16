@@ -178,10 +178,9 @@ export default function SphereImportClient() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="text-sm text-gray-700">
                 <strong>{stats.included}</strong> of {stats.total} rows included ·{" "}
-                <strong>{stats.optIns}</strong> with anniversary opt-in confirmed
-                {skipped > 0 && <> · {skipped} empty rows skipped</>}
+                <strong>{stats.optIns}</strong> {t("pages.dashFragments.anniversaryOptIn")}{skipped > 0 && <> · {skipped} {t("pages.dashFragments.emptyRowsSkipped")}</>}
                 {stats.withErrors > 0 && (
-                  <> · <span className="text-amber-700">{stats.withErrors} with warnings</span></>
+                  <> · <span className="text-amber-700">{stats.withErrors} {t("pages.dashFragments.withWarnings")}</span></>
                 )}
               </div>
               <div className="flex flex-wrap gap-2">

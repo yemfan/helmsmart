@@ -248,12 +248,10 @@ export default function EquityMessageDraftModal(props: {
             {sendStatus.kind === "blocked" ? (
               <SendBlockedBanner status={sendStatus} onSwitchChannel={() => setChannel(channel === "sms" ? "email" : "sms")} currentChannel={channel} />
             ) : sendStatus.kind === "sent" ? (
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
-                Sent via {sendStatus.channel === "sms" ? "SMS" : "email"} · message logged to the contact timeline.
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">{t("pages.dashFragments.sentVia")} {sendStatus.channel === "sms" ? "SMS" : "email"} · message logged to the contact timeline.
               </div>
             ) : sendStatus.kind === "error" ? (
-              <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">
-                Send failed — {sendStatus.reason}. The draft is still here; you can retry or copy.
+              <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">{t("pages.dashFragments.sendFailed")} {sendStatus.reason}. The draft is still here; you can retry or copy.
               </div>
             ) : null}
             <div className="flex items-center justify-between gap-3">
@@ -305,6 +303,7 @@ function SendBlockedBanner(props: {
   currentChannel: Channel;
   onSwitchChannel: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const { code, reason } = props.status;
   const desc = describeSendFailure(code);
   // Switch CTA only makes sense when the failure is channel-specific AND the
@@ -326,8 +325,7 @@ function SendBlockedBanner(props: {
           type="button"
           onClick={props.onSwitchChannel}
           className="shrink-0 rounded-lg border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-amber-900 hover:bg-amber-100"
-        >
-          Try {otherChannel}
+        >{t("pages.dashFragments.tryWord")} {otherChannel}
         </button>
       ) : null}
     </div>

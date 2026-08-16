@@ -256,8 +256,7 @@ export default function VoiceReceptionistSettingsPanel() {
               onChange={() => update("voiceLimitBehavior", "text_back")}
               className="mt-0.5 h-4 w-4 border-gray-300"
             />
-            <span>
-              Text callers back{" "}
+            <span>{t("pages.dashFragments.textCallersBack")}{" "}
               <span className="text-[11px] text-gray-400">
                 — the AI stops answering live and sends an SMS instead (no extra charge)
               </span>
@@ -271,16 +270,14 @@ export default function VoiceReceptionistSettingsPanel() {
               onChange={() => update("voiceLimitBehavior", "overage")}
               className="mt-0.5 h-4 w-4 border-gray-300"
             />
-            <span>
-              Keep the AI answering{" "}
+            <span>{t("pages.dashFragments.keepAiAnswering")}{" "}
               <span className="text-[11px] text-gray-400">
                 — additional minutes billed at $0.25/min
               </span>
             </span>
           </label>
         </div>
-        <p className="mt-1 text-[11px] text-gray-400">
-          Need more included minutes?{" "}
+        <p className="mt-1 text-[11px] text-gray-400">{t("pages.dashFragments.needMoreMinutes")}{" "}
           <a href="/agent/pricing" className="text-brand-accent-text underline underline-offset-2">
             Upgrade your plan →
           </a>

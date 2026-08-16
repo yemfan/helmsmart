@@ -64,16 +64,14 @@ export function GrowthDigestLogClient({
     <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">{t("pages.adminPages.growthDigestLog")}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Weekly Growth &amp; Opportunities email run history. Shows digests generated on or after{" "}
+        <p className="mt-1 text-sm text-slate-500">{t("pages.dashFragments.growthDigestHistory")}{" "}
           <code className="rounded bg-slate-100 px-1 py-0.5 text-[11px]">{cutoffIso}</code>{" "}
           (last 28 days). Support tool — not linked in the sidebar.
         </p>
       </div>
 
       {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          Error loading rows: {error}
+        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{t("pages.dashFragments.errorLoadingRows")} {error}
         </div>
       ) : null}
 

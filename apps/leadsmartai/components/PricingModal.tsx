@@ -263,13 +263,11 @@ export default function PricingModal({
             <div className="text-sm font-semibold text-slate-900">{t("pages.pricingModal.title")}</div>
             <div className="text-xs text-slate-600 mt-1">{t("pages.pricingModal.sub")}</div>
             {leadUsage?.limit != null ? (
-              <div className="text-[11px] text-slate-500 mt-2">
-                Leads: {leadUsage.count}/{leadUsage.limit} ({leadsPct}%)
+              <div className="text-[11px] text-slate-500 mt-2">{t("pages.dashFragments.leads")} {leadUsage.count}/{leadUsage.limit} ({leadsPct}%)
               </div>
             ) : null}
             {cmaUsage ? (
-              <div className="text-[11px] text-slate-500 mt-1">
-                CMA today: {cmaUsage.used}/{cmaUsage.limit} {cmaUsage.reached ? " (reached)" : ""}
+              <div className="text-[11px] text-slate-500 mt-1">{t("pages.dashFragments.cmaToday")} {cmaUsage.used}/{cmaUsage.limit} {cmaUsage.reached ? " (reached)" : ""}
               </div>
             ) : null}
           </div>
@@ -348,8 +346,7 @@ export default function PricingModal({
                 </div>
 
                 {p.key === "pro" && leadUsage?.limit != null ? (
-                  <div className="mt-3 text-[11px] text-amber-700 font-medium">
-                    Pro lead cap is {leadUsage.limit}. Upgrade to Premium for unlimited access.
+                  <div className="mt-3 text-[11px] text-amber-700 font-medium">{t("pages.dashFragments.proLeadCap")} {leadUsage.limit}. Upgrade to Premium for unlimited access.
                   </div>
                 ) : p.key === "pro" ? (
                   <div className="mt-3 text-[11px] text-amber-700 font-medium">{t("pages.pricingModal.upgradeCta")}</div>

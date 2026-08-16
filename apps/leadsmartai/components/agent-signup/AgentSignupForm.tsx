@@ -344,8 +344,7 @@ export function AgentSignupForm({
         ) : signedInAgentFlow ? (
           <p className="text-[11px] text-gray-500">{t("pages.agentSignup.signedInNoPassword")}</p>
         ) : null}
-        <p className="pt-2 text-[11px] text-gray-500">
-          Prefer a 2-minute interactive preview first?{" "}
+        <p className="pt-2 text-[11px] text-gray-500">{t("pages.dashFragments.preferPreview")}{" "}
           <Link
             href="/onboarding"
             className="font-semibold text-blue-700 hover:underline"
@@ -479,8 +478,7 @@ export function AgentSignupForm({
               onChange={(e) => setAcceptTerms(e.target.checked)}
               className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-blue-600"
             />
-            <span className="text-[11px] leading-relaxed text-slate-600">
-              I agree to the{" "}
+            <span className="text-[11px] leading-relaxed text-slate-600">{t("pages.dashFragments.iAgree")}{" "}
               <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">{t("pages.agentSignup.terms")}</Link>{" "}
               and{" "}
               <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">{t("pages.agentSignup.privacy")}</Link>
@@ -502,8 +500,7 @@ export function AgentSignupForm({
         </button>
       </form>
 
-      <p className="text-[11px] text-gray-500 text-center">
-        Prefer regular user signup?{" "}
+      <p className="text-[11px] text-gray-500 text-center">{t("pages.dashFragments.preferRegular")}{" "}
         <a className="text-blue-700 font-semibold" href="/signup" onClick={() => onClose?.()}>{t("pages.agentSignup.signUpHere")}</a>
       </p>
     </div>

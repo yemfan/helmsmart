@@ -136,12 +136,8 @@ function EmptyState({ filter }: { filter: DraftStatus | "all" }) {
     return (
       <div className="p-8 text-center text-sm text-gray-500">
         <div className="font-medium text-gray-700">{t("pages.drafts.noDrafts")}</div>
-        <p className="mt-1">
-          When a trigger fires and your review policy is set to Review, the draft lands here. To
-          see the flow without waiting,{" "}
-          <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">{t("pages.drafts.openContact")}</Link>{" "}
-          and click &ldquo;Generate draft&rdquo;.
-        </p>
+        <p className="mt-1">{t("pages.dashFragments.draftLandsHere")}{" "}
+          <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">{t("pages.drafts.openContact")}</Link>{" "}{t("pages.dashFragments.clickGenerate")}</p>
       </div>
     );
   }
@@ -460,9 +456,7 @@ function DraftDetail({
             <div className="border-t border-gray-100 pt-3 text-xs text-gray-500 space-y-2">
               {draft.status === "approved" && (
                 <div className="flex flex-wrap items-center gap-2">
-                  <span>
-                    Queued. The sender cron runs every 15 min, respects quiet hours + frequency caps.
-                    {draft.scheduledFor && (
+                  <span>{t("pages.dashFragments.queuedCron")}{draft.scheduledFor && (
                       <>{t("pages.drafts.earliestSend", { date: new Date(draft.scheduledFor).toLocaleString(locale) })}</>
                     )}
                   </span>

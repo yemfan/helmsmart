@@ -108,8 +108,7 @@ function SeatUsageBanner({ usage }: { usage: SeatUsageProps }) {
     >
       <div className="min-w-0 flex-1">
         <p className="font-medium tabular-nums">
-          {usage.used} of {capLabel} seats used
-        </p>
+          {usage.used} of {capLabel} {t("pages.dashFragments.seatsUsed")}</p>
         {usage.cap != null ? (
           <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/70 ring-1 ring-inset ring-black/[0.04]">
             <div
@@ -236,8 +235,7 @@ function RosterCard({
               {m.role === "owner" ? "★" : "●"}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-slate-900">
-                Agent {shortenId(m.agentId)}
+              <p className="truncate text-sm font-medium text-slate-900">{t("pages.dashFragments.agentWord")} {shortenId(m.agentId)}
                 {m.agentId === currentAgentId ? (
                   <span className="ml-2 text-xs text-slate-500">(you)</span>
                 ) : null}
@@ -335,8 +333,7 @@ function InviteCard({
 
       {lastInvite ? (
         <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm">
-          <p className="font-medium text-emerald-800">
-            Invite for {lastInvite.email} ready
+          <p className="font-medium text-emerald-800">{t("pages.dashFragments.inviteFor")} {lastInvite.email} ready
           </p>
           <p className="mt-1 text-xs text-emerald-700">{t("pages.team.copyLink")}</p>
           <code className="mt-2 block break-all rounded bg-white px-2 py-1.5 text-[11px] text-emerald-900 ring-1 ring-emerald-200">

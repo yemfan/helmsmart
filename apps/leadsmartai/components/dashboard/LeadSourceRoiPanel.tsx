@@ -152,8 +152,7 @@ export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number }
             <div className="h-64 animate-pulse rounded-xl bg-slate-100" />
           </div>
         ) : error ? (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Couldn&apos;t load report: {error}
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadReport")} {error}
           </div>
         ) : !report || report.rows.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">{t("pages.leadSourceRoi.empty")}</div>
@@ -235,15 +234,14 @@ function Kpi(props: { label: string; value: string; subtext?: string }) {
 }
 
 function SourceRow({ row }: { row: LeadSourceRoiRow }) {
+  const { t } = useTranslation("dashboard");
   const isUnknown = row.sourceKey === "__unknown__";
   return (
     <tr className={isUnknown ? "bg-slate-50/60" : undefined}>
       <td className="px-4 py-2.5">
         <div className="text-sm font-semibold text-slate-900">{row.sourceLabel}</div>
         {row.avgDaysToClose != null ? (
-          <div className="mt-0.5 text-[11px] text-slate-500">
-            Avg {row.avgDaysToClose.toFixed(0)}d to close
-          </div>
+          <div className="mt-0.5 text-[11px] text-slate-500">{t("pages.dashFragments.avg")} {row.avgDaysToClose.toFixed(0)}{t("pages.dashFragments.dToClose")}</div>
         ) : null}
       </td>
       <td className="px-3 py-2.5 text-right tabular-nums">{formatMoney(row.totalVolume)}</td>

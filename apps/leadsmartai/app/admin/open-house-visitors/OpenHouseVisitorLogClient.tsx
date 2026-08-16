@@ -90,16 +90,14 @@ export function OpenHouseVisitorLogClient({
     <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">{t("pages.adminPages.openHouseVisitors")}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Recent sign-ins since{" "}
+        <p className="mt-1 text-sm text-slate-500">{t("pages.dashFragments.recentSignInsSince")}{" "}
           <code className="rounded bg-slate-100 px-1 py-0.5 text-[11px]">{cutoffIso}</code>{" "}
           (last 30 days). Follow-up delivery state shows whether the hourly cron caught them.
         </p>
       </div>
 
       {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          Error loading rows: {error}
+        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{t("pages.dashFragments.errorLoadingRows")} {error}
         </div>
       ) : null}
 

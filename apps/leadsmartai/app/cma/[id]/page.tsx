@@ -28,13 +28,8 @@ export default async function PublicCmaPage({ params }: { params: Promise<{ id: 
     return (
       <div className="min-h-screen bg-slate-50">
         <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-          <h1 className="text-lg font-semibold text-slate-900">
-            This report isn&apos;t available
-          </h1>
-          <p className="mt-2 text-sm text-slate-600">
-            The market analysis for this link is being updated. Please contact
-            your agent for the latest valuation.
-          </p>
+          <h1 className="text-lg font-semibold text-slate-900">{t("pages.dashFragments.reportUnavailable", { ns: "dashboard" })}</h1>
+          <p className="mt-2 text-sm text-slate-600">{t("pages.dashFragments.reportUnavailableBody", { ns: "dashboard" })}</p>
         </div>
       </div>
     );

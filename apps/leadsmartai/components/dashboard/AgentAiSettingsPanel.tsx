@@ -187,8 +187,7 @@ export default function AgentAiSettingsPanel({
 
       <div className="space-y-1 border-t border-gray-100 pt-4">
         <div className="flex items-center justify-between">
-          <label className="block text-[11px] font-medium text-gray-500" htmlFor="brand-color">
-            Brand color{" "}
+          <label className="block text-[11px] font-medium text-gray-500" htmlFor="brand-color">{t("pages.dashFragments.brandColor")}{" "}
             <span className="font-normal text-gray-400">(social cards)</span>
           </label>
           {!canCustomizeBrand && (
@@ -233,8 +232,7 @@ export default function AgentAiSettingsPanel({
         {canCustomizeBrand ? (
           <p className="text-[11px] text-gray-500">{t("pages.agentAiSettings.accentHint")}</p>
         ) : (
-          <p className="text-[11px] text-gray-500">
-            Put your own brand color (and logo) on every generated social card with{" "}
+          <p className="text-[11px] text-gray-500">{t("pages.dashFragments.ownBrandColor")}{" "}
             <a href="/dashboard/billing" className="font-medium text-[#0072ce] underline hover:no-underline">{t("pages.agentAiSettings.signature")}</a>
             .
           </p>
@@ -258,7 +256,7 @@ export default function AgentAiSettingsPanel({
       </div>
 
       <div className="border-t border-gray-100 pt-4">
-        <div className="text-sm font-semibold text-gray-700">Preview ({settings.personality})</div>
+        <div className="text-sm font-semibold text-gray-700">{t("pages.dashFragments.preview")}{settings.personality})</div>
         <PersonalityPreview personality={settings.personality} />
       </div>
     </div>

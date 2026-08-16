@@ -95,9 +95,7 @@ function Hero() {
         <div className="ed-trust-line">{t("pages.editorialLanding.noCard")}<span className="ed-sep">·</span>{t("pages.editorialLanding.worksWith")}</div>
         <div className="ed-logo-strip">
           <div className="ed-logo-strip-label">
-            {/* TODO: swap wordmarks for permissioned SVGs */}
-            Agents at these brokerages use LeadSmart
-          </div>
+            {/* TODO: swap wordmarks for permissioned SVGs */}{t("pages.dashFragments.brokeragesUse")}</div>
           <div className="ed-logo-strip-logos">
             {["Windermere", "Compass", "Keller Williams", "eXp", "Redfin"].map((b) => (
               <span key={b} className="ed-brokerage-logo">
@@ -273,10 +271,7 @@ function ProblemSection() {
           <div className="ed-problem-body">
             <p>{t("pages.editorialLanding.problemP1")}</p>
             <p className="ed-problem-pull">
-              {/* [INVENTED] — cite or replace before launch */}
-              The first agent to reply wins roughly half the time. The second agent wins a quarter.
-              Everyone after that is fighting for scraps.
-            </p>
+              {/* [INVENTED] — cite or replace before launch */}{t("pages.dashFragments.firstAgentWins")}</p>
             <p>{t("pages.editorialLanding.problemP2")}</p>
             <p>{t("pages.editorialLanding.problemP3")}</p>
           </div>
@@ -741,10 +736,7 @@ function FinalCTA() {
           {t("pages.editorialLanding.finalBefore")} <em>{t("pages.editorialLanding.finalEm")}</em>
         </h2>
         <p className="ed-final-sub">
-          {/* [INVENTED] — rewrite before launch */}
-          Fourteen days free. No credit card. Fifteen-minute setup. If it doesn&apos;t earn back its
-          price in your first month, you&apos;ll have lost nothing.
-        </p>
+          {/* [INVENTED] — rewrite before launch */}{t("pages.dashFragments.fourteenDaysFree")}</p>
         <div className="ed-final-cta-row">
           <a href="/signup" className="ed-btn ed-btn-primary">{t("pages.editorialLanding.ctaTrial")}</a>
           <a href="#pricing" className="ed-btn ed-btn-secondary">{t("pages.editorialLanding.seePricing")}</a>

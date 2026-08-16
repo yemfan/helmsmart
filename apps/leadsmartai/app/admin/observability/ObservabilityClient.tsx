@@ -25,10 +25,7 @@ export function ObservabilityClient({ report }: { report: ObservabilityReport })
     <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">{t("pages.adminPages.observability")}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Per-cron + AI-feature health over the last {report.windowDays} days. Support tool
-          — not linked in the sidebar.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.dashFragments.perCronHealth")} {report.windowDays} {t("pages.dashFragments.daysSupportTool")}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

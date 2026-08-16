@@ -75,11 +75,8 @@ export default async function AgentNewsletterSignupPage({ params }: Props) {
               </div>
             )}
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">
-                Weekly Housing Briefing
-              </p>
-              <h1 className="mt-1 text-2xl font-bold leading-tight tracking-tight md:text-3xl">
-                Subscribe to {agentName}&apos;s Weekly Housing Briefing
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">{t("pages.dashFragments.weeklyBriefing", { ns: "dashboard" })}</p>
+              <h1 className="mt-1 text-2xl font-bold leading-tight tracking-tight md:text-3xl">{t("pages.dashFragments.subscribeTo", { ns: "dashboard" })} {agentName}&apos;s Weekly Housing Briefing
               </h1>
               {brokerage && (
                 <p className="mt-1 text-sm text-slate-600">{brokerage}</p>
@@ -87,12 +84,7 @@ export default async function AgentNewsletterSignupPage({ params }: Props) {
             </div>
           </div>
 
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            Every week, {agentName} sends a plain-English digest of where mortgage
-            rates went and what moved the housing market — paired with a local
-            market snapshot for the region you pick. No jargon, every number
-            linked to its source.
-          </p>
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">{t("pages.dashFragments.everyWeek", { ns: "dashboard" })} {agentName} {t("pages.dashFragments.sendsDigest", { ns: "dashboard" })}</p>
 
           <div className="mt-8">
             <SubscribeForm
@@ -103,8 +95,7 @@ export default async function AgentNewsletterSignupPage({ params }: Props) {
             />
           </div>
 
-          <p className="mt-6 text-xs text-slate-400">
-            Delivered by {agentName}
+          <p className="mt-6 text-xs text-slate-400">{t("pages.dashFragments.deliveredBy", { ns: "dashboard" })} {agentName}
             {brokerage ? `, ${brokerage}` : ""} · powered by{" "}
             <Link href="/" className="text-slate-500 hover:text-[#0072ce]">
               CloseBoss

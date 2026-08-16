@@ -96,13 +96,9 @@ export function ReferAFriendCard() {
           <div>
             <div className="text-xs font-bold uppercase tracking-wide text-indigo-700">{t("pages.referAFriend.likeIt")}</div>
             <h2 className="mt-1 text-lg font-bold text-slate-900">{t("pages.referAFriend.headline")}</h2>
-            <p className="mt-1 text-sm text-slate-600">
-              You and your friend each get{" "}
+            <p className="mt-1 text-sm text-slate-600">{t("pages.dashFragments.youAndFriend")}{" "}
               <span className="font-semibold text-indigo-700">
-                {BONUS_TOKENS_DISPLAY.toLocaleString()} AI tokens
-              </span>{" "}
-              when they sign up with your link.
-            </p>
+                {BONUS_TOKENS_DISPLAY.toLocaleString()} {t("pages.dashFragments.aiTokens")}</span>{" "}{t("pages.dashFragments.whenTheySignUp")}</p>
           </div>
           {summary.bonusTokens > 0 ? (
             <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-right">

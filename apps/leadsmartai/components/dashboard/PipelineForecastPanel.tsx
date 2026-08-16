@@ -102,8 +102,7 @@ export function PipelineForecastPanel() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-        Couldn&apos;t load pipeline forecast: {error}
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadForecast")} {error}
       </div>
     );
   }
@@ -207,9 +206,8 @@ function ForecastByMonthChart({ buckets }: { buckets: MonthlyBucket[] }) {
 
       {noDate ? (
         <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-          <span className="font-semibold">{noDate.count}</span> deal{noDate.count === 1 ? "" : "s"} have no close date set yet —{" "}
-          {formatMoney(noDate.grossCommission)} gross / {formatMoney(noDate.weightedGross)} weighted. Add a target close date to see them on the chart.
-        </p>
+          <span className="font-semibold">{noDate.count}</span> deal{noDate.count === 1 ? "" : "s"} {t("pages.dashFragments.noCloseDate")}{" "}
+          {formatMoney(noDate.grossCommission)} gross / {formatMoney(noDate.weightedGross)} {t("pages.dashFragments.weightedAdd")}</p>
       ) : null}
     </div>
   );

@@ -509,8 +509,7 @@ export function AiSmsModal({
                 {messages.length === 0 ? (
                   <div className="m-auto max-w-sm rounded-xl border border-dashed border-slate-300 bg-white px-4 py-6 text-center">
                     <p className="text-sm font-medium text-slate-700">{t("pages.aiComposeModal.noMessages")}</p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      Generate a first draft below — the AI will use the situation, the contact, and your{" "}
+                    <p className="mt-1 text-xs text-slate-500">{t("pages.dashFragments.generateFirstDraft")}{" "}
                       <span className="font-medium text-slate-700">{model.name}</span> tone.
                     </p>
                   </div>
@@ -528,18 +527,10 @@ export function AiSmsModal({
               <div className="border-t border-slate-200 bg-white px-4 py-3">
                 {optedOut ? (
                   <div className="mb-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-900">
-                    <strong className="font-semibold">{t("pages.aiComposeModal.optedOut")}</strong>{" "}
-                    Their last message was a stop keyword (STOP / UNSUBSCRIBE / etc.).
-                    Texting them again would violate opt-out compliance — both
-                    AI drafting and sending are blocked.
-                  </div>
+                    <strong className="font-semibold">{t("pages.aiComposeModal.optedOut")}</strong>{" "}{t("pages.dashFragments.stopKeyword")}</div>
                 ) : needsHuman ? (
                   <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                    <strong className="font-semibold">{t("pages.aiComposeModal.needsYou")}</strong>{" "}
-                    The contact's last message looks like a complaint, dispute,
-                    or urgent issue. AI drafting is paused — reply personally if
-                    you choose to.
-                  </div>
+                    <strong className="font-semibold">{t("pages.aiComposeModal.needsYou")}</strong>{" "}{t("pages.dashFragments.looksLikeComplaint")}</div>
                 ) : gate ? (
                   <AiActionGateBanner reason={gate.reason} className="mb-2" />
                 ) : null}

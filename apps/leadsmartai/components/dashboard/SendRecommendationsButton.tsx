@@ -174,8 +174,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
         >
           <div className="w-full max-w-2xl rounded-xl bg-white shadow-xl">
             <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
-              <h2 className="text-base font-semibold text-gray-900">
-                Send properties{contactFirstName ? ` to ${contactFirstName}` : ""}
+              <h2 className="text-base font-semibold text-gray-900">{t("pages.dashFragments.sendProperties")}{contactFirstName ? ` to ${contactFirstName}` : ""}
               </h2>
               <button
                 type="button"
@@ -213,8 +212,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
               {/* Quick pick from favorites */}
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                    Pick from their favorites ({favorites.length})
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">{t("pages.dashFragments.pickFavorites")}{favorites.length})
                   </h3>
                 </div>
                 {favorites.length === 0 ? (
@@ -271,8 +269,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
               {/* Picked list */}
               {picked.length > 0 && (
                 <div>
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                    Will send ({picked.length})
+                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">{t("pages.dashFragments.willSend")}{picked.length})
                   </h3>
                   <ul className="space-y-1">
                     {picked.map((p) => (

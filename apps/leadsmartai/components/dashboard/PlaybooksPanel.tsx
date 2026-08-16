@@ -305,11 +305,11 @@ export function PlaybooksPanel({
                       </div>
                     ) : null}
                     <ul className="space-y-1">
-                      {section.items.map((t) => {
-                        const complete = t.completed_at != null;
-                        const isSelected = selectedIds.has(t.id);
+                      {section.items.map((task) => {
+                        const complete = task.completed_at != null;
+                        const isSelected = selectedIds.has(task.id);
                         return (
-                          <li key={t.id} className="flex items-start gap-2">
+                          <li key={task.id} className="flex items-start gap-2">
                             <div className="mt-0.5 inline-flex shrink-0 items-center gap-0.5">
                               {/*
                                 "Add to Tasks list" — toggle selection
@@ -321,13 +321,13 @@ export function PlaybooksPanel({
                               ) : (
                                 <PlaybookActionButton
                                   active={isSelected}
-                                  onClick={() => toggleSelected(t.id)}
+                                  onClick={() => toggleSelected(task.id)}
                                   title={
                                     isSelected
                                       ? "Remove from Tasks list selection"
                                       : "Select to add to Tasks list"
                                   }
-                                  ariaLabel={`Select "${t.title}" to add to Tasks list`}
+                                  ariaLabel={`Select "${task.title}" to add to Tasks list`}
                                   tone="select"
                                 >
                                   <Plus className="h-4 w-4" strokeWidth={2.25} />
@@ -335,9 +335,9 @@ export function PlaybooksPanel({
                               )}
                               <PlaybookActionButton
                                 active={complete}
-                                onClick={() => void toggleTask(t, !complete)}
+                                onClick={() => void toggleTask(task, !complete)}
                                 title={complete ? "Mark incomplete" : "Mark complete"}
-                                ariaLabel={`Mark "${t.title}" ${complete ? "incomplete" : "complete"}`}
+                                ariaLabel={`Mark "${task.title}" ${complete ? "incomplete" : "complete"}`}
                                 tone="complete"
                               >
                                 <Check className="h-4 w-4" strokeWidth={2.5} />
@@ -351,20 +351,19 @@ export function PlaybooksPanel({
                                     : "text-slate-900"
                                 }`}
                               >
-                                {t.title}
+                                {task.title}
                               </div>
-                              {t.notes ? (
-                                <div className="text-[11px] text-slate-500">{t.notes}</div>
+                              {task.notes ? (
+                                <div className="text-[11px] text-slate-500">{task.notes}</div>
                               ) : null}
-                              {t.due_date ? (
+                              {task.due_date ? (
                                 <div
                                   className={`mt-0.5 text-[11px] ${
-                                    !complete && isOverdue(t.due_date)
+                                    !complete && isOverdue(task.due_date)
                                       ? "font-medium text-red-600"
                                       : "text-slate-400"
                                   }`}
-                                >
-                                  Due {formatYmd(t.due_date, locale)}
+                                >{t("pages.dashFragments.dueOn", { date: formatYmd(task.due_date, locale) })}
                                 </div>
                               ) : null}
                             </div>
@@ -727,16 +726,13 @@ function ReviewStep({
           </label>
           <p className="mt-0.5 text-[11px] text-amber-800">{t("pages.playbooksPanel.leadBound")}</p>
           {contactPicker.leads.length === 0 ? (
-            <div className="mt-2 rounded-md border border-amber-300 bg-white px-3 py-2 text-xs text-amber-900">
-              You don&apos;t have any contacts yet.{" "}
+            <div className="mt-2 rounded-md border border-amber-300 bg-white px-3 py-2 text-xs text-amber-900">{t("pages.dashFragments.noContactsYet")}{" "}
               <a
                 href="/dashboard/contacts"
                 className="font-semibold underline hover:text-amber-700"
               >
                 Add a contact →
-              </a>{" "}
-              then come back to apply this playbook.
-            </div>
+              </a>{" "}{t("pages.dashFragments.thenComeBack")}</div>
           ) : (
             <select
               value={contactPicker.pickedId}

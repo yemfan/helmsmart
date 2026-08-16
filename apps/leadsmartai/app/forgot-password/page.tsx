@@ -34,10 +34,8 @@ export default function ForgotPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="space-y-1 text-center">
-          <h1 className="text-xl font-bold text-gray-900">Reset your password</h1>
-          <p className="text-xs text-gray-600">
-            Enter the email you use for CloseBoss and we&apos;ll send you a reset link.
-          </p>
+          <h1 className="text-xl font-bold text-gray-900">{t("pages.dashFragments.resetPassword")}</h1>
+          <p className="text-xs text-gray-600">{t("pages.dashFragments.resetBody")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -73,9 +71,7 @@ export default function ForgotPasswordPage() {
         </form>
 
         <p className="mt-6 text-center text-[11px] text-gray-500">
-          <Link href="/login" className="font-semibold text-blue-700 hover:underline">
-            Back to log in
-          </Link>
+          <Link href="/login" className="font-semibold text-blue-700 hover:underline">{t("pages.dashFragments.backToLogin")}</Link>
         </p>
       </div>
     </div>
