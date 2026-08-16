@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { notFound } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getListingOfferWithCounters } from "@/lib/listing-offers/service";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { ListingOfferDetailClient } from "./ListingOfferDetailClient";
 
-export const metadata: Metadata = {
-  title: "Listing offer",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.listingOffer.metaTitle", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 type PageProps = { params: Promise<{ id: string }> };
 
