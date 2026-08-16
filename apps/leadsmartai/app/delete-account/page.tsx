@@ -16,7 +16,7 @@ export default function DeleteAccountPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-3xl font-bold text-slate-900 mb-2">
-        Delete your LeadSmart account
+        Delete your CloseBoss account
       </h1>
       <p className="text-sm text-slate-500 mb-8">
         This page explains how to permanently delete your CloseBoss account and
@@ -26,10 +26,10 @@ export default function DeleteAccountPage() {
 
       <section className="mb-10 rounded-lg border border-slate-200 bg-slate-50 p-5">
         <h2 className="text-lg font-semibold text-slate-900 mb-2">
-          From the LeadSmart mobile app
+          From the CloseBoss mobile app
         </h2>
         <ol className="list-decimal list-inside space-y-2 text-sm text-slate-700">
-          <li>Open the LeadSmart app and sign in.</li>
+          <li>Open the CloseBoss app and sign in.</li>
           <li>
             Go to the <strong>Settings</strong> tab.
           </li>
@@ -59,7 +59,7 @@ export default function DeleteAccountPage() {
           >
             contact@closebossai.com
           </a>{" "}
-          from the address associated with your LeadSmart account, with the
+          from the address associated with your CloseBoss account, with the
           subject line <strong>&ldquo;Account deletion request&rdquo;</strong>.
           We will confirm receipt and complete the deletion within five business
           days.

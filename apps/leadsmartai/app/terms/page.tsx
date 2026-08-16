@@ -22,10 +22,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
       <>
         <p>
           These Terms of Service (&ldquo;Terms&rdquo;) govern your access to and use of
-          closebossai.com and the LeadSmart AI Service (the &ldquo;Service&rdquo;)
-          provided by MAXY Investment Inc., a Texas corporation, doing business as
-          LeadSmart AI (&ldquo;LeadSmart,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo;
-          or &ldquo;our&rdquo;). By creating an account, starting a
+          closebossai.com and the CloseBoss service (the &ldquo;Service&rdquo;).
+          CloseBoss is a product of MAXY Investment Inc., a Texas corporation
+          (referred to in these Terms as &ldquo;CloseBoss,&rdquo; &ldquo;we,&rdquo;
+          &ldquo;us,&rdquo; or &ldquo;our&rdquo;). By creating an account, starting a
           trial, or otherwise using the Service, you agree to these Terms and our{" "}
           <Link href="/privacy" className="text-[#0072ce] hover:underline">
             Privacy Policy
@@ -172,13 +172,13 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             responsible for wider compliance across channels.
           </li>
           <li>
-            Indemnify LeadSmart for claims arising from your failure to obtain consent or
+            Indemnify CloseBoss for claims arising from your failure to obtain consent or
             from content you cause the Service to send.
           </li>
         </ul>
         <p className="font-semibold text-slate-900">10DLC brand and sender allocation</p>
         <p>
-          LeadSmart operates the SMS sending infrastructure under its own
+          CloseBoss operates the SMS sending infrastructure under its own
           registered 10DLC brand and campaign with The Campaign Registry
           (TCR). For purposes of the laws listed above, Customer is the
           &ldquo;caller&rdquo; under the TCPA and the &ldquo;sender&rdquo; under
@@ -192,7 +192,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             of itself as the sender.
           </li>
           <li>
-            <strong>LeadSmart is responsible for</strong> carrier registration
+            <strong>CloseBoss is responsible for</strong> carrier registration
             and brand maintenance, throughput compliance, opt-out automation
             (STOP / UNSUBSCRIBE / HELP across English and Chinese keyword
             sets), and rate-limit enforcement at the platform level.
@@ -281,7 +281,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
       <>
         <p>
           You retain all rights in the data, text, files, and other materials you submit
-          to the Service (&ldquo;Your Content&rdquo;). You grant LeadSmart a worldwide,
+          to the Service (&ldquo;Your Content&rdquo;). You grant CloseBoss a worldwide,
           royalty-free license to host, process, display, and transmit Your Content solely
           to provide the Service, comply with law, and improve the Service in aggregated,
           de-identified form.
@@ -319,12 +319,12 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
       <>
         <p>
           The Service, including all software, designs, text, graphics, and other
-          materials provided by LeadSmart (excluding Your Content and AI Output), is owned
-          by LeadSmart or our licensors and is protected by intellectual property laws.
+          materials provided by CloseBoss (excluding Your Content and AI Output), is owned
+          by CloseBoss or our licensors and is protected by intellectual property laws.
           Nothing in these Terms transfers those rights to you.
         </p>
         <p>
-          Feedback you provide about the Service is non-confidential and LeadSmart may use
+          Feedback you provide about the Service is non-confidential and CloseBoss may use
           it without restriction.
         </p>
       </>
@@ -338,15 +338,15 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           The Service integrates with third-party services (Zillow, Follow Up Boss,
           kvCORE, Twilio, SendGrid, Stripe, Google, Facebook, and others). Your use of
-          those services is governed by their own terms and privacy policies. LeadSmart is
+          those services is governed by their own terms and privacy policies. CloseBoss is
           not responsible for third-party services.
         </p>
         <p>
-          <strong>Inbound email forwarding (optional).</strong> LeadSmart
+          <strong>Inbound email forwarding (optional).</strong> CloseBoss
           provisions each agent a unique inbound forwarding address (e.g.{" "}
           <code>your-name@inbox.closebossai.com</code>) on first dashboard
           visit. If you choose to set up a Gmail / Outlook filter that
-          forwards selected messages to that address, LeadSmart processes
+          forwards selected messages to that address, CloseBoss processes
           only the emails you explicitly forward — we have no access to your
           inbox itself. Our handling of forwarded emails is described in
           detail in section 5 of the{" "}
@@ -368,12 +368,12 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           The Service is provided &ldquo;as is&rdquo; and &ldquo;as available,&rdquo;
           without warranties of any kind, whether express, implied, or statutory. To the
-          maximum extent permitted by law, LeadSmart disclaims all warranties, including
+          maximum extent permitted by law, CloseBoss disclaims all warranties, including
           merchantability, fitness for a particular purpose, non-infringement, and
           accuracy of AI Output.
         </p>
         <p>
-          LeadSmart does not warrant that messages sent through the Service will be
+          CloseBoss does not warrant that messages sent through the Service will be
           delivered, that AI Output will be correct, or that the Service will be
           uninterrupted or error-free.
         </p>
@@ -386,13 +386,13 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <p>
-          To the maximum extent permitted by law, LeadSmart&apos;s aggregate liability for
+          To the maximum extent permitted by law, CloseBoss&apos;s aggregate liability for
           any claim arising out of or related to these Terms or the Service will not
-          exceed the greater of (a) the fees paid by you to LeadSmart in the 12 months
+          exceed the greater of (a) the fees paid by you to CloseBoss in the 12 months
           preceding the claim, or (b) one hundred U.S. dollars ($100).
         </p>
         <p>
-          In no event will LeadSmart be liable for indirect, incidental, special,
+          In no event will CloseBoss be liable for indirect, incidental, special,
           consequential, or exemplary damages (including lost profits, lost leads, or
           lost data) arising from your use of the Service.
         </p>
@@ -432,7 +432,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <p>
-          You agree to defend, indemnify, and hold harmless LeadSmart and its affiliates
+          You agree to defend, indemnify, and hold harmless CloseBoss and its affiliates
           from and against any third-party claim arising out of (a) Your Content, (b) your
           use of the Service in violation of these Terms or applicable law, (c) any SMS
           or email sent through the Service on your behalf, or (d) your violation of a
@@ -447,7 +447,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <p>
-          You may terminate your account at any time from the billing page. LeadSmart may
+          You may terminate your account at any time from the billing page. CloseBoss may
           suspend or terminate your access for violation of these Terms, non-payment, or
           when required by law, with or without notice depending on severity. On
           termination, your right to use the Service ends. Sections of these Terms that by
@@ -499,8 +499,8 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
 
         <p className="font-semibold text-slate-900">Class-action waiver</p>
         <p>
-          You and LeadSmart agree that any Dispute will be brought only in an
-          individual capacity. <strong>Neither you nor LeadSmart will bring,
+          You and CloseBoss agree that any Dispute will be brought only in an
+          individual capacity. <strong>Neither you nor CloseBoss will bring,
           consolidate, or participate in any class, collective, or
           representative action.</strong> The arbitrator may not consolidate
           claims of more than one person and may not preside over any form of a
@@ -531,7 +531,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p className="font-semibold text-slate-900">Court venue (where arbitration does not apply)</p>
         <p>
           Where a Dispute is not subject to arbitration under the carve-outs
-          above, you and LeadSmart agree to exclusive personal jurisdiction
+          above, you and CloseBoss agree to exclusive personal jurisdiction
           and venue in the state and federal courts located in Texas, except
           that either party may seek injunctive relief in any court of
           competent jurisdiction.
@@ -546,7 +546,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           >
             contact@closebossai.com
           </a>{" "}
-          within 30 days of first creating your LeadSmart account. The
+          within 30 days of first creating your CloseBoss account. The
           notice must include your name, the email associated with your
           account, and the words &ldquo;Arbitration Opt-Out.&rdquo; Opting
           out does not affect the rest of these Terms.
@@ -562,7 +562,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <ul>
           <li>
             <strong>Entire agreement.</strong> These Terms and the Privacy Policy are the
-            entire agreement between you and LeadSmart regarding the Service.
+            entire agreement between you and CloseBoss regarding the Service.
           </li>
           <li>
             <strong>Severability.</strong> If any provision is held unenforceable, the
@@ -578,7 +578,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             waiver.
           </li>
           <li>
-            <strong>Contact.</strong> Notices to LeadSmart should be sent to{" "}
+            <strong>Contact.</strong> Notices to CloseBoss should be sent to{" "}
             <a
               href="mailto:contact@closebossai.com"
               className="text-[#0072ce] hover:underline"

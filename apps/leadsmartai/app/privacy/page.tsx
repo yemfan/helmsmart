@@ -21,10 +21,11 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <p>
-          MAXY Investment Inc., a Texas corporation, doing business as LeadSmart AI
-          (&ldquo;LeadSmart,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or
-          &ldquo;our&rdquo;) operates the website closebossai.com and provides AI-assisted
-          lead management, CRM, SMS follow-up, email automation, and related services (the
+          CloseBoss is a product of MAXY Investment Inc., a Texas corporation
+          (referred to in this Privacy Policy as &ldquo;CloseBoss,&rdquo;
+          &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;). We operate the
+          website closebossai.com and provide AI-assisted lead management, CRM, SMS
+          follow-up, email automation, and related services (the
           &ldquo;Service&rdquo;). This Privacy Policy explains what information we collect,
           how we use and share it, and the choices you have.
         </p>
@@ -57,7 +58,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             <strong>Information from integrations you connect</strong> — lead sources such
             as Zillow, Realtor.com, Follow Up Boss, kvCORE, Sierra Interactive, Facebook
             Lead Ads, Google, and any IDX site you link. If you forward emails to your
-            unique LeadSmart inbound address (e.g.{" "}
+            unique CloseBoss inbound address (e.g.{" "}
             <code>your-name@inbox.closebossai.com</code>), we process only those emails
             you explicitly forward to us — see section 5 for inbound email handling. We
             receive only what each integration&rsquo;s OAuth scope permits.
@@ -104,7 +105,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <p>
           We do not knowingly collect <strong>sensitive personal information</strong>
           under CPRA § 1798.140(ae). For information about <em>contacts</em> the agent
-          uploads or imports — which is the agent&rsquo;s data, not LeadSmart&rsquo;s —
+          uploads or imports — which is the agent&rsquo;s data, not CloseBoss&rsquo;s —
           see section 5 (How we share information) and section 11 (Retention).
         </p>
       </>
@@ -159,7 +160,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <p>
-          LeadSmart uses third-party AI providers — currently OpenAI and Anthropic — to
+          CloseBoss uses third-party AI providers — currently OpenAI and Anthropic — to
           generate messages, summarize calls, and rank leads. When the Service sends data
           to these providers:
         </p>
@@ -227,7 +228,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     body: (
       <>
         <p>
-          LeadSmart provisions each agent a unique inbound forwarding
+          CloseBoss provisions each agent a unique inbound forwarding
           address (e.g. <code>your-name@inbox.closebossai.com</code>) on
           first dashboard visit. The address is yours alone, scoped to your
           account, and only processes emails you explicitly forward to it —
@@ -280,7 +281,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <ul>
           <li>
             We do <strong>not</strong> read emails sent to other
-            addresses on your domain — only your unique LeadSmart alias.
+            addresses on your domain — only your unique CloseBoss alias.
           </li>
           <li>
             We do <strong>not</strong> use forwarded email content to
@@ -298,7 +299,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             obligations that mirror these restrictions.
           </li>
           <li>
-            Humans at LeadSmart do not read your forwarded email content
+            Humans at CloseBoss do not read your forwarded email content
             except when (i) you give explicit written permission for
             specific messages, (ii) it is necessary for security or to
             prevent abuse, (iii) it is required for compliance with
@@ -312,7 +313,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
         <ul>
           <li>
             Forwarded email envelopes + body previews are retained in your
-            LeadSmart CRM until you delete them, delete the associated
+            CloseBoss CRM until you delete them, delete the associated
             review task, or delete your account. When your account is
             deleted, all inbound delivery records are removed or
             anonymized within 90 days, aligned with section 11 below.
@@ -355,12 +356,12 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             support tools.
           </li>
           <li>
-            <strong>Your leads and contacts</strong> — messages you or LeadSmart send on
+            <strong>Your leads and contacts</strong> — messages you or CloseBoss send on
             your behalf disclose your identity to those recipients.
           </li>
           <li>
             <strong>Legal and safety</strong> — when required by law, subpoena, court
-            order, or to protect the rights, property, or safety of LeadSmart, our users,
+            order, or to protect the rights, property, or safety of CloseBoss, our users,
             or the public.
           </li>
           <li>
@@ -390,8 +391,8 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           For end-user SMS recipients (homeowners, leads, and contacts)
         </p>
         <p>
-          If you opt in to receive marketing text messages from LeadSmart AI via a
-          consent checkbox on a LeadSmart public surface (for example{" "}
+          If you opt in to receive marketing text messages from CloseBoss via a
+          consent checkbox on a CloseBoss public surface (for example{" "}
           <Link href="/contact" className="text-[#0072ce] hover:underline">
             /contact
           </Link>
@@ -426,10 +427,10 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
           exact text shown at the time of opt-in can be reproduced on request.
         </p>
         <p className="font-semibold text-slate-900">
-          For LeadSmart customers (agents sending on behalf of their own contacts)
+          For CloseBoss customers (agents sending on behalf of their own contacts)
         </p>
         <p>
-          LeadSmart sends SMS and email on your behalf only when consent has been
+          CloseBoss sends SMS and email on your behalf only when consent has been
           established. By using the Service, you represent and warrant that:
         </p>
         <ul>
@@ -447,13 +448,13 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             link and accurate sender identification.
           </li>
           <li>
-            You will honor STOP / UNSUBSCRIBE / HELP requests immediately — LeadSmart
+            You will honor STOP / UNSUBSCRIBE / HELP requests immediately — CloseBoss
             automatically suppresses these numbers and addresses on your behalf, but
             compliance is ultimately your responsibility.
           </li>
         </ul>
         <p>
-          For 10DLC sender / caller allocation: LeadSmart maintains a registered
+          For 10DLC sender / caller allocation: CloseBoss maintains a registered
           10DLC brand and campaign with The Campaign Registry (TCR) and operates
           the SMS sending infrastructure as the messaging vendor. You remain the
           &ldquo;caller&rdquo; under the TCPA and the &ldquo;sender&rdquo; under
