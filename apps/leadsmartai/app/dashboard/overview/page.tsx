@@ -5,6 +5,7 @@ import { BossOnboardingCard } from "@/components/dashboard/BossOnboardingCard";
 import { computeActivationChecklist } from "@/lib/activation/checklist";
 import OverviewClient from "./OverviewClient";
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Dashboard Overview",
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default async function OverviewPage() {
+  const t = await getServerT();
   const ctx = await getCurrentAgentContext();
 
   const { data: profileRow } = await supabaseServer

@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import JsonLd from "../../components/JsonLd";
+import { useTranslation } from "react-i18next";
 
 export default function HowCapRateChangesInDifferentMarketsPage() {
+  const { t } = useTranslation("dashboard");
   const title = "How Cap Rate Changes in Different Markets";
   const url = "https://closebossai.com/how-cap-rate-changes-in-different-markets";
 
@@ -44,9 +46,7 @@ export default function HowCapRateChangesInDifferentMarketsPage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
       <p className="text-gray-600 mb-8 max-w-3xl">
@@ -179,9 +179,7 @@ export default function HowCapRateChangesInDifferentMarketsPage() {
           <li>Tracking your own underwriting over time to see how cap rate assumptions shift.</li>
           <li>
             Using the{" "}
-            <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
-              Cap Rate Calculator
-            </Link>{" "}
+            <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
             to analyze new listings and compare them to past deals.
           </li>
         </ul>
@@ -235,20 +233,13 @@ export default function HowCapRateChangesInDifferentMarketsPage() {
           <Link
             href="/cap-rate-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Open Cap Rate Calculator
-          </Link>
+          >{t("pages.articleChrome.openCapRate")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Investment Analyzer
-          </Link>
+          >{t("pages.articleChrome.openAnalyzer")}</Link>
         </div>
-        <p className="font-semibold">
-          Try our free real estate investment calculator at closebossai.com to quickly analyze
-          your property deals.
-        </p>
+        <p className="font-semibold">{t("pages.articleChrome.footerCta")}</p>
       </section>
     </div>
   );

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabaseServer";
+import { getServerT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -26,6 +27,7 @@ async function unsubscribe(token: string): Promise<void> {
 }
 
 export default async function NewsletterUnsubscribePage({ searchParams }: Props) {
+  const t = await getServerT();
   const sp = await searchParams;
   const raw = Array.isArray(sp.token) ? sp.token[0] : sp.token;
   const token = (raw ?? "").trim();

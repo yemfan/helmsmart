@@ -1,5 +1,6 @@
 import type { SeriesPoint } from "@/lib/research/warehouse/read";
 import { formatValue, formatPeriod, isNum } from "@/lib/research/warehouse/format";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Dependency-free inline SVG line chart for a warehouse metric series.
@@ -24,7 +25,8 @@ const PAD_X = 8;
 const PAD_TOP = 16;
 const PAD_BOTTOM = 24;
 
-export default function Sparkline({ series, unit, label, title }: Props) {
+export default async function Sparkline({ series, unit, label, title }: Props) {
+  const t = await getServerT();
   const points = series
     .map((p, i) => ({ i, period: p.period, value: p.value }))
     .filter((p): p is { i: number; period: string; value: number } =>

@@ -10,6 +10,7 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Try the live demo",
@@ -76,7 +77,8 @@ const TOURS: Tour[] = [
   },
 ];
 
-export default function TryDemoPage() {
+export default async function TryDemoPage() {
+  const t = await getServerT();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",

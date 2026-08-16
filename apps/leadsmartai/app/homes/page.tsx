@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { HOUSE_SEARCH_DISCLAIMER } from "@/lib/house-search/types";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Homes for sale | CloseBoss",
@@ -27,7 +28,8 @@ const POPULAR_CITIES: { city: string; state: string; blurb: string }[] = [
  * page (no client JS needed), popular-city tiles that deep-link into an
  * AI-brief search, and the value-prop section.
  */
-export default function HomesIndexPage() {
+export default async function HomesIndexPage() {
+  const t = await getServerT();
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <header className="mb-8 max-w-2xl">

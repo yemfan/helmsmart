@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getOfferWithCounters } from "@/lib/offers/service";
 import { OfferDetailClient } from "./OfferDetailClient";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Offer",
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 type PageProps = { params: Promise<{ id: string }> };
 
 export default async function OfferDetailPage({ params }: PageProps) {
+  const t = await getServerT();
   const { agentId } = await getCurrentAgentContext();
   const { id } = await params;
   const result = await getOfferWithCounters(String(agentId), id);

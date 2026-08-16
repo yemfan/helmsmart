@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { estimateHomeValue } from "@/lib/property";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import PricingModal from "@/components/PricingModal";
@@ -23,6 +24,7 @@ export default function HomePage() {
 }
 
 function HomePageInner() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
   const { openAgentSignup } = useAuth();
@@ -634,9 +636,7 @@ function HomePageInner() {
               ) : (
                 <form onSubmit={handleSubmitLead} className="space-y-3">
                   <div className="space-y-1">
-                    <label className="block text-xs font-medium text-slate-700">
-                      Name
-                    </label>
+                    <label className="block text-xs font-medium text-slate-700">{t("pages.articleChrome.name")}</label>
                     <input
                       type="text"
                       value={name}
@@ -646,9 +646,7 @@ function HomePageInner() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="block text-xs font-medium text-slate-700">
-                      Email
-                    </label>
+                    <label className="block text-xs font-medium text-slate-700">{t("pages.articleChrome.email")}</label>
                     <input
                       type="email"
                       value={email}
@@ -707,18 +705,14 @@ function HomePageInner() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-medium text-blue-600 hover:underline"
-                      >
-                        Privacy Policy
-                      </a>{" "}
+                      >{t("pages.articleChrome.privacyPolicy")}</a>{" "}
                       and{" "}
                       <a
                         href="/terms"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-medium text-blue-600 hover:underline"
-                      >
-                        Terms of Service
-                      </a>{" "}
+                      >{t("pages.articleChrome.termsOfService")}</a>{" "}
                       for details.
                     </p>
                   </div>

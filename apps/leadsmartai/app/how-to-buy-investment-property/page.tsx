@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import JsonLd from "../../components/JsonLd";
+import { useTranslation } from "react-i18next";
 
 export default function HowToBuyInvestmentPropertyPage() {
+  const { t } = useTranslation("dashboard");
   const title = "How to Buy an Investment Property";
   const url = "https://closebossai.com/how-to-buy-investment-property";
 
@@ -26,9 +28,7 @@ export default function HowToBuyInvestmentPropertyPage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">
         {title}
@@ -69,18 +69,14 @@ export default function HowToBuyInvestmentPropertyPage() {
             <Link
               href="/cash-flow-calculator"
               className="text-blue-600 hover:text-blue-700 font-semibold"
-            >
-              Cash Flow Calculator
-            </Link>{" "}
+            >{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
             – estimate monthly and annual cash flow after mortgage and expenses.
           </li>
           <li>
             <Link
               href="/cap-rate-calculator"
               className="text-blue-600 hover:text-blue-700 font-semibold"
-            >
-              Cap Rate Calculator
-            </Link>{" "}
+            >{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
             – compare NOI to purchase price to see if the property meets your return
             thresholds.
           </li>
@@ -88,9 +84,7 @@ export default function HowToBuyInvestmentPropertyPage() {
             <Link
               href="/property-investment-analyzer"
               className="text-blue-600 hover:text-blue-700 font-semibold"
-            >
-              Property Investment Analyzer
-            </Link>{" "}
+            >{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
             – combine cash flow, NOI, cap rate, and simple cash‑on‑cash ROI in one view.
           </li>
         </ul>
@@ -107,9 +101,7 @@ export default function HowToBuyInvestmentPropertyPage() {
         <p>
           Once you find a property that looks promising, stress‑test it with different
           interest rates, down payments, and expense assumptions. Use the{" "}
-          <Link href="/mortgage-calculator" className="text-blue-600 hover:text-blue-700">
-            Mortgage Calculator
-          </Link>{" "}
+          <Link href="/mortgage-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
           to see how your payment changes if rates move up or down, and adjust property
           taxes, insurance, maintenance, and vacancy in the cash‑flow tools.
         </p>
@@ -149,21 +141,15 @@ export default function HowToBuyInvestmentPropertyPage() {
           <Link
             href="/cash-flow-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Open Cash Flow Calculator
-          </Link>
+          >{t("pages.articleChrome.openCashFlow")}</Link>
           <Link
             href="/cap-rate-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Cap Rate Calculator
-          </Link>
+          >{t("pages.articleChrome.openCapRate")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Investment Analyzer
-          </Link>
+          >{t("pages.articleChrome.openAnalyzer")}</Link>
         </div>
       </section>
     </div>

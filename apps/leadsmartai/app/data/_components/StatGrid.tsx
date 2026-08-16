@@ -6,13 +6,15 @@ import {
   formatPeriod,
   isNum,
 } from "@/lib/research/warehouse/format";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Latest-metrics stat grid, ordered by METRIC_ORDER (headline metrics first).
  * Renders only metrics that have a finite value; each tile shows the formatted
  * value, its metric label, and the observation period.
  */
-export default function StatGrid({ metrics }: { metrics: LatestMetric[] }) {
+export default async function StatGrid({ metrics }: { metrics: LatestMetric[] }) {
+  const t = await getServerT();
   const byMetric = new Map(metrics.map((m) => [m.metric, m]));
   const ordered = METRIC_ORDER.map((k) => byMetric.get(k)).filter(
     (m): m is LatestMetric => !!m && isNum(m.value),

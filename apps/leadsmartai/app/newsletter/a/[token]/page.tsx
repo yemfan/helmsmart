@@ -5,6 +5,7 @@ import SubscribeForm from "@/components/newsletter/SubscribeForm";
 import { listRegionOptions } from "@/lib/newsletter/regions";
 import { resolveAgentIdByNewsletterToken } from "@/lib/newsletter/agentToken";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
+import { getServerT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -34,6 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AgentNewsletterSignupPage({ params }: Props) {
+  const t = await getServerT();
   const { token: rawToken } = await params;
   const token = (rawToken ?? "").trim();
   if (!UUID_RE.test(token)) notFound();

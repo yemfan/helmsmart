@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Cap Rate vs Gross Rent Multiplier",
@@ -6,8 +7,9 @@ export const metadata: Metadata = {
   keywords: ["cap rate", "gross rent multiplier", "GRM", "rental property", "valuation metrics"],
 };
 
-export default function CapRateGRMLayout({
+export default async function CapRateGRMLayout({
   children,
 }: { children: React.ReactNode }) {
+  const t = await getServerT();
   return children;
 }

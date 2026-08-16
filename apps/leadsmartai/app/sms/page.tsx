@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import SmsOptInForm from "./SmsOptInForm";
 import { pageMetadata } from "@/lib/seo";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   ...pageMetadata({
@@ -20,7 +21,8 @@ export const metadata: Metadata = {
  * disclosures are server-rendered so they're in the initial HTML for reviewers
  * and crawlers. Persists each opt-in via /api/sms/opt-in (proof of consent).
  */
-export default function SmsOptInPage() {
+export default async function SmsOptInPage() {
+  const t = await getServerT();
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
       <div className="text-center">
@@ -69,9 +71,7 @@ export default function SmsOptInPage() {
           </ul>
           <p className="text-xs text-slate-500">
             By submitting, you agree to our{" "}
-            <Link href="/privacy" className="text-[#0072ce] hover:underline">
-              Privacy Policy
-            </Link>{" "}
+            <Link href="/privacy" className="text-[#0072ce] hover:underline">{t("pages.articleChrome.privacyPolicy", { ns: "dashboard" })}</Link>{" "}
             and{" "}
             <Link href="/terms" className="text-[#0072ce] hover:underline">
               Terms (incl. SMS program disclosures)

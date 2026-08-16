@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import JsonLd from "../../components/JsonLd";
+import { useTranslation } from "react-i18next";
 
 export default function HowToAnalyzeRentalPropertyPage() {
+  const { t } = useTranslation("dashboard");
   const title = "How to Analyze a Rental Property";
   const url = "https://closebossai.com/how-to-analyze-rental-property";
 
@@ -26,9 +28,7 @@ export default function HowToAnalyzeRentalPropertyPage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">
         {title}
@@ -51,9 +51,7 @@ export default function HowToAnalyzeRentalPropertyPage() {
         </p>
         <p>
           Use the{" "}
-          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">
-            Cash Flow Calculator
-          </Link>{" "}
+          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
           to input these assumptions and see annual income, annual expenses, and
           resulting cash flow.
         </p>
@@ -71,9 +69,7 @@ export default function HowToAnalyzeRentalPropertyPage() {
         </p>
         <p>
           Plug the same income and expense assumptions into the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
-            Cap Rate Calculator
-          </Link>{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
           to see NOI and cap rate side by side. This helps you compare the property to
           other opportunities in your target market.
         </p>
@@ -86,18 +82,12 @@ export default function HowToAnalyzeRentalPropertyPage() {
         <p>
           Once a property looks good on an unlevered basis, analyze it with realistic
           loan terms. Use the{" "}
-          <Link href="/mortgage-calculator" className="text-blue-600 hover:text-blue-700">
-            Mortgage Calculator
-          </Link>{" "}
+          <Link href="/mortgage-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
           to understand your monthly principal and interest payment, then feed that into
           the{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
-            Property Investment Analyzer
-          </Link>{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
           or{" "}
-          <Link href="/roi-calculator" className="text-blue-600 hover:text-blue-700">
-            ROI Calculator
-          </Link>{" "}
+          <Link href="/roi-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.roiCalculator")}</Link>{" "}
           to see cash‑on‑cash ROI and long‑term equity growth.
         </p>
         <p>
@@ -119,21 +109,15 @@ export default function HowToAnalyzeRentalPropertyPage() {
           <Link
             href="/cash-flow-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Open Cash Flow Calculator
-          </Link>
+          >{t("pages.articleChrome.openCashFlow")}</Link>
           <Link
             href="/cap-rate-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Cap Rate Calculator
-          </Link>
+          >{t("pages.articleChrome.openCapRate")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Investment Analyzer
-          </Link>
+          >{t("pages.articleChrome.openAnalyzer")}</Link>
         </div>
       </section>
     </div>

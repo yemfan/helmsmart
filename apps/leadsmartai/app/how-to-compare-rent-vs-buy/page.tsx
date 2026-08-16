@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import JsonLd from "../../components/JsonLd";
+import { useTranslation } from "react-i18next";
 
 export default function HowToCompareRentVsBuyPage() {
+  const { t } = useTranslation("dashboard");
   const title = "How to Compare Renting vs Buying a Home";
   const url = "https://closebossai.com/how-to-compare-rent-vs-buy";
 
@@ -26,9 +28,7 @@ export default function HowToCompareRentVsBuyPage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
       <p className="text-gray-600 mb-8 max-w-3xl">
@@ -52,9 +52,7 @@ export default function HowToCompareRentVsBuyPage() {
           <Link
             href="/rent-vs-buy-calculator"
             className="text-blue-600 hover:text-blue-700 font-semibold"
-          >
-            Rent vs Buy Calculator
-          </Link>{" "}
+          >{t("pages.articleChrome.rentVsBuyCalculator")}</Link>{" "}
           helps you do this by estimating the total amount you would pay to rent versus
           own over a number of years.
         </p>
@@ -92,9 +90,7 @@ export default function HowToCompareRentVsBuyPage() {
           <Link
             href="/mortgage-calculator"
             className="text-blue-600 hover:text-blue-700 font-semibold"
-          >
-            Mortgage Calculator
-          </Link>{" "}
+          >{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
           and{" "}
           <Link
             href="/hoa-fee-tracker"

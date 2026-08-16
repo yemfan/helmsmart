@@ -5,6 +5,7 @@ import { fetchUserPortalContext } from "@/lib/rolePortalServer";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { consumerShouldUsePropertyToolsApp } from "@/lib/signupOriginApp";
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Redirecting",
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
  * LeadSmart-origin consumers → marketing home on this site.
  */
 export default async function DashboardRouterPage() {
+  const t = await getServerT();
   const supabase = supabaseServerClient();
   const ctx = await fetchUserPortalContext(supabase);
   if (!ctx) {

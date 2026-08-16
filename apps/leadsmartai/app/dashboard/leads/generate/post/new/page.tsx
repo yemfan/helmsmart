@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import QuickPostClient from "./QuickPostClient";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Quick Post | CloseBoss",
@@ -8,7 +9,8 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export default function QuickPostPage() {
+export default async function QuickPostPage() {
+  const t = await getServerT();
   return (
     <div className="mx-auto max-w-3xl px-4 py-6">
       <QuickPostClient />

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import type { HomeSearchParams } from "@/lib/house-search/brief";
 
 import HomesSearchClient from "./HomesSearchClient";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "AI home search | CloseBoss",
@@ -33,6 +34,7 @@ function asNumber(v: string | string[] | undefined): number | undefined {
 export default async function HomesSearchPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const t = await getServerT();
   const sp = await props.searchParams;
 
   const initialQuery = asString(sp.q) ?? null;

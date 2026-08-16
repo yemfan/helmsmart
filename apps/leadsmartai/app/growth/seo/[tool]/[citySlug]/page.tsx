@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { GROWTH_SEO_CITIES, GROWTH_SEO_TOOLS } from "@repo/growth";
 import ProgressiveLeadCapture from "@/components/growth/ProgressiveLeadCapture";
+import { getServerT } from "@/lib/i18n/server";
 
 type Props = { params: Promise<{ tool: string; citySlug: string }> };
 
@@ -28,6 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function GrowthSeoPage({ params }: Props) {
+  const tr = await getServerT();
   const { tool, citySlug } = await params;
   const t = GROWTH_SEO_TOOLS.find((x) => x.slug === tool);
   const c = GROWTH_SEO_CITIES.find((x) => x.slug === citySlug);
@@ -35,9 +37,7 @@ export default async function GrowthSeoPage({ params }: Props) {
     return (
       <div className="max-w-lg mx-auto px-4 py-10">
         <p>Page not found.</p>
-        <Link href="/" className="text-blue-700 text-sm">
-          Home
-        </Link>
+        <Link href="/" className="text-blue-700 text-sm">{tr("pages.articleChrome.home", { ns: "dashboard" })}</Link>
       </div>
     );
   }

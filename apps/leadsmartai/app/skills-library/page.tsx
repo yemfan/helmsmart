@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Download, ShieldCheck, Sparkles } from "lucide-react";
 
 import { SKILLS, PILLAR_LABEL, ASSIGNEE_LABEL, type SkillPillar } from "@/lib/realtyboss/skills/catalog";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Free Realtor AI Skills Library — 59 compliance-ready prompts",
@@ -31,7 +32,8 @@ const PILLAR_ORDER: SkillPillar[] = [
   "lead_gen", "nurture", "valuation", "listing", "buyer", "negotiation", "compliance", "communication", "operations",
 ];
 
-export default function SkillsLibraryPage() {
+export default async function SkillsLibraryPage() {
+  const t = await getServerT();
   const count = SKILLS.length;
 
   return (

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { supabaseServer } from "@/lib/supabaseServer";
 import PresentationPublicClient from "@/app/presentation/PresentationPublicClient";
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Listing Presentation",
@@ -23,6 +24,7 @@ export default async function PresentationPublicPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getServerT();
   const { id } = await params;
   const { data, error } = await supabaseServer
     .from("presentations")

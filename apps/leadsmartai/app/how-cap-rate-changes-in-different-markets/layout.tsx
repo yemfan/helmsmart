@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "How Cap Rate Changes in Different Markets",
@@ -6,8 +7,9 @@ export const metadata: Metadata = {
   keywords: ["cap rate markets", "market comparison", "regional cap rates", "real estate", "market analysis"],
 };
 
-export default function CapRateMarketChangesLayout({
+export default async function CapRateMarketChangesLayout({
   children,
 }: { children: React.ReactNode }) {
+  const t = await getServerT();
   return children;
 }

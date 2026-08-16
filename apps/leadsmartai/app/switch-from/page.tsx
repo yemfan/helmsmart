@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SWITCH_SOURCES } from "@/lib/marketing/switch-from";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Switch your CRM to CloseBoss",
@@ -32,7 +33,8 @@ export const metadata: Metadata = {
 
 const SITE_URL = "https://closebossai.com";
 
-export default function SwitchFromIndex() {
+export default async function SwitchFromIndex() {
+  const t = await getServerT();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",

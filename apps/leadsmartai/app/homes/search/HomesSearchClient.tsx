@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import IdxLeadCaptureModal from "@/components/idx/IdxLeadCaptureModal";
 import { paramsToBrief, type HomeSearchParams } from "@/lib/house-search/brief";
@@ -40,6 +41,7 @@ export default function HomesSearchClient({
   initialQuery: string | null;
   initialParams: HomeSearchParams;
 }) {
+  const { t } = useTranslation("dashboard");
   // Seed the box: an explicit ?q= wins; otherwise translate structured params.
   const seededBrief = initialQuery?.trim() || paramsToBrief(initialParams) || "";
 
@@ -317,9 +319,7 @@ export default function HomesSearchClient({
           {/* Sources + disclaimer */}
           {result.sources.length > 0 ? (
             <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
-              <h3 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                Sources
-              </h3>
+              <h3 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.articleChrome.sources")}</h3>
               <ul className="mt-2 space-y-1">
                 {result.sources.slice(0, 12).map((s, i) => (
                   <li key={i} className="truncate text-xs">

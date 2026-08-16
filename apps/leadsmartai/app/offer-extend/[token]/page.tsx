@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import {
   isOfferExtendEnabled,
   verifyOfferExtendToken,
 } from "@/lib/offer-expirations/extendToken";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Extend offer",
@@ -35,9 +37,11 @@ type ExtendOutcome =
   | { kind: "error"; title: string; body: string };
 
 export default async function OfferExtendPage({ params }: PageProps) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const { token } = await params;
   const outcome = await processExtend(token);
-  return <ConfirmationPage outcome={outcome} />;
+  return <ConfirmationPage outcome={outcome} locale={locale} />;
 }
 
 async function processExtend(token: string): Promise<ExtendOutcome> {
@@ -166,9 +170,9 @@ async function resolveAddress(
   }
 }
 
-function ConfirmationPage({ outcome }: { outcome: ExtendOutcome }) {
+function ConfirmationPage({ outcome, locale }: { outcome: ExtendOutcome; locale: string }) {
   if (outcome.kind === "ok") {
-    const whenLabel = new Date(outcome.newExpiresAtIso).toLocaleString(undefined, {
+    const whenLabel = new Date(outcome.newExpiresAtIso).toLocaleString(locale, {
       weekday: "short",
       month: "short",
       day: "numeric",

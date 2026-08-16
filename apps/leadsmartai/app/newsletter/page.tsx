@@ -5,6 +5,8 @@ import { getSiteUrl } from "@/lib/siteUrl";
 import SubscribeForm from "@/components/newsletter/SubscribeForm";
 import { listRegionOptions } from "@/lib/newsletter/regions";
 import { listRecentDigests, type NewsletterDigestRow } from "@/lib/newsletter/db";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export const dynamic = "force-dynamic";
 
@@ -24,14 +26,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-function formatWeek(d: string): string {
+function formatWeek(d: string, locale: string): string {
   const dt = new Date(`${d}T00:00:00Z`);
   return Number.isNaN(dt.getTime())
     ? d
-    : dt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+    : dt.toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
 }
 
 export default async function NewsletterHubPage() {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const [regions, digests] = await Promise.all([
     listRegionOptions(),
     listRecentDigests(24),
@@ -113,7 +117,7 @@ export default async function NewsletterHubPage() {
                 >
                   <div className="flex flex-wrap items-center gap-3 text-xs">
                     <span className="rounded-full bg-[#0072ce]/10 px-2.5 py-1 font-semibold text-[#0072ce]">
-                      Week of {formatWeek(d.week_of)}
+                      Week of {formatWeek(d.week_of, locale)}
                     </span>
                     <span className="text-slate-500">
                       {Array.isArray(d.items) ? d.items.length : 0} stories

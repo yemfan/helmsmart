@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import OnboardingFunnel from "@/components/onboarding/OnboardingFunnel";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Get started — CloseBoss",
@@ -20,7 +21,8 @@ export const metadata: Metadata = {
  * when JS is absent the user still gets branded content, a working signup
  * link, and support contact info instead of a blank "Loading…" state.
  */
-export default function OnboardingPage() {
+export default async function OnboardingPage() {
+  const t = await getServerT();
   return (
     <>
       {/* Noscript fallback — fully static, no JS required. */}

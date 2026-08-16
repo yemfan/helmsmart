@@ -1,4 +1,7 @@
-export default function PricingLoading() {
+import { getServerT } from "@/lib/i18n/server";
+
+export default async function PricingLoading() {
+  const t = await getServerT();
   return (
     <div className="min-h-screen bg-white text-gray-900">
       {/* Header skeleton */}

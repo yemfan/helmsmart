@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { acceptInvite } from "@/lib/teams/service";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Accept team invitation",
@@ -23,6 +24,7 @@ export default async function AcceptInvitePage({
 }: {
   params: Promise<{ token: string }>;
 }) {
+  const t = await getServerT();
   const { token } = await params;
 
   let agentId: string;

@@ -5,6 +5,7 @@ import { isRedirectError } from "@/lib/isRedirectError";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import FinancialServicesSidebar from "./FinancialServicesSidebar";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Auth gate + sectioned-sidebar shell for the financial-services workspace.
@@ -23,6 +24,7 @@ export default async function FinancialServicesDashboardLayout({
 }: {
   children: ReactNode;
 }) {
+  const t = await getServerT();
   let email: string | null = null;
 
   try {

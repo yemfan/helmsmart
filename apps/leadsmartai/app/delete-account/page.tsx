@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { pageMetadata } from "@/lib/seo";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   ...pageMetadata({
@@ -12,7 +13,8 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function DeleteAccountPage() {
+export default async function DeleteAccountPage() {
+  const t = await getServerT();
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
       <h1 className="text-3xl font-bold text-slate-900 mb-2">
@@ -138,13 +140,9 @@ export default function DeleteAccountPage() {
 
       <div className="mt-12 border-t border-slate-200 pt-6 text-sm text-slate-500">
         See also our{" "}
-        <Link href="/privacy" className="text-[#0072ce] hover:underline">
-          Privacy Policy
-        </Link>{" "}
+        <Link href="/privacy" className="text-[#0072ce] hover:underline">{t("pages.articleChrome.privacyPolicy", { ns: "dashboard" })}</Link>{" "}
         and{" "}
-        <Link href="/terms" className="text-[#0072ce] hover:underline">
-          Terms of Service
-        </Link>
+        <Link href="/terms" className="text-[#0072ce] hover:underline">{t("pages.articleChrome.termsOfService", { ns: "dashboard" })}</Link>
         .
       </div>
     </div>

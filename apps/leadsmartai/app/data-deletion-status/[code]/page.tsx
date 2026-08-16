@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Public status page for Meta data-deletion requests. Linked from
@@ -28,6 +29,7 @@ type PageProps = {
 };
 
 export default async function DataDeletionStatusPage({ params }: PageProps) {
+  const t = await getServerT();
   const { code } = await params;
 
   // Basic sanity check on the code format so we don't render the
@@ -61,9 +63,7 @@ export default async function DataDeletionStatusPage({ params }: PageProps) {
               <a
                 href="/privacy"
                 className="underline hover:text-emerald-900"
-              >
-                Privacy Policy
-              </a>
+              >{t("pages.articleChrome.privacyPolicy", { ns: "dashboard" })}</a>
               .
             </p>
           </div>

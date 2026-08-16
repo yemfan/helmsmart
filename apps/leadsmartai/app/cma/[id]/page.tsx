@@ -5,6 +5,7 @@ import CmaShareView from "@/components/cma/CmaShareView";
 import { getPublicCma } from "@/lib/cma/service";
 import { isCredibleCmaValuation } from "@/lib/cma/types";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Comparative Market Analysis",
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
  * as the Deep Report public page. Renders the dedicated CmaShareView.
  */
 export default async function PublicCmaPage({ params }: { params: Promise<{ id: string }> }) {
+  const t = await getServerT();
   const { id } = await params;
   const cma = await getPublicCma(id);
   if (!cma) return notFound();

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import DeepReportView from "@/components/deep-report/DeepReportView";
 import type { DeepReport } from "@/lib/deep-report/types";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Property Deep Report",
@@ -19,6 +20,7 @@ export default async function PublicDeepReportPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getServerT();
   const { id } = await params;
   const { data, error } = await supabaseAdmin
     .from("deep_reports")

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
+import { getServerT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -71,6 +72,7 @@ async function agentNameFor(
 }
 
 export default async function NewsletterConfirmPage({ searchParams }: Props) {
+  const t = await getServerT();
   const sp = await searchParams;
   const raw = Array.isArray(sp.token) ? sp.token[0] : sp.token;
   const token = (raw ?? "").trim();

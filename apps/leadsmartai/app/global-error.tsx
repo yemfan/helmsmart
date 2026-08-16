@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 /**
  * Last-resort UI when the root layout fails. Must define its own <html> / <body>.
  * @see https://nextjs.org/docs/app/building-your-application/routing/error-handling
@@ -11,6 +13,7 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <html lang="en">
       <body className="min-h-screen bg-slate-50 px-4 py-16 font-sans text-slate-900">
@@ -26,9 +29,7 @@ export default function GlobalError({
             type="button"
             onClick={() => reset()}
             className="mt-6 w-full rounded-xl bg-[#0072ce] px-4 py-3 text-sm font-semibold text-white hover:bg-[#005ca8]"
-          >
-            Try again
-          </button>
+          >{t("pages.articleChrome.tryAgain")}</button>
         </div>
       </body>
     </html>

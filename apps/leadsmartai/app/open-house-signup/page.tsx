@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
 import { useSignupProfilePrefill, type SignupPrefillConsumer } from "@/lib/hooks/useSignupProfilePrefill";
 
@@ -28,6 +29,7 @@ export default function OpenHouseSignupPage() {
 }
 
 function OpenHouseSignupPageInner() {
+  const { t } = useTranslation("dashboard");
   const searchParams = useSearchParams();
   const propertyId = searchParams?.get("property_id") ?? "";
   const agentId = searchParams?.get("agent_id") ?? "";
@@ -176,9 +178,7 @@ function OpenHouseSignupPageInner() {
 
           <form noValidate onSubmit={onSubmit} className="mt-6 space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-800">
-                Name
-              </label>
+              <label className="block text-sm font-semibold text-slate-800">{t("pages.articleChrome.name")}</label>
               <input
                 className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                 value={name}
@@ -189,9 +189,7 @@ function OpenHouseSignupPageInner() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-800">
-                Email
-              </label>
+              <label className="block text-sm font-semibold text-slate-800">{t("pages.articleChrome.email")}</label>
               <input
                 type="email"
                 className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
@@ -203,9 +201,7 @@ function OpenHouseSignupPageInner() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-800">
-                Phone
-              </label>
+              <label className="block text-sm font-semibold text-slate-800">{t("pages.articleChrome.phone")}</label>
               <input
                 className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                 value={phone}
@@ -276,18 +272,14 @@ function OpenHouseSignupPageInner() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-blue-600 hover:underline"
-                >
-                  Privacy Policy
-                </a>{" "}
+                >{t("pages.articleChrome.privacyPolicy")}</a>{" "}
                 and{" "}
                 <a
                   href="/terms"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-blue-600 hover:underline"
-                >
-                  Terms of Service
-                </a>{" "}
+                >{t("pages.articleChrome.termsOfService")}</a>{" "}
                 for details.
               </p>
             </div>

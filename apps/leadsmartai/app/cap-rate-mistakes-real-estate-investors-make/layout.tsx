@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Cap Rate Mistakes Real Estate Investors Make",
@@ -6,8 +7,9 @@ export const metadata: Metadata = {
   keywords: ["cap rate mistakes", "common errors", "real estate mistakes", "investment tips", "analysis errors"],
 };
 
-export default function CapRateMistakesLayout({
+export default async function CapRateMistakesLayout({
   children,
 }: { children: React.ReactNode }) {
+  const t = await getServerT();
   return children;
 }

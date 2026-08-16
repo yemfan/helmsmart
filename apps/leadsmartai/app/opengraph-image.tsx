@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Root `og:image` for CloseBoss — auto-detected by Next.js App Router.
@@ -20,6 +21,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function OpengraphImage() {
+  const t = await getServerT();
   return new ImageResponse(
     (
       <div

@@ -2,6 +2,7 @@ import DelayedLeadCapture from "@/components/DelayedLeadCapture";
 import LocalSeoLeadForm from "@/components/LocalSeoLeadForm";
 import TrafficTracker from "@/components/TrafficTracker";
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Mortgage Payment Estimator",
@@ -9,7 +10,8 @@ export const metadata: Metadata = {
   keywords: ["mortgage calculator", "monthly payment", "buying power", "mortgage estimator"],
 };
 
-export default function MortgageLandingPage() {
+export default async function MortgageLandingPage() {
+  const t = await getServerT();
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
       <TrafficTracker pagePath="/landing/mortgage-calculator" source="paid_mortgage_calc" />

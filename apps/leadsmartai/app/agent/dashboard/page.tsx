@@ -2,6 +2,7 @@ import { requireAgentAccess } from "@/lib/auth/requireAgentAccess";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { SectionCard } from "@/components/dashboard/SectionCard";
+import { getServerT } from "@/lib/i18n/server";
 
 const hotLeads = [
   { name: "Sarah Chen", city: "Arcadia", score: 88, status: "Hot Lead" },
@@ -21,6 +22,7 @@ export const metadata = {
 };
 
 export default async function AgentDashboardPage() {
+  const t = await getServerT();
   await requireAgentAccess();
 
   return (

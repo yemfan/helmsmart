@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Cap Rate vs Cash on Cash Return",
@@ -6,8 +7,9 @@ export const metadata: Metadata = {
   keywords: ["cap rate", "cash on cash return", "rental property", "investment metrics", "real estate"],
 };
 
-export default function CapRateCashOnCashLayout({
+export default async function CapRateCashOnCashLayout({
   children,
 }: { children: React.ReactNode }) {
+  const t = await getServerT();
   return children;
 }

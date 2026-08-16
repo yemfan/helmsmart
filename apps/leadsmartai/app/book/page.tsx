@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { pageMetadata } from "@/lib/seo";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = pageMetadata({
   title: "Schedule a Demo — CloseBoss",
@@ -19,7 +20,8 @@ const BOOKING_URL =
   process.env.NEXT_PUBLIC_DEMO_BOOKING_URL?.trim() ||
   "https://cal.com/closeboss/closeboss-demo";
 
-export default function BookingPage() {
+export default async function BookingPage() {
+  const t = await getServerT();
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
       <div className="border-b border-gray-100 bg-white">

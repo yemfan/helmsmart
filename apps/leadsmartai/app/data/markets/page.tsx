@@ -11,6 +11,7 @@ import { geoSlug, stateSlug } from "@/lib/research/warehouse/slug";
 import { formatPeriod, findMetric } from "@/lib/research/warehouse/format";
 import StatGrid from "../_components/StatGrid";
 import DataSources from "../_components/DataSources";
+import { getServerT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MarketsIndexPage() {
+  const t = await getServerT();
   const envOk = !!process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
   let national = [] as Awaited<ReturnType<typeof getLatestMetrics>>;
@@ -96,9 +98,7 @@ export default async function MarketsIndexPage() {
             CloseBoss
           </Link>
           <span className="text-slate-400 mx-2">/</span>
-          <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            Data Center
-          </Link>
+          <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</Link>
           <span className="text-slate-400 mx-2">/</span>
           <span className="text-slate-600">Markets</span>
         </nav>

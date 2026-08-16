@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { UpgradeBanner } from "@/components/upsell/UpgradeBanner";
 import BossAssistantClient from "./BossAssistantClient";
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Ask Max",
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
  * team activity into a single "what needs my attention today" view.
  */
 export default async function BossAssistantPage() {
+  const t = await getServerT();
   const ctx = await getCurrentAgentContext();
 
   const { data: profileRow } = await supabaseServer

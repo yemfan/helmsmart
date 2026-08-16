@@ -1,4 +1,7 @@
-export default function OnboardingLoading() {
+import { getServerT } from "@/lib/i18n/server";
+
+export default async function OnboardingLoading() {
+  const t = await getServerT();
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,114,206,0.25),transparent)]" />

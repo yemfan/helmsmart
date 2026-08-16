@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
 import JsonLd from "../../components/JsonLd";
 
 export default function HOAFeeTracker() {
+  const { t } = useTranslation("dashboard");
   const [monthlyHoa, setMonthlyHoa] = useState<number>(350);
   const [annualIncreasePercent, setAnnualIncreasePercent] = useState<number>(3);
   const [years, setYears] = useState<number>(10);
@@ -49,9 +51,7 @@ export default function HOAFeeTracker() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-2">HOA Fee Tracker</h1>
       <p className="text-gray-600 mb-8">
@@ -70,9 +70,7 @@ export default function HOAFeeTracker() {
             <button
               type="button"
               className="mt-6 w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-              Calculate
-            </button>
+              >{t("pages.articleChrome.calculate")}</button>
           </div>
         </div>
         <div className="lg:col-span-1">

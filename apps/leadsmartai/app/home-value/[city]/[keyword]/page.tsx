@@ -11,6 +11,7 @@ import {
   isValidKeywordSlugForMetro,
   resolveMetroKeyword,
 } from "@/lib/trafficMetros";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Render on demand at request time — NOT static/ISR. The root layout calls
@@ -42,6 +43,7 @@ export default async function HomeValueKeywordPage({
 }: {
   params: Promise<{ city: string; keyword: string }>;
 }) {
+  const t = await getServerT();
   const p = await params;
   const city = await getMetroBySlug(p.city);
   if (!city || !isValidKeywordSlugForMetro("home-value", city, p.keyword)) return notFound();

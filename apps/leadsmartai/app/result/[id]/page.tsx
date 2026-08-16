@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import ResultViewBeacon from "@/components/growth/ResultViewBeacon";
 import ProgressiveLeadCapture from "@/components/growth/ProgressiveLeadCapture";
 import { getShareableResultById } from "@/lib/growth/shareableResults";
+import { getServerT } from "@/lib/i18n/server";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SharedResultPage({ params }: Props) {
+  const t = await getServerT();
   const { id } = await params;
   const row = await getShareableResultById(id);
   if (!row) notFound();

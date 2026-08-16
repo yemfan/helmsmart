@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BLOG_POSTS, categoryLabel, sortedPosts, type BlogPost } from "@/lib/blog/posts";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -24,9 +26,9 @@ export const metadata: Metadata = {
 
 const SITE_URL = "https://closebossai.com";
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, locale: string): string {
   const d = new Date(`${iso}T00:00:00Z`);
-  return d.toLocaleDateString("en-US", {
+  return d.toLocaleDateString(locale, {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -34,7 +36,9 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function BlogIndexPage() {
+export default async function BlogIndexPage() {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const posts = sortedPosts();
   const featured = posts.find((p) => p.featured) ?? posts[0];
   const rest = posts.filter((p) => p.slug !== featured?.slug);
@@ -79,7 +83,7 @@ export default function BlogIndexPage() {
           </p>
         </header>
 
-        {featured ? <FeaturedCard post={featured} /> : null}
+        {featured ? <FeaturedCard post={featured} locale={locale} /> : null}
 
         <section className="mt-12">
           <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">
@@ -88,7 +92,7 @@ export default function BlogIndexPage() {
           <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {rest.map((post) => (
               <li key={post.slug}>
-                <PostCard post={post} />
+                <PostCard post={post} locale={locale} />
               </li>
             ))}
           </ul>
@@ -123,7 +127,7 @@ export default function BlogIndexPage() {
   );
 }
 
-function FeaturedCard({ post }: { post: BlogPost }) {
+function FeaturedCard({ post, locale }: { post: BlogPost; locale: string }) {
   return (
     <section className="mt-10">
       <Link
@@ -153,7 +157,7 @@ function FeaturedCard({ post }: { post: BlogPost }) {
               {post.description}
             </p>
             <p className="mt-5 text-xs text-slate-500 dark:text-slate-400">
-              {formatDate(post.publishedAt)} · {post.author}
+              {formatDate(post.publishedAt, locale)} · {post.author}
             </p>
             <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 dark:text-blue-300">
               Read the post
@@ -193,7 +197,7 @@ function FeaturedCard({ post }: { post: BlogPost }) {
   );
 }
 
-function PostCard({ post }: { post: BlogPost }) {
+function PostCard({ post, locale }: { post: BlogPost; locale: string }) {
   return (
     <Link
       href={post.href}
@@ -211,7 +215,7 @@ function PostCard({ post }: { post: BlogPost }) {
         {post.description}
       </p>
       <p className="mt-auto pt-4 text-xs text-slate-500 dark:text-slate-400">
-        {formatDate(post.publishedAt)}
+        {formatDate(post.publishedAt, locale)}
       </p>
     </Link>
   );

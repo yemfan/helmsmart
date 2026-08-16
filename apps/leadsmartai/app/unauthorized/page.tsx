@@ -5,6 +5,7 @@ import { resolveRoleHomePath } from "@/lib/rolePortalPaths";
 import { fetchUserPortalContext } from "@/lib/rolePortalServer";
 import { consumerShouldUsePropertyToolsApp } from "@/lib/signupOriginApp";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata = {
   title: "Access denied | CloseBoss",
@@ -23,6 +24,7 @@ function homeHref(ctx: Awaited<ReturnType<typeof fetchUserPortalContext>>): stri
 }
 
 export default async function UnauthorizedPage() {
+  const t = await getServerT();
   const supabase = supabaseServerClient();
   const ctx = await fetchUserPortalContext(supabase);
   const href = homeHref(ctx);
@@ -48,9 +50,7 @@ export default async function UnauthorizedPage() {
           <Link
             href="/"
             className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-          >
-            Home
-          </Link>
+          >{t("pages.articleChrome.home", { ns: "dashboard" })}</Link>
         </div>
       </div>
     </div>

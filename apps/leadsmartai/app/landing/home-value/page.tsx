@@ -2,6 +2,7 @@ import DelayedLeadCapture from "@/components/DelayedLeadCapture";
 import LocalSeoLeadForm from "@/components/LocalSeoLeadForm";
 import TrafficTracker from "@/components/TrafficTracker";
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Free Home Value Estimate",
@@ -9,7 +10,8 @@ export const metadata: Metadata = {
   keywords: ["home value estimate", "home worth", "property value", "selling strategy"],
 };
 
-export default function HomeValueLandingPage() {
+export default async function HomeValueLandingPage() {
+  const t = await getServerT();
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
       <TrafficTracker pagePath="/landing/home-value" source="paid_home_value" />

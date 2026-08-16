@@ -5,6 +5,7 @@ import {
   OpenHouseVisitorLogClient,
   type OpenHouseVisitorLogRow,
 } from "./OpenHouseVisitorLogClient";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata = {
   title: "Open House Visitors | Admin | LeadSmart AI",
@@ -21,6 +22,7 @@ export const metadata = {
  * can eyeball whether the cron is catching them.
  */
 export default async function AdminOpenHouseVisitorsPage() {
+  const t = await getServerT();
   await requireRole(["admin"]);
 
   const cutoff = new Date(Date.now() - 30 * 86_400_000).toISOString();

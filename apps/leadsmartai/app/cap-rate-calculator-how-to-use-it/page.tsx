@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import JsonLd from "../../components/JsonLd";
+import { useTranslation } from "react-i18next";
 
 export default function CapRateCalculatorHowToUseItPage() {
+  const { t } = useTranslation("dashboard");
   const title = "Cap Rate Calculator: How to Use It";
   const url = "https://closebossai.com/cap-rate-calculator-how-to-use-it";
 
@@ -44,9 +46,7 @@ export default function CapRateCalculatorHowToUseItPage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
       <p className="text-gray-600 mb-8 max-w-3xl">
@@ -104,9 +104,7 @@ export default function CapRateCalculatorHowToUseItPage() {
         </p>
         <p>
           For example, in the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
-            Cap Rate Calculator
-          </Link>{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
           on CloseBoss, you can enter:
         </p>
         <ul className="list-disc list-inside space-y-1">
@@ -158,9 +156,7 @@ export default function CapRateCalculatorHowToUseItPage() {
         </ul>
         <p>
           In the CloseBoss{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
-            Cap Rate Calculator
-          </Link>
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>
           , these outputs are displayed clearly so you can see both the underlying NOI and the final
           cap rate percentage.
         </p>
@@ -233,9 +229,7 @@ export default function CapRateCalculatorHowToUseItPage() {
         <p>
           Yes. The cap rate math is the same. For larger properties with more complex expenses, you
           may just have more expense line items to enter. The{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
-            Property Investment Analyzer
-          </Link>{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
           is especially helpful for multifamily and mixed-use deals.
         </p>
       </section>
@@ -253,20 +247,13 @@ export default function CapRateCalculatorHowToUseItPage() {
           <Link
             href="/cap-rate-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Open Cap Rate Calculator
-          </Link>
+          >{t("pages.articleChrome.openCapRate")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Investment Analyzer
-          </Link>
+          >{t("pages.articleChrome.openAnalyzer")}</Link>
         </div>
-        <p className="font-semibold">
-          Try our free real estate investment calculator at closebossai.com to quickly analyze
-          your property deals.
-        </p>
+        <p className="font-semibold">{t("pages.articleChrome.footerCta")}</p>
       </section>
     </div>
   );

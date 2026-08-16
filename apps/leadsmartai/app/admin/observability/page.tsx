@@ -1,6 +1,7 @@
 import { requireRole } from "@/lib/auth/requireRole";
 import { collectObservability } from "@/lib/observability/collect";
 import { ObservabilityClient } from "./ObservabilityClient";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata = {
   title: "Observability | Admin | LeadSmart AI",
@@ -17,6 +18,7 @@ export const metadata = {
  * landing late?" — single page, single answer.
  */
 export default async function AdminObservabilityPage() {
+  const t = await getServerT();
   await requireRole(["admin"]);
   const report = await collectObservability({ windowDays: 7 });
   return (

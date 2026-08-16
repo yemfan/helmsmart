@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/server";
 
-export default function ReportNotFound() {
+export default async function ReportNotFound() {
+  const t = await getServerT();
   return (
     <div className="mx-auto flex min-h-[50vh] max-w-lg flex-col items-center justify-center px-4 py-20 text-center">
       <h1 className="text-2xl font-bold text-slate-900">Report not found</h1>
