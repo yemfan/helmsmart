@@ -33,8 +33,12 @@ function walk(dir: string, out: string[] = []): string[] {
   return out;
 }
 
-const stripComments = (s: string) =>
-  s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+/**
+ * Blank comments rather than delete them: deleting shifts every line number
+ * after the first comment, so the reported location doesn't match the file.
+ */
+const blankComments = (s: string) =>
+  s.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " ")).replace(/^(\s*)\/\/.*$/gm, "$1");
 
 function isCopy(raw: string): boolean {
   const t = raw.trim();
@@ -51,7 +55,7 @@ describe("residual English", () => {
       for (const file of walk(join(ROOT, root))) {
         const src = readFileSync(file, "utf8");
         if (!/useTranslation|getServerT/.test(src)) continue;
-        stripComments(src)
+        blankComments(src)
           .split("\n")
           .forEach((line, i) => {
             const hits: string[] = [];
