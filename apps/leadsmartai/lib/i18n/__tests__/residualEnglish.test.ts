@@ -37,6 +37,9 @@ const ALLOWED = new Set([
   "United States",
   "CloseBoss",
   "CloseBoss AI",
+  // Competitor product names, in a comparison table that names them.
+  "AgencyBloc / Redtail CRM",
+  "Salesforce Financial Services Cloud",
   "Pinterest",
   "TikTok",
   "YouTube",

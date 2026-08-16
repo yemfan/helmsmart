@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { intlLocale } from "@/lib/i18n/locale";
 
 type Kpis = {
   activeApplications: number;
@@ -16,6 +18,8 @@ type Kpis = {
 type StageCount = { name: string; value: number; color: string };
 
 export default function BrokerOverviewClient() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [kpis, setKpis] = useState<Kpis | null>(null);
   const [stages, setStages] = useState<StageCount[]>([]);
   const [recentApps, setRecentApps] = useState<any[]>([]);
@@ -42,31 +46,31 @@ export default function BrokerOverviewClient() {
   const h = now.getHours();
   const greeting = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
 
-  if (loading) return <div className="py-20 text-center text-gray-400">Loading dashboard...</div>;
+  if (loading) return <div className="py-20 text-center text-gray-400">{t("pages.loanBroker.loadingDashboard")}</div>;
 
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-xl font-semibold text-gray-900">{greeting}</h1>
-        <p className="text-sm text-gray-500">{now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</p>
+        <p className="text-sm text-gray-500">{now.toLocaleDateString(locale, { weekday: "long", month: "long", day: "numeric" })}</p>
       </div>
 
       {/* KPI Cards */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Active Applications</p>
+          <p className="text-xs text-gray-500">{t("pages.loanBroker.activeApplications")}</p>
           <p className="mt-1 text-3xl font-bold text-gray-900">{kpis?.activeApplications ?? 0}</p>
         </div>
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Funded This Month</p>
+          <p className="text-xs text-gray-500">{t("pages.loanBroker.fundedThisMonth")}</p>
           <p className="mt-1 text-3xl font-bold text-green-600">{kpis?.fundedThisMonth ?? 0}</p>
         </div>
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Avg Days to Close</p>
+          <p className="text-xs text-gray-500">{t("pages.loanBroker.avgDaysToClose")}</p>
           <p className="mt-1 text-3xl font-bold text-gray-900">{kpis?.avgDaysToClose ?? "—"}</p>
         </div>
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Pipeline Value</p>
+          <p className="text-xs text-gray-500">{t("pages.loanBroker.pipelineValue")}</p>
           <p className="mt-1 text-3xl font-bold text-blue-600">
             ${((kpis?.pipelineValue ?? 0) / 1_000_000).toFixed(1)}M
           </p>
@@ -76,7 +80,7 @@ export default function BrokerOverviewClient() {
       {/* Stage pie + recent apps */}
       <div className="grid gap-3 md:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <h3 className="text-xs font-semibold text-gray-500 mb-2">Pipeline by Stage</h3>
+          <h3 className="text-xs font-semibold text-gray-500 mb-2">{t("pages.loanBroker.pipelineByStage")}</h3>
           <div className="h-[180px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -98,9 +102,9 @@ export default function BrokerOverviewClient() {
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <h3 className="text-xs font-semibold text-gray-500 mb-2">Recent Applications</h3>
+          <h3 className="text-xs font-semibold text-gray-500 mb-2">{t("pages.loanBroker.recentApplications")}</h3>
           {recentApps.length === 0 ? (
-            <p className="text-sm text-gray-400 py-4">No applications yet.</p>
+            <p className="text-sm text-gray-400 py-4">{t("pages.loanBroker.noApplications")}</p>
           ) : (
             <div className="space-y-2">
               {recentApps.map((a: any) => (
@@ -108,7 +112,7 @@ export default function BrokerOverviewClient() {
                   <div>
                     <p className="text-sm font-medium text-gray-900">{a.borrower_name}</p>
                     <p className="text-xs text-gray-500">
-                      ${Number(a.loan_amount ?? 0).toLocaleString()} · {a.loan_type ?? "—"}
+                      ${Number(a.loan_amount ?? 0).toLocaleString(locale)} · {a.loan_type ?? "—"}
                     </p>
                   </div>
                   <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
@@ -123,20 +127,12 @@ export default function BrokerOverviewClient() {
 
       {/* Quick actions */}
       <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <h3 className="text-xs font-semibold text-gray-500 mb-3">Quick Actions</h3>
+        <h3 className="text-xs font-semibold text-gray-500 mb-3">{t("pages.loanBroker.quickActions")}</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <Link href="/loan-broker/dashboard/pipeline" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100">
-            View Pipeline
-          </Link>
-          <Link href="/mortgage-calculator" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100">
-            Mortgage Calc
-          </Link>
-          <Link href="/affordability-calculator" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100">
-            Affordability Calc
-          </Link>
-          <Link href="/refinance-calculator" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100">
-            Refinance Calc
-          </Link>
+          <Link href="/loan-broker/dashboard/pipeline" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100">{t("pages.loanBroker.viewPipeline")}</Link>
+          <Link href="/mortgage-calculator" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100">{t("pages.loanBroker.mortgageCalc")}</Link>
+          <Link href="/affordability-calculator" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100">{t("pages.loanBroker.affordabilityCalc")}</Link>
+          <Link href="/refinance-calculator" className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 text-center text-xs font-medium text-gray-700 hover:bg-gray-100">{t("pages.loanBroker.refinanceCalc")}</Link>
         </div>
       </div>
     </div>
