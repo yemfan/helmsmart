@@ -90,15 +90,14 @@ export default function OnePagerClient() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/60">
                 Executive brief · {today}
               </p>
-              <h1 className="mt-1 text-[26pt] font-semibold leading-[1.05] tracking-tight">
-                LeadSmart&nbsp;AI for{" "}
+              <h1 className="mt-1 text-[26pt] font-semibold leading-[1.05] tracking-tight">{t("pages.fsMarketing.forPartner")}{" "}
                 <span className={theme.accentText}>{partnerLabel}</span>
               </h1>
               <p className="mt-2 max-w-[5in] text-[11pt] leading-snug text-white/85">{t("pages.fsMarketing.purposeBuilt")}</p>
             </div>
             <div className="hidden text-right text-[9pt] leading-tight text-white/70 sm:block">
               <p className="font-semibold uppercase tracking-wider text-white/80">{t("pages.fsMarketing.preparedFor")}</p>
-              <p className="mt-0.5">{partnerLabel} Leadership</p>
+              <p className="mt-0.5">{partnerLabel} {t("pages.fsMarketing.leadership")}</p>
             </div>
           </div>
           {/* Accent bar */}
@@ -119,14 +118,7 @@ export default function OnePagerClient() {
         <section className="px-10 py-6 text-[10.5pt] leading-[1.55] text-slate-800">
           {/* Problem framing */}
           <p>
-            <strong className="text-slate-900">{partnerLabel} grows by recruiting and retaining producers who can sit, close, and bring back the next recruit.</strong>{" "}
-            That cycle has two universal bottlenecks: producers respond to
-            inbound prospects too slowly, and assembling a polished Financial
-            Needs Analysis takes hours instead of minutes. New producers feel
-            both bottlenecks the most — and most of them quit before their first
-            issued policy. LeadSmart AI was built to fix those two specific
-            bottlenecks first, then expand from there.
-          </p>
+            <strong className="text-slate-900">{partnerLabel} {t("pages.fsMarketing.growsBy")}</strong>{" "}{t("pages.fsMarketing.bottlenecks")}</p>
 
           {/* What it does — 4 cards in 2x2 */}
           <h2 className="mt-5 text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.fsMarketing.whatItDoes")}</h2>
@@ -212,10 +204,7 @@ export default function OnePagerClient() {
                   />
                 </tbody>
               </table>
-              <p className="mt-1.5 text-[8.5pt] italic text-slate-500">
-                We measure against {partnerLabel}&apos;s actual baselines, not
-                industry averages.
-              </p>
+              <p className="mt-1.5 text-[8.5pt] italic text-slate-500">{t("pages.fsMarketing.measureAgainst")} {partnerLabel}{t("pages.fsMarketing.actualBaselines")}</p>
             </div>
 
             <div className="col-span-2">
@@ -251,37 +240,19 @@ export default function OnePagerClient() {
           {/* What we're not */}
           <div className="mt-5 rounded-xl bg-slate-50 px-4 py-3 text-[9.5pt] leading-snug text-slate-700 ring-1 ring-slate-200">
             <p>
-              <strong className="text-slate-900">{t("pages.fsMarketing.whatWereNot")}</strong>{" "}
-              We don&apos;t replace TransACT, WinFlex, iPipeline, or any carrier
-              tool — producers keep those for illustrations, e-application, and
-              policy administration. LeadSmart AI handles the pre-sale and
-              recruiting layer that no carrier tool addresses. We don&apos;t ask
-              for exclusivity in the pilot. {partnerLabel} owns the data,
-              exportable in one click.
-            </p>
+              <strong className="text-slate-900">{t("pages.fsMarketing.whatWereNot")}</strong>{" "}{t("pages.fsMarketing.noReplace")} {partnerLabel} {t("pages.fsMarketing.ownsData")}</p>
           </div>
 
           {/* Why us / why now */}
           <div className="mt-5 grid grid-cols-2 gap-5">
             <div>
               <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.fsMarketing.whyUsWhyNow")}</h2>
-              <p className="mt-2 text-[9.5pt] leading-snug text-slate-700">
-                The underlying LeadSmart AI platform powers{" "}
-                <strong>3,400+ active producers</strong> in adjacent verticals
-                (real estate, mortgage). AI, CRM, billing, and compliance
-                infrastructure are battle-tested at scale. The financial-services
-                vertical layer is new — purpose-built for IUL, annuity, term
-                life, and MLM hierarchy from day one. {partnerLabel} as the
-                first agency to help shape it means the product gets built
-                around your workflow and your compliance posture.
-              </p>
+              <p className="mt-2 text-[9.5pt] leading-snug text-slate-700">{t("pages.fsMarketing.platformPowers")}{" "}
+                <strong>3,400+ active producers</strong> {t("pages.fsMarketing.adjacentVerticals")} {partnerLabel} {t("pages.fsMarketing.firstAgency")}</p>
             </div>
             <div>
               <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.fsMarketing.nextStep")}</h2>
-              <p className="mt-2 text-[9.5pt] leading-snug text-slate-700">
-                A 30-minute working session with one of your MDs and one of
-                your producers. We show the live workspace, you ask the hard
-                questions, and we decide together if a pilot fits.{" "}
+              <p className="mt-2 text-[9.5pt] leading-snug text-slate-700">{t("pages.fsMarketing.workingSession")}{" "}
                 <strong>{t("pages.fsMarketing.noDeck")}</strong>
               </p>
               <div
@@ -290,8 +261,7 @@ export default function OnePagerClient() {
                     ? "bg-blue-900"
                     : "bg-indigo-700"
                 }`}
-              >
-                Schedule the working session{" "}
+              >{t("pages.fsMarketing.scheduleSession")}{" "}
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             </div>
@@ -303,20 +273,17 @@ export default function OnePagerClient() {
           <div className="flex items-end justify-between gap-3">
             <div>
               <p className="font-semibold text-slate-900">
-                [Your name], LeadSmart AI
+                [Your name], CloseBoss AI
               </p>
               <p>[Your contact email] · closebossai.com</p>
             </div>
-            <p className="text-right text-[7.5pt] text-slate-400">
-              Confidential — prepared exclusively for {partnerLabel}{" "}
-              leadership.
-            </p>
+            <p className="text-right text-[7.5pt] text-slate-400">{t("pages.fsMarketing.confidentialFor")} {partnerLabel}{" "}{t("pages.fsMarketing.leadershipSuffix")}</p>
           </div>
         </footer>
       </article>
 
-      <div className="no-print mx-auto max-w-[8.5in] px-2 py-4 text-center text-xs text-slate-500">{t("pages.fsMarketing.printTip")}<strong>{t("pages.fsMarketing.letter")}</strong> size with{" "}
-        <strong>{t("pages.fsMarketing.defaultMargins")}</strong> for best fit. Make sure{" "}
+      <div className="no-print mx-auto max-w-[8.5in] px-2 py-4 text-center text-xs text-slate-500">{t("pages.fsMarketing.printTip")}<strong>{t("pages.fsMarketing.letter")}</strong> {t("pages.fsMarketing.sizeWith")}{" "}
+        <strong>{t("pages.fsMarketing.defaultMargins")}</strong> {t("pages.fsMarketing.forBestFit")}{" "}
         <strong>{t("pages.fsMarketing.backgroundGraphics")}</strong>{t("pages.fsMarketing.keepBrandColors")}</div>
     </>
   );

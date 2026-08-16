@@ -5051,7 +5051,24 @@
       "dimeTotal": "DIME 总额",
       "recommendedCoverage": "建议保额",
       "retirementShortfall": "退休缺口",
-      "generatedOn": "生成于 {{date}}"
+      "generatedOn": "生成于 {{date}}",
+      "forPartner": "CloseBoss&nbsp;AI，为",
+      "leadership": "管理层",
+      "growsBy": "的增长，靠的是招募并留住能坐下来谈、能成单、还能带回下一个新人的营销员。",
+      "bottlenecks": "这个循环有两个普遍存在的瓶颈：营销员对上门咨询的响应太慢；整理一份像样的财务需求分析（FNA）要花好几个小时，而不是几分钟。新营销员对这两个瓶颈的感受最深——他们中的大多数，在第一张保单出单之前就离开了。CloseBoss AI 就是先冲着这两个瓶颈做的，然后再往外扩展。",
+      "measureAgainst": "我们对标的是",
+      "actualBaselines": "自己的实际基线，而不是行业平均值。",
+      "noReplace": "我们不替代 TransACT、WinFlex、iPipeline 或任何险企工具——演示、电子投保和保单管理，营销员还是用它们。CloseBoss AI 负责的是险企工具从来没覆盖的售前和招募环节。试点期间我们也不要求排他。",
+      "ownsData": "拥有数据，一键即可导出。",
+      "platformPowers": "CloseBoss AI 底层平台目前服务着",
+      "adjacentVerticals": "位活跃营销员，分布在相邻的行业（房地产、按揭）。AI、CRM、计费和合规这几层基础设施都经过了规模化的实战检验。金融服务这一垂直层是新的——从第一天起就是为 IUL、年金、定期寿险和 MLM 层级结构专门打造的。",
+      "firstAgency": "作为第一家参与共建的机构，意味着产品会围绕你们的工作流和你们的合规立场来做。",
+      "workingSession": "一场 30 分钟的工作会议，请你们一位总监和一位一线营销员参加。我们演示真实的工作台，你们提最尖锐的问题，然后我们一起判断试点是否合适。",
+      "scheduleSession": "预约这场工作会议",
+      "confidentialFor": "机密文件——专为",
+      "leadershipSuffix": "管理层准备。",
+      "sizeWith": "尺寸，配合",
+      "forBestFit": "以获得最佳排版效果。请确认"
     },
     "loanBroker": {
       "dashboard": "贷款经纪工作台",
@@ -5252,7 +5269,17 @@
       "defaultMargins": "默认页边距",
       "backgroundGraphics": "背景图形",
       "keepColors": "，以保留品牌配色。",
-      "realDontDo": "它做不了什么"
+      "realDontDo": "它做不了什么",
+      "vsThe": "CloseBoss AI 对比",
+      "honestSideBySide": "把 CloseBoss AI 和",
+      "useToday": "营销员今天在用的五样东西，老实地摆在一起比——包括我们目前落后的地方，以及补上的时间表。",
+      "fiveThings": "以下是",
+      "haveToday": "营销员今天手上的五样东西",
+      "agencyBlocA1": "AgencyBloc 是给传统独立代理人用的、很扎实的后台系统——保单、周年日、受益人。但它从来不是为「招募加培养」这套让",
+      "agencyBlocA2": "增长的打法设计的。我们可以和它并行，负责培养这一侧；如果你们想要一套整合的技术栈，也可以整个替换掉它。",
+      "spreadsheetsA": "因为用 WhatsApp 做获客营销并不符合 TCPA，依赖它的营销员实际上背着真实的法律责任风险。我们给你们表格的速度，配上企业级 CRM 的合规姿态。",
+      "carrierPortalA": "不是，而且我们不建议任何机构这么做。险企门户在它们擅长的事情上做得非常好。我们负责的是投保之前的那一层——找到潜在客户、做出 FNA、约到面谈。",
+      "confidentialFor": "机密文件——专为"
     },
     "articles": {
       "backHome": "返回首页"
@@ -5834,7 +5861,84 @@
       "deletionPending": "状态：处理中",
       "deletionUnknown": "查询编号无法识别",
       "deletionUnknownBody": "该编号不符合我们发放的格式。如果您是从 Facebook 跳转到本页的，请从您 Facebook 账户的",
-      "deletionAppsLink": "「应用和网站」"
+      "deletionAppsLink": "「应用和网站」",
+      "changeLine": "{{label}}为 {{value}}",
+      "changeMom": "环比 {{pct}}",
+      "changeYoy": "同比 {{pct}}",
+      "changeJoin": "{{head}}——{{rest}}。",
+      "changeOnly": "{{head}}。",
+      "vsNatIntro": "，以及它和全国相比处在什么位置。当客户说「可是我听说市场……」的时候，您可以让他们看到：{{geo}} 的典型房屋价值{{cmp}}。",
+      "vsNatHigher": "比全美典型价值 {{value}} 高 {{abs}}%",
+      "vsNatLower": "比全美典型价值 {{value}} 低 {{abs}}%",
+      "vsNatSame": "与全美典型价值 {{value}} 大致相当",
+      "vsNatNone": "与全美典型价值 {{value}} 无法直接比较",
+      "metroAnchor": "可以用它来锚定挂牌价：这里的典型房屋价值{{cmp}}。",
+      "vsStateHigher": "比 {{state}} 州平均高 {{abs}}%",
+      "vsStateLower": "比 {{state}} 州平均低 {{abs}}%",
+      "vsStateSame": "与 {{state}} 州平均大致相当",
+      "vsStateNone": "与 {{state}} 州平均无法直接比较",
+      "andNatHigher": "，比全美典型价值高 {{abs}}%",
+      "andNatLower": "，比全美典型价值低 {{abs}}%",
+      "andNatSame": "，与全美典型价值大致相当",
+      "andNatNone": "，与全美典型价值无法直接比较",
+      "stateHeroTitle": "{{geo}} 住房市场——面向经纪人的数据",
+      "stateHeroBody": "最新的 {{geo}} 房价、库存和在售天数——设定卖方预期、安抚买家时可以直接引用的数字——并附环比和同比走势",
+      "metroHeroBody": "最新的 {{geo}} 房价、库存和在售天数——买卖双方要的本地佐证。",
+      "dataAsOf": "数据截至 {{period}}。",
+      "stateTrendsBody": "这些句子可以直接放进房源展示或定价谈话里——每一句都是 {{geo}} 当前的数字加上它的走势，不是观点。",
+      "metroTrendsBody": "下次 {{geo}} 房源面谈或买家咨询可以直接用的谈资——每一条都是当前数字加上它的走势。",
+      "metrosIn": "{{geo}} 的都市区",
+      "noMetrosIn": "{{geo}} 目前还没有单独跟踪的都市区。",
+      "otherMetrosIn": "{{geo}} 的其他都市区",
+      "notEnoughData": "{{label}}的数据还不够，暂时无法绘图。"
+    },
+    "warehouseMetrics": {
+      "zhvi": {
+        "label": "典型房屋价值（ZHVI）",
+        "short": "房屋价值"
+      },
+      "median_sale_price": {
+        "label": "成交价中位数",
+        "short": "成交价"
+      },
+      "inventory": {
+        "label": "在售房源数",
+        "short": "库存"
+      },
+      "median_dom": {
+        "label": "在售天数中位数",
+        "short": "在售天数"
+      },
+      "months_supply": {
+        "label": "库存消化月数",
+        "short": "消化月数"
+      },
+      "homes_sold": {
+        "label": "成交套数",
+        "short": "成交套数"
+      },
+      "sale_to_list": {
+        "label": "成交价与挂牌价之比",
+        "short": "成交/挂牌"
+      },
+      "new_home_inventory": {
+        "label": "新房库存",
+        "short": "新房库存"
+      },
+      "mortgage_30yr": {
+        "label": "30 年固定房贷利率",
+        "short": "30 年利率"
+      },
+      "mortgage_15yr": {
+        "label": "15 年固定房贷利率",
+        "short": "15 年利率"
+      },
+      "treasury_10yr": {
+        "label": "10 年期美债收益率",
+        "short": "10 年美债"
+      },
+      "dayOne": "天",
+      "dayOther": "天"
     }
   }
 }

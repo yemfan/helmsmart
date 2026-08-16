@@ -118,18 +118,17 @@ const PENDING = new Set([
   "app/cap-rate-calculator/page.tsx",
   "app/down-payment-calculator/page.tsx",
   "app/switch-from/page.tsx",
+  "app/open-house-signup/page.tsx",
   "app/sell-house/[city]/page.tsx",
   "app/blog/your-crm-should-call-your-sphere-not-just-text-it/page.tsx",
   "app/homes/search/HomesSearchClient.tsx",
-  "app/open-house-signup/page.tsx",
   "app/switch-from/[slug]/page.tsx",
   "app/ai-zillow-redfin-link-analyzer/page.tsx",
-  "app/financial-services/one-pager/OnePagerClient.tsx",
   "app/how-to-compare-rent-vs-buy/page.tsx",
+  "app/sms/page.tsx",
   "app/homes/page.tsx",
   "app/login/page.tsx",
   "app/property/[slug]/page.tsx",
-  "app/sms/page.tsx",
   "app/try-demo/page.tsx",
   "app/features/[slug]/page.tsx",
   "app/blog/page.tsx",
@@ -137,14 +136,11 @@ const PENDING = new Set([
   "app/newsletter/page.tsx",
   "app/newsletter/[region]/[week]/page.tsx",
   "app/oh/[slug]/kiosk/KioskClient.tsx",
-  "app/data/markets/[state]/page.tsx",
-  "app/financial-services/competitor-comparison/CompetitorComparisonClient.tsx",
   "app/home-value/[city]/[keyword]/page.tsx",
   "app/home-value-widget/page.tsx",
   "app/how-to-analyze-rental-property/page.tsx",
   "app/onboarding/page.tsx",
   "app/dashboard/leads/generate/ads/new/AdCampaignWizardClient.tsx",
-  "app/data/markets/[state]/[metro]/page.tsx",
   "app/growth/seo/[tool]/[citySlug]/page.tsx",
   "app/hoa-fee-tracker/page.tsx",
   "app/landing/home-value/page.tsx",
@@ -172,6 +168,7 @@ const PENDING = new Set([
   "components/onboarding/OnboardingFunnel.tsx",
   "app/cap-rate-calculator-how-to-use-it/page.tsx",
   "app/cap-rate-vs-roi/page.tsx",
+  "app/dashboard/boss/BossAssistantClient.tsx",
   "app/dashboard/leads/import/ImportWizardClient.tsx",
   "app/dashboard/open-houses/[id]/OpenHouseDetailClient.tsx",
   "app/newsletter/a/[token]/page.tsx",
@@ -181,8 +178,8 @@ const PENDING = new Set([
   "app/client/dashboard/page.tsx",
   "app/dashboard/admin/lead-routing/LeadRoutingAdminClient.tsx",
   "app/dashboard/ai-marketing-assistant/MarketingAssistantClient.tsx",
-  "app/dashboard/boss/BossAssistantClient.tsx",
   "app/dashboard/cma/[id]/CmaDetailClient.tsx",
+  "app/dashboard/credits/CreditsClient.tsx",
   "app/dashboard/inbound/[id]/InboundDeliveryClient.tsx",
   "app/dashboard/transactions/new/ContractUploader.tsx",
   "app/data-deletion-status/[code]/page.tsx",
@@ -195,7 +192,7 @@ const PENDING = new Set([
   "app/cap-rate-vs-cash-on-cash-return/page.tsx",
   "app/client/activity/page.tsx",
   "app/dashboard/calendar/CalendarClient.tsx",
-  "app/dashboard/credits/CreditsClient.tsx",
+  "app/dashboard/deep-report/DeepReportClient.tsx",
   "app/dashboard/house-search/HouseSearchClient.tsx",
   "app/dashboard/listing-offers/[id]/ListingOfferDetailClient.tsx",
   "app/dashboard/listings/[id]/ListingDetailClient.tsx",
@@ -234,7 +231,6 @@ const PENDING = new Set([
   "app/dashboard/coaching/CoachingClient.tsx",
   "app/dashboard/comparison-report/ComparisonReportBuilderClient.tsx",
   "app/dashboard/contracts/review/ReviewContractClient.tsx",
-  "app/dashboard/deep-report/DeepReportClient.tsx",
   "app/dashboard/marketing/plans/MarketingPlansClient.tsx",
   "app/dashboard/playbook-runs/[id]/page.tsx",
   "app/dashboard/skills/[id]/SkillRunner.tsx",
@@ -288,7 +284,6 @@ const PENDING = new Set([
   "app/dashboard/showings/[id]/ShowingDetailClient.tsx",
   "app/dashboard/skills/page.tsx",
   "app/dashboard/transactions/coordinator/CoordinatorClient.tsx",
-  "app/data/_components/Sparkline.tsx",
   "app/demo/contacts/page.tsx",
   "app/demo/page.tsx",
   "app/error.tsx",
@@ -373,7 +368,10 @@ function isCopy(raw: string): boolean {
    * hypothetical — the alternative is a scan that cries wolf and gets ignored.
    */
   if (/^(?:as|satisfies) [A-Z]/.test(t)) return false;
-  if (/^(?:if|for|while|return|const|let|var|function|else|switch|case|catch|try|await|typeof)\b/.test(t)) return false;
+  // `for` and `if` open English sentences too ("for best fit"), so the
+  // statement rejection demands the paren that a keyword would carry.
+  if (/^(?:if|for|while|switch|catch)\s*\(/.test(t)) return false;
+  if (/^(?:return|const|let|var|function|else|try|await|typeof)\b/.test(t)) return false;
   if (/^[a-z][A-Za-z0-9]*\(/.test(t)) return false;
   if (/[{}<>$`]/.test(t)) return false; // interpolated or markup — not a literal
   if (!/^[A-Za-z][A-Za-z0-9 ,.'’!?:;%()/&+—–-]*$/.test(t)) return false;

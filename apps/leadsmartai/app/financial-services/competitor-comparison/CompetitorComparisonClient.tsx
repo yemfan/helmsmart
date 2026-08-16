@@ -20,7 +20,7 @@ const COLUMNS = [
   "AgencyBloc / Redtail",
   "Salesforce FSC",
   "Sheets + WhatsApp",
-  "LeadSmart AI",
+  "CloseBoss AI",
 ] as const;
 
 type Cell = "yes" | "partial" | "no" | "soon";
@@ -113,14 +113,10 @@ export default function CompetitorComparisonClient() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/60">
                 Competitor brief · {today}
               </p>
-              <h1 className="mt-1 text-[24pt] font-semibold leading-[1.05] tracking-tight">
-                LeadSmart AI vs. the{" "}
+              <h1 className="mt-1 text-[24pt] font-semibold leading-[1.05] tracking-tight">{t("pages.competitorComparison.vsThe")}{" "}
                 <span className={theme.accentText}>{t("pages.competitorComparison.stackTail")}</span>
               </h1>
-              <p className="mt-2 max-w-[5.5in] text-[11pt] leading-snug text-white/85">
-                Honest side-by-side of LeadSmart AI vs. the five things {partnerLabel} producers
-                use today — including where we&apos;re behind and the timeline to close it.
-              </p>
+              <p className="mt-2 max-w-[5.5in] text-[11pt] leading-snug text-white/85">{t("pages.competitorComparison.honestSideBySide")} {partnerLabel} {t("pages.competitorComparison.useToday")}</p>
             </div>
           </div>
           <div
@@ -137,9 +133,7 @@ export default function CompetitorComparisonClient() {
         <section className="space-y-6 px-10 py-7 text-[10.5pt] leading-[1.55] text-slate-800">
           {/* The five things */}
           <div className="avoid-break">
-            <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">
-              The five things {partnerLabel} producers have today
-            </h2>
+            <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.competitorComparison.fiveThings")} {partnerLabel} {t("pages.competitorComparison.haveToday")}</h2>
             <ol className="mt-2 list-decimal space-y-1 pl-5 text-[10pt]">
               <li><strong>{t("pages.competitorComparison.optCarrier")}</strong> — TransACT, WinFlex/iPipeline (illustrations), iGo/FireLight (e-app), individual carrier portals.</li>
               <li><strong>{t("pages.competitorComparison.optAgentCrm")}</strong> — AgencyBloc, Redtail, Wealthbox. Built for traditional independent agents, not MLM hierarchies.</li>
@@ -351,21 +345,15 @@ export default function CompetitorComparisonClient() {
             <h2 className="text-[11pt] font-semibold uppercase tracking-wider text-slate-500">{t("pages.competitorComparison.snippets")}</h2>
             <div className="mt-2 space-y-2 text-[9pt] leading-snug text-slate-700">
               <p>
-                <strong className="text-slate-900">&quot;How is this different from AgencyBloc?&quot;</strong>{" "}
-                AgencyBloc is solid back-office for traditional independent agents — policies, anniversaries, beneficiaries. It was never built for the recruit-and-build motion that makes {partnerLabel} grow. We sit beside it on the build side, or replace it entirely if you want the consolidated stack.
-              </p>
+                <strong className="text-slate-900">&quot;How is this different from AgencyBloc?&quot;</strong>{" "}{t("pages.competitorComparison.agencyBlocA1")} {partnerLabel} {t("pages.competitorComparison.agencyBlocA2")}</p>
               <p>
                 <strong className="text-slate-900">&quot;What about Salesforce FSC?&quot;</strong>{" "}
                 FSC is the &quot;we&apos;ll build it ourselves with $200k and 12 months&quot; option. The math doesn&apos;t work for a field producer with a $1,200/year policy in their pipeline. We&apos;re 1/4 the cost and shipping in 2 weeks, not 12 months.
               </p>
               <p>
-                <strong className="text-slate-900">&quot;Why not just keep using spreadsheets?&quot;</strong>{" "}
-                Because WhatsApp marketing for prospecting isn&apos;t TCPA-compliant, and producers who lean on it carry real liability risk. We give you the speed of spreadsheets with the compliance posture of an enterprise CRM.
-              </p>
+                <strong className="text-slate-900">&quot;Why not just keep using spreadsheets?&quot;</strong>{" "}{t("pages.competitorComparison.spreadsheetsA")}</p>
               <p>
-                <strong className="text-slate-900">&quot;Are you trying to replace the carrier portal?&quot;</strong>{" "}
-                No, and we don&apos;t recommend any agency that does. Carrier portals are excellent at what they do. We handle the layer before the application — finding the prospect, building the FNA, booking the sit.
-              </p>
+                <strong className="text-slate-900">&quot;Are you trying to replace the carrier portal?&quot;</strong>{" "}{t("pages.competitorComparison.carrierPortalA")}</p>
             </div>
           </div>
         </section>
@@ -377,8 +365,7 @@ export default function CompetitorComparisonClient() {
               <p className="font-semibold text-slate-900">CloseBoss AI</p>
               <p>closebossai.com · pilot inquiries welcome</p>
             </div>
-            <p className="text-right text-[7.5pt] text-slate-400">
-              Confidential — prepared for {partnerLabel} leadership.
+            <p className="text-right text-[7.5pt] text-slate-400">{t("pages.competitorComparison.confidentialFor")} {partnerLabel} leadership.
             </p>
           </div>
         </footer>

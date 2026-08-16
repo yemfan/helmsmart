@@ -5051,7 +5051,24 @@
       "dimeTotal": "DIME total",
       "recommendedCoverage": "Recommended coverage",
       "retirementShortfall": "Retirement shortfall",
-      "generatedOn": "Generated {{date}}"
+      "generatedOn": "Generated {{date}}",
+      "forPartner": "CloseBoss AI for",
+      "leadership": "Leadership",
+      "growsBy": "grows by recruiting and retaining producers who can sit, close, and bring back the next recruit.",
+      "bottlenecks": "That cycle has two universal bottlenecks: producers respond to inbound prospects too slowly, and assembling a polished Financial Needs Analysis takes hours instead of minutes. New producers feel both bottlenecks the most — and most of them quit before their first issued policy. CloseBoss AI was built to fix those two specific bottlenecks first, then expand from there.",
+      "measureAgainst": "We measure against",
+      "actualBaselines": "'s actual baselines, not industry averages.",
+      "noReplace": "We don't replace TransACT, WinFlex, iPipeline, or any carrier tool — producers keep those for illustrations, e-application, and policy administration. CloseBoss AI handles the pre-sale and recruiting layer that no carrier tool addresses. We don't ask for exclusivity in the pilot.",
+      "ownsData": "owns the data, exportable in one click.",
+      "platformPowers": "The underlying CloseBoss AI platform powers",
+      "adjacentVerticals": "in adjacent verticals (real estate, mortgage). AI, CRM, billing, and compliance infrastructure are battle-tested at scale. The financial-services vertical layer is new — purpose-built for IUL, annuity, term life, and MLM hierarchy from day one.",
+      "firstAgency": "as the first agency to help shape it means the product gets built around your workflow and your compliance posture.",
+      "workingSession": "A 30-minute working session with one of your MDs and one of your producers. We show the live workspace, you ask the hard questions, and we decide together if a pilot fits.",
+      "scheduleSession": "Schedule the working session",
+      "confidentialFor": "Confidential — prepared exclusively for",
+      "leadershipSuffix": "leadership.",
+      "sizeWith": "size with",
+      "forBestFit": "for best fit. Make sure"
     },
     "loanBroker": {
       "dashboard": "Loan broker dashboard",
@@ -5252,7 +5269,17 @@
       "defaultMargins": "default margins",
       "backgroundGraphics": "Background graphics",
       "keepColors": "enabled to keep brand colors.",
-      "realDontDo": "What it doesn't do"
+      "realDontDo": "What it doesn't do",
+      "vsThe": "CloseBoss AI vs. the",
+      "honestSideBySide": "Honest side-by-side of CloseBoss AI vs. the five things",
+      "useToday": "producers use today — including where we're behind and the timeline to close it.",
+      "fiveThings": "The five things",
+      "haveToday": "producers have today",
+      "agencyBlocA1": "AgencyBloc is solid back-office for traditional independent agents — policies, anniversaries, beneficiaries. It was never built for the recruit-and-build motion that makes",
+      "agencyBlocA2": "grow. We sit beside it on the build side, or replace it entirely if you want the consolidated stack.",
+      "spreadsheetsA": "Because WhatsApp marketing for prospecting isn't TCPA-compliant, and producers who lean on it carry real liability risk. We give you the speed of spreadsheets with the compliance posture of an enterprise CRM.",
+      "carrierPortalA": "No, and we don't recommend any agency that does. Carrier portals are excellent at what they do. We handle the layer before the application — finding the prospect, building the FNA, booking the sit.",
+      "confidentialFor": "Confidential — prepared for"
     },
     "articles": {
       "backHome": "Back to Home"
@@ -5834,7 +5861,84 @@
       "deletionPending": "Status: pending",
       "deletionUnknown": "Reference code not recognized",
       "deletionUnknownBody": "That code doesn't match the format we issue. If you reached this page from Facebook, try again from your Facebook account's",
-      "deletionAppsLink": "Apps and Websites"
+      "deletionAppsLink": "Apps and Websites",
+      "changeLine": "{{label}} is {{value}}",
+      "changeMom": "{{pct}} month over month",
+      "changeYoy": "{{pct}} year over year",
+      "changeJoin": "{{head}} — {{rest}}.",
+      "changeOnly": "{{head}}.",
+      "vsNatIntro": "and how it stacks up nationally. When a client says “but I heard the market is…,” you can show them the typical {{geo}} home is {{cmp}}.",
+      "vsNatHigher": "{{abs}}% higher than the U.S. typical value of {{value}}",
+      "vsNatLower": "{{abs}}% lower than the U.S. typical value of {{value}}",
+      "vsNatSame": "about the same as the U.S. typical value of {{value}}",
+      "vsNatNone": "not directly comparable to the U.S. typical value of {{value}}",
+      "metroAnchor": "Use it to anchor a listing price: the typical home here is {{cmp}}.",
+      "vsStateHigher": "{{abs}}% higher than the {{state}} state average",
+      "vsStateLower": "{{abs}}% lower than the {{state}} state average",
+      "vsStateSame": "about the same as the {{state}} state average",
+      "vsStateNone": "not directly comparable to the {{state}} state average",
+      "andNatHigher": "and {{abs}}% higher than the U.S. typical value",
+      "andNatLower": "and {{abs}}% lower than the U.S. typical value",
+      "andNatSame": "and about the same as the U.S. typical value",
+      "andNatNone": "and not directly comparable to the U.S. typical value",
+      "stateHeroTitle": "{{geo}} housing market — data for agents",
+      "stateHeroBody": "The latest {{geo}} home prices, inventory, and days-on-market — the numbers to quote when you set a seller's expectations or reassure a buyer — with month-over-month and year-over-year trends",
+      "metroHeroBody": "The latest {{geo}} home prices, inventory, and days on market — the local proof points your buyers and sellers ask for.",
+      "dataAsOf": "Data as of {{period}}.",
+      "stateTrendsBody": "Drop these lines straight into a listing presentation or a pricing conversation — each one is the current {{geo}} figure with its trend, not an opinion.",
+      "metroTrendsBody": "Ready-to-use talking points for your next {{geo}} listing appointment or buyer consult — each is the current figure with its trend.",
+      "metrosIn": "Metro areas in {{geo}}",
+      "noMetrosIn": "No individual metro areas are tracked in {{geo}} yet.",
+      "otherMetrosIn": "Other metros in {{geo}}",
+      "notEnoughData": "Not enough data to chart {{label}} yet."
+    },
+    "warehouseMetrics": {
+      "zhvi": {
+        "label": "Typical home value (ZHVI)",
+        "short": "Home value"
+      },
+      "median_sale_price": {
+        "label": "Median sale price",
+        "short": "Sale price"
+      },
+      "inventory": {
+        "label": "Homes for sale",
+        "short": "Inventory"
+      },
+      "median_dom": {
+        "label": "Median days on market",
+        "short": "Days on market"
+      },
+      "months_supply": {
+        "label": "Months of supply",
+        "short": "Months supply"
+      },
+      "homes_sold": {
+        "label": "Homes sold",
+        "short": "Homes sold"
+      },
+      "sale_to_list": {
+        "label": "Sale-to-list ratio",
+        "short": "Sale-to-list"
+      },
+      "new_home_inventory": {
+        "label": "New-home inventory",
+        "short": "New-home inv."
+      },
+      "mortgage_30yr": {
+        "label": "30-year fixed mortgage rate",
+        "short": "30-yr rate"
+      },
+      "mortgage_15yr": {
+        "label": "15-year fixed mortgage rate",
+        "short": "15-yr rate"
+      },
+      "treasury_10yr": {
+        "label": "10-year Treasury yield",
+        "short": "10-yr Treasury"
+      },
+      "dayOne": "day",
+      "dayOther": "days"
     }
   }
 }
