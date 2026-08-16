@@ -4288,6 +4288,41 @@
       "source28": "Per spec §2.8",
       "source28Legal": "Per spec §2.8 — NEEDS LEGAL REVIEW",
       "source24": "Per spec §2.4"
+    },
+    "smartLinkShare": {
+      "copyFull": "Copy full link",
+      "shareLink": "Share link",
+      "share": "Share",
+      "copiedNote": "Copied full URL. On mobile, Share opens your apps (Messages, email, etc.)."
+    },
+    "personalityPreview": {
+      "sms": "SMS (sample)",
+      "email": "Email (sample)",
+      "callSummary": "Call transcript summary (sample)",
+      "greeting": "Greeting automation (sample)",
+      "toneOnly": "Samples illustrate tone only. Compliance, opt-outs, and factual rules are unchanged in production."
+    },
+    "usageMeter": {
+      "title": "Plan Usage",
+      "leads": "Leads",
+      "contacts": "Contacts",
+      "cmaToday": "CMA Reports (today)",
+      "upgrade": "Upgrade for more capacity"
+    },
+    "weeklySchedule": {
+      "notEnabled": "Not enabled yet (needs ).",
+      "time": "Time",
+      "twinWarning": "Video uses your digital twin — set up your intro video + cloned voice first (Digital Twin) or this day won't post.",
+      "channels": "Channels",
+      "topic": "Topic",
+      "intro": "Pick the days you want a post to go out. For each day, choose text, an image, or a video, set a time, the channels, and a topic — AI researches the topic and writes + publishes the post automatically. Text → Facebook, LinkedIn, Threads. Image renders a branded card and also reaches Instagram + Pinterest. Video films your digital twin delivering the topic → Facebook, Instagram, LinkedIn, TikTok, YouTube."
+    },
+    "voiceHero": {
+      "headline": "Hear our AI assistant qualify a real-estate lead.",
+      "sub": "Native voice AI. Sub-3-second response. Multi-language. Books showings, qualifies buyers, captures objections — and routes the warm ones to you. Pick up the phone and try it. No signup, no setup.",
+      "tapToCall": "Tap to call",
+      "nativeVoice": "Native voice — not a text bolt-on",
+      "languages": "English + Spanish + Mandarin"
     }
   }
 }

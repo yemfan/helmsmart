@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { resolveVoiceDemoPhone } from "@/lib/marketing/voiceDemoPhone";
+import { useTranslation } from "react-i18next";
 
 /**
  * Hero for the public Voice AI test-drive page. Surfaces the live demo
@@ -14,6 +15,7 @@ import { resolveVoiceDemoPhone } from "@/lib/marketing/voiceDemoPhone";
  * sample transcripts as supporting evidence below.
  */
 export default function VoiceAiHero() {
+  const { t } = useTranslation("dashboard");
   const phone = resolveVoiceDemoPhone(process.env.NEXT_PUBLIC_VOICE_DEMO_PHONE);
 
   return (
@@ -25,14 +27,8 @@ export default function VoiceAiHero() {
         <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-300 ring-1 ring-emerald-400/30">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live demo · no signup
         </span>
-        <h1 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight sm:text-5xl">
-          Hear our AI assistant qualify a real-estate lead.
-        </h1>
-        <p className="mt-3 max-w-2xl text-base text-slate-300 sm:text-lg">
-          Native voice AI. Sub-3-second response. Multi-language. Books showings,
-          qualifies buyers, captures objections — and routes the warm ones to you.
-          Pick up the phone and try it. No signup, no setup.
-        </p>
+        <h1 className="mt-4 max-w-3xl text-3xl font-bold tracking-tight sm:text-5xl">{t("pages.voiceHero.headline")}</h1>
+        <p className="mt-3 max-w-2xl text-base text-slate-300 sm:text-lg">{t("pages.voiceHero.sub")}</p>
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end">
           {phone.display && phone.telHref ? (
@@ -40,9 +36,7 @@ export default function VoiceAiHero() {
               href={phone.telHref}
               className="group inline-flex flex-col items-start gap-1 rounded-2xl bg-white px-6 py-4 text-slate-900 shadow-lg transition hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-emerald-400/40"
             >
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Tap to call
-              </span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.voiceHero.tapToCall")}</span>
               <span className="text-2xl font-bold tabular-nums sm:text-3xl">{phone.display}</span>
               <span className="mt-0.5 text-xs text-slate-600 group-hover:text-slate-900">
                 Live AI · 24/7 · 30-second demo
@@ -67,11 +61,9 @@ export default function VoiceAiHero() {
 
         <ul className="mt-10 grid max-w-3xl grid-cols-1 gap-3 text-sm text-slate-300 sm:grid-cols-3">
           <li className="flex items-start gap-2">
-            <Dot tone="emerald" /> Native voice — not a text bolt-on
-          </li>
+            <Dot tone="emerald" />{t("pages.voiceHero.nativeVoice")}</li>
           <li className="flex items-start gap-2">
-            <Dot tone="emerald" /> English + Spanish + Mandarin
-          </li>
+            <Dot tone="emerald" />{t("pages.voiceHero.languages")}</li>
           <li className="flex items-start gap-2">
             <Dot tone="emerald" /> Hot-lead → text + push to your phone
           </li>

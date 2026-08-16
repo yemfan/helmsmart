@@ -4288,6 +4288,41 @@
       "source28": "依据规范 §2.8",
       "source28Legal": "依据规范 §2.8——需法律审核",
       "source24": "依据规范 §2.4"
+    },
+    "smartLinkShare": {
+      "copyFull": "复制完整链接",
+      "shareLink": "分享链接",
+      "share": "分享",
+      "copiedNote": "已复制完整网址。在手机上，点“分享”会打开您的应用（信息、邮件等）。"
+    },
+    "personalityPreview": {
+      "sms": "短信（示例）",
+      "email": "邮件（示例）",
+      "callSummary": "通话记录摘要（示例）",
+      "greeting": "自动问候（示例）",
+      "toneOnly": "示例仅展示语气。正式使用时，合规、退订和事实性规则都不会因此改变。"
+    },
+    "usageMeter": {
+      "title": "方案用量",
+      "leads": "客源",
+      "contacts": "联系人",
+      "cmaToday": "CMA 报告（今日）",
+      "upgrade": "升级以获得更多额度"
+    },
+    "weeklySchedule": {
+      "notEnabled": "尚未启用（缺少配置）。",
+      "time": "时间",
+      "twinWarning": "视频使用您的数字分身——请先设置好自我介绍视频和克隆声音（数字分身），否则这一天不会发布。",
+      "channels": "渠道",
+      "topic": "主题",
+      "intro": "选好要发帖的日子。每一天可以选择发文字、图片或视频，并设定时间、渠道和主题——AI 会研究该主题，自动撰写并发布。文字 → Facebook、LinkedIn、Threads。图片会生成一张品牌卡片，还会同步到 Instagram 和 Pinterest。视频会拍摄您的数字分身讲解该主题 → Facebook、Instagram、LinkedIn、TikTok、YouTube。"
+    },
+    "voiceHero": {
+      "headline": "听听我们的 AI 助理如何甄别一条房产客源。",
+      "sub": "原生语音 AI。响应不到 3 秒。支持多语言。可以约看房、甄别买家、记录顾虑——并把有意向的客户转给您。拿起电话就能试。无需注册，无需设置。",
+      "tapToCall": "点击拨打",
+      "nativeVoice": "原生语音——不是在文字上外挂一层",
+      "languages": "英语 + 西班牙语 + 普通话"
     }
   }
 }
