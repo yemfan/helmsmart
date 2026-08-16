@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * "Email to seller" CTA on the CMA detail page. Collects recipient
@@ -19,6 +20,7 @@ export default function CmaEmailToSellerButton({
   cmaId: string;
   defaultRecipient: string | null;
 }) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [to, setTo] = useState(defaultRecipient ?? "");
   const [message, setMessage] = useState("");
@@ -88,26 +90,18 @@ export default function CmaEmailToSellerButton({
           }}
         >
           <div className="w-full max-w-lg rounded-2xl bg-white p-5 shadow-xl">
-            <h2 className="text-base font-semibold text-slate-900">
-              Email this CMA to the seller
-            </h2>
-            <p className="mt-0.5 text-xs text-slate-500">
-              Sends a one-page summary in the email body and the full report as a PDF attachment.
-            </p>
+            <h2 className="text-base font-semibold text-slate-900">{t("pages.cmaEmail.title")}</h2>
+            <p className="mt-0.5 text-xs text-slate-500">{t("pages.cmaEmail.sub")}</p>
 
             {sent ? (
               <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-6 text-center">
-                <p className="text-sm font-semibold text-emerald-800">Sent.</p>
-                <p className="mt-1 text-xs text-emerald-700">
-                  Replies will route back to your inbox.
-                </p>
+                <p className="text-sm font-semibold text-emerald-800">{t("pages.cmaEmail.sent")}</p>
+                <p className="mt-1 text-xs text-emerald-700">{t("pages.cmaEmail.repliesRoute")}</p>
                 <button
                   type="button"
                   onClick={onClose}
                   className="mt-4 rounded-lg border border-emerald-200 bg-white px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50"
-                >
-                  Close
-                </button>
+                >{t("pages.cmaEmail.close")}</button>
               </div>
             ) : (
               <div className="mt-4 space-y-3">
@@ -123,8 +117,7 @@ export default function CmaEmailToSellerButton({
                   />
                 </label>
                 <label className="block">
-                  <span className="text-xs font-semibold text-slate-700">
-                    Cover note <span className="font-normal text-slate-400">(optional)</span>
+                  <span className="text-xs font-semibold text-slate-700">{t("pages.cmaEmail.coverNote")}<span className="font-normal text-slate-400">(optional)</span>
                   </span>
                   <textarea
                     value={message}
@@ -146,9 +139,7 @@ export default function CmaEmailToSellerButton({
                       onClick={onClose}
                       disabled={submitting}
                       className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                    >
-                      Cancel
-                    </button>
+                    >{t("pages.cmaEmail.cancel")}</button>
                     <button
                       type="button"
                       onClick={onSubmit}

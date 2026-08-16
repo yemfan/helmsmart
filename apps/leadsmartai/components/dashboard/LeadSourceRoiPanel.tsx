@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import type {
   LeadSourceRoiReport,
@@ -47,6 +48,7 @@ function formatPct(n: number): string {
  * dense table of every source. Window selector (30/90/180/365d) refetches.
  */
 export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number } = {}) {
+  const { t } = useTranslation("dashboard");
   const initialDays = props.defaultWindowDays ?? 90;
 
   const [windowDays, setWindowDays] = useState<number>(initialDays);
@@ -116,7 +118,7 @@ export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number }
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <header className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Lead-source ROI</h2>
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.leadSourceRoi.title")}</h2>
           <p className="mt-0.5 text-xs text-slate-600">
             Cohort: contacts captured in the window. &quot;Closes&quot; = lifecycle reached past_client.
           </p>
@@ -154,17 +156,15 @@ export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number }
             Couldn&apos;t load report: {error}
           </div>
         ) : !report || report.rows.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
-            No leads captured in this window. Capture a few from the IDX site or import a CSV to see the report populate.
-          </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">{t("pages.leadSourceRoi.empty")}</div>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <Kpi label="Leads" value={formatNumber(report.totals.leads)} />
-              <Kpi label="Closes" value={formatNumber(report.totals.won)} />
-              <Kpi label="Conversion" value={formatPct(report.totals.conversionPct)} />
+              <Kpi label={t("pages.leadSourceRoi.leads")} value={formatNumber(report.totals.leads)} />
+              <Kpi label={t("pages.leadSourceRoi.closes")} value={formatNumber(report.totals.won)} />
+              <Kpi label={t("pages.leadSourceRoi.conversion")} value={formatPct(report.totals.conversionPct)} />
               <Kpi
-                label="Revenue"
+                label={t("pages.leadSourceRoi.revenue")}
                 value={formatMoney(report.totals.totalVolume)}
                 subtext={
                   report.totals.avgDealValue > 0
@@ -181,9 +181,7 @@ export default function LeadSourceRoiPanel(props: { defaultWindowDays?: number }
                     <th
                       scope="col"
                       className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-700"
-                    >
-                      Source
-                    </th>
+                    >{t("pages.leadSourceRoi.source")}</th>
                     {SORTS.map((s) => (
                       <th
                         key={s.key}

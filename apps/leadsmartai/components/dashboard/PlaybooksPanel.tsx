@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { Check, Plus } from "lucide-react";
 import { getPlaybook, type PlaybookAnchor } from "@/lib/playbooks/definitions";
 import type { PlaybookTaskRow } from "@/lib/playbooks/types";
@@ -44,6 +46,8 @@ export function PlaybooksPanel({
   anchorId: string | null;
   defaultAnchorDate?: string;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [tasks, setTasks] = useState<PlaybookTaskRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -210,9 +214,7 @@ export function PlaybooksPanel({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold text-slate-900">📋 Playbooks</h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Apply a curated checklist to stay on track. Tick items as you go.
-          </p>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.playbooksPanel.intro")}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -271,9 +273,7 @@ export function PlaybooksPanel({
       ) : null}
 
       {batches.length === 0 ? (
-        <p className="mt-4 text-sm text-slate-500">
-          No playbooks applied yet. Click &quot;Apply playbook&quot; to pick one.
-        </p>
+        <p className="mt-4 text-sm text-slate-500">{t("pages.playbooksPanel.empty")}</p>
       ) : (
         <div className="mt-3 space-y-4">
           {batches.map((batch) => (
@@ -293,9 +293,7 @@ export function PlaybooksPanel({
                     type="button"
                     onClick={() => void deleteBatch(batch.batchId!)}
                     className="text-[11px] text-slate-500 hover:text-red-600"
-                  >
-                    Remove playbook
-                  </button>
+                  >{t("pages.playbooksPanel.remove")}</button>
                 ) : null}
               </div>
               <div className="divide-y divide-slate-100">
@@ -366,7 +364,7 @@ export function PlaybooksPanel({
                                       : "text-slate-400"
                                   }`}
                                 >
-                                  Due {formatYmd(t.due_date)}
+                                  Due {formatYmd(t.due_date, locale)}
                                 </div>
                               ) : null}
                             </div>
@@ -440,6 +438,8 @@ export function PlaybookPickerModal({
   onClose: () => void;
   onApplied: (createdCount: number, title: string) => void;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [playbooks, setPlaybooks] = useState<PlaybookMeta[]>([]);
   const [stage, setStage] = useState<"pick" | "review">("pick");
   const [selected, setSelected] = useState<string | null>(null);
@@ -581,7 +581,7 @@ export function PlaybookPickerModal({
             type="button"
             onClick={onClose}
             className="text-slate-400 hover:text-slate-700"
-            aria-label="Close"
+            aria-label={t("pages.playbooksPanel.close")}
           >
             ✕
           </button>
@@ -590,7 +590,7 @@ export function PlaybookPickerModal({
         {stage === "pick" ? (
           <div className="mt-4 grid max-h-[400px] gap-2 overflow-y-auto">
             {playbooks.length === 0 ? (
-              <p className="text-sm text-slate-500">No playbooks available for this anchor.</p>
+              <p className="text-sm text-slate-500">{t("pages.playbooksPanel.noneForAnchor")}</p>
             ) : (
               playbooks.map((p) => (
                 <button
@@ -651,9 +651,7 @@ export function PlaybookPickerModal({
               type="button"
               onClick={onClose}
               className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-            >
-              Cancel
-            </button>
+            >{t("pages.playbooksPanel.cancel")}</button>
           )}
           {stage === "pick" ? (
             <button
@@ -707,6 +705,8 @@ function ReviewStep({
     onPick: (id: string) => void;
   } | null;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const grouped = useMemo(() => {
     const out = new Map<string, Array<{ item: PlaybookItemMeta; idx: number }>>();
     playbook.items.forEach((item, idx) => {
@@ -725,9 +725,7 @@ function ReviewStep({
           <label className="block text-xs font-medium text-amber-900">
             Contact (lead) *
           </label>
-          <p className="mt-0.5 text-[11px] text-amber-800">
-            This playbook is lead-bound — every task will be linked to the contact you pick.
-          </p>
+          <p className="mt-0.5 text-[11px] text-amber-800">{t("pages.playbooksPanel.leadBound")}</p>
           {contactPicker.leads.length === 0 ? (
             <div className="mt-2 rounded-md border border-amber-300 bg-white px-3 py-2 text-xs text-amber-900">
               You don&apos;t have any contacts yet.{" "}
@@ -936,11 +934,11 @@ function todayYmd(): string {
   return `${y}-${m}-${dd}`;
 }
 
-function formatYmd(ymd: string): string {
+function formatYmd(ymd: string, locale: string): string {
   const [y, m, d] = ymd.split("-");
   if (!y || !m || !d) return ymd;
   const dt = new Date(Number(y), Number(m) - 1, Number(d));
-  return dt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  return dt.toLocaleDateString(locale, { month: "short", day: "numeric" });
 }
 
 function isOverdue(ymd: string): boolean {

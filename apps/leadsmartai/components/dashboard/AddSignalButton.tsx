@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import type { ContactSignalType } from "@/lib/contacts/types";
 
@@ -44,6 +45,7 @@ export default function AddSignalButton({
   variant?: "primary" | "ghost";
   label?: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<ContactSignalType>("equity_milestone");
@@ -131,7 +133,7 @@ export default function AddSignalButton({
           className="w-full max-w-md space-y-4 rounded-xl border border-gray-200 bg-white p-5 shadow-xl"
         >
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Add signal</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t("pages.addSignal.title")}</h3>
             <p className="mt-0.5 text-xs text-gray-500">
               Signals surface on the contact profile and the Signals page. Per spec §2.6.3, they
               never auto-send — they&apos;re a calling list.
@@ -139,7 +141,7 @@ export default function AddSignalButton({
           </div>
 
           <label className="block">
-            <span className="text-[11px] font-medium text-gray-500">Type</span>
+            <span className="text-[11px] font-medium text-gray-500">{t("pages.addSignal.type")}</span>
             <select
               value={type}
               onChange={(e) => pickType(e.target.value as ContactSignalType)}
@@ -154,12 +156,12 @@ export default function AddSignalButton({
           </label>
 
           <label className="block">
-            <span className="text-[11px] font-medium text-gray-500">Label</span>
+            <span className="text-[11px] font-medium text-gray-500">{t("pages.addSignal.label")}</span>
             <input
               type="text"
               value={signalLabel}
               onChange={(e) => setSignalLabel(e.target.value)}
-              placeholder="e.g. Equity crossed +28%"
+              placeholder={t("pages.addSignal.labelPlaceholder")}
               maxLength={200}
               className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
               autoFocus
@@ -167,7 +169,7 @@ export default function AddSignalButton({
           </label>
 
           <label className="block">
-            <span className="text-[11px] font-medium text-gray-500">Confidence</span>
+            <span className="text-[11px] font-medium text-gray-500">{t("pages.addSignal.confidence")}</span>
             <div className="mt-1 inline-flex rounded-md border border-gray-200 bg-gray-50 p-0.5 text-xs">
               {CONFIDENCE.map((c) => (
                 <button
@@ -187,8 +189,7 @@ export default function AddSignalButton({
           </label>
 
           <label className="block">
-            <span className="text-[11px] font-medium text-gray-500">
-              Suggested action <span className="text-gray-400">(optional)</span>
+            <span className="text-[11px] font-medium text-gray-500">{t("pages.addSignal.suggestedAction")}<span className="text-gray-400">(optional)</span>
             </span>
             <textarea
               value={suggestedAction}
@@ -209,9 +210,7 @@ export default function AddSignalButton({
                 reset();
               }}
               className="rounded-lg px-3 py-2 text-xs text-gray-600 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
+            >{t("pages.addSignal.cancel")}</button>
             <button
               type="submit"
               disabled={saving || !signalLabel.trim()}

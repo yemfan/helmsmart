@@ -1680,7 +1680,14 @@
     "leadSourceRoi": {
       "metaTitle": "Lead-source ROI",
       "heading": "Lead-source ROI",
-      "intro": "Which channels are actually producing revenue. Cohort: contacts you captured in the window. \"Closes\" tracks contacts whose lifecycle reached past_client; revenue sums their closing prices."
+      "intro": "Which channels are actually producing revenue. Cohort: contacts you captured in the window. \"Closes\" tracks contacts whose lifecycle reached past_client; revenue sums their closing prices.",
+      "title": "Lead-source ROI",
+      "empty": "No leads captured in this window. Capture a few from the IDX site or import a CSV to see the report populate.",
+      "leads": "Leads",
+      "closes": "Closes",
+      "conversion": "Conversion",
+      "revenue": "Revenue",
+      "source": "Source"
     },
     "dealCoach": {
       "metaTitle": "AI Deal Coach",
@@ -4101,6 +4108,51 @@
       "missingEnv": "Set or MP4/Vimeo env vars (see docs/VSL.md).",
       "missingEnvBefore": "Set",
       "missingEnvAfter": "or MP4/Vimeo env vars (see docs/VSL.md)."
+    },
+    "addSignal": {
+      "title": "Add signal",
+      "type": "Type",
+      "label": "Label",
+      "labelPlaceholder": "e.g. Equity crossed +28%",
+      "confidence": "Confidence",
+      "suggestedAction": "Suggested action",
+      "cancel": "Cancel"
+    },
+    "briefings": {
+      "ariaLabel": "Briefing and instructions",
+      "morningBriefing": "Morning Briefing",
+      "markRead": "Mark as read",
+      "bestMove": "Best move",
+      "instructions": "Instructions for your Boss Assistant",
+      "instructionsHint": "Processed the moment you hit Send — turned into tasks and routed to your team.",
+      "dismiss": "Dismiss"
+    },
+    "bulkCall": {
+      "title": "Call multiple contacts",
+      "selectAll": "Select all",
+      "clear": "Clear",
+      "noContacts": "No saved contacts with a phone number yet.",
+      "noMatches": "No matching contacts.",
+      "tcpaWarning": "Only call contacts who have consented to be contacted. Automated calls are subject to TCPA and state calling rules — you are responsible for having permission to call each number.",
+      "cancel": "Cancel"
+    },
+    "cmaEmail": {
+      "title": "Email this CMA to the seller",
+      "sub": "Sends a one-page summary in the email body and the full report as a PDF attachment.",
+      "sent": "Sent.",
+      "repliesRoute": "Replies will route back to your inbox.",
+      "close": "Close",
+      "coverNote": "Cover note",
+      "cancel": "Cancel"
+    },
+    "playbooksPanel": {
+      "intro": "Apply a curated checklist to stay on track. Tick items as you go.",
+      "empty": "No playbooks applied yet. Click “Apply playbook” to pick one.",
+      "remove": "Remove playbook",
+      "close": "Close",
+      "noneForAnchor": "No playbooks available for this anchor.",
+      "cancel": "Cancel",
+      "leadBound": "This playbook is lead-bound — every task will be linked to the contact you pick."
     }
   }
 }
