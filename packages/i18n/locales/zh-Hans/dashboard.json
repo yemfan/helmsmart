@@ -4472,6 +4472,92 @@
       "footerCompany": "公司",
       "footerLegal": "法律",
       "madeForAgents": "为在成交的经纪人打造"
+    },
+    "salesModelDashboard": {
+      "title": "销售模式",
+      "launchSms": "启动 AI 短信",
+      "launchEmail": "启动 AI 邮件",
+      "switchModel": "切换模式"
+    },
+    "featureUpgrade": {
+      "availableOn": "需要",
+      "andUp": "及以上方案。",
+      "upgradePlan": "升级方案"
+    },
+    "brandLogo": {
+      "tagline": "您的 AI 房产团队"
+    },
+    "channelsCard": {
+      "title": "渠道",
+      "sub": "您的联系人看到的电话号码和邮箱地址。必须完成验证才能保证送达率。",
+      "readOnly": "只读。发件方验证由 CloseBoss 统一管理——如需更换已验证的号码或地址，请联系客服。"
+    },
+    "favorites": {
+      "title": "收藏的房源",
+      "sub": "这位联系人主动收藏的房源。是对具体某套房子感兴趣的最强信号。",
+      "empty": "还没有收藏。",
+      "saved": "收藏于 {{date}}"
+    },
+    "outreachStrip": {
+      "title": "已排期与近期动作",
+      "cancelScheduled": "取消已排期的动作",
+      "cancel": "取消",
+      "channelCall": "电话",
+      "channelSms": "短信",
+      "channelEmail": "邮件",
+      "purposeFollowUp": "跟进",
+      "purposeSurvey": "回访调查",
+      "purposePromo": "推广",
+      "statusScheduled": "已排期",
+      "statusSending": "发送中",
+      "statusSent": "已发送",
+      "statusFailed": "发送失败",
+      "statusCancelled": "已取消"
+    },
+    "delayedCapture": {
+      "beforeYouLeave": "走之前：",
+      "sub": "领取您的免费估值和后续跟进建议。",
+      "close": "关闭"
+    },
+    "entitlementUpgrade": {
+      "currentPlan": "当前方案：",
+      "close": "关闭",
+      "comparePlans": "对比方案"
+    },
+    "clientNewsletter": {
+      "title": "您的客户通讯",
+      "copied": "已复制",
+      "copy": "复制"
+    },
+    "voiceComparison": {
+      "title": "与其他方案相比，它处在什么位置",
+      "sub": "依据公开信息整理。CloseBoss 那一列的每一个“支持”，您都可以拨打上面的号码亲自验证。",
+      "capability": "功能"
+    },
+    "voiceTranscripts": {
+      "title": "听起来是什么样",
+      "sub": "三个真实场景。拨打上面的号码，跑的是同一套引擎。",
+      "outcome": "结果："
+    },
+    "postcardAnimations": {
+      "happyBirthday": "生日快乐，",
+      "anotherYear": "又在这个家住满一年了，",
+      "thinkingOfYou": "想起你了，"
+    },
+    "salesModelBits": {
+      "operatingIdentity": "工作身份",
+      "style": "风格",
+      "bestFor": "适合",
+      "strengths": "优势",
+      "modelTools": "该模式专属工具",
+      "tapTool": "点一个工具，就能拿到一段针对您所选模式调好的 AI 提示词。",
+      "close": "关闭",
+      "recommended": "推荐"
+    },
+    "shareReport": {
+      "share": "分享",
+      "downloadPdf": "下载 PDF",
+      "contact": "联系"
     }
   }
 }

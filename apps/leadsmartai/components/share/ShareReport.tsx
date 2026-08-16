@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Unified "Share" control for every report type (Deep Report, CMA,
@@ -44,6 +45,7 @@ export default function ShareReport({
   resourceLabel,
   className,
 }: ShareReportProps) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [channel, setChannel] = useState<Channel | null>(null);
   const [contacts, setContacts] = useState<ReachableContact[] | null>(null);
@@ -192,9 +194,7 @@ export default function ShareReport({
         className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
         aria-haspopup="true"
         aria-expanded={open}
-      >
-        Share
-        <span aria-hidden className="text-xs">▾</span>
+      >{t("pages.shareReport.share")}<span aria-hidden className="text-xs">▾</span>
       </button>
 
       {open ? (
@@ -208,7 +208,7 @@ export default function ShareReport({
                   <MenuItem onClick={() => void openChannel("sms")}>Text…</MenuItem>
                 </>
               ) : null}
-              {canDownload ? <MenuItem onClick={() => void onDownload()}>Download PDF</MenuItem> : null}
+              {canDownload ? <MenuItem onClick={() => void onDownload()}>{t("pages.shareReport.downloadPdf")}</MenuItem> : null}
             </div>
           ) : (
             <div className="p-1">
@@ -225,9 +225,7 @@ export default function ShareReport({
                 </button>
               </div>
 
-              <label className="block text-xs text-slate-600">
-                Contact
-                <select
+              <label className="block text-xs text-slate-600">{t("pages.shareReport.contact")}<select
                   value={contactId}
                   onChange={(e) => {
                     setContactId(e.target.value);

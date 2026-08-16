@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { PostcardTemplateKey } from "@/lib/postcards/templates";
 
 /**
@@ -100,6 +101,7 @@ function MessageBlock({
 // ── Birthday: confetti burst ──────────────────────────────────────
 
 function BirthdayScene(props: SceneProps) {
+  const { t } = useTranslation("dashboard");
   // Generate stable per-render confetti positions.
   const confetti = Array.from({ length: 60 }).map((_, i) => {
     const left = (i * 37) % 100;
@@ -145,9 +147,7 @@ function BirthdayScene(props: SceneProps) {
         <h1
           className="mt-3 text-4xl font-extrabold tracking-tight text-pink-700 md:text-5xl"
           style={{ animation: "pc-title-pop 800ms ease-out 100ms both" }}
-        >
-          Happy Birthday,
-          <br />
+        >{t("pages.postcardAnimations.happyBirthday")}<br />
           {props.recipientName || "friend"}!
         </h1>
       </div>
@@ -159,6 +159,7 @@ function BirthdayScene(props: SceneProps) {
 // ── Anniversary: house reveal ────────────────────────────────────
 
 function AnniversaryScene(props: SceneProps) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-sky-50 via-white to-emerald-50 pb-16 pt-10">
       <style>{`
@@ -193,9 +194,7 @@ function AnniversaryScene(props: SceneProps) {
         <h1
           className="mt-4 text-3xl font-bold tracking-tight text-sky-700 md:text-4xl"
           style={{ animation: "pc-title-slide 700ms ease-out 900ms both" }}
-        >
-          Another year in your home,
-          <br />
+        >{t("pages.postcardAnimations.anotherYear")}<br />
           <span className="text-emerald-700">{props.recipientName || "friend"}</span>
         </h1>
         <p
@@ -294,6 +293,7 @@ function HolidayScene(props: SceneProps) {
 // ── Thinking of you: subtle warm gradient ────────────────────────
 
 function ThinkingScene(props: SceneProps) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-violet-100 via-white to-rose-50 pb-16 pt-10">
       <style>{`
@@ -335,9 +335,7 @@ function ThinkingScene(props: SceneProps) {
         <h1
           className="mt-3 text-3xl font-bold tracking-tight text-violet-900 md:text-4xl"
           style={{ animation: "pc-title-rise 800ms ease-out 200ms both" }}
-        >
-          Thinking of you,
-          <br />
+        >{t("pages.postcardAnimations.thinkingOfYou")}<br />
           <span className="text-rose-700">{props.recipientName || "friend"}</span>
         </h1>
       </div>

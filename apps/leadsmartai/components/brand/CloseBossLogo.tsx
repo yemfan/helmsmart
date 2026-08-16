@@ -1,8 +1,12 @@
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 // CloseBoss brand palette — navy team + gold "Boss" core (see the brand mark:
 // six AI employees in a hexagon around the gold BOSS sphere).
 const NAVY = "#1B2A4A";
+/** The wordmark is brand, not copy - it reads the same in every language. */
+const WORDMARK = { first: "Close", second: "Boss" } as const;
+
 const GOLD = "#F59E0B";
 
 type Tone = "light" | "dark";
@@ -40,22 +44,21 @@ type Props = {
  * theme-consistent: body indigo (white on dark), "Boss" in the amber accent.
  */
 export function CloseBossLogo({ className, compact, tone = "light" }: Props) {
+  const { t } = useTranslation("dashboard");
   const body = tone === "dark" ? "#FFFFFF" : NAVY;
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
       <CloseBossMark tone={tone} className={compact ? "h-8 w-8" : "h-10 w-10"} />
       <span className="flex flex-col items-center leading-none">
         <span className={cn("font-heading font-bold tracking-tight", compact ? "text-lg" : "text-2xl")}>
-          <span style={{ color: body }}>Close</span>
-          <span style={{ color: GOLD }}>Boss</span>
+          <span style={{ color: body }}>{WORDMARK.first}</span>
+          <span style={{ color: GOLD }}>{WORDMARK.second}</span>
         </span>
         {!compact && (
           <span
             className="mt-0.5 text-[9px] font-semibold uppercase tracking-[0.02em]"
             style={{ color: body }}
-          >
-            Your AI Real Estate Team
-          </span>
+          >{t("pages.brandLogo.tagline")}</span>
         )}
       </span>
     </span>

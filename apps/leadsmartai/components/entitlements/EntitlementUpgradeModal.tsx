@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { LimitReason } from "@/lib/entitlements/types";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   open: boolean;
@@ -78,6 +79,7 @@ function isCrmReason(reason: LimitReason | null): boolean {
 }
 
 export default function EntitlementUpgradeModal({ open, onClose, reason, plan }: Props) {
+  const { t } = useTranslation("dashboard");
   if (!open) return null;
 
   const message = getMessage(reason);
@@ -100,8 +102,7 @@ export default function EntitlementUpgradeModal({ open, onClose, reason, plan }:
             <h2 className="text-2xl font-semibold tracking-tight text-gray-900">{message.title}</h2>
             <p className="mt-3 text-sm leading-6 text-gray-600">{message.body}</p>
             {plan ? (
-              <div className="mt-3 text-xs text-gray-400">
-                Current plan: <span className="font-medium text-gray-700">{plan}</span>
+              <div className="mt-3 text-xs text-gray-400">{t("pages.entitlementUpgrade.currentPlan")}<span className="font-medium text-gray-700">{plan}</span>
               </div>
             ) : null}
           </div>
@@ -110,7 +111,7 @@ export default function EntitlementUpgradeModal({ open, onClose, reason, plan }:
             type="button"
             onClick={onClose}
             className="shrink-0 rounded-xl border px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
-            aria-label="Close"
+            aria-label={t("pages.entitlementUpgrade.close")}
           >
             ✕
           </button>
@@ -136,9 +137,7 @@ export default function EntitlementUpgradeModal({ open, onClose, reason, plan }:
             href="/agent/pricing"
             className="rounded-2xl border px-5 py-3 text-center text-sm font-medium text-gray-900 transition hover:bg-gray-50"
             onClick={onClose}
-          >
-            Compare plans
-          </Link>
+          >{t("pages.entitlementUpgrade.comparePlans")}</Link>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Copy, Check, Mail } from "lucide-react";
 
 /**
@@ -20,6 +21,7 @@ export default function ClientNewsletterCard({
   subscriberCount: number;
   agentName: string | null;
 }) {
+  const { t } = useTranslation("dashboard");
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -41,7 +43,7 @@ export default function ClientNewsletterCard({
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0072ce]/10 text-[#0072ce]">
             <Mail className="h-4 w-4" strokeWidth={2} />
           </span>
-          <h2 className="text-sm font-semibold text-gray-900">Your Client Newsletter</h2>
+          <h2 className="text-sm font-semibold text-gray-900">{t("pages.clientNewsletter.title")}</h2>
         </div>
         <span className="shrink-0 rounded-full bg-[#0072ce]/10 px-2.5 py-1 text-xs font-semibold text-[#0072ce]">
           {subscriberCount} subscriber{subscriberCount === 1 ? "" : "s"}
@@ -68,12 +70,10 @@ export default function ClientNewsletterCard({
         >
           {copied ? (
             <>
-              <Check className="h-4 w-4" strokeWidth={2.5} /> Copied
-            </>
+              <Check className="h-4 w-4" strokeWidth={2.5} />{t("pages.clientNewsletter.copied")}</>
           ) : (
             <>
-              <Copy className="h-4 w-4" strokeWidth={2} /> Copy
-            </>
+              <Copy className="h-4 w-4" strokeWidth={2} />{t("pages.clientNewsletter.copy")}</>
           )}
         </button>
       </div>

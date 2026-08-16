@@ -1,3 +1,5 @@
+import { getServerT } from "@/lib/i18n/server";
+
 type Cell = {
   state: "yes" | "partial" | "no" | "text";
   text?: string;
@@ -108,16 +110,13 @@ const ROWS: Row[] = [
  * relevant feature. The data lives inline (not in a CMS) so a one-line PR
  * is the change cost.
  */
-export default function VoiceAiComparisonTable() {
+export default async function VoiceAiComparisonTable() {
+  const t = await getServerT();
   return (
     <section className="space-y-4">
       <header>
-        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
-          Where it lands vs. the alternatives
-        </h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Built from public information. Call the number above to verify any &quot;yes&quot; under CloseBoss yourself.
-        </p>
+        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">{t("pages.voiceComparison.title", { ns: "dashboard" })}</h2>
+        <p className="mt-1 text-sm text-slate-600">{t("pages.voiceComparison.sub", { ns: "dashboard" })}</p>
       </header>
 
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -127,9 +126,7 @@ export default function VoiceAiComparisonTable() {
               <th
                 scope="col"
                 className="sticky left-0 z-10 bg-slate-50 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-700"
-              >
-                Capability
-              </th>
+              >{t("pages.voiceComparison.capability", { ns: "dashboard" })}</th>
               {COLUMNS.map((c) => (
                 <th
                   key={c.id}

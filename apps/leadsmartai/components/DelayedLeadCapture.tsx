@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import LocalSeoLeadForm from "@/components/LocalSeoLeadForm";
 
 export default function DelayedLeadCapture({
@@ -14,6 +15,7 @@ export default function DelayedLeadCapture({
   source: string;
   city?: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -27,15 +29,13 @@ export default function DelayedLeadCapture({
     <div className="fixed inset-x-0 bottom-4 z-50 mx-auto w-[min(94vw,520px)] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
       <div className="mb-2 flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-slate-900">Before you leave:</p>
-          <p className="text-xs text-slate-600">Get your free estimate and follow-up strategy.</p>
+          <p className="text-sm font-semibold text-slate-900">{t("pages.delayedCapture.beforeYouLeave")}</p>
+          <p className="text-xs text-slate-600">{t("pages.delayedCapture.sub")}</p>
         </div>
         <button
           onClick={() => setOpen(false)}
           className="rounded-md px-2 py-1 text-xs text-slate-500 hover:bg-slate-100"
-        >
-          Close
-        </button>
+        >{t("pages.delayedCapture.close")}</button>
       </div>
       <LocalSeoLeadForm title={title} source={source} city={city} />
     </div>

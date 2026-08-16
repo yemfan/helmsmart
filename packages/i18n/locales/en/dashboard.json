@@ -4472,6 +4472,92 @@
       "footerCompany": "Company",
       "footerLegal": "Legal",
       "madeForAgents": "Made for agents who close"
+    },
+    "salesModelDashboard": {
+      "title": "Sales Model",
+      "launchSms": "Launch AI SMS",
+      "launchEmail": "Launch AI Email",
+      "switchModel": "Switch model"
+    },
+    "featureUpgrade": {
+      "availableOn": "Available on",
+      "andUp": "and up.",
+      "upgradePlan": "Upgrade plan"
+    },
+    "brandLogo": {
+      "tagline": "Your AI Real Estate Team"
+    },
+    "channelsCard": {
+      "title": "Channels",
+      "sub": "The phone number and email address your contacts see. Verification is required for deliverability.",
+      "readOnly": "Read-only. Sender verification is managed by CloseBoss — contact support to change a verified number or address."
+    },
+    "favorites": {
+      "title": "Favorited properties",
+      "sub": "Listings this contact explicitly saved. Strongest signal of specific-property interest.",
+      "empty": "No favorites yet.",
+      "saved": "Saved {{date}}"
+    },
+    "outreachStrip": {
+      "title": "Scheduled & recent actions",
+      "cancelScheduled": "Cancel scheduled action",
+      "cancel": "Cancel",
+      "channelCall": "call",
+      "channelSms": "text",
+      "channelEmail": "email",
+      "purposeFollowUp": "Follow-up",
+      "purposeSurvey": "Survey",
+      "purposePromo": "Promo",
+      "statusScheduled": "Scheduled",
+      "statusSending": "Sending",
+      "statusSent": "Sent",
+      "statusFailed": "Failed",
+      "statusCancelled": "Cancelled"
+    },
+    "delayedCapture": {
+      "beforeYouLeave": "Before you leave:",
+      "sub": "Get your free estimate and follow-up strategy.",
+      "close": "Close"
+    },
+    "entitlementUpgrade": {
+      "currentPlan": "Current plan:",
+      "close": "Close",
+      "comparePlans": "Compare plans"
+    },
+    "clientNewsletter": {
+      "title": "Your Client Newsletter",
+      "copied": "Copied",
+      "copy": "Copy"
+    },
+    "voiceComparison": {
+      "title": "Where it lands vs. the alternatives",
+      "sub": "Built from public information. Call the number above to verify any “yes” under CloseBoss yourself.",
+      "capability": "Capability"
+    },
+    "voiceTranscripts": {
+      "title": "What it sounds like",
+      "sub": "Three real scenarios. Calling the live number above runs the same engine.",
+      "outcome": "Outcome:"
+    },
+    "postcardAnimations": {
+      "happyBirthday": "Happy Birthday,",
+      "anotherYear": "Another year in your home,",
+      "thinkingOfYou": "Thinking of you,"
+    },
+    "salesModelBits": {
+      "operatingIdentity": "Operating identity",
+      "style": "Style",
+      "bestFor": "Best for",
+      "strengths": "Strengths",
+      "modelTools": "Model-specific tools",
+      "tapTool": "Tap a tool to grab a ready-to-use AI prompt tuned to your model.",
+      "close": "Close",
+      "recommended": "Recommended"
+    },
+    "shareReport": {
+      "share": "Share",
+      "downloadPdf": "Download PDF",
+      "contact": "Contact"
     }
   }
 }

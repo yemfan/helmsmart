@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { SalesModel } from "@/lib/sales-models";
 
 /**
@@ -18,20 +19,19 @@ import type { SalesModel } from "@/lib/sales-models";
  * `lib/sales-models.ts` from bloating.
  */
 export function ModelToolsGrid({ model }: { model: SalesModel }) {
+  const { t } = useTranslation("dashboard");
   const [openTool, setOpenTool] = useState<string | null>(null);
 
   return (
     <section
-      aria-label="Model-specific tools"
+      aria-label={t("pages.salesModelBits.modelTools")}
       className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm"
     >
       <header className="mb-4">
         <h2 className="text-base font-semibold text-slate-900">
           Tools for {model.name.replace(/ Model$/, "s")}
         </h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Tap a tool to grab a ready-to-use AI prompt tuned to your model.
-        </p>
+        <p className="mt-1 text-sm text-slate-600">{t("pages.salesModelBits.tapTool")}</p>
       </header>
 
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -88,6 +88,7 @@ function ToolPromptModal({
   model: SalesModel;
   onClose: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [copied, setCopied] = useState(false);
   const prompt = buildPromptFor(tool, model);
 
@@ -139,9 +140,7 @@ function ToolPromptModal({
             type="button"
             onClick={onClose}
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50"
-          >
-            Close
-          </button>
+          >{t("pages.salesModelBits.close")}</button>
           <button
             type="button"
             onClick={onCopy}
