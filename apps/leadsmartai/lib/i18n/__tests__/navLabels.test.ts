@@ -98,6 +98,8 @@ describe("dashboard namespace (page copy)", () => {
       "pages.importFile.emailPlaceholder",
       "pages.offersCompare.agentEmailPlaceholder",
       "pages.newShowing.mlsPlaceholder",
+      "pages.adWizard.sitePlaceholder",
+      "pages.adWizard.privacyPlaceholder",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;
