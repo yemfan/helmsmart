@@ -89,12 +89,8 @@ const JSX_TEXT = /(?:^|[^=])[>}]([^<>{}]+)(?=[<{])/g;
  * the list and the assertion under it.
  */
 const PENDING = new Set([
-  "app/features/[slug]/page.tsx",
-  "app/blog/page.tsx",
   "app/market-report/[city]/[keyword]/page.tsx",
-  "app/newsletter/page.tsx",
   "app/newsletter/[region]/[week]/page.tsx",
-  "app/oh/[slug]/kiosk/KioskClient.tsx",
   "app/home-value/[city]/[keyword]/page.tsx",
   "app/home-value-widget/page.tsx",
   "app/how-to-analyze-rental-property/page.tsx",

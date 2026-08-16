@@ -7418,6 +7418,57 @@
       "investmentAnalysis": "投资分析",
       "roiYear1": "ROI（第 1 年估算）",
       "aiSummary": "AI 摘要"
+    },
+    "featurePages": {
+      "features": "功能",
+      "startFree": "免费开始",
+      "talkToUs": "联系我们",
+      "what": "",
+      "doesForYou": "能为您做什么",
+      "howItWorks": "它是怎么运作的",
+      "meetTheRest": "认识团队里的其他成员",
+      "learnMore": "了解更多",
+      "putToWork": "让您的 AI 房产团队开始干活",
+      "oneMember": "是 CloseBoss 团队的一员——接电话、做跟进、做市场、协调交易，让您可以专心成交。",
+      "seeAllFeatures": "查看全部功能"
+    },
+    "blogIndex": {
+      "h1": "CloseBoss 博客",
+      "tagline": "以速度取胜，以内容成交。",
+      "sub": "关于房产科技、AI 跟进，以及真正影响成交的那些指标——经过实战检验的看法，写给个人经纪人和小团队。",
+      "latestPosts": "最新文章",
+      "wantEveryPost": "想让每篇新文章都送到您的收件箱？",
+      "wantEveryPostBody": "有新内容上线时我们会发一封短信息——通常一个月一到两次，不灌水。或者干脆直接免费试用 CloseBoss 14 天。",
+      "startTrial": "开始免费试用",
+      "compareCrm": "和您现在的 CRM 比一比",
+      "featured": "精选",
+      "readThePost": "阅读全文",
+      "quickTake": "速览"
+    },
+    "newsletterIndex": {
+      "weeklyNewsletter": "每周简报",
+      "h1": "按地区送达的每周利率与住房简报",
+      "sub": "我们每周拆解房贷利率的走向，以及是什么在推动全国住房市场——用大白话讲，并附上您所在州或都市区的本地快照。不用行话，每一个数字都链接到它的出处，让您清楚如果现在买或卖，这些数字意味着什么。",
+      "recentIssuesAria": "往期内容",
+      "recentIssues": "往期内容",
+      "newestFirst": "最新在前",
+      "firstIssueComing": "第一期即将发布。在上方订阅，一发布我们就把您的每周利率与住房简报发过去。",
+      "weekOf": "本周：",
+      "readThisWeek": "读一读本周针对您所在市场的这一期",
+      "sameBriefing": "同样的全国简报，配上您所选地区的本地快照。"
+    },
+    "openHouseKiosk": {
+      "welcome": "欢迎参加开放日",
+      "pendingSync": "条待同步",
+      "signedInToday": "人今天已签到",
+      "yourName": "您的姓名",
+      "workingWithAgent": "您已经有合作的经纪人了吗？",
+      "yes": "是",
+      "agentName": "经纪人姓名",
+      "brokerage": "所属经纪公司",
+      "whenBuying": "您打算什么时候买？",
+      "sendListings": "请给我发送类似房源和后续信息。",
+      "replyStop": "您随时可以回复 STOP 退订。"
     }
   }
 }

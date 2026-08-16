@@ -7418,6 +7418,57 @@
       "investmentAnalysis": "Investment Analysis",
       "roiYear1": "ROI (Year 1 est.)",
       "aiSummary": "AI Summary"
+    },
+    "featurePages": {
+      "features": "Features",
+      "startFree": "Start free",
+      "talkToUs": "Talk to us",
+      "what": "What",
+      "doesForYou": "does for you",
+      "howItWorks": "How it works",
+      "meetTheRest": "Meet the rest of the team",
+      "learnMore": "Learn more",
+      "putToWork": "Put your AI real estate team to work",
+      "oneMember": "is one member of the CloseBoss team — answering calls, following up, marketing, and coordinating deals so you can focus on closing.",
+      "seeAllFeatures": "See all features"
+    },
+    "blogIndex": {
+      "h1": "CloseBoss Blog",
+      "tagline": "Win on speed. Sell on substance.",
+      "sub": "Field-tested takes on real estate technology, AI follow-up, and the metrics that actually move deals — written for solo agents and small teams.",
+      "latestPosts": "Latest posts",
+      "wantEveryPost": "Want every new post in your inbox?",
+      "wantEveryPostBody": "We send a short note when a new piece goes live — usually once or twice a month, no filler. Or skip ahead and try CloseBoss free for 14 days.",
+      "startTrial": "Start free trial",
+      "compareCrm": "Compare with your CRM",
+      "featured": "Featured",
+      "readThePost": "Read the post",
+      "quickTake": "Quick take"
+    },
+    "newsletterIndex": {
+      "weeklyNewsletter": "Weekly Newsletter",
+      "h1": "Your weekly rates + housing briefing, by region",
+      "sub": "Every week we break down where mortgage rates went and what moved the national housing market — in plain English, with a local snapshot for your state or metro. No jargon, every number linked to its source, so you know what it means if you're buying or selling right now.",
+      "recentIssuesAria": "Recent issues",
+      "recentIssues": "Recent issues",
+      "newestFirst": "Newest first",
+      "firstIssueComing": "The first issue is on its way. Subscribe above and we'll send your weekly rates + housing briefing as soon as it publishes.",
+      "weekOf": "Week of",
+      "readThisWeek": "Read this week's issue for your market",
+      "sameBriefing": "Same national briefing, paired with the local snapshot for the region you pick."
+    },
+    "openHouseKiosk": {
+      "welcome": "Welcome to the open house",
+      "pendingSync": "pending sync",
+      "signedInToday": "signed in today",
+      "yourName": "Your name",
+      "workingWithAgent": "Working with an agent?",
+      "yes": "Yes",
+      "agentName": "Agent name",
+      "brokerage": "Brokerage",
+      "whenBuying": "When are you looking to buy?",
+      "sendListings": "Send me similar listings and follow-up info.",
+      "replyStop": "You can reply STOP anytime."
     }
   }
 }

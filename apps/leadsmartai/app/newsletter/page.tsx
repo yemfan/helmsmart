@@ -68,23 +68,13 @@ export default async function NewsletterHubPage() {
               CloseBoss
             </Link>
             <span className="mx-2 text-slate-400">/</span>
-            <span className="text-slate-600">Weekly Newsletter</span>
+            <span className="text-slate-600">{t("pages.newsletterIndex.weeklyNewsletter", { ns: "dashboard" })}</span>
           </nav>
 
           <div className="max-w-3xl">
-            <p className="mb-4 inline-flex rounded-full border border-slate-200/90 bg-white px-3 py-1 text-xs font-medium uppercase tracking-[0.15em] text-slate-600 shadow-sm ring-1 ring-slate-900/[0.03]">
-              Weekly Newsletter
-            </p>
-            <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-5xl">
-              Your weekly rates + housing briefing, by region
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-              Every week we break down where mortgage rates went and what moved
-              the national housing market — in plain English, with a local
-              snapshot for your state or metro. No jargon, every number linked to
-              its source, so you know what it means if you&apos;re buying or
-              selling right now.
-            </p>
+            <p className="mb-4 inline-flex rounded-full border border-slate-200/90 bg-white px-3 py-1 text-xs font-medium uppercase tracking-[0.15em] text-slate-600 shadow-sm ring-1 ring-slate-900/[0.03]">{t("pages.newsletterIndex.weeklyNewsletter", { ns: "dashboard" })}</p>
+            <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-5xl">{t("pages.newsletterIndex.h1", { ns: "dashboard" })}</h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">{t("pages.newsletterIndex.sub", { ns: "dashboard" })}</p>
           </div>
 
           <div className="mt-8 max-w-3xl">
@@ -94,18 +84,15 @@ export default async function NewsletterHubPage() {
       </section>
 
       {/* Recent issues */}
-      <section className="mx-auto max-w-5xl px-6 py-14 md:py-16" aria-label="Recent issues">
+      <section className="mx-auto max-w-5xl px-6 py-14 md:py-16" aria-label={t("pages.newsletterIndex.recentIssuesAria", { ns: "dashboard" })}>
         <div className="mb-6 flex items-baseline justify-between gap-4">
-          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Recent issues</h2>
-          <span className="text-sm text-slate-500">Newest first</span>
+          <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">{t("pages.newsletterIndex.recentIssues", { ns: "dashboard" })}</h2>
+          <span className="text-sm text-slate-500">{t("pages.newsletterIndex.newestFirst", { ns: "dashboard" })}</span>
         </div>
 
         {digests.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
-            <p className="text-slate-600">
-              The first issue is on its way. Subscribe above and we&apos;ll send
-              your weekly rates + housing briefing as soon as it publishes.
-            </p>
+            <p className="text-slate-600">{t("pages.newsletterIndex.firstIssueComing", { ns: "dashboard" })}</p>
           </div>
         ) : (
           <ul className="grid gap-4 md:grid-cols-2">
@@ -116,8 +103,7 @@ export default async function NewsletterHubPage() {
                   className="block h-full rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-[#0072ce]/40 hover:shadow-md"
                 >
                   <div className="flex flex-wrap items-center gap-3 text-xs">
-                    <span className="rounded-full bg-[#0072ce]/10 px-2.5 py-1 font-semibold text-[#0072ce]">
-                      Week of {formatWeek(d.week_of, locale)}
+                    <span className="rounded-full bg-[#0072ce]/10 px-2.5 py-1 font-semibold text-[#0072ce]">{t("pages.newsletterIndex.weekOf", { ns: "dashboard" })} {formatWeek(d.week_of, locale)}
                     </span>
                     <span className="text-slate-500">
                       {Array.isArray(d.items) ? d.items.length : 0} stories
@@ -140,13 +126,8 @@ export default async function NewsletterHubPage() {
         {/* Region picker — jump to the latest issue for a specific market. */}
         {digests.length > 0 && regions.length > 1 && (
           <div className="mt-10 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-              Read this week&apos;s issue for your market
-            </h3>
-            <p className="mt-1 text-sm text-slate-600">
-              Same national briefing, paired with the local snapshot for the
-              region you pick.
-            </p>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("pages.newsletterIndex.readThisWeek", { ns: "dashboard" })}</h3>
+            <p className="mt-1 text-sm text-slate-600">{t("pages.newsletterIndex.sameBriefing", { ns: "dashboard" })}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {regions.slice(0, 24).map((r) => (
                 <Link
