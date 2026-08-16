@@ -1,7 +1,7 @@
- "use client";
+"use client";
 
 import { useState } from "react";
-import { getServerT } from "@/lib/i18n/server";
+import { useTranslation } from "react-i18next";
 
 type WidgetStep = "address" | "email" | "done";
 
@@ -11,8 +11,8 @@ type EstimateResult = {
   high: number;
 };
 
-export default async function HomeValueWidgetPage() {
-  const t = await getServerT();
+export default function HomeValueWidgetPage() {
+  const { t } = useTranslation("dashboard");
   const [step, setStep] = useState<WidgetStep>("address");
   const [address, setAddress] = useState("");
   const [name, setName] = useState("");

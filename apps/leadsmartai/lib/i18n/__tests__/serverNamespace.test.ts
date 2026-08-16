@@ -23,6 +23,13 @@ import { describe, expect, it } from "vitest";
  *
  * Client components are exempt: `useTranslation("dashboard")` binds the
  * namespace once, at the hook.
+ *
+ * So is the server twin, `getServerT("dashboard")`, for the same reason — and
+ * it is the better of the two forms, because a per-call `{ ns }` sweep silently
+ * misses calls whose key is not a literal on the same line: a multi-line call,
+ * or one that picks its key with a ternary. A file only earns the exemption if
+ * EVERY `getServerT(` in it passes a namespace; mixing the bound and unbound
+ * forms leaves the bare calls ambiguous, so those are still reported.
  */
 
 const ROOT = join(__dirname, "..", "..", "..");
@@ -57,6 +64,12 @@ describe("server translator namespace", () => {
         const src = readFileSync(file, "utf8");
         if (/^\s*"use client";/m.test(src)) continue;
         if (!/getServerT/.test(src)) continue;
+
+        // Namespace bound at the translator instead of at each call site.
+        const bindings = [...src.matchAll(/getServerT\(\s*("?)([^)]*?)\1\s*\)/g)];
+        if (bindings.length > 0 && bindings.every((b) => b[2].trim() !== "")) {
+          continue;
+        }
 
         for (const m of src.matchAll(/(?<![\w.])tr?\("(pages\.[^"]+)"/g)) {
           const after = (m.index ?? 0) + m[0].length;

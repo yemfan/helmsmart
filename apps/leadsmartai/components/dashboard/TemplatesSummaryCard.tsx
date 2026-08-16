@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { getServerT } from "@/lib/i18n/server";
 import { getTemplateSummaryForAgent } from "@/lib/agent-messaging/template-summary";
-import { useTranslation } from "react-i18next";
 
 export default async function TemplatesSummaryCard({ agentId }: { agentId: string }) {
-  const { t } = useTranslation("dashboard");
+  const t = await getServerT("dashboard");
   const serverT = await getServerT();
   // Named `tr` — template rows below bind `t` in their .map().
   const tr = (key: string) => serverT(key, { ns: "dashboard" });

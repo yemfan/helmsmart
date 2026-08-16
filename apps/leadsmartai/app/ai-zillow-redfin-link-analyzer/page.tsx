@@ -1,7 +1,7 @@
- "use client";
+"use client";
 
 import { useMemo, useState } from "react";
-import { getServerT } from "@/lib/i18n/server";
+import { useTranslation } from "react-i18next";
 
 type Platform = "zillow" | "redfin";
 
@@ -52,8 +52,8 @@ type DealScore = {
   color: "green" | "yellow" | "red";
 };
 
-export default async function AIZillowRedfinLinkAnalyzerPage() {
-  const t = await getServerT();
+export default function AIZillowRedfinLinkAnalyzerPage() {
+  const { t } = useTranslation("dashboard");
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -1,5 +1,5 @@
 import type { CmaSnapshot } from "@/lib/cma/types";
-import { useTranslation } from "react-i18next";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Read-only, presentation-grade render of a saved CMA snapshot — used by the
@@ -30,7 +30,7 @@ function Card({ title, children }: { title?: string; children: React.ReactNode }
   );
 }
 
-export default function CmaShareView({
+export default async function CmaShareView({
   snapshot,
   agent,
   title,
@@ -39,7 +39,7 @@ export default function CmaShareView({
   agent: CmaShareAgent | null;
   title?: string | null;
 }) {
-  const { t } = useTranslation("dashboard");
+  const t = await getServerT("dashboard");
   const s = snapshot.subject;
   const v = snapshot.valuation;
   const strat = snapshot.strategies;

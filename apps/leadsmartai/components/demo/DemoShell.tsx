@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { useTranslation } from "react-i18next";
+import { getServerT } from "@/lib/i18n/server";
 import {
   CalendarDays,
   ExternalLink,
@@ -33,7 +33,7 @@ const DEMO_NAV: Item[] = [
   { href: "/demo/calendar", label: "Calendar", icon: <CalendarDays className="h-4 w-4" /> },
 ];
 
-export function DemoShell({
+export async function DemoShell({
   active,
   children,
 }: {
@@ -41,7 +41,7 @@ export function DemoShell({
   active: string;
   children: ReactNode;
 }) {
-  const { t } = useTranslation("dashboard");
+  const t = await getServerT("dashboard");
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <SandboxBanner />
@@ -93,8 +93,8 @@ export function DemoShell({
   );
 }
 
-function SandboxBanner() {
-  const { t } = useTranslation("dashboard");
+async function SandboxBanner() {
+  const t = await getServerT("dashboard");
   return (
     <div className="sticky top-0 z-30 border-b border-amber-300 bg-amber-50 px-4 py-2.5 dark:border-amber-900/60 dark:bg-amber-950/40">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 md:px-2">
@@ -121,14 +121,14 @@ function SandboxBanner() {
  * normally mutate state. Renders an inert button that surfaces a
  * tooltip-style note via the title attribute and the visible suffix.
  */
-export function DemoDisabledButton({
+export async function DemoDisabledButton({
   label,
   variant = "primary",
 }: {
   label: string;
   variant?: "primary" | "ghost";
 }) {
-  const { t } = useTranslation("dashboard");
+  const t = await getServerT("dashboard");
   const styles =
     variant === "primary"
       ? "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-500"

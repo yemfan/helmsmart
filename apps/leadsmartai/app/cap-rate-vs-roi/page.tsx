@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import JsonLd from "../../components/JsonLd";
-import { getServerT } from "@/lib/i18n/server";
 
-export default async function CapRateVsRoiPage() {
-  const t = await getServerT();
+export default function CapRateVsRoiPage() {
+  const { t } = useTranslation("dashboard");
   const title = "Cap Rate vs ROI: What’s the Difference for Real Estate Investors?";
   const url = "https://closebossai.com/cap-rate-vs-roi";
 

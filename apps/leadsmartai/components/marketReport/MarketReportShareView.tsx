@@ -1,6 +1,6 @@
 import type { MarketReportSnapshot } from "@/lib/marketReport/service";
 import { formatPeriod } from "@/lib/research/warehouse/format";
-import { useTranslation } from "react-i18next";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Read-only, client-facing render of a frozen market-report snapshot — used by
@@ -46,7 +46,7 @@ function Card({ title, children }: { title?: string; children: React.ReactNode }
   );
 }
 
-export default function MarketReportShareView({
+export default async function MarketReportShareView({
   snapshot,
   agent,
   cityLabel,
@@ -55,7 +55,7 @@ export default function MarketReportShareView({
   agent: MarketReportShareAgent | null;
   cityLabel: string;
 }) {
-  const { t } = useTranslation("dashboard");
+  const t = await getServerT("dashboard");
   const asOf = formatPeriod(snapshot.asOfPeriod);
   const contactBits = agent
     ? [agent.phone, agent.email].filter(Boolean)

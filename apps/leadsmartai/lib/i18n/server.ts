@@ -52,13 +52,20 @@ export async function getServerLocale(): Promise<SupportedLocale> {
  *
  * Interpolation: simple `{{name}}` substitution. Matches i18next's
  * default behavior so the same string keys work on client + server.
+ *
+ * `defaultNs` mirrors `useTranslation(ns)` on the client, and exists because
+ * the asymmetry was a live bug: a component moved from the hook to this
+ * translator kept its bare `t("…")` calls, which then resolved against
+ * "common", missed, and rendered the raw key path on screen. Passing the
+ * namespace once here keeps every call site correct — including the multi-line
+ * and option-bearing calls a per-call `{ ns }` sweep silently skips.
  */
-export async function getServerT(): Promise<
-  (key: string, opts?: { ns?: string; [k: string]: unknown }) => string
-> {
+export async function getServerT(
+  defaultNs = "common",
+): Promise<(key: string, opts?: { ns?: string; [k: string]: unknown }) => string> {
   const locale = await getServerLocale();
   return (key, opts) => {
-    const ns = (opts?.ns as string | undefined) ?? "common";
+    const ns = (opts?.ns as string | undefined) ?? defaultNs;
     const bundle = resources[locale]?.[ns as keyof (typeof resources)[typeof locale]];
     if (!bundle) return key;
     const value = lookup(bundle, key);

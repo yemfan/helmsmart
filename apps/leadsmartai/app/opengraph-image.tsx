@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Root `og:image` for CloseBoss — auto-detected by Next.js App Router.
@@ -20,8 +19,13 @@ export const alt = "CloseBoss — Your AI Real Estate Team";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+// Deliberately untranslated, and listed in the residual-English guard's EXEMPT
+// map: next/og has no CJK glyphs in its default font, so Chinese here renders
+// as tofu boxes in every social preview. The i18n pass wired a translator in
+// anyway and never called it — an unused import that, because this route is
+// `runtime = "edge"`, dragged "server-only" and next/headers into the edge
+// bundle and failed the build.
 export default async function OpengraphImage() {
-  const t = await getServerT();
   return new ImageResponse(
     (
       <div
