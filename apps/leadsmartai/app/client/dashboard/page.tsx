@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TransactionPipeline from "@/components/client/TransactionPipeline";
 import { useClientLeadId } from "@/components/client/useClientLeadId";
 import { isRealEstateProfessionalRole } from "@/lib/paidSubscriptionEligibility";
@@ -38,6 +39,7 @@ type DashRes = {
 };
 
 export default function ClientDashboardPage() {
+  const { t } = useTranslation("dashboard");
   const [me, setMe] = useState<MeRes | null>(null);
   const [meApi, setMeApi] = useState<MeApi | null>(null);
   const [dash, setDash] = useState<DashRes | null>(null);
@@ -99,31 +101,27 @@ export default function ClientDashboardPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-slate-900">Your dashboard</h1>
-        <p className="text-sm text-slate-600 mt-1">Deal status, next steps, and smart suggestions.</p>
+        <h1 className="text-xl font-bold text-slate-900">{t("pages.clientPortal.dashboard")}</h1>
+        <p className="text-sm text-slate-600 mt-1">{t("pages.clientPortal.dashboardSub")}</p>
       </div>
 
       {showAgentWorkspaceHint ? (
         <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-950">
-          <p className="font-semibold">Client portal (buyer / seller)</p>
+          <p className="font-semibold">{t("pages.clientPortal.portalLabel")}</p>
           <p className="mt-1 leading-relaxed">
             This page only shows a deal when your login email matches a lead in CloseBoss. Your{" "}
-            <span className="font-medium">agent workspace</span> (leads, pipeline, tools) is separate —{" "}
+            <span className="font-medium">{t("pages.clientPortal.agentWorkspace")}</span> (leads, pipeline, tools) is separate —{" "}
             <Link
               href={resolveRoleHomePath(meApi?.role ?? null, Boolean(meApi?.has_agent_record))}
               className="font-semibold text-sky-900 underline underline-offset-2 hover:text-sky-950"
-            >
-              open agent workspace
-            </Link>
+            >{t("pages.clientPortal.openAgentWorkspace")}</Link>
             .
           </p>
         </div>
       ) : null}
 
       {leads.length > 1 && (
-        <label className="block text-xs font-semibold text-slate-500 uppercase">
-          Active deal
-          <select
+        <label className="block text-xs font-semibold text-slate-500 uppercase">{t("pages.clientPortal.activeDeal")}<select
             className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
             value={leadId ?? ""}
             onChange={(e) => setLeadId(e.target.value)}
@@ -145,13 +143,11 @@ export default function ClientDashboardPage() {
 
       {!leadId && me?.ok && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-          <p className="font-semibold mb-1">No deal linked yet</p>
+          <p className="font-semibold mb-1">{t("pages.clientPortal.noDeal")}</p>
           <p className="leading-relaxed">
             We match your login email to a contact on a lead. Ask your agent to add this exact email to your
             lead in CloseBoss, then refresh. If you expected the agent CRM instead, use{" "}
-            <Link href="/dashboard/overview" className="font-semibold underline underline-offset-2">
-              Dashboard overview
-            </Link>
+            <Link href="/dashboard/overview" className="font-semibold underline underline-offset-2">{t("pages.clientPortal.overview")}</Link>
             .
           </p>
         </div>
@@ -160,7 +156,7 @@ export default function ClientDashboardPage() {
       {dash?.ok && dash.deal && dash.pipeline && (
         <>
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-2">
-            <div className="text-xs font-semibold text-slate-500 uppercase">Current focus</div>
+            <div className="text-xs font-semibold text-slate-500 uppercase">{t("pages.clientPortal.currentFocus")}</div>
             <h2 className="text-lg font-bold text-slate-900 leading-snug">{dash.deal.headline}</h2>
             <div className="flex flex-wrap gap-2 text-xs">
               <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium capitalize">
@@ -181,12 +177,12 @@ export default function ClientDashboardPage() {
           </section>
 
           <section className="space-y-2">
-            <h3 className="text-sm font-bold text-slate-800">Transaction pipeline</h3>
+            <h3 className="text-sm font-bold text-slate-800">{t("pages.clientPortal.pipeline")}</h3>
             <TransactionPipeline stages={dash.pipeline.stages} activeIndex={dash.pipeline.activeIndex} />
           </section>
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-800 mb-2">Next steps</h3>
+            <h3 className="text-sm font-bold text-slate-800 mb-2">{t("pages.clientPortal.nextSteps")}</h3>
             <ul className="list-disc pl-5 text-sm text-slate-700 space-y-1">
               {(dash.nextSteps ?? []).map((s, i) => (
                 <li key={i}>{s}</li>
@@ -195,7 +191,7 @@ export default function ClientDashboardPage() {
           </section>
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
-            <h3 className="text-sm font-bold text-slate-800">Recommendations</h3>
+            <h3 className="text-sm font-bold text-slate-800">{t("pages.clientPortal.recommendations")}</h3>
             <ul className="space-y-3">
               {(dash.recommendations ?? []).map((r) => (
                 <li

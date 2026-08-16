@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Sparkles } from "lucide-react";
 import { DemoShell, DemoDisabledButton } from "@/components/demo/DemoShell";
 import { DEMO_CONVERSATIONS } from "@/lib/demo/data";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Demo workspace · Inbox",
@@ -11,34 +12,29 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default function DemoInbox() {
+export default async function DemoInbox() {
+  const t = await getServerT();
   const focused = DEMO_CONVERSATIONS[0];
 
   return (
     <DemoShell active="/demo/inbox">
       <header className="mb-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
-            Inbox
-          </h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{t("pages.demoPages.inbox", { ns: "dashboard" })}</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {DEMO_CONVERSATIONS.length} conversations ·{" "}
             {DEMO_CONVERSATIONS.filter((c) => c.unread).length} unread
           </p>
         </div>
-        <DemoDisabledButton label="Compose" />
+        <DemoDisabledButton label={t("pages.demoPages.compose", { ns: "dashboard" })} />
       </header>
 
       <div className="grid gap-4 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)]">
         {/* Thread list */}
         <aside className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-slate-800">
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Needs reply
-            </p>
-            <p className="text-[10px] font-medium text-slate-400">
-              Auto-sorted by urgency
-            </p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("pages.demoPages.needsReply", { ns: "dashboard" })}</p>
+            <p className="text-[10px] font-medium text-slate-400">{t("pages.demoPages.autoSorted", { ns: "dashboard" })}</p>
           </div>
           <ul className="divide-y divide-slate-100 dark:divide-slate-800">
             {DEMO_CONVERSATIONS.map((conv, i) => (
@@ -94,9 +90,9 @@ export default function DemoInbox() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                <DemoDisabledButton label="Call" variant="ghost" />
-                <DemoDisabledButton label="Video email" variant="ghost" />
-                <DemoDisabledButton label="Add to deal" variant="ghost" />
+                <DemoDisabledButton label={t("pages.demoPages.call", { ns: "dashboard" })} variant="ghost" />
+                <DemoDisabledButton label={t("pages.demoPages.videoEmail", { ns: "dashboard" })} variant="ghost" />
+                <DemoDisabledButton label={t("pages.demoPages.addToDeal", { ns: "dashboard" })} variant="ghost" />
               </div>
             </div>
           </header>
@@ -123,9 +119,9 @@ export default function DemoInbox() {
                   day?&rdquo;
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <DemoDisabledButton label="Approve & send" />
-                  <DemoDisabledButton label="Edit" variant="ghost" />
-                  <DemoDisabledButton label="Discard" variant="ghost" />
+                  <DemoDisabledButton label={t("pages.demoPages.approveSend", { ns: "dashboard" })} />
+                  <DemoDisabledButton label={t("pages.demoPages.edit", { ns: "dashboard" })} variant="ghost" />
+                  <DemoDisabledButton label={t("pages.demoPages.discard", { ns: "dashboard" })} variant="ghost" />
                 </div>
               </div>
             </div>
