@@ -2748,6 +2748,45 @@
       "leadName": "Lead name (optional)",
       "leadNamePlaceholder": "e.g. Hong Yang",
       "phone": "Phone number"
+    },
+    "dealReview": {
+      "executionScore": "Execution score:",
+      "wentWell": "What went well",
+      "stalled": "Where it stalled",
+      "vsOthers": "Vs your other deals",
+      "doDifferently": "Do differently next time",
+      "generatedAt": "Generated {{date}}"
+    },
+    "listingFeedback": {
+      "agentName": "Buyer agent name",
+      "agentEmail": "Buyer agent email",
+      "brokerage": "Brokerage (optional)",
+      "buyerName": "Buyer name (optional)",
+      "showingDate": "Showing date",
+      "submittedAt": "Submitted: {{date}}",
+      "requestedAt": "Requested {{date}}"
+    },
+    "missedCallLog": {
+      "autoTextsSent": "Auto-texts sent",
+      "missedNoText": "Missed, no text",
+      "missedOnly": "Missed only",
+      "withAutoText": "With auto-text"
+    },
+    "greetingAutomation": {
+      "heading": "Greeting automation",
+      "triggers": "Birthday, holiday, and home-anniversary triggers (UTC calendar).",
+      "checkIn": "Optional mid-month check-in when last contact was 90+ days ago (15th UTC).",
+      "channel": "Channel: SMS, email, or smart (lead preference + opt-outs + SMS opt-in).",
+      "dailyJob": "Daily job:",
+      "settingsTable": "Per-agent settings table:"
+    },
+    "agentVoice": {
+      "presetVoice": "Preset voice",
+      "speakingStyle": "Speaking style",
+      "chineseSimplified": "Chinese (Simplified)",
+      "bilingualGreeting": "Bilingual inbound greeting (English + Chinese)",
+      "customVoice": "Custom voice (future)",
+      "preview": "Preview (Twilio playback)"
     }
   }
 }

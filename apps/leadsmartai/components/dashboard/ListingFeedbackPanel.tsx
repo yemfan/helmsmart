@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import type { ListingFeedbackRow } from "@/lib/listing-feedback/types";
 
 const REACTION_EMOJI: Record<string, string> = {
@@ -219,6 +221,8 @@ function ReceivedCard({
   row: ListingFeedbackRow;
   onDelete: () => void;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   return (
     <li className="rounded-lg border border-slate-100 p-3 text-sm">
       <div className="flex items-start justify-between gap-2">
@@ -232,7 +236,7 @@ function ReceivedCard({
           <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
             {row.showing_date ? <span>Showing: {row.showing_date}</span> : null}
             {row.submitted_at ? (
-              <span>Submitted: {new Date(row.submitted_at).toLocaleDateString()}</span>
+              <span>{t("pages.listingFeedback.submittedAt", { date: new Date(row.submitted_at).toLocaleDateString(locale) })}</span>
             ) : null}
           </div>
         </div>
@@ -292,6 +296,8 @@ function PendingCard({
   onSend: () => void;
   onDelete: () => void;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   return (
     <li className="rounded-lg border border-dashed border-slate-200 p-3 text-sm">
       <div className="flex items-start justify-between gap-2">
@@ -305,7 +311,7 @@ function PendingCard({
           </div>
           {row.request_email_sent_at ? (
             <div className="mt-1 text-[11px] text-slate-400">
-              Requested {new Date(row.request_email_sent_at).toLocaleString()}
+              {t("pages.listingFeedback.requestedAt", { date: new Date(row.request_email_sent_at).toLocaleString(locale) })}
             </div>
           ) : null}
         </div>
@@ -339,6 +345,8 @@ function AddRequestForm({
   transactionId: string;
   onCreated: () => void;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [buyerAgentName, setBuyerAgentName] = useState("");
   const [buyerAgentEmail, setBuyerAgentEmail] = useState("");
   const [buyerAgentBrokerage, setBuyerAgentBrokerage] = useState("");
@@ -387,33 +395,33 @@ function AddRequestForm({
         <input
           value={buyerAgentName}
           onChange={(e) => setBuyerAgentName(e.target.value)}
-          placeholder="Buyer agent name"
+          placeholder={t("pages.listingFeedback.agentName")}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         />
         <input
           type="email"
           value={buyerAgentEmail}
           onChange={(e) => setBuyerAgentEmail(e.target.value)}
-          placeholder="Buyer agent email"
+          placeholder={t("pages.listingFeedback.agentEmail")}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         />
         <input
           value={buyerAgentBrokerage}
           onChange={(e) => setBuyerAgentBrokerage(e.target.value)}
-          placeholder="Brokerage (optional)"
+          placeholder={t("pages.listingFeedback.brokerage")}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         />
         <input
           value={buyerName}
           onChange={(e) => setBuyerName(e.target.value)}
-          placeholder="Buyer name (optional)"
+          placeholder={t("pages.listingFeedback.buyerName")}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         />
         <input
           type="date"
           value={showingDate}
           onChange={(e) => setShowingDate(e.target.value)}
-          placeholder="Showing date"
+          placeholder={t("pages.listingFeedback.showingDate")}
           className="col-span-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         />
       </div>

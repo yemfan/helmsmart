@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Activity-first view for the missed-call dashboard. Shows the full
@@ -36,6 +37,7 @@ type FilterMode = "all" | "missed" | "with_textback" | "no_textback";
 const PAGE_SIZE = 100;
 
 export default function MissedCallActivityLog() {
+  const { t } = useTranslation("dashboard");
   const [events, setEvents] = useState<CallEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,25 +96,25 @@ export default function MissedCallActivityLog() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Calls" value={stats.total} tone="slate" />
         <Stat label="Missed" value={stats.missed} tone="amber" />
-        <Stat label="Auto-texts sent" value={stats.textbacks} tone="emerald" />
-        <Stat label="Missed, no text" value={stats.missedNoTextback} tone="red" />
+        <Stat label={t("pages.missedCallLog.autoTextsSent")} value={stats.textbacks} tone="emerald" />
+        <Stat label={t("pages.missedCallLog.missedNoText")} value={stats.missedNoTextback} tone="red" />
       </div>
 
       {/* Filter chips */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <FilterChip value="all" current={filter} onClick={setFilter} label="All" />
-        <FilterChip value="missed" current={filter} onClick={setFilter} label="Missed only" />
+        <FilterChip value="missed" current={filter} onClick={setFilter} label={t("pages.missedCallLog.missedOnly")} />
         <FilterChip
           value="with_textback"
           current={filter}
           onClick={setFilter}
-          label="With auto-text"
+          label={t("pages.missedCallLog.withAutoText")}
         />
         <FilterChip
           value="no_textback"
           current={filter}
           onClick={setFilter}
-          label="Missed, no text"
+          label={t("pages.missedCallLog.missedNoText")}
         />
         <button
           type="button"

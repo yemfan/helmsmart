@@ -2748,6 +2748,45 @@
       "leadName": "客户姓名（可选）",
       "leadNamePlaceholder": "例如：杨红",
       "phone": "电话号码"
+    },
+    "dealReview": {
+      "executionScore": "执行评分：",
+      "wentWell": "做得好的地方",
+      "stalled": "卡住的环节",
+      "vsOthers": "与您其他交易的对比",
+      "doDifferently": "下次可以改进之处",
+      "generatedAt": "生成于 {{date}}"
+    },
+    "listingFeedback": {
+      "agentName": "买方经纪人姓名",
+      "agentEmail": "买方经纪人邮箱",
+      "brokerage": "所属经纪公司（可选）",
+      "buyerName": "买家姓名（可选）",
+      "showingDate": "带看日期",
+      "submittedAt": "提交于：{{date}}",
+      "requestedAt": "请求于 {{date}}"
+    },
+    "missedCallLog": {
+      "autoTextsSent": "已发送自动短信",
+      "missedNoText": "未接且未发短信",
+      "missedOnly": "仅未接来电",
+      "withAutoText": "已发自动短信"
+    },
+    "greetingAutomation": {
+      "heading": "问候自动化",
+      "triggers": "生日、节日与购房周年触发（按协调世界时日历）。",
+      "checkIn": "可选的月中回访：上次联系已超过 90 天时触发（协调世界时每月 15 日）。",
+      "channel": "渠道：短信、邮件或智能选择（依据客户偏好、退订状态与短信同意情况）。",
+      "dailyJob": "每日任务：",
+      "settingsTable": "各经纪人设置表："
+    },
+    "agentVoice": {
+      "presetVoice": "预设语音",
+      "speakingStyle": "说话风格",
+      "chineseSimplified": "简体中文",
+      "bilingualGreeting": "双语来电问候（英文 + 中文）",
+      "customVoice": "自定义语音（后续推出）",
+      "preview": "试听（Twilio 播放）"
     }
   }
 }

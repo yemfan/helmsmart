@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { AiActionGateBanner } from "@/components/entitlements/AiActionGateBanner";
 import {
   detectAiActionGate,
@@ -112,6 +114,8 @@ export function DealReviewPanel({ transactionId }: { transactionId: string }) {
 }
 
 function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const { review } = resp;
   return (
     <div className={`mt-4 space-y-4 ${dimmed ? "opacity-60" : ""}`}>
@@ -125,7 +129,7 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
         ) : null}
         {review.executionScore != null ? (
           <div className="mt-2 inline-flex items-center gap-2 text-xs text-slate-600">
-            <span className="font-semibold">Execution score:</span>
+            <span className="font-semibold">{t("pages.dealReview.executionScore")}</span>
             <span className="tabular-nums">
               {Math.round(review.executionScore * 100)}
               <span className="text-slate-400"> / 100</span>
@@ -136,14 +140,14 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
 
       <div className="grid gap-4 md:grid-cols-2">
         {review.whatWentWell.length > 0 ? (
-          <Section title="What went well" tone="green" items={review.whatWentWell} />
+          <Section title={t("pages.dealReview.wentWell")} tone="green" items={review.whatWentWell} />
         ) : null}
         {review.whereItStalled.length > 0 ? (
-          <Section title="Where it stalled" tone="amber" items={review.whereItStalled} />
+          <Section title={t("pages.dealReview.stalled")} tone="amber" items={review.whereItStalled} />
         ) : null}
         {review.patternObservations.length > 0 ? (
           <Section
-            title="Vs your other deals"
+            title={t("pages.dealReview.vsOthers")}
             tone="blue"
             items={review.patternObservations}
             wide
@@ -151,7 +155,7 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
         ) : null}
         {review.doDifferentlyNextTime.length > 0 ? (
           <Section
-            title="Do differently next time"
+            title={t("pages.dealReview.doDifferently")}
             tone="slate"
             items={review.doDifferentlyNextTime}
             wide
@@ -162,7 +166,7 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
       {/* Footer: provenance + fallback notice */}
       <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-400">
         <span>
-          Generated {new Date(review.generatedAtIso).toLocaleString()}
+          {t("pages.dealReview.generatedAt", { date: new Date(review.generatedAtIso).toLocaleString(locale) })}
           {resp.fromCache ? " (cached)" : ""}
         </span>
         {resp.usedFallback ? (

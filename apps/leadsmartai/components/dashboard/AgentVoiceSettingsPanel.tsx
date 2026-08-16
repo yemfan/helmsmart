@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { AgentVoiceSettings, VoicePresetOption, VoiceProvider } from "@/lib/agent-voice/types";
 import { DEFAULT_AGENT_VOICE_SETTINGS } from "@/lib/agent-voice/voiceDefaults";
 import { findPreset, listPresetsForProvider } from "@/lib/agent-voice/presets";
@@ -10,6 +11,7 @@ import { VOICE_BILINGUAL_GREETING_EN } from "@/lib/ai-call/voice-scripts";
 const defaults: AgentVoiceSettings = { ...DEFAULT_AGENT_VOICE_SETTINGS };
 
 export default function AgentVoiceSettingsPanel() {
+  const { t } = useTranslation("dashboard");
   const [settings, setSettings] = useState<AgentVoiceSettings>(defaults);
   const [savedSettings, setSavedSettings] = useState<AgentVoiceSettings>(defaults);
   const [presets, setPresets] = useState<VoicePresetOption[]>([]);
@@ -144,7 +146,7 @@ export default function AgentVoiceSettingsPanel() {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-gray-500">Preset voice</label>
+        <label className="block text-[11px] font-medium text-gray-500">{t("pages.agentVoice.presetVoice")}</label>
         <select
           className="w-full max-w-md border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
           value={settings.presetVoiceId}
@@ -159,7 +161,7 @@ export default function AgentVoiceSettingsPanel() {
       </div>
 
       <div className="space-y-1">
-        <span className="block text-[11px] font-medium text-gray-500">Speaking style</span>
+        <span className="block text-[11px] font-medium text-gray-500">{t("pages.agentVoice.speakingStyle")}</span>
         <div className="flex flex-wrap gap-2">
           {(["friendly", "professional", "luxury"] as const).map((st) => (
             <label
@@ -198,7 +200,7 @@ export default function AgentVoiceSettingsPanel() {
           }
         >
           <option value="en">English</option>
-          <option value="zh">Chinese (Simplified)</option>
+          <option value="zh">{t("pages.agentVoice.chineseSimplified")}</option>
         </select>
       </div>
 
@@ -209,11 +211,11 @@ export default function AgentVoiceSettingsPanel() {
           onChange={(e) => setSettings((s) => ({ ...s, bilingualEnabled: e.target.checked }))}
           className="accent-brand-accent"
         />
-        <span>Bilingual inbound greeting (English + Chinese)</span>
+        <span>{t("pages.agentVoice.bilingualGreeting")}</span>
       </label>
 
       <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50/80 p-3 space-y-2">
-        <div className="text-[11px] font-semibold text-gray-600">Custom voice (future)</div>
+        <div className="text-[11px] font-semibold text-gray-600">{t("pages.agentVoice.customVoice")}</div>
         <p className="text-[11px] text-gray-500">
           Voice cloning will use <span className="font-mono">voice_clone_*</span> columns on your agent row.
           Not available yet — preset voices only.
@@ -234,7 +236,7 @@ export default function AgentVoiceSettingsPanel() {
       </div>
 
       <div className="border-t border-gray-100 pt-4 space-y-2">
-        <div className="text-sm font-semibold text-gray-700">Preview (Twilio playback)</div>
+        <div className="text-sm font-semibold text-gray-700">{t("pages.agentVoice.preview")}</div>
         <p className="text-[11px] text-gray-500">
           English: <span className="font-mono text-gray-700">{previewPlayback.voiceEn}</span> · Chinese:{" "}
           <span className="font-mono text-gray-700">{previewPlayback.voiceZh}</span>
