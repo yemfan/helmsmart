@@ -67,13 +67,9 @@ export default async function MarketReportCityPage({
     <main className="mx-auto max-w-5xl px-4 py-10">
       <TrafficTracker pagePath={`/market-report/${city.slug}`} city={city.city} source="seo_market_report_city" />
       <h1 className="text-3xl font-bold text-slate-900">
-        {city.city}, {city.state} Housing Market Report
-      </h1>
-      <p className="mt-2 text-slate-700">
-        Review {keywords[0]} data for {city.city} and convert market intelligence into a smarter seller
-        launch strategy.
-      </p>
-      {asOf ? <p className="mt-1 text-xs text-slate-500">Market data as of {asOf}.</p> : null}
+        {city.city}, {city.state} {t("pages.marketReportCity.h1", { ns: "dashboard" })}</h1>
+      <p className="mt-2 text-slate-700">{t("pages.marketReportCity.review", { ns: "dashboard" })} {keywords[0]} {t("pages.marketReportCity.dataFor", { ns: "dashboard" })} {city.city} {t("pages.marketReportCity.intoStrategy", { ns: "dashboard" })}</p>
+      {asOf ? <p className="mt-1 text-xs text-slate-500">{t("pages.marketReportCity.dataAsOf", { ns: "dashboard" })} {asOf}.</p> : null}
 
       {(market.typicalValue !== null ||
         market.yoyChangePct !== null ||
@@ -81,32 +77,30 @@ export default async function MarketReportCityPage({
         market.inventory !== null) && (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {market.typicalValue !== null && (
-            <Metric label="Typical Value" value={formatCurrency(market.typicalValue)} />
+            <Metric label={t("pages.marketReportCity.typicalValue", { ns: "dashboard" })} value={formatCurrency(market.typicalValue)} />
           )}
           {market.yoyChangePct !== null && (
             <Metric
-              label="Annual Trend"
+              label={t("pages.marketReportCity.annualTrend", { ns: "dashboard" })}
               value={`${market.yoyChangePct > 0 ? "+" : ""}${market.yoyChangePct}%`}
             />
           )}
           {market.medianDaysOnMarket !== null && (
-            <Metric label="Median Days on Market" value={`${Math.round(market.medianDaysOnMarket)} days`} />
+            <Metric label={t("pages.marketReportCity.medianDom", { ns: "dashboard" })} value={`${Math.round(market.medianDaysOnMarket)} days`} />
           )}
           {market.inventory !== null && (
-            <Metric label="Homes for Sale" value={Math.round(market.inventory).toLocaleString(locale)} />
+            <Metric label={t("pages.marketReportCity.homesForSale", { ns: "dashboard" })} value={Math.round(market.inventory).toLocaleString(locale)} />
           )}
         </div>
       )}
 
       <section className="mt-8 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Monthly summary for {city.city}</h2>
-          <p className="mt-2 text-sm text-slate-700">
-            Inventory and buyer demand remain key drivers in {city.city}. Homeowners evaluating a move can use
+          <h2 className="text-xl font-semibold text-slate-900">{t("pages.marketReportCity.monthlySummary", { ns: "dashboard" })} {city.city}</h2>
+          <p className="mt-2 text-sm text-slate-700">{t("pages.marketReportCity.inventoryDemand", { ns: "dashboard" })} {city.city}. Homeowners evaluating a move can use
             localized pricing data to time the market and improve net proceeds.
           </p>
-          <p className="mt-2 text-sm text-slate-700">
-            The market trend is currently <span className="font-semibold">{market.trend}</span>
+          <p className="mt-2 text-sm text-slate-700">{t("pages.marketReportCity.trendCurrently", { ns: "dashboard" })} <span className="font-semibold">{market.trend}</span>
             {market.yoyChangePct !== null
               ? `, with typical home values ${market.yoyChangePct >= 0 ? "up" : "down"} ${Math.abs(
                   market.yoyChangePct,
@@ -114,7 +108,7 @@ export default async function MarketReportCityPage({
               : ""}
             . When trend is {market.trend}, pricing precision and launch timing become even more important.
           </p>
-          <h3 className="mt-5 text-sm font-semibold uppercase tracking-wide text-slate-800">Keyword coverage</h3>
+          <h3 className="mt-5 text-sm font-semibold uppercase tracking-wide text-slate-800">{t("pages.marketReportCity.keywordCoverage", { ns: "dashboard" })}</h3>
           <div className="mt-2 flex flex-wrap gap-2">
             {keywords.map((keyword) => (
               <span key={keyword} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-700">
@@ -125,26 +119,23 @@ export default async function MarketReportCityPage({
           <h3 className="mt-5 text-base font-semibold text-slate-900">{t("pages.articleChrome.faq", { ns: "dashboard" })}</h3>
           <dl className="mt-2 space-y-4 text-sm text-slate-700">
             <div>
-              <dt className="font-semibold text-slate-900">How often should I check the {city.city} market report?</dt>
-              <dd className="mt-1 ml-0 text-slate-700">Weekly during active listing planning.</dd>
+              <dt className="font-semibold text-slate-900">{t("pages.marketReportCity.howOften", { ns: "dashboard" })} {city.city} {t("pages.marketReportCity.marketReportQ", { ns: "dashboard" })}</dt>
+              <dd className="mt-1 ml-0 text-slate-700">{t("pages.marketReportCity.howOftenA", { ns: "dashboard" })}</dd>
             </div>
             <div>
-              <dt className="font-semibold text-slate-900">What metric matters most for sellers?</dt>
-              <dd className="mt-1 ml-0 text-slate-700">Recent comp velocity plus days on market in your segment.</dd>
+              <dt className="font-semibold text-slate-900">{t("pages.marketReportCity.whichMetric", { ns: "dashboard" })}</dt>
+              <dd className="mt-1 ml-0 text-slate-700">{t("pages.marketReportCity.whichMetricA", { ns: "dashboard" })}</dd>
             </div>
             <div>
-              <dt className="font-semibold text-slate-900">What does a stable trend mean?</dt>
-              <dd className="mt-1 ml-0 text-slate-700">
-                Price growth is flatter, so strategy and presentation drive results.
-              </dd>
+              <dt className="font-semibold text-slate-900">{t("pages.marketReportCity.stableTrend", { ns: "dashboard" })}</dt>
+              <dd className="mt-1 ml-0 text-slate-700">{t("pages.marketReportCity.stableTrendA", { ns: "dashboard" })}</dd>
             </div>
           </dl>
-          <h3 className="mt-5 text-base font-semibold text-slate-900">Internal links</h3>
+          <h3 className="mt-5 text-base font-semibold text-slate-900">{t("pages.marketReportCity.internalLinks", { ns: "dashboard" })}</h3>
           <div className="mt-2 flex flex-wrap gap-3 text-sm">
             {nearbyCities.map((near) => (
               <a key={near.slug} className="text-blue-700 hover:underline" href={`/market-report/${near.slug}`}>
-                {near.city} market report
-              </a>
+                {near.city} {t("pages.marketReportCity.marketReport", { ns: "dashboard" })}</a>
             ))}
             {relatedPages.map((page) => (
               <a key={page.href} className="text-blue-700 hover:underline" href={page.href}>
@@ -152,9 +143,7 @@ export default async function MarketReportCityPage({
               </a>
             ))}
           </div>
-          <p className="mt-5 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-900">
-            CTA: Request your free local report with comps, trend signals, and seller recommendations.
-          </p>
+          <p className="mt-5 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-900">{t("pages.marketReportCity.cta", { ns: "dashboard" })}</p>
         </article>
         <LocalSeoLeadForm title={`Get ${city.city} Market Report`} source="seo_market_report_city" city={city.city} />
       </section>
