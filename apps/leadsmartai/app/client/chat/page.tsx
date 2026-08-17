@@ -1,12 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useClientLeadId } from "@/components/client/useClientLeadId";
+import { intlLocale } from "@/lib/i18n/locale";
 
 type MeRes = { ok: boolean; primaryLeadId?: string | null; leads?: { id: string; property_address: string | null }[] };
 type Msg = { id: string; role: string; body: string; created_at: string; mine?: boolean };
 
 export default function ClientChatPage() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [me, setMe] = useState<MeRes | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [text, setText] = useState("");
@@ -79,8 +83,8 @@ export default function ClientChatPage() {
   return (
     <div className="flex flex-col h-[calc(100dvh-8.5rem)]">
       <div className="mb-3">
-        <h1 className="text-xl font-bold text-slate-900">Chat</h1>
-        <p className="text-sm text-slate-600">Message your agent — they see this on CloseBoss.</p>
+        <h1 className="text-xl font-bold text-slate-900">{t("pages.clientPortal.chat")}</h1>
+        <p className="text-sm text-slate-600">{t("pages.clientPortal.chatSub")}</p>
       </div>
 
       {leads.length > 1 && (
@@ -98,7 +102,7 @@ export default function ClientChatPage() {
       )}
 
       {!leadId ? (
-        <p className="text-sm text-slate-500">Connect a lead to start chatting.</p>
+        <p className="text-sm text-slate-500">{t("pages.clientPortal.connectLead")}</p>
       ) : (
         <>
           <div className="flex-1 overflow-y-auto space-y-2 pr-1">
@@ -112,7 +116,7 @@ export default function ClientChatPage() {
                 }`}
               >
                 <div className="text-[10px] opacity-70 mb-0.5">
-                  {m.role === "agent" ? "Agent" : "You"} · {new Date(m.created_at).toLocaleString()}
+                  {m.role === "agent" ? t("pages.clientPortal.agentRole") : t("pages.clientPortal.youRole")} · {new Date(m.created_at).toLocaleString(locale)}
                 </div>
                 {m.body}
               </div>
@@ -130,13 +134,9 @@ export default function ClientChatPage() {
               type="submit"
               disabled={sending || !text.trim()}
               className="rounded-xl bg-blue-600 text-white font-semibold px-4 text-sm disabled:opacity-50"
-            >
-              Send
-            </button>
+            >{t("pages.clientPortal.send")}</button>
           </form>
-          <p className="text-[10px] text-slate-400 mt-2 text-center">
-            Updates every few seconds. Your agent replies from CloseBoss (coming soon) or in person.
-          </p>
+          <p className="text-[10px] text-slate-400 mt-2 text-center">{t("pages.clientPortal.chatFooter")}</p>
         </>
       )}
     </div>

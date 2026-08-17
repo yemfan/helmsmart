@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type QueueLead = {
   id: number | string;
@@ -14,6 +15,7 @@ type QueueLead = {
 };
 
 export function AddContactClient() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -127,18 +129,16 @@ export function AddContactClient() {
         &larr; Leads
       </Link>
       <header>
-        <h1 className="text-2xl font-semibold text-gray-900">Add contact</h1>
-        <p className="text-sm text-gray-600">Claim a lead from the queue or add one manually.</p>
+        <h1 className="text-2xl font-semibold text-gray-900">{t("pages.addContact.heading")}</h1>
+        <p className="text-sm text-gray-600">{t("pages.addContact.intro")}</p>
       </header>
 
       {/* Lead Queue Section */}
       {!queueLoading && queueLeads.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-700">Available leads</h2>
-            <Link href="/dashboard/lead-queue" className="text-xs font-medium text-blue-600 hover:underline">
-              View all
-            </Link>
+            <h2 className="text-sm font-semibold text-gray-700">{t("pages.addContact.availableLeads")}</h2>
+            <Link href="/dashboard/lead-queue" className="text-xs font-medium text-blue-600 hover:underline">{t("pages.addContact.viewAll")}</Link>
           </div>
 
           {claimFeedback && (
@@ -172,7 +172,7 @@ export function AddContactClient() {
                     onClick={() => claimLead(id)}
                     className="ml-3 shrink-0 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800 disabled:opacity-50"
                   >
-                    {claiming === id ? "..." : "Claim"}
+                    {claiming === id ? "..." : t("pages.addContact.claim")}
                   </button>
                 </div>
               );
@@ -180,23 +180,19 @@ export function AddContactClient() {
           </div>
 
           <div className="border-b border-gray-200" />
-          <p className="text-center text-xs text-gray-400">Or add a contact manually below</p>
+          <p className="text-center text-xs text-gray-400">{t("pages.addContact.orManual")}</p>
         </div>
       )}
 
       {/* Manual Add Form */}
       <div className="space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-        <label className="block text-sm font-medium text-gray-800">
-          Name
-          <input
+        <label className="block text-sm font-medium text-gray-800">{t("pages.addContact.name")}<input
             className="mt-1 w-full min-h-[44px] rounded-xl border border-gray-300 px-3 text-base"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-gray-800">
-          Email
-          <input
+        <label className="block text-sm font-medium text-gray-800">{t("pages.addContact.email")}<input
             className="mt-1 w-full min-h-[44px] rounded-xl border border-gray-300 px-3 text-base"
             inputMode="email"
             autoCapitalize="off"
@@ -204,26 +200,20 @@ export function AddContactClient() {
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-gray-800">
-          Phone
-          <input
+        <label className="block text-sm font-medium text-gray-800">{t("pages.addContact.phone")}<input
             className="mt-1 w-full min-h-[44px] rounded-xl border border-gray-300 px-3 text-base"
             inputMode="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-gray-800">
-          Property / address
-          <input
+        <label className="block text-sm font-medium text-gray-800">{t("pages.addContact.property")}<input
             className="mt-1 w-full min-h-[44px] rounded-xl border border-gray-300 px-3 text-base"
             value={property_address}
             onChange={(e) => setPropertyAddress(e.target.value)}
           />
         </label>
-        <label className="block text-sm font-medium text-gray-800">
-          Notes
-          <textarea
+        <label className="block text-sm font-medium text-gray-800">{t("pages.addContact.notes")}<textarea
             className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-base"
             rows={4}
             value={notes}
@@ -235,9 +225,7 @@ export function AddContactClient() {
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
         <label className="flex items-center gap-2 text-sm text-gray-700">
-          <input type="checkbox" checked={forceCreate} onChange={(e) => setForceCreate(e.target.checked)} />
-          Create anyway if duplicate
-        </label>
+          <input type="checkbox" checked={forceCreate} onChange={(e) => setForceCreate(e.target.checked)} />{t("pages.addContact.createAnyway")}</label>
 
         <button
           type="button"
@@ -245,7 +233,7 @@ export function AddContactClient() {
           className="w-full min-h-[48px] rounded-xl bg-gray-900 text-white text-base font-medium disabled:opacity-50"
           onClick={() => void submit()}
         >
-          {saving ? "Saving\u2026" : "Save to CRM"}
+          {saving ? t("pages.addContact.saving") : t("pages.addContact.save")}
         </button>
       </div>
     </div>

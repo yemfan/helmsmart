@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { SalesModel } from "@/lib/sales-models";
 
 const STORAGE_KEY_PREFIX = "leadsmart.salesModel.dailyDone.v1";
@@ -21,6 +22,7 @@ const STORAGE_KEY_PREFIX = "leadsmart.salesModel.dailyDone.v1";
  * empty set under a new key, no cleanup needed.
  */
 export function DailyActionPlan({ model }: { model: SalesModel }) {
+  const { t } = useTranslation("dashboard");
   const today = todayKey();
   const storageKey = `${STORAGE_KEY_PREFIX}:${model.id}:${today}`;
   const [done, setDone] = useState<Set<number>>(new Set());
@@ -67,13 +69,13 @@ export function DailyActionPlan({ model }: { model: SalesModel }) {
 
   return (
     <section
-      aria-label="Today's action plan"
+      aria-label={t("pages.misc.actionPlanAria")}
       className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm"
     >
       <header className="flex items-center gap-4">
         <ProgressRing completed={completed} total={total} />
         <div className="min-w-0 flex-1">
-          <h2 className="text-base font-semibold text-slate-900">Today&apos;s Action Plan</h2>
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.misc.actionPlan")}</h2>
           <p className="mt-0.5 text-xs text-slate-500 tabular-nums">
             {completed} of {total} done
             {total > 0 ? ` · ${Math.round((completed / total) * 100)}%` : ""}

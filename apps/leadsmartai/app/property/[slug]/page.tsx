@@ -1,6 +1,7 @@
- "use client";
+"use client";
 
 import { useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
 
 type Comparable = {
@@ -33,6 +34,7 @@ type InvestmentMetrics = {
 };
 
 export default function PropertyReportPage() {
+  const { t } = useTranslation("dashboard");
   const params = useParams<{ slug: string }>();
   const slug = params?.slug ?? "";
 
@@ -336,9 +338,7 @@ export default function PropertyReportPage() {
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="flex flex-col md:flex-row items-start gap-4">
         <div className="flex-1 bg-white shadow rounded-xl p-5 border border-gray-100">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-            Property Report
-          </h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{t("pages.propertyReport.h1")}</h1>
           <p className="text-sm text-gray-700 font-medium">
             {property.address}
           </p>
@@ -366,15 +366,11 @@ export default function PropertyReportPage() {
         <button
           onClick={handleDownloadPdf}
           className="inline-flex items-center bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          Download PDF
-        </button>
+        >{t("pages.propertyReport.downloadPdf")}</button>
         <button
           onClick={handleShare}
           className="inline-flex items-center bg-white text-gray-800 text-sm font-semibold px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50"
-        >
-          Share Report
-        </button>
+        >{t("pages.propertyReport.shareReport")}</button>
         <button
           onClick={handleSave}
           disabled={saving}
@@ -386,9 +382,7 @@ export default function PropertyReportPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white shadow rounded-lg p-4 border border-gray-100">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-            Estimated Home Value
-          </h2>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{t("pages.propertyReport.estimatedValue")}</h2>
           <p className="text-2xl font-bold text-blue-700">
             ${Math.round(estimatedValue).toLocaleString()}
           </p>
@@ -401,20 +395,14 @@ export default function PropertyReportPage() {
           </p>
         </div>
         <div className="bg-white shadow rounded-lg p-4 border border-gray-100">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-            Rental Estimate
-          </h2>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{t("pages.propertyReport.rentalEstimate")}</h2>
           <p className="text-xl font-semibold text-gray-900">
             ${rentEstimate.toLocaleString()} / mo
           </p>
-          <p className="text-xs text-gray-500 mt-1">
-            Based on similar rentals in the area.
-          </p>
+          <p className="text-xs text-gray-500 mt-1">{t("pages.propertyReport.rentalNote")}</p>
         </div>
         <div className="bg-white shadow rounded-lg p-4 border border-gray-100">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-            Mortgage Estimate
-          </h2>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{t("pages.propertyReport.mortgageEstimate")}</h2>
           <p className="text-xl font-semibold text-gray-900">
             ${mortgagePayment.toFixed(0)} / mo
           </p>
@@ -425,18 +413,16 @@ export default function PropertyReportPage() {
       </div>
 
       <div className="bg-white shadow rounded-xl p-6 border border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">
-          Comparable Sales
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">{t("pages.articleChrome.comparableSales", { ns: "dashboard" })}</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full text-xs border-collapse">
             <thead>
               <tr className="bg-gray-50 text-left text-gray-600">
-                <th className="px-3 py-2 font-semibold">Address</th>
-                <th className="px-3 py-2 font-semibold">Sale Price</th>
-                <th className="px-3 py-2 font-semibold">Sqft</th>
-                <th className="px-3 py-2 font-semibold">Price/Sqft</th>
-                <th className="px-3 py-2 font-semibold">Distance</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.address", { ns: "dashboard" })}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.propertyReport.salePrice")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.sqft", { ns: "dashboard" })}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.propertyReport.pricePerSqft")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.propertyReport.distance")}</th>
               </tr>
             </thead>
             <tbody>
@@ -466,30 +452,22 @@ export default function PropertyReportPage() {
       </div>
 
       <div className="bg-white shadow rounded-xl p-6 border border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">
-          Investment Analysis
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">{t("pages.propertyReport.investmentAnalysis")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
           <div className="bg-gray-50 rounded-lg p-3 text-center">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">
-              Cap Rate
-            </p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide">{t("pages.articleChrome.capRate", { ns: "dashboard" })}</p>
             <p className="text-lg font-semibold text-gray-900">
               {investmentMetrics.capRate.toFixed(1)}%
             </p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3 text-center">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">
-              Monthly Cash Flow
-            </p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide">{t("pages.articleChrome.monthlyCashFlow", { ns: "dashboard" })}</p>
             <p className="text-lg font-semibold text-gray-900">
               ${investmentMetrics.monthlyCashFlow.toFixed(0)}
             </p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3 text-center">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">
-              ROI (Year 1 est.)
-            </p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide">{t("pages.propertyReport.roiYear1")}</p>
             <p className="text-lg font-semibold text-gray-900">
               {investmentMetrics.roi.toFixed(1)}%
             </p>
@@ -498,7 +476,7 @@ export default function PropertyReportPage() {
       </div>
 
       <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-sm text-blue-900">
-        <h2 className="text-sm font-semibold mb-2">AI Summary</h2>
+        <h2 className="text-sm font-semibold mb-2">{t("pages.propertyReport.aiSummary")}</h2>
         <p>{aiSummary}</p>
       </div>
     </div>

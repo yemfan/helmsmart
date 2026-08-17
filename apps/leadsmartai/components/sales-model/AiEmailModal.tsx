@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { SalesModel } from "@/lib/sales-models";
 
 /**
@@ -41,6 +42,7 @@ export function AiEmailModal({
   /** Optional success hook — fires after a successful send so the parent can show a toast or refresh adjacent data. */
   onSent?: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   // ── Picker state ────────────────────────────────────────────
   const [contactQuery, setContactQuery] = useState("");
   const [contactResults, setContactResults] = useState<EmailContact[]>([]);
@@ -258,9 +260,7 @@ export function AiEmailModal({
                 {selectedContact.email}
               </p>
             ) : (
-              <p className="mt-0.5 text-xs text-slate-500">
-                Pick a contact, describe the situation, then review and send the AI-drafted email.
-              </p>
+              <p className="mt-0.5 text-xs text-slate-500">{t("pages.aiComposeModal.emailIntro")}</p>
             )}
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -270,19 +270,15 @@ export function AiEmailModal({
                 onClick={onChangeContact}
                 disabled={drafting || sending}
                 className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
-              >
-                Change
-              </button>
+              >{t("pages.aiComposeModal.change")}</button>
             ) : null}
             <button
               type="button"
               onClick={onClose}
               disabled={drafting || sending}
               className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
-              aria-label="Close"
-            >
-              Close
-            </button>
+              aria-label={t("pages.aiComposeModal.close")}
+            >{t("pages.aiComposeModal.close")}</button>
           </div>
         </div>
 
@@ -291,14 +287,12 @@ export function AiEmailModal({
           {!selectedContact ? (
             // ── Picker phase ────────────────────────────────────
             <div className="flex flex-col gap-3 px-5 py-4">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Pick a contact
-              </label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.aiComposeModal.pickContact")}</label>
               <input
                 type="search"
                 value={contactQuery}
                 onChange={(e) => setContactQuery(e.target.value)}
-                placeholder="Search by name or email"
+                placeholder={t("pages.aiComposeModal.searchEmail")}
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 autoFocus
               />
@@ -306,9 +300,7 @@ export function AiEmailModal({
                 {searching && contactResults.length === 0 ? (
                   <p className="px-4 py-6 text-center text-xs text-slate-500">Searching…</p>
                 ) : contactResults.length === 0 ? (
-                  <p className="px-4 py-6 text-center text-xs text-slate-500">
-                    No matching contacts with email addresses. Try a different search.
-                  </p>
+                  <p className="px-4 py-6 text-center text-xs text-slate-500">{t("pages.aiComposeModal.noEmailMatches")}</p>
                 ) : (
                   <ul className="divide-y divide-slate-200">
                     {contactResults.map((c) => (
@@ -345,14 +337,12 @@ export function AiEmailModal({
             // ── Compose phase ──────────────────────────────────
             <div className="space-y-4 px-5 py-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  What do you want this email to accomplish?
-                </label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.aiComposeModal.emailGoal")}</label>
                 <textarea
                   value={situation}
                   onChange={(e) => setSituation(e.target.value)}
                   rows={2}
-                  placeholder="e.g. Re-engage Mary about her home search now that two new listings hit her saved areas. Goal: book a 15-min call this week."
+                  placeholder={t("pages.aiComposeModal.goalPlaceholder")}
                   className="mt-1 block w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 />
               </div>
@@ -371,16 +361,13 @@ export function AiEmailModal({
                       ? "Regenerate draft"
                       : "Generate draft with AI"}
                 </button>
-                <span className="text-xs text-slate-500">
-                  Drafts use your{" "}
+                <span className="text-xs text-slate-500">{t("pages.dashFragments.draftsUseYour")}{" "}
                   <span className="font-medium text-slate-700">{model.name}</span> tone.
                 </span>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Subject
-                </label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.aiComposeModal.subject")}</label>
                 <input
                   type="text"
                   value={subject}
@@ -393,9 +380,7 @@ export function AiEmailModal({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Body
-                </label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.aiComposeModal.body")}</label>
                 <textarea
                   value={emailBody}
                   onChange={(e) => setEmailBody(e.target.value)}
@@ -411,7 +396,7 @@ export function AiEmailModal({
 
               {successMsg ? (
                 <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
-                  <strong className="font-semibold">Sent.</strong> {successMsg}
+                  <strong className="font-semibold">{t("pages.aiComposeModal.sent")}</strong> {successMsg}
                 </div>
               ) : null}
               {error ? (
@@ -432,9 +417,7 @@ export function AiEmailModal({
                 onClick={onClose}
                 disabled={drafting || sending}
                 className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
-              >
-                Cancel
-              </button>
+              >{t("pages.aiComposeModal.cancel")}</button>
               <button
                 type="button"
                 onClick={() => void onSend()}

@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "ROI Calculator",
@@ -6,8 +7,9 @@ export const metadata: Metadata = {
   keywords: ["ROI calculator", "return on investment", "rental property", "cash on cash", "real estate investing"],
 };
 
-export default function ROICalculatorLayout({
+export default async function ROICalculatorLayout({
   children,
 }: { children: React.ReactNode }) {
+  const t = await getServerT();
   return children;
 }

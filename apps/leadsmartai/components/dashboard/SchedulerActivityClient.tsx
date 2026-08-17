@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import Link from "next/link";
 import type { FiringOutcomeFilter, FiringRange, FiringRow } from "@/lib/scheduler/firings";
 
@@ -25,6 +27,8 @@ const RANGE_OPTIONS: { value: FiringRange; label: string }[] = [
 ];
 
 export default function SchedulerActivityClient() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [outcome, setOutcome] = useState<FiringOutcomeFilter>("all");
   const [range, setRange] = useState<FiringRange>("30d");
   const [rows, setRows] = useState<DisplayRow[]>([]);
@@ -93,9 +97,7 @@ export default function SchedulerActivityClient() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-            Outcome
-          </span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.scheduler.colOutcome")}</span>
           <div className="flex flex-wrap gap-1">
             {OUTCOME_OPTIONS.map((o) => (
               <button
@@ -114,9 +116,7 @@ export default function SchedulerActivityClient() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-            Range
-          </span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.scheduler.range")}</span>
           <div className="flex flex-wrap gap-1">
             {RANGE_OPTIONS.map((r) => (
               <button
@@ -150,11 +150,11 @@ export default function SchedulerActivityClient() {
             <table className="w-full text-xs">
               <thead className="bg-gray-50">
                 <tr>
-                  <Th>When</Th>
-                  <Th>Contact</Th>
-                  <Th>Template</Th>
-                  <Th>Period</Th>
-                  <Th>Outcome</Th>
+                  <Th>{t("pages.scheduler.colWhen")}</Th>
+                  <Th>{t("pages.scheduler.colContact")}</Th>
+                  <Th>{t("pages.scheduler.colTemplate")}</Th>
+                  <Th>{t("pages.scheduler.colPeriod")}</Th>
+                  <Th>{t("pages.scheduler.colOutcome")}</Th>
                   <Th />
                 </tr>
               </thead>
@@ -169,9 +169,9 @@ export default function SchedulerActivityClient() {
                         onClick={() => setExpandedId(expanded ? null : r.id)}
                       >
                         <Td>
-                          <div className="text-gray-700">{relativeTime(r.firedAt)}</div>
+                          <div className="text-gray-700">{relativeTime(r.firedAt, t, locale)}</div>
                           <div className="text-[10px] text-gray-400">
-                            {new Date(r.firedAt).toLocaleString()}
+                            {new Date(r.firedAt).toLocaleString(locale)}
                           </div>
                         </Td>
                         <Td>
@@ -241,7 +241,7 @@ export default function SchedulerActivityClient() {
                                 </Link>
                               )}
                               <div>
-                                <span className="text-gray-400">Fired at: </span>
+                                <span className="text-gray-400">{t("pages.scheduler.firedAt")}</span>
                                 {new Date(r.firedAt).toISOString()}
                               </div>
                             </div>
@@ -276,25 +276,21 @@ export default function SchedulerActivityClient() {
 }
 
 function EmptyState({ outcome }: { outcome: FiringOutcomeFilter }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   if (outcome === "all") {
     return (
       <div className="p-8 text-center text-sm text-gray-500">
-        <div className="font-medium text-gray-700">No scheduler activity yet.</div>
+        <div className="font-medium text-gray-700">{t("pages.scheduler.noActivity")}</div>
         <p className="mt-1">
           Each time the scheduler runs, every (contact × template) evaluation lands here — created,
           suppressed, already fired, and errors. Run the scheduler from the{" "}
-          <Link href="/dashboard/drafts" className="text-brand-accent-text hover:underline">
-            drafts page
-          </Link>{" "}
-          to populate this feed.
-        </p>
+          <Link href="/dashboard/drafts" className="text-brand-accent-text hover:underline">{t("pages.scheduler.draftsPage")}</Link>{" "}{t("pages.dashFragments.toPopulateFeed")}</p>
       </div>
     );
   }
   return (
-    <div className="p-8 text-center text-sm text-gray-500">
-      No firings match the current filter.
-    </div>
+    <div className="p-8 text-center text-sm text-gray-500">{t("pages.scheduler.noMatches")}</div>
   );
 }
 
@@ -359,14 +355,16 @@ function Td({ children, className }: { children: React.ReactNode; className?: st
   return <td className={`px-3 py-2 align-top ${className ?? ""}`}>{children}</td>;
 }
 
-function relativeTime(iso: string): string {
+type Translate = (k: string, o?: Record<string, unknown>) => string;
+
+function relativeTime(iso: string, t: Translate, locale: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return t("pages.scheduler.justNow");
+  if (mins < 60) return t("pages.scheduler.minsAgo", { n: mins });
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
+  if (hrs < 24) return t("pages.scheduler.hrsAgo", { n: hrs });
   const days = Math.floor(hrs / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString();
+  if (days < 7) return t("pages.scheduler.daysAgo", { n: days });
+  return new Date(iso).toLocaleDateString(locale);
 }

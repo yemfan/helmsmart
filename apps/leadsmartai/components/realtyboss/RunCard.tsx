@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { AssistantAvatar } from "@/components/realtyboss/AssistantAvatar";
 
@@ -97,6 +98,7 @@ export default function RunCard({
   runId: string;
   onChanged?: () => void | Promise<void>;
 }) {
+  const { t } = useTranslation("dashboard");
   const [run, setRun] = useState<RunDetail | null>(null);
   const [steps, setSteps] = useState<RunStep[]>([]);
 
@@ -170,10 +172,10 @@ export default function RunCard({
         )
       )}
       {run.status === "failed" && run.error && (
-        <p className="text-xs text-red-600">Run failed: {run.error}</p>
+        <p className="text-xs text-red-600">{t("pages.dashFragments.runFailed")} {run.error}</p>
       )}
       {run.status === "budget_exceeded" && (
-        <p className="text-xs text-amber-700">Stopped at the run budget — partial work above.</p>
+        <p className="text-xs text-amber-700">{t("pages.runCard.stoppedAtBudget")}</p>
       )}
     </div>
   );
@@ -188,6 +190,7 @@ export default function RunCard({
  * "premium" cue is the gold stars + soft emerald wash, nothing that flashes.
  */
 function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] }) {
+  const { t } = useTranslation("dashboard");
   const done = steps.filter((s) => s.status === "completed");
 
   // Crew credit — the distinct AI employees who completed a step, in order.
@@ -213,8 +216,8 @@ function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] 
         <AssistantAvatar id="max" size={30} alt="Max" className="mt-0.5 h-[30px] w-[30px]" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-            <p className="text-sm font-semibold text-gray-900">Mission accomplished.</p>
-            <span className="text-xs tracking-tight text-amber-500" aria-label="five stars">★★★★★</span>
+            <p className="text-sm font-semibold text-gray-900">{t("pages.runCard.missionAccomplished")}</p>
+            <span className="text-xs tracking-tight text-amber-500" aria-label={t("pages.runCard.fiveStars")}>★★★★★</span>
           </div>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-gray-500">
             <span className="font-medium text-emerald-700">
@@ -228,7 +231,7 @@ function MissionCompleteCard({ run, steps }: { run: RunDetail; steps: RunStep[] 
       {/* crew credit */}
       {crew.length > 0 && (
         <div className="flex flex-wrap items-center gap-1.5 px-3 pt-2">
-          <span className="text-[10px] uppercase tracking-[0.12em] text-gray-400">Delivered by</span>
+          <span className="text-[10px] uppercase tracking-[0.12em] text-gray-400">{t("pages.runCard.deliveredBy")}</span>
           <span className="flex items-center gap-1.5">
             {crew.map((c) => (
               <span key={c.name} className="inline-flex items-center gap-1 rounded-full bg-white/80 px-1.5 py-0.5 ring-1 ring-emerald-100">
@@ -363,6 +366,7 @@ function ApprovalControls({
   runId: string;
   onChanged: () => Promise<void>;
 }) {
+  const { t } = useTranslation("dashboard");
   const [busy, setBusy] = useState<"approved" | "rejected" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -420,9 +424,7 @@ function ApprovalControls({
             type="button"
             onClick={() => setEditing(true)}
             className="rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-50"
-          >
-            Edit
-          </button>
+          >{t("pages.runCard.edit")}</button>
         )}
         <button
           type="button"

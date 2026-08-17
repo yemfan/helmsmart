@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import {
   LISTING_AD_MAX_CLIPS,
   LISTING_AD_CLIP_SECONDS,
@@ -42,6 +44,8 @@ function factsFromListing(l: ListingDetail): Facts {
 }
 
 export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [facts, setFacts] = useState<Facts>(() => factsFromListing(listing));
   const [source, setSource] = useState<string | null>(listing.ad_facts_source);
   const [confidence, setConfidence] = useState<number | null>(listing.ad_facts_confidence);
@@ -199,13 +203,13 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
         if (url) uploaded.push(url);
       }
       if (uploaded.length === 0) {
-        setError("Please choose image files.");
+        setError(t("pages.listingAd.needImages"));
         return;
       }
       // Cap the total so a huge upload can't fan out into 30 fal clips later.
       const next = { ...facts, photoUrls: [...facts.photoUrls, ...uploaded].slice(0, 20) };
       setFacts(next);
-      // Persist immediately so "Generate cinematic clips" (which reads the DB) sees them.
+      // Persist immediately so t("pages.listingAd.generateClips") (which reads the DB) sees them.
       await persistFacts(next);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed.");
@@ -230,7 +234,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
     const queue = photosToAnimate;
     const total = queue.length;
     if (total === 0) {
-      setError("Select at least one photo to animate.");
+      setError(t("pages.listingAd.needPhotoToAnimate"));
       return;
     }
     setGenerating(true);
@@ -403,19 +407,17 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Video ad</h2>
-            <p className="text-[11px] text-slate-500">
-              Pull the photos + facts from the listing, then (soon) generate a cinematic video ad.
-            </p>
+            <h2 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.videoAd")}</h2>
+            <p className="text-[11px] text-slate-500">{t("pages.listingAd.pullBlurb")}</p>
           </div>
           <button
             type="button"
             onClick={() => void pull()}
             disabled={pulling || !pullUrl.trim()}
             className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-            title={pullUrl.trim() ? "Render the listing page and pull photos + facts" : "Paste a listing URL first"}
+            title={pullUrl.trim() ? t("pages.listingAd.pullHint") : t("pages.listingAd.pullNeedsUrl")}
           >
-            {pulling ? "Pulling…" : hasFacts ? "Re-pull from URL" : "Pull from URL"}
+            {pulling ? "Pulling…" : hasFacts ? t("pages.listingAd.rePull") : t("pages.listingAd.pullFromUrl")}
           </button>
         </div>
 
@@ -425,7 +427,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           <input
             value={pullUrl}
             onChange={(e) => setPullUrl(e.target.value)}
-            placeholder="Paste a listing URL — e.g. https://www.zillow.com/homedetails/…"
+            placeholder={t("pages.listingAd.urlPlaceholder")}
             className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             inputMode="url"
           />
@@ -440,57 +442,58 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
 
         {warnings.length > 0 ? (
           <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
-            <div className="font-medium">The pull was partial:</div>
+            <div className="font-medium">{t("pages.listingAd.partialPull")}</div>
             <ul className="list-inside list-disc">
               {warnings.map((w, i) => (
                 <li key={i}>{w}</li>
               ))}
             </ul>
-            <div className="mt-1">Fill in what&apos;s missing below.</div>
+            <div className="mt-1">{t("pages.listingAd.fillMissing")}</div>
           </div>
         ) : null}
 
         {source ? (
-          <p className="mb-3 text-[11px] text-slate-500">
-            Source: <span className="font-medium">{source === "mls_url" ? "MLS pull" : "Manual"}</span>
-            {confidence != null ? <> · confidence {Math.round(confidence * 100)}%</> : null}
-            {savedAt ? <> · updated {new Date(savedAt).toLocaleDateString()}</> : null}
+          <p className="mb-3 text-[11px] text-slate-500">{t("pages.listingAd.source")}<span className="font-medium">{source === "mls_url" ? t("pages.listingAd.mlsPull") : t("pages.listingAd.manual")}</span>
+            {confidence != null ? <> · {t("pages.listingAd.confidence", { pct: Math.round(confidence * 100) })}</> : null}
+            {savedAt ? (
+            <> {t("pages.listingAd.updatedAt", { date: new Date(savedAt).toLocaleDateString(locale) })}</>
+          ) : null}
           </p>
         ) : null}
 
         {/* Facts */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <label className="block">
-            <span className="text-xs font-medium text-slate-600">Beds</span>
+            <span className="text-xs font-medium text-slate-600">{t("pages.listingAd.beds")}</span>
             <input value={facts.beds} onChange={(e) => setFacts({ ...facts, beds: e.target.value })} className={field} inputMode="numeric" />
           </label>
           <label className="block">
-            <span className="text-xs font-medium text-slate-600">Baths</span>
+            <span className="text-xs font-medium text-slate-600">{t("pages.listingAd.baths")}</span>
             <input value={facts.baths} onChange={(e) => setFacts({ ...facts, baths: e.target.value })} className={field} inputMode="decimal" />
           </label>
           <label className="block">
-            <span className="text-xs font-medium text-slate-600">Sq ft</span>
+            <span className="text-xs font-medium text-slate-600">{t("pages.listingAd.sqft")}</span>
             <input value={facts.sqft} onChange={(e) => setFacts({ ...facts, sqft: e.target.value })} className={field} inputMode="numeric" />
           </label>
           <label className="block">
-            <span className="text-xs font-medium text-slate-600">Year built</span>
+            <span className="text-xs font-medium text-slate-600">{t("pages.listingAd.yearBuilt")}</span>
             <input value={facts.yearBuilt} onChange={(e) => setFacts({ ...facts, yearBuilt: e.target.value })} className={field} inputMode="numeric" />
           </label>
         </div>
 
         <label className="mt-3 block">
-          <span className="text-xs font-medium text-slate-600">Description</span>
+          <span className="text-xs font-medium text-slate-600">{t("pages.listingAd.description")}</span>
           <textarea
             value={facts.description}
             onChange={(e) => setFacts({ ...facts, description: e.target.value })}
             rows={3}
             className={`${field} resize-y`}
-            placeholder="The marketing description for this home…"
+            placeholder={t("pages.listingAd.descriptionPlaceholder")}
           />
         </label>
 
         <label className="mt-3 block">
-          <span className="text-xs font-medium text-slate-600">Highlights (one per line)</span>
+          <span className="text-xs font-medium text-slate-600">{t("pages.listingAd.highlights")}</span>
           <textarea
             value={facts.highlights}
             onChange={(e) => setFacts({ ...facts, highlights: e.target.value })}
@@ -503,10 +506,9 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
         {/* Photos */}
         <div className="mt-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs font-medium text-slate-600">
-              Photos ({facts.photoUrls.length})
+            <span className="text-xs font-medium text-slate-600">{t("pages.dashFragments.photos")}{facts.photoUrls.length})
               {facts.photoUrls.length > 0 && (
-                <span className="ml-1 text-slate-400">· {photosToAnimate.length} selected for video</span>
+                <span className="ml-1 text-slate-400">· {photosToAnimate.length} {t("pages.dashFragments.selectedForVideo")}</span>
               )}
             </span>
             <div className="flex items-center gap-2">
@@ -516,16 +518,12 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                     type="button"
                     onClick={selectAllPhotos}
                     className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
-                  >
-                    Select all
-                  </button>
+                  >{t("pages.listingAd.selectAll")}</button>
                   <button
                     type="button"
                     onClick={clearPhotoSelection}
                     className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
-                  >
-                    Clear
-                  </button>
+                  >{t("pages.listingAd.clear")}</button>
                 </>
               )}
               <button
@@ -534,7 +532,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                 disabled={uploading}
                 className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
               >
-                {uploading ? "Uploading…" : "+ Upload photos"}
+                {uploading ? t("pages.listingAd.uploading") : t("pages.listingAd.uploadPhotos")}
               </button>
             </div>
             <input
@@ -570,7 +568,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={url}
-                        alt="listing"
+                        alt={t("pages.listingAd.listingAlt")}
                         onClick={() => togglePhoto(url)}
                         className={`h-full w-full cursor-pointer object-cover transition ${on ? "" : "opacity-40"}`}
                       />
@@ -578,7 +576,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                       <button
                         type="button"
                         onClick={() => togglePhoto(url)}
-                        aria-label={on ? "Exclude photo from video" : "Include photo in video"}
+                        aria-label={on ? t("pages.listingAd.excludePhoto") : t("pages.listingAd.includePhoto")}
                         aria-pressed={on}
                         className={`absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold shadow ${
                           on && !overCap
@@ -595,7 +593,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                         type="button"
                         onClick={() => removePhoto(url)}
                         className="absolute right-1 top-1 hidden rounded-full bg-black/60 px-1.5 text-xs text-white group-hover:block"
-                        aria-label="remove photo"
+                        aria-label={t("pages.listingAd.removePhoto")}
                       >
                         ×
                       </button>
@@ -614,7 +612,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
             disabled={saving}
             className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
           >
-            {saving ? "Saving…" : "Save facts"}
+            {saving ? t("pages.listingAd.saving") : t("pages.listingAd.saveFacts")}
           </button>
         </div>
 
@@ -622,25 +620,23 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
         <div className="mt-5 border-t border-slate-100 pt-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Cinematic clips</h3>
-              <p className="text-[11px] text-slate-500">
-                Animate your selected photos into cinematic motion clips (the raw material for the video ad).
-              </p>
+              <h3 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.cinematicClips")}</h3>
+              <p className="text-[11px] text-slate-500">{t("pages.listingAd.animateBlurb")}</p>
             </div>
             <button
               type="button"
               onClick={() => void generateClips()}
               disabled={generating || photosToAnimate.length === 0}
               className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-              title={photosToAnimate.length === 0 ? "Select at least one photo" : "Generate cinematic clips (fal)"}
+              title={photosToAnimate.length === 0 ? t("pages.listingAd.needPhoto") : t("pages.listingAd.generateClips")}
             >
-              {generating ? "Rendering…" : clipUrls.length > 0 ? "Re-generate clips" : "Generate cinematic clips"}
+              {generating ? "Rendering…" : clipUrls.length > 0 ? t("pages.listingAd.regenerateClips") : t("pages.listingAd.generateClips")}
             </button>
           </div>
 
           {/* Length controls: per-clip seconds + a live total-length estimate. */}
           <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/60 p-2.5">
-            <span className="text-xs font-medium text-slate-600">Clip length</span>
+            <span className="text-xs font-medium text-slate-600">{t("pages.listingAd.clipLength")}</span>
             <div className="inline-flex overflow-hidden rounded-lg border border-slate-200">
               {LISTING_AD_CLIP_SECONDS.map((s) => (
                 <button
@@ -659,7 +655,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               {photosToAnimate.length > 0 ? (
                 <>
                   {photosToAnimate.length} clip{photosToAnimate.length === 1 ? "" : "s"} × {clipSeconds}s ≈{" "}
-                  <span className="font-semibold text-slate-700">~{estSeconds}s video</span>
+                  <span className="font-semibold text-slate-700">~{estSeconds}{t("pages.dashFragments.sVideo")}</span>
                 </>
               ) : (
                 "Select photos above to set the length"
@@ -668,9 +664,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
           </div>
 
           {generating ? (
-            <p className="mt-2 text-[11px] text-slate-500">
-              Rendering cinematic motion — this can take a couple minutes per photo.
-            </p>
+            <p className="mt-2 text-[11px] text-slate-500">{t("pages.listingAd.rendering")}</p>
           ) : null}
           {clipNote ? <p className="mt-2 text-[12px] text-slate-600">{clipNote}</p> : null}
 
@@ -688,9 +682,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               ))}
             </div>
           ) : (
-            <p className="mt-2 text-[11px] text-slate-400">
-              No clips yet. Generate them above, then build the branded ad below.
-            </p>
+            <p className="mt-2 text-[11px] text-slate-400">{t("pages.listingAd.noClips")}</p>
           )}
         </div>
 
@@ -698,19 +690,17 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
         <div className="mt-5 border-t border-slate-100 pt-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Video ad</h3>
-              <p className="text-[11px] text-slate-500">
-                Stitch the clips into one video tour + an AI caption — ready to post.
-              </p>
+              <h3 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.videoAd")}</h3>
+              <p className="text-[11px] text-slate-500">{t("pages.listingAd.stitchBlurb")}</p>
             </div>
             <button
               type="button"
               onClick={() => void buildReel()}
               disabled={building || clipUrls.length === 0}
               className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-              title={clipUrls.length === 0 ? "Generate cinematic clips first" : "Build the video ad"}
+              title={clipUrls.length === 0 ? t("pages.listingAd.needClips") : t("pages.listingAd.buildAd")}
             >
-              {building ? "Building…" : reelUrl ? "Rebuild ad" : "Build the video ad"}
+              {building ? "Building…" : reelUrl ? t("pages.listingAd.rebuildAd") : t("pages.listingAd.buildAd")}
             </button>
           </div>
 
@@ -721,7 +711,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               <video src={reelUrl} controls loop className="aspect-[9/16] w-48 shrink-0 rounded-lg border border-slate-200 bg-black" />
               <div className="min-w-0 flex-1">
                 <label className="block">
-                  <span className="text-xs font-medium text-slate-600">Caption</span>
+                  <span className="text-xs font-medium text-slate-600">{t("pages.listingAd.caption")}</span>
                   <textarea
                     value={reelCaption}
                     onChange={(e) => setReelCaption(e.target.value)}
@@ -735,9 +725,9 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                     onClick={() => void publishReel()}
                     disabled={publishing}
                     className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-                    title="Post to every connected video channel — Facebook, Instagram, LinkedIn, TikTok, YouTube"
+                    title={t("pages.listingAd.publishHint")}
                   >
-                    {publishing ? "Publishing…" : "Publish to social"}
+                    {publishing ? t("pages.listingAd.publishing") : t("pages.listingAd.publish")}
                   </button>
                   <a
                     href={reelUrl}
@@ -757,7 +747,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               </div>
             </div>
           ) : clipUrls.length === 0 ? (
-            <p className="mt-2 text-[11px] text-slate-400">Generate the cinematic clips first.</p>
+            <p className="mt-2 text-[11px] text-slate-400">{t("pages.listingAd.clipsFirst")}</p>
           ) : null}
         </div>
 
@@ -765,34 +755,31 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
         <div className="mt-5 border-t border-slate-100 pt-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Script &amp; voiceover</h3>
-              <p className="text-[11px] text-slate-500">
-                Let AI write a narration, then speak it over your video — in your cloned voice if you&apos;ve set one
-                up, otherwise a professional voice.
-              </p>
+              <h3 className="text-sm font-semibold text-slate-900">{t("pages.listingAd.scriptVoiceover")}</h3>
+              <p className="text-[11px] text-slate-500">{t("pages.listingAd.narrationBlurb")}</p>
             </div>
             <button
               type="button"
               onClick={() => void generateScript()}
               disabled={scripting || !reelUrl}
               className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-              title={!reelUrl ? "Build the video ad first" : "Write a narration script"}
+              title={!reelUrl ? t("pages.listingAd.needAdFirst") : t("pages.listingAd.writeScript")}
             >
-              {scripting ? "Writing…" : script ? "Rewrite script" : "Generate script"}
+              {scripting ? "Writing…" : script ? t("pages.listingAd.rewriteScript") : t("pages.listingAd.generateScript")}
             </button>
           </div>
 
           {!reelUrl ? (
-            <p className="mt-2 text-[11px] text-slate-400">Build the video ad above first, then add a voiceover.</p>
+            <p className="mt-2 text-[11px] text-slate-400">{t("pages.listingAd.buildAdFirstHint")}</p>
           ) : (
             <>
               <label className="mt-3 block">
-                <span className="text-xs font-medium text-slate-600">Narration script</span>
+                <span className="text-xs font-medium text-slate-600">{t("pages.listingAd.narrationScript")}</span>
                 <textarea
                   value={script}
                   onChange={(e) => setScript(e.target.value)}
                   rows={4}
-                  placeholder="Generate a script above, or write your own — this is exactly what the voice will say."
+                  placeholder={t("pages.listingAd.scriptPlaceholder")}
                   className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                 />
               </label>
@@ -803,9 +790,9 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                   onClick={() => void addVoiceover()}
                   disabled={voicing || !script.trim()}
                   className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-                  title={!script.trim() ? "Generate or write a script first" : "Speak the script over your video"}
+                  title={!script.trim() ? t("pages.listingAd.needScript") : t("pages.listingAd.speakScript")}
                 >
-                  {voicing ? "Adding…" : voicedUrl ? "Redo voiceover" : "Add voiceover"}
+                  {voicing ? "Adding…" : voicedUrl ? t("pages.listingAd.redoVoiceover") : "Add voiceover"}
                 </button>
                 {voNote ? <span className="text-[11px] text-slate-600">{voNote}</span> : null}
               </div>
@@ -819,13 +806,13 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                     className="aspect-[9/16] w-48 shrink-0 rounded-lg border border-slate-200 bg-black"
                   />
                   <div className="min-w-0 flex-1 text-[11px] text-slate-500">
-                    <p className="font-medium text-slate-700">Video ad with voiceover</p>
+                    <p className="font-medium text-slate-700">{t("pages.listingAd.voicedVersion")}</p>
                     {voiceKind ? (
                       <p className="mt-0.5">
                         {voiceKind === "cloned" ? "Narrated in your cloned voice." : "Narrated in a professional voice."}
                       </p>
                     ) : null}
-                    <p className="mt-1">This voiced version is what gets posted when you publish above.</p>
+                    <p className="mt-1">{t("pages.listingAd.voicedHint")}</p>
                     <a
                       href={voicedUrl}
                       target="_blank"

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import MarketReportShareView from "@/components/marketReport/MarketReportShareView";
 import { getPublicMarketReport } from "@/lib/marketReport/service";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Market Update",
@@ -21,6 +22,7 @@ export default async function PublicMarketReportPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getServerT();
   const { id } = await params;
   const report = await getPublicMarketReport(id);
   if (!report) return notFound();

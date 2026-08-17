@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { getServerT } from "@/lib/i18n/server";
 import {
   CalendarDays,
   ExternalLink,
@@ -32,7 +33,7 @@ const DEMO_NAV: Item[] = [
   { href: "/demo/calendar", label: "Calendar", icon: <CalendarDays className="h-4 w-4" /> },
 ];
 
-export function DemoShell({
+export async function DemoShell({
   active,
   children,
 }: {
@@ -40,6 +41,7 @@ export function DemoShell({
   active: string;
   children: ReactNode;
 }) {
+  const t = await getServerT("dashboard");
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <SandboxBanner />
@@ -48,9 +50,7 @@ export function DemoShell({
         {/* Sidebar */}
         <aside className="hidden w-56 shrink-0 md:block">
           <div className="sticky top-6 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-            <p className="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Demo workspace
-            </p>
+            <p className="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("pages.demoShell.workspace")}</p>
             <p className="mt-1 px-2 text-sm font-semibold text-slate-900 dark:text-white">
               Sandbox · Read-only
             </p>
@@ -76,18 +76,12 @@ export function DemoShell({
 
             <div className="mt-6 rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-3 dark:border-blue-900/40 dark:from-blue-950/30 dark:to-slate-900">
               <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-300">
-                <Sparkles className="h-3 w-3" aria-hidden />
-                Ready to use this for real?
-              </div>
-              <p className="mt-1 text-xs leading-5 text-slate-700 dark:text-slate-300">
-                Start a 14-day free trial — your real workspace, no credit card.
-              </p>
+                <Sparkles className="h-3 w-3" aria-hidden />{t("pages.demoShell.readyForReal")}</div>
+              <p className="mt-1 text-xs leading-5 text-slate-700 dark:text-slate-300">{t("pages.demoShell.startTrialSub")}</p>
               <Link
                 href="/start-free"
                 className="mt-2 inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700"
-              >
-                Start free trial
-              </Link>
+              >{t("pages.demoShell.startTrial")}</Link>
             </div>
           </div>
         </aside>
@@ -99,28 +93,22 @@ export function DemoShell({
   );
 }
 
-function SandboxBanner() {
+async function SandboxBanner() {
+  const t = await getServerT("dashboard");
   return (
     <div className="sticky top-0 z-30 border-b border-amber-300 bg-amber-50 px-4 py-2.5 dark:border-amber-900/60 dark:bg-amber-950/40">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 md:px-2">
         <p className="text-xs font-medium text-amber-900 dark:text-amber-200 sm:text-sm">
-          <span className="font-bold">Sandbox mode.</span> You&apos;re looking
-          at fake data — buttons that send messages, create deals, or
-          change settings are disabled. Click freely.
-        </p>
+          <span className="font-bold">{t("pages.demoShell.sandboxMode")}</span>{t("pages.demoShell.sandboxNote")}</p>
         <div className="flex items-center gap-2">
           <Link
             href="/start-free"
             className="inline-flex items-center justify-center rounded-md bg-amber-900 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-amber-950 dark:bg-amber-200 dark:text-amber-950 dark:hover:bg-amber-100"
-          >
-            Start free trial
-          </Link>
+          >{t("pages.demoShell.startTrial")}</Link>
           <Link
             href="/try-demo"
             className="inline-flex items-center gap-1 text-xs font-semibold text-amber-900 underline-offset-2 transition hover:underline dark:text-amber-200"
-          >
-            About this demo
-            <ExternalLink className="h-3 w-3" aria-hidden />
+          >{t("pages.demoShell.aboutDemo")}<ExternalLink className="h-3 w-3" aria-hidden />
           </Link>
         </div>
       </div>
@@ -133,13 +121,14 @@ function SandboxBanner() {
  * normally mutate state. Renders an inert button that surfaces a
  * tooltip-style note via the title attribute and the visible suffix.
  */
-export function DemoDisabledButton({
+export async function DemoDisabledButton({
   label,
   variant = "primary",
 }: {
   label: string;
   variant?: "primary" | "ghost";
 }) {
+  const t = await getServerT("dashboard");
   const styles =
     variant === "primary"
       ? "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-500"
@@ -148,13 +137,11 @@ export function DemoDisabledButton({
     <button
       type="button"
       disabled
-      title="Disabled in sandbox mode. Start a free trial to use this for real."
+      title={t("pages.demoShell.disabledTip")}
       className={`inline-flex cursor-not-allowed items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold ${styles}`}
     >
       {label}
-      <span className="text-[9px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
-        Demo
-      </span>
+      <span className="text-[9px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">{t("pages.demoShell.demo")}</span>
     </button>
   );
 }

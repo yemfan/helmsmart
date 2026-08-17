@@ -4,6 +4,7 @@ import JsonLd from "../../components/JsonLd";
 import Link from "next/link";
 import ResultCard from "../../components/ResultCard";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import RequireAuthGate from "../../components/RequireAuthGate";
 
 type PropertyData = {
@@ -111,6 +112,7 @@ export default function RentalPropertyAnalyzerPage() {
 }
 
 function RentalPropertyAnalyzerPageInner() {
+  const { t } = useTranslation("dashboard");
   const [address, setAddress] = useState("");
   const [zip, setZip] = useState("");
   const [propertyData, setPropertyData] =
@@ -507,33 +509,28 @@ function RentalPropertyAnalyzerPageInner() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">Rental Property Analyzer</h1>
-      <p className="text-gray-600 mb-8">
-        Just enter an address. Estimate cash flow, cap rate, cash-on-cash return, and ROI for buy-and-hold
-        rentals—then refine every assumption below.
-      </p>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.rentalAnalyzer.h1")}</h1>
+      <p className="text-gray-600 mb-8">{t("pages.rentalAnalyzer.sub")}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Property address</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("pages.rentalAnalyzer.propertyAddress")}</h2>
             <div className="flex flex-col sm:flex-row flex-wrap gap-2">
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="Enter property address (or paste a Zillow/Redfin URL)"
+                placeholder={t("pages.rentalAnalyzer.addressPlaceholder")}
                 className="border border-gray-300 px-3 py-2 rounded w-full sm:w-72 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="text"
                 value={zip}
                 onChange={(e) => setZip(e.target.value)}
-                placeholder="ZIP (optional)"
+                placeholder={t("pages.rentalAnalyzer.zipOptional")}
                 className="border border-gray-300 px-3 py-2 rounded w-full sm:w-32 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
@@ -541,10 +538,8 @@ function RentalPropertyAnalyzerPageInner() {
                 className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
                 onClick={handleFindOnZillow}
                 disabled={loading}
-                title="Open Zillow search in a new tab"
-              >
-                Find on Zillow
-              </button>
+                title={t("pages.rentalAnalyzer.openZillow")}
+              >{t("pages.rentalAnalyzer.findOnZillow")}</button>
               <button
                 type="button"
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
@@ -557,9 +552,7 @@ function RentalPropertyAnalyzerPageInner() {
             {error ? <p className="text-xs text-rose-600">{error}</p> : null}
             {lastLookup ? (
               <details className="text-left">
-                <summary className="text-xs text-gray-500 cursor-pointer select-none">
-                  Show lookup details
-                </summary>
+                <summary className="text-xs text-gray-500 cursor-pointer select-none">{t("pages.rentalAnalyzer.showLookup")}</summary>
                 <pre className="mt-2 overflow-x-auto rounded border border-gray-200 bg-gray-50 p-3 text-[11px] leading-snug text-gray-700">
                   {JSON.stringify(
                     {
@@ -574,18 +567,13 @@ function RentalPropertyAnalyzerPageInner() {
                 </pre>
               </details>
             ) : null}
-            <p className="text-xs text-gray-500">
-              Listing or MLS integrations can auto-fill property details from the address and ZIP; values below are
-              fully editable.
-            </p>
+            <p className="text-xs text-gray-500">{t("pages.rentalAnalyzer.autofillNote")}</p>
           </div>
 
           <DealScoreCard dealScore={dealScore} />
 
           <div className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-900">
-              Property Details & Assumptions
-            </h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-900">{t("pages.rentalAnalyzer.detailsAndAssumptions")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
           {(
             Object.entries(propertyData) as [keyof PropertyData, any][]
@@ -647,7 +635,7 @@ function RentalPropertyAnalyzerPageInner() {
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-24">
             <ResultCard
-              title="Monthly cash flow"
+              title={t("pages.rentalAnalyzer.monthlyCashFlow")}
               value={`$${metrics.monthlyCashFlow.toFixed(0)}/mo`}
               details={resultCardDetails}
             />
@@ -657,7 +645,7 @@ function RentalPropertyAnalyzerPageInner() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <MetricCard
-          label="Monthly Cash Flow"
+          label={t("pages.articleChrome.monthlyCashFlow")}
           value={`$${metrics.monthlyCashFlow.toFixed(0)}`}
           tooltip="Monthly Cash Flow = Rent – Mortgage – Operating Expenses"
           highlight={
@@ -669,7 +657,7 @@ function RentalPropertyAnalyzerPageInner() {
           }
         />
         <MetricCard
-          label="Annual Cash Flow"
+          label={t("pages.rentalAnalyzer.annualCashFlow")}
           value={`$${metrics.annualCashFlow.toFixed(0)}`}
           tooltip="Annual Cash Flow = Monthly Cash Flow × 12"
           highlight={
@@ -681,17 +669,17 @@ function RentalPropertyAnalyzerPageInner() {
           }
         />
         <MetricCard
-          label="Cap Rate"
+          label={t("pages.articleChrome.capRate")}
           value={`${metrics.capRate.toFixed(1)}%`}
           tooltip="Cap Rate = (Annual NOI ÷ Property Value) × 100"
         />
         <MetricCard
-          label="Cash on Cash Return"
+          label={t("pages.rentalAnalyzer.cashOnCash")}
           value={`${metrics.cashOnCash.toFixed(1)}%`}
           tooltip="Cash on Cash = (Annual Cash Flow ÷ Down Payment) × 100"
         />
         <MetricCard
-          label="Price to Rent Ratio"
+          label={t("pages.rentalAnalyzer.priceToRent")}
           value={
             metrics.priceToRent > 0
               ? metrics.priceToRent.toFixed(1)
@@ -700,39 +688,33 @@ function RentalPropertyAnalyzerPageInner() {
           tooltip="Price to Rent Ratio = Property Value ÷ (Annual Rent)"
         />
         <MetricCard
-          label="ROI (Year 1 Est.)"
+          label={t("pages.rentalAnalyzer.roiYear1")}
           value={`${metrics.roi.toFixed(1)}%`}
           tooltip="ROI ≈ (Annual Cash Flow + Appreciation) ÷ Down Payment"
         />
       </div>
 
       <div className="bg-yellow-50 border border-yellow-100 p-6 rounded-lg mb-6 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold mb-2 text-gray-900">
-          AI Market Summary
-        </h2>
+        <h2 className="text-xl font-semibold mb-2 text-gray-900">{t("pages.rentalAnalyzer.aiSummary")}</h2>
         <p>{aiSummary}</p>
       </div>
 
       <div className="bg-white shadow-md rounded-lg p-6 mb-6 text-sm">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Nearby Comparable Rentals
-          </h2>
-          <span className="text-xs text-gray-500">
-            Sample data – rental API integration coming soon
-          </span>
+          <h2 className="text-xl font-semibold text-gray-900">{t("pages.rentalAnalyzer.nearbyComps")}</h2>
+          <span className="text-xs text-gray-500">{t("pages.rentalAnalyzer.sampleData")}</span>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-xs border-collapse">
             <thead>
               <tr className="bg-gray-50 text-left text-gray-600">
-                <th className="px-3 py-2 font-semibold">Address</th>
-                <th className="px-3 py-2 font-semibold">Beds</th>
-                <th className="px-3 py-2 font-semibold">Baths</th>
-                <th className="px-3 py-2 font-semibold">Sqft</th>
-                <th className="px-3 py-2 font-semibold">Rent</th>
-                <th className="px-3 py-2 font-semibold">Rent/Sqft</th>
-                <th className="px-3 py-2 font-semibold">Distance</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.address")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.beds")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.baths")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.sqft")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.rentalAnalyzer.rent")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.rentalAnalyzer.rentPerSqft")}</th>
+                <th className="px-3 py-2 font-semibold">{t("pages.rentalAnalyzer.distance")}</th>
               </tr>
             </thead>
             <tbody>
@@ -767,15 +749,9 @@ function RentalPropertyAnalyzerPageInner() {
       </div>
 
       <section className="mt-12 max-w-3xl space-y-3 text-sm text-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900">Analyze a rental with one address</h2>
-        <p>
-          Enter a street address or paste a listing URL, then adjust value, rent, financing, and expenses. Metrics
-          update instantly so you can stress-test assumptions before you make an offer.
-        </p>
-        <p>
-          This tool is for education and screening—not tax, legal, or investment advice. Always verify rents,
-          taxes, insurance, and loan terms with local professionals.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.rentalAnalyzer.oneAddressTitle")}</h2>
+        <p>{t("pages.rentalAnalyzer.oneAddressBody")}</p>
+        <p>{t("pages.rentalAnalyzer.disclaimer")}</p>
       </section>
 
       <div className="mt-10">
@@ -783,9 +759,7 @@ function RentalPropertyAnalyzerPageInner() {
           type="button"
           className="bg-blue-600 text-white px-6 py-3 rounded-lg text-sm sm:text-base font-semibold hover:bg-blue-700"
           onClick={handleDownloadReport}
-        >
-          Download Full Rental Property Report (PDF)
-        </button>
+        >{t("pages.rentalAnalyzer.downloadReport")}</button>
       </div>
     </div>
   );
@@ -829,6 +803,7 @@ type DealScoreCardProps = {
 };
 
 function DealScoreCard({ dealScore }: DealScoreCardProps) {
+  const { t } = useTranslation("dashboard");
   const colorClasses =
     dealScore.color === "green"
       ? "bg-emerald-50 border-emerald-200 text-emerald-800"
@@ -845,12 +820,8 @@ function DealScoreCard({ dealScore }: DealScoreCardProps) {
       title={tooltip}
     >
       <div>
-        <h2 className="text-sm font-semibold uppercase tracking-wide">
-          Deal Score
-        </h2>
-        <p className="text-xs opacity-80">
-          Quick visual rating of this rental based on your current assumptions.
-        </p>
+        <h2 className="text-sm font-semibold uppercase tracking-wide">{t("pages.rentalAnalyzer.dealScore")}</h2>
+        <p className="text-xs opacity-80">{t("pages.rentalAnalyzer.dealScoreNote")}</p>
       </div>
       <div className="flex items-baseline gap-3">
         <span className="text-3xl sm:text-4xl font-bold">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { PublicOpenHouseInfo } from "@/lib/open-houses/publicService";
 import type {
   VisitorBuyerStatus,
@@ -15,6 +16,7 @@ import type {
  * in another visitor" to reset and hand off to the next person.
  */
 export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
+  const { t } = useTranslation("dashboard");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -90,9 +92,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
       <div className="min-h-screen bg-slate-50 px-4 py-10">
         <div className="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg">
           <div className="text-5xl">✅</div>
-          <h1 className="mt-4 text-2xl font-semibold text-slate-900">
-            Thanks for signing in!
-          </h1>
+          <h1 className="mt-4 text-2xl font-semibold text-slate-900">{t("pages.openHouseSignin.thanks")}</h1>
           <p className="mt-2 text-slate-600">
             {info.hostAgentFirstName
               ? `${info.hostAgentFirstName} is around — feel free to ask questions about the home.`
@@ -102,9 +102,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
             type="button"
             onClick={resetForNext}
             className="mt-6 w-full rounded-xl bg-slate-900 px-6 py-3 text-base font-semibold text-white hover:bg-slate-800"
-          >
-            Sign in another visitor
-          </button>
+          >{t("pages.openHouseSignin.signInAnother")}</button>
         </div>
       </div>
     );
@@ -114,9 +112,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
     <div className="min-h-screen bg-slate-50 px-4 py-6">
       <div className="mx-auto max-w-md space-y-5">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">
-            Open House
-          </div>
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-blue-600">{t("pages.openHouseSignin.openHouse")}</div>
           <h1 className="mt-1 text-xl font-semibold text-slate-900">
             {info.propertyAddress}
           </h1>
@@ -156,8 +152,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
                 </span>
               ) : null}
               {info.yearBuilt != null ? (
-                <span className="rounded-md bg-slate-100 px-2 py-0.5">
-                  Built <strong className="font-semibold">{info.yearBuilt}</strong>
+                <span className="rounded-md bg-slate-100 px-2 py-0.5">{t("pages.openHouseSignin.built")} <strong className="font-semibold">{info.yearBuilt}</strong>
                 </span>
               ) : null}
               {info.propertyType ? (
@@ -205,8 +200,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
           ) : null}
 
           {info.hostAgentFirstName ? (
-            <p className="mt-3 text-sm text-slate-500">
-              Hosted by {info.hostAgentFirstName}
+            <p className="mt-3 text-sm text-slate-500">{t("pages.openHouseSignin.hostedBy")} {info.hostAgentFirstName}
               {info.hostAgentHeadline ? ` · ${info.hostAgentHeadline}` : ""}
             </p>
           ) : null}
@@ -214,9 +208,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
 
         <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div>
-            <label className="block text-sm font-medium text-slate-700">
-              Your name
-            </label>
+            <label className="block text-sm font-medium text-slate-700">{t("pages.openHouseSignin.yourName")}</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -226,7 +218,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Email</label>
+            <label className="block text-sm font-medium text-slate-700">{t("pages.articleChrome.email")}</label>
             <input
               type="email"
               value={email}
@@ -238,7 +230,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">Phone</label>
+            <label className="block text-sm font-medium text-slate-700">{t("pages.articleChrome.phone")}</label>
             <input
               type="tel"
               value={phone}
@@ -250,9 +242,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">
-              Are you working with an agent?
-            </label>
+            <label className="block text-sm font-medium text-slate-700">{t("pages.openHouseSignin.workingWithAgent")}</label>
             <div className="mt-2 grid grid-cols-2 gap-2">
               <button
                 type="button"
@@ -273,18 +263,14 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
                     ? "border-slate-900 bg-slate-900 text-white"
                     : "border-slate-200 bg-white text-slate-700"
                 }`}
-              >
-                Yes
-              </button>
+              >{t("pages.openHouseSignin.yes")}</button>
             </div>
           </div>
 
           {isBuyerAgented ? (
             <div className="space-y-3 rounded-xl bg-slate-50 p-3">
               <div>
-                <label className="block text-sm font-medium text-slate-700">
-                  Your agent&apos;s name
-                </label>
+                <label className="block text-sm font-medium text-slate-700">{t("pages.openHouseSignin.agentName")}</label>
                 <input
                   value={buyerAgentName}
                   onChange={(e) => setBuyerAgentName(e.target.value)}
@@ -292,9 +278,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700">
-                  Brokerage
-                </label>
+                <label className="block text-sm font-medium text-slate-700">{t("pages.openHouseSignin.brokerage")}</label>
                 <input
                   value={buyerAgentBrokerage}
                   onChange={(e) => setBuyerAgentBrokerage(e.target.value)}
@@ -305,20 +289,18 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
           ) : null}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700">
-              When are you looking to buy?
-            </label>
+            <label className="block text-sm font-medium text-slate-700">{t("pages.openHouseSignin.whenBuying")}</label>
             <select
               value={timeline}
               onChange={(e) => setTimeline(e.target.value as VisitorTimeline | "")}
               className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base"
             >
               <option value="">—</option>
-              <option value="now">Actively looking</option>
-              <option value="3_6_months">In 3-6 months</option>
-              <option value="6_12_months">In 6-12 months</option>
-              <option value="later">Just exploring for later</option>
-              <option value="just_looking">Just curious</option>
+              <option value="now">{t("pages.openHouseSignin.activelyLooking")}</option>
+              <option value="3_6_months">{t("pages.openHouseSignin.in36")}</option>
+              <option value="6_12_months">{t("pages.openHouseSignin.in612")}</option>
+              <option value="later">{t("pages.openHouseSignin.exploringLater")}</option>
+              <option value="just_looking">{t("pages.openHouseSignin.justCurious")}</option>
             </select>
           </div>
 
@@ -332,10 +314,10 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
               className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base"
             >
               <option value="">—</option>
-              <option value="looking">An active buyer</option>
-              <option value="just_browsing">Just browsing</option>
-              <option value="neighbor">A neighbor</option>
-              <option value="other">Other</option>
+              <option value="looking">{t("pages.openHouseSignin.activeBuyer")}</option>
+              <option value="just_browsing">{t("pages.openHouseSignin.justBrowsing")}</option>
+              <option value="neighbor">{t("pages.openHouseSignin.aNeighbor")}</option>
+              <option value="other">{t("pages.openHouseSignin.other")}</option>
             </select>
           </div>
 
@@ -347,9 +329,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
                 onChange={(e) => setMarketingConsent(e.target.checked)}
                 className="mt-1 h-5 w-5"
               />
-              <span className="text-sm text-slate-700">
-                Send me similar listings and follow-up info. You can unsubscribe anytime.
-              </span>
+              <span className="text-sm text-slate-700">{t("pages.openHouseSignin.marketingOptIn")}</span>
             </label>
           ) : null}
 
@@ -368,9 +348,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
             {submitting ? "Signing in…" : "Sign in"}
           </button>
 
-          <p className="text-center text-[11px] text-slate-400">
-            Powered by CloseBoss
-          </p>
+          <p className="text-center text-[11px] text-slate-400">{t("pages.openHouseSignin.poweredBy")}</p>
         </div>
       </div>
     </div>

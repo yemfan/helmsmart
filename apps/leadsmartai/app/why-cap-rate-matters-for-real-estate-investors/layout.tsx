@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Why Cap Rate Matters for Real Estate Investors",
@@ -6,8 +7,9 @@ export const metadata: Metadata = {
   keywords: ["cap rate importance", "why cap rate matters", "real estate investing", "property metrics", "analysis"],
 };
 
-export default function CapRateImportanceLayout({
+export default async function CapRateImportanceLayout({
   children,
 }: { children: React.ReactNode }) {
+  const t = await getServerT();
   return children;
 }

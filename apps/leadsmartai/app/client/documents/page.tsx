@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useClientLeadId } from "@/components/client/useClientLeadId";
 
 type MeRes = { ok: boolean; primaryLeadId?: string | null; leads?: { id: string; property_address: string | null }[] };
 type Doc = { id: string; title: string; doc_type: string; url: string | null; created_at: string };
 
 export default function ClientDocumentsPage() {
+  const { t } = useTranslation("dashboard");
   const [me, setMe] = useState<MeRes | null>(null);
   const [docs, setDocs] = useState<Doc[]>([]);
   const leads = me?.leads ?? [];
@@ -42,8 +44,8 @@ export default function ClientDocumentsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-slate-900">Documents</h1>
-        <p className="text-sm text-slate-600 mt-1">View or open files your agent shared.</p>
+        <h1 className="text-xl font-bold text-slate-900">{t("pages.clientPortal.documents")}</h1>
+        <p className="text-sm text-slate-600 mt-1">{t("pages.clientPortal.documentsSub")}</p>
       </div>
 
       {leads.length > 1 && (
@@ -61,7 +63,7 @@ export default function ClientDocumentsPage() {
       )}
 
       {!leadId && (
-        <p className="text-sm text-slate-500">No deal selected — link your lead first.</p>
+        <p className="text-sm text-slate-500">{t("pages.clientPortal.noDealSelected")}</p>
       )}
 
       <ul className="space-y-2">
@@ -79,18 +81,16 @@ export default function ClientDocumentsPage() {
                 href={d.url}
                 className="shrink-0 text-xs font-bold text-blue-700"
                 target={d.url.startsWith("http") ? "_blank" : undefined}
-              >
-                Open
-              </Link>
+              >{t("pages.clientPortal.open")}</Link>
             ) : (
-              <span className="text-xs text-slate-400">No link</span>
+              <span className="text-xs text-slate-400">{t("pages.clientPortal.noLink")}</span>
             )}
           </li>
         ))}
       </ul>
 
       {leadId && docs.length === 0 && (
-        <p className="text-sm text-slate-500 text-center py-6">No documents yet — your agent can upload links.</p>
+        <p className="text-sm text-slate-500 text-center py-6">{t("pages.clientPortal.noDocuments")}</p>
       )}
     </div>
   );

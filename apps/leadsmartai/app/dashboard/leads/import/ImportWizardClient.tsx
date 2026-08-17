@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { autoMapHeaders, IMPORT_PRESETS, presetExtra } from "@/lib/contact-intake/autoMap";
 
 type ColumnMapping = {
@@ -46,29 +47,33 @@ const emptyMapping = (): ColumnMapping => ({
   tags: "",
 });
 
-/** Fields the user can map, with friendly labels. Order = display order. */
-const MAP_FIELDS: { key: keyof ColumnMapping; label: string }[] = [
-  { key: "name", label: "Full name" },
-  { key: "first_name", label: "First name" },
-  { key: "last_name", label: "Last name" },
-  { key: "email", label: "Email" },
-  { key: "phone", label: "Phone" },
-  { key: "source", label: "Lead source" },
-  { key: "lead_type", label: "Type (buyer/seller/renter)" },
-  { key: "search_location", label: "Area of interest" },
-  { key: "city", label: "City" },
-  { key: "state", label: "State" },
-  { key: "price_min", label: "Budget min" },
-  { key: "price_max", label: "Budget max" },
-  { key: "beds", label: "Beds" },
-  { key: "baths", label: "Baths" },
-  { key: "timeline", label: "Timeline" },
-  { key: "property_address", label: "Property address" },
-  { key: "tags", label: "Tags" },
-  { key: "notes", label: "Notes" },
+/**
+ * Fields the user can map. Order = display order. The label is a translation
+ * KEY rather than text — this list is module scope, so it cannot reach a hook.
+ */
+const MAP_FIELDS: { key: keyof ColumnMapping; labelKey: string }[] = [
+  { key: "name", labelKey: "pages.importWizard.field.full_name" },
+  { key: "first_name", labelKey: "pages.importWizard.field.first_name" },
+  { key: "last_name", labelKey: "pages.importWizard.field.last_name" },
+  { key: "email", labelKey: "pages.importWizard.field.email" },
+  { key: "phone", labelKey: "pages.importWizard.field.phone" },
+  { key: "source", labelKey: "pages.importWizard.field.lead_source" },
+  { key: "lead_type", labelKey: "pages.importWizard.field.lead_type" },
+  { key: "search_location", labelKey: "pages.importWizard.field.area_of_interest" },
+  { key: "city", labelKey: "pages.importWizard.field.city" },
+  { key: "state", labelKey: "pages.importWizard.field.state" },
+  { key: "price_min", labelKey: "pages.importWizard.field.budget_min" },
+  { key: "price_max", labelKey: "pages.importWizard.field.budget_max" },
+  { key: "beds", labelKey: "pages.importWizard.field.beds" },
+  { key: "baths", labelKey: "pages.importWizard.field.baths" },
+  { key: "timeline", labelKey: "pages.importWizard.field.timeline" },
+  { key: "property_address", labelKey: "pages.importWizard.field.property_address" },
+  { key: "tags", labelKey: "pages.importWizard.field.tags" },
+  { key: "notes", labelKey: "pages.importWizard.field.notes" },
 ];
 
 export function ImportWizardClient() {
+  const { t } = useTranslation("dashboard");
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [headers, setHeaders] = useState<string[]>([]);
   const [jobId, setJobId] = useState<string | null>(null);
@@ -190,19 +195,16 @@ export function ImportWizardClient() {
         <Link href="/dashboard/leads" className="text-sm font-medium text-gray-600 hover:text-gray-900">
           ← Back to leads
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold text-gray-900">Import contacts (CSV)</h1>
-        <p className="text-sm text-gray-600">
-          Upload a spreadsheet, map columns, preview duplicates, then finalize. Uses the same normalization, dedupe,
-          enrichment, and CRM save path as manual entry.
-        </p>
+        <h1 className="mt-2 text-2xl font-semibold text-gray-900">{t("pages.importWizard.heading")}</h1>
+        <p className="text-sm text-gray-600">{t("pages.importWizard.sub")}</p>
       </div>
 
       {error ? <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</div> : null}
 
       {step === 1 && (
         <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">1. Upload CSV</h2>
-          <p className="mt-1 text-sm text-gray-600">First row must be headers (e.g. Name, Email, Phone).</p>
+          <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step1")}</h2>
+          <p className="mt-1 text-sm text-gray-600">{t("pages.importWizard.step1Hint")}</p>
           <label
             className={`mt-4 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 transition ${
               loading
@@ -221,9 +223,9 @@ export function ImportWizardClient() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
             </svg>
             <span className="mt-3 text-sm font-semibold text-gray-700">
-              {loading ? "Uploading..." : "Click to upload or drag and drop"}
+              {loading ? t("pages.importWizard.uploading") : t("pages.importWizard.dropzone")}
             </span>
-            <span className="mt-1 text-xs text-gray-500">CSV files only</span>
+            <span className="mt-1 text-xs text-gray-500">{t("pages.importWizard.csvOnly")}</span>
             <input
               type="file"
               accept=".csv,text/csv"
@@ -240,10 +242,10 @@ export function ImportWizardClient() {
 
       {step === 2 && (
         <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">2. Column mapping</h2>
+          <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step2")}</h2>
           <p className="mt-1 text-sm text-gray-600">{rowCount.toLocaleString()} rows · job {jobId}</p>
           <label className="mt-3 block text-sm">
-            <span className="font-medium text-gray-700">Importing from</span>
+            <span className="font-medium text-gray-700">{t("pages.importWizard.importingFrom")}</span>
             <select
               className="mt-1 w-full rounded-lg border border-gray-300 px-2 py-2 text-sm sm:w-64"
               value={preset}
@@ -262,20 +264,18 @@ export function ImportWizardClient() {
             </select>
           </label>
           <p className="mt-2 text-xs text-gray-500">
-            We auto-detected the mapping from your headers — review and adjust below.
-            Anything left as “ignore” is skipped. Only a name (full, or first + last)
-            plus email or phone is required.
+            {t("pages.importWizard.autoDetect")}
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {MAP_FIELDS.map(({ key, label }) => (
+            {MAP_FIELDS.map(({ key, labelKey }) => (
               <label key={key} className="block text-sm">
-                <span className="font-medium text-gray-700">{label}</span>
+                <span className="font-medium text-gray-700">{t(labelKey)}</span>
                 <select
                   className="mt-1 w-full rounded-lg border border-gray-300 px-2 py-2 text-sm"
                   value={mapping[key]}
                   onChange={(e) => setMapping((m) => ({ ...m, [key]: e.target.value }))}
                 >
-                  <option value="">— ignore —</option>
+                  <option value="">{t("pages.importWizard.ignore")}</option>
                   {headers.map((h) => (
                     <option key={h} value={h}>
                       {h}
@@ -286,7 +286,7 @@ export function ImportWizardClient() {
             ))}
           </div>
           <div className="mt-4">
-            <span className="text-sm font-medium text-gray-700">Duplicate handling</span>
+            <span className="text-sm font-medium text-gray-700">{t("pages.importWizard.duplicateHandling")}</span>
             <div className="mt-2 flex flex-wrap gap-3 text-sm">
               <label className="flex items-center gap-2">
                 <input
@@ -294,27 +294,21 @@ export function ImportWizardClient() {
                   name="dup"
                   checked={dupStrategy === "skip"}
                   onChange={() => setDupStrategy("skip")}
-                />
-                Skip likely duplicates
-              </label>
+                />{t("pages.importWizard.skipDupes")}</label>
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
                   name="dup"
                   checked={dupStrategy === "merge"}
                   onChange={() => setDupStrategy("merge")}
-                />
-                Merge into existing
-              </label>
+                />{t("pages.importWizard.mergeExisting")}</label>
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
                   name="dup"
                   checked={dupStrategy === "create_anyway"}
                   onChange={() => setDupStrategy("create_anyway")}
-                />
-                Create new rows anyway
-              </label>
+                />{t("pages.importWizard.createAnyway")}</label>
             </div>
           </div>
           <button
@@ -322,18 +316,16 @@ export function ImportWizardClient() {
             disabled={loading}
             className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
             onClick={() => void runPreview()}
-          >
-            Preview
-          </button>
+          >{t("pages.importWizard.preview")}</button>
         </section>
       )}
 
       {step === 3 && (
         <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">3. Preview (first 100 rows)</h2>
+          <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step3")}</h2>
           {stats ? (
             <p className="mt-1 text-sm text-gray-600">
-              {stats.total} rows · {stats.likelyDuplicates} likely duplicates (by email/phone/address rules)
+              {t("pages.importWizard.rowsAndDupes", { total: stats.total, dupes: stats.likelyDuplicates })}
             </p>
           ) : null}
           <div className="mt-4 overflow-x-auto">
@@ -341,10 +333,10 @@ export function ImportWizardClient() {
               <thead>
                 <tr className="text-left text-gray-600">
                   <th className="px-2 py-1">#</th>
-                  <th className="px-2 py-1">Name</th>
-                  <th className="px-2 py-1">Email</th>
-                  <th className="px-2 py-1">Phone</th>
-                  <th className="px-2 py-1">Dup?</th>
+                  <th className="px-2 py-1">{t("pages.importWizard.colName")}</th>
+                  <th className="px-2 py-1">{t("pages.importWizard.colEmail")}</th>
+                  <th className="px-2 py-1">{t("pages.importWizard.colPhone")}</th>
+                  <th className="px-2 py-1">{t("pages.importWizard.colDup")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -367,36 +359,30 @@ export function ImportWizardClient() {
             disabled={loading}
             className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
             onClick={() => void runFinalize()}
-          >
-            Run import
-          </button>
+          >{t("pages.importWizard.runImport")}</button>
         </section>
       )}
 
       {step === 4 && summary && (
         <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-gray-900">4. Summary</h2>
+          <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.step4")}</h2>
           <ul className="mt-2 list-disc pl-5 text-sm text-gray-700">
-            <li>Inserted: {summary.inserted}</li>
-            <li>Merged: {summary.merged}</li>
-            <li>Skipped: {summary.skipped}</li>
-            <li>Errors: {summary.errors}</li>
+            <li>{t("pages.importWizard.inserted", { count: summary.inserted })}</li>
+            <li>{t("pages.importWizard.merged", { count: summary.merged })}</li>
+            <li>{t("pages.importWizard.skipped", { count: summary.skipped })}</li>
+            <li>{t("pages.importWizard.errors", { count: summary.errors })}</li>
           </ul>
-          <Link href="/dashboard/leads" className="mt-4 inline-block text-sm font-medium text-gray-900 underline">
-            View leads
-          </Link>
+          <Link href="/dashboard/leads" className="mt-4 inline-block text-sm font-medium text-gray-900 underline">{t("pages.importWizard.viewLeads")}</Link>
         </section>
       )}
 
       <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-gray-900">Import history</h2>
-          <button type="button" className="text-sm text-gray-600 hover:text-gray-900" onClick={() => void loadHistory()}>
-            Refresh
-          </button>
+          <h2 className="text-base font-semibold text-gray-900">{t("pages.importWizard.history")}</h2>
+          <button type="button" className="text-sm text-gray-600 hover:text-gray-900" onClick={() => void loadHistory()}>{t("pages.importWizard.refresh")}</button>
         </div>
         <ul className="mt-3 divide-y divide-gray-100 text-sm">
-          {history.length === 0 ? <li className="py-2 text-gray-500">No imports yet.</li> : null}
+          {history.length === 0 ? <li className="py-2 text-gray-500">{t("pages.importWizard.noImports")}</li> : null}
           {(history as Array<Record<string, unknown>>).map((j) => (
             <li key={String(j.id)} className="py-2 flex flex-wrap justify-between gap-2">
               <span className="text-gray-800">{String(j.file_name ?? j.intake_channel ?? "job")}</span>

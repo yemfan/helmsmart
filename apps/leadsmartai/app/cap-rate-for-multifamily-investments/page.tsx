@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import JsonLd from "../../components/JsonLd";
+import { useTranslation } from "react-i18next";
 
 export default function CapRateForMultifamilyInvestmentsPage() {
+  const { t } = useTranslation("dashboard");
   const title = "Cap Rate for Multifamily Investments";
   const url = "https://closebossai.com/cap-rate-for-multifamily-investments";
 
@@ -44,191 +46,84 @@ export default function CapRateForMultifamilyInvestmentsPage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Cap rate is one of the most important metrics in multifamily investing. From small
-        fourplexes to large apartment complexes, cap rate helps investors understand how much income
-        a building produces relative to its price, compare deals across markets, and evaluate value
-        creation opportunities.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.capRateMultifamily.intro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Why cap rate is especially important for multifamily
-        </h2>
-        <p>
-          Multifamily properties are often bought and sold primarily as income streams rather than
-          based on comparable sales of similar floor plans, the way single-family homes are. That
-          makes cap rate—a direct link between income and value—a central part of how multifamily
-          investors, appraisers, and lenders think about pricing.
-        </p>
-        <p>
-          Because multifamily buildings have multiple units and often professional management,
-          investors can more accurately estimate net operating income (NOI), making cap rate a
-          reliable, comparable metric across deals.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMultifamily.s1Title")}</h2>
+        <p>{t("pages.capRateMultifamily.s1a")}</p>
+        <p>{t("pages.capRateMultifamily.s1b")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Cap rate, NOI, and scale in multifamily deals
-        </h2>
-        <p>
-          The cap rate formula for multifamily is the same as for other income properties:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMultifamily.s2Title")}</h2>
+        <p>{t("pages.capRateMultifamily.s2a")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cap Rate = Net Operating Income (NOI) ÷ Property Value
         </p>
-        <p>
-          In multifamily deals, however, NOI often benefits from economies of scale. Fixed costs
-          like management, maintenance, and certain utilities can be spread across more units,
-          potentially improving margins compared to single-family rentals.
-        </p>
-        <p>
-          When underwriting a multifamily deal, investors carefully project rental income for each
-          unit, apply realistic vacancy and credit loss, and estimate operating expenses line by
-          line to arrive at a stabilized NOI before calculating cap rate.
-        </p>
+        <p>{t("pages.capRateMultifamily.s2b")}</p>
+        <p>{t("pages.capRateMultifamily.s2c")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          How cap rate varies by property class and size
-        </h2>
-        <p>
-          Multifamily cap rates are heavily influenced by the property&apos;s class (A, B, or C),
-          age, location, and size.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMultifamily.s3Title")}</h2>
+        <p>{t("pages.capRateMultifamily.s3Intro")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
-            <span className="font-semibold">Class A:</span> Newer, amenity-rich properties in
-            top-tier locations typically command lower cap rates because investors expect stability
-            and rent growth.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMultifamily.classA")}</span> {t("pages.capRateMultifamily.classABody")}</li>
           <li>
-            <span className="font-semibold">Class B:</span> Well-maintained but older assets in good
-            areas often trade at mid-range cap rates, with both income and value-add potential.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMultifamily.classB")}</span> {t("pages.capRateMultifamily.classBBody")}</li>
           <li>
-            <span className="font-semibold">Class C:</span> Older properties in working-class or
-            transitional neighborhoods may offer higher cap rates but come with more operational and
-            tenant risk.
-          </li>
+            <span className="font-semibold">{t("pages.capRateMultifamily.classC")}</span> {t("pages.capRateMultifamily.classCBody")}</li>
         </ul>
-        <p>
-          Smaller multifamily (2–4 units) may also behave differently from institutional-size
-          complexes. In some markets, small buildings trade more like single-family rentals; in
-          others, they are priced strictly on income and cap rate.
-        </p>
+        <p>{t("pages.capRateMultifamily.s3Close")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Using cap rate to compare multifamily markets
-        </h2>
-        <p>
-          Multifamily investors often look at cap rate spreads between markets to decide where to
-          deploy capital. For example, a core coastal market might have 4%–5% caps for Class A
-          properties, while a growing secondary city might offer 5.5%–6.5% caps for similar assets.
-        </p>
-        <p>
-          Higher cap rates can mean more immediate income, but they may also reflect higher risk or
-          slower growth. Many multifamily investors build diversified portfolios that include both
-          lower-cap-rate, high-growth markets and higher-cap-rate, income-oriented markets.
-        </p>
-        <p>
-          The{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
-            Property Investment Analyzer
-          </Link>{" "}
-          can help you standardize underwriting assumptions so you can compare multifamily deals
-          across different cities on a level playing field.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMultifamily.s4Title")}</h2>
+        <p>{t("pages.capRateMultifamily.s4a")}</p>
+        <p>{t("pages.capRateMultifamily.s4b")}</p>
+        <p>{t("pages.capRateMultifamily.the")}{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}{t("pages.capRateMultifamily.standardize")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Value-add strategies and cap rate expansion/compression
-        </h2>
-        <p>
-          In multifamily, cap rate is deeply connected to value-add strategies. If you can increase
-          NOI through renovations, better management, or amenities, and cap rates in your market
-          remain stable or compress, your property&apos;s value can increase significantly.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMultifamily.s5Title")}</h2>
+        <p>{t("pages.capRateMultifamily.s5a")}</p>
         <p>
           For example, adding $50 per month in rent per unit across 40 units adds $24,000 of annual
           income. At a 6% cap rate, that extra NOI alone could support an additional $400,000 in
           value (because $24,000 ÷ 0.06 = $400,000).
         </p>
-        <p>
-          This leverage of small operational improvements into large value gains is one reason
-          cap-rate-focused underwriting is so central to multifamily investing.
-        </p>
+        <p>{t("pages.capRateMultifamily.s5b")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Frequently asked questions about multifamily cap rates
-        </h2>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Are multifamily cap rates usually lower or higher than single-family rentals?
-        </h3>
-        <p>
-          It depends on the market, but larger, professionally managed multifamily assets often
-          trade at lower cap rates than scattered single-family rentals because institutions value
-          scale, stability, and liquidity. However, in some markets small multifamily can show
-          higher cap rates due to operational complexity.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Should I chase the highest cap rate in multifamily?
-        </h3>
-        <p>
-          Not blindly. Very high cap rates can indicate serious issues with location, tenant base,
-          or physical condition. Focus on risk-adjusted returns: cap rate should be evaluated
-          alongside occupancy trends, rent growth, and long-term demand for the area.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          How do lenders look at cap rate for multifamily loans?
-        </h3>
-        <p>
-          Lenders and appraisers use cap rates to value multifamily properties via the income
-          approach, then combine that with debt service coverage ratios and loan-to-value limits to
-          size loans. Strong, stable NOI at a reasonable cap rate generally leads to more favorable
-          financing terms.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateMultifamily.faqTitle")}</h2>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateMultifamily.q1")}</h3>
+        <p>{t("pages.capRateMultifamily.a1")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateMultifamily.q2")}</h3>
+        <p>{t("pages.capRateMultifamily.a2")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateMultifamily.q3")}</h3>
+        <p>{t("pages.capRateMultifamily.a3")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Underwrite your next multifamily deal with cap rate in mind
-        </h2>
-        <p className="mb-3">
-          Whether you are buying a fourplex or a 100-unit complex, cap rate should be part of every
-          analysis. Used correctly, it helps you compare buildings, understand market pricing, and
-          see how value-add strategies can compound your returns.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.capRateMultifamily.ctaTitle")}</h2>
+        <p className="mb-3">{t("pages.capRateMultifamily.ctaBody")}</p>
         <div className="flex flex-wrap gap-3 mb-4">
           <Link
             href="/cap-rate-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Open Cap Rate Calculator
-          </Link>
+          >{t("pages.articleChrome.openCapRate")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Investment Analyzer
-          </Link>
+          >{t("pages.articleChrome.openAnalyzer")}</Link>
         </div>
-        <p className="font-semibold">
-          Try our free real estate investment calculator at closebossai.com to quickly analyze
-          your property deals.
-        </p>
+        <p className="font-semibold">{t("pages.articleChrome.footerCta")}</p>
       </section>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   POSTCARD_TEMPLATES,
   type PostcardTemplateKey,
@@ -44,6 +45,7 @@ export function BulkSendPostcardModal({
   recipients: Recipient[];
   onSent?: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [step, setStep] = useState<"pick" | "customize" | "sending" | "done">(
     "pick",
   );
@@ -133,8 +135,10 @@ export function BulkSendPostcardModal({
         <div className="flex items-start justify-between border-b border-slate-100 px-5 py-4">
           <div>
             <h3 className="text-base font-semibold text-slate-900">
-              Send postcard to {recipients.length}{" "}
-              {recipients.length === 1 ? "person" : "people"}
+              {t("pages.bulkPostcard.sendToN", {
+                count: recipients.length,
+                unit: t(recipients.length === 1 ? "pages.bulkPostcard.person" : "pages.bulkPostcard.people"),
+              })}
             </h3>
             <p className="mt-0.5 text-xs text-slate-500">
               {step === "pick"
@@ -150,7 +154,7 @@ export function BulkSendPostcardModal({
             type="button"
             onClick={onClose}
             className="text-slate-400 hover:text-slate-700"
-            aria-label="Close"
+            aria-label={t("pages.sendPostcard.close")}
             disabled={step === "sending"}
           >
             ✕
@@ -200,19 +204,15 @@ export function BulkSendPostcardModal({
                     type="button"
                     onClick={() => setStep("pick")}
                     className="ml-auto text-[11px] text-slate-500 hover:text-slate-700 hover:underline"
-                  >
-                    Change design
-                  </button>
+                  >{t("pages.sendPostcard.changeDesign")}</button>
                 </div>
               </div>
 
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                 <div className="text-xs font-semibold text-slate-700">
-                  Recipients ({recipients.length})
+                  {t("pages.bulkPostcard.recipientsN", { count: recipients.length })}
                 </div>
-                <div className="mt-1 text-[11px] text-slate-500">
-                  Each card greets its recipient by name — the message below is shared.
-                </div>
+                <div className="mt-1 text-[11px] text-slate-500">{t("pages.bulkPostcard.greetsByName")}</div>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {recipients.slice(0, 8).map((r) => (
                     <span
@@ -231,9 +231,7 @@ export function BulkSendPostcardModal({
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700">
-                  Personal message
-                </label>
+                <label className="block text-xs font-medium text-slate-700">{t("pages.sendPostcard.personalMessage")}</label>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
@@ -241,13 +239,11 @@ export function BulkSendPostcardModal({
                   className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
                   placeholder={template.defaultMessage}
                 />
-                <p className="mt-1 text-[11px] text-slate-500">
-                  Shown after the animation. Keep it warm + generic — no names inline.
-                </p>
+                <p className="mt-1 text-[11px] text-slate-500">{t("pages.bulkPostcard.messageHint")}</p>
               </div>
 
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <div className="text-xs font-semibold text-slate-700">Deliver via</div>
+                <div className="text-xs font-semibold text-slate-700">{t("pages.sendPostcard.deliverVia")}</div>
                 <div className="mt-2 flex flex-wrap gap-3 text-sm">
                   <label className="flex items-center gap-2">
                     <input
@@ -260,7 +256,7 @@ export function BulkSendPostcardModal({
                     />
                     ✉️ Email{" "}
                     <span className="text-[11px] text-slate-500">
-                      ({emailable} have email)
+                      {t("pages.bulkPostcard.haveEmail", { count: emailable })}
                     </span>
                   </label>
                   <label className="flex items-center gap-2">
@@ -274,12 +270,12 @@ export function BulkSendPostcardModal({
                     />
                     💬 SMS{" "}
                     <span className="text-[11px] text-slate-500">
-                      ({smsable} have phone)
+                      {t("pages.bulkPostcard.havePhone", { count: smsable })}
                     </span>
                   </label>
                   <label
                     className="flex items-center gap-2 text-slate-400"
-                    title="WeChat coming soon"
+                    title={t("pages.sendPostcard.wechatSoon")}
                   >
                     <input
                       type="checkbox"
@@ -304,33 +300,27 @@ export function BulkSendPostcardModal({
             <div className="flex flex-col items-center py-12 text-center">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
               <p className="mt-4 text-sm text-slate-600">
-                Sending {recipients.length} postcards…
+                {t("pages.bulkPostcard.sendingN", { count: recipients.length })}
               </p>
-              <p className="mt-1 text-[11px] text-slate-400">
-                This can take 10-30 seconds for large batches.
-              </p>
+              <p className="mt-1 text-[11px] text-slate-400">{t("pages.bulkPostcard.takesSeconds")}</p>
             </div>
           ) : doneSummary && results ? (
             <div className="space-y-4">
               <div className="text-center">
                 <div className="text-5xl">🎉</div>
                 <h3 className="mt-2 text-lg font-semibold text-slate-900">
-                  Sent {doneSummary.okCount} of {results.length} postcards
+                  {t("pages.bulkPostcard.sentNofM", { ok: doneSummary.okCount, total: results.length })}
                 </h3>
               </div>
               <div className="grid grid-cols-2 gap-2 text-center">
                 <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
-                    Email sent
-                  </div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-700">{t("pages.bulkPostcard.emailSent")}</div>
                   <div className="text-xl font-bold text-emerald-900">
                     {doneSummary.emailOk}
                   </div>
                 </div>
                 <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
-                    SMS sent
-                  </div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-emerald-700">{t("pages.bulkPostcard.smsSent")}</div>
                   <div className="text-xl font-bold text-emerald-900">
                     {doneSummary.smsOk}
                   </div>
@@ -339,7 +329,7 @@ export function BulkSendPostcardModal({
               {doneSummary.failures.length ? (
                 <div>
                   <div className="text-xs font-semibold text-slate-700">
-                    Not delivered ({doneSummary.failures.length})
+                    {t("pages.bulkPostcard.notDelivered", { count: doneSummary.failures.length })}
                   </div>
                   <ul className="mt-1 max-h-32 space-y-1 overflow-y-auto text-xs">
                     {doneSummary.failures.map((f) => (
@@ -366,16 +356,14 @@ export function BulkSendPostcardModal({
               type="button"
               onClick={onClose}
               className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-            >
-              Cancel
-            </button>
+            >{t("pages.sendPostcard.cancel")}</button>
             <button
               type="button"
               onClick={() => void onSend()}
               disabled={!pickedChannels.length}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
             >
-              Send {recipients.length} postcards
+              {t("pages.bulkPostcard.sendN", { count: recipients.length })}
             </button>
           </div>
         ) : step === "done" ? (
@@ -384,9 +372,7 @@ export function BulkSendPostcardModal({
               type="button"
               onClick={onClose}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
-            >
-              Done
-            </button>
+            >{t("pages.sendPostcard.done")}</button>
           </div>
         ) : null}
       </div>

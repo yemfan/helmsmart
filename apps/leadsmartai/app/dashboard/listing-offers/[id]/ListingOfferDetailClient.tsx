@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import type {
   CounterDirection,
   ListingOfferCounterRow,
@@ -28,18 +30,18 @@ const STATUS_BADGE: Record<ListingOfferStatus, string> = {
   expired: "bg-slate-100 text-slate-600",
 };
 
-function formatMoney(n: number | null | undefined): string {
+function formatMoney(n: number | null | undefined, locale: string): string {
   if (n == null) return "—";
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(n);
 }
 
-function formatDateTime(iso: string | null): string {
+function formatDateTime(iso: string | null, locale: string): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleString(undefined, {
+  return new Date(iso).toLocaleString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -57,6 +59,8 @@ export function ListingOfferDetailClient({
   counters: ListingOfferCounterRow[];
   transaction: { id: string; property_address: string };
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const router = useRouter();
   const [offer, setOffer] = useState(initialOffer);
   const [counters, setCounters] = useState(initialCounters);
@@ -82,7 +86,7 @@ export function ListingOfferDetailClient({
         return;
       }
       setOffer(body.offer);
-      setMsg({ tone: "ok", text: "Status saved." });
+      setMsg({ tone: "ok", text: t("pages.listingOffer.statusSaved") });
     } catch (e) {
       setMsg({ tone: "err", text: e instanceof Error ? e.message : "Network error." });
     } finally {
@@ -108,8 +112,7 @@ export function ListingOfferDetailClient({
           <Link
             href={`/dashboard/transactions/${transaction.id}/offers`}
             className="hover:underline"
-          >
-            Offers on {transaction.property_address}
+          >{t("pages.dashFragments.offersOn")} {transaction.property_address}
           </Link>
           {" / "}
           <span>{offer.buyer_name ?? "(unknown buyer)"}</span>
@@ -119,8 +122,7 @@ export function ListingOfferDetailClient({
         </h1>
         <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
           {offer.buyer_agent_name ? (
-            <span>
-              Agent: {offer.buyer_agent_name}
+            <span>{t("pages.dashFragments.agent")} {offer.buyer_agent_name}
               {offer.buyer_brokerage ? ` · ${offer.buyer_brokerage}` : ""}
             </span>
           ) : null}
@@ -146,57 +148,57 @@ export function ListingOfferDetailClient({
 
       <div className="grid gap-5 md:grid-cols-3">
         <div className="space-y-4 md:col-span-2">
-          <Card title="Offer terms">
+          <Card title={t("pages.listingOffer.offerTerms")}>
             <dl className="grid grid-cols-2 gap-3 text-sm">
-              <Detail label="Offer price" value={formatMoney(offer.offer_price)} />
+              <Detail label={t("pages.listingOffer.offerPrice")} value={formatMoney(offer.offer_price, locale)} />
               <Detail
-                label="Current price"
+                label={t("pages.listingOffer.currentPrice")}
                 value={
                   offer.current_price != null && offer.current_price !== offer.offer_price ? (
                     <span className="font-semibold text-slate-900">
-                      {formatMoney(offer.current_price)}
+                      {formatMoney(offer.current_price, locale)}
                     </span>
                   ) : (
-                    formatMoney(offer.current_price ?? offer.offer_price)
+                    formatMoney(offer.current_price ?? offer.offer_price, locale)
                   )
                 }
               />
-              <Detail label="Earnest money" value={formatMoney(offer.earnest_money)} />
-              <Detail label="Down payment" value={formatMoney(offer.down_payment)} />
-              <Detail label="Financing" value={offer.financing_type ?? "—"} />
-              <Detail label="Proposed closing" value={offer.closing_date_proposed ?? "—"} />
-              <Detail label="Seller concessions" value={formatMoney(offer.seller_concessions)} />
+              <Detail label={t("pages.listingOffer.earnestMoney")} value={formatMoney(offer.earnest_money, locale)} />
+              <Detail label={t("pages.listingOffer.downPayment")} value={formatMoney(offer.down_payment, locale)} />
+              <Detail label={t("pages.listingOffer.financing")} value={offer.financing_type ?? "—"} />
+              <Detail label={t("pages.listingOffer.proposedClosing")} value={offer.closing_date_proposed ?? "—"} />
+              <Detail label={t("pages.listingOffer.concessions")} value={formatMoney(offer.seller_concessions, locale)} />
               <Detail
-                label="Contingencies"
+                label={t("pages.listingOffer.contingencies")}
                 wide
                 value={
                   <div className="flex flex-wrap gap-1.5">
-                    {offer.inspection_contingency ? <Chip>Inspection</Chip> : null}
-                    {offer.appraisal_contingency ? <Chip>Appraisal</Chip> : null}
-                    {offer.loan_contingency ? <Chip>Loan</Chip> : null}
-                    {offer.sale_of_home_contingency ? <Chip>Sale of home</Chip> : null}
+                    {offer.inspection_contingency ? <Chip>{t("pages.listingOffer.inspection")}</Chip> : null}
+                    {offer.appraisal_contingency ? <Chip>{t("pages.listingOffer.appraisal")}</Chip> : null}
+                    {offer.loan_contingency ? <Chip>{t("pages.listingOffer.loan")}</Chip> : null}
+                    {offer.sale_of_home_contingency ? <Chip>{t("pages.listingOffer.saleOfHome")}</Chip> : null}
                     {!offer.inspection_contingency &&
                     !offer.appraisal_contingency &&
                     !offer.loan_contingency &&
                     !offer.sale_of_home_contingency ? (
-                      <span className="text-xs text-slate-500">None (all waived)</span>
+                      <span className="text-xs text-slate-500">{t("pages.listingOffer.noneWaived")}</span>
                     ) : null}
                   </div>
                 }
               />
               {offer.contingency_notes ? (
-                <Detail label="Other contingencies" value={offer.contingency_notes} wide />
+                <Detail label={t("pages.listingOffer.otherContingencies")} value={offer.contingency_notes} wide />
               ) : null}
-              {offer.notes ? <Detail label="Notes" value={offer.notes} wide /> : null}
+              {offer.notes ? <Detail label={t("pages.listingOffer.notes")} value={offer.notes} wide /> : null}
             </dl>
           </Card>
 
-          <Card title="Buyer's agent contact">
+          <Card title={t("pages.listingOffer.buyerAgent")}>
             <dl className="grid grid-cols-2 gap-3 text-sm">
-              <Detail label="Name" value={offer.buyer_agent_name} />
-              <Detail label="Brokerage" value={offer.buyer_brokerage} />
+              <Detail label={t("pages.listingOffer.name")} value={offer.buyer_agent_name} />
+              <Detail label={t("pages.listingOffer.brokerage")} value={offer.buyer_brokerage} />
               <Detail
-                label="Email"
+                label={t("pages.listingOffer.email")}
                 value={
                   offer.buyer_agent_email ? (
                     <a
@@ -208,11 +210,11 @@ export function ListingOfferDetailClient({
                   ) : null
                 }
               />
-              <Detail label="Phone" value={offer.buyer_agent_phone} />
+              <Detail label={t("pages.listingOffer.phone")} value={offer.buyer_agent_phone} />
             </dl>
           </Card>
 
-          <Card title="Status">
+          <Card title={t("pages.listingOffer.status")}>
             <div className="flex flex-wrap gap-2">
               {(
                 ["submitted", "countered", "accepted", "rejected", "withdrawn", "expired"] as ListingOfferStatus[]
@@ -253,7 +255,7 @@ export function ListingOfferDetailClient({
         </div>
 
         <div className="space-y-4">
-          <Card title="Quick actions">
+          <Card title={t("pages.listingOffer.quickActions")}>
             <div className="space-y-2">
               <Link
                 href={`/dashboard/transactions/${transaction.id}/offers`}
@@ -277,12 +279,12 @@ export function ListingOfferDetailClient({
             </div>
           </Card>
 
-          <Card title="Timeline">
+          <Card title={t("pages.listingOffer.timeline")}>
             <dl className="space-y-2 text-sm">
-              <Detail label="Submitted" value={formatDateTime(offer.submitted_at)} />
-              <Detail label="Accepted" value={formatDateTime(offer.accepted_at)} />
-              <Detail label="Closed" value={formatDateTime(offer.closed_at)} />
-              <Detail label="Expires" value={formatDateTime(offer.offer_expires_at)} />
+              <Detail label={t("pages.listingOffer.submitted")} value={formatDateTime(offer.submitted_at, locale)} />
+              <Detail label={t("pages.listingOffer.accepted")} value={formatDateTime(offer.accepted_at, locale)} />
+              <Detail label={t("pages.listingOffer.closed")} value={formatDateTime(offer.closed_at, locale)} />
+              <Detail label={t("pages.listingOffer.expires")} value={formatDateTime(offer.offer_expires_at, locale)} />
             </dl>
           </Card>
         </div>
@@ -302,6 +304,8 @@ function CounterTimeline({
   onCounterAdded: (c: ListingOfferCounterRow) => void;
   disabled: boolean;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [adding, setAdding] = useState(false);
   const [direction, setDirection] = useState<CounterDirection>("seller_to_buyer");
   const [price, setPrice] = useState("");
@@ -345,7 +349,7 @@ function CounterTimeline({
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">Counter history</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.listingOffer.counterHistory")}</h2>
         {!adding && !disabled ? (
           <button
             type="button"
@@ -359,7 +363,7 @@ function CounterTimeline({
 
       {counters.length === 0 && !adding ? (
         <p className="mt-3 text-sm text-slate-500">
-          {disabled ? "Offer is closed — no further counters." : "No counters yet."}
+          {disabled ? t("pages.listingOffer.noCountersClosed") : t("pages.listingOffer.noCounters")}
         </p>
       ) : null}
 
@@ -370,12 +374,12 @@ function CounterTimeline({
               <div className="flex items-center justify-between">
                 <div className="font-medium text-slate-900">
                   #{c.counter_number} ·{" "}
-                  {c.direction === "seller_to_buyer" ? "Seller → Buyer" : "Buyer → Seller"}
+                  {c.direction === "seller_to_buyer" ? t("pages.listingOffer.sellerToBuyer") : t("pages.listingOffer.buyerToSeller")}
                 </div>
-                <div className="text-[11px] text-slate-500">{formatDateTime(c.created_at)}</div>
+                <div className="text-[11px] text-slate-500">{formatDateTime(c.created_at, locale)}</div>
               </div>
               {c.price != null ? (
-                <div className="mt-1 tabular-nums text-slate-700">Price: {formatMoney(c.price)}</div>
+                <div className="mt-1 tabular-nums text-slate-700">{t("pages.dashFragments.price")} {formatMoney(c.price, locale)}</div>
               ) : null}
               {c.notes ? <div className="mt-1 text-slate-600">{c.notes}</div> : null}
             </li>
@@ -386,18 +390,18 @@ function CounterTimeline({
       {adding ? (
         <div className="mt-3 space-y-2 rounded-lg bg-slate-50 p-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">Direction</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.listingOffer.direction")}</label>
             <select
               value={direction}
               onChange={(e) => setDirection(e.target.value as CounterDirection)}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             >
-              <option value="seller_to_buyer">Seller → Buyer (we countered them)</option>
-              <option value="buyer_to_seller">Buyer → Seller (they countered us)</option>
+              <option value="seller_to_buyer">{t("pages.listingOffer.weCountered")}</option>
+              <option value="buyer_to_seller">{t("pages.listingOffer.theyCountered")}</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">New price (optional)</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.listingOffer.newPrice")}</label>
             <input
               type="number"
               value={price}
@@ -407,11 +411,11 @@ function CounterTimeline({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Notes</label>
+            <label className="block text-xs font-medium text-slate-700">{t("detail.offerDetail.notes")}</label>
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Moved close to 30d, kept EMD…"
+              placeholder={t("pages.listingOffer.counterNotesPlaceholder")}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             />
           </div>
@@ -421,16 +425,14 @@ function CounterTimeline({
               type="button"
               onClick={() => setAdding(false)}
               className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100"
-            >
-              Cancel
-            </button>
+            >{t("pages.listingOfferDetail.cancel")}</button>
             <button
               type="button"
               onClick={() => void submit()}
               disabled={saving}
               className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             >
-              {saving ? "Saving…" : "Record counter"}
+              {saving ? t("pages.listingOffer.saving") : t("pages.listingOffer.recordCounter")}
             </button>
           </div>
         </div>

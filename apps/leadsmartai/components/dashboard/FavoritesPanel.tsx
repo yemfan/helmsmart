@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { Heart } from "lucide-react";
 
 type Favorite = {
@@ -37,6 +39,8 @@ function money(v: number | null): string {
  * to bring up on the next call.
  */
 export default function FavoritesPanel({ contactId }: Props) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,11 +67,8 @@ export default function FavoritesPanel({ contactId }: Props) {
     <section className="rounded-xl border border-gray-200 bg-white p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">Favorited properties</h2>
-          <p className="mt-0.5 text-xs text-gray-500">
-            Listings this contact explicitly saved. Strongest signal of
-            specific-property interest.
-          </p>
+          <h2 className="text-sm font-semibold text-gray-900">{t("pages.favorites.title")}</h2>
+          <p className="mt-0.5 text-xs text-gray-500">{t("pages.favorites.sub")}</p>
         </div>
         <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-medium text-rose-700">
           {favorites.length}
@@ -79,7 +80,7 @@ export default function FavoritesPanel({ contactId }: Props) {
       ) : favorites.length === 0 ? (
         <div className="mt-3 rounded border border-dashed border-gray-200 p-4 text-center text-xs text-gray-500">
           <Heart className="mx-auto h-5 w-5 text-gray-300" aria-hidden />
-          <div className="mt-1">No favorites yet.</div>
+          <div className="mt-1">{t("pages.favorites.empty")}</div>
         </div>
       ) : (
         <ul className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -114,7 +115,7 @@ export default function FavoritesPanel({ contactId }: Props) {
                   </div>
                 )}
                 <div className="mt-0.5 text-[10px] text-gray-400">
-                  Saved {new Date(f.createdAt).toLocaleDateString()}
+                  {t("pages.favorites.saved", { date: new Date(f.createdAt).toLocaleDateString(locale) })}
                 </div>
               </div>
             </li>

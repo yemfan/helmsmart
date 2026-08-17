@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { agentHasSocialCustomization } from "@/lib/social/customization";
 import AdComposerClient from "./AdComposerClient";
 
-export const metadata: Metadata = {
-  title: "Ad Composer",
-  description: "Design custom social ads from templates.",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.adComposer.metaTitle", { ns: "dashboard" }),
+    description: t("pages.adComposer.metaDescription", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -19,15 +23,16 @@ export const dynamic = "force-dynamic";
  * upgrade note otherwise; the save API enforces it too).
  */
 export default async function AdComposerPage() {
+  const t = await getServerT();
   const { agentId } = await getCurrentAgentContext();
   const canCustomize = await agentHasSocialCustomization(String(agentId)).catch(() => false);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
       <div className="mb-5">
-        <h1 className="text-xl font-semibold text-gray-900">Ad Composer</h1>
+        <h1 className="text-xl font-semibold text-gray-900">{t("pages.adComposer.heading", { ns: "dashboard" })}</h1>
         <p className="mt-0.5 text-sm text-gray-500">
-          Pick a template and theme, edit the copy, preview it live, then save to your pool or schedule.
+          {t("pages.adComposer.intro", { ns: "dashboard" })}
         </p>
       </div>
       <AdComposerClient canCustomize={canCustomize} />

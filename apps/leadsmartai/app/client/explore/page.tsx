@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useClientLeadId } from "@/components/client/useClientLeadId";
 
 type MeRes = {
@@ -17,6 +18,7 @@ type SavedRow = {
 };
 
 export default function ClientExplorePage() {
+  const { t } = useTranslation("dashboard");
   const [me, setMe] = useState<MeRes | null>(null);
   const [saved, setSaved] = useState<SavedRow[]>([]);
   const [address, setAddress] = useState("");
@@ -65,13 +67,13 @@ export default function ClientExplorePage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-slate-900">Saved homes</h1>
-        <p className="text-sm text-slate-600 mt-1">Track favorites and AI-style scores while you shop.</p>
+        <h1 className="text-xl font-bold text-slate-900">{t("pages.clientPortal.savedHomes")}</h1>
+        <p className="text-sm text-slate-600 mt-1">{t("pages.clientPortal.savedHomesSub")}</p>
       </div>
 
       <form onSubmit={addSaved} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase">Address</label>
+          <label className="text-xs font-semibold text-slate-500 uppercase">{t("pages.clientPortal.address")}</label>
           <input
             className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
             value={address}
@@ -80,7 +82,7 @@ export default function ClientExplorePage() {
           />
         </div>
         <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase">Your AI score (0–100)</label>
+          <label className="text-xs font-semibold text-slate-500 uppercase">{t("pages.clientPortal.yourScore")}</label>
           <input
             type="number"
             min={0}
@@ -102,7 +104,7 @@ export default function ClientExplorePage() {
 
       <div className="space-y-3">
         {saved.length === 0 && (
-          <p className="text-sm text-slate-500 text-center py-8">No saved homes yet — add one above.</p>
+          <p className="text-sm text-slate-500 text-center py-8">{t("pages.clientPortal.noSavedHomes")}</p>
         )}
         {saved.map((h) => (
           <div
@@ -111,10 +113,9 @@ export default function ClientExplorePage() {
           >
             <div className="font-semibold text-slate-900">{h.address}</div>
             {h.ai_score != null && (
-              <div className="text-xs font-bold text-blue-700">AI score: {h.ai_score}</div>
+              <div className="text-xs font-bold text-blue-700">{t("pages.dashFragments.aiScore")} {h.ai_score}</div>
             )}
-            <div className="text-xs text-slate-500">
-              Insights: {Object.keys(h.insights ?? {}).length ? JSON.stringify(h.insights) : "Add notes with your agent"}
+            <div className="text-xs text-slate-500">{t("pages.dashFragments.insights")} {Object.keys(h.insights ?? {}).length ? JSON.stringify(h.insights) : "Add notes with your agent"}
             </div>
           </div>
         ))}

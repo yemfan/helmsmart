@@ -110,10 +110,13 @@ Out of scope for this PR — build when post-verification traffic starts.
 
 ## Inbox UX (future)
 
-Once WeChat traffic is flowing, the existing `SmsConversationPanel` +
-`EmailConversationPanel` can be joined by a `WeChatConversationPanel`
-that reads from `wechat_messages`. A unified-timeline view across all
-three channels is a natural follow-up.
+Once WeChat traffic is flowing, a `WeChatConversationPanel` reading from
+`wechat_messages` can sit alongside the SMS and email conversation views. A
+unified-timeline view across all three channels is a natural follow-up.
+
+(The `SmsConversationPanel` / `EmailConversationPanel` components this section
+originally named were removed — nothing imported them. The live SMS and email
+threads render from `AiChatPanel` and the inbox.)
 
 ## Safety gates
 

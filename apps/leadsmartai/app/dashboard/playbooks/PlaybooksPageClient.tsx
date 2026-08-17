@@ -358,9 +358,7 @@ function TaskRow({
               </span>
             ) : null}
             {cancelled ? (
-              <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-                Cancelled
-              </span>
+              <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">{tr("pages.playbooksPage.cancelled")}</span>
             ) : null}
           </div>
         ) : null}
@@ -530,17 +528,13 @@ function DelayButton({
             role="menuitem"
             onClick={() => pick(1)}
             className="block w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
-          >
-            Tomorrow
-          </button>
+          >{tr("pages.playbooksPage.tomorrow")}</button>
           <button
             type="button"
             role="menuitem"
             onClick={() => pick(7)}
             className="block w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
-          >
-            Next week
-          </button>
+          >{tr("pages.playbooksPage.nextWeek")}</button>
           <div className="border-t border-slate-100 px-3 py-2">
             <label className="block text-[11px] font-medium text-slate-500">{tr("more.playbooks.pickDate")}</label>
             <input

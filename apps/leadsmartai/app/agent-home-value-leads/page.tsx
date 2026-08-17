@@ -1,6 +1,8 @@
- "use client";
+"use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 type Lead = {
   name: string;
@@ -16,6 +18,8 @@ type LeadsResponse = {
 };
 
 export default function AgentHomeValueLeadsPage() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,46 +79,35 @@ export default function AgentHomeValueLeadsPage() {
     <div className="max-w-5xl mx-auto p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Home Value Leads
-          </h1>
-          <p className="text-sm text-gray-600">
-            View and export leads captured from your home value widgets.
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">{t("pages.homeValueLeads.h1")}</h1>
+          <p className="text-sm text-gray-600">{t("pages.homeValueLeads.sub")}</p>
         </div>
         <button
           onClick={handleExportCsv}
           disabled={!leads.length}
           className="inline-flex items-center bg-blue-600 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Export CSV
-        </button>
+        >{t("pages.homeValueLeads.exportCsv")}</button>
       </div>
 
       <div className="bg-white shadow rounded-xl p-4 border border-gray-100">
         {loading ? (
           <div className="flex items-center justify-center py-10 text-sm text-gray-600">
-            <span className="mr-2 inline-block h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-            Loading leads...
-          </div>
+            <span className="mr-2 inline-block h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />{t("pages.homeValueLeads.loading")}</div>
         ) : error ? (
           <p className="text-sm text-red-600">{error}</p>
         ) : !leads.length ? (
-          <p className="text-sm text-gray-600">
-            No leads found yet. Embed your home value widget to start capturing
-            seller leads.
-          </p>
+          <p className="text-sm text-gray-600">{t("pages.homeValueLeads.empty")}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full text-xs border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-left text-gray-600">
-                  <th className="px-3 py-2 font-semibold">Name</th>
-                  <th className="px-3 py-2 font-semibold">Address</th>
-                  <th className="px-3 py-2 font-semibold">Email</th>
-                  <th className="px-3 py-2 font-semibold">Phone</th>
-                  <th className="px-3 py-2 font-semibold">Agent ID</th>
-                  <th className="px-3 py-2 font-semibold">Date</th>
+                  <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.name", { ns: "dashboard" })}</th>
+                  <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.address", { ns: "dashboard" })}</th>
+                  <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.email", { ns: "dashboard" })}</th>
+                  <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.phone", { ns: "dashboard" })}</th>
+                  <th className="px-3 py-2 font-semibold">{t("pages.homeValueLeads.agentId")}</th>
+                  <th className="px-3 py-2 font-semibold">{t("pages.homeValueLeads.date")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -131,7 +124,7 @@ export default function AgentHomeValueLeadsPage() {
                     <td className="px-3 py-2">{lead.phone}</td>
                     <td className="px-3 py-2">{lead.agent_id}</td>
                     <td className="px-3 py-2">
-                      {new Date(lead.timestamp).toLocaleString()}
+                      {new Date(lead.timestamp).toLocaleString(locale)}
                     </td>
                   </tr>
                 ))}

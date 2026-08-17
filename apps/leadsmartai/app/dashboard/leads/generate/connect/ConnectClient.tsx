@@ -636,10 +636,7 @@ export default function ConnectClient({
             </div>
             <div>
               <h2 className="text-base font-semibold text-gray-900">Pinterest</h2>
-              <p className="text-sm text-gray-600">
-                Auto-publish Pins — listing photos, neighborhood guides, branded
-                cards — to a board on your Pinterest business account.
-              </p>
+              <p className="text-sm text-gray-600">{t("pages.connect.pinterestBlurb")}</p>
             </div>
           </div>
           <a
@@ -707,14 +704,10 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">
-            Connect a Pinterest business account to schedule Pins. New Pins post to your first board.
-          </p>
+          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">{t("pages.connect.pinterestConnect")}</p>
         )}
 
-        <p className="mt-4 text-xs text-gray-400">
-          Disconnecting removes the token stored here. To fully revoke, remove the app in your Pinterest account settings.
-        </p>
+        <p className="mt-4 text-xs text-gray-400">{t("pages.connect.pinterestRevoke")}</p>
       </section>
 
       {/* TikTok card */}
@@ -726,10 +719,7 @@ export default function ConnectClient({
             </div>
             <div>
               <h2 className="text-base font-semibold text-gray-900">TikTok</h2>
-              <p className="text-sm text-gray-600">
-                Post your videos — listing tours, avatar clips — straight to TikTok.
-                New videos start private until your TikTok app passes the Content Posting audit.
-              </p>
+              <p className="text-sm text-gray-600">{t("pages.connect.tiktokBlurb")}</p>
             </div>
           </div>
           <a
@@ -796,14 +786,10 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">
-            Connect a TikTok account to post videos. Until your app is audited, posts are private (only you see them).
-          </p>
+          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">{t("pages.connect.tiktokConnect")}</p>
         )}
 
-        <p className="mt-4 text-xs text-gray-400">
-          Disconnecting removes the token stored here. To fully revoke, remove the app in your TikTok account settings.
-        </p>
+        <p className="mt-4 text-xs text-gray-400">{t("pages.connect.tiktokRevoke")}</p>
       </section>
 
       {/* YouTube card */}
@@ -815,9 +801,7 @@ export default function ConnectClient({
             </div>
             <div>
               <h2 className="text-base font-semibold text-gray-900">YouTube</h2>
-              <p className="text-sm text-gray-600">
-                Upload your videos — listing tours, avatar clips — to your YouTube channel. Vertical clips land as Shorts.
-              </p>
+              <p className="text-sm text-gray-600">{t("pages.connect.youtubeBlurb")}</p>
             </div>
           </div>
           <a
@@ -882,14 +866,10 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">
-            Connect a YouTube channel to upload videos. Vertical videos post as Shorts.
-          </p>
+          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">{t("pages.connect.youtubeConnect")}</p>
         )}
 
-        <p className="mt-4 text-xs text-gray-400">
-          Disconnecting removes the token stored here. To fully revoke, remove access in your Google account settings.
-        </p>
+        <p className="mt-4 text-xs text-gray-400">{t("pages.connect.youtubeRevoke")}</p>
       </section>
 
       {/* Phase 3 placeholders */}

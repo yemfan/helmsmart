@@ -2,6 +2,7 @@ import { requireRole } from "@/lib/auth/requireRole";
 import { resolveAgentDisplays } from "@/lib/admin/resolveAgentDisplay";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { GrowthDigestLogClient, type GrowthDigestLogRow } from "./GrowthDigestLogClient";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata = {
   title: "Growth Digest Log | Admin | LeadSmart AI",
@@ -17,6 +18,7 @@ export const metadata = {
  * meaningful). Not linked in the sidebar.
  */
 export default async function AdminGrowthDigestsPage() {
+  const t = await getServerT();
   await requireRole(["admin"]);
 
   const cutoff = new Date(Date.now() - 28 * 86_400_000).toISOString().slice(0, 10);

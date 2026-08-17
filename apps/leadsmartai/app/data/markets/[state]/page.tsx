@@ -22,12 +22,16 @@ import {
   momChange,
   yoyChange,
   relativePct,
-  comparePhrase,
+  compareParts,
+  metricLabel,
+  type Translate,
   isNum,
 } from "@/lib/research/warehouse/format";
 import Sparkline from "../../_components/Sparkline";
 import StatGrid from "../../_components/StatGrid";
 import DataSources from "../../_components/DataSources";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export const dynamic = "force-dynamic";
 
@@ -66,25 +70,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/** `higher` -> `Higher`, so a compareParts kind reads as a key suffix. */
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 function changeLine(
   metrics: LatestMetric[],
   seriesMap: Map<string, SeriesPoint[]>,
   metric: string,
+  t: Translate,
 ): string | null {
   const m = findMetric(metrics, metric);
   if (!m || !isNum(m.value)) return null;
   const series = seriesMap.get(metric) ?? [];
   const mom = momChange(series);
   const yoy = yoyChange(series);
-  const label = METRIC_META[metric]?.label ?? metric;
-  const val = formatValue(m.value, m.unit, { compact: false });
-  const parts: string[] = [`${label} is ${val}`];
-  if (isNum(mom.pct)) parts.push(`${formatPct(mom.pct)} month over month`);
-  if (isNum(yoy.pct)) parts.push(`${formatPct(yoy.pct)} year over year`);
-  return parts.length > 1 ? `${parts[0]} — ${parts.slice(1).join(", ")}.` : `${parts[0]}.`;
+  const T = (k: string, v: Record<string, unknown> = {}) =>
+    t(`pages.dataCenterPages.${k}`, { ns: "dashboard", ...v });
+  const head = T("changeLine", {
+    label: metricLabel(metric, t),
+    value: formatValue(m.value, m.unit, { compact: false, t }),
+  });
+  const parts: string[] = [];
+  if (isNum(mom.pct)) parts.push(T("changeMom", { pct: formatPct(mom.pct) }));
+  if (isNum(yoy.pct)) parts.push(T("changeYoy", { pct: formatPct(yoy.pct) }));
+  return parts.length
+    ? T("changeJoin", { head, rest: parts.join("、") })
+    : T("changeOnly", { head });
 }
 
 export default async function StatePage({ params }: Props) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const { state } = await params;
   const geo = await resolveState(state);
   if (!geo) notFound();
@@ -107,14 +123,14 @@ export default async function StatePage({ params }: Props) {
 
   const base = getSiteUrl();
   const zhvi = findMetric(metrics, "zhvi");
-  const periodLabel = zhvi ? formatPeriod(zhvi.period) : "";
+  const periodLabel = zhvi ? formatPeriod(zhvi.period, locale) : "";
 
   // Deterministic comparison sentence: state ZHVI vs national ZHVI.
   const natZhvi = findMetric(national, "zhvi");
   const vsNational = relativePct(zhvi?.value ?? null, natZhvi?.value ?? null);
 
   const insightLines = CHART_METRICS.map((m) =>
-    changeLine(metrics, seriesMap, m),
+    changeLine(metrics, seriesMap, m, t),
   ).filter((l): l is string => !!l);
 
   const breadcrumbJsonLd = {
@@ -162,61 +178,54 @@ export default async function StatePage({ params }: Props) {
             CloseBoss
           </Link>
           <span className="text-slate-400 mx-2">/</span>
-          <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            Data Center
-          </Link>
+          <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</Link>
           <span className="text-slate-400 mx-2">/</span>
-          <Link href="/data/markets" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            Markets
-          </Link>
+          <Link href="/data/markets" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.dataCenterPages.markets", { ns: "dashboard" })}</Link>
           <span className="text-slate-400 mx-2">/</span>
           <span className="text-slate-600">{geo.geo_name}</span>
         </nav>
 
         <header className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">
-            State market data for agents
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">{t("pages.dataCenterPages.stateTitle", { ns: "dashboard" })}</p>
           <h1 className="text-4xl font-bold leading-tight text-slate-900">
-            {geo.geo_name} housing market — data for agents
+            {t("pages.dataCenterPages.stateHeroTitle", { ns: "dashboard", geo: geo.geo_name })}
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-slate-600">
-            The latest {geo.geo_name} home prices, inventory, and days-on-market — the
-            numbers to quote when you set a seller&apos;s expectations or reassure a
-            buyer — with month-over-month and year-over-year trends
-            {isNum(vsNational) && isNum(zhvi?.value) ? (
-              <>
-                {" "}and how it stacks up nationally. When a client says &ldquo;but I
-                heard the market is…,&rdquo; you can show them the typical {geo.geo_name}{" "}
-                home is <strong>{comparePhrase(vsNational)}</strong> the U.S. typical
-                value of{" "}
-                {formatValue(natZhvi?.value ?? null, natZhvi?.unit ?? "index", { compact: true })}.
-              </>
-            ) : (
-              "."
-            )}
+            {t("pages.dataCenterPages.stateHeroBody", { ns: "dashboard", geo: geo.geo_name })}
+            {isNum(vsNational) && isNum(zhvi?.value)
+              ? ` ${t("pages.dataCenterPages.vsNatIntro", {
+                  ns: "dashboard",
+                  geo: geo.geo_name,
+                  cmp: t(
+                    `pages.dataCenterPages.vsNat${capitalize(compareParts(vsNational).kind)}`,
+                    {
+                      ns: "dashboard",
+                      abs: compareParts(vsNational).abs ?? "",
+                      value: formatValue(
+                        natZhvi?.value ?? null,
+                        natZhvi?.unit ?? "index",
+                        { compact: true, t },
+                      ),
+                    },
+                  ),
+                })}`
+              : "."}
           </p>
           {periodLabel && (
-            <p className="text-xs text-slate-500">Data as of {periodLabel}.</p>
+            <p className="text-xs text-slate-500">{t("pages.dataCenterPages.dataAsOf", { ns: "dashboard", period: periodLabel })}</p>
           )}
         </header>
 
-        <section aria-label="Latest metrics" className="space-y-4">
-          <h2 className="text-2xl font-bold text-slate-900">
-            Latest snapshot — quote these in your CMA
-          </h2>
+        <section aria-label={t("pages.dataCenterPages.latestAria", { ns: "dashboard" })} className="space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.latestTitle", { ns: "dashboard" })}</h2>
           <StatGrid metrics={metrics} />
         </section>
 
         {insightLines.length > 0 && (
-          <section aria-label="Trends and insights" className="space-y-3">
-            <h2 className="text-2xl font-bold text-slate-900">
-              What to tell your buyers and sellers
-            </h2>
+          <section aria-label={t("pages.dataCenterPages.trendsAria", { ns: "dashboard" })} className="space-y-3">
+            <h2 className="text-2xl font-bold text-slate-900">{t("pages.dataCenterPages.trendsTitle", { ns: "dashboard" })}</h2>
             <p className="max-w-2xl text-sm leading-relaxed text-slate-600">
-              Drop these lines straight into a listing presentation or a pricing
-              conversation — each one is the current {geo.geo_name} figure with its
-              trend, not an opinion.
+              {t("pages.dataCenterPages.stateTrendsBody", { ns: "dashboard", geo: geo.geo_name })}
             </p>
             <ul className="space-y-2 text-slate-700">
               {insightLines.map((line, i) => (
@@ -229,7 +238,7 @@ export default async function StatePage({ params }: Props) {
           </section>
         )}
 
-        <section aria-label="Trend charts" className="space-y-4">
+        <section aria-label={t("pages.dataCenterPages.chartsAria", { ns: "dashboard" })} className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-900">
             13-month trends — the story behind your pricing
           </h2>
@@ -251,25 +260,22 @@ export default async function StatePage({ params }: Props) {
           </div>
         </section>
 
-        <section aria-label="Metros in this state" className="space-y-4">
+        <section aria-label={t("pages.dataCenterPages.metrosAria", { ns: "dashboard" })} className="space-y-4">
           <h2 className="text-2xl font-bold text-slate-900">
-            Metro areas in {geo.geo_name}
+            {t("pages.dataCenterPages.metrosIn", { ns: "dashboard", geo: geo.geo_name })}
           </h2>
-          <p className="max-w-2xl text-sm leading-relaxed text-slate-600">
-            All real estate is local — drill into your client&apos;s metro for the
-            numbers that actually move a pricing conversation.
-          </p>
+          <p className="max-w-2xl text-sm leading-relaxed text-slate-600">{t("pages.dataCenterPages.allLocal", { ns: "dashboard" })}</p>
           {metros.length === 0 ? (
             <p className="text-sm text-slate-500">
-              No individual metro areas are tracked in {geo.geo_name} yet.
+              {t("pages.dataCenterPages.noMetrosIn", { ns: "dashboard", geo: geo.geo_name })}
             </p>
           ) : (
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-left">
                   <tr>
-                    <th className="px-4 py-2 font-semibold text-slate-700">Metro area</th>
-                    <th className="px-4 py-2 font-semibold text-slate-700">Typical home value</th>
+                    <th className="px-4 py-2 font-semibold text-slate-700">{t("pages.dataCenterPages.metroArea", { ns: "dashboard" })}</th>
+                    <th className="px-4 py-2 font-semibold text-slate-700">{t("pages.dataCenterPages.typicalValue", { ns: "dashboard" })}</th>
                   </tr>
                 </thead>
                 <tbody>

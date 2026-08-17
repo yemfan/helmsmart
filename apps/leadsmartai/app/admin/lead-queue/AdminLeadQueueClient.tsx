@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 type QueueLead = {
   id: number | string;
@@ -21,6 +23,8 @@ type AgentOption = {
 };
 
 export function AdminLeadQueueClient() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [leads, setLeads] = useState<QueueLead[]>([]);
   const [agents, setAgents] = useState<AgentOption[]>([]);
   const [total, setTotal] = useState(0);
@@ -83,7 +87,7 @@ export function AdminLeadQueueClient() {
 
   function formatDate(dateStr: string | null) {
     if (!dateStr) return "";
-    return new Date(dateStr).toLocaleDateString("en-US", {
+    return new Date(dateStr).toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       hour: "numeric",
@@ -93,9 +97,7 @@ export function AdminLeadQueueClient() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20 text-gray-400">
-        Loading queue...
-      </div>
+      <div className="flex items-center justify-center py-20 text-gray-400">{t("pages.adminPages.loadingQueue")}</div>
     );
   }
 
@@ -103,17 +105,15 @@ export function AdminLeadQueueClient() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Lead Queue</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">{t("pages.adminPages.leadQueue")}</h1>
           <p className="text-sm text-gray-500">
-            {total} unclaimed lead{total !== 1 ? "s" : ""} &middot; assign to any agent
+            {total} {t("pages.dashFragments.unclaimedLead")}{total !== 1 ? "s" : ""} &middot; assign to any agent
           </p>
         </div>
         <button
           onClick={() => { setLoading(true); fetchQueue(); }}
           className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Refresh
-        </button>
+        >{t("pages.adminCommon.refresh")}</button>
       </div>
 
       {feedback && (
@@ -124,20 +124,20 @@ export function AdminLeadQueueClient() {
 
       {leads.length === 0 ? (
         <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center shadow-sm">
-          <p className="text-gray-500">No leads in the queue.</p>
+          <p className="text-gray-500">{t("pages.adminPages.noLeadsQueue")}</p>
         </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-gray-100 bg-gray-50/50">
               <tr>
-                <th className="px-4 py-3 font-medium text-gray-600">Name</th>
-                <th className="px-4 py-3 font-medium text-gray-600">Email</th>
-                <th className="px-4 py-3 font-medium text-gray-600">Phone</th>
-                <th className="px-4 py-3 font-medium text-gray-600">Address</th>
-                <th className="px-4 py-3 font-medium text-gray-600">Source</th>
-                <th className="px-4 py-3 font-medium text-gray-600">Created</th>
-                <th className="px-4 py-3 font-medium text-gray-600">Assign</th>
+                <th className="px-4 py-3 font-medium text-gray-600">{t("pages.adminCommon.name")}</th>
+                <th className="px-4 py-3 font-medium text-gray-600">{t("pages.adminCommon.email")}</th>
+                <th className="px-4 py-3 font-medium text-gray-600">{t("pages.adminCommon.phone")}</th>
+                <th className="px-4 py-3 font-medium text-gray-600">{t("pages.adminCommon.address")}</th>
+                <th className="px-4 py-3 font-medium text-gray-600">{t("pages.adminCommon.source")}</th>
+                <th className="px-4 py-3 font-medium text-gray-600">{t("pages.adminCommon.created")}</th>
+                <th className="px-4 py-3 font-medium text-gray-600">{t("pages.adminPages.assign")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -172,7 +172,7 @@ export function AdminLeadQueueClient() {
                           }
                           className="min-w-[140px] rounded-lg border border-gray-200 px-2 py-1.5 text-sm"
                         >
-                          <option value="">Select agent...</option>
+                          <option value="">{t("pages.adminPages.selectAgent")}</option>
                           {agents.map((a) => (
                             <option key={a.id} value={a.id}>
                               {a.name}

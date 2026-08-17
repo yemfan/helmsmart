@@ -1,5 +1,6 @@
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getServerT } from "@/lib/i18n/server";
 
 type ChannelStatus = {
   sms: {
@@ -62,14 +63,13 @@ async function loadChannelStatus(_agentId: string): Promise<ChannelStatus> {
 }
 
 export default async function ChannelsCard({ agentId: _agentId }: { agentId: string }) {
+  const t = await getServerT("dashboard");
   const s = await loadChannelStatus(_agentId);
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <h2 className="text-sm font-semibold text-gray-900">Channels</h2>
-      <p className="mt-0.5 text-xs text-gray-500">
-        The phone number and email address your contacts see. Verification is required for deliverability.
-      </p>
+      <h2 className="text-sm font-semibold text-gray-900">{t("pages.channelsCard.title")}</h2>
+      <p className="mt-0.5 text-xs text-gray-500">{t("pages.channelsCard.sub")}</p>
 
       <div className="mt-4 space-y-4">
         <ChannelBlock
@@ -130,10 +130,7 @@ export default async function ChannelsCard({ agentId: _agentId }: { agentId: str
         />
       </div>
 
-      <p className="mt-4 text-[11px] text-gray-400">
-        Read-only. Sender verification is managed by CloseBoss — contact support to change a verified number or
-        address.
-      </p>
+      <p className="mt-4 text-[11px] text-gray-400">{t("pages.channelsCard.readOnly")}</p>
     </div>
   );
 }

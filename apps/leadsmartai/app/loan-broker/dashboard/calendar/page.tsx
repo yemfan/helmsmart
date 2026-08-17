@@ -1,16 +1,19 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 export default function BrokerCalendarPage() {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">Calendar</h1>
-        <p className="text-sm text-gray-500">Schedule and track borrower appointments.</p>
+        <h1 className="text-xl font-semibold text-gray-900">{t("pages.loanBroker.calendar", { ns: "dashboard" })}</h1>
+        <p className="text-sm text-gray-500">{t("pages.loanBroker.calendarSub", { ns: "dashboard" })}</p>
       </div>
       <div className="rounded-xl border border-gray-200 bg-white p-12 shadow-sm text-center">
         <div className="text-3xl mb-3">📅</div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">Coming soon</h3>
-        <p className="text-sm text-gray-500">Borrower appointment scheduling will be available in the next update.</p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">{t("pages.loanBroker.comingSoon", { ns: "dashboard" })}</h3>
+        <p className="text-sm text-gray-500">{t("pages.loanBroker.calendarSoon", { ns: "dashboard" })}</p>
       </div>
     </div>
   );

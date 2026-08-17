@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 /**
  * Lead Ad campaign wizard. Single-page, four sections:
@@ -91,6 +93,8 @@ type LaunchResult = {
 };
 
 export default function AdCampaignWizardClient() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -293,7 +297,9 @@ export default function AdCampaignWizardClient() {
         body: JSON.stringify({
           connectionId: connection.id,
           adAccountId: adAccount.id,
-          name: campaignName.trim() || `Lead Ad — ${new Date().toLocaleDateString()}`,
+          name:
+        campaignName.trim() ||
+        t("pages.adWizard.defaultName", { date: new Date().toLocaleDateString(locale) }),
           body: adBody,
           headline: adHeadline.trim() || undefined,
           mediaItemId: selectedMedia.id,
@@ -522,13 +528,8 @@ export default function AdCampaignWizardClient() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">
-            New Lead Ad Campaign
-          </h1>
-          <p className="text-sm text-gray-500">
-            Launch a Meta Lead Ad. Leads land directly in your CRM tagged with
-            the campaign source.
-          </p>
+          <h1 className="text-xl font-semibold text-gray-900">{t("pages.adWizard.newCampaign")}</h1>
+          <p className="text-sm text-gray-500">{t("pages.adWizard.newCampaignSub")}</p>
         </div>
         <Link
           href="/dashboard/leads/generate"
@@ -547,14 +548,13 @@ export default function AdCampaignWizardClient() {
       {/* Section 1 — Where it runs */}
       <Section
         n={1}
-        title="Where it runs"
+        title={t("pages.adWizard.whereItRuns")}
         subtitle="Pick a connected Facebook Page and an ad account."
       >
         {connectionsLoading ? (
-          <p className="text-sm text-gray-500">Loading connections…</p>
+          <p className="text-sm text-gray-500">{t("pages.adWizard.loadingConnections")}</p>
         ) : connections.length === 0 ? (
-          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
-            No Facebook Pages connected.{" "}
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">{t("pages.adWizard.noPages")}{" "}
             <Link
               href="/dashboard/leads/generate/connect"
               className="font-medium underline hover:text-amber-700"
@@ -564,15 +564,13 @@ export default function AdCampaignWizardClient() {
           </div>
         ) : (
           <>
-            <label className="block text-xs font-medium text-gray-700">
-              Page
-            </label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.page")}</label>
             <select
               value={connectionId ?? ""}
               onChange={(e) => setConnectionId(e.target.value || null)}
               className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             >
-              <option value="">Pick a Page…</option>
+              <option value="">{t("pages.adWizard.pickPage")}</option>
               {connections.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.fbPageName ?? "Connected Page"}
@@ -583,26 +581,22 @@ export default function AdCampaignWizardClient() {
 
             {connectionId && (
               <div className="mt-3">
-                <label className="block text-xs font-medium text-gray-700">
-                  Ad account
-                </label>
+                <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.adAccount")}</label>
                 {adAccountsLoading ? (
-                  <p className="mt-1 text-sm text-gray-500">Loading ad accounts…</p>
+                  <p className="mt-1 text-sm text-gray-500">{t("pages.adWizard.loadingAdAccounts")}</p>
                 ) : accountsError ? (
                   <p className="mt-1 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">
                     {accountsError}
                   </p>
                 ) : adAccounts.length === 0 ? (
-                  <p className="mt-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                    No ad accounts found under this Page&apos;s Business Manager. Create one in Meta Business Settings.
-                  </p>
+                  <p className="mt-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">{t("pages.adWizard.noAdAccounts")}</p>
                 ) : (
                   <select
                     value={adAccountId ?? ""}
                     onChange={(e) => setAdAccountId(e.target.value || null)}
                     className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   >
-                    <option value="">Pick an ad account…</option>
+                    <option value="">{t("pages.adWizard.pickAdAccount")}</option>
                     {adAccounts.map((a) => (
                       <option key={a.id} value={a.id} disabled={!a.isActive}>
                         {a.name ?? a.accountId}
@@ -622,13 +616,11 @@ export default function AdCampaignWizardClient() {
       {step1Complete && (
         <Section
           n={2}
-          title="Who sees it"
+          title={t("pages.adWizard.whoSeesIt")}
           subtitle="Real-estate ads are HOUSING-restricted by Meta — only broad geo + age targeting allowed."
         >
           <div>
-            <label className="block text-xs font-medium text-gray-700">
-              ZIP codes (comma-separated)
-            </label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.zips")}</label>
             <textarea
               value={zipCodes}
               onChange={(e) => setZipCodes(e.target.value)}
@@ -636,15 +628,13 @@ export default function AdCampaignWizardClient() {
               placeholder="90210, 90211, 90212"
               className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Optional. Leave blank to target the entire US. Up to 50 zips.
-            </p>
+            <p className="mt-1 text-xs text-gray-500">{t("pages.adWizard.zipsHint")}</p>
           </div>
 
           {zipCodes.trim() && (
             <div className="mt-3">
               <label className="block text-xs font-medium text-gray-700">
-                Radius around each ZIP: {radiusMiles} mi
+                {t("pages.adWizard.radiusAround", { miles: radiusMiles })}
               </label>
               <input
                 type="range"
@@ -660,9 +650,7 @@ export default function AdCampaignWizardClient() {
 
           <div className="mt-3 grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Min age
-              </label>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.minAge")}</label>
               <input
                 type="number"
                 min={18}
@@ -675,9 +663,7 @@ export default function AdCampaignWizardClient() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Max age
-              </label>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.maxAge")}</label>
               <input
                 type="number"
                 min={18}
@@ -696,7 +682,7 @@ export default function AdCampaignWizardClient() {
               restricts targeting, so this is a meaningful gut-check. */}
           <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50/60 px-3 py-2.5 text-xs text-blue-900">
             <div className="flex items-center justify-between">
-              <p className="font-semibold">Estimated audience size</p>
+              <p className="font-semibold">{t("pages.adWizard.audienceSize")}</p>
               {audienceEstimateLoading && (
                 <span className="text-[10px] uppercase tracking-wide text-blue-700">
                   Estimating…
@@ -707,13 +693,11 @@ export default function AdCampaignWizardClient() {
               <p className="mt-1 text-red-800">{audienceEstimateError}</p>
             ) : audienceEstimate ? (
               audienceEstimate.lower != null && audienceEstimate.upper != null ? (
-                <p className="mt-1">
-                  Approximately{" "}
+                <p className="mt-1">{t("pages.adWizard.approximately")}{" "}
                   <span className="font-semibold">
                     {formatRangeShort(audienceEstimate.lower)} –{" "}
                     {formatRangeShort(audienceEstimate.upper)}
-                  </span>{" "}
-                  people match these targeting filters.{" "}
+                  </span>{" "}{t("pages.adWizard.peopleMatch")}{" "}
                   {!audienceEstimate.ready && (
                     <span className="text-blue-700">
                       (Initial estimate — Meta refines this as the campaign runs.)
@@ -721,15 +705,10 @@ export default function AdCampaignWizardClient() {
                   )}
                 </p>
               ) : (
-                <p className="mt-1 text-blue-700">
-                  No estimate available — usually means the filters are too
-                  narrow. Try expanding the radius or adding ZIPs.
-                </p>
+                <p className="mt-1 text-blue-700">{t("pages.adWizard.noEstimate")}</p>
               )
             ) : (
-              <p className="mt-1 text-blue-700">
-                Pick a connection + ad account above to see an estimate.
-              </p>
+              <p className="mt-1 text-blue-700">{t("pages.adWizard.pickToEstimate")}</p>
             )}
           </div>
         </Section>
@@ -739,27 +718,24 @@ export default function AdCampaignWizardClient() {
       {step2Complete && (
         <Section
           n={3}
-          title="What it says"
+          title={t("pages.adWizard.whatItSays")}
           subtitle="The ad's body, image, headline, and what the lead form asks for."
         >
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Campaign name <span className="text-gray-400">(internal label)</span>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.campaignName")}<span className="text-gray-400">{t("pages.adWizard.internalLabel")}</span>
               </label>
               <input
                 value={campaignName}
                 onChange={(e) => setCampaignName(e.target.value)}
-                placeholder={`Lead Ad — ${new Date().toLocaleDateString()}`}
+                placeholder={t("pages.adWizard.defaultName", { date: new Date().toLocaleDateString(locale) })}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between">
-                <label className="block text-xs font-medium text-gray-700">
-                  Ad body
-                </label>
+                <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.adBody")}</label>
                 <button
                   type="button"
                   onClick={() => {
@@ -768,14 +744,12 @@ export default function AdCampaignWizardClient() {
                   }}
                   className="text-xs font-medium text-purple-700 hover:text-purple-900"
                 >
-                  ✨ {showSuggest ? "Hide" : "Suggest with AI"}
+                  ✨ {showSuggest ? t("pages.adWizard.hide") : t("pages.adWizard.suggestWithAi")}
                 </button>
               </div>
               {showSuggest && (
                 <div className="mt-1 rounded-lg border border-purple-200 bg-purple-50/60 p-3 space-y-2">
-                  <label className="block text-[11px] font-medium text-purple-900">
-                    Brief — what's the campaign promoting?
-                  </label>
+                  <label className="block text-[11px] font-medium text-purple-900">{t("pages.adWizard.brief")}</label>
                   <textarea
                     value={suggestBrief}
                     onChange={(e) => setSuggestBrief(e.target.value)}
@@ -790,7 +764,7 @@ export default function AdCampaignWizardClient() {
                       disabled={suggesting || !suggestBrief.trim()}
                       className="rounded-md bg-purple-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-purple-700 disabled:opacity-50"
                     >
-                      {suggesting ? "Generating…" : "Generate"}
+                      {suggesting ? t("pages.adWizard.generating") : t("pages.adWizard.generate")}
                     </button>
                     {suggestVariants.length > 1 && (
                       <button
@@ -798,8 +772,10 @@ export default function AdCampaignWizardClient() {
                         onClick={cycleSuggestVariant}
                         className="rounded-md border border-purple-300 bg-white px-2.5 py-1 text-xs font-medium text-purple-700 hover:bg-purple-50"
                       >
-                        Try a different angle ({suggestVariantIndex + 1}/
-                        {suggestVariants.length})
+                        {t("pages.adWizard.differentAngle", {
+                          n: suggestVariantIndex + 1,
+                          total: suggestVariants.length,
+                        })}
                       </button>
                     )}
                   </div>
@@ -812,14 +788,13 @@ export default function AdCampaignWizardClient() {
                 value={adBody}
                 onChange={(e) => setAdBody(e.target.value)}
                 rows={4}
-                placeholder="2-3 sentences about the listing or the offer. What's the hook?"
+                placeholder={t("pages.adWizard.briefPlaceholder")}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Headline <span className="text-gray-400">(optional, ≤ 40 chars)</span>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.headline")}<span className="text-gray-400">{t("pages.adWizard.headlineLimit")}</span>
               </label>
               <input
                 value={adHeadline}
@@ -831,33 +806,28 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Landing URL <span className="text-gray-400">(where the lead form&apos;s &ldquo;Submit&rdquo; confirmation sends them)</span>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.landingUrl")}<span className="text-gray-400">{t("pages.adWizard.thankYouHint")}</span>
               </label>
               <input
                 value={landingUrl}
                 onChange={(e) => setLandingUrl(e.target.value)}
-                placeholder="https://yoursite.com"
+                placeholder={t("pages.adWizard.sitePlaceholder")}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Privacy policy URL{" "}
-                <span className="text-gray-400">
-                  (Meta requires one — leave blank to use CloseBoss&apos;s default)
-                </span>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.privacyUrl")}{" "}
+                <span className="text-gray-400">{t("pages.adWizard.privacyNote")}</span>
               </label>
               <input
                 type="url"
                 value={privacyPolicyUrl}
                 onChange={(e) => setPrivacyPolicyUrl(e.target.value)}
-                placeholder="https://yourbrokerage.com/privacy"
+                placeholder={t("pages.adWizard.privacyPlaceholder")}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
-              <p className="mt-1 text-[11px] text-gray-500">
-                Must be HTTPS. Set a default for all your campaigns in{" "}
+              <p className="mt-1 text-[11px] text-gray-500">{t("pages.adWizard.mustBeHttps")}{" "}
                 <a
                   href="/dashboard/settings"
                   target="_blank"
@@ -874,15 +844,11 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Image
-              </label>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.image")}</label>
               {libraryLoading ? (
-                <p className="mt-1 text-sm text-gray-500">Loading library…</p>
+                <p className="mt-1 text-sm text-gray-500">{t("pages.adWizard.loadingLibrary")}</p>
               ) : library.length === 0 ? (
-                <p className="mt-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                  Your media library is empty. Upload an image first — Meta requires one for Lead Ad creatives.
-                </p>
+                <p className="mt-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">{t("pages.adWizard.emptyLibrary")}</p>
               ) : (
                 <div className="mt-1 grid grid-cols-3 gap-2 sm:grid-cols-4">
                   {library.map((m) => (
@@ -914,9 +880,7 @@ export default function AdCampaignWizardClient() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700">
-                Lead form questions
-              </label>
+              <label className="block text-xs font-medium text-gray-700">{t("pages.adWizard.formQuestions")}</label>
               <p className="text-xs text-gray-500 mt-0.5 mb-2">
                 Tick the fields you want each lead to fill in. Fewer = higher
                 conversion; more = better-qualified leads.
@@ -946,7 +910,7 @@ export default function AdCampaignWizardClient() {
       {step3Complete && (
         <Section
           n={4}
-          title="Budget + launch"
+          title={t("pages.adWizard.budgetLaunch")}
           subtitle="Daily spend cap and how long the campaign runs."
         >
           <div className="space-y-3">
@@ -971,7 +935,10 @@ export default function AdCampaignWizardClient() {
 
             <div>
               <label className="block text-xs font-medium text-gray-700">
-                Run for: {durationDays} {durationDays === 1 ? "day" : "days"}
+                {t("pages.adWizard.runForDays", {
+                  days: durationDays,
+                  unit: t(durationDays === 1 ? "pages.adWizard.dayOne" : "pages.adWizard.dayOther"),
+                })}
               </label>
               <input
                 type="range"
@@ -990,14 +957,12 @@ export default function AdCampaignWizardClient() {
 
             <div className="rounded-lg border border-gray-200 bg-gray-50/60 px-3 py-2.5 text-sm">
               <div className="flex items-baseline justify-between">
-                <span className="text-gray-600">Total budget</span>
+                <span className="text-gray-600">{t("pages.adWizard.totalBudget")}</span>
                 <span className="font-semibold text-gray-900">
                   ${dailyBudget * durationDays}
                 </span>
               </div>
-              <p className="mt-0.5 text-xs text-gray-500">
-                Meta bills you directly. CloseBoss never touches your ad spend.
-              </p>
+              <p className="mt-0.5 text-xs text-gray-500">{t("pages.adWizard.metaBills")}</p>
             </div>
 
             <label className="flex items-start gap-2 rounded-lg border border-gray-200 px-3 py-2.5">
@@ -1008,12 +973,9 @@ export default function AdCampaignWizardClient() {
                 className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               <div className="text-sm">
-                <span className="font-medium text-gray-900">
-                  Launch immediately
-                </span>
+                <span className="font-medium text-gray-900">{t("pages.adWizard.launchNow")}</span>
                 <p className="text-xs text-gray-500">
-                  Default is to create in <strong>paused</strong> state so you can
-                  review in Meta Ads Manager before money starts moving.
+                  {t("pages.adWizard.pausedBefore")} <strong>{t("pages.adWizard.paused")}</strong> {t("pages.adWizard.pausedAfter")}
                 </p>
               </div>
             </label>
@@ -1022,9 +984,7 @@ export default function AdCampaignWizardClient() {
               <Link
                 href="/dashboard/leads/generate"
                 className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </Link>
+              >{t("pages.adWizard.cancel")}</Link>
               <button
                 type="button"
                 onClick={launch}
@@ -1081,6 +1041,7 @@ function DoneState({
   onAnother: () => void;
   onBack: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const adsManagerUrl = `https://adsmanager.facebook.com/adsmanager/manage/campaigns?selected_campaign_ids=${encodeURIComponent(result.meta.campaignId)}`;
   return (
     <div className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-6 shadow-sm space-y-4">
@@ -1101,8 +1062,7 @@ function DoneState({
           </svg>
         </div>
         <div>
-          <h2 className="text-base font-semibold text-emerald-900">
-            Campaign created{result.status === "active" ? " and live" : " (paused)"}
+          <h2 className="text-base font-semibold text-emerald-900">{t("pages.adWizard.campaignCreated")}{result.status === "active" ? t("pages.adWizard.andLive") : t("pages.adWizard.andPaused")}
           </h2>
           <p className="text-sm text-emerald-800">
             {result.status === "active"
@@ -1114,18 +1074,18 @@ function DoneState({
 
       <div className="rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs font-mono text-emerald-900 space-y-0.5">
         <div>
-          <span className="text-emerald-700">Campaign</span>{" "}
+          <span className="text-emerald-700">{t("pages.adWizard.campaign")}</span>{" "}
           {result.meta.campaignId}
         </div>
         <div>
-          <span className="text-emerald-700">Ad set</span>{" "}
+          <span className="text-emerald-700">{t("pages.adWizard.adSet")}</span>{" "}
           {result.meta.adSetId}
         </div>
         <div>
           <span className="text-emerald-700">Ad</span> {result.meta.adId}
         </div>
         <div>
-          <span className="text-emerald-700">Lead form</span>{" "}
+          <span className="text-emerald-700">{t("pages.adWizard.leadForm")}</span>{" "}
           {result.meta.formId}
         </div>
       </div>
@@ -1143,16 +1103,12 @@ function DoneState({
           type="button"
           onClick={onAnother}
           className="rounded-lg border border-emerald-300 bg-white px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50"
-        >
-          Create another
-        </button>
+        >{t("pages.adWizard.createAnother")}</button>
         <button
           type="button"
           onClick={onBack}
           className="rounded-lg border border-emerald-300 bg-white px-4 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-50"
-        >
-          Back to Generate Leads
-        </button>
+        >{t("pages.adWizard.backToGenerate")}</button>
       </div>
     </div>
   );

@@ -17,6 +17,7 @@ import {
   type FeatureIcon,
 } from "@/lib/marketing/features";
 import { getSiteUrl } from "@/lib/siteUrl";
+import { getServerT } from "@/lib/i18n/server";
 
 const PRIMARY_CTA_HREF = "/onboarding";
 const BRAND = "#0072ce";
@@ -65,6 +66,7 @@ export default async function FeatureDetailPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const t = await getServerT();
   const { slug } = await params;
   const feature = getFeaturePageBySlug(slug);
   if (!feature) return notFound();
@@ -124,10 +126,8 @@ export default async function FeatureDetailPage({
         </div>
         <div className="relative mx-auto max-w-3xl text-center">
           {/* Breadcrumb (visible, matches BreadcrumbList schema) */}
-          <nav className="mb-6 text-sm text-slate-500 dark:text-slate-400" aria-label="Breadcrumb">
-            <Link href="/features" className="hover:text-[#0072ce] hover:underline">
-              Features
-            </Link>
+          <nav className="mb-6 text-sm text-slate-500 dark:text-slate-400" aria-label={t("pages.articleChrome.breadcrumb", { ns: "dashboard" })}>
+            <Link href="/features" className="hover:text-[#0072ce] hover:underline">{t("pages.featurePages.features", { ns: "dashboard" })}</Link>
             <span className="mx-2" aria-hidden>
               /
             </span>
@@ -150,16 +150,12 @@ export default async function FeatureDetailPage({
             <Link
               href={PRIMARY_CTA_HREF}
               className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0072ce] px-7 py-3 text-base font-semibold text-white shadow-lg shadow-[#0072ce]/20 transition hover:bg-[#005ba8] hover:shadow-xl"
-            >
-              Start free
-              <ArrowRight size={18} aria-hidden />
+            >{t("pages.featurePages.startFree", { ns: "dashboard" })}<ArrowRight size={18} aria-hidden />
             </Link>
             <Link
               href="/contact"
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-base font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-            >
-              Talk to us
-            </Link>
+            >{t("pages.featurePages.talkToUs", { ns: "dashboard" })}</Link>
           </div>
         </div>
       </section>
@@ -167,9 +163,7 @@ export default async function FeatureDetailPage({
       {/* ── BENEFITS ── */}
       <section className="px-6 py-18 md:py-20">
         <div className="mx-auto max-w-4xl">
-          <h2 className="text-center font-heading text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">
-            What {feature.name} does for you
-          </h2>
+          <h2 className="text-center font-heading text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">{t("pages.featurePages.what", { ns: "dashboard" })} {feature.name} {t("pages.featurePages.doesForYou", { ns: "dashboard" })}</h2>
           <ul className="mt-10 grid gap-4 sm:grid-cols-2">
             {feature.benefits.map((b) => (
               <li
@@ -187,9 +181,7 @@ export default async function FeatureDetailPage({
       {/* ── HOW IT WORKS ── */}
       <section className="border-y border-slate-200/80 bg-slate-50/70 px-6 py-18 dark:border-slate-800 dark:bg-slate-900/30 md:py-20">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-center font-heading text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">
-            How it works
-          </h2>
+          <h2 className="text-center font-heading text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">{t("pages.featurePages.howItWorks", { ns: "dashboard" })}</h2>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {feature.steps.map((s, i) => (
               <div
@@ -212,9 +204,7 @@ export default async function FeatureDetailPage({
       {/* ── FAQ ── */}
       <section className="px-6 py-18 md:py-20">
         <div className="mx-auto max-w-3xl">
-          <h2 className="text-center font-heading text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">
-            Frequently asked questions
-          </h2>
+          <h2 className="text-center font-heading text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">{t("pages.articleChrome.faqLong", { ns: "dashboard" })}</h2>
           <dl className="mt-10 space-y-4">
             {feature.faqs.map((f) => (
               <div
@@ -233,9 +223,7 @@ export default async function FeatureDetailPage({
       {related.length > 0 ? (
         <section className="border-t border-slate-200/80 px-6 py-16 dark:border-slate-800">
           <div className="mx-auto max-w-5xl">
-            <h2 className="text-center font-heading text-xl font-bold text-slate-900 md:text-2xl dark:text-white">
-              Meet the rest of the team
-            </h2>
+            <h2 className="text-center font-heading text-xl font-bold text-slate-900 md:text-2xl dark:text-white">{t("pages.featurePages.meetTheRest", { ns: "dashboard" })}</h2>
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {related.map((r) => {
                 const RIcon = ICONS[r.icon];
@@ -251,9 +239,7 @@ export default async function FeatureDetailPage({
                     <h3 className="mt-4 font-heading text-sm font-bold text-slate-900 dark:text-white">
                       {r.name}
                     </h3>
-                    <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-[#0072ce] dark:text-[#4da3e8]">
-                      Learn more
-                      <ArrowRight size={14} className="transition group-hover:translate-x-0.5" aria-hidden />
+                    <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-[#0072ce] dark:text-[#4da3e8]">{t("pages.featurePages.learnMore", { ns: "dashboard" })}<ArrowRight size={14} className="transition group-hover:translate-x-0.5" aria-hidden />
                     </span>
                   </Link>
                 );
@@ -266,28 +252,20 @@ export default async function FeatureDetailPage({
       {/* ── FINAL CTA ── */}
       <section className="px-6 pb-20 pt-4 md:pb-24">
         <div className="mx-auto max-w-4xl rounded-3xl bg-gradient-to-br from-[#0072ce] via-[#4F46E5] to-[#7c3aed] px-8 py-14 text-center text-white shadow-2xl md:px-12">
-          <h2 className="font-heading text-2xl font-bold leading-tight md:text-3xl">
-            Put your AI real estate team to work
-          </h2>
+          <h2 className="font-heading text-2xl font-bold leading-tight md:text-3xl">{t("pages.featurePages.putToWork", { ns: "dashboard" })}</h2>
           <p className="mx-auto mt-4 max-w-xl text-base text-white/90 md:text-lg">
-            {feature.name} is one member of the CloseBoss team — answering calls, following up,
-            marketing, and coordinating deals so you can focus on closing.
-          </p>
+            {feature.name} {t("pages.featurePages.oneMember", { ns: "dashboard" })}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link
               href={PRIMARY_CTA_HREF}
               className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold shadow-lg transition hover:bg-slate-50 md:text-base"
               style={{ color: BRAND }}
-            >
-              Start free
-              <ArrowRight size={18} aria-hidden />
+            >{t("pages.featurePages.startFree", { ns: "dashboard" })}<ArrowRight size={18} aria-hidden />
             </Link>
             <Link
               href="/features"
               className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20 md:text-base"
-            >
-              See all features
-            </Link>
+            >{t("pages.featurePages.seeAllFeatures", { ns: "dashboard" })}</Link>
           </div>
         </div>
       </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Per-agent IDX lead-routing settings.
@@ -26,6 +27,7 @@ type Rule = {
 };
 
 export default function LeadRoutingSettingsPanel() {
+  const { t } = useTranslation("dashboard");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -111,14 +113,11 @@ export default function LeadRoutingSettingsPanel() {
       <header className="border-b border-slate-100 px-5 py-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold text-slate-900">IDX lead routing</h2>
-            <p className="mt-0.5 text-xs text-slate-600">
-              Opt into the round-robin pool for inbound IDX leads, and declare which ZIPs you serve so leads in those areas come to you first.
-            </p>
+            <h2 className="text-base font-semibold text-slate-900">{t("pages.leadRoutingSettings.title")}</h2>
+            <p className="mt-0.5 text-xs text-slate-600">{t("pages.leadRoutingSettings.intro")}</p>
           </div>
           {updatedAt ? (
-            <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">
-              Saved {formatDate(updatedAt)}
+            <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">{t("pages.dashFragments.saved")} {formatDate(updatedAt)}
             </span>
           ) : null}
         </div>
@@ -140,22 +139,14 @@ export default function LeadRoutingSettingsPanel() {
                 className="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
               />
               <span>
-                <span className="text-sm font-semibold text-slate-900">
-                  Include me in the round-robin pool
-                </span>
-                <span className="mt-0.5 block text-xs text-slate-600">
-                  When on, new IDX leads will be assigned to you in rotation with other enrolled agents. The picker uses least-recently-assigned ordering.
-                </span>
+                <span className="text-sm font-semibold text-slate-900">{t("pages.leadRoutingSettings.includeMe")}</span>
+                <span className="mt-0.5 block text-xs text-slate-600">{t("pages.leadRoutingSettings.includeHint")}</span>
               </span>
             </label>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-900">
-                ZIP coverage
-              </label>
-              <p className="mt-0.5 text-xs text-slate-600">
-                Comma- or space-separated 5-digit ZIPs. Leave blank to receive leads from any ZIP. The list is sanitized — junk values are dropped.
-              </p>
+              <label className="block text-sm font-semibold text-slate-900">{t("pages.leadRoutingSettings.zipCoverage")}</label>
+              <p className="mt-0.5 text-xs text-slate-600">{t("pages.leadRoutingSettings.zipHint")}</p>
               <textarea
                 value={zipText}
                 onChange={(e) => setZipText(e.target.value)}
@@ -171,7 +162,7 @@ export default function LeadRoutingSettingsPanel() {
                 {error ? (
                   <span className="text-rose-600">{error}</span>
                 ) : savedAt && Date.now() - savedAt < 4000 ? (
-                  <span className="text-emerald-600">Saved.</span>
+                  <span className="text-emerald-600">{t("pages.leadRoutingSettings.saved")}</span>
                 ) : null}
               </div>
               <button
@@ -191,11 +182,10 @@ export default function LeadRoutingSettingsPanel() {
 }
 
 function ZipPreview({ parsed }: { parsed: string[] }) {
+  const { t } = useTranslation("dashboard");
   if (parsed.length === 0) {
     return (
-      <p className="mt-2 text-[11px] text-slate-400">
-        No ZIPs entered — eligible for leads in any area.
-      </p>
+      <p className="mt-2 text-[11px] text-slate-400">{t("pages.leadRoutingSettings.noZips")}</p>
     );
   }
   return (

@@ -11,9 +11,9 @@
   "lead_fallback": "线索 {{id}}",
   "count_one": "{{count}} 个线索",
   "count_other": "{{count}} 个线索",
-  "count_partial": "已显示 {{count}} 个,共 {{total}} 个线索",
+  "count_partial": "已显示 {{count}} 个，共 {{total}} 个线索",
   "demo_label": "示例线索 — 请在 CloseBoss 中添加真实线索",
-  "booking_hint": "请在下方选择一位线索,打开其档案,然后通过预约链接或日历工具分享时间。",
+  "booking_hint": "请在下方选择一位线索，打开其档案，然后通过预约链接或日历工具分享时间。",
   "errors": {
     "load_failed": "无法加载线索"
   },
@@ -32,7 +32,7 @@
   },
   "add_contact": {
     "header": "新建联系人",
-    "intro": "从待领取队列中认领线索,或手动添加。",
+    "intro": "从待领取队列中认领线索，或手动添加。",
     "queue_title": "可领取的线索",
     "queue_claim": "领取",
     "queue_claiming": "……",
@@ -55,5 +55,3 @@
     "validation_failed": "请修正下方的错误。"
   }
 }
-
-

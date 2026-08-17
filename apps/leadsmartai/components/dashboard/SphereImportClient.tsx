@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import type { ParsedSphereRow, CommitRow } from "@/lib/contacts/import";
 
@@ -22,6 +23,7 @@ type UIRow = ParsedSphereRow & {
 };
 
 export default function SphereImportClient() {
+  const { t } = useTranslation("dashboard");
   const [file, setFile] = useState<File | null>(null);
   const [parsing, setParsing] = useState(false);
   const [parseError, setParseError] = useState<string | null>(null);
@@ -143,11 +145,8 @@ export default function SphereImportClient() {
       </Link>
 
       <div className="rounded-xl border border-gray-200 bg-white p-5">
-        <h1 className="text-lg font-semibold text-gray-900">Import Sphere contacts</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Upload a CSV. Columns are matched by name — First name, Last name, Email, Phone,
-          Closing date, Closing price, Relationship, Tag, and Language are all recognized.
-        </p>
+        <h1 className="text-lg font-semibold text-gray-900">{t("pages.sphereImport.title")}</h1>
+        <p className="mt-1 text-sm text-gray-500">{t("pages.sphereImport.sub")}</p>
         <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
           <strong>Spec §2.8:</strong> anniversary triggers do not fire until you explicitly
           confirm each contact has consented to SMS. The CSV can pre-fill this column, but we
@@ -179,10 +178,9 @@ export default function SphereImportClient() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="text-sm text-gray-700">
                 <strong>{stats.included}</strong> of {stats.total} rows included ·{" "}
-                <strong>{stats.optIns}</strong> with anniversary opt-in confirmed
-                {skipped > 0 && <> · {skipped} empty rows skipped</>}
+                <strong>{stats.optIns}</strong> {t("pages.dashFragments.anniversaryOptIn")}{skipped > 0 && <> · {skipped} {t("pages.dashFragments.emptyRowsSkipped")}</>}
                 {stats.withErrors > 0 && (
-                  <> · <span className="text-amber-700">{stats.withErrors} with warnings</span></>
+                  <> · <span className="text-amber-700">{stats.withErrors} {t("pages.dashFragments.withWarnings")}</span></>
                 )}
               </div>
               <div className="flex flex-wrap gap-2">
@@ -190,16 +188,12 @@ export default function SphereImportClient() {
                   type="button"
                   onClick={() => bulkOptIn(true)}
                   className="rounded border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50"
-                >
-                  Confirm opt-in for all included
-                </button>
+                >{t("pages.sphereImport.confirmAll")}</button>
                 <button
                   type="button"
                   onClick={() => bulkOptIn(false)}
                   className="rounded border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50"
-                >
-                  Uncheck all opt-ins
-                </button>
+                >{t("pages.sphereImport.uncheckAll")}</button>
                 <button
                   type="button"
                   onClick={() => void handleCommit()}
@@ -234,13 +228,13 @@ export default function SphereImportClient() {
             <table className="w-full text-xs">
               <thead className="sticky top-0 bg-gray-50">
                 <tr>
-                  <Th>Include</Th>
-                  <Th>Name</Th>
-                  <Th>Relationship</Th>
-                  <Th>Closing</Th>
-                  <Th>Email / Phone</Th>
+                  <Th>{t("pages.sphereImport.include")}</Th>
+                  <Th>{t("pages.sphereImport.name")}</Th>
+                  <Th>{t("pages.sphereImport.relationship")}</Th>
+                  <Th>{t("pages.sphereImport.closing")}</Th>
+                  <Th>{t("pages.sphereImport.emailPhone")}</Th>
                   <Th>Opt-in ✓</Th>
-                  <Th>Warnings</Th>
+                  <Th>{t("pages.sphereImport.warnings")}</Th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -305,7 +299,7 @@ export default function SphereImportClient() {
                         {r.csvAnniversaryOptIn && (
                           <span
                             className="text-[9px] uppercase tracking-wide text-gray-400"
-                            title="CSV indicated opt-in — still requires explicit confirmation"
+                            title={t("pages.sphereImport.csvOptIn")}
                           >
                             csv
                           </span>

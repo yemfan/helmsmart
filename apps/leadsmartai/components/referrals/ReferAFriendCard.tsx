@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Summary = {
   code: string;
@@ -22,6 +23,7 @@ type Summary = {
 const BONUS_TOKENS_DISPLAY = 20_000;
 
 export function ReferAFriendCard() {
+  const { t } = useTranslation("dashboard");
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -92,29 +94,19 @@ export function ReferAFriendCard() {
       <div className="p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="text-xs font-bold uppercase tracking-wide text-indigo-700">
-              Like it?
-            </div>
-            <h2 className="mt-1 text-lg font-bold text-slate-900">
-              Refer a friend — get 20,000 free AI tokens
-            </h2>
-            <p className="mt-1 text-sm text-slate-600">
-              You and your friend each get{" "}
+            <div className="text-xs font-bold uppercase tracking-wide text-indigo-700">{t("pages.referAFriend.likeIt")}</div>
+            <h2 className="mt-1 text-lg font-bold text-slate-900">{t("pages.referAFriend.headline")}</h2>
+            <p className="mt-1 text-sm text-slate-600">{t("pages.dashFragments.youAndFriend")}{" "}
               <span className="font-semibold text-indigo-700">
-                {BONUS_TOKENS_DISPLAY.toLocaleString()} AI tokens
-              </span>{" "}
-              when they sign up with your link.
-            </p>
+                {BONUS_TOKENS_DISPLAY.toLocaleString()} {t("pages.dashFragments.aiTokens")}</span>{" "}{t("pages.dashFragments.whenTheySignUp")}</p>
           </div>
           {summary.bonusTokens > 0 ? (
             <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-right">
-              <div className="text-[11px] font-medium uppercase tracking-wide text-emerald-700">
-                Your bonus wallet
-              </div>
+              <div className="text-[11px] font-medium uppercase tracking-wide text-emerald-700">{t("pages.referAFriend.bonusWallet")}</div>
               <div className="text-lg font-bold text-emerald-900">
                 {summary.bonusTokens.toLocaleString()}
               </div>
-              <div className="text-[10px] text-emerald-700">tokens available</div>
+              <div className="text-[10px] text-emerald-700">{t("pages.referAFriend.tokensAvailable")}</div>
             </div>
           ) : null}
         </div>
@@ -130,8 +122,7 @@ export function ReferAFriendCard() {
           >
             {copied ? (
               <>
-                <span aria-hidden>✓</span> Copied
-              </>
+                <span aria-hidden>✓</span>{t("pages.referAFriend.copied")}</>
             ) : (
               <>
                 <svg
@@ -143,9 +134,7 @@ export function ReferAFriendCard() {
                 >
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                </svg>
-                Copy link
-              </>
+                </svg>{t("pages.referAFriend.copyLink")}</>
             )}
           </button>
           <button
@@ -165,9 +154,7 @@ export function ReferAFriendCard() {
               <circle cx="18" cy="19" r="3" />
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-            </svg>
-            Share
-          </button>
+            </svg>{t("pages.referAFriend.share")}</button>
         </div>
         {shareError ? (
           <p className="mt-2 text-xs text-red-600">{shareError}</p>
@@ -188,8 +175,7 @@ export function ReferAFriendCard() {
             ) : null}
           </div>
         ) : (
-          <p className="mt-3 text-[11px] text-slate-500">
-            Your code: <span className="font-mono font-semibold">{summary.code}</span>
+          <p className="mt-3 text-[11px] text-slate-500">{t("pages.referAFriend.yourCode")}<span className="font-mono font-semibold">{summary.code}</span>
           </p>
         )}
       </div>

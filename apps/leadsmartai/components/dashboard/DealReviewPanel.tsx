@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { AiActionGateBanner } from "@/components/entitlements/AiActionGateBanner";
 import {
   detectAiActionGate,
@@ -25,6 +27,7 @@ type ReviewResponse = {
 };
 
 export function DealReviewPanel({ transactionId }: { transactionId: string }) {
+  const { t } = useTranslation("dashboard");
   const [resp, setResp] = useState<ReviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
@@ -77,10 +80,7 @@ export function DealReviewPanel({ transactionId }: { transactionId: string }) {
           <h2 className="text-sm font-semibold text-slate-900">
             🧠 AI deal review
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Post-mortem on this closed deal — timeline, stall points, and what to repeat
-            or change next time.
-          </p>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.dealReview.intro")}</p>
         </div>
         {resp ? (
           <button
@@ -95,9 +95,7 @@ export function DealReviewPanel({ transactionId }: { transactionId: string }) {
       </div>
 
       {loading && !resp ? (
-        <div className="mt-6 rounded-lg bg-slate-50 p-6 text-center text-sm text-slate-500">
-          Generating your deal review. This takes about 15 seconds the first time.
-        </div>
+        <div className="mt-6 rounded-lg bg-slate-50 p-6 text-center text-sm text-slate-500">{t("pages.dealReview.generating")}</div>
       ) : gate ? (
         <AiActionGateBanner reason={gate.reason} className="mt-4" />
       ) : error ? (
@@ -112,6 +110,8 @@ export function DealReviewPanel({ transactionId }: { transactionId: string }) {
 }
 
 function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const { review } = resp;
   return (
     <div className={`mt-4 space-y-4 ${dimmed ? "opacity-60" : ""}`}>
@@ -125,7 +125,7 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
         ) : null}
         {review.executionScore != null ? (
           <div className="mt-2 inline-flex items-center gap-2 text-xs text-slate-600">
-            <span className="font-semibold">Execution score:</span>
+            <span className="font-semibold">{t("pages.dealReview.executionScore")}</span>
             <span className="tabular-nums">
               {Math.round(review.executionScore * 100)}
               <span className="text-slate-400"> / 100</span>
@@ -136,14 +136,14 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
 
       <div className="grid gap-4 md:grid-cols-2">
         {review.whatWentWell.length > 0 ? (
-          <Section title="What went well" tone="green" items={review.whatWentWell} />
+          <Section title={t("pages.dealReview.wentWell")} tone="green" items={review.whatWentWell} />
         ) : null}
         {review.whereItStalled.length > 0 ? (
-          <Section title="Where it stalled" tone="amber" items={review.whereItStalled} />
+          <Section title={t("pages.dealReview.stalled")} tone="amber" items={review.whereItStalled} />
         ) : null}
         {review.patternObservations.length > 0 ? (
           <Section
-            title="Vs your other deals"
+            title={t("pages.dealReview.vsOthers")}
             tone="blue"
             items={review.patternObservations}
             wide
@@ -151,7 +151,7 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
         ) : null}
         {review.doDifferentlyNextTime.length > 0 ? (
           <Section
-            title="Do differently next time"
+            title={t("pages.dealReview.doDifferently")}
             tone="slate"
             items={review.doDifferentlyNextTime}
             wide
@@ -162,13 +162,11 @@ function ReviewBody({ resp, dimmed }: { resp: ReviewResponse; dimmed: boolean })
       {/* Footer: provenance + fallback notice */}
       <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-400">
         <span>
-          Generated {new Date(review.generatedAtIso).toLocaleString()}
+          {t("pages.dealReview.generatedAt", { date: new Date(review.generatedAtIso).toLocaleString(locale) })}
           {resp.fromCache ? " (cached)" : ""}
         </span>
         {resp.usedFallback ? (
-          <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-700">
-            AI unavailable — baseline rules used
-          </span>
+          <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-700">{t("pages.dealReview.aiUnavailable")}</span>
         ) : null}
         {!resp.aiConfigured ? (
           <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">

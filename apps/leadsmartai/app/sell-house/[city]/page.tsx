@@ -10,6 +10,8 @@ import {
   getNearbyMetros,
   getRelatedMetroLinks,
 } from "@/lib/trafficMetros";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 // Render on demand — NOT static/ISR, matching the [keyword] child route.
 // The root layout reads cookies() -> this tree is dynamic regardless, so the old
@@ -35,11 +37,11 @@ export async function generateMetadata({
   });
 }
 
-function fmtDate(period: string | null): string | null {
+function fmtDate(period: string | null, locale: string): string | null {
   if (!period) return null;
   const d = new Date(period);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  return d.toLocaleDateString(locale, { month: "long", year: "numeric" });
 }
 
 export default async function SellHouseCityPage({
@@ -47,6 +49,8 @@ export default async function SellHouseCityPage({
 }: {
   params: Promise<{ city: string }>;
 }) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const p = await params;
   const city = await getMetroBySlug(p.city);
   if (!city) return notFound();
@@ -56,7 +60,7 @@ export default async function SellHouseCityPage({
     (page) => !page.href.endsWith(`/sell-house/${city.slug}`),
   );
   const keywords = getPageKeywords("sell-house", city.slug);
-  const asOf = fmtDate(market.period);
+  const asOf = fmtDate(market.period, locale);
   const domText =
     market.medianDaysOnMarket !== null ? `${Math.round(market.medianDaysOnMarket)} days` : "varies";
 
@@ -64,38 +68,36 @@ export default async function SellHouseCityPage({
     <main className="mx-auto max-w-5xl px-4 py-10">
       <TrafficTracker pagePath={`/sell-house/${city.slug}`} city={city.city} source="seo_sell_house_city" />
       <h1 className="text-3xl font-bold text-slate-900">
-        Sell Your House in {city.city}, {city.state}
+        {t("pages.seoCityPages.shTitle", { ns: "dashboard", city: city.city, state: city.state })}
       </h1>
       <p className="mt-2 text-slate-700">
-        Build your plan to {keywords[0]} in {city.city} with market timing, pricing, and prep guidance.
+        {t("pages.seoCityPages.shIntroFull", { ns: "dashboard", keyword: keywords[0], city: city.city })}
       </p>
-      {asOf ? <p className="mt-1 text-xs text-slate-500">Market data as of {asOf}.</p> : null}
+      {asOf ? <p className="mt-1 text-xs text-slate-500">{t("pages.seoCityPages.dataAsOfDate", { ns: "dashboard", date: asOf })}</p> : null}
 
       <section className="mt-8 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Local seller insights</h2>
+          <h2 className="text-xl font-semibold text-slate-900">{t("pages.seoCityPages.localSellerInsights", { ns: "dashboard" })}</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-700">
             {market.medianDaysOnMarket !== null && (
-              <li>Typical time on market: {Math.round(market.medianDaysOnMarket)} days</li>
+              <li>{t("pages.seoCityPages.timeOnMarketLi", { ns: "dashboard", days: Math.round(market.medianDaysOnMarket) })}</li>
             )}
             {market.yoyChangePct !== null && (
               <li>
-                1-year value change: {market.yoyChangePct > 0 ? "+" : ""}
-                {market.yoyChangePct}%
+                {t("pages.seoCityPages.yearChangeLi", { ns: "dashboard", pct: `${market.yoyChangePct > 0 ? "+" : ""}${market.yoyChangePct}` })}
               </li>
             )}
             {market.typicalValue !== null && (
-              <li>Typical home value: ${Math.round(market.typicalValue).toLocaleString()}</li>
+              <li>{t("pages.seoCityPages.typicalValueLi", { ns: "dashboard", value: `$${Math.round(market.typicalValue).toLocaleString(locale)}` })}</li>
             )}
             {market.inventory !== null && (
-              <li>Homes currently for sale: {Math.round(market.inventory).toLocaleString()}</li>
+              <li>{t("pages.seoCityPages.inventoryLi", { ns: "dashboard", count: Math.round(market.inventory).toLocaleString(locale) })}</li>
             )}
           </ul>
           <p className="mt-3 text-sm text-slate-700">
-            Homes that launch with pricing tied to current inventory windows typically generate stronger
-            early offer activity.
+            {t("pages.seoCityPages.launchPricing", { ns: "dashboard" })}
           </p>
-          <h3 className="mt-5 text-sm font-semibold uppercase tracking-wide text-slate-800">Keyword coverage</h3>
+          <h3 className="mt-5 text-sm font-semibold uppercase tracking-wide text-slate-800">{t("pages.seoCityPages.keywordCoverage", { ns: "dashboard" })}</h3>
           <div className="mt-2 flex flex-wrap gap-2">
             {keywords.map((keyword) => (
               <span key={keyword} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-700">
@@ -103,32 +105,32 @@ export default async function SellHouseCityPage({
               </span>
             ))}
           </div>
-          <h3 className="mt-5 text-base font-semibold text-slate-900">FAQ</h3>
+          <h3 className="mt-5 text-base font-semibold text-slate-900">{t("pages.articleChrome.faq", { ns: "dashboard" })}</h3>
           <dl className="mt-2 space-y-4 text-sm text-slate-700">
             <div>
-              <dt className="font-semibold text-slate-900">How fast can I sell in {city.city}?</dt>
+              <dt className="font-semibold text-slate-900">{t("pages.seoCityPages.howFastQ", { ns: "dashboard", city: city.city })}</dt>
               <dd className="mt-1 ml-0 text-slate-700">
-                Median timelines are currently about {domText}, depending on condition and price.
+                {t("pages.seoCityPages.medianTimelinesFull", { ns: "dashboard", dom: domText })}
               </dd>
             </div>
             <div>
-              <dt className="font-semibold text-slate-900">Should I renovate before listing?</dt>
+              <dt className="font-semibold text-slate-900">{t("pages.seoCityPages.shouldIRenovate", { ns: "dashboard" })}</dt>
               <dd className="mt-1 ml-0 text-slate-700">
-                Prioritize updates with strong buyer signal in your neighborhood price band.
+                {t("pages.seoCityPages.shouldIRenovateA", { ns: "dashboard" })}
               </dd>
             </div>
             <div>
-              <dt className="font-semibold text-slate-900">How do I maximize net proceeds?</dt>
+              <dt className="font-semibold text-slate-900">{t("pages.seoCityPages.maximizeProceeds", { ns: "dashboard" })}</dt>
               <dd className="mt-1 ml-0 text-slate-700">
-                Use a pricing strategy tied to demand trend and buyer activity by week.
+                {t("pages.seoCityPages.maximizeProceedsA", { ns: "dashboard" })}
               </dd>
             </div>
           </dl>
-          <h3 className="mt-5 text-base font-semibold text-slate-900">Internal links</h3>
+          <h3 className="mt-5 text-base font-semibold text-slate-900">{t("pages.seoCityPages.internalLinks", { ns: "dashboard" })}</h3>
           <div className="mt-2 flex flex-wrap gap-3 text-sm">
             {nearbyCities.map((near) => (
               <a key={near.slug} className="text-blue-700 hover:underline" href={`/sell-house/${near.slug}`}>
-                Sell in {near.city}
+                {t("pages.seoCityPages.sellNearby", { ns: "dashboard", city: near.city })}
               </a>
             ))}
             {relatedPages.map((page) => (
@@ -138,7 +140,7 @@ export default async function SellHouseCityPage({
             ))}
           </div>
           <p className="mt-5 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-900">
-            CTA: Get your free selling strategy and estimated listing range.
+            {t("pages.seoCityPages.sellCta", { ns: "dashboard" })}
           </p>
         </article>
         <LocalSeoLeadForm title={`Get a ${city.city} Selling Plan`} source="seo_sell_house_city" city={city.city} />

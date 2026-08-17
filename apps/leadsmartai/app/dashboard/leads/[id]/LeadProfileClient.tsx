@@ -84,9 +84,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
               </span>
             )}
             {p.auto_pilot && (
-              <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-                AI Sales Assistant handling follow-ups
-              </span>
+              <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">{t("pages.leadProfile.assistantHandling")}</span>
             )}
           </div>
         </div>
@@ -94,19 +92,14 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
         {p.intent && story && <p className="mt-0.5 text-sm text-gray-500">{story}</p>}
         <div className="mt-4 flex flex-wrap gap-2">
           {p.phone && (
-            <a href={`tel:${p.phone}`} className="rounded-lg bg-gray-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-gray-700">
-              Call {p.first_name ?? ""}
+            <a href={`tel:${p.phone}`} className="rounded-lg bg-gray-900 px-3.5 py-2 text-sm font-medium text-white hover:bg-gray-700">{t("pages.dashFragments.call")} {p.first_name ?? ""}
             </a>
           )}
           {p.phone && (
-            <a href={`sms:${p.phone}`} className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-              Text
-            </a>
+            <a href={`sms:${p.phone}`} className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{t("pages.leadProfile.text")}</a>
           )}
           {p.email && (
-            <a href={`mailto:${p.email}`} className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-              Email
-            </a>
+            <a href={`mailto:${p.email}`} className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{t("pages.leadProfile.email")}</a>
           )}
           <SendMarketReportButton
             contactId={p.id}
@@ -115,15 +108,11 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
             phone={p.phone}
             city={p.search_location}
           />
-          <Link href="/dashboard/inbox" className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-            Conversations
-          </Link>
+          <Link href="/dashboard/inbox" className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{t("pages.leadProfile.conversations")}</Link>
           <Link
             href={`/dashboard/contacts?list=leads&highlight=${encodeURIComponent(p.id)}`}
             className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50"
-          >
-            Full record
-          </Link>
+          >{t("pages.leadProfile.fullRecord")}</Link>
         </div>
       </header>
 
@@ -151,7 +140,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
           <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">{t("detail.leadProfile.openFollowUps")}</p>
             {data.tasks.length === 0 ? (
-              <p className="mt-1.5 text-sm text-gray-400">Nothing open — your AI team will flag the next touch.</p>
+              <p className="mt-1.5 text-sm text-gray-400">{t("pages.leadProfile.nothingOpen")}</p>
             ) : (
               <ul className="mt-1.5 space-y-1.5">
                 {data.tasks.map((t) => (
@@ -189,9 +178,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
         <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm lg:col-span-3">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">{t("detail.leadProfile.storySoFar")}</p>
           {timeline.length === 0 ? (
-            <p className="mt-2 text-sm text-gray-400">
-              No interactions yet — your AI team will log calls, texts, and follow-ups here.
-            </p>
+            <p className="mt-2 text-sm text-gray-400">{t("pages.leadProfile.noInteractions")}</p>
           ) : (
             <ol className="mt-3 space-y-3">
               {timeline.map((item) => (

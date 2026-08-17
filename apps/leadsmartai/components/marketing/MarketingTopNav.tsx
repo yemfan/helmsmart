@@ -85,7 +85,7 @@ export function MarketingTopNav({
 
         {/* Desktop menu (centered) */}
         <nav
-          aria-label="Primary"
+          aria-label={t("pages.labels.primaryNav")}
           className="hidden flex-1 items-center justify-center gap-1 lg:flex"
         >
           {sections.map((section, i) => (

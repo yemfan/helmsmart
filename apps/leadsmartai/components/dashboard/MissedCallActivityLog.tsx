@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Activity-first view for the missed-call dashboard. Shows the full
@@ -36,6 +37,7 @@ type FilterMode = "all" | "missed" | "with_textback" | "no_textback";
 const PAGE_SIZE = 100;
 
 export default function MissedCallActivityLog() {
+  const { t } = useTranslation("dashboard");
   const [events, setEvents] = useState<CallEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,27 +94,27 @@ export default function MissedCallActivityLog() {
     <div className="space-y-4">
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Calls" value={stats.total} tone="slate" />
-        <Stat label="Missed" value={stats.missed} tone="amber" />
-        <Stat label="Auto-texts sent" value={stats.textbacks} tone="emerald" />
-        <Stat label="Missed, no text" value={stats.missedNoTextback} tone="red" />
+        <Stat label={t("pages.labels.calls")} value={stats.total} tone="slate" />
+        <Stat label={t("pages.labels.missed")} value={stats.missed} tone="amber" />
+        <Stat label={t("pages.missedCallLog.autoTextsSent")} value={stats.textbacks} tone="emerald" />
+        <Stat label={t("pages.missedCallLog.missedNoText")} value={stats.missedNoTextback} tone="red" />
       </div>
 
       {/* Filter chips */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        <FilterChip value="all" current={filter} onClick={setFilter} label="All" />
-        <FilterChip value="missed" current={filter} onClick={setFilter} label="Missed only" />
+        <FilterChip value="all" current={filter} onClick={setFilter} label={t("pages.labels.all")} />
+        <FilterChip value="missed" current={filter} onClick={setFilter} label={t("pages.missedCallLog.missedOnly")} />
         <FilterChip
           value="with_textback"
           current={filter}
           onClick={setFilter}
-          label="With auto-text"
+          label={t("pages.missedCallLog.withAutoText")}
         />
         <FilterChip
           value="no_textback"
           current={filter}
           onClick={setFilter}
-          label="Missed, no text"
+          label={t("pages.missedCallLog.missedNoText")}
         />
         <button
           type="button"
@@ -166,13 +168,9 @@ export default function MissedCallActivityLog() {
                     title={
                       ev.textback_status ? `SMS status: ${ev.textback_status}` : undefined
                     }
-                  >
-                    Text sent
-                  </span>
+                  >{t("pages.missedCallLog.textSent")}</span>
                 ) : ev.status === "missed" ? (
-                  <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700 ring-1 ring-inset ring-amber-200">
-                    No auto-text
-                  </span>
+                  <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-700 ring-1 ring-inset ring-amber-200">{t("pages.missedCallLog.noAutoText")}</span>
                 ) : null}
               </div>
 
@@ -181,9 +179,7 @@ export default function MissedCallActivityLog() {
                   can expand to see the actual SMS that went out. */}
               {ev.textback_sent && ev.textback_message && (
                 <details className="ml-9 mt-2">
-                  <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 hover:text-slate-900">
-                    Show auto-text body
-                  </summary>
+                  <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 hover:text-slate-900">{t("pages.missedCallLog.showBody")}</summary>
                   <blockquote className="mt-2 rounded-lg border-l-2 border-emerald-300 bg-emerald-50/50 px-3 py-2 text-xs leading-relaxed text-slate-700">
                     {ev.textback_message}
                     {ev.textback_sent_at && (

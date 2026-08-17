@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Send, Sparkles } from "lucide-react";
 import { useAssistantNames } from "@/components/realtyboss/useAssistantNames";
 
@@ -102,8 +103,9 @@ const ARTIFACT_LABEL: Record<string, string> = {
 };
 
 export default function BriefingsCard() {
+  const { t } = useTranslation("dashboard");
   return (
-    <section aria-label="Briefing and instructions" className="grid gap-4 lg:grid-cols-2">
+    <section aria-label={t("pages.briefings.ariaLabel")} className="grid gap-4 lg:grid-cols-2">
       <MorningBriefingPane />
       <BossInstructionsPane />
     </section>
@@ -113,6 +115,7 @@ export default function BriefingsCard() {
 // ── Morning briefing (dismissible) ──────────────────────────────────
 
 function MorningBriefingPane() {
+  const { t } = useTranslation("dashboard");
   const [briefing, setBriefing] = useState<BriefingRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [hidden, setHidden] = useState(false);
@@ -170,7 +173,7 @@ function MorningBriefingPane() {
             ☀️
           </span>
           <div>
-            <h3 className="text-sm font-semibold text-amber-900">Morning Briefing</h3>
+            <h3 className="text-sm font-semibold text-amber-900">{t("pages.briefings.morningBriefing")}</h3>
             <p className="text-[11px] text-slate-500">
               {briefing ? formatRelativeDate(briefing.created_at) : ""}
             </p>
@@ -182,9 +185,7 @@ function MorningBriefingPane() {
             onClick={markRead}
             className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-amber-200 bg-white px-2.5 py-1 text-[11px] font-medium text-amber-900 shadow-sm hover:bg-amber-50"
           >
-            <Check className="h-3 w-3" strokeWidth={2.5} />
-            Mark as read
-          </button>
+            <Check className="h-3 w-3" strokeWidth={2.5} />{t("pages.briefings.markRead")}</button>
         )}
       </header>
 
@@ -200,6 +201,7 @@ function MorningBriefingPane() {
 }
 
 function BriefingBody({ row }: { row: BriefingRow }) {
+  const { t } = useTranslation("dashboard");
   const insights = row.insights ?? {};
   const headline = row.headline?.trim() || row.summary.split(/[.!?]\s/)[0] || "";
   return (
@@ -209,9 +211,7 @@ function BriefingBody({ row }: { row: BriefingRow }) {
       {insights.topOpportunity ? (
         <div className="mt-4 rounded-lg bg-amber-50 p-3 text-amber-900 ring-1 ring-inset ring-amber-200">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide">
-            <Sparkles className="h-3 w-3" strokeWidth={2.5} aria-hidden />
-            Best move
-          </p>
+            <Sparkles className="h-3 w-3" strokeWidth={2.5} aria-hidden />{t("pages.briefings.bestMove")}</p>
           <p className="mt-1 text-sm leading-snug">{insights.topOpportunity}</p>
         </div>
       ) : null}
@@ -222,6 +222,7 @@ function BriefingBody({ row }: { row: BriefingRow }) {
 // ── Boss instructions channel ───────────────────────────────────────
 
 function BossInstructionsPane() {
+  const { t } = useTranslation("dashboard");
   const [content, setContent] = useState("");
   const [instructions, setInstructions] = useState<InstructionRow[]>([]);
   const [tasks, setTasks] = useState<InstructionTask[]>([]);
@@ -285,10 +286,8 @@ function BossInstructionsPane() {
           📋
         </span>
         <div>
-          <h3 className="text-sm font-semibold text-[#0B1F44]">Instructions for your Boss Assistant</h3>
-          <p className="text-[11px] text-slate-500">
-            Processed the moment you hit Send — turned into tasks and routed to your team.
-          </p>
+          <h3 className="text-sm font-semibold text-[#0B1F44]">{t("pages.briefings.instructions")}</h3>
+          <p className="text-[11px] text-slate-500">{t("pages.briefings.instructionsHint")}</p>
         </div>
       </header>
 
@@ -372,6 +371,7 @@ function TaskItem({
   task: InstructionTask;
   onChanged: () => void | Promise<void>;
 }) {
+  const { t: tr } = useTranslation("dashboard");
   const [busy, setBusy] = useState<"approve" | "dismiss" | "answer" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [answer, setAnswer] = useState("");
@@ -435,8 +435,9 @@ function TaskItem({
           without this click. */}
       {t.status === "awaiting_approval" && t.draft_body && (
         <div className="mt-1.5 rounded-lg border border-[#D4A017]/30 bg-[#D4A017]/5 p-2.5">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8a6a0e]">
-            Draft {t.draft_channel === "sms" ? "text" : "email"}
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8a6a0e]">{tr("pages.dashFragments.draftChannelOf", {
+              channel: tr(t.draft_channel === "sms" ? "pages.dashFragments.channelText" : "pages.dashFragments.channelEmail"),
+            })}
             {t.execution_note && !t.execution_note.startsWith("to:") ? ` · ${t.execution_note}` : ""}
           </p>
           {t.draft_subject && (
@@ -457,9 +458,7 @@ function TaskItem({
               disabled={busy !== null}
               onClick={() => act("dismiss")}
               className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
-            >
-              Dismiss
-            </button>
+            >{tr("pages.briefings.dismiss")}</button>
             {error && <span className="text-[11px] text-red-600">{error}</span>}
           </div>
         </div>
@@ -509,8 +508,7 @@ function TaskItem({
             <a
               href={t.artifact_url}
               className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B1F44] hover:underline"
-            >
-              View {ARTIFACT_LABEL[t.artifact_type ?? ""] ?? "result"} →
+            >{tr("pages.dashFragments.view")} {ARTIFACT_LABEL[t.artifact_type ?? ""] ?? "result"} →
             </a>
           )}
         </div>

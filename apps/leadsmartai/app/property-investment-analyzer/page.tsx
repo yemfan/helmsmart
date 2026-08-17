@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
 import JsonLd from "../../components/JsonLd";
 
 export default function PropertyInvestmentAnalyzer() {
+  const { t } = useTranslation("dashboard");
   const [purchasePrice, setPurchasePrice] = useState<number>(350000);
   const [monthlyRent, setMonthlyRent] = useState<number>(2600);
   const [monthlyExpenses, setMonthlyExpenses] = useState<number>(600);
@@ -52,23 +54,15 @@ export default function PropertyInvestmentAnalyzer() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">
-        Property Investment Analyzer
-      </h1>
-      <p className="text-gray-600 mb-8">
-        Analyze rental property cash flow, cap rate, and simple ROI based on your assumptions.
-      </p>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.propertyAnalyzer")}</h1>
+      <p className="text-gray-600 mb-8">{t("pages.propertyInvestmentAnalyzer.sub")}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Investment inputs
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.propertyInvestmentAnalyzer.inputs")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="Purchase price ($)"
@@ -99,9 +93,7 @@ export default function PropertyInvestmentAnalyzer() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>
@@ -109,7 +101,7 @@ export default function PropertyInvestmentAnalyzer() {
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-24">
             <ResultCard
-              title="Investment performance"
+              title={t("pages.propertyInvestmentAnalyzer.performanceAria")}
               value={`${results.cashOnCashROI.toFixed(2)}% ROI`}
               details={
                 `Monthly NOI: $${results.monthlyNOI.toFixed(2)}` +
@@ -125,160 +117,74 @@ export default function PropertyInvestmentAnalyzer() {
       </div>
 
       <section className="mt-12 max-w-3xl space-y-3 text-sm text-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Complete rental investment analysis
-        </h2>
-        <p>
-          This property investment analyzer combines cash flow, net operating income
-          (NOI), cap rate, and simple cash-on-cash ROI in one view. By entering the
-          purchase price, rent, expenses, and mortgage payment, you can quickly see how
-          a deal performs on both monthly and annual bases.
-        </p>
-        <p>
-          Use the results to filter potential acquisitions, compare properties in
-          different markets, and communicate returns to partners or clients. For deeper
-          analysis, pair this tool with your own pro-forma models and local rent
-          assumptions.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.propertyInvestmentAnalyzer.explainTitle")}</h2>
+        <p>{t("pages.propertyInvestmentAnalyzer.explainA")}</p>
+        <p>{t("pages.propertyInvestmentAnalyzer.explainB")}</p>
       </section>
 
       <section className="mt-16 max-w-4xl space-y-6 text-sm text-gray-700 text-left">
-        <h2 className="text-2xl font-semibold text-gray-900">
-          People also ask about real estate investing
-        </h2>
+        <h2 className="text-2xl font-semibold text-gray-900">{t("pages.propertyInvestmentAnalyzer.peopleAsk")}</h2>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            What does a real estate investment analyzer help me understand?
-          </h3>
-          <p className="text-gray-600">
-            A real estate investment analyzer helps you understand a rental property&apos;s cash
-            flow, cap rate, and overall return based on your income, expenses, and financing
-            assumptions.
-            It brings together monthly numbers and long-term performance so you can compare deals
-            side by side. You can use this tool along with our{" "}
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>{" "}
+          <h3 className="text-lg font-semibold">{t("pages.propertyInvestmentAnalyzer.q1")}</h3>
+          <p className="text-gray-600">{t("pages.propertyInvestmentAnalyzer.a1")}{" "}
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
             and{" "}
-            <Link href="/cap-rate-calculator" className="text-blue-600 underline">
-              Cap Rate Calculator
-            </Link>
+            <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            What inputs do I need for a solid investment property analysis?
-          </h3>
-          <p className="text-gray-600">
-            For a solid analysis you&apos;ll want purchase price, down payment or equity invested,
-            mortgage payment, rent, operating expenses, expected vacancy, and a hold period.
-            You can estimate loan payments with our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>{" "}
-            and then plug those into this{" "}
+          <h3 className="text-lg font-semibold">{t("pages.propertyInvestmentAnalyzer.q2")}</h3>
+          <p className="text-gray-600">{t("pages.propertyInvestmentAnalyzer.a2")}{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}{t("pages.propertyInvestmentAnalyzer.a2Tail")}{" "}
             <Link
               href="/property-investment-analyzer"
               className="text-blue-600 underline"
-            >
-              Property Investment Analyzer
-            </Link>
+            >{t("pages.articleChrome.propertyAnalyzer")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How is cash-on-cash return different from cap rate?
-          </h3>
-          <p className="text-gray-600">
-            Cap rate looks at net operating income relative to purchase price and ignores financing,
-            while cash-on-cash return measures annual cash flow relative to the actual cash you
-            invested.
-            This analyzer shows both so you can see how leverage affects your returns. You can also
-            run quick cap rate checks using our{" "}
-            <Link href="/cap-rate-calculator" className="text-blue-600 underline">
-              Cap Rate Calculator
-            </Link>
+          <h3 className="text-lg font-semibold">{t("pages.propertyInvestmentAnalyzer.q3")}</h3>
+          <p className="text-gray-600">{t("pages.propertyInvestmentAnalyzer.a3")}{" "}
+            <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How do I compare multiple rental properties with this tool?
-          </h3>
-          <p className="text-gray-600">
-            To compare multiple rentals, run a separate analysis for each property using consistent
-            assumptions for rent growth, expenses, and vacancy.
-            Then compare metrics like monthly cash flow, cap rate, and cash-on-cash return across
-            deals. For quick screening, you can also use the{" "}
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>{" "}
-            before diving deeper here.
-          </p>
+          <h3 className="text-lg font-semibold">{t("pages.propertyInvestmentAnalyzer.q4")}</h3>
+          <p className="text-gray-600">{t("pages.propertyInvestmentAnalyzer.a4")}{" "}
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}{t("pages.propertyInvestmentAnalyzer.a4Tail")}</p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How do interest rates and loan terms change my investment returns?
-          </h3>
-          <p className="text-gray-600">
-            Interest rates and loan terms change your mortgage payment, which is one of the biggest
-            drivers of cash flow and overall returns.
-            Higher rates or shorter terms increase the payment and reduce cash flow, while lower
-            rates or longer terms improve monthly numbers but can change total interest paid. You
-            can model different loans with our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>{" "}
+          <h3 className="text-lg font-semibold">{t("pages.propertyInvestmentAnalyzer.q5")}</h3>
+          <p className="text-gray-600">{t("pages.propertyInvestmentAnalyzer.a5")}{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
             or{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Loan Amortization Calculator
-            </Link>{" "}
-            and then bring those payments into this analyzer.
-          </p>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.amortizationCalculator")}</Link>{" "}{t("pages.propertyInvestmentAnalyzer.a5Tail")}</p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            Should I prioritize cash flow, appreciation, or overall ROI?
-          </h3>
-          <p className="text-gray-600">
-            The right priority depends on your strategy—some investors focus on strong cash flow
-            today, while others prioritize appreciation and long-term equity growth.
-            This analyzer helps you balance monthly income against overall returns so you can choose
-            deals that match your goals. You can also isolate pure cash flow in the{" "}
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>{" "}
-            or long-term returns in the{" "}
-            <Link href="/roi-calculator" className="text-blue-600 underline">
-              ROI Calculator
-            </Link>
+          <h3 className="text-lg font-semibold">{t("pages.propertyInvestmentAnalyzer.q6")}</h3>
+          <p className="text-gray-600">{t("pages.propertyInvestmentAnalyzer.a6")}{" "}
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}{t("pages.propertyInvestmentAnalyzer.a6Tail")}{" "}
+            <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>
             .
           </p>
         </article>
 
         <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-4">Related Calculators</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("pages.articleChrome.relatedCalculators")}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>
-            <Link href="/cap-rate-calculator" className="text-blue-600 underline">
-              Cap Rate Calculator
-            </Link>
-            <Link href="/roi-calculator" className="text-blue-600 underline">
-              ROI Calculator
-            </Link>
-            <Link href="/rent-vs-buy-calculator" className="text-blue-600 underline">
-              Rent vs Buy Calculator
-            </Link>
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
+            <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
+            <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>
+            <Link href="/rent-vs-buy-calculator" className="text-blue-600 underline">{t("pages.articleChrome.rentVsBuyCalculator")}</Link>
           </div>
         </div>
       </section>

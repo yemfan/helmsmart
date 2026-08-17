@@ -450,7 +450,7 @@ export default function DigitalTwinPanel() {
 
       {!configured ? (
         <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
-          Not enabled yet (needs <code>FAL_KEY</code> + <code>ANTHROPIC_API_KEY</code>).
+          {t("pages.digitalTwin.notEnabledBefore")} <code>FAL_KEY</code> + <code>ANTHROPIC_API_KEY</code>{t("pages.digitalTwin.notEnabledAfter")}
         </p>
       ) : null}
 
@@ -543,9 +543,7 @@ export default function DigitalTwinPanel() {
       <div className="mt-5 space-y-3 border-t border-slate-100 pt-5">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-slate-900">{t("twin.aiVoice")}</h3>
-          <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
-            Beta
-          </span>
+          <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">{t("pages.digitalTwin.beta")}</span>
         </div>
         <p className="text-[12px] text-slate-500">
           {t("twin.voiceIntro")}
@@ -553,7 +551,7 @@ export default function DigitalTwinPanel() {
 
         {vc && !vc.configured ? (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
-            Not enabled yet (needs <code>ELEVENLABS_API_KEY</code>).
+            {t("pages.digitalTwin.notEnabledBefore")} <code>ELEVENLABS_API_KEY</code>{t("pages.digitalTwin.notEnabledAfter")}
           </p>
         ) : null}
 
@@ -604,9 +602,7 @@ export default function DigitalTwinPanel() {
               {avPremium ? (
                 <span className="text-slate-400">{t("twin.cleanVoiceHelp")}</span>
               ) : (
-                <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">
-                  Upgrade to unlock
-                </a>
+                <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">{t("pages.digitalTwin.upgradeToUnlock")}</a>
               )}
             </span>
           </label>
@@ -654,9 +650,7 @@ export default function DigitalTwinPanel() {
       <div className="mt-5 space-y-3 border-t border-slate-100 pt-5">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-slate-900">{t("twin.avatarVideo")}</h3>
-          <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
-            Beta
-          </span>
+          <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">{t("pages.digitalTwin.beta")}</span>
         </div>
         <p className="text-[12px] text-slate-500">
           {t("twin.avatarIntro")}
@@ -669,14 +663,12 @@ export default function DigitalTwinPanel() {
 
         {av && !av.configured ? (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
-            Not enabled yet (needs <code>FAL_KEY</code> + <code>ELEVENLABS_API_KEY</code>).
+            {t("pages.digitalTwin.notEnabledBefore")} <code>FAL_KEY</code> + <code>ELEVENLABS_API_KEY</code>{t("pages.digitalTwin.notEnabledAfter")}
           </p>
         ) : av && !av.hasIntroVideo && !av.hasPortrait ? (
           /* The face is the hard requirement, not the voice — a stock voice can
              speak the script, but nothing can stand in for the agent's likeness. */
-          <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] text-slate-600">
-            Upload your intro video or a photo above first — the avatar needs your face.
-          </p>
+          <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] text-slate-600">{t("pages.digitalTwin.needFaceFirst")}</p>
         ) : av ? (
           <>
             <div className="flex flex-wrap items-end gap-2">
@@ -790,17 +782,21 @@ export default function DigitalTwinPanel() {
                 />
                 <p className="text-[12px] leading-relaxed text-violet-900">
                   <strong>
-                    {avJob?.status === "upscaling" ? "Sharpening your video…" : "Rendering your video…"}
+                    {avJob?.status === "upscaling"
+                      ? t("pages.digitalTwin.renderSharpening")
+                      : t("pages.digitalTwin.renderRendering")}
                   </strong>{" "}
-                  This usually takes 1–3 minutes{avJob?.sharpen ? ", longer with Sharper video" : ""}. You can
-                  close this page — we&rsquo;ll notify you the moment it&rsquo;s ready.
+                  {t("pages.digitalTwin.renderDuration")}
+                  {avJob?.sharpen ? t("pages.digitalTwin.renderDurationSharper") : ""}
+                  {t("pages.digitalTwin.renderCloseHint")}
                 </p>
               </div>
             ) : null}
 
             {avJob?.status === "failed" ? (
               <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-800">
-                {avJob.error ?? "The render didn't finish."} Your credits were returned.
+                {avJob.error ?? t("pages.digitalTwin.renderFailed")}{" "}
+                {t("pages.digitalTwin.renderCreditsReturned")}
               </p>
             ) : null}
 
@@ -832,9 +828,7 @@ export default function DigitalTwinPanel() {
                 {avPremium ? (
                   <span className="text-slate-400">— upscales &amp; restores the render</span>
                 ) : (
-                  <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">
-                    Upgrade to unlock
-                  </a>
+                  <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">{t("pages.digitalTwin.upgradeToUnlock")}</a>
                 )}
               </span>
             </label>
@@ -853,9 +847,7 @@ export default function DigitalTwinPanel() {
                 {avPremium ? (
                   <span className="text-slate-400">— photo-to-avatar with head motion (vs lip-sync)</span>
                 ) : (
-                  <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">
-                    Upgrade to unlock
-                  </a>
+                  <a href="/dashboard/billing" className="text-violet-600 underline underline-offset-2">{t("pages.digitalTwin.upgradeToUnlock")}</a>
                 )}
               </span>
             </label>
@@ -870,9 +862,7 @@ export default function DigitalTwinPanel() {
               <div className="space-y-2">
                 <video controls src={av.videoUrl} className="mt-1 w-full max-w-md rounded-lg border border-slate-200" />
                 <div className="flex items-center gap-3">
-                  <a href={av.videoUrl} download className="text-[12px] font-medium text-violet-700 hover:underline">
-                    Download video
-                  </a>
+                  <a href={av.videoUrl} download className="text-[12px] font-medium text-violet-700 hover:underline">{t("pages.digitalTwin.downloadVideo")}</a>
                 </div>
 
                 {/* Post straight to social */}
@@ -897,9 +887,7 @@ export default function DigitalTwinPanel() {
                       {avBusy === "publish" ? "Posting…" : t("twin.postToSocial")}
                     </button>
                     {avNeedsConnect ? (
-                      <a href="/connections" className="text-[12px] font-medium text-violet-700 underline underline-offset-2">
-                        Connect accounts
-                      </a>
+                      <a href="/connections" className="text-[12px] font-medium text-violet-700 underline underline-offset-2">{t("pages.digitalTwin.connectAccounts")}</a>
                     ) : null}
                   </div>
                   {avPublishMsg ? (

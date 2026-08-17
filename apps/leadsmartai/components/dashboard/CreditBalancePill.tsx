@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Coins } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Live credit balance in the top bar — links to the Credits page to buy more.
@@ -10,6 +11,7 @@ import { useEffect, useState } from "react";
  * when the balance is low.
  */
 export function CreditBalancePill() {
+  const { t } = useTranslation("dashboard");
   const [credits, setCredits] = useState<number | null>(null);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export function CreditBalancePill() {
   return (
     <Link
       href="/dashboard/credits"
-      title="Credits — click to buy more"
+      title={t("pages.misc.creditsTip")}
       className={`inline-flex h-10 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-sm font-semibold shadow-sm ring-1 ring-slate-900/[0.03] transition ${
         low
           ? "border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"

@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Sparkles, FileText, Printer, RotateCcw } from "lucide-react";
 import { faSampleFnaInputs } from "@/lib/financial-services-demo-data";
+import { intlLocale } from "@/lib/i18n/locale";
 
 type RiskTolerance = "conservative" | "moderate" | "aggressive";
 
@@ -27,6 +29,8 @@ const usd = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
 export default function FnaGeneratorClient() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [form, setForm] = useState({
     clientName: faSampleFnaInputs.clientName,
     age: String(faSampleFnaInputs.age),
@@ -123,9 +127,7 @@ export default function FnaGeneratorClient() {
     <div className="space-y-6">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-            Financial Needs Analysis
-          </h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{t("pages.fsMarketing.fna")}</h1>
           <p className="mt-1 text-sm text-slate-600">
             Type the client&apos;s info → get an agent-branded FNA in under a minute.
           </p>
@@ -137,17 +139,13 @@ export default function FnaGeneratorClient() {
               onClick={() => window.print()}
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
             >
-              <Printer className="h-4 w-4" />
-              Print / PDF
-            </button>
+              <Printer className="h-4 w-4" />{t("pages.fsMarketing.printPdf")}</button>
             <button
               type="button"
               onClick={reset}
               className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
             >
-              <RotateCcw className="h-4 w-4" />
-              New FNA
-            </button>
+              <RotateCcw className="h-4 w-4" />{t("pages.fsMarketing.newFna")}</button>
           </div>
         )}
       </header>
@@ -155,21 +153,19 @@ export default function FnaGeneratorClient() {
       <div className="grid gap-6 xl:grid-cols-12">
         <section className="xl:col-span-5 print:hidden">
           <div className="rounded-2xl border border-slate-200 bg-white p-6">
-            <h2 className="text-base font-semibold text-slate-900">Client inputs</h2>
-            <p className="mt-1 text-xs text-slate-500">
-              Defaults pre-filled with a sample family — overwrite for a live demo.
-            </p>
+            <h2 className="text-base font-semibold text-slate-900">{t("pages.fsMarketing.clientInputs")}</h2>
+            <p className="mt-1 text-xs text-slate-500">{t("pages.fsMarketing.defaultsPrefilled")}</p>
 
             <div className="mt-5 space-y-4">
-              <Field label="Client name">
+              <Field label={t("pages.fsMarketing.clientName")}>
                 <input className={inputCls} value={form.clientName} onChange={set("clientName")} />
               </Field>
 
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Age">
+                <Field label={t("pages.fsMarketing.age")}>
                   <input type="number" className={inputCls} value={form.age} onChange={set("age")} />
                 </Field>
-                <Field label="Spouse age">
+                <Field label={t("pages.fsMarketing.spouseAge")}>
                   <input type="number" className={inputCls} value={form.spouseAge} onChange={set("spouseAge")} />
                 </Field>
               </div>
@@ -184,7 +180,7 @@ export default function FnaGeneratorClient() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Dependents">
+                <Field label={t("pages.fsMarketing.dependents")}>
                   <input type="number" className={inputCls} value={form.dependents} onChange={set("dependents")} />
                 </Field>
                 <Field label="Monthly expenses ($)">
@@ -211,7 +207,7 @@ export default function FnaGeneratorClient() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Retirement age">
+                <Field label={t("pages.fsMarketing.retirementAge")}>
                   <input type="number" className={inputCls} value={form.retirementAge} onChange={set("retirementAge")} />
                 </Field>
                 <Field label="Existing coverage ($)">
@@ -219,23 +215,23 @@ export default function FnaGeneratorClient() {
                 </Field>
               </div>
 
-              <Field label="Risk tolerance">
+              <Field label={t("pages.fsMarketing.riskTolerance")}>
                 <select className={inputCls} value={form.riskTolerance} onChange={set("riskTolerance")}>
-                  <option value="conservative">Conservative</option>
-                  <option value="moderate">Moderate</option>
-                  <option value="aggressive">Aggressive</option>
+                  <option value="conservative">{t("pages.fsMarketing.conservative")}</option>
+                  <option value="moderate">{t("pages.fsMarketing.moderate")}</option>
+                  <option value="aggressive">{t("pages.fsMarketing.aggressive")}</option>
                 </select>
               </Field>
 
-              <Field label="Goals (comma-separated)">
+              <Field label={t("pages.fsMarketing.goals")}>
                 <input className={inputCls} value={form.goals} onChange={set("goals")} />
               </Field>
 
               <div className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-4">
-                <Field label="Producer name">
+                <Field label={t("pages.fsMarketing.producerName")}>
                   <input className={inputCls} value={form.advisorName} onChange={set("advisorName")} placeholder="(optional)" />
                 </Field>
-                <Field label="Agency">
+                <Field label={t("pages.fsMarketing.agency")}>
                   <input className={inputCls} value={form.agencyName} onChange={set("agencyName")} placeholder="(optional)" />
                 </Field>
               </div>
@@ -261,9 +257,7 @@ export default function FnaGeneratorClient() {
           {!report && !loading && (
             <div className="flex h-full min-h-[400px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center print:hidden">
               <FileText className="h-10 w-10 text-slate-400" />
-              <p className="mt-4 text-sm text-slate-600">
-                Your FNA report will appear here. Hit <strong>Generate FNA</strong> to start.
-              </p>
+              <p className="mt-4 text-sm text-slate-600">{t("pages.fsMarketing.reportAppearsBefore")}<strong>{t("pages.fsMarketing.generateFna")}</strong>{t("pages.fsMarketing.reportAppearsAfter")}</p>
             </div>
           )}
 
@@ -271,23 +265,18 @@ export default function FnaGeneratorClient() {
             <div className="flex h-full min-h-[400px] flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-10 text-center">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600" />
               <p className="mt-4 text-sm font-medium text-slate-700">Analyzing client profile…</p>
-              <p className="mt-1 text-xs text-slate-500">
-                Computing income replacement, DIME, retirement gap, and coverage recommendation.
-              </p>
+              <p className="mt-1 text-xs text-slate-500">{t("pages.fsMarketing.computing")}</p>
             </div>
           )}
 
           {report && (
             <article id="fna-report" className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
               <header className="border-b border-slate-100 pb-5">
-                <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
-                  Financial Needs Analysis
-                </p>
-                <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
-                  Prepared for {form.clientName}
+                <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600">{t("pages.fsMarketing.fna")}</p>
+                <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{t("pages.dashFragments.preparedFor")} {form.clientName}
                 </h1>
                 <p className="mt-1 text-xs text-slate-500">
-                  Generated {new Date().toLocaleDateString()} ·{" "}
+                  {t("pages.fsMarketing.generatedOn", { date: new Date().toLocaleDateString(locale) })} ·{" "}
                   {form.advisorName ? `Prepared by ${form.advisorName}` : "Prepared by your producer"}
                   {form.agencyName ? ` · ${form.agencyName}` : ""}
                 </p>
@@ -295,10 +284,10 @@ export default function FnaGeneratorClient() {
 
               {calc && (
                 <section className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  <KpiBox label="Income replacement need" value={usd(calc.incomeReplacementNeed)} />
-                  <KpiBox label="DIME total" value={usd(calc.dimeNumber)} />
-                  <KpiBox label="Recommended coverage" value={usd(calc.recommendedCoverage)} accent />
-                  <KpiBox label="Retirement shortfall" value={usd(calc.retirementShortfall)} />
+                  <KpiBox label={t("pages.fsMarketing.incomeReplacement")} value={usd(calc.incomeReplacementNeed)} />
+                  <KpiBox label={t("pages.fsMarketing.dimeTotal")} value={usd(calc.dimeNumber)} />
+                  <KpiBox label={t("pages.fsMarketing.recommendedCoverage")} value={usd(calc.recommendedCoverage)} accent />
+                  <KpiBox label={t("pages.fsMarketing.retirementShortfall")} value={usd(calc.retirementShortfall)} />
                 </section>
               )}
 

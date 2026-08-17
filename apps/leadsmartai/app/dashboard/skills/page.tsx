@@ -59,8 +59,7 @@ export default async function SkillsPage() {
 
       {/* Compliance state banner */}
       <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm dark:border-blue-900/50 dark:bg-blue-950/30">
-        <span className="font-medium text-blue-900 dark:text-blue-200">
-          Compliance: {knownState ? compliance.state : "not set"}
+        <span className="font-medium text-blue-900 dark:text-blue-200">{serverT("pages.dashFragments.compliance", { ns: "dashboard" })} {knownState ? compliance.state : "not set"}
         </span>
         <span className="text-blue-800/80 dark:text-blue-300/80">
           {knownState

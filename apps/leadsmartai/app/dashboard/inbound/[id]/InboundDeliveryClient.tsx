@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import type {
   InboundDeliveryWithMatch,
   InboundExtractionPayload,
@@ -30,6 +32,8 @@ export default function InboundDeliveryClient({
   delivery: InboundDeliveryWithMatch;
   intentLabel: string;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [current, setCurrent] = useState<InboundDeliveryWithMatch>(delivery);
   // Buyer/seller selection state. Defaults to "use match" when the
   // webhook found one — the agent can untoggle to "different person"
@@ -85,29 +89,31 @@ export default function InboundDeliveryClient({
       <div>
         <div className="text-xs text-slate-500">
           <Link href="/dashboard/calendar" className="hover:underline">
-            Calendar
+            {t("pages.inbound.breadcrumbCalendar")}
           </Link>
-          {" / Forwarded emails / "}
+          {t("pages.inbound.breadcrumbForwarded")}
           <span className="text-slate-700">{intentLabel}</span>
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">
-          {current.subject ?? "(no subject)"}
+          {current.subject ?? t("pages.inbound.noSubject")}
         </h1>
         <p className="mt-1 text-sm text-slate-500">
-          Forwarded {new Date(current.created_at).toLocaleString()} · classified as{" "}
+          {t("pages.inbound.forwardedAt", {
+            when: new Date(current.created_at).toLocaleString(locale),
+          })}{" "}
           <span className="font-medium text-slate-700">{intentLabel}</span>
         </p>
       </div>
 
       {/* ── Envelope ─────────────────────────────────────────────── */}
       <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-700">Email</h2>
+        <h2 className="text-sm font-semibold text-slate-700">{t("pages.inbound.email")}</h2>
         <dl className="grid gap-3 text-sm sm:grid-cols-[120px_1fr]">
-          <Field label="From" value={current.from_header} />
+          <Field label={t("pages.inbound.from")} value={current.from_header} />
           <Field label="To" value={current.to_header} />
-          <Field label="Subject" value={current.subject} />
+          <Field label={t("pages.inbound.subject")} value={current.subject} />
           <Field
-            label="Attachments"
+            label={t("pages.inbound.attachments")}
             value={
               attachments.length === 0
                 ? "(none)"
@@ -117,9 +123,7 @@ export default function InboundDeliveryClient({
         </dl>
         {current.text_preview && (
           <details className="group">
-            <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 hover:text-slate-900">
-              Show body preview
-            </summary>
+            <summary className="cursor-pointer select-none text-xs font-medium text-slate-600 hover:text-slate-900">{t("pages.inboundDelivery.showBody")}</summary>
             <pre className="mt-2 max-h-80 overflow-y-auto whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-slate-700">
               {current.text_preview}
             </pre>
@@ -130,19 +134,14 @@ export default function InboundDeliveryClient({
       {/* ── Extraction ───────────────────────────────────────────── */}
       <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-700">
-            AI extraction
-          </h2>
+          <h2 className="text-sm font-semibold text-slate-700">{t("pages.inboundDelivery.aiExtraction")}</h2>
           <ExtractionStatusPill status={current.extraction_status} />
         </div>
 
         {current.extraction_status === "extracted" && current.extraction ? (
           <ExtractionView extraction={current.extraction} />
         ) : current.extraction_status === "skipped" ? (
-          <p className="text-sm text-slate-500">
-            No structured extractor for this intent yet — review the email
-            body above and act manually.
-          </p>
+          <p className="text-sm text-slate-500">{t("pages.inboundDelivery.noExtractor")}</p>
         ) : current.extraction_status === "failed" ? (
           <div className="space-y-2">
             <p className="text-sm text-rose-700">
@@ -154,21 +153,19 @@ export default function InboundDeliveryClient({
               disabled={retrying}
               className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              {retrying ? "Retrying…" : "🔁 Retry extraction"}
+              {retrying ? t("pages.inbound.retrying") : t("pages.inbound.retry")}
             </button>
           </div>
         ) : (
           <div className="space-y-2">
-            <p className="text-sm text-slate-500">
-              Extraction hasn&apos;t run yet for this delivery.
-            </p>
+            <p className="text-sm text-slate-500">{t("pages.inboundDelivery.notRunYet")}</p>
             <button
               type="button"
               onClick={runExtraction}
               disabled={retrying}
               className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              {retrying ? "Running…" : "▶️ Run extraction"}
+              {retrying ? t("pages.inbound.running") : t("pages.inbound.run")}
             </button>
           </div>
         )}
@@ -188,11 +185,9 @@ export default function InboundDeliveryClient({
           match — they'll just pick manually as before. */}
       {current.matched_contact && (
         <section className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-blue-900">
-            Suggested contact
-          </h2>
+          <h2 className="text-sm font-semibold text-blue-900">{t("pages.inboundDelivery.suggestedContact")}</h2>
           <p className="mt-1 text-sm text-blue-900">
-            Looks like{" "}
+            {t("pages.inboundDelivery.looksLike")}{" "}
             <span className="font-semibold">
               {current.matched_contact.name ?? current.matched_contact.email ?? "—"}
             </span>
@@ -204,8 +199,7 @@ export default function InboundDeliveryClient({
                 </span>
               </>
             ) : null}{" "}
-            from your CRM. Forwarded offers sometimes come from a TC or
-            assistant — confirm before applying.
+            {t("pages.inboundDelivery.fromYourCrm")}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
             <button
@@ -216,9 +210,7 @@ export default function InboundDeliveryClient({
                   ? "bg-blue-600 text-white"
                   : "bg-white text-blue-700 ring-1 ring-blue-200 hover:bg-blue-100"
               }`}
-            >
-              Use this contact
-            </button>
+            >{t("pages.inboundDelivery.useThisContact")}</button>
             <button
               type="button"
               onClick={() => setUseSuggestedContact(false)}
@@ -227,9 +219,7 @@ export default function InboundDeliveryClient({
                   ? "bg-slate-700 text-white"
                   : "bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100"
               }`}
-            >
-              Different person
-            </button>
+            >{t("pages.inboundDelivery.differentPerson")}</button>
             <Link
               href={`/dashboard/contacts/${current.matched_contact.id}`}
               className="ml-auto text-blue-700 hover:underline"
@@ -243,28 +233,26 @@ export default function InboundDeliveryClient({
       {/* ── Apply CTA ────────────────────────────────────────────── */}
       {current.extraction_status === "extracted" && applyHref && (
         <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-emerald-900">
-            Save as a draft
-          </h2>
+          <h2 className="text-sm font-semibold text-emerald-900">{t("pages.inboundDelivery.saveDraft")}</h2>
           <p className="mt-1 text-sm text-emerald-800">
-            Open the upload flow with these fields pre-filled.{" "}
+            {t("pages.inboundDelivery.prefilled")}{" "}
             {useSuggestedContact && current.matched_contact ? (
               <>
-                Buyer is set to{" "}
+                {t("pages.inboundDelivery.buyerIsSetTo")}{" "}
                 <span className="font-semibold">
                   {current.matched_contact.name ?? current.matched_contact.email}
                 </span>
                 .
               </>
             ) : (
-              <>Pick the buyer / seller and save when you&apos;re ready.</>
+              <>{t("pages.inbound.pickParty")}</>
             )}
           </p>
           <Link
             href={applyHref}
             className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700"
           >
-            {applyCtaLabel(current)}
+            {applyCtaLabel(current, t)}
           </Link>
         </section>
       )}
@@ -304,36 +292,37 @@ function ExtractionView({
 }: {
   extraction: InboundExtractionPayload;
 }) {
+  const { t } = useTranslation("dashboard");
   if (extraction.kind === "offer") {
     const o = extraction.data;
     return (
       <dl className="grid gap-3 text-sm sm:grid-cols-[180px_1fr]">
-        <Field label="Property" value={o.propertyAddress} />
+        <Field label={t("pages.uploadOffer.f.property")} value={o.propertyAddress} />
         <Field
-          label="City / State / ZIP"
+          label={t("pages.uploadOffer.f.cityStateZip")}
           value={[o.city, o.state, o.zip].filter(Boolean).join(", ") || null}
         />
-        <Field label="List price" value={fmtMoney(o.listPrice)} />
-        <Field label="Offer price" value={fmtMoney(o.offerPrice)} />
-        <Field label="Earnest money" value={fmtMoney(o.earnestMoney)} />
-        <Field label="Down payment" value={fmtMoney(o.downPayment)} />
-        <Field label="Financing" value={o.financingType} />
-        <Field label="Proposed closing" value={o.closingDateProposed} />
-        <Field label="Offer expires" value={o.offerExpiresAt} />
+        <Field label={t("pages.uploadOffer.f.listPrice")} value={fmtMoney(o.listPrice)} />
+        <Field label={t("pages.uploadOffer.f.offerPrice")} value={fmtMoney(o.offerPrice)} />
+        <Field label={t("pages.uploadOffer.f.earnestMoney")} value={fmtMoney(o.earnestMoney)} />
+        <Field label={t("pages.uploadOffer.f.downPayment")} value={fmtMoney(o.downPayment)} />
+        <Field label={t("pages.uploadOffer.f.financing")} value={o.financingType} />
+        <Field label={t("pages.uploadOffer.f.proposedClosing")} value={o.closingDateProposed} />
+        <Field label={t("pages.uploadOffer.f.offerExpires")} value={o.offerExpiresAt} />
         <Field
-          label="Inspection contingency"
-          value={contingencyLabel(o.inspectionContingency)}
+          label={t("pages.uploadOffer.f.inspection")}
+          value={contingencyLabel(o.inspectionContingency, t)}
         />
         <Field
-          label="Appraisal contingency"
-          value={contingencyLabel(o.appraisalContingency)}
+          label={t("pages.uploadOffer.f.appraisal")}
+          value={contingencyLabel(o.appraisalContingency, t)}
         />
         <Field
-          label="Loan contingency"
-          value={contingencyLabel(o.loanContingency)}
+          label={t("pages.uploadOffer.f.loan")}
+          value={contingencyLabel(o.loanContingency, t)}
         />
-        <Field label="Other contingencies" value={o.contingencyNotes} />
-        <Field label="Notes" value={o.notes} />
+        <Field label={t("pages.uploadOffer.f.otherContingencies")} value={o.contingencyNotes} />
+        <Field label={t("pages.inbound.f.notes")} value={o.notes} />
       </dl>
     );
   }
@@ -342,24 +331,24 @@ function ExtractionView({
     const l = extraction.data;
     return (
       <dl className="grid gap-3 text-sm sm:grid-cols-[180px_1fr]">
-        <Field label="Property" value={l.propertyAddress} />
+        <Field label={t("pages.uploadOffer.f.property")} value={l.propertyAddress} />
         <Field
-          label="City / State / ZIP"
+          label={t("pages.uploadOffer.f.cityStateZip")}
           value={[l.city, l.state, l.zip].filter(Boolean).join(", ") || null}
         />
-        <Field label="List price" value={fmtMoney(l.listPrice)} />
-        <Field label="Listing start" value={l.listingStartDate} />
-        <Field label="Listing expires" value={l.listingExpirationDate} />
+        <Field label={t("pages.uploadOffer.f.listPrice")} value={fmtMoney(l.listPrice)} />
+        <Field label={t("pages.uploadListing.f.listingStart")} value={l.listingStartDate} />
+        <Field label={t("pages.uploadListing.f.listingExpires")} value={l.listingExpirationDate} />
         <Field
-          label="Sellers"
+          label={t("pages.uploadListing.f.sellers")}
           value={l.sellerNames.length > 0 ? l.sellerNames.join(", ") : null}
         />
         <Field
-          label="Total commission"
+          label={t("pages.uploadListing.f.totalCommission")}
           value={l.commissionTotalPct != null ? `${l.commissionTotalPct}%` : null}
         />
         <Field
-          label="Buyer-side commission"
+          label={t("pages.uploadListing.f.buyerCommission")}
           value={
             l.commissionBuyerSidePct != null
               ? `${l.commissionBuyerSidePct}%`
@@ -367,11 +356,11 @@ function ExtractionView({
           }
         />
         <Field
-          label="Confidence"
+          label={t("pages.inbound.f.confidence")}
           value={l.confidence != null ? `${Math.round(l.confidence * 100)}%` : null}
         />
         {l.warnings.length > 0 && (
-          <Field label="Warnings" value={l.warnings.join("; ")} />
+          <Field label={t("pages.inbound.f.warnings")} value={l.warnings.join("; ")} />
         )}
       </dl>
     );
@@ -381,23 +370,23 @@ function ExtractionView({
   const s = extraction.data;
   return (
     <dl className="grid gap-3 text-sm sm:grid-cols-[180px_1fr]">
-      <Field label="Requester" value={s.requesterName} />
-      <Field label="Phone" value={s.requesterPhone} />
-      <Field label="Email" value={s.requesterEmail} />
-      <Field label="Property" value={s.propertyAddress} />
+      <Field label={t("pages.inbound.f.requester")} value={s.requesterName} />
+      <Field label={t("pages.inbound.f.phone")} value={s.requesterPhone} />
+      <Field label={t("pages.labels.emailAddress")} value={s.requesterEmail} />
+      <Field label={t("pages.uploadOffer.f.property")} value={s.propertyAddress} />
       <Field
-        label="City / State / ZIP"
+        label={t("pages.uploadOffer.f.cityStateZip")}
         value={[s.city, s.state, s.zip].filter(Boolean).join(", ") || null}
       />
-      <Field label="Requested date" value={s.requestedDate} />
-      <Field label="Requested time" value={s.requestedTime} />
-      <Field label="Notes" value={s.notes} />
+      <Field label={t("pages.inbound.f.requestedDate")} value={s.requestedDate} />
+      <Field label={t("pages.inbound.f.requestedTime")} value={s.requestedTime} />
+      <Field label={t("pages.inbound.f.notes")} value={s.notes} />
       <Field
-        label="Confidence"
+        label={t("pages.inbound.f.confidence")}
         value={s.confidence != null ? `${Math.round(s.confidence * 100)}%` : null}
       />
       {s.warnings.length > 0 && (
-        <Field label="Warnings" value={s.warnings.join("; ")} />
+        <Field label={t("pages.inbound.f.warnings")} value={s.warnings.join("; ")} />
       )}
     </dl>
   );
@@ -412,16 +401,18 @@ function fmtMoney(n: number | null): string | null {
   }).format(n);
 }
 
-function contingencyLabel(v: boolean | null): string | null {
+function contingencyLabel(v: boolean | null, t: (k: string) => string): string | null {
   if (v == null) return null;
-  return v ? "WAIVED" : "kept";
+  return v ? t("pages.inbound.waived") : t("pages.inbound.kept");
 }
 
-function applyCtaLabel(d: InboundDeliveryWithMatch): string {
-  if (d.intent === "offer_received") return "Open in offer upload →";
-  if (d.intent === "listing_signed") return "Open in listing upload →";
-  if (d.intent === "showing_requested") return "Open in showing form →";
-  return "Open in upload →";
+type Translate = (k: string) => string;
+
+function applyCtaLabel(d: InboundDeliveryWithMatch, t: Translate): string {
+  if (d.intent === "offer_received") return t("pages.inbound.openOfferUpload");
+  if (d.intent === "listing_signed") return t("pages.inbound.openListingUpload");
+  if (d.intent === "showing_requested") return t("pages.inbound.openShowingForm");
+  return t("pages.inbound.openUpload");
 }
 
 /**

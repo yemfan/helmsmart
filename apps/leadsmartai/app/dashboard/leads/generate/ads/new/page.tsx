@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 import AdCampaignWizardClient from "./AdCampaignWizardClient";
 
-export const metadata: Metadata = {
-  title: "New Lead Ad | CloseBoss",
-  description:
-    "Launch a Meta Lead Ad campaign — pick the listing, audience, budget, and creative. The leads land directly in your CRM.",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.adWizard.metaTitle", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 export default function NewAdCampaignPage() {
   return (

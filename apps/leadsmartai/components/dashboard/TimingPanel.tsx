@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { AgentMessageSettings } from "@/lib/agent-messaging/types";
 
 type State = Pick<
@@ -37,6 +38,7 @@ function same(a: State, b: State): boolean {
 }
 
 export default function TimingPanel() {
+  const { t } = useTranslation("dashboard");
   const [state, setState] = useState<State>(DEFAULT_STATE);
   const [saved, setSaved] = useState<State>(DEFAULT_STATE);
   const [loading, setLoading] = useState(true);
@@ -130,8 +132,8 @@ export default function TimingPanel() {
     <div className="space-y-5">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <Label>Quiet hours begin</Label>
-          <Hint>No outbound SMS or email after this time.</Hint>
+          <Label>{t("pages.timingPanel.quietStart")}</Label>
+          <Hint>{t("pages.timingPanel.quietStartHint")}</Hint>
           <input
             type="time"
             value={state.quietHoursStart}
@@ -140,8 +142,8 @@ export default function TimingPanel() {
           />
         </div>
         <div>
-          <Label>Quiet hours end</Label>
-          <Hint>Messages resume at this time.</Hint>
+          <Label>{t("pages.timingPanel.quietEnd")}</Label>
+          <Hint>{t("pages.timingPanel.quietEndHint")}</Hint>
           <input
             type="time"
             value={state.quietHoursEnd}
@@ -155,27 +157,27 @@ export default function TimingPanel() {
         <CheckboxRow
           checked={state.useContactTimezone}
           onChange={(v) => setState((s) => ({ ...s, useContactTimezone: v }))}
-          label="Use the contact's local timezone"
-          hint="Your 9pm cutoff becomes their 9pm cutoff. Recommended for out-of-state referrals."
+          label={t("pages.timingPanel.useContactTz")}
+          hint={t("pages.timingPanel.useContactTzHint")}
         />
         <CheckboxRow
           checked={state.noSundayMorning}
           onChange={(v) => setState((s) => ({ ...s, noSundayMorning: v }))}
-          label="No outbound messages Sunday before noon"
-          hint="A real-estate-specific rule — Sunday morning texting annoys people."
+          label={t("pages.timingPanel.noSundayMorning")}
+          hint={t("pages.timingPanel.noSundayMorningHint")}
         />
         <CheckboxRow
           checked={state.pauseChineseNewYear}
           onChange={(v) => setState((s) => ({ ...s, pauseChineseNewYear: v }))}
-          label="Pause all outbound during Chinese New Year (5-day window)"
-          hint="Automatically detected by contact language preference. Resumes the Monday after."
+          label={t("pages.timingPanel.pauseCny")}
+          hint={t("pages.timingPanel.pauseCnyHint")}
         />
       </div>
 
       <div className="grid grid-cols-1 gap-4 border-t border-gray-100 pt-4 sm:grid-cols-2">
         <div>
-          <Label>Max messages per contact per day</Label>
-          <Hint>Across SMS and email combined. Hard cap — no template overrides.</Hint>
+          <Label>{t("pages.timingPanel.maxPerDay")}</Label>
+          <Hint>{t("pages.timingPanel.maxPerDayHint")}</Hint>
           <Stepper
             value={state.maxPerContactPerDay}
             onChange={(v) => setState((s) => ({ ...s, maxPerContactPerDay: v }))}
@@ -184,8 +186,8 @@ export default function TimingPanel() {
           />
         </div>
         <div>
-          <Label>Pause triggers for (days) after a contact replies</Label>
-          <Hint>Gives you time to take over the conversation without the AI talking over you.</Hint>
+          <Label>{t("pages.timingPanel.pauseOnReply")}</Label>
+          <Hint>{t("pages.timingPanel.pauseOnReplyHint")}</Hint>
           <Stepper
             value={state.pauseOnReplyDays}
             onChange={(v) => setState((s) => ({ ...s, pauseOnReplyDays: v }))}
@@ -256,13 +258,14 @@ function Stepper({
   min: number;
   max: number;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="mt-1 inline-flex items-center rounded-lg border border-gray-300 bg-white">
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
-        aria-label="Decrement"
+        aria-label={t("pages.labels.decrement")}
         className="px-3 py-2 text-gray-600 disabled:opacity-30"
       >
         −
@@ -272,7 +275,7 @@ function Stepper({
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
-        aria-label="Increment"
+        aria-label={t("pages.labels.increment")}
         className="px-3 py-2 text-gray-600 disabled:opacity-30"
       >
         +

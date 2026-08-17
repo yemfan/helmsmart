@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 type Period = "ytd" | "12m" | "all";
@@ -60,6 +61,7 @@ function formatMoney(n: number | null | undefined): string {
 }
 
 export function RevenuePanel() {
+  const { t } = useTranslation("dashboard");
   const [period, setPeriod] = useState<Period>("ytd");
   const [data, setData] = useState<RevenueData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -93,7 +95,7 @@ export function RevenuePanel() {
   const csvHref = useMemo(() => `/api/performance/revenue/export?period=${period}`, [period]);
 
   if (loading && !data) {
-    return <div className="py-8 text-center text-sm text-slate-400">Loading revenue…</div>;
+    return <div className="py-8 text-center text-sm text-slate-400">{t("pages.revenuePanel.loading")}</div>;
   }
   if (error) {
     return <div className="py-4 text-sm text-red-600">{error}</div>;
@@ -126,16 +128,16 @@ export function RevenuePanel() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        <Stat label="Closed" value={String(data.closedCount)} hint="deals" />
-        <Stat label="Gross commission" value={formatMoney(data.grossCommission)} tone="green" />
-        <Stat label="Net (you)" value={formatMoney(data.netCommission)} tone="green" />
+        <Stat label={t("pages.revenuePanel.closed")} value={String(data.closedCount)} hint="deals" />
+        <Stat label={t("pages.revenuePanel.grossCommission")} value={formatMoney(data.grossCommission)} tone="green" />
+        <Stat label={t("pages.revenuePanel.net")} value={formatMoney(data.netCommission)} tone="green" />
         <Stat
-          label="Avg days to close"
+          label={t("pages.revenuePanel.avgDaysToClose")}
           value={data.avgDaysToClose != null ? String(data.avgDaysToClose) : "—"}
           hint={data.avgDaysToClose != null ? "days from mutual accept" : undefined}
         />
         <Stat
-          label="Close rate"
+          label={t("pages.revenuePanel.closeRate")}
           value={data.closeRatePct != null ? `${data.closeRatePct}%` : "—"}
           hint={
             data.closeRatePct != null
@@ -149,38 +151,38 @@ export function RevenuePanel() {
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-900">Pipeline</h3>
-            <span className="text-[11px] text-slate-500">Active deals</span>
+            <h3 className="text-sm font-semibold text-slate-900">{t("pages.revenuePanel.pipeline")}</h3>
+            <span className="text-[11px] text-slate-500">{t("pages.revenuePanel.activeDeals")}</span>
           </div>
           <div className="mt-2 flex items-baseline gap-3">
             <div>
               <div className="text-2xl font-bold text-slate-900">{data.activePipelineCount}</div>
-              <div className="text-[11px] text-slate-500">active transactions</div>
+              <div className="text-[11px] text-slate-500">{t("pages.revenuePanel.activeTransactions")}</div>
             </div>
             <div className="text-slate-300">|</div>
             <div>
               <div className="text-2xl font-bold text-blue-700">
                 {formatMoney(data.expectedGrossFromActive)}
               </div>
-              <div className="text-[11px] text-slate-500">expected gross commission</div>
+              <div className="text-[11px] text-slate-500">{t("pages.revenuePanel.expectedGross")}</div>
             </div>
           </div>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-900">Offer funnel</h3>
+          <h3 className="text-sm font-semibold text-slate-900">{t("pages.revenuePanel.offerFunnel")}</h3>
           <div className="mt-2 grid grid-cols-3 gap-2 text-center text-xs">
             <div>
               <div className="text-xl font-bold text-slate-900">{data.offersSubmitted}</div>
-              <div className="text-[11px] text-slate-500">submitted</div>
+              <div className="text-[11px] text-slate-500">{t("pages.revenuePanel.submitted")}</div>
             </div>
             <div>
               <div className="text-xl font-bold text-green-700">{data.offersAccepted}</div>
-              <div className="text-[11px] text-slate-500">accepted</div>
+              <div className="text-[11px] text-slate-500">{t("pages.revenuePanel.accepted")}</div>
             </div>
             <div>
               <div className="text-xl font-bold text-red-600">{data.offersLost}</div>
-              <div className="text-[11px] text-slate-500">lost</div>
+              <div className="text-[11px] text-slate-500">{t("pages.revenuePanel.lost")}</div>
             </div>
           </div>
         </div>
@@ -188,7 +190,7 @@ export function RevenuePanel() {
 
       {data.byMonth.length > 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-900">Monthly gross commission</h3>
+          <h3 className="text-sm font-semibold text-slate-900">{t("pages.revenuePanel.monthlyGross")}</h3>
           <div className="mt-3 h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.byMonth} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
@@ -215,7 +217,7 @@ export function RevenuePanel() {
 
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
-          <h3 className="text-sm font-semibold text-slate-900">Closed deals</h3>
+          <h3 className="text-sm font-semibold text-slate-900">{t("pages.revenuePanel.closedDeals")}</h3>
           <span className="text-[11px] text-slate-500">
             {data.closedDeals.length} {data.closedDeals.length === 1 ? "deal" : "deals"}
           </span>
@@ -224,14 +226,14 @@ export function RevenuePanel() {
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-600">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">Closed</th>
-                <th className="px-3 py-2 text-left font-medium">Property</th>
-                <th className="px-3 py-2 text-left font-medium">Client</th>
-                <th className="px-3 py-2 text-right font-medium">Price</th>
+                <th className="px-3 py-2 text-left font-medium">{t("detail.offerDetail.closed")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.revenuePanel.colProperty")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.revenuePanel.colClient")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("pages.revenuePanel.colPrice")}</th>
                 <th className="px-3 py-2 text-right font-medium">%</th>
-                <th className="px-3 py-2 text-right font-medium">Gross</th>
-                <th className="px-3 py-2 text-right font-medium">Net (you)</th>
-                <th className="px-3 py-2 text-right font-medium">Days</th>
+                <th className="px-3 py-2 text-right font-medium">{t("pages.revenuePanel.colGross")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("pages.revenuePanel.colNet")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("pages.revenuePanel.colDays")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -268,9 +270,7 @@ export function RevenuePanel() {
               ))}
               {data.closedDeals.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-3 py-8 text-center text-sm text-slate-500">
-                    No closed deals in this period.
-                  </td>
+                  <td colSpan={8} className="px-3 py-8 text-center text-sm text-slate-500">{t("pages.revenue.noClosed")}</td>
                 </tr>
               ) : null}
             </tbody>

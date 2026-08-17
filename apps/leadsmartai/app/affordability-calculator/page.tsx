@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
@@ -21,6 +22,7 @@ function pmt(principal: number, annualRate: number, years: number): number {
 }
 
 export default function AffordabilityCalculator() {
+  const { t } = useTranslation("dashboard");
   const [annualIncome, setAnnualIncome] = useState<number>(120000);
   const [monthlyDebts, setMonthlyDebts] = useState<number>(500);
   const [downPayment, setDownPayment] = useState<number>(60000);
@@ -62,19 +64,15 @@ export default function AffordabilityCalculator() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">Affordability Calculator</h1>
-      <p className="text-gray-600 mb-8">
-        See how much home you can afford. Uses a 36% debt-to-income ratio.
-      </p>
+      <h1 className="text-3xl font-bold text-blue-600 mb-2">{t("pages.articleChrome.affordabilityCalculator")}</h1>
+      <p className="text-gray-600 mb-8">{t("pages.affordabilityCalculator.sub")}</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Your finances</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("pages.affordabilityCalculator.yourFinances")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
                 label="Annual income ($)"
@@ -95,7 +93,7 @@ export default function AffordabilityCalculator() {
                 min={0}
               />
               <InputField
-                label="Interest rate (%)"
+                label={t("pages.articleChrome.interestRate")}
                 value={interestRate}
                 onChange={setInterestRate}
                 min={0.1}
@@ -103,7 +101,7 @@ export default function AffordabilityCalculator() {
                 step={0.125}
               />
               <InputField
-                label="Loan term (years)"
+                label={t("pages.articleChrome.loanTermYears")}
                 value={loanTerm}
                 onChange={setLoanTerm}
                 min={1}
@@ -114,9 +112,7 @@ export default function AffordabilityCalculator() {
               <button
                 type="button"
                 className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Calculate
-              </button>
+              >{t("pages.articleChrome.calculate")}</button>
             </div>
           </div>
         </div>
@@ -130,7 +126,7 @@ export default function AffordabilityCalculator() {
              * duplication and kept only the monthly payment breakdown.
              */}
             <ResultCard
-              title="Maximum home price"
+              title={t("pages.affordabilityCalculator.maxPriceAria")}
               value={`$${Math.round(maxHomePrice).toLocaleString()}`}
               details={`Estimated monthly payment: $${estimatedMonthlyPayment.toFixed(2)}`}
             />
@@ -139,146 +135,69 @@ export default function AffordabilityCalculator() {
       </div>
 
       <section className="mt-12 max-w-3xl space-y-3 text-sm text-gray-700">
-        <h2 className="text-xl font-semibold text-gray-900">
-          How much house can you afford?
-        </h2>
-        <p>
-          This home affordability calculator estimates a maximum purchase price using a
-          36% debt-to-income (DTI) guideline. It factors in your gross income, existing
-          monthly debts, down payment, interest rate, and loan term to estimate a safe
-          monthly housing payment.
-        </p>
-        <p>
-          Buyers and agents can use these results to narrow price ranges before shopping
-          for properties or getting pre-approved. While this tool is a helpful planning
-          guide, always confirm final numbers with a lender who can include taxes,
-          insurance, and any HOA dues in a full underwriting review.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.affordabilityCalculator.explainTitle")}</h2>
+        <p>{t("pages.affordabilityCalculator.explainA")}</p>
+        <p>{t("pages.affordabilityCalculator.explainB")}</p>
       </section>
 
       <section className="mt-16 max-w-4xl space-y-6 text-sm text-gray-700 text-left">
-        <h2 className="text-2xl font-semibold text-gray-900">
-          People also ask about home affordability
-        </h2>
+        <h2 className="text-2xl font-semibold text-gray-900">{t("pages.affordabilityCalculator.peopleAsk")}</h2>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How does a home affordability calculator determine my price range?
-          </h3>
-          <p className="text-gray-600">
-            A home affordability calculator estimates a comfortable price range based on your
-            income, existing monthly debts, down payment, and current mortgage rates.
-            It applies common debt-to-income guidelines to convert your budget into a target
-            housing payment and home price. You can then test specific payments with our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>
+          <h3 className="text-lg font-semibold">{t("pages.affordabilityCalculator.q1")}</h3>
+          <p className="text-gray-600">{t("pages.affordabilityCalculator.a1")}{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            What percentage of my income should my mortgage payment be?
-          </h3>
-          <p className="text-gray-600">
-            Many lenders prefer that your total housing payment stays around 28–30% of your gross
-            monthly income and that all debts stay below 36–43%.
-            This calculator helps you stay within those ranges by limiting how much of your income
-            can go toward housing. For more detail, you can also run scenarios in our{" "}
-            <Link href="/affordability-calculator" className="text-blue-600 underline">
-              Affordability Calculator
-            </Link>
+          <h3 className="text-lg font-semibold">{t("pages.affordabilityCalculator.q2")}</h3>
+          <p className="text-gray-600">{t("pages.affordabilityCalculator.a2")}{" "}
+            <Link href="/affordability-calculator" className="text-blue-600 underline">{t("pages.articleChrome.affordabilityCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How does my down payment change what I can afford?
-          </h3>
-          <p className="text-gray-600">
-            A larger down payment reduces your loan amount and monthly mortgage payment, which can
-            increase your maximum affordable price.
-            A smaller down payment may keep you in budget but can add mortgage insurance and
-            increase your overall costs. You can experiment with different down payment levels
-            using our{" "}
-            <Link href="/down-payment-calculator" className="text-blue-600 underline">
-              Down Payment Calculator
-            </Link>{" "}
-            and then plug the results into this affordability tool.
-          </p>
+          <h3 className="text-lg font-semibold">{t("pages.affordabilityCalculator.q3")}</h3>
+          <p className="text-gray-600">{t("pages.affordabilityCalculator.a3")}{" "}
+            <Link href="/down-payment-calculator" className="text-blue-600 underline">{t("pages.articleChrome.downPaymentCalculator")}</Link>{" "}{t("pages.affordabilityCalculator.a3Tail")}</p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            Does this affordability calculator include taxes and insurance?
-          </h3>
-          <p className="text-gray-600">
-            Some affordability tools estimate only principal and interest, while others include
-            estimated property taxes and homeowners insurance in your total payment.
-            When reviewing your results, remember to factor in HOA dues, mortgage insurance, and
-            utilities for a full housing budget. You can see how these costs affect cash flow with
-            our{" "}
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>
+          <h3 className="text-lg font-semibold">{t("pages.affordabilityCalculator.q4")}</h3>
+          <p className="text-gray-600">{t("pages.affordabilityCalculator.a4")}{" "}
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            Should I use gross or net income in a home affordability calculator?
-          </h3>
-          <p className="text-gray-600">
-            Lenders typically use gross (pre-tax) income to calculate debt-to-income ratios, so
-            affordability calculators usually follow that standard.
-            However, you should also consider your net (take-home) pay and lifestyle expenses when
-            deciding what payment feels comfortable. You can cross-check your preferred payment in
-            our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>
+          <h3 className="text-lg font-semibold">{t("pages.affordabilityCalculator.q5")}</h3>
+          <p className="text-gray-600">{t("pages.affordabilityCalculator.a5")}{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
             .
           </p>
         </article>
 
         <article className="space-y-2">
-          <h3 className="text-lg font-semibold">
-            How does my credit score affect how much I can afford?
-          </h3>
-          <p className="text-gray-600">
-            Your credit score affects the interest rate and loan programs you qualify for, which in
-            turn changes your monthly payment and maximum price.
-            Higher scores usually unlock lower rates and better affordability. You can see how rate
-            changes move your payment by testing different rates in our{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>{" "}
+          <h3 className="text-lg font-semibold">{t("pages.affordabilityCalculator.q6")}</h3>
+          <p className="text-gray-600">{t("pages.affordabilityCalculator.a6")}{" "}
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
             or{" "}
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Loan Amortization Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.amortizationCalculator")}</Link>
             .
           </p>
         </article>
 
         <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-4">Related Calculators</h3>
+          <h3 className="text-xl font-semibold mb-4">{t("pages.articleChrome.relatedCalculators")}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/mortgage-calculator" className="text-blue-600 underline">
-              Mortgage Calculator
-            </Link>
-            <Link href="/down-payment-calculator" className="text-blue-600 underline">
-              Down Payment Calculator
-            </Link>
-            <Link href="/rent-vs-buy-calculator" className="text-blue-600 underline">
-              Rent vs Buy Calculator
-            </Link>
-            <Link href="/cash-flow-calculator" className="text-blue-600 underline">
-              Cash Flow Calculator
-            </Link>
+            <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>
+            <Link href="/down-payment-calculator" className="text-blue-600 underline">{t("pages.articleChrome.downPaymentCalculator")}</Link>
+            <Link href="/rent-vs-buy-calculator" className="text-blue-600 underline">{t("pages.articleChrome.rentVsBuyCalculator")}</Link>
+            <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>
           </div>
         </div>
       </section>

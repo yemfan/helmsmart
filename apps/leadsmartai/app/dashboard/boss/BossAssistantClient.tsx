@@ -595,10 +595,10 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           )}
           {teamDigest && (
             <p className="mt-2 border-t border-gray-100 pt-2 text-xs text-gray-600">
-              <span className="font-semibold text-gray-800">Your team finished {teamDigest.total} task{teamDigest.total === 1 ? "" : "s"} while you were away</span> — {teamDigest.line}.
+              <span className="font-semibold text-gray-800">{tr("pages.boss.teamFinished", { count: teamDigest.total })}</span> — {teamDigest.line}.
               {teamDigest.needsYou > 0 && (
                 <span className="ml-1 rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700">
-                  {teamDigest.needsYou} need{teamDigest.needsYou === 1 ? "s" : ""} you
+                  {tr("pages.boss.needsYou", { count: teamDigest.needsYou })}
                 </span>
               )}
             </p>
@@ -607,9 +607,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
         {/* Today's priorities — the proposals the recommendations engine surfaced */}
         {recommendations.length > 0 && (
-          <p className="px-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
-            Today&apos;s priorities
-          </p>
+          <p className="px-1 pt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{tr("pages.boss.todaysPriorities")}</p>
         )}
         {recommendations.map((r) => (
           <ProposalCard
@@ -684,7 +682,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
         {recommendations.length === 0 && allInstructions.length === 0 && !loading && (
           <BossBubble bossName={bossName} avatar={bossAvatar}>
-            <p className="text-sm text-gray-600">Nothing urgent — your team has things under control. Tell me what you&apos;d like done.</p>
+            <p className="text-sm text-gray-600">{tr("pages.boss.nothingUrgent")}</p>
           </BossBubble>
         )}
 
@@ -930,7 +928,7 @@ function ProposalCard({
       {(rec.summary || rec.reason) && <p className="mt-0.5 text-xs text-gray-500">{[rec.summary, rec.reason].filter(Boolean).join(" — ")}</p>}
       {rec.expected_outcome && <p className="mt-0.5 text-xs font-medium text-[#8a6a0e]">→ {rec.expected_outcome}</p>}
       {handled ? (
-        <p className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-700"><span aria-hidden>✓</span> Handed to your team — see below.</p>
+        <p className="mt-2 flex items-center gap-1 text-xs font-medium text-emerald-700"><span aria-hidden>✓</span>{tr("pages.boss.handedToTeam")}</p>
       ) : (
         <div className="mt-2 flex flex-wrap gap-2">
           {/* Most proposals point at a page to review/act on (a transaction,
@@ -946,9 +944,7 @@ function ProposalCard({
               {rec.recommended_action && rec.recommended_action.length > 3 ? rec.recommended_action : tr("boss.open")}
             </Link>
           ) : (
-            <button type="button" onClick={() => { setHandled(true); onHandle(); }} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
-              Have Boss handle it
-            </button>
+            <button type="button" onClick={() => { setHandled(true); onHandle(); }} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">{tr("pages.boss.haveBossHandle")}</button>
           )}
           <button type="button" onClick={onDismiss} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-400 hover:bg-gray-50">{tr("boss.notNow")}</button>
         </div>
@@ -1001,7 +997,7 @@ function InstructionExchange({
         // Vague/non-actionable ask → one clarifying question, no no-op task card.
         <BossBubble bossName={bossName} avatar={avatar}>
           <p className="text-sm text-gray-700">{instruction.clarification}</p>
-          <p className="mt-1 text-xs text-gray-400">Send a more specific instruction and I&apos;ll take it from there.</p>
+          <p className="mt-1 text-xs text-gray-400">{tr("pages.boss.beMoreSpecific")}</p>
         </BossBubble>
       ) : null}
     </div>
@@ -1054,7 +1050,10 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
       {t.status === "awaiting_approval" && t.draft_body && (
         <div className="mt-1.5 rounded-lg border border-amber-200 bg-amber-50/50 p-2.5">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8a6a0e]">
-            Draft {t.draft_channel === "sms" ? "text" : "email"}{t.execution_note && !t.execution_note.startsWith("to:") ? ` · ${t.execution_note}` : ""}
+            {tr("pages.boss.draftChannel", {
+              channel: tr(t.draft_channel === "sms" ? "pages.boss.channelText" : "pages.boss.channelEmail"),
+            })}
+            {t.execution_note && !t.execution_note.startsWith("to:") ? ` · ${t.execution_note}` : ""}
           </p>
           {t.draft_subject && <p className="mt-1 text-xs font-medium text-gray-800">{t.draft_subject}</p>}
           <p className="mt-1 whitespace-pre-wrap text-xs text-gray-700">{t.draft_body}</p>
@@ -1093,7 +1092,15 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
           {t.execution_note && <p className="text-[11px] text-gray-500">{t.execution_note}</p>}
           {t.artifact_url && (
             <a href={t.artifact_url} className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 hover:underline">
-              View {t.artifact_type === "cma" ? "CMA" : t.artifact_type === "presentation" ? "presentation" : "result"} →
+              {tr("pages.boss.viewArtifact", {
+                kind: tr(
+                  t.artifact_type === "cma"
+                    ? "pages.boss.artifactCma"
+                    : t.artifact_type === "presentation"
+                      ? "pages.boss.artifactPresentation"
+                      : "pages.boss.artifactResult",
+                ),
+              })}
             </a>
           )}
         </div>
@@ -1165,8 +1172,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-2">
       {pendingQuestion ? (
-        <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50/60 px-2.5 py-1.5 text-[11px] text-amber-900">
-          Answering: <span className="font-medium">{pendingQuestion}</span>
+        <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50/60 px-2.5 py-1.5 text-[11px] text-amber-900">{tr("pages.boss.answering")}<span className="font-medium">{pendingQuestion}</span>
         </div>
       ) : (
         <div className="mb-2 flex flex-wrap gap-1.5">
@@ -1185,7 +1191,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
           placeholder={pendingQuestion ? tr("boss.composer.answer") : autopilot ? tr("boss.composer.autopilot") : tr("boss.composer.ask")}
           className="max-h-[120px] min-h-[38px] flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
         />
-        <button type="button" onClick={send} disabled={!text.trim()} className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" aria-label="Send">↑</button>
+        <button type="button" onClick={send} disabled={!text.trim()} className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" aria-label={tr("pages.labels.send")}>↑</button>
       </div>
 
       {/* Add a file — attach an image to post, or a spreadsheet to import from */}
@@ -1251,7 +1257,7 @@ function SettingsModal({
       <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900">{tr("boss.approvals.title")}</h2>
-          <button type="button" onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-gray-700">✕</button>
+          <button type="button" onClick={onClose} aria-label={tr("pages.labels.close")} className="text-gray-400 hover:text-gray-700">✕</button>
         </div>
         <p className="mt-1 text-xs text-gray-500">{tr("boss.approvals.subtitle")}</p>
 
@@ -1306,7 +1312,7 @@ function SettingsModal({
           >
             ⏸ Pause all autonomy
           </button>
-          <button type="button" onClick={onClose} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Done</button>
+          <button type="button" onClick={onClose} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">{tr("tasks.status.done")}</button>
         </div>
       </div>
     </div>

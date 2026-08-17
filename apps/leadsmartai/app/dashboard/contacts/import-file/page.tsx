@@ -1,11 +1,13 @@
+import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import ImportFileClient from "./ImportFileClient";
 
-export const metadata = {
-  title: "AI Import Contacts | CloseBoss",
-  description:
-    "Extract contacts from a PDF, image, or text file using AI, then preview and edit before saving.",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: `${t("pages.importFile.metaTitle", { ns: "dashboard" })} | CloseBoss`,
+  };
+}
 
 export default function ImportFilePage() {
   return (

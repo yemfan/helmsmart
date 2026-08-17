@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Weekly Social Schedule — check the days you want a post, and per checked day
@@ -47,6 +48,7 @@ function hhmm(h: number, m: number): string {
 }
 
 export default function WeeklyScheduleController() {
+  const { t } = useTranslation("dashboard");
   const [days, setDays] = useState<Day[] | null>(null);
   const [presets, setPresets] = useState<string[]>([]);
   const [configured, setConfigured] = useState(true);
@@ -137,15 +139,12 @@ export default function WeeklyScheduleController() {
   return (
     <div className="space-y-3">
       <p className="text-xs text-gray-600">
-        Pick the days you want a post to go out. For each day, choose text, an image, or a video, set a time, the
-        channels, and a topic — AI researches the topic and writes + publishes the post automatically. Text → Facebook,
-        LinkedIn, Threads. Image renders a branded card and also reaches Instagram + Pinterest. Video films your digital
-        twin delivering the topic → Facebook, Instagram, LinkedIn, TikTok, YouTube.
+        {t("pages.weeklySchedule.intro")}
       </p>
 
       {!configured ? (
         <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
-          Not enabled yet (needs <code>ANTHROPIC_API_KEY</code>).
+          {t("pages.digitalTwin.notEnabledBefore")} <code>ANTHROPIC_API_KEY</code>{t("pages.digitalTwin.notEnabledAfter")}
         </p>
       ) : null}
 
@@ -170,7 +169,7 @@ export default function WeeklyScheduleController() {
                 <div className="mt-3 grid gap-3 sm:grid-cols-[auto,1fr]">
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-medium text-gray-500">Time</span>
+                      <span className="text-[11px] font-medium text-gray-500">{t("pages.weeklySchedule.time")}</span>
                       <input
                         type="time"
                         value={hhmm(d.postHour, d.postMinute)}
@@ -197,16 +196,13 @@ export default function WeeklyScheduleController() {
                       ))}
                     </div>
                     {d.mediaType === "video" && !videoReady ? (
-                      <p className="text-[10px] leading-tight text-amber-700">
-                        Video uses your digital twin — set up your intro video + cloned voice first (Digital Twin) or
-                        this day won&apos;t post.
-                      </p>
+                      <p className="text-[10px] leading-tight text-amber-700">{t("pages.weeklySchedule.twinWarning")}</p>
                     ) : null}
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-[11px] font-medium text-gray-500">Channels</span>
+                      <span className="text-[11px] font-medium text-gray-500">{t("pages.weeklySchedule.channels")}</span>
                       {all.map((p) => (
                         <button
                           key={p}
@@ -225,7 +221,7 @@ export default function WeeklyScheduleController() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[11px] font-medium text-gray-500">Topic</span>
+                      <span className="text-[11px] font-medium text-gray-500">{t("pages.weeklySchedule.topic")}</span>
                       <select
                         value={presets.includes(d.topic) ? d.topic : ""}
                         onChange={(e) => e.target.value && patch(d.weekday, { topic: e.target.value })}

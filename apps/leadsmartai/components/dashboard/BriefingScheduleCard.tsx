@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Briefing schedule settings — controls when the morning + evening
@@ -49,6 +50,7 @@ const COMMON_TZ_VALUES = new Set(COMMON_TZS.map((t) => t.value));
 const OTHER = "__other__";
 
 export default function BriefingScheduleCard() {
+  const { t } = useTranslation("dashboard");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -137,7 +139,7 @@ export default function BriefingScheduleCard() {
   return (
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Morning briefing">
+        <Field label={t("pages.briefingSchedule.morning")}>
           <input
             type="time"
             value={settings.briefing_morning_time}
@@ -150,7 +152,7 @@ export default function BriefingScheduleCard() {
             ☀️ Start-of-day plan, hot leads, follow-ups.
           </p>
         </Field>
-        <Field label="Evening summary">
+        <Field label={t("pages.briefingSchedule.evening")}>
           <input
             type="time"
             value={settings.briefing_evening_time}
@@ -165,7 +167,7 @@ export default function BriefingScheduleCard() {
         </Field>
       </div>
 
-      <Field label="Timezone">
+      <Field label={t("pages.briefingSchedule.timezone")}>
         <select
           value={tzMode === "other" ? OTHER : settings.briefing_timezone}
           onChange={(e) => {
@@ -192,7 +194,7 @@ export default function BriefingScheduleCard() {
           <input
             type="text"
             value={otherTz}
-            placeholder="e.g. Europe/Berlin"
+            placeholder={t("pages.briefingSchedule.tzPlaceholder")}
             onChange={(e) => {
               setOtherTz(e.target.value);
               setSettings((s) => ({ ...s, briefing_timezone: e.target.value }));
@@ -200,9 +202,7 @@ export default function BriefingScheduleCard() {
             className="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         ) : null}
-        <p className="mt-1 text-[11px] text-gray-500">
-          IANA timezone — your briefing fires at the times above in this zone.
-        </p>
+        <p className="mt-1 text-[11px] text-gray-500">{t("pages.briefingSchedule.tzHint")}</p>
       </Field>
 
       {error ? (
@@ -219,7 +219,7 @@ export default function BriefingScheduleCard() {
           {saving ? "Saving…" : "Save schedule"}
         </button>
         {savedAt ? (
-          <span className="text-xs font-medium text-emerald-700">Saved.</span>
+          <span className="text-xs font-medium text-emerald-700">{t("pages.briefingSchedule.saved")}</span>
         ) : null}
       </div>
     </div>

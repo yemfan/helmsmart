@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   countiesForState,
   US_STATES,
@@ -29,6 +30,7 @@ export function ServiceAreasPicker({
   onChange: (next: AgentServiceArea[]) => void;
   disabled?: boolean;
 }) {
+  const { t } = useTranslation("dashboard");
   const [state, setState] = useState<string>("");
   const [county, setCounty] = useState<string>("");
   const [city, setCity] = useState<string>("");
@@ -82,7 +84,7 @@ export function ServiceAreasPicker({
     <div className="space-y-3">
       <div className="grid gap-2 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-xs font-medium text-gray-700">
-          <span>State</span>
+          <span>{t("pages.serviceAreas.state")}</span>
           <select
             value={state}
             onChange={(e) => handleStateChange(e.target.value)}
@@ -99,7 +101,7 @@ export function ServiceAreasPicker({
         </label>
 
         <label className="flex flex-col gap-1 text-xs font-medium text-gray-700">
-          <span>County</span>
+          <span>{t("pages.serviceAreas.county")}</span>
           <select
             value={county}
             onChange={(e) => setCounty(e.target.value)}
@@ -125,14 +127,12 @@ export function ServiceAreasPicker({
             disabled={disabled || !county}
             className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
           />
-          <span className={county ? "" : "text-gray-400"}>
-            I serve all cities in this county
-          </span>
+          <span className={county ? "" : "text-gray-400"}>{t("pages.serviceAreas.allCities")}</span>
         </label>
 
         {!allCities ? (
           <label className="flex flex-col gap-1 text-xs font-medium text-gray-700">
-            <span>City</span>
+            <span>{t("pages.serviceAreas.city")}</span>
             <input
               type="text"
               value={city}
@@ -155,9 +155,7 @@ export function ServiceAreasPicker({
           onClick={add}
           disabled={!canAdd || disabled}
           className="inline-flex items-center justify-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Add service area
-        </button>
+        >{t("pages.serviceAreas.add")}</button>
       </div>
 
       {value.length > 0 ? (
@@ -184,10 +182,7 @@ export function ServiceAreasPicker({
           })}
         </div>
       ) : (
-        <p className="text-xs text-gray-400">
-          Pick a state, then a county, then either name a city or check &ldquo;all
-          cities&rdquo; to cover the whole county.
-        </p>
+        <p className="text-xs text-gray-400">{t("pages.serviceAreas.hint")}</p>
       )}
     </div>
   );

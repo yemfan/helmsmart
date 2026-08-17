@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type ImportResult = {
   insertedProperties: number;
@@ -12,6 +13,7 @@ type ImportResult = {
 };
 
 export default function MlsCsvImportClient() {
+  const { t } = useTranslation("dashboard");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export default function MlsCsvImportClient() {
 
   return (
     <div className="space-y-3">
-      <div className="text-sm font-semibold text-brand-text">MLS CSV Import</div>
+      <div className="text-sm font-semibold text-brand-text">{t("pages.mlsImport.title")}</div>
       <p className="text-xs text-brand-text/80">
         Upload an MLS export (sold + active listings). We’ll upsert properties and
         store sold prices as “sold” snapshots for comps and valuation tools.
@@ -85,34 +87,33 @@ export default function MlsCsvImportClient() {
           <div className="text-xs text-gray-700 space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
-                <span className="font-semibold">Properties added:</span>{" "}
+                <span className="font-semibold">{t("pages.mlsImport.added")}</span>{" "}
                 {result.insertedProperties}
               </div>
               <div>
-                <span className="font-semibold">Properties updated:</span>{" "}
+                <span className="font-semibold">{t("pages.mlsImport.updated")}</span>{" "}
                 {result.updatedProperties}
               </div>
               <div>
-                <span className="font-semibold">Sold snapshots inserted:</span>{" "}
+                <span className="font-semibold">{t("pages.mlsImport.soldInserted")}</span>{" "}
                 {result.insertedSnapshots}
               </div>
               <div>
-                <span className="font-semibold">Sold snapshots skipped:</span>{" "}
+                <span className="font-semibold">{t("pages.mlsImport.soldSkipped")}</span>{" "}
                 {result.skippedSnapshots}
               </div>
             </div>
 
             {result.skippedRows ? (
               <div>
-                <span className="font-semibold">Skipped rows:</span>{" "}
+                <span className="font-semibold">{t("pages.mlsImport.skippedRows")}</span>{" "}
                 {result.skippedRows}
               </div>
             ) : null}
 
             {result.errors?.length ? (
               <details className="mt-2">
-                <summary className="cursor-pointer text-[11px] text-gray-500">
-                  Show import errors ({result.errors.length})
+                <summary className="cursor-pointer text-[11px] text-gray-500">{t("pages.dashFragments.showImportErrors")}{result.errors.length})
                 </summary>
                 <div className="mt-2 overflow-auto max-h-48 rounded-lg border border-gray-200 bg-gray-50 p-3">
                   <pre className="text-[11px] whitespace-pre-wrap">

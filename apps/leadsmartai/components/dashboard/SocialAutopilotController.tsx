@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * The social auto-post controller: what gets posted, where, how often, when,
@@ -96,6 +97,7 @@ function formatLocalHour(h: number): string {
 }
 
 export default function SocialAutopilotController() {
+  const { t } = useTranslation("dashboard");
   const [config, setConfig] = useState<Config | null>(null);
   const [platformOptions, setPlatformOptions] = useState<string[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
@@ -113,7 +115,7 @@ export default function SocialAutopilotController() {
         setPlatformOptions(json.options?.platforms ?? []);
         setCategoryOptions(json.options?.contentCategories ?? []);
       } catch {
-        setError("Could not load your posting settings.");
+        setError(t("pages.socialAutopilot.loadFailed"));
       }
     })();
   }, []);
@@ -140,7 +142,7 @@ export default function SocialAutopilotController() {
         setTimeout(() => setSaved(false), 2000);
       } catch {
         setConfig(prev); // never show a setting we failed to save
-        setError("Could not save that. Try again.");
+        setError(t("pages.socialAutopilot.saveFailed"));
       } finally {
         setSaving(false);
       }
@@ -191,27 +193,18 @@ export default function SocialAutopilotController() {
           className="mt-0.5 h-4 w-4 shrink-0 accent-[#0072ce]"
         />
         <span className="min-w-0">
-          <span className="block text-sm font-semibold text-gray-900">
-            Let AI run my social media
-          </span>
-          <span className="mt-0.5 block text-xs text-gray-600">
-            The AI decides how often to post, which of your connected accounts to use,
-            which topics to cover, and what time to publish — and re-plans every week.
-            Your approval setting below still applies.
-          </span>
+          <span className="block text-sm font-semibold text-gray-900">{t("pages.socialAutopilot.letAiRun")}</span>
+          <span className="mt-0.5 block text-xs text-gray-600">{t("pages.socialAutopilot.letAiRunSub")}</span>
         </span>
       </label>
 
       {aiOn && (
-        <p className="-mt-3 text-[11px] text-gray-500">
-          AI automation is on, so the settings below are being chosen for you each week.
-          Turn it off to set them yourself — your choices are kept.
-        </p>
+        <p className="-mt-3 text-[11px] text-gray-500">{t("pages.socialAutopilot.onNotice")}</p>
       )}
 
       {/* ── Where ───────────────────────────────────────────────────── */}
       <section className={dim}>
-        <h3 className="text-sm font-semibold text-gray-900">Where to post</h3>
+        <h3 className="text-sm font-semibold text-gray-900">{t("pages.socialAutopilot.whereToPost")}</h3>
         <p className="mt-0.5 text-xs text-gray-600">
           {config.platforms === null
             ? "All connected accounts."
@@ -244,7 +237,7 @@ export default function SocialAutopilotController() {
 
       {/* ── What ────────────────────────────────────────────────────── */}
       <section className={dim}>
-        <h3 className="text-sm font-semibold text-gray-900">What to post about</h3>
+        <h3 className="text-sm font-semibold text-gray-900">{t("pages.socialAutopilot.whatToPost")}</h3>
         <p className="mt-0.5 text-xs text-gray-600">
           {config.contentCategories === null
             ? "Any topic from your content library."
@@ -284,18 +277,16 @@ export default function SocialAutopilotController() {
             onChange={() => save({ includeTimely: !config.includeTimely })}
             className="h-4 w-4 accent-[#0072ce]"
           />
-          <span className="text-xs text-gray-700">
-            Include one market-news post each week
-          </span>
+          <span className="text-xs text-gray-700">{t("pages.socialAutopilot.marketNews")}</span>
         </label>
       </section>
 
       {/* ── How often ───────────────────────────────────────────────── */}
       <section className={dim}>
-        <h3 className="text-sm font-semibold text-gray-900">How often</h3>
+        <h3 className="text-sm font-semibold text-gray-900">{t("pages.socialAutopilot.howOften")}</h3>
         <div className="mt-2 grid gap-3 sm:grid-cols-2">
           <label className="block">
-            <span className="block text-xs font-medium text-gray-700">Posts per week</span>
+            <span className="block text-xs font-medium text-gray-700">{t("pages.socialAutopilot.postsPerWeek")}</span>
             <select
               value={config.postsPerWeek}
               disabled={saving}
@@ -311,7 +302,7 @@ export default function SocialAutopilotController() {
           </label>
 
           <label className="block">
-            <span className="block text-xs font-medium text-gray-700">Max per day</span>
+            <span className="block text-xs font-medium text-gray-700">{t("pages.socialAutopilot.maxPerDay")}</span>
             <select
               value={config.postsPerDay ?? ""}
               disabled={saving}
@@ -323,15 +314,14 @@ export default function SocialAutopilotController() {
               <option value="">1 (spread out)</option>
               {[1, 2, 3, 4, 5].map((n) => (
                 <option key={n} value={n}>
-                  {n} per day
-                </option>
+                  {n} {t("pages.dashFragments.perDay")}</option>
               ))}
             </select>
           </label>
         </div>
 
         <div className="mt-3">
-          <span className="block text-xs font-medium text-gray-700">Days to post</span>
+          <span className="block text-xs font-medium text-gray-700">{t("pages.socialAutopilot.daysToPost")}</span>
           <p className="mt-0.5 text-[11px] text-gray-500">
             {config.postDays === null
               ? "Spread automatically across the week."
@@ -360,7 +350,7 @@ export default function SocialAutopilotController() {
         </div>
 
         <label className="mt-3 block max-w-[220px]">
-          <span className="block text-xs font-medium text-gray-700">Time of day</span>
+          <span className="block text-xs font-medium text-gray-700">{t("pages.socialAutopilot.timeOfDay")}</span>
           <select
             value={config.postHourUtc === null ? "" : utcHourToLocal(config.postHourUtc)}
             disabled={saving}
@@ -372,11 +362,10 @@ export default function SocialAutopilotController() {
             }
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm"
           >
-            <option value="">Default (9am PT / noon ET)</option>
+            <option value="">{t("pages.socialAutopilot.defaultTime")}</option>
             {Array.from({ length: 24 }, (_, h) => (
               <option key={h} value={h}>
-                {formatLocalHour(h)} your time
-              </option>
+                {formatLocalHour(h)} {t("pages.dashFragments.yourTime")}</option>
             ))}
           </select>
         </label>
@@ -384,7 +373,7 @@ export default function SocialAutopilotController() {
 
       {/* ── Who approves ────────────────────────────────────────────── */}
       <section>
-        <h3 className="text-sm font-semibold text-gray-900">Who approves posts</h3>
+        <h3 className="text-sm font-semibold text-gray-900">{t("pages.socialAutopilot.whoApproves")}</h3>
         <div className="mt-2 space-y-2">
           {APPROVAL_OPTIONS.map((opt) => {
             // Legacy 'ask' (drafts-only) has no control here; show it as the
@@ -420,12 +409,9 @@ export default function SocialAutopilotController() {
       </section>
 
       {error && <p className="text-xs text-red-600">{error}</p>}
-      {saved && <p className="text-xs text-green-700">Saved.</p>}
+      {saved && <p className="text-xs text-green-700">{t("pages.socialAutopilot.saved")}</p>}
 
-      <p className="text-[11px] text-gray-500">
-        Applies to social posts only. Live calls and text replies can&apos;t wait for
-        approval, so they&apos;re governed by their own settings on each assistant.
-      </p>
+      <p className="text-[11px] text-gray-500">{t("pages.socialAutopilot.approvalScope")}</p>
     </div>
   );
 }

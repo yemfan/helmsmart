@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import RequireAuthGate from "../../components/RequireAuthGate";
+import { intlLocale } from "@/lib/i18n/locale";
 
 type PropertyInputs = {
   address: string;
@@ -75,6 +77,8 @@ export default function AiCmaAnalyzerPage() {
 }
 
 function AiCmaAnalyzerPageInner() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [inputs, setInputs] = useState<PropertyInputs>({
     address: "",
     bedrooms: 3,
@@ -200,9 +204,7 @@ function AiCmaAnalyzerPageInner() {
             strokeWidth={2}
             d="M15 19l-7-7 7-7"
           />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       {/*
        * Demo banner — TVR-011 / BF-034. The Comparable Sales table
@@ -217,7 +219,7 @@ function AiCmaAnalyzerPageInner() {
        */}
       <div
         role="status"
-        aria-label="Demo mode notice"
+        aria-label={t("pages.aiCmaAnalyzer.demoAria")}
         className="mb-6 flex items-start gap-3 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4 text-amber-900 shadow-sm"
       >
         <svg
@@ -231,24 +233,15 @@ function AiCmaAnalyzerPageInner() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008zM3 16.5l9-13.5 9 13.5H3z" />
         </svg>
         <div className="text-sm">
-          <strong className="block font-semibold">Demo mode — sample data shown</strong>
-          <span className="mt-0.5 block text-amber-800">
-            The comparable sales and AI analysis below are illustrative
-            examples, not live MLS data. Don&apos;t share these figures with
-            clients as a real CMA. Live comp data integration is in progress.
-          </span>
+          <strong className="block font-semibold">{t("pages.aiCmaAnalyzer.demoTitle")}</strong>
+          <span className="mt-0.5 block text-amber-800">{t("pages.aiCmaAnalyzer.demoBody")}</span>
         </div>
       </div>
 
       {/* Hero section */}
       <section className="mb-8">
-        <h1 className="text-3xl font-bold text-blue-600 mb-3">
-          AI CMA Analyzer – Comparative Market Analysis Tool
-        </h1>
-        <p className="text-gray-600 max-w-3xl">
-          Estimate property value using comparable home sales and AI market
-          analysis. Perfect for real estate agents, home sellers, and buyers.
-        </p>
+        <h1 className="text-3xl font-bold text-blue-600 mb-3">{t("pages.aiCmaAnalyzer.h1")}</h1>
+        <p className="text-gray-600 max-w-3xl">{t("pages.aiCmaAnalyzer.sub")}</p>
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
@@ -256,12 +249,10 @@ function AiCmaAnalyzerPageInner() {
         <div className="space-y-6">
           {/* Address Input */}
           <section className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Property Address
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("pages.aiCmaAnalyzer.propertyAddress")}</h2>
             <div className="space-y-3">
               <label className="block text-sm">
-                <span className="text-gray-700">Address</span>
+                <span className="text-gray-700">{t("pages.articleChrome.address")}</span>
                 <input
                   type="text"
                   className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -279,24 +270,17 @@ function AiCmaAnalyzerPageInner() {
                 type="button"
                 onClick={handleAnalyzeProperty}
                 className="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
-              >
-                Analyze Property
-              </button>
+              >{t("pages.aiCmaAnalyzer.analyze")}</button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              In demo mode the address only personalizes the report header —
-              comparable sales below are illustrative sample data.
-            </p>
+            <p className="text-xs text-gray-500 mt-1">{t("pages.aiCmaAnalyzer.demoAddressNote")}</p>
           </section>
 
           {/* Property Details */}
           <section className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Property Details
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("pages.aiCmaAnalyzer.propertyDetails")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <NumberInput
-                label="Bedrooms"
+                label={t("pages.aiCmaAnalyzer.bedrooms")}
                 value={inputs.bedrooms}
                 onChange={(v) =>
                   setInputs((prev) => ({ ...prev, bedrooms: v }))
@@ -304,7 +288,7 @@ function AiCmaAnalyzerPageInner() {
                 min={0}
               />
               <NumberInput
-                label="Bathrooms"
+                label={t("pages.aiCmaAnalyzer.bathrooms")}
                 value={inputs.bathrooms}
                 onChange={(v) =>
                   setInputs((prev) => ({ ...prev, bathrooms: v }))
@@ -313,7 +297,7 @@ function AiCmaAnalyzerPageInner() {
                 step={0.5}
               />
               <NumberInput
-                label="Square Feet"
+                label={t("pages.aiCmaAnalyzer.squareFeet")}
                 value={inputs.squareFeet}
                 onChange={(v) =>
                   setInputs((prev) => ({ ...prev, squareFeet: v }))
@@ -321,7 +305,7 @@ function AiCmaAnalyzerPageInner() {
                 min={0}
               />
               <NumberInput
-                label="Year Built"
+                label={t("pages.articleChrome.yearBuilt")}
                 value={inputs.yearBuilt ?? ""}
                 onChange={(v) =>
                   setInputs((prev) => ({ ...prev, yearBuilt: v }))
@@ -329,7 +313,7 @@ function AiCmaAnalyzerPageInner() {
                 min={1800}
               />
               <NumberInput
-                label="Lot Size (sqft)"
+                label={t("pages.aiCmaAnalyzer.lotSize")}
                 value={inputs.lotSize ?? ""}
                 onChange={(v) =>
                   setInputs((prev) => ({ ...prev, lotSize: v }))
@@ -338,7 +322,7 @@ function AiCmaAnalyzerPageInner() {
               />
             </div>
             <label className="block text-sm mt-3">
-              <span className="text-gray-700">Property Type</span>
+              <span className="text-gray-700">{t("pages.aiCmaAnalyzer.propertyType")}</span>
               <select
                 className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={inputs.propertyType}
@@ -349,33 +333,24 @@ function AiCmaAnalyzerPageInner() {
                   }))
                 }
               >
-                <option>Single-family</option>
-                <option>Condo</option>
-                <option>Townhome</option>
-                <option>Multi-family (2–4 units)</option>
-                <option>Multi-family (5+ units)</option>
+                <option>{t("pages.aiCmaAnalyzer.singleFamily")}</option>
+                <option>{t("pages.aiCmaAnalyzer.condo")}</option>
+                <option>{t("pages.aiCmaAnalyzer.townhome")}</option>
+                <option>{t("pages.aiCmaAnalyzer.multi24")}</option>
+                <option>{t("pages.aiCmaAnalyzer.multi5")}</option>
               </select>
             </label>
           </section>
 
           {/* Report Generator */}
           <section className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              CMA Report Generator
-            </h2>
-            <p className="text-sm text-gray-600">
-              Generate a sample CMA report layout. Branded PDFs with your
-              logo and contact information will be available once live MLS
-              comp data is connected — until then this is for layout
-              preview only.
-            </p>
+            <h2 className="text-lg font-semibold text-gray-900">{t("pages.aiCmaAnalyzer.reportGenerator")}</h2>
+            <p className="text-sm text-gray-600">{t("pages.aiCmaAnalyzer.reportGeneratorBody")}</p>
             <button
               type="button"
               onClick={handleExportPdf}
               className="inline-flex items-center justify-center rounded-md border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
-            >
-              Download CMA Report (PDF)
-            </button>
+            >{t("pages.aiCmaAnalyzer.downloadPdf")}</button>
           </section>
         </div>
 
@@ -384,26 +359,20 @@ function AiCmaAnalyzerPageInner() {
           {/* Comparable Sales Table */}
           <section className="bg-white shadow-md rounded-lg p-6 space-y-4">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Comparable Sales
-              </h2>
-              <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">
-                Sample data
-              </span>
+              <h2 className="text-lg font-semibold text-gray-900">{t("pages.articleChrome.comparableSales")}</h2>
+              <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800">{t("pages.aiCmaAnalyzer.sampleData")}</span>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full text-xs sm:text-sm border-collapse">
                 <thead>
                   <tr className="bg-gray-50 text-left text-gray-600">
-                    <th className="px-3 py-2 font-semibold">Address</th>
-                    <th className="px-3 py-2 font-semibold">Beds</th>
-                    <th className="px-3 py-2 font-semibold">Baths</th>
-                    <th className="px-3 py-2 font-semibold">Sqft</th>
-                    <th className="px-3 py-2 font-semibold">Sold Price</th>
-                    <th className="px-3 py-2 font-semibold">
-                      Price per Sqft
-                    </th>
-                    <th className="px-3 py-2 font-semibold">Sold Date</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.address")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.beds")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.baths")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.sqft")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.aiCmaAnalyzer.soldPrice")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.aiCmaAnalyzer.pricePerSqft")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.aiCmaAnalyzer.soldDate")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -421,10 +390,10 @@ function AiCmaAnalyzerPageInner() {
                         <td className="px-3 py-2">{comp.beds}</td>
                         <td className="px-3 py-2">{comp.baths}</td>
                         <td className="px-3 py-2">
-                          {comp.sqft.toLocaleString()}
+                          {comp.sqft.toLocaleString(locale)}
                         </td>
                         <td className="px-3 py-2">
-                          ${comp.soldPrice.toLocaleString()}
+                          ${comp.soldPrice.toLocaleString(locale)}
                         </td>
                         <td className="px-3 py-2">
                           ${ppsf.toFixed(0)}/sqft
@@ -432,7 +401,7 @@ function AiCmaAnalyzerPageInner() {
                         <td className="px-3 py-2">
                           {new Date(
                             comp.soldDate
-                          ).toLocaleDateString()}
+                          ).toLocaleDateString(locale)}
                         </td>
                       </tr>
                     );
@@ -444,32 +413,30 @@ function AiCmaAnalyzerPageInner() {
 
           {/* Price Analysis Section */}
           <section className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Price Analysis
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("pages.aiCmaAnalyzer.priceAnalysis")}</h2>
             {priceStats ? (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <MetricCard
-                    label="Average Sold Price"
+                    label={t("pages.aiCmaAnalyzer.avgSold")}
                     value={`$${priceStats.avgPrice.toLocaleString(
                       undefined,
                       { maximumFractionDigits: 0 }
                     )}`}
                   />
                   <MetricCard
-                    label="Median Sold Price"
+                    label={t("pages.aiCmaAnalyzer.medianSold")}
                     value={`$${priceStats.medianPrice.toLocaleString(
                       undefined,
                       { maximumFractionDigits: 0 }
                     )}`}
                   />
                   <MetricCard
-                    label="Average Price per Sqft"
+                    label={t("pages.aiCmaAnalyzer.avgPerSqft")}
                     value={`$${priceStats.avgPpsf.toFixed(0)}/sqft`}
                   />
                   <MetricCard
-                    label="Estimated Market Value Range"
+                    label={t("pages.aiCmaAnalyzer.estRange")}
                     value={`$${priceStats.suggestedLow.toLocaleString(
                       undefined,
                       { maximumFractionDigits: 0 }
@@ -481,21 +448,16 @@ function AiCmaAnalyzerPageInner() {
                 </div>
               </>
             ) : (
-              <p className="text-sm text-gray-500">
-                Price analysis will appear here once comparable sales are
-                available.
-              </p>
+              <p className="text-sm text-gray-500">{t("pages.aiCmaAnalyzer.priceAnalysisEmpty")}</p>
             )}
           </section>
 
           {/* Market Trends Section */}
           <section className="bg-white shadow-md rounded-lg p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Market Trends
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t("pages.aiCmaAnalyzer.marketTrends")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
               <MetricCard
-                label="Median Price (Area)"
+                label={t("pages.aiCmaAnalyzer.medianArea")}
                 value={
                   marketTrends.medianPrice
                     ? `$${marketTrends.medianPrice.toLocaleString(
@@ -506,11 +468,11 @@ function AiCmaAnalyzerPageInner() {
                 }
               />
               <MetricCard
-                label="Average DOM"
+                label={t("pages.aiCmaAnalyzer.avgDom")}
                 value={`${marketTrends.averageDom} days`}
               />
               <MetricCard
-                label="Market Status"
+                label={t("pages.aiCmaAnalyzer.marketStatus")}
                 value={`${marketTrends.status} Market`}
               />
             </div>
@@ -519,13 +481,9 @@ function AiCmaAnalyzerPageInner() {
           {/* AI Market Analysis + Confidence */}
           <section className="bg-white shadow-md rounded-lg p-6 space-y-4 text-sm text-gray-700">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold text-gray-900">
-                AI Market Analysis
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("pages.aiCmaAnalyzer.aiAnalysis")}</h2>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                  Confidence
-                </span>
+                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">{t("pages.aiCmaAnalyzer.confidence")}</span>
                 <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
                   {confidenceScore.toFixed(0)} / 100
                 </span>

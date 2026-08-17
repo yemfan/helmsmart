@@ -139,9 +139,7 @@ export default function PromptsLeadMagnet() {
                     checked={lang === "en"}
                     onChange={() => setLang("en")}
                     className="accent-blue-600"
-                  />
-                  English
-                </label>
+                  />{t("pages.promptsLeadMagnet.english")}</label>
                 <label className="inline-flex cursor-pointer items-center gap-1.5">
                   <input
                     type="radio"

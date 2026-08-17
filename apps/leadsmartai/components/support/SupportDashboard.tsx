@@ -444,9 +444,7 @@ export default function SupportDashboard() {
                     </div>
 
                     <div className="border-t p-4">
-                      <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-400">
-                        Reply to customer
-                      </label>
+                      <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-400">{t("pages.supportDashboard.replyToCustomer")}</label>
                       <SupportRealtimeTypingRow text={typingLabel} />
                       <div className="flex gap-3">
                         <textarea

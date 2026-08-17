@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { getPublicOpenHouseBySlug } from "@/lib/open-houses/publicService";
 import { KioskClient } from "./KioskClient";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Open House Kiosk",
@@ -39,6 +40,7 @@ type PageProps = { params: Promise<{ slug: string }> };
  * PWA manifest is served at /oh/[slug]/kiosk/manifest.json.
  */
 export default async function OpenHouseKioskPage({ params }: PageProps) {
+  const t = await getServerT();
   const { slug } = await params;
   const info = await getPublicOpenHouseBySlug(slug);
   if (!info || info.status === "cancelled") notFound();

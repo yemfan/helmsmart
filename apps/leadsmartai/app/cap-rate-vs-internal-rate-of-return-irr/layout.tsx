@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Cap Rate vs Internal Rate of Return (IRR)",
@@ -6,8 +7,9 @@ export const metadata: Metadata = {
   keywords: ["cap rate", "IRR", "internal rate of return", "property returns", "real estate"],
 };
 
-export default function CapRateIRRLayout({
+export default async function CapRateIRRLayout({
   children,
 }: { children: React.ReactNode }) {
+  const t = await getServerT();
   return children;
 }

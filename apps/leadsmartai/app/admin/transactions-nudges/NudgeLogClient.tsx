@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export type NudgeLogRow = {
   id: string;
@@ -27,6 +29,8 @@ export function NudgeLogClient({
   error: string | null;
   cutoffIso: string;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [filter, setFilter] = useState<FilterMode>("all");
   const [q, setQ] = useState("");
 
@@ -60,25 +64,23 @@ export function NudgeLogClient({
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Transaction nudge log</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Daily overdue-task digest run history. Shows rows created on or after{" "}
+        <h1 className="text-2xl font-semibold text-slate-900">{t("pages.adminPages.nudgeLog")}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.dashFragments.nudgeHistory")}{" "}
           <code className="rounded bg-slate-100 px-1 py-0.5 text-[11px]">{cutoffIso}</code>{" "}
           (last 14 days). Support tool — not linked in the sidebar.
         </p>
       </div>
 
       {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          Error loading rows: {error}
+        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{t("pages.dashFragments.errorLoadingRows")} {error}
         </div>
       ) : null}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Total" value={summary.total} />
-        <Stat label="Sent" value={summary.sent} tone="green" />
-        <Stat label="Skipped (no tasks)" value={summary.skipped} />
-        <Stat label="Errored" value={summary.errored} tone={summary.errored > 0 ? "red" : "neutral"} />
+        <Stat label={t("pages.adminCommon.total")} value={summary.total} />
+        <Stat label={t("pages.adminCommon.sent")} value={summary.sent} tone="green" />
+        <Stat label={t("pages.adminPages.skippedNoTasks")} value={summary.skipped} />
+        <Stat label={t("pages.adminCommon.errored")} value={summary.errored} tone={summary.errored > 0 ? "red" : "neutral"} />
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -93,10 +95,10 @@ export function NudgeLogClient({
           onChange={(e) => setFilter(e.target.value as FilterMode)}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         >
-          <option value="all">All rows</option>
-          <option value="sent">Sent only</option>
-          <option value="skipped">Skipped (no tasks)</option>
-          <option value="errored">Errored only</option>
+          <option value="all">{t("pages.adminCommon.allRows")}</option>
+          <option value="sent">{t("pages.adminCommon.sentOnly")}</option>
+          <option value="skipped">{t("pages.adminPages.skippedNoTasks")}</option>
+          <option value="errored">{t("pages.adminCommon.erroredOnly")}</option>
         </select>
       </div>
 
@@ -105,13 +107,13 @@ export function NudgeLogClient({
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-600">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">Digest date</th>
-                <th className="px-3 py-2 text-left font-medium">Agent</th>
-                <th className="px-3 py-2 text-right font-medium">Tasks</th>
-                <th className="px-3 py-2 text-right font-medium">Overdue</th>
-                <th className="px-3 py-2 text-right font-medium">Upcoming</th>
-                <th className="px-3 py-2 text-left font-medium">Status</th>
-                <th className="px-3 py-2 text-left font-medium">Recorded at</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminCommon.digestDate")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminCommon.agent")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("pages.adminPages.tasks")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("pages.adminPages.overdue")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("pages.adminPages.upcoming")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminCommon.status")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminCommon.recordedAt")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -138,33 +140,25 @@ export function NudgeLogClient({
                   <td className="px-3 py-2">
                     {r.error ? (
                       <span className="inline-flex items-center gap-1">
-                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-700">
-                          Errored
-                        </span>
+                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-700">{t("pages.adminCommon.errored")}</span>
                         <span className="max-w-xs truncate text-[11px] text-red-600" title={r.error}>
                           {r.error}
                         </span>
                       </span>
                     ) : r.emailSent ? (
-                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">
-                        Sent
-                      </span>
+                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">{t("pages.adminCommon.sent")}</span>
                     ) : (
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
-                        Skipped
-                      </span>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">{t("pages.adminCommon.skipped")}</span>
                     )}
                   </td>
                   <td className="whitespace-nowrap px-3 py-2 text-[11px] text-slate-500">
-                    {new Date(r.createdAt).toLocaleString()}
+                    {new Date(r.createdAt).toLocaleString(locale)}
                   </td>
                 </tr>
               ))}
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-400">
-                    No matching rows.
-                  </td>
+                  <td colSpan={7} className="px-3 py-8 text-center text-sm text-slate-400">{t("pages.adminCommon.noMatchingRows")}</td>
                 </tr>
               ) : null}
             </tbody>

@@ -1,6 +1,7 @@
- "use client";
+"use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type WidgetStep = "address" | "email" | "done";
 
@@ -11,6 +12,7 @@ type EstimateResult = {
 };
 
 export default function HomeValueWidgetPage() {
+  const { t } = useTranslation("dashboard");
   const [step, setStep] = useState<WidgetStep>("address");
   const [address, setAddress] = useState("");
   const [name, setName] = useState("");
@@ -122,13 +124,8 @@ export default function HomeValueWidgetPage() {
   return (
     <div className="max-w-md mx-auto p-4">
       <div className="bg-white shadow-md rounded-xl p-4 border border-gray-100">
-        <h1 className="text-lg font-bold text-gray-900 mb-1">
-          What&apos;s My Home Worth?
-        </h1>
-        <p className="text-xs text-gray-600 mb-3">
-          Get an instant home value estimate and have a local agent follow up
-          with a personalized report.
-        </p>
+        <h1 className="text-lg font-bold text-gray-900 mb-1">{t("pages.homeValueWidget.h1")}</h1>
+        <p className="text-xs text-gray-600 mb-3">{t("pages.homeValueWidget.sub")}</p>
 
         {step === "address" && (
           <div className="space-y-3">
@@ -136,7 +133,7 @@ export default function HomeValueWidgetPage() {
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Enter property address"
+              placeholder={t("pages.homeValueWidget.addressPlaceholder")}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
@@ -154,14 +151,11 @@ export default function HomeValueWidgetPage() {
 
         {step !== "address" && estimate && (
           <div className="mt-3">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-              Estimated Home Value
-            </h2>
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{t("pages.homeValueWidget.estimatedValue")}</h2>
             <p className="text-xl font-bold text-blue-700">
               {formatCurrency(estimate.estimatedValue)}
             </p>
-            <p className="text-[11px] text-gray-500">
-              Estimated range: {formatCurrency(estimate.low)} –{" "}
+            <p className="text-[11px] text-gray-500">{t("pages.homeValueWidget.estimatedRange")} {formatCurrency(estimate.low)} –{" "}
               {formatCurrency(estimate.high)}
             </p>
           </div>
@@ -169,29 +163,26 @@ export default function HomeValueWidgetPage() {
 
         {step === "email" && (
           <div className="mt-4 space-y-2">
-            <p className="text-xs text-gray-700">
-              Enter your email to unlock your full home value report and have a
-              local expert follow up.
-            </p>
+            <p className="text-xs text-gray-700">{t("pages.homeValueWidget.unlockNote")}</p>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Name (optional)"
+              placeholder={t("pages.homeValueWidget.nameOptional")}
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
+              placeholder={t("pages.articleChrome.email", { ns: "dashboard" })}
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="Phone (optional)"
+              placeholder={t("pages.homeValueWidget.phoneOptional")}
               className="w-full border border-gray-300 rounded px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
@@ -206,10 +197,7 @@ export default function HomeValueWidgetPage() {
 
         {step === "done" && (
           <div className="mt-4">
-            <p className="text-xs text-emerald-700 font-semibold">
-              Thank you! Your home value report request has been sent. An agent
-              will follow up with a detailed CMA.
-            </p>
+            <p className="text-xs text-emerald-700 font-semibold">{t("pages.homeValueWidget.thankYou")}</p>
           </div>
         )}
 
@@ -217,9 +205,7 @@ export default function HomeValueWidgetPage() {
           <p className="mt-2 text-[11px] text-red-600 font-medium">{error}</p>
         )}
 
-        <p className="mt-4 text-[10px] text-gray-400 text-center">
-          Powered by CloseBoss
-        </p>
+        <p className="mt-4 text-[10px] text-gray-400 text-center">{t("pages.homeValueWidget.poweredBy")}</p>
       </div>
     </div>
   );

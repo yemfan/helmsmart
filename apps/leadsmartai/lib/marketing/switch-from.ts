@@ -3,7 +3,7 @@
  *
  * Each entry powers a page at /switch-from/<slug> with:
  *   - Why-leave pain points
- *   - Migration steps (export from source → import to LeadSmart)
+ *   - Migration steps (export from source → import to CloseBoss)
  *   - Feature comparison highlights (a subset of /agent/compare)
  *   - Concierge migration CTA (white-glove migration offer)
  *
@@ -14,7 +14,7 @@
 
 export type SwitchSource = {
   slug: string;
-  /** Display name of the source CRM. */
+  /** Display name of the source CRM — a product name, not copy. */
   name: string;
   /** Marketing pitch as the source CRM advertises itself, in their words. */
   positioning: string;
@@ -37,7 +37,7 @@ export type SwitchSource = {
   companionPost?: { href: string; label: string };
   /** Why agents are leaving. 3–4 pain points specific to this CRM. */
   painPoints: Array<{ title: string; body: string }>;
-  /** Features where LeadSmart wins (drives the comparison block). */
+  /** Features where CloseBoss wins (drives the comparison block). */
   comparisonWins: Array<{ feature: string; them: string; us: string }>;
   /** Step-by-step migration. Generic enough to cover most data shapes. */
   migrationSteps: string[];
@@ -46,154 +46,72 @@ export type SwitchSource = {
 };
 
 const COMMON_MIGRATION_STEPS = [
-  "Export your contacts as CSV from <SOURCE>. Most CRMs put this under Settings → Data → Export.",
-  "Export any active sequences / drips / templates as text or PDF — drip-campaign logic doesn't port cleanly between CRMs, but your copy does.",
-  "Sign up for LeadSmart AI at /start-free. Free 14-day trial, no credit card.",
-  "Open Settings → Data & Tools → Import contacts in LeadSmart and upload the CSV. Field mapping auto-detects Name / Email / Phone / Source / Notes.",
-  "Run the import. Duplicates are merged on email + phone. If anything looks off, click Undo last import within 24 hours to roll the entire batch back.",
-  "Optional: enable concierge migration (link below) and we'll do the import + sequence rebuild for you.",
+  "pages.switchFrom.step1",
+  "pages.switchFrom.step2",
+  "pages.switchFrom.step3",
+  "pages.switchFrom.step4",
+  "pages.switchFrom.step5",
+  "pages.switchFrom.step6",
 ];
 
 const COMMON_FAQ: Array<{ q: string; a: string }> = [
-  {
-    q: "Will I lose my contact history?",
-    a: "No. The CSV export from your current CRM includes every contact, and LeadSmart's import keeps all notes + custom fields in their own columns. Conversation history (SMS / call recordings) doesn't port between platforms — that's a CRM-industry limitation, not a LeadSmart one — but you can attach the exported activity log as a file on each contact.",
-  },
-  {
-    q: "How long does a migration take?",
-    a: "Self-serve migrations run 30–60 minutes for ~1,000 contacts. With concierge migration (we do it for you) most agents are fully cut over in 2–3 business days, including rebuilding any drip sequences in LeadSmart's template library.",
-  },
-  {
-    q: "Can I run both CRMs in parallel during the switch?",
-    a: "Yes. Most agents run parallel for 1–2 weeks. Just disable AI auto-send on the old CRM so leads don't get double-messaged, and route new inbound to LeadSmart while you wrap up active deals in the old system.",
-  },
-  {
-    q: "What's the catch with the concierge migration?",
-    a: "Free for agents migrating from LionDesk, Follow Up Boss, kvCORE, Lofty, BoomTown, or Sierra Interactive through 2026. You commit to a 3-month LeadSmart plan (Pro tier or higher); we commit to a working migration within 5 business days, or you keep the trial credits regardless.",
-  },
+  { q: "pages.switchFrom.cq1", a: "pages.switchFrom.ca1" },
+  { q: "pages.switchFrom.cq2", a: "pages.switchFrom.ca2" },
+  { q: "pages.switchFrom.cq3", a: "pages.switchFrom.ca3" },
+  { q: "pages.switchFrom.cq4", a: "pages.switchFrom.ca4" },
 ];
 
+/*
+ * Every copy field below holds a TRANSLATION KEY, not copy. A module-scope
+ * constant cannot hold a hook, so the previous version rendered English on all
+ * six pages no matter what the reader had chosen. Names, slugs and prices stay
+ * literal: a product's name is its name, and a price is a number.
+ */
 export const SWITCH_SOURCES: ReadonlyArray<SwitchSource> = [
   {
     slug: "liondesk",
     name: "LionDesk",
-    positioning: "Affordable solo-agent CRM — $25–$83 / mo.",
+    positioning: "pages.switchFrom.liondeskPositioning",
     priceRange: "$25–$83 / mo",
-    heroHeadline: "Switching from LionDesk to LeadSmart AI",
-    heroSubhead:
-      "LionDesk is shutting down. We'll move your contacts, rebuild your sequences, and get you live on a CRM with real AI follow-up — in under a week.",
-    urgencyBanner:
-      "LionDesk is winding down its CRM. Don't wait for the lights-out date — pull your contacts now while every feature still works.",
-    companionPost: {
-      href: "/blog/liondesk-shutdown-what-agents-should-do-next",
-      label: "Read: LionDesk Is Shutting Down — What Solo Agents Should Do Next",
-    },
+    heroHeadline: "pages.switchFrom.liondeskHeadline",
+    heroSubhead: "pages.switchFrom.liondeskSubhead",
+    urgencyBanner: "pages.switchFrom.liondeskUrgency",
+    companionPost: { href: "/blog/liondesk-shutdown-what-agents-should-do-next", label: "pages.switchFrom.liondeskCompanion" },
     painPoints: [
-      {
-        title: "The platform is sunsetting",
-        body: "LionDesk has announced a wind-down. Sunset timelines for tools like this typically run 60–180 days; pulling your contacts now beats scrambling on the final day.",
-      },
-      {
-        title: "No real AI follow-up",
-        body: "Drips and templates were the product. There's no sub-minute AI text-back, no missed-call recovery, no autonomous reply engine — exactly the gap that's been costing solo agents deals.",
-      },
-      {
-        title: "Mobile workflow stuck in 2015",
-        body: "The mobile experience never matched the desktop. The agents winning today need inbox, deal updates, and AI drafts one tap away — not a stripped-down companion app.",
-      },
-      {
-        title: "Migration window is closing",
-        body: "Once the platform shuts down, exports stop. The longer you wait, the higher the chance you lose contact history, notes, or activity logs forever.",
-      },
+      { title: "pages.switchFrom.liondeskP1T", body: "pages.switchFrom.liondeskP1B" },
+      { title: "pages.switchFrom.liondeskP2T", body: "pages.switchFrom.liondeskP2B" },
+      { title: "pages.switchFrom.liondeskP3T", body: "pages.switchFrom.liondeskP3B" },
+      { title: "pages.switchFrom.liondeskP4T", body: "pages.switchFrom.liondeskP4B" },
     ],
     comparisonWins: [
-      {
-        feature: "AI follow-up under 60 sec, 24/7",
-        them: "Drip + template only",
-        us: "Native, on every plan",
-      },
-      {
-        feature: "Missed-call text-back",
-        them: "Add-on integration",
-        us: "Out of the box",
-      },
-      {
-        feature: "Voice AI for inbound calls",
-        them: "Not available",
-        us: "Yes — public test-drive at /voice-ai-test-drive",
-      },
-      {
-        feature: "Bilingual EN / 中文",
-        them: "English only",
-        us: "Native bilingual templates + AI",
-      },
-      {
-        feature: "Roadmap stability",
-        them: "Platform sunsetting",
-        us: "Actively shipping every 2 weeks",
-      },
+      { feature: "pages.switchFrom.liondeskW1F", them: "pages.switchFrom.liondeskW1T", us: "pages.switchFrom.liondeskW1U" },
+      { feature: "pages.switchFrom.liondeskW2F", them: "pages.switchFrom.liondeskW2T", us: "pages.switchFrom.liondeskW2U" },
+      { feature: "pages.switchFrom.liondeskW3F", them: "pages.switchFrom.liondeskW3T", us: "pages.switchFrom.liondeskW3U" },
+      { feature: "pages.switchFrom.liondeskW4F", them: "pages.switchFrom.liondeskW4T", us: "pages.switchFrom.liondeskW4U" },
+      { feature: "pages.switchFrom.liondeskW5F", them: "pages.switchFrom.liondeskW5T", us: "pages.switchFrom.liondeskW5U" },
     ],
     migrationSteps: COMMON_MIGRATION_STEPS,
-    faq: [
-      {
-        q: "How long do I have to migrate before LionDesk shuts down?",
-        a: "Sunset windows for CRMs like this typically run 60–180 days, with a read-only export window after that. Pull your contacts now — every day you wait increases the risk of losing data or missing the final export.",
-      },
-      ...COMMON_FAQ,
-    ],
+    faq: [{ q: "pages.switchFrom.liondeskQ0", a: "pages.switchFrom.liondeskA0" }, ...COMMON_FAQ],
   },
   {
     slug: "follow-up-boss",
     name: "Follow Up Boss",
-    positioning: "Power-team CRM built around inside sales agents.",
+    positioning: "pages.switchFrom.fubPositioning",
     priceRange: "$69–$1,000+ / mo",
-    heroHeadline: "Switching from Follow Up Boss to LeadSmart AI",
-    heroSubhead:
-      "If you're a solo agent paying enterprise prices for a team-of-50 feature set you'll never touch, the math doesn't work. Move to a CRM priced for solo P&Ls — with native AI follow-up instead of bolt-on add-ons.",
+    heroHeadline: "pages.switchFrom.fubHeadline",
+    heroSubhead: "pages.switchFrom.fubSubhead",
     painPoints: [
-      {
-        title: "Built for teams, sold to solo agents",
-        body: "FUB's roles, ISA queues, and lead-router rules are designed for a team of inside sales agents dialing a lead pool — not a solo agent juggling showings, calls, and texts from their phone.",
-      },
-      {
-        title: "AI is bolted on, not native",
-        body: "AI features are sold as integrations (Aiva, Conversion Monster, etc.) — extra subscriptions stacked on top. LeadSmart's AI follow-up, voice AI, and Deal Coach are native and included on every paid plan.",
-      },
-      {
-        title: "Costs balloon at the features that matter",
-        body: "The advertised $69/mo entry tier is the starting point. Add the dialer, AI integrations, and meaningful seat counts and you're looking at $300–$1,000+ / mo — without owning the AI.",
-      },
-      {
-        title: "Migration is the right time to upgrade, not lateral-move",
-        body: "Switching from FUB usually means more features for less money. Solo agents who switch to LeadSmart typically cut their CRM spend by 60–80% while gaining AI follow-up, voice AI, and missed-call recovery.",
-      },
+      { title: "pages.switchFrom.fubP1T", body: "pages.switchFrom.fubP1B" },
+      { title: "pages.switchFrom.fubP2T", body: "pages.switchFrom.fubP2B" },
+      { title: "pages.switchFrom.fubP3T", body: "pages.switchFrom.fubP3B" },
+      { title: "pages.switchFrom.fubP4T", body: "pages.switchFrom.fubP4B" },
     ],
     comparisonWins: [
-      {
-        feature: "Native AI SMS responder",
-        them: "Third-party integration ($)",
-        us: "Native, every plan",
-      },
-      {
-        feature: "Native AI email responder",
-        them: "Not available natively",
-        us: "Yes, autonomous reply",
-      },
-      {
-        feature: "Voice AI for inbound calls",
-        them: "Not available",
-        us: "Native + public test-drive",
-      },
-      {
-        feature: "Solo-agent pricing",
-        them: "$69–$1,000+ / mo",
-        us: "$79 / mo starting",
-      },
-      {
-        feature: "AI Coaching with peer benchmarks",
-        them: "Not available",
-        us: "Yes, included on Pro+",
-      },
+      { feature: "pages.switchFrom.fubW1F", them: "pages.switchFrom.fubW1T", us: "pages.switchFrom.fubW1U" },
+      { feature: "pages.switchFrom.fubW2F", them: "pages.switchFrom.fubW2T", us: "pages.switchFrom.fubW2U" },
+      { feature: "pages.switchFrom.fubW3F", them: "pages.switchFrom.fubW3T", us: "pages.switchFrom.fubW3U" },
+      { feature: "pages.switchFrom.fubW4F", them: "pages.switchFrom.fubW4T", us: "pages.switchFrom.fubW4U" },
+      { feature: "pages.switchFrom.fubW5F", them: "pages.switchFrom.fubW5T", us: "pages.switchFrom.fubW5U" },
     ],
     migrationSteps: COMMON_MIGRATION_STEPS,
     faq: COMMON_FAQ,
@@ -201,55 +119,22 @@ export const SWITCH_SOURCES: ReadonlyArray<SwitchSource> = [
   {
     slug: "lofty",
     name: "Lofty",
-    positioning: "Agentic-AI-branded IDX + CRM (formerly Chime).",
+    positioning: "pages.switchFrom.loftyPositioning",
     priceRange: "$499+ / mo",
-    heroHeadline: "Switching from Lofty to LeadSmart AI",
-    heroSubhead:
-      "Lofty's marketing leans hard on \"agentic AI\" but the in-product reality is uneven — and the bill is enterprise-tier. Move to a CRM with the same AI promise actually shipped, at solo-agent pricing.",
+    heroHeadline: "pages.switchFrom.loftyHeadline",
+    heroSubhead: "pages.switchFrom.loftySubhead",
     painPoints: [
-      {
-        title: "AI text-back has noticeable production lag",
-        body: "Demos show sub-minute response; in production agents commonly report multi-minute delays and occasional drops. The whole point of the feature is the sub-60-second response — if it doesn't fire reliably, you're paying for a promise.",
-      },
-      {
-        title: "Off-brand SMS templates trip spam filters",
-        body: "Lofty's AI ships with generic copy that recipients flag as templated, hurting deliverability over time. Custom copy + per-agent style tuning matter more than the AI label.",
-      },
-      {
-        title: "Lead-source attribution is unreliable",
-        body: "Multi-portal leads frequently land with the wrong source set, which corrupts your ROI math. Once you start spending real ad money, that drift becomes expensive.",
-      },
-      {
-        title: "Enterprise pricing, no free trial",
-        body: "Lofty explicitly does not offer a free trial — you commit blind. LeadSmart starts at $79/mo with a 14-day free trial; you can see the AI actually work before paying.",
-      },
+      { title: "pages.switchFrom.loftyP1T", body: "pages.switchFrom.loftyP1B" },
+      { title: "pages.switchFrom.loftyP2T", body: "pages.switchFrom.loftyP2B" },
+      { title: "pages.switchFrom.loftyP3T", body: "pages.switchFrom.loftyP3B" },
+      { title: "pages.switchFrom.loftyP4T", body: "pages.switchFrom.loftyP4B" },
     ],
     comparisonWins: [
-      {
-        feature: "Free trial before committing",
-        them: "Demo only — no free trial",
-        us: "14-day free trial, no credit card",
-      },
-      {
-        feature: "AI follow-up that ships",
-        them: "Agentic-AI branding, uneven delivery",
-        us: "Native, every plan, sub-60s response",
-      },
-      {
-        feature: "Solo-agent pricing",
-        them: "$499+ / mo",
-        us: "$79 / mo starting",
-      },
-      {
-        feature: "Lead-source attribution",
-        them: "Unreliable across portals",
-        us: "Source-stable, dedupe-aware",
-      },
-      {
-        feature: "Voice AI for inbound calls",
-        them: "Not available",
-        us: "Native + public test-drive",
-      },
+      { feature: "pages.switchFrom.loftyW1F", them: "pages.switchFrom.loftyW1T", us: "pages.switchFrom.loftyW1U" },
+      { feature: "pages.switchFrom.loftyW2F", them: "pages.switchFrom.loftyW2T", us: "pages.switchFrom.loftyW2U" },
+      { feature: "pages.switchFrom.loftyW3F", them: "pages.switchFrom.loftyW3T", us: "pages.switchFrom.loftyW3U" },
+      { feature: "pages.switchFrom.loftyW4F", them: "pages.switchFrom.loftyW4T", us: "pages.switchFrom.loftyW4U" },
+      { feature: "pages.switchFrom.loftyW5F", them: "pages.switchFrom.loftyW5T", us: "pages.switchFrom.loftyW5U" },
     ],
     migrationSteps: COMMON_MIGRATION_STEPS,
     faq: COMMON_FAQ,
@@ -257,55 +142,22 @@ export const SWITCH_SOURCES: ReadonlyArray<SwitchSource> = [
   {
     slug: "boomtown",
     name: "BoomTown",
-    positioning: "Top-end lead-conversion platform for big teams ($1,500+ / mo).",
+    positioning: "pages.switchFrom.boomPositioning",
     priceRange: "$1,500+ / mo",
-    heroHeadline: "Switching from BoomTown to LeadSmart AI",
-    heroSubhead:
-      "BoomTown is excellent for a 20-agent brokerage with a dedicated CRM admin. If you're a solo agent or small team running your own book, you're paying for a Cadillac to drive to the grocery store. Switch to a CRM priced for solo P&Ls with the same AI follow-up speed.",
+    heroHeadline: "pages.switchFrom.boomHeadline",
+    heroSubhead: "pages.switchFrom.boomSubhead",
     painPoints: [
-      {
-        title: "Sticker shock and seat lock-in",
-        body: "$1,500+/mo is the starting line — typical mid-size deployments run $3K–$5K. If you're a solo agent or 2–3-person team, you're funding a feature set you'll never use.",
-      },
-      {
-        title: "Designed for an ISA team you don't have",
-        body: "BoomTown's lead routing, queues, and accountability dashboards exist because brokerages run inside sales agents. As a solo, you ARE the ISA — half the surface area is dead weight.",
-      },
-      {
-        title: "Setup requires a Success Assurance team",
-        body: "The product is too complex to self-serve, so it ships with a paid Lead Concierge team. That's a tell — you shouldn't need a managed-services line item to use your CRM.",
-      },
-      {
-        title: "Annual contracts and onboarding fees",
-        body: "BoomTown locks in annual commitments and bills onboarding fees on top. LeadSmart is month-to-month with no setup fee and no commitment beyond the current period.",
-      },
+      { title: "pages.switchFrom.boomP1T", body: "pages.switchFrom.boomP1B" },
+      { title: "pages.switchFrom.boomP2T", body: "pages.switchFrom.boomP2B" },
+      { title: "pages.switchFrom.boomP3T", body: "pages.switchFrom.boomP3B" },
+      { title: "pages.switchFrom.boomP4T", body: "pages.switchFrom.boomP4B" },
     ],
     comparisonWins: [
-      {
-        feature: "Solo-agent pricing",
-        them: "$1,500+ / mo · $3K–$5K typical",
-        us: "$79 / mo starting · month-to-month",
-      },
-      {
-        feature: "Onboarding fee",
-        them: "Yes, in addition to monthly",
-        us: "None · self-serve or concierge included",
-      },
-      {
-        feature: "Contract commitment",
-        them: "Annual",
-        us: "Month-to-month",
-      },
-      {
-        feature: "Native AI follow-up",
-        them: "Predictive CRM branding, basic templates",
-        us: "Sub-60s AI replies + missed-call text-back",
-      },
-      {
-        feature: "Voice AI for inbound calls",
-        them: "Not available",
-        us: "Native + public test-drive",
-      },
+      { feature: "pages.switchFrom.boomW1F", them: "pages.switchFrom.boomW1T", us: "pages.switchFrom.boomW1U" },
+      { feature: "pages.switchFrom.boomW2F", them: "pages.switchFrom.boomW2T", us: "pages.switchFrom.boomW2U" },
+      { feature: "pages.switchFrom.boomW3F", them: "pages.switchFrom.boomW3T", us: "pages.switchFrom.boomW3U" },
+      { feature: "pages.switchFrom.boomW4F", them: "pages.switchFrom.boomW4T", us: "pages.switchFrom.boomW4U" },
+      { feature: "pages.switchFrom.boomW5F", them: "pages.switchFrom.boomW5T", us: "pages.switchFrom.boomW5U" },
     ],
     migrationSteps: COMMON_MIGRATION_STEPS,
     faq: COMMON_FAQ,
@@ -313,55 +165,22 @@ export const SWITCH_SOURCES: ReadonlyArray<SwitchSource> = [
   {
     slug: "sierra-interactive",
     name: "Sierra Interactive",
-    positioning: "IDX-first CRM with strong investor lean ($500+ / mo).",
+    positioning: "pages.switchFrom.sierraPositioning",
     priceRange: "$500+ / mo",
-    heroHeadline: "Switching from Sierra Interactive to LeadSmart AI",
-    heroSubhead:
-      "Sierra has the best IDX site in the category — and the weakest mobile experience. If your day happens off your laptop, you're fighting the product. Switch to a CRM where the mobile and AI surfaces are the main product, not an afterthought.",
+    heroHeadline: "pages.switchFrom.sierraHeadline",
+    heroSubhead: "pages.switchFrom.sierraSubhead",
     painPoints: [
-      {
-        title: "Weak mobile experience",
-        body: "Sierra's mobile companion app trails the desktop substantially. If your actual job happens between showings, that's a daily friction tax.",
-      },
-      {
-        title: "SMS automation requires third-party integrations",
-        body: "Sierra punts SMS to add-ons (Twilio, third-party tools you wire yourself). LeadSmart ships A2P-registered SMS native, with AI replies and missed-call text-back included.",
-      },
-      {
-        title: "Pre-AI architecture, retrofitted",
-        body: "Sierra was built before AI follow-up was table stakes. The features exist but feel grafted on; the rest of the CRM hasn't been reimagined around the AI loop.",
-      },
-      {
-        title: "Setup-heavy action plans",
-        body: "Sierra's Action Plans are powerful but require real configuration time. LeadSmart's defaults are designed to work day-one with copy you'd actually send.",
-      },
+      { title: "pages.switchFrom.sierraP1T", body: "pages.switchFrom.sierraP1B" },
+      { title: "pages.switchFrom.sierraP2T", body: "pages.switchFrom.sierraP2B" },
+      { title: "pages.switchFrom.sierraP3T", body: "pages.switchFrom.sierraP3B" },
+      { title: "pages.switchFrom.sierraP4T", body: "pages.switchFrom.sierraP4B" },
     ],
     comparisonWins: [
-      {
-        feature: "Native SMS pipeline (A2P 10DLC)",
-        them: "Third-party integration",
-        us: "Native, every plan",
-      },
-      {
-        feature: "Mobile-first workflow",
-        them: "Desktop-first, mobile companion lags",
-        us: "Mobile parity — same surface, one tap away",
-      },
-      {
-        feature: "AI follow-up + missed-call recovery",
-        them: "Add-on or third-party",
-        us: "Native on every plan",
-      },
-      {
-        feature: "Voice AI for inbound calls",
-        them: "Not available",
-        us: "Native + public test-drive",
-      },
-      {
-        feature: "Time to first lead handled",
-        them: "Days of action-plan setup",
-        us: "Same afternoon",
-      },
+      { feature: "pages.switchFrom.sierraW1F", them: "pages.switchFrom.sierraW1T", us: "pages.switchFrom.sierraW1U" },
+      { feature: "pages.switchFrom.sierraW2F", them: "pages.switchFrom.sierraW2T", us: "pages.switchFrom.sierraW2U" },
+      { feature: "pages.switchFrom.sierraW3F", them: "pages.switchFrom.sierraW3T", us: "pages.switchFrom.sierraW3U" },
+      { feature: "pages.switchFrom.sierraW4F", them: "pages.switchFrom.sierraW4T", us: "pages.switchFrom.sierraW4U" },
+      { feature: "pages.switchFrom.sierraW5F", them: "pages.switchFrom.sierraW5T", us: "pages.switchFrom.sierraW5U" },
     ],
     migrationSteps: COMMON_MIGRATION_STEPS,
     faq: COMMON_FAQ,
@@ -369,72 +188,33 @@ export const SWITCH_SOURCES: ReadonlyArray<SwitchSource> = [
   {
     slug: "kvcore",
     name: "kvCORE",
-    positioning: "All-in-one IDX website + CRM, sold via brokerage.",
+    positioning: "pages.switchFrom.kvPositioning",
     priceRange: "$499+ / mo",
-    heroHeadline: "Switching from kvCORE to LeadSmart AI",
-    heroSubhead:
-      "kvCORE is overkill for solo agents — and brokerage-funded plans evaporate when you leave or your brokerage drops the contract. Build your own CRM stack at solo-agent prices, with the AI features kvCORE adds as expensive bolt-ons.",
+    heroHeadline: "pages.switchFrom.kvHeadline",
+    heroSubhead: "pages.switchFrom.kvSubhead",
     painPoints: [
-      {
-        title: "Designed for brokerages, not solo agents",
-        body: "Roles, lead-router matrices, multi-team seat permissions — useful at a 50-agent brokerage, dead weight at a one-person shop. The complexity makes it harder to actually run your day.",
-      },
-      {
-        title: "Pricing is brokerage-funded — and that funding vanishes",
-        body: "Most kvCORE seats are paid for by the brokerage. If you leave, switch firms, or your brokerage drops kvCORE, you lose access — and your data is locked behind their workflow.",
-      },
-      {
-        title: "AI assistant ships off-brand SMS",
-        body: "kvCORE's AI assistant (Alex) sends templated messages that recipients commonly flag as spam, hurting deliverability and damaging your reputation with leads.",
-      },
-      {
-        title: "Weeks of onboarding for features you'll barely use",
-        body: "kvCORE onboarding takes 2–6 weeks because the surface area is enormous. LeadSmart most-onboard agents are live in under an afternoon — same core features, none of the cruft.",
-      },
+      { title: "pages.switchFrom.kvP1T", body: "pages.switchFrom.kvP1B" },
+      { title: "pages.switchFrom.kvP2T", body: "pages.switchFrom.kvP2B" },
+      { title: "pages.switchFrom.kvP3T", body: "pages.switchFrom.kvP3B" },
+      { title: "pages.switchFrom.kvP4T", body: "pages.switchFrom.kvP4B" },
     ],
     comparisonWins: [
-      {
-        feature: "Solo-agent pricing",
-        them: "$499+ / mo (brokerage-funded)",
-        us: "$79 / mo starting",
-      },
-      {
-        feature: "AI SMS that doesn't read as spam",
-        them: "Off-brand, generic templates",
-        us: "Trained on your style, escalates intelligently",
-      },
-      {
-        feature: "Voice AI for inbound calls",
-        them: "Not available",
-        us: "Native + public test-drive",
-      },
-      {
-        feature: "Onboarding time to first lead handled",
-        them: "2–6 weeks",
-        us: "Under an afternoon",
-      },
-      {
-        feature: "Data portability",
-        them: "Limited export, brokerage-gated",
-        us: "Full CSV export anytime, no quota",
-      },
+      { feature: "pages.switchFrom.kvW1F", them: "pages.switchFrom.kvW1T", us: "pages.switchFrom.kvW1U" },
+      { feature: "pages.switchFrom.kvW2F", them: "pages.switchFrom.kvW2T", us: "pages.switchFrom.kvW2U" },
+      { feature: "pages.switchFrom.kvW3F", them: "pages.switchFrom.kvW3T", us: "pages.switchFrom.kvW3U" },
+      { feature: "pages.switchFrom.kvW4F", them: "pages.switchFrom.kvW4T", us: "pages.switchFrom.kvW4U" },
+      { feature: "pages.switchFrom.kvW5F", them: "pages.switchFrom.kvW5T", us: "pages.switchFrom.kvW5U" },
     ],
     migrationSteps: [
-      "Open Settings → Data Export in kvCORE. If you don't see the option, ask your brokerage admin — most kvCORE permissions gate this by default.",
-      "Export your contacts, deals, and activity history as separate CSVs.",
-      "Sign up for LeadSmart AI at /start-free. Free 14-day trial, no credit card.",
-      "Open Settings → Data & Tools → Import contacts in LeadSmart and upload the contacts CSV. Field mapping auto-detects Name / Email / Phone / Source / Notes.",
-      "Run the import. Duplicates are merged on email + phone. Use Undo last import within 24 hours if anything looks off.",
-      "Re-create your most-used drip sequences inside LeadSmart's Templates → Sequences. The default LeadSmart sequences (buyer onboarding, FSBO outreach, expired follow-up) often outperform kvCORE drips out of the box.",
-      "Optional: enable concierge migration (link below) and we'll do the import + sequence rebuild for you.",
+      "pages.switchFrom.kvS1",
+      "pages.switchFrom.kvS2",
+      "pages.switchFrom.kvS3",
+      "pages.switchFrom.kvS4",
+      "pages.switchFrom.kvS5",
+      "pages.switchFrom.kvS6",
+      "pages.switchFrom.kvS7",
     ],
-    faq: [
-      {
-        q: "What if my brokerage controls my kvCORE access?",
-        a: "Most brokerages allow agent-level data export on request. If your brokerage refuses, the agent's contact list is still legally the agent's — escalate to the broker / managing broker. As a fallback, you can rebuild your contact list from your email inbox and phone exports while we set up the new CRM.",
-      },
-      ...COMMON_FAQ,
-    ],
+    faq: [{ q: "pages.switchFrom.kvQ0", a: "pages.switchFrom.kvA0" }, ...COMMON_FAQ],
   },
 ];
 

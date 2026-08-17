@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import type { ListingFeedbackRow } from "@/lib/listing-feedback/types";
 
 const REACTION_EMOJI: Record<string, string> = {
@@ -10,10 +12,11 @@ const REACTION_EMOJI: Record<string, string> = {
   pass: "👎",
 };
 
-const PRICE_LABEL: Record<string, string> = {
-  too_high: "Too high",
-  about_right: "About right",
-  bargain: "Bargain",
+/** Keys, not copy: a constant cannot hold a hook, so it resolves at render. */
+const PRICE_LABEL_KEY: Record<string, string> = {
+  too_high: "pages.listingFeedback.priceTooHigh",
+  about_right: "pages.listingFeedback.priceAboutRight",
+  bargain: "pages.listingFeedback.priceBargain",
 };
 
 type FetchResponse = {
@@ -33,6 +36,7 @@ type FetchResponse = {
  * and delete a stale row.
  */
 export function ListingFeedbackPanel({ transactionId }: { transactionId: string }) {
+  const { t } = useTranslation("dashboard");
   const [rows, setRows] = useState<ListingFeedbackRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -114,10 +118,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
           <h2 className="text-sm font-semibold text-slate-900">
             💬 Buyer-agent feedback
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Request and collect candid feedback from buyer agents who showed this listing.
-            Shared link — no login needed for them.
-          </p>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.listingFeedback.intro")}</p>
         </div>
         <button
           type="button"
@@ -164,7 +165,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
                 ⭐ {avgRating} / 5
               </span>
               <span className="ml-2 text-xs text-slate-500">
-                average across {received.length} response{received.length === 1 ? "" : "s"}
+                {t("pages.listingFeedback.averageAcross", { count: received.length })}
               </span>
             </div>
           ) : null}
@@ -172,7 +173,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
           {received.length > 0 ? (
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Received ({received.length})
+                {t("pages.listingFeedback.receivedN", { count: received.length })}
               </h3>
               <ul className="mt-2 space-y-2">
                 {received.map((r) => (
@@ -185,7 +186,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
           {pending.length > 0 ? (
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Pending ({pending.length})
+                {t("pages.listingFeedback.pendingN", { count: pending.length })}
               </h3>
               <ul className="mt-2 space-y-2">
                 {pending.map((r) => (
@@ -202,8 +203,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
 
           {rows.length === 0 ? (
             <p className="text-xs text-slate-500">
-              No feedback yet. Click <strong>+ Add request</strong> after a buyer agent shows the
-              listing.
+              {t("pages.listingFeedback.noFeedbackBefore")} <strong>+ Add request</strong>{t("pages.listingFeedback.noFeedbackAfter")}
             </p>
           ) : null}
         </div>
@@ -219,6 +219,8 @@ function ReceivedCard({
   row: ListingFeedbackRow;
   onDelete: () => void;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   return (
     <li className="rounded-lg border border-slate-100 p-3 text-sm">
       <div className="flex items-start justify-between gap-2">
@@ -230,9 +232,9 @@ function ReceivedCard({
             ) : null}
           </div>
           <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
-            {row.showing_date ? <span>Showing: {row.showing_date}</span> : null}
+            {row.showing_date ? <span>{t("pages.listingFeedback.showingOn", { date: row.showing_date })}</span> : null}
             {row.submitted_at ? (
-              <span>Submitted: {new Date(row.submitted_at).toLocaleDateString()}</span>
+              <span>{t("pages.listingFeedback.submittedAt", { date: new Date(row.submitted_at).toLocaleDateString(locale) })}</span>
             ) : null}
           </div>
         </div>
@@ -250,23 +252,21 @@ function ReceivedCard({
 
       {row.pros ? (
         <div className="mt-2 rounded bg-green-50 px-2 py-1 text-xs text-green-800">
-          <strong>Worked:</strong> {row.pros}
+          <strong>{t("pages.oneWord.worked")}</strong> {row.pros}
         </div>
       ) : null}
       {row.cons ? (
         <div className="mt-1 rounded bg-amber-50 px-2 py-1 text-xs text-amber-800">
-          <strong>Concerns:</strong> {row.cons}
+          <strong>{t("pages.oneWord.concerns")}</strong> {row.cons}
         </div>
       ) : null}
       {row.price_feedback ? (
         <div className="mt-1 inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 text-[11px] text-slate-700">
-          Price: {PRICE_LABEL[row.price_feedback]}
+          {t("pages.listingFeedback.priceVerdict", { verdict: t(PRICE_LABEL_KEY[row.price_feedback] ?? "") })}
         </div>
       ) : null}
       {row.would_offer === true ? (
-        <div className="mt-1 inline-flex items-center gap-1 rounded bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
-          Considering an offer
-        </div>
+        <div className="mt-1 inline-flex items-center gap-1 rounded bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">{t("pages.listingFeedback.consideringOffer")}</div>
       ) : null}
       {row.notes ? (
         <p className="mt-2 text-xs text-slate-600">{row.notes}</p>
@@ -276,9 +276,7 @@ function ReceivedCard({
         type="button"
         onClick={onDelete}
         className="mt-2 text-[10px] text-red-500 hover:underline"
-      >
-        Delete
-      </button>
+      >{t("pages.listingFeedback.delete")}</button>
     </li>
   );
 }
@@ -292,6 +290,8 @@ function PendingCard({
   onSend: () => void;
   onDelete: () => void;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   return (
     <li className="rounded-lg border border-dashed border-slate-200 p-3 text-sm">
       <div className="flex items-start justify-between gap-2">
@@ -305,7 +305,7 @@ function PendingCard({
           </div>
           {row.request_email_sent_at ? (
             <div className="mt-1 text-[11px] text-slate-400">
-              Requested {new Date(row.request_email_sent_at).toLocaleString()}
+              {t("pages.listingFeedback.requestedAt", { date: new Date(row.request_email_sent_at).toLocaleString(locale) })}
             </div>
           ) : null}
         </div>
@@ -323,9 +323,7 @@ function PendingCard({
             type="button"
             onClick={onDelete}
             className="rounded-lg border border-red-200 bg-white px-3 py-1 text-[11px] text-red-600 hover:bg-red-50"
-          >
-            Delete
-          </button>
+          >{t("pages.listingFeedback.delete")}</button>
         </div>
       </div>
     </li>
@@ -339,6 +337,8 @@ function AddRequestForm({
   transactionId: string;
   onCreated: () => void;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [buyerAgentName, setBuyerAgentName] = useState("");
   const [buyerAgentEmail, setBuyerAgentEmail] = useState("");
   const [buyerAgentBrokerage, setBuyerAgentBrokerage] = useState("");
@@ -387,33 +387,33 @@ function AddRequestForm({
         <input
           value={buyerAgentName}
           onChange={(e) => setBuyerAgentName(e.target.value)}
-          placeholder="Buyer agent name"
+          placeholder={t("pages.listingFeedback.agentName")}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         />
         <input
           type="email"
           value={buyerAgentEmail}
           onChange={(e) => setBuyerAgentEmail(e.target.value)}
-          placeholder="Buyer agent email"
+          placeholder={t("pages.listingFeedback.agentEmail")}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         />
         <input
           value={buyerAgentBrokerage}
           onChange={(e) => setBuyerAgentBrokerage(e.target.value)}
-          placeholder="Brokerage (optional)"
+          placeholder={t("pages.listingFeedback.brokerage")}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         />
         <input
           value={buyerName}
           onChange={(e) => setBuyerName(e.target.value)}
-          placeholder="Buyer name (optional)"
+          placeholder={t("pages.listingFeedback.buyerName")}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         />
         <input
           type="date"
           value={showingDate}
           onChange={(e) => setShowingDate(e.target.value)}
-          placeholder="Showing date"
+          placeholder={t("pages.listingFeedback.showingDate")}
           className="col-span-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         />
       </div>
@@ -426,10 +426,7 @@ function AddRequestForm({
       >
         {saving ? "Adding…" : "Add request"}
       </button>
-      <p className="text-[11px] text-slate-500">
-        This creates a pending request. The &quot;Send request&quot; button emails the form link to
-        the buyer agent.
-      </p>
+      <p className="text-[11px] text-slate-500">{t("pages.listingFeedback.pendingNote")}</p>
     </div>
   );
 }

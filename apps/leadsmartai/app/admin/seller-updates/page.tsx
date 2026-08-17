@@ -5,6 +5,7 @@ import {
   SellerUpdateLogClient,
   type SellerUpdateRow,
 } from "./SellerUpdateLogClient";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata = {
   title: "Seller Updates Log | Admin | LeadSmart AI",
@@ -21,6 +22,7 @@ export const metadata = {
  * dual transactions with the toggle on, ordered by most-recent-send.
  */
 export default async function AdminSellerUpdatesPage() {
+  const t = await getServerT();
   await requireRole(["admin"]);
 
   const { data, error } = await supabaseAdmin

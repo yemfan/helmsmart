@@ -90,6 +90,31 @@ describe("dashboard namespace (page copy)", () => {
       "profile.backToDashboard",
       "branding.leadAdPlaceholder",
       "aiTeam.eyebrow",
+      // Format examples, not copy: an MLS number, a bare URL scheme, and an
+      // email address. Translating the shape of an identifier would be wrong.
+      "pages.newOpenHouse.mlsPlaceholder",
+      "pages.newOpenHouse.urlPlaceholder",
+      "pages.newListingOffer.agentEmailPlaceholder",
+      "pages.importFile.emailPlaceholder",
+      "pages.offersCompare.agentEmailPlaceholder",
+      "pages.newShowing.mlsPlaceholder",
+      "pages.adWizard.sitePlaceholder",
+      "pages.adWizard.privacyPlaceholder",
+      "pages.books.clientEmailPlaceholder",
+      "pages.calendarBooking.urlPlaceholder",
+      // The acronym an agent says out loud in both languages.
+      "pages.boss.artifactCma",
+      // A platform's own name — LinkedIn does not localise its wordmark.
+      "pages.liondeskShutdown.linkedin",
+      /*
+       * The SMS keywords a carrier actually recognises. A reader has to type
+       * these exact letters to opt out or get help, so translating them would
+       * strand a Chinese-speaking recipient in a program they can't leave.
+       */
+      "pages.homeValueFunnel.stop",
+      "pages.homeValueFunnel.help",
+      "pages.smsOptIn.stop",
+      "pages.smsOptIn.help",
     ]);
     const en = enDash as Record<string, unknown>;
     const zh = zhDash as Record<string, unknown>;

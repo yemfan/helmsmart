@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 import ComingSoon from "../_components/ComingSoon";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Compliance · LeadSmart AI",
   robots: { index: false },
 };
 
-export default function CompliancePage() {
+export default async function CompliancePage() {
+  const t = await getServerT();
   return (
     <ComingSoon
       icon={ShieldCheck}
-      title="Compliance"
+      title={t("pages.financialServices.navCompliance", { ns: "dashboard" })}
       description="Your compliance hub — license status, AML training, supervised-review queue, and audit-ready communications archive."
       availability="Pilot week 1"
       bulletPoints={[

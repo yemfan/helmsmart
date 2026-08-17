@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ServiceAreasPicker } from "@/components/onboarding/ServiceAreasPicker";
 import {
   serviceAreasToLegacyStrings,
@@ -12,6 +13,7 @@ const STEPS = ["Service Areas", "Branding", "AI Assistant", "Notifications"] as 
 type StepIndex = 0 | 1 | 2 | 3;
 
 export function SetupWizard({ onComplete }: { onComplete: () => void }) {
+  const { t } = useTranslation("dashboard");
   const [step, setStep] = useState<StepIndex>(0);
   const [saving, setSaving] = useState(false);
 
@@ -131,8 +133,7 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
         </div>
 
         <div className="p-6">
-          <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">
-            Step {step + 1} of 4
+          <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">{t("pages.dashFragments.step")} {step + 1} of 4
           </p>
           <h2 className="text-xl font-bold text-gray-900 mb-1">
             {STEPS[step]}
@@ -148,9 +149,7 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
           {step === 0 && (
             <>
               {autoSuggested ? (
-                <p className="mb-2 rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">
-                  We pre-filled your market from your location — edit it if it&rsquo;s not right.
-                </p>
+                <p className="mb-2 rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">{t("pages.setupWizard.prefilledMarket")}</p>
               ) : null}
               <ServiceAreasPicker value={areas} onChange={setAreas} disabled={saving} />
             </>
@@ -160,17 +159,15 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
           {step === 1 && (
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Brand / Team Name</label>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">{t("pages.setupWizard.brandName")}</label>
                 <input
                   value={brandName}
                   onChange={(e) => setBrandName(e.target.value)}
-                  placeholder="e.g. Smith Realty Group"
+                  placeholder={t("pages.setupWizard.brandPlaceholder")}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
                 />
               </div>
-              <p className="text-xs text-gray-400">
-                You can upload your logo and email signature later in Settings &rarr; Profile.
-              </p>
+              <p className="text-xs text-gray-400">{t("pages.setupWizard.logoLater")}</p>
             </div>
           )}
 
@@ -178,30 +175,30 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
           {step === 2 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Communication Style</label>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">{t("pages.setupWizard.commStyle")}</label>
                 <select
                   value={personality}
                   onChange={(e) => setPersonality(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white"
                 >
-                  <option value="friendly">Friendly &amp; Warm</option>
-                  <option value="professional">Professional &amp; Formal</option>
-                  <option value="casual">Casual &amp; Conversational</option>
-                  <option value="concise">Short &amp; Direct</option>
+                  <option value="friendly">{t("pages.setupWizard.styleFriendly")}</option>
+                  <option value="professional">{t("pages.setupWizard.styleProfessional")}</option>
+                  <option value="casual">{t("pages.setupWizard.styleCasual")}</option>
+                  <option value="concise">{t("pages.setupWizard.styleShort")}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Primary Language</label>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">{t("pages.setupWizard.primaryLanguage")}</label>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white"
                 >
-                  <option value="en">English</option>
-                  <option value="es">Spanish</option>
-                  <option value="zh">Chinese</option>
-                  <option value="ko">Korean</option>
-                  <option value="vi">Vietnamese</option>
+                  <option value="en">{t("pages.setupWizard.langEnglish")}</option>
+                  <option value="es">{t("pages.setupWizard.langSpanish")}</option>
+                  <option value="zh">{t("pages.setupWizard.langChinese")}</option>
+                  <option value="ko">{t("pages.setupWizard.langKorean")}</option>
+                  <option value="vi">{t("pages.setupWizard.langVietnamese")}</option>
                 </select>
               </div>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Dashboard widget for CloseBoss Coaching enrollment.
@@ -40,6 +41,7 @@ type ApiResponse = {
 };
 
 export function CoachingProgramsCard() {
+  const { t } = useTranslation("dashboard");
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -73,17 +75,13 @@ export function CoachingProgramsCard() {
 
   return (
     <section
-      aria-label="CloseBoss Coaching"
+      aria-label={t("pages.coaching.brand")}
       className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm"
     >
       <header className="flex items-baseline justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-            CloseBoss Coaching
-          </p>
-          <h2 className="mt-1 text-base font-semibold text-slate-900">
-            Your coaching programs
-          </h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{t("pages.coaching.brand")}</p>
+          <h2 className="mt-1 text-base font-semibold text-slate-900">{t("pages.coaching.yourPrograms")}</h2>
         </div>
         <a
           href="/agent/coaching"
@@ -103,6 +101,7 @@ export function CoachingProgramsCard() {
 }
 
 function ProgramRow({ program }: { program: ProgramView }) {
+  const { t } = useTranslation("dashboard");
   const isEnrolled = program.status === "enrolled";
   const isOptedOut = program.status === "opted_out";
   return (
@@ -121,11 +120,11 @@ function ProgramRow({ program }: { program: ProgramView }) {
           </p>
           <p className="mt-0.5 text-[11px] uppercase tracking-wider font-semibold">
             {isEnrolled ? (
-              <span className="text-blue-700">Enrolled</span>
+              <span className="text-blue-700">{t("pages.coaching.enrolled")}</span>
             ) : isOptedOut ? (
-              <span className="text-slate-500">Opted out</span>
+              <span className="text-slate-500">{t("pages.coaching.optedOut")}</span>
             ) : (
-              <span className="text-amber-700">Eligible — not enrolled</span>
+              <span className="text-amber-700">{t("pages.coaching.eligible")}</span>
             )}
           </p>
         </div>
@@ -133,11 +132,11 @@ function ProgramRow({ program }: { program: ProgramView }) {
 
       <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
         <Mini
-          label="Goal"
+          label={t("pages.coaching.goal")}
           value={`${program.meta.annualTransactionTarget} deals`}
         />
         <Mini
-          label="Conv. target"
+          label={t("pages.coaching.convTarget")}
           value={`${program.meta.conversionRateTargetPct}%`}
         />
       </div>
@@ -149,9 +148,7 @@ function ProgramRow({ program }: { program: ProgramView }) {
             : "Auto-enrollment runs on your next sign-in. Or enroll now to start tracking."}
         </p>
       ) : (
-        <p className="mt-3 text-[11px] text-slate-600">
-          Your dashboard tasks + weekly playbooks are tracking toward this goal.
-        </p>
+        <p className="mt-3 text-[11px] text-slate-600">{t("pages.coaching.trackingNote")}</p>
       )}
     </div>
   );
@@ -171,32 +168,21 @@ function Mini({ label, value }: { label: string; value: string }) {
 }
 
 function UpgradePrompt() {
+  const { t } = useTranslation("dashboard");
   return (
     <section className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-white p-6 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-        CloseBoss Coaching
-      </p>
-      <h2 className="mt-1 text-base font-semibold text-slate-900">
-        Add coaching to your plan
-      </h2>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-        Producer Track auto-enrolls on Pro and above; Top Producer Track is
-        bundled with Premium and Team. Upgrade to start hitting 10–15
-        transactions a year with daily AI-driven plans.
-      </p>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{t("pages.coaching.brand")}</p>
+      <h2 className="mt-1 text-base font-semibold text-slate-900">{t("pages.coaching.addToPlan")}</h2>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{t("pages.coaching.upsell")}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         <a
           href="/agent/pricing"
           className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-blue-700"
-        >
-          See pricing
-        </a>
+        >{t("pages.coaching.seePricing")}</a>
         <a
           href="/agent/coaching"
           className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-slate-300"
-        >
-          Learn how it works
-        </a>
+        >{t("pages.coaching.learnHow")}</a>
       </div>
     </section>
   );

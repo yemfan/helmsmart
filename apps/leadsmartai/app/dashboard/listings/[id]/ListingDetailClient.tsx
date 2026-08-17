@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import {
   LISTING_STATUS_LABEL,
   type ListingDetail,
@@ -139,18 +141,18 @@ function sortedOffers<T extends ListingOfferCompareItem>(
   return next;
 }
 
-function formatMoney(n: number | null | undefined): string {
+function formatMoney(n: number | null | undefined, locale: string): string {
   if (n == null) return "—";
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(n);
 }
 
-function formatDate(iso: string | null): string {
+function formatDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -158,12 +160,14 @@ function formatDate(iso: string | null): string {
 }
 
 function formatRelative(iso: string | null): string {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   if (!iso) return "—";
   const then = new Date(iso).getTime();
   const days = Math.round((Date.now() - then) / 86_400_000);
-  if (days === 0) return "today";
-  if (days === 1) return "yesterday";
-  if (days < 0) return formatDate(iso);
+  if (days === 0) return t("pages.listingDetail.today");
+  if (days === 1) return t("pages.listingDetail.yesterday");
+  if (days < 0) return formatDate(iso, locale);
   if (days < 30) return `${days}d ago`;
   if (days < 365) return `${Math.floor(days / 30)}mo ago`;
   return `${Math.floor(days / 365)}y ago`;
@@ -194,6 +198,8 @@ export function ListingDetailClient({
   listing: ListingDetail;
   offers: ListingOfferCompareItem[];
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const router = useRouter();
   const cityState = [listing.city, listing.state].filter(Boolean).join(", ");
   const fullLocation = [cityState, listing.zip].filter(Boolean).join(" ");
@@ -273,7 +279,7 @@ export function ListingDetailClient({
   async function acceptOffer(offerId: string, offerPrice: number) {
     if (
       !confirm(
-        `Accept this offer at ${formatMoney(offerPrice)}?\n\nThis marks the offer accepted, flips the listing to "under contract," and opens the new-transaction form prefilled with the listing + offer details.`,
+        `Accept this offer at ${formatMoney(offerPrice, locale)}?\n\nThis marks the offer accepted, flips the listing to "under contract," and opens the new-transaction form prefilled with the listing + offer details.`,
       )
     ) {
       return;
@@ -447,9 +453,7 @@ export function ListingDetailClient({
     <main id="main-content" className="mx-auto max-w-5xl space-y-5 px-4 py-8">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/properties" className="hover:underline">
-            Listings
-          </Link>
+          <Link href="/dashboard/properties" className="hover:underline">{t("pages.listingDetail.listings")}</Link>
           {" / "}
           <span className="truncate">{listing.property_address}</span>
         </div>
@@ -466,17 +470,15 @@ export function ListingDetailClient({
                 the consolidated 3-card grid below. */}
             <p className="mt-0.5 text-[12px] text-slate-500">
               {listing.contactName ? (
-                <>
-                  Seller:{" "}
+                <>{t("pages.dashFragments.seller")}{" "}
                   <span className="font-medium text-slate-700">
                     {listing.contactName}
                   </span>
                 </>
               ) : (
-                <span className="text-slate-400">Seller not set</span>
+                <span className="text-slate-400">{t("pages.listingDetail.sellerNotSet")}</span>
               )}
-              <span className="mx-1.5 text-slate-300">·</span>
-              Created {formatRelative(listing.created_at)}
+              <span className="mx-1.5 text-slate-300">·</span>{t("pages.dashFragments.created")} {formatRelative(listing.created_at)}
             </p>
           </div>
           <span
@@ -491,7 +493,7 @@ export function ListingDetailClient({
                 transaction) → blue "Open contracted deal" bridge
                 so the agent can jump to the post-acceptance view
             (b) listing not yet promoted but eligible → emerald
-                "Mark under contract" CTA that fires the promote
+                t("pages.listingDetail.markUnderContract") CTA that fires the promote
                 endpoint, spawning a transaction to track escrow */}
         {listing.transactionId ? (
           <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
@@ -501,19 +503,14 @@ export function ListingDetailClient({
             >
               Open contracted deal →
             </Link>
-            <span className="ml-2 text-[11px] text-blue-700">
-              Closing date, contingencies, and escrow tasks live on the deal page.
-            </span>
+            <span className="ml-2 text-[11px] text-blue-700">{t("pages.listingDetail.dealPageNote")}</span>
           </div>
         ) : canPromote ? (
           <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="text-sm text-emerald-900">
-                <span className="font-medium">Offer accepted?</span>
-                <span className="ml-2 text-[11px] text-emerald-700">
-                  Mark under contract — spawns a deal so closing + contingencies
-                  get tracked separately.
-                </span>
+                <span className="font-medium">{t("pages.listingDetail.offerAccepted")}</span>
+                <span className="ml-2 text-[11px] text-emerald-700">{t("pages.listingDetail.markUnderContract")}</span>
               </div>
               <button
                 type="button"
@@ -521,7 +518,7 @@ export function ListingDetailClient({
                 disabled={promoting}
                 className="rounded-lg bg-emerald-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
               >
-                {promoting ? "Promoting…" : "Mark under contract"}
+                {promoting ? t("pages.listingDetail.promoting") : t("pages.listingDetail.markUnderContract")}
               </button>
             </div>
             {promoteError ? (
@@ -550,14 +547,14 @@ export function ListingDetailClient({
           a subtitle on the page header. Notes overflow into a
           full-width card below the 3-card row when present. */}
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card title="Property">
-          <DetailRow label="Address" value={listing.property_address} />
-          <DetailRow label="City / State" value={cityState || "—"} />
-          <DetailRow label="ZIP" value={listing.zip ?? "—"} />
-          <DetailRow label="MLS #" value={listing.mls_number ?? "—"} />
+        <Card title={t("pages.listingDetail.property")}>
+          <DetailRow label={t("pages.listingDetail.address")} value={listing.property_address} />
+          <DetailRow label={t("pages.listingDetail.cityState")} value={cityState || "—"} />
+          <DetailRow label={t("pages.listingDetail.zip")} value={listing.zip ?? "—"} />
+          <DetailRow label={t("pages.listingDetail.mls")} value={listing.mls_number ?? "—"} />
           {listing.mls_url ? (
             <DetailRow
-              label="Listing URL"
+              label={t("pages.listingDetail.listingUrl")}
               value={
                 <a
                   href={listing.mls_url}
@@ -571,28 +568,28 @@ export function ListingDetailClient({
             />
           ) : null}
           <DetailRow
-            label="List price"
+            label={t("pages.listingDetail.listPrice")}
             value={
               <span className="font-semibold text-slate-900">
-                {formatMoney(listing.list_price)}
+                {formatMoney(listing.list_price, locale)}
               </span>
             }
           />
           <DetailRow
-            label="Commission"
+            label={t("pages.listingDetail.commission")}
             value={listing.commission_pct != null ? `${listing.commission_pct}%` : "—"}
           />
         </Card>
 
-        <Card title="Dates">
-          <DetailRow label="Listed" value={formatDate(listing.listing_start_date)} />
-          <DetailRow label="Expires" value={formatDate(listing.listing_end_date)} />
+        <Card title={t("pages.listingDetail.dates")}>
+          <DetailRow label={t("pages.listingDetail.listed")} value={formatDate(listing.listing_start_date, locale)} />
+          <DetailRow label={t("pages.listingDetail.expires")} value={formatDate(listing.listing_end_date, locale)} />
         </Card>
 
-        <Card title="Showings">
-          <DetailRow label="Total" value={String(listing.showings_total)} />
-          <DetailRow label="Upcoming" value={String(listing.showings_upcoming)} />
-          <DetailRow label="Last" value={formatRelative(listing.last_showing_at)} />
+        <Card title={t("pages.listingDetail.showings")}>
+          <DetailRow label={t("pages.listingDetail.total")} value={String(listing.showings_total)} />
+          <DetailRow label={t("pages.listingDetail.upcoming")} value={String(listing.showings_upcoming)} />
+          <DetailRow label={t("pages.listingDetail.last")} value={formatRelative(listing.last_showing_at)} />
           <div className="pt-1">
             <Link
               href={`/dashboard/showings?propertyAddress=${encodeURIComponent(listing.property_address)}`}
@@ -606,7 +603,7 @@ export function ListingDetailClient({
 
       {listing.notes ? (
         <section>
-          <Card title="Notes">
+          <Card title={t("pages.listingDetail.notes")}>
             <p className="whitespace-pre-wrap text-sm text-slate-700">
               {listing.notes}
             </p>
@@ -635,8 +632,7 @@ export function ListingDetailClient({
       <section>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-baseline gap-3">
-            <h2 className="text-sm font-semibold text-slate-900">
-              Offers ({offers.length})
+            <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.offers")}{offers.length})
             </h2>
             {offers.length > 1 ? (
               <button
@@ -647,10 +643,8 @@ export function ListingDetailClient({
                     ? "bg-emerald-100 text-emerald-800"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
-                title="Cash beats financed; ties break on fewest contingencies + higher price"
-              >
-                Strongest first
-              </button>
+                title={t("pages.listingDetail.rankHint")}
+              >{t("pages.listingDetail.strongestFirst")}</button>
             ) : null}
             {offerActionError ? (
               <span className="text-[11px] text-rose-700">{offerActionError}</span>
@@ -659,14 +653,12 @@ export function ListingDetailClient({
           <Link
             href={`/dashboard/listings/${encodeURIComponent(listing.id)}/offers/new`}
             className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
-          >
-            + Add offer
-          </Link>
+          >{t("pages.listingDetail.addOffer")}</Link>
         </div>
 
         {offers.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
-            No offers yet. Click <strong>+ Add offer</strong> to record one.
+            {t("pages.listingDetail.noOffersBefore")} <strong>{t("pages.listingDetail.addOffer")}</strong> {t("pages.listingDetail.noOffersAfter")}
           </div>
         ) : (
           <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -674,28 +666,14 @@ export function ListingDetailClient({
               <table className="min-w-full text-sm">
                 <thead className="bg-slate-50 text-xs text-slate-600">
                   <tr>
-                    <SortableTh field="buyer" sortBy={sortBy} onClick={clickSort}>
-                      Buyer
-                    </SortableTh>
-                    <SortableTh field="status" sortBy={sortBy} onClick={clickSort}>
-                      Status
-                    </SortableTh>
-                    <SortableTh field="price" sortBy={sortBy} onClick={clickSort} align="right">
-                      Price
-                    </SortableTh>
-                    <SortableTh field="financing" sortBy={sortBy} onClick={clickSort}>
-                      Financing
-                    </SortableTh>
-                    <SortableTh field="closing" sortBy={sortBy} onClick={clickSort}>
-                      Closing
-                    </SortableTh>
-                    <SortableTh field="contingencies" sortBy={sortBy} onClick={clickSort} align="center">
-                      Cont.
-                    </SortableTh>
-                    <SortableTh field="earnest" sortBy={sortBy} onClick={clickSort} align="right">
-                      EMD
-                    </SortableTh>
-                    <th className="px-3 py-2 text-right font-medium">Actions</th>
+                    <SortableTh field="buyer" sortBy={sortBy} onClick={clickSort}>{t("pages.listingDetail.buyer")}</SortableTh>
+                    <SortableTh field="status" sortBy={sortBy} onClick={clickSort}>{t("pages.listingDetail.status")}</SortableTh>
+                    <SortableTh field="price" sortBy={sortBy} onClick={clickSort} align="right">{t("pages.listingDetail.price")}</SortableTh>
+                    <SortableTh field="financing" sortBy={sortBy} onClick={clickSort}>{t("pages.listingDetail.financing")}</SortableTh>
+                    <SortableTh field="closing" sortBy={sortBy} onClick={clickSort}>{t("pages.listingDetail.closing")}</SortableTh>
+                    <SortableTh field="contingencies" sortBy={sortBy} onClick={clickSort} align="center">{t("pages.listingDetail.contingencies")}</SortableTh>
+                    <SortableTh field="earnest" sortBy={sortBy} onClick={clickSort} align="right">{t("pages.listingDetail.emd")}</SortableTh>
+                    <th className="px-3 py-2 text-right font-medium">{t("pages.listingDetail.actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -731,20 +709,18 @@ export function ListingDetailClient({
                           </td>
                           <td className="px-3 py-2.5 text-right tabular-nums">
                             <div className="font-medium text-slate-900">
-                              {formatMoney(o.current_price ?? o.offer_price)}
+                              {formatMoney(o.current_price ?? o.offer_price, locale)}
                             </div>
                             {o.current_price != null && o.current_price !== o.offer_price ? (
                               <div className="text-[11px] text-slate-500">
-                                from {formatMoney(o.offer_price)}
+                                from {formatMoney(o.offer_price, locale)}
                               </div>
                             ) : null}
                           </td>
                           <td className="px-3 py-2.5">
                             <div className="flex flex-wrap items-center gap-1">
                               {o.is_cash ? (
-                                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
-                                  Cash
-                                </span>
+                                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">{t("pages.listingDetail.cash")}</span>
                               ) : (
                                 <span className="text-slate-700">
                                   {o.financing_type ?? "—"}
@@ -754,7 +730,7 @@ export function ListingDetailClient({
                           </td>
                           <td className="px-3 py-2.5 text-slate-700">
                             {o.closing_date_proposed
-                              ? formatDate(o.closing_date_proposed)
+                              ? formatDate(o.closing_date_proposed, locale)
                               : "—"}
                           </td>
                           <td className="px-3 py-2.5 text-center tabular-nums">
@@ -767,7 +743,7 @@ export function ListingDetailClient({
                             )}
                           </td>
                           <td className="px-3 py-2.5 text-right tabular-nums text-slate-700">
-                            {formatMoney(o.earnest_money)}
+                            {formatMoney(o.earnest_money, locale)}
                           </td>
                           <td className="px-3 py-2.5">
                             {!isClosed ? (
@@ -777,9 +753,9 @@ export function ListingDetailClient({
                                   onClick={() => void acceptOffer(o.id, o.offer_price)}
                                   disabled={isAccepting || isDeclining || isCountering}
                                   className="rounded-lg bg-emerald-700 px-2.5 py-1 text-xs font-medium text-white hover:bg-emerald-800 disabled:opacity-50"
-                                  title="Mark this offer accepted + spawn a deal"
+                                  title={t("pages.listingDetail.acceptHint")}
                                 >
-                                  {isAccepting ? "…" : "✓ Accept"}
+                                  {isAccepting ? "…" : t("pages.listingDetail.accept")}
                                 </button>
                                 <button
                                   type="button"
@@ -795,18 +771,18 @@ export function ListingDetailClient({
                                   }}
                                   disabled={isAccepting || isDeclining}
                                   className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                                  title="Record a counter to the buyer"
+                                  title={t("pages.listingDetail.counterHint")}
                                 >
-                                  {showCounterForm ? "Cancel" : "🔁 Counter"}
+                                  {showCounterForm ? t("pages.listingDetail.cancel") : t("pages.listingDetail.counter")}
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => void declineOffer(o.id)}
                                   disabled={isAccepting || isDeclining || isCountering}
                                   className="rounded-lg border border-rose-200 bg-white px-2.5 py-1 text-xs font-medium text-rose-700 hover:bg-rose-50 disabled:opacity-50"
-                                  title="Mark this offer rejected"
+                                  title={t("pages.listingDetail.declineHint")}
                                 >
-                                  {isDeclining ? "…" : "✗ Decline"}
+                                  {isDeclining ? "…" : t("pages.listingDetail.decline")}
                                 </button>
                               </div>
                             ) : (
@@ -821,9 +797,7 @@ export function ListingDetailClient({
                             <td colSpan={8} className="px-3 py-3">
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                  <label className="block text-xs font-medium text-slate-700">
-                                    Counter price
-                                  </label>
+                                  <label className="block text-xs font-medium text-slate-700">{t("pages.listingDetail.counterPrice")}</label>
                                   <input
                                     type="number"
                                     value={counterPrice}
@@ -835,13 +809,11 @@ export function ListingDetailClient({
                                   />
                                 </div>
                                 <div>
-                                  <label className="block text-xs font-medium text-slate-700">
-                                    Notes
-                                  </label>
+                                  <label className="block text-xs font-medium text-slate-700">{t("pages.listingDetail.notes")}</label>
                                   <input
                                     value={counterNotes}
                                     onChange={(e) => setCounterNotes(e.target.value)}
-                                    placeholder="Closing moved, terms changed…"
+                                    placeholder={t("pages.listingDetail.counterPlaceholder")}
                                     className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                                   />
                                 </div>
@@ -851,16 +823,14 @@ export function ListingDetailClient({
                                   type="button"
                                   onClick={() => setCounterFormForOfferId(null)}
                                   className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                                >
-                                  Cancel
-                                </button>
+                                >{t("pages.listingDetail.cancel")}</button>
                                 <button
                                   type="button"
                                   onClick={() => void recordCounter(o.id)}
                                   disabled={isCountering}
                                   className="rounded-lg bg-slate-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50"
                                 >
-                                  {isCountering ? "Recording…" : "Record counter"}
+                                  {isCountering ? t("pages.listingDetail.recording") : t("pages.listingDetail.recordCounter")}
                                 </button>
                               </div>
                             </td>

@@ -21,6 +21,7 @@ import {
   faTasks,
 } from "@/lib/financial-services-demo-data";
 import { FileText, GitBranch, MessageSquareText, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 function prospectStatusTone(s: string): "success" | "warning" | "info" {
   if (s === "FNA Done") return "success";
@@ -37,17 +38,14 @@ function recruitStageTone(s: string): "success" | "warning" | "info" {
 const TOOL_ICONS = [Sparkles, MessageSquareText, GitBranch, FileText];
 
 export default function FinancialServicesDashboardClient() {
+  const { t } = useTranslation("dashboard");
   const maxRecruit = Math.max(...faRecruitStages.map((s) => s.count), 1);
 
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-          Financial services dashboard
-        </h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Prospects, recruits, and AI tools — built for IUL, annuity, and term life producers.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{t("pages.financialServices.dashboard")}</h1>
+        <p className="mt-1 text-sm text-slate-600">{t("pages.financialServices.dashboardSub")}</p>
       </header>
 
       <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
@@ -57,7 +55,7 @@ export default function FinancialServicesDashboardClient() {
       </div>
 
       <section className="grid gap-6 xl:grid-cols-12">
-        <SectionCard title="Active prospects" className="xl:col-span-8">
+        <SectionCard title={t("pages.financialServices.activeProspects")} className="xl:col-span-8">
           <DashboardTable
             columns={[
               { key: "name", header: "Prospect" },
@@ -66,13 +64,13 @@ export default function FinancialServicesDashboardClient() {
               { key: "product", header: "Product interest" },
               { key: "score", header: "Score", cell: (r) => <span className="font-semibold tabular-nums">{String(r.score)}</span> },
               { key: "status", header: "Stage", cell: (r) => <StatusBadge tone={prospectStatusTone(String(r.status))}>{String(r.status)}</StatusBadge> },
-              { key: "action", header: "Action", cell: () => <ActionButton className="h-8 px-2.5 text-xs">Open</ActionButton> },
+              { key: "action", header: "Action", cell: () => <ActionButton className="h-8 px-2.5 text-xs">{t("pages.financialServices.open")}</ActionButton> },
             ]}
             rows={faProspects as unknown as Record<string, unknown>[]}
           />
         </SectionCard>
 
-        <SectionCard title="AI tools" className="xl:col-span-4">
+        <SectionCard title={t("pages.financialServices.aiTools")} className="xl:col-span-4">
           <div className="grid gap-2">
             {faAiTools.map((tool, i) => {
               const Icon = TOOL_ICONS[i] ?? Sparkles;
@@ -93,7 +91,7 @@ export default function FinancialServicesDashboardClient() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-12">
-        <SectionCard title="Recruit pipeline" className="xl:col-span-8">
+        <SectionCard title={t("pages.financialServices.recruitPipeline")} className="xl:col-span-8">
           <div className="space-y-4">
             {faRecruitStages.map((s) => (
               <div key={s.id}>
@@ -120,7 +118,7 @@ export default function FinancialServicesDashboardClient() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Alerts" className="xl:col-span-4">
+        <SectionCard title={t("pages.financialServices.alerts")} className="xl:col-span-4">
           <ul className="space-y-3">
             {faAlerts.map((a, i) => (
               <li
@@ -143,7 +141,7 @@ export default function FinancialServicesDashboardClient() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-12">
-        <SectionCard title="Recent recruits" className="xl:col-span-8">
+        <SectionCard title={t("pages.financialServices.recentRecruits")} className="xl:col-span-8">
           <DashboardTable
             columns={[
               { key: "name", header: "Recruit" },
@@ -156,7 +154,7 @@ export default function FinancialServicesDashboardClient() {
           />
         </SectionCard>
 
-        <SectionCard title="Today" className="xl:col-span-4">
+        <SectionCard title={t("pages.financialServices.today")} className="xl:col-span-4">
           <ul className="space-y-2">
             {faTasks.map((t, i) => (
               <li
@@ -175,7 +173,7 @@ export default function FinancialServicesDashboardClient() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-12">
-        <SectionCard title="Recent activity" className="xl:col-span-12">
+        <SectionCard title={t("pages.financialServices.recentActivity")} className="xl:col-span-12">
           <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {faActivity.map((a, i) => (
               <li key={i} className="rounded-xl border border-slate-100 bg-white px-3 py-3">

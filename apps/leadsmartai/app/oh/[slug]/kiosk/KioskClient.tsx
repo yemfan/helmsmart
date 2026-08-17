@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { PublicOpenHouseInfo } from "@/lib/open-houses/publicService";
 
 /**
@@ -54,6 +55,7 @@ const SESSION_KEY = (slug: string) => `oh-kiosk-session:${slug}`;
 const RESET_MS = 4000;
 
 export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
+  const { t } = useTranslation("dashboard");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -174,9 +176,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
       {/* Top strip: property + session counters */}
       <header className="flex items-start justify-between gap-4 px-8 pt-6 pb-3">
         <div>
-          <div className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
-            Welcome to the open house
-          </div>
+          <div className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{t("pages.openHouseKiosk.welcome")}</div>
           <h1 className="mt-1 text-2xl font-semibold leading-tight">
             {info.propertyAddress}
           </h1>
@@ -205,12 +205,10 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
           </span>
           {pendingCount > 0 ? (
             <span className="rounded-full bg-slate-700 px-2 py-1 text-slate-200">
-              {pendingCount} pending sync
-            </span>
+              {pendingCount} {t("pages.openHouseKiosk.pendingSync")}</span>
           ) : null}
           <span className="rounded-full bg-slate-700 px-2 py-1 text-slate-200">
-            {sessionCount} signed in today
-          </span>
+            {sessionCount} {t("pages.openHouseKiosk.signedInToday")}</span>
         </div>
       </header>
 
@@ -220,7 +218,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
           <section className="space-y-4">
             <KioskInput
               refEl={nameRef}
-              label="Your name"
+              label={t("pages.openHouseKiosk.yourName")}
               value={name}
               onChange={setName}
               autoComplete="name"
@@ -228,7 +226,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
             />
             <div className="grid grid-cols-2 gap-4">
               <KioskInput
-                label="Email"
+                label={t("pages.articleChrome.email")}
                 value={email}
                 onChange={setEmail}
                 type="email"
@@ -236,7 +234,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
                 inputMode="email"
               />
               <KioskInput
-                label="Phone"
+                label={t("pages.articleChrome.phone")}
                 value={phone}
                 onChange={setPhone}
                 type="tel"
@@ -246,9 +244,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
             </div>
 
             <div>
-              <div className="mb-2 text-sm font-medium text-slate-300">
-                Working with an agent?
-              </div>
+              <div className="mb-2 text-sm font-medium text-slate-300">{t("pages.openHouseKiosk.workingWithAgent")}</div>
               <div className="grid grid-cols-2 gap-3">
                 <BigToggle
                   selected={!isBuyerAgented}
@@ -258,19 +254,19 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
                 <BigToggle
                   selected={isBuyerAgented}
                   onClick={() => setBuyerAgented(true)}
-                  label="Yes"
+                  label={t("pages.openHouseKiosk.yes")}
                 />
               </div>
               {isBuyerAgented ? (
                 <div className="mt-3 grid grid-cols-2 gap-3 rounded-xl bg-slate-800 p-4">
                   <KioskInput
-                    label="Agent name"
+                    label={t("pages.openHouseKiosk.agentName")}
                     value={buyerAgentName}
                     onChange={setBuyerAgentName}
                     compact
                   />
                   <KioskInput
-                    label="Brokerage"
+                    label={t("pages.openHouseKiosk.brokerage")}
                     value={buyerAgentBrokerage}
                     onChange={setBuyerAgentBrokerage}
                     compact
@@ -283,9 +279,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
           {/* RIGHT: timeline + consent + submit */}
           <section className="space-y-4">
             <div>
-              <div className="mb-2 text-sm font-medium text-slate-300">
-                When are you looking to buy?
-              </div>
+              <div className="mb-2 text-sm font-medium text-slate-300">{t("pages.openHouseKiosk.whenBuying")}</div>
               <div className="grid grid-cols-2 gap-3">
                 {TIMELINE_OPTIONS.map((opt) => (
                   <button
@@ -313,11 +307,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
                   onChange={(e) => setMarketingConsent(e.target.checked)}
                   className="mt-1 h-5 w-5 rounded border-slate-500 bg-slate-900"
                 />
-                <span className="text-slate-200">
-                  Send me similar listings and follow-up info.
-                  <span className="mt-1 block text-xs text-slate-400">
-                    You can reply STOP anytime.
-                  </span>
+                <span className="text-slate-200">{t("pages.openHouseKiosk.sendListings")}<span className="mt-1 block text-xs text-slate-400">{t("pages.openHouseKiosk.replyStop")}</span>
                 </span>
               </label>
             ) : null}

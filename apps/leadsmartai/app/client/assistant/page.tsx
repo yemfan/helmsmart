@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useClientLeadId } from "@/components/client/useClientLeadId";
 
 type MeRes = { ok: boolean; primaryLeadId?: string | null };
 
 export default function ClientAssistantPage() {
+  const { t } = useTranslation("dashboard");
   const [me, setMe] = useState<MeRes | null>(null);
   const [q, setQ] = useState("");
   const [a, setA] = useState<string | null>(null);
@@ -44,16 +46,14 @@ export default function ClientAssistantPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-slate-900">AI assistant</h1>
-        <p className="text-sm text-slate-600 mt-1">
-          Plain-language help for process questions — not legal or tax advice.
-        </p>
+        <h1 className="text-xl font-bold text-slate-900">{t("pages.clientPortal.assistant")}</h1>
+        <p className="text-sm text-slate-600 mt-1">{t("pages.clientPortal.assistantSub")}</p>
       </div>
 
       <form onSubmit={ask} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3">
         <textarea
           className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm min-h-[100px]"
-          placeholder="e.g. What happens after we go under contract?"
+          placeholder={t("pages.clientPortal.assistantPlaceholder")}
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />

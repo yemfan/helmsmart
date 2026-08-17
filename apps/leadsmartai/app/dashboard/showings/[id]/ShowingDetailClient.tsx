@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import type {
   OverallReaction,
   ShowingFeedbackRow,
@@ -25,15 +27,15 @@ const STATUS_BADGE: Record<ShowingStatus, string> = {
   no_show: "bg-amber-100 text-amber-800",
 };
 
-const REACTION_LABEL: Record<OverallReaction, { emoji: string; label: string; tone: string }> = {
-  love: { emoji: "❤️", label: "Love it", tone: "bg-red-50 border-red-200 text-red-700" },
-  like: { emoji: "👍", label: "Like it", tone: "bg-green-50 border-green-200 text-green-700" },
-  maybe: { emoji: "🤔", label: "Maybe", tone: "bg-amber-50 border-amber-200 text-amber-700" },
-  pass: { emoji: "👎", label: "Pass", tone: "bg-slate-50 border-slate-200 text-slate-700" },
+const REACTION_LABEL: Record<OverallReaction, { emoji: string; labelKey: string; tone: string }> = {
+  love: { emoji: "❤️", labelKey: "pages.showingDetail.reaction.love", tone: "bg-red-50 border-red-200 text-red-700" },
+  like: { emoji: "👍", labelKey: "pages.showingDetail.reaction.like", tone: "bg-green-50 border-green-200 text-green-700" },
+  maybe: { emoji: "🤔", labelKey: "pages.showingDetail.reaction.maybe", tone: "bg-amber-50 border-amber-200 text-amber-700" },
+  pass: { emoji: "👎", labelKey: "pages.showingDetail.reaction.pass", tone: "bg-slate-50 border-slate-200 text-slate-700" },
 };
 
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
+function formatDateTime(iso: string, locale: string): string {
+  return new Date(iso).toLocaleString(locale, {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -54,6 +56,8 @@ export function ShowingDetailClient({
   contactName: string | null;
   siblings: ShowingListItem[];
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const router = useRouter();
   const [status, setStatus] = useState<ShowingStatus>(showing.status);
   const [feedback, setFeedback] = useState<ShowingFeedbackRow | null>(initialFeedback);
@@ -77,7 +81,7 @@ export function ShowingDetailClient({
         setStatus(showing.status);
         return;
       }
-      setMsg({ tone: "ok", text: "Status saved." });
+      setMsg({ tone: "ok", text: t("pages.showingDetail.statusSaved") });
     } catch (e) {
       setMsg({ tone: "err", text: e instanceof Error ? e.message : "Network error." });
       setStatus(showing.status);
@@ -107,7 +111,7 @@ export function ShowingDetailClient({
         return;
       }
       if (body.feedback) setFeedback(body.feedback);
-      setMsg({ tone: "ok", text: "Feedback saved." });
+      setMsg({ tone: "ok", text: t("pages.showingDetail.feedbackSaved") });
     } catch (e) {
       setMsg({ tone: "err", text: e instanceof Error ? e.message : "Network error." });
     } finally {
@@ -141,9 +145,7 @@ export function ShowingDetailClient({
     <div className="mx-auto max-w-5xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/showings" className="hover:underline">
-            Showings
-          </Link>
+          <Link href="/dashboard/showings" className="hover:underline">{t("pages.showingDetail.showings")}</Link>
           {" / "}
           <span>{showing.property_address}</span>
         </div>
@@ -151,10 +153,9 @@ export function ShowingDetailClient({
           {showing.property_address}
         </h1>
         <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
-          <span>{formatDateTime(showing.scheduled_at)}</span>
+          <span>{formatDateTime(showing.scheduled_at, locale)}</span>
           <span className="text-slate-400">·</span>
-          <span>
-            With{" "}
+          <span>{t("pages.dashFragments.withWord")}{" "}
             <Link
               href={`/dashboard/showings?contactId=${encodeURIComponent(showing.contact_id)}`}
               className="text-blue-600 hover:underline"
@@ -186,11 +187,11 @@ export function ShowingDetailClient({
       <div className="grid gap-5 md:grid-cols-3">
         {/* LEFT: details + status + feedback */}
         <div className="space-y-4 md:col-span-2">
-          <Card title="Visit details">
+          <Card title={t("pages.showingDetail.visitDetails")}>
             <dl className="grid grid-cols-2 gap-3 text-sm">
-              <Detail label="MLS #" value={showing.mls_number} />
+              <Detail label={t("pages.showingDetail.mls")} value={showing.mls_number} />
               <Detail
-                label="Listing URL"
+                label={t("pages.showingDetail.listingUrl")}
                 value={
                   showing.mls_url ? (
                     <a
@@ -198,21 +199,19 @@ export function ShowingDetailClient({
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline"
-                    >
-                      Open listing
-                    </a>
+                    >{t("pages.showingDetail.openListing")}</a>
                   ) : null
                 }
               />
-              <Detail label="Duration" value={showing.duration_minutes ? `${showing.duration_minutes} min` : null} />
-              <Detail label="Location" value={[showing.city, showing.state, showing.zip].filter(Boolean).join(", ") || null} />
+              <Detail label={t("pages.showingDetail.duration")} value={showing.duration_minutes ? `${showing.duration_minutes} min` : null} />
+              <Detail label={t("pages.showingDetail.location")} value={[showing.city, showing.state, showing.zip].filter(Boolean).join(", ") || null} />
               <Detail
-                label="Access"
+                label={t("pages.showingDetail.access")}
                 value={showing.access_notes || null}
                 wide
               />
               <Detail
-                label="Listing agent"
+                label={t("pages.showingDetail.listingAgent")}
                 wide
                 value={
                   showing.listing_agent_name || showing.listing_agent_email || showing.listing_agent_phone ? (
@@ -228,11 +227,11 @@ export function ShowingDetailClient({
                   ) : null
                 }
               />
-              <Detail label="Notes" value={showing.notes} wide />
+              <Detail label={t("pages.showingDetail.notes")} value={showing.notes} wide />
             </dl>
           </Card>
 
-          <Card title="Status">
+          <Card title={t("pages.showingDetail.status")}>
             <div className="flex flex-wrap gap-2">
               {(["scheduled", "attended", "cancelled", "no_show"] as ShowingStatus[]).map((s) => (
                 <button
@@ -251,12 +250,11 @@ export function ShowingDetailClient({
               ))}
             </div>
             <p className="mt-2 text-[11px] text-slate-500">
-              Mark the showing <strong>Attended</strong> once you&apos;ve finished the visit — that
-              unlocks the feedback form and makes the showing count toward your buyer&apos;s stats.
+              {t("pages.showingDetail.markBefore")} <strong>{t("pages.showingDetail.attended")}</strong>{t("pages.showingDetail.markAfter")}
             </p>
           </Card>
 
-          <Card title="Buyer feedback">
+          <Card title={t("pages.showingDetail.buyerFeedback")}>
             <FeedbackEditor
               feedback={feedback}
               saving={savingFeedback}
@@ -268,7 +266,7 @@ export function ShowingDetailClient({
 
         {/* RIGHT: sibling showings + quick actions */}
         <div className="space-y-4">
-          <Card title="Quick actions">
+          <Card title={t("pages.showingDetail.quickActions")}>
             <div className="space-y-2">
               {/* "Create offer" is always available so an agent can
                   start drafting before/after the showing regardless
@@ -290,9 +288,7 @@ export function ShowingDetailClient({
                   >
                     📝 Create offer
                     {isHot ? (
-                      <div className="text-[11px] font-normal text-amber-700">
-                        Buyer flagged this one as would-offer.
-                      </div>
+                      <div className="text-[11px] font-normal text-amber-700">{t("pages.showingDetail.wouldOffer")}</div>
                     ) : null}
                   </Link>
                 );
@@ -311,7 +307,7 @@ export function ShowingDetailClient({
               >
                 ✉️ Thank listing agent
                 {!showing.listing_agent_email ? (
-                  <div className="text-[11px] text-slate-400">Add listing agent email to enable</div>
+                  <div className="text-[11px] text-slate-400">{t("pages.showingDetail.needAgentEmail")}</div>
                 ) : null}
               </a>
               <a
@@ -336,7 +332,7 @@ export function ShowingDetailClient({
 
           <Card title={`Other showings with ${contactName ?? "this buyer"} (${siblings.length})`}>
             {siblings.length === 0 ? (
-              <p className="text-sm text-slate-500">No other showings logged yet.</p>
+              <p className="text-sm text-slate-500">{t("pages.showingDetail.noOtherShowings")}</p>
             ) : (
               <ul className="space-y-2 text-sm">
                 {siblings.map((s) => (
@@ -347,7 +343,7 @@ export function ShowingDetailClient({
                     >
                       <div className="font-medium text-slate-900">{s.property_address}</div>
                       <div className="mt-0.5 flex items-center gap-2 text-[11px] text-slate-500">
-                        <span>{formatDateTime(s.scheduled_at)}</span>
+                        <span>{formatDateTime(s.scheduled_at, locale)}</span>
                         {s.feedback_reaction ? (
                           <span>
                             · {REACTION_LABEL[s.feedback_reaction].emoji}
@@ -382,10 +378,11 @@ function FeedbackEditor({
   disabled: boolean;
   onChange: (patch: Partial<ShowingFeedbackRow>) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   if (disabled) {
     return (
       <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500">
-        Mark this showing <strong>Attended</strong> to capture feedback.
+        {t("pages.showingDetail.feedbackBefore")} <strong>{t("pages.showingDetail.attended")}</strong>{t("pages.showingDetail.feedbackAfter")}
       </div>
     );
   }
@@ -393,7 +390,7 @@ function FeedbackEditor({
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs font-medium text-slate-700">Overall reaction</label>
+        <label className="block text-xs font-medium text-slate-700">{t("pages.showingDetail.overallReaction")}</label>
         <div className="mt-1 flex flex-wrap gap-2">
           {(Object.keys(REACTION_LABEL) as OverallReaction[]).map((r) => {
             const selected = feedback?.overall_reaction === r;
@@ -407,7 +404,7 @@ function FeedbackEditor({
                 className={`rounded-lg border px-3 py-1.5 text-sm ${selected ? conf.tone : "border-slate-200 bg-white hover:bg-slate-50"} disabled:opacity-60`}
               >
                 <span className="mr-1">{conf.emoji}</span>
-                {conf.label}
+                {t(conf.labelKey)}
               </button>
             );
           })}
@@ -415,7 +412,7 @@ function FeedbackEditor({
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-slate-700">Rating (1–5)</label>
+        <label className="block text-xs font-medium text-slate-700">{t("pages.showingDetail.rating")}</label>
         <div className="mt-1 flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((n) => {
             const active = (feedback?.rating ?? 0) >= n;
@@ -438,69 +435,67 @@ function FeedbackEditor({
               onClick={() => onChange({ rating: null })}
               disabled={saving}
               className="ml-2 text-[11px] text-slate-500 hover:underline"
-            >
-              Clear
-            </button>
+            >{t("pages.showingDetail.clear")}</button>
           ) : null}
         </div>
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
         <div>
-          <label className="block text-xs font-medium text-slate-700">What worked</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.showingDetail.whatWorked")}</label>
           <textarea
             defaultValue={feedback?.pros ?? ""}
             onBlur={(e) => onChange({ pros: e.target.value.trim() || null })}
             rows={3}
-            placeholder="Natural light, kitchen, walkable block…"
+            placeholder={t("pages.showingDetail.whatWorkedPlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-700">Concerns</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.showingDetail.concerns")}</label>
           <textarea
             defaultValue={feedback?.cons ?? ""}
             onBlur={(e) => onChange({ cons: e.target.value.trim() || null })}
             rows={3}
-            placeholder="Price, condition, schools, commute…"
+            placeholder={t("pages.showingDetail.concernsPlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-slate-700">Internal notes</label>
+        <label className="block text-xs font-medium text-slate-700">{t("pages.showingDetail.internalNotes")}</label>
         <textarea
           defaultValue={feedback?.notes ?? ""}
           onBlur={(e) => onChange({ notes: e.target.value.trim() || null })}
           rows={2}
-          placeholder="Anything else worth remembering when the next similar property hits the market."
+          placeholder={t("pages.showingDetail.internalNotesPlaceholder")}
           className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
         />
       </div>
 
       <div className="flex flex-wrap gap-4 border-t border-slate-100 pt-3">
         <ConcernCheckbox
-          label="Would write an offer"
+          label={t("pages.showingDetail.wouldOffer")}
           checked={feedback?.would_offer ?? false}
           onChange={(v) => onChange({ would_offer: v })}
           accent="amber"
           disabled={saving}
         />
         <ConcernCheckbox
-          label="Price concern"
+          label={t("pages.showingDetail.priceConcern")}
           checked={feedback?.price_concerns ?? false}
           onChange={(v) => onChange({ price_concerns: v })}
           disabled={saving}
         />
         <ConcernCheckbox
-          label="Location concern"
+          label={t("pages.showingDetail.locationConcern")}
           checked={feedback?.location_concerns ?? false}
           onChange={(v) => onChange({ location_concerns: v })}
           disabled={saving}
         />
         <ConcernCheckbox
-          label="Condition concern"
+          label={t("pages.showingDetail.conditionConcern")}
           checked={feedback?.condition_concerns ?? false}
           onChange={(v) => onChange({ condition_concerns: v })}
           disabled={saving}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PhoneOutgoing, Search, User2, X, Users, ClipboardList, Megaphone } from "lucide-react";
 
 type PickContact = { id: string; name: string; phone: string };
@@ -21,6 +22,7 @@ const PURPOSES: { key: Purpose; label: string; icon: typeof Users }[] = [
  * fields) or type an ad-hoc number.
  */
 export default function OutboundCallPanel() {
+  const { t } = useTranslation("dashboard");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<"idle" | "calling" | "placed" | "error">("idle");
@@ -98,7 +100,7 @@ export default function OutboundCallPanel() {
     if (!phone.trim() || status === "calling") return;
     if (needsDetail && !detail.trim()) {
       setStatus("error");
-      setMessage(purpose === "survey" ? "Add the survey questions first." : "Add the announcement message first.");
+      setMessage(purpose === "survey" ? t("pages.outboundCall.needSurvey") : t("pages.outboundCall.needAnnouncement"));
       return;
     }
     setStatus("calling");
@@ -131,11 +133,8 @@ export default function OutboundCallPanel() {
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-900">AI Concierge</h2>
-        <p className="mt-0.5 mb-4 text-xs text-slate-500">
-          Lucy dials the lead from your receptionist number, opens by disclosing she&apos;s an AI
-          assistant, and follows up on your behalf — then logs the call below in Inbound &amp; outbound activity.
-        </p>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.outboundCall.heading")}</h2>
+        <p className="mt-0.5 mb-4 text-xs text-slate-500">{t("pages.outboundCall.intro")}</p>
 
         {/* Purpose picker */}
         <div className="mb-3 flex flex-wrap gap-2">
@@ -162,9 +161,7 @@ export default function OutboundCallPanel() {
 
         {/* Contact picker */}
         <div ref={boxRef} className="relative mb-3">
-          <span className="mb-1 block text-[11px] font-medium text-slate-500">
-            Call a contact
-          </span>
+          <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.outboundCall.callContact")}</span>
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" strokeWidth={2} />
             <input
@@ -189,7 +186,7 @@ export default function OutboundCallPanel() {
               <button
                 type="button"
                 onClick={clearPick}
-                aria-label="Clear selected contact"
+                aria-label={t("pages.outboundCall.clearContact")}
                 className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
               >
                 <X className="h-4 w-4" strokeWidth={2} />
@@ -200,7 +197,7 @@ export default function OutboundCallPanel() {
           {open && contacts.length > 0 && (
             <div className="absolute z-10 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
               {filtered.length === 0 ? (
-                <div className="px-3 py-2 text-xs text-slate-400">No matching contacts.</div>
+                <div className="px-3 py-2 text-xs text-slate-400">{t("pages.outboundCall.noMatches")}</div>
               ) : (
                 filtered.map((c) => (
                   <button
@@ -225,11 +222,11 @@ export default function OutboundCallPanel() {
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <span className="mb-1 block text-[11px] font-medium text-slate-500">Lead name (optional)</span>
-            <input className={input} value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Hong Yang" />
+            <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.outboundCall.leadName")}</span>
+            <input className={input} value={name} onChange={(e) => setName(e.target.value)} placeholder={t("pages.outboundCall.leadNamePlaceholder")} />
           </div>
           <div>
-            <span className="mb-1 block text-[11px] font-medium text-slate-500">Phone number</span>
+            <span className="mb-1 block text-[11px] font-medium text-slate-500">{t("pages.outboundCall.phone")}</span>
             <input className={input} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (626) 555-1234" />
           </div>
         </div>
@@ -271,10 +268,7 @@ export default function OutboundCallPanel() {
         </div>
       </div>
 
-      <p className="text-xs text-slate-400">
-        Outbound calls go out from your receptionist number and require Retell calling credits.
-        Need to reach several people at once? Select multiple contacts to call them in one batch.
-      </p>
+      <p className="text-xs text-slate-400">{t("pages.outboundCall.creditsNote")}</p>
     </div>
   );
 }

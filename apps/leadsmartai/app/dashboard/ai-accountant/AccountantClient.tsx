@@ -114,9 +114,7 @@ export default function AccountantClient({
           <Link href="/dashboard/performance" className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.accountant.revenueForecast")}</Link>
         </div>
         {pipelineDeals.length === 0 ? (
-          <p className="py-6 text-center text-sm text-gray-400">
-            Your AI Accountant is ready — when a deal goes under contract, its expected commission shows up here.
-          </p>
+          <p className="py-6 text-center text-sm text-gray-400">{t("pages.accountant.ready")}</p>
         ) : (
           <div className="space-y-2">
             {pipelineDeals.map((d) => (
@@ -128,9 +126,7 @@ export default function AccountantClient({
                   </p>
                 </div>
                 {d.commission_missing ? (
-                  <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                    commission details missing
-                  </span>
+                  <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">{t("pages.accountant.commissionMissing")}</span>
                 ) : (
                   <span className="shrink-0 text-sm font-semibold text-gray-900">{money(d.expected_net ?? 0, locale)}</span>
                 )}
@@ -157,9 +153,7 @@ export default function AccountantClient({
             </div>
           )}
           {recentExpenses.length === 0 ? (
-            <p className="py-6 text-center text-sm text-gray-400">
-              No expenses logged yet — track them and your AI Accountant keeps the categories clean for tax time.
-            </p>
+            <p className="py-6 text-center text-sm text-gray-400">{t("pages.accountant.noExpenses")}</p>
           ) : (
             <div className="space-y-2">
               {recentExpenses.map((e) => (
@@ -178,9 +172,7 @@ export default function AccountantClient({
         {/* ── Receivables — the side story (referral fees, rebills) ── */}
         <section className="min-w-0 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-900">
-              Receivables
-              {overdueReceivables.length > 0 && (
+            <h2 className="text-sm font-semibold text-gray-900">{t("pages.dashFragments.receivables")}{overdueReceivables.length > 0 && (
                 <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
                   {overdueReceivables.length} overdue
                 </span>
@@ -190,7 +182,7 @@ export default function AccountantClient({
           </div>
           <p className="mb-2 text-[11px] text-gray-400">{t("tips.accountantOther")}</p>
           {invoices.length === 0 ? (
-            <p className="py-4 text-center text-sm text-gray-400">Nothing outstanding — commissions are tracked in the pipeline above.</p>
+            <p className="py-4 text-center text-sm text-gray-400">{t("pages.accountant.nothingOutstanding")}</p>
           ) : (
             <div className="space-y-2">
               {[...overdueReceivables, ...invoices.filter((i) => i.status !== "overdue")].slice(0, 5).map((i) => (

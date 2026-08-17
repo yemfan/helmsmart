@@ -543,9 +543,7 @@ export default function TopBar({
             <Link
               href="/dashboard/credits"
               className="hidden md:inline-flex h-10 items-center justify-center rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 text-xs font-semibold text-white shadow-md shadow-amber-500/20 transition hover:from-amber-600 hover:to-orange-600 md:text-sm"
-            >
-              Upgrade
-            </Link>
+            >{t("pages.topbar.upgrade")}</Link>
           ) : null}
 
           {/*

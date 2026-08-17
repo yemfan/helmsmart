@@ -2,6 +2,7 @@ import { requireAgentAccess } from "@/lib/auth/requireAgentAccess";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { KpiCard } from "@/components/dashboard/KpiCard";
 import { SectionCard } from "@/components/dashboard/SectionCard";
+import { getServerT } from "@/lib/i18n/server";
 
 const hotLeads = [
   { name: "Sarah Chen", city: "Arcadia", score: 88, status: "Hot Lead" },
@@ -21,24 +22,25 @@ export const metadata = {
 };
 
 export default async function AgentDashboardPage() {
+  const t = await getServerT();
   await requireAgentAccess();
 
   return (
     <DashboardShell
-      title="Agent Dashboard"
+      title={t("pages.agentDashboardMock.dashboardAria", { ns: "dashboard" })}
       subtitle="Focus on the highest-intent leads and close faster."
       kpis={
         <>
-          <KpiCard label="New Leads" value="12" subtext="+3 from yesterday" />
-          <KpiCard label="Hot Leads" value="5" subtext="Need fast follow-up" />
-          <KpiCard label="Follow-Ups Due" value="8" subtext="Today" />
-          <KpiCard label="Active Deals" value="6" subtext="2 offers pending" />
-          <KpiCard label="Closed This Month" value="4" subtext="$78K est. GCI" />
+          <KpiCard label={t("pages.agentDashboardMock.newLeads", { ns: "dashboard" })} value="12" subtext="+3 from yesterday" />
+          <KpiCard label={t("pages.agentDashboardMock.hotLeads", { ns: "dashboard" })} value="5" subtext="Need fast follow-up" />
+          <KpiCard label={t("pages.agentDashboardMock.followUpsDue", { ns: "dashboard" })} value="8" subtext="Today" />
+          <KpiCard label={t("pages.agentDashboardMock.activeDeals", { ns: "dashboard" })} value="6" subtext="2 offers pending" />
+          <KpiCard label={t("pages.agentDashboardMock.closedThisMonth", { ns: "dashboard" })} value="4" subtext="$78K est. GCI" />
         </>
       }
     >
       <div className="grid gap-6 xl:grid-cols-[1.4fr_0.8fr]">
-        <SectionCard title="Hot Leads / Lead Inbox">
+        <SectionCard title={t("pages.agentDashboardMock.leadInbox", { ns: "dashboard" })}>
           <div className="space-y-3">
             {hotLeads.map((lead) => (
               <div
@@ -57,26 +59,18 @@ export default async function AgentDashboardPage() {
           </div>
         </SectionCard>
 
-        <SectionCard title="AI Actions">
+        <SectionCard title={t("pages.agentDashboardMock.aiActions", { ns: "dashboard" })}>
           <div className="grid gap-3">
-            <button className="rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white">
-              Send AI Follow-Up
-            </button>
-            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">
-              Generate Property Comparison
-            </button>
-            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">
-              Draft Reply
-            </button>
-            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">
-              Generate CMA Summary
-            </button>
+            <button className="rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white">{t("pages.agentDashboardMock.sendFollowUp", { ns: "dashboard" })}</button>
+            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">{t("pages.agentDashboardMock.generateComparison", { ns: "dashboard" })}</button>
+            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">{t("pages.agentDashboardMock.draftReply", { ns: "dashboard" })}</button>
+            <button className="rounded-xl border px-4 py-3 text-sm font-medium text-gray-900">{t("pages.agentDashboardMock.generateCma", { ns: "dashboard" })}</button>
           </div>
         </SectionCard>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-        <SectionCard title="Pipeline Snapshot">
+        <SectionCard title={t("pages.agentDashboardMock.pipelineSnapshot", { ns: "dashboard" })}>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-6">
             {[
               ["New", 12],
@@ -94,7 +88,7 @@ export default async function AgentDashboardPage() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Alerts">
+        <SectionCard title={t("pages.agentDashboardMock.alerts", { ns: "dashboard" })}>
           <div className="space-y-3">
             {alerts.map((alert) => (
               <div key={alert} className="rounded-xl bg-gray-50 p-4 text-sm text-gray-700">
@@ -106,19 +100,19 @@ export default async function AgentDashboardPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-        <SectionCard title="Tasks / Follow-Up Due">
+        <SectionCard title={t("pages.agentDashboardMock.tasksDue", { ns: "dashboard" })}>
           <ul className="space-y-3 text-sm text-gray-700">
-            <li>Call Sarah Chen about Arcadia listing</li>
-            <li>Send comps to David Lin</li>
-            <li>Follow up with seller lead from Pasadena</li>
+            <li>{t("pages.agentDashboardMock.task1", { ns: "dashboard" })}</li>
+            <li>{t("pages.agentDashboardMock.task2", { ns: "dashboard" })}</li>
+            <li>{t("pages.agentDashboardMock.task3", { ns: "dashboard" })}</li>
           </ul>
         </SectionCard>
 
-        <SectionCard title="Recent Activity">
+        <SectionCard title={t("pages.agentDashboardMock.recentActivity", { ns: "dashboard" })}>
           <ul className="space-y-3 text-sm text-gray-700">
-            <li>Buyer opened property comparison report</li>
-            <li>Seller requested updated valuation</li>
-            <li>Lead score increased for San Gabriel inquiry</li>
+            <li>{t("pages.agentDashboardMock.act1", { ns: "dashboard" })}</li>
+            <li>{t("pages.agentDashboardMock.act2", { ns: "dashboard" })}</li>
+            <li>{t("pages.agentDashboardMock.act3", { ns: "dashboard" })}</li>
           </ul>
         </SectionCard>
       </div>

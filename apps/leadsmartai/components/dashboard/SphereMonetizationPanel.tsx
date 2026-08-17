@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import {
   filterMonetizationRows,
@@ -46,6 +48,8 @@ const FILTERS: { value: MonetizationFilter; label: string; hint: string }[] = [
 export default function SphereMonetizationPanel(
   props: { defaultLimitPerSide?: number } = {},
 ) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const limitPerSide = props.defaultLimitPerSide ?? 100;
 
   const [rows, setRows] = useState<RowWithEnrollment[]>([]);
@@ -119,10 +123,8 @@ export default function SphereMonetizationPanel(
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <header className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-slate-900">Sphere monetization</h2>
-          <p className="mt-0.5 text-xs text-slate-600">
-            Past clients + sphere with their seller-side AND buyer-side scores side-by-side. The combined score surfaces the highest-leverage contacts overall.
-          </p>
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.sphereMonetization.title")}</h2>
+          <p className="mt-0.5 text-xs text-slate-600">{t("pages.sphereMonetization.intro")}</p>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {FILTERS.map((f) => (
@@ -157,8 +159,7 @@ export default function SphereMonetizationPanel(
             ))}
           </ul>
         ) : error ? (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Couldn&apos;t load monetization view: {error}
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadMonetization")} {error}
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
@@ -296,39 +297,35 @@ function SidePill({
 }
 
 function DripBadge({ enrollment }: { enrollment: EnrollmentInfo }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   if (enrollment.status === "completed") {
     return (
       <span
         className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700 ring-1 ring-emerald-200"
-        title="Sphere drip cadence completed"
-      >
-        Drip done
-      </span>
+        title={t("pages.sphereMonetization.dripDoneTip")}
+      >{t("pages.sphereMonetization.dripDone")}</span>
     );
   }
   if (enrollment.status === "exited") {
     return (
       <span
         className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 ring-1 ring-slate-200"
-        title="Removed from sphere drip"
-      >
-        Drip exited
-      </span>
+        title={t("pages.sphereMonetization.dripExitedTip")}
+      >{t("pages.sphereMonetization.dripExited")}</span>
     );
   }
   if (enrollment.status === "paused") {
     return (
       <span
         className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 ring-1 ring-amber-200"
-        title="Sphere drip paused"
-      >
-        Drip paused
-      </span>
+        title={t("pages.sphereMonetization.dripPausedTip")}
+      >{t("pages.sphereMonetization.dripPaused")}</span>
     );
   }
   // Active.
   const stepLabel = `${enrollment.currentStep}/${enrollment.totalSteps}`;
-  const dueLabel = enrollment.nextDueAt ? formatDueRelative(enrollment.nextDueAt) : null;
+  const dueLabel = enrollment.nextDueAt ? formatDueRelative(enrollment.nextDueAt, t, locale) : null;
   return (
     <span
       className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-700 ring-1 ring-indigo-200"
@@ -337,23 +334,26 @@ function DripBadge({ enrollment }: { enrollment: EnrollmentInfo }) {
           ? `In sphere drip — step ${enrollment.currentStep} of ${enrollment.totalSteps} (next due ${enrollment.nextDueAt})`
           : `In sphere drip — step ${enrollment.currentStep} of ${enrollment.totalSteps}`
       }
-    >
-      Drip {stepLabel}
+    >{t("pages.dashFragments.drip")} {stepLabel}
       {dueLabel ? <span className="font-normal normal-case text-indigo-500"> · {dueLabel}</span> : null}
     </span>
   );
 }
 
-function formatDueRelative(iso: string): string {
+type Translate = (k: string, o?: Record<string, unknown>) => string;
+
+function formatDueRelative(iso: string, t: Translate, locale: string): string {
   const ts = Date.parse(iso);
   if (!Number.isFinite(ts)) return "";
   const diffDays = Math.round((ts - Date.now()) / 86_400_000);
-  if (diffDays < -1) return `${-diffDays}d overdue`;
-  if (diffDays === -1) return "1d overdue";
-  if (diffDays === 0) return "due today";
-  if (diffDays === 1) return "due tmrw";
-  if (diffDays <= 30) return `due in ${diffDays}d`;
-  return `due ${new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+  if (diffDays < -1) return t("pages.sphereMonetization.overdueDays", { n: -diffDays });
+  if (diffDays === -1) return t("pages.sphereMonetization.overdueOne");
+  if (diffDays === 0) return t("pages.sphereMonetization.dueToday");
+  if (diffDays === 1) return t("pages.sphereMonetization.dueTomorrow");
+  if (diffDays <= 30) return t("pages.sphereMonetization.dueInDays", { n: diffDays });
+  return t("pages.sphereMonetization.dueOn", {
+    date: new Date(ts).toLocaleDateString(locale, { month: "short", day: "numeric" }),
+  });
 }
 
 function LifecyclePill({ stage }: { stage: MonetizationRow["lifecycleStage"] }) {

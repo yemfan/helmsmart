@@ -5,16 +5,18 @@ import JsonLd from "@/components/JsonLd";
 import { getSiteUrl } from "@/lib/siteUrl";
 import { getResearchReport } from "@/lib/research/db";
 import type { ResearchReportRow, ResearchSource } from "@/lib/research/types";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug: string }> };
 
-function formatDate(d: string): string {
+function formatDate(d: string, locale: string): string {
   const dt = new Date(`${d}T00:00:00Z`);
   return Number.isNaN(dt.getTime())
     ? d
-    : dt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+    : dt.toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -48,6 +50,8 @@ function sourceForStat(report: ResearchReportRow, idx: number): ResearchSource |
 }
 
 export default async function ResearchReportPage({ params }: Props) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const { slug } = await params;
   const report = await getResearchReport(slug);
   if (!report) notFound();
@@ -97,29 +101,26 @@ export default async function ResearchReportPage({ params }: Props) {
             CloseBoss
           </Link>
           <span className="mx-2 text-slate-400">/</span>
-          <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            Data Center
-          </Link>
+          <Link href="/data" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.articleChrome.dataCenter", { ns: "dashboard" })}</Link>
           <span className="mx-2 text-slate-400">/</span>
-          <span className="text-slate-600">Report</span>
+          <span className="text-slate-600">{t("pages.dataCenterPages.report", { ns: "dashboard" })}</span>
         </nav>
 
         <header className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">
-            {report.period_label ?? formatDate(report.published_date)}
+            {report.period_label ?? formatDate(report.published_date, locale)}
           </p>
           <h1 className="text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl">
             {report.title}
           </h1>
           {report.dek && <p className="text-lg leading-relaxed text-slate-600">{report.dek}</p>}
-          <p className="text-xs text-slate-500">
-            Published {formatDate(report.published_date)} · Grounded in the cited sources below —
+          <p className="text-xs text-slate-500">{t("pages.dashFragments.published", { ns: "dashboard" })} {formatDate(report.published_date, locale)} · Grounded in the cited sources below —
             quote them with confidence.
           </p>
         </header>
 
         {keyStats.length > 0 && (
-          <section aria-label="Key stats" className="grid gap-3 sm:grid-cols-2">
+          <section aria-label={t("pages.dataCenterPages.keyStatsAria", { ns: "dashboard" })} className="grid gap-3 sm:grid-cols-2">
             {keyStats.map((stat, i) => {
               const src = sourceForStat(report, stat.sourceIndex);
               return (
@@ -134,8 +135,7 @@ export default async function ResearchReportPage({ params }: Props) {
                       target="_blank"
                       rel="noopener"
                       className="mt-1 inline-block text-xs text-[#0072ce] hover:underline"
-                    >
-                      Source: {src.publisher || src.title}
+                    >{t("pages.dashFragments.source", { ns: "dashboard" })} {src.publisher || src.title}
                     </a>
                   )}
                 </div>
@@ -145,7 +145,7 @@ export default async function ResearchReportPage({ params }: Props) {
         )}
 
         {dataTable && (
-          <section aria-label="Data table" className="space-y-2">
+          <section aria-label={t("pages.dataCenterPages.dataTableAria", { ns: "dashboard" })} className="space-y-2">
             <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-left">
@@ -174,7 +174,7 @@ export default async function ResearchReportPage({ params }: Props) {
           </section>
         )}
 
-        <section aria-label="Analysis" className="space-y-8">
+        <section aria-label={t("pages.dataCenterPages.analysisAria", { ns: "dashboard" })} className="space-y-8">
           {sections.map((sec, i) => (
             <div key={i} className="border-t border-slate-200 pt-8 first:border-t-0 first:pt-0">
               {sec.heading && (
@@ -190,8 +190,8 @@ export default async function ResearchReportPage({ params }: Props) {
         </section>
 
         {faqs.length > 0 && (
-          <section aria-label="FAQ" className="space-y-4">
-            <h2 className="text-xl font-bold tracking-tight text-slate-900">FAQ</h2>
+          <section aria-label={t("pages.articleChrome.faq", { ns: "dashboard" })} className="space-y-4">
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">{t("pages.articleChrome.faq", { ns: "dashboard" })}</h2>
             <div className="space-y-3">
               {faqs.map((f, i) => (
                 <details
@@ -210,12 +210,9 @@ export default async function ResearchReportPage({ params }: Props) {
         )}
 
         {sources.length > 0 && (
-          <section aria-label="Sources" className="space-y-3 border-t border-slate-200 pt-8">
-            <h2 className="text-lg font-bold tracking-tight text-slate-900">Sources</h2>
-            <p className="text-sm text-slate-500">
-              Every figure in this report links to its primary source. We cite openly so you — and
-              your clients — can verify the numbers.
-            </p>
+          <section aria-label={t("pages.articleChrome.sources", { ns: "dashboard" })} className="space-y-3 border-t border-slate-200 pt-8">
+            <h2 className="text-lg font-bold tracking-tight text-slate-900">{t("pages.articleChrome.sources", { ns: "dashboard" })}</h2>
+            <p className="text-sm text-slate-500">{t("pages.dataCenterPages.citation", { ns: "dashboard" })}</p>
             <ol className="space-y-2 text-sm">
               {sources.map((src, i) => (
                 <li key={i} className="flex gap-2">

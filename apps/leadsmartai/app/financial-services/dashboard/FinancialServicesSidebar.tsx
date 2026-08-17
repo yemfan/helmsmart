@@ -34,6 +34,7 @@ import {
   faRecruits,
 } from "@/lib/financial-services-demo-data";
 import { getFinancialServicesTheme } from "@/lib/financial-services/theme";
+import { useTranslation } from "react-i18next";
 
 type NavItem = {
   href: string;
@@ -238,6 +239,7 @@ export default function FinancialServicesSidebar({
   email: string | null;
   showTeamSection?: boolean;
 }) {
+  const { t } = useTranslation("dashboard");
   const theme = getFinancialServicesTheme();
   const pathname = usePathname() ?? "";
   const sections = buildSections().filter((s) => !s.mdOnly || showTeamSection);
@@ -264,15 +266,13 @@ export default function FinancialServicesSidebar({
           <Sparkles className="h-4 w-4 text-white" />
         </div>
         <div className="min-w-0">
-          <p className="truncate text-xs font-semibold uppercase tracking-wider text-slate-500">
-            LeadSmart AI
-          </p>
+          <p className="truncate text-xs font-semibold uppercase tracking-wider text-slate-500">CloseBoss AI</p>
           {theme.partnerName ? (
             <p className={`truncate text-sm font-bold ${accentText}`}>
               {theme.partnerName}
             </p>
           ) : (
-            <p className="truncate text-sm font-bold text-slate-900">Financial Services</p>
+            <p className="truncate text-sm font-bold text-slate-900">{t("pages.financialServices.section")}</p>
           )}
         </div>
       </div>
@@ -314,9 +314,7 @@ export default function FinancialServicesSidebar({
                       />
                       <span className="flex-1 truncate">{item.label}</span>
                       {item.comingSoon ? (
-                        <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-slate-500">
-                          Soon
-                        </span>
+                        <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-slate-500">{t("pages.financialServices.soon")}</span>
                       ) : item.badge != null ? (
                         <span
                           className={[
@@ -344,14 +342,12 @@ export default function FinancialServicesSidebar({
           <UserCircle2 className="h-7 w-7 shrink-0 text-slate-400" />
           <div className="min-w-0 flex-1">
             <p className="truncate font-medium text-slate-700">{email ?? "Producer"}</p>
-            <p className="text-[10px] uppercase tracking-wider text-slate-400">
-              Producer
-            </p>
+            <p className="text-[10px] uppercase tracking-wider text-slate-400">{t("pages.financialServices.producer")}</p>
           </div>
           <Link
             href="/logout"
             className="rounded-md p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-            aria-label="Sign out"
+            aria-label={t("pages.financialServices.signOut")}
           >
             <LogOut className="h-4 w-4" />
           </Link>

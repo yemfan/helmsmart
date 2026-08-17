@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   AgentMessageSettings,
   ReviewPolicy,
@@ -15,6 +16,7 @@ const DEFAULT_STATE: State = {
 };
 
 export default function ReviewPolicyPanel() {
+  const { t } = useTranslation("dashboard");
   const [state, setState] = useState<State>(DEFAULT_STATE);
   const [saved, setSaved] = useState<State>(DEFAULT_STATE);
   const [onboardingGate, setOnboardingGate] = useState(true);
@@ -113,7 +115,7 @@ export default function ReviewPolicyPanel() {
     <div className="space-y-4">
       <div className="space-y-2">
         <ChoiceItem
-          label="Review each one"
+          label={t("pages.reviewPolicy.reviewEach")}
           sublabel="Safer. Every triggered message becomes a draft in your approval queue. Nothing sends silently."
           note="Recommended for your first 30 days, or if you're coming back after a break."
           recommended={onboardingGate}
@@ -121,14 +123,14 @@ export default function ReviewPolicyPanel() {
           onSelect={() => setState((s) => ({ ...s, reviewPolicy: "review" }))}
         />
         <ChoiceItem
-          label="Autosend everything"
+          label={t("pages.reviewPolicy.autosendAll")}
           sublabel="Faster. Messages go out the moment triggers fire. You'll see them in the history log."
           note="Best once you trust how the templates read in your voice."
           active={state.reviewPolicy === "autosend"}
           onSelect={() => setState((s) => ({ ...s, reviewPolicy: "autosend" }))}
         />
         <ChoiceItem
-          label="Let me pick per category"
+          label={t("pages.reviewPolicy.perCategory")}
           sublabel="Different rules for different types — review sphere outreach, autosend tour confirmations."
           active={state.reviewPolicy === "per_category"}
           onSelect={() => setState((s) => ({ ...s, reviewPolicy: "per_category" }))}
@@ -137,7 +139,7 @@ export default function ReviewPolicyPanel() {
 
       {state.reviewPolicy === "per_category" && (
         <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
-          <div className="text-xs font-semibold text-gray-700">Policy by category</div>
+          <div className="text-xs font-semibold text-gray-700">{t("pages.reviewPolicy.policyByCategory")}</div>
           <CategoryRow
             title="Sphere · past clients"
             description="Home anniversaries, equity updates, dormant re-engage, referral thank-yous."
@@ -172,9 +174,7 @@ export default function ReviewPolicyPanel() {
       )}
 
       <div className="rounded-lg bg-gray-50 border border-gray-200 p-3">
-        <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-          What this means right now
-        </div>
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.reviewPolicy.whatThisMeans")}</div>
         <div className="mt-1 text-sm text-gray-700">
           <EffectiveSummary state={state} />
         </div>
@@ -197,17 +197,17 @@ export default function ReviewPolicyPanel() {
 }
 
 function EffectiveSummary({ state }: { state: State }) {
+  const { t } = useTranslation("dashboard");
   if (state.reviewPolicy === "review") {
-    return <>Every message from every trigger becomes a draft. You&apos;ll get a notification, tap approve, and it sends.</>;
+    return <>{t("pages.reviewPolicy.meansReview")}</>;
   }
   if (state.reviewPolicy === "autosend") {
-    return <>Every message sends the moment its trigger fires. You&apos;ll see them in your history after the fact.</>;
+    return <>{t("pages.reviewPolicy.meansAutosend")}</>;
   }
   const s = state.reviewPolicyByCategory.sphere === "review" ? "reviewed before sending" : "sent automatically";
   const lr = state.reviewPolicyByCategory.lead_response === "review" ? "reviewed before sending" : "sent automatically";
   return (
-    <>
-      Sphere: <strong>{s}</strong>. Lead response: <strong>{lr}</strong>. Lifecycle: always autosend.
+    <>{t("pages.reviewPolicy.sphere")}<strong>{s}</strong>. Lead response: <strong>{lr}</strong>. Lifecycle: always autosend.
     </>
   );
 }
@@ -228,6 +228,7 @@ function ChoiceItem({
   recommended?: boolean;
   onSelect: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <button
       type="button"
@@ -250,9 +251,7 @@ function ChoiceItem({
         <span className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-semibold text-gray-900">{label}</span>
           {recommended && (
-            <span className="inline-flex items-center rounded-full border border-brand-accent/40 bg-brand-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-accent-text">
-              Recommended
-            </span>
+            <span className="inline-flex items-center rounded-full border border-brand-accent/40 bg-brand-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-accent-text">{t("pages.reviewPolicy.recommended")}</span>
           )}
         </span>
         <span className="mt-0.5 block text-xs text-gray-600">{sublabel}</span>

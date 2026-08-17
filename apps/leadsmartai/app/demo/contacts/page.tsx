@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DemoShell, DemoDisabledButton } from "@/components/demo/DemoShell";
 import { DEMO_CONTACTS, type DemoLeadScore } from "@/lib/demo/data";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Demo workspace · Contacts",
@@ -38,7 +39,8 @@ const STAGE_LABEL: Record<string, { label: string; className: string }> = {
   },
 };
 
-export default function DemoContacts() {
+export default async function DemoContacts() {
+  const t = await getServerT();
   const total = DEMO_CONTACTS.length;
   const hot = DEMO_CONTACTS.filter((c) => c.score === "A").length;
   const escalated = DEMO_CONTACTS.filter((c) =>
@@ -49,29 +51,26 @@ export default function DemoContacts() {
     <DemoShell active="/demo/contacts">
       <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
-            Contacts
-          </h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{t("pages.demoPages.contacts", { ns: "dashboard" })}</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {total} total · {hot} hot · {escalated} escalated to you
-          </p>
+            {total} total · {hot} hot · {escalated} {t("pages.dashFragments.escalatedToYou", { ns: "dashboard" })}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <DemoDisabledButton label="Import CSV" variant="ghost" />
-          <DemoDisabledButton label="New contact" />
+          <DemoDisabledButton label={t("pages.demoPages.importCsv", { ns: "dashboard" })} variant="ghost" />
+          <DemoDisabledButton label={t("pages.demoPages.newContact", { ns: "dashboard" })} />
         </div>
       </header>
 
       {/* Filter chips */}
       <div className="mb-4 flex flex-wrap gap-2">
-        <Chip label="All" count={total} active />
-        <Chip label="Hot (A)" count={hot} />
+        <Chip label={t("pages.demoPages.all", { ns: "dashboard" })} count={total} active />
+        <Chip label={t("pages.demoPages.hotA", { ns: "dashboard" })} count={hot} />
         <Chip
-          label="From Zillow"
+          label={t("pages.demoPages.fromZillow", { ns: "dashboard" })}
           count={DEMO_CONTACTS.filter((c) => c.source === "Zillow").length}
         />
         <Chip
-          label="Open House"
+          label={t("pages.demoPages.openHouse", { ns: "dashboard" })}
           count={DEMO_CONTACTS.filter((c) => c.source === "Open House").length}
         />
         <Chip
@@ -81,7 +80,7 @@ export default function DemoContacts() {
           }
         />
         <Chip
-          label="Escalated"
+          label={t("pages.demoPages.escalated", { ns: "dashboard" })}
           count={escalated}
           tone="red"
         />
@@ -91,11 +90,11 @@ export default function DemoContacts() {
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:bg-slate-900 dark:text-slate-400">
             <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Stage</th>
-              <th className="px-4 py-3">Score</th>
-              <th className="px-4 py-3">Source</th>
-              <th className="px-4 py-3">Last activity</th>
+              <th className="px-4 py-3">{t("pages.demoPages.colName", { ns: "dashboard" })}</th>
+              <th className="px-4 py-3">{t("pages.demoPages.colStage", { ns: "dashboard" })}</th>
+              <th className="px-4 py-3">{t("pages.demoPages.colScore", { ns: "dashboard" })}</th>
+              <th className="px-4 py-3">{t("pages.demoPages.colSource", { ns: "dashboard" })}</th>
+              <th className="px-4 py-3">{t("pages.demoPages.colLastActivity", { ns: "dashboard" })}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">

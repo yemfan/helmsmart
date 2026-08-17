@@ -14,12 +14,14 @@ import { AiChatPanel } from "@/components/dashboard/AiChatPanel";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { CommandPalette } from "@/components/ui/CommandPalette";
+import { getServerT } from "@/lib/i18n/server";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = await getServerT();
   const ctx = await (async () => {
     try {
       return await getCurrentAgentContext();

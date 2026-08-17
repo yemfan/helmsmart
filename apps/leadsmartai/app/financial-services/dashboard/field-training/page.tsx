@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { GraduationCap } from "lucide-react";
 import ComingSoon from "../_components/ComingSoon";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Field Training · LeadSmart AI",
   robots: { index: false },
 };
 
-export default function FieldTrainingPage() {
+export default async function FieldTrainingPage() {
+  const t = await getServerT();
   return (
     <ComingSoon
       icon={GraduationCap}
-      title="Field Training"
+      title={t("pages.financialServices.navFieldTraining", { ns: "dashboard" })}
       description="New-associate onboarding and licensing path — track each recruit's progress from BPM to first sale."
       availability="Pilot week 2"
       bulletPoints={[

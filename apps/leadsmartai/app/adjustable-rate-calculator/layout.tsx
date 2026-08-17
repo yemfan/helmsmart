@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Adjustable Rate Mortgage Calculator",
@@ -6,8 +7,9 @@ export const metadata: Metadata = {
   keywords: ["ARM calculator", "adjustable rate mortgage", "rate adjustment", "mortgage payment", "real estate"],
 };
 
-export default function AdjustableRateCalculatorLayout({
+export default async function AdjustableRateCalculatorLayout({
   children,
 }: { children: React.ReactNode }) {
+  const t = await getServerT();
   return children;
 }

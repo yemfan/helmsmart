@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Shared empty-state for routes that are scaffolded for the GFI pitch
@@ -6,7 +7,7 @@ import type { LucideIcon } from "lucide-react";
  * passes its own title/description/icon + a clear "Available in pilot
  * week X" framing so execs see the roadmap baked in.
  */
-export default function ComingSoon({
+export default async function ComingSoon({
   icon: Icon,
   title,
   description,
@@ -21,6 +22,7 @@ export default function ComingSoon({
   /** Optional list of capabilities the feature will ship with. */
   bulletPoints?: string[];
 }) {
+  const t = await getServerT("dashboard");
   return (
     <div className="space-y-6">
       <header>
@@ -34,13 +36,11 @@ export default function ComingSoon({
             <Icon className="h-7 w-7 text-indigo-600" />
           </div>
 
-          <span className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-800">
-            Available in {availability}
+          <span className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-800">{t("pages.dashFragments.availableIn")} {availability}
           </span>
 
           <h2 className="mt-4 text-xl font-semibold tracking-tight text-slate-900">
-            {title} ships during the pilot
-          </h2>
+            {title} {t("pages.dashFragments.shipsDuringPilot")}</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
             {description}
           </p>
@@ -59,10 +59,7 @@ export default function ComingSoon({
             </ul>
           )}
 
-          <p className="mt-6 text-xs text-slate-500">
-            Cohort feedback during weeks 1-2 of the pilot shapes the final spec
-            for this feature.
-          </p>
+          <p className="mt-6 text-xs text-slate-500">{t("pages.financialServices.cohortFeedback")}</p>
         </div>
       </section>
     </div>

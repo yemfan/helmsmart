@@ -10,6 +10,8 @@ import {
   getNearbyMetros,
   getRelatedMetroLinks,
 } from "@/lib/trafficMetros";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 // Render on demand — NOT static/ISR, matching the [keyword] child route.
 //
@@ -40,11 +42,11 @@ export async function generateMetadata({
   });
 }
 
-function fmtDate(period: string | null): string | null {
+function fmtDate(period: string | null, locale: string): string | null {
   if (!period) return null;
   const d = new Date(period);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  return d.toLocaleDateString(locale, { month: "long", year: "numeric" });
 }
 
 export default async function HomeValueCityPage({
@@ -52,6 +54,8 @@ export default async function HomeValueCityPage({
 }: {
   params: Promise<{ city: string }>;
 }) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const p = await params;
   const city = await getMetroBySlug(p.city);
   if (!city) return notFound();
@@ -62,19 +66,18 @@ export default async function HomeValueCityPage({
     (page) => !page.href.endsWith(`/home-value/${city.slug}`),
   );
   const keywords = getPageKeywords("home-value", city.slug);
-  const asOf = fmtDate(market.period);
+  const asOf = fmtDate(market.period, locale);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
       <TrafficTracker pagePath={`/home-value/${city.slug}`} city={city.city} source="seo_home_value_city" />
       <h1 className="text-3xl font-bold text-slate-900">
-        Free Home Value Estimate in {city.city}, {city.state}
+        {t("pages.seoCityPages.hvTitle", { ns: "dashboard", city: city.city, state: city.state })}
       </h1>
       <p className="mt-2 text-slate-700">
-        Use this page to get a {keywords[0]} for {city.city}, compare hyper-local pricing, and decide the
-        best time to sell.
+        {t("pages.seoCityPages.hvIntro", { ns: "dashboard", keyword: keywords[0], city: city.city })}
       </p>
-      {asOf ? <p className="mt-1 text-xs text-slate-500">Market data as of {asOf}.</p> : null}
+      {asOf ? <p className="mt-1 text-xs text-slate-500">{t("pages.seoCityPages.dataAsOfDate", { ns: "dashboard", date: asOf })}</p> : null}
 
       {(market.typicalValue !== null ||
         market.yoyChangePct !== null ||
@@ -82,7 +85,7 @@ export default async function HomeValueCityPage({
         market.inventory !== null) && (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {market.typicalValue !== null && (
-            <Metric label="Typical Home Value" value={formatCurrency(market.typicalValue)} />
+            <Metric label={t("pages.seoCityPages.typicalHomeValue", { ns: "dashboard" })} value={formatCurrency(market.typicalValue)} />
           )}
           {market.yoyChangePct !== null && (
             <Metric
@@ -91,36 +94,38 @@ export default async function HomeValueCityPage({
             />
           )}
           {market.medianDaysOnMarket !== null && (
-            <Metric label="Median Days on Market" value={`${Math.round(market.medianDaysOnMarket)} days`} />
+            <Metric label={t("pages.seoCityPages.medianDom", { ns: "dashboard" })} value={`${Math.round(market.medianDaysOnMarket)} days`} />
           )}
           {market.inventory !== null && (
-            <Metric label="Homes for Sale" value={Math.round(market.inventory).toLocaleString()} />
+            <Metric label={t("pages.seoCityPages.homesForSale", { ns: "dashboard" })} value={Math.round(market.inventory).toLocaleString(locale)} />
           )}
         </div>
       )}
 
       <section className="mt-8 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Seller insight for {city.city}</h2>
+          <h2 className="text-xl font-semibold text-slate-900">{t("pages.seoCityPages.sellerInsightIn", { ns: "dashboard", city: city.city })}</h2>
           <p className="mt-2 text-sm text-slate-700">
-            The best-performing listings in {city.city} are priced against fresh local comps and marketed
-            with a clear timeline.
+            {t("pages.seoCityPages.bestListingsBody", { ns: "dashboard", city: city.city })}
             {market.medianDaysOnMarket !== null
-              ? ` Homes here are currently selling in a median of about ${Math.round(
-                  market.medianDaysOnMarket,
-                )} days.`
+              ? t("pages.seoCityPages.sellingInDays", {
+                  ns: "dashboard",
+                  days: Math.round(market.medianDaysOnMarket),
+                })
               : ""}
           </p>
           <p className="mt-2 text-sm text-slate-700">
-            The {city.city} market trend is currently <span className="font-semibold">{market.trend}</span>
+            {t("pages.seoCityPages.trendLine", { ns: "dashboard", city: city.city })} <span className="font-semibold">{market.trend}</span>
             {market.yoyChangePct !== null
-              ? `, with typical values ${market.yoyChangePct >= 0 ? "up" : "down"} ${Math.abs(
-                  market.yoyChangePct,
-                )}% over the past year`
+              ? t("pages.seoCityPages.trendYoy", {
+                  ns: "dashboard",
+                  dir: t(market.yoyChangePct >= 0 ? "pages.seoCityPages.dirUp" : "pages.seoCityPages.dirDown", { ns: "dashboard" }),
+                  pct: Math.abs(market.yoyChangePct),
+                })
               : ""}
             .
           </p>
-          <h3 className="mt-5 text-sm font-semibold uppercase tracking-wide text-slate-800">Keyword coverage</h3>
+          <h3 className="mt-5 text-sm font-semibold uppercase tracking-wide text-slate-800">{t("pages.seoCityPages.keywordCoverage", { ns: "dashboard" })}</h3>
           <div className="mt-2 flex flex-wrap gap-2">
             {keywords.map((keyword) => (
               <span key={keyword} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-700">
@@ -128,36 +133,36 @@ export default async function HomeValueCityPage({
               </span>
             ))}
           </div>
-          <h3 className="mt-5 text-base font-semibold text-slate-900">FAQ</h3>
+          <h3 className="mt-5 text-base font-semibold text-slate-900">{t("pages.articleChrome.faq", { ns: "dashboard" })}</h3>
           <dl className="mt-2 space-y-4 text-sm text-slate-700">
             <div>
-              <dt className="font-semibold text-slate-900">How accurate is a {keywords[0]} in {city.city}?</dt>
+              <dt className="font-semibold text-slate-900">{t("pages.seoCityPages.howAccurateQ", { ns: "dashboard", keyword: keywords[0], city: city.city })}</dt>
               <dd className="mt-1 ml-0 text-slate-700">
-                It is strongest when combined with recent neighborhood comps.
+                {t("pages.seoCityPages.strongestWith", { ns: "dashboard" })}
               </dd>
             </div>
             <div>
-              <dt className="font-semibold text-slate-900">Is now a good time to sell in {city.city}?</dt>
+              <dt className="font-semibold text-slate-900">{t("pages.seoCityPages.goodTimeQ", { ns: "dashboard", city: city.city })}</dt>
               <dd className="mt-1 ml-0 text-slate-700">
                 {market.trend === "up"
-                  ? "Values are rising, which tends to favor sellers who price to the current market."
+                  ? t("pages.seoCityPages.trendUpA", { ns: "dashboard" })
                   : market.trend === "down"
-                    ? "Values have softened, so pricing precision and presentation matter more than ever."
-                    : "The market is steady, so strategy, timing, and presentation drive your result."}
+                    ? t("pages.seoCityPages.trendDownA", { ns: "dashboard" })
+                    : t("pages.seoCityPages.trendFlatA", { ns: "dashboard" })}
               </dd>
             </div>
             <div>
-              <dt className="font-semibold text-slate-900">What impacts value the most?</dt>
+              <dt className="font-semibold text-slate-900">{t("pages.seoCityPages.whatImpacts", { ns: "dashboard" })}</dt>
               <dd className="mt-1 ml-0 text-slate-700">
-                Condition, lot position, school zone, and pricing strategy versus local alternatives.
+                {t("pages.seoCityPages.whatImpactsA", { ns: "dashboard" })}
               </dd>
             </div>
           </dl>
-          <h3 className="mt-5 text-base font-semibold text-slate-900">Internal links</h3>
+          <h3 className="mt-5 text-base font-semibold text-slate-900">{t("pages.seoCityPages.internalLinks", { ns: "dashboard" })}</h3>
           <div className="mt-2 flex flex-wrap gap-3 text-sm">
             {nearbyCities.map((near) => (
               <a key={near.slug} className="text-blue-700 hover:underline" href={`/home-value/${near.slug}`}>
-                {near.city} home values
+                {t("pages.seoCityPages.nearbyHomeValues", { ns: "dashboard", city: near.city })}
               </a>
             ))}
             {relatedPages.map((page) => (
@@ -167,7 +172,7 @@ export default async function HomeValueCityPage({
             ))}
           </div>
           <p className="mt-5 rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-900">
-            Ready for a full valuation? Get your free report and custom pricing plan now.
+            {t("pages.seoCityPages.readyForValuation", { ns: "dashboard" })}
           </p>
         </article>
         <LocalSeoLeadForm

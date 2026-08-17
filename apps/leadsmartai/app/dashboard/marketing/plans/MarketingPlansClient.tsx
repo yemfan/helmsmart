@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 type Template = { key: string; title: string; description: string };
@@ -52,6 +53,7 @@ function timeAgo(iso: string) {
 }
 
 export default function MarketingPlansClient() {
+  const { t } = useTranslation("dashboard");
   const [plans, setPlans] = useState<Plan[]>([]);
   const [leads, setLeads] = useState<LeadOption[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -68,7 +70,7 @@ export default function MarketingPlansClient() {
   const [sortBy, setSortBy] = useState<SortKey>("updated_at");
   const [sortAsc, setSortAsc] = useState(false);
   const [leadSearch, setLeadSearch] = useState("");
-  const [stats, setStats] = useState<{ performance: Array<{ name: string; value: number; color: string }>; completedByMonth: Array<{ label: string; count: number }>; totalPlans: number } | null>(null);
+  const [stats, setStats] = useState<{ performance: Array<{ name: string; value: number; color: string }>; completedByMonth: Array<{ labelKey: string; count: number }>; totalPlans: number } | null>(null);
 
   const fetchPlans = useCallback(async () => {
     try {
@@ -177,14 +179,14 @@ export default function MarketingPlansClient() {
     loadPlanDetail(planId);
   }
 
-  if (loading) return <div className="py-20 text-center text-gray-400">Loading...</div>;
+  if (loading) return <div className="py-20 text-center text-gray-400">{t("pages.marketingPlans.loading")}</div>;
 
   // ── Plan Detail View ──
   if (selectedPlan) {
     const p = selectedPlan;
     return (
       <div className="space-y-4">
-        <button onClick={() => { setSelectedPlan(null); setSearch(""); setStatusFilter("all"); }} className="text-sm text-gray-600 hover:text-gray-900">&larr; All plans</button>
+        <button onClick={() => { setSelectedPlan(null); setSearch(""); setStatusFilter("all"); }} className="text-sm text-gray-600 hover:text-gray-900">{t("pages.marketingPlans.allPlans")}</button>
 
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between gap-3">
@@ -194,17 +196,17 @@ export default function MarketingPlansClient() {
               <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? ""}`}>{p.status}</span>
             </div>
             <div className="flex gap-2">
-              {p.status === "draft" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "approve")} className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">Approve</button>}
-              {p.status === "approved" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "start")} className="rounded-lg bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50">Start</button>}
-              {p.status === "active" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "pause")} className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">Pause</button>}
-              {["draft", "approved", "active", "paused"].includes(p.status) && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "cancel")} className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50">Cancel</button>}
+              {p.status === "draft" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "approve")} className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">{t("pages.marketingPlans.approve")}</button>}
+              {p.status === "approved" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "start")} className="rounded-lg bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50">{t("pages.marketingPlans.start")}</button>}
+              {p.status === "active" && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "pause")} className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">{t("pages.marketingPlans.pause")}</button>}
+              {["draft", "approved", "active", "paused"].includes(p.status) && <button disabled={!!actionLoading} onClick={() => planAction(p.id, "cancel")} className="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50">{t("more.playbooks.cancel")}</button>}
             </div>
           </div>
         </div>
 
         {/* Pipeline steps */}
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-gray-700">Pipeline Steps</h3>
+          <h3 className="text-sm font-semibold text-gray-700">{t("pages.marketingPlans.pipelineSteps")}</h3>
           {(p.steps ?? []).map((step) => (
             <div key={step.id} className={`rounded-xl border p-4 ${!step.enabled ? "border-gray-100 bg-gray-50 opacity-60" : "border-gray-200 bg-white"}`}>
               <div className="flex items-center gap-3">
@@ -213,7 +215,7 @@ export default function MarketingPlansClient() {
                 </label>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">Day {step.delay_days}</span>
+                    <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">{t("pages.dashFragments.day")} {step.delay_days}</span>
                     <span className="rounded bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">{CHANNEL_LABELS[step.channel] ?? step.channel}</span>
                     <span className={`rounded px-2 py-0.5 text-xs font-medium ${step.status === "executed" ? "bg-green-50 text-green-700" : step.status === "failed" ? "bg-red-50 text-red-700" : "bg-gray-50 text-gray-500"}`}>{step.status}</span>
                   </div>
@@ -233,8 +235,8 @@ export default function MarketingPlansClient() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Marketing Plans</h1>
-          <p className="text-sm text-gray-500">{plans.length} total plans</p>
+          <h1 className="text-xl font-semibold text-gray-900">{t("pages.marketingPlans.heading")}</h1>
+          <p className="text-sm text-gray-500">{plans.length} {t("pages.dashFragments.totalPlans")}</p>
         </div>
       </div>
 
@@ -242,7 +244,7 @@ export default function MarketingPlansClient() {
       {stats && (
         <div className="grid gap-3 md:grid-cols-2">
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h3 className="text-xs font-semibold text-gray-500 mb-2">Plan Performance (30 days)</h3>
+            <h3 className="text-xs font-semibold text-gray-500 mb-2">{t("pages.marketingPlans.performance")}</h3>
             <div className="flex items-center gap-3">
               <div className="h-[120px] w-[120px] shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
@@ -267,7 +269,7 @@ export default function MarketingPlansClient() {
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h3 className="text-xs font-semibold text-gray-500 mb-2">Plans Started vs Completed by Month</h3>
+            <h3 className="text-xs font-semibold text-gray-500 mb-2">{t("pages.marketingPlans.startedVsCompleted")}</h3>
             <div className="h-[120px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.completedByMonth} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
@@ -288,27 +290,27 @@ export default function MarketingPlansClient() {
 
       <div className="flex flex-wrap gap-2">
         <button type="button" onClick={() => setShowCreate((v) => !v)} className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800">
-          {showCreate ? "Cancel" : "New Plan"}
+          {showCreate ? t("pages.marketingPlans.cancel") : t("pages.marketingPlans.newPlan")}
         </button>
       </div>
 
       {/* Create form */}
       {showCreate && (
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
-          <h3 className="text-sm font-semibold text-gray-900">Create a new plan</h3>
+          <h3 className="text-sm font-semibold text-gray-900">{t("pages.marketingPlans.createHeading")}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="block text-[11px] font-medium text-gray-500 mb-1">Lead / Contact</label>
-              <input value={leadSearch} onChange={(e) => setLeadSearch(e.target.value)} placeholder="Search leads..." className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm mb-1" />
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">{t("pages.marketingPlans.leadContact")}</label>
+              <input value={leadSearch} onChange={(e) => setLeadSearch(e.target.value)} placeholder={t("pages.marketingPlans.searchLeads")} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm mb-1" />
               <select value={leadId} onChange={(e) => setLeadId(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
-                <option value="">Select a lead...</option>
+                <option value="">{t("pages.marketingPlans.selectLead")}</option>
                 {filteredLeads.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-gray-500 mb-1">Template</label>
+              <label className="block text-[11px] font-medium text-gray-500 mb-1">{t("pages.marketingPlans.template")}</label>
               <select value={templateKey} onChange={(e) => setTemplateKey(e.target.value)} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm mt-6">
-                <option value="">Select template...</option>
+                <option value="">{t("pages.marketingPlans.selectTemplate")}</option>
                 {templates.map((t) => <option key={t.key} value={t.key}>{t.title}</option>)}
               </select>
               {templateKey && templates.find((t) => t.key === templateKey) && (
@@ -318,23 +320,23 @@ export default function MarketingPlansClient() {
           </div>
           <button disabled={!leadId || !templateKey || creating} onClick={() => void createPlan()}
             className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
-            {creating ? "Creating..." : "Generate Plan"}
+            {creating ? t("pages.marketingPlans.creating") : t("pages.marketingPlans.generate")}
           </button>
         </div>
       )}
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search plans or leads..."
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t("pages.marketingPlans.searchPlans")}
           className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-gray-300 px-3 py-2 text-sm" />
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm">
-          <option value="all">All statuses</option>
-          <option value="draft">Draft</option>
-          <option value="approved">Approved</option>
-          <option value="active">Active</option>
-          <option value="paused">Paused</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
+          <option value="all">{t("pages.marketingPlans.allStatuses")}</option>
+          <option value="draft">{t("pages.marketingPlans.stDraft")}</option>
+          <option value="approved">{t("pages.marketingPlans.stApproved")}</option>
+          <option value="active">{t("pages.marketingPlans.stActive")}</option>
+          <option value="paused">{t("pages.marketingPlans.stPaused")}</option>
+          <option value="completed">{t("pages.marketingPlans.stCompleted")}</option>
+          <option value="cancelled">{t("pages.marketingPlans.stCancelled")}</option>
         </select>
       </div>
 
@@ -345,16 +347,17 @@ export default function MarketingPlansClient() {
             <thead className="bg-gray-50 text-gray-600">
               <tr>
                 {([
-                  { key: "title" as SortKey, label: "Plan" },
-                  { key: "lead_name" as SortKey, label: "Lead" },
-                  { key: "status" as SortKey, label: "Status" },
-                  { key: null, label: "Progress" },
-                  { key: "updated_at" as SortKey, label: "Last Updated" },
-                  { key: null, label: "" },
+                  { key: "title" as SortKey, labelKey: "pages.marketingPlans.colPlan" },
+                  { key: "lead_name" as SortKey, labelKey: "pages.marketingPlans.colLead" },
+                  { key: "status" as SortKey, labelKey: "pages.marketingPlans.colStatus" },
+                  { key: null, labelKey: "pages.marketingPlans.colProgress" },
+                  { key: "updated_at" as SortKey, labelKey: "pages.marketingPlans.colUpdated" },
+                  // Spacer column for the row actions; no header text.
+                  { key: null, labelKey: "" },
                 ] as const).map((col, i) => (
                   <th key={i} className={`text-left px-4 py-2.5 font-medium ${col.key ? "cursor-pointer select-none hover:text-gray-900" : ""}`}
                     onClick={() => col.key && toggleSort(col.key)}>
-                    {col.label}
+                    {col.labelKey ? t(col.labelKey) : ""}
                     {col.key && sortBy === col.key && <span className="ml-1 text-[10px]">{sortAsc ? "\u25B2" : "\u25BC"}</span>}
                   </th>
                 ))}
@@ -374,14 +377,14 @@ export default function MarketingPlansClient() {
                   <td className="px-4 py-2.5 text-xs text-gray-500">{stepProgress(p)}</td>
                   <td className="px-4 py-2.5 text-xs text-gray-500 whitespace-nowrap">{timeAgo(p.updated_at)}</td>
                   <td className="px-4 py-2.5">
-                    <button onClick={() => loadPlanDetail(p.id)} className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">View</button>
+                    <button onClick={() => loadPlanDetail(p.id)} className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">{t("pages.marketingPlans.view")}</button>
                   </td>
                 </tr>
               ))}
               {!filtered.length && (
                 <tr>
                   <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
-                    {search || statusFilter !== "all" ? "No plans match your filters." : "No marketing plans yet."}
+                    {search || statusFilter !== "all" ? t("pages.marketingPlans.emptyFiltered") : t("pages.marketingPlans.empty")}
                   </td>
                 </tr>
               )}
@@ -392,19 +395,17 @@ export default function MarketingPlansClient() {
 
       {/* Templates list */}
       <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-gray-900 mb-3">Available Templates</h3>
+        <h3 className="text-sm font-semibold text-gray-900 mb-3">{t("pages.marketingPlans.availableTemplates")}</h3>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {templates.map((t) => (
-            <div key={t.key} className="rounded-lg border border-gray-100 bg-gray-50 p-3">
-              <p className="text-sm font-medium text-gray-900">{t.title}</p>
-              <p className="mt-1 text-xs text-gray-500">{t.description}</p>
+          {templates.map((tpl) => (
+            <div key={tpl.key} className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+              <p className="text-sm font-medium text-gray-900">{tpl.title}</p>
+              <p className="mt-1 text-xs text-gray-500">{tpl.description}</p>
               <button
                 type="button"
-                onClick={() => { setShowCreate(true); setTemplateKey(t.key); }}
+                onClick={() => { setShowCreate(true); setTemplateKey(tpl.key); }}
                 className="mt-2 text-xs font-medium text-blue-600 hover:text-blue-800"
-              >
-                Use this template
-              </button>
+              >{t("pages.marketingPlans.useTemplate")}</button>
             </div>
           ))}
         </div>

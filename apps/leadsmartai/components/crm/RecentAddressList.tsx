@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 /**
  * Recent property addresses associated with a buyer — quick-pick list
@@ -101,7 +103,9 @@ function mergeAndDedupe(
  * Returns negative numbers for future dates (scheduled showings) so the
  * caller can label those distinctly.
  */
-function relativeAge(iso: string): string {
+type Translate = (k: string, o?: Record<string, unknown>) => string;
+
+function relativeAge(iso: string, t: Translate, locale: string): string {
   const then = new Date(iso);
   if (Number.isNaN(then.getTime())) return "";
   const now = new Date();
@@ -111,16 +115,16 @@ function relativeAge(iso: string): string {
 
   if (dayDiff < 0) {
     // Future-dated (scheduled showings).
-    if (dayDiff === -1) return "tomorrow";
-    if (dayDiff > -7) return `in ${-dayDiff}d`;
-    return then.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    if (dayDiff === -1) return t("pages.relativeAge.tomorrow");
+    if (dayDiff > -7) return t("pages.relativeAge.inDays", { n: -dayDiff });
+    return then.toLocaleDateString(locale, { month: "short", day: "numeric" });
   }
-  if (dayDiff === 0) return "today";
-  if (dayDiff === 1) return "yesterday";
-  if (dayDiff < 7) return `${dayDiff}d ago`;
-  if (dayDiff < 30) return `${Math.floor(dayDiff / 7)}w ago`;
-  if (dayDiff < 365) return `${Math.floor(dayDiff / 30)}mo ago`;
-  return `${Math.floor(dayDiff / 365)}y ago`;
+  if (dayDiff === 0) return t("pages.relativeAge.today");
+  if (dayDiff === 1) return t("pages.relativeAge.yesterday");
+  if (dayDiff < 7) return t("pages.relativeAge.daysAgo", { n: dayDiff });
+  if (dayDiff < 30) return t("pages.relativeAge.weeksAgo", { n: Math.floor(dayDiff / 7) });
+  if (dayDiff < 365) return t("pages.relativeAge.monthsAgo", { n: Math.floor(dayDiff / 30) });
+  return t("pages.relativeAge.yearsAgo", { n: Math.floor(dayDiff / 365) });
 }
 
 export function RecentAddressList({
@@ -130,6 +134,8 @@ export function RecentAddressList({
   contactId: string | null;
   onPick: (addr: RecentAddress) => void;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [items, setItems] = useState<RecentAddress[]>([]);
 
   useEffect(() => {
@@ -173,9 +179,7 @@ export function RecentAddressList({
   return (
     <div className="mt-1.5 overflow-hidden rounded-lg border border-slate-200 bg-white">
       <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-3 py-1.5">
-        <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">
-          Recent with this buyer
-        </span>
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-600">{t("pages.misc.recentWithBuyer")}</span>
         <span className="text-[10px] text-slate-400">{items.length}</span>
       </div>
       <ul role="list" className="divide-y divide-slate-100">
@@ -205,7 +209,7 @@ export function RecentAddressList({
                 >
                   {item.source === "offer" ? "Offer" : "Showing"}
                 </span>
-                <span className="mt-0.5 block">{relativeAge(item.occurredAt)}</span>
+                <span className="mt-0.5 block">{relativeAge(item.occurredAt, t, locale)}</span>
               </span>
             </button>
           </li>

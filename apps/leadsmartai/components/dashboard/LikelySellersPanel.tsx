@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import EquityMessageDraftModal from "@/components/dashboard/EquityMessageDraftModal";
 import type {
@@ -48,6 +49,7 @@ const FILTERS: { value: LabelFilter; label: string }[] = [
  * message" CTA that re-uses the factor breakdown for the prompt.
  */
 export default function LikelySellersPanel(props: { defaultLimit?: number } = {}) {
+  const { t } = useTranslation("dashboard");
   const limit = props.defaultLimit ?? 25;
 
   const [rows, setRows] = useState<LikelySellerRow[]>([]);
@@ -96,7 +98,7 @@ export default function LikelySellersPanel(props: { defaultLimit?: number } = {}
     <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <header className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Today&apos;s likely sellers</h2>
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.misc.likelySellers")}</h2>
           <p className="mt-0.5 text-xs text-slate-600">
             Past clients + sphere ranked by likelihood to list in the next ~90 days. Click a row for the full factor breakdown.
           </p>
@@ -131,8 +133,7 @@ export default function LikelySellersPanel(props: { defaultLimit?: number } = {}
             ))}
           </ul>
         ) : error ? (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Couldn&apos;t load likely sellers: {error}
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadSellers")} {error}
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
@@ -171,9 +172,7 @@ export default function LikelySellersPanel(props: { defaultLimit?: number } = {}
                   type="button"
                   onClick={() => setDraftFor({ id: r.contactId, name: r.fullName })}
                   className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                >
-                  Draft message
-                </button>
+                >{t("pages.misc.draftMessage")}</button>
               </li>
             ))}
           </ul>

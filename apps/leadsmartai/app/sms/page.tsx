@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import SmsOptInForm from "./SmsOptInForm";
 import { pageMetadata } from "@/lib/seo";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   ...pageMetadata({
@@ -20,26 +21,20 @@ export const metadata: Metadata = {
  * disclosures are server-rendered so they're in the initial HTML for reviewers
  * and crawlers. Persists each opt-in via /api/sms/opt-in (proof of consent).
  */
-export default function SmsOptInPage() {
+export default async function SmsOptInPage() {
+  const t = await getServerT();
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Get text updates from CloseBoss
-        </h1>
-        <p className="mx-auto mt-3 max-w-xl text-base text-slate-600">
-          Enter your number to receive text messages from CloseBoss and your
-          real estate agent.
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{t("pages.smsOptIn.h1", { ns: "dashboard" })}</h1>
+        <p className="mx-auto mt-3 max-w-xl text-base text-slate-600">{t("pages.smsOptIn.sub", { ns: "dashboard" })}</p>
       </div>
 
       <div className="mt-10 grid gap-8 md:grid-cols-2">
         {/* Program disclosures — server-rendered (in the HTML for reviewers). */}
         <div className="space-y-4 text-sm leading-6 text-slate-700">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-              About this program
-            </h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">{t("pages.smsOptIn.aboutProgram", { ns: "dashboard" })}</h2>
             <p className="mt-2">
               <strong>CloseBoss</strong> (a product of MAXY Investment Inc.)
               sends conversational and transactional text messages on behalf of
@@ -50,32 +45,24 @@ export default function SmsOptInPage() {
           </div>
           <ul className="space-y-2">
             <li>
-              <strong>Message frequency</strong> varies based on your
-              interaction with your agent.
-            </li>
+              <strong>{t("pages.smsOptIn.frequency", { ns: "dashboard" })}</strong> {t("pages.smsOptIn.frequencyTail", { ns: "dashboard" })}</li>
             <li>
-              <strong>Message and data rates may apply</strong> (charged by your
+              <strong>{t("pages.smsOptIn.rates", { ns: "dashboard" })}</strong> (charged by your
               mobile carrier).
             </li>
-            <li>
-              Reply <strong>STOP</strong> to unsubscribe at any time;{" "}
-              <strong>HELP</strong> for help, or email{" "}
+            <li>{t("pages.smsOptIn.reply", { ns: "dashboard" })} <strong>{t("pages.smsOptIn.stop", { ns: "dashboard" })}</strong> {t("pages.smsOptIn.toUnsubscribe", { ns: "dashboard" })}{" "}
+              <strong>{t("pages.smsOptIn.help", { ns: "dashboard" })}</strong> {t("pages.smsOptIn.forHelpOrEmail", { ns: "dashboard" })}{" "}
               <a href="mailto:contact@closebossai.com" className="text-[#0072ce] hover:underline">
                 contact@closebossai.com
               </a>
               .
             </li>
-            <li>Consent is not a condition of any purchase.</li>
+            <li>{t("pages.smsOptIn.notACondition", { ns: "dashboard" })}</li>
           </ul>
-          <p className="text-xs text-slate-500">
-            By submitting, you agree to our{" "}
-            <Link href="/privacy" className="text-[#0072ce] hover:underline">
-              Privacy Policy
-            </Link>{" "}
+          <p className="text-xs text-slate-500">{t("pages.smsOptIn.bySubmitting", { ns: "dashboard" })}{" "}
+            <Link href="/privacy" className="text-[#0072ce] hover:underline">{t("pages.articleChrome.privacyPolicy", { ns: "dashboard" })}</Link>{" "}
             and{" "}
-            <Link href="/terms" className="text-[#0072ce] hover:underline">
-              Terms (incl. SMS program disclosures)
-            </Link>
+            <Link href="/terms" className="text-[#0072ce] hover:underline">{t("pages.smsOptIn.termsLink", { ns: "dashboard" })}</Link>
             . Mobile information is never shared with third parties for their own
             marketing.
           </p>

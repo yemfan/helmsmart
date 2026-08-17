@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { Inbox } from "lucide-react";
 import ComingSoon from "../_components/ComingSoon";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Inbox · LeadSmart AI",
   robots: { index: false },
 };
 
-export default function InboxPage() {
+export default async function InboxPage() {
+  const t = await getServerT();
   return (
     <ComingSoon
       icon={Inbox}
-      title="Inbox"
+      title={t("pages.financialServices.navInbox", { ns: "dashboard" })}
       description="Unified SMS + email inbox. AI handles routine replies; you handle the ones that matter."
       availability="Pilot week 1"
       bulletPoints={[

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import ShareReport from "@/components/share/ShareReport";
 
@@ -220,6 +221,7 @@ export default function PresentationView({
   /** Public share URL (dashboard only) → enables the full Share menu. */
   shareUrl?: string | null;
 }) {
+  const { t } = useTranslation("dashboard");
   const vm = useMemo(() => normalize(data, propertyAddress ?? ""), [data, propertyAddress]);
 
   const onDownloadPdf = async () => {
@@ -281,9 +283,7 @@ export default function PresentationView({
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-              Seller Listing Presentation
-            </div>
+            <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.presentationView.title")}</div>
             <div className="mt-1 text-2xl font-bold text-slate-900">{vm.address}</div>
           </div>
           <div className="shrink-0">
@@ -310,7 +310,7 @@ export default function PresentationView({
       </section>
 
       {/* Property details */}
-      <Card title="Property Details">
+      <Card title={t("pages.presentationView.propertyDetails")}>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {detail("Beds", vm.beds != null ? String(vm.beds) : "—")}
           {detail("Baths", vm.baths != null ? String(vm.baths) : "—")}
@@ -325,33 +325,33 @@ export default function PresentationView({
 
       {/* Narrative */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card title="Pricing Strategy">
+        <Card title={t("pages.presentationView.pricingStrategy")}>
           <p className="whitespace-pre-wrap text-sm text-slate-700">{vm.pricing_strategy || "—"}</p>
         </Card>
-        <Card title="Market Insights">
+        <Card title={t("pages.presentationView.marketInsights")}>
           <p className="whitespace-pre-wrap text-sm text-slate-700">{vm.market_insights || "—"}</p>
         </Card>
-        <Card title="Marketing Plan">
+        <Card title={t("pages.presentationView.marketingPlan")}>
           <p className="whitespace-pre-wrap text-sm text-slate-700">{vm.marketing_plan || "—"}</p>
         </Card>
       </div>
 
       {/* Neighborhood + Schools */}
       {vm.neighborhood ? (
-        <Card title="Neighborhood">
+        <Card title={t("pages.presentationView.neighborhood")}>
           <p className="whitespace-pre-wrap text-sm text-slate-700">{vm.neighborhood}</p>
         </Card>
       ) : null}
 
       {vm.schools.length ? (
-        <Card title="Schools">
+        <Card title={t("pages.presentationView.schools")}>
           <table className="w-full text-sm">
             <thead className="text-[11px] uppercase tracking-wide text-slate-500">
               <tr className="text-left">
-                <th className="py-1 font-semibold">School</th>
-                <th className="py-1 font-semibold">Level</th>
-                <th className="py-1 font-semibold">Rating</th>
-                <th className="py-1 text-right font-semibold">Distance</th>
+                <th className="py-1 font-semibold">{t("pages.presentationView.school")}</th>
+                <th className="py-1 font-semibold">{t("pages.presentationView.level")}</th>
+                <th className="py-1 font-semibold">{t("pages.presentationView.rating")}</th>
+                <th className="py-1 text-right font-semibold">{t("pages.presentationView.distance")}</th>
               </tr>
             </thead>
             <tbody>
@@ -371,17 +371,17 @@ export default function PresentationView({
       {/* Comps */}
       <Card title={`Comparable Sales (${vm.comps.length})`}>
         {vm.comps.length === 0 ? (
-          <p className="text-sm text-slate-500">No comparable sold data available yet.</p>
+          <p className="text-sm text-slate-500">{t("pages.presentationView.noComps")}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="text-[11px] uppercase tracking-wide text-slate-500">
                 <tr className="text-left">
-                  <th className="py-1 font-semibold">Address</th>
-                  <th className="py-1 text-right font-semibold">Sqft</th>
+                  <th className="py-1 font-semibold">{t("pages.presentationView.address")}</th>
+                  <th className="py-1 text-right font-semibold">{t("pages.presentationView.sqft")}</th>
                   <th className="py-1 text-right font-semibold">$/sqft</th>
-                  <th className="py-1 text-right font-semibold">Sold</th>
-                  <th className="py-1 text-right font-semibold">Price</th>
+                  <th className="py-1 text-right font-semibold">{t("pages.presentationView.sold")}</th>
+                  <th className="py-1 text-right font-semibold">{t("pages.presentationView.price")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -404,7 +404,7 @@ export default function PresentationView({
 
       {/* Sources */}
       {vm.sources.length ? (
-        <Card title="Sources">
+        <Card title={t("pages.presentationView.sources")}>
           <ul className="space-y-1 text-xs text-slate-500">
             {vm.sources.slice(0, 12).map((s, i) => (
               <li key={i}>

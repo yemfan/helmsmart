@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { AiActionGateBanner } from "@/components/entitlements/AiActionGateBanner";
 import {
   detectAiActionGate,
@@ -57,6 +59,7 @@ export function AiSmsModal({
   onClose: () => void;
   model: SalesModel;
 }) {
+  const { t } = useTranslation("dashboard");
   // ── Contact picker state ────────────────────────────────────
   const [contactQuery, setContactQuery] = useState("");
   const [contactResults, setContactResults] = useState<SmsContact[]>([]);
@@ -402,9 +405,7 @@ export function AiSmsModal({
                 {selectedContact.email ? ` · ${selectedContact.email}` : ""}
               </p>
             ) : (
-              <p className="mt-0.5 text-xs text-slate-500">
-                Pick a contact, describe the situation, then approve each AI-drafted message before it sends.
-              </p>
+              <p className="mt-0.5 text-xs text-slate-500">{t("pages.aiComposeModal.smsIntro")}</p>
             )}
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -414,19 +415,15 @@ export function AiSmsModal({
                 onClick={onChangeContact}
                 disabled={drafting || sending}
                 className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
-              >
-                Change
-              </button>
+              >{t("pages.aiComposeModal.change")}</button>
             ) : null}
             <button
               type="button"
               onClick={onClose}
               disabled={drafting || sending}
               className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
-              aria-label="Close"
-            >
-              Close
-            </button>
+              aria-label={t("pages.aiComposeModal.close")}
+            >{t("pages.aiComposeModal.close")}</button>
           </div>
         </div>
 
@@ -435,14 +432,12 @@ export function AiSmsModal({
           {!selectedContact ? (
             // ── Picker phase ────────────────────────────────────
             <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-5 py-4">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Pick a contact
-              </label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.aiComposeModal.pickContact")}</label>
               <input
                 type="search"
                 value={contactQuery}
                 onChange={(e) => setContactQuery(e.target.value)}
-                placeholder="Search by name, phone, or email"
+                placeholder={t("pages.aiComposeModal.searchPhone")}
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 autoFocus
               />
@@ -450,9 +445,7 @@ export function AiSmsModal({
                 {searching && contactResults.length === 0 ? (
                   <p className="px-4 py-6 text-center text-xs text-slate-500">Searching…</p>
                 ) : contactResults.length === 0 ? (
-                  <p className="px-4 py-6 text-center text-xs text-slate-500">
-                    No matching contacts with phone numbers. Try a different search.
-                  </p>
+                  <p className="px-4 py-6 text-center text-xs text-slate-500">{t("pages.aiComposeModal.noPhoneMatches")}</p>
                 ) : (
                   <ul className="divide-y divide-slate-200">
                     {contactResults.map((c) => (
@@ -490,22 +483,18 @@ export function AiSmsModal({
                   more vertical space. */}
               {messages.length === 0 ? (
                 <div className="border-b border-slate-200 px-5 py-3">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    What do you want this SMS to accomplish?
-                  </label>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500">{t("pages.aiComposeModal.smsGoal")}</label>
                   <textarea
                     value={situation}
                     onChange={(e) => setSituation(e.target.value)}
                     rows={2}
-                    placeholder="e.g. Re-engage Mary about her home search now that two new listings hit her saved areas. Goal: book a 15-min call this week."
+                    placeholder={t("pages.aiComposeModal.goalPlaceholder")}
                     className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   />
                 </div>
               ) : situation.trim() ? (
                 <div className="flex items-baseline gap-2 border-b border-slate-100 bg-slate-50/60 px-5 py-2">
-                  <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-                    Goal
-                  </span>
+                  <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-500">{t("pages.aiComposeModal.goal")}</span>
                   <p className="truncate text-xs text-slate-600" title={situation}>
                     {situation}
                   </p>
@@ -519,11 +508,8 @@ export function AiSmsModal({
               >
                 {messages.length === 0 ? (
                   <div className="m-auto max-w-sm rounded-xl border border-dashed border-slate-300 bg-white px-4 py-6 text-center">
-                    <p className="text-sm font-medium text-slate-700">
-                      No messages yet
-                    </p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      Generate a first draft below — the AI will use the situation, the contact, and your{" "}
+                    <p className="text-sm font-medium text-slate-700">{t("pages.aiComposeModal.noMessages")}</p>
+                    <p className="mt-1 text-xs text-slate-500">{t("pages.dashFragments.generateFirstDraft")}{" "}
                       <span className="font-medium text-slate-700">{model.name}</span> tone.
                     </p>
                   </div>
@@ -541,18 +527,10 @@ export function AiSmsModal({
               <div className="border-t border-slate-200 bg-white px-4 py-3">
                 {optedOut ? (
                   <div className="mb-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-900">
-                    <strong className="font-semibold">Contact opted out.</strong>{" "}
-                    Their last message was a stop keyword (STOP / UNSUBSCRIBE / etc.).
-                    Texting them again would violate opt-out compliance — both
-                    AI drafting and sending are blocked.
-                  </div>
+                    <strong className="font-semibold">{t("pages.aiComposeModal.optedOut")}</strong>{" "}{t("pages.dashFragments.stopKeyword")}</div>
                 ) : needsHuman ? (
                   <div className="mb-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                    <strong className="font-semibold">This needs you, not AI.</strong>{" "}
-                    The contact's last message looks like a complaint, dispute,
-                    or urgent issue. AI drafting is paused — reply personally if
-                    you choose to.
-                  </div>
+                    <strong className="font-semibold">{t("pages.aiComposeModal.needsYou")}</strong>{" "}{t("pages.dashFragments.looksLikeComplaint")}</div>
                 ) : gate ? (
                   <AiActionGateBanner reason={gate.reason} className="mb-2" />
                 ) : null}
@@ -630,6 +608,7 @@ export function AiSmsModal({
 }
 
 function Bubble({ m }: { m: SmsMessage }) {
+  const { i18n } = useTranslation("dashboard");
   const inbound = m.direction === "inbound";
   return (
     <div className={inbound ? "flex justify-start" : "flex justify-end"}>
@@ -648,7 +627,7 @@ function Bubble({ m }: { m: SmsMessage }) {
             inbound ? "text-slate-400" : "text-blue-100",
           ].join(" ")}
         >
-          {formatTime(m.created_at)}
+          {formatTime(m.created_at, intlLocale(i18n.language))}
           {!inbound && m.id.startsWith("optimistic-") ? " · sending…" : ""}
         </p>
       </div>
@@ -669,10 +648,10 @@ function CharCounter({ value }: { value: string }) {
   );
 }
 
-function formatTime(iso: string): string {
+function formatTime(iso: string, locale: string): string {
   const d = new Date(iso);
   if (!Number.isFinite(d.getTime())) return "";
-  return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  return d.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
 }
 
 // ── Safety helpers (mirror server-side ai-sms/safety.ts) ─────────

@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 type CalendarEventRow = {
   id: string;
@@ -32,6 +34,8 @@ function defaultTomorrowMorningLocal(): string {
  * Appointments + booking links for the lead drawer (same `lead_calendar_events` / `lead_booking_links` as mobile).
  */
 export default function LeadCalendarBookingPanel({ leadId }: { leadId: string }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [events, setEvents] = useState<CalendarEventRow[]>([]);
   const [links, setLinks] = useState<BookingLinkRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -158,25 +162,21 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-4">
-      <div className="text-sm font-semibold text-slate-900">Calendar & booking</div>
-      <p className="text-xs text-slate-600">
-        Appointments and scheduling links are stored on this lead and update last activity (same as mobile).
-      </p>
+      <div className="text-sm font-semibold text-slate-900">{t("pages.calendarBooking.heading")}</div>
+      <p className="text-xs text-slate-600">{t("pages.calendarBooking.storedNote")}</p>
 
       {err ? (
         <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-800">{err}</div>
       ) : null}
 
       {loading ? (
-        <div className="text-xs text-slate-500">Loading schedule…</div>
+        <div className="text-xs text-slate-500">{t("pages.calendarBooking.loading")}</div>
       ) : (
         <>
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
-              Upcoming appointments
-            </div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{t("pages.calendarBooking.upcoming")}</div>
             {events.length === 0 ? (
-              <div className="text-xs text-slate-500">None scheduled.</div>
+              <div className="text-xs text-slate-500">{t("pages.calendarBooking.noneScheduled")}</div>
             ) : (
               <ul className="space-y-2">
                 {events.map((ev) => (
@@ -187,7 +187,7 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
                     <div className="min-w-0">
                       <div className="text-sm font-medium text-slate-900">{ev.title}</div>
                       <div className="text-xs text-slate-600">
-                        {new Date(ev.starts_at).toLocaleString()}
+                        {new Date(ev.starts_at).toLocaleString(locale)}
                         {ev.calendar_provider ? ` · ${ev.calendar_provider}` : ""}
                       </div>
                     </div>
@@ -197,7 +197,7 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
                       onClick={() => void cancelEvent(ev.id)}
                       className="shrink-0 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
                     >
-                      {busyId === ev.id ? "…" : "Cancel"}
+                      {busyId === ev.id ? "…" : t("pages.calendarBooking.cancel")}
                     </button>
                   </li>
                 ))}
@@ -206,11 +206,11 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
           </div>
 
           <div className="border-t border-slate-100 pt-3 space-y-2">
-            <div className="text-xs font-semibold text-slate-700">New appointment</div>
+            <div className="text-xs font-semibold text-slate-700">{t("pages.calendarBooking.newAppointment")}</div>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Title"
+              placeholder={t("pages.calendarBooking.title")}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
             />
             <input
@@ -222,7 +222,7 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
             <textarea
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
-              placeholder="Notes (optional)"
+              placeholder={t("pages.calendarBooking.notes")}
               rows={2}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
             />
@@ -232,16 +232,14 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
               onClick={() => void addAppointment()}
               className="w-full rounded-lg bg-brand-primary px-3 py-2 text-sm font-semibold text-white hover:bg-[#005ca8] disabled:opacity-50"
             >
-              {savingAppt ? "Saving…" : "Add appointment"}
+              {savingAppt ? t("pages.calendarBooking.saving") : t("pages.calendarBooking.add")}
             </button>
           </div>
 
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
-              Booking links
-            </div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{t("pages.calendarBooking.bookingLinks")}</div>
             {links.length === 0 ? (
-              <div className="text-xs text-slate-500">None saved yet.</div>
+              <div className="text-xs text-slate-500">{t("pages.calendarBooking.noneSaved")}</div>
             ) : (
               <ul className="space-y-2">
                 {links.map((lk) => (
@@ -256,7 +254,7 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
                       {lk.booking_url}
                     </a>
                     <div className="text-[11px] text-emerald-700/80 mt-1">
-                      Saved {new Date(lk.created_at).toLocaleString()}
+                      {t("pages.calendarBooking.savedAt", { date: new Date(lk.created_at).toLocaleString(locale) })}
                     </div>
                   </li>
                 ))}
@@ -265,17 +263,17 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
           </div>
 
           <div className="border-t border-slate-100 pt-3 space-y-2">
-            <div className="text-xs font-semibold text-slate-700">Save booking link</div>
+            <div className="text-xs font-semibold text-slate-700">{t("pages.calendarBooking.saveBookingLink")}</div>
             <input
               value={bookingUrl}
               onChange={(e) => setBookingUrl(e.target.value)}
-              placeholder="https://…"
+              placeholder={t("pages.calendarBooking.urlPlaceholder")}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
             />
             <input
               value={bookingLabel}
               onChange={(e) => setBookingLabel(e.target.value)}
-              placeholder="Label (optional)"
+              placeholder={t("pages.calendarBooking.labelOptional")}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
             />
             <button
@@ -284,7 +282,7 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
               onClick={() => void saveBookingLink()}
               className="w-full rounded-lg border border-emerald-600 bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
             >
-              {savingLink ? "Saving…" : "Save link"}
+              {savingLink ? t("pages.calendarBooking.saving") : t("pages.calendarBooking.saveLink")}
             </button>
           </div>
         </>

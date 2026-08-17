@@ -31,7 +31,7 @@
       "default": "失败"
     },
     "detail": {
-      "missing_agent_phone": "请先在设置中添加您的手机号,再发起拨打。",
+      "missing_agent_phone": "请先在设置中添加您的手机号，再发起拨打。",
       "missing_contact_phone": "该客户档案中没有电话号码。",
       "invalid_phone": "电话号码格式无效。",
       "twilio_not_configured": "该账户尚未配置 Twilio。",

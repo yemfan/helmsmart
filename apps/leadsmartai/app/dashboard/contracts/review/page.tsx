@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { ReviewContractClient } from "./ReviewContractClient";
 
-export const metadata: Metadata = {
-  title: "Contract review | CloseBoss",
-  description: "AI plain-English review of a purchase contract — key terms, deadlines, risk flags, and blank fields. Not legal advice.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.contractReview.metaTitle", { ns: "dashboard" }),
+    description: t("pages.contractReview.metaDescription", { ns: "dashboard" }),
+  };
+}
 
 export default function ContractReviewPage() {
   return <ReviewContractClient />;

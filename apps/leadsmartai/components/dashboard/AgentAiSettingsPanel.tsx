@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { AgentAiSettings } from "@/lib/agent-ai/types";
 import { listOutboundEnabled } from "@/lib/locales/registry";
 import { PersonalityPreview } from "./PersonalityPreview";
@@ -26,6 +27,7 @@ export default function AgentAiSettingsPanel({
   /** Signature-tier: unlocks the brand color input (else disabled + upgrade hint). */
   canCustomizeBrand?: boolean;
 }) {
+  const { t } = useTranslation("dashboard");
   const [settings, setSettings] = useState<AgentAiSettings>(empty);
   const [savedSettings, setSavedSettings] = useState<AgentAiSettings>(empty);
   const [loading, setLoading] = useState(true);
@@ -108,13 +110,10 @@ export default function AgentAiSettingsPanel({
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-gray-600">
-        Choose how CloseBoss sounds for SMS, email, call summaries, and automated greetings. This adjusts
-        tone and wording only — compliance and safety rules are unchanged.
-      </p>
+      <p className="text-xs text-gray-600">{t("pages.agentAiSettings.intro")}</p>
 
       <div className="space-y-2">
-        <span className="block text-[11px] font-medium text-gray-500">Personality</span>
+        <span className="block text-[11px] font-medium text-gray-500">{t("pages.agentAiSettings.personality")}</span>
         <div className="flex flex-wrap gap-2">
           {(["friendly", "professional", "luxury"] as const).map((p) => (
             <label
@@ -139,7 +138,7 @@ export default function AgentAiSettingsPanel({
       </div>
 
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-gray-500">Default outbound language</label>
+        <label className="block text-[11px] font-medium text-gray-500">{t("pages.agentAiSettings.outboundLanguage")}</label>
         <select
           className="w-full max-w-xs border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
           value={settings.defaultLanguage}
@@ -159,11 +158,9 @@ export default function AgentAiSettingsPanel({
               {l.nativeLabel !== l.label ? ` (${l.nativeLabel})` : ""}
             </option>
           ))}
-          <option value="auto">Auto (match lead)</option>
+          <option value="auto">{t("pages.agentAiSettings.autoMatch")}</option>
         </select>
-        <p className="text-[11px] text-gray-500">
-          The AI uses this when a contact has no preferred language set. Override per-contact on the Contacts page.
-        </p>
+        <p className="text-[11px] text-gray-500">{t("pages.agentAiSettings.languageHint")}</p>
       </div>
 
       <label className="flex items-center gap-2 text-sm cursor-pointer">
@@ -177,12 +174,11 @@ export default function AgentAiSettingsPanel({
       </label>
 
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-gray-500">
-          Custom style notes <span className="text-gray-400 font-normal">(optional, max 500 chars)</span>
+        <label className="block text-[11px] font-medium text-gray-500">{t("pages.agentAiSettings.styleNotes")}<span className="text-gray-400 font-normal">(optional, max 500 chars)</span>
         </label>
         <textarea
           className="w-full min-h-[88px] border border-gray-300 rounded-lg px-3 py-2 text-sm"
-          placeholder="e.g. Prefer Oxford comma; avoid exclamation marks; mention our team name once."
+          placeholder={t("pages.agentAiSettings.stylePlaceholder")}
           maxLength={500}
           value={settings.styleNotes ?? ""}
           onChange={(e) => setSettings((s) => ({ ...s, styleNotes: e.target.value || null }))}
@@ -191,20 +187,17 @@ export default function AgentAiSettingsPanel({
 
       <div className="space-y-1 border-t border-gray-100 pt-4">
         <div className="flex items-center justify-between">
-          <label className="block text-[11px] font-medium text-gray-500" htmlFor="brand-color">
-            Brand color{" "}
+          <label className="block text-[11px] font-medium text-gray-500" htmlFor="brand-color">{t("pages.dashFragments.brandColor")}{" "}
             <span className="font-normal text-gray-400">(social cards)</span>
           </label>
           {!canCustomizeBrand && (
-            <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-medium text-[#0072ce]">
-              Signature
-            </span>
+            <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-medium text-[#0072ce]">{t("pages.agentAiSettings.signature")}</span>
           )}
         </div>
         <div className="flex items-center gap-2">
           <input
             type="color"
-            aria-label="Brand color swatch"
+            aria-label={t("pages.agentAiSettings.swatch")}
             disabled={!canCustomizeBrand}
             value={
               settings.brandColor && isValidHex(settings.brandColor)
@@ -233,22 +226,14 @@ export default function AgentAiSettingsPanel({
               disabled={!canCustomizeBrand}
               onClick={() => setSettings((s) => ({ ...s, brandColor: null }))}
               className="text-[11px] text-gray-500 underline-offset-2 hover:underline disabled:opacity-50"
-            >
-              Reset
-            </button>
+            >{t("pages.agentAiSettings.reset")}</button>
           )}
         </div>
         {canCustomizeBrand ? (
-          <p className="text-[11px] text-gray-500">
-            Used as the accent color on your generated social cards. Leave blank for the
-            default CloseBoss blue.
-          </p>
+          <p className="text-[11px] text-gray-500">{t("pages.agentAiSettings.accentHint")}</p>
         ) : (
-          <p className="text-[11px] text-gray-500">
-            Put your own brand color (and logo) on every generated social card with{" "}
-            <a href="/dashboard/billing" className="font-medium text-[#0072ce] underline hover:no-underline">
-              Signature
-            </a>
+          <p className="text-[11px] text-gray-500">{t("pages.dashFragments.ownBrandColor")}{" "}
+            <a href="/dashboard/billing" className="font-medium text-[#0072ce] underline hover:no-underline">{t("pages.agentAiSettings.signature")}</a>
             .
           </p>
         )}
@@ -271,7 +256,7 @@ export default function AgentAiSettingsPanel({
       </div>
 
       <div className="border-t border-gray-100 pt-4">
-        <div className="text-sm font-semibold text-gray-700">Preview ({settings.personality})</div>
+        <div className="text-sm font-semibold text-gray-700">{t("pages.dashFragments.preview")}{settings.personality})</div>
         <PersonalityPreview personality={settings.personality} />
       </div>
     </div>

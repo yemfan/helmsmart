@@ -29,13 +29,13 @@ const FULL_LABEL: Record<SupportedLocale, string> = {
 };
 
 export default function LanguageToggle({ className = "" }: { className?: string }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation("dashboard");
   const current = (i18n.language as SupportedLocale) ?? "en";
 
   return (
     <div
       role="radiogroup"
-      aria-label="Language"
+      aria-label={t("pages.labels.language")}
       className={`inline-flex shrink-0 items-center rounded-2xl border border-slate-200/90 bg-white p-0.5 shadow-sm ring-1 ring-slate-900/[0.03] dark:border-slate-700 dark:bg-slate-900 ${className}`}
     >
       {SUPPORTED_LOCALES.map((loc) => {

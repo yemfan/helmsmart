@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CalendarClock, PhoneOutgoing } from "lucide-react";
 
 type Appt = {
@@ -17,6 +18,7 @@ type Appt = {
  * each client to remind/confirm (AI reminder call). Mirrors the bulk-call flow.
  */
 export default function AppointmentRemindersPanel() {
+  const { t } = useTranslation("dashboard");
   const [appts, setAppts] = useState<Appt[]>([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<"idle" | "calling" | "done" | "error">("idle");
@@ -71,7 +73,7 @@ export default function AppointmentRemindersPanel() {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <CalendarClock className="h-4 w-4 text-slate-500" strokeWidth={2} />
-          <h2 className="text-sm font-semibold text-slate-900">Upcoming appointments</h2>
+          <h2 className="text-sm font-semibold text-slate-900">{t("pages.appointmentReminders.title")}</h2>
         </div>
         <button
           type="button"
@@ -83,9 +85,7 @@ export default function AppointmentRemindersPanel() {
           {status === "calling" ? "Calling…" : `Remind all (${callable})`}
         </button>
       </div>
-      <p className="mt-0.5 mb-3 text-xs text-slate-500">
-        Lucy calls each client to remind &amp; confirm their appointment in the next 48 hours.
-      </p>
+      <p className="mt-0.5 mb-3 text-xs text-slate-500">{t("pages.appointmentReminders.sub")}</p>
 
       {message && (
         <p className={`mb-2 text-xs font-medium ${status === "error" ? "text-rose-600" : "text-emerald-600"}`}>{message}</p>
@@ -94,16 +94,14 @@ export default function AppointmentRemindersPanel() {
       {loading ? (
         <p className="py-3 text-center text-sm text-slate-400">Loading…</p>
       ) : appts.length === 0 ? (
-        <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-sm text-slate-500">
-          No appointments in the next 48 hours.
-        </p>
+        <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-sm text-slate-500">{t("pages.appointmentReminders.empty")}</p>
       ) : (
         <ul className="divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200">
           {appts.map((a) => (
             <li key={a.id} className="flex items-center gap-2 px-3 py-2 text-sm">
               <span className="min-w-0 flex-1 truncate text-slate-800">{a.name || a.phone || "—"}</span>
               <span className="shrink-0 text-xs text-slate-500">{fmt(a.startAt)}</span>
-              {!a.callable && <span className="shrink-0 text-[10px] font-medium text-amber-600">no phone</span>}
+              {!a.callable && <span className="shrink-0 text-[10px] font-medium text-amber-600">{t("pages.appointmentReminders.noPhone")}</span>}
             </li>
           ))}
         </ul>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import {
   POSTCARD_TEMPLATES,
@@ -39,6 +40,7 @@ export function SendPostcardModal({
   target: SendTarget;
   onSent?: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [step, setStep] = useState<"pick" | "customize" | "sent">("pick");
   const [templateKey, setTemplateKey] = useState<PostcardTemplateKey>("thinking_of_you");
   const [recipientName, setRecipientName] = useState(target.name);
@@ -128,9 +130,7 @@ export function SendPostcardModal({
         {/* Header */}
         <div className="flex items-start justify-between border-b border-slate-100 px-5 py-4">
           <div>
-            <h3 className="text-base font-semibold text-slate-900">
-              Send a postcard
-            </h3>
+            <h3 className="text-base font-semibold text-slate-900">{t("pages.sendPostcard.title")}</h3>
             <p className="mt-0.5 text-xs text-slate-500">
               {step === "pick"
                 ? "Pick a design"
@@ -143,7 +143,7 @@ export function SendPostcardModal({
             type="button"
             onClick={onClose}
             className="text-slate-400 hover:text-slate-700"
-            aria-label="Close"
+            aria-label={t("pages.sendPostcard.close")}
           >
             ✕
           </button>
@@ -196,17 +196,13 @@ export function SendPostcardModal({
                     type="button"
                     onClick={() => setStep("pick")}
                     className="ml-auto text-[11px] text-slate-500 hover:text-slate-700 hover:underline"
-                  >
-                    Change design
-                  </button>
+                  >{t("pages.sendPostcard.changeDesign")}</button>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700">
-                    Recipient name
-                  </label>
+                  <label className="block text-xs font-medium text-slate-700">{t("pages.sendPostcard.recipientName")}</label>
                   <input
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
@@ -214,9 +210,7 @@ export function SendPostcardModal({
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-slate-700">
-                    Personal message
-                  </label>
+                  <label className="block text-xs font-medium text-slate-700">{t("pages.sendPostcard.personalMessage")}</label>
                   <textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -224,12 +218,10 @@ export function SendPostcardModal({
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
                     placeholder={template.defaultMessage}
                   />
-                  <p className="mt-1 text-[11px] text-slate-500">
-                    This is what they read after the animation plays. Shorter + warmer wins.
-                  </p>
+                  <p className="mt-1 text-[11px] text-slate-500">{t("pages.sendPostcard.messageHint")}</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700">Email</label>
+                  <label className="block text-xs font-medium text-slate-700">{t("pages.sendPostcard.email")}</label>
                   <input
                     type="email"
                     value={email}
@@ -239,7 +231,7 @@ export function SendPostcardModal({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700">Phone</label>
+                  <label className="block text-xs font-medium text-slate-700">{t("pages.sendPostcard.phone")}</label>
                   <input
                     type="tel"
                     value={phone}
@@ -251,7 +243,7 @@ export function SendPostcardModal({
               </div>
 
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <div className="text-xs font-semibold text-slate-700">Deliver via</div>
+                <div className="text-xs font-semibold text-slate-700">{t("pages.sendPostcard.deliverVia")}</div>
                 <div className="mt-2 flex flex-wrap gap-3 text-sm">
                   <label className="flex items-center gap-2">
                     <input
@@ -275,7 +267,7 @@ export function SendPostcardModal({
                     />
                     💬 SMS
                   </label>
-                  <label className="flex items-center gap-2 text-slate-400" title="WeChat coming soon">
+                  <label className="flex items-center gap-2 text-slate-400" title={t("pages.sendPostcard.wechatSoon")}>
                     <input
                       type="checkbox"
                       checked={channels.wechat}
@@ -298,9 +290,7 @@ export function SendPostcardModal({
           ) : sentResult ? (
             <div className="space-y-4 text-center">
               <div className="text-5xl">🎉</div>
-              <h3 className="text-lg font-semibold text-slate-900">
-                Postcard is on its way
-              </h3>
+              <h3 className="text-lg font-semibold text-slate-900">{t("pages.sendPostcard.onItsWay")}</h3>
               <div className="grid gap-2 text-left">
                 {(Object.keys(sentResult.deliveries) as ChannelKey[]).map((ch) => {
                   const d = sentResult.deliveries[ch];
@@ -324,9 +314,7 @@ export function SendPostcardModal({
                 })}
               </div>
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-left">
-                <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                  Public link
-                </div>
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{t("pages.sendPostcard.publicLink")}</div>
                 <div className="mt-1 break-all font-mono text-xs text-slate-800">
                   {sentResult.publicUrl}
                 </div>
@@ -337,16 +325,12 @@ export function SendPostcardModal({
                       void navigator.clipboard.writeText(sentResult.publicUrl);
                     }}
                     className="rounded-md border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                  >
-                    Copy link
-                  </button>
+                  >{t("pages.sendPostcard.copyLink")}</button>
                   <Link
                     href={sentResult.publicUrl}
                     target="_blank"
                     className="rounded-md border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                  >
-                    Open
-                  </Link>
+                  >{t("pages.sendPostcard.open")}</Link>
                 </div>
               </div>
             </div>
@@ -360,9 +344,7 @@ export function SendPostcardModal({
               type="button"
               onClick={onClose}
               className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
-            >
-              Cancel
-            </button>
+            >{t("pages.sendPostcard.cancel")}</button>
             <button
               type="button"
               onClick={() => void onSend()}
@@ -378,9 +360,7 @@ export function SendPostcardModal({
               type="button"
               onClick={onClose}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
-            >
-              Done
-            </button>
+            >{t("pages.sendPostcard.done")}</button>
           </div>
         ) : null}
       </div>

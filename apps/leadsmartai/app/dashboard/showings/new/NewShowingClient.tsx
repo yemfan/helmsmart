@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AddressAutocomplete, {
   type AddressAutocompleteValue,
 } from "@/components/AddressAutocomplete";
@@ -56,6 +57,7 @@ function readBlobString(blob: unknown, ...keys: string[]): string | null {
  */
 
 function NewShowingForm() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const searchParams = useSearchParams();
   const prefilledContactId = searchParams?.get("contactId") ?? "";
@@ -254,7 +256,7 @@ function NewShowingForm() {
         // Lookup failure is non-fatal; the agent can still submit.
         setStatusBanner({
           tone: "info",
-          text: "Couldn't auto-verify listing status — fill in MLS # manually if you have it.",
+          text: t("pages.newShowing.lookupFailed"),
         });
         return;
       }
@@ -272,7 +274,7 @@ function NewShowingForm() {
       } else {
         setStatusBanner({
           tone: "info",
-          text: "No MLS status on file for this address — could be off-market or just not in our cache yet.",
+          text: t("pages.newShowing.noMls"),
         });
       }
 
@@ -307,7 +309,7 @@ function NewShowingForm() {
     } catch {
       setStatusBanner({
         tone: "info",
-        text: "Couldn't reach property service — proceed manually.",
+        text: t("pages.newShowing.serviceDown"),
       });
     } finally {
       setLookupLoading(false);
@@ -552,7 +554,7 @@ function NewShowingForm() {
   async function submit() {
     setError(null);
     if (!contact?.id || !propertyAddress.trim() || !scheduledAtIso) {
-      setError("Buyer, property address, and date+time are required.");
+      setError(t("pages.newShowing.errRequired"));
       return;
     }
     setSubmitting(true);
@@ -598,16 +600,11 @@ function NewShowingForm() {
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/showings" className="hover:underline">
-            Showings
-          </Link>
+          <Link href="/dashboard/showings" className="hover:underline">{t("pages.newShowing.showings")}</Link>
           {" / New"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">Schedule showing</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Log a property visit with a buyer. After the showing, capture their feedback
-          for your file + next-steps conversation.
-        </p>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.newShowing.heading")}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.newShowing.sub")}</p>
       </div>
 
       {/* Banner shown when prefill arrived from a forwarded showing-
@@ -616,9 +613,7 @@ function NewShowingForm() {
           the review page so they can compare against the source. */}
       {inboundSource && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          <div className="font-medium">
-            Pre-filled from a forwarded showing request
-          </div>
+          <div className="font-medium">{t("pages.newShowing.prefilled")}</div>
           <div className="mt-0.5 text-xs text-emerald-700">
             {inboundSource.subject ? `“${inboundSource.subject}”` : "(no subject)"}
             {inboundSource.fromHeader ? ` · from ${inboundSource.fromHeader}` : ""}
@@ -626,16 +621,14 @@ function NewShowingForm() {
             <Link
               href={`/dashboard/inbound/${inboundSource.id}`}
               className="underline hover:text-emerald-900"
-            >
-              view source email
-            </Link>
+            >{t("pages.newShowing.viewSource")}</Link>
           </div>
         </div>
       )}
 
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">Buyer *</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.buyer")}</label>
           <ContactPicker
             value={contact}
             onChange={setContact}
@@ -646,7 +639,7 @@ function NewShowingForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">Property address *</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.address")}</label>
 
           {/* Recent addresses from this buyer's showings + offers
               history. Vertical list with source tag (Showing / Offer)
@@ -676,7 +669,7 @@ function NewShowingForm() {
               }
             }}
             onSelect={onAddressPick}
-            placeholder="Start typing the address — or paste a Zillow/Redfin/Realtor.com/Compass link"
+            placeholder={t("pages.newShowing.addressHint")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
           {/* Parsed city/state/zip render as small chips beneath the
@@ -703,28 +696,25 @@ function NewShowingForm() {
               data. */}
           {!addressVerified && propertyAddress.trim().length > 4 ? (
             <div className="mt-2 space-y-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-              <p className="text-[11px] text-slate-600">
-                Pick from the suggestions to auto-fill, or enter address
-                parts below:
-              </p>
+              <p className="text-[11px] text-slate-600">{t("pages.newShowing.pickSuggestion")}</p>
               <div className="grid grid-cols-4 gap-2">
                 <input
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="City"
+                  placeholder={t("pages.newShowing.city")}
                   className="col-span-2 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs"
                 />
                 <input
                   value={state}
                   onChange={(e) => setStateValue(e.target.value.toUpperCase())}
-                  placeholder="State"
+                  placeholder={t("pages.newShowing.state")}
                   maxLength={2}
                   className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs"
                 />
                 <input
                   value={zip}
                   onChange={(e) => setZip(e.target.value)}
-                  placeholder="ZIP"
+                  placeholder={t("pages.newShowing.zip")}
                   maxLength={10}
                   className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs"
                 />
@@ -732,7 +722,7 @@ function NewShowingForm() {
             </div>
           ) : null}
           {lookupLoading ? (
-            <p className="mt-1.5 text-[11px] text-slate-500">Looking up listing…</p>
+            <p className="mt-1.5 text-[11px] text-slate-500">{t("pages.newShowing.lookingUp")}</p>
           ) : null}
           {statusBanner ? (
             <div
@@ -752,7 +742,7 @@ function NewShowingForm() {
 
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">Date *</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.date")}</label>
             <input
               type="date"
               value={date}
@@ -761,7 +751,7 @@ function NewShowingForm() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Time *</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.time")}</label>
             <input
               type="time"
               value={time}
@@ -770,7 +760,7 @@ function NewShowingForm() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Duration (min)</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.duration")}</label>
             <input
               type="number"
               value={durationMinutes}
@@ -784,16 +774,16 @@ function NewShowingForm() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">MLS #</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.mls")}</label>
             <input
               value={mlsNumber}
               onChange={(e) => setMlsNumber(e.target.value)}
-              placeholder="ML12345678"
+              placeholder={t("pages.newShowing.mlsPlaceholder")}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">Listing URL</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.listingUrl")}</label>
             <input
               value={mlsUrl}
               onChange={(e) => {
@@ -815,7 +805,7 @@ function NewShowingForm() {
                   setTimeout(() => void detectListingUrl(pasted.trim()), 0);
                 }
               }}
-              placeholder="Paste a Zillow, Redfin, Realtor.com, or Compass link…"
+              placeholder={t("pages.newShowing.urlPlaceholder")}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
             {listingUrlDetected && (
@@ -840,7 +830,7 @@ function NewShowingForm() {
                 )}
                 {listingUrlDetected.status === "failed" && (
                   <span className="text-amber-700">
-                    {listingUrlDetected.label} detected, but{" "}
+                    {listingUrlDetected.label} {t("pages.dashFragments.detectedBut")}{" "}
                     {listingUrlDetected.note?.toLowerCase()}
                   </span>
                 )}
@@ -850,23 +840,21 @@ function NewShowingForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">Access notes</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.accessNotes")}</label>
           <input
             value={accessNotes}
             onChange={(e) => setAccessNotes(e.target.value)}
-            placeholder="Lockbox 1234, gate open, side door"
+            placeholder={t("pages.newShowing.accessPlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
-          <p className="mt-1 text-[11px] text-slate-500">
-            Copy from ShowingTime / CSS confirmation. Saved on this showing only.
-          </p>
+          <p className="mt-1 text-[11px] text-slate-500">{t("pages.newShowing.copyFromShowingTime")}</p>
         </div>
 
         <div className="space-y-3 rounded-lg bg-slate-50 p-3">
-          <div className="text-xs font-medium text-slate-700">Listing agent contact</div>
+          <div className="text-xs font-medium text-slate-700">{t("pages.newShowing.listingAgent")}</div>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-[11px] text-slate-500">Name</label>
+              <label className="block text-[11px] text-slate-500">{t("pages.newShowing.name")}</label>
               <input
                 value={listingAgentName}
                 onChange={(e) => setListingAgentName(e.target.value)}
@@ -874,7 +862,7 @@ function NewShowingForm() {
               />
             </div>
             <div>
-              <label className="block text-[11px] text-slate-500">Email</label>
+              <label className="block text-[11px] text-slate-500">{t("pages.newShowing.email")}</label>
               <input
                 type="email"
                 value={listingAgentEmail}
@@ -883,7 +871,7 @@ function NewShowingForm() {
               />
             </div>
             <div>
-              <label className="block text-[11px] text-slate-500">Phone</label>
+              <label className="block text-[11px] text-slate-500">{t("pages.newShowing.phone")}</label>
               <input
                 value={listingAgentPhone}
                 onChange={(e) => setListingAgentPhone(e.target.value)}
@@ -894,7 +882,7 @@ function NewShowingForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">Notes</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newShowing.notes")}</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
@@ -909,16 +897,14 @@ function NewShowingForm() {
           <Link
             href="/dashboard/showings"
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </Link>
+          >{t("pages.newShowing.cancel")}</Link>
           <button
             type="button"
             onClick={() => void submit()}
             disabled={submitting || !contact?.id || !propertyAddress.trim() || !scheduledAtIso}
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
           >
-            {submitting ? "Scheduling…" : "Schedule showing"}
+            {submitting ? t("pages.newShowing.scheduling") : t("pages.newShowing.schedule")}
           </button>
         </div>
       </div>
@@ -936,8 +922,9 @@ function defaultDateIso(): string {
 }
 
 export function NewShowingClient() {
+  const { t } = useTranslation("dashboard");
   return (
-    <Suspense fallback={<div className="text-sm text-slate-500">Loading…</div>}>
+    <Suspense fallback={<div className="text-sm text-slate-500">{t("pages.newShowing.loading")}</div>}>
       <NewShowingForm />
     </Suspense>
   );

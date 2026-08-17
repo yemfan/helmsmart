@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 /**
  * Radix-backed Dialog primitive — the shadcn-style composition pattern.
@@ -79,6 +80,7 @@ const DialogContent = forwardRef<
   ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
 >(function DialogContent({ className, children, hideCloseButton, ...props }, ref) {
+  const { t } = useTranslation("dashboard");
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -102,7 +104,7 @@ const DialogContent = forwardRef<
             // Top-right "X" close button. Keyboard users still get the
             // Escape-to-close behavior; this is for mouse + touch.
             className="absolute right-4 top-4 rounded-md p-1 text-slate-500 opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-[#0072ce]/40 focus:ring-offset-2 disabled:pointer-events-none dark:text-slate-400 dark:ring-offset-slate-900"
-            aria-label="Close"
+            aria-label={t("pages.misc.close")}
           >
             <X className="h-4 w-4" aria-hidden />
           </DialogPrimitive.Close>

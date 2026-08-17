@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import CmaEmailToSellerButton from "@/components/dashboard/CmaEmailToSellerButton";
 import ShareReport from "@/components/share/ShareReport";
@@ -29,9 +31,9 @@ type CmaFullRow = {
   snapshot: CmaSnapshot;
 };
 
-function formatMoney(n: number | null | undefined): string {
+function formatMoney(n: number | null | undefined, locale: string): string {
   if (n == null) return "—";
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
@@ -55,9 +57,9 @@ function formatHoa(hoaMonthly: number | null | undefined): string {
   return `$${Math.round(hoaMonthly).toLocaleString()}/mo`;
 }
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, locale: string): string {
   try {
-    return new Date(iso).toLocaleDateString(undefined, {
+    return new Date(iso).toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -68,6 +70,8 @@ function formatDate(iso: string): string {
 }
 
 export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [cma, setCma] = useState<CmaFullRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -125,7 +129,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
   if (error || !cma) {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        Couldn&apos;t load this CMA: {error ?? "not found"}
+        {t("pages.cmaDetail.couldntLoad", { reason: error ?? t("pages.cmaDetail.notFound") })}
         <div className="mt-2">
           <Link href="/dashboard/cma" className="font-semibold text-slate-700 hover:underline">
             ← Back to CMAs
@@ -158,8 +162,13 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
             <p className="text-sm text-slate-600">{cma.subjectAddress}</p>
           ) : null}
           <p className="mt-1 text-xs text-slate-400">
-            Saved {formatDate(cma.createdAt)} · {cma.compCount} comp{cma.compCount === 1 ? "" : "s"}
-            {cma.confidenceScore != null ? ` · confidence ${cma.confidenceScore}` : ""}
+            {t("pages.cmaDetail.savedLine", {
+              date: formatDate(cma.createdAt, locale),
+              count: cma.compCount,
+            })}
+            {cma.confidenceScore != null
+              ? t("pages.cmaDetail.confidenceSuffix", { score: cma.confidenceScore })
+              : ""}
           </p>
         </div>
         {valuationOk ? (
@@ -190,27 +199,23 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
 
       {!valuationOk ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
-          <span className="font-semibold">Valuation unavailable.</span> This CMA
-          didn&apos;t return a reliable value, so sharing, emailing, and PDF
-          export are disabled to protect your client relationship. Regenerate it
-          with a more complete address to produce a sendable report.
-        </div>
+          <span className="font-semibold">{t("pages.cmaDetail.unavailable")}</span>{t("pages.cmaDetail.unreliable")}</div>
       ) : null}
 
       {cma.snapshot.disclaimer ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
-          <span className="font-semibold">AI estimate · </span>
+          <span className="font-semibold">{t("pages.cmaDetail.aiEstimate")}</span>
           {cma.snapshot.disclaimer}
         </div>
       ) : null}
 
       {/* Headline value range */}
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-slate-900">Estimated value</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.cmaDetail.estimatedValue")}</h2>
         <div className="mt-3 grid grid-cols-3 gap-px overflow-hidden rounded-xl bg-slate-200">
-          <ValueCell label="Low" value={cma.lowEstimate} tone="text-slate-700" />
-          <ValueCell label="Estimated" value={cma.estimatedValue} tone="text-emerald-700" />
-          <ValueCell label="High" value={cma.highEstimate} tone="text-slate-700" />
+          <ValueCell label={t("pages.cmaDetail.low")} value={cma.lowEstimate} tone="text-slate-700" />
+          <ValueCell label={t("pages.cmaDetail.estimated")} value={cma.estimatedValue} tone="text-emerald-700" />
+          <ValueCell label={t("pages.cmaDetail.high")} value={cma.highEstimate} tone="text-slate-700" />
         </div>
         <p className="mt-3 text-[11px] text-slate-500">
           {subject.beds} bed / {subject.baths} bath / {subject.sqft.toLocaleString()} sqft
@@ -227,10 +232,8 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       {/* Listing strategies */}
       <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <header className="border-b border-slate-100 px-5 py-4">
-          <h2 className="text-sm font-semibold text-slate-900">Listing strategies</h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Three list-price scenarios with projected days on market.
-          </p>
+          <h2 className="text-sm font-semibold text-slate-900">{t("pages.cmaDetail.strategies")}</h2>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.cmaDetail.scenarios")}</p>
         </header>
         <ul className="divide-y divide-slate-100">
           {bands.map((b) => (
@@ -240,7 +243,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
               </span>
               <p className="text-xs text-slate-600">{b.rationale}</p>
               <span className="text-base font-bold tabular-nums text-slate-900">
-                {formatMoney(b.price)}
+                {formatMoney(b.price, locale)}
               </span>
             </li>
           ))}
@@ -251,31 +254,29 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <header className="border-b border-slate-100 px-5 py-4">
           <h2 className="text-sm font-semibold text-slate-900">
-            Comparable sales ({cma.snapshot.comps.length})
+            {t("pages.cmaDetail.comparableSales", { count: cma.snapshot.comps.length })}
           </h2>
           <p className="mt-0.5 text-xs text-slate-500">
             Sold within ~3 miles of the subject in the last ~12 months.
           </p>
         </header>
         {cma.snapshot.comps.length === 0 ? (
-          <div className="px-5 py-6 text-center text-sm text-slate-500">
-            No comps available for this property.
-          </div>
+          <div className="px-5 py-6 text-center text-sm text-slate-500">{t("pages.cmaDetail.noComps")}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
                 <tr>
-                  <th className="px-4 py-2 text-left font-semibold">Address</th>
-                  <th className="px-3 py-2 text-right font-semibold">Beds</th>
-                  <th className="px-3 py-2 text-right font-semibold">Baths</th>
-                  <th className="px-3 py-2 text-right font-semibold">Sqft</th>
-                  <th className="px-3 py-2 text-right font-semibold">Lot</th>
-                  <th className="px-3 py-2 text-right font-semibold">HOA</th>
-                  <th className="px-3 py-2 text-right font-semibold">$/sqft</th>
-                  <th className="px-3 py-2 text-right font-semibold">Sold</th>
-                  <th className="px-4 py-2 text-right font-semibold">Price</th>
-                  <th className="px-4 py-2 text-right font-semibold">Distance</th>
+                  <th className="px-4 py-2 text-left font-semibold">{t("pages.cmaDetail.colAddress")}</th>
+                  <th className="px-3 py-2 text-right font-semibold">{t("pages.cmaDetail.colBeds")}</th>
+                  <th className="px-3 py-2 text-right font-semibold">{t("pages.cmaDetail.colBaths")}</th>
+                  <th className="px-3 py-2 text-right font-semibold">{t("pages.cmaDetail.colSqft")}</th>
+                  <th className="px-3 py-2 text-right font-semibold">{t("pages.cmaDetail.colLot")}</th>
+                  <th className="px-3 py-2 text-right font-semibold">{t("pages.cmaDetail.colHoa")}</th>
+                  <th className="px-3 py-2 text-right font-semibold">{t("pages.cmaDetail.colPerSqft")}</th>
+                  <th className="px-3 py-2 text-right font-semibold">{t("pages.cmaDetail.colSold")}</th>
+                  <th className="px-4 py-2 text-right font-semibold">{t("pages.cmaDetail.colPrice")}</th>
+                  <th className="px-4 py-2 text-right font-semibold">{t("pages.cmaDetail.colDistance")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -303,7 +304,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
                     </td>
                     <td className="px-3 py-2 text-right text-slate-700">{c.soldDate}</td>
                     <td className="px-4 py-2 text-right tabular-nums font-semibold text-slate-900">
-                      {formatMoney(c.price)}
+                      {formatMoney(c.price, locale)}
                     </td>
                     <td className="px-4 py-2 text-right tabular-nums text-slate-500">
                       {c.distanceMiles.toFixed(1)} mi
@@ -318,7 +319,7 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
 
       {cma.snapshot.summary ? (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">Summary</h2>
+          <h2 className="text-sm font-semibold text-slate-900">{t("pages.cmaDetail.summary")}</h2>
           <p className="mt-2 whitespace-pre-line text-sm text-slate-600">
             {cma.snapshot.summary}
           </p>
@@ -328,11 +329,9 @@ export default function CmaDetailClient({ cmaId }: { cmaId: string }) {
       {cma.snapshot.sources && cma.snapshot.sources.length > 0 ? (
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-900">
-            Sources ({cma.snapshot.sources.length})
+            {t("pages.cmaDetail.sourcesN", { count: cma.snapshot.sources.length })}
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Where the comps and market data came from — verify before relying on the estimate.
-          </p>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.cmaDetail.sources")}</p>
           <ul className="mt-3 space-y-1.5">
             {cma.snapshot.sources.map((s, i) => (
               <li key={`${s.url}-${i}`} className="truncate text-sm">
@@ -362,6 +361,8 @@ function ValueCell({
   value: number | null;
   tone: string;
 }) {
+  const { i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   return (
     <div className="bg-white px-4 py-3">
       <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
@@ -370,7 +371,7 @@ function ValueCell({
       <p className={`mt-1 text-2xl font-bold tabular-nums ${tone}`}>
         {value == null
           ? "—"
-          : new Intl.NumberFormat("en-US", {
+          : new Intl.NumberFormat(locale, {
               style: "currency",
               currency: "USD",
               maximumFractionDigits: 0,

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import AddressAutocomplete, {
   type AddressAutocompleteValue,
 } from "@/components/AddressAutocomplete";
@@ -63,6 +64,7 @@ const WEEKDAYS = [
 ];
 
 export function NewOpenHouseClient() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
 
   const [propertyAddress, setPropertyAddress] = useState("");
@@ -104,25 +106,25 @@ export function NewOpenHouseClient() {
   async function submit() {
     setError(null);
     if (!propertyAddress.trim() || !date || !startTime || !endTime) {
-      setError("Property address, date, and time window are required.");
+      setError(t("pages.newOpenHouse.errRequired"));
       return;
     }
     if (isRecurring) {
       if (!weekdays.length) {
-        setError("Pick at least one weekday for the recurrence.");
+        setError(t("pages.newOpenHouse.errWeekday"));
         return;
       }
       if (weeks <= 0) {
-        setError("Number of weeks must be at least 1.");
+        setError(t("pages.newOpenHouse.errWeeks"));
         return;
       }
     } else {
       if (!startAtIso || !endAtIso) {
-        setError("Invalid date/time.");
+        setError(t("pages.newOpenHouse.errDateTime"));
         return;
       }
       if (new Date(endAtIso).getTime() <= new Date(startAtIso).getTime()) {
-        setError("End time must be after start time.");
+        setError(t("pages.newOpenHouse.errEndBeforeStart"));
         return;
       }
     }
@@ -217,7 +219,7 @@ export function NewOpenHouseClient() {
       if (!res.ok || !body.ok) {
         setStatusBanner({
           tone: "info",
-          text: "Couldn't auto-verify listing — fill in MLS # and price manually if you have them.",
+          text: t("pages.newOpenHouse.lookupFailed"),
         });
         return;
       }
@@ -235,7 +237,7 @@ export function NewOpenHouseClient() {
       } else {
         setStatusBanner({
           tone: "info",
-          text: "No MLS status on file for this address — could be off-market or just not in our cache yet.",
+          text: t("pages.newOpenHouse.noMls"),
         });
       }
 
@@ -252,7 +254,7 @@ export function NewOpenHouseClient() {
     } catch {
       setStatusBanner({
         tone: "info",
-        text: "Couldn't reach property service — proceed manually.",
+        text: t("pages.newOpenHouse.serviceDown"),
       });
     } finally {
       setLookupLoading(false);
@@ -269,20 +271,16 @@ export function NewOpenHouseClient() {
     <div className="mx-auto max-w-2xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/open-houses" className="hover:underline">
-            Open Houses
-          </Link>
+          <Link href="/dashboard/open-houses" className="hover:underline">{t("pages.newOpenHouse.openHouses")}</Link>
           {" / New"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold text-slate-900">Schedule open house</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          After saving, you&apos;ll get a QR code and a sign-in URL to share at the door.
-        </p>
+        <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.newOpenHouse.heading")}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.newOpenHouse.afterSaving")}</p>
       </div>
 
       <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div>
-          <label className="block text-xs font-medium text-slate-700">Property address *</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.address")}</label>
           <AddressAutocomplete
             value={propertyAddress}
             onChange={(next) => {
@@ -294,7 +292,7 @@ export function NewOpenHouseClient() {
               if (statusBanner) setStatusBanner(null);
             }}
             onSelect={onAddressPick}
-            placeholder="Start typing — Google will autocomplete the full address"
+            placeholder={t("pages.newOpenHouse.addressHint")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
           {(city || state || zip) ? (
@@ -305,7 +303,7 @@ export function NewOpenHouseClient() {
             </div>
           ) : null}
           {lookupLoading ? (
-            <p className="mt-1.5 text-[11px] text-slate-500">Looking up listing…</p>
+            <p className="mt-1.5 text-[11px] text-slate-500">{t("pages.newOpenHouse.lookingUp")}</p>
           ) : null}
           {statusBanner ? (
             <div
@@ -325,7 +323,7 @@ export function NewOpenHouseClient() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700">List price</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.listPrice")}</label>
             <input
               type="number"
               value={listPrice}
@@ -335,27 +333,25 @@ export function NewOpenHouseClient() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700">MLS #</label>
+            <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.mls")}</label>
             <input
               value={mlsNumber}
               onChange={(e) => setMlsNumber(e.target.value)}
-              placeholder="ML12345678"
+              placeholder={t("pages.newOpenHouse.mlsPlaceholder")}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">Listing URL</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.listingUrl")}</label>
           <input
             value={mlsUrl}
             onChange={(e) => setMlsUrl(e.target.value)}
-            placeholder="https://…"
+            placeholder={t("pages.newOpenHouse.urlPlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
-          <p className="mt-1 text-[11px] text-slate-500">
-            Shown on the sign-in page as &quot;View listing&quot; — visitors can save the link.
-          </p>
+          <p className="mt-1 text-[11px] text-slate-500">{t("pages.newOpenHouse.listingUrlHint")}</p>
         </div>
 
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
@@ -367,19 +363,15 @@ export function NewOpenHouseClient() {
               onChange={(e) => setIsRecurring(e.target.checked)}
               className="h-4 w-4 rounded border-slate-300"
             />
-            <label htmlFor="recurring-toggle" className="text-sm font-medium text-slate-800">
-              Recurring series
-            </label>
+            <label htmlFor="recurring-toggle" className="text-sm font-medium text-slate-800">{t("pages.newOpenHouse.recurring")}</label>
           </div>
-          <p className="mt-1 text-[11px] text-slate-500">
-            Create N open houses at once — one row per occurrence, each with its own sign-in URL.
-          </p>
+          <p className="mt-1 text-[11px] text-slate-500">{t("pages.newOpenHouse.recurringHint")}</p>
         </div>
 
         {!isRecurring ? (
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-700">Date *</label>
+              <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.date")}</label>
               <input
                 type="date"
                 value={date}
@@ -388,7 +380,7 @@ export function NewOpenHouseClient() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-700">Start *</label>
+              <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.start")}</label>
               <input
                 type="time"
                 value={startTime}
@@ -397,7 +389,7 @@ export function NewOpenHouseClient() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-700">End *</label>
+              <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.end")}</label>
               <input
                 type="time"
                 value={endTime}
@@ -419,9 +411,7 @@ export function NewOpenHouseClient() {
                   onChange={(e) => setDate(e.target.value)}
                   className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
                 />
-                <p className="mt-1 text-[11px] text-slate-500">
-                  Anchor — pattern walks forward from here.
-                </p>
+                <p className="mt-1 text-[11px] text-slate-500">{t("pages.newOpenHouse.anchorHint")}</p>
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-700">
@@ -438,7 +428,7 @@ export function NewOpenHouseClient() {
               </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-700">Weekdays *</label>
+              <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.weekdays")}</label>
               <div className="mt-1 flex flex-wrap gap-1.5">
                 {WEEKDAYS.map((w) => {
                   const selected = weekdays.includes(w.n);
@@ -461,7 +451,7 @@ export function NewOpenHouseClient() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-slate-700">Start *</label>
+                <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.start")}</label>
                 <input
                   type="time"
                   value={startTime}
@@ -470,7 +460,7 @@ export function NewOpenHouseClient() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-700">End *</label>
+                <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.end")}</label>
                 <input
                   type="time"
                   value={endTime}
@@ -480,24 +470,22 @@ export function NewOpenHouseClient() {
               </div>
             </div>
             <div className="rounded-md bg-blue-50 px-3 py-2 text-xs text-blue-800">
-              Will create <strong>{projectedCount}</strong> open house
-              {projectedCount === 1 ? "" : "s"} (capped at 26).
+              {t("pages.newOpenHouse.willCreate")} <strong>{projectedCount}</strong>{" "}
+              {t("pages.newOpenHouse.willCreateAfter", { count: projectedCount })}
             </div>
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-medium text-slate-700">Host notes</label>
+          <label className="block text-xs font-medium text-slate-700">{t("pages.newOpenHouse.hostNotes")}</label>
           <textarea
             value={hostNotes}
             onChange={(e) => setHostNotes(e.target.value)}
             rows={2}
-            placeholder="Parking out back, skip the garage, keep the cat inside, etc."
+            placeholder={t("pages.newOpenHouse.hostNotesPlaceholder")}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           />
-          <p className="mt-1 text-[11px] text-slate-500">
-            Host notes + property details are copied to every occurrence in the series.
-          </p>
+          <p className="mt-1 text-[11px] text-slate-500">{t("pages.newOpenHouse.copiedToAll")}</p>
         </div>
 
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
@@ -506,9 +494,7 @@ export function NewOpenHouseClient() {
           <Link
             href="/dashboard/open-houses"
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </Link>
+          >{t("pages.newOpenHouse.cancel")}</Link>
           <button
             type="button"
             onClick={() => void submit()}

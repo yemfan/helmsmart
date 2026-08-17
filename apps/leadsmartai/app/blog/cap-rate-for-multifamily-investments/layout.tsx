@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Cap Rate for Multifamily Investments",
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   keywords: ["multifamily cap rate", "apartment investing", "multifamily investment", "capitalization rate"],
 };
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default async function Layout({ children }: { children: ReactNode }) {
+  const t = await getServerT();
   return children;
 }

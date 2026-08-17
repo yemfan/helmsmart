@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type UsageData = {
   planType: string;
@@ -35,6 +36,7 @@ function MeterBar({ used, max, label }: { used: number; max: number; label: stri
 }
 
 export function UsageMeter() {
+  const { t } = useTranslation("dashboard");
   const [data, setData] = useState<UsageData | null>(null);
 
   useEffect(() => {
@@ -54,25 +56,21 @@ export function UsageMeter() {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-          Plan Usage
-        </h3>
+        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t("pages.usageMeter.title")}</h3>
         <span className="text-[10px] font-semibold text-gray-400 uppercase bg-gray-100 px-2 py-0.5 rounded">
           {planType}
         </span>
       </div>
 
-      <MeterBar used={usage.leads} max={limits.maxLeads} label="Leads" />
-      <MeterBar used={usage.contacts} max={limits.maxContacts} label="Contacts" />
-      <MeterBar used={usage.cmaToday} max={limits.cmaPerDay} label="CMA Reports (today)" />
+      <MeterBar used={usage.leads} max={limits.maxLeads} label={t("pages.usageMeter.leads")} />
+      <MeterBar used={usage.contacts} max={limits.maxContacts} label={t("pages.usageMeter.contacts")} />
+      <MeterBar used={usage.cmaToday} max={limits.cmaPerDay} label={t("pages.usageMeter.cmaToday")} />
 
       {anyNearLimit && planType === "free" && (
         <Link
           href="/dashboard/billing"
           className="block text-center rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700"
-        >
-          Upgrade for more capacity
-        </Link>
+        >{t("pages.usageMeter.upgrade")}</Link>
       )}
     </div>
   );

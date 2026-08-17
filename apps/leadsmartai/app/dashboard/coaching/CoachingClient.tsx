@@ -126,8 +126,7 @@ export default function CoachingClient() {
 
   if (error) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        Couldn&apos;t load coaching insights: {error}
+      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadCoaching")} {error}
       </div>
     );
   }
@@ -205,8 +204,7 @@ export default function CoachingClient() {
         ))}
       </ul>
       {generatedAt ? (
-        <p className="text-[11px] text-slate-400">
-          Refreshed {formatGeneratedAt(generatedAt, locale)}
+        <p className="text-[11px] text-slate-400">{t("pages.dashFragments.refreshed")} {formatGeneratedAt(generatedAt, locale)}
         </p>
       ) : null}
     </div>

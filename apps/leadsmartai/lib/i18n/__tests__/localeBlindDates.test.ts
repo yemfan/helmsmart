@@ -44,9 +44,16 @@ function walk(dir: string, out: string[] = []): string[] {
   return out;
 }
 
-/** Strip comments so an explanatory note mentioning "en-US" isn't a finding. */
-function stripComments(src: string): string {
-  return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+/**
+ * Blank out comments so an explanatory note mentioning "en-US" isn't a finding,
+ * while KEEPING the line count identical. Deleting the lines instead shifts
+ * every number after the first comment, so the reported line doesn't match the
+ * file — which cost me several minutes each time this fired.
+ */
+function blankComments(src: string): string {
+  return src
+    .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "))
+    .replace(/^(\s*)\/\/.*$/gm, "$1");
 }
 
 describe("locale-blind dates", () => {
@@ -56,7 +63,7 @@ describe("locale-blind dates", () => {
       for (const file of walk(join(ROOT, root))) {
         const src = readFileSync(file, "utf8");
         if (!/useTranslation|getServerT/.test(src)) continue;
-        const code = stripComments(src);
+        const code = blankComments(src);
         code.split("\n").forEach((line, i) => {
           if (OFFENDERS.some((re) => re.test(line))) {
             findings.push(`${file.slice(ROOT.length + 1)}:${i + 1}  ${line.trim().slice(0, 90)}`);

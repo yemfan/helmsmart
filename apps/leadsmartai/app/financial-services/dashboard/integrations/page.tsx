@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { Plug } from "lucide-react";
 import ComingSoon from "../_components/ComingSoon";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Integrations · LeadSmart AI",
   robots: { index: false },
 };
 
-export default function IntegrationsPage() {
+export default async function IntegrationsPage() {
+  const t = await getServerT();
   return (
     <ComingSoon
       icon={Plug}
-      title="Integrations"
+      title={t("pages.financialServices.navIntegrations", { ns: "dashboard" })}
       description="Connect your existing carrier portals, illustrators, e-app providers, and calendar so LeadSmart AI fits into the workflow you already have."
       availability="Pilot week 3"
       bulletPoints={[

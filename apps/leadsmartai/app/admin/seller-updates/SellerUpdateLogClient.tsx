@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export type SellerUpdateRow = {
   transactionId: string;
@@ -27,6 +29,8 @@ export function SellerUpdateLogClient({
   rows: SellerUpdateRow[];
   error: string | null;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [filter, setFilter] = useState<FilterMode>("all");
   const [q, setQ] = useState("");
 
@@ -76,7 +80,7 @@ export function SellerUpdateLogClient({
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Seller updates</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">{t("pages.adminPages.sellerUpdates")}</h1>
         <p className="mt-1 text-sm text-slate-500">
           Active listing_rep / dual transactions with the weekly seller-update toggle on.
           Send state lives on the transactions row
@@ -86,14 +90,13 @@ export function SellerUpdateLogClient({
       </div>
 
       {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          Error loading rows: {error}
+        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{t("pages.dashFragments.errorLoadingRowsShort")} {error}
         </div>
       ) : null}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Enabled listings" value={stats.total} />
-        <Stat label="Never sent" value={stats.neverSent} tone={stats.neverSent > 0 ? "amber" : "neutral"} />
+        <Stat label={t("pages.adminPages.enabledListings")} value={stats.total} />
+        <Stat label={t("pages.adminPages.neverSent")} value={stats.neverSent} tone={stats.neverSent > 0 ? "amber" : "neutral"} />
         <Stat label="Recent (≤8d)" value={stats.recent} tone="green" />
         <Stat label="Stale (>14d)" value={stats.stale} tone={stats.stale > 0 ? "red" : "neutral"} />
       </div>
@@ -110,10 +113,10 @@ export function SellerUpdateLogClient({
           onChange={(e) => setFilter(e.target.value as FilterMode)}
           className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
         >
-          <option value="all">All enabled listings</option>
-          <option value="never_sent">Never sent</option>
-          <option value="recent">Sent in last 8 days</option>
-          <option value="stale">Stale (&gt;14d since last send)</option>
+          <option value="all">{t("pages.adminPages.allEnabled")}</option>
+          <option value="never_sent">{t("pages.adminPages.neverSent")}</option>
+          <option value="recent">{t("pages.adminPages.sentLast8")}</option>
+          <option value="stale">{t("pages.adminPages.stale14")}</option>
         </select>
       </div>
 
@@ -122,11 +125,11 @@ export function SellerUpdateLogClient({
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-600">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">Property</th>
-                <th className="px-3 py-2 text-left font-medium">Agent</th>
-                <th className="px-3 py-2 text-left font-medium">Seller</th>
-                <th className="px-3 py-2 text-left font-medium">Tx state</th>
-                <th className="px-3 py-2 text-left font-medium">Last sent</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminCommon.property")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminCommon.agent")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminPages.seller")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminPages.txState")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.adminPages.lastSent")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -161,24 +164,20 @@ export function SellerUpdateLogClient({
                   <td className="whitespace-nowrap px-3 py-2 text-[11px] text-slate-500">
                     {r.lastSentAt ? (
                       <>
-                        {new Date(r.lastSentAt).toLocaleDateString()}
+                        {new Date(r.lastSentAt).toLocaleDateString(locale)}
                         <div className="text-[10px] text-slate-400">
                           {ageDescription(r.lastSentAt)}
                         </div>
                       </>
                     ) : (
-                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800">
-                        Never sent
-                      </span>
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800">{t("pages.adminPages.neverSent")}</span>
                     )}
                   </td>
                 </tr>
               ))}
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-3 py-8 text-center text-sm text-slate-400">
-                    No matching rows.
-                  </td>
+                  <td colSpan={5} className="px-3 py-8 text-center text-sm text-slate-400">{t("pages.adminCommon.noMatchingRows")}</td>
                 </tr>
               ) : null}
             </tbody>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Email engagement card for the performance dashboard.
@@ -27,6 +28,7 @@ type EmailStats = {
 };
 
 export function EmailEngagementPanel() {
+  const { t } = useTranslation("dashboard");
   const [stats, setStats] = useState<EmailStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(30);
@@ -55,9 +57,8 @@ export function EmailEngagementPanel() {
     <section className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm">
       <header className="flex items-baseline justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Email engagement</h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Last {days} days · opens & clicks across outbound mail
+          <h2 className="text-base font-semibold text-slate-900">{t("pages.emailEngagement.title")}</h2>
+          <p className="mt-0.5 text-xs text-slate-500">{t("pages.dashFragments.last")} {days} days · opens & clicks across outbound mail
           </p>
         </div>
         <RangeSelect value={days} onChange={setDays} />
@@ -75,23 +76,24 @@ export function EmailEngagementPanel() {
 }
 
 function Stats({ stats }: { stats: EmailStats }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
-      <Stat label="Sent" value={stats.sent} tone="default" />
+      <Stat label={t("pages.emailEngagement.sent")} value={stats.sent} tone="default" />
       <Stat
-        label="Open rate"
+        label={t("pages.emailEngagement.openRate")}
         value={formatPercent(stats.openRate)}
         sub={`${stats.opened} opened`}
         tone="primary"
       />
       <Stat
-        label="Click-through"
+        label={t("pages.emailEngagement.clickThrough")}
         value={formatPercent(stats.clickThroughRate)}
         sub={`${stats.clicked} clicked`}
         tone="primary"
       />
       <Stat
-        label="Bounced"
+        label={t("pages.emailEngagement.bounced")}
         value={stats.bounced}
         tone={stats.bounced > 0 ? "warn" : "default"}
       />
@@ -130,13 +132,11 @@ function Stat({
 }
 
 function EmptyState() {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="mt-5 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center">
-      <p className="text-sm font-medium text-slate-700">No email activity yet</p>
-      <p className="mt-1 text-xs text-slate-500">
-        Once you send mail through the AI Email layer, opens and clicks will
-        appear here. We track via Resend webhooks — no pixel cruft.
-      </p>
+      <p className="text-sm font-medium text-slate-700">{t("pages.emailEngagement.empty")}</p>
+      <p className="mt-1 text-xs text-slate-500">{t("pages.emailEngagement.emptyHint")}</p>
     </div>
   );
 }
@@ -162,12 +162,13 @@ function RangeSelect({
   value: number;
   onChange: (v: number) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <select
       value={value}
       onChange={(e) => onChange(Number(e.target.value))}
       className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:border-slate-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-      aria-label="Time range"
+      aria-label={t("pages.emailEngagement.timeRange")}
     >
       <option value={7}>7d</option>
       <option value={30}>30d</option>

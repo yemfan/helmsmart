@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Lock, ArrowRight } from "lucide-react";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Server-rendered "this feature needs a higher plan" gate. Used by pages
@@ -7,7 +8,7 @@ import { Lock, ArrowRight } from "lucide-react";
  * user lands on an upgrade prompt instead of the gated UI. Enforcement lives in
  * the page/route; this is just the presentation.
  */
-export default function FeatureUpgradeCard({
+export default async function FeatureUpgradeCard({
   title,
   description,
   requiredPlan,
@@ -16,6 +17,7 @@ export default function FeatureUpgradeCard({
   description: string;
   requiredPlan: string;
 }) {
+  const t = await getServerT("dashboard");
   return (
     <div className="mx-auto mt-10 max-w-lg rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
@@ -23,15 +25,11 @@ export default function FeatureUpgradeCard({
       </div>
       <h1 className="mt-4 text-lg font-semibold text-slate-900">{title}</h1>
       <p className="mt-2 text-sm text-slate-600">{description}</p>
-      <p className="mt-1 text-sm text-slate-500">
-        Available on <span className="font-medium text-slate-700">{requiredPlan}</span> and up.
-      </p>
+      <p className="mt-1 text-sm text-slate-500">{t("pages.featureUpgrade.availableOn")}<span className="font-medium text-slate-700">{requiredPlan}</span>{t("pages.featureUpgrade.andUp")}</p>
       <Link
         href="/dashboard/billing"
         className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-      >
-        Upgrade plan
-        <ArrowRight className="h-4 w-4" strokeWidth={2} />
+      >{t("pages.featureUpgrade.upgradePlan")}<ArrowRight className="h-4 w-4" strokeWidth={2} />
       </Link>
     </div>
   );

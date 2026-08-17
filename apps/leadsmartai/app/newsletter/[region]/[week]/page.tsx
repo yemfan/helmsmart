@@ -15,6 +15,8 @@ import {
   coerceState,
   type DigestItem,
 } from "@/lib/newsletter/generateDigest";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export const dynamic = "force-dynamic";
 
@@ -22,11 +24,11 @@ type Props = { params: Promise<{ region: string; week: string }> };
 
 const WEEK_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-function formatWeek(d: string): string {
+function formatWeek(d: string, locale: string): string {
   const dt = new Date(`${d}T00:00:00Z`);
   return Number.isNaN(dt.getTime())
     ? d
-    : dt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+    : dt.toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
 }
 
 async function loadIssue(
@@ -56,7 +58,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       /* fall back to U.S. */
     }
   }
-  const weekLabel = WEEK_RE.test(week) ? formatWeek(week) : week;
+  const locale = intlLocale(await getServerLocale());
+  const weekLabel = WEEK_RE.test(week) ? formatWeek(week, locale) : week;
   const title = `${regionName} Housing & Rates — Week of ${weekLabel} | CloseBoss`;
   const description = `The week of ${weekLabel} in mortgage rates and the housing market, in plain English — paired with the latest ${regionName} market snapshot. Every figure linked to its source.`;
 
@@ -75,13 +78,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function NewsletterIssuePage({ params }: Props) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const { region, week } = await params;
   const issue = await loadIssue(region, week);
   if (!issue) notFound();
 
   const { digest, region: reg, weekOf } = issue;
   const base = getSiteUrl();
-  const weekLabel = formatWeek(weekOf);
+  const weekLabel = formatWeek(weekOf, locale);
   const rawItems = Array.isArray(digest.items) ? digest.items : [];
   const sources = Array.isArray(digest.sources) ? digest.sources : [];
 
@@ -152,9 +157,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
             CloseBoss
           </Link>
           <span className="mx-2 text-slate-400">/</span>
-          <Link href="/newsletter" className="font-medium text-[#0072ce] hover:text-[#005ca8]">
-            Weekly Newsletter
-          </Link>
+          <Link href="/newsletter" className="font-medium text-[#0072ce] hover:text-[#005ca8]">{t("pages.newsletterIssue.weeklyNewsletter", { ns: "dashboard" })}</Link>
           <span className="mx-2 text-slate-400">/</span>
           <span className="text-slate-600">
             {reg.name} — Week of {weekLabel}
@@ -162,8 +165,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
         </nav>
 
         <header className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">
-            Week of {weekLabel} · {reg.name}
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">{t("pages.newsletterIssue.weekOf", { ns: "dashboard" })} {weekLabel} · {reg.name}
           </p>
           <h1 className="text-4xl font-bold leading-tight text-slate-900">{digest.title}</h1>
           {digest.intro && (
@@ -172,11 +174,10 @@ export default async function NewsletterIssuePage({ params }: Props) {
         </header>
 
         {/* Regional market snapshot */}
-        <section aria-label="Regional market snapshot" className="space-y-4">
+        <section aria-label={t("pages.newsletterIssue.snapshotAria", { ns: "dashboard" })} className="space-y-4">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="text-2xl font-bold text-slate-900">
-              {reg.name} market snapshot
-            </h2>
+              {reg.name} {t("pages.newsletterIssue.marketSnapshot", { ns: "dashboard" })}</h2>
             <Link
               href={reg.dataHref}
               className="text-sm font-semibold text-[#0072ce] hover:text-[#005ca8]"
@@ -185,9 +186,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
             </Link>
           </div>
           {reg.stats.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
-              Market data for {reg.name} is being refreshed. Check back soon.
-            </p>
+            <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">{t("pages.newsletterIssue.dataFor", { ns: "dashboard" })} {reg.name} {t("pages.newsletterIssue.beingRefreshed", { ns: "dashboard" })}</p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {reg.stats.map((st) => (
@@ -209,8 +208,8 @@ export default async function NewsletterIssuePage({ params }: Props) {
         </section>
 
         {/* This-week-in-housing radar items */}
-        <section aria-label="This week in housing" className="space-y-6">
-          <h2 className="text-2xl font-bold text-slate-900">This week in housing</h2>
+        <section aria-label={t("pages.newsletterIssue.thisWeekAria", { ns: "dashboard" })} className="space-y-6">
+          <h2 className="text-2xl font-bold text-slate-900">{t("pages.newsletterIssue.thisWeek", { ns: "dashboard" })}</h2>
           <div className="divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm ring-1 ring-slate-900/[0.03]">
             {items.map((it, i) => {
               const otherState =
@@ -257,8 +256,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
                       )}
                       {it.why_it_matters && (
                         <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                          <span className="font-semibold text-slate-700">
-                            What it means for you:{" "}
+                          <span className="font-semibold text-slate-700">{t("pages.newsletterIssue.whatItMeans", { ns: "dashboard" })}{" "}
                           </span>
                           {it.why_it_matters}
                         </p>
@@ -285,8 +283,8 @@ export default async function NewsletterIssuePage({ params }: Props) {
 
         {/* Sources */}
         {sources.length > 0 && (
-          <section aria-label="Sources" className="space-y-3">
-            <h2 className="text-xl font-bold text-slate-900">Sources</h2>
+          <section aria-label={t("pages.articleChrome.sources", { ns: "dashboard" })} className="space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">{t("pages.articleChrome.sources", { ns: "dashboard" })}</h2>
             <ul className="space-y-1 text-sm">
               {sources.map((sc, i) => (
                 <li key={i} className="flex gap-2">
@@ -306,10 +304,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
           </section>
         )}
 
-        <footer className="border-t border-slate-200 pt-6 text-sm text-slate-500">
-          CloseBoss publishes this briefing weekly. Numbers are pulled from the
-          cited public sources; the {reg.name} snapshot comes from the CloseBoss
-          Data Center.{" "}
+        <footer className="border-t border-slate-200 pt-6 text-sm text-slate-500">{t("pages.newsletterIssue.provenance", { ns: "dashboard" })} {reg.name} {t("pages.newsletterIssue.provenanceTail", { ns: "dashboard" })}{" "}
           <Link href="/newsletter" className="font-medium text-[#0072ce] hover:underline">
             Subscribe or browse past issues →
           </Link>

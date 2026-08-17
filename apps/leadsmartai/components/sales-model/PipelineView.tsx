@@ -2,6 +2,7 @@
 
 import type { SalesModel } from "@/lib/sales-models";
 import type { StageActivity } from "@/lib/sales-model/pipelineActivity";
+import { useTranslation } from "react-i18next";
 
 /**
  * Sales pipeline visualization — horizontal stage cards.
@@ -24,16 +25,16 @@ export function PipelineView({
   model: SalesModel;
   activity?: StageActivity[];
 }) {
+  const { t } = useTranslation("dashboard");
   const stages = model.pipeline;
   return (
     <section
-      aria-label="Sales pipeline"
+      aria-label={t("pages.misc.pipelineAria")}
       className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm"
     >
       <header className="mb-4">
-        <h2 className="text-base font-semibold text-slate-900">Your Sales Pipeline</h2>
-        <p className="mt-1 text-sm text-slate-600">
-          The path a lead takes from first touch to closed deal under the{" "}
+        <h2 className="text-base font-semibold text-slate-900">{t("pages.misc.pipeline")}</h2>
+        <p className="mt-1 text-sm text-slate-600">{t("pages.dashFragments.pathALeadTakes")}{" "}
           <span className="font-medium text-slate-800">{model.name}</span>.
         </p>
       </header>
@@ -53,8 +54,7 @@ export function PipelineView({
                     : "border-slate-200 bg-slate-50",
                 ].join(" ")}
               >
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 tabular-nums">
-                  Step {idx + 1}
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 tabular-nums">{t("pages.dashFragments.step")} {idx + 1}
                 </span>
                 <span
                   className={[

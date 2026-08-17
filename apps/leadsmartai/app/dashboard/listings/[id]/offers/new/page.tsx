@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { notFound } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getListingById } from "@/lib/listings/service";
 import { NewListingOfferClient } from "./NewListingOfferClient";
 
-export const metadata: Metadata = {
-  title: "Record offer",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.newListingOffer.metaTitle", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 /**
  * New listing-side offer form. Replaces the cramped inline form

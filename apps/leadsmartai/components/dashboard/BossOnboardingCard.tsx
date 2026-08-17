@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { ArrowRight, Check, Send, Sparkles, X } from "lucide-react";
 import type {
@@ -23,6 +24,7 @@ type Props = {
  * takes free-form questions. Hides once setup is complete or when dismissed.
  */
 export function BossOnboardingCard({ checklist }: Props) {
+  const { t } = useTranslation("dashboard");
   const [mounted, setMounted] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -145,7 +147,7 @@ export function BossOnboardingCard({ checklist }: Props) {
         <button
           type="button"
           onClick={hide}
-          aria-label="Hide Boss setup guide"
+          aria-label={t("pages.misc.hideBossGuide")}
           className="absolute right-1.5 top-1.5 flex h-11 w-11 items-center justify-center rounded-md text-slate-400 hover:bg-white/10 hover:text-white"
         >
           <X className="h-4 w-4" aria-hidden />
@@ -157,8 +159,7 @@ export function BossOnboardingCard({ checklist }: Props) {
           <div>
             <p className="text-sm font-semibold text-white">Boss · your AI chief of staff</p>
             <p className="text-xs text-slate-300">
-              {checklist.doneCount} of {checklist.total} steps set up
-            </p>
+              {checklist.doneCount} of {checklist.total} {t("pages.dashFragments.stepsSetUp")}</p>
           </div>
         </div>
         <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/15">
@@ -270,7 +271,7 @@ export function BossOnboardingCard({ checklist }: Props) {
           type="button"
           onClick={() => void send()}
           disabled={loading || !input.trim()}
-          aria-label="Send"
+          aria-label={t("pages.misc.send")}
           className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-40"
         >
           <Send className="h-4 w-4" aria-hidden />

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 
 type Extracted = {
@@ -16,6 +17,7 @@ type Extracted = {
 type Step = "capture" | "processing" | "review" | "saved";
 
 export default function ScanCardClient() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<Step>("capture");
@@ -97,10 +99,10 @@ export default function ScanCardClient() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Scan Business Card</h1>
-          <p className="text-sm text-gray-500">Take a photo or upload an image.</p>
+          <h1 className="text-xl font-semibold text-gray-900">{t("pages.scanCard.heading")}</h1>
+          <p className="text-sm text-gray-500">{t("pages.scanCard.intro")}</p>
         </div>
-        <Link href="/dashboard/contacts" className="text-sm text-gray-500 hover:text-gray-900">&larr; Contacts</Link>
+        <Link href="/dashboard/contacts" className="text-sm text-gray-500 hover:text-gray-900">{t("pages.scanCard.backToContacts")}</Link>
       </div>
 
       {error && (
@@ -118,8 +120,8 @@ export default function ScanCardClient() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
             </svg>
-            <span className="mt-3 text-sm font-semibold text-gray-700">Tap to take photo or upload</span>
-            <span className="mt-1 text-xs text-gray-500">Best results with a clear, well-lit photo</span>
+            <span className="mt-3 text-sm font-semibold text-gray-700">{t("pages.scanCard.tapToUpload")}</span>
+            <span className="mt-1 text-xs text-gray-500">{t("pages.scanCard.tapHint")}</span>
           </div>
           <input
             ref={fileRef}
@@ -140,11 +142,11 @@ export default function ScanCardClient() {
       {step === "processing" && (
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm text-center space-y-4">
           {preview && (
-            <img src={preview} alt="Card" className="mx-auto max-h-48 rounded-lg border border-gray-200 object-contain" />
+            <img src={preview} alt={t("pages.scanCard.cardAlt")} className="mx-auto max-h-48 rounded-lg border border-gray-200 object-contain" />
           )}
           <div className="flex items-center justify-center gap-2">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
-            <span className="text-sm text-gray-600">Reading business card...</span>
+            <span className="text-sm text-gray-600">{t("pages.scanCard.reading")}</span>
           </div>
         </div>
       )}
@@ -154,11 +156,11 @@ export default function ScanCardClient() {
         <div className="rounded-xl border border-gray-200 bg-white shadow-sm divide-y divide-gray-100">
           {preview && (
             <div className="p-4">
-              <img src={preview} alt="Card" className="mx-auto max-h-36 rounded-lg border border-gray-200 object-contain" />
+              <img src={preview} alt={t("pages.scanCard.cardAlt")} className="mx-auto max-h-36 rounded-lg border border-gray-200 object-contain" />
             </div>
           )}
           <div className="p-5 space-y-3">
-            <h3 className="text-sm font-semibold text-gray-900">Review extracted info</h3>
+            <h3 className="text-sm font-semibold text-gray-900">{t("pages.scanCard.review")}</h3>
             {([
               { key: "name" as const, label: "Name" },
               { key: "email" as const, label: "Email" },
@@ -185,15 +187,13 @@ export default function ScanCardClient() {
               disabled={saving}
               className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
             >
-              {saving ? "Saving..." : "Save Contact"}
+              {saving ? t("pages.scanCard.saving") : t("pages.scanCard.save")}
             </button>
             <button
               type="button"
               onClick={reset}
               className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Retake
-            </button>
+            >{t("pages.scanCard.retake")}</button>
           </div>
         </div>
       )}
@@ -206,22 +206,18 @@ export default function ScanCardClient() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <p className="text-sm font-semibold text-gray-900">Contact saved to CRM!</p>
+          <p className="text-sm font-semibold text-gray-900">{t("pages.scanCard.saved")}</p>
           <div className="flex justify-center gap-3">
             <button
               type="button"
               onClick={reset}
               className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-            >
-              Scan Another
-            </button>
+            >{t("pages.scanCard.scanAnother")}</button>
             <button
               type="button"
               onClick={() => router.push("/dashboard/contacts")}
               className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              View Contacts
-            </button>
+            >{t("pages.scanCard.viewContacts")}</button>
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { LimitWarningBanner } from "@/components/entitlements/LimitWarningBanner";
 
 type QueueLead = {
@@ -21,6 +22,7 @@ type Feedback =
   | { kind: "error"; message: string };
 
 export function LeadQueueClient() {
+  const { t } = useTranslation("dashboard");
   const [leads, setLeads] = useState<QueueLead[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -70,16 +72,16 @@ export function LeadQueueClient() {
         if (body.merged && body.leadId) {
           setFeedback({
             kind: "merged",
-            message: "Already in your contacts — merged with the existing record.",
+            message: t("pages.leadQueue.merged"),
             existingContactId: String(body.leadId),
           });
         } else {
-          setFeedback({ kind: "success", message: "Lead claimed." });
+          setFeedback({ kind: "success", message: t("pages.leadQueue.claimed") });
         }
       } else if (res.status === 409) {
         setFeedback({
           kind: "error",
-          message: "This lead was already claimed by another agent.",
+          message: t("pages.leadQueue.alreadyClaimed"),
         });
         fetchQueue();
       } else {
@@ -89,7 +91,7 @@ export function LeadQueueClient() {
         });
       }
     } catch {
-      setFeedback({ kind: "error", message: "Network error. Please try again." });
+      setFeedback({ kind: "error", message: t("pages.leadQueue.networkError") });
     } finally {
       setClaiming(null);
     }
@@ -108,9 +110,7 @@ export function LeadQueueClient() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20 text-gray-400">
-        Loading queue...
-      </div>
+      <div className="flex items-center justify-center py-20 text-gray-400">{t("pages.leadQueue.loading")}</div>
     );
   }
 
@@ -118,17 +118,15 @@ export function LeadQueueClient() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Lead Queue</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">{t("pages.leadQueue.heading")}</h1>
           <p className="text-sm text-gray-500">
-            {total} unclaimed lead{total !== 1 ? "s" : ""} available
+            {total} {t("pages.dashFragments.unclaimedLead")}{total !== 1 ? "s" : ""} available
           </p>
         </div>
         <button
           onClick={() => { setLoading(true); fetchQueue(); }}
           className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Refresh
-        </button>
+        >{t("pages.leadQueue.refresh")}</button>
       </div>
 
       {/* Shows only when the agent is at/near their max-leads cap —
@@ -139,8 +137,8 @@ export function LeadQueueClient() {
 
       {leads.length === 0 ? (
         <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center shadow-sm">
-          <p className="text-gray-500">No leads in the queue right now.</p>
-          <p className="mt-1 text-sm text-gray-400">New leads will appear here automatically.</p>
+          <p className="text-gray-500">{t("pages.leadQueue.empty")}</p>
+          <p className="mt-1 text-sm text-gray-400">{t("pages.leadQueue.emptyHint")}</p>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -179,7 +177,7 @@ export function LeadQueueClient() {
                     onClick={() => claimLead(id)}
                     className="rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50"
                   >
-                    {claiming === id ? "Claiming..." : "Claim"}
+                    {claiming === id ? t("pages.leadQueue.claiming") : t("pages.leadQueue.claim")}
                   </button>
                 </div>
               </div>

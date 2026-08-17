@@ -145,16 +145,13 @@ export function OfferDetailClient({
     <div className="mx-auto max-w-5xl space-y-5">
       <div>
         <div className="text-xs text-slate-500">
-          <Link href="/dashboard/offers" className="hover:underline">
-            Offers
-          </Link>
+          <Link href="/dashboard/offers" className="hover:underline">{t("pages.offerDetail.offers")}</Link>
           {" / "}
           <span>{offer.property_address}</span>
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{offer.property_address}</h1>
         <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
-          <span>
-            Buyer:{" "}
+          <span>{t("pages.dashFragments.buyer")}{" "}
             <Link
               href={`/dashboard/offers?contactId=${encodeURIComponent(offer.contact_id)}`}
               className="text-blue-600 hover:underline"
@@ -236,7 +233,7 @@ export function OfferDetailClient({
             </dl>
           </Card>
 
-          <Card title="Status">
+          <Card title={t("pages.labels.status")}>
             <div className="flex flex-wrap gap-2">
               {(
                 ["draft", "submitted", "countered", "accepted", "rejected", "withdrawn", "expired"] as OfferStatus[]
@@ -291,9 +288,7 @@ export function OfferDetailClient({
                   className="block w-full rounded-lg border border-green-300 bg-green-50 px-3 py-2 text-left text-sm font-medium text-green-800 hover:bg-green-100"
                 >
                   ✅ Convert to transaction
-                  <div className="text-[11px] font-normal text-green-700">
-                    Creates a buyer-rep deal pre-filled with this offer&apos;s price + close date.
-                  </div>
+                  <div className="text-[11px] font-normal text-green-700">{t("pages.offerDetail.createsBuyerRep")}</div>
                 </button>
               ) : null}
 
@@ -319,8 +314,8 @@ export function OfferDetailClient({
           <Card title={t("detail.offerDetail.timeline")}>
             <dl className="space-y-2 text-sm">
               <Detail label={t("detail.offerDetail.created")} value={formatDateTime(offer.created_at, locale)} />
-              <Detail label="Submitted" value={formatDateTime(offer.submitted_at, locale)} />
-              <Detail label="Accepted" value={formatDateTime(offer.accepted_at, locale)} />
+              <Detail label={t("pages.labels.submitted")} value={formatDateTime(offer.submitted_at, locale)} />
+              <Detail label={t("pages.labels.accepted")} value={formatDateTime(offer.accepted_at, locale)} />
               <Detail label={t("detail.offerDetail.closed")} value={formatDateTime(offer.closed_at, locale)} />
             </dl>
           </Card>
@@ -358,6 +353,7 @@ function Detail({
 }
 
 function Chip({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation("dashboard");
   return (
     <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700">
       {children}
@@ -587,9 +583,7 @@ function ActivityTimeline({
                 setErr(null);
               }}
               className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-            >
-              Cancel
-            </button>
+            >{t("pages.offerDetail.cancel")}</button>
             <button
               type="button"
               onClick={() => void submit()}

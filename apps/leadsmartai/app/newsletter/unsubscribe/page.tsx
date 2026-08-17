@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabaseServer";
+import { getServerT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -26,6 +27,7 @@ async function unsubscribe(token: string): Promise<void> {
 }
 
 export default async function NewsletterUnsubscribePage({ searchParams }: Props) {
+  const t = await getServerT();
   const sp = await searchParams;
   const raw = Array.isArray(sp.token) ? sp.token[0] : sp.token;
   const token = (raw ?? "").trim();
@@ -39,13 +41,8 @@ export default async function NewsletterUnsubscribePage({ searchParams }: Props)
         <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#0072ce]">
           CloseBoss
         </p>
-        <h1 className="mt-4 text-3xl font-bold text-slate-900">
-          You've been unsubscribed
-        </h1>
-        <p className="mt-3 text-lg leading-relaxed text-slate-600">
-          You won't receive any more CloseBoss weekly housing briefings. If this
-          was a mistake, you can subscribe again anytime.
-        </p>
+        <h1 className="mt-4 text-3xl font-bold text-slate-900">{t("pages.dashFragments.unsubscribed", { ns: "dashboard" })}</h1>
+        <p className="mt-3 text-lg leading-relaxed text-slate-600">{t("pages.dashFragments.unsubscribedBody", { ns: "dashboard" })}</p>
         <Link
           href="/newsletter"
           className="mt-8 inline-flex items-center rounded-lg bg-[#0072ce] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#005ca8]"

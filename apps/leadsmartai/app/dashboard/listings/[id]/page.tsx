@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { notFound } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getListingById } from "@/lib/listings/service";
@@ -20,10 +21,13 @@ import { ListingDetailClient } from "./ListingDetailClient";
  * offer) so those URLs would 404 cleanly; until then both paths
  * coexist.
  */
-export const metadata: Metadata = {
-  title: "Listing details",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.listingDetail.metaTitle", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 export default async function ListingDetailPage({
   params,

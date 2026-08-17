@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type ImportResult = {
   jobId: string;
@@ -17,6 +18,7 @@ export function CsvImportModal({
   onClose: () => void;
   onImported: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,16 +81,14 @@ export function CsvImportModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900">Import Contacts from CSV</h2>
+          <h2 className="text-lg font-bold text-gray-900">{t("pages.csvImport.title")}</h2>
           <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
         </div>
 
         <div className="p-6 space-y-4">
           {!result ? (
             <>
-              <p className="text-sm text-gray-600">
-                Upload a CSV file with contact data. Supported columns: Name, Email, Phone, Address, City, State, Zip, Notes.
-              </p>
+              <p className="text-sm text-gray-600">{t("pages.csvImport.sub")}</p>
 
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
                 <input
@@ -107,7 +107,7 @@ export function CsvImportModal({
                   <p className="text-sm font-medium text-gray-700">
                     {fileName || "Click to select a CSV file"}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">Max 5 MB, up to 10,000 rows</p>
+                  <p className="text-xs text-gray-400 mt-1">{t("pages.csvImport.limits")}</p>
                 </label>
               </div>
 
@@ -121,9 +121,7 @@ export function CsvImportModal({
                 <button
                   onClick={handleClose}
                   className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
-                >
-                  Cancel
-                </button>
+                >{t("pages.csvImport.cancel")}</button>
                 <button
                   onClick={handleUpload}
                   disabled={uploading || !fileName}
@@ -136,12 +134,10 @@ export function CsvImportModal({
           ) : (
             <>
               <div className="rounded-xl bg-green-50 border border-green-200 p-4">
-                <p className="text-sm font-semibold text-green-800">Import started</p>
+                <p className="text-sm font-semibold text-green-800">{t("pages.csvImport.started")}</p>
                 <p className="text-sm text-green-700 mt-1">
-                  {result.rowCount} contact{result.rowCount !== 1 ? "s" : ""} are being processed.
-                </p>
-                <p className="text-xs text-green-600 mt-2">
-                  Detected columns: {result.headers.join(", ")}
+                  {result.rowCount} contact{result.rowCount !== 1 ? "s" : ""} {t("pages.dashFragments.beingProcessed")}</p>
+                <p className="text-xs text-green-600 mt-2">{t("pages.dashFragments.detectedColumns")} {result.headers.join(", ")}
                 </p>
               </div>
 
@@ -152,9 +148,7 @@ export function CsvImportModal({
                     onImported();
                   }}
                   className="px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700"
-                >
-                  Done
-                </button>
+                >{t("pages.csvImport.done")}</button>
               </div>
             </>
           )}

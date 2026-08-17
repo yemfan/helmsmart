@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { InternalPlan as BillingPlan } from "@/lib/billing/stripe-plan-map";
 
 type LoanBrokerPlan = "starter" | "pro";
@@ -59,6 +60,7 @@ const PLANS: Array<{
 ];
 
 export default function LoanBrokerPricingClientPage() {
+  const { t } = useTranslation("dashboard");
   const [currentPlan, setCurrentPlan] = useState<BillingPlan | null>(null);
   const [loadingPlan, setLoadingPlan] = useState("");
   const [error, setError] = useState("");
@@ -122,16 +124,10 @@ export default function LoanBrokerPricingClientPage() {
     <div className="min-h-screen bg-gray-50 px-4 py-12 md:px-6">
       <div className="mx-auto max-w-5xl space-y-10">
         <div className="text-center">
-          <h1 className="text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">
-            CloseBoss for Loan Brokers
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-gray-600 md:text-lg">
-            Upgrade to unlock a stronger borrower workflow, more powerful pipeline tools,
-            and a better financing workspace.
-          </p>
+          <h1 className="text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">{t("pages.loanBroker.pricingTitle")}</h1>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-gray-600 md:text-lg">{t("pages.loanBroker.pricingSub")}</p>
           {currentPlan && (
-            <div className="mt-4 inline-flex rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white">
-              Current plan: {currentPlan.replace(/_/g, " ")}
+            <div className="mt-4 inline-flex rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white">{t("pages.dashFragments.currentPlan")} {currentPlan.replace(/_/g, " ")}
             </div>
           )}
         </div>
@@ -166,9 +162,7 @@ export default function LoanBrokerPricingClientPage() {
                   </div>
 
                   {plan.featured && (
-                    <span className="rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white">
-                      Popular
-                    </span>
+                    <span className="rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white">{t("pages.loanBroker.popular")}</span>
                   )}
                 </div>
 

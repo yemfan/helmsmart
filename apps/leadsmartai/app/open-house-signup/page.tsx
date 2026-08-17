@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
 import { useSignupProfilePrefill, type SignupPrefillConsumer } from "@/lib/hooks/useSignupProfilePrefill";
 
@@ -28,6 +29,7 @@ export default function OpenHouseSignupPage() {
 }
 
 function OpenHouseSignupPageInner() {
+  const { t } = useTranslation("dashboard");
   const searchParams = useSearchParams();
   const propertyId = searchParams?.get("property_id") ?? "";
   const agentId = searchParams?.get("agent_id") ?? "";
@@ -159,11 +161,9 @@ function OpenHouseSignupPageInner() {
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
-            <p className="text-sm text-slate-600">
-              Leave your info and we will follow up with open house updates.
-            </p>
+            <p className="text-sm text-slate-600">{t("pages.openHouseSignup.leaveInfo")}</p>
             <div className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2 text-xs text-slate-700">
-              <span className="font-semibold text-slate-900">Property:</span>{" "}
+              <span className="font-semibold text-slate-900">{t("pages.openHouseSignup.property")}</span>{" "}
               {isDemo ? DEFAULT_PROPERTY_ADDRESS : "Loading property…"}
               {isDemo && (
                 <span className="ml-1 text-slate-500">
@@ -176,22 +176,18 @@ function OpenHouseSignupPageInner() {
 
           <form noValidate onSubmit={onSubmit} className="mt-6 space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-800">
-                Name
-              </label>
+              <label className="block text-sm font-semibold text-slate-800">{t("pages.articleChrome.name")}</label>
               <input
                 className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Your full name"
+                placeholder={t("pages.openHouseSignup.fullName")}
                 autoComplete="name"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-800">
-                Email
-              </label>
+              <label className="block text-sm font-semibold text-slate-800">{t("pages.articleChrome.email")}</label>
               <input
                 type="email"
                 className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
@@ -203,9 +199,7 @@ function OpenHouseSignupPageInner() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-800">
-                Phone
-              </label>
+              <label className="block text-sm font-semibold text-slate-800">{t("pages.articleChrome.phone")}</label>
               <input
                 className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                 value={phone}
@@ -216,31 +210,23 @@ function OpenHouseSignupPageInner() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-800">
-                Notes (optional)
-              </label>
+              <label className="block text-sm font-semibold text-slate-800">{t("pages.openHouseSignup.notesOptional")}</label>
               <textarea
                 className="mt-1 w-full min-h-[100px] rounded-xl border border-slate-300 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Anything you'd like the agent to know?"
+                placeholder={t("pages.openHouseSignup.notesPlaceholder")}
               />
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-semibold text-slate-800">I&apos;m interested in:</p>
+              <p className="text-sm font-semibold text-slate-800">{t("pages.openHouseSignup.interestedIn")}</p>
               <label className="flex items-center gap-2 text-sm text-slate-700">
-                <input type="checkbox" checked={wantMoreInfo} onChange={(e) => setWantMoreInfo(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-blue-600" />
-                More information about this property
-              </label>
+                <input type="checkbox" checked={wantMoreInfo} onChange={(e) => setWantMoreInfo(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-blue-600" />{t("pages.openHouseSignup.moreInfo")}</label>
               <label className="flex items-center gap-2 text-sm text-slate-700">
-                <input type="checkbox" checked={wantSimilar} onChange={(e) => setWantSimilar(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-blue-600" />
-                Similar properties on the market
-              </label>
+                <input type="checkbox" checked={wantSimilar} onChange={(e) => setWantSimilar(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-blue-600" />{t("pages.openHouseSignup.similarProps")}</label>
               <label className="flex items-center gap-2 text-sm text-slate-700">
-                <input type="checkbox" checked={wantValuation} onChange={(e) => setWantValuation(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-blue-600" />
-                A home valuation for my property
-              </label>
+                <input type="checkbox" checked={wantValuation} onChange={(e) => setWantValuation(e.target.checked)} className="h-4 w-4 rounded border-gray-300 text-blue-600" />{t("pages.openHouseSignup.valuation")}</label>
             </div>
 
             {/* SMS opt-in — Twilio TFV / A2P proof-of-consent surface.
@@ -258,38 +244,24 @@ function OpenHouseSignupPageInner() {
                   className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-slate-700">
-                  <span className="font-semibold text-slate-900">
-                    Yes, send me marketing text messages from CloseBoss.
-                  </span>{" "}
-                  By checking this box and providing my phone number above, I consent
-                  to receive promotional text messages from{" "}
-                  <strong>CloseBoss</strong> about real-estate services, new
-                  listings, market updates, and special offers.
-                </span>
+                  <span className="font-semibold text-slate-900">{t("pages.homeValueFunnel.smsConsent")}</span>{" "}{t("pages.homeValueFunnel.smsConsentBody")}{" "}
+                  <strong>CloseBoss</strong> {t("pages.homeValueFunnel.smsConsentTail")}</span>
               </label>
-              <p className="mt-3 pl-7 text-xs leading-relaxed text-slate-500">
-                Message frequency varies. Message and data rates may apply. Reply{" "}
-                <strong>STOP</strong> to opt out at any time, or <strong>HELP</strong> for
-                help. Consent is not a condition of any purchase. See our{" "}
+              <p className="mt-3 pl-7 text-xs leading-relaxed text-slate-500">{t("pages.homeValueFunnel.smsRates")}{" "}
+                <strong>{t("pages.homeValueFunnel.stop")}</strong> {t("pages.homeValueFunnel.toOptOut")} <strong>{t("pages.homeValueFunnel.help")}</strong> {t("pages.homeValueFunnel.forHelp")}{" "}
                 <a
                   href="/privacy"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-blue-600 hover:underline"
-                >
-                  Privacy Policy
-                </a>{" "}
+                >{t("pages.articleChrome.privacyPolicy")}</a>{" "}
                 and{" "}
                 <a
                   href="/terms"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-blue-600 hover:underline"
-                >
-                  Terms of Service
-                </a>{" "}
-                for details.
-              </p>
+                >{t("pages.articleChrome.termsOfService")}</a>{" "}{t("pages.homeValueFunnel.forDetails")}</p>
             </div>
 
             <button

@@ -19,6 +19,7 @@ import {
   brokerTasks,
 } from "@/lib/platform-dashboard-demo-data";
 import { Activity, Banknote, Calculator, Landmark } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 function loanStatusTone(s: string): "success" | "warning" | "info" {
   if (s === "Underwriting" || s === "Application") return "info";
@@ -27,32 +28,33 @@ function loanStatusTone(s: string): "success" | "warning" | "info" {
 }
 
 export default function LoanBrokerDashboardClient() {
+  const { t } = useTranslation("dashboard");
   const maxPipe = Math.max(...brokerPipeline.map((p) => p.count), 1);
 
   return (
     <DashboardShell
-      title="Loan broker dashboard"
+      title={t("pages.loanBroker.dashboard")}
       subtitle="Borrower flow from inquiry to funded, with AI finance tools on-demand."
       kpis={brokerKpis.map((k) => (
         <KpiCard key={k.label} label={k.label} value={k.value} subtext={kpiSubtext(k)} />
       ))}
     >
         <section className="grid gap-6 xl:grid-cols-12">
-          <SectionCard title="Borrower queue" className="xl:col-span-8">
+          <SectionCard title={t("pages.loanBroker.borrowerQueue")} className="xl:col-span-8">
             <DashboardTable
               columns={[
                 { key: "name", header: "Borrower" },
                 { key: "amount", header: "Est. loan", cell: (r) => <span className="font-semibold tabular-nums">{String(r.amount)}</span> },
                 { key: "readiness", header: "Readiness" },
-                { key: "scenario", header: "Scenario", cell: () => <span className="text-xs text-slate-500">Primary</span> },
+                { key: "scenario", header: "Scenario", cell: () => <span className="text-xs text-slate-500">{t("pages.loanBroker.primary")}</span> },
                 { key: "status", header: "Status", cell: (r) => <StatusBadge tone={loanStatusTone(String(r.status))}>{String(r.status)}</StatusBadge> },
-                { key: "action", header: "Action", cell: () => <ActionButton className="h-8 px-2.5 text-xs">Open</ActionButton> },
+                { key: "action", header: "Action", cell: () => <ActionButton className="h-8 px-2.5 text-xs">{t("pages.loanBroker.open")}</ActionButton> },
               ]}
               rows={brokerBorrowers as unknown as Record<string, unknown>[]}
             />
           </SectionCard>
 
-          <SectionCard title="AI finance tools" className="xl:col-span-4">
+          <SectionCard title={t("pages.loanBroker.aiFinanceTools")} className="xl:col-span-4">
             <div className="grid gap-2">
               {[
                 { label: "Affordability summary", icon: Calculator },
@@ -69,7 +71,7 @@ export default function LoanBrokerDashboardClient() {
         </section>
 
         <section className="grid gap-6 xl:grid-cols-12">
-          <SectionCard title="Loan pipeline" className="xl:col-span-8">
+          <SectionCard title={t("pages.loanBroker.loanPipeline")} className="xl:col-span-8">
             <div className="space-y-4">
               {brokerPipeline.map((p) => (
                 <div key={p.label}>
@@ -85,7 +87,7 @@ export default function LoanBrokerDashboardClient() {
             </div>
           </SectionCard>
 
-          <SectionCard title="Missing docs" className="xl:col-span-4">
+          <SectionCard title={t("pages.loanBroker.missingDocs")} className="xl:col-span-4">
             <ul className="space-y-3">
               {brokerMissingDocs.map((d, i) => (
                 <li key={i} className="rounded-xl border border-amber-100 bg-amber-50/50 px-3 py-3 ring-1 ring-amber-100/80">
@@ -99,7 +101,7 @@ export default function LoanBrokerDashboardClient() {
         </section>
 
         <section className="grid gap-6 xl:grid-cols-12">
-          <SectionCard title="Tasks" className="xl:col-span-8">
+          <SectionCard title={t("pages.loanBroker.tasks")} className="xl:col-span-8">
             <ul className="space-y-2">
               {brokerTasks.map((t, i) => (
                 <li key={i} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-white px-3 py-2.5">
@@ -113,7 +115,7 @@ export default function LoanBrokerDashboardClient() {
             </ul>
           </SectionCard>
 
-          <SectionCard title="Recent borrower activity" className="xl:col-span-4">
+          <SectionCard title={t("pages.loanBroker.recentActivity")} className="xl:col-span-4">
             <ul className="space-y-3">
               {brokerActivity.map((a, i) => (
                 <li key={i} className="flex items-start justify-between gap-3 text-sm">

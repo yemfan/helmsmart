@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Component, type ReactNode, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { i18n } from "@/lib/i18n/client";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 
@@ -23,13 +26,13 @@ class CmaErrorBoundary extends Component<{ children: ReactNode }, { failed: bool
     if (this.state.failed) {
       return (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Something went wrong rendering this view.{" "}
+          {i18n.t("pages.cmaList.renderError", { ns: "dashboard" })}{" "}
           <button
             type="button"
             onClick={() => window.location.reload()}
             className="font-semibold underline"
           >
-            Reload
+            {i18n.t("pages.cmaList.reload", { ns: "dashboard" })}
           </button>
         </div>
       );
@@ -62,18 +65,18 @@ type CmaQuota = {
   resetDate: string;
 };
 
-function formatMoney(n: number | null | undefined): string {
+function formatMoney(n: number | null | undefined, locale: string): string {
   if (n == null) return "—";
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(n);
 }
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, locale: string): string {
   try {
-    return new Date(iso).toLocaleDateString(undefined, {
+    return new Date(iso).toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -92,6 +95,8 @@ export default function CmaListClient() {
 }
 
 function CmaListInner() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [rows, setRows] = useState<CmaListRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -131,7 +136,7 @@ function CmaListInner() {
       }
       setRows(data.cmas ?? []);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load CMAs");
+      setError(e instanceof Error ? e.message : t("pages.cma.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -164,7 +169,7 @@ function CmaListInner() {
       // Jump straight to the freshly generated CMA instead of the list.
       router.push(`/dashboard/cma/${encodeURIComponent(data.cma.id)}`);
     } catch (e) {
-      setSubmitError(e instanceof Error ? e.message : "Failed to create CMA");
+      setSubmitError(e instanceof Error ? e.message : t("pages.cma.createFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -174,14 +179,14 @@ function CmaListInner() {
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-xs text-slate-500">
-          {loading ? "Loading…" : `${rows.length} saved`}
+          {loading ? t("pages.cma.loading") : t("pages.cma.savedCount", { count: rows.length })}
         </p>
         <button
           type="button"
           onClick={() => setShowForm((v) => !v)}
           className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
         >
-          {showForm ? "Cancel" : "+ New CMA"}
+          {showForm ? t("pages.cma.cancel") : t("pages.cma.newCma")}
         </button>
       </div>
 
@@ -189,9 +194,9 @@ function CmaListInner() {
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-slate-900">Generate a CMA</h2>
+              <h2 className="text-sm font-semibold text-slate-900">{t("pages.cma.generateHeading")}</h2>
               <p className="mt-0.5 text-xs text-slate-500">
-                Enter the subject property address. The engine pulls comps, runs the valuation, and saves the snapshot to your account.
+                {t("pages.cma.generateIntro")}
               </p>
             </div>
             {quota ? <QuotaPill quota={quota} /> : null}
@@ -199,13 +204,13 @@ function CmaListInner() {
           <div className="mt-3 space-y-3">
             <label className="block">
               <span className="text-xs font-semibold text-slate-700">
-                Subject address
+                {t("pages.cma.subjectAddress")}
               </span>
               <div className="mt-1">
                 <AddressAutocomplete
                   value={address}
                   onChange={setAddress}
-                  placeholder="123 Main St, Austin, TX 78701"
+                  placeholder={t("pages.cma.addressPlaceholder")}
                   className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
                   disabled={submitting || quota?.reached === true}
                 />
@@ -217,11 +222,11 @@ function CmaListInner() {
                   <span className="text-rose-600">{submitError}</span>
                 ) : quota?.reached ? (
                   <span className="text-amber-700">
-                    Daily limit reached. Resets at midnight UTC.
+                    {t("pages.cma.quotaReached")}
                   </span>
                 ) : (
                   <span className="text-slate-400">
-                    Searches recent public sales — results take up to a minute.
+                    {t("pages.cma.liveWeb")}
                   </span>
                 )}
               </div>
@@ -235,13 +240,13 @@ function CmaListInner() {
                 }
                 className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {submitting ? "Generating…" : "Generate CMA"}
+                {submitting ? t("pages.cma.generating") : t("pages.cma.generate")}
               </button>
             </div>
             {submitting ? (
               <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
                 <span className="mr-2 inline-block h-3 w-3 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600 align-[-1px]" aria-hidden />
-                Searching the live web for recent comparable sales, then running the valuation… this can take up to a minute.
+                {t("pages.cma.working")}
               </div>
             ) : null}
           </div>
@@ -250,7 +255,7 @@ function CmaListInner() {
 
       {error ? (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Couldn&apos;t load CMAs: {error}
+          {t("pages.cma.loadFailedInline")} {error}
         </div>
       ) : null}
 
@@ -266,7 +271,7 @@ function CmaListInner() {
         </ul>
       ) : rows.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-600">
-          No CMAs saved yet. Click &ldquo;+ New CMA&rdquo; above to generate your first.
+          {t("pages.cma.empty")}
         </div>
       ) : (
         <ul className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -286,16 +291,18 @@ function CmaListInner() {
                     </p>
                   ) : null}
                   <p className="mt-1 text-[11px] text-slate-400">
-                    {formatDate(r.createdAt)} · {r.compCount} comp{r.compCount === 1 ? "" : "s"}
-                    {r.confidenceScore != null ? ` · confidence ${r.confidenceScore}` : ""}
+                    {formatDate(r.createdAt, locale)} · {t("pages.cma.comps", { count: r.compCount })}
+                    {r.confidenceScore != null
+                      ? ` · ${t("pages.cma.confidence", { score: r.confidenceScore })}`
+                      : ""}
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
                   <p className="text-base font-bold tabular-nums text-slate-900">
-                    {formatMoney(r.estimatedValue)}
+                    {formatMoney(r.estimatedValue, locale)}
                   </p>
                   <p className="text-[11px] text-slate-500 tabular-nums">
-                    {formatMoney(r.lowEstimate)} – {formatMoney(r.highEstimate)}
+                    {formatMoney(r.lowEstimate, locale)} – {formatMoney(r.highEstimate, locale)}
                   </p>
                 </div>
               </Link>
@@ -308,6 +315,8 @@ function CmaListInner() {
 }
 
 function QuotaPill({ quota }: { quota: CmaQuota }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const tone = quota.reached
     ? "bg-rose-50 text-rose-700 ring-rose-200"
     : quota.warning
@@ -316,11 +325,11 @@ function QuotaPill({ quota }: { quota: CmaQuota }) {
   return (
     <span
       className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold ring-1 ${tone}`}
-      title={`Daily CMA quota — resets ${quota.resetDate}`}
+      title={t("pages.cma.quotaTitle", { date: quota.resetDate })}
     >
       {quota.unlimited
-        ? "Unlimited CMAs"
-        : `${quota.remaining} of ${quota.limit} left today`}
+        ? t("pages.cma.unlimited")
+        : t("pages.cma.remaining", { remaining: quota.remaining, limit: quota.limit })}
     </span>
   );
 }

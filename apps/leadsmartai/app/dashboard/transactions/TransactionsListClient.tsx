@@ -131,19 +131,14 @@ export function TransactionsListClient({
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">{t("transactions.title")}</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Every deal from mutual acceptance through close — deadlines, tasks,
-            counterparties in one place.
-          </p>
+          <p className="mt-1 text-sm text-slate-500">{t("pages.transactionsList.sub")}</p>
         </div>
         <div className="flex items-center gap-2">
           <TransactionsViewToggle current="list" />
           <Link
             href="/dashboard/transactions/new"
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
-          >
-            New transaction
-          </Link>
+          >{t("pages.transactionsList.newTransaction")}</Link>
         </div>
       </header>
 
@@ -182,9 +177,7 @@ export function TransactionsListClient({
           );
         })}
         <div className="ml-auto inline-flex items-center gap-2">
-          <label className="text-xs text-slate-500" htmlFor="txn-type-filter">
-            Type:
-          </label>
+          <label className="text-xs text-slate-500" htmlFor="txn-type-filter">{t("pages.transactionsList.type")}</label>
           <select
             id="txn-type-filter"
             value={typeFilter}
@@ -205,17 +198,12 @@ export function TransactionsListClient({
             {items.length === 0 ? t("transactions.empty") : t("transactions.noMatch")}
           </p>
           {items.length === 0 ? (
-            <p className="mt-2 text-xs text-slate-500">
-              Create one for a buyer who just had an offer accepted, or for any active deal you
-              want to track in one place.
-            </p>
+            <p className="mt-2 text-xs text-slate-500">{t("pages.transactionsList.emptyHint")}</p>
           ) : null}
           <Link
             href="/dashboard/transactions/new"
             className="mt-4 inline-flex rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
-          >
-            New transaction
-          </Link>
+          >{t("pages.transactionsList.newTransaction")}</Link>
         </div>
       ) : (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

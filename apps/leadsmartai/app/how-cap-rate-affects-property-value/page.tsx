@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import JsonLd from "../../components/JsonLd";
+import { useTranslation } from "react-i18next";
 
 export default function HowCapRateAffectsPropertyValuePage() {
+  const { t } = useTranslation("dashboard");
   const title = "How Cap Rate Affects Property Value in Real Estate Investing";
   const url = "https://closebossai.com/how-cap-rate-affects-property-value";
 
@@ -44,41 +46,22 @@ export default function HowCapRateAffectsPropertyValuePage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Cap rate is more than just a return metric. It is also one of the most important drivers of
-        property value in income-producing real estate. When you understand how cap rate and net
-        operating income (NOI) interact, you can see why small operational improvements or market
-        shifts can create big changes in value.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.capRateValue.intro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          The income approach: value based on cap rate and NOI
-        </h2>
-        <p>
-          For rental properties, many investors and appraisers use the income approach to value. It
-          rearranges the cap rate formula to solve for value instead of return:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateValue.s1Title")}</h2>
+        <p>{t("pages.capRateValue.s1a")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Value = Net Operating Income (NOI) ÷ Market Cap Rate
         </p>
-        <p>
-          In this formula, NOI comes from the property&apos;s income and expenses, while the market
-          cap rate reflects how investors in that market price similar properties. A lower market
-          cap rate (investors accept lower returns) implies a higher value for the same NOI. A
-          higher market cap rate implies a lower value.
-        </p>
+        <p>{t("pages.capRateValue.s1b")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Example: how a small change in cap rate moves value
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateValue.ex1Title")}</h2>
         <p>
           Consider a property that produces $50,000 in NOI per year. If the market cap rate for
           similar assets is 6%, the indicated value using the income approach is:
@@ -86,10 +69,7 @@ export default function HowCapRateAffectsPropertyValuePage() {
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Value = $50,000 ÷ 0.06 ≈ $833,333
         </p>
-        <p>
-          If market conditions improve and investors are now willing to accept a 5.5% cap rate for
-          the same NOI, the value becomes:
-        </p>
+        <p>{t("pages.capRateValue.ex1Body")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Value = $50,000 ÷ 0.055 ≈ $909,091
         </p>
@@ -101,17 +81,13 @@ export default function HowCapRateAffectsPropertyValuePage() {
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Example: adding value by increasing NOI at the same cap rate
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateValue.ex2Title")}</h2>
         <p>
           Now imagine the same market where 6% is still the typical cap rate, but you improve the
           property&apos;s operations. Through better management, slight rent increases, and tighter
           control of expenses, you raise NOI from $50,000 to $55,000.
         </p>
-        <p>
-          At a 6% cap rate, the value with the higher NOI is:
-        </p>
+        <p>{t("pages.capRateValue.ex2Body")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Value = $55,000 ÷ 0.06 ≈ $916,667
         </p>
@@ -123,119 +99,52 @@ export default function HowCapRateAffectsPropertyValuePage() {
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          How market conditions change cap rates and values
-        </h2>
-        <p>
-          Cap rates do not stay fixed forever. They expand and compress over time based on interest
-          rates, investor sentiment, supply and demand, and perceived risk. In hot markets,
-          investors may accept lower cap rates, bidding up prices for the same income. In weaker
-          markets, cap rates can rise as investors demand more return for taking on risk.
-        </p>
-        <p>
-          As a result, two investors might own similar properties with the same NOI but very
-          different values depending on when they bought and what the prevailing market cap rates
-          were at the time.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateValue.s2Title")}</h2>
+        <p>{t("pages.capRateValue.s2a")}</p>
+        <p>{t("pages.capRateValue.s2b")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Using cap rate and NOI together to create value
-        </h2>
-        <p>
-          As an investor, you cannot control the market cap rate, but you can control which markets
-          you invest in and how you operate your properties. Combining both levers—market selection
-          and NOI growth—can create powerful value creation over time.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateValue.s3Title")}</h2>
+        <p>{t("pages.capRateValue.s3Intro")}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
-            <span className="font-semibold">Choose markets wisely:</span> Investing in areas with
-            strong fundamentals can lead to cap rate compression over time, boosting values even if
-            NOI grows slowly.
-          </li>
+            <span className="font-semibold">{t("pages.capRateValue.lever1")}</span> {t("pages.capRateValue.lever1Body")}</li>
           <li>
-            <span className="font-semibold">Improve operations:</span> Raising rents to market
-            levels, reducing avoidable expenses, and adding new income streams directly increase
-            NOI, which increases value at any cap rate.
-          </li>
+            <span className="font-semibold">{t("pages.capRateValue.lever2")}</span> {t("pages.capRateValue.lever2Body")}</li>
           <li>
-            <span className="font-semibold">Plan your exit:</span> Understanding where current cap
-            rates sit relative to history can inform whether now is an attractive time to refinance
-            or sell.
-          </li>
+            <span className="font-semibold">{t("pages.capRateValue.lever3")}</span> {t("pages.capRateValue.lever3Body")}</li>
         </ul>
-        <p>
-          Tools like the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
-            Cap Rate Calculator
-          </Link>{" "}
+        <p>{t("pages.capRateValue.toolsLike")}{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
           and{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
-            Property Investment Analyzer
-          </Link>{" "}
-          in CloseBoss can help you visualize how different NOI and cap rate scenarios impact
-          value over time.
-        </p>
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}{t("pages.capRateValue.toolsLikeTail")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">Frequently asked questions</h2>
-        <h3 className="text-lg font-semibold text-gray-900">
-          How does cap rate impact what I should pay for a property?
-        </h3>
-        <p>
-          If you know a property&apos;s stabilized NOI and the typical cap rate for similar
-          properties in the area, you can estimate a fair value by dividing NOI by that market cap
-          rate. Paying much more than this implied value can reduce your returns unless you have a
-          clear plan to increase NOI or expect cap rate compression.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Is a lower cap rate always better?
-        </h3>
-        <p>
-          A lower cap rate means a higher value for the same NOI, which is good if you already own
-          the property. But if you are buying, a very low cap rate may mean you are paying a premium
-          price for the income. Balance cap rate, NOI growth potential, and your investment
-          strategy.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Can I control the cap rate on my property?
-        </h3>
-        <p>
-          You cannot single-handedly set market cap rates, but you can influence the effective cap
-          rate your property achieves by increasing NOI. You can also choose to invest in markets
-          and property types where you believe cap rates will remain stable or compress over time.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.articleChrome.faqLong")}</h2>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateValue.q1")}</h3>
+        <p>{t("pages.capRateValue.a1")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateValue.q2")}</h3>
+        <p>{t("pages.capRateValue.a2")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateValue.q3")}</h3>
+        <p>{t("pages.capRateValue.a3")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Use cap rate and NOI to drive long-term value
-        </h2>
-        <p className="mb-3">
-          Understanding how cap rate and NOI combine to determine value is one of the biggest
-          mindset shifts for real estate investors. It turns routine management decisions into
-          strategic value-creation moves.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.capRateValue.ctaTitle")}</h2>
+        <p className="mb-3">{t("pages.capRateValue.ctaBody")}</p>
         <div className="flex flex-wrap gap-3 mb-4">
           <Link
             href="/cap-rate-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Open Cap Rate Calculator
-          </Link>
+          >{t("pages.articleChrome.openCapRate")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Investment Analyzer
-          </Link>
+          >{t("pages.articleChrome.openAnalyzer")}</Link>
         </div>
-        <p className="font-semibold">
-          Try our free real estate investment calculator at closebossai.com to quickly analyze
-          your property deals.
-        </p>
+        <p className="font-semibold">{t("pages.articleChrome.footerCta")}</p>
       </section>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   getSalesModel,
   type SalesModelId,
@@ -41,6 +42,7 @@ export function SalesModelDashboard({
    *  remaps the same numbers to different stage labels. */
   activitySnapshot: ActivitySnapshot;
 }) {
+  const { t } = useTranslation("dashboard");
   const [modelId, setModelId] = useState<SalesModelId>(initialModelId);
   const [switchOpen, setSwitchOpen] = useState(false);
   const [smsOpen, setSmsOpen] = useState(false);
@@ -52,9 +54,7 @@ export function SalesModelDashboard({
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Sales Model
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t("pages.salesModelDashboard.title")}</p>
           <h1 className="mt-1 text-2xl font-semibold text-slate-900">
             {model.name}
           </h1>
@@ -68,24 +68,18 @@ export function SalesModelDashboard({
             onClick={() => setSmsOpen(true)}
             className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
           >
-            <SmsIcon />
-            Launch AI SMS
-          </button>
+            <SmsIcon />{t("pages.salesModelDashboard.launchSms")}</button>
           <button
             type="button"
             onClick={() => setEmailOpen(true)}
             className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-700"
           >
-            <EmailIcon />
-            Launch AI Email
-          </button>
+            <EmailIcon />{t("pages.salesModelDashboard.launchEmail")}</button>
           <button
             type="button"
             onClick={() => setSwitchOpen(true)}
             className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50"
-          >
-            Switch model
-          </button>
+          >{t("pages.salesModelDashboard.switchModel")}</button>
         </div>
       </div>
 

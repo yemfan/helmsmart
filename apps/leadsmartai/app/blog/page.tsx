@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BLOG_POSTS, categoryLabel, sortedPosts, type BlogPost } from "@/lib/blog/posts";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -24,9 +26,9 @@ export const metadata: Metadata = {
 
 const SITE_URL = "https://closebossai.com";
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, locale: string): string {
   const d = new Date(`${iso}T00:00:00Z`);
-  return d.toLocaleDateString("en-US", {
+  return d.toLocaleDateString(locale, {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -34,7 +36,9 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function BlogIndexPage() {
+export default async function BlogIndexPage() {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const posts = sortedPosts();
   const featured = posts.find((p) => p.featured) ?? posts[0];
   const rest = posts.filter((p) => p.slug !== featured?.slug);
@@ -66,56 +70,36 @@ export default function BlogIndexPage() {
 
       <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
         <header className="text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">
-            CloseBoss Blog
-          </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-5xl dark:text-white">
-            Win on speed. Sell on substance.
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg dark:text-slate-300">
-            Field-tested takes on real estate technology, AI follow-up,
-            and the metrics that actually move deals — written for solo
-            agents and small teams.
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">{t("pages.blogIndex.h1", { ns: "dashboard" })}</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 md:text-5xl dark:text-white">{t("pages.blogIndex.tagline", { ns: "dashboard" })}</h1>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600 md:text-lg dark:text-slate-300">{t("pages.blogIndex.sub", { ns: "dashboard" })}</p>
         </header>
 
-        {featured ? <FeaturedCard post={featured} /> : null}
+        {featured ? <FeaturedCard post={featured} locale={locale} /> : null}
 
         <section className="mt-12">
-          <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">
-            Latest posts
-          </h2>
+          <h2 className="text-xl font-semibold tracking-tight text-slate-900 md:text-2xl dark:text-white">{t("pages.blogIndex.latestPosts", { ns: "dashboard" })}</h2>
           <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {rest.map((post) => (
               <li key={post.slug}>
-                <PostCard post={post} />
+                <PostCard post={post} locale={locale} />
               </li>
             ))}
           </ul>
         </section>
 
         <section className="mt-16 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center dark:border-slate-800 dark:bg-slate-900/40 md:p-8">
-          <h2 className="text-lg font-semibold text-slate-900 md:text-xl dark:text-white">
-            Want every new post in your inbox?
-          </h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-            We send a short note when a new piece goes live — usually
-            once or twice a month, no filler. Or skip ahead and try
-            CloseBoss free for 14 days.
-          </p>
+          <h2 className="text-lg font-semibold text-slate-900 md:text-xl dark:text-white">{t("pages.blogIndex.wantEveryPost", { ns: "dashboard" })}</h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300">{t("pages.blogIndex.wantEveryPostBody", { ns: "dashboard" })}</p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
             <Link
               href="/start-free"
               className="inline-flex items-center justify-center rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-            >
-              Start free trial
-            </Link>
+            >{t("pages.blogIndex.startTrial", { ns: "dashboard" })}</Link>
             <Link
               href="/agent/compare"
               className="inline-flex items-center justify-center rounded-md border border-blue-200 bg-white px-5 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 dark:border-blue-900/50 dark:bg-slate-900 dark:text-blue-300 dark:hover:bg-slate-900/70"
-            >
-              Compare with your CRM
-            </Link>
+            >{t("pages.blogIndex.compareCrm", { ns: "dashboard" })}</Link>
           </div>
         </section>
       </div>
@@ -123,7 +107,8 @@ export default function BlogIndexPage() {
   );
 }
 
-function FeaturedCard({ post }: { post: BlogPost }) {
+async function FeaturedCard({ post, locale }: { post: BlogPost; locale: string }) {
+  const t = await getServerT();
   return (
     <section className="mt-10">
       <Link
@@ -133,9 +118,7 @@ function FeaturedCard({ post }: { post: BlogPost }) {
         <div className="grid gap-8 p-6 md:grid-cols-[1.2fr_1fr] md:gap-12 md:p-10">
           <div>
             <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-wider">
-              <span className="inline-flex items-center rounded-full bg-blue-600 px-2.5 py-1 text-white">
-                Featured
-              </span>
+              <span className="inline-flex items-center rounded-full bg-blue-600 px-2.5 py-1 text-white">{t("pages.blogIndex.featured", { ns: "dashboard" })}</span>
               <span className="text-slate-500 dark:text-slate-400">
                 {categoryLabel(post.category)}
               </span>
@@ -153,11 +136,9 @@ function FeaturedCard({ post }: { post: BlogPost }) {
               {post.description}
             </p>
             <p className="mt-5 text-xs text-slate-500 dark:text-slate-400">
-              {formatDate(post.publishedAt)} · {post.author}
+              {formatDate(post.publishedAt, locale)} · {post.author}
             </p>
-            <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 dark:text-blue-300">
-              Read the post
-              <svg
+            <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-700 dark:text-blue-300">{t("pages.blogIndex.readThePost", { ns: "dashboard" })}<svg
                 aria-hidden
                 className="h-4 w-4 transition group-hover:translate-x-0.5"
                 fill="none"
@@ -175,9 +156,7 @@ function FeaturedCard({ post }: { post: BlogPost }) {
           </div>
           <div className="relative hidden overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 md:block dark:border-slate-800 dark:bg-slate-900">
             <div className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-300">
-                Quick take
-              </p>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-300">{t("pages.blogIndex.quickTake", { ns: "dashboard" })}</p>
               <p className="text-base font-semibold leading-snug text-slate-800 dark:text-slate-200">
                 &ldquo;47% of leads go with the first agent who responds.
                 Not the best agent. The fastest one.&rdquo;
@@ -193,7 +172,8 @@ function FeaturedCard({ post }: { post: BlogPost }) {
   );
 }
 
-function PostCard({ post }: { post: BlogPost }) {
+async function PostCard({ post, locale }: { post: BlogPost; locale: string }) {
+  const t = await getServerT();
   return (
     <Link
       href={post.href}
@@ -211,7 +191,7 @@ function PostCard({ post }: { post: BlogPost }) {
         {post.description}
       </p>
       <p className="mt-auto pt-4 text-xs text-slate-500 dark:text-slate-400">
-        {formatDate(post.publishedAt)}
+        {formatDate(post.publishedAt, locale)}
       </p>
     </Link>
   );

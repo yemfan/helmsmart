@@ -1,5 +1,7 @@
 import type { SeriesPoint } from "@/lib/research/warehouse/read";
 import { formatValue, formatPeriod, isNum } from "@/lib/research/warehouse/format";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locale";
 
 /**
  * Dependency-free inline SVG line chart for a warehouse metric series.
@@ -24,7 +26,9 @@ const PAD_X = 8;
 const PAD_TOP = 16;
 const PAD_BOTTOM = 24;
 
-export default function Sparkline({ series, unit, label, title }: Props) {
+export default async function Sparkline({ series, unit, label, title }: Props) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const points = series
     .map((p, i) => ({ i, period: p.period, value: p.value }))
     .filter((p): p is { i: number; period: string; value: number } =>
@@ -34,7 +38,10 @@ export default function Sparkline({ series, unit, label, title }: Props) {
   if (points.length < 2) {
     return (
       <div className="flex h-32 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white text-sm text-slate-400">
-        Not enough data to chart {label.toLowerCase()} yet.
+        {t("pages.dataCenterPages.notEnoughData", {
+          ns: "dashboard",
+          label: label.toLowerCase(),
+        })}
       </div>
     );
   }
@@ -70,7 +77,7 @@ export default function Sparkline({ series, unit, label, title }: Props) {
 
   const endX = xFor(last.i);
   const endY = yFor(last.value);
-  const labelText = formatValue(last.value, unit, { compact: true });
+  const labelText = formatValue(last.value, unit, { compact: true, t });
   const anchorRight = endX > W - 90;
 
   return (
@@ -78,7 +85,7 @@ export default function Sparkline({ series, unit, label, title }: Props) {
       <figcaption className="mb-2 flex items-baseline justify-between gap-3">
         <span className="text-sm font-semibold text-slate-700">{label}</span>
         <span className="text-xs text-slate-500">
-          {formatPeriod(first.period)} – {formatPeriod(last.period)}
+          {formatPeriod(first.period, locale)} – {formatPeriod(last.period, locale)}
         </span>
       </figcaption>
       <svg

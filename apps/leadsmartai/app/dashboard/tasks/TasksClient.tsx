@@ -221,9 +221,7 @@ function MiniPie({ data, title }: { data: ChartItem[]; title: string }) {
             );
           })}
           {!isDrilled && hasAnyDrill && (
-            <p className="pt-1 text-[10px] text-gray-400">
-              Click a slice for details
-            </p>
+            <p className="pt-1 text-[10px] text-gray-400">{tr("pages.tasksPage.clickSlice")}</p>
           )}
         </div>
       </div>
@@ -635,13 +633,13 @@ export default function TasksClient({
                       </td>
                       <td className="px-4 py-2">
                         <select value={editFields.status ?? t.status} onChange={(e) => setEditFields((f) => ({ ...f, status: e.target.value }))} className="rounded border border-gray-300 px-2 py-1 text-sm">
-                          <option value="open">Open</option><option value="done">Done</option><option value="cancelled">Cancelled</option>
+                          <option value="open">{tr("tasks.status.open")}</option><option value="done">{tr("tasks.status.done")}</option><option value="cancelled">{tr("tasks.status.cancelled")}</option>
                         </select>
                       </td>
-                      <td className="px-4 py-2"><input value={editFields.description ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, description: e.target.value }))} className="w-full rounded border border-gray-300 px-2 py-1 text-sm" placeholder="Notes" /></td>
+                      <td className="px-4 py-2"><input value={editFields.description ?? ""} onChange={(e) => setEditFields((f) => ({ ...f, description: e.target.value }))} className="w-full rounded border border-gray-300 px-2 py-1 text-sm" placeholder={tr("pages.labels.notes")} /></td>
                       <td className="px-4 py-2 whitespace-nowrap">
-                        <button onClick={() => void updateTask(t.id, { title: editFields.title, description: editFields.description, priority: editFields.priority, status: editFields.status, dueAt: editFields.due_at })} disabled={actionLoading} className="rounded-lg bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 mr-2">Save</button>
-                        <button onClick={() => setEditingId(null)} className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
+                        <button onClick={() => void updateTask(t.id, { title: editFields.title, description: editFields.description, priority: editFields.priority, status: editFields.status, dueAt: editFields.due_at })} disabled={actionLoading} className="rounded-lg bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 mr-2">{tr("branding.save")}</button>
+                        <button onClick={() => setEditingId(null)} className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50">{tr("tasks.cancel")}</button>
                       </td>
                     </tr>
                   );
@@ -798,13 +796,12 @@ export default function TasksClient({
  * nothing (the absence of a chip = "I made this myself").
  */
 function SourceChip({ task }: { task: TaskRow }) {
+  const { t: tr } = useTranslation("dashboard");
   if (task.source === "manual") return null;
   if (task.source === "briefing") {
     return (
       <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700">
-        <span aria-hidden>☀️</span>
-        Morning briefing
-      </span>
+        <span aria-hidden>☀️</span>{tr("pages.tasksPage.morningBriefing")}</span>
     );
   }
   // Playbook + coaching share the same shape (template title + section).

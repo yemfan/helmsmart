@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { SalesModel } from "@/lib/sales-models";
 
 /**
@@ -24,6 +25,7 @@ export function SalesModelCard({
   /** Async to let the parent persist before clearing UI. */
   onSelect: (id: SalesModel["id"]) => Promise<void>;
 }) {
+  const { t } = useTranslation("dashboard");
   const [busy, setBusy] = useState(false);
 
   const handleClick = async () => {
@@ -47,9 +49,7 @@ export function SalesModelCard({
       ].join(" ")}
     >
       {model.recommended ? (
-        <span className="absolute right-4 top-4 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
-          Recommended
-        </span>
+        <span className="absolute right-4 top-4 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-700">{t("pages.salesModelBits.recommended")}</span>
       ) : null}
 
       <div className="flex items-start gap-3">
@@ -71,13 +71,12 @@ export function SalesModelCard({
         {model.description}
       </p>
 
-      <p className="mt-3 text-xs italic text-slate-500">
-        Inspired by {model.inspiredBy.replace(/^Inspired by\s+/i, "")}.
+      <p className="mt-3 text-xs italic text-slate-500">{t("pages.dashFragments.inspiredBy")} {model.inspiredBy.replace(/^Inspired by\s+/i, "")}.
       </p>
 
       <div className="mt-5 space-y-3">
-        <SectionLabelList label="Best for" items={model.bestFor} />
-        <SectionLabelList label="Strengths" items={model.strengths} />
+        <SectionLabelList label={t("pages.salesModelBits.bestFor")} items={model.bestFor} />
+        <SectionLabelList label={t("pages.salesModelBits.strengths")} items={model.strengths} />
       </div>
 
       <div className="mt-6 flex-1" />

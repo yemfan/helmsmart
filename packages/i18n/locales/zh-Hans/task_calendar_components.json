@@ -39,7 +39,7 @@
   "appointment_composer": {
     "title": "新建约见",
     "placeholder_lead_id": "客户 ID",
-    "placeholder_title": "标题 (例如:看房 · 123 Main St)",
+    "placeholder_title": "标题 (例如：看房 · 123 Main St)",
     "placeholder_notes": "备注 (可选)",
     "label_contact": "客户",
     "placeholder_contact_search": "按姓名或电话搜索…",
@@ -66,7 +66,7 @@
   },
   "booking_link_composer": {
     "title": "发送预约链接",
-    "hint": "链接会保存到客户档案,并更新最后活动时间。分享会调起系统分享面板。",
+    "hint": "链接会保存到客户档案，并更新最后活动时间。分享会调起系统分享面板。",
     "placeholder_url": "https://…",
     "placeholder_label": "标签 (可选)",
     "placeholder_share_message": "分享时随短信 / 邮件发送的消息 (可选)",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Per-assistant call settings + knowledge base.
@@ -49,6 +50,7 @@ export function AssistantCallSettings({
   /** Seed the knowledge box with this starter brief when none is saved yet. */
   defaultKnowledge?: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const [voiceName, setVoiceName] = useState("");
   const [voiceKnowledge, setVoiceKnowledge] = useState("");
   const [loading, setLoading] = useState(true);
@@ -100,26 +102,20 @@ export function AssistantCallSettings({
     <form onSubmit={save} className="space-y-4">
       {showName && (
         <div>
-          <label className={labelCls} htmlFor={`${type}-voice-name`}>
-            Voice name
-          </label>
+          <label className={labelCls} htmlFor={`${type}-voice-name`}>{t("pages.assistantCall.voiceName")}</label>
           <input
             id={`${type}-voice-name`}
             className={inputCls}
             value={voiceName}
             onChange={(e) => setVoiceName(e.target.value)}
-            placeholder="e.g. Sophie"
+            placeholder={t("pages.assistantCall.voicePlaceholder")}
             maxLength={100}
           />
-          <p className={hintCls}>
-            The name this assistant uses on its calls. Leave blank to use your account voice name.
-          </p>
+          <p className={hintCls}>{t("pages.assistantCall.voiceHint")}</p>
         </div>
       )}
       <div>
-        <label className={labelCls} htmlFor={`${type}-voice-knowledge`}>
-          Knowledge base
-        </label>
+        <label className={labelCls} htmlFor={`${type}-voice-knowledge`}>{t("pages.assistantCall.knowledgeBase")}</label>
         <textarea
           id={`${type}-voice-knowledge`}
           className={`${inputCls} min-h-[120px]`}
@@ -140,6 +136,7 @@ export function AssistantCallSettings({
 }
 
 export function ReceptionistVoiceForm() {
+  const { t } = useTranslation("dashboard");
   const [greeting, setGreeting] = useState("");
   const [extraNotes, setExtraNotes] = useState("");
   const [loading, setLoading] = useState(true);
@@ -188,23 +185,19 @@ export function ReceptionistVoiceForm() {
   return (
     <form onSubmit={save} className="space-y-4">
       <div>
-        <label className={labelCls} htmlFor="receptionist-greeting">
-          Greeting
-        </label>
+        <label className={labelCls} htmlFor="receptionist-greeting">{t("pages.assistantCall.greeting")}</label>
         <input
           id="receptionist-greeting"
           className={inputCls}
           value={greeting}
           onChange={(e) => setGreeting(e.target.value)}
-          placeholder="Hello! Thank you for calling. How can I help you today?"
+          placeholder={t("pages.assistantCall.greetingPlaceholder")}
           maxLength={1000}
         />
-        <p className={hintCls}>The first thing callers hear when your Receptionist answers.</p>
+        <p className={hintCls}>{t("pages.assistantCall.greetingHint")}</p>
       </div>
       <div>
-        <label className={labelCls} htmlFor="receptionist-knowledge">
-          Knowledge base
-        </label>
+        <label className={labelCls} htmlFor="receptionist-knowledge">{t("pages.assistantCall.knowledgeBase")}</label>
         <textarea
           id="receptionist-knowledge"
           className={`${inputCls} min-h-[120px]`}

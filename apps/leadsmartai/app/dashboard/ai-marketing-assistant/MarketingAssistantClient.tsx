@@ -115,21 +115,14 @@ export default function MarketingAssistantClient({
           className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50"
           aria-expanded={knowledgeOpen}
         >
-          <BookOpen className="h-3.5 w-3.5" strokeWidth={2} />
-          Brand &amp; knowledge
-          {knowledgeOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          <BookOpen className="h-3.5 w-3.5" strokeWidth={2} />{t("pages.dashFragments.brandKnowledge")}{knowledgeOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
         </button>
       </div>
 
       {knowledgeOpen && (
         <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-1 text-sm font-semibold text-gray-900">
-            Your Marketing Assistant&apos;s knowledge base
-          </h2>
-          <p className="mb-4 text-xs text-gray-500">
-            Grounds everything it writes — post captions, plans, nurture copy. Its own brief,
-            separate from your Receptionist&apos;s and Sales Assistant&apos;s.
-          </p>
+          <h2 className="mb-1 text-sm font-semibold text-gray-900">{t("pages.marketingAssistant.kbTitle")}</h2>
+          <p className="mb-4 text-xs text-gray-500">{t("pages.marketingAssistant.kbSub")}</p>
           <AssistantCallSettings
             type="marketing_assistant"
             showName={false}
@@ -154,10 +147,7 @@ export default function MarketingAssistantClient({
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 [&::-webkit-details-marker]:hidden">
           <div>
             <h3 className="text-base font-semibold text-gray-900">{t("assistants.marketing.advanced")}</h3>
-            <p className="mt-0.5 text-sm text-gray-500">
-              Custom ad designer, brand photos, and video reels — optional. Your assistant
-              posts curated designs automatically without any of this.
-            </p>
+            <p className="mt-0.5 text-sm text-gray-500">{t("pages.marketingAssistant.studioSub")}</p>
           </div>
           <span className="shrink-0 text-gray-400 transition group-open:rotate-180" aria-hidden>
             ▾
@@ -169,9 +159,7 @@ export default function MarketingAssistantClient({
           <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-gray-50 p-5">
             <div>
               <h3 className="text-base font-semibold text-gray-900">{t("assistants.marketing.customAd")}</h3>
-              <p className="mt-0.5 text-sm text-gray-500">
-                Pick a template + theme, edit the copy, preview live, then save or schedule.
-              </p>
+              <p className="mt-0.5 text-sm text-gray-500">{t("pages.marketingAssistant.templateSub")}</p>
             </div>
             <Link
               href="/dashboard/ai-marketing-assistant/ad-composer"
@@ -214,16 +202,11 @@ export default function MarketingAssistantClient({
             <Link
               href="/dashboard/leads/generate"
               className="text-xs font-medium text-blue-600 hover:text-blue-800"
-            >
-              Open scheduler
-            </Link>
+            >{t("pages.marketingAssistant.openScheduler")}</Link>
           </div>
           {data.upcomingPosts.length === 0 ? (
-            <p className="py-6 text-center text-sm text-gray-400">
-              Nothing scheduled — a quiet calendar means a quiet pipeline.{" "}
-              <Link href="/dashboard/leads/generate" className="text-blue-600 hover:underline">
-                Schedule a post
-              </Link>
+            <p className="py-6 text-center text-sm text-gray-400">{t("pages.dashFragments.nothingScheduled")}{" "}
+              <Link href="/dashboard/leads/generate" className="text-blue-600 hover:underline">{t("pages.marketingAssistant.schedulePost")}</Link>
               .
             </p>
           ) : (
@@ -250,10 +233,7 @@ export default function MarketingAssistantClient({
         <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <h2 className="mb-3 text-sm font-semibold text-gray-900">{t("assistants.marketing.latestActivity")}</h2>
           {data.activities.length === 0 ? (
-            <p className="py-6 text-center text-sm text-gray-400">
-              No activity yet. Once your Marketing Assistant starts publishing and nurturing, its
-              work shows up here.
-            </p>
+            <p className="py-6 text-center text-sm text-gray-400">{t("pages.marketingAssistant.noActivity")}</p>
           ) : (
             <ul className="space-y-2">
               {data.activities.map((a) => (
@@ -271,13 +251,8 @@ export default function MarketingAssistantClient({
       </div>
 
       {/* Hand-off note — constitution: a team, with clear lanes */}
-      <p className="text-xs text-gray-400">
-        Your Marketing Assistant creates demand; leads it generates are handed to your{" "}
-        <Link href="/dashboard/ai-sales-assistant" className="text-gray-500 underline-offset-2 hover:underline">
-          Sales Assistant
-        </Link>{" "}
-        to convert.
-      </p>
+      <p className="text-xs text-gray-400">{t("pages.dashFragments.marketingCreates")}{" "}
+        <Link href="/dashboard/ai-sales-assistant" className="text-gray-500 underline-offset-2 hover:underline">{t("pages.marketingAssistant.salesAssistant")}</Link>{" "}{t("pages.dashFragments.toConvert")}</p>
     </div>
   );
 }

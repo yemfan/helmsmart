@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useClientLeadId } from "@/components/client/useClientLeadId";
+import { intlLocale } from "@/lib/i18n/locale";
 
 type MeLead = {
   id: string;
@@ -63,9 +65,9 @@ function formatMoney(n: number | null | undefined): string {
   }).format(n);
 }
 
-function formatDate(iso: string | null): string {
+function formatDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -90,6 +92,8 @@ const OFFER_STATUS_COLOR: Record<string, string> = {
 };
 
 export default function ClientActivityPage() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [me, setMe] = useState<MeRes | null>(null);
   const [activity, setActivity] = useState<ActivityRes | null>(null);
   const [loading, setLoading] = useState(true);
@@ -140,10 +144,8 @@ export default function ClientActivityPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900">Activity</h1>
-        <p className="mt-0.5 text-xs text-slate-500">
-          Your homes, offers, and (if you&apos;re selling) your listing&apos;s activity.
-        </p>
+        <h1 className="text-xl font-semibold text-slate-900">{t("pages.clientPortal.activity")}</h1>
+        <p className="mt-0.5 text-xs text-slate-500">{t("pages.clientPortal.activitySub")}</p>
       </div>
 
       {leads.length > 1 ? (
@@ -167,9 +169,7 @@ export default function ClientActivityPage() {
           {err}
         </div>
       ) : !activity ? (
-        <div className="rounded-xl border border-dashed border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
-          No activity yet.
-        </div>
+        <div className="rounded-xl border border-dashed border-slate-200 bg-white p-6 text-center text-sm text-slate-500">{t("pages.clientPortal.noActivity")}</div>
       ) : (
         <>
           {activity.listing ? <ListingCard listing={activity.listing} /> : null}
@@ -179,9 +179,7 @@ export default function ClientActivityPage() {
           {!activity.listing &&
           activity.showings.length === 0 &&
           activity.offers.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
-              Nothing to show yet. Your agent will add activity here as your deal progresses.
-            </div>
+            <div className="rounded-xl border border-dashed border-slate-200 bg-white p-6 text-center text-sm text-slate-500">{t("pages.clientPortal.noActivityHint")}</div>
           ) : null}
         </>
       )}
@@ -199,11 +197,11 @@ export default function ClientActivityPage() {
 }
 
 function ListingCard({ listing }: { listing: ListingSummary }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-blue-700">
-        Your listing
-      </div>
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-blue-700">{t("pages.clientPortal.yourListing")}</div>
       <div className="mt-1 text-base font-semibold text-slate-900">
         {listing.propertyAddress}
       </div>
@@ -214,23 +212,22 @@ function ListingCard({ listing }: { listing: ListingSummary }) {
           : ""}
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-        <Stat label="Visitors" value={listing.visitorsTotal} />
-        <Stat label="Total offers" value={listing.offersCount} />
-        <Stat label="Active" value={listing.offersActive} tone="blue" />
+        <Stat label={t("pages.clientPortal.visitors")} value={listing.visitorsTotal} />
+        <Stat label={t("pages.clientPortal.totalOffers")} value={listing.offersCount} />
+        <Stat label={t("pages.clientPortal.active")} value={listing.offersActive} tone="blue" />
       </div>
-      <p className="mt-3 text-[11px] text-slate-400">
-        Your agent sends a weekly summary every Monday with market commentary + what to do next.
-      </p>
+      <p className="mt-3 text-[11px] text-slate-400">{t("pages.clientPortal.weeklySummary")}</p>
     </div>
   );
 }
 
 function ShowingsCard({ items }: { items: ShowingItem[] }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   if (items.length === 0) return null;
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">
-        Showings ({items.length})
+      <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.showings")}{items.length})
       </h2>
       <ul className="mt-2 space-y-2">
         {items.map((s) => (
@@ -239,7 +236,7 @@ function ShowingsCard({ items }: { items: ShowingItem[] }) {
               <div className="min-w-0">
                 <div className="font-medium text-slate-900">{s.propertyAddress}</div>
                 <div className="text-[11px] text-slate-500">
-                  {formatDate(s.scheduledAt)}
+                  {formatDate(s.scheduledAt, locale)}
                   {s.city || s.state
                     ? ` · ${[s.city, s.state].filter(Boolean).join(", ")}`
                     : ""}
@@ -266,11 +263,12 @@ function ShowingsCard({ items }: { items: ShowingItem[] }) {
 }
 
 function OffersCard({ items }: { items: OfferItem[] }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   if (items.length === 0) return null;
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-900">
-        Offers ({items.length})
+      <h2 className="text-sm font-semibold text-slate-900">{t("pages.dashFragments.offers")}{items.length})
       </h2>
       <ul className="mt-2 space-y-2">
         {items.map((o) => (
@@ -278,9 +276,8 @@ function OffersCard({ items }: { items: OfferItem[] }) {
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="font-medium text-slate-900">{o.propertyAddress}</div>
-                <div className="mt-0.5 text-[11px] text-slate-500">
-                  Submitted {formatDate(o.submittedAt)}
-                  {o.acceptedAt ? ` · Accepted ${formatDate(o.acceptedAt)}` : ""}
+                <div className="mt-0.5 text-[11px] text-slate-500">{t("pages.dashFragments.submitted")} {formatDate(o.submittedAt, locale)}
+                  {o.acceptedAt ? ` · Accepted ${formatDate(o.acceptedAt, locale)}` : ""}
                 </div>
               </div>
               <div className="shrink-0 text-right">

@@ -1,6 +1,7 @@
 "use client";
 
 import type { SalesModel } from "@/lib/sales-models";
+import { useTranslation } from "react-i18next";
 
 /**
  * Compact identity strip at the top of the sales-model dashboard.
@@ -13,9 +14,10 @@ import type { SalesModel } from "@/lib/sales-models";
  * own cards.
  */
 export function IdentityBlock({ model }: { model: SalesModel }) {
+  const { t } = useTranslation("dashboard");
   return (
     <section
-      aria-label="Operating identity"
+      aria-label={t("pages.salesModelBits.operatingIdentity")}
       className={[
         "relative overflow-hidden rounded-xl border bg-white px-4 py-3 sm:px-5 sm:py-4",
         "ring-1 ring-slate-900/[0.04] shadow-sm",
@@ -47,8 +49,8 @@ export function IdentityBlock({ model }: { model: SalesModel }) {
             {model.philosophy}
           </p>
           <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
-            <MetaPair label="Style" value={model.tone} />
-            <MetaPair label="Best for" value={model.leadTypes.join(", ")} />
+            <MetaPair label={t("pages.salesModelBits.style")} value={model.tone} />
+            <MetaPair label={t("pages.salesModelBits.bestFor")} value={model.leadTypes.join(", ")} />
           </dl>
         </div>
       </div>

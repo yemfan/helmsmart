@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import JsonLd from "../../components/JsonLd";
 
 export default function CapRateVsRoiPage() {
+  const { t } = useTranslation("dashboard");
   const title = "Cap Rate vs ROI: What’s the Difference for Real Estate Investors?";
   const url = "https://closebossai.com/cap-rate-vs-roi";
 
@@ -52,82 +54,43 @@ export default function CapRateVsRoiPage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articles.backHome", { ns: "dashboard" })}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Cap rate and return on investment (ROI) are two of the most commonly used metrics in real
-        estate investing. They are related, but they are not the same thing. Understanding how they
-        differ—and when to use each one—will help you make better decisions, avoid overpaying, and
-        build a portfolio that matches your goals.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.capRateVsRoi.intro", { ns: "dashboard" })}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">What is cap rate?</h2>
-        <p>
-          Cap rate, short for capitalization rate, measures a property&apos;s net operating income
-          (NOI) relative to its purchase price or current market value. It answers the question:
-          &quot;If I bought this property in cash today, what annual return would I earn from
-          operations before financing?&quot;
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsRoi.whatIsCapRate", { ns: "dashboard" })}</h2>
+        <p>{t("pages.capRateVsRoi.capRateDef", { ns: "dashboard" })}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cap Rate = Net Operating Income (NOI) ÷ Purchase Price or Value
         </p>
-        <p>
-          Because cap rate ignores financing, it is a property-level metric. It tells you about the
-          asset itself, not your personal investment structure. Investors use cap rates to compare
-          similar properties, understand local market pricing, and estimate value using the income
-          approach.
-        </p>
+        <p>{t("pages.capRateVsRoi.capRateProperty", { ns: "dashboard" })}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">What is ROI in real estate?</h2>
-        <p>
-          Return on investment (ROI) measures how much profit you earn relative to the total cash
-          you invest in a deal. In real estate, ROI can be calculated in several ways, but a simple
-          version looks at total profit divided by total cash invested over a given period.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsRoi.whatIsRoi", { ns: "dashboard" })}</h2>
+        <p>{t("pages.capRateVsRoi.roiDef", { ns: "dashboard" })}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           ROI = (Total Profit ÷ Total Cash Invested) × 100%
         </p>
-        <p>
-          Total profit can include cash flow from rents, loan paydown, appreciation, and tax
-          benefits, depending on how detailed you want to be. ROI is investor-specific because it
-          depends on your down payment, loan terms, holding period, and exit strategy.
-        </p>
+        <p>{t("pages.capRateVsRoi.roiInvestor", { ns: "dashboard" })}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Cap rate vs ROI: key differences
-        </h2>
-        <p>
-          While both metrics involve returns, they answer different questions and are used at
-          different stages of your analysis.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsRoi.keyDifferences", { ns: "dashboard" })}</h2>
+        <p>{t("pages.capRateVsRoi.bothMetrics", { ns: "dashboard" })}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
-            <span className="font-semibold">Cap rate:</span> property-focused, based on NOI and
-            value, ignores financing, great for comparing properties and understanding income yield.
-          </li>
+            <span className="font-semibold">{t("pages.capRateVsRoi.capRateLabel", { ns: "dashboard" })}</span>{t("pages.capRateVsRoi.capRateBullet", { ns: "dashboard" })}</li>
           <li>
-            <span className="font-semibold">ROI:</span> investor-focused, based on your actual cash
-            invested and total profit, includes the impact of financing, taxes, and appreciation.
-          </li>
+            <span className="font-semibold">{t("pages.capRateVsRoi.roiLabel", { ns: "dashboard" })}</span>{t("pages.capRateVsRoi.roiBullet", { ns: "dashboard" })}</li>
         </ul>
-        <p>
-          Think of cap rate as a quick, high-level screening tool and market pricing signal. Think
-          of ROI as a deeper, personalized view of how a specific deal will perform for you.
-        </p>
+        <p>{t("pages.capRateVsRoi.thinkOf", { ns: "dashboard" })}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Example: same cap rate, different ROI
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsRoi.exampleTitle", { ns: "dashboard" })}</h2>
         <p>
           Imagine a small rental property that sells for $300,000 and produces $18,000 in net
           operating income. The cap rate is:
@@ -135,152 +98,79 @@ export default function CapRateVsRoiPage() {
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cap Rate = $18,000 ÷ $300,000 = 6%
         </p>
-        <p>
-          Now compare two investors who buy the same property at the same price and NOI:
-        </p>
+        <p>{t("pages.capRateVsRoi.nowCompare", { ns: "dashboard" })}</p>
         <ul className="list-disc list-inside space-y-1">
           <li>
-            <span className="font-semibold">Investor A:</span> buys all-cash, investing $300,000 of
+            <span className="font-semibold">{t("pages.capRateVsRoi.investorA", { ns: "dashboard" })}</span> buys all-cash, investing $300,000 of
             their own money.
           </li>
           <li>
-            <span className="font-semibold">Investor B:</span> uses a 25% down payment ($75,000)
+            <span className="font-semibold">{t("pages.capRateVsRoi.investorB", { ns: "dashboard" })}</span> uses a 25% down payment ($75,000)
             and finances the rest with a mortgage.
           </li>
         </ul>
-        <p>
-          The property&apos;s cap rate is still 6% for both investors because NOI and value have not
-          changed. But their ROIs will look very different once you factor in loan payments, closing
-          costs, and how much cash they each invested. With the right financing, Investor B could
-          achieve a much higher ROI than 6% due to the leverage effect, even though the cap rate is
-          fixed at 6%.
-        </p>
+        <p>{t("pages.capRateVsRoi.exampleBody", { ns: "dashboard" })}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          When to use cap rate vs when to use ROI
-        </h2>
-        <p>
-          In practice, you will often use both metrics at different stages of the investment
-          process.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">Use cap rate when you:</h3>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsRoi.whenToUse", { ns: "dashboard" })}</h2>
+        <p>{t("pages.capRateVsRoi.inPractice", { ns: "dashboard" })}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsRoi.useCapWhen", { ns: "dashboard" })}</h3>
         <ul className="list-disc list-inside space-y-1">
-          <li>Screen a large number of listings quickly.</li>
-          <li>Compare similar properties in the same neighborhood.</li>
-          <li>Evaluate whether asking prices make sense for the income being produced.</li>
-          <li>Talk with brokers, appraisers, and lenders about market pricing.</li>
+          <li>{t("pages.capRateVsRoi.useCap1", { ns: "dashboard" })}</li>
+          <li>{t("pages.capRateVsRoi.useCap2", { ns: "dashboard" })}</li>
+          <li>{t("pages.capRateVsRoi.useCap3", { ns: "dashboard" })}</li>
+          <li>{t("pages.capRateVsRoi.useCap4", { ns: "dashboard" })}</li>
         </ul>
-        <h3 className="text-lg font-semibold text-gray-900 mt-4">Use ROI when you:</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mt-4">{t("pages.capRateVsRoi.useRoiWhen", { ns: "dashboard" })}</h3>
         <ul className="list-disc list-inside space-y-1">
-          <li>Model your personal returns based on your down payment and loan terms.</li>
-          <li>Compare different financing options for the same property.</li>
-          <li>Plan how long to hold a property and what exit returns you expect.</li>
-          <li>Compare real estate investments against other asset classes.</li>
+          <li>{t("pages.capRateVsRoi.useRoi1", { ns: "dashboard" })}</li>
+          <li>{t("pages.capRateVsRoi.useRoi2")}</li>
+          <li>{t("pages.capRateVsRoi.useRoi3")}</li>
+          <li>{t("pages.capRateVsRoi.useRoi4")}</li>
         </ul>
-        <p>
-          In short, cap rate helps you decide whether a property is worth deeper analysis. ROI helps
-          you decide whether that specific deal fits your portfolio and financial goals.
-        </p>
+        <p>{t("pages.capRateVsRoi.inShort")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Cap rate, ROI, and cash-on-cash return
-        </h2>
-        <p>
-          Many investors also rely on{" "}
-          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">
-            cash-on-cash return
-          </Link>{" "}
-          alongside cap rate and ROI. Cash-on-cash return measures your annual pre-tax cash flow
-          divided by your total cash invested and focuses on the income portion of your returns in
-          the early years of a deal.
-        </p>
-        <p>
-          A common workflow is to use the{" "}
-          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">
-            Cap Rate Calculator
-          </Link>{" "}
-          to screen deals, then switch to the{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
-            Property Investment Analyzer
-          </Link>{" "}
-          or ROI-focused tools to model financing, cash-on-cash, and long-term ROI in more detail.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsRoi.cocTitle")}</h2>
+        <p>{t("pages.articleLinks.manyAlsoRelyOn")}{" "}
+          <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.capRateVsRoi.cocLink")}</Link>{" "}{t("pages.articleLinks.cocMeasures")}</p>
+        <p>{t("pages.articleLinks.commonWorkflow")}{" "}
+          <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.capRateVsRoi.capCalc")}</Link>{" "}{t("pages.articleLinks.toScreenThenSwitch")}{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.capRateVsRoi.analyzer")}</Link>{" "}{t("pages.articleLinks.orRoiFocused")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">Frequently asked questions</h2>
-        <h3 className="text-lg font-semibold text-gray-900">
-          What is the main difference between cap rate and ROI?
-        </h3>
-        <p>
-          Cap rate is a property-level metric that compares NOI to value and ignores financing. ROI
-          is an investor-level metric that compares total profit to the cash you invest, including
-          the effects of leverage, holding period, and exit strategy.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Can a low cap rate deal still have a strong ROI?
-        </h3>
-        <p>
-          Yes. A property in a low-cap-rate market can still produce strong ROI if you buy at a
-          discount, add value through renovations or better management, or use conservative leverage
-          that amplifies returns without adding too much risk.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Which metric do banks care about more?
-        </h3>
-        <p>
-          Lenders often look at cap rates and NOI to assess the property and its ability to support
-          debt. They also evaluate your personal financial strength and debt service coverage
-          ratios, which are more closely related to cash flow and ability to repay the loan than to
-          your long-term ROI.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Should I ignore a deal if the cap rate looks low?
-        </h3>
-        <p>
-          Not automatically. A lower cap rate can reflect a safer market with strong appreciation,
-          better tenant quality, or lower volatility. It may still be a good fit if it aligns with
-          your goals and you are prioritizing stability and growth over immediate cash flow.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsRoi.faq")}</h2>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsRoi.q1")}</h3>
+        <p>{t("pages.capRateVsRoi.a1")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsRoi.q2")}</h3>
+        <p>{t("pages.capRateVsRoi.a2")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsRoi.q3")}</h3>
+        <p>{t("pages.capRateVsRoi.a3")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsRoi.q4")}</h3>
+        <p>{t("pages.capRateVsRoi.a4")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Compare cap rate and ROI on your next deal
-        </h2>
-        <p className="mb-3">
-          The best investors rarely rely on a single metric. Use cap rate to understand the
-          property, and ROI to understand how the deal performs for you. Then layer in cash-on-cash
-          return, debt paydown, and appreciation to see the full picture.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.capRateVsRoi.ctaTitle")}</h2>
+        <p className="mb-3">{t("pages.capRateVsRoi.ctaBody")}</p>
         <div className="flex flex-wrap gap-3 mb-4">
           <Link
             href="/cap-rate-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Open Cap Rate Calculator
-          </Link>
+          >{t("pages.capRateVsRoi.openCapCalc")}</Link>
           <Link
             href="/roi-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open ROI Calculator
-          </Link>
+          >{t("pages.capRateVsRoi.openRoiCalc")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Investment Analyzer
-          </Link>
+          >{t("pages.capRateVsRoi.openAnalyzer")}</Link>
         </div>
-        <p className="font-semibold">
-          Try our free real estate investment calculator at closebossai.com to quickly analyze
-          your property deals.
-        </p>
+        <p className="font-semibold">{t("pages.capRateVsRoi.footerCta")}</p>
       </section>
     </div>
   );

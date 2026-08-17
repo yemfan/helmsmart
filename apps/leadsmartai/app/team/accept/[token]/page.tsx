@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { acceptInvite } from "@/lib/teams/service";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Accept team invitation",
@@ -23,6 +24,7 @@ export default async function AcceptInvitePage({
 }: {
   params: Promise<{ token: string }>;
 }) {
+  const t = await getServerT();
   const { token } = await params;
 
   let agentId: string;
@@ -47,16 +49,12 @@ export default async function AcceptInvitePage({
   return (
     <div className="mx-auto max-w-md p-8">
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h1 className="text-xl font-semibold text-slate-900">
-          Invitation can&apos;t be used
-        </h1>
+        <h1 className="text-xl font-semibold text-slate-900">{t("pages.dashFragments.inviteUnusable", { ns: "dashboard" })}</h1>
         <p className="mt-2 text-sm text-slate-600">{describeReason(failure.reason)}</p>
         <Link
           href="/dashboard"
           className="mt-4 inline-flex items-center rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
-        >
-          Back to dashboard
-        </Link>
+        >{t("pages.dashFragments.backToDashboard", { ns: "dashboard" })}</Link>
       </div>
     </div>
   );

@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 
 import type {
   CoordinatorBoard,
@@ -20,10 +22,10 @@ function formatMoney(n: number | null): string {
   }).format(n);
 }
 
-function formatDateShort(iso: string | null): string {
+function formatDateShort(iso: string | null, locale: string): string {
   if (!iso) return "—";
   try {
-    return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
+    return new Date(`${iso}T00:00:00Z`).toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       timeZone: "UTC",
@@ -33,22 +35,25 @@ function formatDateShort(iso: string | null): string {
   }
 }
 
-function daysFromTodayLabel(iso: string | null): string | null {
+type Translate = (k: string, o?: Record<string, unknown>) => string;
+
+function daysFromTodayLabel(iso: string | null, t: Translate, locale: string): string | null {
   if (!iso) return null;
   const todayIso = new Date().toISOString().slice(0, 10);
   const todayMs = Date.parse(`${todayIso}T00:00:00Z`);
   const targetMs = Date.parse(`${iso}T00:00:00Z`);
   if (!Number.isFinite(todayMs) || !Number.isFinite(targetMs)) return null;
   const days = Math.round((targetMs - todayMs) / 86_400_000);
-  if (days === 0) return "today";
-  if (days === 1) return "tomorrow";
-  if (days === -1) return "yesterday";
-  if (days < 0) return `${-days}d overdue`;
-  if (days <= 30) return `in ${days}d`;
-  return formatDateShort(iso);
+  if (days === 0) return t("pages.coordinator.today");
+  if (days === 1) return t("pages.coordinator.tomorrow");
+  if (days === -1) return t("pages.coordinator.yesterday");
+  if (days < 0) return t("pages.coordinator.daysOverdue", { count: -days });
+  if (days <= 30) return t("pages.coordinator.inDays", { count: days });
+  return formatDateShort(iso, locale);
 }
 
 export default function CoordinatorClient() {
+  const { t } = useTranslation("dashboard");
   const [board, setBoard] = useState<CoordinatorBoard | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -99,8 +104,7 @@ export default function CoordinatorClient() {
 
   if (error || !board) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        Couldn&apos;t load the coordinator board: {error ?? "unknown error"}
+      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">{t("pages.dashFragments.couldntLoadCoordinator")} {error ?? "unknown error"}
       </div>
     );
   }
@@ -115,14 +119,16 @@ export default function CoordinatorClient() {
  */
 type RoleFilter = "all" | TransactionType;
 
-const ROLE_LABELS: Record<RoleFilter, string> = {
-  all: "All",
-  buyer_rep: "Buyer-side",
-  listing_rep: "Listing-side",
-  dual: "Dual",
+/** Keyed lookup: a module-scope map cannot reach the translator. */
+const ROLE_KEYS: Record<RoleFilter, string> = {
+  all: "pages.coordinator.roleAll",
+  buyer_rep: "pages.coordinator.roleBuyer",
+  listing_rep: "pages.coordinator.roleListing",
+  dual: "pages.coordinator.roleDual",
 };
 
 function CoordinatorBody({ board }: { board: CoordinatorBoard }) {
+  const { t } = useTranslation("dashboard");
   const [role, setRole] = useState<RoleFilter>(() => {
     if (typeof window === "undefined") return "all";
     try {
@@ -159,9 +165,9 @@ function CoordinatorBody({ board }: { board: CoordinatorBoard }) {
 
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-          Show
+          {t("pages.coordinator.show")}
         </span>
-        {(Object.keys(ROLE_LABELS) as RoleFilter[]).map((r) => (
+        {(Object.keys(ROLE_KEYS) as RoleFilter[]).map((r) => (
           <button
             key={r}
             type="button"
@@ -172,17 +178,19 @@ function CoordinatorBody({ board }: { board: CoordinatorBoard }) {
                 : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
             }`}
           >
-            {ROLE_LABELS[r]}
+            {t(ROLE_KEYS[r])}
           </button>
         ))}
       </div>
 
       {board.totals.transactionCount === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-12 text-center text-sm text-slate-600">
-          <p className="text-base font-semibold text-slate-900">No active deals.</p>
+          <p className="text-base font-semibold text-slate-900">{t("pages.coordinator.noDeals")}</p>
           <p className="mt-1">
-            New transactions appear here automatically once they&apos;re opened
-            in <Link href="/dashboard/transactions" className="font-semibold text-slate-700 underline">Transactions</Link>.
+            {t("pages.coordinator.noDealsHint")}{" "}
+            <Link href="/dashboard/transactions" className="font-semibold text-slate-700 underline">
+              {t("pages.coordinator.transactions")}
+            </Link>
           </p>
         </div>
       ) : (
@@ -197,19 +205,20 @@ function CoordinatorBody({ board }: { board: CoordinatorBoard }) {
 }
 
 function KpiStrip({ totals }: { totals: CoordinatorBoard["totals"] }) {
+  const { t } = useTranslation("dashboard");
   const cells = [
     {
-      label: "In-flight deals",
+      label: t("pages.coordinator.inFlight"),
       value: String(totals.transactionCount),
       tone: "text-slate-900",
     },
     {
-      label: "Overdue tasks",
+      label: t("pages.coordinator.overdueTasks"),
       value: String(totals.overdueTasksTotal),
       tone: totals.overdueTasksTotal > 0 ? "text-rose-700" : "text-slate-900",
     },
     {
-      label: "Closing this week",
+      label: t("pages.coordinator.closingThisWeek"),
       value: String(totals.closingThisWeek),
       tone: totals.closingThisWeek > 0 ? "text-emerald-700" : "text-slate-900",
     },
@@ -254,6 +263,7 @@ function avgDaysToDeadline(column: CoordinatorStageColumn): number | null {
 }
 
 function StageColumn({ column }: { column: CoordinatorStageColumn }) {
+  const { t } = useTranslation("dashboard");
   const avg = avgDaysToDeadline(column);
   const overdueCards = column.cards.filter((c) => c.byStage[column.stage]?.overdueCount > 0).length;
 
@@ -273,11 +283,13 @@ function StageColumn({ column }: { column: CoordinatorStageColumn }) {
       {avg != null ? (
         <div className="flex items-center justify-between border-b border-slate-200/70 px-3 py-1.5 text-[10px]">
           <span className={avg < 0 ? "font-semibold text-rose-700" : "text-slate-500"}>
-            {avg < 0 ? `Avg ${-avg}d past` : `Avg ${avg}d to deadline`}
+            {avg < 0
+              ? t("pages.coordinator.avgPast", { days: -avg })
+              : t("pages.coordinator.avgToDeadline", { days: avg })}
           </span>
           {overdueCards > 0 ? (
             <span className="font-semibold text-rose-700">
-              {overdueCards} overdue
+              {t("pages.coordinator.overdueCount", { count: overdueCards })}
             </span>
           ) : null}
         </div>
@@ -285,7 +297,7 @@ function StageColumn({ column }: { column: CoordinatorStageColumn }) {
 
       {column.cards.length === 0 ? (
         <div className="flex flex-1 items-center justify-center px-4 py-6 text-center text-[11px] text-slate-400">
-          No open work at this stage.
+          {t("pages.coordinator.noWork")}
         </div>
       ) : (
         <ul className="space-y-2 p-2">
@@ -307,10 +319,12 @@ function CardForStage({
   stage: CoordinatorStageColumn["stage"];
   card: CoordinatorTransactionCard;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const stageMetrics = card.byStage[stage];
   const txn = card.transaction;
   const isPastDue = stageMetrics.overdueCount > 0;
-  const dueLabel = daysFromTodayLabel(stageMetrics.earliestDue);
+  const dueLabel = daysFromTodayLabel(stageMetrics.earliestDue, t, locale);
 
   return (
     <Link
@@ -325,7 +339,7 @@ function CardForStage({
         </p>
         {isPastDue ? (
           <span className="shrink-0 rounded-full bg-rose-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-rose-700">
-            {stageMetrics.overdueCount} overdue
+            {t("pages.coordinator.overdueCount", { count: stageMetrics.overdueCount })}
           </span>
         ) : null}
       </div>
@@ -340,15 +354,18 @@ function CardForStage({
 
       {stageMetrics.nextUpTitle ? (
         <p className="mt-2 line-clamp-2 text-[11px] text-slate-700">
-          <span className="font-semibold">Next:</span> {stageMetrics.nextUpTitle}
+          <span className="font-semibold">{t("pages.coordinator.next")}</span> {stageMetrics.nextUpTitle}
         </p>
       ) : null}
 
       <div className="mt-2 flex items-center justify-between gap-2 text-[10px] text-slate-500">
         <span>
-          {stageMetrics.openCount} open
+          {t("pages.coordinator.openCount", { count: stageMetrics.openCount })}
           {card.overall.totalTasks > 0
-            ? ` · ${card.overall.completedTasks}/${card.overall.totalTasks} all-stage`
+            ? ` · ${t("pages.coordinator.allStage", {
+                done: card.overall.completedTasks,
+                total: card.overall.totalTasks,
+              })}`
             : ""}
         </span>
         {dueLabel ? (
@@ -362,7 +379,7 @@ function CardForStage({
 
       {txn.closing_date ? (
         <p className="mt-1 text-[10px] text-slate-400">
-          Closing {formatDateShort(txn.closing_date)}
+          {t("pages.coordinator.closingOn", { date: formatDateShort(txn.closing_date, locale) })}
         </p>
       ) : null}
     </Link>

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import ResultViewBeacon from "@/components/growth/ResultViewBeacon";
 import ProgressiveLeadCapture from "@/components/growth/ProgressiveLeadCapture";
 import { getShareableResultById } from "@/lib/growth/shareableResults";
+import { getServerT } from "@/lib/i18n/server";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SharedResultPage({ params }: Props) {
+  const t = await getServerT();
   const { id } = await params;
   const row = await getShareableResultById(id);
   if (!row) notFound();
@@ -43,7 +45,7 @@ export default async function SharedResultPage({ params }: Props) {
         </header>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="text-sm font-bold text-slate-800 mb-3">Results</h2>
+          <h2 className="text-sm font-bold text-slate-800 mb-3">{t("pages.dashFragments.results", { ns: "dashboard" })}</h2>
           <dl className="space-y-2 text-sm">
             {entries.length ? (
               entries.map(([k, v]) => (
@@ -53,7 +55,7 @@ export default async function SharedResultPage({ params }: Props) {
                 </div>
               ))
             ) : (
-              <p className="text-slate-500">No structured fields.</p>
+              <p className="text-slate-500">{t("pages.dashFragments.noStructuredFields", { ns: "dashboard" })}</p>
             )}
           </dl>
           <p className="text-[11px] text-slate-400 mt-4">{row.view_count} views</p>
@@ -61,9 +63,7 @@ export default async function SharedResultPage({ params }: Props) {
 
         <ProgressiveLeadCapture headline="Talk to an agent about these numbers" />
 
-        <p className="text-xs text-slate-500 text-center">
-          Want your own analysis? Try our calculators on the homepage.
-        </p>
+        <p className="text-xs text-slate-500 text-center">{t("pages.dashFragments.wantYourOwn", { ns: "dashboard" })}</p>
       </div>
     </div>
   );

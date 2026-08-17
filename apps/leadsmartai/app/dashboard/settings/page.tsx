@@ -31,6 +31,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SettingsPage() {
+  const t = await getServerT();
   const serverT = await getServerT();
   const tr = (key: string) => serverT(key, { ns: "dashboard" });
   const ctx = await getCurrentAgentContext();
@@ -140,9 +141,7 @@ export default async function SettingsPage() {
               <a
                 href="/dashboard/leads/generate/connect"
                 className="inline-flex rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005ba6]"
-              >
-                Manage connected accounts
-              </a>
+              >{t("pages.settingsPage.manageConnected", { ns: "dashboard" })}</a>
             </Card>
             <Card
               title={tr("tips.socialAutoposting")}

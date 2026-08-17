@@ -76,9 +76,7 @@ export function SkillsManager({
               <h2 className="text-base font-semibold text-slate-900 dark:text-white">
                 {assigneeLabels[assignee]}
                 {assignee === "boss" ? (
-                  <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
-                    validators + oversight
-                  </span>
+                  <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">{t("pages.skillsManager.validators")}</span>
                 ) : null}
               </h2>
               <span className="text-xs text-slate-500 dark:text-slate-400">

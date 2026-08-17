@@ -1,6 +1,7 @@
 import { requireRole } from "@/lib/auth/requireRole";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { NudgeLogClient, type NudgeLogRow } from "./NudgeLogClient";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata = {
   title: "Transaction Nudge Log | Admin | LeadSmart AI",
@@ -20,6 +21,7 @@ export const metadata = {
  * links to it from internal docs / Slack, not a live product surface.
  */
 export default async function AdminNudgeLogPage() {
+  const t = await getServerT();
   await requireRole(["admin"]);
 
   // 14-day window is enough for same-week support questions without

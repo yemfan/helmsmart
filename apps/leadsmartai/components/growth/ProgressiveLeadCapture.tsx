@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Progressive onboarding: email → optional contact details → POST /api/leads (public).
@@ -14,6 +15,7 @@ export default function ProgressiveLeadCapture({
   headline?: string;
   className?: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const [step, setStep] = useState(0);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -68,9 +70,7 @@ export default function ProgressiveLeadCapture({
 
   if (done) {
     return (
-      <div className={`rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 ${className}`}>
-        Thanks — we&apos;ll follow up with next steps.
-      </div>
+      <div className={`rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 ${className}`}>{t("pages.growthCapture.thanks")}</div>
     );
   }
 
@@ -84,7 +84,7 @@ export default function ProgressiveLeadCapture({
         <input
           type="email"
           required
-          placeholder="Email"
+          placeholder={t("pages.growthCapture.email")}
           className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -92,9 +92,7 @@ export default function ProgressiveLeadCapture({
         <button
           type="submit"
           className="w-full rounded-xl bg-blue-600 text-white font-semibold py-2 text-sm"
-        >
-          Continue
-        </button>
+        >{t("pages.growthCapture.continueCta")}</button>
       </form>
     );
   }
@@ -104,24 +102,24 @@ export default function ProgressiveLeadCapture({
       onSubmit={submitLead}
       className={`rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 ${className}`}
     >
-      <div className="font-semibold text-slate-900">Tell us a bit more</div>
+      <div className="font-semibold text-slate-900">{t("pages.growthCapture.tellMore")}</div>
       <input
         type="text"
-        placeholder="City or ZIP (optional)"
+        placeholder={t("pages.growthCapture.cityZip")}
         className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
         value={area}
         onChange={(e) => setArea(e.target.value)}
       />
       <input
         type="tel"
-        placeholder="Phone (optional)"
+        placeholder={t("pages.growthCapture.phone")}
         className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
       />
       <input
         type="text"
-        placeholder="Name (optional)"
+        placeholder={t("pages.growthCapture.name")}
         className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
         value={name}
         onChange={(e) => setName(e.target.value)}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslation } from "react-i18next";
 
 import { runSkillAction } from "./actions";
 import type { ComplianceGate } from "@/lib/realtyboss/skills/run";
@@ -18,6 +19,7 @@ export function SkillRunner({
   inputKeys: string[];
   assigneeLabel: string;
 }) {
+  const { t } = useTranslation("dashboard");
   const [values, setValues] = useState<Record<string, string>>({});
   const [output, setOutput] = useState<string | null>(null);
   const [gate, setGate] = useState<ComplianceGate | null>(null);
@@ -44,10 +46,7 @@ export function SkillRunner({
     <div className="space-y-5">
       {inputKeys.length > 0 ? (
         <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Your name, brokerage, {assigneeLabel.toLowerCase()} voice, market, and compliance are filled in
-            automatically. Just provide the specifics:
-          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{t("pages.dashFragments.yourNameBrokerage")} {assigneeLabel.toLowerCase()} {t("pages.dashFragments.voiceMarketCompliance")}</p>
           {inputKeys.map((k) => (
             <div key={k}>
               <label className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-300">{humanize(k)}</label>
@@ -62,7 +61,7 @@ export function SkillRunner({
           ))}
         </div>
       ) : (
-        <p className="text-sm text-slate-500 dark:text-slate-400">This skill needs no extra input — just run it.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t("pages.skillRunner.noInput")}</p>
       )}
 
       <button
@@ -85,7 +84,7 @@ export function SkillRunner({
           }`}
         >
           <p className={`font-semibold ${gate.status === "pass" ? "text-emerald-700 dark:text-emerald-300" : "text-amber-800 dark:text-amber-300"}`}>
-            {gate.status === "pass" ? "✓ Compliance gate passed (Boss Assistant)" : "⚠ Compliance gate flagged — review before use"}
+            {gate.status === "pass" ? t("pages.skillRun.gatePassed") : t("pages.skillRun.gateFlagged")}
           </p>
           {gate.issues.length > 0 ? (
             <ul className="mt-2 space-y-1.5 text-slate-700 dark:text-slate-300">
@@ -103,7 +102,7 @@ export function SkillRunner({
       {output ? (
         <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2 dark:border-slate-800">
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Output</span>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{t("pages.skillRunner.output")}</span>
             <button
               type="button"
               onClick={() => {
@@ -113,7 +112,7 @@ export function SkillRunner({
               }}
               className="text-xs font-medium text-blue-600 hover:underline dark:text-blue-400"
             >
-              {copied ? "Copied" : "Copy"}
+              {copied ? t("pages.skillRunner.copied") : t("pages.skillRunner.copy")}
             </button>
           </div>
           <div className="whitespace-pre-wrap p-4 text-sm text-slate-800 dark:text-slate-200">{output}</div>

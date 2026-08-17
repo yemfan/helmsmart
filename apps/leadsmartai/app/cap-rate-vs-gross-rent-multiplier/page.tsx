@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import JsonLd from "../../components/JsonLd";
+import { useTranslation } from "react-i18next";
 
 export default function CapRateVsGrossRentMultiplierPage() {
+  const { t } = useTranslation("dashboard");
   const title = "Cap Rate vs Gross Rent Multiplier (GRM): Which Should You Use?";
   const url = "https://closebossai.com/cap-rate-vs-gross-rent-multiplier";
 
@@ -44,54 +46,31 @@ export default function CapRateVsGrossRentMultiplierPage() {
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Home
-      </Link>
+        </svg>{t("pages.articleChrome.backHome")}</Link>
 
       <h1 className="text-3xl font-bold text-blue-600 mb-3">{title}</h1>
-      <p className="text-gray-600 mb-8 max-w-3xl">
-        Cap rate and gross rent multiplier (GRM) are both ways to relate a property&apos;s price to
-        its income. Cap rate looks at net operating income (NOI), while GRM looks only at gross
-        rent. Understanding how they differ—and how to use them together—will help you screen deals
-        faster and avoid overpaying.
-      </p>
+      <p className="text-gray-600 mb-8 max-w-3xl">{t("pages.capRateVsGrm.intro")}</p>
 
       <section className="max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">What is cap rate?</h2>
-        <p>
-          Cap rate compares a property&apos;s net operating income to its value. It tells you the
-          income yield a property generates each year as a percentage of its price, assuming an
-          all-cash purchase.
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.articleChrome.whatIsCapRate")}</h2>
+        <p>{t("pages.capRateVsGrm.capDef")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cap Rate = Net Operating Income (NOI) ÷ Purchase Price or Value
         </p>
-        <p>
-          Because cap rate includes operating expenses, it is more precise than GRM and better for
-          detailed comparison of properties once you have accurate income and expense data.
-        </p>
+        <p>{t("pages.capRateVsGrm.capMore")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">What is gross rent multiplier (GRM)?</h2>
-        <p>
-          Gross rent multiplier is a simpler metric that relates a property&apos;s price to its
-          gross annual rent, without considering expenses:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsGrm.grmTitle")}</h2>
+        <p>{t("pages.capRateVsGrm.grmDef")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           GRM = Purchase Price ÷ Gross Annual Rent
         </p>
-        <p>
-          A lower GRM means you are paying fewer dollars for each dollar of gross rent, which can be
-          attractive—but because GRM ignores expenses, two properties with the same GRM can have
-          very different bottom lines.
-        </p>
+        <p>{t("pages.capRateVsGrm.grmMore")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Example: comparing cap rate and GRM on the same property
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsGrm.exampleTitle")}</h2>
         <p>
           Suppose a duplex costs $360,000 and brings in $3,000 per month in rent ($36,000 per year).
           The gross rent multiplier is:
@@ -106,127 +85,70 @@ export default function CapRateVsGrossRentMultiplierPage() {
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           NOI = $36,000 – $14,000 = $22,000
         </p>
-        <p>
-          The cap rate is then:
-        </p>
+        <p>{t("pages.capRateVsGrm.capRateIs")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cap Rate = $22,000 ÷ $360,000 ≈ 6.1%
         </p>
-        <p>
-          GRM told you that the property costs 10 times its annual rent. Cap rate told you that, net
-          of expenses, it yields just over 6% on an all-cash basis. Both are useful, but cap rate
-          gives a fuller picture once expenses are known.
-        </p>
+        <p>{t("pages.capRateVsGrm.exampleClose")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          When to use cap rate vs when to use GRM
-        </h2>
-        <p>
-          Cap rate and GRM shine at different stages of your analysis:
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">Use GRM when you:</h3>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsGrm.whenTitle")}</h2>
+        <p>{t("pages.capRateVsGrm.whenIntro")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsGrm.useGrmWhen")}</h3>
         <ul className="list-disc list-inside space-y-1">
-          <li>Are scanning a large number of listings quickly.</li>
-          <li>Only have reliable rent information but not full expenses.</li>
-          <li>Want a simple rule-of-thumb comparison within the same market.</li>
+          <li>{t("pages.capRateVsGrm.grm1")}</li>
+          <li>{t("pages.capRateVsGrm.grm2")}</li>
+          <li>{t("pages.capRateVsGrm.grm3")}</li>
         </ul>
-        <h3 className="text-lg font-semibold text-gray-900 mt-4">Use cap rate when you:</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mt-4">{t("pages.capRateVsGrm.useCapWhen")}</h3>
         <ul className="list-disc list-inside space-y-1">
-          <li>Have or can estimate realistic operating expenses.</li>
-          <li>Need a more accurate comparison of net income yields.</li>
-          <li>Are deciding how much to offer or whether to proceed.</li>
+          <li>{t("pages.capRateVsGrm.cap1")}</li>
+          <li>{t("pages.capRateVsGrm.cap2")}</li>
+          <li>{t("pages.capRateVsGrm.cap3")}</li>
         </ul>
-        <p>
-          In practice, many investors start with a GRM screen and then move to cap rate and full
-          cash-flow analysis for shortlisted deals using tools like the{" "}
-          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">
-            Property Investment Analyzer
-          </Link>
+        <p>{t("pages.capRateVsGrm.inPractice")}{" "}
+          <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>
           .
         </p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800">
-        <h2 className="text-xl font-semibold text-gray-900">
-          How cap rate and GRM relate to each other
-        </h2>
-        <p>
-          Although cap rate and GRM use different inputs, they are both reflections of price relative
-          to income. In fact, if you know a property&apos;s operating expense ratio, you can roughly
-          convert between them.
-        </p>
-        <p>
-          For example, if expenses are 40% of gross rent, then NOI is 60% of gross rent. In that
-          case:
-        </p>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsGrm.relateTitle")}</h2>
+        <p>{t("pages.capRateVsGrm.relateA")}</p>
+        <p>{t("pages.capRateVsGrm.relateB")}</p>
         <p className="font-mono text-xs bg-gray-50 border border-gray-200 rounded-md p-3">
           Cap Rate ≈ (NOI ÷ Price) = (0.60 × Gross Rent) ÷ Price = 0.60 ÷ GRM
         </p>
-        <p>
-          So if GRM is 10 and expenses are around 40% of income, you might expect a cap rate near
-          6%. This kind of back-of-the-envelope math can help you sanity-check deals quickly.
-        </p>
+        <p>{t("pages.capRateVsGrm.relateC")}</p>
       </section>
 
       <section className="mt-8 max-w-3xl space-y-4 text-sm text-gray-800 border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Frequently asked questions about cap rate vs GRM
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">{t("pages.capRateVsGrm.faqTitle")}</h2>
         <h3 className="text-lg font-semibold text-gray-900">
           Is there a “good” GRM like there is a “good” cap rate?
         </h3>
-        <p>
-          GRM, like cap rate, is market-specific. A GRM that looks high or low in one city may be
-          perfectly normal in another. Always compare GRM values to similar properties in the same
-          area and combine GRM with expense estimates before making decisions.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Should I ever rely on GRM alone to buy a property?
-        </h3>
-        <p>
-          It&apos;s risky to rely on GRM alone because it ignores expenses, which can vary widely
-          between properties. GRM is best used as an early filter, followed by cap rate and full
-          cash-flow analysis with realistic expense assumptions.
-        </p>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Which metric do appraisers and lenders care about more?
-        </h3>
-        <p>
-          Appraisers and lenders typically focus more on cap rates and NOI, because they reflect the
-          property&apos;s true income after expenses. However, GRM can still appear in some market
-          analyses, especially for smaller residential income properties.
-        </p>
+        <p>{t("pages.capRateVsGrm.a1")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsGrm.q2")}</h3>
+        <p>{t("pages.capRateVsGrm.a2")}</p>
+        <h3 className="text-lg font-semibold text-gray-900">{t("pages.capRateVsGrm.q3")}</h3>
+        <p>{t("pages.capRateVsGrm.a3")}</p>
       </section>
 
       <section className="mt-10 max-w-3xl border-t border-gray-200 pt-4 text-sm text-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Use both metrics to build a clearer picture
-        </h2>
-        <p className="mb-3">
-          Cap rate and gross rent multiplier are not enemies—they are tools designed for different
-          stages of analysis. Use GRM for fast scans when you only know rents, and cap rate once you
-          have a handle on expenses and want a more accurate view of income and value.
-        </p>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.capRateVsGrm.ctaTitle")}</h2>
+        <p className="mb-3">{t("pages.capRateVsGrm.ctaBody")}</p>
         <div className="flex flex-wrap gap-3 mb-4">
           <Link
             href="/cap-rate-calculator"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Open Cap Rate Calculator
-          </Link>
+          >{t("pages.articleChrome.openCapRate")}</Link>
           <Link
             href="/property-investment-analyzer"
             className="inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold bg-white text-blue-600 border border-blue-200 hover:bg-blue-50"
-          >
-            Open Investment Analyzer
-          </Link>
+          >{t("pages.articleChrome.openAnalyzer")}</Link>
         </div>
-        <p className="font-semibold">
-          Try our free real estate investment calculator at closebossai.com to quickly analyze
-          your property deals.
-        </p>
+        <p className="font-semibold">{t("pages.articleChrome.footerCta")}</p>
       </section>
     </div>
   );

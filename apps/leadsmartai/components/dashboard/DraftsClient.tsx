@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import Link from "next/link";
 import type { DraftStatus, MessageDraftView } from "@/lib/drafts/types";
 
@@ -14,6 +16,8 @@ const STATUS_LABELS: Record<DraftStatus | "all", string> = {
 };
 
 export default function DraftsClient() {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [filter, setFilter] = useState<DraftStatus | "all">("pending");
   const [drafts, setDrafts] = useState<MessageDraftView[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -118,7 +122,7 @@ export default function DraftsClient() {
             currentFilter={filter}
           />
         ) : (
-          <div className="p-8 text-sm text-gray-500">Select a draft.</div>
+          <div className="p-8 text-sm text-gray-500">{t("pages.drafts.selectDraft")}</div>
         )}
       </main>
     </div>
@@ -126,18 +130,14 @@ export default function DraftsClient() {
 }
 
 function EmptyState({ filter }: { filter: DraftStatus | "all" }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   if (filter === "pending") {
     return (
       <div className="p-8 text-center text-sm text-gray-500">
-        <div className="font-medium text-gray-700">No drafts waiting.</div>
-        <p className="mt-1">
-          When a trigger fires and your review policy is set to Review, the draft lands here. To
-          see the flow without waiting,{" "}
-          <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">
-            open a contact
-          </Link>{" "}
-          and click &ldquo;Generate draft&rdquo;.
-        </p>
+        <div className="font-medium text-gray-700">{t("pages.drafts.noDrafts")}</div>
+        <p className="mt-1">{t("pages.dashFragments.draftLandsHere")}{" "}
+          <Link href="/dashboard/sphere" className="text-brand-accent-text hover:underline">{t("pages.drafts.openContact")}</Link>{" "}{t("pages.dashFragments.clickGenerate")}</p>
       </div>
     );
   }
@@ -238,6 +238,8 @@ function DraftDetail({
   onRemoveFromList: (id: string) => void;
   currentFilter: DraftStatus | "all";
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [subject, setSubject] = useState(draft.subject ?? "");
   const [body, setBody] = useState(draft.body);
   const [rejectReason, setRejectReason] = useState("");
@@ -381,14 +383,14 @@ function DraftDetail({
                 </span>
               )}
               <StatusPill status={draft.status} />
-              <span>Created {new Date(draft.createdAt).toLocaleString()}</span>
+              <span>{t("pages.drafts.created", { date: new Date(draft.createdAt).toLocaleString(locale) })}</span>
               {draft.approvedAt && (
                 <span className="text-blue-700">
-                  · Approved {new Date(draft.approvedAt).toLocaleString()}
+                  {t("pages.drafts.approved", { date: new Date(draft.approvedAt).toLocaleString(locale) })}
                 </span>
               )}
               {draft.rejectedAt && (
-                <span>· Rejected {new Date(draft.rejectedAt).toLocaleString()}</span>
+                <span>{t("pages.drafts.rejected", { date: new Date(draft.rejectedAt).toLocaleString(locale) })}</span>
               )}
             </div>
           </div>
@@ -402,7 +404,7 @@ function DraftDetail({
           </div>
           {draft.channel === "email" && (
             <label className="block">
-              <span className="text-[11px] font-medium text-gray-500">Subject</span>
+              <span className="text-[11px] font-medium text-gray-500">{t("pages.drafts.subject")}</span>
               <input
                 type="text"
                 value={subject}
@@ -413,7 +415,7 @@ function DraftDetail({
             </label>
           )}
           <label className="block flex-1">
-            <span className="text-[11px] font-medium text-gray-500">Body</span>
+            <span className="text-[11px] font-medium text-gray-500">{t("pages.drafts.body")}</span>
             <textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
@@ -446,9 +448,7 @@ function DraftDetail({
                 onClick={() => setShowRejectBox((v) => !v)}
                 disabled={saving !== null}
                 className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              >
-                Reject
-              </button>
+              >{t("pages.drafts.reject")}</button>
               {message && <span className="text-sm text-green-700">{message}</span>}
               {error && <span className="text-sm text-red-600">{error}</span>}
             </div>
@@ -456,10 +456,8 @@ function DraftDetail({
             <div className="border-t border-gray-100 pt-3 text-xs text-gray-500 space-y-2">
               {draft.status === "approved" && (
                 <div className="flex flex-wrap items-center gap-2">
-                  <span>
-                    Queued. The sender cron runs every 15 min, respects quiet hours + frequency caps.
-                    {draft.scheduledFor && (
-                      <> Earliest send: {new Date(draft.scheduledFor).toLocaleString()}.</>
+                  <span>{t("pages.dashFragments.queuedCron")}{draft.scheduledFor && (
+                      <>{t("pages.drafts.earliestSend", { date: new Date(draft.scheduledFor).toLocaleString(locale) })}</>
                     )}
                   </span>
                   <button
@@ -476,25 +474,24 @@ function DraftDetail({
               )}
               {draft.status === "rejected" &&
                 (draft.rejectedReason
-                  ? `Rejected reason: ${draft.rejectedReason}`
-                  : "Rejected without a reason.")}
-              {draft.status === "sent" && `Sent ${draft.sentAt ? new Date(draft.sentAt).toLocaleString() : ""}`}
+                  ? t("pages.drafts.rejectedReason", { reason: draft.rejectedReason })
+                  : t("pages.drafts.rejectedNoReason"))}
+              {draft.status === "sent" &&
+                t("pages.drafts.sent", { date: draft.sentAt ? new Date(draft.sentAt).toLocaleString(locale) : "" })}
               {draft.status === "failed" &&
-                (draft.failureReason ?? "Send failed — check provider logs.")}
+                (draft.failureReason ?? t("pages.drafts.sendFailed"))}
             </div>
           )}
 
           {showRejectBox && isPending && (
             <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
               <label className="block">
-                <span className="text-[11px] font-medium text-gray-500">
-                  Reason (optional, internal only)
-                </span>
+                <span className="text-[11px] font-medium text-gray-500">{t("pages.drafts.reason")}</span>
                 <input
                   type="text"
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
-                  placeholder="e.g. Already texted them this morning"
+                  placeholder={t("pages.drafts.reasonPlaceholder")}
                   className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
                 />
               </label>
@@ -511,9 +508,7 @@ function DraftDetail({
                   type="button"
                   onClick={() => setShowRejectBox(false)}
                   className="rounded-lg px-3 py-2 text-xs text-gray-600 hover:bg-gray-100"
-                >
-                  Cancel
-                </button>
+                >{t("pages.drafts.cancel")}</button>
               </div>
             </div>
           )}
@@ -532,9 +527,7 @@ function DraftDetail({
 
           {Object.keys(draft.triggerContext).length > 0 && (
             <>
-              <div className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-                Trigger context
-              </div>
+              <div className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.drafts.triggerContext")}</div>
               <pre className="mt-2 overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-3 text-[11px] text-gray-700">
                 {JSON.stringify(draft.triggerContext, null, 2)}
               </pre>

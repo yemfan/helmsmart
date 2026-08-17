@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Home Affordability Calculator",
@@ -6,8 +7,9 @@ export const metadata: Metadata = {
   keywords: ["affordability calculator", "home price", "mortgage", "DTI ratio", "real estate"],
 };
 
-export default function AffordabilityCalculatorLayout({
+export default async function AffordabilityCalculatorLayout({
   children,
 }: { children: React.ReactNode }) {
+  const t = await getServerT();
   return children;
 }

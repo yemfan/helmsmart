@@ -370,7 +370,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
         <div>
           <h1 className="text-xl font-semibold text-gray-900">{tr("calendar.title")}</h1>
           <p className="text-sm text-gray-500">
-            {monthStats.events} appointments &middot; {monthStats.tasks} tasks &middot; {monthStats.followups} follow-ups &middot; {monthStats.drafts} drafts
+            {monthStats.events} {tr("pages.dashFragments.appointments")} {monthStats.tasks} {tr("pages.dashFragments.tasksSep")} {monthStats.followups} {tr("pages.dashFragments.followUps")} {monthStats.drafts} {tr("pages.dashFragments.drafts")}
           </p>
         </div>
         <button onClick={() => setShowAdd((v) => !v)} className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800">
@@ -485,9 +485,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
             <a
               href="/api/auth/google-calendar"
               className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700"
-            >
-              Connect
-            </a>
+            >{tr("pages.calendarPage.connect")}</a>
           )}
         </div>
       )}
@@ -526,9 +524,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {/* Filters + view toggle */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap gap-2">
-        <button onClick={() => { setShowEvents(true); setShowTasks(true); setShowFollowups(true); setShowDrafts(true); }} className={`rounded-lg px-3 py-1 text-xs font-medium ${showEvents && showTasks && showFollowups && showDrafts ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-500"}`}>
-          All
-        </button>
+        <button onClick={() => { setShowEvents(true); setShowTasks(true); setShowFollowups(true); setShowDrafts(true); }} className={`rounded-lg px-3 py-1 text-xs font-medium ${showEvents && showTasks && showFollowups && showDrafts ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-500"}`}>{tr("pages.calendarPage.all")}</button>
         <button onClick={() => { setShowEvents(true); setShowTasks(false); setShowFollowups(false); setShowDrafts(false); }} className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${showEvents && !showTasks && !showFollowups && !showDrafts ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-500"}`}>
           <span className="h-2 w-2 rounded-full bg-blue-500" /> {tr("calendar.filters.appointments")}
         </button>
@@ -689,8 +685,8 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                         {entry.leadName && <span>{entry.leadName} &middot; </span>}
                         {formatTime(entry.time, timeLocale)}
                         {entry.priority && entry.priority !== "normal" && <span className="ml-1 capitalize text-amber-600">{entry.priority}</span>}
-                        {entry.overdue && <span className="ml-1 text-red-600">Overdue</span>}
-                        {entry.status === "done" && <span className="ml-1 text-green-600">Done</span>}
+                        {entry.overdue && <span className="ml-1 text-red-600">{tr("tasks.chart.overdue")}</span>}
+                        {entry.status === "done" && <span className="ml-1 text-green-600">{tr("tasks.status.done")}</span>}
                       </p>
                     </div>
                   </div>
@@ -779,9 +775,7 @@ function ListView({
       </div>
 
       {sortedKeys.length === 0 ? (
-        <div className="px-6 py-12 text-center text-sm text-gray-400">
-          Nothing scheduled this month.
-        </div>
+        <div className="px-6 py-12 text-center text-sm text-gray-400">{tr("pages.calendarPage.nothingScheduled")}</div>
       ) : (
         <div className="divide-y divide-gray-100">
           {sortedKeys.map((key) => {
@@ -822,8 +816,8 @@ function ListView({
                             {entry.priority && entry.priority !== "normal" && (
                               <span className="ml-1 capitalize text-amber-600">{entry.priority}</span>
                             )}
-                            {entry.overdue && <span className="ml-1 text-red-600">Overdue</span>}
-                            {entry.status === "done" && <span className="ml-1 text-green-600">Done</span>}
+                            {entry.overdue && <span className="ml-1 text-red-600">{tr("tasks.chart.overdue")}</span>}
+                            {entry.status === "done" && <span className="ml-1 text-green-600">{tr("tasks.status.done")}</span>}
                           </p>
                         </div>
                       </div>

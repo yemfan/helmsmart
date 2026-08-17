@@ -1,6 +1,7 @@
 "use client";
 
 import type { AiPersonality } from "@/lib/agent-ai/types";
+import { useTranslation } from "react-i18next";
 
 const EXAMPLES: Record<
   AiPersonality,
@@ -35,36 +36,35 @@ const EXAMPLES: Record<
 };
 
 export function PersonalityPreview({ personality }: { personality: AiPersonality }) {
+  const { t } = useTranslation("dashboard");
   const ex = EXAMPLES[personality] ?? EXAMPLES.friendly;
   return (
     <div className="mt-4 grid gap-3 text-xs text-gray-700">
       <div>
-        <div className="font-semibold text-gray-600 mb-1">SMS (sample)</div>
+        <div className="font-semibold text-gray-600 mb-1">{t("pages.personalityPreview.sms")}</div>
         <pre className="whitespace-pre-wrap rounded-lg border border-gray-100 bg-gray-50 p-3 font-sans text-[11px] leading-relaxed">
           {ex.sms}
         </pre>
       </div>
       <div>
-        <div className="font-semibold text-gray-600 mb-1">Email (sample)</div>
+        <div className="font-semibold text-gray-600 mb-1">{t("pages.personalityPreview.email")}</div>
         <pre className="whitespace-pre-wrap rounded-lg border border-gray-100 bg-gray-50 p-3 font-sans text-[11px] leading-relaxed">
           {ex.email}
         </pre>
       </div>
       <div>
-        <div className="font-semibold text-gray-600 mb-1">Call transcript summary (sample)</div>
+        <div className="font-semibold text-gray-600 mb-1">{t("pages.personalityPreview.callSummary")}</div>
         <pre className="whitespace-pre-wrap rounded-lg border border-gray-100 bg-gray-50 p-3 font-sans text-[11px] leading-relaxed">
           {ex.call}
         </pre>
       </div>
       <div>
-        <div className="font-semibold text-gray-600 mb-1">Greeting automation (sample)</div>
+        <div className="font-semibold text-gray-600 mb-1">{t("pages.personalityPreview.greeting")}</div>
         <pre className="whitespace-pre-wrap rounded-lg border border-gray-100 bg-gray-50 p-3 font-sans text-[11px] leading-relaxed">
           {ex.greeting}
         </pre>
       </div>
-      <p className="text-[10px] text-gray-500">
-        Samples illustrate tone only. Compliance, opt-outs, and factual rules are unchanged in production.
-      </p>
+      <p className="text-[10px] text-gray-500">{t("pages.personalityPreview.toneOnly")}</p>
     </div>
   );
 }

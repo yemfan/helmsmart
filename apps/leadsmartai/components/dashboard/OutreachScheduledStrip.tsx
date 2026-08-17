@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { Clock, Mail, MessageSquare, Phone, X } from "lucide-react";
 
 type ScheduledAction = {
@@ -16,18 +18,18 @@ type ScheduledAction = {
 };
 
 const CHANNEL_ICON = { call: Phone, sms: MessageSquare, email: Mail } as const;
-const CHANNEL_NOUN = { call: "call", sms: "text", email: "email" } as const;
-const PURPOSE_LABEL = { follow_up: "Follow-up", survey: "Survey", promo: "Promo" } as const;
+const CHANNEL_NOUN = { call: "pages.outreachStrip.channelCall", sms: "pages.outreachStrip.channelSms", email: "pages.outreachStrip.channelEmail" } as const;
+const PURPOSE_LABEL = { follow_up: "pages.outreachStrip.purposeFollowUp", survey: "pages.outreachStrip.purposeSurvey", promo: "pages.outreachStrip.purposePromo" } as const;
 const STATUS_BADGE: Record<ScheduledAction["status"], { label: string; cls: string }> = {
-  scheduled: { label: "Scheduled", cls: "bg-blue-50 text-blue-700" },
-  sending: { label: "Sending", cls: "bg-sky-50 text-sky-700" },
-  sent: { label: "Sent", cls: "bg-emerald-50 text-emerald-700" },
-  failed: { label: "Failed", cls: "bg-red-50 text-red-700" },
-  cancelled: { label: "Cancelled", cls: "bg-slate-100 text-slate-500" },
+  scheduled: { label: "pages.outreachStrip.statusScheduled", cls: "bg-blue-50 text-blue-700" },
+  sending: { label: "pages.outreachStrip.statusSending", cls: "bg-sky-50 text-sky-700" },
+  sent: { label: "pages.outreachStrip.statusSent", cls: "bg-emerald-50 text-emerald-700" },
+  failed: { label: "pages.outreachStrip.statusFailed", cls: "bg-red-50 text-red-700" },
+  cancelled: { label: "pages.outreachStrip.statusCancelled", cls: "bg-slate-100 text-slate-500" },
 };
 
-function fmtWhen(iso: string) {
-  return new Date(iso).toLocaleString("en-US", {
+function fmtWhen(iso: string, locale: string) {
+  return new Date(iso).toLocaleString(locale, {
     month: "short",
     day: "numeric",
     hour: "numeric",
@@ -41,6 +43,8 @@ function fmtWhen(iso: string) {
  * `refreshSignal` changes (e.g. after the composer schedules something).
  */
 export default function OutreachScheduledStrip({ refreshSignal }: { refreshSignal?: number }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [actions, setActions] = useState<ScheduledAction[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [cancelling, setCancelling] = useState<string | null>(null);
@@ -86,7 +90,7 @@ export default function OutreachScheduledStrip({ refreshSignal }: { refreshSigna
     <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
       <div className="mb-3 flex items-center gap-2">
         <Clock className="h-4 w-4 text-gray-400" strokeWidth={2} />
-        <h2 className="text-sm font-semibold text-gray-900">Scheduled &amp; recent actions</h2>
+        <h2 className="text-sm font-semibold text-gray-900">{t("pages.outreachStrip.title")}</h2>
       </div>
 
       <div className="space-y-1.5">
@@ -110,6 +114,8 @@ function Row({
   onCancel: (id: string) => void;
   cancelling: boolean;
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const Icon = CHANNEL_ICON[a.channel];
   const badge = STATUS_BADGE[a.status];
   const noun = CHANNEL_NOUN[a.channel];
@@ -128,20 +134,20 @@ function Row({
           {a.count} {noun}
           {a.count === 1 ? "" : "s"}
         </span>{" "}
-        · {PURPOSE_LABEL[a.purpose]}
+        · {t(PURPOSE_LABEL[a.purpose])}
         <span className="text-gray-400">{resultNote}</span>
       </span>
-      <span className="shrink-0 text-[11px] text-gray-400">{fmtWhen(when)}</span>
+      <span className="shrink-0 text-[11px] text-gray-400">{fmtWhen(when, locale)}</span>
       <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${badge.cls}`}>
-        {badge.label}
+        {t(badge.label)}
       </span>
       {a.status === "scheduled" && (
         <button
           type="button"
           onClick={() => onCancel(a.id)}
           disabled={cancelling}
-          aria-label="Cancel scheduled action"
-          title="Cancel"
+          aria-label={t("pages.outreachStrip.cancelScheduled")}
+          title={t("pages.outreachStrip.cancel")}
           className="shrink-0 rounded-md p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 disabled:opacity-50"
         >
           <X className="h-3.5 w-3.5" strokeWidth={2} />

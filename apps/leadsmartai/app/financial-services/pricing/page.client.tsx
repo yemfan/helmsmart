@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Check, Sparkles } from "lucide-react";
 import { getFinancialServicesTheme } from "@/lib/financial-services/theme";
+import { useTranslation } from "react-i18next";
 
 type Plan = {
   key: "pilot" | "producer" | "agency" | "enterprise";
@@ -88,6 +89,7 @@ const PLANS: Plan[] = [
 ];
 
 export default function FinancialServicesPricingClient() {
+  const { t } = useTranslation("dashboard");
   const theme = getFinancialServicesTheme();
 
   return (
@@ -108,15 +110,11 @@ export default function FinancialServicesPricingClient() {
             )}
           </Link>
           <nav className="hidden gap-6 text-sm text-slate-600 md:flex">
-            <Link href="/financial-services" className="hover:text-slate-900">
-              Overview
-            </Link>
+            <Link href="/financial-services" className="hover:text-slate-900">{t("pages.fsMarketing.overview")}</Link>
             <Link
               href="/financial-services/dashboard"
               className="hover:text-slate-900"
-            >
-              Demo dashboard
-            </Link>
+            >{t("pages.fsMarketing.demoDashboard")}</Link>
           </nav>
         </div>
       </header>
@@ -124,16 +122,9 @@ export default function FinancialServicesPricingClient() {
       <section className="px-4 py-16 md:px-6 md:py-20">
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-800">
-            <Sparkles className="h-3.5 w-3.5" />
-            Per-producer pricing
-          </span>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-900 md:text-5xl">
-            Built for agencies. Priced for growth.
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600">
-            Start with a pilot or buy outright. No long contracts. No setup fees.
-            Volume discounts kick in automatically at 10, 50, and 200 producers.
-          </p>
+            <Sparkles className="h-3.5 w-3.5" />{t("pages.fsMarketing.perProducer")}</span>
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-900 md:text-5xl">{t("pages.fsMarketing.builtForAgencies")}</h1>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600">{t("pages.fsMarketing.pricingSub")}</p>
         </div>
 
         <div className="mx-auto mt-12 grid max-w-6xl gap-5 lg:grid-cols-4">
@@ -153,9 +144,7 @@ export default function FinancialServicesPricingClient() {
                     {plan.name}
                   </h2>
                   {plan.featured && (
-                    <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white">
-                      Most popular
-                    </span>
+                    <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white">{t("pages.fsMarketing.mostPopular")}</span>
                   )}
                 </div>
                 <div className="mt-3 flex items-baseline gap-1.5">
@@ -197,7 +186,7 @@ export default function FinancialServicesPricingClient() {
         </div>
 
         <div className="mx-auto mt-12 max-w-4xl rounded-2xl border border-slate-200 bg-white p-6 text-sm leading-6 text-slate-600">
-          <p className="font-semibold text-slate-900">What&apos;s included at every tier</p>
+          <p className="font-semibold text-slate-900">{t("pages.fsMarketing.includedEveryTier")}</p>
           <p className="mt-2">
             TCPA opt-in audit logging · State-disclosure injection ·
             Supervised-review queue for AI-drafted comms · Carrier-portal-agnostic
@@ -206,10 +195,7 @@ export default function FinancialServicesPricingClient() {
           </p>
         </div>
 
-        <p className="mx-auto mt-8 max-w-2xl text-center text-xs text-slate-500">
-          Pricing is illustrative. Agency and Enterprise commercial terms
-          finalized via contract.
-        </p>
+        <p className="mx-auto mt-8 max-w-2xl text-center text-xs text-slate-500">{t("pages.fsMarketing.pricingIllustrative")}</p>
       </section>
     </main>
   );

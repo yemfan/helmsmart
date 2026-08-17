@@ -1,9 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import type { JobHealth, ObservabilityReport } from "@/lib/observability/collect";
+import { intlLocale } from "@/lib/i18n/locale";
 
 export function ObservabilityClient({ report }: { report: ObservabilityReport }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const { crons, onDemand } = useMemo(() => {
     const crons: JobHealth[] = [];
     const onDemand: JobHealth[] = [];
@@ -20,19 +24,16 @@ export function ObservabilityClient({ report }: { report: ObservabilityReport })
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Observability</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Per-cron + AI-feature health over the last {report.windowDays} days. Support tool
-          — not linked in the sidebar.
-        </p>
+        <h1 className="text-2xl font-semibold text-slate-900">{t("pages.adminPages.observability")}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.dashFragments.perCronHealth")} {report.windowDays} {t("pages.dashFragments.daysSupportTool")}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Total sent" value={totalSent} tone="blue" />
-        <Stat label="Total errors" value={totalErrors} tone={totalErrors > 0 ? "red" : "neutral"} />
-        <Stat label="Crons tracked" value={crons.length} />
+        <Stat label={t("pages.adminPages.totalSent")} value={totalSent} tone="blue" />
+        <Stat label={t("pages.adminPages.totalErrors")} value={totalErrors} tone={totalErrors > 0 ? "red" : "neutral"} />
+        <Stat label={t("pages.adminPages.cronsTracked")} value={crons.length} />
         <Stat
-          label="Stuck crons"
+          label={t("pages.adminPages.stuckCrons")}
           value={stuckCrons.length}
           tone={stuckCrons.length > 0 ? "red" : "green"}
           hint="no run in expected window"
@@ -46,7 +47,7 @@ export function ObservabilityClient({ report }: { report: ObservabilityReport })
             {stuckCrons.map((j) => (
               <li key={j.id}>
                 <strong>{j.label}</strong> — last run{" "}
-                {j.lastRunIso ? new Date(j.lastRunIso).toLocaleString() : "never"}
+                {j.lastRunIso ? new Date(j.lastRunIso).toLocaleString(locale) : t("pages.adminCommon.never")}
               </li>
             ))}
           </ul>
@@ -59,7 +60,7 @@ export function ObservabilityClient({ report }: { report: ObservabilityReport })
       ) : null}
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-slate-900">Scheduled crons</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.adminPages.scheduledCrons")}</h2>
         <div className="grid gap-3 md:grid-cols-2">
           {crons.map((j) => (
             <JobCard key={j.id} job={j} />
@@ -68,9 +69,7 @@ export function ObservabilityClient({ report }: { report: ObservabilityReport })
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-slate-900">
-          On-demand AI features
-        </h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("pages.adminPages.onDemandAi")}</h2>
         <div className="grid gap-3 md:grid-cols-2">
           {onDemand.map((j) => (
             <JobCard key={j.id} job={j} />
@@ -82,9 +81,11 @@ export function ObservabilityClient({ report }: { report: ObservabilityReport })
 }
 
 function JobCard({ job }: { job: JobHealth }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const total = job.sent + job.skipped + job.errored;
   const lastRunLabel = job.lastRunIso
-    ? new Date(job.lastRunIso).toLocaleString()
+    ? new Date(job.lastRunIso).toLocaleString(locale)
     : "Never";
   const stuck = isStuck(job);
 
@@ -108,9 +109,7 @@ function JobCard({ job }: { job: JobHealth }) {
         <div className="shrink-0 text-right">
           <div
             className={`text-[11px] ${stuck ? "text-red-700" : "text-slate-500"}`}
-          >
-            Last run
-          </div>
+          >{t("pages.adminPages.lastRun")}</div>
           <div
             className={`text-[11px] font-medium ${stuck ? "text-red-700" : "text-slate-900"}`}
           >
@@ -120,14 +119,14 @@ function JobCard({ job }: { job: JobHealth }) {
       </div>
 
       <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[11px]">
-        <Pill label="Sent" value={job.sent} tone="green" />
-        <Pill label="Skipped" value={job.skipped} tone="slate" />
-        <Pill label="Errored" value={job.errored} tone={job.errored > 0 ? "red" : "slate"} />
+        <Pill label={t("pages.adminCommon.sent")} value={job.sent} tone="green" />
+        <Pill label={t("pages.adminCommon.skipped")} value={job.skipped} tone="slate" />
+        <Pill label={t("pages.adminCommon.errored")} value={job.errored} tone={job.errored > 0 ? "red" : "slate"} />
       </div>
 
       {job.topSkipReasons.length > 0 ? (
         <div className="mt-3 text-[11px]">
-          <div className="font-medium text-slate-600">Top skip reasons</div>
+          <div className="font-medium text-slate-600">{t("pages.adminPages.topSkipReasons")}</div>
           <ul className="mt-1 space-y-0.5 text-slate-600">
             {job.topSkipReasons.map((r) => (
               <li key={r.reason} className="flex justify-between">
@@ -143,7 +142,7 @@ function JobCard({ job }: { job: JobHealth }) {
 
       {job.sampleErrors.length > 0 ? (
         <div className="mt-3 rounded-md bg-red-50 p-2 text-[11px] text-red-800">
-          <div className="font-medium">Recent errors</div>
+          <div className="font-medium">{t("pages.adminPages.recentErrors")}</div>
           <ul className="mt-1 space-y-0.5">
             {job.sampleErrors.map((e, i) => (
               <li key={i} className="truncate" title={e}>
@@ -155,10 +154,7 @@ function JobCard({ job }: { job: JobHealth }) {
       ) : null}
 
       {total === 0 && !stuck ? (
-        <div className="mt-3 text-[11px] text-slate-400">
-          No activity in the window — could mean no eligible work (calm week) or migration
-          not applied.
-        </div>
+        <div className="mt-3 text-[11px] text-slate-400">{t("pages.adminPages.noActivityWindow")}</div>
       ) : null}
     </div>
   );

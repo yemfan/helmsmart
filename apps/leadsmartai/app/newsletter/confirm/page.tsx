@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
+import { getServerT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -71,6 +72,7 @@ async function agentNameFor(
 }
 
 export default async function NewsletterConfirmPage({ searchParams }: Props) {
+  const t = await getServerT();
   const sp = await searchParams;
   const raw = Array.isArray(sp.token) ? sp.token[0] : sp.token;
   const token = (raw ?? "").trim();
@@ -85,7 +87,7 @@ export default async function NewsletterConfirmPage({ searchParams }: Props) {
         </p>
         {result.status === "confirmed" ? (
           <>
-            <h1 className="mt-4 text-3xl font-bold text-slate-900">You're confirmed</h1>
+            <h1 className="mt-4 text-3xl font-bold text-slate-900">{t("pages.dashFragments.confirmed", { ns: "dashboard" })}</h1>
             <p className="mt-3 text-lg leading-relaxed text-slate-600">
               {result.agentName
                 ? `Thanks for confirming — you'll hear from ${result.agentName} each week with a plain-English housing briefing for your region.`
@@ -94,14 +96,8 @@ export default async function NewsletterConfirmPage({ searchParams }: Props) {
           </>
         ) : (
           <>
-            <h1 className="mt-4 text-3xl font-bold text-slate-900">
-              This link has expired
-            </h1>
-            <p className="mt-3 text-lg leading-relaxed text-slate-600">
-              We couldn't confirm this subscription — the link may have expired or
-              already been used. You can subscribe again to get a fresh
-              confirmation email.
-            </p>
+            <h1 className="mt-4 text-3xl font-bold text-slate-900">{t("pages.dashFragments.linkExpired", { ns: "dashboard" })}</h1>
+            <p className="mt-3 text-lg leading-relaxed text-slate-600">{t("pages.dashFragments.couldntConfirm", { ns: "dashboard" })}</p>
           </>
         )}
         <Link

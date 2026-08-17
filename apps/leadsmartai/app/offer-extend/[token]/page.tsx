@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { intlLocale } from "@/lib/i18n/locale";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import {
   isOfferExtendEnabled,
   verifyOfferExtendToken,
 } from "@/lib/offer-expirations/extendToken";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Extend offer",
@@ -35,9 +37,11 @@ type ExtendOutcome =
   | { kind: "error"; title: string; body: string };
 
 export default async function OfferExtendPage({ params }: PageProps) {
+  const t = await getServerT();
+  const locale = intlLocale(await getServerLocale());
   const { token } = await params;
   const outcome = await processExtend(token);
-  return <ConfirmationPage outcome={outcome} />;
+  return <ConfirmationPage outcome={outcome} locale={locale} />;
 }
 
 async function processExtend(token: string): Promise<ExtendOutcome> {
@@ -166,9 +170,10 @@ async function resolveAddress(
   }
 }
 
-function ConfirmationPage({ outcome }: { outcome: ExtendOutcome }) {
+async function ConfirmationPage({ outcome, locale }: { outcome: ExtendOutcome; locale: string }) {
+  const t = await getServerT();
   if (outcome.kind === "ok") {
-    const whenLabel = new Date(outcome.newExpiresAtIso).toLocaleString(undefined, {
+    const whenLabel = new Date(outcome.newExpiresAtIso).toLocaleString(locale, {
       weekday: "short",
       month: "short",
       day: "numeric",
@@ -179,10 +184,9 @@ function ConfirmationPage({ outcome }: { outcome: ExtendOutcome }) {
       <div className="mx-auto max-w-md space-y-5 px-4 py-10">
         <div className="rounded-2xl border border-green-200 bg-green-50 p-5 text-center shadow-sm">
           <div className="text-4xl">✅</div>
-          <h1 className="mt-3 text-xl font-semibold text-slate-900">Offer extended</h1>
+          <h1 className="mt-3 text-xl font-semibold text-slate-900">{t("pages.dashFragments.offerExtended", { ns: "dashboard" })}</h1>
           <p className="mt-2 text-sm text-slate-700">{outcome.address}</p>
-          <p className="mt-1 text-sm text-slate-700">
-            New expiration: <strong>{whenLabel}</strong>
+          <p className="mt-1 text-sm text-slate-700">{t("pages.dashFragments.newExpiration", { ns: "dashboard" })} <strong>{whenLabel}</strong>
           </p>
         </div>
         <a

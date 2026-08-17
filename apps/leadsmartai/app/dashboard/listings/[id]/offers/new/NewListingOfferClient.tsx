@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ListingDetail } from "@/lib/listings/types";
 import type { FinancingType } from "@/lib/offers/types";
 
@@ -39,6 +40,7 @@ type ParsedOffer = {
 };
 
 export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -205,14 +207,8 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
           </Link>
           {" / Record offer"}
         </div>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
-          Record offer
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Capture the offer terms so you and the seller can compare side-by-side.
-          Required: offer price. Everything else helps with the decision but can
-          be left blank.
-        </p>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">{t("pages.newListingOffer.recordOffer")}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t("pages.newListingOffer.recordOfferSub")}</p>
       </div>
 
       {/* Upload section — drop a signed RPA PDF and Claude extracts
@@ -281,46 +277,44 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
       <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         {/* ── Buyer ───────────────────────────────────────────── */}
         <fieldset className="space-y-3">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Buyer
-          </legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.newListingOffer.buyer")}</legend>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Buyer name">
+            <Field label={t("pages.newListingOffer.buyerName")}>
               <input
                 value={buyerName}
                 onChange={(e) => setBuyerName(e.target.value)}
-                placeholder="John & Jane Smith"
+                placeholder={t("pages.newListingOffer.buyerNamePlaceholder")}
                 className={INPUT_CLASS}
               />
             </Field>
-            <Field label="Buyer brokerage">
+            <Field label={t("pages.newListingOffer.buyerBrokerage")}>
               <input
                 value={buyerBrokerage}
                 onChange={(e) => setBuyerBrokerage(e.target.value)}
-                placeholder="Northland Realty"
+                placeholder={t("pages.newListingOffer.brokeragePlaceholder")}
                 className={INPUT_CLASS}
               />
             </Field>
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <Field label="Buyer agent">
+            <Field label={t("pages.newListingOffer.buyerAgent")}>
               <input
                 value={buyerAgentName}
                 onChange={(e) => setBuyerAgentName(e.target.value)}
-                placeholder="Agent name"
+                placeholder={t("pages.newListingOffer.agentName")}
                 className={INPUT_CLASS}
               />
             </Field>
-            <Field label="Agent email">
+            <Field label={t("pages.newListingOffer.agentEmail")}>
               <input
                 type="email"
                 value={buyerAgentEmail}
                 onChange={(e) => setBuyerAgentEmail(e.target.value)}
-                placeholder="agent@example.com"
+                placeholder={t("pages.newListingOffer.agentEmailPlaceholder")}
                 className={INPUT_CLASS}
               />
             </Field>
-            <Field label="Agent phone">
+            <Field label={t("pages.newListingOffer.agentPhone")}>
               <input
                 type="tel"
                 value={buyerAgentPhone}
@@ -334,11 +328,9 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
 
         {/* ── Price + financing ───────────────────────────────── */}
         <fieldset className="space-y-3">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Price + financing
-          </legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.newListingOffer.priceFinancing")}</legend>
           <div className="grid grid-cols-3 gap-3">
-            <Field label="Offer price *">
+            <Field label={t("pages.newListingOffer.offerPrice")}>
               <input
                 type="number"
                 value={offerPrice}
@@ -346,7 +338,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
                 className={INPUT_CLASS}
               />
             </Field>
-            <Field label="Earnest money">
+            <Field label={t("pages.newListingOffer.earnestMoney")}>
               <input
                 type="number"
                 value={earnestMoney}
@@ -354,7 +346,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
                 className={INPUT_CLASS}
               />
             </Field>
-            <Field label="Down payment">
+            <Field label={t("pages.newListingOffer.downPayment")}>
               <input
                 type="number"
                 value={downPayment}
@@ -364,7 +356,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
             </Field>
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <Field label="Financing">
+            <Field label={t("pages.newListingOffer.financing")}>
               <select
                 value={financingType}
                 onChange={(e) =>
@@ -373,16 +365,16 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
                 className={INPUT_CLASS}
               >
                 <option value="">—</option>
-                <option value="cash">Cash</option>
-                <option value="conventional">Conventional</option>
-                <option value="fha">FHA</option>
+                <option value="cash">{t("pages.newListingOffer.cash")}</option>
+                <option value="conventional">{t("pages.newListingOffer.conventional")}</option>
+                <option value="fha">{t("pages.newListingOffer.fha")}</option>
                 <option value="va">VA</option>
-                <option value="jumbo">Jumbo</option>
-                <option value="other">Other</option>
+                <option value="jumbo">{t("pages.newListingOffer.jumbo")}</option>
+                <option value="other">{t("pages.newListingOffer.other")}</option>
               </select>
             </Field>
             <Field
-              label="Seller concessions"
+              label={t("pages.newListingOffer.concessions")}
               hint="Buyer-requested credit at closing"
             >
               <input
@@ -394,7 +386,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
               />
             </Field>
             <Field
-              label="Buyer commission (%)"
+              label={t("pages.newListingOffer.buyerCommission")}
               hint="Offered to buyer's brokerage"
             >
               <input
@@ -411,11 +403,9 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
 
         {/* ── Timing ──────────────────────────────────────────── */}
         <fieldset className="space-y-3">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Timing
-          </legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.newListingOffer.timing")}</legend>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Proposed closing">
+            <Field label={t("pages.newListingOffer.proposedClosing")}>
               <input
                 type="date"
                 value={closingDateProposed}
@@ -423,7 +413,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
                 className={INPUT_CLASS}
               />
             </Field>
-            <Field label="Offer expires">
+            <Field label={t("pages.newListingOffer.offerExpires")}>
               <input
                 type="datetime-local"
                 value={offerExpiresAt}
@@ -436,9 +426,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
 
         {/* ── Contingencies ───────────────────────────────────── */}
         <fieldset className="space-y-3">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Contingencies
-          </legend>
+          <legend className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t("pages.newListingOffer.contingencies")}</legend>
           <div className="flex flex-wrap gap-4 text-sm">
             <label className="inline-flex items-center gap-2">
               <input
@@ -446,54 +434,46 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
                 checked={inspectionContingency}
                 onChange={(e) => setInspectionContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Inspection
-            </label>
+              />{t("pages.newListingOffer.inspection")}</label>
             <label className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={appraisalContingency}
                 onChange={(e) => setAppraisalContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Appraisal
-            </label>
+              />{t("pages.newListingOffer.appraisal")}</label>
             <label className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={loanContingency}
                 onChange={(e) => setLoanContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Loan
-            </label>
+              />{t("pages.newListingOffer.loan")}</label>
             <label className="inline-flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={saleOfHomeContingency}
                 onChange={(e) => setSaleOfHomeContingency(e.target.checked)}
                 className="h-4 w-4"
-              />
-              Sale of home
-            </label>
+              />{t("pages.newListingOffer.saleOfHome")}</label>
           </div>
-          <Field label="Other contingencies / notes">
+          <Field label={t("pages.newListingOffer.otherContingencies")}>
             <input
               value={contingencyNotes}
               onChange={(e) => setContingencyNotes(e.target.value)}
-              placeholder="e.g. short-sale approval, 1031 exchange…"
+              placeholder={t("pages.newListingOffer.otherPlaceholder")}
               className={INPUT_CLASS}
             />
           </Field>
         </fieldset>
 
         {/* ── Notes ───────────────────────────────────────────── */}
-        <Field label="Notes">
+        <Field label={t("pages.newListingOffer.notes")}>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
-            placeholder="Anything else the seller should know about this offer"
+            placeholder={t("pages.newListingOffer.notesPlaceholder")}
             className={INPUT_CLASS}
           />
         </Field>
@@ -504,16 +484,14 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
           <Link
             href={`/dashboard/listings/${encodeURIComponent(listing.id)}`}
             className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Cancel
-          </Link>
+          >{t("pages.newListingOffer.cancel")}</Link>
           <button
             type="button"
             onClick={() => void submit()}
             disabled={submitting || !offerPrice}
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
           >
-            {submitting ? "Recording…" : "Record offer"}
+            {submitting ? t("pages.newListingOffer.recording") : t("pages.newListingOffer.record")}
           </button>
         </div>
       </div>

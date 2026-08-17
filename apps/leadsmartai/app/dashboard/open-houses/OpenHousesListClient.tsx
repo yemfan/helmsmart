@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { intlLocale } from "@/lib/i18n/locale";
 import type { OpenHouseListItem, OpenHouseStatus } from "@/lib/open-houses/types";
 
 const STATUS_LABEL: Record<OpenHouseStatus, string> = {
@@ -18,8 +20,8 @@ const STATUS_BADGE: Record<OpenHouseStatus, string> = {
   cancelled: "bg-red-100 text-red-700",
 };
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
+function formatDate(iso: string, locale: string): string {
+  return new Date(iso).toLocaleDateString(locale, {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -27,11 +29,11 @@ function formatDate(iso: string): string {
   });
 }
 
-function formatTimeRange(startIso: string, endIso: string): string {
+function formatTimeRange(startIso: string, endIso: string, locale: string): string {
   const start = new Date(startIso);
   const end = new Date(endIso);
   const opts: Intl.DateTimeFormatOptions = { hour: "numeric", minute: "2-digit" };
-  return `${start.toLocaleTimeString(undefined, opts)} – ${end.toLocaleTimeString(undefined, opts)}`;
+  return `${start.toLocaleTimeString(locale, opts)} – ${end.toLocaleTimeString(locale, opts)}`;
 }
 
 /**
@@ -54,6 +56,8 @@ export function OpenHousesListClient({
 }: {
   initialOpenHouses: OpenHouseListItem[];
 }) {
+  const { t, i18n } = useTranslation("dashboard");
+  const locale = intlLocale(i18n.language);
   const [filter, setFilter] = useState<"upcoming" | "past" | "all">("upcoming");
 
   const filtered = useMemo(() => {
@@ -96,25 +100,20 @@ export function OpenHousesListClient({
     <div className="mx-auto max-w-6xl space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Open Houses</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Schedule events, share a QR-code sign-in at the door, and auto-follow-up with
-            visitors. No paper sheets.
-          </p>
+          <h1 className="text-2xl font-semibold text-slate-900">{t("pages.openHouses.heading")}</h1>
+          <p className="mt-1 text-sm text-slate-500">{t("pages.openHouses.intro")}</p>
         </div>
         <Link
           href="/dashboard/open-houses/new"
           className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
-        >
-          + Schedule open house
-        </Link>
+        >{t("pages.openHouses.schedule")}</Link>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Upcoming" value={String(stats.upcoming)} tone="blue" />
-        <Stat label="Total visitors" value={String(stats.totalVisitors)} />
-        <Stat label="Hot leads" value={String(stats.totalHot)} tone="red" />
-        <Stat label="Opted-in for follow-up" value={String(stats.totalConsent)} tone="green" />
+        <Stat label={t("pages.openHouses.upcoming")} value={String(stats.upcoming)} tone="blue" />
+        <Stat label={t("pages.openHouses.totalVisitors")} value={String(stats.totalVisitors)} />
+        <Stat label={t("pages.openHouses.hotLeads")} value={String(stats.totalHot)} tone="red" />
+        <Stat label={t("pages.openHouses.optedIn")} value={String(stats.totalConsent)} tone="green" />
       </div>
 
       <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-xs">
@@ -127,7 +126,7 @@ export function OpenHousesListClient({
               filter === f ? "bg-white text-slate-900 shadow" : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            {f === "upcoming" ? "Upcoming" : f === "past" ? "Past" : "All"}
+            {f === "upcoming" ? "Upcoming" : f === "past" ? t("pages.openHouses.tabPast") : t("pages.openHouses.tabAll")}
           </button>
         ))}
       </div>
@@ -137,12 +136,12 @@ export function OpenHousesListClient({
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-xs text-slate-600">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">When</th>
-                <th className="px-3 py-2 text-left font-medium">Property</th>
-                <th className="px-3 py-2 text-right font-medium">Visitors</th>
-                <th className="px-3 py-2 text-right font-medium">Hot</th>
-                <th className="px-3 py-2 text-right font-medium">Opted-in</th>
-                <th className="px-3 py-2 text-left font-medium">Status</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.openHouses.colWhen")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.openHouses.colProperty")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("pages.openHouses.colVisitors")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("pages.openHouses.colHot")}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("pages.openHouses.colOptedIn")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("pages.openHouses.colStatus")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -150,9 +149,9 @@ export function OpenHousesListClient({
                 <tr key={oh.id} className="hover:bg-slate-50">
                   <td className="whitespace-nowrap px-3 py-2">
                     <Link href={`/dashboard/open-houses/${oh.id}`} className="block">
-                      <div className="font-medium text-slate-900">{formatDate(oh.start_at)}</div>
+                      <div className="font-medium text-slate-900">{formatDate(oh.start_at, locale)}</div>
                       <div className="text-[11px] text-slate-500">
-                        {formatTimeRange(oh.start_at, oh.end_at)}
+                        {formatTimeRange(oh.start_at, oh.end_at, locale)}
                       </div>
                     </Link>
                   </td>
@@ -166,7 +165,7 @@ export function OpenHousesListClient({
                       </Link>
                       {oh.recurrence_group_id ? (
                         <span
-                          title="Part of a recurring series"
+                          title={t("pages.openHouses.recurring")}
                           className="rounded-full bg-purple-100 px-1.5 py-0.5 text-[10px] font-medium text-purple-800"
                         >
                           ↻ Series
@@ -206,9 +205,9 @@ export function OpenHousesListClient({
                   <td colSpan={6} className="px-3 py-10 text-center text-sm text-slate-500">
                     {initialOpenHouses.length === 0 ? (
                       <>
-                        <div className="font-medium">No open houses yet.</div>
+                        <div className="font-medium">{t("pages.openHouses.empty")}</div>
                         <div className="mt-1 text-[12px]">
-                          Click <strong>+ Schedule open house</strong> to create your first event.
+                          {t("pages.openHouses.emptyBefore")} <strong>{t("pages.openHouses.schedule")}</strong>{t("pages.openHouses.emptyAfter")}
                         </div>
                       </>
                     ) : (

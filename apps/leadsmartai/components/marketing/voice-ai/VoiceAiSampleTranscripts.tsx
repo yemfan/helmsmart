@@ -1,3 +1,5 @@
+import { getServerT } from "@/lib/i18n/server";
+
 type Turn = {
   speaker: "ai" | "caller";
   text: string;
@@ -77,16 +79,13 @@ const SCENARIOS: Scenario[] = [
  * dig in when challenged — that's the single biggest reason agents kill
  * pilots. Showing a clean hand-off here is the credibility move.
  */
-export default function VoiceAiSampleTranscripts() {
+export default async function VoiceAiSampleTranscripts() {
+  const t = await getServerT();
   return (
     <section className="space-y-6">
       <header>
-        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
-          What it sounds like
-        </h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Three real scenarios. Calling the live number above runs the same engine.
-        </p>
+        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">{t("pages.voiceTranscripts.title", { ns: "dashboard" })}</h2>
+        <p className="mt-1 text-sm text-slate-600">{t("pages.voiceTranscripts.sub", { ns: "dashboard" })}</p>
       </header>
 
       <div className="grid gap-5 lg:grid-cols-3">
@@ -118,7 +117,7 @@ export default function VoiceAiSampleTranscripts() {
             </ol>
 
             <div className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-[11px] leading-snug text-emerald-900">
-              <span className="font-semibold uppercase tracking-wide">Outcome:</span> {s.outcome}
+              <span className="font-semibold uppercase tracking-wide">{t("pages.voiceTranscripts.outcome", { ns: "dashboard" })}</span> {s.outcome}
             </div>
           </article>
         ))}

@@ -5,6 +5,7 @@ import { BrandCheck } from "@/components/brand/BrandCheck";
 import { CloseBossLogo } from "@/components/brand/CloseBossLogo";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { buildDemoLeads, randomIncomingSnippet } from "./demoLeads";
 import { clearOnboarding, loadOnboarding, saveOnboarding, stepToProgress } from "./storage";
 import type { DemoLead, LeadFocus, OnboardingProfile, OnboardingStep, PriceRangeId } from "./types";
@@ -34,12 +35,13 @@ function trackOnboardingStep(step: OnboardingStep, label: string) {
 }
 
 function ProgressBar({ step }: { step: OnboardingStep }) {
+  const { t } = useTranslation("dashboard");
   const pct = stepToProgress(step);
   return (
     <div className="mb-8">
       <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-500">
         <span>
-          Step {step} of 8
+          {t("pages.onboardingFunnel.stepOfEight", { step })}
         </span>
         <span>{pct}%</span>
       </div>
@@ -49,7 +51,7 @@ function ProgressBar({ step }: { step: OnboardingStep }) {
           style={{ width: `${pct}%`, minWidth: step >= 1 ? "4%" : "0" }}
         />
       </div>
-      <p className="mt-1.5 text-[11px] text-slate-400">Preview experience — no charge until you upgrade.</p>
+      <p className="mt-1.5 text-[11px] text-slate-400">{t("pages.onboardingFunnel.previewBanner")}</p>
     </div>
   );
 }
@@ -61,6 +63,7 @@ function Shell({
   children: React.ReactNode;
   step: OnboardingStep;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(0,114,206,0.25),transparent)]" />
@@ -72,9 +75,7 @@ function Shell({
           <Link
             href="/agent/pricing"
             className="text-xs font-semibold text-sky-300/90 underline-offset-2 hover:text-white hover:underline"
-          >
-            Pricing
-          </Link>
+          >{t("pages.onboardingFunnel.pricing")}</Link>
         </header>
         <ProgressBar step={step} />
         <div className="onboarding-fade-up flex-1">{children}</div>
@@ -105,6 +106,7 @@ export default function OnboardingFunnel({
    */
   fallback?: React.ReactNode;
 } = {}) {
+  const { t } = useTranslation("dashboard");
   const [hydrated, setHydrated] = useState(false);
   const [step, setStep] = useState<OnboardingStep>(1);
   const [profile, setProfile] = useState<Partial<OnboardingProfile>>({});
@@ -287,12 +289,8 @@ export default function OnboardingFunnel({
       <Shell step={1}>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur-md sm:p-8">
           <p className="text-xs font-bold uppercase tracking-wider text-sky-300/90">CloseBoss</p>
-          <h1 className="mt-2 font-heading text-2xl font-bold leading-tight sm:text-3xl">
-            You&apos;re minutes from your first qualified leads
-          </h1>
-          <p className="mt-3 text-sm text-slate-300">
-            No credit card. We&apos;ll personalize your demo pipeline, then show you real-style conversations.
-          </p>
+          <h1 className="mt-2 font-heading text-2xl font-bold leading-tight sm:text-3xl">{t("pages.onboardingFunnel.heroTitle")}</h1>
+          <p className="mt-3 text-sm text-slate-300">{t("pages.onboardingFunnel.heroSub")}</p>
           <form
             className="mt-8 space-y-4"
             onSubmit={(e) => {
@@ -305,7 +303,7 @@ export default function OnboardingFunnel({
             }}
           >
             <div>
-              <label className="block text-xs font-semibold text-slate-300">Full name</label>
+              <label className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.fullName")}</label>
               <input
                 name="fullName"
                 value={profile.fullName ?? ""}
@@ -313,11 +311,11 @@ export default function OnboardingFunnel({
                 required
                 autoComplete="name"
                 className="mt-1.5 w-full rounded-xl border border-white/15 bg-slate-950/50 px-4 py-3 text-white placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
-                placeholder="Jordan Martinez"
+                placeholder={t("pages.onboardingFunnel.namePlaceholder")}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300">Work email</label>
+              <label className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.workEmail")}</label>
               <input
                 name="email"
                 type="email"
@@ -337,10 +335,8 @@ export default function OnboardingFunnel({
             </button>
           </form>
           <p className="mt-6 text-center text-xs text-slate-500">
-            Already have an account?{" "}
-            <Link href="/login?redirect=/dashboard" className="font-semibold text-sky-400 hover:underline">
-              Log in
-            </Link>
+            {t("pages.onboardingFunnel.alreadyHaveAccount")}{" "}
+            <Link href="/login?redirect=/dashboard" className="font-semibold text-sky-400 hover:underline">{t("pages.onboardingFunnel.logIn")}</Link>
           </p>
         </div>
       </Shell>
@@ -352,8 +348,8 @@ export default function OnboardingFunnel({
     return (
       <Shell step={2}>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur-md sm:p-8">
-          <h1 className="font-heading text-2xl font-bold sm:text-3xl">Quick setup</h1>
-          <p className="mt-2 text-sm text-slate-300">We&apos;ll tune the demo to your market and price band.</p>
+          <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.quickSetup")}</h1>
+          <p className="mt-2 text-sm text-slate-300">{t("pages.onboardingFunnel.tuneDemo")}</p>
           <form
             className="mt-8 space-y-6"
             onSubmit={(e) => {
@@ -368,17 +364,17 @@ export default function OnboardingFunnel({
             }}
           >
             <div>
-              <label className="block text-xs font-semibold text-slate-300">Primary city / farm area</label>
+              <label className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.primaryCity")}</label>
               <input
                 name="city"
                 defaultValue={profile.city ?? ""}
                 required
                 className="mt-1.5 w-full rounded-xl border border-white/15 bg-slate-950/50 px-4 py-3 text-white placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
-                placeholder="e.g. Austin, TX"
+                placeholder={t("pages.onboardingFunnel.cityPlaceholder")}
               />
             </div>
             <div>
-              <span className="block text-xs font-semibold text-slate-300">Pipeline focus</span>
+              <span className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.pipelineFocus")}</span>
               <div className="mt-2 grid gap-2">
                 {FOCUS_OPTIONS.map((o) => (
                   <label
@@ -401,7 +397,7 @@ export default function OnboardingFunnel({
               </div>
             </div>
             <div>
-              <span className="block text-xs font-semibold text-slate-300">Typical deal size</span>
+              <span className="block text-xs font-semibold text-slate-300">{t("pages.onboardingFunnel.dealSize")}</span>
               <div className="mt-2 flex flex-wrap gap-2">
                 {PRICE_OPTIONS.map((o) => (
                   <label key={o.id} className="cursor-pointer">
@@ -424,9 +420,7 @@ export default function OnboardingFunnel({
                 type="button"
                 onClick={() => go(1, "back")}
                 className="rounded-xl border border-white/20 px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-white/5"
-              >
-                Back
-              </button>
+              >{t("pages.onboardingFunnel.back")}</button>
               <button
                 type="submit"
                 className="flex-1 rounded-xl bg-[#0072ce] py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#005ca8]"
@@ -450,7 +444,7 @@ export default function OnboardingFunnel({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-40" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
             </span>
-            <span className="text-xs font-bold uppercase tracking-wide">Live system simulation</span>
+            <span className="text-xs font-bold uppercase tracking-wide">{t("pages.onboardingFunnel.simulation")}</span>
           </div>
           <h1 className="font-heading text-xl font-bold text-white sm:text-2xl">
             Turning on your AI lead desk…
@@ -499,12 +493,12 @@ export default function OnboardingFunnel({
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-xl backdrop-blur-md sm:p-6">
             <div className="flex items-center justify-between gap-2">
-              <h1 className="font-heading text-xl font-bold sm:text-2xl">New leads</h1>
+              <h1 className="font-heading text-xl font-bold sm:text-2xl">{t("pages.onboardingFunnel.newLeads")}</h1>
               <span className="rounded-full bg-rose-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-200">
                 {demoLeads.length} waiting
               </span>
             </div>
-            <p className="mt-1 text-sm text-slate-400">Tap one to respond — speed wins listings.</p>
+            <p className="mt-1 text-sm text-slate-400">{t("pages.onboardingFunnel.tapToRespond")}</p>
             <ul className="mt-6 space-y-3">
               {demoLeads.map((lead) => (
                 <li key={lead.id}>
@@ -581,7 +575,7 @@ export default function OnboardingFunnel({
                   </p>
                 </div>
                 <span className="ml-auto rounded-full bg-emerald-500/20 px-2 py-1 text-[10px] font-bold text-emerald-200">
-                  Score {lead.score}
+                  {t("pages.onboardingFunnel.scoreN", { score: lead.score })}
                 </span>
               </div>
             </div>
@@ -628,7 +622,7 @@ export default function OnboardingFunnel({
                 }, 650);
               }}
             >
-              <label className="sr-only">Reply</label>
+              <label className="sr-only">{t("pages.oneWord.reply")}</label>
               <textarea
                 value={replyDraft}
                 onChange={(e) => setReplyDraft(e.target.value)}
@@ -642,9 +636,7 @@ export default function OnboardingFunnel({
               >
                 Send reply →
               </button>
-              <p className="mt-2 text-center text-[11px] text-slate-500">
-                AI can draft follow-ups on Pro — unlock after upgrade.
-              </p>
+              <p className="mt-2 text-center text-[11px] text-slate-500">{t("pages.onboardingFunnel.draftOnPro")}</p>
             </form>
           </div>
         </div>
@@ -657,24 +649,21 @@ export default function OnboardingFunnel({
     return (
       <Shell step={6}>
         <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-b from-rose-950/80 to-slate-950/90 p-6 shadow-2xl sm:p-8">
-          <p className="text-center text-xs font-bold uppercase tracking-widest text-rose-300">Leads are waiting</p>
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-rose-300">{t("pages.onboardingFunnel.leadsWaiting")}</p>
           <h1 className="mt-3 text-center font-heading text-2xl font-bold leading-tight sm:text-3xl">
             2 more conversations are queued in your territory
           </h1>
-          <p className="mx-auto mt-4 max-w-md text-center text-sm text-rose-100/90">
-            You just proved response speed. Premium agents get full CRM, AI follow-ups, and unlimited lead routing —
-            so none of these slip while you&apos;re in appointments.
-          </p>
+          <p className="mx-auto mt-4 max-w-md text-center text-sm text-rose-100/90">{t("pages.onboardingFunnel.provedSpeed")}</p>
           <div className="mx-auto mt-8 max-w-sm rounded-xl border border-white/10 bg-black/30 p-4 text-sm text-slate-200">
-            <p className="font-semibold text-white">What you unlocked in this preview</p>
+            <p className="font-semibold text-white">{t("pages.onboardingFunnel.unlocked")}</p>
             <ul className="mt-3 space-y-2 text-xs text-slate-300">
               <li className="flex items-start gap-2">
                 <BrandCheck tone="primary" />
-                <span>Realistic lead profiles matched to {fullProfile.city}</span>
+                <span>{t("pages.onboardingFunnel.profilesMatched", { city: fullProfile.city })}</span>
               </li>
               <li className="flex items-start gap-2">
                 <BrandCheck tone="success" />
-                <span>Inbox + thread view (what you&apos;ll use daily)</span>
+                <span>{t("pages.onboardingFunnel.inboxPreview")}</span>
               </li>
               <li className="flex items-start gap-2">
                 <BrandCheck tone="accent" />
@@ -693,9 +682,7 @@ export default function OnboardingFunnel({
             <Link
               href={`/agent/pricing?from=onboarding&email=${encodeURIComponent(fullProfile.email)}`}
               className="rounded-xl border border-white/25 px-6 py-3.5 text-center text-sm font-semibold text-white hover:bg-white/5"
-            >
-              Open full pricing page
-            </Link>
+            >{t("pages.onboardingFunnel.openPricing")}</Link>
           </div>
           <p className="mt-6 text-center text-xs text-slate-500">
             No credit card required · Cancel anytime
@@ -813,10 +800,8 @@ export default function OnboardingFunnel({
       <Shell step={7}>
         <div className="space-y-6">
           <div className="text-center">
-            <h1 className="font-heading text-2xl font-bold sm:text-3xl">Choose how you scale</h1>
-            <p className="mt-2 text-sm text-slate-400">
-              Every paid plan includes a 14-day free trial. Cancel anytime.
-              <br />
+            <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.chooseScale")}</h1>
+            <p className="mt-2 text-sm text-slate-400">{t("pages.onboardingFunnel.trialNote")}<br />
               Available in English and 中文.
             </p>
           </div>
@@ -830,24 +815,18 @@ export default function OnboardingFunnel({
                 className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
                   cadence === "monthly" ? "bg-white text-slate-900" : "text-slate-300 hover:text-white"
                 }`}
-              >
-                Monthly
-              </button>
+              >{t("pages.onboardingFunnel.monthly")}</button>
               <button
                 type="button"
                 onClick={() => setOnboardingCadence("annual")}
                 className={`ml-1 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
                   cadence === "annual" ? "bg-white text-slate-900" : "text-slate-300 hover:text-white"
                 }`}
-              >
-                Annual
-                <span
+              >{t("pages.onboardingFunnel.annual")}<span
                   className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
                     cadence === "annual" ? "bg-emerald-500 text-white" : "bg-emerald-500/20 text-emerald-300"
                   }`}
-                >
-                  Save 17%
-                </span>
+                >{t("pages.onboardingFunnel.save17")}</span>
               </button>
             </div>
           </div>
@@ -923,7 +902,7 @@ export default function OnboardingFunnel({
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-white">
-                  Team — {cadence === "annual" ? "$249/mo" : "$299/mo"} per team
+                  {t("pages.onboardingFunnel.teamPrice", { price: cadence === "annual" ? "$249/mo" : "$299/mo" })}
                 </p>
                 <p className="mt-0.5 text-xs text-slate-400">
                   Up to 5 seats · round-robin routing · Top Producer Track for every member.
@@ -955,27 +934,18 @@ export default function OnboardingFunnel({
     return (
       <Shell step={8}>
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center shadow-xl backdrop-blur-md sm:p-10">
-          <h1 className="font-heading text-2xl font-bold sm:text-3xl">Finish setup in the real app</h1>
-          <p className="mx-auto mt-3 max-w-md text-sm text-slate-300">
-            Create your agent profile (phone + password), then start your trial or upgrade from pricing. Your preview
-            preferences aren&apos;t lost — we passed your email to signup.
-          </p>
+          <h1 className="font-heading text-2xl font-bold sm:text-3xl">{t("pages.onboardingFunnel.finishSetup")}</h1>
+          <p className="mx-auto mt-3 max-w-md text-sm text-slate-300">{t("pages.onboardingFunnel.createProfile")}</p>
           <div className="mt-8 flex flex-col gap-3 sm:mx-auto sm:max-w-md">
             <Link
               href={`/agent-signup?${signupQuery}`}
               className="rounded-xl bg-[#0072ce] py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#005ca8]"
-            >
-              Create agent account
-            </Link>
+            >{t("pages.onboardingFunnel.createAccount")}</Link>
             <Link
               href="/agent/pricing?from=onboarding#plans"
               className="rounded-xl border border-white/20 py-3.5 text-sm font-semibold text-white hover:bg-white/5"
-            >
-              View all plans &amp; pricing
-            </Link>
-            <Link href="/login?redirect=/dashboard" className="text-sm font-semibold text-sky-400 hover:underline">
-              Already registered? Log in
-            </Link>
+            >{t("pages.onboardingFunnel.viewPlans")}</Link>
+            <Link href="/login?redirect=/dashboard" className="text-sm font-semibold text-sky-400 hover:underline">{t("pages.onboardingFunnel.alreadyRegistered")}</Link>
           </div>
           <button
             type="button"
@@ -989,9 +959,7 @@ export default function OnboardingFunnel({
               setEngagementPoints(0);
             }}
             className="mt-8 text-xs text-slate-500 underline-offset-2 hover:text-slate-300 hover:underline"
-          >
-            Restart preview (clears saved progress)
-          </button>
+          >{t("pages.onboardingFunnel.restart")}</button>
         </div>
       </Shell>
     );

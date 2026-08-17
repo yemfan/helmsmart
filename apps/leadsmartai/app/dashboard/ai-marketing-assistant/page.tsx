@@ -13,6 +13,7 @@ import type { SocialRec } from "@/components/marketing/WeeklySocialPosts";
 import { getSiteUrl } from "@/lib/siteUrl";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import { agentHasSocialCustomization } from "@/lib/social/customization";
+import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Marketing Assistant",
@@ -28,6 +29,7 @@ export const dynamic = "force-dynamic";
  * scheduled social posts, marketing plans, templates, and new leads.
  */
 export default async function MarketingAssistantPage() {
+  const t = await getServerT();
   const { agentId } = await getCurrentAgentContext();
   const monthStart = new Date();
   monthStart.setDate(1);

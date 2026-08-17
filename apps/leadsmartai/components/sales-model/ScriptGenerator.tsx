@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AiActionGateBanner } from "@/components/entitlements/AiActionGateBanner";
 import {
   detectAiActionGate,
@@ -41,6 +42,7 @@ import {
  * error and lets the user retry.
  */
 export function ScriptGenerator({ model }: { model: SalesModel }) {
+  const { t } = useTranslation("dashboard");
   const [situation, setSituation] = useState("");
   const [output, setOutput] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -179,15 +181,12 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
 
   return (
     <section
-      aria-label="Script generator"
+      aria-label={t("pages.scriptGenerator.ariaLabel")}
       className="rounded-2xl border border-slate-200 bg-white p-6 ring-1 ring-slate-900/[0.04] shadow-sm"
     >
       <header className="mb-4">
-        <h2 className="text-base font-semibold text-slate-900">Script Generator</h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Describe the situation — the AI figures out what kind of message
-          you need (DM reply, follow-up, objection, appointment, opener) and
-          writes it in your{" "}
+        <h2 className="text-base font-semibold text-slate-900">{t("pages.scriptGenerator.title")}</h2>
+        <p className="mt-1 text-sm text-slate-600">{t("pages.dashFragments.describeSituation")}{" "}
           <span className="font-medium text-slate-800">{model.name}</span> tone.
         </p>
       </header>
@@ -196,21 +195,16 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
         <label
           htmlFor="script-situation"
           className="block text-xs font-semibold uppercase tracking-wider text-slate-500"
-        >
-          Describe the situation
-        </label>
+        >{t("pages.scriptGenerator.describe")}</label>
         <textarea
           id="script-situation"
           value={situation}
           onChange={(e) => setSituation(e.target.value)}
-          placeholder="e.g. I have a buyer named Mary. I want to set an initial appointment, but she said interest rates are too high and prices are falling, so she wants to wait."
+          placeholder={t("pages.scriptGenerator.placeholder")}
           rows={4}
           className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         />
-        <p className="mt-1.5 text-xs text-slate-500">
-          Include the lead's name, what you want from this message, and any
-          context they've shared (objections, timeline, etc.).
-        </p>
+        <p className="mt-1.5 text-xs text-slate-500">{t("pages.scriptGenerator.hint")}</p>
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -251,8 +245,7 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
           </span>
         ) : null}
         {detectedLabel ? (
-          <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 ring-1 ring-inset ring-slate-200">
-            Read as: {detectedLabel}
+          <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 ring-1 ring-inset ring-slate-200">{t("pages.dashFragments.readAs")} {detectedLabel}
           </span>
         ) : null}
       </div>

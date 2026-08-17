@@ -7,6 +7,7 @@ import {
   type BillingStatus,
 } from "@/lib/admin/billingRecords";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -60,6 +61,7 @@ function planLabel(plan: BillingPlan) {
 }
 
 export default function AdminBillingClient() {
+  const { t } = useTranslation("dashboard");
   const [rows, setRows] = useState<BillingRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState("");
@@ -201,12 +203,8 @@ export default function AdminBillingClient() {
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
-          Subscription &amp; Billing
-        </h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Manage plans, billing status, MRR, and payment issues.
-        </p>
+        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">{t("pages.adminBilling.title")}</h1>
+        <p className="mt-1 text-sm text-gray-500">{t("pages.adminBilling.sub")}</p>
       </div>
 
       {error ? (
@@ -217,23 +215,23 @@ export default function AdminBillingClient() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         <div className="rounded-2xl border bg-white p-4 shadow-sm">
-          <div className="text-sm text-gray-500">MRR</div>
+          <div className="text-sm text-gray-500">{t("pages.adminBilling.mrr")}</div>
           <div className="mt-2 text-2xl font-semibold text-gray-900">{formatCurrency(summary.mrr)}</div>
         </div>
         <div className="rounded-2xl border bg-white p-4 shadow-sm">
-          <div className="text-sm text-gray-500">Active</div>
+          <div className="text-sm text-gray-500">{t("pages.adminBilling.active")}</div>
           <div className="mt-2 text-2xl font-semibold text-gray-900">{summary.activeCount}</div>
         </div>
         <div className="rounded-2xl border bg-white p-4 shadow-sm">
-          <div className="text-sm text-gray-500">Trialing</div>
+          <div className="text-sm text-gray-500">{t("pages.adminBilling.trialing")}</div>
           <div className="mt-2 text-2xl font-semibold text-gray-900">{summary.trialingCount}</div>
         </div>
         <div className="rounded-2xl border bg-white p-4 shadow-sm">
-          <div className="text-sm text-gray-500">Past Due</div>
+          <div className="text-sm text-gray-500">{t("pages.adminBilling.pastDue")}</div>
           <div className="mt-2 text-2xl font-semibold text-gray-900">{summary.pastDueCount}</div>
         </div>
         <div className="rounded-2xl border bg-white p-4 shadow-sm">
-          <div className="text-sm text-gray-500">Canceled</div>
+          <div className="text-sm text-gray-500">{t("pages.adminBilling.canceled")}</div>
           <div className="mt-2 text-2xl font-semibold text-gray-900">{summary.canceledCount}</div>
         </div>
       </div>
@@ -244,7 +242,7 @@ export default function AdminBillingClient() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name, email, role..."
+              placeholder={t("pages.adminBilling.searchPlaceholder")}
               className="flex-1 rounded-2xl border px-4 py-3 text-sm outline-none focus:border-gray-400"
             />
 
@@ -253,12 +251,12 @@ export default function AdminBillingClient() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="rounded-2xl border px-4 py-3 text-sm outline-none focus:border-gray-400"
             >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="trialing">Trialing</option>
-              <option value="past_due">Past Due</option>
-              <option value="canceled">Canceled</option>
-              <option value="incomplete">Incomplete</option>
+              <option value="all">{t("pages.adminBilling.allStatus")}</option>
+              <option value="active">{t("pages.adminBilling.active")}</option>
+              <option value="trialing">{t("pages.adminBilling.trialing")}</option>
+              <option value="past_due">{t("pages.adminBilling.pastDue")}</option>
+              <option value="canceled">{t("pages.adminBilling.canceled")}</option>
+              <option value="incomplete">{t("pages.adminBilling.incomplete")}</option>
             </select>
 
             <select
@@ -266,19 +264,17 @@ export default function AdminBillingClient() {
               onChange={(e) => setRoleFilter(e.target.value)}
               className="rounded-2xl border px-4 py-3 text-sm outline-none focus:border-gray-400"
             >
-              <option value="all">All Roles</option>
-              <option value="consumer">Consumer</option>
-              <option value="agent">Agent</option>
-              <option value="loan_broker">Loan Broker</option>
+              <option value="all">{t("pages.adminBilling.allRoles")}</option>
+              <option value="consumer">{t("pages.adminBilling.consumer")}</option>
+              <option value="agent">{t("pages.adminBilling.agent")}</option>
+              <option value="loan_broker">{t("pages.adminBilling.loanBroker")}</option>
             </select>
 
             <button
               type="button"
               onClick={() => void loadBilling()}
               className="rounded-2xl border px-4 py-3 text-sm font-medium text-gray-900 hover:bg-gray-50"
-            >
-              Refresh
-            </button>
+            >{t("pages.adminBilling.refresh")}</button>
           </div>
         </div>
 
@@ -286,28 +282,24 @@ export default function AdminBillingClient() {
           <table className="min-w-full text-left text-sm">
             <thead className="border-b bg-gray-50 text-gray-500">
               <tr>
-                <th className="px-5 py-4 font-medium">User</th>
-                <th className="px-5 py-4 font-medium">Role</th>
-                <th className="px-5 py-4 font-medium">Plan</th>
-                <th className="px-5 py-4 font-medium">Status</th>
-                <th className="px-5 py-4 font-medium">Monthly</th>
-                <th className="px-5 py-4 font-medium">Period End</th>
-                <th className="px-5 py-4 font-medium">Actions</th>
+                <th className="px-5 py-4 font-medium">{t("pages.adminBilling.colUser")}</th>
+                <th className="px-5 py-4 font-medium">{t("pages.adminBilling.colRole")}</th>
+                <th className="px-5 py-4 font-medium">{t("pages.adminBilling.colPlan")}</th>
+                <th className="px-5 py-4 font-medium">{t("pages.adminBilling.colStatus")}</th>
+                <th className="px-5 py-4 font-medium">{t("pages.adminBilling.colMonthly")}</th>
+                <th className="px-5 py-4 font-medium">{t("pages.adminBilling.colPeriodEnd")}</th>
+                <th className="px-5 py-4 font-medium">{t("pages.adminBilling.colActions")}</th>
               </tr>
             </thead>
 
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-6 text-gray-500">
-                    Loading billing records...
-                  </td>
+                  <td colSpan={7} className="px-5 py-6 text-gray-500">{t("pages.adminBilling.loading")}</td>
                 </tr>
               ) : filteredRows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-6 text-gray-500">
-                    No billing records found.
-                  </td>
+                  <td colSpan={7} className="px-5 py-6 text-gray-500">{t("pages.adminBilling.empty")}</td>
                 </tr>
               ) : (
                 filteredRows.map((row) => (
@@ -333,11 +325,11 @@ export default function AdminBillingClient() {
                         className="max-w-[200px] rounded-xl border px-3 py-2 text-sm"
                         title={planLabel(row.plan)}
                       >
-                        <option value="consumer_free">Consumer Free</option>
-                        <option value="consumer_premium">Consumer Premium</option>
-                        <option value="agent_starter">Agent Starter</option>
-                        <option value="agent_pro">Agent Pro</option>
-                        <option value="loan_broker_pro">Loan Broker Pro</option>
+                        <option value="consumer_free">{t("pages.adminBilling.planConsumerFree")}</option>
+                        <option value="consumer_premium">{t("pages.adminBilling.planConsumerPremium")}</option>
+                        <option value="agent_starter">{t("pages.adminBilling.planAgentStarter")}</option>
+                        <option value="agent_pro">{t("pages.adminBilling.planAgentPro")}</option>
+                        <option value="loan_broker_pro">{t("pages.adminBilling.planLoanBrokerPro")}</option>
                       </select>
                     </td>
 

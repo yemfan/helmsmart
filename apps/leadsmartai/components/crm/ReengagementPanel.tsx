@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type StatusPayload = {
   campaignCount?: number;
@@ -8,6 +9,7 @@ type StatusPayload = {
 };
 
 export function ReengagementPanel({ isAdmin }: { isAdmin: boolean }) {
+  const { t } = useTranslation("dashboard");
   const [status, setStatus] = useState<StatusPayload | null>(null);
   const [loading, setLoading] = useState(false);
   const [bootLoading, setBootLoading] = useState(false);
@@ -76,10 +78,9 @@ export function ReengagementPanel({ isAdmin }: { isAdmin: boolean }) {
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="text-base font-semibold text-slate-900">Re-engagement campaigns</h2>
+      <h2 className="text-base font-semibold text-slate-900">{t("pages.reengagement.title")}</h2>
       <p className="mt-1 text-sm text-slate-600">
-        AI-personalized SMS or email revivals for cold leads, with a timed follow-up sequence. Daily job also
-        runs via cron when <code className="text-xs">CRON_SECRET</code> is set.
+        {t("pages.reengagement.subBefore")} <code className="text-xs">CRON_SECRET</code> {t("pages.reengagement.subAfter")}
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -116,16 +117,14 @@ export function ReengagementPanel({ isAdmin }: { isAdmin: boolean }) {
             checked={runAllAgents}
             onChange={(e) => setRunAllAgents(e.target.checked)}
             className="rounded border-slate-300"
-          />
-          Admin: run for all agents (scheduled cron does this automatically)
-        </label>
+          />{t("pages.reengagement.adminRun")}</label>
       ) : null}
 
       {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
       {message ? <p className="mt-3 text-sm text-emerald-800">{message}</p> : null}
 
       <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-        <div className="font-medium text-slate-900">Active campaigns: {status?.campaignCount ?? "—"}</div>
+        <div className="font-medium text-slate-900">{t("pages.dashFragments.activeCampaigns")} {status?.campaignCount ?? "—"}</div>
         {status?.campaigns?.length ? (
           <ul className="mt-2 list-inside list-disc text-xs text-slate-600">
             {status.campaigns.map((c) => (
@@ -135,7 +134,7 @@ export function ReengagementPanel({ isAdmin }: { isAdmin: boolean }) {
             ))}
           </ul>
         ) : (
-          <p className="mt-2 text-xs text-slate-500">No campaigns yet — bootstrap to add a 3-step cold-lead SMS sequence.</p>
+          <p className="mt-2 text-xs text-slate-500">{t("pages.reengagement.empty")}</p>
         )}
       </div>
     </div>

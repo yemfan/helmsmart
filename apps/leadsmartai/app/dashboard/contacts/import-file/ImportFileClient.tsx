@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { createClient } from "@/lib/supabase/client";
 
@@ -51,6 +52,7 @@ type SaveResult = {
 };
 
 export default function ImportFileClient() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<Step>("pick");
@@ -196,7 +198,7 @@ export default function ImportFileClient() {
   async function handleSave() {
     const chosen = rows.filter((r) => selected.has(r.rowKey));
     if (chosen.length === 0) {
-      setError("Select at least one contact to save.");
+      setError(t("pages.importFile.selectAtLeastOne"));
       return;
     }
     setError(null);
@@ -248,13 +250,8 @@ export default function ImportFileClient() {
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">
-            AI Import from File
-          </h1>
-          <p className="text-sm text-gray-500">
-            Upload a PDF, image, or text file. AI extracts contacts; you review
-            and save.
-          </p>
+          <h1 className="text-xl font-semibold text-gray-900">{t("pages.importFile.title")}</h1>
+          <p className="text-sm text-gray-500">{t("pages.importFile.sub")}</p>
         </div>
         <Link
           href="/dashboard/contacts"
@@ -282,12 +279,10 @@ export default function ImportFileClient() {
           <div className="mx-auto flex items-center justify-center gap-3">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
             <span className="text-sm text-gray-700">
-              Reading {fileName ?? "file"}...
+              {t("pages.importFile.readingFile", { name: fileName ?? t("pages.importFile.aFile") })}
             </span>
           </div>
-          <p className="mt-3 text-xs text-gray-500">
-            This usually takes 5–30 seconds depending on file size.
-          </p>
+          <p className="mt-3 text-xs text-gray-500">{t("pages.importFile.takesSeconds")}</p>
         </div>
       )}
 
@@ -318,7 +313,7 @@ export default function ImportFileClient() {
           <div className="mx-auto flex items-center justify-center gap-3">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
             <span className="text-sm text-gray-700">
-              Saving {selectedCount} contact{selectedCount === 1 ? "" : "s"}...
+              {t("pages.importFile.savingN", { count: selectedCount })}
             </span>
           </div>
         </div>
@@ -342,6 +337,7 @@ function DropZone({
   fileRef: React.RefObject<HTMLInputElement | null>;
   onFile: (file: File) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [dragOver, setDragOver] = useState(false);
 
   return (
@@ -377,9 +373,7 @@ function DropZone({
           d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
         />
       </svg>
-      <span className="mt-3 text-sm font-semibold text-gray-700">
-        Drop a file here, or click to browse
-      </span>
+      <span className="mt-3 text-sm font-semibold text-gray-700">{t("pages.importFile.dropFile")}</span>
       <span className="mt-1 text-xs text-gray-500">
         PDF · JPEG / PNG / WEBP · TXT / VCF / MD &nbsp;·&nbsp; up to 20 MB
       </span>
@@ -417,6 +411,7 @@ function ReviewTable(props: {
   onSave: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const {
     rows,
     selected,
@@ -452,14 +447,12 @@ function ReviewTable(props: {
           </span>
           {duplicateCount > 0 && (
             <span className="rounded-full bg-yellow-50 px-2.5 py-0.5 text-xs font-medium text-yellow-800 ring-1 ring-yellow-200">
-              {duplicateCount} likely duplicate
-              {duplicateCount === 1 ? "" : "s"}
+              {t("pages.importFile.likelyDupes", { count: duplicateCount })}
             </span>
           )}
           {truncated && (
             <span className="text-xs text-gray-500">
-              showing the first {rows.length} of {totalExtracted} found — save these,
-              then split the file to import the rest
+              {t("pages.importFile.truncated", { shown: rows.length, total: totalExtracted })}
             </span>
           )}
         </div>
@@ -472,7 +465,7 @@ function ReviewTable(props: {
               <th className="px-3 py-2.5 w-10">
                 <input
                   type="checkbox"
-                  aria-label="Select all"
+                  aria-label={t("pages.importFile.selectAll")}
                   className="h-4 w-4 cursor-pointer"
                   checked={allChecked}
                   ref={(el) => {
@@ -481,13 +474,13 @@ function ReviewTable(props: {
                   onChange={toggleSelectAll}
                 />
               </th>
-              <th className="px-3 py-2.5">Name</th>
-              <th className="px-3 py-2.5">Email</th>
-              <th className="px-3 py-2.5">Phone</th>
-              <th className="px-3 py-2.5">Company</th>
-              <th className="px-3 py-2.5">Title</th>
-              <th className="px-3 py-2.5">Address</th>
-              <th className="px-3 py-2.5">Notes</th>
+              <th className="px-3 py-2.5">{t("pages.importFile.colName")}</th>
+              <th className="px-3 py-2.5">{t("pages.importFile.colEmail")}</th>
+              <th className="px-3 py-2.5">{t("pages.importFile.colPhone")}</th>
+              <th className="px-3 py-2.5">{t("pages.importFile.colCompany")}</th>
+              <th className="px-3 py-2.5">{t("pages.importFile.colTitle")}</th>
+              <th className="px-3 py-2.5">{t("pages.importFile.colAddress")}</th>
+              <th className="px-3 py-2.5">{t("pages.importFile.colNotes")}</th>
               <th className="px-3 py-2.5 w-12" />
             </tr>
           </thead>
@@ -502,7 +495,7 @@ function ReviewTable(props: {
                 <td className="px-3 py-1.5 align-top">
                   <input
                     type="checkbox"
-                    aria-label="Include this contact"
+                    aria-label={t("pages.importFile.includeContact")}
                     className="mt-1 h-4 w-4 cursor-pointer"
                     checked={selected.has(r.rowKey)}
                     onChange={() => toggleSelect(r.rowKey)}
@@ -513,15 +506,13 @@ function ReviewTable(props: {
                     <Cell
                       value={r.name}
                       onChange={(v) => updateField(r.rowKey, "name", v)}
-                      placeholder="Full name"
+                      placeholder={t("pages.importFile.fullName")}
                     />
                     {r.duplicateContactId && (
                       <span
                         className="inline-flex w-fit items-center rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-medium text-yellow-800"
                         title={`Match score ${r.duplicateScore?.toFixed(2) ?? "—"}`}
-                      >
-                        Likely duplicate
-                      </span>
+                      >{t("pages.importFile.likelyDuplicate")}</span>
                     )}
                   </div>
                 </td>
@@ -529,7 +520,7 @@ function ReviewTable(props: {
                   <Cell
                     value={r.email}
                     onChange={(v) => updateField(r.rowKey, "email", v)}
-                    placeholder="email@example.com"
+                    placeholder={t("pages.importFile.emailPlaceholder")}
                     type="email"
                   />
                 </td>
@@ -545,28 +536,28 @@ function ReviewTable(props: {
                   <Cell
                     value={r.company}
                     onChange={(v) => updateField(r.rowKey, "company", v)}
-                    placeholder="Company"
+                    placeholder={t("pages.importFile.colCompany")}
                   />
                 </td>
                 <td className="px-2 py-1.5 align-top">
                   <Cell
                     value={r.title}
                     onChange={(v) => updateField(r.rowKey, "title", v)}
-                    placeholder="Title"
+                    placeholder={t("pages.importFile.colTitle")}
                   />
                 </td>
                 <td className="px-2 py-1.5 align-top">
                   <Cell
                     value={r.address}
                     onChange={(v) => updateField(r.rowKey, "address", v)}
-                    placeholder="Address"
+                    placeholder={t("pages.importFile.colAddress")}
                   />
                 </td>
                 <td className="px-2 py-1.5 align-top">
                   <Cell
                     value={r.notes}
                     onChange={(v) => updateField(r.rowKey, "notes", v)}
-                    placeholder="Notes"
+                    placeholder={t("pages.importFile.colNotes")}
                   />
                 </td>
                 <td className="px-2 py-1.5 text-right align-top">
@@ -574,8 +565,8 @@ function ReviewTable(props: {
                     type="button"
                     onClick={() => removeRow(r.rowKey)}
                     className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600"
-                    title="Remove row"
-                    aria-label="Remove row"
+                    title={t("pages.importFile.removeRow")}
+                    aria-label={t("pages.importFile.removeRow")}
                   >
                     <svg
                       className="h-4 w-4"
@@ -608,7 +599,7 @@ function ReviewTable(props: {
         </button>
 
         <div className="flex items-center gap-3 text-sm">
-          <label className="text-gray-600">If duplicate:</label>
+          <label className="text-gray-600">{t("pages.importFile.ifDuplicate")}</label>
           <select
             value={duplicateStrategy}
             onChange={(e) =>
@@ -616,9 +607,9 @@ function ReviewTable(props: {
             }
             className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="skip">Skip duplicates</option>
-            <option value="merge">Merge into existing</option>
-            <option value="create_anyway">Create anyway</option>
+            <option value="skip">{t("pages.importFile.skipDuplicates")}</option>
+            <option value="merge">{t("pages.importFile.mergeExisting")}</option>
+            <option value="create_anyway">{t("pages.importFile.createAnyway")}</option>
           </select>
         </div>
       </div>
@@ -628,16 +619,14 @@ function ReviewTable(props: {
           type="button"
           onClick={onCancel}
           className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Cancel
-        </button>
+        >{t("pages.importFile.cancel")}</button>
         <button
           type="button"
           onClick={onSave}
           disabled={selectedCount === 0}
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
         >
-          Save {selectedCount} contact{selectedCount === 1 ? "" : "s"}
+          {t("pages.importFile.saveN", { count: selectedCount })}
         </button>
       </div>
     </div>
@@ -675,6 +664,7 @@ function DoneSummary({
   onAnother: () => void;
   onViewContacts: () => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const total =
     result.inserted + result.merged + result.skipped + result.errors;
   return (
@@ -697,7 +687,7 @@ function DoneSummary({
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-900">
-            Saved {result.inserted + result.merged} of {total} contacts
+            {t("pages.importFile.savedNofM", { saved: result.inserted + result.merged, total })}
           </p>
           <p className="text-xs text-gray-500">
             {result.inserted} added · {result.merged} merged ·{" "}
@@ -709,7 +699,7 @@ function DoneSummary({
 
       {result.errorMessages.length > 0 && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 space-y-1">
-          <p className="font-semibold">First errors:</p>
+          <p className="font-semibold">{t("pages.importFile.firstErrors")}</p>
           {result.errorMessages.map((m, i) => (
             <p key={i}>· {m}</p>
           ))}
@@ -721,16 +711,12 @@ function DoneSummary({
           type="button"
           onClick={onViewContacts}
           className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800"
-        >
-          View Contacts
-        </button>
+        >{t("pages.importFile.viewContacts")}</button>
         <button
           type="button"
           onClick={onAnother}
           className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Import another
-        </button>
+        >{t("pages.importFile.importAnother")}</button>
       </div>
     </div>
   );

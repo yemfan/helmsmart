@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Minimal contact autocomplete for forms that need to reference an existing
@@ -54,6 +55,7 @@ export default function ContactPicker({
   className,
   helperText,
 }: Props) {
+  const { t } = useTranslation("dashboard");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<PickerRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -188,9 +190,7 @@ export default function ContactPicker({
             onClick={clear}
             disabled={disabled}
             className="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-50"
-          >
-            Change
-          </button>
+          >{t("pages.misc.change")}</button>
         </div>
       ) : (
         <>

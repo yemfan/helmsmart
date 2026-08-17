@@ -3,6 +3,7 @@
 import { Headset } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   fetchConversation,
   markConversationRead,
@@ -35,6 +36,7 @@ export default function CustomerSupportChat({
   embedded = false,
   onClose,
 }: CustomerSupportChatProps) {
+  const { t } = useTranslation("dashboard");
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [subject, setSubject] = useState("");
@@ -150,15 +152,13 @@ export default function CustomerSupportChat({
     <div className={outerClass}>
       {embedded ? (
         <div className="flex shrink-0 items-center justify-between border-b border-gray-200 px-4 py-3">
-          <span id="ls-support-chat-title" className="text-sm font-semibold text-gray-900">
-            Support
-          </span>
+          <span id="ls-support-chat-title" className="text-sm font-semibold text-gray-900">{t("pages.supportChat.support")}</span>
           {onClose ? (
             <button
               type="button"
               onClick={onClose}
               className="rounded-xl p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
-              aria-label="Close support chat"
+              aria-label={t("pages.supportChat.closeChat")}
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -170,7 +170,7 @@ export default function CustomerSupportChat({
 
       <div className={embedded ? "flex min-h-0 flex-1 flex-col" : undefined}>
         <div className="border-b p-5">
-          <h2 className="text-xl font-semibold text-gray-900">Customer Support</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t("pages.supportChat.title")}</h2>
           <p className="mt-1 text-sm text-gray-500">
             {conversationPublicId
               ? "This conversation refreshes automatically."
@@ -183,19 +183,19 @@ export default function CustomerSupportChat({
           <div className="grid gap-4 border-b p-5 md:grid-cols-2">
             <input
               className="rounded-2xl border px-4 py-3 text-sm outline-none focus:border-gray-400"
-              placeholder="Your name"
+              placeholder={t("pages.supportChat.yourName")}
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
             />
             <input
               className="rounded-2xl border px-4 py-3 text-sm outline-none focus:border-gray-400"
-              placeholder="Your email"
+              placeholder={t("pages.supportChat.yourEmail")}
               value={customerEmail}
               onChange={(e) => setCustomerEmail(e.target.value)}
             />
             <input
               className="rounded-2xl border px-4 py-3 text-sm outline-none focus:border-gray-400 md:col-span-2"
-              placeholder="Subject (optional)"
+              placeholder={t("pages.supportChat.subject")}
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
             />
@@ -210,9 +210,7 @@ export default function CustomerSupportChat({
           )}
 
           {!conversationPublicId && (
-            <div className="rounded-2xl border bg-gray-50 p-4 text-sm text-gray-600">
-              Start by describing your question or issue below.
-            </div>
+            <div className="rounded-2xl border bg-gray-50 p-4 text-sm text-gray-600">{t("pages.supportChat.describeIssue")}</div>
           )}
 
           {conversation?.messages?.map((message) => {
@@ -311,6 +309,7 @@ export type SupportChatLauncherProps = {
 
 /** Navbar / shell chat icon: opens a slide-over with {@link CustomerSupportChat}. */
 export function SupportChatLauncher({ buttonClassName }: SupportChatLauncherProps) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -354,7 +353,7 @@ export function SupportChatLauncher({ buttonClassName }: SupportChatLauncherProp
                 backgroundColor: open ? "rgba(15,23,42,0.4)" : "transparent",
                 backdropFilter: open ? "blur(4px)" : "none",
               }}
-              aria-label="Close support chat"
+              aria-label={t("pages.supportChat.closeChat")}
               onClick={() => setOpen(false)}
             />
             <div
@@ -373,7 +372,7 @@ export function SupportChatLauncher({ buttonClassName }: SupportChatLauncherProp
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={btn} aria-label="Open support chat">
+      <button type="button" onClick={() => setOpen(true)} className={btn} aria-label={t("pages.supportChat.openChat")}>
         <Headset className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
       </button>
       {overlay}

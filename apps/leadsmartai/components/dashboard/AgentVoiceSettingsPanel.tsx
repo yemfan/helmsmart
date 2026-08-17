@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { AgentVoiceSettings, VoicePresetOption, VoiceProvider } from "@/lib/agent-voice/types";
 import { DEFAULT_AGENT_VOICE_SETTINGS } from "@/lib/agent-voice/voiceDefaults";
 import { findPreset, listPresetsForProvider } from "@/lib/agent-voice/presets";
@@ -10,6 +11,7 @@ import { VOICE_BILINGUAL_GREETING_EN } from "@/lib/ai-call/voice-scripts";
 const defaults: AgentVoiceSettings = { ...DEFAULT_AGENT_VOICE_SETTINGS };
 
 export default function AgentVoiceSettingsPanel() {
+  const { t } = useTranslation("dashboard");
   const [settings, setSettings] = useState<AgentVoiceSettings>(defaults);
   const [savedSettings, setSavedSettings] = useState<AgentVoiceSettings>(defaults);
   const [presets, setPresets] = useState<VoicePresetOption[]>([]);
@@ -112,14 +114,10 @@ export default function AgentVoiceSettingsPanel() {
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-gray-600">
-        Choose the voice for your CloseBoss phone assistant. Calls use Twilio speech today; OpenAI and
-        ElevenLabs presets map to Amazon Polly voices until native TTS is connected. Assistant disclosure
-        scripts are unchanged.
-      </p>
+      <p className="text-xs text-gray-600">{t("pages.agentVoice.intro")}</p>
 
       <div className="space-y-1">
-        <span className="block text-[11px] font-medium text-gray-500">Provider</span>
+        <span className="block text-[11px] font-medium text-gray-500">{t("pages.oneWord.provider")}</span>
         <div className="flex flex-wrap gap-2">
           {(["openai", "elevenlabs"] as const).map((p) => (
             <label
@@ -144,7 +142,7 @@ export default function AgentVoiceSettingsPanel() {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-gray-500">Preset voice</label>
+        <label className="block text-[11px] font-medium text-gray-500">{t("pages.agentVoice.presetVoice")}</label>
         <select
           className="w-full max-w-md border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
           value={settings.presetVoiceId}
@@ -159,7 +157,7 @@ export default function AgentVoiceSettingsPanel() {
       </div>
 
       <div className="space-y-1">
-        <span className="block text-[11px] font-medium text-gray-500">Speaking style</span>
+        <span className="block text-[11px] font-medium text-gray-500">{t("pages.agentVoice.speakingStyle")}</span>
         <div className="flex flex-wrap gap-2">
           {(["friendly", "professional", "luxury"] as const).map((st) => (
             <label
@@ -184,9 +182,7 @@ export default function AgentVoiceSettingsPanel() {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-gray-500">
-          Default language (when bilingual is off)
-        </label>
+        <label className="block text-[11px] font-medium text-gray-500">{t("pages.agentVoice.defaultLanguage")}</label>
         <select
           className="w-full max-w-xs border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
           value={settings.defaultLanguage}
@@ -197,8 +193,8 @@ export default function AgentVoiceSettingsPanel() {
             }))
           }
         >
-          <option value="en">English</option>
-          <option value="zh">Chinese (Simplified)</option>
+          <option value="en">{t("pages.oneWord.english")}</option>
+          <option value="zh">{t("pages.agentVoice.chineseSimplified")}</option>
         </select>
       </div>
 
@@ -209,14 +205,13 @@ export default function AgentVoiceSettingsPanel() {
           onChange={(e) => setSettings((s) => ({ ...s, bilingualEnabled: e.target.checked }))}
           className="accent-brand-accent"
         />
-        <span>Bilingual inbound greeting (English + Chinese)</span>
+        <span>{t("pages.agentVoice.bilingualGreeting")}</span>
       </label>
 
       <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50/80 p-3 space-y-2">
-        <div className="text-[11px] font-semibold text-gray-600">Custom voice (future)</div>
+        <div className="text-[11px] font-semibold text-gray-600">{t("pages.agentVoice.customVoice")}</div>
         <p className="text-[11px] text-gray-500">
-          Voice cloning will use <span className="font-mono">voice_clone_*</span> columns on your agent row.
-          Not available yet — preset voices only.
+          {t("pages.agentVoice.cloneBefore")} <span className="font-mono">voice_clone_*</span>{t("pages.agentVoice.cloneAfter")}
         </p>
       </div>
 
@@ -234,9 +229,8 @@ export default function AgentVoiceSettingsPanel() {
       </div>
 
       <div className="border-t border-gray-100 pt-4 space-y-2">
-        <div className="text-sm font-semibold text-gray-700">Preview (Twilio playback)</div>
-        <p className="text-[11px] text-gray-500">
-          English: <span className="font-mono text-gray-700">{previewPlayback.voiceEn}</span> · Chinese:{" "}
+        <div className="text-sm font-semibold text-gray-700">{t("pages.agentVoice.preview")}</div>
+        <p className="text-[11px] text-gray-500">{t("pages.agentVoice.englishLabel")}<span className="font-mono text-gray-700">{previewPlayback.voiceEn}</span> · Chinese:{" "}
           <span className="font-mono text-gray-700">{previewPlayback.voiceZh}</span>
           {previewPlayback.ratePercent ? (
             <>
@@ -245,13 +239,11 @@ export default function AgentVoiceSettingsPanel() {
             </>
           ) : null}
         </p>
-        <p className="text-[11px] text-gray-600">
-          Disclosure sample (always included on calls):{" "}
+        <p className="text-[11px] text-gray-600">{t("pages.dashFragments.disclosureSample")}{" "}
           <span className="italic text-gray-800">{VOICE_BILINGUAL_GREETING_EN}</span>
         </p>
         {activePreset ? (
-          <p className="text-[10px] text-gray-500">
-            Future OpenAI Realtime voice id: <span className="font-mono">{activePreset.openaiVoiceId}</span>
+          <p className="text-[10px] text-gray-500">{t("pages.agentVoice.futureVoiceId")}<span className="font-mono">{activePreset.openaiVoiceId}</span>
             {settings.provider === "elevenlabs" ? (
               <>
                 {" "}

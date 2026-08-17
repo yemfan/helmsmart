@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import type { CronJob } from "@/app/api/admin/cron-jobs/route";
 
 interface RunResult {
@@ -130,6 +131,7 @@ function JobRow({
 }
 
 export function JobsClient({ jobs }: { jobs: CronJob[] }) {
+  const { t } = useTranslation("dashboard");
   const [states, setStates] = useState<Record<string, JobState>>(
     Object.fromEntries(jobs.map((j) => [j.path, { running: false }]))
   );
@@ -172,10 +174,9 @@ export function JobsClient({ jobs }: { jobs: CronJob[] }) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Cron Job Monitor</h1>
+          <h1 className="text-xl font-semibold text-slate-900">{t("pages.adminPages.cronMonitor")}</h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            {jobs.length} scheduled jobs
-            {runningCount > 0 && ` · ${runningCount} running`}
+            {jobs.length} {t("pages.dashFragments.scheduledJobs")}{runningCount > 0 && ` · ${runningCount} running`}
             {successCount > 0 && ` · ${successCount} ✓`}
             {errorCount > 0 && ` · ${errorCount} errors`}
           </p>
@@ -215,14 +216,12 @@ export function JobsClient({ jobs }: { jobs: CronJob[] }) {
           />
         ))}
         {visible.length === 0 && (
-          <p className="p-6 text-center text-sm text-slate-400">No jobs in this category.</p>
+          <p className="p-6 text-center text-sm text-slate-400">{t("pages.adminPages.noJobs")}</p>
         )}
       </div>
 
-      <p className="text-xs text-slate-400">
-        All schedules are UTC. Jobs are triggered with{" "}
-        <code className="rounded bg-slate-100 px-1">CRON_SECRET</code> auth automatically.
-      </p>
+      <p className="text-xs text-slate-400">{t("pages.dashFragments.allSchedulesUtc")}{" "}
+        <code className="rounded bg-slate-100 px-1">CRON_SECRET</code> {t("pages.dashFragments.authAutomatically")}</p>
     </div>
   );
 }

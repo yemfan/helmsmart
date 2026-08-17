@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { notFound } from "next/navigation";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getShowingWithFeedback } from "@/lib/showings/service";
 import { ShowingDetailClient } from "./ShowingDetailClient";
 
-export const metadata: Metadata = {
-  title: "Showing",
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("pages.showingDetail.metaTitle", { ns: "dashboard" }),
+    robots: { index: false },
+  };
+}
 
 type PageProps = { params: Promise<{ id: string }> };
 

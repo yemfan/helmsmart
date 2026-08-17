@@ -1,6 +1,7 @@
- "use client";
+"use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import PaywallModal from "@/components/PaywallModal";
@@ -54,6 +55,7 @@ export default function SmartCmaBuilderPage() {
 }
 
 function SmartCmaBuilderPageInner() {
+  const { t } = useTranslation("dashboard");
   const searchParams = useSearchParams();
   const initialAddress = searchParams?.get("address") ?? "";
   const queryLeadId = searchParams?.get("contact_id") ?? null;
@@ -377,27 +379,18 @@ function SmartCmaBuilderPageInner() {
     <>
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="bg-white shadow rounded-xl p-6 border border-gray-100">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Smart CMA Builder
-        </h1>
-        <p className="text-sm text-gray-600 mb-4">
-          Generate a comparative market analysis with price range and listing
-          strategies based on nearby comparable sales.
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t("pages.smartCmaBuilder.h1")}</h1>
+        <p className="text-sm text-gray-600 mb-4">{t("pages.smartCmaBuilder.sub")}</p>
         {usage ? (
           <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-            <div className="text-xs text-slate-700 font-medium">
-              You have used {usage.used}/{usage.limit} CMA reports today
-            </div>
+            <div className="text-xs text-slate-700 font-medium">{t("pages.smartCmaBuilder.youHaveUsed")} {usage.used}/{usage.limit} {t("pages.smartCmaBuilder.reportsToday")}</div>
             {usage.warning && !usage.reached ? (
               <div className="text-[11px] text-amber-700 mt-1">
                 ⚠️ You’re almost out of free CMA reports
               </div>
             ) : null}
             {usage.reached ? (
-              <div className="text-[11px] text-red-700 mt-1">
-                You’ve reached your limit
-              </div>
+              <div className="text-[11px] text-red-700 mt-1">{t("pages.smartCmaBuilder.limitReached")}</div>
             ) : null}
           </div>
         ) : null}
@@ -405,12 +398,8 @@ function SmartCmaBuilderPageInner() {
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <div className="text-xs font-semibold text-slate-700">
-                  Attach report to Lead (optional)
-                </div>
-                <div className="text-[11px] text-slate-500 mt-1">
-                  The report will be linked to this lead in CloseBoss.
-                </div>
+                <div className="text-xs font-semibold text-slate-700">{t("pages.smartCmaBuilder.attachToLead")}</div>
+                <div className="text-[11px] text-slate-500 mt-1">{t("pages.smartCmaBuilder.attachNote")}</div>
               </div>
               <div className="flex-1 sm:max-w-[420px]">
                 {leadOptionsLoading ? (
@@ -425,7 +414,7 @@ function SmartCmaBuilderPageInner() {
                   className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
                   disabled={leadOptionsLoading || !!leadOptionsError}
                 >
-                  <option value="">Do not attach to a lead</option>
+                  <option value="">{t("pages.smartCmaBuilder.doNotAttach")}</option>
                   {leadOptions.map((l) => (
                     <option key={l.id} value={l.id}>
                       {l.name ?? "Lead"}{" "}
@@ -437,30 +426,23 @@ function SmartCmaBuilderPageInner() {
             </div>
 
             {attachedLead ? (
-              <div className="text-xs text-slate-600">
-                Attached to{" "}
+              <div className="text-xs text-slate-600">{t("pages.smartCmaBuilder.attachedTo")}{" "}
                 <span className="font-semibold">{attachedLead.name ?? "Lead"}</span> •{" "}
                 {attachedLead.property_address ?? "No address"}
               </div>
             ) : (
-              <div className="text-xs text-slate-600">
-                No lead attached. Reports will still be saved in the Reports table.
-              </div>
+              <div className="text-xs text-slate-600">{t("pages.smartCmaBuilder.noLeadAttached")}</div>
             )}
 
             {attachedLeadId && attachedLead?.property_address ? (
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div className="text-[11px] text-slate-500">
-                  Use the lead&apos;s address to generate and save a report.
-                </div>
+                <div className="text-[11px] text-slate-500">{t("pages.smartCmaBuilder.useLeadAddress")}</div>
                 <button
                   type="button"
                   onClick={handleCreateAndSaveForLead}
                   disabled={loading || savingReport}
                   className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  Create & Save Report
-                </button>
+                >{t("pages.smartCmaBuilder.createAndSave")}</button>
               </div>
             ) : null}
           </div>
@@ -470,7 +452,7 @@ function SmartCmaBuilderPageInner() {
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Property address"
+              placeholder={t("pages.smartCmaBuilder.propertyAddress")}
               className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
@@ -487,29 +469,27 @@ function SmartCmaBuilderPageInner() {
               onClick={() => handleGenerate(true)}
               disabled={loading}
               className="inline-flex items-center justify-center bg-white text-blue-700 text-sm font-semibold px-4 py-2 rounded-lg border border-blue-200 hover:bg-blue-50 disabled:opacity-60 disabled:cursor-not-allowed min-w-[180px]"
-            >
-              Refresh Latest Data
-            </button>
+            >{t("pages.smartCmaBuilder.refreshData")}</button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
             <LabeledInput
-              label="Beds"
+              label={t("pages.articleChrome.beds", { ns: "dashboard" })}
               value={beds ?? ""}
               onChange={(v) => setBeds(v ? Number(v) || 0 : undefined)}
             />
             <LabeledInput
-              label="Baths"
+              label={t("pages.articleChrome.baths", { ns: "dashboard" })}
               value={baths ?? ""}
               onChange={(v) => setBaths(v ? Number(v) || 0 : undefined)}
             />
             <LabeledInput
-              label="Sqft"
+              label={t("pages.articleChrome.sqft", { ns: "dashboard" })}
               value={sqft ?? ""}
               onChange={(v) => setSqft(v ? Number(v) || 0 : undefined)}
             />
             <LabeledInput
-              label="Year Built"
+              label={t("pages.articleChrome.yearBuilt", { ns: "dashboard" })}
               value={yearBuilt ?? ""}
               onChange={(v) =>
                 setYearBuilt(v ? Number(v) || new Date().getFullYear() : undefined)
@@ -518,18 +498,16 @@ function SmartCmaBuilderPageInner() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
             <label className="flex flex-col">
-              <span className="font-semibold text-gray-600 mb-1">
-                Condition
-              </span>
+              <span className="font-semibold text-gray-600 mb-1">{t("pages.smartCmaBuilder.condition")}</span>
               <select
                 value={condition}
                 onChange={(e) => setCondition(e.target.value)}
                 className="border border-gray-300 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option>Needs Work</option>
-                <option>Average</option>
-                <option>Updated</option>
-                <option>Fully Renovated</option>
+                <option>{t("pages.smartCmaBuilder.needsWork")}</option>
+                <option>{t("pages.smartCmaBuilder.average")}</option>
+                <option>{t("pages.smartCmaBuilder.updated")}</option>
+                <option>{t("pages.smartCmaBuilder.fullyRenovated")}</option>
               </select>
             </label>
           </div>
@@ -542,9 +520,7 @@ function SmartCmaBuilderPageInner() {
       {data && (
         <>
           <div className="bg-white shadow rounded-xl p-6 border border-gray-100">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
-              Property Summary
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">{t("pages.smartCmaBuilder.propertySummary")}</h2>
             <p className="text-sm font-medium text-gray-800">
               {data.subject.address}
             </p>
@@ -553,17 +529,14 @@ function SmartCmaBuilderPageInner() {
               {data.subject.sqft.toLocaleString()} sqft •{" "}
               {data.subject.propertyType}
             </p>
-            <p className="text-xs text-gray-600">
-              Built {data.subject.yearBuilt} • Condition:{" "}
+            <p className="text-xs text-gray-600">{t("pages.smartCmaBuilder.built")} {data.subject.yearBuilt} • Condition:{" "}
               {data.subject.condition}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white shadow rounded-lg p-4 border border-gray-100">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                Estimated Value
-              </h3>
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{t("pages.smartCmaBuilder.estimatedValue")}</h3>
               <p className="text-2xl font-bold text-blue-700">
                 {formatCurrency(data.estimatedValue)}
               </p>
@@ -573,9 +546,7 @@ function SmartCmaBuilderPageInner() {
               </p>
             </div>
             <div className="bg-white shadow rounded-lg p-4 border border-gray-100">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                Price Range
-              </h3>
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{t("pages.smartCmaBuilder.priceRange")}</h3>
               <p className="text-sm font-semibold text-gray-900">
                 {formatCurrency(data.low)} – {formatCurrency(data.high)}
               </p>
@@ -584,25 +555,20 @@ function SmartCmaBuilderPageInner() {
               </p>
             </div>
             <div className="bg-white shadow rounded-lg p-4 border border-gray-100">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                Listing Strategy Snapshot
-              </h3>
-              <p className="text-xs text-gray-700">
-                Aggressive:{" "}
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{t("pages.smartCmaBuilder.strategySnapshot")}</h3>
+              <p className="text-xs text-gray-700">{t("pages.smartCmaBuilder.aggressive")}{" "}
                 <span className="font-semibold">
                   {formatCurrency(data.strategies.aggressive)}
                 </span>{" "}
                 (≈{data.strategies.daysOnMarket.aggressive} days)
               </p>
-              <p className="text-xs text-gray-700">
-                Market:{" "}
+              <p className="text-xs text-gray-700">{t("pages.smartCmaBuilder.market")}{" "}
                 <span className="font-semibold">
                   {formatCurrency(data.strategies.market)}
                 </span>{" "}
                 (≈{data.strategies.daysOnMarket.market} days)
               </p>
-              <p className="text-xs text-gray-700">
-                Premium:{" "}
+              <p className="text-xs text-gray-700">{t("pages.smartCmaBuilder.premium")}{" "}
                 <span className="font-semibold">
                   {formatCurrency(data.strategies.premium)}
                 </span>{" "}
@@ -613,9 +579,7 @@ function SmartCmaBuilderPageInner() {
 
           <div className="bg-white shadow rounded-xl p-6 border border-gray-100">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Comparable Sales
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t("pages.articleChrome.comparableSales", { ns: "dashboard" })}</h2>
               <span className="text-xs text-gray-500">
                 {data.comps.length} comps used (last 6 months, ~0.5 mi)
               </span>
@@ -624,14 +588,14 @@ function SmartCmaBuilderPageInner() {
               <table className="min-w-full text-xs border-collapse">
                 <thead>
                   <tr className="bg-gray-50 text-left text-gray-600">
-                    <th className="px-3 py-2 font-semibold">Address</th>
-                    <th className="px-3 py-2 font-semibold">Sold Price</th>
-                    <th className="px-3 py-2 font-semibold">Sqft</th>
-                    <th className="px-3 py-2 font-semibold">Price/Sqft</th>
-                    <th className="px-3 py-2 font-semibold">Beds</th>
-                    <th className="px-3 py-2 font-semibold">Baths</th>
-                    <th className="px-3 py-2 font-semibold">Distance</th>
-                    <th className="px-3 py-2 font-semibold">Sold Date</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.address", { ns: "dashboard" })}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.smartCmaBuilder.soldPrice")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.sqft", { ns: "dashboard" })}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.smartCmaBuilder.pricePerSqft")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.beds", { ns: "dashboard" })}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.articleChrome.baths", { ns: "dashboard" })}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.smartCmaBuilder.distance")}</th>
+                    <th className="px-3 py-2 font-semibold">{t("pages.smartCmaBuilder.soldDate")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -666,9 +630,7 @@ function SmartCmaBuilderPageInner() {
           </div>
 
           <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-sm text-blue-900">
-            <h2 className="text-sm font-semibold mb-2">
-              AI CMA Summary
-            </h2>
+            <h2 className="text-sm font-semibold mb-2">{t("pages.smartCmaBuilder.aiSummary")}</h2>
             <p>{data.summary}</p>
           </div>
 
@@ -676,9 +638,7 @@ function SmartCmaBuilderPageInner() {
             <button
               onClick={handleDownloadPdf}
               className="inline-flex items-center bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Download CMA PDF Report
-            </button>
+            >{t("pages.smartCmaBuilder.downloadPdf")}</button>
 
             <button
               type="button"
@@ -695,9 +655,7 @@ function SmartCmaBuilderPageInner() {
               <Link
                 href={`/report/${encodeURIComponent(savedReportId)}`}
                 className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
-              >
-                Open Saved Report
-              </Link>
+              >{t("pages.smartCmaBuilder.openSaved")}</Link>
             </div>
           ) : null}
 
@@ -719,9 +677,7 @@ function SmartCmaBuilderPageInner() {
           type="button"
           onClick={() => setPaywallOpen(false)}
           className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-        >
-          Try again tomorrow
-        </button>
+        >{t("pages.smartCmaBuilder.tryTomorrow")}</button>
       </div>
     ) : null}
     </>

@@ -1,12 +1,17 @@
+import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { getOpenHouseWithVisitors } from "@/lib/open-houses/service";
 import FlyerBuilderClient, { type OpenHousePrefill } from "./FlyerBuilderClient";
 
-export const metadata = {
-  title: "Open House Flyer Builder | CloseBoss",
-  description: "Create a professional open house flyer with property details, photos, and QR code.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: `${t("pages.flyer.metaTitle", { ns: "dashboard" })} | CloseBoss`,
+    description: t("pages.flyer.metaDescription", { ns: "dashboard" }),
+  };
+}
 
 export default async function FlyerBuilderPage({
   searchParams,

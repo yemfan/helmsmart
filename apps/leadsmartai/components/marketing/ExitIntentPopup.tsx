@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { trackLandingEvent } from "@/lib/marketing/landingTrack";
 
 const SESSION_KEY = "leadsmart_exit_popup_session_done";
@@ -16,6 +17,7 @@ type Props = {
 };
 
 export default function ExitIntentPopup({ role }: Props) {
+  const { t } = useTranslation("dashboard");
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -129,13 +131,13 @@ export default function ExitIntentPopup({ role }: Props) {
 
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center p-4 sm:items-center" role="dialog" aria-modal="true" aria-labelledby="exit-popup-title">
-      <button type="button" className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]" aria-label="Close" onClick={dismiss} />
+      <button type="button" className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]" aria-label={t("pages.exitIntent.close")} onClick={dismiss} />
       <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/25">
         <button
           type="button"
           onClick={dismiss}
           className="absolute right-3 top-3 rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-          aria-label="Close dialog"
+          aria-label={t("pages.exitIntent.closeDialog")}
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -145,16 +147,16 @@ export default function ExitIntentPopup({ role }: Props) {
           <p id="exit-popup-title" className="font-heading text-2xl font-bold text-slate-900">
             Before you go…
           </p>
-          <p className="mt-3 text-lg font-semibold text-[#0072ce]">Want 3 free buyer leads?</p>
-          <p className="mt-2 text-sm text-slate-600">Drop your email and we&apos;ll send details.</p>
+          <p className="mt-3 text-lg font-semibold text-[#0072ce]">{t("pages.exitIntent.headline")}</p>
+          <p className="mt-2 text-sm text-slate-600">{t("pages.exitIntent.sub")}</p>
         </div>
         <div className="px-6 py-6 sm:px-8">
           {status === "success" ? (
-            <p className="text-center text-base font-semibold text-emerald-700">You&apos;re in — check your inbox soon.</p>
+            <p className="text-center text-base font-semibold text-emerald-700">{t("pages.exitIntent.done")}</p>
           ) : (
             <form onSubmit={onSubmit} className="space-y-4">
               <label className="block">
-                <span className="sr-only">Email</span>
+                <span className="sr-only">{t("pages.exitIntent.email")}</span>
                 <input
                   type="email"
                   name="email"

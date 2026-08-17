@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Copy, Share2 } from "lucide-react";
 
 function absoluteUrl(relativePath: string): string {
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export default function HomeValueSmartLinkCopyShare({ relativePath, compact = false }: Props) {
+  const { t } = useTranslation("dashboard");
   const [copied, setCopied] = useState(false);
   const [shareHint, setShareHint] = useState(false);
 
@@ -57,13 +59,13 @@ export default function HomeValueSmartLinkCopyShare({ relativePath, compact = fa
   if (compact) {
     return (
       <div className="flex flex-wrap items-center gap-2">
-        <button type="button" className={btnBase} onClick={copyLink} aria-label="Copy full link">
+        <button type="button" className={btnBase} onClick={copyLink} aria-label={t("pages.smartLinkShare.copyFull")}>
           <Copy className="h-4 w-4 shrink-0" />
           <span className="sr-only sm:not-sr-only">{copied ? "Copied!" : "Copy"}</span>
         </button>
-        <button type="button" className={btnBase} onClick={shareLink} aria-label="Share link">
+        <button type="button" className={btnBase} onClick={shareLink} aria-label={t("pages.smartLinkShare.shareLink")}>
           <Share2 className="h-4 w-4 shrink-0" />
-          <span className="sr-only sm:not-sr-only">Share</span>
+          <span className="sr-only sm:not-sr-only">{t("pages.smartLinkShare.share")}</span>
         </button>
         {(copied || shareHint) && (
           <span className="text-xs font-medium text-emerald-600" role="status">
@@ -81,13 +83,9 @@ export default function HomeValueSmartLinkCopyShare({ relativePath, compact = fa
         {copied ? "Copied!" : "Copy link"}
       </button>
       <button type="button" className={btnBase} onClick={shareLink}>
-        <Share2 className="h-4 w-4 shrink-0" />
-        Share
-      </button>
+        <Share2 className="h-4 w-4 shrink-0" />{t("pages.smartLinkShare.share")}</button>
       {shareHint && !copied && (
-        <span className="text-xs text-slate-600" role="status">
-          Copied full URL. On mobile, Share opens your apps (Messages, email, etc.).
-        </span>
+        <span className="text-xs text-slate-600" role="status">{t("pages.smartLinkShare.copiedNote")}</span>
       )}
     </div>
   );

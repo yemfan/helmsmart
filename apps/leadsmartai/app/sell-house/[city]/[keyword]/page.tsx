@@ -10,6 +10,7 @@ import {
   isValidKeywordSlugForMetro,
   resolveMetroKeyword,
 } from "@/lib/trafficMetros";
+import { getServerT } from "@/lib/i18n/server";
 
 /**
  * Render on demand at request time — NOT static/ISR. The root layout calls
@@ -41,6 +42,7 @@ export default async function SellHouseKeywordPage({
 }: {
   params: Promise<{ city: string; keyword: string }>;
 }) {
+  const t = await getServerT();
   const p = await params;
   const city = await getMetroBySlug(p.city);
   if (!city || !isValidKeywordSlugForMetro("sell-house", city, p.keyword)) return notFound();
@@ -52,16 +54,15 @@ export default async function SellHouseKeywordPage({
     <main className="mx-auto max-w-5xl px-4 py-10">
       <TrafficTracker pagePath={`/sell-house/${city.slug}/${p.keyword}`} city={city.city} source="seo_sell_house_keyword" />
       <h1 className="text-3xl font-bold text-slate-900">{keyword}</h1>
-      <p className="mt-2 text-slate-700">
-        Seller-focused local page for {city.city}. Get timing, pricing, and demand insights built for this market.
+      <p className="mt-2 text-slate-700">{t("pages.keywordPages.sellerFocusedFor", { ns: "dashboard" })} {city.city}. Get timing, pricing, and demand insights built for this market.
       </p>
 
       <section className="mt-8 grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Market snapshot</h2>
+          <h2 className="text-xl font-semibold text-slate-900">{t("pages.keywordPages.marketSnapshot", { ns: "dashboard" })}</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-700">
             {market.medianDaysOnMarket !== null && (
-              <li>Median time on market: {Math.round(market.medianDaysOnMarket)} days</li>
+              <li>{t("pages.keywordPages.medianTimeOnMarket", { ns: "dashboard" })} {Math.round(market.medianDaysOnMarket)} days</li>
             )}
             {market.yoyChangePct !== null && (
               <li>
@@ -72,9 +73,9 @@ export default async function SellHouseKeywordPage({
             {market.typicalValue !== null && (
               <li>Typical home value: ${Math.round(market.typicalValue).toLocaleString()}</li>
             )}
-            <li>Current direction: {market.trend}</li>
+            <li>{t("pages.keywordPages.currentDirection", { ns: "dashboard" })} {market.trend}</li>
           </ul>
-          <h3 className="mt-4 text-base font-semibold text-slate-900">Nearby city links</h3>
+          <h3 className="mt-4 text-base font-semibold text-slate-900">{t("pages.keywordPages.nearbyLinks", { ns: "dashboard" })}</h3>
           <div className="mt-2 flex flex-wrap gap-3 text-sm">
             {nearby.map((n) => (
               <a key={n.slug} href={`/sell-house/${n.slug}/${p.keyword}`} className="text-blue-700 hover:underline">
@@ -82,10 +83,10 @@ export default async function SellHouseKeywordPage({
               </a>
             ))}
           </div>
-          <h3 className="mt-4 text-base font-semibold text-slate-900">Related pages</h3>
+          <h3 className="mt-4 text-base font-semibold text-slate-900">{t("pages.keywordPages.relatedPages", { ns: "dashboard" })}</h3>
           <div className="mt-2 flex flex-wrap gap-3 text-sm">
-            <a href={`/home-value/${city.slug}/${p.keyword}`} className="text-blue-700 hover:underline">Home value keyword page</a>
-            <a href={`/market-report/${city.slug}/${p.keyword}`} className="text-blue-700 hover:underline">Market report keyword page</a>
+            <a href={`/home-value/${city.slug}/${p.keyword}`} className="text-blue-700 hover:underline">{t("pages.keywordPages.homeValueKeyword", { ns: "dashboard" })}</a>
+            <a href={`/market-report/${city.slug}/${p.keyword}`} className="text-blue-700 hover:underline">{t("pages.keywordPages.marketReportKeyword", { ns: "dashboard" })}</a>
           </div>
         </article>
         <LocalSeoLeadForm title={`Get a ${city.city} Selling Plan`} source="seo_sell_house_keyword" city={city.city} />

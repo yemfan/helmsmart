@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 
 import AddressAutocomplete from "@/components/AddressAutocomplete";
@@ -25,6 +26,7 @@ type Quota = {
 };
 
 export default function DeepReportClient() {
+  const { t } = useTranslation("dashboard");
   const [address, setAddress] = useState("");
   const [use, setUse] = useState<PropertyUse>("primary");
   const [showLoan, setShowLoan] = useState(false);
@@ -137,12 +139,12 @@ export default function DeepReportClient() {
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-start justify-between gap-3">
           <label className="block flex-1">
-            <span className="text-sm font-semibold text-slate-900">Property address</span>
+            <span className="text-sm font-semibold text-slate-900">{t("pages.deepReport.address")}</span>
             <div className="mt-1">
               <AddressAutocomplete
                 value={address}
                 onChange={setAddress}
-                placeholder="123 Main St, Austin, TX 78701"
+                placeholder={t("pages.deepReport.addressPlaceholder")}
                 className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
                 disabled={loading || quota?.reached === true}
               />
@@ -152,7 +154,7 @@ export default function DeepReportClient() {
         </div>
 
         <div className="mt-3">
-          <span className="text-sm font-semibold text-slate-900">How will the buyer use it?</span>
+          <span className="text-sm font-semibold text-slate-900">{t("pages.deepReport.buyerUse")}</span>
           <div className="mt-2 flex flex-wrap gap-2">
             {USE_OPTIONS.map((o) => (
               <button
@@ -177,34 +179,32 @@ export default function DeepReportClient() {
             onClick={() => setShowLoan((v) => !v)}
             className="text-xs font-semibold text-slate-500 hover:text-slate-700"
           >
-            {showLoan ? "− Loan assumptions" : "+ Loan assumptions (optional)"}
+            {showLoan ? t("pages.deepReport.loanHide") : t("pages.deepReport.loanShow")}
           </button>
           {showLoan ? (
             <div className="mt-2 grid grid-cols-3 gap-2">
               <label className="block text-xs">
-                <span className="text-slate-600">Down %</span>
+                <span className="text-slate-600">{t("pages.deepReport.downPct")}</span>
                 <input value={downPct} onChange={(e) => setDownPct(e.target.value)} inputMode="decimal" className="mt-1 block w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm" />
               </label>
               <label className="block text-xs">
-                <span className="text-slate-600">Rate %</span>
+                <span className="text-slate-600">{t("pages.deepReport.ratePct")}</span>
                 <input value={ratePct} onChange={(e) => setRatePct(e.target.value)} inputMode="decimal" className="mt-1 block w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm" />
               </label>
               <label className="block text-xs">
-                <span className="text-slate-600">Term (yrs)</span>
+                <span className="text-slate-600">{t("pages.deepReport.termYears")}</span>
                 <input value={termYears} onChange={(e) => setTermYears(e.target.value)} inputMode="numeric" className="mt-1 block w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm" />
               </label>
             </div>
           ) : null}
           {showLoan && report ? (
-            <p className="mt-2 text-xs text-slate-400">
-              Affordability updates instantly below — no new report needed.
-            </p>
+            <p className="mt-2 text-xs text-slate-400">{t("pages.deepReport.instantUpdate")}</p>
           ) : null}
         </div>
 
         <div className="mt-4 flex items-center justify-between gap-3">
           <span className="text-xs text-slate-400">
-            {quota?.reached ? "Daily limit reached — resets at midnight UTC." : "Searches the live web — results take up to a minute."}
+            {quota?.reached ? t("pages.deepReport.quotaReached") : t("pages.deepReport.liveWeb")}
           </span>
           <button
             type="button"
@@ -212,14 +212,12 @@ export default function DeepReportClient() {
             disabled={loading || address.trim().length === 0 || quota?.reached === true}
             className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Generating…" : "Generate Deep Report"}
+            {loading ? t("pages.deepReport.generating") : t("pages.deepReport.generate")}
           </button>
         </div>
         {quota?.reached ? (
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            <span>
-              You&rsquo;ve used all {quota.limit} Deep Report{quota.limit === 1 ? "" : "s"} for today. Resets at midnight UTC.
-            </span>
+            <span>{t("pages.dashFragments.usedAll")} {quota.limit} {t("pages.dashFragments.deepReport")}{quota.limit === 1 ? "" : "s"} {t("pages.dashFragments.forTodayResets")}</span>
             <Link href="/agent/pricing" className="shrink-0 font-semibold text-amber-900 underline hover:text-amber-950">
               Upgrade for more →
             </Link>

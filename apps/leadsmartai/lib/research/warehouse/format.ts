@@ -46,8 +46,30 @@ export const METRIC_ORDER = [
   "treasury_10yr",
 ];
 
-export function metricLabel(metric: string): string {
-  return METRIC_META[metric]?.label ?? metric;
+/**
+ * The translator, as both `getServerT()` and `useTranslation()` hand it over.
+ *
+ * Every helper below that returns *copy* takes one, optionally. Optional
+ * because these run from the newsletter assembler and the market-report
+ * service too, where there is no request and no reader locale to speak of —
+ * those callers get English and that is the correct answer for them.
+ */
+export type Translate = (key: string, opts?: Record<string, unknown>) => string;
+
+const say = (t: Translate | undefined, key: string, english: string) =>
+  t ? t(`pages.warehouseMetrics.${key}`, { ns: "dashboard" }) : english;
+
+export function metricLabel(metric: string, t?: Translate): string {
+  const meta = METRIC_META[metric];
+  if (!meta) return metric;
+  return say(t, `${metric}.label`, meta.label);
+}
+
+/** The short form, for a stat tile where the full label would wrap. */
+export function metricShort(metric: string, t?: Translate): string {
+  const meta = METRIC_META[metric];
+  if (!meta) return metric;
+  return say(t, `${metric}.short`, meta.short);
 }
 
 export function isNum(v: number | null | undefined): v is number {
@@ -61,7 +83,7 @@ export function isNum(v: number | null | undefined): v is number {
 export function formatValue(
   value: number | null | undefined,
   unit: string | null | undefined,
-  opts: { compact?: boolean } = {},
+  opts: { compact?: boolean; t?: Translate } = {},
 ): string {
   if (!isNum(value)) return "—";
   const u = unit ?? "";
@@ -74,8 +96,14 @@ export function formatValue(
     case "count":
       return Math.round(value).toLocaleString("en-US");
     case "days": {
+      /*
+       * Grouping stays en-US on purpose: these are US dollar and unit figures
+       * and zh-CN groups them identically. The word "days" is the only part
+       * of a formatted value that is language, not notation.
+       */
       const d = Math.round(value);
-      return `${d.toLocaleString("en-US")} ${d === 1 ? "day" : "days"}`;
+      const unitWord = say(opts.t, d === 1 ? "dayOne" : "dayOther", d === 1 ? "day" : "days");
+      return `${d.toLocaleString("en-US")} ${unitWord}`;
     }
     case "percent":
       return `${value.toFixed(1)}%`;
@@ -183,21 +211,34 @@ export function findMetric(
   return metrics.find((m) => m.metric === metric) ?? null;
 }
 
-/** "higher than" / "lower than" / "about the same as" phrasing for a delta. */
-export function comparePhrase(pct: number | null): string {
-  if (!isNum(pct)) return "not directly comparable to";
+/**
+ * A delta, decomposed rather than phrased.
+ *
+ * English puts the magnitude before the comparison and the object after it —
+ * "12.3% higher than the state average" — while Chinese puts the object in
+ * the middle: 比州平均高 12.3%. A helper that returns a finished phrase can
+ * only serve one of those word orders, so it returns the pieces and lets the
+ * translated sentence assemble them.
+ */
+export function compareParts(pct: number | null): {
+  kind: "notComparable" | "same" | "higher" | "lower";
+  abs: string | null;
+} {
+  if (!isNum(pct)) return { kind: "notComparable", abs: null };
   const abs = Math.abs(pct);
-  if (abs < 1) return "about the same as";
-  const dir = pct > 0 ? "higher than" : "lower than";
-  return `${abs.toFixed(1)}% ${dir}`;
+  if (abs < 1) return { kind: "same", abs: null };
+  return { kind: pct > 0 ? "higher" : "lower", abs: abs.toFixed(1) };
 }
 
-/** Format a YYYY-MM-DD period as "June 2026". */
-export function formatPeriod(period: string | null | undefined): string {
+/** Format a YYYY-MM-DD period as "June 2026" / "2026年6月". */
+export function formatPeriod(
+  period: string | null | undefined,
+  locale = "en-US",
+): string {
   if (!period) return "";
   const dt = new Date(`${period}T00:00:00Z`);
   if (Number.isNaN(dt.getTime())) return period;
-  return dt.toLocaleDateString("en-US", {
+  return dt.toLocaleDateString(locale, {
     year: "numeric",
     month: "long",
     timeZone: "UTC",
