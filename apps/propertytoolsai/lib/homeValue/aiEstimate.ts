@@ -177,7 +177,6 @@ function buildResponse(
       applied,
     },
     sessionId,
-    rentcastComps: [],
   };
 }
 

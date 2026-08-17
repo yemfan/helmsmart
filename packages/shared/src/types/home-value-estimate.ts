@@ -100,24 +100,6 @@ export type HomeValueEstimateRequest = {
   session_id?: string;
 };
 
-/** Comparable sale from Rentcast (used as fallback when local comps are unavailable). */
-export type RentcastComparable = {
-  id: string;
-  address: string;
-  soldPrice: number;
-  soldDate: string;
-  zip?: string;
-  beds?: number;
-  baths?: number;
-  sqft?: number;
-  yearBuilt?: number;
-  distanceMiles?: number;
-  propertyType?: string;
-  pricePerSqft?: number;
-  lat?: number;
-  lng?: number;
-};
-
 /** API → client success body. */
 export type HomeValueEstimateResponse = {
   ok: true;
@@ -145,5 +127,4 @@ export type HomeValueEstimateResponse = {
   };
   sessionId: string;
   /** Rentcast comparable sales — fallback when local warehouse comps are unavailable. */
-  rentcastComps: RentcastComparable[];
 };
