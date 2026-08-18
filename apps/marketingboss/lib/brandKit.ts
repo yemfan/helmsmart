@@ -17,7 +17,14 @@ export type BrandKit = {
 };
 
 /** Column list for selecting a brand kit row. */
-export const BRAND_KIT_COLUMNS = "brand_name, voice, audience, primary_color, accent_color, logo_url";
+/**
+ * Columns every brand-aware read pulls. `company_url` is in the list because the
+ * type has always declared it and the column has existed since 0021 — it was
+ * simply never selected, so the composer fell back to a hardcoded placeholder
+ * and posts went out with no link at all.
+ */
+export const BRAND_KIT_COLUMNS =
+  "brand_name, voice, audience, primary_color, accent_color, logo_url, company_url";
 
 const HEX = /^#?[0-9a-fA-F]{3,8}$/;
 
