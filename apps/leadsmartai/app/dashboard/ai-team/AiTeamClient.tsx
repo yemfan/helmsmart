@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AI_TEAM, type AssistantType } from "@/lib/realtyboss/team";
-import { AssistantAvatar, AssistantAvatarPicker } from "@/components/realtyboss/AssistantAvatar";
+import { AI_TEAM, type AssistantType } from "@/lib/closeboss/team";
+import { AssistantAvatar, AssistantAvatarPicker } from "@/components/closeboss/AssistantAvatar";
 
 type AssistantRow = {
   id: string;
@@ -39,8 +39,8 @@ export default function AiTeamClient() {
 
   const load = useCallback(async () => {
     const [res, perfRes] = await Promise.all([
-      fetch("/api/dashboard/realtyboss/team").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtyboss/performance").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/closeboss/team").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/closeboss/performance").then((r) => r.json()).catch(() => ({})),
     ]);
     if (res?.ok) {
       setAssistants((res.assistants ?? []) as AssistantRow[]);
@@ -61,7 +61,7 @@ export default function AiTeamClient() {
     ) => {
       setSaving(type);
       setError(null);
-      const res = await fetch("/api/dashboard/realtyboss/team", {
+      const res = await fetch("/api/dashboard/closeboss/team", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type, ...body }),
@@ -82,7 +82,7 @@ export default function AiTeamClient() {
     const fd = new FormData();
     fd.append("type", type);
     fd.append("file", file);
-    const res = await fetch("/api/dashboard/realtyboss/assistant-avatar", { method: "POST", body: fd })
+    const res = await fetch("/api/dashboard/closeboss/assistant-avatar", { method: "POST", body: fd })
       .then((r) => r.json())
       .catch(() => ({}));
     if (res?.ok && res.assistant) {
@@ -96,7 +96,7 @@ export default function AiTeamClient() {
   const removeAvatar = useCallback(async (type: AssistantType) => {
     setSaving(type);
     setError(null);
-    const res = await fetch("/api/dashboard/realtyboss/assistant-avatar", {
+    const res = await fetch("/api/dashboard/closeboss/assistant-avatar", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type }),

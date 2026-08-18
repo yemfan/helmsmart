@@ -1,10 +1,10 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { effectiveAutopilot } from "@/lib/realtyboss/autopilot";
-import { logAssistantActivity } from "@/lib/realtyboss/activities";
-import type { AssistantType } from "@/lib/realtyboss/team";
-import type { BossChannel } from "@/lib/realtyboss/actions/registry";
+import { effectiveAutopilot } from "@/lib/closeboss/autopilot";
+import { logAssistantActivity } from "@/lib/closeboss/activities";
+import type { AssistantType } from "@/lib/closeboss/team";
+import type { BossChannel } from "@/lib/closeboss/actions/registry";
 import { getBossTool } from "./registry";
 import type { BossTool, ToolContext, ToolOutcome } from "./types";
 

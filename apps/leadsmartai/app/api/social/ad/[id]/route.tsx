@@ -11,7 +11,7 @@ import { buildAdImageResponse } from "@/lib/social/renderAd";
  */
 export const runtime = "nodejs";
 
-const BRAND_LOGO_PATH = "/brand/realtyboss/realtyboss-icon-512.png";
+const BRAND_LOGO_PATH = "/brand/closeboss/closeboss-icon-512.png";
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;

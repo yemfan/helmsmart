@@ -2,10 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/supabase/admin", () => ({ supabaseAdmin: {} }));
-vi.mock("@/lib/realtyboss/autopilot", () => ({
+vi.mock("@/lib/closeboss/autopilot", () => ({
   effectiveAutopilot: vi.fn(async () => false),
 }));
-vi.mock("@/lib/realtyboss/activities", () => ({
+vi.mock("@/lib/closeboss/activities", () => ({
   logAssistantActivity: vi.fn(async () => undefined),
 }));
 vi.mock("../registry", () => ({

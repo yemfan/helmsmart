@@ -2,7 +2,7 @@ import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendSMS } from "@/lib/twilioSms";
-import { logAssistantActivity } from "@/lib/realtyboss/activities";
+import { logAssistantActivity } from "@/lib/closeboss/activities";
 import type { TransactionRow, TransactionTaskRow } from "./types";
 
 /**

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Download, ShieldCheck, Sparkles } from "lucide-react";
 
-import { SKILLS, PILLAR_LABEL, ASSIGNEE_LABEL, type SkillPillar } from "@/lib/realtyboss/skills/catalog";
+import { SKILLS, PILLAR_LABEL, ASSIGNEE_LABEL, type SkillPillar } from "@/lib/closeboss/skills/catalog";
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {

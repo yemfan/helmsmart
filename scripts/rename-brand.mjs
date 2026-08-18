@@ -52,6 +52,14 @@ const SKIP_PATHS = [
   /REALTORBOSS_LEGACY\.md$/i,
   /realtyboss-theme-constitution\.md$/i, // renamed .docx -- binary, edit the .extracted.md
   /[\\/]next\.config\.js$/i,             // holds deliberate realtorboss->realtyboss rewrites
+  // This file IS the rename tool: its RULES table holds `realtyboss` as the SOURCE
+  // pattern.  Sweeping it rewrites the left-hand side, so every rule becomes a
+  // no-op identity mapping and the tool can never be run again.
+  /rename-brand\.mjs$/i,
+  // The runbook records WHY the rename happened: `RealtyBoss` collides with USPTO
+  // Reg. 6152911.  Swept, it would assert the NEW name infringes -- inverting a
+  // trademark finding.  It is a historical record, like the migrations.
+  /rename-runbook\.md$/i,
 ];
 
 const TEXT_EXT = /\.(ts|tsx|js|jsx|mjs|cjs|json|md|mdx|css|scss|html|yml|yaml|txt|sql|env|example)$/i;

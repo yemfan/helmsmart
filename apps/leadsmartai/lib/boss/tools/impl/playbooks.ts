@@ -3,15 +3,15 @@ import "server-only";
 import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createCmaForAgent, isCreateCmaFailure } from "@/lib/cma/service";
-import { startPlaybookRun } from "@/lib/realtyboss/playbook-runs/service";
-import { autoDispatchRunTasks } from "@/lib/realtyboss/playbook-runs/dispatch";
+import { startPlaybookRun } from "@/lib/closeboss/playbook-runs/service";
+import { autoDispatchRunTasks } from "@/lib/closeboss/playbook-runs/dispatch";
 import { defineTool } from "../types";
 
 /**
  * Playbook & multi-step engagement tools (capability-map Phase 1).
  *
  * These wrap capabilities that already exist in the older action registry
- * (lib/realtyboss/actions/registry.ts) so Ask Max's tool-loop reaches them:
+ * (lib/closeboss/actions/registry.ts) so Ask Max's tool-loop reaches them:
  * the two stateful selling/buying engagements, the open-house playbook, and
  * the closing-timeline playbook. All are non-outbound (they create CMAs, tasks,
  * and playbook-run records) — riskClass crm_write.

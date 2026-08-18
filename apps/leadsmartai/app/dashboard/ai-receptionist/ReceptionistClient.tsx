@@ -6,13 +6,13 @@ import { intlLocale } from "@/lib/i18n/locale";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
-import { getAssistant } from "@/lib/realtyboss/team";
-import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
+import { getAssistant } from "@/lib/closeboss/team";
+import { AssistantHeader, AssistantKpiCard } from "@/components/closeboss/AssistantPage";
 import MissedCallSettingsForm from "@/components/dashboard/MissedCallSettingsForm";
 import {
   AssistantCallSettings,
   ReceptionistVoiceForm,
-} from "@/components/realtyboss/AssistantCallSettings";
+} from "@/components/closeboss/AssistantCallSettings";
 
 /**
  * /dashboard/ai-receptionist — the ONE Receptionist page.
@@ -111,7 +111,7 @@ export default function ReceptionistClient() {
   const [voiceSettingsOpen, setVoiceSettingsOpen] = useState(false);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/dashboard/realtyboss/receptionist-calls?limit=100")
+    const res = await fetch("/api/dashboard/closeboss/receptionist-calls?limit=100")
       .then((r) => r.json())
       .catch(() => ({}));
     setCalls((res?.calls ?? []) as ReceptionistCall[]);

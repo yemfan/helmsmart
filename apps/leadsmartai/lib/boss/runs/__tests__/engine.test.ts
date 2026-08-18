@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/supabase/admin", () => ({ supabaseAdmin: {} }));
-vi.mock("@/lib/realtyboss/autopilot", () => ({ effectiveAutopilot: vi.fn(async () => false) }));
-vi.mock("@/lib/realtyboss/activities", () => ({ logAssistantActivity: vi.fn(async () => undefined) }));
+vi.mock("@/lib/closeboss/autopilot", () => ({ effectiveAutopilot: vi.fn(async () => false) }));
+vi.mock("@/lib/closeboss/activities", () => ({ logAssistantActivity: vi.fn(async () => undefined) }));
 // The engine reads the real registry for schemas; stub it with two fake tools.
 vi.mock("../../tools/registry", () => {
   const { z } = require("zod");

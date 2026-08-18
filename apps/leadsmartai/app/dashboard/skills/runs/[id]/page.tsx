@@ -2,8 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { getSkillRun } from "@/lib/realtyboss/skills/run";
-import { getSkill, ASSIGNEE_LABEL, type SkillAssignee } from "@/lib/realtyboss/skills/catalog";
+import { getSkillRun } from "@/lib/closeboss/skills/run";
+import { getSkill, ASSIGNEE_LABEL, type SkillAssignee } from "@/lib/closeboss/skills/catalog";
 import { CopyButton } from "./CopyButton";
 import { getServerT } from "@/lib/i18n/server";
 

@@ -2,7 +2,7 @@ import "server-only";
 
 import { sendSMS } from "@/lib/twilioSms";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { logAssistantActivity } from "@/lib/realtyboss/activities";
+import { logAssistantActivity } from "@/lib/closeboss/activities";
 import { getOpenAIConfig } from "@/lib/ai/openaiClient";
 import { getSelectedSalesModelServer } from "@/lib/sales-model-server";
 import { getSalesModel, DEFAULT_SALES_MODEL } from "@/lib/sales-models";

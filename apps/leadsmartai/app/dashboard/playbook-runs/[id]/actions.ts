@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { optimizePlaybookRun, type OptimizeResult } from "@/lib/realtyboss/playbook-runs/service";
-import { dispatchPlaybookTask, type DispatchResult } from "@/lib/realtyboss/playbook-runs/dispatch";
+import { optimizePlaybookRun, type OptimizeResult } from "@/lib/closeboss/playbook-runs/service";
+import { dispatchPlaybookTask, type DispatchResult } from "@/lib/closeboss/playbook-runs/dispatch";
 
 /**
  * Agent-approved "optimize as we go" step. Runs the AI review, records the

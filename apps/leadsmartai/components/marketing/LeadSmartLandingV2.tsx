@@ -97,7 +97,7 @@ const BUY_FASTER = ["auto_criteria", "ai_machine"] as const;
 
 /**
  * The CloseBoss AI team — the six branded assistants, introduced at the top of
- * the page. Names + portraits match the in-app roster (lib/realtyboss/team.ts,
+ * the page. Names + portraits match the in-app roster (lib/closeboss/team.ts,
  * /avatars/personas). Copy is brand content, kept inline (not i18n) for now.
  */
 const AI_TEAM_MEMBERS = [

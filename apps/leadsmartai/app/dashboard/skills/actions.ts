@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { setSkillOverride } from "@/lib/realtyboss/skills/service";
-import type { SkillAssignee } from "@/lib/realtyboss/skills/catalog";
+import { setSkillOverride } from "@/lib/closeboss/skills/service";
+import type { SkillAssignee } from "@/lib/closeboss/skills/catalog";
 
 export type SkillOverridePatch = { enabled?: boolean; assignee?: SkillAssignee };
 

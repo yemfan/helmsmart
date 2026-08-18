@@ -48,7 +48,7 @@ export default async function OpenHouseKioskPage({ params }: PageProps) {
   return (
     <>
       <link rel="manifest" href={`/oh/${slug}/kiosk/manifest.json`} />
-      <link rel="apple-touch-icon" href="/brand/realtyboss/realtyboss-icon-180.png" />
+      <link rel="apple-touch-icon" href="/brand/closeboss/closeboss-icon-180.png" />
       <KioskClient info={info} />
     </>
   );

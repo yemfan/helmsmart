@@ -10,7 +10,7 @@ import PostToFacebookCard from "@/components/dashboard/PostToFacebookCard";
 import { PlaybooksPanel } from "@/components/dashboard/PlaybooksPanel";
 import { LimitWarningBanner } from "@/components/entitlements/LimitWarningBanner";
 import { TransactionTypeBadge } from "@/components/transactions/TransactionAtoms";
-import { TransactionHealthBanner } from "@/components/realtyboss/TransactionHealthBanner";
+import { TransactionHealthBanner } from "@/components/closeboss/TransactionHealthBanner";
 import type {
   CounterpartyRole,
   TransactionCounterpartyRow,

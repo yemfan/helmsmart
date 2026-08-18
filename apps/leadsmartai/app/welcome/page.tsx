@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, Clock, Send } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
-import { AssistantAvatar } from "@/components/realtyboss/AssistantAvatar";
+import { AssistantAvatar } from "@/components/closeboss/AssistantAvatar";
 
 /**
  * First-run welcome — hosted by Max, the captain of the AI real estate team.

@@ -33,15 +33,15 @@ export const MOBILE_API_PATHS = {
   account: "/api/mobile/account",
   leadQueue: "/api/dashboard/lead-queue",
   leadQueueClaim: "/api/dashboard/lead-queue/claim",
-  // Boss Assistant command center — these /api/dashboard/realtyboss/* routes
+  // Boss Assistant command center — these /api/dashboard/closeboss/* routes
   // are dual-auth (Bearer-aware), so the mobile app calls them directly.
-  bossInstructions: "/api/dashboard/realtyboss/instructions",
-  bossInstructionTasks: "/api/dashboard/realtyboss/instruction-tasks",
-  bossRecommendations: "/api/dashboard/realtyboss/recommendations",
+  bossInstructions: "/api/dashboard/closeboss/instructions",
+  bossInstructionTasks: "/api/dashboard/closeboss/instruction-tasks",
+  bossRecommendations: "/api/dashboard/closeboss/recommendations",
   bossRecommendation: (id: string) =>
-    `/api/dashboard/realtyboss/recommendations/${encodeURIComponent(id)}`,
-  bossTeam: "/api/dashboard/realtyboss/team",
-  bossAutopilot: "/api/dashboard/realtyboss/autopilot",
+    `/api/dashboard/closeboss/recommendations/${encodeURIComponent(id)}`,
+  bossTeam: "/api/dashboard/closeboss/team",
+  bossAutopilot: "/api/dashboard/closeboss/autopilot",
   // Offer desk — dual-auth (Bearer-aware) routes, called directly from mobile.
   offerBuild: "/api/dashboard/offers/build",
   contractReview: "/api/dashboard/contracts/review",

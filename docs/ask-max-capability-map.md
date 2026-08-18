@@ -8,7 +8,7 @@ Ask Max runs on the **Boss v2 tool-loop**: `apps/leadsmartai/lib/boss/tools/regi
 
 **Adding a capability to Ask Max = adding one `BossTool` to `ALL_TOOLS`** (+ update the assertion in `lib/boss/tools/__tests__/registry.test.ts`). Each tool declares: `name`, `description` (shown to the model), `inputSchema` (zod), `riskClass` (`research | draft | crm_write | outbound | financial`), `assignee` (which AI employee), optional `outbound` spec, and `execute` / `propose`.
 
-There is a **second, older engine** — the action registry (`lib/realtyboss/actions/registry.ts`) — used when Boss v2 is off. It already implements several capabilities the tool-loop lacks; those are the cheapest wins (wrap existing code).
+There is a **second, older engine** — the action registry (`lib/closeboss/actions/registry.ts`) — used when Boss v2 is off. It already implements several capabilities the tool-loop lacks; those are the cheapest wins (wrap existing code).
 
 ## Legend
 
@@ -135,7 +135,7 @@ There is a **second, older engine** — the action registry (`lib/realtyboss/act
 ## Recommended plan (most leverage first)
 
 ### Phase 1 — Restore parity: bridge the action registry into the loop ✅ DONE
-Wrap capabilities that **already exist** in `lib/realtyboss/actions/registry.ts` as `BossTool`s. Lowest effort, biggest jump.
+Wrap capabilities that **already exist** in `lib/closeboss/actions/registry.ts` as `BossTool`s. Lowest effort, biggest jump.
 
 1. ✅ **`run_skill`** (#1113) — unlocks the **~59-skill** catalog (listing descriptions, farm/expired/FSBO scripts, objection scripts, GCI plan, net sheets, newsletters, case studies, video scripts…). Single highest-value addition. Wraps `routeSkillRequest` + `runSkillAndSave`.
 2. ✅ **`setup_open_house`** (#1114) — playbook (pricing CMA + dated checklist).

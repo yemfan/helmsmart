@@ -4,17 +4,17 @@ import { useTranslation } from "react-i18next";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getAssistant } from "@/lib/realtyboss/team";
-import { assessTransactionHealth } from "@/lib/realtyboss/transactionHealth";
+import { getAssistant } from "@/lib/closeboss/team";
+import { assessTransactionHealth } from "@/lib/closeboss/transactionHealth";
 import {
   happeningLine,
   levelLabel,
   missingLine,
   nextLine,
   riskLine,
-} from "@/lib/realtyboss/transactionHealthText";
+} from "@/lib/closeboss/transactionHealthText";
 import { intlLocale } from "@/lib/i18n/locale";
-import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
+import { AssistantHeader, AssistantKpiCard } from "@/components/closeboss/AssistantPage";
 
 type TransactionItem = {
   id: string;

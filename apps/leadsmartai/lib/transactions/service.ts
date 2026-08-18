@@ -5,7 +5,7 @@ import { persistCommissionDefaults } from "./applyCommissionDefaults";
 import { addDaysIso, applyDeadlineDefaults } from "./deadlineDefaults";
 import { applyOnCloseBackfill } from "./onCloseBackfill";
 import { seedTasksFor } from "./seedTasks";
-import { maybeAutoStartFromTransaction } from "@/lib/realtyboss/playbook-runs/auto";
+import { maybeAutoStartFromTransaction } from "@/lib/closeboss/playbook-runs/auto";
 import type {
   CounterpartyRole,
   TransactionCounterpartyRow,

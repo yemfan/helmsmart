@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 
 import { runSkillAction } from "./actions";
-import type { ComplianceGate } from "@/lib/realtyboss/skills/run";
+import type { ComplianceGate } from "@/lib/closeboss/skills/run";
 
 function humanize(key: string): string {
   return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());

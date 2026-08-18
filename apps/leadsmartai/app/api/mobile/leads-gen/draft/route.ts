@@ -116,7 +116,7 @@ export async function POST(req: Request) {
     // The Marketing Assistant's own knowledge base grounds the copy.
     let brandKnowledge: string | null = null;
     try {
-      const { getAssistantVoiceSettings } = await import("@/lib/realtyboss/voicePersona");
+      const { getAssistantVoiceSettings } = await import("@/lib/closeboss/voicePersona");
       const voice = await getAssistantVoiceSettings(String(auth.ctx.agentId), "marketing_assistant");
       brandKnowledge = voice.voiceKnowledge;
     } catch {

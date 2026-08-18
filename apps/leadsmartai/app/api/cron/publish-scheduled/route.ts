@@ -4,7 +4,7 @@ import { publishCarouselPost } from "@/lib/leads-gen/carousel-post";
 import { publishPost } from "@/lib/leads-gen/publish";
 import { runReelRenderTick } from "@/lib/social/enqueueReels";
 import { dispatchMobilePublishFailurePush } from "@/lib/mobile/pushDispatch";
-import { logAssistantActivity } from "@/lib/realtyboss/activities";
+import { logAssistantActivity } from "@/lib/closeboss/activities";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";

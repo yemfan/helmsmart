@@ -16,14 +16,14 @@ type Tone = "light" | "dark";
 /**
  * The CloseBoss mark — six AI employees in a hexagon around the gold BOSS core.
  * Rendered as the generated raster icon so it matches the app / launcher icon
- * exactly (master art in public/brand/realtyboss/). The `tone` prop is accepted
+ * exactly (master art in public/brand/closeboss/). The `tone` prop is accepted
  * for API compatibility but unused (the tile is self-contained).
  */
 export function CloseBossMark({ className }: { className?: string; tone?: Tone }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/brand/realtyboss/realtyboss-mark-512.png"
+      src="/brand/closeboss/closeboss-mark-512.png"
       alt="CloseBoss"
       width={40}
       height={40}

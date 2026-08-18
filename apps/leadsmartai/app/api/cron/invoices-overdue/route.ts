@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { logAssistantActivity } from "@/lib/realtyboss/activities";
+import { logAssistantActivity } from "@/lib/closeboss/activities";
 
 export const runtime = "nodejs";
 

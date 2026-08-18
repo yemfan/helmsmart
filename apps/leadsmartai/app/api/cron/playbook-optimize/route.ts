@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { verifyCronRequest } from "@/lib/cronAuth";
 import { isAnthropicConfigured } from "@/lib/anthropic";
-import { listDueOptimizeRuns, optimizePlaybookRun } from "@/lib/realtyboss/playbook-runs/service";
+import { listDueOptimizeRuns, optimizePlaybookRun } from "@/lib/closeboss/playbook-runs/service";
 
 export const runtime = "nodejs";
 // Each optimize is one Claude call; process a batch sequentially per tick.

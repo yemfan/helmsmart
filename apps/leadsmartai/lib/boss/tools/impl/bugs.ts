@@ -2,7 +2,7 @@ import "server-only";
 
 import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { logAssistantActivity } from "@/lib/realtyboss/activities";
+import { logAssistantActivity } from "@/lib/closeboss/activities";
 import { sendEmail } from "@/lib/email";
 import { defineTool } from "../types";
 
