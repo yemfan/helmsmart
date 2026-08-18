@@ -18,7 +18,7 @@
  * one-sentence story for users: "you only pay for AI calls and the videos you make."
  */
 export const CREDIT_COSTS = {
-  voicePerMinute: 8, // voice calling — charged (Retell all-in ~$0.15/min)
+  voicePerMinute: 15, // voice calling — charged (all-in ~$0.30/min, measured 2026-08-18)
   listingClip: 15, // video creation — a cinematic listing clip (fal Kling, ~$0.30)
   twinAvatar: 20, // video creation — digital-twin lipsync render (~$0.35)
   ctaEndCard: 5, // video creation — branded end-card appended to a video
@@ -45,7 +45,7 @@ export const CREDIT_TIERS: ReadonlyArray<{
     priceUsd: 49,
     monthlyCredits: 1000,
     priceEnv: "STRIPE_PRICE_ID_CB_STARTER",
-    blurb: "~125 call-min or ~50 twin videos",
+    blurb: "~65 call-min or ~50 twin videos",
   },
   {
     id: "growth",
@@ -53,7 +53,7 @@ export const CREDIT_TIERS: ReadonlyArray<{
     priceUsd: 99,
     monthlyCredits: 3000,
     priceEnv: "STRIPE_PRICE_ID_CB_GROWTH",
-    blurb: "~375 call-min, heavier video",
+    blurb: "~200 call-min, heavier video",
   },
   {
     id: "scale",
@@ -61,9 +61,27 @@ export const CREDIT_TIERS: ReadonlyArray<{
     priceUsd: 199,
     monthlyCredits: 8000,
     priceEnv: "STRIPE_PRICE_ID_CB_SCALE",
-    blurb: "~1,600 call-min, heavy video",
+    blurb: "~530 call-min, heavy video",
   },
 ] as const;
+
+/**
+ * Voice minutes a monthly grant buys at the CURRENT rate. Render display copy
+ * from this rather than hardcoding minutes in a string.
+ *
+ * The `blurb` fields above drifted badly exactly once: they were written when
+ * voice cost 8 credits/min and still claimed 125 / 375 / 1,600 minutes after
+ * the rate moved to 15 — overstating Scale by 60%. Nothing caught it because a
+ * blurb is just a string. A pricing page is a promise, so compute the number.
+ */
+export function approxCallMinutes(monthlyCredits: number): number {
+  return Math.floor(monthlyCredits / CREDIT_COSTS.voicePerMinute);
+}
+
+/** Videos of a given kind a monthly grant buys — same reasoning as above. */
+export function approxVideos(monthlyCredits: number, kind: "listingClip" | "twinAvatar"): number {
+  return Math.floor(monthlyCredits / CREDIT_COSTS[kind]);
+}
 
 /** One-off credit top-up packs (no commitment; priced above the plan rate). */
 export const CREDIT_PACKS: ReadonlyArray<{
