@@ -588,7 +588,7 @@ export default function Compose({
             </div>
             {type === "video" && (
               <div className="mt-3">
-                <NotifyChoice n={notifier} disabled={generating} />
+                <NotifyChoice n={notifier} />
               </div>
             )}
             {generating && type === "video" && (

@@ -440,7 +440,7 @@ export default function UgcStudio({
             </button>
           </div>
           <div className="mt-3">
-            <NotifyChoice n={notifier} disabled={generating} />
+            <NotifyChoice n={notifier} />
           </div>
           {generating && (
             <p className="mt-2 text-center text-xs text-slate-500">
