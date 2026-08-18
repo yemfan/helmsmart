@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { PRESETS } from "@/lib/presets";
 import { CREDIT_COST } from "@/lib/creditCosts";
+import { useDoneNotifier, NotifyChoice } from "@/components/NotifyWhenDone";
 import SocialPublish, { type SocialStatus } from "@/components/SocialPublish";
 
 type Mode = "image" | "video" | "swap";
@@ -106,6 +107,8 @@ export default function Studio({
    */
   const willUpscale =
     upscaleFirst && !!srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH;
+  /** Shared "wait here vs notify me" control — see components/NotifyWhenDone. */
+  const notifier = useDoneNotifier();
   const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
   const videoRef = useRef<HTMLInputElement>(null);
 
@@ -274,9 +277,14 @@ export default function Studio({
       setResultAspect("16:9");
       setResultPrompt(prompt.trim() || `${swapTarget} swap`);
       if (urls.length) setModalOpen(true);
+      notifier.fire("Your swap is ready", "Open MarketingBoss to see the finished clip.");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      const msg = e instanceof Error ? e.message : "Something went wrong.";
+      setError(msg);
+      // Notify on failure too — a silent failure while they're in another tab
+      // means they come back to a spinner that stopped, with no idea when.
+      notifier.fire("Your swap didn't finish", msg.slice(0, 140));
     } finally {
       setLoading(false);
       setStage(null);
@@ -303,9 +311,15 @@ export default function Studio({
       setResultAspect(aspect);
       setResultPrompt(p);
       if (urls.length) setModalOpen(true);
+      notifier.fire(
+        mode === "video" ? "Your video is ready" : "Your image is ready",
+        "Open MarketingBoss to see it.",
+      );
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      const msg = e instanceof Error ? e.message : "Something went wrong.";
+      setError(msg);
+      notifier.fire(mode === "video" ? "Your video didn't finish" : "Your image didn't finish", msg.slice(0, 140));
     } finally {
       setLoading(false);
     }
@@ -528,6 +542,8 @@ export default function Studio({
               className="w-full resize-y rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60 focus:ring-2 focus:ring-boss-violet/20"
             />
 
+            <NotifyChoice n={notifier} disabled={loading} />
+
             <div className="flex items-center gap-3">
               <span className="text-xs text-slate-400">
                 {willUpscale
@@ -549,6 +565,18 @@ export default function Studio({
                     : "Run swap"}
               </button>
             </div>
+            {loading && (
+              <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                {stage === "upscaling"
+                  ? `Upscaling to ${srcSize ? `${srcSize.width * 2}×${srcSize.height * 2}` : "720p+"} — step 1 of 2, about a minute.`
+                  : willUpscale
+                    ? "Swapping in your reference — step 2 of 2, usually 1–3 minutes."
+                    : "Swapping in your reference — this usually takes 1–3 minutes."}{" "}
+                {notifier.mode === "notify"
+                  ? "You can switch tabs — we'll notify you when it's done."
+                  : "Keep this tab open; the result appears here."}
+              </p>
+            )}
           </div>
         ) : (
           <>
@@ -602,6 +630,14 @@ export default function Studio({
           </button>
         </div>
 
+        {/* Video renders run minutes; images come back in seconds, so the
+            wait/notify choice would be noise there. */}
+        {mode === "video" && (
+          <div className="mt-3">
+            <NotifyChoice n={notifier} disabled={loading} />
+          </div>
+        )}
+
         {!hasRef && (
           <div className="mt-4">
             <span className="text-xs text-slate-400">Start from a preset:</span>
@@ -629,11 +665,11 @@ export default function Studio({
         )}
       </section>
 
-      {loading && (
+      {/* Swap has its own stage-aware line inside the panel — this one said
+          "Swapping in your reference" while the button read "Upscaling… (1 of 2)". */}
+      {loading && mode !== "swap" && (
         <p className="text-center text-sm text-slate-500">
-          {mode === "swap"
-            ? "Swapping in your reference — this usually takes 1–3 minutes."
-            : mode === "video"
+          {mode === "video"
               ? "Rendering video — this usually takes 1–3 minutes."
               : hasRef
                 ? "Editing your image…"
