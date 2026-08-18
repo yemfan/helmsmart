@@ -14,16 +14,24 @@ type SwapTarget = "face" | "person" | "outfit" | "product" | "background";
 const ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"] as const;
 type Aspect = (typeof ASPECTS)[number];
 
-/** fal's swap model floor. Below this it 422s — see app/api/swap/route.ts. */
+/**
+ * The swap model's limits. Both are enforced by fal AFTER the upload and the
+ * credit reservation, so every one of them is checked here first.
+ */
 const MIN_SWAP_WIDTH = 720;
+/** fal reports "Maximum is 10.05 seconds"; 10 is the honest number to show. */
+const MAX_SWAP_SECONDS = 10;
+const MIN_SWAP_SECONDS = 3;
+
+type VideoMeta = { width: number; height: number; duration: number };
 
 /**
- * Read a local video's pixel dimensions without uploading it. Resolves from the
- * `loadedmetadata` event, which fires long before the file is fully buffered.
+ * Read a local video's dimensions AND duration without uploading it. Resolves
+ * from `loadedmetadata`, which fires long before the file is fully buffered.
  * Rejects on anything the browser can't decode; callers treat that as unknown
  * and let the server decide rather than blocking a possibly-valid upload.
  */
-function readVideoSize(file: File): Promise<{ width: number; height: number }> {
+function readVideoMeta(file: File): Promise<VideoMeta> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const el = document.createElement("video");
@@ -33,7 +41,15 @@ function readVideoSize(file: File): Promise<{ width: number; height: number }> {
       fn();
     };
     el.onloadedmetadata = () =>
-      done(() => resolve({ width: el.videoWidth, height: el.videoHeight }));
+      done(() =>
+        resolve({
+          width: el.videoWidth,
+          height: el.videoHeight,
+          // Infinity/NaN on some streamed sources — 0 means "unknown", which
+          // callers treat as "let the server decide".
+          duration: Number.isFinite(el.duration) ? el.duration : 0,
+        }),
+      );
     el.onerror = () => done(() => reject(new Error("Could not read that video.")));
     el.src = url;
   });
@@ -96,7 +112,7 @@ export default function Studio({
   }
   const [srcUploading, setSrcUploading] = useState(false);
   /** Source clip dimensions, read locally at pick time. null = couldn't measure. */
-  const [srcSize, setSrcSize] = useState<{ width: number; height: number } | null>(null);
+  const [srcSize, setSrcSize] = useState<VideoMeta | null>(null);
   /** Tick to prepend an upscale pass to the swap, in one click. */
   const [upscaleFirst, setUpscaleFirst] = useState(true);
   /** Which leg of a chained run is in flight, for the button label. */
@@ -107,6 +123,20 @@ export default function Studio({
    */
   const willUpscale =
     upscaleFirst && !!srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH;
+  /**
+   * Duration is a HARD stop, unlike width. An undersized clip can be upscaled;
+   * an over-long one has to be trimmed outside the app, so there is nothing to
+   * offer but an accurate message — delivered before the upload, not after fal
+   * has taken the credits and three minutes.
+   */
+  const durationIssue: "long" | "short" | null =
+    !srcSize || srcSize.duration <= 0
+      ? null // unmeasurable — let the server have the final say
+      : srcSize.duration > MAX_SWAP_SECONDS
+        ? "long"
+        : srcSize.duration < MIN_SWAP_SECONDS
+          ? "short"
+          : null;
   /** Shared "wait here vs notify me" control — see components/NotifyWhenDone. */
   const notifier = useDoneNotifier();
   const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
@@ -178,7 +208,7 @@ export default function Studio({
     // the size immediately — measure now so the panel can offer an upscale
     // instead of failing them at the end. Unreadable metadata stays null and
     // the server has the final say, so this can only ever fail open.
-    setSrcSize(await readVideoSize(file).catch(() => null));
+    setSrcSize(await readVideoMeta(file).catch(() => null));
     if (!uid) {
       setError("Still signing in — try again in a second.");
       return;
@@ -229,6 +259,18 @@ export default function Studio({
       setError("Add a source video — upload a clip or paste a direct video URL.");
       return;
     }
+    if (durationIssue === "long") {
+      setError(
+        `That clip is ${srcSize!.duration.toFixed(1)}s — swaps take at most ${MAX_SWAP_SECONDS}s. Trim it to a ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s section and upload again.`,
+      );
+      return;
+    }
+    if (durationIssue === "short") {
+      setError(
+        `That clip is only ${srcSize!.duration.toFixed(1)}s — swaps need at least ${MIN_SWAP_SECONDS}s to work with.`,
+      );
+      return;
+    }
     const tooSmall = !!srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH;
     if (tooSmall && !upscaleFirst) {
       setError(
@@ -252,7 +294,7 @@ export default function Studio({
         sourceUrl = await upscaleNow(srcVideoUrl);
         setSrcVideoUrl(sourceUrl);
         setSrcVideoName("upscaled clip");
-        setSrcSize((s) => (s ? { width: s.width * 2, height: s.height * 2 } : null));
+        setSrcSize((s) => (s ? { ...s, width: s.width * 2, height: s.height * 2 } : null));
       }
       setStage("swapping");
       const res = await fetch("/api/swap", {
@@ -459,7 +501,27 @@ export default function Studio({
                 <p className="mt-1 text-[11px] text-slate-400">
                   {srcVideoName}
                   {srcSize && srcSize.width > 0 && ` · ${srcSize.width}×${srcSize.height}`}
+                  {srcSize && srcSize.duration > 0 && ` · ${srcSize.duration.toFixed(1)}s`}
                 </p>
+              )}
+              {durationIssue && (
+                <div className="mt-2 rounded-lg border border-rose-200 bg-rose-50 p-2.5">
+                  <p className="text-[11px] leading-relaxed text-rose-900">
+                    {durationIssue === "long" ? (
+                      <>
+                        This clip is {srcSize!.duration.toFixed(1)}s — swaps take at most{" "}
+                        {MAX_SWAP_SECONDS}s. Trim it to a {MIN_SWAP_SECONDS}–{MAX_SWAP_SECONDS}s section
+                        and upload again; the model edits every frame, so a long clip can&rsquo;t be
+                        processed even partially.
+                      </>
+                    ) : (
+                      <>
+                        This clip is only {srcSize!.duration.toFixed(1)}s — swaps need at least{" "}
+                        {MIN_SWAP_SECONDS}s to work with.
+                      </>
+                    )}
+                  </p>
+                </div>
               )}
               {srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH && (
                 <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-2.5">
@@ -552,7 +614,9 @@ export default function Studio({
               </span>
               <button
                 onClick={runSwap}
-                disabled={loading || !srcVideoUrl || !refUrl}
+                // Duration is unfixable in-app, so refuse the click outright.
+                // (Width is NOT in here — that one has an upscale to offer.)
+                disabled={loading || !srcVideoUrl || !refUrl || !!durationIssue}
                 className="ml-auto inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {loading && <Spinner />}
