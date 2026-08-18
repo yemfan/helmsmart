@@ -96,7 +96,16 @@ export default function Studio({
   const [srcUploading, setSrcUploading] = useState(false);
   /** Source clip dimensions, read locally at pick time. null = couldn't measure. */
   const [srcSize, setSrcSize] = useState<{ width: number; height: number } | null>(null);
-  const [upscaling, setUpscaling] = useState(false);
+  /** Tick to prepend an upscale pass to the swap, in one click. */
+  const [upscaleFirst, setUpscaleFirst] = useState(true);
+  /** Which leg of a chained run is in flight, for the button label. */
+  const [stage, setStage] = useState<"upscaling" | "swapping" | null>(null);
+  /**
+   * Whether Run swap will chain an upscale pass first. Drives the cost line and
+   * the step labels, so the extra credits are stated before the click, not after.
+   */
+  const willUpscale =
+    upscaleFirst && !!srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH;
   const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
   const videoRef = useRef<HTMLInputElement>(null);
 
@@ -191,32 +200,24 @@ export default function Studio({
   }
 
   /**
-   * Raise the source clip to 720p+ so the swap model will accept it. Its own
-   * request, not a step folded into the swap: both take minutes, and chaining
-   * them inside one function is what used to blow the 300s ceiling on avatar
-   * renders. The upscaled clip replaces the source, so the swap then runs normally.
+   * Raise the source clip past the swap model's floor, returning the new URL.
+   *
+   * Its own HTTP request rather than a step inside /api/swap: an upscale and a
+   * Kling O1 edit are each minutes long, and running them back to back in one
+   * 300s function is how the CloseBoss avatar renders used to 504 — taking the
+   * reserved credits with them, since SIGKILL skips the refund. Two short
+   * requests, chained here, stay well inside the ceiling while still being a
+   * single click for the user.
    */
-  async function runUpscale() {
-    if (upscaling || !srcVideoUrl) return;
-    setUpscaling(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/upscale", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ videoUrl: srcVideoUrl }),
-      });
-      const data = (await res.json()) as { url?: string; error?: string };
-      if (!res.ok || !data.url) throw new Error(data.error || `Request failed (${res.status})`);
-      setSrcVideoUrl(data.url);
-      setSrcVideoName("upscaled clip");
-      // The model doubles both axes; reflect that so the warning clears.
-      setSrcSize((s) => (s ? { width: s.width * 2, height: s.height * 2 } : null));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Upscale failed.");
-    } finally {
-      setUpscaling(false);
-    }
+  async function upscaleNow(url: string): Promise<string> {
+    const res = await fetch("/api/upscale", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ videoUrl: url }),
+    });
+    const data = (await res.json()) as { url?: string; error?: string };
+    if (!res.ok || !data.url) throw new Error(data.error || `Upscale failed (${res.status})`);
+    return data.url;
   }
 
   async function runSwap() {
@@ -225,9 +226,10 @@ export default function Studio({
       setError("Add a source video — upload a clip or paste a direct video URL.");
       return;
     }
-    if (srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH) {
+    const tooSmall = !!srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH;
+    if (tooSmall && !upscaleFirst) {
       setError(
-        `That clip is only ${srcSize.width}px wide — swaps need at least ${MIN_SWAP_WIDTH}px. Upscale it first, or re-export at a higher resolution.`,
+        `That clip is only ${srcSize!.width}px wide — swaps need at least ${MIN_SWAP_WIDTH}px. Tick “Upscale it first”, or re-export at a higher resolution.`,
       );
       return;
     }
@@ -239,11 +241,26 @@ export default function Studio({
     setError(null);
     setResults([]);
     try {
+      // One click, two calls. If the upscale fails it throws here and the swap
+      // is never submitted — so a failed prep can't burn the swap's credits too.
+      let sourceUrl = srcVideoUrl;
+      if (tooSmall && upscaleFirst) {
+        setStage("upscaling");
+        sourceUrl = await upscaleNow(srcVideoUrl);
+        setSrcVideoUrl(sourceUrl);
+        setSrcVideoName("upscaled clip");
+        setSrcSize((s) => (s ? { width: s.width * 2, height: s.height * 2 } : null));
+      }
+      setStage("swapping");
       const res = await fetch("/api/swap", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          videoUrl: srcVideoUrl,
+          // `sourceUrl`, not `srcVideoUrl` — setSrcVideoUrl above does not update
+          // the value captured by this closure, so reading state here would send
+          // the original undersized clip and 422 immediately after paying to
+          // upscale it.
+          videoUrl: sourceUrl,
           imageUrl: refUrl,
           target: swapTarget,
           prompt: prompt.trim() || undefined,
@@ -262,6 +279,7 @@ export default function Studio({
       setError(e instanceof Error ? e.message : "Something went wrong.");
     } finally {
       setLoading(false);
+      setStage(null);
     }
   }
 
@@ -432,18 +450,21 @@ export default function Studio({
               {srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH && (
                 <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-2.5">
                   <p className="text-[11px] leading-relaxed text-amber-900">
-                    This clip is {srcSize.width}px wide — swaps need at least {MIN_SWAP_WIDTH}px. Upscale it
-                    to {srcSize.width * 2}×{srcSize.height * 2} first, or re-export it at a higher resolution.
+                    This clip is {srcSize.width}px wide — swaps need at least {MIN_SWAP_WIDTH}px.
                   </p>
-                  <button
-                    onClick={runUpscale}
-                    disabled={upscaling}
-                    className="mt-2 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-900 transition hover:border-amber-400 disabled:opacity-40"
-                  >
-                    {upscaling
-                      ? "Upscaling… (1–2 min)"
-                      : `Upscale it first · ${CREDIT_COST.upscale} credits`}
-                  </button>
+                  <label className="mt-2 flex cursor-pointer items-start gap-2 text-[11px] leading-relaxed text-amber-900">
+                    <input
+                      type="checkbox"
+                      checked={upscaleFirst}
+                      onChange={(e) => setUpscaleFirst(e.target.checked)}
+                      disabled={loading}
+                      className="mt-0.5 accent-amber-600"
+                    />
+                    <span>
+                      Upscale to {srcSize.width * 2}×{srcSize.height * 2} first — runs automatically
+                      when you hit Run swap (+{CREDIT_COST.upscale} credits, adds 1–2 min).
+                    </span>
+                  </label>
                 </div>
               )}
             </div>
@@ -508,14 +529,24 @@ export default function Studio({
             />
 
             <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-400">Costs 25 credits · ~1–3 min</span>
+              <span className="text-xs text-slate-400">
+                {willUpscale
+                  ? `Costs ${25 + CREDIT_COST.upscale} credits (incl. upscale) · ~2–5 min`
+                  : "Costs 25 credits · ~1–3 min"}
+              </span>
               <button
                 onClick={runSwap}
                 disabled={loading || !srcVideoUrl || !refUrl}
                 className="ml-auto inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {loading && <Spinner />}
-                {loading ? "Swapping…" : "Run swap"}
+                {stage === "upscaling"
+                  ? "Upscaling… (1 of 2)"
+                  : stage === "swapping"
+                    ? willUpscale
+                      ? "Swapping… (2 of 2)"
+                      : "Swapping…"
+                    : "Run swap"}
               </button>
             </div>
           </div>
