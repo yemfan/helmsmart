@@ -542,7 +542,7 @@ export default function Studio({
               className="w-full resize-y rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60 focus:ring-2 focus:ring-boss-violet/20"
             />
 
-            <NotifyChoice n={notifier} disabled={loading} />
+            <NotifyChoice n={notifier} />
 
             <div className="flex items-center gap-3">
               <span className="text-xs text-slate-400">
@@ -634,7 +634,7 @@ export default function Studio({
             wait/notify choice would be noise there. */}
         {mode === "video" && (
           <div className="mt-3">
-            <NotifyChoice n={notifier} disabled={loading} />
+            <NotifyChoice n={notifier} />
           </div>
         )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * "Wait here" vs "Notify me" for any job that runs long enough to walk away
@@ -26,6 +26,16 @@ export type DoneNotifier = {
 export function useDoneNotifier(): DoneNotifier {
   const [mode, setMode] = useState<NotifyMode>("wait");
   const [blocked, setBlocked] = useState(false);
+  /**
+   * `fire` is called from inside a job's async closure, captured when the run
+   * STARTED. Reading `mode` directly would freeze the choice at that moment —
+   * so switching to "Notify me" halfway through a five-minute render would do
+   * nothing. The ref keeps fire() reading the live value.
+   */
+  const modeRef = useRef<NotifyMode>("wait");
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
 
   useEffect(() => {
     if (typeof Notification === "undefined") return;
@@ -62,7 +72,7 @@ export function useDoneNotifier(): DoneNotifier {
 
   const fire = useCallback(
     (title: string, body: string) => {
-      if (mode !== "notify") return;
+      if (modeRef.current !== "notify") return;
       if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
       // Only if they actually left. If the tab is in front, the result is
       // already on screen and a notification is noise on top of it.
@@ -73,14 +83,23 @@ export function useDoneNotifier(): DoneNotifier {
         /* some browsers refuse construction outside a user gesture */
       }
     },
-    [mode],
+    // No deps: everything read here is a ref or a global, so `fire` is stable.
+    // That matters — a changing identity is what made the captured copy stale.
+    [],
   );
 
   return { mode, choose, blocked, fire };
 }
 
-/** The paired control. Render next to whatever button starts the job. */
-export function NotifyChoice({ n, disabled = false }: { n: DoneNotifier; disabled?: boolean }) {
+/**
+ * The paired control. Render next to whatever button starts the job.
+ *
+ * Deliberately NOT disabled while the job runs. Mid-run is precisely when the
+ * choice matters — you start a render, see it will take five minutes, and only
+ * then decide to walk away. Locking it at that moment made the option useless.
+ * Only a browser-level block disables anything here.
+ */
+export function NotifyChoice({ n }: { n: DoneNotifier }) {
   const pill = (active: boolean) =>
     `rounded-full border px-3 py-1 text-xs font-medium transition disabled:opacity-40 ${
       active
@@ -91,13 +110,13 @@ export function NotifyChoice({ n, disabled = false }: { n: DoneNotifier; disable
   return (
     <div className="flex flex-wrap items-center gap-2">
       <span className="text-xs text-slate-400">While this runs:</span>
-      <button type="button" onClick={() => n.choose("wait")} disabled={disabled} className={pill(n.mode === "wait")}>
+      <button type="button" onClick={() => n.choose("wait")} className={pill(n.mode === "wait")}>
         Wait here
       </button>
       <button
         type="button"
         onClick={() => n.choose("notify")}
-        disabled={disabled || n.blocked}
+        disabled={n.blocked}
         className={pill(n.mode === "notify")}
       >
         🔔 Notify me when it&rsquo;s done
