@@ -106,6 +106,19 @@ export default function Studio({
    */
   const willUpscale =
     upscaleFirst && !!srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH;
+  /**
+   * Whether we can actually raise a desktop notification. A chained run takes
+   * minutes, so people switch tabs — but the copy only offers "we'll notify
+   * you" when permission is really granted, otherwise it tells them to stay put.
+   * Promising a notification we can't send is worse than not offering one.
+   */
+  const [canNotify, setCanNotify] = useState(false);
+
+  useEffect(() => {
+    if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+      setCanNotify(true);
+    }
+  }, []);
   const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
   const videoRef = useRef<HTMLInputElement>(null);
 
@@ -209,6 +222,36 @@ export default function Studio({
    * requests, chained here, stay well inside the ceiling while still being a
    * single click for the user.
    */
+  /**
+   * Ask for notification permission at the moment a long job starts — that is
+   * when the request makes sense to the user, rather than on page load where
+   * browsers (and people) treat an unprompted ask as spam.
+   */
+  async function ensureNotifyPermission() {
+    if (typeof Notification === "undefined") return;
+    if (Notification.permission === "granted") {
+      setCanNotify(true);
+      return;
+    }
+    if (Notification.permission === "denied") return; // asking again is blocked anyway
+    const p = await Notification.requestPermission().catch(() => "denied" as NotificationPermission);
+    setCanNotify(p === "granted");
+  }
+
+  /**
+   * Notify only if they actually navigated away. If the tab is in front they
+   * can already see the result, and a notification on top of it is just noise.
+   */
+  function notifyDone(title: string, body: string) {
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    if (!document.hidden) return;
+    try {
+      new Notification(title, { body });
+    } catch {
+      /* some browsers refuse construction outside a user gesture — not worth surfacing */
+    }
+  }
+
   async function upscaleNow(url: string): Promise<string> {
     const res = await fetch("/api/upscale", {
       method: "POST",
@@ -237,6 +280,9 @@ export default function Studio({
       setError("Add a reference image to swap in.");
       return;
     }
+    // Ask now, while the click is fresh — this is the moment the permission
+    // prompt is self-explanatory. Not awaited: the run shouldn't wait on it.
+    void ensureNotifyPermission();
     setLoading(true);
     setError(null);
     setResults([]);
@@ -274,9 +320,14 @@ export default function Studio({
       setResultAspect("16:9");
       setResultPrompt(prompt.trim() || `${swapTarget} swap`);
       if (urls.length) setModalOpen(true);
+      notifyDone("Your swap is ready", "Open MarketingBoss to see the finished clip.");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      const msg = e instanceof Error ? e.message : "Something went wrong.";
+      setError(msg);
+      // Notify on failure too — a silent failure while they're in another tab
+      // means they come back to a spinner that stopped, with no idea when.
+      notifyDone("Your swap didn't finish", msg.slice(0, 140));
     } finally {
       setLoading(false);
       setStage(null);
@@ -549,6 +600,18 @@ export default function Studio({
                     : "Run swap"}
               </button>
             </div>
+            {loading && (
+              <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                {stage === "upscaling"
+                  ? `Upscaling to ${srcSize ? `${srcSize.width * 2}×${srcSize.height * 2}` : "720p+"} — step 1 of 2, about a minute.`
+                  : willUpscale
+                    ? "Swapping in your reference — step 2 of 2, usually 1–3 minutes."
+                    : "Swapping in your reference — this usually takes 1–3 minutes."}{" "}
+                {canNotify
+                  ? "You can switch tabs — we'll notify you when it's done."
+                  : "Keep this tab open; the result appears here."}
+              </p>
+            )}
           </div>
         ) : (
           <>
@@ -629,11 +692,11 @@ export default function Studio({
         )}
       </section>
 
-      {loading && (
+      {/* Swap has its own stage-aware line inside the panel — this one said
+          "Swapping in your reference" while the button read "Upscaling… (1 of 2)". */}
+      {loading && mode !== "swap" && (
         <p className="text-center text-sm text-slate-500">
-          {mode === "swap"
-            ? "Swapping in your reference — this usually takes 1–3 minutes."
-            : mode === "video"
+          {mode === "video"
               ? "Rendering video — this usually takes 1–3 minutes."
               : hasRef
                 ? "Editing your image…"
