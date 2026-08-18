@@ -22,6 +22,13 @@ const MIN_SWAP_WIDTH = 720;
 /** fal reports "Maximum is 10.05 seconds"; 10 is the honest number to show. */
 const MAX_SWAP_SECONDS = 10;
 const MIN_SWAP_SECONDS = 3;
+/**
+ * The third limit the panel advertises ("under 200MB") and the last one that
+ * was never checked. Unlike width and duration this one is knowable without
+ * decoding anything — it is just file.size — and catching it here also saves
+ * the pointless upload of a file the model will refuse.
+ */
+const MAX_SWAP_BYTES = 200 * 1024 * 1024;
 
 type VideoMeta = { width: number; height: number; duration: number };
 
@@ -201,6 +208,15 @@ export default function Studio({
     if (!file) return;
     if (!file.type.startsWith("video/")) {
       setError("Source must be a video file.");
+      return;
+    }
+    // Checked before the upload starts, not after: a 200MB+ file would spend
+    // minutes going to Storage only to be refused by the model afterwards.
+    if (file.size > MAX_SWAP_BYTES) {
+      const mb = Math.round(file.size / (1024 * 1024));
+      setError(
+        `That file is ${mb}MB — swaps take clips under 200MB. A ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s export is normally far smaller.`,
+      );
       return;
     }
     // fal only rejects an undersized clip AFTER the upload and the credit
