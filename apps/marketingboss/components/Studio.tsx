@@ -5,12 +5,38 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { PRESETS } from "@/lib/presets";
+import { CREDIT_COST } from "@/lib/creditCosts";
 import SocialPublish, { type SocialStatus } from "@/components/SocialPublish";
 
 type Mode = "image" | "video" | "swap";
-type SwapTarget = "face" | "product" | "background";
+type SwapTarget = "face" | "person" | "outfit" | "product" | "background";
 const ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"] as const;
 type Aspect = (typeof ASPECTS)[number];
+
+/** fal's swap model floor. Below this it 422s — see app/api/swap/route.ts. */
+const MIN_SWAP_WIDTH = 720;
+
+/**
+ * Read a local video's pixel dimensions without uploading it. Resolves from the
+ * `loadedmetadata` event, which fires long before the file is fully buffered.
+ * Rejects on anything the browser can't decode; callers treat that as unknown
+ * and let the server decide rather than blocking a possibly-valid upload.
+ */
+function readVideoSize(file: File): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const el = document.createElement("video");
+    el.preload = "metadata";
+    const done = (fn: () => void) => {
+      URL.revokeObjectURL(url);
+      fn();
+    };
+    el.onloadedmetadata = () =>
+      done(() => resolve({ width: el.videoWidth, height: el.videoHeight }));
+    el.onerror = () => done(() => reject(new Error("Could not read that video.")));
+    el.src = url;
+  });
+}
 
 type StudioProps = {
   youtubeEnabled?: boolean;
@@ -68,6 +94,9 @@ export default function Studio({
     setSrcVideoName(null);
   }
   const [srcUploading, setSrcUploading] = useState(false);
+  /** Source clip dimensions, read locally at pick time. null = couldn't measure. */
+  const [srcSize, setSrcSize] = useState<{ width: number; height: number } | null>(null);
+  const [upscaling, setUpscaling] = useState(false);
   const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
   const videoRef = useRef<HTMLInputElement>(null);
 
@@ -132,6 +161,12 @@ export default function Studio({
       setError("Source must be a video file.");
       return;
     }
+    // fal only rejects an undersized clip AFTER the upload and the credit
+    // reservation, so the user waited, then read a raw 422. The browser knows
+    // the size immediately — measure now so the panel can offer an upscale
+    // instead of failing them at the end. Unreadable metadata stays null and
+    // the server has the final say, so this can only ever fail open.
+    setSrcSize(await readVideoSize(file).catch(() => null));
     if (!uid) {
       setError("Still signing in — try again in a second.");
       return;
@@ -155,10 +190,45 @@ export default function Studio({
     }
   }
 
+  /**
+   * Raise the source clip to 720p+ so the swap model will accept it. Its own
+   * request, not a step folded into the swap: both take minutes, and chaining
+   * them inside one function is what used to blow the 300s ceiling on avatar
+   * renders. The upscaled clip replaces the source, so the swap then runs normally.
+   */
+  async function runUpscale() {
+    if (upscaling || !srcVideoUrl) return;
+    setUpscaling(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/upscale", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoUrl: srcVideoUrl }),
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) throw new Error(data.error || `Request failed (${res.status})`);
+      setSrcVideoUrl(data.url);
+      setSrcVideoName("upscaled clip");
+      // The model doubles both axes; reflect that so the warning clears.
+      setSrcSize((s) => (s ? { width: s.width * 2, height: s.height * 2 } : null));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upscale failed.");
+    } finally {
+      setUpscaling(false);
+    }
+  }
+
   async function runSwap() {
     if (loading) return;
     if (!srcVideoUrl) {
       setError("Add a source video — upload a clip or paste a direct video URL.");
+      return;
+    }
+    if (srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH) {
+      setError(
+        `That clip is only ${srcSize.width}px wide — swaps need at least ${MIN_SWAP_WIDTH}px. Upscale it first, or re-export at a higher resolution.`,
+      );
       return;
     }
     if (!refUrl) {
@@ -353,7 +423,29 @@ export default function Studio({
                   </p>
                 </div>
               )}
-              {srcVideoName && <p className="mt-1 text-[11px] text-slate-400">{srcVideoName}</p>}
+              {srcVideoName && (
+                <p className="mt-1 text-[11px] text-slate-400">
+                  {srcVideoName}
+                  {srcSize && srcSize.width > 0 && ` · ${srcSize.width}×${srcSize.height}`}
+                </p>
+              )}
+              {srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH && (
+                <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-2.5">
+                  <p className="text-[11px] leading-relaxed text-amber-900">
+                    This clip is {srcSize.width}px wide — swaps need at least {MIN_SWAP_WIDTH}px. Upscale it
+                    to {srcSize.width * 2}×{srcSize.height * 2} first, or re-export it at a higher resolution.
+                  </p>
+                  <button
+                    onClick={runUpscale}
+                    disabled={upscaling}
+                    className="mt-2 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-medium text-amber-900 transition hover:border-amber-400 disabled:opacity-40"
+                  >
+                    {upscaling
+                      ? "Upscaling… (1–2 min)"
+                      : `Upscale it first · ${CREDIT_COST.upscale} credits`}
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="rounded-xl border border-slate-200 p-3">
@@ -385,6 +477,8 @@ export default function Studio({
                 {(
                   [
                     ["face", "🙂 Face"],
+                    ["person", "🧍 Whole person"],
+                    ["outfit", "👔 Outfit"],
                     ["product", "📦 Product"],
                     ["background", "🖼 Background"],
                   ] as [SwapTarget, string][]

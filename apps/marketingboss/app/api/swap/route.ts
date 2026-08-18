@@ -6,7 +6,7 @@ import { generateAndStore, CreditError } from "@/lib/generation";
 export const maxDuration = 300;
 export const runtime = "nodejs";
 
-type SwapTarget = "face" | "product" | "background";
+type SwapTarget = "face" | "person" | "outfit" | "product" | "background";
 
 /**
  * Build the instruction the model follows. `@Image1` is the first reference
@@ -15,6 +15,13 @@ type SwapTarget = "face" | "product" | "background";
 function buildPrompt(target: SwapTarget, note: string): string {
   const base: Record<SwapTarget, string> = {
     face: "Replace the face of the main person in the video with the face from @Image1. Keep the original body, hair, motion, lighting, camera movement and background unchanged, and blend the new face naturally.",
+    // Whole-person: the opposite instruction to `face`, which explicitly PRESERVES
+    // body and clothing — asking for a wardrobe change under `face` fights the prompt.
+    person:
+      "Replace the entire person in the video with the person shown in @Image1 — their face, hair, body and clothing. Keep the original motion, gestures, camera movement, framing, lighting and background exactly as they are, and keep the new person consistent from frame to frame.",
+    // Wardrobe only: same person, different clothes.
+    outfit:
+      "Change the clothing worn by the main person in the video to the outfit shown in @Image1. Keep their face, hair, body and motion unchanged, keep the background and lighting as they are, and let the fabric hang and move naturally with them.",
     product:
       "Replace the main product / object in the video with the item shown in @Image1. Match the original placement, scale, motion, lighting and reflections so it looks natural in the scene.",
     background:
@@ -23,7 +30,38 @@ function buildPrompt(target: SwapTarget, note: string): string {
   return note ? `${base[target]} ${note}` : base[target];
 }
 
-const TARGETS = new Set<SwapTarget>(["face", "product", "background"]);
+const TARGETS = new Set<SwapTarget>(["face", "person", "outfit", "product", "background"]);
+
+/**
+ * fal reports validation failures as `fal result 422: {"detail":[{msg,type,ctx}]}`.
+ * Lift the human sentence out of that instead of echoing the payload: the raw
+ * blob reads as a crash, and it also prints the caller's Storage URL back at
+ * them. Returns null for any other shape so the caller can fall through.
+ */
+function falDetailMessage(raw: string): string | null {
+  const start = raw.indexOf("{");
+  if (start === -1) return null;
+  try {
+    const parsed = JSON.parse(raw.slice(start)) as {
+      detail?: Array<{ msg?: string; type?: string; ctx?: Record<string, unknown> }>;
+    };
+    const first = parsed.detail?.[0];
+    if (!first?.msg) return null;
+    // The common one by far: the clip is below the model's floor. fal gives us
+    // both numbers, so say which clip failed and by how much rather than
+    // quoting a generic "720p+" rule the user then has to measure against.
+    if (first.type === "video_too_small") {
+      const min = first.ctx?.min_width;
+      const found = first.ctx?.width;
+      if (typeof min === "number" && typeof found === "number") {
+        return `That clip is only ${found} pixels wide — swaps need at least ${min}. Re-export it at a higher resolution and try again.`;
+      }
+    }
+    return first.msg;
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(req: Request) {
   const supabase = await createClient();
@@ -72,12 +110,23 @@ export async function POST(req: Request) {
       );
     if (/FAL_KEY/.test(msg))
       return NextResponse.json({ error: "Server is not configured (missing FAL_KEY)." }, { status: 503 });
+    // Prefer fal's own structured reason — it names the actual number.
+    const detail = falDetailMessage(msg);
+    if (detail) return NextResponse.json({ error: detail }, { status: 422 });
     // Kling O1 rejects clips outside 3–10s / >200MB / odd resolutions — surface a hint.
-    if (/duration|resolution|size|format|invalid/i.test(msg))
+    // "dimension"/"too small"/"pixel" matter: fal's video_too_small message contains
+    // none of duration/resolution/size/format/invalid, so it used to fall through
+    // to the raw-message branch below and print the whole JSON payload on screen.
+    if (/duration|resolution|dimension|too small|pixel|size|format|invalid/i.test(msg))
       return NextResponse.json(
-        { error: "That clip couldn't be edited. Use a 3–10s video, 720p+ and under 200MB." },
+        { error: "That clip couldn't be edited. Use a 3–10s video, at least 720 pixels wide and under 200MB." },
         { status: 422 },
       );
-    return NextResponse.json({ error: msg }, { status: 500 });
+    // Never echo the provider payload to the browser — log it, show a sentence.
+    console.error("[swap] unhandled generation failure:", msg);
+    return NextResponse.json(
+      { error: "The swap couldn't be completed. Try a different clip, or try again in a moment." },
+      { status: 500 },
+    );
   }
 }

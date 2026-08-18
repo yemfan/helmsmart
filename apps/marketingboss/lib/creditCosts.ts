@@ -14,4 +14,10 @@ export const CREDIT_COST = {
   edit: 2,
   /** A cinematic video clip. */
   video: 20,
+  /**
+   * Upscaling an existing clip so it clears a model's resolution floor. No
+   * generation happens — it is a single pass over frames the user already has,
+   * so it is priced well under a fresh clip.
+   */
+  upscale: 5,
 } as const;
