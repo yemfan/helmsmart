@@ -38,26 +38,34 @@ type VideoMeta = { width: number; height: number; duration: number };
  * Rejects on anything the browser can't decode; callers treat that as unknown
  * and let the server decide rather than blocking a possibly-valid upload.
  */
-function readVideoMeta(file: File): Promise<VideoMeta> {
-  return new Promise((resolve, reject) => {
+function readVideoMeta(file: File): Promise<VideoMeta | null> {
+  return new Promise((resolve) => {
     const url = URL.createObjectURL(file);
     const el = document.createElement("video");
     el.preload = "metadata";
-    const done = (fn: () => void) => {
+    let timer: ReturnType<typeof setTimeout>;
+    let settled = false;
+    const finish = (v: VideoMeta | null) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
       URL.revokeObjectURL(url);
-      fn();
+      resolve(v);
     };
+    // A source the browser cannot decode fires NEITHER loadedmetadata NOR
+    // error — verified live in Chrome on 2026-08-18. Without this timeout the
+    // promise never settles, and anything awaiting it stalls forever with no
+    // error to show. Never resolve-or-hang; always resolve.
+    timer = setTimeout(() => finish(null), 5000);
     el.onloadedmetadata = () =>
-      done(() =>
-        resolve({
-          width: el.videoWidth,
-          height: el.videoHeight,
-          // Infinity/NaN on some streamed sources — 0 means "unknown", which
-          // callers treat as "let the server decide".
-          duration: Number.isFinite(el.duration) ? el.duration : 0,
-        }),
-      );
-    el.onerror = () => done(() => reject(new Error("Could not read that video.")));
+      finish({
+        width: el.videoWidth,
+        height: el.videoHeight,
+        // Infinity/NaN on some streamed sources — 0 means "unknown", which
+        // callers treat as "let the server decide".
+        duration: Number.isFinite(el.duration) ? el.duration : 0,
+      });
+    el.onerror = () => finish(null);
     el.src = url;
   });
 }
@@ -241,12 +249,16 @@ export default function Studio({
       );
       return;
     }
-    // fal only rejects an undersized clip AFTER the upload and the credit
-    // reservation, so the user waited, then read a raw 422. The browser knows
-    // the size immediately — measure now so the panel can offer an upscale
-    // instead of failing them at the end. Unreadable metadata stays null and
-    // the server has the final say, so this can only ever fail open.
-    setSrcSize(await readVideoMeta(file).catch(() => null));
+    // Measure ALONGSIDE the upload, never in front of it.
+    //
+    // This used to be `setSrcSize(await readVideoMeta(file))`, which made the
+    // upload wait on a promise that can hang forever (see readVideoMeta). The
+    // result, reproduced live: pick a clip, the input clears, and absolutely
+    // nothing happens — no video, no spinner, no error. Measurement is only
+    // advisory (it decides which warnings to show), so it must never sit on
+    // the critical path.
+    setSrcSize(null);
+    void readVideoMeta(file).then(setSrcSize);
     if (!uid) {
       setError("Still signing in — try again in a second.");
       return;
