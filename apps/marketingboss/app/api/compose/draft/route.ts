@@ -37,6 +37,10 @@ export async function POST(req: Request) {
     // Best-effort: a missing kit (or missing table before the migration runs)
     // simply leaves the draft unbranded.
     let brand = "";
+    // The brand's own site is the sane default for a post's CTA link — it was
+    // stored all along, just never read, so every draft started with the field
+    // blank next to a placeholder pointing at an unrelated domain.
+    let link: string | null = null;
     try {
       const { data: kit } = await supabase
         .from("brand_kits")
@@ -44,11 +48,12 @@ export async function POST(req: Request) {
         .eq("user_id", user.id)
         .maybeSingle();
       brand = brandPromptContext(kit as BrandKit | null);
+      link = (kit as BrandKit | null)?.company_url?.trim() || null;
     } catch {
       /* no brand kit — proceed unbranded */
     }
     const draft = await draftPost(intent, type, brand);
-    return NextResponse.json({ draft });
+    return NextResponse.json({ draft, link });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Could not write the draft.";
     const status = /ANTHROPIC_API_KEY/.test(msg) ? 503 : 500;

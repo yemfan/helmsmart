@@ -183,12 +183,16 @@ export default function Compose({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ intent: i, type }),
       });
-      const data = (await res.json()) as { draft?: Draft; error?: string };
+      const data = (await res.json()) as { draft?: Draft; link?: string | null; error?: string };
       if (!res.ok || !data.draft) throw new Error(data.error || `Draft failed (${res.status})`);
       const d = data.draft;
       setTitle(d.title);
       setCaption(d.caption);
       setCta(d.cta);
+      // Prefill the CTA link from the Brand Kit's company_url. Still editable —
+      // and still blank if no brand URL is set, since a wrong link is worse
+      // than none.
+      if (data.link) setLink(data.link);
       setHashtags((d.hashtags || []).map((h) => `#${h.replace(/^#/, "")}`).join(" "));
       setMediaPrompt(type === "image" ? d.imagePrompt : type === "video" ? d.videoPrompt : "");
       setHasDraft(true);
@@ -503,7 +507,15 @@ export default function Compose({
                   <input value={cta} onChange={(e) => setCta(e.target.value)} className={fieldCls} />
                 </Field>
                 <Field label="Link / CTA URL (optional)">
-                  <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://avasc.org" className={fieldCls} />
+                  <input
+                    value={link}
+                    onChange={(e) => setLink(e.target.value)}
+                    // Neutral: this used to name one specific customer's domain,
+                    // which read as a suggestion to every other tenant. The real
+                    // value is prefilled from the Brand Kit when one is set.
+                    placeholder="https://yourcompany.com"
+                    className={fieldCls}
+                  />
                 </Field>
               </div>
               <Field label="Hashtags">
