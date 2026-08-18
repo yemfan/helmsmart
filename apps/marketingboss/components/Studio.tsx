@@ -146,6 +146,28 @@ export default function Studio({
           : null;
   /** Shared "wait here vs notify me" control — see components/NotifyWhenDone. */
   const notifier = useDoneNotifier();
+  /**
+   * Why Run swap is unavailable, in the user's words. A disabled button that
+   * explains nothing is the worst of both worlds — it refuses and leaves you
+   * guessing, which is exactly what happened here: the cost line reads
+   * "30 credits (incl. upscale)" as soon as the clip is MEASURED, but the
+   * button needs it UPLOADED, and those are seconds apart on a big file.
+   *
+   * Ordered by what the user would fix first.
+   */
+  const blockedReason: string | null = loading
+    ? null // the button label already says what is happening
+    : srcUploading
+      ? "Uploading your clip…"
+      : !srcVideoUrl
+        ? "Add a source video to get started."
+        : durationIssue === "long"
+          ? `Clip is ${srcSize!.duration.toFixed(1)}s — trim to ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s.`
+          : durationIssue === "short"
+            ? `Clip is ${srcSize!.duration.toFixed(1)}s — needs at least ${MIN_SWAP_SECONDS}s.`
+            : !refUrl
+              ? "Add a reference image to swap in."
+              : null;
   const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
   const videoRef = useRef<HTMLInputElement>(null);
 
@@ -628,11 +650,16 @@ export default function Studio({
                   ? `Costs ${25 + CREDIT_COST.upscale} credits (incl. upscale) · ~2–5 min`
                   : "Costs 25 credits · ~1–3 min"}
               </span>
+              {blockedReason && (
+                <span className="text-xs font-medium text-amber-700">{blockedReason}</span>
+              )}
               <button
                 onClick={runSwap}
-                // Duration is unfixable in-app, so refuse the click outright.
-                // (Width is NOT in here — that one has an upscale to offer.)
-                disabled={loading || !srcVideoUrl || !refUrl || !!durationIssue}
+                // Single source of truth with the message beside it — the button
+                // is disabled exactly when there is a reason to show, so the two
+                // can never disagree. (Width is deliberately NOT a blocker: it
+                // has an upscale to offer instead.)
+                disabled={loading || !!blockedReason}
                 className="ml-auto inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {loading && <Spinner />}
