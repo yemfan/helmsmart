@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { PRESETS } from "@/lib/presets";
 import { CREDIT_COST } from "@/lib/creditCosts";
+import { useDoneNotifier, NotifyChoice } from "@/components/NotifyWhenDone";
 import SocialPublish, { type SocialStatus } from "@/components/SocialPublish";
 
 type Mode = "image" | "video" | "swap";
@@ -106,19 +107,8 @@ export default function Studio({
    */
   const willUpscale =
     upscaleFirst && !!srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH;
-  /**
-   * Whether we can actually raise a desktop notification. A chained run takes
-   * minutes, so people switch tabs — but the copy only offers "we'll notify
-   * you" when permission is really granted, otherwise it tells them to stay put.
-   * Promising a notification we can't send is worse than not offering one.
-   */
-  const [canNotify, setCanNotify] = useState(false);
-
-  useEffect(() => {
-    if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-      setCanNotify(true);
-    }
-  }, []);
+  /** Shared "wait here vs notify me" control — see components/NotifyWhenDone. */
+  const notifier = useDoneNotifier();
   const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
   const videoRef = useRef<HTMLInputElement>(null);
 
@@ -222,36 +212,6 @@ export default function Studio({
    * requests, chained here, stay well inside the ceiling while still being a
    * single click for the user.
    */
-  /**
-   * Ask for notification permission at the moment a long job starts — that is
-   * when the request makes sense to the user, rather than on page load where
-   * browsers (and people) treat an unprompted ask as spam.
-   */
-  async function ensureNotifyPermission() {
-    if (typeof Notification === "undefined") return;
-    if (Notification.permission === "granted") {
-      setCanNotify(true);
-      return;
-    }
-    if (Notification.permission === "denied") return; // asking again is blocked anyway
-    const p = await Notification.requestPermission().catch(() => "denied" as NotificationPermission);
-    setCanNotify(p === "granted");
-  }
-
-  /**
-   * Notify only if they actually navigated away. If the tab is in front they
-   * can already see the result, and a notification on top of it is just noise.
-   */
-  function notifyDone(title: string, body: string) {
-    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
-    if (!document.hidden) return;
-    try {
-      new Notification(title, { body });
-    } catch {
-      /* some browsers refuse construction outside a user gesture — not worth surfacing */
-    }
-  }
-
   async function upscaleNow(url: string): Promise<string> {
     const res = await fetch("/api/upscale", {
       method: "POST",
@@ -280,9 +240,6 @@ export default function Studio({
       setError("Add a reference image to swap in.");
       return;
     }
-    // Ask now, while the click is fresh — this is the moment the permission
-    // prompt is self-explanatory. Not awaited: the run shouldn't wait on it.
-    void ensureNotifyPermission();
     setLoading(true);
     setError(null);
     setResults([]);
@@ -320,14 +277,14 @@ export default function Studio({
       setResultAspect("16:9");
       setResultPrompt(prompt.trim() || `${swapTarget} swap`);
       if (urls.length) setModalOpen(true);
-      notifyDone("Your swap is ready", "Open MarketingBoss to see the finished clip.");
+      notifier.fire("Your swap is ready", "Open MarketingBoss to see the finished clip.");
       router.refresh();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Something went wrong.";
       setError(msg);
       // Notify on failure too — a silent failure while they're in another tab
       // means they come back to a spinner that stopped, with no idea when.
-      notifyDone("Your swap didn't finish", msg.slice(0, 140));
+      notifier.fire("Your swap didn't finish", msg.slice(0, 140));
     } finally {
       setLoading(false);
       setStage(null);
@@ -354,9 +311,15 @@ export default function Studio({
       setResultAspect(aspect);
       setResultPrompt(p);
       if (urls.length) setModalOpen(true);
+      notifier.fire(
+        mode === "video" ? "Your video is ready" : "Your image is ready",
+        "Open MarketingBoss to see it.",
+      );
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      const msg = e instanceof Error ? e.message : "Something went wrong.";
+      setError(msg);
+      notifier.fire(mode === "video" ? "Your video didn't finish" : "Your image didn't finish", msg.slice(0, 140));
     } finally {
       setLoading(false);
     }
@@ -579,6 +542,8 @@ export default function Studio({
               className="w-full resize-y rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60 focus:ring-2 focus:ring-boss-violet/20"
             />
 
+            <NotifyChoice n={notifier} disabled={loading} />
+
             <div className="flex items-center gap-3">
               <span className="text-xs text-slate-400">
                 {willUpscale
@@ -607,7 +572,7 @@ export default function Studio({
                   : willUpscale
                     ? "Swapping in your reference — step 2 of 2, usually 1–3 minutes."
                     : "Swapping in your reference — this usually takes 1–3 minutes."}{" "}
-                {canNotify
+                {notifier.mode === "notify"
                   ? "You can switch tabs — we'll notify you when it's done."
                   : "Keep this tab open; the result appears here."}
               </p>
@@ -664,6 +629,14 @@ export default function Studio({
             {actionLabel}
           </button>
         </div>
+
+        {/* Video renders run minutes; images come back in seconds, so the
+            wait/notify choice would be noise there. */}
+        {mode === "video" && (
+          <div className="mt-3">
+            <NotifyChoice n={notifier} disabled={loading} />
+          </div>
+        )}
 
         {!hasRef && (
           <div className="mt-4">

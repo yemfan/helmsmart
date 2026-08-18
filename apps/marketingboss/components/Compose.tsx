@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useDoneNotifier, NotifyChoice } from "@/components/NotifyWhenDone";
 
 type PostType = "text" | "image" | "video";
 type Draft = {
@@ -93,6 +94,8 @@ export default function Compose({
 
   const [aspect, setAspect] = useState<Aspect>("1:1");
   const [generating, setGenerating] = useState(false);
+  /** Video renders run minutes — offer wait-or-notify (images are seconds). */
+  const notifier = useDoneNotifier();
   const [mediaUrl, setMediaUrl] = useState<string | null>(null);
 
   // Reference image (guides generation) + own-media upload/gallery.
@@ -221,8 +224,11 @@ export default function Compose({
       const data = (await res.json()) as { urls?: string[]; error?: string };
       if (!res.ok) throw new Error(data.error || `Generation failed (${res.status})`);
       setMediaUrl((data.urls || [])[0] ?? null);
+      if (type === "video") notifier.fire("Your video is ready", "Open MarketingBoss to review and publish it.");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Generation failed.");
+      const msg = e instanceof Error ? e.message : "Generation failed.";
+      setError(msg);
+      if (type === "video") notifier.fire("Your video didn't finish", msg.slice(0, 140));
     } finally {
       setGenerating(false);
     }
@@ -580,8 +586,16 @@ export default function Compose({
                 {genLabel}
               </button>
             </div>
+            {type === "video" && (
+              <div className="mt-3">
+                <NotifyChoice n={notifier} disabled={generating} />
+              </div>
+            )}
             {generating && type === "video" && (
-              <p className="mt-2 text-center text-xs text-slate-500">Rendering video — this usually takes 1–3 minutes.</p>
+              <p className="mt-2 text-center text-xs text-slate-500">
+                Rendering video — this usually takes 1–3 minutes.{" "}
+                {notifier.mode === "notify" ? "You can switch tabs; we'll notify you." : "Keep this tab open."}
+              </p>
             )}
 
             {/* Or use your own media directly */}

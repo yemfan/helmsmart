@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useDoneNotifier, NotifyChoice } from "@/components/NotifyWhenDone";
 
 export type ChannelOption = { id: string; label: string; connected: boolean; connectPath: string };
 
@@ -60,6 +61,8 @@ export default function UgcStudio({
 
   const [generating, setGenerating] = useState(false);
   const [clipUrl, setClipUrl] = useState<string | null>(null);
+  /** Seedance renders run minutes — offer wait-or-notify. */
+  const notifier = useDoneNotifier();
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [publishMode, setPublishMode] = useState<"now" | "schedule">("now");
@@ -190,8 +193,11 @@ export default function UgcStudio({
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) throw new Error(data.error || `Generation failed (${res.status})`);
       setClipUrl(data.url);
+      notifier.fire("Your UGC ad is ready", "Open MarketingBoss to watch the clip.");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Generation failed.");
+      const msg = e instanceof Error ? e.message : "Generation failed.";
+      setError(msg);
+      notifier.fire("Your UGC ad didn't finish", msg.slice(0, 140));
     } finally {
       setGenerating(false);
     }
@@ -433,7 +439,17 @@ export default function UgcStudio({
               {generating ? "Filming…" : clipUrl ? "Re-film" : "Film the ad"}
             </button>
           </div>
-          {generating && <p className="mt-2 text-center text-xs text-slate-500">Filming with Seedance — this usually takes 1–3 minutes.</p>}
+          <div className="mt-3">
+            <NotifyChoice n={notifier} disabled={generating} />
+          </div>
+          {generating && (
+            <p className="mt-2 text-center text-xs text-slate-500">
+              Filming with Seedance — this usually takes 1–3 minutes.{" "}
+              {notifier.mode === "notify"
+                ? "You can switch tabs; we'll notify you."
+                : "Keep this tab open."}
+            </p>
+          )}
 
           {clipUrl && (
             <div className="mt-3 flex justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
