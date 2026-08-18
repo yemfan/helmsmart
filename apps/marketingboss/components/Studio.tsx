@@ -12,6 +12,31 @@ type SwapTarget = "face" | "product" | "background";
 const ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"] as const;
 type Aspect = (typeof ASPECTS)[number];
 
+/** fal's swap model floor. Below this it 422s — see app/api/swap/route.ts. */
+const MIN_SWAP_WIDTH = 720;
+
+/**
+ * Read a local video's pixel dimensions without uploading it. Resolves from the
+ * `loadedmetadata` event, which fires long before the file is fully buffered.
+ * Rejects on anything the browser can't decode; callers treat that as unknown
+ * and let the server decide rather than blocking a possibly-valid upload.
+ */
+function readVideoSize(file: File): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const el = document.createElement("video");
+    el.preload = "metadata";
+    const done = (fn: () => void) => {
+      URL.revokeObjectURL(url);
+      fn();
+    };
+    el.onloadedmetadata = () =>
+      done(() => resolve({ width: el.videoWidth, height: el.videoHeight }));
+    el.onerror = () => done(() => reject(new Error("Could not read that video.")));
+    el.src = url;
+  });
+}
+
 type StudioProps = {
   youtubeEnabled?: boolean;
   youtubeConnected?: boolean;
@@ -130,6 +155,17 @@ export default function Studio({
     if (!file) return;
     if (!file.type.startsWith("video/")) {
       setError("Source must be a video file.");
+      return;
+    }
+    // fal rejects anything under 720px wide, but only AFTER the upload and the
+    // credit reservation — so the user waited, then read a raw 422. The browser
+    // already knows the dimensions, so check here: a too-small clip now costs
+    // nothing and fails instantly.
+    const size = await readVideoSize(file).catch(() => null);
+    if (size && size.width > 0 && size.width < MIN_SWAP_WIDTH) {
+      setError(
+        `That clip is ${size.width}×${size.height}. Swaps need a video at least ${MIN_SWAP_WIDTH} pixels wide — re-export it at a higher resolution.`,
+      );
       return;
     }
     if (!uid) {
