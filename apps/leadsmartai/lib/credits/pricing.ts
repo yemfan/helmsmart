@@ -18,7 +18,22 @@
  * one-sentence story for users: "you only pay for AI calls and the videos you make."
  */
 export const CREDIT_COSTS = {
-  voicePerMinute: 15, // voice calling — charged (all-in ~$0.30/min, measured 2026-08-18)
+  // Voice calling. 15 credits is a PRICING choice, not cost recovery — see below.
+  //
+  // MEASURED from the Retell invoice, 2026-08-18 (25-minute billing period):
+  //   voice infra $1.38 + voice LLM $1.13 + TTS $0.38     = $0.116/min
+  //   + text LLM $0.89 (test chat, post-call analysis)    = $0.151/min all-in
+  //
+  // So a minute costs ~$0.15, not the ~$0.30 an earlier comment here claimed —
+  // that figure was inferred backwards from 15 credits x $0.02 and labelled
+  // "measured", which it was not. At 15 credits/min the implied cost per credit
+  // for VOICE is ~$0.010, roughly half the $0.02 used elsewhere in this file.
+  // Voice therefore carries about 2x more margin than any blended model shows.
+  // (fal video is the opposite — listingClip/twinAvatar really are ~$0.02/credit.)
+  //
+  // Excluded: Twilio telephony, billed separately. Measured on low volume, so
+  // re-check if minutes scale into a different Retell tier.
+  voicePerMinute: 15,
   listingClip: 15, // video creation — a cinematic listing clip (fal Kling, ~$0.30)
   twinAvatar: 20, // video creation — digital-twin lipsync render (~$0.35)
   ctaEndCard: 5, // video creation — branded end-card appended to a video
