@@ -81,7 +81,7 @@
       "chime": { "stack": "Chime", "limit": "Closest to us on intent. 5-year-old UX. AI is template-based, not LLM-generative." },
       "boomtown": { "stack": "BoomTown", "limit": "Excellent CS team. $1,500–3,500+/mo before agent seats. Pricing makes sense for $5M+ brokerages, not 100-agent independents." },
       "spreadsheets": { "stack": "Spreadsheets + WhatsApp", "limit": "Fast for small teams. Zero broker visibility. WhatsApp isn't TCPA-compliant for prospecting." },
-      "realtyboss": { "stack": "CloseBoss", "limit": "✓ Broker-first home screen, real LLM AI, agent-fitness flags, $24/agent at 100 — half the category cost." }
+      "closeboss": { "stack": "CloseBoss", "limit": "✓ Broker-first home screen, real LLM AI, agent-fitness flags, $24/agent at 100 — half the category cost." }
     }
   },
   "pricing": {

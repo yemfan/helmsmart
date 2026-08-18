@@ -10,7 +10,7 @@ import {
   detectServiceAreaFromGeo,
   ensureAgentDefaultMarket,
   readGeoFromHeaders,
-} from "@/lib/realtyboss/market/autodetect";
+} from "@/lib/closeboss/market/autodetect";
 
 export async function GET(req: Request) {
   try {

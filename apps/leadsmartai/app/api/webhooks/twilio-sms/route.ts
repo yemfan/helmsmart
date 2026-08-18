@@ -3,7 +3,7 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { generateSmsAssistantReply } from "@/lib/ai-sms/service";
 import { inferIntentHeuristic } from "@/lib/ai-sms/intent";
-import { logAssistantActivity } from "@/lib/realtyboss/activities";
+import { logAssistantActivity } from "@/lib/closeboss/activities";
 import type { SmsReplyContext } from "@/lib/ai-sms/types";
 
 function digitsOnly(input: string) {

@@ -4,7 +4,7 @@ import {
   getAssistantVoiceSettings,
   receptionistVoiceNotesFromSkills,
   voiceNotesFromSkills,
-} from "@/lib/realtyboss/voicePersona";
+} from "@/lib/closeboss/voicePersona";
 import {
   describeHours,
   defaultBusinessHours,

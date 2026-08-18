@@ -81,7 +81,7 @@
       "chime": { "stack": "Chime", "limit": "理念上与我们最接近。界面已有 5 年历史。AI 基于模板，而非大模型生成。" },
       "boomtown": { "stack": "BoomTown", "limit": "客户成功团队出色。在计入经纪人席位前，每月已需 1,500–3,500 美元以上。定价适合 500 万美元以上规模的经纪公司，而非百人独立经纪公司。" },
       "spreadsheets": { "stack": "电子表格 + WhatsApp", "limit": "对小团队来说上手快。负责人毫无可视性。WhatsApp 用于开发客户并不符合 TCPA 规范。" },
-      "realtyboss": { "stack": "CloseBoss", "limit": "✓ 负责人优先的主界面、真正的大模型 AI、经纪人状态预警，100 人规模每人仅 24 美元——只需品类一半的成本。" }
+      "closeboss": { "stack": "CloseBoss", "limit": "✓ 负责人优先的主界面、真正的大模型 AI、经纪人状态预警，100 人规模每人仅 24 美元——只需品类一半的成本。" }
     }
   },
   "pricing": {

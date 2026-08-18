@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { getPlaybookAutoSettings, listPlaybookRuns } from "@/lib/realtyboss/playbook-runs/service";
+import { getPlaybookAutoSettings, listPlaybookRuns } from "@/lib/closeboss/playbook-runs/service";
 import { getServerT, getServerLocale } from "@/lib/i18n/server";
 import { intlLocale } from "@/lib/i18n/locale";
 import { AutoSettingsCard } from "./AutoSettingsCard";

@@ -73,7 +73,7 @@ const COMPARISON_KEYS = [
   "chime",
   "boomtown",
   "spreadsheets",
-  "realtyboss",
+  "closeboss",
 ] as const;
 
 const HOW_KEYS = ["capture", "nurture", "convert", "retain"] as const;

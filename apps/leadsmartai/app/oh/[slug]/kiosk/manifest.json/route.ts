@@ -36,13 +36,13 @@ export async function GET(_req: Request, ctx: { params: Promise<{ slug: string }
     theme_color: "#0f172a",
     icons: [
       {
-        src: "/brand/realtyboss/realtyboss-icon-180.png",
+        src: "/brand/closeboss/closeboss-icon-180.png",
         sizes: "180x180",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/brand/realtyboss/realtyboss-icon-512.png",
+        src: "/brand/closeboss/closeboss-icon-512.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "any maskable",

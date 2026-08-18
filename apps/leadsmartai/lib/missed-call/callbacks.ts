@@ -2,7 +2,7 @@ import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getOrInitSettings, toE164 } from "@/lib/missed-call/service";
-import { logAssistantActivity } from "@/lib/realtyboss/activities";
+import { logAssistantActivity } from "@/lib/closeboss/activities";
 
 const MS_DAY = 24 * 60 * 60_000;
 

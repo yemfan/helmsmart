@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AI_TEAM } from "@/lib/realtyboss/team";
+import { AI_TEAM } from "@/lib/closeboss/team";
 import { SKILLS } from "@helm/pack-real-estate";
 import en from "@leadsmart/i18n/locale/en/dashboard";
 import zh from "@leadsmart/i18n/locale/zh-Hans/dashboard";

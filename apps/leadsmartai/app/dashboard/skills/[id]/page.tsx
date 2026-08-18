@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 import { getServerT } from "@/lib/i18n/server";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { getSkill, ASSIGNEE_LABEL, PILLAR_LABEL } from "@/lib/realtyboss/skills/catalog";
-import { getResolvedSkills } from "@/lib/realtyboss/skills/service";
-import { skillInputKeys } from "@/lib/realtyboss/skills/run";
+import { getSkill, ASSIGNEE_LABEL, PILLAR_LABEL } from "@/lib/closeboss/skills/catalog";
+import { getResolvedSkills } from "@/lib/closeboss/skills/service";
+import { skillInputKeys } from "@/lib/closeboss/skills/run";
 import { SkillRunner } from "./SkillRunner";
 
 export const dynamic = "force-dynamic";

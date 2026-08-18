@@ -69,7 +69,7 @@ export default async function LiondeskShutdownPost() {
           name: "CloseBoss",
           logo: {
             "@type": "ImageObject",
-            url: `${SITE_URL}/brand/realtyboss/realtyboss-icon-512.png`,
+            url: `${SITE_URL}/brand/closeboss/closeboss-icon-512.png`,
           },
         },
       },

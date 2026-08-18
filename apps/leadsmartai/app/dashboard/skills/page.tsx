@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { getResolvedSkills, getAgentStateCompliance } from "@/lib/realtyboss/skills/service";
-import { ASSIGNEE_LABEL, PILLAR_LABEL } from "@/lib/realtyboss/skills/catalog";
+import { getResolvedSkills, getAgentStateCompliance } from "@/lib/closeboss/skills/service";
+import { ASSIGNEE_LABEL, PILLAR_LABEL } from "@/lib/closeboss/skills/catalog";
 import { SkillsManager, type SkillRow } from "./SkillsManager";
 
 export const dynamic = "force-dynamic";

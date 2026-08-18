@@ -10,7 +10,7 @@ import {
   buildTimeline,
   fmtAgo,
   type LeadProfilePayload,
-} from "@/lib/realtyboss/leadProfile";
+} from "@/lib/closeboss/leadProfile";
 import { SendMarketReportButton } from "@/components/marketReport/SendMarketReportButton";
 
 /**
@@ -27,7 +27,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/dashboard/realtyboss/lead/${leadId}?full=1`)
+    fetch(`/api/dashboard/closeboss/lead/${leadId}?full=1`)
       .then((r) => r.json())
       .then((j) => {
         if (cancelled) return;

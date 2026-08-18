@@ -21,8 +21,14 @@ const BASE_URL = (process.env.APP_BASE_URL || "https://www.closebossai.com").rep
 /** CloseBoss "house" account that owns inbound product/marketing leads, so
  *  they're managed inside CloseBoss's own CRM rather than floating unowned.
  *  Defaults to the owner account (agents.id = 26); override per-env. */
-function realtybossLeadsAgentId(): number {
-  const n = Number(process.env.REALTYBOSS_LEADS_AGENT_ID);
+function closebossLeadsAgentId(): number {
+  // Reads both spellings so the Vercel env var can be renamed on its own
+  // schedule: a hard cutover would silently fall back to 26 in the window
+  // between deploying this code and renaming the variable. Drop the legacy
+  // read once CLOSEBOSS_LEADS_AGENT_ID is set in every environment.
+  const raw =
+    process.env.CLOSEBOSS_LEADS_AGENT_ID ?? process.env.REALTYBOSS_LEADS_AGENT_ID;
+  const n = Number(raw);
   return Number.isInteger(n) && n > 0 ? n : 26;
 }
 
@@ -111,7 +117,7 @@ export async function POST(req: Request) {
     // funnel measures: download -> free signup -> paid.
     try {
       await supabaseServer.from("contacts").insert({
-        agent_id: realtybossLeadsAgentId(),
+        agent_id: closebossLeadsAgentId(),
         name,
         email,
         source: asset.source,

@@ -5,7 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createCmaForAgent, isCreateCmaFailure } from "@/lib/cma/service";
 import { generateDeepReport } from "@/lib/deep-report/service";
 import { getFeatureQuota, incrementFeatureUsage } from "@/lib/quota/featureQuota";
-import { BOSS_ACTIONS } from "@/lib/realtyboss/actions/registry";
+import { BOSS_ACTIONS } from "@/lib/closeboss/actions/registry";
 import { defineTool } from "../types";
 
 /** agents.auth_user_id — CMA quota + presentation ownership key off the user. */

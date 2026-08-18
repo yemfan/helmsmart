@@ -15,9 +15,9 @@ const TEMPLATES: AdTemplate[] = ["bold", "photo", "stat", "spotlight", "feature"
 const FORMATS: AdFormat[] = ["square", "portrait", "landscape"];
 const THEMES: AdTheme[] = ["navy", "midnight", "azure", "light"];
 
-// CloseBoss hexagon mark (served from public/brand/realtyboss/). Absolute URL is
+// CloseBoss hexagon mark (served from public/brand/closeboss/). Absolute URL is
 // built from the request origin so satori can fetch it in dev and prod alike.
-const BRAND_LOGO_PATH = "/brand/realtyboss/realtyboss-icon-512.png";
+const BRAND_LOGO_PATH = "/brand/closeboss/closeboss-icon-512.png";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 
 import { setSkillOverrideAction } from "./actions";
-import type { SkillAssignee } from "@/lib/realtyboss/skills/catalog";
+import type { SkillAssignee } from "@/lib/closeboss/skills/catalog";
 
 export type SkillRow = {
   id: string;

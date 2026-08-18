@@ -6,10 +6,10 @@ import { intlLocale } from "@/lib/i18n/locale";
 import Link from "next/link";
 import nextDynamic from "next/dynamic";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
-import { AI_TEAM } from "@/lib/realtyboss/team";
-import { LeadProfileDrawer } from "@/components/realtyboss/LeadProfileDrawer";
-import { AssistantAvatar } from "@/components/realtyboss/AssistantAvatar";
-import RunCard from "@/components/realtyboss/RunCard";
+import { AI_TEAM } from "@/lib/closeboss/team";
+import { LeadProfileDrawer } from "@/components/closeboss/LeadProfileDrawer";
+import { AssistantAvatar } from "@/components/closeboss/AssistantAvatar";
+import RunCard from "@/components/closeboss/RunCard";
 import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
 
 /** A file the user attached in the command bar (uploaded to Storage). */
@@ -107,7 +107,7 @@ type Channel = "call" | "sms" | "email" | "social";
 type AutopilotCell = { assignee: string; channel: Channel; mode: "ask" | "auto" };
 type AutopilotChannels = { assignee: string; channels: Channel[] };
 
-/** Boss v2 live run (see /api/dashboard/realtyboss/runs). */
+/** Boss v2 live run (see /api/dashboard/closeboss/runs). */
 type RunRow = {
   id: string;
   instruction_id: string | null;
@@ -246,8 +246,8 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
   const loadConversation = useCallback(async () => {
     const [res, runsRes] = await Promise.all([
-      fetch(`/api/dashboard/realtyboss/instructions?limit=${RECENT_LIMIT}`).then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtyboss/runs?limit=12").then((r) => r.json()).catch(() => ({})),
+      fetch(`/api/dashboard/closeboss/instructions?limit=${RECENT_LIMIT}`).then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/closeboss/runs?limit=12").then((r) => r.json()).catch(() => ({})),
     ]);
     const recent = (res?.instructions ?? []) as InstructionRow[];
     setInstructions(recent.slice().reverse());
@@ -272,7 +272,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       );
       if (!oldest) { setHasMoreEarlier(false); return; }
       const res = await fetch(
-        `/api/dashboard/realtyboss/instructions?limit=${RECENT_LIMIT}&before=${encodeURIComponent(oldest)}`,
+        `/api/dashboard/closeboss/instructions?limit=${RECENT_LIMIT}&before=${encodeURIComponent(oldest)}`,
       ).then((r) => r.json()).catch(() => ({}));
       const older = (res?.instructions ?? []) as InstructionRow[];
       setEarlier((prev) => {
@@ -301,11 +301,11 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       fetch(`/api/dashboard/calendar/events?from=${todayStart}&to=${todayEnd}`).then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/leads?filter=hot&pageSize=5").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/transactions").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtyboss/recommendations").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtyboss/activities?limit=40").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtyboss/team").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/closeboss/recommendations").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/closeboss/activities?limit=40").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/closeboss/team").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/briefings?limit=1").then((r) => r.json()).catch(() => ({})),
-      fetch("/api/dashboard/realtyboss/autopilot").then((r) => r.json()).catch(() => ({})),
+      fetch("/api/dashboard/closeboss/autopilot").then((r) => r.json()).catch(() => ({})),
     ]);
 
     const m = summaryRes?.metrics;
@@ -386,7 +386,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       .filter((t) => t.status === "needs_input")
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
     if (pending) {
-      await fetch("/api/dashboard/realtyboss/instruction-tasks", {
+      await fetch("/api/dashboard/closeboss/instruction-tasks", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: pending.id, action: "answer", answer: content }),
@@ -398,7 +398,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     // Optimistic instruction bubble so the conversation reacts instantly.
     const tempId = `temp_${Date.now()}`;
     setInstructions((prev) => [...prev, { id: tempId, content, status: "processing", created_at: new Date().toISOString() }]);
-    await fetch("/api/dashboard/realtyboss/instructions", {
+    await fetch("/api/dashboard/closeboss/instructions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(attachment ? { content, attachment } : { content }),
@@ -408,7 +408,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
   const resolveRecommendation = useCallback(async (id: string, status: "completed" | "dismissed") => {
     setRecommendations((prev) => prev.filter((r) => r.id !== id));
-    await fetch(`/api/dashboard/realtyboss/recommendations/${id}`, {
+    await fetch(`/api/dashboard/closeboss/recommendations/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
@@ -417,7 +417,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
   const setGlobalAutopilot = useCallback(async (on: boolean) => {
     setAutopilot(on);
-    await fetch("/api/dashboard/realtyboss/autopilot", {
+    await fetch("/api/dashboard/closeboss/autopilot", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ global: on }),
@@ -429,7 +429,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       const next = prev.filter((c) => !(c.assignee === assignee && c.channel === channel));
       return [...next, { assignee, channel, mode }];
     });
-    await fetch("/api/dashboard/realtyboss/autopilot", {
+    await fetch("/api/dashboard/closeboss/autopilot", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ assignee, channel, mode }),
@@ -438,7 +438,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
   const toggleOvernight = useCallback(async (on: boolean) => {
     setOvernightMode(on);
-    await fetch("/api/dashboard/realtyboss/autopilot", {
+    await fetch("/api/dashboard/closeboss/autopilot", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ overnightMode: on }),
@@ -449,7 +449,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const pauseAllAutonomy = useCallback(async () => {
     setAutopilot(false);
     setAutopilotCells((prev) => prev.map((c) => ({ ...c, mode: "ask" as const })));
-    await fetch("/api/dashboard/realtyboss/autopilot", {
+    await fetch("/api/dashboard/closeboss/autopilot", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pauseAll: true }),
@@ -1016,7 +1016,7 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
     setBusy(action);
     setError(null);
     try {
-      const res = await fetch("/api/dashboard/realtyboss/instruction-tasks", {
+      const res = await fetch("/api/dashboard/closeboss/instruction-tasks", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(action === "answer" ? { id: t.id, action, answer: answer.trim() } : { id: t.id, action }),

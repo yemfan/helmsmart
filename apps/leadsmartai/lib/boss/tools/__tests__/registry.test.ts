@@ -55,8 +55,8 @@ vi.mock("@/lib/cityDataEngine", () => ({
 vi.mock("@/lib/agent-messaging/settings", () => ({
   getAgentMessageSettingsEffective: vi.fn(async () => null),
 }));
-vi.mock("@/lib/realtyboss/autopilot", () => ({ effectiveAutopilot: vi.fn(async () => false) }));
-vi.mock("@/lib/realtyboss/activities", () => ({ logAssistantActivity: vi.fn(async () => undefined) }));
+vi.mock("@/lib/closeboss/autopilot", () => ({ effectiveAutopilot: vi.fn(async () => false) }));
+vi.mock("@/lib/closeboss/activities", () => ({ logAssistantActivity: vi.fn(async () => undefined) }));
 
 // eslint-disable-next-line import/first
 import { getBossTool, listBossTools } from "../registry";

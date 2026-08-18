@@ -5,8 +5,8 @@ vi.mock("server-only", () => ({}));
 // client at module load). Evals never execute registry tools — getTools is
 // injected — so stub the client out.
 vi.mock("@/lib/supabase/admin", () => ({ supabaseAdmin: {} }));
-vi.mock("@/lib/realtyboss/autopilot", () => ({ effectiveAutopilot: async () => false }));
-vi.mock("@/lib/realtyboss/activities", () => ({ logAssistantActivity: async () => undefined }));
+vi.mock("@/lib/closeboss/autopilot", () => ({ effectiveAutopilot: async () => false }));
+vi.mock("@/lib/closeboss/activities", () => ({ logAssistantActivity: async () => undefined }));
 
 /**
  * Boss v2 eval harness (HANDOFF_BOSS_V2 PR-6): 10 golden commands driven

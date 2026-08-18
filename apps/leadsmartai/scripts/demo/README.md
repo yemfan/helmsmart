@@ -7,7 +7,7 @@ timestamps, so **re-running it before any demo makes "today" fresh**.
 
 ## Reset / refresh the demo
 
-Run `realtyboss-demo-seed.sql` against the LeadSmart Supabase project
+Run `closeboss-demo-seed.sql` against the LeadSmart Supabase project
 (`babmbowmzwizoahkmshx`) as service role — via the Supabase MCP
 `execute_sql`, the SQL editor, or psql. It is idempotent: it clears the
 sandbox agent's CRM rows (and cached AI briefings) and reinserts the

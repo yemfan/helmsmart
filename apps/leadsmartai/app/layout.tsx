@@ -45,19 +45,19 @@ const SITE_URL = getSiteUrl().replace(/\/$/, "");
 // CloseBoss rebrand on the same domain (closebossai.com stays the URL).
 const SITE_NAME = "CloseBoss";
 // SEO brand: lead <title>/OG/schema with the "CloseBoss AI" variant. We own
-// the exact-match domain (closebossai.com) for the winnable "realtyboss ai"
-// query, and it disambiguates us from realtyboss.com / realtyboss.ng. SITE_NAME
+// the exact-match domain (closebossai.com) for the winnable "closeboss ai"
+// query, and it disambiguates us from closeboss.com / closeboss.ng. SITE_NAME
 // stays the wordmark; SITE_BRAND / SITE_TITLE drive search-facing metadata.
 const SITE_BRAND = "CloseBoss AI";
 // Homepage title per HANDOFF_BOSS_V2 PR-1. Subpages keep the `%s | CloseBoss AI`
-// template for the exact-match "realtyboss ai" query.
+// template for the exact-match "closeboss ai" query.
 const SITE_TITLE = "CloseBoss — Your AI Real Estate Team. Close More Deals.";
 const SITE_DESCRIPTION =
   "CloseBoss is an AI-powered real estate team that answers every call, follows up with every lead, coordinates every transaction, and helps agents close more deals without hiring additional staff.";
 
 /**
  * Tab + Apple + JSON-LD all use the CloseBoss icons in
- * `public/brand/realtyboss/` (regenerated via scripts/generate-brand-icons.mjs).
+ * `public/brand/closeboss/` (regenerated via scripts/generate-brand-icons.mjs).
  * Explicit entries ensure correct absolute URLs with `metadataBase` on Vercel previews.
  */
 export const metadata: Metadata = {
@@ -152,13 +152,13 @@ const jsonLd = [
     // (our exact-match domain query) to this entity.
     alternateName: SITE_BRAND,
     url: SITE_URL,
-    logo: `${SITE_URL}/brand/realtyboss/realtyboss-icon-512.png`,
+    logo: `${SITE_URL}/brand/closeboss/closeboss-icon-512.png`,
     description: SITE_DESCRIPTION,
     // sameAs is how Google ties the "CloseBoss AI" ENTITY to its official web
     // presence — critical because Google currently confuses us with the
     // similarly-named "CloseBot". Only list profiles actually BRANDED CloseBoss
     // AI (a LinkedIn company page, Crunchbase, X/Instagram/YouTube named
-    // "CloseBoss AI"). The old maxy-investment / realtyboss links were removed:
+    // "CloseBoss AI"). The old maxy-investment / closeboss links were removed:
     // linking to a differently-named entity dilutes recognition instead of
     // building it. Add each CloseBoss-branded profile URL here as it's created.
     sameAs: [] as string[],
@@ -188,7 +188,7 @@ const jsonLd = [
     url: SITE_URL,
     // Add a CloseBoss-branded product/profile URL here once one exists (a
     // LinkedIn product page, G2/Capterra listing, etc.). The old
-    // maxy-investment-realtyboss-ai link was removed — it named a different
+    // maxy-investment-closeboss-ai link was removed — it named a different
     // product and worked against CloseBoss entity recognition.
     sameAs: [] as string[],
     offers: {

@@ -5,9 +5,9 @@
  * Expo app's launcher icons in sync.
  *
  * Source of truth is the mascot artwork (raster):
- *   realtyboss-mascot.png       → opaque full-bleed purple tile (app icons,
+ *   closeboss-mascot.png       → opaque full-bleed purple tile (app icons,
  *                                  favicon, apple-touch, PWA, mobile launcher)
- *   realtyboss-mascot-mark.png  → the mascot on a transparent background
+ *   closeboss-mascot-mark.png  → the mascot on a transparent background
  *                                  (standalone mark + Android adaptive foreground)
  *
  * Run after replacing either master:  node scripts/generate-brand-icons.mjs
@@ -18,12 +18,12 @@ import sharp from "sharp";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.resolve(here, "..");
-const brand = path.join(appRoot, "public", "brand", "realtyboss");
+const brand = path.join(appRoot, "public", "brand", "closeboss");
 // Sibling Expo app — keep its launcher icons in sync with the web brand.
 const mobileAssets = path.resolve(appRoot, "..", "leadsmart-mobile", "assets");
 
-const tileMaster = path.join(brand, "realtyboss-mascot.png"); // opaque tile
-const markMaster = path.join(brand, "realtyboss-mascot-mark.png"); // transparent
+const tileMaster = path.join(brand, "closeboss-mascot.png"); // opaque tile
+const markMaster = path.join(brand, "closeboss-mascot-mark.png"); // transparent
 
 async function resizePng(src, size, out) {
   await sharp(src)
@@ -35,13 +35,13 @@ async function resizePng(src, size, out) {
 
 const tasks = [
   // Opaque app-icon tile (the mascot already has no transparent corners)
-  [tileMaster, 64, path.join(brand, "realtyboss-icon-64.png")],
-  [tileMaster, 180, path.join(brand, "realtyboss-icon-180.png")],
-  [tileMaster, 512, path.join(brand, "realtyboss-icon-512.png")],
+  [tileMaster, 64, path.join(brand, "closeboss-icon-64.png")],
+  [tileMaster, 180, path.join(brand, "closeboss-icon-180.png")],
+  [tileMaster, 512, path.join(brand, "closeboss-icon-512.png")],
   [tileMaster, 256, path.join(appRoot, "app", "icon.png")], // favicon
   [tileMaster, 180, path.join(appRoot, "app", "apple-icon.png")],
   // Standalone mark (transparent)
-  [markMaster, 512, path.join(brand, "realtyboss-mark-512.png")],
+  [markMaster, 512, path.join(brand, "closeboss-mark-512.png")],
   // Expo mobile launcher icon (iOS/Android base) — opaque 1024 tile.
   [tileMaster, 1024, path.join(mobileAssets, "icon.png")],
 ];

@@ -2,8 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 import { defineTool } from "../types";
-import { routeSkillRequest, runSkillAndSave } from "@/lib/realtyboss/skills/run";
-import { getSkill, ASSIGNEE_LABEL } from "@/lib/realtyboss/skills/catalog";
+import { routeSkillRequest, runSkillAndSave } from "@/lib/closeboss/skills/run";
+import { getSkill, ASSIGNEE_LABEL } from "@/lib/closeboss/skills/catalog";
 
 /**
  * run_skill — the agent's Realtor AI skills library (~59 skills) as one tool.

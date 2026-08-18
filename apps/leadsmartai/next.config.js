@@ -39,13 +39,27 @@ const nextConfig = {
    */
   async rewrites() {
     return [
+      // Two renames deep now: RealtorBoss -> RealtyBoss -> CloseBoss. BOTH old
+      // spellings must keep resolving — shipped mobile builds and installed
+      // kiosk PWAs call /api/dashboard/{realtorboss,realtyboss}/* and cannot be
+      // updated retroactively. Each points straight at the current path, since
+      // Next resolves a rewrite once against the filesystem rather than
+      // re-running the table, so chaining old -> newer -> newest would not work.
       {
         source: "/api/dashboard/realtorboss/:path*",
-        destination: "/api/dashboard/realtyboss/:path*",
+        destination: "/api/dashboard/closeboss/:path*",
+      },
+      {
+        source: "/api/dashboard/realtyboss/:path*",
+        destination: "/api/dashboard/closeboss/:path*",
       },
       {
         source: "/brand/realtorboss/realtorboss-:file",
-        destination: "/brand/realtyboss/realtyboss-:file",
+        destination: "/brand/closeboss/closeboss-:file",
+      },
+      {
+        source: "/brand/realtyboss/realtyboss-:file",
+        destination: "/brand/closeboss/closeboss-:file",
       },
     ];
   },

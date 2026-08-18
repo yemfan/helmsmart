@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 
 import Link from "next/link";
-import { getAssistant } from "@/lib/realtyboss/team";
-import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
+import { getAssistant } from "@/lib/closeboss/team";
+import { AssistantHeader, AssistantKpiCard } from "@/components/closeboss/AssistantPage";
 
 type PipelineDeal = {
   id: string;

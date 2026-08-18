@@ -2,7 +2,7 @@ import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
-import { logAssistantActivity } from "@/lib/realtyboss/activities";
+import { logAssistantActivity } from "@/lib/closeboss/activities";
 import { buildAgentDigest, renderDigestEmail } from "./overdueDigest";
 import type { TransactionRow, TransactionTaskRow } from "./types";
 

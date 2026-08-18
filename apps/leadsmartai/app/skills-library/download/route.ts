@@ -1,4 +1,4 @@
-import { buildSkillsPackMarkdown, SKILLS_PACK_FILENAME } from "@/lib/realtyboss/skills/pack";
+import { buildSkillsPackMarkdown, SKILLS_PACK_FILENAME } from "@/lib/closeboss/skills/pack";
 
 // The catalog is static, so the pack can be generated at build time.
 export const dynamic = "force-static";

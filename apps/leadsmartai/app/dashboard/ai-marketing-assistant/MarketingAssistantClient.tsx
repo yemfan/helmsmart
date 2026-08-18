@@ -6,9 +6,9 @@ import { intlLocale } from "@/lib/i18n/locale";
 import Link from "next/link";
 import { useState } from "react";
 import { BookOpen, ChevronDown, ChevronUp } from "lucide-react";
-import { getAssistant } from "@/lib/realtyboss/team";
-import { AssistantHeader, AssistantKpiCard } from "@/components/realtyboss/AssistantPage";
-import { AssistantCallSettings } from "@/components/realtyboss/AssistantCallSettings";
+import { getAssistant } from "@/lib/closeboss/team";
+import { AssistantHeader, AssistantKpiCard } from "@/components/closeboss/AssistantPage";
+import { AssistantCallSettings } from "@/components/closeboss/AssistantCallSettings";
 import WeeklySocialPosts, {
   type SocialMode,
   type SocialRec,

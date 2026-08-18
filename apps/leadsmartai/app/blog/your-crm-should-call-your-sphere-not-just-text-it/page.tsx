@@ -102,7 +102,7 @@ export default async function CallYourSpherePost() {
         publisher: {
           "@type": "Organization",
           name: "CloseBoss",
-          logo: { "@type": "ImageObject", url: `${SITE_URL}/brand/realtyboss/realtyboss-icon-512.png` },
+          logo: { "@type": "ImageObject", url: `${SITE_URL}/brand/closeboss/closeboss-icon-512.png` },
         },
       },
       {

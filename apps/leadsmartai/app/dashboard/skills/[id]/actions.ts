@@ -1,7 +1,7 @@
 "use server";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { runSkill, type RunSkillResult } from "@/lib/realtyboss/skills/run";
+import { runSkill, type RunSkillResult } from "@/lib/closeboss/skills/run";
 
 /** Run one skill with the given inputs; auto-fills agent + compliance placeholders. */
 export async function runSkillAction(skillId: string, inputs: Record<string, string>): Promise<RunSkillResult> {

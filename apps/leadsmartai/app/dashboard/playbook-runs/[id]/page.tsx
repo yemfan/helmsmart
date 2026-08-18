@@ -4,9 +4,9 @@ import { getServerT, getServerLocale } from "@/lib/i18n/server";
 import { intlLocale } from "@/lib/i18n/locale";
 
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { getPlaybookRun, getRunTasks } from "@/lib/realtyboss/playbook-runs/service";
-import { getPlaybookRunDef } from "@/lib/realtyboss/playbook-runs/definitions";
-import type { BuyingPlan, PlaybookArtifact, SellingPlan } from "@/lib/realtyboss/playbook-runs/types";
+import { getPlaybookRun, getRunTasks } from "@/lib/closeboss/playbook-runs/service";
+import { getPlaybookRunDef } from "@/lib/closeboss/playbook-runs/definitions";
+import type { BuyingPlan, PlaybookArtifact, SellingPlan } from "@/lib/closeboss/playbook-runs/types";
 import { OptimizePanel } from "./OptimizePanel";
 import { ApproveRunButton } from "./ApproveRunButton";
 

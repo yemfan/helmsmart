@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { BossAssignee, BossChannel } from "@/lib/realtyboss/actions/registry";
+import type { BossAssignee, BossChannel } from "@/lib/closeboss/actions/registry";
 
 /**
  * Boss v2 tool layer (HANDOFF_BOSS_V2 PR-2).
