@@ -6,7 +6,7 @@ import { generateAndStore, CreditError } from "@/lib/generation";
 export const maxDuration = 300;
 export const runtime = "nodejs";
 
-type SwapTarget = "face" | "product" | "background";
+type SwapTarget = "face" | "person" | "outfit" | "product" | "background";
 
 /**
  * Build the instruction the model follows. `@Image1` is the first reference
@@ -15,6 +15,13 @@ type SwapTarget = "face" | "product" | "background";
 function buildPrompt(target: SwapTarget, note: string): string {
   const base: Record<SwapTarget, string> = {
     face: "Replace the face of the main person in the video with the face from @Image1. Keep the original body, hair, motion, lighting, camera movement and background unchanged, and blend the new face naturally.",
+    // Whole-person: the opposite instruction to `face`, which explicitly PRESERVES
+    // body and clothing — asking for a wardrobe change under `face` fights the prompt.
+    person:
+      "Replace the entire person in the video with the person shown in @Image1 — their face, hair, body and clothing. Keep the original motion, gestures, camera movement, framing, lighting and background exactly as they are, and keep the new person consistent from frame to frame.",
+    // Wardrobe only: same person, different clothes.
+    outfit:
+      "Change the clothing worn by the main person in the video to the outfit shown in @Image1. Keep their face, hair, body and motion unchanged, keep the background and lighting as they are, and let the fabric hang and move naturally with them.",
     product:
       "Replace the main product / object in the video with the item shown in @Image1. Match the original placement, scale, motion, lighting and reflections so it looks natural in the scene.",
     background:
@@ -23,7 +30,7 @@ function buildPrompt(target: SwapTarget, note: string): string {
   return note ? `${base[target]} ${note}` : base[target];
 }
 
-const TARGETS = new Set<SwapTarget>(["face", "product", "background"]);
+const TARGETS = new Set<SwapTarget>(["face", "person", "outfit", "product", "background"]);
 
 /**
  * fal reports validation failures as `fal result 422: {"detail":[{msg,type,ctx}]}`.

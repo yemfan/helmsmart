@@ -26,6 +26,8 @@ export const DEFAULT_MODELS = {
   // existing clip while keeping the original motion, lighting and camera.
   // Reference images map to @Image1..@Image4 in the prompt.
   videoEdit: "fal-ai/kling-video/o1/video-to-video/edit",
+  /** Doubles a clip's resolution so it clears the swap model's 720px floor. */
+  videoUpscale: "fal-ai/video-upscaler",
   // Seedance 2.0 — realistic people + native audio; used for UGC ads (a creator
   // talking to camera). Reference-to-video accepts uploaded images/videos so we
   // can emulate a viral ad the user drops in.
@@ -146,10 +148,9 @@ function collectUrls(result: Record<string, unknown>): string[] {
   return urls;
 }
 
-/** Submit a job, poll to completion, and return the media URL(s). */
-export async function generate(p: GenParams): Promise<GenResult> {
+/** Submit a job to `model`, poll to completion, and return the raw result. */
+async function runModel(model: string, input: Record<string, unknown>): Promise<Record<string, unknown>> {
   const H = headers();
-  const { model, input } = buildRequest(p);
 
   const sub = await fetch(`https://queue.fal.run/${model}`, {
     method: "POST",
@@ -183,8 +184,29 @@ export async function generate(p: GenParams): Promise<GenResult> {
   const rr = await fetch(responseUrl, { headers: H });
   const out = (await rr.json().catch(() => ({}))) as Record<string, unknown>;
   if (!rr.ok) throw new Error(`fal result ${rr.status}: ${JSON.stringify(out)}`);
+  return out;
+}
 
+/** Submit a job, poll to completion, and return the media URL(s). */
+export async function generate(p: GenParams): Promise<GenResult> {
+  const { model, input } = buildRequest(p);
+  const out = await runModel(model, input);
   const urls = collectUrls(out);
   if (!urls.length) throw new Error("No media URL in the fal.ai result.");
   return { urls, model };
+}
+
+/**
+ * Raise a clip above a model's resolution floor. Deliberately its OWN request
+ * rather than a step chained ahead of the swap: an upscale and a Kling O1 edit
+ * are each minutes long, and running them back to back inside one 300s function
+ * is how the CloseBoss avatar renders used to 504 — losing the reserved credits
+ * with them, because SIGKILL skips the refund. Two short calls always beat one
+ * long one here.
+ */
+export async function upscaleVideo(videoUrl: string): Promise<string> {
+  const out = await runModel(DEFAULT_MODELS.videoUpscale, { video_url: videoUrl, scale: 2 });
+  const url = collectUrls(out)[0];
+  if (!url) throw new Error("No media URL in the fal.ai result.");
+  return url;
 }
