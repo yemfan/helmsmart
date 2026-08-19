@@ -55,10 +55,16 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
  * seedance 2.5 REFUSES face references outright, so an uploaded human tops out
  * at 2.0's 15s rather than 2.5's 30s.
  *
- * A photo of a person is a likeness, so this path is gated. It forces
- * identity_type to `real_person` and demands a consent note naming who they are
- * and that they agreed — the generated ad will show their face saying words
- * they never said, and "the schema had a field for it" is not consent.
+ * Consent is demanded for a REAL PERSON and only then. The first cut of this
+ * forced every upload to `real_person` and required a note, which meant asking
+ * permission to use a drawing of your own robot mascot — a gate that fires on
+ * everything teaches people to type anything to get past it. So the caller
+ * declares what the picture is, and the character's own type constrains that:
+ * only a `human` character can be a real person at all.
+ *
+ * Where it does apply the reason is real: the ad shows that person's face
+ * saying words they never said, and "the schema had a field for it" is not
+ * consent.
  */
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -77,6 +83,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
   const url = typeof body.url === "string" ? body.url.trim() : "";
   const consentNote = typeof body.consentNote === "string" ? body.consentNote.trim() : "";
+  const claimed = typeof body.identityType === "string" ? body.identityType : "";
 
   // The photo must live in OUR Storage. Accepting an arbitrary URL would let a
   // caller point the renderer at anything on the internet through our key.
@@ -84,23 +91,29 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   if (prefix === "/storage/" || !url.startsWith(prefix)) {
     return NextResponse.json({ error: "Upload the photo here rather than pasting a link." }, { status: 400 });
   }
-  if (consentNote.length < 10) {
+  const character = await getCharacter(user.id, id);
+  if (!character) return NextResponse.json({ error: "Character not found." }, { status: 404 });
+
+  // Only a human character can depict a real person; a mascot or robot cannot,
+  // whatever the request claims. Anything else is the brand's own artwork.
+  const identityType =
+    character.type === "human" && claimed === "real_person" ? "real_person" : "brand_owned";
+
+  if (identityType === "real_person" && consentNote.length < 10) {
     return NextResponse.json(
-      { error: "Say whose photo this is and that they agreed to it being used in AI-generated ads." },
+      { error: "Say who is in the photo and how they agreed to it being used in AI-generated ads." },
       { status: 400 },
     );
   }
 
-  const character = await getCharacter(user.id, id);
-  if (!character) return NextResponse.json({ error: "Character not found." }, { status: 404 });
-
   try {
     await setCharacterPortrait(user.id, id, url);
     await updateCharacter(user.id, id, {
-      identityType: "real_person",
-      consentNote: consentNote.slice(0, 500),
+      identityType,
+      // Don't leave a stale note behind if this stops being a real likeness.
+      consentNote: identityType === "real_person" ? consentNote.slice(0, 500) : null,
     });
-    return NextResponse.json({ ok: true, url });
+    return NextResponse.json({ ok: true, url, identityType });
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Could not save that photo." },
