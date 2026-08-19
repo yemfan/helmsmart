@@ -21,6 +21,13 @@ type Aspect = (typeof ASPECTS)[number];
 const MIN_SWAP_WIDTH = 720;
 /** fal reports "Maximum is 10.05 seconds"; 10 is the honest number to show. */
 const MAX_SWAP_SECONDS = 10;
+/**
+ * What we actually ask the trimmer for. A stream copy cuts on a keyframe and so
+ * lands slightly LONG (+0.13s measured), and a clip with sparse keyframes could
+ * overshoot further. Aiming a second under the ceiling means a normal overshoot
+ * still clears it, instead of failing the swap after the upload.
+ */
+const TRIM_TARGET_SECONDS = MAX_SWAP_SECONDS - 1;
 const MIN_SWAP_SECONDS = 3;
 /**
  * The third limit the panel advertises ("under 200MB") and the last one that
@@ -130,8 +137,16 @@ export default function Studio({
   const [srcSize, setSrcSize] = useState<VideoMeta | null>(null);
   /** Tick to prepend an upscale pass to the swap, in one click. */
   const [upscaleFirst, setUpscaleFirst] = useState(true);
+  /** Tick to cut an over-long clip down to the ceiling before swapping. */
+  const [trimFirst, setTrimFirst] = useState(true);
+  /**
+   * The file the user picked, kept so an over-long clip can be trimmed locally
+   * at Run-swap time. A pasted URL leaves this null — there is no local file to
+   * cut, so trimming is simply not offered in that case.
+   */
+  const pickedFile = useRef<File | null>(null);
   /** Which leg of a chained run is in flight, for the button label. */
-  const [stage, setStage] = useState<"upscaling" | "swapping" | null>(null);
+  const [stage, setStage] = useState<"trimming" | "upscaling" | "swapping" | null>(null);
   /**
    * Whether Run swap will chain an upscale pass first. Drives the cost line and
    * the step labels, so the extra credits are stated before the click, not after.
@@ -139,10 +154,10 @@ export default function Studio({
   const willUpscale =
     upscaleFirst && !!srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH;
   /**
-   * Duration is a HARD stop, unlike width. An undersized clip can be upscaled;
-   * an over-long one has to be trimmed outside the app, so there is nothing to
-   * offer but an accurate message — delivered before the upload, not after fal
-   * has taken the credits and three minutes.
+   * Too SHORT is a hard stop — there are no frames to invent. Too LONG is not:
+   * ffmpeg.wasm can cut the picked file in the browser (see lib/trimClient).
+   * Both are decided before the swap runs, not after fal has taken the credits
+   * and three minutes.
    */
   const durationIssue: "long" | "short" | null =
     !srcSize || srcSize.duration <= 0
@@ -152,6 +167,22 @@ export default function Studio({
         : srcSize.duration < MIN_SWAP_SECONDS
           ? "short"
           : null;
+  /**
+   * Whether Run swap will cut the clip first. Needs the local file: the trim
+   * happens in the browser, so a clip that arrived as a pasted URL can't use it.
+   */
+  const canTrim = durationIssue === "long" && !!pickedFile.current;
+  const willTrim = trimFirst && canTrim;
+  /**
+   * How many passes one click runs: trim and upscale are each optional prep,
+   * the swap always happens. Counted rather than hardcoded — the labels used to
+   * read "1 of 2" and would have started lying the moment trim was added.
+   */
+  const totalSteps = (willTrim ? 1 : 0) + (willUpscale ? 1 : 0) + 1;
+  const stepNumber =
+    stage === "trimming" ? 1 : stage === "upscaling" ? (willTrim ? 2 : 1) : totalSteps;
+  /** " (2 of 3)" — omitted when the swap is the only pass. */
+  const stepSuffix = totalSteps > 1 ? ` (${stepNumber} of ${totalSteps})` : "";
   /** Shared "wait here vs notify me" control — see components/NotifyWhenDone. */
   const notifier = useDoneNotifier();
   /**
@@ -169,8 +200,10 @@ export default function Studio({
       ? "Uploading your clip…"
       : !srcVideoUrl
         ? "Add a source video to get started."
-        : durationIssue === "long"
-          ? `Clip is ${srcSize!.duration.toFixed(1)}s — trim to ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s.`
+        : durationIssue === "long" && !willTrim
+          ? canTrim
+            ? `Clip is ${srcSize!.duration.toFixed(1)}s — tick “Trim it first”, or cut it to ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s.`
+            : `Clip is ${srcSize!.duration.toFixed(1)}s — upload a ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s file so it can be trimmed here.`
           : durationIssue === "short"
             ? `Clip is ${srcSize!.duration.toFixed(1)}s — needs at least ${MIN_SWAP_SECONDS}s.`
             : !refUrl
@@ -258,6 +291,7 @@ export default function Studio({
     // advisory (it decides which warnings to show), so it must never sit on
     // the critical path.
     setSrcSize(null);
+    pickedFile.current = file;
     void readVideoMeta(file).then(setSrcSize);
     if (!uid) {
       setError("Still signing in — try again in a second.");
@@ -266,13 +300,7 @@ export default function Studio({
     setError(null);
     setSrcUploading(true);
     try {
-      const ext = (file.name.split(".").pop() || "mp4").toLowerCase();
-      const path = `${uid}/src/${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("media")
-        .upload(path, file, { contentType: file.type, upsert: false });
-      if (upErr) throw upErr;
-      const url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+      const url = await uploadSource(file);
       setSrcVideoUrl(url);
       setSrcVideoName(file.name);
     } catch (err) {
@@ -280,6 +308,39 @@ export default function Studio({
     } finally {
       setSrcUploading(false);
     }
+  }
+
+  /** Put a source clip in Storage and hand back its public URL. */
+  async function uploadSource(file: File): Promise<string> {
+    const ext = (file.name.split(".").pop() || "mp4").toLowerCase();
+    const path = `${uid}/src/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("media")
+      .upload(path, file, { contentType: file.type, upsert: false });
+    if (upErr) throw upErr;
+    return supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+  }
+
+  /**
+   * Cut the picked clip to the model's ceiling, in the browser, and upload the
+   * result. Returns the new URL and the measured length.
+   *
+   * The cut is re-MEASURED rather than assumed: a stream copy lands on a
+   * keyframe, so the output is at or just under the request, and "just under"
+   * is exactly what keeps us inside the ceiling. If it somehow comes back long
+   * we stop here rather than pay fal to reject it.
+   */
+  async function trimNow(file: File): Promise<{ url: string; meta: VideoMeta | null }> {
+    const { trimToFirstSeconds } = await import("@/lib/trimClient");
+    const cut = await trimToFirstSeconds(file, TRIM_TARGET_SECONDS);
+    const meta = await readVideoMeta(cut);
+    if (meta && meta.duration > MAX_SWAP_SECONDS) {
+      throw new Error(
+        `Trimming produced a ${meta.duration.toFixed(1)}s clip, which is still over the ${MAX_SWAP_SECONDS}s limit. Cut it to ${MAX_SWAP_SECONDS}s before uploading.`,
+      );
+    }
+    const url = await uploadSource(cut);
+    return { url, meta };
   }
 
   /**
@@ -309,9 +370,11 @@ export default function Studio({
       setError("Add a source video — upload a clip or paste a direct video URL.");
       return;
     }
-    if (durationIssue === "long") {
+    if (durationIssue === "long" && !willTrim) {
       setError(
-        `That clip is ${srcSize!.duration.toFixed(1)}s — swaps take at most ${MAX_SWAP_SECONDS}s. Trim it to a ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s section and upload again.`,
+        canTrim
+          ? `That clip is ${srcSize!.duration.toFixed(1)}s — swaps take at most ${MAX_SWAP_SECONDS}s. Tick “Trim it first”, or cut it to a ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s section and upload again.`
+          : `That clip is ${srcSize!.duration.toFixed(1)}s — swaps take at most ${MAX_SWAP_SECONDS}s. Trimming runs on the file itself, so upload a ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s clip instead of a link.`,
       );
       return;
     }
@@ -339,9 +402,19 @@ export default function Studio({
       // One click, two calls. If the upscale fails it throws here and the swap
       // is never submitted — so a failed prep can't burn the swap's credits too.
       let sourceUrl = srcVideoUrl;
+      // Trim BEFORE upscaling: the upscaler then walks 10s of frames instead of
+      // 30, which is faster and further from the function's time ceiling.
+      if (willTrim && pickedFile.current) {
+        setStage("trimming");
+        const cut = await trimNow(pickedFile.current);
+        sourceUrl = cut.url;
+        setSrcVideoUrl(cut.url);
+        setSrcVideoName(`first ${TRIM_TARGET_SECONDS}s`);
+        if (cut.meta) setSrcSize(cut.meta);
+      }
       if (tooSmall && upscaleFirst) {
         setStage("upscaling");
-        sourceUrl = await upscaleNow(srcVideoUrl);
+        sourceUrl = await upscaleNow(sourceUrl);
         setSrcVideoUrl(sourceUrl);
         setSrcVideoName("upscaled clip");
         setSrcSize((s) => (s ? { ...s, width: s.width * 2, height: s.height * 2 } : null));
@@ -554,22 +627,53 @@ export default function Studio({
                   {srcSize && srcSize.duration > 0 && ` · ${srcSize.duration.toFixed(1)}s`}
                 </p>
               )}
-              {durationIssue && (
+              {durationIssue === "long" && (
+                <div
+                  className={`mt-2 rounded-lg border p-2.5 ${
+                    canTrim ? "border-amber-200 bg-amber-50" : "border-rose-200 bg-rose-50"
+                  }`}
+                >
+                  <p
+                    className={`text-[11px] leading-relaxed ${
+                      canTrim ? "text-amber-900" : "text-rose-900"
+                    }`}
+                  >
+                    This clip is {srcSize!.duration.toFixed(1)}s — swaps take at most{" "}
+                    {MAX_SWAP_SECONDS}s.
+                  </p>
+                  {canTrim ? (
+                    <>
+                      <label className="mt-2 flex cursor-pointer items-start gap-2 text-[11px] leading-relaxed text-amber-900">
+                        <input
+                          type="checkbox"
+                          checked={trimFirst}
+                          onChange={(e) => setTrimFirst(e.target.checked)}
+                          disabled={loading}
+                          className="mt-0.5 accent-amber-600"
+                        />
+                        <span>
+                          Trim to the first {TRIM_TARGET_SECONDS}s — runs automatically when you
+                          hit Run swap (free, no quality loss).
+                        </span>
+                      </label>
+                      <p className="mt-1.5 text-[11px] leading-relaxed text-amber-800">
+                        Only the opening is kept. If the moment you want is later in the clip, cut
+                        it yourself and upload that section instead.
+                      </p>
+                    </>
+                  ) : (
+                    <p className="mt-1.5 text-[11px] leading-relaxed text-rose-900">
+                      Trimming runs on the file itself, so it isn&rsquo;t available for a pasted
+                      link. Upload a {MIN_SWAP_SECONDS}–{MAX_SWAP_SECONDS}s clip instead.
+                    </p>
+                  )}
+                </div>
+              )}
+              {durationIssue === "short" && (
                 <div className="mt-2 rounded-lg border border-rose-200 bg-rose-50 p-2.5">
                   <p className="text-[11px] leading-relaxed text-rose-900">
-                    {durationIssue === "long" ? (
-                      <>
-                        This clip is {srcSize!.duration.toFixed(1)}s — swaps take at most{" "}
-                        {MAX_SWAP_SECONDS}s. Trim it to a {MIN_SWAP_SECONDS}–{MAX_SWAP_SECONDS}s section
-                        and upload again; the model edits every frame, so a long clip can&rsquo;t be
-                        processed even partially.
-                      </>
-                    ) : (
-                      <>
-                        This clip is only {srcSize!.duration.toFixed(1)}s — swaps need at least{" "}
-                        {MIN_SWAP_SECONDS}s to work with.
-                      </>
-                    )}
+                    This clip is only {srcSize!.duration.toFixed(1)}s — swaps need at least{" "}
+                    {MIN_SWAP_SECONDS}s to work with.
                   </p>
                 </div>
               )}
@@ -661,6 +765,7 @@ export default function Studio({
                 {willUpscale
                   ? `Costs ${25 + CREDIT_COST.upscale} credits (incl. upscale) · ~2–5 min`
                   : "Costs 25 credits · ~1–3 min"}
+                {willTrim && " · trim is free"}
               </span>
               {blockedReason && (
                 <span className="text-xs font-medium text-amber-700">{blockedReason}</span>
@@ -675,22 +780,22 @@ export default function Studio({
                 className="ml-auto inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {loading && <Spinner />}
-                {stage === "upscaling"
-                  ? "Upscaling… (1 of 2)"
-                  : stage === "swapping"
-                    ? willUpscale
-                      ? "Swapping… (2 of 2)"
-                      : "Swapping…"
-                    : "Run swap"}
+                {stage === "trimming"
+                  ? `Trimming…${stepSuffix}`
+                  : stage === "upscaling"
+                    ? `Upscaling…${stepSuffix}`
+                    : stage === "swapping"
+                      ? `Swapping…${stepSuffix}`
+                      : "Run swap"}
               </button>
             </div>
             {loading && (
               <p className="mt-2 text-xs leading-relaxed text-slate-500">
-                {stage === "upscaling"
-                  ? `Upscaling to ${srcSize ? `${srcSize.width * 2}×${srcSize.height * 2}` : "720p+"} — step 1 of 2, about a minute.`
-                  : willUpscale
-                    ? "Swapping in your reference — step 2 of 2, usually 1–3 minutes."
-                    : "Swapping in your reference — this usually takes 1–3 minutes."}{" "}
+                {stage === "trimming"
+                  ? `Cutting the clip to the first ${TRIM_TARGET_SECONDS}s${stepSuffix} — the first run also downloads the trimmer, so give it a moment.`
+                  : stage === "upscaling"
+                    ? `Upscaling to ${srcSize ? `${srcSize.width * 2}×${srcSize.height * 2}` : "720p+"}${stepSuffix} — about a minute.`
+                    : `Swapping in your reference${stepSuffix} — usually 1–3 minutes.`}{" "}
                 {notifier.mode === "notify"
                   ? "You can switch tabs — we'll notify you when it's done."
                   : "Keep this tab open; the result appears here."}
