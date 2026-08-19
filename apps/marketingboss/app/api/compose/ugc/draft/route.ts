@@ -27,11 +27,13 @@ export async function POST(req: Request) {
   const intent = typeof body.intent === "string" ? body.intent.trim() : "";
   const hasReference = body.hasReference === true;
   const styleHint = typeof body.styleHint === "string" ? body.styleHint.trim().slice(0, 800) : undefined;
+  // The script has to be written for the runtime it will be spoken over.
+  const seconds = typeof body.seconds === "number" ? body.seconds : undefined;
   if (!intent) return NextResponse.json({ error: "Tell me what the ad is about." }, { status: 400 });
   if (intent.length > 1500) return NextResponse.json({ error: "Keep it under 1500 characters." }, { status: 400 });
 
   try {
-    const ad = await draftUgcAd(intent, hasReference, styleHint || undefined);
+    const ad = await draftUgcAd(intent, hasReference, styleHint || undefined, seconds);
     return NextResponse.json({ ad });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Could not write the ad.";

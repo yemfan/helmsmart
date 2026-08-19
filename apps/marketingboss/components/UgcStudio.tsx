@@ -107,8 +107,9 @@ export default function UgcStudio({
     if (!file.type.startsWith(`${kind}/`)) return setError(`Please choose ${kind === "video" ? "a video" : "an image"} file.`);
     // Seedance caps refs at 9 images / 3 videos.
     const have = refs.filter((r) => r.kind === kind).length;
-    if (kind === "image" && have >= 9) return setError("Up to 9 reference images.");
-    if (kind === "video" && have >= 3) return setError("Up to 3 reference videos.");
+    // Seedance 2.5 limits, raised from 2.0's 9/3 when the model was upgraded.
+    if (kind === "image" && have >= 30) return setError("Up to 30 reference images.");
+    if (kind === "video" && have >= 10) return setError("Up to 10 reference videos.");
     setError(null);
     setUploading(true);
     try {
@@ -160,6 +161,7 @@ export default function UgcStudio({
           intent: i,
           hasReference: refs.length > 0,
           styleHint: chosenStyle ? styleHintFrom(chosenStyle) : undefined,
+          seconds,
         }),
       });
       const data = (await res.json()) as { ad?: UgcAd; error?: string };
@@ -340,7 +342,7 @@ export default function UgcStudio({
                 </span>
               ))}
               <span className="self-center text-[11px] text-slate-400">
-                {imgCount}/9 images · {vidCount}/3 videos
+                {imgCount}/30 images · {vidCount}/10 videos
               </span>
             </div>
           )}

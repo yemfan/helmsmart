@@ -190,14 +190,24 @@ const UGC_SCHEMA = {
  * Seedance-ready video prompt that renders that creator speaking it (Seedance
  * generates the person + native audio, so the prompt embeds the actual lines).
  */
-export async function draftUgcAd(intent: string, hasReference: boolean, styleHint?: string): Promise<UgcAd> {
+export async function draftUgcAd(
+  intent: string,
+  hasReference: boolean,
+  styleHint?: string,
+  seconds = 20,
+): Promise<UgcAd> {
+  // ~2.5 words a second is a natural talking-to-camera pace. The script used to
+  // be pinned at "~30-45 words" from when clips maxed out near 15s; once 30s
+  // became possible that left the model padding to fill the runtime.
+  const len = Math.min(Math.max(Math.round(seconds), 4), 30);
+  const words = Math.round(len * 2.5);
   const system = [
     "You are a top-performing UGC (user-generated content) ad creator for short-form video (TikTok/Reels/Shorts).",
-    "Write a single ~10-15 second ad as if a real person filmed it on their phone — casual, authentic, NOT polished or corporate.",
+    `Write a single ${len}-second ad as if a real person filmed it on their phone — casual, authentic, NOT polished or corporate.`,
     "Structure: a scroll-stopping hook in the first 2 seconds, a quick relatable why/problem, the product as the fix, and a clear CTA.",
     "Return:",
     "- hook: the exact opening line the creator says.",
-    "- script: the full spoken script, first person, conversational, ~30-45 words.",
+    `- script: the full spoken script, first person, conversational. Aim for about ${words} words — that is what fills ${len} seconds at a natural pace, so do not pad or rush.`,
     "- onScreen: 2-4 short on-screen caption lines (punchy fragments).",
     "- cta: one clear call to action.",
     "- hashtags: 4-8 relevant tags WITHOUT the # sign.",
@@ -214,7 +224,7 @@ export async function draftUgcAd(intent: string, hasReference: boolean, styleHin
 
   return anthropicJson<UgcAd>({
     system,
-    user: `Create a UGC ad about:\n\n${intent}`,
+    user: `Create a ${len}-second UGC ad about:\n\n${intent}`,
     schema: UGC_SCHEMA,
     maxTokens: 1500,
   });
