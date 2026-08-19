@@ -28,11 +28,16 @@ export const DEFAULT_MODELS = {
   videoEdit: "fal-ai/kling-video/o1/video-to-video/edit",
   /** Doubles a clip's resolution so it clears the swap model's 720px floor. */
   videoUpscale: "fal-ai/video-upscaler",
-  // Seedance 2.0 — realistic people + native audio; used for UGC ads (a creator
-  // talking to camera). Reference-to-video accepts uploaded images/videos so we
-  // can emulate a viral ad the user drops in.
-  ugcText: "bytedance/seedance-2.0/text-to-video",
-  ugcRef: "bytedance/seedance-2.0/reference-to-video",
+  // Seedance 2.5 — realistic people + native lip-synced audio; used for UGC ads
+  // (a creator talking to camera). Reference-to-video accepts uploaded
+  // images/videos so we can emulate a viral ad the user drops in.
+  //
+  // 2.5 over 2.0 for one reason: it generates up to 30s in a SINGLE shot, where
+  // 2.0 capped at 15s. A normal UGC ad is 15-30s, so 2.0 could not reach ad
+  // length without generating two clips and merging them — and a merge seam in
+  // the middle of a talking-head ad is exactly where it looks fake.
+  ugcText: "bytedance/seedance-2.5/text-to-video",
+  ugcRef: "bytedance/seedance-2.5/reference-to-video",
 };
 
 export type GenType = "image" | "video";
@@ -45,9 +50,11 @@ export type GenParams = {
   num?: number;
   duration?: number;
   imageUrl?: string;
-  /** Seedance reference-to-video inputs (up to 9 images / 3 videos, ≤12 total). */
+  /** Seedance reference inputs (2.5: up to 30 images / 10 videos, ≤50 total). */
   imageUrls?: string[];
   videoUrls?: string[];
+  /** Output height for Seedance: "480p" | "720p" | "1080p". */
+  resolution?: string;
   /** Source clip for a video-to-video edit / swap (Kling O1). */
   videoUrl?: string;
   /** Keep the source clip's original audio through the edit. */
@@ -92,12 +99,12 @@ function buildRequest(p: GenParams): { model: string; input: Record<string, unkn
     const input: Record<string, unknown> = {
       prompt: p.prompt,
       aspect_ratio: aspect,
-      resolution: "720p",
+      resolution: p.resolution || "720p",
       duration: p.duration ? String(p.duration) : "auto",
       generate_audio: true,
     };
-    if (p.imageUrls?.length) input.image_urls = p.imageUrls.slice(0, 9);
-    if (p.videoUrls?.length) input.video_urls = p.videoUrls.slice(0, 3);
+    if (p.imageUrls?.length) input.image_urls = p.imageUrls.slice(0, 30);
+    if (p.videoUrls?.length) input.video_urls = p.videoUrls.slice(0, 10);
     return { model, input };
   }
 

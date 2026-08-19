@@ -72,6 +72,10 @@ export type GenParams = {
   /** Source clip for a video-to-video edit / swap. */
   videoUrl?: string;
   keepAudio?: boolean;
+  /** Seedance output length in seconds (4-30); omitted lets the model choose. */
+  duration?: number;
+  /** Seedance output height: "480p" | "720p" | "1080p". */
+  resolution?: string;
 };
 
 /** UGC (Seedance) clips cost more than a Kling clip. */
