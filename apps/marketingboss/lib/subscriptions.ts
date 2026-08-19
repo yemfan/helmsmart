@@ -1,21 +1,66 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { retrieveSubscription } from "@/lib/stripe";
+import { retrieveSubscription, type StripeSubscription } from "@/lib/stripe";
 
 /**
  * Subscription fulfillment (webhook side). Monthly credits are granted per PAID
  * INVOICE and deduped by invoice id in the DB (grant_subscription_credits), so a
  * webhook retry or overlapping delivery can never double-grant. The user + plan
- * + credit count live on the Stripe SUBSCRIPTION's metadata, so an invoice maps
- * back to a user without depending on event ordering.
+ * + credit count are stamped on the Stripe SUBSCRIPTION's metadata (and echoed
+ * onto each of its invoices), so an invoice maps back to a user without
+ * depending on event ordering.
  */
 
 type AdminClient = ReturnType<typeof createAdminClient>;
 
+/** Metadata we stamp on the subscription at checkout: who to credit, and how much. */
+type SubMeta = { userId: string | null; plan: string | null; credits: number };
+
+function readMeta(meta: Record<string, string> | null | undefined): SubMeta {
+  const m = meta ?? {};
+  return {
+    userId: m.user_id || null,
+    plan: m.plan || null,
+    credits: Number.parseInt(m.credits ?? "", 10),
+  };
+}
+
+/**
+ * The subscription an invoice belongs to. Stripe moved this off the invoice's
+ * top level in API 2025-04-30.basil; it now lives under
+ * `parent.subscription_details`, which also carries the subscription metadata.
+ * Both shapes are read so the webhook works regardless of the account's version.
+ */
+function invoiceSubscription(invoice: Record<string, unknown>): {
+  id: string | null;
+  meta: SubMeta | null;
+} {
+  const legacy = invoice.subscription;
+  if (typeof legacy === "string") return { id: legacy, meta: null };
+
+  const parent = invoice.parent as { subscription_details?: unknown } | null | undefined;
+  const details = parent?.subscription_details as
+    | { subscription?: unknown; metadata?: Record<string, string> | null }
+    | undefined;
+  const id = typeof details?.subscription === "string" ? details.subscription : null;
+  return { id, meta: details?.metadata ? readMeta(details.metadata) : null };
+}
+
+/**
+ * A subscription's period end. Also moved in basil+ — off the subscription and
+ * onto each subscription item — so fall back to the first item.
+ */
+function periodEnd(sub: StripeSubscription): string | null {
+  const top = sub.current_period_end;
+  const item = sub.items?.data?.[0]?.current_period_end;
+  const secs = typeof top === "number" ? top : typeof item === "number" ? item : null;
+  return secs === null ? null : new Date(secs * 1000).toISOString();
+}
+
 async function upsertSubscriptionRow(
   admin: AdminClient,
   userId: string,
-  sub: { id: string; customer?: string | null; status?: string; current_period_end?: number | null },
+  sub: StripeSubscription,
   plan: string | null,
   credits: number | null,
 ): Promise<void> {
@@ -27,10 +72,7 @@ async function upsertSubscriptionRow(
       plan,
       status: sub.status ?? null,
       credits_per_month: credits,
-      current_period_end:
-        typeof sub.current_period_end === "number"
-          ? new Date(sub.current_period_end * 1000).toISOString()
-          : null,
+      current_period_end: periodEnd(sub),
       updated_at: new Date().toISOString(),
     },
     { onConflict: "user_id" },
@@ -45,14 +87,23 @@ async function upsertSubscriptionRow(
  */
 export async function fulfillInvoice(invoice: Record<string, unknown>): Promise<boolean> {
   const invoiceId = typeof invoice.id === "string" ? invoice.id : null;
-  const subId = typeof invoice.subscription === "string" ? invoice.subscription : null;
+  const { id: subId, meta: inlineMeta } = invoiceSubscription(invoice);
   if (!invoiceId || !subId) return false; // one-time invoice, not a subscription
 
   const sub = await retrieveSubscription(subId);
-  const userId = sub.metadata?.user_id ?? null;
-  const plan = sub.metadata?.plan ?? null;
-  const credits = Number.parseInt(sub.metadata?.credits ?? "", 10);
-  if (!userId || !Number.isFinite(credits) || credits <= 0) return false;
+  // The invoice usually carries the metadata inline; the subscription is the
+  // fallback (and the source of status/customer/period either way).
+  const fromSub = readMeta(sub.metadata);
+  const { userId, plan, credits } =
+    inlineMeta && inlineMeta.userId ? inlineMeta : fromSub;
+  if (!userId || !Number.isFinite(credits) || credits <= 0) {
+    // Never fail silently here again: a subscription invoice we cannot map is a
+    // customer who paid and got nothing.
+    console.warn(
+      `[stripe] invoice ${invoiceId} (${subId}) has no usable metadata — no credits granted.`,
+    );
+    return false;
+  }
 
   const admin = createAdminClient();
   const { error } = await admin.rpc("grant_subscription_credits", {
@@ -68,18 +119,15 @@ export async function fulfillInvoice(invoice: Record<string, unknown>): Promise<
 
 /** Refresh a subscription's status from a customer.subscription.* event. */
 export async function syncSubscriptionStatus(subObj: Record<string, unknown>): Promise<void> {
-  const meta = (subObj.metadata ?? {}) as Record<string, string>;
-  const userId = meta.user_id ?? null;
+  const sub = subObj as unknown as StripeSubscription;
+  const { userId } = readMeta(sub.metadata);
   if (!userId) return;
   const admin = createAdminClient();
   await admin
     .from("subscriptions")
     .update({
-      status: typeof subObj.status === "string" ? subObj.status : null,
-      current_period_end:
-        typeof subObj.current_period_end === "number"
-          ? new Date(subObj.current_period_end * 1000).toISOString()
-          : null,
+      status: typeof sub.status === "string" ? sub.status : null,
+      current_period_end: periodEnd(sub),
       updated_at: new Date().toISOString(),
     })
     .eq("user_id", userId);

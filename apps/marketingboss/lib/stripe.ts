@@ -41,7 +41,10 @@ export type CheckoutSession = {
 export type StripeSubscription = {
   id: string;
   status?: string;
+  /** Removed from the subscription in API 2025-04-30.basil — see `items`. */
   current_period_end?: number | null;
+  /** basil+ reports the billing period per item, not on the subscription. */
+  items?: { data?: Array<{ current_period_end?: number | null }> } | null;
   customer?: string | null;
   metadata?: Record<string, string> | null;
 };
