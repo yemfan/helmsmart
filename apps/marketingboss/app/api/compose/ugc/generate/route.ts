@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { generateAndStore, CreditError } from "@/lib/generation";
-import { DEFAULT_MODELS } from "@/lib/fal";
+import {
+  DEFAULT_MODELS,
+  UGC_MAX_SECONDS,
+  UGC_REF_MAX_IMAGES,
+  UGC_REF_MAX_SECONDS,
+  UGC_REF_MAX_VIDEOS,
+} from "@/lib/fal";
 import { getCharacter, recordCharacterUsage } from "@/lib/characters";
 
 /**
@@ -20,9 +26,7 @@ export const runtime = "nodejs";
 
 const ASPECTS = new Set(["9:16", "16:9", "1:1", "4:3", "3:4"]);
 const RESOLUTIONS = new Set(["480p", "720p", "1080p"]);
-/** Seedance 2.5 generates 4-30s natively — the whole point of the 2.0 upgrade. */
 const MIN_UGC_SECONDS = 4;
-const MAX_UGC_SECONDS = 30;
 
 /**
  * Generate a UGC ad clip on Seedance (9:16, native audio), optionally guided by
@@ -57,8 +61,8 @@ export async function POST(req: Request) {
     (Array.isArray(arr) ? arr : [])
       .filter((u): u is string => typeof u === "string" && storagePrefix !== "/storage/" && u.startsWith(storagePrefix))
       .slice(0, max);
-  const uploaded = clean(body.imageUrls, 30);
-  const videoUrls = clean(body.videoUrls, 10);
+  const uploaded = clean(body.imageUrls, UGC_REF_MAX_IMAGES);
+  const videoUrls = clean(body.videoUrls, UGC_REF_MAX_VIDEOS);
 
   /**
    * Remix: the ad is performed by one of the user's Character Studio cast, so
@@ -81,11 +85,14 @@ export async function POST(req: Request) {
     }
     void recordCharacterUsage(user.id, characterId);
   }
-  const imageUrls = [...portraits, ...uploaded].slice(0, 30);
+  const imageUrls = [...portraits, ...uploaded].slice(0, UGC_REF_MAX_IMAGES);
 
+  // A reference or a cast character routes the request to Seedance 2.0, whose
+  // ceiling is 15s; only a text-only ad reaches 2.5's 30s.
+  const hasRefs = imageUrls.length > 0 || videoUrls.length > 0;
+  const ceiling = hasRefs ? UGC_REF_MAX_SECONDS : UGC_MAX_SECONDS;
   const asked = typeof body.duration === "number" ? Math.round(body.duration) : null;
-  const duration =
-    asked === null ? undefined : Math.min(Math.max(asked, MIN_UGC_SECONDS), MAX_UGC_SECONDS);
+  const duration = asked === null ? undefined : Math.min(Math.max(asked, MIN_UGC_SECONDS), ceiling);
   const resolution =
     typeof body.resolution === "string" && RESOLUTIONS.has(body.resolution)
       ? body.resolution
