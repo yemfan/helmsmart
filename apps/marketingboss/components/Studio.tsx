@@ -28,6 +28,12 @@ const MAX_SWAP_SECONDS = 10;
  * still clears it, instead of failing the swap after the upload.
  */
 const TRIM_TARGET_SECONDS = MAX_SWAP_SECONDS - 1;
+
+/** 75.5 -> "1:15" — seconds alone stop being readable past a minute. */
+function formatClock(sec: number): string {
+  const whole = Math.floor(sec);
+  return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, "0")}`;
+}
 const MIN_SWAP_SECONDS = 3;
 /**
  * The third limit the panel advertises ("under 200MB") and the last one that
@@ -139,6 +145,13 @@ export default function Studio({
   const [upscaleFirst, setUpscaleFirst] = useState(true);
   /** Tick to cut an over-long clip down to the ceiling before swapping. */
   const [trimFirst, setTrimFirst] = useState(true);
+  /** Where the kept section starts, in seconds. null until a clip is measured. */
+  const [trimStart, setTrimStart] = useState<number | null>(null);
+  /** The quietest stretch we found, kept so the UI can label the default. */
+  const [quietStart, setQuietStart] = useState<number | null>(null);
+  const [scanningAudio, setScanningAudio] = useState(false);
+  /** Once the slider is touched, a later scan must not yank it back. */
+  const startTouched = useRef(false);
   /**
    * The file the user picked, kept so an over-long clip can be trimmed locally
    * at Run-swap time. A pasted URL leaves this null — there is no local file to
@@ -173,6 +186,9 @@ export default function Studio({
    */
   const canTrim = durationIssue === "long" && !!pickedFile.current;
   const willTrim = trimFirst && canTrim;
+  /** Latest start that still leaves a full section — the slider's upper bound. */
+  const maxTrimStart = Math.max(0, (srcSize?.duration ?? 0) - TRIM_TARGET_SECONDS);
+  const startAt = Math.min(trimStart ?? 0, maxTrimStart);
   /**
    * How many passes one click runs: trim and upscale are each optional prep,
    * the swap always happens. Counted rather than hardcoded — the labels used to
@@ -209,6 +225,37 @@ export default function Studio({
             : !refUrl
               ? "Add a reference image to swap in."
               : null;
+  /**
+   * Suggest the quietest stretch as the default section.
+   *
+   * A swap has to invent lip movement, and the seam shows most while someone is
+   * talking — so the section with no speech in it is usually the better one to
+   * hand the model. Advisory only: it seeds the slider, never overrides a
+   * choice, and a failure just leaves the opening selected.
+   */
+  useEffect(() => {
+    if (durationIssue !== "long" || !pickedFile.current || !srcSize) return;
+    if (startTouched.current) return;
+    let cancelled = false;
+    setScanningAudio(true);
+    (async () => {
+      try {
+        const { findQuietestStart } = await import("@/lib/trimClient");
+        const at = await findQuietestStart(pickedFile.current!, TRIM_TARGET_SECONDS, srcSize.duration);
+        if (cancelled || startTouched.current) return;
+        setQuietStart(at);
+        setTrimStart(at);
+      } catch {
+        if (!cancelled) setTrimStart((v) => v ?? 0);
+      } finally {
+        if (!cancelled) setScanningAudio(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [durationIssue, srcSize]);
+
   const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
   const videoRef = useRef<HTMLInputElement>(null);
 
@@ -292,6 +339,9 @@ export default function Studio({
     // the critical path.
     setSrcSize(null);
     pickedFile.current = file;
+    startTouched.current = false;
+    setTrimStart(null);
+    setQuietStart(null);
     void readVideoMeta(file).then(setSrcSize);
     if (!uid) {
       setError("Still signing in — try again in a second.");
@@ -330,9 +380,9 @@ export default function Studio({
    * is exactly what keeps us inside the ceiling. If it somehow comes back long
    * we stop here rather than pay fal to reject it.
    */
-  async function trimNow(file: File): Promise<{ url: string; meta: VideoMeta | null }> {
-    const { trimToFirstSeconds } = await import("@/lib/trimClient");
-    const cut = await trimToFirstSeconds(file, TRIM_TARGET_SECONDS);
+  async function trimNow(file: File, start: number): Promise<{ url: string; meta: VideoMeta | null }> {
+    const { trimSection } = await import("@/lib/trimClient");
+    const cut = await trimSection(file, start, TRIM_TARGET_SECONDS);
     const meta = await readVideoMeta(cut);
     if (meta && meta.duration > MAX_SWAP_SECONDS) {
       throw new Error(
@@ -406,10 +456,14 @@ export default function Studio({
       // 30, which is faster and further from the function's time ceiling.
       if (willTrim && pickedFile.current) {
         setStage("trimming");
-        const cut = await trimNow(pickedFile.current);
+        const cut = await trimNow(pickedFile.current, startAt);
         sourceUrl = cut.url;
         setSrcVideoUrl(cut.url);
-        setSrcVideoName(`first ${TRIM_TARGET_SECONDS}s`);
+        setSrcVideoName(
+          startAt > 0
+            ? `${TRIM_TARGET_SECONDS}s from ${formatClock(startAt)}`
+            : `first ${TRIM_TARGET_SECONDS}s`,
+        );
         if (cut.meta) setSrcSize(cut.meta);
       }
       if (tooSmall && upscaleFirst) {
@@ -652,14 +706,41 @@ export default function Studio({
                           className="mt-0.5 accent-amber-600"
                         />
                         <span>
-                          Trim to the first {TRIM_TARGET_SECONDS}s — runs automatically when you
+                          Trim to a {TRIM_TARGET_SECONDS}s section — runs automatically when you
                           hit Run swap (free, no quality loss).
                         </span>
                       </label>
-                      <p className="mt-1.5 text-[11px] leading-relaxed text-amber-800">
-                        Only the opening is kept. If the moment you want is later in the clip, cut
-                        it yourself and upload that section instead.
-                      </p>
+                      {trimFirst && (
+                        <div className="mt-2 pl-5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] text-amber-900">Start at</span>
+                            <input
+                              type="range"
+                              min={0}
+                              max={Math.max(maxTrimStart, 0.25)}
+                              step={0.25}
+                              value={startAt}
+                              onChange={(e) => {
+                                startTouched.current = true;
+                                setTrimStart(Number(e.target.value));
+                              }}
+                              disabled={loading}
+                              aria-label="Section start time"
+                              className="h-1 flex-1 accent-amber-600"
+                            />
+                            <span className="w-24 shrink-0 text-right text-[11px] font-medium tabular-nums text-amber-900">
+                              {formatClock(startAt)}–{formatClock(startAt + TRIM_TARGET_SECONDS)}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-[11px] leading-relaxed text-amber-800">
+                            {scanningAudio
+                              ? "Looking for the quietest stretch…"
+                              : quietStart !== null && startAt === quietStart
+                                ? "Suggested: the quietest stretch, where nobody is talking — swaps look cleaner without lip movement to match. Drag to pick a different section."
+                                : "Drag to pick the section you want."}
+                          </p>
+                        </div>
+                      )}
                     </>
                   ) : (
                     <p className="mt-1.5 text-[11px] leading-relaxed text-rose-900">
@@ -792,7 +873,7 @@ export default function Studio({
             {loading && (
               <p className="mt-2 text-xs leading-relaxed text-slate-500">
                 {stage === "trimming"
-                  ? `Cutting the clip to the first ${TRIM_TARGET_SECONDS}s${stepSuffix} — the first run also downloads the trimmer, so give it a moment.`
+                  ? `Cutting ${TRIM_TARGET_SECONDS}s from ${formatClock(startAt)}${stepSuffix} — the first run also downloads the trimmer, so give it a moment.`
                   : stage === "upscaling"
                     ? `Upscaling to ${srcSize ? `${srcSize.width * 2}×${srcSize.height * 2}` : "720p+"}${stepSuffix} — about a minute.`
                     : `Swapping in your reference${stepSuffix} — usually 1–3 minutes.`}{" "}
