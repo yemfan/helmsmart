@@ -76,6 +76,21 @@ export default function UgcStudio({
    * model's "auto" (which tended to come back far shorter than ad length).
    */
   const [seconds, setSeconds] = useState(20);
+  /**
+   * A cast character or an uploaded reference routes the render to Seedance 2.0
+   * — 2.5 refuses face references outright — and 2.0 stops at 15s. Only a
+   * text-only ad reaches 30s, so the picker must not offer lengths that would
+   * be silently clamped.
+   */
+  const refBound = refs.length > 0 || !!characterId;
+  const maxSeconds = refBound ? 15 : 30;
+  const lengthChoices = [8, 12, 15, 20, 25, 30].filter((n) => n <= maxSeconds);
+  // Casting someone AFTER picking 30s would leave the select holding a value it
+  // no longer offers, and the server would quietly clamp it to something the
+  // user never chose. Bring it down as soon as the ceiling drops.
+  useEffect(() => {
+    setSeconds((v) => (v > maxSeconds ? maxSeconds : v));
+  }, [maxSeconds]);
   const [generating, setGenerating] = useState(false);
   const [clipUrl, setClipUrl] = useState<string | null>(null);
   /** Seedance renders run minutes — offer wait-or-notify. */
@@ -136,9 +151,10 @@ export default function UgcStudio({
     if (!file) return;
     if (!file.type.startsWith(`${kind}/`)) return setError(`Please choose ${kind === "video" ? "a video" : "an image"} file.`);
     const have = refs.filter((r) => r.kind === kind).length;
-    // Seedance 2.5 limits, raised from 2.0's 9/3 when the model was upgraded.
-    if (kind === "image" && have >= 30) return setError("Up to 30 reference images.");
-    if (kind === "video" && have >= 10) return setError("Up to 10 reference videos.");
+    // References run on Seedance 2.0 (2.5 refuses face references), so 2.0's
+    // 9-image / 3-video limits are the ones that apply.
+    if (kind === "image" && have >= 9) return setError("Up to 9 reference images.");
+    if (kind === "video" && have >= 3) return setError("Up to 3 reference videos.");
     setError(null);
     setUploading(true);
     try {
@@ -373,7 +389,7 @@ export default function UgcStudio({
                 </span>
               ))}
               <span className="self-center text-[11px] text-slate-400">
-                {imgCount}/30 images · {vidCount}/10 videos
+                {imgCount}/9 images · {vidCount}/3 videos
               </span>
             </div>
           )}
@@ -508,14 +524,17 @@ export default function UgcStudio({
                 disabled={generating}
                 className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 outline-none focus:border-boss-violet/60"
               >
-                {[8, 12, 15, 20, 25, 30].map((n) => (
+                {lengthChoices.map((n) => (
                   <option key={n} value={n}>
                     {n}s{n === 20 ? " · typical ad" : ""}
                   </option>
                 ))}
               </select>
             </label>
-            <span className="text-[11px] text-slate-400">9:16 vertical · native voice · ~35 credits</span>
+            <span className="text-[11px] text-slate-400">
+              9:16 vertical · native voice · ~35 credits
+              {refBound && " · max 15s with a reference"}
+            </span>
             <button onClick={generateClip} disabled={generating || !videoPrompt.trim()} className={primaryBtn}>
               {generating && <Spinner />}
               {generating ? "Filming…" : clipUrl ? "Re-film" : "Film the ad"}
