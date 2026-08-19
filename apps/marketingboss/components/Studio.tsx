@@ -28,6 +28,11 @@ const MAX_SWAP_SECONDS = 10;
  * still clears it, instead of failing the swap after the upload.
  */
 const TRIM_TARGET_SECONDS = MAX_SWAP_SECONDS - 1;
+/** Kling O1's frame-rate window. A 16.9fps screen capture is rejected outright. */
+const MIN_SWAP_FPS = 24;
+const MAX_SWAP_FPS = 60;
+/** Mirrors TARGET_FPS in lib/trimClient — importing it would pull in the wasm chunk. */
+const TARGET_FPS_UI = 30;
 
 /** 75.5 -> "1:15" — seconds alone stop being readable past a minute. */
 function formatClock(sec: number): string {
@@ -150,6 +155,10 @@ export default function Studio({
   /** The quietest stretch we found, kept so the UI can label the default. */
   const [quietStart, setQuietStart] = useState<number | null>(null);
   const [scanningAudio, setScanningAudio] = useState(false);
+  /** Source frame rate, read from the MP4 header. null = couldn't tell. */
+  const [srcFps, setSrcFps] = useState<number | null>(null);
+  /** Tick to re-encode a clip whose frame rate is outside the model's window. */
+  const [fixFps, setFixFps] = useState(true);
   /** Once the slider is touched, a later scan must not yank it back. */
   const startTouched = useRef(false);
   /**
@@ -184,8 +193,18 @@ export default function Studio({
    * Whether Run swap will cut the clip first. Needs the local file: the trim
    * happens in the browser, so a clip that arrived as a pasted URL can't use it.
    */
+  /**
+   * Frame rate is the fourth limit, after width, length and file size — and the
+   * only one the app used to discover by letting fal refuse the upload.
+   */
+  const fpsIssue = srcFps !== null && (srcFps < MIN_SWAP_FPS || srcFps > MAX_SWAP_FPS);
   const canTrim = durationIssue === "long" && !!pickedFile.current;
   const willTrim = trimFirst && canTrim;
+  /** A clip short enough to swap but at the wrong rate still needs a re-encode. */
+  const canFixFps = fpsIssue && !!pickedFile.current && durationIssue !== "short";
+  const willFixFpsOnly = !willTrim && fixFps && canFixFps;
+  /** Either path re-encodes, and either one lands the clip at 30fps. */
+  const willConform = willTrim || willFixFpsOnly;
   /** Latest start that still leaves a full section — the slider's upper bound. */
   const maxTrimStart = Math.max(0, (srcSize?.duration ?? 0) - TRIM_TARGET_SECONDS);
   const startAt = Math.min(trimStart ?? 0, maxTrimStart);
@@ -194,9 +213,9 @@ export default function Studio({
    * the swap always happens. Counted rather than hardcoded — the labels used to
    * read "1 of 2" and would have started lying the moment trim was added.
    */
-  const totalSteps = (willTrim ? 1 : 0) + (willUpscale ? 1 : 0) + 1;
+  const totalSteps = (willConform ? 1 : 0) + (willUpscale ? 1 : 0) + 1;
   const stepNumber =
-    stage === "trimming" ? 1 : stage === "upscaling" ? (willTrim ? 2 : 1) : totalSteps;
+    stage === "trimming" ? 1 : stage === "upscaling" ? (willConform ? 2 : 1) : totalSteps;
   /** " (2 of 3)" — omitted when the swap is the only pass. */
   const stepSuffix = totalSteps > 1 ? ` (${stepNumber} of ${totalSteps})` : "";
   /** Shared "wait here vs notify me" control — see components/NotifyWhenDone. */
@@ -222,7 +241,11 @@ export default function Studio({
             : `Clip is ${srcSize!.duration.toFixed(1)}s — upload a ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s file so it can be trimmed here.`
           : durationIssue === "short"
             ? `Clip is ${srcSize!.duration.toFixed(1)}s — needs at least ${MIN_SWAP_SECONDS}s.`
-            : !refUrl
+            : fpsIssue && !willConform
+              ? canFixFps
+                ? `Clip is ${srcFps!.toFixed(1)}fps — tick “Fix the frame rate”.`
+                : `Clip is ${srcFps!.toFixed(1)}fps — swaps need ${MIN_SWAP_FPS}–${MAX_SWAP_FPS}fps.`
+              : !refUrl
               ? "Add a reference image to swap in."
               : null;
   /**
@@ -342,6 +365,12 @@ export default function Studio({
     startTouched.current = false;
     setTrimStart(null);
     setQuietStart(null);
+    // Header-only read, so this costs a couple of MB and no wasm download.
+    setSrcFps(null);
+    void import("@/lib/trimClient")
+      .then((m) => m.readMp4Fps(file))
+      .then(setSrcFps)
+      .catch(() => setSrcFps(null));
     void readVideoMeta(file).then(setSrcSize);
     if (!uid) {
       setError("Still signing in — try again in a second.");
@@ -380,16 +409,33 @@ export default function Studio({
    * is exactly what keeps us inside the ceiling. If it somehow comes back long
    * we stop here rather than pay fal to reject it.
    */
-  async function trimNow(file: File, start: number): Promise<{ url: string; meta: VideoMeta | null }> {
-    const { trimSection } = await import("@/lib/trimClient");
-    const cut = await trimSection(file, start, TRIM_TARGET_SECONDS);
-    const meta = await readVideoMeta(cut);
-    if (meta && meta.duration > MAX_SWAP_SECONDS) {
+  /**
+   * Re-encode the picked clip into something the model accepts — optionally
+   * keeping only a section — and upload the result.
+   *
+   * The output is re-MEASURED, and an unmeasurable one is treated as a failure
+   * rather than waved through. That leniency is exactly how a 12.47s clip
+   * reached fal after a 9s request: the check was `if (meta && ...)`, so a
+   * measurement that returned null skipped it entirely.
+   */
+  async function conformNow(
+    file: File,
+    opts: { startSec?: number; seconds?: number },
+  ): Promise<{ url: string; meta: VideoMeta }> {
+    const { conformClip } = await import("@/lib/trimClient");
+    const out = await conformClip(file, opts);
+    const meta = await readVideoMeta(out);
+    if (!meta || meta.duration <= 0) {
       throw new Error(
-        `Trimming produced a ${meta.duration.toFixed(1)}s clip, which is still over the ${MAX_SWAP_SECONDS}s limit. Cut it to ${MAX_SWAP_SECONDS}s before uploading.`,
+        "Couldn't confirm the prepared clip's length, so it wasn't sent. Try a different file.",
       );
     }
-    const url = await uploadSource(cut);
+    if (meta.duration > MAX_SWAP_SECONDS) {
+      throw new Error(
+        `Preparing the clip produced ${meta.duration.toFixed(1)}s, over the ${MAX_SWAP_SECONDS}s limit. Pick a shorter section, or cut it before uploading.`,
+      );
+    }
+    const url = await uploadSource(out);
     return { url, meta };
   }
 
@@ -399,9 +445,7 @@ export default function Studio({
    * Its own HTTP request rather than a step inside /api/swap: an upscale and a
    * Kling O1 edit are each minutes long, and running them back to back in one
    * 300s function is how the CloseBoss avatar renders used to 504 — taking the
-   * reserved credits with them, since SIGKILL skips the refund. Two short
-   * requests, chained here, stay well inside the ceiling while still being a
-   * single click for the user.
+   * reserved credits with them, since SIGKILL skips the refund.
    */
   async function upscaleNow(url: string): Promise<string> {
     const res = await fetch("/api/upscale", {
@@ -434,6 +478,14 @@ export default function Studio({
       );
       return;
     }
+    if (fpsIssue && !willConform) {
+      setError(
+        canFixFps
+          ? `That clip is ${srcFps!.toFixed(1)}fps — swaps need ${MIN_SWAP_FPS}–${MAX_SWAP_FPS}fps. Tick “Fix the frame rate” and it will be re-encoded for you.`
+          : `That clip is ${srcFps!.toFixed(1)}fps — swaps need ${MIN_SWAP_FPS}–${MAX_SWAP_FPS}fps. Re-export it at 30fps and upload again.`,
+      );
+      return;
+    }
     const tooSmall = !!srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH;
     if (tooSmall && !upscaleFirst) {
       setError(
@@ -454,17 +506,23 @@ export default function Studio({
       let sourceUrl = srcVideoUrl;
       // Trim BEFORE upscaling: the upscaler then walks 10s of frames instead of
       // 30, which is faster and further from the function's time ceiling.
-      if (willTrim && pickedFile.current) {
+      if (willConform && pickedFile.current) {
         setStage("trimming");
-        const cut = await trimNow(pickedFile.current, startAt);
+        const cut = await conformNow(
+          pickedFile.current,
+          willTrim ? { startSec: startAt, seconds: TRIM_TARGET_SECONDS } : {},
+        );
         sourceUrl = cut.url;
         setSrcVideoUrl(cut.url);
         setSrcVideoName(
-          startAt > 0
-            ? `${TRIM_TARGET_SECONDS}s from ${formatClock(startAt)}`
-            : `first ${TRIM_TARGET_SECONDS}s`,
+          willTrim
+            ? startAt > 0
+              ? `${TRIM_TARGET_SECONDS}s from ${formatClock(startAt)}`
+              : `first ${TRIM_TARGET_SECONDS}s`
+            : "re-encoded at 30fps",
         );
-        if (cut.meta) setSrcSize(cut.meta);
+        setSrcSize(cut.meta);
+        setSrcFps(TARGET_FPS_UI);
       }
       if (tooSmall && upscaleFirst) {
         setStage("upscaling");
@@ -679,6 +737,7 @@ export default function Studio({
                   {srcVideoName}
                   {srcSize && srcSize.width > 0 && ` · ${srcSize.width}×${srcSize.height}`}
                   {srcSize && srcSize.duration > 0 && ` · ${srcSize.duration.toFixed(1)}s`}
+                  {srcFps !== null && ` · ${srcFps.toFixed(1)}fps`}
                 </p>
               )}
               {durationIssue === "long" && (
@@ -707,7 +766,7 @@ export default function Studio({
                         />
                         <span>
                           Trim to a {TRIM_TARGET_SECONDS}s section — runs automatically when you
-                          hit Run swap (free, no quality loss).
+                          hit Run swap (free, adds a few seconds).
                         </span>
                       </label>
                       {trimFirst && (
@@ -756,6 +815,49 @@ export default function Studio({
                     This clip is only {srcSize!.duration.toFixed(1)}s — swaps need at least{" "}
                     {MIN_SWAP_SECONDS}s to work with.
                   </p>
+                </div>
+              )}
+              {fpsIssue && (
+                <div
+                  className={`mt-2 rounded-lg border p-2.5 ${
+                    canFixFps ? "border-amber-200 bg-amber-50" : "border-rose-200 bg-rose-50"
+                  }`}
+                >
+                  <p
+                    className={`text-[11px] leading-relaxed ${
+                      canFixFps ? "text-amber-900" : "text-rose-900"
+                    }`}
+                  >
+                    This clip runs at {srcFps!.toFixed(1)}fps — swaps need {MIN_SWAP_FPS}–
+                    {MAX_SWAP_FPS}fps.
+                  </p>
+                  {canFixFps ? (
+                    willTrim ? (
+                      <p className="mt-1.5 text-[11px] leading-relaxed text-amber-900">
+                        Trimming re-encodes the clip anyway, so the frame rate is fixed in the same
+                        pass — nothing else to tick.
+                      </p>
+                    ) : (
+                      <label className="mt-2 flex cursor-pointer items-start gap-2 text-[11px] leading-relaxed text-amber-900">
+                        <input
+                          type="checkbox"
+                          checked={fixFps}
+                          onChange={(e) => setFixFps(e.target.checked)}
+                          disabled={loading}
+                          className="mt-0.5 accent-amber-600"
+                        />
+                        <span>
+                          Re-encode at {TARGET_FPS_UI}fps — runs automatically when you hit Run
+                          swap (free, adds a few seconds).
+                        </span>
+                      </label>
+                    )
+                  ) : (
+                    <p className="mt-1.5 text-[11px] leading-relaxed text-rose-900">
+                      Re-encoding runs on the file itself, so it isn&rsquo;t available for a pasted
+                      link. Re-export at {TARGET_FPS_UI}fps and upload the file.
+                    </p>
+                  )}
                 </div>
               )}
               {srcSize && srcSize.width > 0 && srcSize.width < MIN_SWAP_WIDTH && (
@@ -846,7 +948,7 @@ export default function Studio({
                 {willUpscale
                   ? `Costs ${25 + CREDIT_COST.upscale} credits (incl. upscale) · ~2–5 min`
                   : "Costs 25 credits · ~1–3 min"}
-                {willTrim && " · trim is free"}
+                {willConform && " · preparing the clip is free"}
               </span>
               {blockedReason && (
                 <span className="text-xs font-medium text-amber-700">{blockedReason}</span>
@@ -873,7 +975,7 @@ export default function Studio({
             {loading && (
               <p className="mt-2 text-xs leading-relaxed text-slate-500">
                 {stage === "trimming"
-                  ? `Cutting ${TRIM_TARGET_SECONDS}s from ${formatClock(startAt)}${stepSuffix} — the first run also downloads the trimmer, so give it a moment.`
+                  ? `${willTrim ? `Cutting ${TRIM_TARGET_SECONDS}s from ${formatClock(startAt)}` : `Re-encoding at ${TARGET_FPS_UI}fps`}${stepSuffix} — the first run also downloads the encoder, so give it a moment.`
                   : stage === "upscaling"
                     ? `Upscaling to ${srcSize ? `${srcSize.width * 2}×${srcSize.height * 2}` : "720p+"}${stepSuffix} — about a minute.`
                     : `Swapping in your reference${stepSuffix} — usually 1–3 minutes.`}{" "}

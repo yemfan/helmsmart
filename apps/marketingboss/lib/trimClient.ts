@@ -82,37 +82,53 @@ async function withFile<T>(
   }
 }
 
+/** Kling O1 accepts 24-60 fps. 30 is the safe middle and a normal delivery rate. */
+export const TARGET_FPS = 30;
+
 /**
- * Cut `seconds` of a clip starting at `startSec`.
+ * Re-encode a clip to something the swap model will accept, optionally keeping
+ * only a section of it.
  *
- * Uses `-c copy`, so no frames are re-encoded: the cut is near-instant and the
- * picture is bit-identical to the source.
- *
- * Two consequences of a stream copy, both measured on 2026-08-19:
- *   - the length OVERSHOOTS, +0.13s for a 2s and a 3s request, and further on
- *     a clip with sparse keyframes. Ask for less than the real ceiling.
- *   - the start SNAPS to the nearest preceding keyframe, so the window can
- *     begin slightly earlier than asked.
- * Re-measure the result; do not assume you got exactly what you requested.
+ * This RE-ENCODES rather than stream-copying, which was the first attempt.
+ * Copying is ~150x faster (41ms vs 5.9s on a real 30s clip) but cannot deliver
+ * either guarantee we need, measured on a user's actual file:
+ *   - length: a copy cuts on a keyframe, so a 9s request returned 9.28s on that
+ *     clip and 12.47s from a different start. Encoding returned 9.03s.
+ *   - frame rate: a copy preserves the source's, so a 16.87fps clip stayed
+ *     16.87fps and fal rejected it for being under its 24fps floor. Encoding
+ *     normalises to exactly 30.
+ * Six seconds of the user's time is a fair trade for not failing after upload.
  */
-export async function trimSection(file: File, startSec: number, seconds: number): Promise<File> {
-  const start = Math.max(0, startSec);
+export async function conformClip(
+  file: File,
+  opts: { startSec?: number; seconds?: number } = {},
+): Promise<File> {
+  const start = Math.max(0, opts.startSec ?? 0);
   const bytes = await withFile(
     file,
     "out.mp4",
     (input, output) => [
-      // -ss BEFORE -i seeks by index instead of decoding everything up to the
-      // mark — the difference between instant and tens of seconds on a long clip.
-      "-ss",
-      String(start),
-      "-t",
-      String(seconds),
+      // -ss BEFORE -i seeks by index instead of decoding up to the mark.
+      ...(start > 0 ? ["-ss", String(start)] : []),
+      ...(opts.seconds ? ["-t", String(opts.seconds)] : []),
       "-i",
       input,
-      "-c",
-      "copy",
-      // Move the index to the front so the result is seekable — the <video>
-      // element needs it to report a duration for our own length check.
+      "-r",
+      String(TARGET_FPS),
+      "-c:v",
+      "libx264",
+      // veryfast keeps the wait tolerable in wasm; crf 20 is visually clean.
+      "-preset",
+      "veryfast",
+      "-crf",
+      "20",
+      // Some sources decode to a pixel format H.264 players choke on.
+      "-pix_fmt",
+      "yuv420p",
+      "-c:a",
+      "aac",
+      // Index at the front so the result is seekable — the <video> element
+      // needs it to report a duration for our own length check.
       "-movflags",
       "+faststart",
       output,
@@ -121,12 +137,17 @@ export async function trimSection(file: File, startSec: number, seconds: number)
   );
   const base = file.name.replace(/\.\w{2,4}$/, "");
   const tag = start > 0 ? `-from-${Math.round(start)}s` : "";
-  return new File([bytes], `${base}${tag}-${Math.round(seconds)}s.mp4`, { type: "video/mp4" });
+  return new File([bytes], `${base}${tag}-ready.mp4`, { type: "video/mp4" });
 }
 
-/** Keep the opening — the common case, and what the old call site expected. */
-export function trimToFirstSeconds(file: File, seconds: number): Promise<File> {
-  return trimSection(file, 0, seconds);
+/** Keep `seconds` starting at `startSec`, normalising the frame rate too. */
+export function trimSection(file: File, startSec: number, seconds: number): Promise<File> {
+  return conformClip(file, { startSec, seconds });
+}
+
+/** Fix only the frame rate — for a clip already short enough to swap. */
+export function normalizeFrameRate(file: File): Promise<File> {
+  return conformClip(file);
 }
 
 /**
@@ -198,4 +219,85 @@ export async function findQuietestStart(
   // Round to a quarter-second: the UI shows this number, and false precision
   // ("starts at 7.3281s") reads like a bug rather than a suggestion.
   return Math.round((bestOffset / RATE) * 4) / 4;
+}
+
+/**
+ * Average frame rate of an MP4, read straight from its boxes.
+ *
+ * Deliberately parses the container by hand instead of asking ffmpeg: the fps
+ * check runs on EVERY picked clip, and loading the ~30MB wasm core just to read
+ * a header would make the common case pay for the rare one. No decoding happens
+ * here — it walks moov/trak to the video track and divides its frame count by
+ * its duration.
+ *
+ * Returns null for anything it cannot read (a non-MP4, a fragmented file, a
+ * truncated header), which callers must treat as "unknown", never as "bad".
+ */
+export async function readMp4Fps(file: File): Promise<number | null> {
+  // The header is at one end or the other; 2MB from each covers both layouts
+  // without pulling a 200MB file into memory.
+  const EDGE = 2 * 1024 * 1024;
+  const head = new Uint8Array(await file.slice(0, Math.min(EDGE, file.size)).arrayBuffer());
+  const fromHead = fpsFromMp4(head);
+  if (fromHead !== null) return fromHead;
+  if (file.size <= EDGE) return null;
+  const tail = new Uint8Array(await file.slice(Math.max(0, file.size - EDGE)).arrayBuffer());
+  return fpsFromMp4(tail);
+}
+
+function fpsFromMp4(buf: Uint8Array): number | null {
+  const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  const tag = (p: number) => String.fromCharCode(buf[p], buf[p + 1], buf[p + 2], buf[p + 3]);
+  const children = (start: number, end: number) => {
+    const out: { type: string; start: number; end: number }[] = [];
+    let p = start;
+    while (p + 8 <= end) {
+      let size = dv.getUint32(p);
+      let hdr = 8;
+      const type = tag(p + 4);
+      if (size === 1) {
+        if (p + 16 > end) break;
+        size = Number(dv.getBigUint64(p + 8));
+        hdr = 16;
+      }
+      if (size === 0) size = end - p;
+      if (size < hdr || p + size > end) break;
+      out.push({ type, start: p + hdr, end: p + size });
+      p += size;
+    }
+    return out;
+  };
+  const pick = (l: { type: string; start: number; end: number }[], t: string) =>
+    l.find((b) => b.type === t);
+
+  try {
+    const moov = pick(children(0, buf.length), "moov");
+    if (!moov) return null;
+    for (const trak of children(moov.start, moov.end).filter((b) => b.type === "trak")) {
+      const mdia = pick(children(trak.start, trak.end), "mdia");
+      if (!mdia) continue;
+      const md = children(mdia.start, mdia.end);
+      const hdlr = pick(md, "hdlr");
+      // The handler type sits after version+flags and a reserved word.
+      if (!hdlr || tag(hdlr.start + 8) !== "vide") continue;
+      const mdhd = pick(md, "mdhd");
+      const minf = pick(md, "minf");
+      if (!mdhd || !minf) return null;
+      const v = buf[mdhd.start];
+      const timescale = v === 1 ? dv.getUint32(mdhd.start + 20) : dv.getUint32(mdhd.start + 12);
+      const duration =
+        v === 1 ? Number(dv.getBigUint64(mdhd.start + 24)) : dv.getUint32(mdhd.start + 16);
+      const stbl = pick(children(minf.start, minf.end), "stbl");
+      if (!stbl) return null;
+      const stsz = pick(children(stbl.start, stbl.end), "stsz");
+      if (!stsz) return null;
+      const frames = dv.getUint32(stsz.start + 8);
+      const secs = duration / timescale;
+      if (!(secs > 0) || !(frames > 0)) return null;
+      return frames / secs;
+    }
+  } catch {
+    return null; // a malformed box tree is "unknown", not "bad"
+  }
+  return null;
 }
