@@ -1,5 +1,5 @@
 /**
- * CloseBoss usage-based pricing — the SINGLE SOURCE OF TRUTH (locked 2026-08-07).
+ * CloseBoss usage-based pricing — the SINGLE SOURCE OF TRUTH (rev. 2026-08-19).
  *
  * Model: everything included, pay for what you use. Plans differ only by credit
  * volume + per-credit price; every account gets every feature (one seat, except
@@ -57,26 +57,26 @@ export const CREDIT_TIERS: ReadonlyArray<{
   {
     id: "starter",
     name: "Starter",
-    priceUsd: 49,
-    monthlyCredits: 1000,
+    priceUsd: 50,
+    monthlyCredits: 500,
     priceEnv: "STRIPE_PRICE_ID_CB_STARTER",
-    blurb: "~65 call-min or ~50 twin videos",
+    blurb: "Light phone use, a few videos a month",
   },
   {
     id: "growth",
     name: "Growth",
-    priceUsd: 99,
-    monthlyCredits: 3000,
+    priceUsd: 159,
+    monthlyCredits: 2000,
     priceEnv: "STRIPE_PRICE_ID_CB_GROWTH",
-    blurb: "~200 call-min, heavier video",
+    blurb: "Steady calling plus regular video",
   },
   {
     id: "scale",
     name: "Scale",
-    priceUsd: 199,
-    monthlyCredits: 8000,
+    priceUsd: 299,
+    monthlyCredits: 4000,
     priceEnv: "STRIPE_PRICE_ID_CB_SCALE",
-    blurb: "~530 call-min, heavy video",
+    blurb: "Heavy calling and heavy video",
   },
 ] as const;
 
@@ -98,7 +98,12 @@ export function approxVideos(monthlyCredits: number, kind: "listingClip" | "twin
   return Math.floor(monthlyCredits / CREDIT_COSTS[kind]);
 }
 
-/** One-off credit top-up packs (no commitment; priced above the plan rate). */
+/**
+ * One-off credit top-up packs (no commitment). Deliberately priced ~18-20%
+ * ABOVE the equivalent plan's per-credit rate — if a pack ever undercuts a
+ * subscription, the subscription stops making sense and the recurring revenue
+ * quietly converts to one-offs. Keep every pack above its matching tier.
+ */
 export const CREDIT_PACKS: ReadonlyArray<{
   id: string;
   credits: number;
@@ -106,9 +111,9 @@ export const CREDIT_PACKS: ReadonlyArray<{
   /** Env var holding this pack's Stripe one-time price id. */
   priceEnv: string;
 }> = [
-  { id: "pack_1k", credits: 1000, priceUsd: 49, priceEnv: "STRIPE_PRICE_ID_CB_PACK_1K" },
-  { id: "pack_3k", credits: 3000, priceUsd: 129, priceEnv: "STRIPE_PRICE_ID_CB_PACK_3K" },
-  { id: "pack_8k", credits: 8000, priceUsd: 299, priceEnv: "STRIPE_PRICE_ID_CB_PACK_8K" },
+  { id: "pack_500", credits: 500, priceUsd: 59, priceEnv: "STRIPE_PRICE_ID_CB_PACK_500" },
+  { id: "pack_2k", credits: 2000, priceUsd: 189, priceEnv: "STRIPE_PRICE_ID_CB_PACK_2K" },
+  { id: "pack_4k", credits: 4000, priceUsd: 359, priceEnv: "STRIPE_PRICE_ID_CB_PACK_4K" },
 ] as const;
 
 /**
