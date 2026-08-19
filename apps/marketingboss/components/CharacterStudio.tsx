@@ -46,6 +46,8 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
   const [photoFor, setPhotoFor] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [consent, setConsent] = useState("");
+  /** Only meaningful for a `human` character — a mascot cannot be a real person. */
+  const [isRealPerson, setIsRealPerson] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [q, setQ] = useState("");
@@ -139,8 +141,8 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
     const file = photoFile;
     if (!file || busy) return;
     if (!file.type.startsWith("image/")) return setError("Choose an image file.");
-    if (consent.trim().length < 10) {
-      return setError("Say whose photo this is and that they agreed to it being used in AI ads.");
+    if (isRealPerson && consent.trim().length < 10) {
+      return setError("Say who is in the photo and how they agreed to it being used in AI ads.");
     }
     setBusy(id);
     setError(null);
@@ -159,13 +161,18 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
       const res = await fetch(`/api/characters/${id}/portrait`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, consentNote: consent.trim() }),
+        body: JSON.stringify({
+          url,
+          identityType: isRealPerson ? "real_person" : "brand_owned",
+          consentNote: consent.trim(),
+        }),
       });
       const b = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
       if (!res.ok || !b?.ok) throw new Error(b?.error || "Could not save that photo.");
       setPhotoFor(null);
       setPhotoFile(null);
       setConsent("");
+      setIsRealPerson(false);
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not save that photo.");
@@ -391,6 +398,7 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
                         setPhotoFor(photoFor === c.id ? null : c.id);
                         setPhotoFile(null);
                         setConsent("");
+                        setIsRealPerson(false);
                         setError(null);
                       }}
                       disabled={busy === c.id}
@@ -418,8 +426,8 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
                   {photoFor === c.id && (
                     <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3">
                       <p className="text-[11px] leading-relaxed text-amber-900">
-                        A photo becomes {c.name}&rsquo;s identity anchor, and every ad is built from that
-                        face. Uploading one marks this character as a real likeness.
+                        This picture becomes {c.name}&rsquo;s identity anchor — every later render is
+                        built from it, so use the clearest reference you have.
                       </p>
                       <input
                         ref={photoInput}
@@ -428,17 +436,37 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
                         onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
                         className="mt-2 block w-full text-[11px] text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-[11px] file:text-slate-700"
                       />
-                      <textarea
-                        value={consent}
-                        onChange={(e) => setConsent(e.target.value)}
-                        rows={2}
-                        placeholder="Who is in this photo, and how did they agree to it being used in AI-generated ads?"
-                        className="mt-2 w-full resize-y rounded-lg border border-amber-200 bg-white p-2 text-[11px] text-slate-900 placeholder:text-slate-400 outline-none focus:border-amber-400"
-                      />
+                      {/* Only a human character can be a real person — asking a
+                          mascot's owner for consent teaches people to click past it. */}
+                      {c.type === "human" && (
+                        <label className="mt-2 flex cursor-pointer items-start gap-2 text-[11px] leading-relaxed text-amber-900">
+                          <input
+                            type="checkbox"
+                            checked={isRealPerson}
+                            onChange={(e) => setIsRealPerson(e.target.checked)}
+                            disabled={busy === c.id}
+                            className="mt-0.5 accent-amber-600"
+                          />
+                          <span>This is a photo of a real person (not AI-generated or illustrated).</span>
+                        </label>
+                      )}
+                      {isRealPerson && c.type === "human" && (
+                        <textarea
+                          value={consent}
+                          onChange={(e) => setConsent(e.target.value)}
+                          rows={2}
+                          placeholder="Who is in this photo, and how did they agree to it being used in AI-generated ads?"
+                          className="mt-2 w-full resize-y rounded-lg border border-amber-200 bg-white p-2 text-[11px] text-slate-900 placeholder:text-slate-400 outline-none focus:border-amber-400"
+                        />
+                      )}
                       <div className="mt-2 flex items-center gap-2">
                         <button
                           onClick={() => void uploadPhoto(c.id)}
-                          disabled={busy === c.id || !photoFile || consent.trim().length < 10}
+                          disabled={
+                            busy === c.id ||
+                            !photoFile ||
+                            (isRealPerson && c.type === "human" && consent.trim().length < 10)
+                          }
                           className="rounded-lg bg-boss-gold px-3 py-1.5 text-xs font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           {busy === c.id ? "Saving…" : "Save photo"}
@@ -452,8 +480,10 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
                         </button>
                       </div>
                       <p className="mt-2 text-[11px] leading-relaxed text-amber-800">
-                        A photographed person caps ads at 15s — the 30s model refuses face references.
-                        Check the photo for logos you don&rsquo;t own, too: they get reproduced.
+                        {c.type === "human"
+                          ? "A human reference caps ads at 15s — the 30s model refuses face references. "
+                          : ""}
+                        Check the picture for logos you don&rsquo;t own: they get reproduced.
                       </p>
                     </div>
                   )}
