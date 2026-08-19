@@ -59,6 +59,12 @@ export default function UgcStudio({
   const imgRef = useRef<HTMLInputElement>(null);
   const vidRef = useRef<HTMLInputElement>(null);
 
+  /**
+   * Output length. Seedance 2.5 generates up to 30s in one shot; the platforms'
+   * own guidance puts a UGC ad at 15-30s, so 20 is a better default than the
+   * model's "auto" (which tended to come back far shorter than ad length).
+   */
+  const [seconds, setSeconds] = useState(20);
   const [generating, setGenerating] = useState(false);
   const [clipUrl, setClipUrl] = useState<string | null>(null);
   /** Seedance renders run minutes — offer wait-or-notify. */
@@ -186,6 +192,7 @@ export default function UgcStudio({
         body: JSON.stringify({
           prompt: p,
           aspect: "9:16",
+          duration: seconds,
           imageUrls: refs.filter((r) => r.kind === "image").map((r) => r.url),
           videoUrls: refs.filter((r) => r.kind === "video").map((r) => r.url),
         }),
@@ -433,6 +440,21 @@ export default function UgcStudio({
           </Field>
 
           <div className="mt-4 flex items-center justify-between gap-2">
+            <label className="flex items-center gap-2 text-[11px] text-slate-500">
+              Length
+              <select
+                value={seconds}
+                onChange={(e) => setSeconds(Number(e.target.value))}
+                disabled={generating}
+                className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 outline-none focus:border-boss-violet/60"
+              >
+                {[8, 12, 15, 20, 25, 30].map((n) => (
+                  <option key={n} value={n}>
+                    {n}s{n === 20 ? " · typical ad" : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
             <span className="text-[11px] text-slate-400">9:16 vertical · native voice · ~35 credits</span>
             <button onClick={generateClip} disabled={generating || !videoPrompt.trim()} className={primaryBtn}>
               {generating && <Spinner />}
