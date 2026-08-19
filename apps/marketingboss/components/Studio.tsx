@@ -38,26 +38,34 @@ type VideoMeta = { width: number; height: number; duration: number };
  * Rejects on anything the browser can't decode; callers treat that as unknown
  * and let the server decide rather than blocking a possibly-valid upload.
  */
-function readVideoMeta(file: File): Promise<VideoMeta> {
-  return new Promise((resolve, reject) => {
+function readVideoMeta(file: File): Promise<VideoMeta | null> {
+  return new Promise((resolve) => {
     const url = URL.createObjectURL(file);
     const el = document.createElement("video");
     el.preload = "metadata";
-    const done = (fn: () => void) => {
+    let timer: ReturnType<typeof setTimeout>;
+    let settled = false;
+    const finish = (v: VideoMeta | null) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
       URL.revokeObjectURL(url);
-      fn();
+      resolve(v);
     };
+    // A source the browser cannot decode fires NEITHER loadedmetadata NOR
+    // error — verified live in Chrome on 2026-08-18. Without this timeout the
+    // promise never settles, and anything awaiting it stalls forever with no
+    // error to show. Never resolve-or-hang; always resolve.
+    timer = setTimeout(() => finish(null), 5000);
     el.onloadedmetadata = () =>
-      done(() =>
-        resolve({
-          width: el.videoWidth,
-          height: el.videoHeight,
-          // Infinity/NaN on some streamed sources — 0 means "unknown", which
-          // callers treat as "let the server decide".
-          duration: Number.isFinite(el.duration) ? el.duration : 0,
-        }),
-      );
-    el.onerror = () => done(() => reject(new Error("Could not read that video.")));
+      finish({
+        width: el.videoWidth,
+        height: el.videoHeight,
+        // Infinity/NaN on some streamed sources — 0 means "unknown", which
+        // callers treat as "let the server decide".
+        duration: Number.isFinite(el.duration) ? el.duration : 0,
+      });
+    el.onerror = () => finish(null);
     el.src = url;
   });
 }
@@ -146,6 +154,28 @@ export default function Studio({
           : null;
   /** Shared "wait here vs notify me" control — see components/NotifyWhenDone. */
   const notifier = useDoneNotifier();
+  /**
+   * Why Run swap is unavailable, in the user's words. A disabled button that
+   * explains nothing is the worst of both worlds — it refuses and leaves you
+   * guessing, which is exactly what happened here: the cost line reads
+   * "30 credits (incl. upscale)" as soon as the clip is MEASURED, but the
+   * button needs it UPLOADED, and those are seconds apart on a big file.
+   *
+   * Ordered by what the user would fix first.
+   */
+  const blockedReason: string | null = loading
+    ? null // the button label already says what is happening
+    : srcUploading
+      ? "Uploading your clip…"
+      : !srcVideoUrl
+        ? "Add a source video to get started."
+        : durationIssue === "long"
+          ? `Clip is ${srcSize!.duration.toFixed(1)}s — trim to ${MIN_SWAP_SECONDS}–${MAX_SWAP_SECONDS}s.`
+          : durationIssue === "short"
+            ? `Clip is ${srcSize!.duration.toFixed(1)}s — needs at least ${MIN_SWAP_SECONDS}s.`
+            : !refUrl
+              ? "Add a reference image to swap in."
+              : null;
   const [swapTarget, setSwapTarget] = useState<SwapTarget>("face");
   const videoRef = useRef<HTMLInputElement>(null);
 
@@ -219,12 +249,16 @@ export default function Studio({
       );
       return;
     }
-    // fal only rejects an undersized clip AFTER the upload and the credit
-    // reservation, so the user waited, then read a raw 422. The browser knows
-    // the size immediately — measure now so the panel can offer an upscale
-    // instead of failing them at the end. Unreadable metadata stays null and
-    // the server has the final say, so this can only ever fail open.
-    setSrcSize(await readVideoMeta(file).catch(() => null));
+    // Measure ALONGSIDE the upload, never in front of it.
+    //
+    // This used to be `setSrcSize(await readVideoMeta(file))`, which made the
+    // upload wait on a promise that can hang forever (see readVideoMeta). The
+    // result, reproduced live: pick a clip, the input clears, and absolutely
+    // nothing happens — no video, no spinner, no error. Measurement is only
+    // advisory (it decides which warnings to show), so it must never sit on
+    // the critical path.
+    setSrcSize(null);
+    void readVideoMeta(file).then(setSrcSize);
     if (!uid) {
       setError("Still signing in — try again in a second.");
       return;
@@ -628,11 +662,16 @@ export default function Studio({
                   ? `Costs ${25 + CREDIT_COST.upscale} credits (incl. upscale) · ~2–5 min`
                   : "Costs 25 credits · ~1–3 min"}
               </span>
+              {blockedReason && (
+                <span className="text-xs font-medium text-amber-700">{blockedReason}</span>
+              )}
               <button
                 onClick={runSwap}
-                // Duration is unfixable in-app, so refuse the click outright.
-                // (Width is NOT in here — that one has an upscale to offer.)
-                disabled={loading || !srcVideoUrl || !refUrl || !!durationIssue}
+                // Single source of truth with the message beside it — the button
+                // is disabled exactly when there is a reason to show, so the two
+                // can never disagree. (Width is deliberately NOT a blocker: it
+                // has an upscale to offer instead.)
+                disabled={loading || !!blockedReason}
                 className="ml-auto inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {loading && <Spinner />}
