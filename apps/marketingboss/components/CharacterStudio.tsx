@@ -40,6 +40,15 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
   const [draftRole, setDraftRole] = useState("");
   const [draftCollection, setDraftCollection] = useState("");
   const [saving, setSaving] = useState(false);
+  /**
+   * An optional reference picture chosen DURING creation. A character used to be
+   * born with nothing to look at, so the presenter picker hid it until someone
+   * came back and added one — the first run of the feature dead-ended.
+   */
+  const [draftRef, setDraftRef] = useState<File | null>(null);
+  const [draftRealPerson, setDraftRealPerson] = useState(false);
+  const [draftConsent, setDraftConsent] = useState("");
+  const draftRefInput = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [supabase] = useState(() => createClient());
   /** Which card has the "use a photo" panel open, plus its pending input. */
@@ -71,6 +80,9 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
     setStep("type");
     setDescription("");
     setDraft(null);
+    setDraftRef(null);
+    setDraftRealPerson(false);
+    setDraftConsent("");
     setError(null);
   }
 
@@ -114,8 +126,31 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
           dna: draft.dna,
         }),
       });
-      const b = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+      const b = (await res.json().catch(() => null)) as
+        | { ok?: boolean; character?: { id: string }; error?: string }
+        | null;
       if (!res.ok || !b?.ok) throw new Error(b?.error || "Couldn't save the character.");
+      // The reference is attached AFTER creation because the portrait endpoint
+      // is keyed by character id. A failure here must not read as "nothing
+      // saved" — the character exists, so say what actually went wrong and
+      // leave them on the card, where the same upload is available.
+      if (draftRef && b.character?.id) {
+        try {
+          await savePortrait(b.character.id, draftRef, {
+            realPerson: draftRealPerson,
+            consentNote: draftConsent.trim(),
+          });
+        } catch (e) {
+          resetWizard();
+          router.refresh();
+          setError(
+            `${draftName.trim() || draft.name} was created, but the reference picture didn't attach: ${
+              e instanceof Error ? e.message : "unknown error"
+            }. Add it from the card.`,
+          );
+          return;
+        }
+      }
       resetWizard();
       router.refresh();
     } catch (e) {
@@ -123,6 +158,43 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
     } finally {
       setSaving(false);
     }
+  }
+
+  /**
+   * Put a picture in Storage and make it the character's identity anchor.
+   *
+   * Shared by the creation wizard and the card, so both record the same thing:
+   * only a human character can be a real person, and only then is a consent
+   * note meaningful. The server re-derives this from the stored character
+   * rather than trusting what we send.
+   */
+  async function savePortrait(
+    characterId: string,
+    file: File,
+    opts: { realPerson: boolean; consentNote: string },
+  ): Promise<void> {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error("Still signing in — try again in a second.");
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const path = `${user.id}/characters/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("media")
+      .upload(path, file, { contentType: file.type, upsert: false });
+    if (upErr) throw upErr;
+    const url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+    const res = await fetch(`/api/characters/${characterId}/portrait`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url,
+        identityType: opts.realPerson ? "real_person" : "brand_owned",
+        consentNote: opts.consentNote,
+      }),
+    });
+    const b = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+    if (!res.ok || !b?.ok) throw new Error(b?.error || "Could not save that picture.");
   }
 
   /**
@@ -147,28 +219,7 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
     setBusy(id);
     setError(null);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Still signing in — try again in a second.");
-      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-      const path = `${user.id}/characters/${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("media")
-        .upload(path, file, { contentType: file.type, upsert: false });
-      if (upErr) throw upErr;
-      const url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
-      const res = await fetch(`/api/characters/${id}/portrait`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url,
-          identityType: isRealPerson ? "real_person" : "brand_owned",
-          consentNote: consent.trim(),
-        }),
-      });
-      const b = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
-      if (!res.ok || !b?.ok) throw new Error(b?.error || "Could not save that photo.");
+      await savePortrait(id, file, { realPerson: isRealPerson, consentNote: consent.trim() });
       setPhotoFor(null);
       setPhotoFile(null);
       setConsent("");
@@ -320,13 +371,65 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
                   </div>
                 ))}
               </div>
+              <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                  Reference picture (optional)
+                </div>
+                <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
+                  Every later render is built from this, so a picture you already have will look more
+                  like {draftName.trim() || draft.name} than anything described in words. Skip it and
+                  you can generate one for 1 credit instead.
+                </p>
+                <input
+                  ref={draftRefInput}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setDraftRef(e.target.files?.[0] ?? null)}
+                  className="mt-2 block w-full text-[11px] text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-[11px] file:text-slate-700"
+                />
+                {/* Only a human can be a real person, so only a human is asked. */}
+                {draftRef && type === "human" && (
+                  <label className="mt-2 flex cursor-pointer items-start gap-2 text-[11px] leading-relaxed text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={draftRealPerson}
+                      onChange={(e) => setDraftRealPerson(e.target.checked)}
+                      disabled={saving}
+                      className="mt-0.5 accent-boss-violet"
+                    />
+                    <span>This is a photo of a real person (not AI-generated or illustrated).</span>
+                  </label>
+                )}
+                {draftRef && type === "human" && draftRealPerson && (
+                  <>
+                    <textarea
+                      value={draftConsent}
+                      onChange={(e) => setDraftConsent(e.target.value)}
+                      rows={2}
+                      placeholder="Who is in this photo, and how did they agree to it being used in AI-generated ads?"
+                      className="mt-2 w-full resize-y rounded-lg border border-slate-200 bg-white p-2 text-[11px] text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
+                    />
+                    <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                      A human reference caps ads at 15s — the 30s model refuses face references.
+                    </p>
+                  </>
+                )}
+                {draftRef && (
+                  <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">
+                    Check the picture for logos you don&rsquo;t own: they get reproduced.
+                  </p>
+                )}
+              </div>
               <div className="mt-3 flex items-center gap-2">
                 <button
                   onClick={() => void save()}
-                  disabled={saving}
-                  className="inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:opacity-40"
+                  disabled={
+                    saving ||
+                    (!!draftRef && type === "human" && draftRealPerson && draftConsent.trim().length < 10)
+                  }
+                  className="inline-flex items-center gap-2 rounded-xl bg-boss-gold px-5 py-2.5 text-sm font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {saving ? "Saving…" : "Create character"}
+                  {saving ? "Saving…" : draftRef ? "Create with this reference" : "Create character"}
                 </button>
                 <button onClick={() => setStep("describe")} className="rounded-xl border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:text-slate-900">
                   Re-describe
