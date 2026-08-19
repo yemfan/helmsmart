@@ -2,8 +2,18 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { generateAndStore, CreditError } from "@/lib/generation";
 
-// A Kling O1 edit can take a couple of minutes — give the function room.
-export const maxDuration = 300;
+/**
+ * A Kling O1 edit can take several minutes, and 300s was not enough.
+ *
+ * Seen in production 2026-08-19: a swap died on "Generation timed out" because
+ * the poll ceiling was 280s to stay under a 300s function. The render was still
+ * running; we simply stopped waiting for it and refunded a swap that might well
+ * have finished. 800s gives it room, with the poll ceiling below that so the
+ * refund still runs rather than being cut off by a SIGKILL.
+ */
+export const maxDuration = 800;
+/** Under maxDuration, so a give-up is ours and the credits go back. */
+const POLL_TIMEOUT_MS = 760_000;
 export const runtime = "nodejs";
 
 type SwapTarget = "face" | "person" | "outfit" | "product" | "background";
@@ -96,6 +106,7 @@ export async function POST(req: Request) {
       videoUrl,
       imageUrls: [refUrl],
       keepAudio,
+      timeoutMs: POLL_TIMEOUT_MS,
     });
     return NextResponse.json({ urls: out.urls, model: out.model, credits: out.credits });
   } catch (e: unknown) {
@@ -110,6 +121,16 @@ export async function POST(req: Request) {
       );
     if (/FAL_KEY/.test(msg))
       return NextResponse.json({ error: "Server is not configured (missing FAL_KEY)." }, { status: 503 });
+    // A give-up on our side, not a bad clip — say so, and say the credits came
+    // back, because "try a different clip" sends people to fix the wrong thing.
+    if (/timed out/i.test(msg))
+      return NextResponse.json(
+        {
+          error:
+            "That edit took longer than we waited for. Your credits were returned — try again, or use a shorter clip to speed it up.",
+        },
+        { status: 504 },
+      );
     // Prefer fal's own structured reason — it names the actual number.
     const detail = falDetailMessage(msg);
     if (detail) return NextResponse.json({ error: detail }, { status: 422 });

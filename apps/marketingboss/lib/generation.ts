@@ -76,6 +76,8 @@ export type GenParams = {
   duration?: number;
   /** Seedance output height: "480p" | "720p" | "1080p". */
   resolution?: string;
+  /** Poll ceiling in ms — must be under the route's maxDuration so the refund runs. */
+  timeoutMs?: number;
 };
 
 /** UGC (Seedance) clips cost more than a Kling clip. */

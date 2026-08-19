@@ -59,6 +59,14 @@ export const UGC_REF_MAX_SECONDS = 15;
 export const UGC_REF_MAX_IMAGES = 9;
 export const UGC_REF_MAX_VIDEOS = 3;
 
+/**
+ * Default poll ceiling: under the 300s a route gets unless it raises
+ * maxDuration. A route that allows longer must pass its own — a Kling O1 swap
+ * measured past 280s in production and died on this default, when the route
+ * could have waited.
+ */
+const DEFAULT_POLL_TIMEOUT_MS = 280_000;
+
 export type GenType = "image" | "video";
 
 export type GenParams = {
@@ -78,6 +86,12 @@ export type GenParams = {
   videoUrl?: string;
   /** Keep the source clip's original audio through the edit. */
   keepAudio?: boolean;
+  /**
+   * How long to poll before giving up, in ms. Must sit UNDER the calling route's
+   * maxDuration: the refund in generateCore only runs if this throws first, and
+   * a Vercel timeout is a SIGKILL that skips it entirely.
+   */
+  timeoutMs?: number;
 };
 
 /** Seedance models are ByteDance-hosted on fal and take a different input shape. */
@@ -179,7 +193,11 @@ function collectUrls(result: Record<string, unknown>): string[] {
 }
 
 /** Submit a job to `model`, poll to completion, and return the raw result. */
-async function runModel(model: string, input: Record<string, unknown>): Promise<Record<string, unknown>> {
+async function runModel(
+  model: string,
+  input: Record<string, unknown>,
+  timeoutMs = DEFAULT_POLL_TIMEOUT_MS,
+): Promise<Record<string, unknown>> {
   const H = headers();
 
   const sub = await fetch(`https://queue.fal.run/${model}`, {
@@ -199,14 +217,13 @@ async function runModel(model: string, input: Record<string, unknown>): Promise<
   const responseUrl = q.response_url || `https://queue.fal.run/${model}/requests/${q.request_id}`;
 
   const started = Date.now();
-  const TIMEOUT_MS = 280_000; // stay under the 300s function ceiling
   for (;;) {
     const r = await fetch(statusUrl, { headers: H });
     const s = (await r.json().catch(() => ({}))) as { status?: string };
     if (s.status === "COMPLETED") break;
     if (s.status === "FAILED" || s.status === "ERROR")
       throw new Error(`fal generation failed: ${JSON.stringify(s)}`);
-    if (Date.now() - started > TIMEOUT_MS)
+    if (Date.now() - started > timeoutMs)
       throw new Error("Generation timed out. Video can take a couple minutes — try again.");
     await new Promise((res) => setTimeout(res, 2500));
   }
@@ -220,7 +237,7 @@ async function runModel(model: string, input: Record<string, unknown>): Promise<
 /** Submit a job, poll to completion, and return the media URL(s). */
 export async function generate(p: GenParams): Promise<GenResult> {
   const { model, input } = buildRequest(p);
-  const out = await runModel(model, input);
+  const out = await runModel(model, input, p.timeoutMs);
   const urls = collectUrls(out);
   if (!urls.length) throw new Error("No media URL in the fal.ai result.");
   return { urls, model };
