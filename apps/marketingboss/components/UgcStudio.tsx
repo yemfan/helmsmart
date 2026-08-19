@@ -67,6 +67,8 @@ export default function UgcStudio({
   // References (guide the render — a still or a viral ad to emulate)
   const [refs, setRefs] = useState<Ref[]>([]);
   const [uploading, setUploading] = useState(false);
+  /** What the browser is doing to a reference clip before it uploads, if anything. */
+  const [prepping, setPrepping] = useState<string | null>(null);
   const imgRef = useRef<HTMLInputElement>(null);
   const vidRef = useRef<HTMLInputElement>(null);
 
@@ -158,11 +160,29 @@ export default function UgcStudio({
     setError(null);
     setUploading(true);
     try {
-      const url = await uploadFile(file, "ugc-refs");
+      let toUpload = file;
+      // Seedance enforces the same 24-60fps window on reference clips that Kling
+      // enforces on swap sources, and rejects them AFTER the upload. A 16.87fps
+      // screen recording is a normal thing to have, so fix it here rather than
+      // hand the user a failure minutes later.
+      //
+      // Deliberately in the browser: neither fal endpoint can change a frame
+      // rate. Measured on a 30.11s/16.87fps clip, both returned 508 frames at
+      // 16.87fps — video-upscaler (241s, resolution only) and ffmpeg-api compose.
+      if (kind === "video") {
+        const { readMp4Fps, conformClip } = await import("@/lib/trimClient");
+        const fps = await readMp4Fps(file);
+        if (fps !== null && (fps < 24 || fps > 60)) {
+          setPrepping(`This clip runs at ${fps.toFixed(1)}fps — re-encoding at 30fps so the model accepts it…`);
+          toUpload = await conformClip(file);
+        }
+      }
+      const url = await uploadFile(toUpload, "ugc-refs");
       setRefs((prev) => [...prev, { url, kind }]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
+      setPrepping(null);
       setUploading(false);
     }
   }
@@ -362,7 +382,7 @@ export default function UgcStudio({
               {uploading ? "Uploading…" : "+ Image"}
             </button>
             <button onClick={() => vidRef.current?.click()} disabled={uploading} className={chipBtn}>
-              {uploading ? "Uploading…" : "+ Video (a viral ad)"}
+              {uploading ? (prepping ? "Preparing…" : "Uploading…") : "+ Video (a viral ad)"}
             </button>
             <span className="text-[11px] text-slate-400">Drop in a still or a clip to emulate its style, framing &amp; pacing.</span>
           </div>
@@ -392,6 +412,11 @@ export default function UgcStudio({
                 {imgCount}/9 images · {vidCount}/3 videos
               </span>
             </div>
+          )}
+          {prepping && (
+            <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-[11px] leading-relaxed text-amber-900">
+              {prepping} The first one also downloads the encoder, so give it a moment.
+            </p>
           )}
         </div>
 
