@@ -17,6 +17,8 @@ type UgcAd = {
 };
 type PubResult = { platform: string; ok: boolean; url?: string | null; error?: string };
 type Ref = { url: string; kind: "image" | "video" };
+/** Just enough of a Character to offer it as the ad's presenter. */
+type CastMember = { id: string; name: string; role: string | null; reference_images: string[] | null };
 type ViralRef = { title: string; platform: string; why: string; hook: string; styleNotes: string; url: string };
 
 function withHashes(tags: string[]): string {
@@ -42,6 +44,15 @@ export default function UgcStudio({
   const [intent, setIntent] = useState("");
   const [drafting, setDrafting] = useState(false);
   const [ad, setAd] = useState<UgcAd | null>(null);
+
+  /**
+   * Remix: cast one of the user's Character Studio cast as the presenter, so
+   * the ad is performed by a recurring model instead of whoever the video model
+   * happens to invent. Distinct from the Studio's swap, which edits an existing
+   * clip — nothing here is edited, the ad is generated with them in it.
+   */
+  const [cast, setCast] = useState<CastMember[]>([]);
+  const [characterId, setCharacterId] = useState("");
 
   // Viral-reference finder (AI web search) + the chosen style to emulate.
   const [scouting, setScouting] = useState(false);
@@ -84,6 +95,25 @@ export default function UgcStudio({
     supabase.auth.getUser().then(({ data }) => setUid(data.user?.id ?? null));
   }, [supabase]);
 
+  // Load the cast so an ad can be performed by a recurring character. Silent on
+  // failure: casting is optional, and a missing cast should not block writing.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/characters")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { characters?: CastMember[] } | null) => {
+        if (!cancelled && d?.characters) setCast(d.characters);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  /** Only a character with a portrait can be cast — it IS the visual reference. */
+  const castable = cast.filter((c) => (c.reference_images ?? []).length > 0);
+  const presenter = castable.find((c) => c.id === characterId) ?? null;
+
   const fieldCls =
     "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60";
   const primaryBtn =
@@ -105,7 +135,6 @@ export default function UgcStudio({
     e.target.value = "";
     if (!file) return;
     if (!file.type.startsWith(`${kind}/`)) return setError(`Please choose ${kind === "video" ? "a video" : "an image"} file.`);
-    // Seedance caps refs at 9 images / 3 videos.
     const have = refs.filter((r) => r.kind === kind).length;
     // Seedance 2.5 limits, raised from 2.0's 9/3 when the model was upgraded.
     if (kind === "image" && have >= 30) return setError("Up to 30 reference images.");
@@ -162,6 +191,7 @@ export default function UgcStudio({
           hasReference: refs.length > 0,
           styleHint: chosenStyle ? styleHintFrom(chosenStyle) : undefined,
           seconds,
+          characterId: characterId || undefined,
         }),
       });
       const data = (await res.json()) as { ad?: UgcAd; error?: string };
@@ -195,6 +225,7 @@ export default function UgcStudio({
           prompt: p,
           aspect: "9:16",
           duration: seconds,
+          characterId: characterId || undefined,
           imageUrls: refs.filter((r) => r.kind === "image").map((r) => r.url),
           videoUrls: refs.filter((r) => r.kind === "video").map((r) => r.url),
         }),
@@ -440,6 +471,33 @@ export default function UgcStudio({
           <Field label="Shot prompt (what gets filmed)">
             <textarea value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} rows={4} className={`${fieldCls} resize-y leading-relaxed`} />
           </Field>
+
+          {castable.length > 0 && (
+            <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <label className="flex flex-wrap items-center gap-2 text-[11px] text-slate-600">
+                <span className="font-medium text-slate-700">Performed by</span>
+                <select
+                  value={characterId}
+                  onChange={(e) => setCharacterId(e.target.value)}
+                  disabled={generating || drafting}
+                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 outline-none focus:border-boss-violet/60"
+                >
+                  <option value="">Anyone (the model invents a creator)</option>
+                  {castable.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                      {c.role ? ` · ${c.role}` : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">
+                {presenter
+                  ? `${presenter.name}'s portrait guides the render and their description is written into the script, so they stay recognisable across ads. Add a reference clip above to remix its style with them in it.`
+                  : "Cast someone from Character Studio to keep the same face across every ad, instead of a new stranger each time."}
+              </p>
+            </div>
+          )}
 
           <div className="mt-4 flex items-center justify-between gap-2">
             <label className="flex items-center gap-2 text-[11px] text-slate-500">

@@ -195,6 +195,8 @@ export async function draftUgcAd(
   hasReference: boolean,
   styleHint?: string,
   seconds = 20,
+  /** Character Studio descriptor of whoever performs the ad (see personaBlock). */
+  persona?: string,
 ): Promise<UgcAd> {
   // ~2.5 words a second is a natural talking-to-camera pace. The script used to
   // be pinned at "~30-45 words" from when clips maxed out near 15s; once 30s
@@ -217,6 +219,11 @@ export async function draftUgcAd(
       : "",
     styleHint
       ? `Emulate this trending ad format the user chose — borrow its hook style, pacing, and structure (do NOT copy its exact words):\n${styleHint}`
+      : "",
+    // Reused VERBATIM. Paraphrasing the descriptor is exactly what makes a
+    // recurring character drift into a different-looking person between ads.
+    persona
+      ? `This ad is performed by a specific recurring character. Write the script in THEIR voice, and begin videoPrompt with this description word for word:\n${persona}`
       : "",
   ]
     .filter(Boolean)

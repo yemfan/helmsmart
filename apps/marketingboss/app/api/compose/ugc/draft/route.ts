@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { aiConfigured, draftUgcAd } from "@/lib/ai";
+import { getCharacter, personaBlock } from "@/lib/characters";
 
 export const maxDuration = 60;
 export const runtime = "nodejs";
@@ -29,11 +30,22 @@ export async function POST(req: Request) {
   const styleHint = typeof body.styleHint === "string" ? body.styleHint.trim().slice(0, 800) : undefined;
   // The script has to be written for the runtime it will be spoken over.
   const seconds = typeof body.seconds === "number" ? body.seconds : undefined;
+  // Remix: the ad is performed by one of the user's Character Studio cast. The
+  // character is loaded HERE rather than trusted from the client — the caller
+  // could otherwise hand us any id and read someone else's persona back out of
+  // the generated script.
+  const characterId = typeof body.characterId === "string" ? body.characterId : "";
+  let persona: string | undefined;
+  if (characterId) {
+    const character = await getCharacter(user.id, characterId);
+    if (!character) return NextResponse.json({ error: "That character was not found." }, { status: 404 });
+    persona = personaBlock(character);
+  }
   if (!intent) return NextResponse.json({ error: "Tell me what the ad is about." }, { status: 400 });
   if (intent.length > 1500) return NextResponse.json({ error: "Keep it under 1500 characters." }, { status: 400 });
 
   try {
-    const ad = await draftUgcAd(intent, hasReference, styleHint || undefined, seconds);
+    const ad = await draftUgcAd(intent, hasReference, styleHint || undefined, seconds, persona);
     return NextResponse.json({ ad });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Could not write the ad.";

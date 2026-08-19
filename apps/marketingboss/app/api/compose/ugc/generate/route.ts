@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { generateAndStore, CreditError } from "@/lib/generation";
 import { DEFAULT_MODELS } from "@/lib/fal";
+import { getCharacter, recordCharacterUsage } from "@/lib/characters";
 
 /**
  * Seedance is slow, and 300s was not enough once 30s clips became possible.
@@ -56,8 +57,31 @@ export async function POST(req: Request) {
     (Array.isArray(arr) ? arr : [])
       .filter((u): u is string => typeof u === "string" && storagePrefix !== "/storage/" && u.startsWith(storagePrefix))
       .slice(0, max);
-  const imageUrls = clean(body.imageUrls, 30);
+  const uploaded = clean(body.imageUrls, 30);
   const videoUrls = clean(body.videoUrls, 10);
+
+  /**
+   * Remix: the ad is performed by one of the user's Character Studio cast, so
+   * that character's portraits go in as image references and the reference clip
+   * supplies the style. Loaded server-side rather than trusted from the client,
+   * and put FIRST — Seedance weights earlier references more heavily, and the
+   * point of picking a character is that the ad features them, not the extras.
+   */
+  const characterId = typeof body.characterId === "string" ? body.characterId : "";
+  let portraits: string[] = [];
+  if (characterId) {
+    const character = await getCharacter(user.id, characterId);
+    if (!character) return NextResponse.json({ error: "That character was not found." }, { status: 404 });
+    portraits = (character.reference_images ?? []).filter((u) => typeof u === "string" && u);
+    if (!portraits.length) {
+      return NextResponse.json(
+        { error: `${character.name} has no portrait yet — add one in Character Studio so the ad can feature them.` },
+        { status: 400 },
+      );
+    }
+    void recordCharacterUsage(user.id, characterId);
+  }
+  const imageUrls = [...portraits, ...uploaded].slice(0, 30);
 
   const asked = typeof body.duration === "number" ? Math.round(body.duration) : null;
   const duration =
