@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import type { Character, CharacterDna, CharacterType, ComposedCharacter } from "@/lib/characters";
 
 /**
@@ -40,6 +41,12 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
   const [draftCollection, setDraftCollection] = useState("");
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
+  const [supabase] = useState(() => createClient());
+  /** Which card has the "use a photo" panel open, plus its pending input. */
+  const [photoFor, setPhotoFor] = useState<string | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [consent, setConsent] = useState("");
+  const photoInput = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [typeFilter, setTypeFilter] = useState<CharacterType | "">("");
@@ -113,6 +120,57 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
       setError(e instanceof Error ? e.message : "Couldn't save the character.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  /**
+   * Use a PHOTO as the identity anchor instead of a generated portrait.
+   *
+   * Verified 2026-08-19: a real head-and-shoulders photo through
+   * seedance-2.0/reference-to-video produced a usable vertical ad with the
+   * face, hair and wardrobe intact. Note it only works on 2.0 — 2.5 refuses
+   * face references — so an uploaded human caps at 15s rather than 30s.
+   *
+   * Consent is required rather than assumed. The output shows a real person's
+   * face saying words they never said, so the note has to name who they are and
+   * that they agreed; the server enforces this too.
+   */
+  async function uploadPhoto(id: string) {
+    const file = photoFile;
+    if (!file || busy) return;
+    if (!file.type.startsWith("image/")) return setError("Choose an image file.");
+    if (consent.trim().length < 10) {
+      return setError("Say whose photo this is and that they agreed to it being used in AI ads.");
+    }
+    setBusy(id);
+    setError(null);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Still signing in — try again in a second.");
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const path = `${user.id}/characters/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("media")
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (upErr) throw upErr;
+      const url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+      const res = await fetch(`/api/characters/${id}/portrait`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, consentNote: consent.trim() }),
+      });
+      const b = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+      if (!res.ok || !b?.ok) throw new Error(b?.error || "Could not save that photo.");
+      setPhotoFor(null);
+      setPhotoFile(null);
+      setConsent("");
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not save that photo.");
+    } finally {
+      setBusy(null);
     }
   }
 
@@ -329,6 +387,19 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
                       {busy === c.id ? "Working…" : portrait ? "New portrait" : "Portrait · 1cr"}
                     </button>
                     <button
+                      onClick={() => {
+                        setPhotoFor(photoFor === c.id ? null : c.id);
+                        setPhotoFile(null);
+                        setConsent("");
+                        setError(null);
+                      }}
+                      disabled={busy === c.id}
+                      title="Use a real photo as the identity anchor instead of generating one"
+                      className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+                    >
+                      Use a photo
+                    </button>
+                    <button
                       onClick={() => void act(c.id, () => fetch(`/api/characters/${c.id}/duplicate`, { method: "POST" }))}
                       disabled={busy === c.id}
                       className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
@@ -343,6 +414,49 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
                       Archive
                     </button>
                   </div>
+
+                  {photoFor === c.id && (
+                    <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                      <p className="text-[11px] leading-relaxed text-amber-900">
+                        A photo becomes {c.name}&rsquo;s identity anchor, and every ad is built from that
+                        face. Uploading one marks this character as a real likeness.
+                      </p>
+                      <input
+                        ref={photoInput}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
+                        className="mt-2 block w-full text-[11px] text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-[11px] file:text-slate-700"
+                      />
+                      <textarea
+                        value={consent}
+                        onChange={(e) => setConsent(e.target.value)}
+                        rows={2}
+                        placeholder="Who is in this photo, and how did they agree to it being used in AI-generated ads?"
+                        className="mt-2 w-full resize-y rounded-lg border border-amber-200 bg-white p-2 text-[11px] text-slate-900 placeholder:text-slate-400 outline-none focus:border-amber-400"
+                      />
+                      <div className="mt-2 flex items-center gap-2">
+                        <button
+                          onClick={() => void uploadPhoto(c.id)}
+                          disabled={busy === c.id || !photoFile || consent.trim().length < 10}
+                          className="rounded-lg bg-boss-gold px-3 py-1.5 text-xs font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          {busy === c.id ? "Saving…" : "Save photo"}
+                        </button>
+                        <button
+                          onClick={() => setPhotoFor(null)}
+                          disabled={busy === c.id}
+                          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <p className="mt-2 text-[11px] leading-relaxed text-amber-800">
+                        A photographed person caps ads at 15s — the 30s model refuses face references.
+                        Check the photo for logos you don&rsquo;t own, too: they get reproduced.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             );
