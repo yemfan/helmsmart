@@ -92,6 +92,8 @@ export default function Compose({
    * outside the UGC studio has no voice until it is narrated here.
    */
   const [voiceScript, setVoiceScript] = useState("");
+  const [voices, setVoices] = useState<{ id: string; name: string; cloned: boolean }[]>([]);
+  const [voiceId, setVoiceId] = useState("");
   const [voicing, setVoicing] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [cta, setCta] = useState("");
@@ -277,7 +279,7 @@ export default function Compose({
       const res = await fetch("/api/voiceover", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ videoUrl: mediaUrl, script }),
+        body: JSON.stringify({ videoUrl: mediaUrl, script, voiceId }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !data.url) throw new Error(data.error || `Narration failed (${res.status})`);
@@ -668,6 +670,19 @@ export default function Compose({
                         // empty box; it is usually most of the read.
                         setVoiceScript((v) => v || caption);
                         setVoiceOpen(true);
+                        // Loaded on open, not on mount: most posts are never
+                        // narrated, and the list costs an ElevenLabs round-trip.
+                        if (!voices.length) {
+                          fetch("/api/voiceover")
+                            .then((r) => (r.ok ? r.json() : null))
+                            .then((d: { voices?: typeof voices } | null) => {
+                              if (d?.voices?.length) {
+                                setVoices(d.voices);
+                                setVoiceId((v) => v || d.voices![0].id);
+                              }
+                            })
+                            .catch(() => {});
+                        }
                       }}
                       className={chipBtn}
                     >
@@ -687,6 +702,24 @@ export default function Compose({
                       placeholder="Keep it to what fits the clip — about 2.5 words a second."
                       className={`${fieldCls} mt-2 resize-y leading-relaxed`}
                     />
+                    {voices.length > 1 && (
+                      <label className="mt-2 flex items-center gap-2 text-[11px] text-slate-500">
+                        Voice
+                        <select
+                          value={voiceId}
+                          onChange={(e) => setVoiceId(e.target.value)}
+                          disabled={voicing}
+                          className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 outline-none focus:border-boss-violet/60"
+                        >
+                          {voices.map((v) => (
+                            <option key={v.id} value={v.id}>
+                              {v.name}
+                              {v.cloned ? " · cloned" : ""}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       <button
                         onClick={() => void runVoiceover()}

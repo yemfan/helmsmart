@@ -10,14 +10,67 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * keep. fal already hosts a TTS model and we already hold FAL_KEY, so the whole
  * feature rides on credentials that exist.
  *
- * Verified end to end on 2026-08-19: `xai/tts/v1` returned an mp3 in 3s, and
- * ffmpeg compose muxed it onto a 5s clip in 10s with a `soun` track present in
- * the output.
+ * ElevenLabs is used when ELEVENLABS_API_KEY is present and fal's TTS otherwise,
+ * so the feature works today and improves the moment the key is added rather
+ * than being blocked on it. ElevenLabs earns the second vendor for one thing
+ * fal's TTS cannot do: speak in a CLONED voice. The voices offered are read from
+ * the account's own library rather than hardcoded, so a voice cloned elsewhere
+ * appears here without a code change.
+ *
+ * Verified end to end on 2026-08-19 — the FAL path only, since no ElevenLabs key
+ * exists here yet: `xai/tts/v1` returned an mp3 in 3s, and ffmpeg compose muxed
+ * it onto a 5s clip in 10s with a `soun` track present in the output.
  */
 
 const QUEUE = "https://queue.fal.run";
 const TTS_MODEL = "xai/tts/v1";
 const COMPOSE_MODEL = "fal-ai/ffmpeg-api/compose";
+const ELEVEN_TTS = "https://api.elevenlabs.io/v1/text-to-speech";
+const ELEVEN_VOICES = "https://api.elevenlabs.io/v1/voices";
+
+export type VoiceOption = { id: string; name: string; cloned: boolean };
+
+function elevenKey(): string | null {
+  return process.env.ELEVENLABS_API_KEY?.trim() || null;
+}
+
+/** Which engine will speak — the UI says so, since the voices differ. */
+export function voiceProvider(): "elevenlabs" | "fal" {
+  return elevenKey() ? "elevenlabs" : "fal";
+}
+
+/**
+ * The voices on offer.
+ *
+ * Read from the ElevenLabs account rather than hardcoded, so a cloned voice
+ * appears without a code change and this can never list an id the account
+ * cannot actually use. Falls back to the single fal voice when there is no key,
+ * or when ElevenLabs cannot be reached — a voice list is not worth failing a
+ * page over.
+ */
+export async function listVoices(): Promise<VoiceOption[]> {
+  const key = elevenKey();
+  if (!key) return [{ id: "", name: "Default narrator", cloned: false }];
+  try {
+    const res = await fetch(ELEVEN_VOICES, { headers: { "xi-api-key": key } });
+    if (!res.ok) throw new Error(String(res.status));
+    const body = (await res.json()) as {
+      voices?: Array<{ voice_id?: string; name?: string; category?: string }>;
+    };
+    const voices = (body.voices ?? [])
+      .filter((v) => v.voice_id && v.name)
+      .map((v) => ({
+        id: v.voice_id as string,
+        name: v.name as string,
+        cloned: v.category === "cloned" || v.category === "professional",
+      }));
+    // Cloned first — someone who cloned a voice wants to use it.
+    voices.sort((a, b) => Number(b.cloned) - Number(a.cloned));
+    return voices.length ? voices : [{ id: "", name: "Default narrator", cloned: false }];
+  } catch {
+    return [{ id: "", name: "Default narrator", cloned: false }];
+  }
+}
 
 /** A TTS pass plus an ffmpeg mux — no frames are generated, so it is cheap. */
 export const VOICEOVER_CREDIT = 3;
@@ -96,12 +149,52 @@ function durationFromMp4(buf: Uint8Array): number | null {
   }
 }
 
-/** Speak `text`, returning a fal-hosted mp3 URL. */
-async function speak(text: string): Promise<string> {
-  const out = await falRun(TTS_MODEL, { text });
-  const url = (out.audio as { url?: string } | undefined)?.url;
-  if (!url) throw new Error("Narration returned no audio.");
-  return url;
+/**
+ * Speak `text`, returning a URL the mux can fetch.
+ *
+ * ElevenLabs returns raw audio rather than a URL, so those bytes are stored in
+ * our own bucket and that public URL is passed on: fal's ffmpeg has to be able
+ * to fetch the track over HTTP.
+ */
+async function speak(
+  supabase: SupabaseClient,
+  userId: string,
+  text: string,
+  voiceId: string,
+): Promise<string> {
+  const key = elevenKey();
+  if (!key) {
+    const out = await falRun(TTS_MODEL, { text });
+    const url = (out.audio as { url?: string } | undefined)?.url;
+    if (!url) throw new Error("Narration returned no audio.");
+    return url;
+  }
+
+  // An empty id means no preference — pick a documented stock voice rather than
+  // posting an empty path segment.
+  const voice = voiceId || "21m00Tcm4TlvDq8ikWAM";
+  const res = await fetch(`${ELEVEN_TTS}/${encodeURIComponent(voice)}`, {
+    method: "POST",
+    headers: { "xi-api-key": key, "Content-Type": "application/json", Accept: "audio/mpeg" },
+    body: JSON.stringify({
+      text: text.slice(0, MAX_SCRIPT_CHARS),
+      // Overridable so a newer model can be switched on with an env change; the
+      // default stays a GA model so a misset var cannot break synthesis.
+      model_id: process.env.ELEVENLABS_TTS_MODEL?.trim() || "eleven_multilingual_v2",
+      voice_settings: { stability: 0.4, similarity_boost: 0.85, style: 0.35, use_speaker_boost: true },
+    }),
+  });
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`Voice synth failed (${res.status})${detail ? `: ${detail.slice(0, 200)}` : ""}`);
+  }
+  const bytes = new Uint8Array(await res.arrayBuffer());
+  const path = `${userId}/voice/${crypto.randomUUID()}.mp3`;
+  const { error: upErr } = await supabase.storage
+    .from("media")
+    .upload(path, bytes, { contentType: "audio/mpeg", upsert: false });
+  if (upErr) throw new Error(`Could not store the narration: ${upErr.message}`);
+  return supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
 }
 
 /**
@@ -115,6 +208,7 @@ export async function addVoiceover(
   userId: string,
   videoUrl: string,
   script: string,
+  voiceId = "",
 ): Promise<{ url: string; credits: number }> {
   const { data: remaining, error: reserveErr } = await supabase.rpc("consume_credits", {
     p_cost: VOICEOVER_CREDIT,
@@ -129,7 +223,7 @@ export async function addVoiceover(
     const seconds = durationFromMp4(videoBytes);
     if (!seconds) throw new Error("Could not read the clip's length.");
 
-    const audioUrl = await speak(script);
+    const audioUrl = await speak(supabase, userId, script, voiceId);
 
     // Both tracks are pinned to the VIDEO's length so they stay aligned and the
     // result is never longer than the footage it narrates.
@@ -159,7 +253,7 @@ export async function addVoiceover(
       user_id: userId,
       type: "video",
       prompt: `Voiceover: ${script.slice(0, 180)}`,
-      model: `${TTS_MODEL} + ffmpeg`,
+      model: `${voiceProvider()} tts + ffmpeg`,
       aspect: "16:9",
       media_url: publicUrl,
     });
