@@ -153,10 +153,13 @@ function durationFromMp4(buf: Uint8Array): number | null {
  * Speak `text`, returning a URL the mux can fetch.
  *
  * ElevenLabs returns raw audio rather than a URL, so those bytes are stored in
- * our own bucket and that public URL is passed on: fal's ffmpeg has to be able
- * to fetch the track over HTTP.
+ * our own bucket and that public URL is passed on: fal has to be able to fetch
+ * the track over HTTP.
+ *
+ * Exported because the talking avatar needs exactly this step — same engine
+ * selection, same cloned voices — and a second copy would drift from this one.
  */
-async function speak(
+export async function speak(
   supabase: SupabaseClient,
   userId: string,
   text: string,

@@ -57,6 +57,15 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
   const [consent, setConsent] = useState("");
   /** Only meaningful for a `human` character — a mascot cannot be a real person. */
   const [isRealPerson, setIsRealPerson] = useState(false);
+  /**
+   * "Make them talk" — the visible half of a digital twin. The picture anchors
+   * who they are, the voice may be a clone of the owner's; this joins the two.
+   */
+  const [talkFor, setTalkFor] = useState<string | null>(null);
+  const [talkScript, setTalkScript] = useState("");
+  const [talkVoice, setTalkVoice] = useState("");
+  const [talkVoices, setTalkVoices] = useState<{ id: string; name: string; cloned: boolean }[]>([]);
+  const [talkUrl, setTalkUrl] = useState<string | null>(null);
   const photoInput = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [q, setQ] = useState("");
@@ -227,6 +236,31 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not save that photo.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  /** Render the character speaking, and show the result in place. */
+  async function makeTalk(id: string) {
+    const script = talkScript.trim();
+    if (!script || busy) return;
+    setBusy(id);
+    setError(null);
+    setTalkUrl(null);
+    try {
+      const res = await fetch("/api/avatar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ characterId: id, script, voiceId: talkVoice }),
+      });
+      const b = (await res.json().catch(() => null)) as { url?: string; error?: string } | null;
+      if (!res.ok || !b?.url) throw new Error(b?.error || "The talking video failed.");
+      setTalkUrl(b.url);
+      // It lands in the gallery too, so Compose can pick it up via "From gallery".
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "The talking video failed.");
     } finally {
       setBusy(null);
     }
@@ -510,6 +544,34 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
                     >
                       Use a photo
                     </button>
+                    {portrait && (
+                      <button
+                        onClick={() => {
+                          setTalkFor(talkFor === c.id ? null : c.id);
+                          setTalkScript("");
+                          setTalkUrl(null);
+                          setError(null);
+                          // Voices load on open — most characters are never
+                          // asked to speak, and the list costs a round-trip.
+                          if (!talkVoices.length) {
+                            fetch("/api/voiceover")
+                              .then((r) => (r.ok ? r.json() : null))
+                              .then((d: { voices?: typeof talkVoices } | null) => {
+                                if (d?.voices?.length) {
+                                  setTalkVoices(d.voices);
+                                  setTalkVoice((v) => v || d.voices![0].id);
+                                }
+                              })
+                              .catch(() => {});
+                          }
+                        }}
+                        disabled={busy === c.id}
+                        title="Render this character speaking, in a voice you choose"
+                        className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+                      >
+                        🎬 Make them talk
+                      </button>
+                    )}
                     <button
                       onClick={() => void act(c.id, () => fetch(`/api/characters/${c.id}/duplicate`, { method: "POST" }))}
                       disabled={busy === c.id}
@@ -588,6 +650,65 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
                           : ""}
                         Check the picture for logos you don&rsquo;t own: they get reproduced.
                       </p>
+                    </div>
+                  )}
+
+                  {talkFor === c.id && (
+                    <div className="mt-2 rounded-xl border border-boss-violet/30 bg-boss-violet/5 p-3">
+                      <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                        What {c.name} says
+                      </div>
+                      <textarea
+                        value={talkScript}
+                        onChange={(e) => setTalkScript(e.target.value)}
+                        rows={3}
+                        maxLength={800}
+                        placeholder="A short read — about 2.5 words a second."
+                        className="mt-2 w-full resize-y rounded-lg border border-slate-200 bg-white p-2 text-[11px] leading-relaxed text-slate-900 placeholder:text-slate-400 outline-none focus:border-boss-violet/60"
+                      />
+                      {talkVoices.length > 1 && (
+                        <label className="mt-2 flex items-center gap-2 text-[11px] text-slate-600">
+                          Voice
+                          <select
+                            value={talkVoice}
+                            onChange={(e) => setTalkVoice(e.target.value)}
+                            disabled={busy === c.id}
+                            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] text-slate-700 outline-none focus:border-boss-violet/60"
+                          >
+                            {talkVoices.map((v) => (
+                              <option key={v.id} value={v.id}>
+                                {v.name}
+                                {v.cloned ? " · cloned" : ""}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <button
+                          onClick={() => void makeTalk(c.id)}
+                          disabled={busy === c.id || !talkScript.trim()}
+                          className="rounded-lg bg-boss-gold px-3 py-1.5 text-xs font-semibold text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          {busy === c.id ? "Rendering…" : "Make the video · 15cr"}
+                        </button>
+                        <button
+                          onClick={() => setTalkFor(null)}
+                          disabled={busy === c.id}
+                          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+                        >
+                          Close
+                        </button>
+                        <span className="text-[11px] text-slate-400">About a minute.</span>
+                      </div>
+                      {talkUrl && (
+                        <>
+                          <video src={talkUrl} controls className="mt-2 w-full rounded-lg border border-slate-200" />
+                          <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                            Saved to your gallery — pick it up in Actions with &ldquo;From gallery&rdquo;.
+                          </p>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
