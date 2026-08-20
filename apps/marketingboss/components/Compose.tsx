@@ -87,6 +87,13 @@ export default function Compose({
   const [hasDraft, setHasDraft] = useState(false);
   const [title, setTitle] = useState("");
   const [caption, setCaption] = useState("");
+  /**
+   * Voiceover for a generated clip. Kling renders silent video, so anything made
+   * outside the UGC studio has no voice until it is narrated here.
+   */
+  const [voiceScript, setVoiceScript] = useState("");
+  const [voicing, setVoicing] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
   const [cta, setCta] = useState("");
   const [hashtags, setHashtags] = useState("");
   const [link, setLink] = useState("");
@@ -257,6 +264,31 @@ export default function Compose({
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
       setUploading(false);
+    }
+  }
+
+  /** Narrate the current clip and replace it with the voiced version. */
+  async function runVoiceover() {
+    const script = voiceScript.trim();
+    if (!mediaUrl || !script || voicing) return;
+    setVoicing(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/voiceover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ videoUrl: mediaUrl, script }),
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) throw new Error(data.error || `Narration failed (${res.status})`);
+      // The narrated clip becomes the post's media; the silent one stays in the
+      // gallery, so a bad read is recoverable without regenerating the video.
+      setMediaUrl(data.url);
+      setVoiceOpen(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Narration failed.");
+    } finally {
+      setVoicing(false);
     }
   }
 
@@ -619,6 +651,58 @@ export default function Compose({
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={mediaUrl} alt="Post media" className="max-h-[45dvh] w-full object-contain" />
+                )}
+              </div>
+            )}
+
+            {mediaUrl && type === "video" && (
+              <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                {!voiceOpen ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs text-slate-500">
+                      This clip is silent — generated video has no audio.
+                    </span>
+                    <button
+                      onClick={() => {
+                        // Seed from the copy they already wrote rather than an
+                        // empty box; it is usually most of the read.
+                        setVoiceScript((v) => v || caption);
+                        setVoiceOpen(true);
+                      }}
+                      className={chipBtn}
+                    >
+                      🎙 Add a voiceover
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                      What the voice says
+                    </div>
+                    <textarea
+                      value={voiceScript}
+                      onChange={(e) => setVoiceScript(e.target.value)}
+                      rows={3}
+                      maxLength={800}
+                      placeholder="Keep it to what fits the clip — about 2.5 words a second."
+                      className={`${fieldCls} mt-2 resize-y leading-relaxed`}
+                    />
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => void runVoiceover()}
+                        disabled={voicing || !voiceScript.trim()}
+                        className={primaryBtn}
+                      >
+                        {voicing ? "Narrating…" : "Add voiceover · 3cr"}
+                      </button>
+                      <button onClick={() => setVoiceOpen(false)} disabled={voicing} className={chipBtn}>
+                        Cancel
+                      </button>
+                      <span className="text-[11px] text-slate-400">
+                        The narration is trimmed to the clip&rsquo;s length, so a long script gets cut.
+                      </span>
+                    </div>
+                  </>
                 )}
               </div>
             )}
