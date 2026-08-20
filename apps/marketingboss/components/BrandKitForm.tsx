@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { BrandKit } from "@/lib/brandKit";
 
@@ -26,11 +26,60 @@ export default function BrandKitForm({ uid, initial }: { uid: string; initial: B
   const [logoUrl, setLogoUrl] = useState(initial?.logo_url ?? "");
   const [companyUrl, setCompanyUrl] = useState(initial?.company_url ?? "");
   const [researching, setResearching] = useState(false);
+  /**
+   * Fill the same fields from a video of the owner speaking. Someone who talks
+   * to camera has already stated their positioning out loud; asking them to
+   * retype it as "tone of voice" is asking twice.
+   */
+  const [reading, setReading] = useState(false);
+  const [heard, setHeard] = useState<string | null>(null);
+  const videoInput = useRef<HTMLInputElement>(null);
   const [researched, setResearched] = useState<ResearchedProfile | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  async function fillFromVideo(file: File) {
+    if (reading) return;
+    setReading(true);
+    setError(null);
+    setNote(null);
+    setHeard(null);
+    try {
+      const supabase = createClient();
+      const ext = (file.name.split(".").pop() || "mp4").toLowerCase();
+      const path = `${uid}/brand/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("media")
+        .upload(path, file, { contentType: file.type || "video/mp4", upsert: false });
+      if (upErr) throw upErr;
+      const mediaUrl = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+
+      const res = await fetch("/api/brand-kit/from-video", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ mediaUrl }),
+      });
+      const b = (await res.json().catch(() => null)) as
+        | { ok?: boolean; brandName?: string; voice?: string; audience?: string; transcript?: string; error?: string }
+        | null;
+      if (!res.ok || !b?.ok) throw new Error(b?.error || "Couldn't read that video.");
+
+      // Fill only empty fields — the same rule the website path follows. A
+      // Brand Kit someone has already written is not overwritten by one clip.
+      if (!brandName.trim() && b.brandName) setBrandName(b.brandName);
+      if (!voice.trim() && b.voice) setVoice(b.voice);
+      if (!audience.trim() && b.audience) setAudience(b.audience);
+      setHeard(b.transcript ?? null);
+      setNote("Filled from what you said — review it, then Save.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Couldn't read that video.");
+    } finally {
+      setReading(false);
+      if (videoInput.current) videoInput.current.value = "";
+    }
+  }
 
   async function fillFromWebsite() {
     const url = companyUrl.trim();
@@ -152,6 +201,39 @@ export default function BrandKitForm({ uid, initial }: { uid: string; initial: B
             Reading your site, filling your brand info, and generating post topics — this can take a minute or two.
           </p>
         )}
+
+        <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-slate-500">
+              Or use a video of yourself talking — 20 seconds is enough:
+            </span>
+            <button
+              type="button"
+              onClick={() => videoInput.current?.click()}
+              disabled={reading}
+              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+            >
+              {reading ? "Listening…" : "🎤 Fill from a video"}
+            </button>
+            <input
+              ref={videoInput}
+              type="file"
+              accept="video/*,audio/*"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) void fillFromVideo(f);
+              }}
+              className="hidden"
+            />
+          </div>
+          {heard && (
+            <p className="mt-2 text-[11px] leading-relaxed text-slate-500">
+              <span className="font-medium text-slate-600">Heard:</span> &ldquo;
+              {heard.slice(0, 220)}
+              {heard.length > 220 ? "…" : ""}&rdquo;
+            </p>
+          )}
+        </div>
         {researched && !researching && (
           <p className="mt-1.5 text-xs text-slate-600">
             {researched.summary}
