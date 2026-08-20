@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Nav from "@/components/Nav";
 import SettingsTabs from "@/components/SettingsTabs";
+import { voiceCloningConfigured } from "@/lib/voiceClone";
 import { getConnectionStatuses } from "@/lib/social";
 import { youtubeConfigured } from "@/lib/youtube";
 import { OAUTH_ADAPTERS } from "@/lib/oauth";
@@ -58,6 +59,7 @@ export default async function SettingsPage({
         <p className="text-sm text-slate-500">Manage your connections and billing.</p>
       </section>
       <SettingsTabs
+        voiceCloning={voiceCloningConfigured()}
         initialTab={initialTab}
         stripeStatus={sp.status ?? null}
         uid={user.id}

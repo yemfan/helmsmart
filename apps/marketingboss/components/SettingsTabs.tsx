@@ -4,6 +4,7 @@ import { useState } from "react";
 import Connections from "@/components/Connections";
 import BuyCredits from "@/components/BuyCredits";
 import BrandKitForm from "@/components/BrandKitForm";
+import VoiceCloneCard from "@/components/VoiceCloneCard";
 import { formatPrice, type CreditPack, type SubscriptionPlan } from "@/lib/billing";
 import type { BrandKit } from "@/lib/brandKit";
 
@@ -14,10 +15,11 @@ import type { BrandKit } from "@/lib/brandKit";
  * credits pill).
  */
 
-type Tab = "brand" | "connections" | "billing";
+type Tab = "brand" | "voice" | "connections" | "billing";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "brand", label: "Brand Kit" },
+  { id: "voice", label: "Your voice" },
   { id: "connections", label: "Connections" },
   { id: "billing", label: "Billing & credits" },
 ];
@@ -27,6 +29,7 @@ export default function SettingsTabs({
   stripeStatus,
   uid,
   brand,
+  voiceCloning,
   connections,
   billing,
 }: {
@@ -34,6 +37,8 @@ export default function SettingsTabs({
   stripeStatus: string | null;
   uid: string;
   brand: BrandKit | null;
+  /** Whether voice cloning is switched on — the card explains itself when not. */
+  voiceCloning: boolean;
   connections: { providersConfigured: Record<string, boolean>; statuses: Record<string, { connected: boolean; accountName: string | null }> };
   billing: {
     packs: CreditPack[];
@@ -102,6 +107,8 @@ export default function SettingsTabs({
       </div>
 
       {tab === "brand" && <BrandKitForm uid={uid} initial={brand} />}
+
+      {tab === "voice" && <VoiceCloneCard configured={voiceCloning} />}
 
       {tab === "connections" && (
         <section className="flex flex-col gap-4">
