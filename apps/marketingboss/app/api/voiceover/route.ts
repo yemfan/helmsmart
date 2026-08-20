@@ -1,10 +1,33 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { addVoiceover, MAX_SCRIPT_CHARS, VOICEOVER_CREDIT, VoiceoverCreditError } from "@/lib/voiceover";
+import {
+  addVoiceover,
+  listVoices,
+  MAX_SCRIPT_CHARS,
+  VOICEOVER_CREDIT,
+  VoiceoverCreditError,
+  voiceProvider,
+} from "@/lib/voiceover";
 
 // TTS is quick; the mux is an ffmpeg pass. Measured at ~13s end to end.
 export const maxDuration = 300;
 export const runtime = "nodejs";
+
+/**
+ * Which voices this account can use.
+ *
+ * Served rather than hardcoded in the client: the list comes from the
+ * ElevenLabs account, so a cloned voice appears without a deploy, and the
+ * browser never needs the key to find out.
+ */
+export async function GET() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Please sign in first." }, { status: 401 });
+  return NextResponse.json({ provider: voiceProvider(), voices: await listVoices() });
+}
 
 /**
  * Narrate a silent clip.
@@ -31,6 +54,7 @@ export async function POST(req: Request) {
 
   const videoUrl = typeof body.videoUrl === "string" ? body.videoUrl.trim() : "";
   const script = typeof body.script === "string" ? body.script.trim() : "";
+  const voiceId = typeof body.voiceId === "string" ? body.voiceId.trim() : "";
 
   // The clip must be one of ours. An arbitrary URL would point our renderer at
   // anything on the internet using our key.
@@ -47,7 +71,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const out = await addVoiceover(supabase, user.id, videoUrl, script);
+    const out = await addVoiceover(supabase, user.id, videoUrl, script, voiceId);
     return NextResponse.json({ url: out.url, credits: out.credits, cost: VOICEOVER_CREDIT });
   } catch (e) {
     if (e instanceof VoiceoverCreditError) {
@@ -61,6 +85,18 @@ export async function POST(req: Request) {
       );
     if (/FAL_KEY/.test(msg))
       return NextResponse.json({ error: "Server is not configured (missing FAL_KEY)." }, { status: 503 });
+    // ElevenLabs rejects an unusable voice id or an exhausted quota — say which,
+    // because "try again" is wrong advice for both.
+    if (/Voice synth failed \(401|Voice synth failed \(403/.test(msg))
+      return NextResponse.json(
+        { error: "The voice service rejected our key. Your credits were returned." },
+        { status: 502 },
+      );
+    if (/Voice synth failed \(422|Voice synth failed \(404/.test(msg))
+      return NextResponse.json(
+        { error: "That voice isn't available on this account. Pick another and try again." },
+        { status: 422 },
+      );
     if (/timed out/i.test(msg))
       return NextResponse.json(
         { error: "Narration took too long. Your credits were returned — try a shorter script." },
