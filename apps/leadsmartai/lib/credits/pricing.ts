@@ -44,7 +44,17 @@ export const CREDIT_COSTS = {
 
 export type CreditTierId = "starter" | "growth" | "scale";
 
-/** Monthly subscription plans — a credit grant + everything included. */
+/**
+ * Monthly subscription plans.
+ *
+ * The price buys the PRODUCT — every feature, one seat. Credits are the usage
+ * allowance inside it, and they are spent on only two things: AI phone minutes
+ * and video. Tiers differ by how much of that usage they include, never by what
+ * the software can do.
+ *
+ * Worth stating because the plan cards show a credit count most prominently,
+ * which reads as "you are buying credits" unless the copy says otherwise.
+ */
 export const CREDIT_TIERS: ReadonlyArray<{
   id: CreditTierId;
   name: string;
@@ -60,7 +70,7 @@ export const CREDIT_TIERS: ReadonlyArray<{
     priceUsd: 59,
     monthlyCredits: 500,
     priceEnv: "STRIPE_PRICE_ID_CB_STARTER",
-    blurb: "Light phone use, a few videos a month",
+    blurb: "Every feature, one seat. Room for light phone use and a few videos.",
   },
   {
     id: "growth",
@@ -68,7 +78,7 @@ export const CREDIT_TIERS: ReadonlyArray<{
     priceUsd: 159,
     monthlyCredits: 2000,
     priceEnv: "STRIPE_PRICE_ID_CB_GROWTH",
-    blurb: "Steady calling plus regular video",
+    blurb: "Every feature, one seat. Room for steady calling and regular video.",
   },
   {
     id: "scale",
@@ -76,7 +86,7 @@ export const CREDIT_TIERS: ReadonlyArray<{
     priceUsd: 299,
     monthlyCredits: 4000,
     priceEnv: "STRIPE_PRICE_ID_CB_SCALE",
-    blurb: "Heavy calling and heavy video",
+    blurb: "Every feature, one seat. Room for heavy calling and heavy video.",
   },
 ] as const;
 

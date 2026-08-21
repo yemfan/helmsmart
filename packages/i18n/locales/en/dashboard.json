@@ -723,7 +723,7 @@
       "portalFailed": "Couldn't open the billing portal.",
       "checkoutFailed": "Checkout couldn't start.",
       "planChanged": "Plan changed.",
-      "subtitle": "Everything's included — you only spend credits on calls, video, and image generation.",
+      "subtitle": "Everything's included on every plan — credits are only spent on AI phone minutes and video.",
       "payg": "Pay-as-you-go",
       "paygHelp": "No subscription — buy credits any time, everything's included.",
       "monthlyHelp": "A credit allotment every month at the best per-credit rate. One seat, everything included.",
@@ -3458,7 +3458,7 @@
       "counterpartyHint": "Title, lender, inspector, insurance — add them here so you don't hunt through texts."
     },
     "credits": {
-      "everythingIncluded": "Everything's included — you only spend credits on calls, video, and image generation.",
+      "everythingIncluded": "Everything's included on every plan — credits are only spent on AI phone minutes and video.",
       "creditsAdded": "Credits added — your new balance should appear in a moment.",
       "subUpdated": "Subscription updated — your monthly credits will appear shortly.",
       "switchingNote": "Switching plans only bills the difference for the rest of your billing period. Downgrades keep the credits you've already been given.",
