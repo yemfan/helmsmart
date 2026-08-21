@@ -61,12 +61,25 @@ export async function getCurrentPlan(userId: string): Promise<CurrentPlan> {
   // Match the subscribed price back to our catalog. Prefer the plan recorded in
   // metadata at checkout; fall back to the price id.
   const metaPlan = (sub.metadata?.plan as string | undefined)?.toLowerCase();
-  const priceId = sub.items.data[0]?.price?.id;
+  const firstItem = sub.items.data[0];
+  const priceId = firstItem?.price?.id;
   const tier =
     CREDIT_TIERS.find((t) => t.id === metaPlan) ??
-    CREDIT_TIERS.find((t) => process.env[t.priceEnv]?.trim() === priceId);
+    // `priceId` must be checked: without it an unset env var is `undefined` on
+    // both sides and every tier "matches", silently reporting Starter.
+    (priceId ? CREDIT_TIERS.find((t) => process.env[t.priceEnv]?.trim() === priceId) : undefined);
 
-  const periodEnd = (sub as unknown as { current_period_end?: number }).current_period_end;
+  // Stripe moved this in 2025-04-30.basil: the billing period now lives on the
+  // subscription ITEM, and the top-level field is absent. We pin
+  // 2025-08-27.basil, so reading only the old location returned undefined every
+  // time and the renewal date silently vanished from the billing card.
+  // Verified against the live API: top-level `current_period_end` was null on
+  // every subscription returned, including active ones, while
+  // `items.data[0].current_period_end` carried the real timestamp.
+  // `lib/billing/stripeSubscriptionSync.ts` already reads both; this did not.
+  const subPeriod = sub as unknown as { current_period_end?: number };
+  const itemPeriod = firstItem as unknown as { current_period_end?: number } | undefined;
+  const periodEnd = subPeriod.current_period_end ?? itemPeriod?.current_period_end;
 
   return {
     planId: tier?.id ?? metaPlan ?? "unknown",
