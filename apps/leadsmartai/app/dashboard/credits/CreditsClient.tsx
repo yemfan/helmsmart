@@ -6,6 +6,7 @@ import { intlLocale } from "@/lib/i18n/locale";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { approxCallMinutes, approxVideos, CREDIT_TIERS, CREDIT_PACKS } from "@/lib/credits/pricing";
+import IncludedFeatures from "@/components/pricing/IncludedFeatures";
 
 const BRAND = "#0072CE";
 
@@ -239,6 +240,8 @@ export default function CreditsClient() {
           {tr("more.credits.teamPrompt")}{" "}
           <a href="/contact?topic=team" className="font-medium underline" style={{ color: BRAND }}>{tr("pages.credits.contactBrokerage")}</a>{" "}{tr("pages.dashFragments.forMultipleAgents")}</p>
       </section>
+
+      <IncludedFeatures compact />
 
       {/* Top-up packs */}
       <section>

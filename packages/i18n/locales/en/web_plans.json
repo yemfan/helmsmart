@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "title": "Plans & Pricing",
+    "description": "Every feature on every plan. Credits are only spent on AI phone minutes and video — everything else is included."
+  },
+  "header": {
+    "title": "Plans & Pricing",
+    "subtitle": "Every feature on every plan, one seat. Credits are only spent on AI phone minutes and video — the CRM, texting, Ask Max, reports and social posting are all included.",
+    "trial": "New accounts start with a {{days}}-day trial and {{credits}} credits."
+  },
+  "plans": {
+    "heading": "Monthly plans",
+    "help": "Pick the plan that matches how much calling and video you do. Change or cancel any time.",
+    "perMonth": "/mo",
+    "creditsPerMo": "credits / month",
+    "usage": "About {{minutes}} AI call-minutes, or {{videos}} videos",
+    "cta": "Get started",
+    "blurb": {
+      "starter": "Every feature, one seat. For steady solo marketing.",
+      "growth": "Every feature, one seat. For daily calling and regular video.",
+      "scale": "Every feature, one seat. For high-volume calling and video."
+    }
+  },
+  "packs": {
+    "heading": "Top-up packs",
+    "help": "Run out mid-month? Buy more credits without changing your plan. Credits from a pack don't expire.",
+    "credits": "credits",
+    "oneTime": "one-time",
+    "cta": "Buy credits"
+  },
+  "costs": {
+    "heading": "What actually costs credits",
+    "help": "Only these. Everything else in CloseBoss is included in your plan.",
+    "voice": "AI phone call",
+    "voiceUnit": "{{n}} credits per minute",
+    "listingClip": "Listing video clip",
+    "twinAvatar": "Talking-avatar video",
+    "ctaEndCard": "Video end card",
+    "each": "{{n}} credits each",
+    "freeHeading": "Included, never metered",
+    "free": "CRM and contacts · texting and email · Ask Max · CMAs and market reports · social images and posting · voice cloning"
+  },
+  "brokerage": {
+    "prompt": "Need more than one seat?",
+    "link": "Talk to us about Brokerage"
+  },
+  "included": {
+    "heading": "Every plan includes everything",
+    "help": "Plans differ only by how many credits you get. No feature is locked behind a higher tier, and every plan is one seat.",
+    "items": [
+      "AI Receptionist — answers every call, qualifies, books",
+      "AI text + email responder, 24/7",
+      "Full CRM — unlimited leads and contacts, custom fields",
+      "Ask Max — your AI chief of staff across the app",
+      "Unlimited CMAs and market reports",
+      "Listing videos — photos to cinematic clips with voiceover",
+      "Digital twin — voice clone and talking-avatar video",
+      "Social posting to 7 networks + weekly auto-schedule",
+      "Sphere intelligence — equity tracking, life-event signals",
+      "Bookkeeping — invoices, expenses, receipt capture",
+      "E-signature and Buyer Broker Agreement workflow",
+      "Video email, newsletters and listing presentations",
+      "Bilingual English / 中文 throughout",
+      "Mobile app, reviews and testimonial capture"
+    ]
+  }
+}
