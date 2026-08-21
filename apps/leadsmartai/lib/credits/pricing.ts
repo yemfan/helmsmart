@@ -57,7 +57,7 @@ export const CREDIT_TIERS: ReadonlyArray<{
   {
     id: "starter",
     name: "Starter",
-    priceUsd: 50,
+    priceUsd: 59,
     monthlyCredits: 500,
     priceEnv: "STRIPE_PRICE_ID_CB_STARTER",
     blurb: "Light phone use, a few videos a month",
@@ -111,7 +111,7 @@ export const CREDIT_PACKS: ReadonlyArray<{
   /** Env var holding this pack's Stripe one-time price id. */
   priceEnv: string;
 }> = [
-  { id: "pack_500", credits: 500, priceUsd: 59, priceEnv: "STRIPE_PRICE_ID_CB_PACK_500" },
+  { id: "pack_500", credits: 500, priceUsd: 69, priceEnv: "STRIPE_PRICE_ID_CB_PACK_500" },
   { id: "pack_2k", credits: 2000, priceUsd: 189, priceEnv: "STRIPE_PRICE_ID_CB_PACK_2K" },
   { id: "pack_4k", credits: 4000, priceUsd: 359, priceEnv: "STRIPE_PRICE_ID_CB_PACK_4K" },
 ] as const;
