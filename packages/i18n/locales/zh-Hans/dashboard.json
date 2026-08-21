@@ -3458,6 +3458,7 @@
       "counterpartyHint": "产权公司、贷款经纪、验房师、保险——都记在这里，省得回头翻聊天记录找。"
     },
     "credits": {
+      "planUsage": "约 {{minutes}} 分钟 AI 通话，或 {{videos}} 条视频",
       "everythingIncluded": "每个套餐都包含全部功能——额度只用于 AI 通话分钟和视频。",
       "creditsAdded": "额度已充值——新的余额稍后就会显示。",
       "subUpdated": "订阅已更新——每月额度稍后就会到账。",

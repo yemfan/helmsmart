@@ -3458,6 +3458,7 @@
       "counterpartyHint": "Title, lender, inspector, insurance — add them here so you don't hunt through texts."
     },
     "credits": {
+      "planUsage": "About {{minutes}} AI call-minutes, or {{videos}} videos",
       "everythingIncluded": "Everything's included on every plan — credits are only spent on AI phone minutes and video.",
       "creditsAdded": "Credits added — your new balance should appear in a moment.",
       "subUpdated": "Subscription updated — your monthly credits will appear shortly.",

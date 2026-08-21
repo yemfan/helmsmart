@@ -5,7 +5,7 @@ import { intlLocale } from "@/lib/i18n/locale";
 
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CREDIT_TIERS, CREDIT_PACKS } from "@/lib/credits/pricing";
+import { approxCallMinutes, approxVideos, CREDIT_TIERS, CREDIT_PACKS } from "@/lib/credits/pricing";
 
 const BRAND = "#0072CE";
 
@@ -210,6 +210,14 @@ export default function CreditsClient() {
                 </p>
                 <p className="mt-1 text-sm font-semibold text-gray-700">
                   {t.monthlyCredits.toLocaleString()} {tr("pages.dashFragments.creditsPerMo")}</p>
+                {/* Computed from CREDIT_COSTS, never hand-written: these numbers
+                    have been wrong twice when someone typed them into a blurb. */}
+                <p className="mt-0.5 text-xs text-gray-500">
+                  {tr("pages.credits.planUsage", {
+                    minutes: approxCallMinutes(t.monthlyCredits).toLocaleString(),
+                    videos: approxVideos(t.monthlyCredits, "twinAvatar").toLocaleString(),
+                  })}
+                </p>
                 <p className="mt-1 flex-1 text-xs text-gray-500">{t.blurb}</p>
                 <button
                   type="button"
