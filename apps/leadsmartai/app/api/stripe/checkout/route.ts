@@ -31,7 +31,29 @@ async function findActiveSubscription(userId: string) {
   const customerId = (data as { stripe_customer_id?: string | null } | null)?.stripe_customer_id;
   if (!customerId) return null;
 
-  const subs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 10 });
+  let subs;
+  try {
+    subs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 10 });
+  } catch (e) {
+    // A stored customer id from the OTHER Stripe mode does not exist under the
+    // current key, and Stripe answers `resource_missing` rather than an empty
+    // list. Unhandled, that surfaced to the user as the raw string
+    // "No such customer: 'cus_...'" with a 500 — blocking anyone who had ever
+    // touched billing in test mode from subscribing for real.
+    //
+    // A customer that does not exist here cannot have a subscription here, so
+    // treating it as "not subscribed" is correct: Checkout below identifies the
+    // buyer by `customer_email` and Stripe creates a fresh customer.
+    //
+    // Deliberately narrow. Any other error (rate limit, outage) is re-thrown,
+    // because concluding "no subscription" from a failed lookup would start a
+    // SECOND subscription and bill an existing customer twice — the expensive
+    // failure this function exists to prevent.
+    const code = (e as { code?: string } | null)?.code;
+    if (code !== "resource_missing") throw e;
+    console.warn("stripe checkout: stored customer %s not found in this mode", customerId);
+    return null;
+  }
   return subs.data.find((s) => LIVE_STATUSES.has(s.status)) ?? null;
 }
 
@@ -135,10 +157,14 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ url: session.url });
-  } catch (e: any) {
+  } catch (e: unknown) {
+    // Every case we can explain returns above with its own message. What reaches
+    // here is unexpected, and raw Stripe/Postgres text ("No such customer:
+    // 'cus_...'") tells a customer nothing they can act on while leaking
+    // internal ids. Log the detail, show a person a next step.
     console.error("stripe checkout error", e);
     return NextResponse.json(
-      { error: e?.message ?? "Server error" },
+      { error: "We couldn't start checkout just now. Please try again, or contact support if it keeps happening." },
       { status: 500 }
     );
   }
