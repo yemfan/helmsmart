@@ -51,6 +51,17 @@ const PRICE_ID_TO_PLAN: Record<string, InternalPlan> = {
  * cadences.
  */
 const CRM_ENV_TO_PLAN: ReadonlyArray<{ envKey: string; plan: InternalPlan }> = [
+  // Usage-model tiers (Starter/Growth/Scale). Without these the live CB price
+  // ids match nothing and every paid CB checkout is recorded as `consumer_free`
+  // — which is exactly what happened to the first real $59 subscription.
+  //
+  // All three collapse to one InternalPlan on purpose. Entitlements do not vary
+  // by CB tier: every plan includes every feature and the tiers differ only in
+  // monthly credits, which are tracked in the ledger, not here. Same reasoning
+  // the map already applies to monthly vs annual.
+  { envKey: "STRIPE_PRICE_ID_CB_STARTER", plan: "crm_signature" },
+  { envKey: "STRIPE_PRICE_ID_CB_GROWTH", plan: "crm_signature" },
+  { envKey: "STRIPE_PRICE_ID_CB_SCALE", plan: "crm_signature" },
   { envKey: "STRIPE_PRICE_ID_PRO", plan: "crm_pro" },
   { envKey: "STRIPE_PRICE_ID_PRO_ANNUAL", plan: "crm_pro" },
   { envKey: "STRIPE_PRICE_ID_PREMIUM", plan: "crm_premium" },

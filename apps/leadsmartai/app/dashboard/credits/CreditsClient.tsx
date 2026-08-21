@@ -177,6 +177,8 @@ export default function CreditsClient() {
       {notice && <Banner tone="ok">{notice}</Banner>}
       {error && <Banner tone="err">{error}</Banner>}
 
+      <IncludedFeatures compact />
+
       {/* Monthly plans */}
       <section>
         <h2 className="mb-1 text-lg font-bold text-brand-text">{tr("more.credits.monthlyPlans")}</h2>
@@ -240,8 +242,6 @@ export default function CreditsClient() {
           {tr("more.credits.teamPrompt")}{" "}
           <a href="/contact?topic=team" className="font-medium underline" style={{ color: BRAND }}>{tr("pages.credits.contactBrokerage")}</a>{" "}{tr("pages.dashFragments.forMultipleAgents")}</p>
       </section>
-
-      <IncludedFeatures compact />
 
       {/* Top-up packs */}
       <section>

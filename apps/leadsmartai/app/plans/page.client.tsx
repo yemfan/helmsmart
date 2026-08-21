@@ -70,6 +70,8 @@ export default function PlansClientPage() {
           </p>
         </header>
 
+        <IncludedFeatures />
+
         {/* Monthly plans */}
         <section>
           <h2 className="mb-1 text-lg font-bold text-gray-900">{t("plans.heading")}</h2>
@@ -123,8 +125,6 @@ export default function PlansClientPage() {
             </a>
           </p>
         </section>
-
-        <IncludedFeatures />
 
         {/* Top-up packs */}
         <section>
