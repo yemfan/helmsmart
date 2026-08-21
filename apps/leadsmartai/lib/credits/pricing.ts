@@ -70,7 +70,7 @@ export const CREDIT_TIERS: ReadonlyArray<{
     priceUsd: 59,
     monthlyCredits: 500,
     priceEnv: "STRIPE_PRICE_ID_CB_STARTER",
-    blurb: "Every feature, one seat. Room for light phone use and a few videos.",
+    blurb: "Every feature, one seat. For steady solo marketing.",
   },
   {
     id: "growth",
@@ -78,7 +78,7 @@ export const CREDIT_TIERS: ReadonlyArray<{
     priceUsd: 159,
     monthlyCredits: 2000,
     priceEnv: "STRIPE_PRICE_ID_CB_GROWTH",
-    blurb: "Every feature, one seat. Room for steady calling and regular video.",
+    blurb: "Every feature, one seat. For daily calling and regular video.",
   },
   {
     id: "scale",
@@ -86,7 +86,7 @@ export const CREDIT_TIERS: ReadonlyArray<{
     priceUsd: 299,
     monthlyCredits: 4000,
     priceEnv: "STRIPE_PRICE_ID_CB_SCALE",
-    blurb: "Every feature, one seat. Room for heavy calling and heavy video.",
+    blurb: "Every feature, one seat. For high-volume calling and video.",
   },
 ] as const;
 
@@ -94,10 +94,15 @@ export const CREDIT_TIERS: ReadonlyArray<{
  * Voice minutes a monthly grant buys at the CURRENT rate. Render display copy
  * from this rather than hardcoding minutes in a string.
  *
- * The `blurb` fields above drifted badly exactly once: they were written when
+ * The `blurb` fields above drifted badly TWICE. First they were written when
  * voice cost 8 credits/min and still claimed 125 / 375 / 1,600 minutes after
- * the rate moved to 15 — overstating Scale by 60%. Nothing caught it because a
- * blurb is just a string. A pricing page is a promise, so compute the number.
+ * the rate moved to 15, overstating Scale by 60%. Then they were rewritten as
+ * vague prose — "a few videos" for a tier that actually affords 25 — which is
+ * the same failure wearing different clothes: a number a human guessed.
+ *
+ * So blurbs carry no quantities at all now. Every figure a customer reads is
+ * computed from CREDIT_COSTS by the helpers below. A pricing page is a promise;
+ * a promise nobody recalculates is a promise that expires quietly.
  */
 export function approxCallMinutes(monthlyCredits: number): number {
   return Math.floor(monthlyCredits / CREDIT_COSTS.voicePerMinute);
