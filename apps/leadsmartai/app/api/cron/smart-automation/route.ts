@@ -48,12 +48,14 @@ export async function GET(req: Request) {
       .eq("active", true);
     if (rulesErr) throw rulesErr;
 
-    // Load candidate leads. We intentionally avoid selecting columns like `leads.email`
-    // because some schemas store contact info in `contacts` via `contact_id`.
+    // Contact info lives on `contacts` itself. This used to read `leads` and embed
+    // `contact:contact_id(...)`; after the leads->contacts consolidation there is no
+    // contact_id column here, so that embed made PostgREST reject the whole query
+    // (PGRST200) and this cron had not processed a single row since.
     const { data: leads, error: leadsErr } = await supabaseServer
       .from("contacts")
       .select(
-        "id,agent_id,property_address,rating,contact_frequency,contact_method,engagement_score,last_activity_at,automation_disabled,contact:contact_id(name,email,phone)"
+        "id,agent_id,name,email,phone,property_address,rating,contact_frequency,contact_method,engagement_score,last_activity_at,automation_disabled"
       )
       .limit(200);
     if (leadsErr) throw leadsErr;
@@ -65,7 +67,7 @@ export async function GET(req: Request) {
 
     for (const lead of (leads as any[]) ?? []) {
       processed++;
-      const leadId = Number(lead.id);
+      const contactId = String(lead.id);
       if (!(await agentMayUseAutomation(lead.agent_id))) {
         skipped++;
         continue;
@@ -74,7 +76,7 @@ export async function GET(req: Request) {
         skipped++;
         continue;
       }
-      const email = String(lead?.contact?.email ?? "");
+      const email = String(lead?.email ?? "");
       const method = String(lead.contact_method ?? "email");
       if (!email || (method !== "email" && method !== "both")) {
         skipped++;
@@ -85,7 +87,7 @@ export async function GET(req: Request) {
       const { data: recentLog } = await supabaseServer
         .from("automation_logs")
         .select("id")
-        .eq("contact_id", leadId)
+        .eq("contact_id", contactId)
         .gte("created_at", hoursAgoIso(24))
         .limit(1)
         .maybeSingle();
@@ -101,7 +103,7 @@ export async function GET(req: Request) {
       const { data: events } = await supabaseServer
         .from("contact_events")
         .select("event_type,created_at")
-        .eq("contact_id", leadId)
+        .eq("contact_id", contactId)
         .order("created_at", { ascending: false })
         .limit(10);
 
@@ -160,7 +162,7 @@ export async function GET(req: Request) {
       // (Simple guard: if lead frequency is weekly/monthly, also enforce 24h cooldown already above.)
       const rating = (String(lead.rating ?? "warm") as any) as "hot" | "warm" | "cold";
       const name =
-        String(lead?.contact?.name ?? "").trim() ||
+        String(lead?.name ?? "").trim() ||
         String(email).split("@")[0] ||
         "there";
       const address = String(lead.property_address ?? "");
@@ -182,7 +184,7 @@ export async function GET(req: Request) {
         });
 
         await supabaseServer.from("automation_logs").insert({
-          contact_id: leadId,
+          contact_id: contactId,
           rule_id: matchedRule.id,
           message,
           status: "sent",
@@ -191,7 +193,7 @@ export async function GET(req: Request) {
 
         // Also log in communications for unified timeline.
         await supabaseServer.from("communications").insert({
-          contact_id: leadId,
+          contact_id: contactId,
           agent_id: lead.agent_id ?? null,
           type: "email",
           content: message,
@@ -204,14 +206,14 @@ export async function GET(req: Request) {
           await supabaseServer
             .from("contacts")
             .update({ last_contacted_at: nowIso } as Record<string, unknown>)
-            .eq("id", leadId);
+            .eq("id", contactId);
         } catch { /* best-effort */ }
 
         sent++;
       } catch (e) {
         failed++;
         await supabaseServer.from("automation_logs").insert({
-          contact_id: leadId,
+          contact_id: contactId,
           rule_id: matchedRule.id,
           message,
           status: "failed",
