@@ -28,6 +28,7 @@ import enWebLanding from "@leadsmart/i18n/locale/en/web_landing";
 import enWebMarketing from "@leadsmart/i18n/locale/en/web_marketing";
 import enWebPosts from "@leadsmart/i18n/locale/en/web_posts";
 import enWebPricing from "@leadsmart/i18n/locale/en/web_pricing";
+import enWebPlans from "@leadsmart/i18n/locale/en/web_plans";
 import enWebQuickPost from "@leadsmart/i18n/locale/en/web_quick_post";
 import enWebAgent from "@leadsmart/i18n/locale/en/web_agent";
 import enWebAgentPricing from "@leadsmart/i18n/locale/en/web_agent_pricing";
@@ -53,6 +54,7 @@ import zhWebLanding from "@leadsmart/i18n/locale/zh-Hans/web_landing";
 import zhWebMarketing from "@leadsmart/i18n/locale/zh-Hans/web_marketing";
 import zhWebPosts from "@leadsmart/i18n/locale/zh-Hans/web_posts";
 import zhWebPricing from "@leadsmart/i18n/locale/zh-Hans/web_pricing";
+import zhWebPlans from "@leadsmart/i18n/locale/zh-Hans/web_plans";
 import zhWebQuickPost from "@leadsmart/i18n/locale/zh-Hans/web_quick_post";
 import zhWebAgent from "@leadsmart/i18n/locale/zh-Hans/web_agent";
 import zhWebAgentPricing from "@leadsmart/i18n/locale/zh-Hans/web_agent_pricing";
@@ -85,6 +87,7 @@ export const namespaces = [
   "web_help",
   "web_integrations",
   "web_pricing",
+  "web_plans",
   "web_quick_post",
   "web_agent",
   "web_agent_pricing",
@@ -118,6 +121,7 @@ export const resources: Record<
     web_help: enWebHelp,
     web_integrations: enWebIntegrations,
     web_pricing: enWebPricing,
+    web_plans: enWebPlans,
     web_quick_post: enWebQuickPost,
     web_agent: enWebAgent,
     web_agent_pricing: enWebAgentPricing,
@@ -145,6 +149,7 @@ export const resources: Record<
     web_help: zhWebHelp,
     web_integrations: zhWebIntegrations,
     web_pricing: zhWebPricing,
+    web_plans: zhWebPlans,
     web_quick_post: zhWebQuickPost,
     web_agent: zhWebAgent,
     web_agent_pricing: zhWebAgentPricing,
