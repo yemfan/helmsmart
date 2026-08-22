@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import RemakeStudio from "@/components/RemakeStudio";
 import { PRESETS } from "@/lib/presets";
 import { CREDIT_COST } from "@/lib/creditCosts";
 import { useDoneNotifier, NotifyChoice } from "@/components/NotifyWhenDone";
 import SocialPublish, { type SocialStatus } from "@/components/SocialPublish";
 
-type Mode = "image" | "video" | "swap";
+type Mode = "image" | "video" | "swap" | "remake";
 type SwapTarget = "face" | "person" | "outfit" | "product" | "background";
 const ASPECTS = ["16:9", "9:16", "1:1", "4:3", "3:4"] as const;
 type Aspect = (typeof ASPECTS)[number];
@@ -630,7 +631,7 @@ export default function Studio({
       <section className="rounded-2xl border border-slate-200 bg-white p-4 backdrop-blur sm:p-5">
         <div className="mb-3 flex items-center gap-2">
           <div className="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-1 text-sm">
-            {(["image", "video", "swap"] as Mode[]).map((m) => (
+            {(["image", "video", "swap", "remake"] as Mode[]).map((m) => (
               <button
                 key={m}
                 onClick={() => {
@@ -646,7 +647,7 @@ export default function Studio({
             ))}
           </div>
 
-          {mode !== "swap" &&
+          {mode !== "swap" && mode !== "remake" &&
             (hasRef ? (
               <div className="ml-1 flex items-center gap-2 rounded-lg border border-boss-gold/30 bg-boss-gold/10 py-1 pl-1 pr-2 text-xs">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -669,7 +670,7 @@ export default function Studio({
           <input ref={videoRef} type="file" accept="video/*" onChange={onPickVideo} className="hidden" />
         </div>
 
-        {mode === "swap" ? (
+        {mode === "remake" ? (<RemakeStudio />) : mode === "swap" ? (
           <div className="space-y-3">
             <p className="text-xs text-slate-500">
               Replace a face, product, or background inside an existing clip — the original motion,
@@ -1074,7 +1075,7 @@ export default function Studio({
 
       {/* Swap has its own stage-aware line inside the panel — this one said
           "Swapping in your reference" while the button read "Upscaling… (1 of 2)". */}
-      {loading && mode !== "swap" && (
+      {loading && mode !== "swap" && mode !== "remake" && (
         <p className="text-center text-sm text-slate-500">
           {mode === "video"
               ? "Rendering video — this usually takes 1–3 minutes."
