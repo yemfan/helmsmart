@@ -1,5 +1,6 @@
 import "server-only";
 import { anthropicJson } from "@/lib/ai";
+import { transcribeMedia } from "@/lib/transcribeMedia";
 
 /**
  * Read a brand's voice off a video of someone talking — the last piece of the
@@ -16,9 +17,6 @@ import { anthropicJson } from "@/lib/ai";
  * Verified against fal on 2026-08-20: Wizper transcribed a 30s MP4 in 3s,
  * returning 401 characters of accurate speech.
  */
-
-const QUEUE = "https://queue.fal.run";
-const WIZPER = "fal-ai/wizper";
 
 export type BrandFromVideo = {
   /** The business name if it is actually said; empty when it is not. */
@@ -42,47 +40,6 @@ const SCHEMA = {
   additionalProperties: false,
 };
 
-function falHeaders(): Record<string, string> {
-  const key = process.env.FAL_KEY?.trim();
-  if (!key) throw new Error("FAL_KEY is not configured on the server.");
-  return { Authorization: `Key ${key}`, "Content-Type": "application/json" };
-}
-
-/** Transcribe the clip. Wizper's `audio_url` accepts an mp4 and pulls the audio. */
-async function transcribe(mediaUrl: string): Promise<string> {
-  const H = falHeaders();
-  const sub = await fetch(`${QUEUE}/${WIZPER}`, {
-    method: "POST",
-    headers: H,
-    body: JSON.stringify({ audio_url: mediaUrl, task: "transcribe" }),
-  });
-  const q = (await sub.json().catch(() => ({}))) as {
-    request_id?: string;
-    status_url?: string;
-    response_url?: string;
-  };
-  if (!sub.ok) throw new Error(`Transcription rejected (${sub.status}).`);
-
-  const statusUrl = q.status_url || `${QUEUE}/${WIZPER}/requests/${q.request_id}/status`;
-  const responseUrl = q.response_url || `${QUEUE}/${WIZPER}/requests/${q.request_id}`;
-  const started = Date.now();
-  for (;;) {
-    const s = (await (await fetch(statusUrl, { headers: H })).json().catch(() => ({}))) as {
-      status?: string;
-    };
-    if (s.status === "COMPLETED") break;
-    if (s.status === "FAILED" || s.status === "ERROR") throw new Error("Transcription failed.");
-    if (Date.now() - started > 180_000) throw new Error("Transcription timed out.");
-    await new Promise((r) => setTimeout(r, 2500));
-  }
-  const out = (await (await fetch(responseUrl, { headers: H })).json().catch(() => ({}))) as {
-    text?: string;
-    detail?: unknown;
-  };
-  if (out.detail) throw new Error("That file couldn't be transcribed.");
-  return (out.text ?? "").trim();
-}
-
 /**
  * Transcribe `mediaUrl` and derive Brand Kit fields from what was said.
  *
@@ -91,7 +48,7 @@ async function transcribe(mediaUrl: string): Promise<string> {
  * saying the video had no words in it.
  */
 export async function brandFromVideo(mediaUrl: string): Promise<BrandFromVideo> {
-  const transcript = await transcribe(mediaUrl);
+  const transcript = await transcribeMedia(mediaUrl);
   if (transcript.length < 80) {
     throw new Error(
       "There wasn't enough speech in that video to read a brand voice from. Try a clip where you talk for 20 seconds or more.",

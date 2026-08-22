@@ -60,15 +60,65 @@ export const MEDIA_CRAFT =
 export const ANTHROPIC_API_URL = API_URL;
 export const ANTHROPIC_MODEL = MODEL;
 
+/** A still for the model to look at — a fetchable URL, or inline bytes. */
+export type PromptImage = {
+  /** Text placed immediately before the image, e.g. a timestamp. */
+  label?: string;
+  url?: string;
+  base64?: string;
+  /** Required alongside `base64`, e.g. "image/png". */
+  mediaType?: string;
+};
+
 /** Call Claude and parse the JSON its structured-output format guarantees. */
 export async function anthropicJson<T>(opts: {
   system: string;
   user: string;
   schema: Record<string, unknown>;
   maxTokens?: number;
+  /**
+   * Stills for the model to look at, sent ahead of `user`.
+   *
+   * Each `label` becomes a text block immediately before its image, which is
+   * what lets the model say "at 8.5s the shot changes" rather than describing
+   * an unordered pile of pictures — the ad blueprint analyzer depends on it.
+   * Omit entirely and the request is byte-identical to the text-only form.
+   *
+   * Give each image either a `url` the API can fetch, or `base64` + its
+   * `mediaType`. Frames pulled straight out of a video are already bytes in
+   * hand, so inlining them skips an upload the caller would otherwise only do
+   * to have the API download it again.
+   */
+  images?: PromptImage[];
+  /**
+   * Reasoning effort. Copywriting is fine on "low"; reading a shot list off
+   * frames is not, so callers doing analysis should raise it. Opus 5 accepts
+   * all five levels.
+   */
+  effort?: "low" | "medium" | "high" | "xhigh" | "max";
 }): Promise<T> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) throw new Error("ANTHROPIC_API_KEY is not configured on the server.");
+
+  // A plain string when there are no images, so the existing text-only callers
+  // send exactly the request they always did.
+  const content = opts.images?.length
+    ? [
+        ...opts.images.flatMap((img) => {
+          const source = img.base64
+            ? { type: "base64", media_type: img.mediaType || "image/png", data: img.base64 }
+            : img.url
+              ? { type: "url", url: img.url }
+              : null;
+          if (!source) throw new Error("Each image needs either a url or base64 data.");
+          return [
+            ...(img.label ? [{ type: "text", text: img.label }] : []),
+            { type: "image", source },
+          ];
+        }),
+        { type: "text", text: opts.user },
+      ]
+    : opts.user;
 
   const res = await fetch(API_URL, {
     method: "POST",
@@ -81,9 +131,12 @@ export async function anthropicJson<T>(opts: {
       model: MODEL,
       max_tokens: opts.maxTokens ?? 3000,
       system: opts.system,
-      messages: [{ role: "user", content: opts.user }],
+      messages: [{ role: "user", content }],
       // Snappy, cost-effective copywriting; low effort is strong on Opus 5.
-      output_config: { effort: "low", format: { type: "json_schema", schema: opts.schema } },
+      output_config: {
+        effort: opts.effort ?? "low",
+        format: { type: "json_schema", schema: opts.schema },
+      },
     }),
   });
 

@@ -301,3 +301,130 @@ function fpsFromMp4(buf: Uint8Array): number | null {
   }
   return null;
 }
+
+/**
+ * Find the shot boundaries in a clip, in seconds.
+ *
+ * Runs here rather than asking the analyzer model to infer cuts from stills.
+ * Measured 2026-08-22 on a 30s five-shot ad: from 16 frames the model found
+ * every real boundary but invented five more, reading a gimbal move inside a
+ * shot as a new setup — and then described the ad's pacing as "~2s cuts" when
+ * it averages 6s. Differencing frames is exact, costs one ffmpeg pass, and
+ * leaves the model doing only the part it is good at: describing what a shot
+ * contains.
+ *
+ * Decodes to 64x64 greyscale at 4fps and compares neighbours. A cut is a jump
+ * far above the clip's own typical frame-to-frame movement, so the threshold is
+ * relative to the median: a locked-off interview and a handheld walk-and-talk
+ * have very different baselines and a fixed number would over-cut one and miss
+ * the other. The floor stops a near-static clip, whose median can be ~3, from
+ * calling every flicker a cut.
+ *
+ * Tuned to favour RECALL over precision, which is not the obvious default. A
+ * false cut splits one shot into two with the same description, and the recast
+ * just generates two clips instead of one — it degrades gracefully. A MISSED
+ * cut merges two settings into a single shot, and every description of that
+ * shot is then internally contradictory. Over-detecting is the cheaper error.
+ *
+ * Measured 2026-08-22 against ffmpeg scene detection on a 30s five-shot ad
+ * (heavy handheld motion, median frame diff 17): 4/4 cuts found, 1 false
+ * positive on a foreground foliage wipe. A stricter multiple lost two real cuts.
+ */
+export async function detectCuts(file: File): Promise<number[]> {
+  const FPS = 4;
+  const SIDE = 64;
+  const AREA = SIDE * SIDE;
+
+  let gray: Uint8Array;
+  try {
+    gray = await withFile(
+      file,
+      "gray.raw",
+      (input, output) => [
+        "-i",
+        input,
+        "-vf",
+        `fps=${FPS},scale=${SIDE}:${SIDE},format=gray`,
+        "-an",
+        "-f",
+        "rawvideo",
+        output,
+      ],
+      (b) => b,
+    );
+  } catch {
+    return []; // unreadable video — "no cuts measured" is a valid answer
+  }
+
+  const frames = Math.floor(gray.byteLength / AREA);
+  if (frames < 3) return [];
+
+  const diffs: number[] = [];
+  for (let f = 1; f < frames; f += 1) {
+    const a = (f - 1) * AREA;
+    const b = f * AREA;
+    let sum = 0;
+    for (let i = 0; i < AREA; i += 1) sum += Math.abs(gray[a + i] - gray[b + i]);
+    diffs.push(sum / AREA);
+  }
+
+  // Median as the baseline: a mean would be dragged up by the cuts themselves.
+  const sorted = [...diffs].sort((x, y) => x - y);
+  const median = sorted[Math.floor(sorted.length / 2)];
+  const threshold = Math.max(median * 2.5, 30);
+
+  const cuts: number[] = [];
+  for (let i = 0; i < diffs.length; i += 1) {
+    if (diffs[i] < threshold) continue;
+    const at = (i + 1) / FPS;
+    // A cross-fade trips several neighbouring frames; keep the first only.
+    if (cuts.length && at - cuts[cuts.length - 1] < 0.6) continue;
+    cuts.push(Number(at.toFixed(2)));
+  }
+  return cuts;
+}
+
+/**
+ * Grab one still per shot, as base64 JPEG, for the analyzer to look at.
+ *
+ * Samples the MIDDLE of each shot rather than its start: the first frames after
+ * a cut are where a cross-fade is still resolving, and a transition frame
+ * describes neither shot. Extra evenly-spaced stills are added when there are
+ * few shots, so a two-shot ad still shows the model enough to read.
+ *
+ * JPEG, not PNG, and deliberately small. These are posted to our own API as
+ * base64 inside a JSON body, and a Vercel function rejects a request body over
+ * ~4.5MB — sixteen 360px PNGs base64-encode to roughly that on their own. JPEG
+ * at q4 is about a sixth of the size and loses nothing that matters for reading
+ * a shot list.
+ */
+export async function sampleShotFrames(
+  file: File,
+  durationSec: number,
+  cuts: number[],
+  minFrames = 8,
+): Promise<{ atSec: number; base64: string; mediaType: string }[]> {
+  const bounds = [0, ...cuts, durationSec];
+  const times: number[] = [];
+  for (let i = 0; i < bounds.length - 1; i += 1) times.push((bounds[i] + bounds[i + 1]) / 2);
+  for (let i = 1; times.length < minFrames && i < minFrames * 2; i += 1) {
+    const at = Number(((durationSec * i) / (minFrames + 1)).toFixed(2));
+    if (!times.some((t) => Math.abs(t - at) < 0.4)) times.push(at);
+  }
+  times.sort((a, b) => a - b);
+
+  const out: { atSec: number; base64: string; mediaType: string }[] = [];
+  for (const atSec of times) {
+    const bytes = await withFile(
+      file,
+      "frame.jpg",
+      (input, output) => ["-ss", String(atSec), "-i", input, "-frames:v", "1", "-vf", "scale=360:-1", "-q:v", "4", output],
+      (b) => b,
+    ).catch(() => null);
+    if (!bytes) continue;
+    let binary = "";
+    for (let i = 0; i < bytes.length; i += 1) binary += String.fromCharCode(bytes[i]);
+    out.push({ atSec: Number(atSec.toFixed(2)), base64: btoa(binary), mediaType: "image/jpeg" });
+  }
+  return out;
+}
