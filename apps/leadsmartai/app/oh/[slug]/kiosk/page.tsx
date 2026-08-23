@@ -4,20 +4,24 @@ import { getPublicOpenHouseBySlug } from "@/lib/open-houses/publicService";
 import { KioskClient } from "./KioskClient";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Open House Kiosk",
-  robots: { index: false, follow: false },
-  // iOS "Add to Home Screen" behaviour — installs as a standalone app
-  // without browser chrome.
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "Open House",
-  },
-  other: {
-    "mobile-web-app-capable": "yes",
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.openHouseKiosk.title", { ns: "web_marketing" });
+  return {
+  title,
+  robots: { index: false, follow: false },
+  // iOS "Add to Home Screen" behaviour — installs as a standalone app
+  // without browser chrome.
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Open House",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
+}
 
 export const viewport: Viewport = {
   width: "device-width",

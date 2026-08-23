@@ -8959,6 +8959,22 @@
       "totalRentReceived": "Total rent received",
       "other": "Other",
       "total": "Total"
+    },
+    "brokerPortal": {
+      "title": "Broker portal",
+      "description": "Lead your brokerage with pipeline visibility, growth tools, and team-ready workflows.",
+      "brokerDashboard": "Broker dashboard",
+      "brokerDashboardDesc": "Brokerage home, pipeline & growth",
+      "growthSeo": "Growth & SEO",
+      "growthSeoDesc": "Traffic and landing tools",
+      "leadsCrm": "Leads & CRM",
+      "leadsCrmDesc": "Pipeline and follow-ups",
+      "marketing": "Marketing",
+      "marketingDesc": "Campaigns and assets",
+      "plansBilling": "Plans & billing",
+      "plansBillingDesc": "Team plans and upgrades",
+      "stripePortal": "Stripe billing portal",
+      "stripePortalDesc": "Billing and invoices"
     }
   }
 }

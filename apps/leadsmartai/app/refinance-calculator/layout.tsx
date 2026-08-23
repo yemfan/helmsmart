@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Refinance Calculator",
-  description: "Calculate refinance savings and break-even point. Compare current mortgage with new loan options to determine if refinancing saves money.",
-  keywords: ["refinance calculator", "mortgage refinance", "savings", "lower rate", "real estate"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.refinanceCalculator.title", { ns: "web_marketing" });
+  const description = t("routeMeta.refinanceCalculator.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["refinance calculator", "mortgage refinance", "savings", "lower rate", "real estate"],
 };
+}
 
 export default async function RefinanceCalculatorLayout({
   children,

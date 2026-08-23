@@ -7,10 +7,14 @@ import { isCredibleCmaValuation } from "@/lib/cma/types";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Comparative Market Analysis",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.cmaReport.title", { ns: "web_marketing" });
+  return {
+  title,
+  robots: { index: false },
 };
+}
 
 /**
  * Public, shareable CMA — read by id (no auth; share-by-link), same posture

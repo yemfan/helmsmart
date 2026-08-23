@@ -3,12 +3,16 @@ import Link from "next/link";
 import OnboardingFunnel from "@/components/onboarding/OnboardingFunnel";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Get started — CloseBoss",
-  description:
-    "Interactive onboarding: personalize your market, preview AI leads, then unlock full CRM and automation.",
-  robots: { index: false, follow: true },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.onboarding.title", { ns: "web_marketing" });
+  const description = t("routeMeta.onboarding.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  robots: { index: false, follow: true },
 };
+}
 
 /**
  * TOM report MJ-003: static fetch of /onboarding previously returned only

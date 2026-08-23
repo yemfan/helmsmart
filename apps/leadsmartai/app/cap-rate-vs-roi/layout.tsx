@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Cap Rate vs ROI",
-  description: "Compare cap rate and ROI for real estate investments. Learn the differences and how each metric applies to property analysis.",
-  keywords: ["cap rate", "ROI", "return on investment", "real estate", "property metrics"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.capRateVsRoi.title", { ns: "web_marketing" });
+  const description = t("routeMeta.capRateVsRoi.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["cap rate", "ROI", "return on investment", "real estate", "property metrics"],
 };
+}
 
 export default async function CapRateROICompareLayout({
   children,

@@ -4,16 +4,20 @@ import SmsOptInForm from "./SmsOptInForm";
 import { pageMetadata } from "@/lib/seo";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  ...pageMetadata({
-    title: "Text Message Updates",
-    description:
-      "Sign up to receive text message updates from CloseBoss and your real estate agent — property updates, showing confirmations, and follow-ups. Msg & data rates may apply.",
-    path: "/sms",
-  }),
-  // Publicly indexable so carrier reviewers can reach the opt-in flow directly.
-  robots: { index: true, follow: true },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.sms.title", { ns: "web_marketing" });
+  const description = t("routeMeta.sms.description", { ns: "web_marketing" });
+  return {
+  ...pageMetadata({
+    title,
+    description,
+    path: "/sms",
+  }),
+  // Publicly indexable so carrier reviewers can reach the opt-in flow directly.
+  robots: { index: true, follow: true },
 };
+}
 
 /**
  * Public SMS opt-in page — a carrier-reviewable URL (A2P 10DLC) showing the

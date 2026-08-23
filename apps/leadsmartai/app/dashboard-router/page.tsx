@@ -7,12 +7,17 @@ import { consumerShouldUsePropertyToolsApp } from "@/lib/signupOriginApp";
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Redirecting",
-  description: "Routing to your personalized dashboard.",
-  keywords: ["dashboard", "redirect"],
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.dashboardRouter.title", { ns: "web_marketing" });
+  const description = t("routeMeta.dashboardRouter.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["dashboard", "redirect"],
+  robots: { index: false },
 };
+}
 
 /**
  * Post-login landing: professionals → CRM; PropertyTools-origin consumers → PropertyTools app;

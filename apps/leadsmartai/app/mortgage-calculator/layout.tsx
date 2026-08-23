@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Mortgage Calculator",
-  description: "Calculate monthly mortgage payments and amortization. Estimate loan costs with taxes, insurance, and HOA fees included.",
-  keywords: ["mortgage calculator", "monthly payment", "loan calculator", "interest rate", "real estate"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.mortgageCalculator.title", { ns: "web_marketing" });
+  const description = t("routeMeta.mortgageCalculator.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["mortgage calculator", "monthly payment", "loan calculator", "interest rate", "real estate"],
 };
+}
 
 export default async function MortgageCalculatorLayout({
   children,

@@ -5,12 +5,16 @@ import {
   isOfferExtendEnabled,
   verifyOfferExtendToken,
 } from "@/lib/offer-expirations/extendToken";
-import { getServerT, getServerLocale } from "@/lib/i18n/server";
+import { getServerT, getServerLocale } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Extend offer",
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.offerExtend.title", { ns: "web_marketing" });
+  return {
+  title,
+  robots: { index: false, follow: false },
 };
+}
 
 /**
  * Public one-click extend handler for offer-expiration alert emails.

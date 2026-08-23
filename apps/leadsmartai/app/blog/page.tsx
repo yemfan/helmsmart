@@ -2,27 +2,31 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BLOG_POSTS, categoryLabel, sortedPosts, type BlogPost } from "@/lib/blog/posts";
 import { getServerT, getServerLocale } from "@/lib/i18n/server";
-import { intlLocale } from "@/lib/i18n/locale";
+import { intlLocale } from "@/lib/i18n/locale";
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description:
-    "Real estate technology, lead conversion playbooks, and investing fundamentals from the CloseBoss team — written for solo agents and small teams who win on speed.",
-  alternates: { canonical: "/blog" },
-  openGraph: {
-    title: "CloseBoss Blog",
-    description:
-      "Real estate technology, lead conversion playbooks, and investing fundamentals — written for solo agents and small teams.",
-    url: "/blog",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "CloseBoss Blog",
-    description:
-      "Real estate technology, lead conversion playbooks, and investing fundamentals.",
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.blog.title", { ns: "web_marketing" });
+  const description = t("routeMeta.blog.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  alternates: { canonical: "/blog" },
+  openGraph: {
+    title: "CloseBoss Blog",
+    description:
+      "Real estate technology, lead conversion playbooks, and investing fundamentals — written for solo agents and small teams.",
+    url: "/blog",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CloseBoss Blog",
+    description:
+      "Real estate technology, lead conversion playbooks, and investing fundamentals.",
+  },
 };
+}
 
 const SITE_URL = "https://closebossai.com";
 

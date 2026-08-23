@@ -17,24 +17,28 @@ import {
 import { getFinancialServicesTheme } from "@/lib/financial-services/theme";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "LeadSmart AI for Financial Services Agencies",
-  description:
-    "AI lead nurture, recruit pipeline, and instant Financial Needs Analysis — purpose-built for IUL, annuity, and term life producers. Demo-ready for GFI, WFG, and Transamerica-affiliated agencies.",
-  keywords: [
-    "financial services CRM",
-    "IUL CRM",
-    "annuity CRM",
-    "MLM insurance",
-    "WFG",
-    "GFI",
-    "Global Financial Impact",
-    "World Financial Group",
-    "recruit pipeline",
-    "Financial Needs Analysis",
-    "FNA",
-  ],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.financialServices.title", { ns: "web_marketing" });
+  const description = t("routeMeta.financialServices.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: [
+    "financial services CRM",
+    "IUL CRM",
+    "annuity CRM",
+    "MLM insurance",
+    "WFG",
+    "GFI",
+    "Global Financial Impact",
+    "World Financial Group",
+    "recruit pipeline",
+    "Financial Needs Analysis",
+    "FNA",
+  ],
 };
+}
 
 const KPI_BAR = [
   { label: "Speed-to-lead", value: "< 5 min", hint: "From inbound to first contact, automated." },

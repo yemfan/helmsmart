@@ -6,17 +6,21 @@ import VoiceAiHero from "@/components/marketing/voice-ai/VoiceAiHero";
 import VoiceAiSampleTranscripts from "@/components/marketing/voice-ai/VoiceAiSampleTranscripts";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Test-drive our voice AI for real estate",
-  description:
-    "Hear our voice AI assistant qualify a real-estate lead live. Native voice, sub-3-second response, multi-language, books showings — included with the CloseBoss CRM.",
-  openGraph: {
-    title: "Test-drive our voice AI for real estate",
-    description:
-      "Native voice AI for real estate. Tap to call the live demo or have it call you.",
-    type: "website",
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.voiceAiTestDrive.title", { ns: "web_marketing" });
+  const description = t("routeMeta.voiceAiTestDrive.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  openGraph: {
+    title,
+    description:
+      "Native voice AI for real estate. Tap to call the live demo or have it call you.",
+    type: "website",
+  },
 };
+}
 
 /**
  * Public marketing page for the Voice AI ISA. The thesis: don't try to claim

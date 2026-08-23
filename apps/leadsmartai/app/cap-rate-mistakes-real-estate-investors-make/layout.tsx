@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Cap Rate Mistakes Real Estate Investors Make",
-  description: "Learn common cap rate mistakes investors make. Avoid errors in capitalization rate calculation and property analysis.",
-  keywords: ["cap rate mistakes", "common errors", "real estate mistakes", "investment tips", "analysis errors"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.capRateMistakes.title", { ns: "web_marketing" });
+  const description = t("routeMeta.capRateMistakes.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["cap rate mistakes", "common errors", "real estate mistakes", "investment tips", "analysis errors"],
 };
+}
 
 export default async function CapRateMistakesLayout({
   children,

@@ -3,33 +3,37 @@ import Link from "next/link";
 import { SWITCH_SOURCES } from "@/lib/marketing/switch-from";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Switch your CRM to CloseBoss",
-  description:
-    "Migration guides for agents leaving LionDesk, Follow Up Boss, kvCORE, and more. Free concierge migration through 2026 — we'll move your data and rebuild your sequences in under a week.",
-  keywords: [
-    "real estate CRM migration",
-    "LionDesk alternative",
-    "Follow Up Boss alternative",
-    "kvCORE alternative",
-    "switch CRM",
-    "CloseBoss migration",
-  ],
-  alternates: { canonical: "/switch-from" },
-  openGraph: {
-    title: "Switch your CRM to CloseBoss",
-    description:
-      "Migration guides for LionDesk, Follow Up Boss, kvCORE, and more — with free concierge migration through 2026.",
-    url: "/switch-from",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Switch your CRM to CloseBoss",
-    description:
-      "Migration guides + free concierge migration for agents leaving LionDesk, FUB, kvCORE, and more.",
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.switchFrom.title", { ns: "web_marketing" });
+  const description = t("routeMeta.switchFrom.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: [
+    "real estate CRM migration",
+    "LionDesk alternative",
+    "Follow Up Boss alternative",
+    "kvCORE alternative",
+    "switch CRM",
+    "CloseBoss migration",
+  ],
+  alternates: { canonical: "/switch-from" },
+  openGraph: {
+    title,
+    description:
+      "Migration guides for LionDesk, Follow Up Boss, kvCORE, and more — with free concierge migration through 2026.",
+    url: "/switch-from",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description:
+      "Migration guides + free concierge migration for agents leaving LionDesk, FUB, kvCORE, and more.",
+  },
 };
+}
 
 const SITE_URL = "https://closebossai.com";
 

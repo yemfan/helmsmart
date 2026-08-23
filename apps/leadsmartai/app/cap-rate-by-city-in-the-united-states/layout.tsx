@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Cap Rate By City in the United States",
-  description: "Compare cap rates across US cities and markets. Find average capitalization rates by location for real estate investment analysis.",
-  keywords: ["cap rate", "by city", "market data", "real estate", "investment comparison"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.capRateByCity.title", { ns: "web_marketing" });
+  const description = t("routeMeta.capRateByCity.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["cap rate", "by city", "market data", "real estate", "investment comparison"],
 };
+}
 
 export default async function CapRateByCityLayout({
   children,

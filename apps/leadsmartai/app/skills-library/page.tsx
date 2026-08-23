@@ -5,28 +5,32 @@ import { Download, ShieldCheck, Sparkles } from "lucide-react";
 import { SKILLS, PILLAR_LABEL, ASSIGNEE_LABEL, type SkillPillar } from "@/lib/closeboss/skills/catalog";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Free Realtor AI Skills Library — 59 compliance-ready prompts",
-  description:
-    "A free library of 59 AI skills for real estate agents — lead gen, listings, buyer rep, negotiation, compliance, and ops. Each with the value it captures and a ready-to-run, Fair-Housing-safe prompt. Download free, no signup.",
-  keywords: [
-    "real estate AI prompts",
-    "realtor AI skills",
-    "real estate ChatGPT prompts",
-    "fair housing compliant listing description",
-    "real estate marketing prompts",
-    "AI for real estate agents",
-  ],
-  alternates: { canonical: "/skills-library" },
-  openGraph: {
-    title: "Free Realtor AI Skills Library — 59 compliance-ready prompts",
-    description:
-      "59 AI skills for real estate agents, each with a compliance-baked prompt. Free download, no signup.",
-    url: "/skills-library",
-    type: "website",
-  },
-  twitter: { card: "summary_large_image", title: "Free Realtor AI Skills Library", description: "59 compliance-ready AI prompts for real estate agents. Free." },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.skillsLibrary.title", { ns: "web_marketing" });
+  const description = t("routeMeta.skillsLibrary.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: [
+    "real estate AI prompts",
+    "realtor AI skills",
+    "real estate ChatGPT prompts",
+    "fair housing compliant listing description",
+    "real estate marketing prompts",
+    "AI for real estate agents",
+  ],
+  alternates: { canonical: "/skills-library" },
+  openGraph: {
+    title,
+    description:
+      "59 AI skills for real estate agents, each with a compliance-baked prompt. Free download, no signup.",
+    url: "/skills-library",
+    type: "website",
+  },
+  twitter: { card: "summary_large_image", title: "Free Realtor AI Skills Library", description: "59 compliance-ready AI prompts for real estate agents. Free." },
 };
+}
 
 const PILLAR_ORDER: SkillPillar[] = [
   "lead_gen", "nurture", "valuation", "listing", "buyer", "negotiation", "compliance", "communication", "operations",

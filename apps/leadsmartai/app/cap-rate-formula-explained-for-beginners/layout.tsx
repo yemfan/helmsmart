@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Cap Rate Formula Explained for Beginners",
-  description: "Learn cap rate formula basics. Understand how to calculate capitalization rate for real estate investments step-by-step.",
-  keywords: ["cap rate formula", "how to calculate", "beginner guide", "real estate", "investment basics"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.capRateFormulaBeginners.title", { ns: "web_marketing" });
+  const description = t("routeMeta.capRateFormulaBeginners.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["cap rate formula", "how to calculate", "beginner guide", "real estate", "investment basics"],
 };
+}
 
 export default async function CapRateFormulaLayout({
   children,

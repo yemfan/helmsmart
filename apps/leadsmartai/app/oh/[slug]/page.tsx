@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPublicOpenHouseBySlug } from "@/lib/open-houses/publicService";
-import { OpenHouseSigninClient } from "./OpenHouseSigninClient";
+import { OpenHouseSigninClient } from "./OpenHouseSigninClient";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Open House Sign-In",
-  // Public page — explicitly allow indexing is pointless (slug URLs are
-  // shared directly) but don't actively block either.
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.openHouseSignIn.title", { ns: "web_marketing" });
+  return {
+  title,
+  // Public page — explicitly allow indexing is pointless (slug URLs are
+  // shared directly) but don't actively block either.
+  robots: { index: false, follow: false },
 };
+}
 
 type PageProps = { params: Promise<{ slug: string }> };
 

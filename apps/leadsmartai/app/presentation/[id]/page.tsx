@@ -4,12 +4,17 @@ import PresentationPublicClient from "@/app/presentation/PresentationPublicClien
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Listing Presentation",
-  description: "View a personalized listing or seller presentation.",
-  keywords: ["presentation", "listing", "seller"],
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.listingPresentation.title", { ns: "web_marketing" });
+  const description = t("routeMeta.listingPresentation.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["presentation", "listing", "seller"],
+  robots: { index: false },
 };
+}
 
 type PresentationRow = {
   id: string;

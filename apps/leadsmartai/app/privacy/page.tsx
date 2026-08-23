@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata } from "@/lib/seo";
+import { getServerT } from "@/lib/i18n/server";
 
 const LAST_UPDATED = "April 24, 2026";
 
-export const metadata: Metadata = {
-  ...pageMetadata({
-    title: "Privacy Policy",
-    description:
-      "How CloseBoss collects, uses, shares, and protects your personal and business information, including SMS, email, and AI processing disclosures.",
-    path: "/privacy",
-  }),
-  keywords: ["privacy policy", "data protection", "GDPR", "CCPA", "TCPA", "SMS consent"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.privacy.title", { ns: "web_marketing" });
+  const description = t("routeMeta.privacy.description", { ns: "web_marketing" });
+  return {
+  ...pageMetadata({
+    title,
+    description,
+    path: "/privacy",
+  }),
+  keywords: ["privacy policy", "data protection", "GDPR", "CCPA", "TCPA", "SMS consent"],
 };
+}
 
 const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   {

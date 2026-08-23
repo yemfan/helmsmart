@@ -6,10 +6,14 @@ import type { DeepReport } from "@/lib/deep-report/types";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Property Deep Report",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.deepReport.title", { ns: "web_marketing" });
+  return {
+  title,
+  robots: { index: false },
 };
+}
 
 /**
  * Public, shareable Property Deep Report — read by id (no auth; share-by-link).

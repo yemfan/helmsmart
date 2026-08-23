@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Cap Rate vs Cash on Cash Return",
-  description: "Compare cap rate vs cash-on-cash return for rental investments. Understand the difference and when to use each metric.",
-  keywords: ["cap rate", "cash on cash return", "rental property", "investment metrics", "real estate"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.capRateVsCoc.title", { ns: "web_marketing" });
+  const description = t("routeMeta.capRateVsCoc.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["cap rate", "cash on cash return", "rental property", "investment metrics", "real estate"],
 };
+}
 
 export default async function CapRateCashOnCashLayout({
   children,
