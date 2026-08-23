@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Cap Rate and ROI Calculator",
-  description: "Calculate capitalization rate and return on investment side-by-side. Compare rental property cap rate and ROI metrics for better analysis.",
-  keywords: ["cap rate", "ROI calculator", "return on investment", "rental property", "real estate"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.capRateRoiCalculator.title", { ns: "web_marketing" });
+  const description = t("routeMeta.capRateRoiCalculator.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["cap rate", "ROI calculator", "return on investment", "rental property", "real estate"],
 };
+}
 
 export default async function CapRateROICalculatorLayout({
   children,

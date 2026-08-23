@@ -1,13 +1,20 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUserWithRole } from "@/lib/auth/getCurrentUser";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { getActiveAgentEntitlement } from "@/lib/entitlements/getEntitlements";
-import StartFreeAgentClientPage from "./page.client";
+import StartFreeAgentClientPage from "./page.client";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata = {
-  title: "Choose Your Plan",
-  description: "Pick a plan to unlock your CloseBoss Agent workspace.",
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.startFreeAgent.title", { ns: "web_marketing" });
+  const description = t("routeMeta.startFreeAgent.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
 };
+}
 
 export default async function StartFreeAgentPage() {
   const user = await getCurrentUserWithRole();

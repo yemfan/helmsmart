@@ -173,6 +173,302 @@
     "howToRentalCashFlow": {
       "title": "How to Evaluate Rental Property Cash Flow",
       "description": "Work out what a rental actually puts in your pocket each month, after every expense."
+    },
+    "about": {
+      "title": "About CloseBoss | AI Growth Engine for Real Estate",
+      "description": "CloseBoss helps agents and financing professionals capture, qualify, and convert leads with AI—from first click to closed deal."
+    },
+    "adjustableRateCalculator": {
+      "title": "Adjustable Rate Mortgage Calculator",
+      "description": "Calculate ARM payments and rate adjustments over time. Compare initial rates, caps, and long-term costs for adjustable mortgages."
+    },
+    "affordabilityCalculator": {
+      "title": "Home Affordability Calculator",
+      "description": "Calculate how much house you can afford based on income, debts, and interest rate using a debt-to-income ratio calculator."
+    },
+    "agentDashboard": {
+      "title": "Agent Dashboard",
+      "description": "Leads, pipeline, and AI actions for real estate agents."
+    },
+    "blog": {
+      "title": "Blog",
+      "description": "Real estate technology, lead conversion playbooks, and investing fundamentals from the CloseBoss team — written for solo agents and small teams who win on speed."
+    },
+    "broker": {
+      "title": "Broker Portal",
+      "description": "Lead your brokerage with pipeline visibility and growth tools."
+    },
+    "capRateByCity": {
+      "title": "Cap Rate By City in the United States",
+      "description": "Compare cap rates across US cities and markets. Find average capitalization rates by location for real estate investment analysis."
+    },
+    "capRateCalculator": {
+      "title": "Cap Rate Calculator",
+      "description": "Calculate capitalization rate and NOI for rental properties. Analyze investment returns and compare deals with our property cap rate calculator."
+    },
+    "capRateCalculatorHowToUse": {
+      "title": "How to Use a Cap Rate Calculator",
+      "description": "Learn how to use a cap rate calculator to evaluate rental property investments and calculate capitalization rates effectively."
+    },
+    "capRateExample": {
+      "title": "Cap Rate Example for Rental Property",
+      "description": "Learn cap rate with real examples. See how to calculate capitalization rate for actual rental properties and deals."
+    },
+    "capRateMultifamily": {
+      "title": "Cap Rate for Multifamily Investments",
+      "description": "Understand cap rates for multifamily and apartment building investments. Analyze returns for multi-unit rental properties."
+    },
+    "capRateFormulaBeginners": {
+      "title": "Cap Rate Formula Explained for Beginners",
+      "description": "Learn cap rate formula basics. Understand how to calculate capitalization rate for real estate investments step-by-step."
+    },
+    "capRateMistakes": {
+      "title": "Cap Rate Mistakes Real Estate Investors Make",
+      "description": "Learn common cap rate mistakes investors make. Avoid errors in capitalization rate calculation and property analysis."
+    },
+    "capRateRoiCalculator": {
+      "title": "Cap Rate and ROI Calculator",
+      "description": "Calculate capitalization rate and return on investment side-by-side. Compare rental property cap rate and ROI metrics for better analysis."
+    },
+    "capRateVsCoc": {
+      "title": "Cap Rate vs Cash on Cash Return",
+      "description": "Compare cap rate vs cash-on-cash return for rental investments. Understand the difference and when to use each metric."
+    },
+    "capRateVsGrm": {
+      "title": "Cap Rate vs Gross Rent Multiplier",
+      "description": "Compare cap rate and gross rent multiplier. Understand key differences for rental property valuation and investment analysis."
+    },
+    "capRateVsIrr": {
+      "title": "Cap Rate vs Internal Rate of Return (IRR)",
+      "description": "Understand cap rate vs IRR for real estate investments. Compare these metrics to evaluate property returns and performance."
+    },
+    "capRateVsRoi": {
+      "title": "Cap Rate vs ROI",
+      "description": "Compare cap rate and ROI for real estate investments. Learn the differences and how each metric applies to property analysis."
+    },
+    "cashFlowCalculator": {
+      "title": "Cash Flow Calculator",
+      "description": "Calculate monthly and annual cash flow for rental properties. Analyze income, expenses, and profitability with our property cash flow calculator."
+    },
+    "checkoutSuccess": {
+      "title": "Checkout Success",
+      "description": "Your subscription is now active."
+    },
+    "clientPortal": {
+      "title": "My deal",
+      "description": "Track your transaction, documents, and messages with your agent."
+    },
+    "closingCostEstimator": {
+      "title": "Closing Cost Estimator",
+      "description": "Estimate closing costs for home purchases. Calculate loan origination, title insurance, appraisal, and other buyer fees."
+    },
+    "cmaReport": {
+      "title": "Comparative Market Analysis"
+    },
+    "videoScripts": {
+      "title": "Video Scripts",
+      "description": "AI-generated video scripts for real estate marketing."
+    },
+    "dashboardHome": {
+      "title": "Boss Assistant",
+      "description": "Your CloseBoss command center — priorities, leads, transactions, and your AI team."
+    },
+    "dashboardRouter": {
+      "title": "Redirecting",
+      "description": "Routing to your personalized dashboard."
+    },
+    "dataDeletionStatus": {
+      "title": "Data Deletion Status",
+      "description": "Status of a Facebook data-deletion request submitted to CloseBoss."
+    },
+    "deepReport": {
+      "title": "Property Deep Report"
+    },
+    "deleteAccount": {
+      "title": "Delete your CloseBoss account",
+      "description": "How to permanently delete your CloseBoss account and the personal data we hold about you. Required disclosure under Apple App Store and Google Play account-deletion policies."
+    },
+    "demoOverview": {
+      "title": "Demo workspace · Overview",
+      "description": "Live read-only demo of the CloseBoss workspace — see the morning briefings, KPIs, AI follow-up activity, and today's calendar without signing up."
+    },
+    "downPaymentCalculator": {
+      "title": "Down Payment Calculator",
+      "description": "Calculate required down payment for home purchases. Determine deposit amount, loan size, and PMI with our down payment calculator."
+    },
+    "showingFeedback": {
+      "title": "Showing feedback"
+    },
+    "financialServices": {
+      "title": "LeadSmart AI for Financial Services Agencies",
+      "description": "AI lead nurture, recruit pipeline, and instant Financial Needs Analysis — purpose-built for IUL, annuity, and term life producers. Demo-ready for GFI, WFG, and Transamerica-affiliated agencies."
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "description": "Enter your email to receive a link to reset your CloseBoss account password."
+    },
+    "hoaFeeTracker": {
+      "title": "HOA Fee Tracker",
+      "description": "Project total HOA costs over time with annual increase estimates."
+    },
+    "homes": {
+      "title": "Homes for sale",
+      "description": "Describe your ideal home in plain English and get real, current listings — powered by AI and live web search. Then connect with a local agent."
+    },
+    "homesSearch": {
+      "title": "AI home search",
+      "description": "Describe the home you want in plain English and get real, current listings — powered by AI and live web search."
+    },
+    "banksCapRate": {
+      "title": "How Banks Use Cap Rate to Value Property",
+      "description": "Learn how banks and lenders use cap rate in property valuation. Understand the lender perspective on cap rate analysis."
+    },
+    "capRateAffectsValue": {
+      "title": "How Cap Rate Affects Property Value",
+      "description": "Understand how cap rate impacts property values. Learn the relationship between capitalization rate and property pricing."
+    },
+    "capRateAcrossMarkets": {
+      "title": "How Cap Rate Changes in Different Markets",
+      "description": "Explore cap rate variations across different real estate markets. Understand market factors affecting capitalization rates."
+    },
+    "analyzeWithCapRate": {
+      "title": "How to Analyze a Property Using Cap Rate",
+      "description": "Learn how to use cap rate to analyze rental properties. Step-by-step guide for real estate investors and agents."
+    },
+    "howToCalculateCapRate": {
+      "title": "How to Calculate Cap Rate",
+      "description": "Learn how to calculate cap rate step-by-step. Complete guide for real estate investors and professional property analysis."
+    },
+    "increaseCapRate": {
+      "title": "How to Increase Cap Rate on Rental Property",
+      "description": "Strategies to improve cap rate on rental properties. Learn how to increase NOI and boost investment returns."
+    },
+    "landingHomeValue": {
+      "title": "Free Home Value Estimate",
+      "description": "Get a fast home value estimate, local demand score, and custom selling strategy in under 2 minutes."
+    },
+    "landingMortgage": {
+      "title": "Mortgage Payment Estimator",
+      "description": "Estimate your monthly mortgage payment and buying power with personalized lender-ready next steps."
+    },
+    "login": {
+      "title": "Sign In",
+      "description": "Sign in to your CloseBoss account to access lead management, CRM, and automation tools for real estate professionals."
+    },
+    "marketReportShare": {
+      "title": "Market Update"
+    },
+    "mortgageCalculator": {
+      "title": "Mortgage Calculator",
+      "description": "Calculate monthly mortgage payments and amortization. Estimate loan costs with taxes, insurance, and HOA fees included."
+    },
+    "offerExtend": {
+      "title": "Extend offer"
+    },
+    "openHouseSignIn": {
+      "title": "Open House Sign-In"
+    },
+    "openHouseKiosk": {
+      "title": "Open House Kiosk"
+    },
+    "onboarding": {
+      "title": "Get started — CloseBoss",
+      "description": "Interactive onboarding: personalize your market, preview AI leads, then unlock full CRM and automation."
+    },
+    "billingPortal": {
+      "title": "Billing Portal",
+      "description": "Manage your Stripe subscription and invoices."
+    },
+    "listingPresentation": {
+      "title": "Listing Presentation",
+      "description": "View a personalized listing or seller presentation."
+    },
+    "pricingAgent": {
+      "title": "Agent Pricing",
+      "description": "View pricing plans for real estate agents."
+    },
+    "pricingConsumer": {
+      "title": "Consumer Pricing",
+      "description": "View pricing for home buyers and sellers."
+    },
+    "pricingHub": {
+      "title": "Choose a plan",
+      "description": "Compare PropertyToolsAI consumer pricing, CloseBoss for agents, and loan broker plans."
+    },
+    "pricingLoanBroker": {
+      "title": "Loan Broker Pricing",
+      "description": "View pricing plans for loan brokers."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "How CloseBoss collects, uses, shares, and protects your personal and business information, including SMS, email, and AI processing disclosures."
+    },
+    "propertyDetails": {
+      "title": "Property Details",
+      "description": "View detailed property information and market analysis."
+    },
+    "refinanceCalculator": {
+      "title": "Refinance Calculator",
+      "description": "Calculate refinance savings and break-even point. Compare current mortgage with new loan options to determine if refinancing saves money."
+    },
+    "rentVsBuyCalculator": {
+      "title": "Rent vs Buy Calculator",
+      "description": "Compare renting vs buying costs over time. Analyze total expenses, equity, and returns to determine the better option for your situation."
+    },
+    "roiCalculator": {
+      "title": "ROI Calculator",
+      "description": "Calculate return on investment for rental properties and real estate deals. Analyze cash-on-cash returns, annual ROI, and property appreciation."
+    },
+    "signup": {
+      "title": "Create Your Free Account",
+      "description": "Sign up for CloseBoss and start capturing, qualifying, and converting leads with AI-powered lead management for real estate professionals."
+    },
+    "skillsLibrary": {
+      "title": "Free Realtor AI Skills Library — 59 compliance-ready prompts",
+      "description": "A free library of 59 AI skills for real estate agents — lead gen, listings, buyer rep, negotiation, compliance, and ops. Each with the value it captures and a ready-to-run, Fair-Housing-safe prompt. Download free, no signup."
+    },
+    "sms": {
+      "title": "Text Message Updates",
+      "description": "Sign up to receive text message updates from CloseBoss and your real estate agent — property updates, showing confirmations, and follow-ups. Msg & data rates may apply."
+    },
+    "startFreeAgent": {
+      "title": "Choose Your Plan",
+      "description": "Pick a plan to unlock your CloseBoss Agent workspace."
+    },
+    "support": {
+      "title": "Customer Support",
+      "description": "Chat with CloseBoss support — pricing, billing, technical help, and leads."
+    },
+    "switchFrom": {
+      "title": "Switch your CRM to CloseBoss",
+      "description": "Migration guides for agents leaving LionDesk, Follow Up Boss, kvCORE, and more. Free concierge migration through 2026 — we'll move your data and rebuild your sequences in under a week."
+    },
+    "teamAccept": {
+      "title": "Accept team invitation"
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "description": "Terms governing use of the CloseBoss lead management, CRM, and automation service — subscription, acceptable use, SMS/email compliance, intellectual property, liability, and disputes."
+    },
+    "tryDemo": {
+      "title": "Try the live demo",
+      "description": "Click through a real CloseBoss workspace — 50 sample contacts, an AI-powered inbox, the drafts queue, calendar, and deal pipeline. No signup, no credit card."
+    },
+    "voiceAiTestDrive": {
+      "title": "Test-drive our voice AI for real estate",
+      "description": "Hear our voice AI assistant qualify a real-estate lead live. Native voice, sub-3-second response, multi-language, books showings — included with the CloseBoss CRM."
+    },
+    "goodCapRate": {
+      "title": "What is a Good Cap Rate for Rental Property",
+      "description": "Understand what constitutes a good cap rate. Market benchmarks and cap rate ranges for rental property investments."
+    },
+    "whatIsCapRate": {
+      "title": "What is Cap Rate",
+      "description": "Complete guide to cap rate (capitalization rate). Learn the definition, formula, and importance for real estate investing."
+    },
+    "whyCapRateMatters": {
+      "title": "Why Cap Rate Matters for Real Estate Investors",
+      "description": "Understand the importance of cap rate for real estate investors. Learn why capitalization rate matters in property analysis."
     }
   }
 }

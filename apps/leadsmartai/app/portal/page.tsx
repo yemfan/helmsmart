@@ -2,14 +2,20 @@ import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { getProfessionalPortalPath } from "@/lib/rolePortalPaths";
-import type { Metadata } from "next";
+import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Billing Portal",
-  description: "Manage your Stripe subscription and invoices.",
-  keywords: ["billing portal", "subscription", "invoices"],
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.billingPortal.title", { ns: "web_marketing" });
+  const description = t("routeMeta.billingPortal.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["billing portal", "subscription", "invoices"],
+  robots: { index: false },
 };
+}
 
 export const dynamic = "force-dynamic";
 

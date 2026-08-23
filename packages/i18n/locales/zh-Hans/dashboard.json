@@ -8959,6 +8959,22 @@
       "totalRentReceived": "累计收到租金",
       "other": "其他",
       "total": "合计"
+    },
+    "brokerPortal": {
+      "title": "经纪行门户",
+      "description": "用清晰的漏斗视图、增长工具和面向团队的流程，带好您的整个经纪行。",
+      "brokerDashboard": "经纪行工作台",
+      "brokerDashboardDesc": "经纪行主页、漏斗与增长",
+      "growthSeo": "增长与 SEO",
+      "growthSeoDesc": "流量与落地页工具",
+      "leadsCrm": "客户与 CRM",
+      "leadsCrmDesc": "漏斗与跟进",
+      "marketing": "营销",
+      "marketingDesc": "推广活动与素材",
+      "plansBilling": "套餐与账单",
+      "plansBillingDesc": "团队套餐与升级",
+      "stripePortal": "Stripe 账单门户",
+      "stripePortalDesc": "账单与发票"
     }
   }
 }

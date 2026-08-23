@@ -1,11 +1,16 @@
 import { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "ROI Calculator",
-  description: "Calculate return on investment for rental properties and real estate deals. Analyze cash-on-cash returns, annual ROI, and property appreciation.",
-  keywords: ["ROI calculator", "return on investment", "rental property", "cash on cash", "real estate investing"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.roiCalculator.title", { ns: "web_marketing" });
+  const description = t("routeMeta.roiCalculator.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["ROI calculator", "return on investment", "rental property", "cash on cash", "real estate investing"],
 };
+}
 
 export default async function ROICalculatorLayout({
   children,

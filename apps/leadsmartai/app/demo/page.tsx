@@ -9,15 +9,19 @@ import {
   DEMO_TASKS,
 } from "@/lib/demo/data";
 import { getServerT, getServerLocale } from "@/lib/i18n/server";
-import { intlLocale } from "@/lib/i18n/locale";
+import { intlLocale } from "@/lib/i18n/locale";
 
-export const metadata: Metadata = {
-  title: "Demo workspace · Overview",
-  description:
-    "Live read-only demo of the CloseBoss workspace — see the morning briefings, KPIs, AI follow-up activity, and today's calendar without signing up.",
-  alternates: { canonical: "/demo" },
-  robots: { index: false, follow: true },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.demoOverview.title", { ns: "web_marketing" });
+  const description = t("routeMeta.demoOverview.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  alternates: { canonical: "/demo" },
+  robots: { index: false, follow: true },
 };
+}
 
 export default async function DemoOverview() {
   const t = await getServerT();

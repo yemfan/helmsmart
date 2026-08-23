@@ -6,11 +6,15 @@ import { getPublicMarketReport } from "@/lib/marketReport/service";
 import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Market Update",
-  // Private client shares — keep them out of the index.
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.marketReportShare.title", { ns: "web_marketing" });
+  return {
+  title,
+  // Private client shares — keep them out of the index.
+  robots: { index: false, follow: false },
 };
+}
 
 /**
  * Public, shareable market report — read by id (no auth; share-by-link), same

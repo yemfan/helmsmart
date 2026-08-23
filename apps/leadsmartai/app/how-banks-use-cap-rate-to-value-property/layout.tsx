@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "How Banks Use Cap Rate to Value Property",
-  description: "Learn how banks and lenders use cap rate in property valuation. Understand the lender perspective on cap rate analysis.",
-  keywords: ["cap rate valuation", "bank valuation", "property value", "lender perspective", "real estate"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.banksCapRate.title", { ns: "web_marketing" });
+  const description = t("routeMeta.banksCapRate.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["cap rate valuation", "bank valuation", "property value", "lender perspective", "real estate"],
 };
+}
 
 export default async function BanksCapRateValuationLayout({
   children,

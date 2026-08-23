@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { requireAgentAccess } from "@/lib/auth/requireAgentAccess";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { KpiCard } from "@/components/dashboard/KpiCard";
@@ -16,10 +17,15 @@ const alerts = [
   "Buyer opened mortgage estimate this morning",
 ];
 
-export const metadata = {
-  title: "Agent Dashboard",
-  description: "Leads, pipeline, and AI actions for real estate agents.",
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.agentDashboard.title", { ns: "web_marketing" });
+  const description = t("routeMeta.agentDashboard.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
 };
+}
 
 export default async function AgentDashboardPage() {
   const t = await getServerT();

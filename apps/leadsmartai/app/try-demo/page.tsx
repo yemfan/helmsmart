@@ -12,25 +12,29 @@ import {
 } from "lucide-react";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Try the live demo",
-  description:
-    "Click through a real CloseBoss workspace — 50 sample contacts, an AI-powered inbox, the drafts queue, calendar, and deal pipeline. No signup, no credit card.",
-  alternates: { canonical: "/try-demo" },
-  openGraph: {
-    title: "Try the live CloseBoss demo",
-    description:
-      "A real read-only sandbox of the CloseBoss workspace — inbox, drafts, contacts, calendar. No signup required.",
-    url: "/try-demo",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Try the live CloseBoss demo",
-    description:
-      "Read-only sandbox of the workspace — inbox, drafts, contacts, calendar. No signup.",
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.tryDemo.title", { ns: "web_marketing" });
+  const description = t("routeMeta.tryDemo.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  alternates: { canonical: "/try-demo" },
+  openGraph: {
+    title: "Try the live CloseBoss demo",
+    description:
+      "A real read-only sandbox of the CloseBoss workspace — inbox, drafts, contacts, calendar. No signup required.",
+    url: "/try-demo",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Try the live CloseBoss demo",
+    description:
+      "Read-only sandbox of the workspace — inbox, drafts, contacts, calendar. No signup.",
+  },
 };
+}
 
 const SITE_URL = "https://closebossai.com";
 

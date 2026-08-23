@@ -173,6 +173,302 @@
     "howToRentalCashFlow": {
       "title": "如何评估出租房的现金流",
       "description": "算清楚扣掉所有开销之后，一套出租房每个月真正能给您留下多少钱。"
+    },
+    "about": {
+      "title": "关于 CloseBoss — 房产行业的 AI 增长引擎",
+      "description": "CloseBoss 帮助经纪人和贷款从业者用 AI 获客、甄别与转化——从第一次点击到成功成交。"
+    },
+    "adjustableRateCalculator": {
+      "title": "浮动利率房贷计算器",
+      "description": "测算 ARM 浮动利率贷款的月供与利率调整。对比初始利率、利率上限和长期成本。"
+    },
+    "affordabilityCalculator": {
+      "title": "购房力计算器",
+      "description": "根据收入、负债和利率，用债务收入比算出您能负担多少钱的房子。"
+    },
+    "agentDashboard": {
+      "title": "经纪人工作台",
+      "description": "房产经纪人的客户线索、成交漏斗与 AI 行动，都在这里。"
+    },
+    "blog": {
+      "title": "博客",
+      "description": "房产科技、线索转化打法与投资基本功——由 CloseBoss 团队撰写。"
+    },
+    "broker": {
+      "title": "经纪行门户",
+      "description": "用清晰的漏斗视图和增长工具，带好您的整个经纪行。"
+    },
+    "capRateByCity": {
+      "title": "美国各城市资本化率一览",
+      "description": "对比美国各城市与市场的资本化率，查找各地平均 Cap Rate，辅助房产投资决策。"
+    },
+    "capRateCalculator": {
+      "title": "资本化率计算器",
+      "description": "计算出租房的资本化率与净营运收入，分析投资回报、横向对比不同标的。"
+    },
+    "capRateCalculatorHowToUse": {
+      "title": "资本化率计算器怎么用",
+      "description": "手把手教您用资本化率计算器评估出租房投资、算清 Cap Rate。"
+    },
+    "capRateExample": {
+      "title": "出租房资本化率实例讲解",
+      "description": "用真实案例讲资本化率：一套出租房的 Cap Rate 到底怎么算、怎么看。"
+    },
+    "capRateMultifamily": {
+      "title": "多户型投资的资本化率",
+      "description": "看懂多户型与公寓楼投资的资本化率，分析多单元出租物业的回报水平。"
+    },
+    "capRateFormulaBeginners": {
+      "title": "资本化率公式入门讲解",
+      "description": "从零开始讲清资本化率公式，一步步教您算出房产投资的 Cap Rate。"
+    },
+    "capRateMistakes": {
+      "title": "投资人最常犯的资本化率错误",
+      "description": "盘点投资人在算资本化率时最容易踩的坑，避开这些错误再做房产分析。"
+    },
+    "capRateRoiCalculator": {
+      "title": "资本化率与投资回报率计算器",
+      "description": "同屏计算资本化率与投资回报率，一次看清出租房的 Cap Rate 和 ROI。"
+    },
+    "capRateVsCoc": {
+      "title": "资本化率 vs 现金回报率",
+      "description": "对比资本化率和现金回报率：两者差在哪，什么时候该用哪一个。"
+    },
+    "capRateVsGrm": {
+      "title": "资本化率 vs 租金乘数",
+      "description": "对比资本化率与租金乘数（GRM），看懂两者在出租房估值中的关键差别。"
+    },
+    "capRateVsIrr": {
+      "title": "资本化率 vs 内部收益率（IRR）",
+      "description": "看懂资本化率与 IRR 的区别，用对指标评估房产投资的真实回报。"
+    },
+    "capRateVsRoi": {
+      "title": "资本化率 vs 投资回报率",
+      "description": "对比资本化率与 ROI：两个指标分别衡量什么，各自适用在什么场景。"
+    },
+    "cashFlowCalculator": {
+      "title": "现金流计算器",
+      "description": "计算出租房的月度与年度现金流，分析收入、支出与实际盈利能力。"
+    },
+    "checkoutSuccess": {
+      "title": "支付成功",
+      "description": "您的订阅已经开通。"
+    },
+    "clientPortal": {
+      "title": "我的交易",
+      "description": "跟进您的交易进度、文件和与经纪人的沟通记录。"
+    },
+    "closingCostEstimator": {
+      "title": "过户费用估算器",
+      "description": "估算买房的过户费用：贷款手续费、产权保险、评估费等一次算清。"
+    },
+    "cmaReport": {
+      "title": "比较市场分析报告"
+    },
+    "videoScripts": {
+      "title": "视频脚本",
+      "description": "为房产营销自动生成的 AI 视频脚本。"
+    },
+    "dashboardHome": {
+      "title": "Boss 助理",
+      "description": "您的 CloseBoss 指挥中心——优先事项、客户、交易与您的 AI 团队。"
+    },
+    "dashboardRouter": {
+      "title": "正在跳转",
+      "description": "正在为您跳转到对应的工作台。"
+    },
+    "dataDeletionStatus": {
+      "title": "数据删除状态",
+      "description": "查询提交给 CloseBoss 的 Facebook 数据删除请求的处理状态。"
+    },
+    "deepReport": {
+      "title": "房产深度报告"
+    },
+    "deleteAccount": {
+      "title": "删除您的 CloseBoss 账户",
+      "description": "如何永久删除您的 CloseBoss 账户及我们保存的个人资料。"
+    },
+    "demoOverview": {
+      "title": "演示工作区 · 总览",
+      "description": "只读的 CloseBoss 工作区实时演示——晨间简报、关键指标、AI 跟进动态一览无余。"
+    },
+    "downPaymentCalculator": {
+      "title": "首付计算器",
+      "description": "计算买房所需首付：定金金额、贷款额度与 PMI 一并算出。"
+    },
+    "showingFeedback": {
+      "title": "带看反馈"
+    },
+    "financialServices": {
+      "title": "面向金融服务机构的 LeadSmart AI",
+      "description": "AI 线索培育、招募漏斗与秒级财务需求分析——专为 IUL、年金与人寿代理人打造。"
+    },
+    "forgotPassword": {
+      "title": "重设您的密码",
+      "description": "填写邮箱，我们会给您发送重设 CloseBoss 账户密码的链接。"
+    },
+    "hoaFeeTracker": {
+      "title": "物业费追踪器",
+      "description": "按年度涨幅估算，推演您未来要付的物业费总额。"
+    },
+    "homes": {
+      "title": "在售房源",
+      "description": "用大白话描述您想要的房子，AI 结合实时联网搜索为您找出真实在售房源。"
+    },
+    "homesSearch": {
+      "title": "AI 房源搜索",
+      "description": "用大白话说出您的需求，AI 实时联网为您匹配真实在售房源。"
+    },
+    "banksCapRate": {
+      "title": "银行如何用资本化率给房产估值",
+      "description": "了解银行与放贷机构在房产估值中怎么使用资本化率，看懂放贷方的视角。"
+    },
+    "capRateAffectsValue": {
+      "title": "资本化率如何影响房产价值",
+      "description": "看懂资本化率与房产价值之间的关系，以及它如何左右估值结果。"
+    },
+    "capRateAcrossMarkets": {
+      "title": "不同市场的资本化率差异",
+      "description": "了解各地房产市场的资本化率差异，以及背后的市场因素。"
+    },
+    "analyzeWithCapRate": {
+      "title": "如何用资本化率分析一套房产",
+      "description": "一步步教房产投资人用资本化率分析出租房，做出更稳的判断。"
+    },
+    "howToCalculateCapRate": {
+      "title": "资本化率怎么算",
+      "description": "一步步教您计算资本化率，房产投资人和从业者都适用的完整指南。"
+    },
+    "increaseCapRate": {
+      "title": "如何提高出租房的资本化率",
+      "description": "提升出租房资本化率的实用策略：怎么提高 NOI、怎么把回报做上去。"
+    },
+    "landingHomeValue": {
+      "title": "免费房屋估值",
+      "description": "2 分钟内拿到快速房屋估值、本地需求评分和专属卖房策略。"
+    },
+    "landingMortgage": {
+      "title": "房贷月供估算器",
+      "description": "估算您的月供与购房力，并给出可直接对接贷款方的下一步建议。"
+    },
+    "login": {
+      "title": "登录",
+      "description": "登录您的 CloseBoss 账户，使用客户管理、CRM 与自动化工具。"
+    },
+    "marketReportShare": {
+      "title": "市场动态"
+    },
+    "mortgageCalculator": {
+      "title": "房贷计算器",
+      "description": "计算每月月供与还款摊销，含房产税、保险与物业费的完整贷款成本估算。"
+    },
+    "offerExtend": {
+      "title": "延长报价有效期"
+    },
+    "openHouseSignIn": {
+      "title": "开放日登记"
+    },
+    "openHouseKiosk": {
+      "title": "开放日自助登记台"
+    },
+    "onboarding": {
+      "title": "开始使用 CloseBoss",
+      "description": "互动式上手引导：设定您的市场、预览 AI 客户线索，再解锁完整 CRM 与自动化。"
+    },
+    "billingPortal": {
+      "title": "账单门户",
+      "description": "管理您的 Stripe 订阅与发票。"
+    },
+    "listingPresentation": {
+      "title": "房源推介方案",
+      "description": "查看为您定制的房源或卖家推介方案。"
+    },
+    "pricingAgent": {
+      "title": "经纪人价格",
+      "description": "查看面向房产经纪人的套餐与价格。"
+    },
+    "pricingConsumer": {
+      "title": "个人用户价格",
+      "description": "查看面向买家和卖家的价格方案。"
+    },
+    "pricingHub": {
+      "title": "选择适合您的方案",
+      "description": "对比 PropertyToolsAI 个人版、CloseBoss 经纪人版与贷款经纪版的价格。"
+    },
+    "pricingLoanBroker": {
+      "title": "贷款经纪价格",
+      "description": "查看面向贷款经纪的套餐与价格。"
+    },
+    "privacy": {
+      "title": "隐私政策",
+      "description": "CloseBoss 如何收集、使用、共享和保护您的个人与业务信息，含短信相关说明。"
+    },
+    "propertyDetails": {
+      "title": "房产详情",
+      "description": "查看房产的详细信息与市场分析。"
+    },
+    "refinanceCalculator": {
+      "title": "再融资计算器",
+      "description": "计算再融资能省多少、多久回本，把现有房贷和新方案放在一起比。"
+    },
+    "rentVsBuyCalculator": {
+      "title": "租房 vs 买房计算器",
+      "description": "把租房和买房的长期成本、净值与回报放在一起算，看清哪个更划算。"
+    },
+    "roiCalculator": {
+      "title": "投资回报率计算器",
+      "description": "计算出租房与房产交易的投资回报率，分析现金回报等关键指标。"
+    },
+    "signup": {
+      "title": "创建您的免费账户",
+      "description": "注册 CloseBoss，用 AI 驱动的客户管理开始获客、甄别与成交。"
+    },
+    "skillsLibrary": {
+      "title": "免费房产经纪 AI 技能库 — 59 条合规提示词",
+      "description": "面向房产经纪人的 59 条 AI 技能：获客、房源、买方代理、谈判与合规，全部免费。"
+    },
+    "sms": {
+      "title": "短信通知",
+      "description": "订阅 CloseBoss 与您经纪人的短信通知——房源动态、带看安排等。"
+    },
+    "startFreeAgent": {
+      "title": "选择您的套餐",
+      "description": "选一个套餐，解锁您的 CloseBoss 经纪人工作区。"
+    },
+    "support": {
+      "title": "客户支持",
+      "description": "与 CloseBoss 客服对话——价格、账单、技术问题与客户线索。"
+    },
+    "switchFrom": {
+      "title": "把您的 CRM 换成 CloseBoss",
+      "description": "从 LionDesk、Follow Up Boss、kvCORE 等平台迁移的完整指南，并提供免费迁移协助。"
+    },
+    "teamAccept": {
+      "title": "接受团队邀请"
+    },
+    "terms": {
+      "title": "服务条款",
+      "description": "使用 CloseBoss 客户管理、CRM 与自动化服务的条款——订阅、可接受使用与相关约定。"
+    },
+    "tryDemo": {
+      "title": "试试实时演示",
+      "description": "点开一个真实的 CloseBoss 工作区——50 位示例联系人、AI 收件箱、草稿队列与日历。"
+    },
+    "voiceAiTestDrive": {
+      "title": "试听我们的房产语音 AI",
+      "description": "现场听 AI 语音助理如何甄别一条房产客源。原生语音、3 秒内响应、支持多语言。"
+    },
+    "goodCapRate": {
+      "title": "出租房的资本化率多少算好",
+      "description": "多少的资本化率算好？看懂各地市场基准与出租房的 Cap Rate 合理区间。"
+    },
+    "whatIsCapRate": {
+      "title": "什么是资本化率",
+      "description": "资本化率（Cap Rate）完整指南：定义、公式，以及它对房产投资为什么重要。"
+    },
+    "whyCapRateMatters": {
+      "title": "资本化率为什么对投资人重要",
+      "description": "为什么资本化率对房产投资人如此关键，它在投资决策中到底起什么作用。"
     }
   }
 }

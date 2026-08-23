@@ -3,15 +3,19 @@ import Link from "next/link";
 import { pageMetadata } from "@/lib/seo";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  ...pageMetadata({
-    title: "Delete your CloseBoss account",
-    description:
-      "How to permanently delete your CloseBoss account and the personal data we hold about you. Required disclosure under Apple App Store and Google Play account-deletion policies.",
-    path: "/delete-account",
-  }),
-  robots: { index: true, follow: true },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.deleteAccount.title", { ns: "web_marketing" });
+  const description = t("routeMeta.deleteAccount.description", { ns: "web_marketing" });
+  return {
+  ...pageMetadata({
+    title,
+    description,
+    path: "/delete-account",
+  }),
+  robots: { index: true, follow: true },
 };
+}
 
 export default async function DeleteAccountPage() {
   const t = await getServerT();

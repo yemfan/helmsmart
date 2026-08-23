@@ -5,11 +5,15 @@ import type { HomeSearchParams } from "@/lib/house-search/brief";
 import HomesSearchClient from "./HomesSearchClient";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "AI home search",
-  description:
-    "Describe the home you want in plain English and get real, current listings — powered by AI and live web search.",
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.homesSearch.title", { ns: "web_marketing" });
+  const description = t("routeMeta.homesSearch.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
 };
+}
 
 function asString(v: string | string[] | undefined): string | undefined {
   const s = Array.isArray(v) ? v[0] : v;

@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata } from "@/lib/seo";
+import { getServerT } from "@/lib/i18n/server";
 
 const LAST_UPDATED = "April 24, 2026";
 
-export const metadata: Metadata = {
-  ...pageMetadata({
-    title: "Terms of Service",
-    description:
-      "Terms governing use of the CloseBoss lead management, CRM, and automation service — subscription, acceptable use, SMS/email compliance, intellectual property, liability, and disputes.",
-    path: "/terms",
-  }),
-  keywords: ["terms of service", "terms of use", "subscription terms", "acceptable use"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.terms.title", { ns: "web_marketing" });
+  const description = t("routeMeta.terms.description", { ns: "web_marketing" });
+  return {
+  ...pageMetadata({
+    title,
+    description,
+    path: "/terms",
+  }),
+  keywords: ["terms of service", "terms of use", "subscription terms", "acceptable use"],
 };
+}
 
 const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   {

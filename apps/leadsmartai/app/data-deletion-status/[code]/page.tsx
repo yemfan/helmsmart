@@ -17,12 +17,16 @@ import { getServerT } from "@/lib/i18n/server";
  * render `pending` / `completed` / `failed`.
  */
 
-export const metadata: Metadata = {
-  title: "Data Deletion Status",
-  description:
-    "Status of a Facebook data-deletion request submitted to CloseBoss.",
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.dataDeletionStatus.title", { ns: "web_marketing" });
+  const description = t("routeMeta.dataDeletionStatus.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  robots: { index: false, follow: false },
 };
+}
 
 type PageProps = {
   params: Promise<{ code: string }>;

@@ -11,14 +11,20 @@ import {
   checkoutSuccessShouldSyncSubscription,
   persistAgentAndProfileFromSubscription,
 } from "@/lib/stripeSubscriptionApply";
-import type { Metadata } from "next";
+import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Checkout Success",
-  description: "Your subscription is now active.",
-  keywords: ["checkout", "success", "subscription"],
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.checkoutSuccess.title", { ns: "web_marketing" });
+  const description = t("routeMeta.checkoutSuccess.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["checkout", "success", "subscription"],
+  robots: { index: false },
 };
+}
 
 /**
  * Stripe `success_url` lands here first. We sync subscription from Stripe immediately so

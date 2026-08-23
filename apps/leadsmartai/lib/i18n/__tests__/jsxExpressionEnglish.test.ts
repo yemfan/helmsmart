@@ -67,6 +67,17 @@ const ALLOWED = new Set([
   "Resend",
 ]);
 
+/**
+ * Files that stay English on purpose.
+ *
+ * The legal pages are English-only by product decision (23 Aug 2026) — the
+ * bilingual claim on the Signature tier is about the AI assistants meeting
+ * clients in their language, not about translating the contract. They entered
+ * this scan's scope only when their TITLE was localised, which is the part a
+ * Chinese visitor actually needs.
+ */
+const EXEMPT = new Set(["app/privacy/page.tsx", "app/terms/page.tsx"]);
+
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
@@ -133,6 +144,7 @@ describe("English inside JSX expressions", () => {
       for (const file of walk(join(ROOT, root))) {
         const src = readFileSync(file, "utf8");
         if (!/useTranslation|getServerT/.test(src)) continue;
+        if (EXEMPT.has(relative(ROOT, file).split(sep).join("/"))) continue;
         const sf = ts.createSourceFile(
           file,
           src,

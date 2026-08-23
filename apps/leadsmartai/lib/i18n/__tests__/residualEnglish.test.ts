@@ -88,6 +88,15 @@ const JSX_TEXT = /(?:^|[^=])[>}]([^<>{}]+)(?=[<{])/g;
  */
 const EXEMPT = new Map<string, string>([
   [
+    "app/privacy/page.tsx",
+    // English by product decision — see below.
+    "Legal copy: English-only by decision, title localised separately",
+  ],
+  [
+    "app/terms/page.tsx",
+    "Legal copy: English-only by decision, title localised separately",
+  ],
+  [
     "app/opengraph-image.tsx",
     // next/og renders with a Latin-only default font. Chinese here would come
     // out as tofu boxes in every social preview, which is worse than English.

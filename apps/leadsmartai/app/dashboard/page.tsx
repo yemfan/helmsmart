@@ -2,13 +2,19 @@ import type { Metadata } from "next";
 import BossAssistantPage from "./boss/page";
 import { redirect } from "next/navigation";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
-import { BROKER_PORTAL_ROLES } from "@/lib/rolePortalPaths";
+import { BROKER_PORTAL_ROLES } from "@/lib/rolePortalPaths";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Boss Assistant",
-  description: "Your CloseBoss command center — priorities, leads, transactions, and your AI team.",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.dashboardHome.title", { ns: "web_marketing" });
+  const description = t("routeMeta.dashboardHome.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  robots: { index: false },
 };
+}
 
 /**
  * `/dashboard` — agents land on the Boss Assistant command center;

@@ -5,10 +5,14 @@ import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { acceptInvite } from "@/lib/teams/service";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Accept team invitation",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.teamAccept.title", { ns: "web_marketing" });
+  return {
+  title,
+  robots: { index: false },
 };
+}
 
 /**
  * Public-ish accept-invite endpoint. Requires the invitee to be

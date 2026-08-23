@@ -4,11 +4,16 @@ import TrafficTracker from "@/components/TrafficTracker";
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Free Home Value Estimate",
-  description: "Get a fast home value estimate, local demand score, and custom selling strategy in under 2 minutes.",
-  keywords: ["home value estimate", "home worth", "property value", "selling strategy"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.landingHomeValue.title", { ns: "web_marketing" });
+  const description = t("routeMeta.landingHomeValue.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["home value estimate", "home worth", "property value", "selling strategy"],
 };
+}
 
 export default async function HomeValueLandingPage() {
   const t = await getServerT();

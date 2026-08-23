@@ -1,11 +1,16 @@
 import { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Cash Flow Calculator",
-  description: "Calculate monthly and annual cash flow for rental properties. Analyze income, expenses, and profitability with our property cash flow calculator.",
-  keywords: ["cash flow calculator", "rental property", "monthly income", "expenses", "real estate investing"],
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.cashFlowCalculator.title", { ns: "web_marketing" });
+  const description = t("routeMeta.cashFlowCalculator.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["cash flow calculator", "rental property", "monthly income", "expenses", "real estate investing"],
 };
+}
 
 export default async function CashFlowCalculatorLayout({
   children,

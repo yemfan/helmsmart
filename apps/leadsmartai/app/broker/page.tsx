@@ -1,26 +1,33 @@
 import RolePortalHub from "@/components/portals/RolePortalHub";
-import type { Metadata } from "next";
+import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Broker Portal",
-  description: "Lead your brokerage with pipeline visibility and growth tools.",
-  keywords: ["broker portal", "brokerage", "pipeline"],
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("routeMeta.broker.title", { ns: "web_marketing" });
+  const description = t("routeMeta.broker.description", { ns: "web_marketing" });
+  return {
+  title,
+  description,
+  keywords: ["broker portal", "brokerage", "pipeline"],
+  robots: { index: false },
 };
+}
 
-export default function BrokerPortalPage() {
+export default async function BrokerPortalPage() {
+  const t = await getServerT();
   return (
     <RolePortalHub
       eyebrow="CloseBoss"
-      title="Broker portal"
-      description="Lead your brokerage with pipeline visibility, growth tools, and team-ready workflows."
+      title={t("pages.brokerPortal.title", { ns: "dashboard" })}
+      description={t("pages.brokerPortal.description", { ns: "dashboard" })}
       links={[
-        { href: "/dashboard/broker", label: "Broker dashboard", description: "Brokerage home, pipeline & growth" },
-        { href: "/dashboard/growth", label: "Growth & SEO", description: "Traffic and landing tools" },
-        { href: "/dashboard/leads", label: "Leads & CRM", description: "Pipeline and follow-ups" },
-        { href: "/dashboard/marketing", label: "Marketing", description: "Campaigns and assets" },
-        { href: "/agent/pricing", label: "Plans & billing", description: "Team plans and upgrades" },
-        { href: "/portal", label: "Stripe billing portal", description: "Billing and invoices" },
+        { href: "/dashboard/broker", label: t("pages.brokerPortal.brokerDashboard", { ns: "dashboard" }), description: t("pages.brokerPortal.brokerDashboardDesc", { ns: "dashboard" }) },
+        { href: "/dashboard/growth", label: t("pages.brokerPortal.growthSeo", { ns: "dashboard" }), description: t("pages.brokerPortal.growthSeoDesc", { ns: "dashboard" }) },
+        { href: "/dashboard/leads", label: t("pages.brokerPortal.leadsCrm", { ns: "dashboard" }), description: t("pages.brokerPortal.leadsCrmDesc", { ns: "dashboard" }) },
+        { href: "/dashboard/marketing", label: t("pages.brokerPortal.marketing", { ns: "dashboard" }), description: t("pages.brokerPortal.marketingDesc", { ns: "dashboard" }) },
+        { href: "/agent/pricing", label: t("pages.brokerPortal.plansBilling", { ns: "dashboard" }), description: t("pages.brokerPortal.plansBillingDesc", { ns: "dashboard" }) },
+        { href: "/portal", label: t("pages.brokerPortal.stripePortal", { ns: "dashboard" }), description: t("pages.brokerPortal.stripePortalDesc", { ns: "dashboard" }) },
       ]}
     />
   );
