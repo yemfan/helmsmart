@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import Link from "next/link";
-import type { FiringOutcomeFilter, FiringRange, FiringRow } from "@/lib/scheduler/firings";
+import type { FiringOutcomeFilter, FiringRange, FiringRow } from "@/lib/scheduler/firings";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 type DisplayRow = FiringRow & { contactInitials?: string };
 
@@ -142,7 +143,7 @@ export default function SchedulerActivityClient() {
 
       <div className="rounded-xl border border-gray-200 bg-white">
         {loading ? (
-          <div className="p-8 text-sm text-gray-500">Loading…</div>
+          <div className="p-8 text-sm text-gray-500"><LoadingText /></div>
         ) : rows.length === 0 ? (
           <EmptyState outcome={outcome} />
         ) : (
@@ -237,7 +238,7 @@ export default function SchedulerActivityClient() {
                                   href="/dashboard/drafts"
                                   className="text-brand-accent-text hover:underline"
                                 >
-                                  Open draft →
+                                  {t("pages.schedulerActivity.openDraft")}
                                 </Link>
                               )}
                               <div>
@@ -264,7 +265,7 @@ export default function SchedulerActivityClient() {
                   disabled={loadingMore}
                   className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                 >
-                  {loadingMore ? "Loading…" : "Load more"}
+                  {loadingMore ? <LoadingText /> : t("common:actions.load_more")}
                 </button>
               </div>
             )}

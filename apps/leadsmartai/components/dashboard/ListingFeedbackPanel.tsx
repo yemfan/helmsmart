@@ -125,7 +125,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
           onClick={() => setShowAdd((v) => !v)}
           className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
         >
-          {showAdd ? "Cancel" : "+ Add request"}
+          {showAdd ? t("common:actions.cancel") : "+ Add request"}
         </button>
       </div>
 
@@ -152,7 +152,7 @@ export function ListingFeedbackPanel({ transactionId }: { transactionId: string 
       ) : null}
 
       {loading ? (
-        <div className="mt-4 text-xs text-slate-400">Loading feedback…</div>
+        <div className="mt-4 text-xs text-slate-400">{t("pages.listingFeedback.loading")}</div>
       ) : error ? (
         <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
           {error}
@@ -300,7 +300,7 @@ function PendingCard({
             {row.buyer_agent_name ?? "(unknown buyer agent)"}
           </div>
           <div className="mt-0.5 text-[11px] text-slate-500">
-            {row.buyer_agent_email ?? "No email on file"}
+            {row.buyer_agent_email ?? t("pages.listingFeedback.noEmailOnFile")}
             {row.showing_date ? ` · ${row.showing_date}` : ""}
           </div>
           {row.request_email_sent_at ? (
@@ -317,7 +317,7 @@ function PendingCard({
             className="rounded-lg bg-slate-900 px-3 py-1 text-[11px] font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             title={!row.buyer_agent_email ? "Add buyer-agent email to enable" : ""}
           >
-            {row.request_email_sent_at ? "Resend" : "Send request"}
+            {row.request_email_sent_at ? "Resend" : t("pages.listingFeedback.sendRequest")}
           </button>
           <button
             type="button"
@@ -424,7 +424,7 @@ function AddRequestForm({
         disabled={saving}
         className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
       >
-        {saving ? "Adding…" : "Add request"}
+        {saving ? t("common:status.adding") : t("pages.listingFeedback.addRequest")}
       </button>
       <p className="text-[11px] text-slate-500">{t("pages.listingFeedback.pendingNote")}</p>
     </div>

@@ -471,7 +471,7 @@ export default function DigitalTwinPanel() {
           className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
           title={consent ? t("twin.uploadIntroTitle") : t("twin.consentFirst")}
         >
-          {uploading ? "Uploading…" : hasVideo ? t("twin.replaceIntro") : t("twin.uploadIntro")}
+          {uploading ? t("common:status.uploading") : hasVideo ? t("twin.replaceIntro") : t("twin.uploadIntro")}
         </button>
         <input ref={fileRef} type="file" accept="video/*" onChange={onPickVideo} className="hidden" />
         <button
@@ -481,7 +481,7 @@ export default function DigitalTwinPanel() {
           className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
           title={consent ? t("twin.usePhotoTitle") : t("twin.consentFirst")}
         >
-          {photoUploading ? "Uploading…" : hasPortrait ? t("twin.replacePhoto") : t("twin.usePhoto")}
+          {photoUploading ? t("common:status.uploading") : hasPortrait ? t("twin.replacePhoto") : t("twin.usePhoto")}
         </button>
         <input ref={photoRef} type="file" accept="image/*" onChange={onPickPhoto} className="hidden" />
         <button
@@ -533,7 +533,7 @@ export default function DigitalTwinPanel() {
           </label>
           <div className="flex justify-end">
             <button type="button" onClick={() => void save()} disabled={saving} className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50">
-              {saving ? "Saving…" : t("twin.saveProfile")}
+              {saving ? t("common:status.saving") : t("twin.saveProfile")}
             </button>
           </div>
         </div>
@@ -688,7 +688,7 @@ export default function DigitalTwinPanel() {
                 disabled={avBusy !== null}
                 className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
               >
-                {avBusy === "draft" ? "Writing…" : t("twin.draftScript")}
+                {avBusy === "draft" ? t("common:status.writing") : t("twin.draftScript")}
               </button>
             </div>
 
@@ -739,7 +739,7 @@ export default function DigitalTwinPanel() {
                 disabled={avBusy !== null || !avScript.trim()}
                 className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
               >
-                {avBusy === "preview" ? "Synthesizing…" : t("twin.previewVoice")}
+                {avBusy === "preview" ? t("common:status.synthesizing") : t("twin.previewVoice")}
               </button>
               {/*
                 Sits right after Preview on purpose: this is the only place the
@@ -755,7 +755,7 @@ export default function DigitalTwinPanel() {
                   disabled={vcBusy !== null}
                   className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-50"
                 >
-                  {vcBusy === "acknowledge" ? "Saving…" : t("twin.confirmVoice")}
+                  {vcBusy === "acknowledge" ? t("common:status.saving") : t("twin.confirmVoice")}
                 </button>
               ) : null}
               <button
@@ -765,7 +765,7 @@ export default function DigitalTwinPanel() {
                 title={avAudioPath ? t("twin.renderTitle") : t("twin.previewFirst")}
                 className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
               >
-                {avBusy === "render" ? "Queueing…" : "Generate video (uses credits)"}
+                {avBusy === "render" ? t("common:status.queueing") : t("pages.digitalTwin.generateVideoUsesCredits")}
               </button>
             </div>
 
@@ -808,8 +808,8 @@ export default function DigitalTwinPanel() {
             {!avAudioPath && avBusy === null ? (
               <p className="text-[12px] text-slate-500">
                 {avScript.trim()
-                  ? "Hit Preview voice (free) first — Generate video unlocks once you've heard the take."
-                  : "Draft or write a script, then Preview voice (free) to unlock Generate video."}
+                  ? t("pages.digitalTwin.hitPreviewVoiceFree")
+                  : t("pages.digitalTwin.draftOrWriteA")}
               </p>
             ) : null}
 
@@ -884,7 +884,7 @@ export default function DigitalTwinPanel() {
                       disabled={avBusy !== null}
                       className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
                     >
-                      {avBusy === "publish" ? "Posting…" : t("twin.postToSocial")}
+                      {avBusy === "publish" ? t("common:status.posting") : t("twin.postToSocial")}
                     </button>
                     {avNeedsConnect ? (
                       <a href="/connections" className="text-[12px] font-medium text-violet-700 underline underline-offset-2">{t("pages.digitalTwin.connectAccounts")}</a>

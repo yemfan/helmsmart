@@ -61,7 +61,7 @@ export default function HomeValueSmartLinkCopyShare({ relativePath, compact = fa
       <div className="flex flex-wrap items-center gap-2">
         <button type="button" className={btnBase} onClick={copyLink} aria-label={t("pages.smartLinkShare.copyFull")}>
           <Copy className="h-4 w-4 shrink-0" />
-          <span className="sr-only sm:not-sr-only">{copied ? "Copied!" : "Copy"}</span>
+          <span className="sr-only sm:not-sr-only">{copied ? t("common:actions.copied_bang") : t("common:actions.copy")}</span>
         </button>
         <button type="button" className={btnBase} onClick={shareLink} aria-label={t("pages.smartLinkShare.shareLink")}>
           <Share2 className="h-4 w-4 shrink-0" />
@@ -69,7 +69,7 @@ export default function HomeValueSmartLinkCopyShare({ relativePath, compact = fa
         </button>
         {(copied || shareHint) && (
           <span className="text-xs font-medium text-emerald-600" role="status">
-            {copied ? "Full URL copied" : "Link copied — use Share on a phone for more options"}
+            {copied ? t("pages.homeValueSmartLinkCopyShare.fullUrlCopied") : t("pages.homeValueSmartLinkCopyShare.linkCopiedUseShare")}
           </span>
         )}
       </div>
@@ -80,7 +80,7 @@ export default function HomeValueSmartLinkCopyShare({ relativePath, compact = fa
     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
       <button type="button" className={btnBase} onClick={copyLink}>
         <Copy className="h-4 w-4 shrink-0" />
-        {copied ? "Copied!" : "Copy link"}
+        {copied ? t("common:actions.copied_bang") : t("common:actions.copy_link")}
       </button>
       <button type="button" className={btnBase} onClick={shareLink}>
         <Share2 className="h-4 w-4 shrink-0" />{t("pages.smartLinkShare.share")}</button>

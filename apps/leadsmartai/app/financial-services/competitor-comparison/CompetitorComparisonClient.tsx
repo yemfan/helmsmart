@@ -336,7 +336,7 @@ export default function CompetitorComparisonClient() {
             <p className="mt-1.5 text-[12pt] font-semibold leading-snug">{t("pages.competitorComparison.oneSentence1")}<span className={theme.accentText}>{t("pages.competitorComparison.oneSentence2")}</span>
             </p>
             <p className="mt-2 text-[9pt] leading-snug text-white/80">
-              Carrier portals handle policy admin. AgencyBloc handles back-office. Salesforce can be customized to almost anything with a year and a six-figure budget. Spreadsheets handle today. None of them were built around the MLM-financial-services flow: capture → 5-minute nurture → FNA in 60 seconds → kitchen-table sit → close → recruit. That cycle is the engine of {partnerLabel}&apos;s growth, and it&apos;s the cycle we built around.
+              {t("pages.competitorComparison.positioning", { partner: partnerLabel })}
             </p>
           </div>
 

@@ -488,7 +488,7 @@ export function ListingOffersCompareClient({
               disabled={summarizing}
               className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#005fa8] disabled:opacity-50"
             >
-              {summarizing ? "Analyzing…" : summary ? t("pages.offersCompare.refresh") : t("pages.offersCompare.summarize")}
+              {summarizing ? t("common:status.analyzing") : summary ? t("pages.offersCompare.refresh") : t("pages.offersCompare.summarize")}
             </button>
           </div>
           {summaryErr ? <p className="mt-2 text-xs text-red-600">{summaryErr}</p> : null}
@@ -516,7 +516,7 @@ export function ListingOffersCompareClient({
                     return (
                       <div key={p.offerId} className="flex gap-2 text-xs">
                         <span className="shrink-0 font-medium text-slate-900">
-                          {o?.buyer_name ?? "Offer"}:
+                          {o?.buyer_name ?? t("pages.listingOffersCompare.offer")}:
                         </span>
                         <span className="text-slate-600">{p.summary}</span>
                       </div>
@@ -766,7 +766,7 @@ function NewListingOfferForm({
           disabled={submitting || !offerPrice.trim()}
           className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
         >
-          {submitting ? "Saving…" : "Record offer"}
+          {submitting ? t("common:status.saving") : t("pages.listingOffersCompare.recordOffer")}
         </button>
       </div>
     </div>

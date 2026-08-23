@@ -52,7 +52,7 @@ export default async function DemoDrafts() {
                   {draft.contactName}
                 </h3>
                 <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  {draft.channel === "sms" ? "SMS" : "Email"} · drafted{" "}
+                  {draft.channel === "sms" ? "SMS" : t("pages.drafts.email", { ns: "dashboard" })} · drafted{" "}
                   {draft.ago < 60
                     ? `${draft.ago}m ago`
                     : `${Math.floor(draft.ago / 60)}h ago`}

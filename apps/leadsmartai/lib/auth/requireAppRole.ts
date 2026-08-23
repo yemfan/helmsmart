@@ -50,10 +50,6 @@ export async function requireRole(allowed: AppRole[]): Promise<CurrentUserWithRo
   }
 
   if (!roleInAllowed(user.role, allowed)) {
-    if (allowed.map((a) => normalizeRole(a)).includes("loan_broker")) {
-      redirect("/start-free/loan-broker");
-    }
-
     redirect("/unauthorized");
   }
 

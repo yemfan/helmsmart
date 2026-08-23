@@ -114,7 +114,7 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
                     className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                     title={t("pages.sphereSignals.markSeen")}
                   >
-                    {pendingId === s.id ? "…" : "Acknowledge"}
+                    {pendingId === s.id ? "…" : t("common:actions.acknowledge")}
                   </button>
                 )}
                 {s.acknowledgedAt && (
@@ -128,7 +128,7 @@ export default function SphereSignalsList({ signals: initial }: { signals: Signa
                   disabled={pendingId === s.id}
                   className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                 >
-                  {pendingId === s.id ? "Dismissing…" : "Dismiss"}
+                  {pendingId === s.id ? t("common:status.dismissing") : t("common:actions.dismiss")}
                 </button>
               </div>
             </div>

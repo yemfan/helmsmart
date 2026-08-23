@@ -235,7 +235,7 @@ export default async function NotificationsPage() {
                       href={`/dashboard/leads?id=${encodeURIComponent(String(l.id))}`}
                       className="block px-4 py-3 transition hover:bg-orange-50/60"
                     >
-                      <p className="text-sm font-medium text-slate-900">{l.name ?? "Lead"}</p>
+                      <p className="text-sm font-medium text-slate-900">{l.name ?? tr("pages.notifications.lead", { ns: "dashboard" })}</p>
                       {l.last_activity_at ? (
                         <p className="mt-0.5 text-xs text-slate-500">{tr("pages.dashFragments.lastActivity", { ns: "dashboard" })} {new Date(l.last_activity_at).toLocaleString(locale)}
                         </p>

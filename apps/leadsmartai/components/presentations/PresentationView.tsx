@@ -142,7 +142,11 @@ function normalize(data: RawData, fallbackAddress: string): VM {
   };
 }
 
-export function buildPresentationPdf(vm: VM, jsPDF: any) {
+export function buildPresentationPdf(
+  vm: VM,
+  jsPDF: any,
+  t: (k: string) => string,
+) {
   const doc = new jsPDF();
   const money2 = (n: number | null) => (n == null ? "—" : `$${Math.round(n).toLocaleString()}`);
   let y = 12;
@@ -199,7 +203,7 @@ export function buildPresentationPdf(vm: VM, jsPDF: any) {
   );
 
   if (vm.agent && (vm.agent.name || vm.agent.email || vm.agent.phone)) {
-    heading("Your Agent");
+    heading(t("pages.cmaShareView.yourAgent"));
     line(
       [vm.agent.name, vm.agent.brokerage, vm.agent.licenseNumber ? `Lic #${vm.agent.licenseNumber}` : null]
         .filter(Boolean)
@@ -227,7 +231,7 @@ export default function PresentationView({
   const onDownloadPdf = async () => {
     try {
       const jsPDF = (await import("jspdf")).default;
-      buildPresentationPdf(vm, jsPDF).save("listing-presentation.pdf");
+      buildPresentationPdf(vm, jsPDF, t).save("listing-presentation.pdf");
     } catch (e) {
       console.error(e);
       alert("Could not generate the PDF. Please try again.");
@@ -262,7 +266,7 @@ export default function PresentationView({
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-slate-900">{vm.agent.name ?? "Your Agent"}</div>
+            <div className="text-sm font-bold text-slate-900">{vm.agent.name ?? t("pages.cmaShareView.yourAgent")}</div>
             <div className="text-xs text-slate-600">
               {[vm.agent.brokerage, vm.agent.licenseNumber ? `Lic #${vm.agent.licenseNumber}` : null]
                 .filter(Boolean)

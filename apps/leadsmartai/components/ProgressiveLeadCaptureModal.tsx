@@ -193,7 +193,7 @@ export default function ProgressiveLeadCaptureModal(props: {
                 disabled={loading}
                 className="w-full inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {loading ? "Unlocking..." : "Unlock Full Report"}
+                {loading ? t("common:status.unlocking") : t("pages.homeValueWidget.unlockFullReport")}
               </button>
             </>
           ) : null}
@@ -220,7 +220,7 @@ export default function ProgressiveLeadCaptureModal(props: {
                   disabled={loading}
                   className="flex-1 inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Saving..." : "Continue"}
+                  {loading ? t("common:status.saving") : t("pages.completeProfile.continue")}
                 </button>
               </div>
             </>
@@ -243,7 +243,7 @@ export default function ProgressiveLeadCaptureModal(props: {
                   disabled={loading}
                   className="w-full inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Saving..." : "Save phone"}
+                  {loading ? t("common:status.saving") : t("pages.progressiveLeadCapture.savePhone")}
                 </button>
                 <button
                   type="button"

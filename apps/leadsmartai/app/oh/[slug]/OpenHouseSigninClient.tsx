@@ -96,7 +96,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
           <p className="mt-2 text-slate-600">
             {info.hostAgentFirstName
               ? `${info.hostAgentFirstName} is around — feel free to ask questions about the home.`
-              : "Feel free to walk around and explore the home."}
+              : t("pages.openHouseSignin.feelFreeToWalk")}
           </p>
           <button
             type="button"
@@ -179,7 +179,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] font-medium text-slate-800 hover:bg-slate-50"
                 >
-                  See property details →
+                  {t("pages.openHouseSignin.seePropertyDetails")}
                 </a>
               ) : null}
               {(info.city || info.zip) ? (
@@ -193,7 +193,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
                   })()}
                   className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] font-medium text-slate-800 hover:bg-slate-50"
                 >
-                  Search similar nearby →
+                  {t("pages.openHouseSignin.searchSimilar")}
                 </a>
               ) : null}
             </div>
@@ -306,7 +306,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
 
           <div>
             <label className="block text-sm font-medium text-slate-700">
-              You are…
+              {t("pages.openHouseSignin.youAre")}
             </label>
             <select
               value={buyerStatus}
@@ -345,7 +345,7 @@ export function OpenHouseSigninClient({ info }: { info: PublicOpenHouseInfo }) {
             disabled={submitting}
             className="w-full rounded-xl bg-slate-900 px-6 py-4 text-lg font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
           >
-            {submitting ? "Signing in…" : "Sign in"}
+            {submitting ? t("pages.openHouseSignin.signingIn") : t("pages.openHouseSignin.signIn")}
           </button>
 
           <p className="text-center text-[11px] text-slate-400">{t("pages.openHouseSignin.poweredBy")}</p>

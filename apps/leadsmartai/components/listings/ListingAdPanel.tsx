@@ -417,7 +417,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
             className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             title={pullUrl.trim() ? t("pages.listingAd.pullHint") : t("pages.listingAd.pullNeedsUrl")}
           >
-            {pulling ? "Pulling…" : hasFacts ? t("pages.listingAd.rePull") : t("pages.listingAd.pullFromUrl")}
+            {pulling ? t("common:status.pulling") : hasFacts ? t("pages.listingAd.rePull") : t("pages.listingAd.pullFromUrl")}
           </button>
         </div>
 
@@ -630,7 +630,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
               title={photosToAnimate.length === 0 ? t("pages.listingAd.needPhoto") : t("pages.listingAd.generateClips")}
             >
-              {generating ? "Rendering…" : clipUrls.length > 0 ? t("pages.listingAd.regenerateClips") : t("pages.listingAd.generateClips")}
+              {generating ? t("common:status.rendering") : clipUrls.length > 0 ? t("pages.listingAd.regenerateClips") : t("pages.listingAd.generateClips")}
             </button>
           </div>
 
@@ -658,7 +658,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                   <span className="font-semibold text-slate-700">~{estSeconds}{t("pages.dashFragments.sVideo")}</span>
                 </>
               ) : (
-                "Select photos above to set the length"
+                t("pages.listingAd.selectPhotosAboveTo")
               )}
             </span>
           </div>
@@ -700,7 +700,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
               title={clipUrls.length === 0 ? t("pages.listingAd.needClips") : t("pages.listingAd.buildAd")}
             >
-              {building ? "Building…" : reelUrl ? t("pages.listingAd.rebuildAd") : t("pages.listingAd.buildAd")}
+              {building ? t("common:status.building") : reelUrl ? t("pages.listingAd.rebuildAd") : t("pages.listingAd.buildAd")}
             </button>
           </div>
 
@@ -740,7 +740,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                   {publishNote ? <span className="text-[11px] text-emerald-700">{publishNote}</span> : null}
                   {needsConnect ? (
                     <a href="/connections" className="text-[11px] text-indigo-600 underline underline-offset-2">
-                      Connect Facebook / Instagram / LinkedIn →
+                      {t("pages.listingAdPanel.connectSocials")}
                     </a>
                   ) : null}
                 </div>
@@ -765,7 +765,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
               className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
               title={!reelUrl ? t("pages.listingAd.needAdFirst") : t("pages.listingAd.writeScript")}
             >
-              {scripting ? "Writing…" : script ? t("pages.listingAd.rewriteScript") : t("pages.listingAd.generateScript")}
+              {scripting ? t("common:status.writing") : script ? t("pages.listingAd.rewriteScript") : t("pages.listingAd.generateScript")}
             </button>
           </div>
 
@@ -792,7 +792,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                   className="rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
                   title={!script.trim() ? t("pages.listingAd.needScript") : t("pages.listingAd.speakScript")}
                 >
-                  {voicing ? "Adding…" : voicedUrl ? t("pages.listingAd.redoVoiceover") : "Add voiceover"}
+                  {voicing ? t("common:status.adding") : voicedUrl ? t("pages.listingAd.redoVoiceover") : t("pages.listingAd.addVoiceover")}
                 </button>
                 {voNote ? <span className="text-[11px] text-slate-600">{voNote}</span> : null}
               </div>
@@ -809,7 +809,7 @@ export function ListingAdPanel({ listing }: { listing: ListingDetail }) {
                     <p className="font-medium text-slate-700">{t("pages.listingAd.voicedVersion")}</p>
                     {voiceKind ? (
                       <p className="mt-0.5">
-                        {voiceKind === "cloned" ? "Narrated in your cloned voice." : "Narrated in a professional voice."}
+                        {voiceKind === "cloned" ? t("pages.listingAd.narratedInYourCloned") : t("pages.listingAd.narratedInAProfessional")}
                       </p>
                     ) : null}
                     <p className="mt-1">{t("pages.listingAd.voicedHint")}</p>

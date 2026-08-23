@@ -67,6 +67,7 @@ function JobRow({
   state: JobState;
   onTrigger: (path: string) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   const [expanded, setExpanded] = useState(false);
   const last = state.lastRun;
 
@@ -92,7 +93,7 @@ function JobRow({
               onClick={() => setExpanded((x) => !x)}
               className="text-xs text-[#0072CE] hover:underline"
             >
-              {expanded ? "Hide" : "Result"}
+              {expanded ? t("common:actions.hide") : t("pages.jobs.result")}
             </button>
           </div>
         )}
@@ -105,7 +106,7 @@ function JobRow({
           {state.running ? (
             <span className="flex items-center gap-1.5">
               <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#0072CE] border-t-transparent" />
-              Running…
+              {t("pages.adminCommon.running")}
             </span>
           ) : (
             "▶ Run now"
@@ -186,7 +187,7 @@ export function JobsClient({ jobs }: { jobs: CronJob[] }) {
           disabled={globalRunning}
           className="rounded-lg bg-[#0072CE] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
         >
-          {globalRunning ? "Running all…" : "Run all jobs"}
+          {globalRunning ? t("pages.jobs.runningAll") : t("pages.jobs.runAllJobs")}
         </button>
       </div>
 

@@ -501,7 +501,7 @@ export function ListingDetailClient({
               href={`/dashboard/transactions/${listing.transactionId}`}
               className="font-medium hover:underline"
             >
-              Open contracted deal →
+              {t("pages.listingDetail.openContractedDeal")}
             </Link>
             <span className="ml-2 text-[11px] text-blue-700">{t("pages.listingDetail.dealPageNote")}</span>
           </div>
@@ -595,7 +595,7 @@ export function ListingDetailClient({
               href={`/dashboard/showings?propertyAddress=${encodeURIComponent(listing.property_address)}`}
               className="text-xs text-blue-600 hover:underline"
             >
-              View all showings →
+              {t("pages.listingDetail.viewAllShowings")}
             </Link>
           </div>
         </Card>
@@ -692,7 +692,7 @@ export function ListingDetailClient({
                         <tr className="align-top hover:bg-slate-50">
                           <td className="px-3 py-2.5">
                             <div className="font-medium text-slate-900">
-                              {o.buyer_name ?? "Unnamed buyer"}
+                              {o.buyer_name ?? t("pages.listingDetail.unnamedBuyer")}
                             </div>
                             {o.counter_count > 0 ? (
                               <div className="text-[11px] text-slate-500">

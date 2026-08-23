@@ -211,10 +211,10 @@ export default function ContactPicker({
           {open && (
             <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-72 overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg">
               {loading ? (
-                <div className="px-3 py-2 text-xs text-slate-500">Searching…</div>
+                <div className="px-3 py-2 text-xs text-slate-500">{t("pages.contactPicker.searching")}</div>
               ) : results.length === 0 ? (
                 <div className="px-3 py-2 text-xs text-slate-500">
-                  {query.trim() ? "No contacts match." : "Type to search — or your most recently contacted show here."}
+                  {query.trim() ? t("pages.contactPicker.noContactsMatch") : t("pages.contactPicker.typeToSearchOr")}
                 </div>
               ) : (
                 <ul role="listbox">

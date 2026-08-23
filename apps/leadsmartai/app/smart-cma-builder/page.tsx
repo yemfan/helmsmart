@@ -403,7 +403,7 @@ function SmartCmaBuilderPageInner() {
               </div>
               <div className="flex-1 sm:max-w-[420px]">
                 {leadOptionsLoading ? (
-                  <div className="text-xs text-slate-600">Loading leads…</div>
+                  <div className="text-xs text-slate-600">{t("pages.smartCmaBuilder.loadingLeads")}</div>
                 ) : null}
                 {leadOptionsError ? (
                   <div className="text-xs text-red-600">{leadOptionsError}</div>
@@ -417,7 +417,7 @@ function SmartCmaBuilderPageInner() {
                   <option value="">{t("pages.smartCmaBuilder.doNotAttach")}</option>
                   {leadOptions.map((l) => (
                     <option key={l.id} value={l.id}>
-                      {l.name ?? "Lead"}{" "}
+                      {l.name ?? t("pages.notifications.lead")}{" "}
                       {l.property_address ? `- ${l.property_address}` : ""}
                     </option>
                   ))}
@@ -427,8 +427,8 @@ function SmartCmaBuilderPageInner() {
 
             {attachedLead ? (
               <div className="text-xs text-slate-600">{t("pages.smartCmaBuilder.attachedTo")}{" "}
-                <span className="font-semibold">{attachedLead.name ?? "Lead"}</span> •{" "}
-                {attachedLead.property_address ?? "No address"}
+                <span className="font-semibold">{attachedLead.name ?? t("pages.notifications.lead")}</span> •{" "}
+                {attachedLead.property_address ?? t("pages.smartCmaBuilder.noAddress")}
               </div>
             ) : (
               <div className="text-xs text-slate-600">{t("pages.smartCmaBuilder.noLeadAttached")}</div>
@@ -463,7 +463,7 @@ function SmartCmaBuilderPageInner() {
               {loading && (
                 <span className="mr-2 inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               )}
-              {loading ? "Generating..." : "Generate CMA"}
+              {loading ? t("common:status.generating") : t("pages.smartCmaBuilder.generateCma")}
             </button>
             <button
               onClick={() => handleGenerate(true)}
@@ -646,7 +646,7 @@ function SmartCmaBuilderPageInner() {
               disabled={savingReport}
               className="inline-flex items-center bg-white text-blue-700 text-sm font-semibold px-4 py-2 rounded-lg border border-blue-200 hover:bg-blue-50 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {savingReport ? "Saving..." : "Save to Reports"}
+              {savingReport ? t("common:status.saving") : t("pages.smartCmaBuilder.saveToReports")}
             </button>
           </div>
 

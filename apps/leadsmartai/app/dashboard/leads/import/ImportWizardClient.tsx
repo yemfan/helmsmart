@@ -193,7 +193,7 @@ export function ImportWizardClient() {
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-8">
       <div>
         <Link href="/dashboard/leads" className="text-sm font-medium text-gray-600 hover:text-gray-900">
-          ← Back to leads
+          {t("pages.importWizard.backToLeads")}
         </Link>
         <h1 className="mt-2 text-2xl font-semibold text-gray-900">{t("pages.importWizard.heading")}</h1>
         <p className="text-sm text-gray-600">{t("pages.importWizard.sub")}</p>

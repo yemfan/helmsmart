@@ -50,7 +50,7 @@ export function ReferAFriendCard() {
   if (loading || !summary) {
     return (
       <section className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-5 shadow-sm">
-        <p className="text-xs text-slate-500">Loading your referral link…</p>
+        <p className="text-xs text-slate-500">{t("pages.referAFriend.loadingLink")}</p>
       </section>
     );
   }

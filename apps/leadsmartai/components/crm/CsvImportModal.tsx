@@ -105,7 +105,7 @@ export function CsvImportModal({
                 >
                   <div className="text-gray-400 text-3xl mb-2">+</div>
                   <p className="text-sm font-medium text-gray-700">
-                    {fileName || "Click to select a CSV file"}
+                    {fileName || t("pages.csvImport.clickToSelectA")}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">{t("pages.csvImport.limits")}</p>
                 </label>
@@ -127,7 +127,7 @@ export function CsvImportModal({
                   disabled={uploading || !fileName}
                   className="px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
-                  {uploading ? "Uploading..." : "Upload & Import"}
+                  {uploading ? t("common:status.uploading") : t("pages.csvImport.uploadImport")}
                 </button>
               </div>
             </>

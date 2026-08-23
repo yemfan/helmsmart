@@ -157,16 +157,16 @@ export default function HomesSearchClient({
           <span className="text-xs text-slate-400">
             {usage?.reached
               ? usage.reason === "free_limit"
-                ? "You've hit today's free searches."
-                : "You've used today's free search."
-              : "Searches the live web — results take up to a minute."}
+                ? t("pages.homesSearch.youVeHitToday")
+                : t("pages.homesSearch.youVeUsedToday")
+              : t("pages.homesSearch.searchesTheLiveWeb")}
           </span>
           <button
             type="submit"
             disabled={loading || query.trim().length === 0 || usage?.reached === true}
             className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Searching…" : "Search homes"}
+            {loading ? t("common:status.searching") : t("pages.homesSearch.searchHomes")}
           </button>
         </div>
         {usage && usage.tier === "anonymous" && !usage.reached ? (
@@ -211,7 +211,7 @@ export default function HomesSearchClient({
 
       {loading ? (
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-600">
-          Searching the web for matching listings… this can take up to a minute.
+          {t("pages.houseSearch.searchingWeb")}
         </div>
       ) : null}
 

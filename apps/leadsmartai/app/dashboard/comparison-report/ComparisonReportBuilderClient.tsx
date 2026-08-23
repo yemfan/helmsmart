@@ -333,8 +333,7 @@ export default function ComparisonReportBuilderClient({
                     <span className="mt-1 block text-[11px]">
                       {detect[row.id]!.status === "looking-up" && (
                         <span className="text-gray-500">
-                          🔍 {detect[row.id]!.label} detected — looking up
-                          listing…
+                          🔍 {t("pages.listingLookup.detected", { label: detect[row.id]!.label })}
                         </span>
                       )}
                       {detect[row.id]!.status === "filled" && (

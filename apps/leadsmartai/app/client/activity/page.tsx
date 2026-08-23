@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useClientLeadId } from "@/components/client/useClientLeadId";
-import { intlLocale } from "@/lib/i18n/locale";
+import { intlLocale } from "@/lib/i18n/locale";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 type MeLead = {
   id: string;
@@ -163,7 +164,7 @@ export default function ClientActivityPage() {
       ) : null}
 
       {loading ? (
-        <div className="py-10 text-center text-sm text-slate-400">Loading…</div>
+        <div className="py-10 text-center text-sm text-slate-400"><LoadingText /></div>
       ) : err ? (
         <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
           {err}
@@ -190,7 +191,7 @@ export default function ClientActivityPage() {
         href="/client/assistant"
         className="block rounded-xl border border-slate-200 bg-white px-3 py-2 text-center text-xs text-slate-500 hover:bg-slate-50"
       >
-        Ask the AI assistant →
+        {t("pages.clientPortal.askAssistant")}
       </Link>
     </div>
   );
@@ -206,7 +207,7 @@ function ListingCard({ listing }: { listing: ListingSummary }) {
         {listing.propertyAddress}
       </div>
       <div className="mt-1 text-xs text-slate-500">
-        {listing.listPrice ? formatMoney(listing.listPrice) : "Price TBD"}
+        {listing.listPrice ? formatMoney(listing.listPrice) : t("pages.activity.priceTbd")}
         {listing.daysOnMarket != null
           ? ` · ${listing.daysOnMarket} day${listing.daysOnMarket === 1 ? "" : "s"} on market`
           : ""}

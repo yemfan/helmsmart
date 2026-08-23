@@ -20,10 +20,16 @@ export default function ForgotPasswordPage() {
     try {
       const result = await sendPasswordResetEmail(email);
       if (result.ok === false) {
-        setError(result.message);
+        setError(
+          t(
+            result.reason === "email_required"
+              ? "pages.dashFragments.resetEmailRequired"
+              : "pages.dashFragments.resetSendFailed",
+          ),
+        );
         return;
       }
-      setSuccess("Check your email for a link to reset your password.");
+      setSuccess(t("pages.dashFragments.resetEmailSent"));
       setEmail("");
     } finally {
       setLoading(false);
@@ -66,7 +72,7 @@ export default function ForgotPasswordPage() {
             disabled={loading}
             className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Sending…" : "Send reset link"}
+            {loading ? t("pages.dashFragments.sendingResetLink") : t("pages.dashFragments.sendResetLink")}
           </button>
         </form>
 

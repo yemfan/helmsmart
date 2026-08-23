@@ -62,7 +62,7 @@ export function PlatformOverviewClient() {
   if (error || !data) {
     return (
       <div className="p-6 text-sm text-red-600">
-        {error || "Failed to load dashboard"}
+        {error || t("pages.platformOverview.failedToLoadDashboard")}
       </div>
     );
   }

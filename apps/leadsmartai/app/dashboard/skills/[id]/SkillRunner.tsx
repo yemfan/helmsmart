@@ -70,7 +70,7 @@ export function SkillRunner({
         disabled={pending}
         className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
       >
-        {pending ? "Running…" : `Run — ${assigneeLabel}`}
+        {pending ? t("common:status.running") : `Run — ${assigneeLabel}`}
       </button>
 
       {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}

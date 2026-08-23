@@ -50,7 +50,7 @@ export default function PaywallModal(props: {
           <div className="min-w-0">
             <div id="leadsmart-paywall-title" className="text-sm font-semibold text-slate-900">{t("pages.paywallModal.title")}</div>
             <div className="text-xs text-slate-600 mt-1">
-              {props.message ?? "You’ve reached your free limit. Upgrade to continue."}
+              {props.message ?? t("pages.paywall.youVeReachedYour")}
             </div>
           </div>
           <button
@@ -66,7 +66,7 @@ export default function PaywallModal(props: {
               className="w-full inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
               onClick={() => void handlePrimary()}
             >
-              {props.ctaLabel ?? "Start Free Trial"}
+              {props.ctaLabel ?? t("pages.paywall.startFreeTrial")}
             </button>
           ) : (
             <a
@@ -74,7 +74,7 @@ export default function PaywallModal(props: {
               className="w-full inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
               onClick={() => props.onClose()}
             >
-              {props.ctaLabel ?? "Start Free Trial"}
+              {props.ctaLabel ?? t("pages.paywall.startFreeTrial")}
             </a>
           )}
           <p className="text-[11px] text-slate-500">{t("pages.paywallModal.sub")}</p>

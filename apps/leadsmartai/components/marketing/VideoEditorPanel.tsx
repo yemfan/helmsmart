@@ -169,7 +169,7 @@ export default function VideoEditorPanel({ canCustomize }: { canCustomize: boole
             disabled={busy || !file || !duration}
             className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005ba8] disabled:opacity-50"
           >
-            {busy ? "Uploading & rendering…" : "Create branded reel"}
+            {busy ? t("pages.videoEditor.uploadingRendering") : t("pages.videoEditor.createBrandedReel")}
           </button>
         </div>
       )}

@@ -151,7 +151,7 @@ export default function PostQueue() {
   if (loading) {
     return (
       <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <p className="text-xs text-gray-500">Loading the queue…</p>
+        <p className="text-xs text-gray-500">{t("pages.postQueue.loadingQueue")}</p>
       </section>
     );
   }
@@ -169,9 +169,9 @@ export default function PostQueue() {
                 — nothing publishes until you approve it.
               </>
             ) : pending.length > 0 ? (
-              "Everything here is approved and will publish at its scheduled time."
+              t("pages.postQueue.everythingHereIsApproved")
             ) : (
-              "Nothing queued. New posts appear here when your weekly plan is generated."
+              t("pages.postQueue.nothingQueuedNewPosts")
             )}
           </p>
         </div>
@@ -182,7 +182,7 @@ export default function PostQueue() {
             disabled={busyId !== null}
             className="rounded-lg bg-[#0072ce] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#005fa8] disabled:opacity-60"
           >
-            {busyId === "all" ? "Approving…" : `Approve all ${awaiting.length}`}
+            {busyId === "all" ? t("common:status.approving") : `Approve all ${awaiting.length}`}
           </button>
         )}
       </div>
@@ -262,7 +262,7 @@ export default function PostQueue() {
                   disabled={busyId !== null}
                   className="rounded-md bg-[#0072ce] px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-[#005fa8] disabled:opacity-60"
                 >
-                  {busyId === item.id ? "…" : "Approve"}
+                  {busyId === item.id ? "…" : t("common:actions.approve")}
                 </button>
               )}
               {item.status !== "posting" && (

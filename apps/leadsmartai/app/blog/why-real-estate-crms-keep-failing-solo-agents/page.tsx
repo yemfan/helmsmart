@@ -364,8 +364,7 @@ export default async function CrmProblemsPost() {
                 href="/blog/liondesk-shutdown-what-agents-should-do-next"
                 className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
               >
-                LionDesk Is Shutting Down: What Solo Agents Should Do
-                Next →
+                {t("pages.crmBlog.liondeskLink", { ns: "dashboard" })}
               </Link>
             </li>
             <li>
@@ -373,7 +372,7 @@ export default async function CrmProblemsPost() {
                 href="/agent/compare"
                 className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
               >
-                CloseBoss vs. the rest — full feature comparison →
+                {t("pages.crmBlog.compareLink", { ns: "dashboard" })}
               </Link>
             </li>
             <li>
@@ -381,7 +380,7 @@ export default async function CrmProblemsPost() {
                 href="/help"
                 className="font-semibold text-blue-700 hover:underline dark:text-blue-300"
               >
-                Help center — every how-to guide for CloseBoss →
+                {t("pages.crmBlog.helpCenterLink", { ns: "dashboard" })}
               </Link>
             </li>
           </ul>

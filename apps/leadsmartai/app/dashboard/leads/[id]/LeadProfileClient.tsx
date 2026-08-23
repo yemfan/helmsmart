@@ -53,7 +53,7 @@ export default function LeadProfileClient({ leadId }: { leadId: string }) {
     );
   }
   if (!data) {
-    return <p className="py-16 text-center text-sm text-gray-400">Getting the full picture…</p>;
+    return <p className="py-16 text-center text-sm text-gray-400">{t("pages.leadProfile.gettingFullPicture")}</p>;
   }
 
   const p = data.person;

@@ -71,9 +71,7 @@ export async function POST(req: Request) {
       isConsumerPremium ? "consumer" : isLoanBroker ? "loan_broker" : "agent";
     const cancelUrl = isConsumerPremium
       ? `${origin}/pricing`
-      : isLoanBroker
-        ? `${origin}/loan-broker/dashboard`
-        : `${origin}/agent/pricing`;
+      : `${origin}/agent/pricing`;
 
     try {
       const priceRow = await stripe.prices.retrieve(parsed.data.priceId);

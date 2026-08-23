@@ -31,11 +31,28 @@
     "h2_highlight": "Ask Max.",
     "body": "Max is your AI captain. Tell him what you need — follow up with a lead, launch a listing, chase a signature — and he puts your whole AI team to work. Around the clock.",
     "cta": "Ask Max free",
+    "avatar_alt": "Max, the captain of your CloseBoss AI team",
     "bubble_prefix": "Ask Max",
     "bubble": " — what would you like your AI team to do today?",
     "name": "Max",
     "role": "Captain of your AI team",
     "quote": "“I've got your back.”"
+  },
+  "team": {
+    "members": {
+      "max": { "role": "Captain", "line": "Runs the team and keeps you focused on what matters most today." },
+      "emma": { "role": "AI Receptionist", "line": "Answers every call and text — instantly, day or night." },
+      "chris": { "role": "AI Sales Specialist", "line": "Follows up relentlessly and turns leads into booked appointments." },
+      "ruby": { "role": "AI Marketing Specialist", "line": "Creates content and campaigns that keep your pipeline full." },
+      "grace": { "role": "AI Transaction Coordinator", "line": "Tracks every deadline so deals move smoothly to the closing table." },
+      "oliver": { "role": "AI Financial Analyst", "line": "Watches every dollar and keeps your commissions and books straight." }
+    },
+    "eyebrow": "Meet your AI team",
+    "h2_prefix": "Six specialists.",
+    "h2_highlight": "One AI team.",
+    "sub": "A specialist for every step of the deal — from the first call to the closing table. They work together, around the clock, so you can focus on your clients.",
+    "image_alt": "Meet the CloseBoss AI real estate team — Emma, Chris, Ruby, Oliver, Grace, and Max",
+    "cta": "Hire Your AI Team Free"
   },
   "brokerage_strip": {
     "eyebrow": "Trusted by agents at"
@@ -340,5 +357,25 @@
       "chinese": "中文",
       "more": "+ more languages"
     }
+  },
+  "faq": {
+    "h2": "What is CloseBoss AI?",
+    "sub": "Common questions about CloseBoss AI — the AI real estate team at closebossai.com."
+  },
+  "exit_intent": {
+    "close": "Close",
+    "close_dialog": "Close dialog",
+    "title": "Before you go…",
+    "headline": "Want 3 free buyer leads?",
+    "sub": "Drop your email and we'll send details.",
+    "done": "You're in — check your inbox soon.",
+    "email": "Email",
+    "email_placeholder": "Enter your email →",
+    "submit": "Send me the leads",
+    "sending": "Sending…",
+    "error_required": "Enter your email.",
+    "error_invalid": "Enter a valid email address.",
+    "error_generic": "Something went wrong. Try again.",
+    "error_network": "Network error. Try again."
   }
 }

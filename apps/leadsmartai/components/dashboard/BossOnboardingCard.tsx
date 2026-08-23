@@ -216,7 +216,7 @@ export function BossOnboardingCard({ checklist }: Props) {
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white">
               <Sparkles className="h-3 w-3" aria-hidden />
             </span>
-            Boss is typing…
+            {t("pages.bossOnboarding.typing")}
           </div>
         )}
       </div>
@@ -264,7 +264,7 @@ export function BossOnboardingCard({ checklist }: Props) {
               void send();
             }
           }}
-          placeholder="Ask Boss about setup…"
+          placeholder={t("pages.bossOnboarding.askAboutSetup")}
           className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400"
         />
         <button

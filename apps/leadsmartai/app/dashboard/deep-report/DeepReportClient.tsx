@@ -9,10 +9,11 @@ import DeepReportView from "@/components/deep-report/DeepReportView";
 import { computeAffordability, computeInvestmentReturns } from "@/lib/deep-report/finance";
 import type { DeepReport, PropertyUse } from "@/lib/deep-report/types";
 
-const USE_OPTIONS: Array<{ value: PropertyUse; label: string }> = [
-  { value: "primary", label: "Primary residence" },
-  { value: "second_home", label: "Second home" },
-  { value: "investment", label: "Investment / rental" },
+/* Keys, not labels — a module constant is built before any locale is known. */
+const USE_OPTIONS: Array<{ value: PropertyUse; labelKey: string }> = [
+  { value: "primary", labelKey: "pages.deepReport.usePrimary" },
+  { value: "second_home", labelKey: "pages.deepReport.useSecondHome" },
+  { value: "investment", labelKey: "pages.deepReport.useInvestment" },
 ];
 
 type Quota = {
@@ -167,7 +168,7 @@ export default function DeepReportClient() {
                     : "bg-white text-slate-700 ring-slate-200 hover:bg-slate-50"
                 }`}
               >
-                {o.label}
+                {t(o.labelKey)}
               </button>
             ))}
           </div>
@@ -219,7 +220,7 @@ export default function DeepReportClient() {
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             <span>{t("pages.dashFragments.usedAll")} {quota.limit} {t("pages.dashFragments.deepReport")}{quota.limit === 1 ? "" : "s"} {t("pages.dashFragments.forTodayResets")}</span>
             <Link href="/agent/pricing" className="shrink-0 font-semibold text-amber-900 underline hover:text-amber-950">
-              Upgrade for more →
+              {t("pages.deepReport.upgradeForMore")}
             </Link>
           </div>
         ) : null}
@@ -228,7 +229,7 @@ export default function DeepReportClient() {
 
       {loading ? (
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-600">
-          Crunching value, comps, affordability, deal rating, schools, and the map…
+          {t("pages.deepReport.crunching")}
         </div>
       ) : null}
 
@@ -240,6 +241,7 @@ export default function DeepReportClient() {
 }
 
 function QuotaPill({ quota }: { quota: Quota }) {
+  const { t } = useTranslation("dashboard");
   const tone = quota.reached
     ? "bg-rose-50 text-rose-700 ring-rose-200"
     : quota.warning
@@ -250,7 +252,7 @@ function QuotaPill({ quota }: { quota: Quota }) {
       className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold ring-1 ${tone}`}
       title={`Daily Deep Report quota — resets ${quota.resetDate}`}
     >
-      {quota.unlimited ? "Unlimited reports" : `${quota.remaining} of ${quota.limit} left today`}
+      {quota.unlimited ? t("pages.deepReport.unlimitedReports") : `${quota.remaining} of ${quota.limit} left today`}
     </span>
   );
 }

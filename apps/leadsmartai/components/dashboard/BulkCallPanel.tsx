@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PhoneOutgoing, Search, Users, AlertTriangle, ClipboardList, Megaphone } from "lucide-react";
+import { PhoneOutgoing, Search, Users, AlertTriangle, ClipboardList, Megaphone } from "lucide-react";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 type PickContact = { id: string; name: string; phone: string };
 type CallResult = { id: string; name: string; phone: string | null; ok: boolean; error?: string };
@@ -167,7 +168,7 @@ export default function BulkCallPanel() {
       {needsDetail && (
         <div className="mb-3">
           <span className="mb-1 block text-[11px] font-medium text-slate-500">
-            {purpose === "survey" ? "What should Lucy ask each contact?" : "What's the announcement?"}
+            {purpose === "survey" ? t("pages.bulkCall.whatShouldLucyAsk") : t("pages.bulkCall.whatSTheAnnouncement")}
           </span>
           <textarea
             className="w-full resize-y rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
@@ -212,7 +213,7 @@ export default function BulkCallPanel() {
 
       {/* Contact list */}
       {loading ? (
-        <p className="py-6 text-center text-sm text-slate-400">Loading…</p>
+        <p className="py-6 text-center text-sm text-slate-400"><LoadingText /></p>
       ) : contacts.length === 0 ? (
         <p className="rounded-lg bg-slate-50 px-3 py-6 text-center text-sm text-slate-500">{t("pages.bulkCall.noContacts")}</p>
       ) : (
@@ -268,7 +269,7 @@ export default function BulkCallPanel() {
             className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
           >
             <PhoneOutgoing className="h-4 w-4" strokeWidth={2} />
-            {selected.size > 0 ? `Call ${selected.size} contact${selected.size === 1 ? "" : "s"}` : "Call contacts"}
+            {selected.size > 0 ? `Call ${selected.size} contact${selected.size === 1 ? "" : "s"}` : t("pages.bulkCall.callContacts")}
           </button>
         ) : (
           <>

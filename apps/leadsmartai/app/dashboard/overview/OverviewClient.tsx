@@ -16,6 +16,9 @@ type DigestInsight = { key: string; label: string; message: string; tone: string
 
 export default function OverviewClient({ greetingName, planType }: { greetingName: string; planType: string }) {
   const { t, i18n } = useTranslation("dashboard");
+  // Task rows below bind `t` in their .map(), so translation calls inside them
+  // have to reach the translator under a name the loop cannot shadow.
+  const tr = t;
   const locale = intlLocale(i18n.language);
   const [stats, setStats] = useState<Stats | null>(null);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -197,7 +200,7 @@ export default function OverviewClient({ greetingName, planType }: { greetingNam
                         <span className={new Date(t.due_at).getTime() < Date.now() ? "text-red-600" : ""}>
                           {new Date(t.due_at).toLocaleDateString(locale, { month: "short", day: "numeric" })}
                         </span>
-                      ) : "No due date"}
+                      ) : tr("pages.overview.noDueDate")}
                     </p>
                   </div>
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${t.priority === "urgent" ? "bg-red-100 text-red-700" : t.priority === "high" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-600"}`}>

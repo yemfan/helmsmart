@@ -23,13 +23,14 @@ const labelCls = "mb-1 block text-xs font-medium text-gray-700";
 const hintCls = "mt-1 text-[11px] text-gray-400";
 
 function SaveButton({ saving, saved }: { saving: boolean; saved: boolean }) {
+  const { t } = useTranslation("dashboard");
   return (
     <button
       type="submit"
       disabled={saving}
       className="rounded-lg bg-[#0B1F44] px-4 py-2 text-xs font-semibold text-white hover:bg-[#142c5c] disabled:opacity-50"
     >
-      {saving ? "Saving…" : saved ? "Saved" : "Save"}
+      {saving ? t("common:status.saving") : saved ? t("common:actions.saved") : t("common:actions.save")}
     </button>
   );
 }
@@ -96,7 +97,7 @@ export function AssistantCallSettings({
     }
   }
 
-  if (loading) return <p className="py-4 text-sm text-gray-400">Loading call settings…</p>;
+  if (loading) return <p className="py-4 text-sm text-gray-400">{t("pages.assistantCallSettings.loadingCallSettings")}</p>;
 
   return (
     <form onSubmit={save} className="space-y-4">
@@ -126,7 +127,7 @@ export function AssistantCallSettings({
         />
         <p className={hintCls}>
           {knowledgeHint ??
-            "What this assistant may state as fact on its calls. Leave blank to share the Receptionist's knowledge base."}
+            t("pages.assistantCallSettings.whatThisAssistantMay")}
         </p>
       </div>
       {error && <p className="text-xs text-red-600">{error}</p>}
@@ -180,7 +181,7 @@ export function ReceptionistVoiceForm() {
     }
   }
 
-  if (loading) return <p className="py-4 text-sm text-gray-400">Loading voice settings…</p>;
+  if (loading) return <p className="py-4 text-sm text-gray-400">{t("pages.assistantCallSettings.loadingVoiceSettings")}</p>;
 
   return (
     <form onSubmit={save} className="space-y-4">
@@ -203,12 +204,11 @@ export function ReceptionistVoiceForm() {
           className={`${inputCls} min-h-[120px]`}
           value={extraNotes}
           onChange={(e) => setExtraNotes(e.target.value)}
-          placeholder="Service areas, office address, your specialties, current listings, FAQs…"
+          placeholder={t("pages.assistantCallSettings.knowledgePlaceholder")}
           maxLength={4000}
         />
         <p className={hintCls}>
-          What your Receptionist may state as fact when answering calls. Business name, number,
-          and hours live in Settings → Voice.
+          {t("pages.assistantCallSettings.knowledgeHint")}
         </p>
       </div>
       {error && <p className="text-xs text-red-600">{error}</p>}

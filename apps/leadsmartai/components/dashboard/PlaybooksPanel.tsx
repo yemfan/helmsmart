@@ -204,7 +204,7 @@ export function PlaybooksPanel({
     return (
       <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-slate-900">📋 Playbooks</h2>
-        <p className="mt-2 text-xs text-slate-500">Loading tasks…</p>
+        <p className="mt-2 text-xs text-slate-500">{t("pages.playbooksPanel.loadingTasks")}</p>
       </section>
     );
   }
@@ -229,7 +229,7 @@ export function PlaybooksPanel({
             className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 disabled:hover:bg-white"
           >
             {addingToTasks
-              ? "Adding…"
+              ? t("common:status.adding")
               : `+ Add to Tasks List${selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}`}
           </button>
           {open > 0 ? (
@@ -262,7 +262,7 @@ export function PlaybooksPanel({
             href="/dashboard/tasks"
             className="font-semibold underline hover:text-green-900"
           >
-            View Tasks list →
+            {t("pages.playbooksPanel.viewTasksList")}
           </a>
         </div>
       ) : null}
@@ -568,12 +568,12 @@ export function PlaybookPickerModal({
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-base font-semibold text-slate-900">
-              {stage === "pick" ? "Apply playbook" : selectedPlaybook?.title ?? "Review tasks"}
+              {stage === "pick" ? t("pages.playbooks.applyPlaybook") : selectedPlaybook?.title ?? t("pages.playbooks.reviewTasks")}
             </h3>
             <p className="mt-0.5 text-xs text-slate-500">
               {stage === "pick"
-                ? "Pick a curated checklist. You'll review the tasks before they're added."
-                : "Untick anything you don't want to add. Each task's due date is offset from your anchor date."}
+                ? t("pages.playbooks.pickACuratedChecklist")
+                : t("pages.playbooks.untickAnythingYouDon")}
             </p>
           </div>
           <button
@@ -659,7 +659,7 @@ export function PlaybookPickerModal({
               disabled={!selected}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             >
-              Review tasks →
+              {t("pages.playbooksPanel.reviewTasks")}
             </button>
           ) : (
             <button
@@ -669,7 +669,7 @@ export function PlaybookPickerModal({
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             >
               {applying
-                ? "Applying…"
+                ? t("common:status.applying")
                 : `Apply ${includedCount} task${includedCount === 1 ? "" : "s"}`}
             </button>
           )}
@@ -731,7 +731,7 @@ function ReviewStep({
                 href="/dashboard/contacts"
                 className="font-semibold underline hover:text-amber-700"
               >
-                Add a contact →
+                {t("pages.playbooksPanel.addAContact")}
               </a>{" "}{t("pages.dashFragments.thenComeBack")}</div>
           ) : (
             <select
@@ -739,7 +739,7 @@ function ReviewStep({
               onChange={(e) => contactPicker.onPick(e.target.value)}
               className="mt-2 w-full rounded-md border border-amber-300 bg-white px-3 py-2 text-sm"
             >
-              <option value="">Select a contact…</option>
+              <option value="">{t("pages.playbooksPanel.selectAContact")}</option>
               {contactPicker.leads.map((l) => (
                 <option key={l.id} value={l.id}>
                   {l.name ?? `Contact #${l.id}`}

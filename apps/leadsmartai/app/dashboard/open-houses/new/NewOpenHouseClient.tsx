@@ -502,10 +502,10 @@ export function NewOpenHouseClient() {
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
           >
             {submitting
-              ? "Creating…"
+              ? t("common:status.creating")
               : isRecurring
                 ? `Create ${projectedCount} open house${projectedCount === 1 ? "" : "s"}`
-                : "Create open house"}
+                : t("pages.newOpenHouse.createOpenHouse")}
           </button>
         </div>
       </div>

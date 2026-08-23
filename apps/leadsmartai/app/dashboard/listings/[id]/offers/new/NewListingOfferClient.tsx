@@ -241,17 +241,17 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
         <div className="min-w-0">
           <div className="font-medium text-slate-800">
             {uploading
-              ? "Reading offer PDF…"
+              ? t("pages.newListingOffer.readingOfferPdf")
               : parsedSummary
                 ? "✓ Prefilled from PDF"
-                : "Upload offer PDF (optional)"}
+                : t("pages.newListingOffer.uploadOfferPdfOptional")}
           </div>
           <div className="mt-0.5 text-[11px] text-slate-500">
             {uploading
               ? "15-40 seconds for most purchase agreements."
               : parsedSummary
                 ? parsedSummary
-                : "Drop a signed RPA PDF here or click to pick — we'll extract price, contingencies, and dates with Claude. Nothing is stored."}
+                : t("pages.newListingOffer.dropASignedRpa")}
           </div>
         </div>
         <div className="shrink-0 text-2xl" aria-hidden>

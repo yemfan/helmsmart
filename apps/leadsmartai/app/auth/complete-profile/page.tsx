@@ -15,14 +15,15 @@ import { consumerShouldUsePropertyToolsApp } from "@/lib/signupOriginApp";
 import { resolveRoleHomePath } from "@/lib/rolePortalPaths";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { formatUsPhoneInput, formatUsPhoneStored, isValidUsPhone } from "@/lib/usPhone";
-import { consumeStashedReferralCode } from "@/components/referrals/ReferralCodeCapture";
+import { consumeStashedReferralCode } from "@/components/referrals/ReferralCodeCapture";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 export default function CompleteProfilePage() {
   return (
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-slate-50 text-sm text-slate-600">
-          Loading…
+          <LoadingText />
         </div>
       }
     >
@@ -228,7 +229,7 @@ function CompleteProfileInner() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 text-sm text-slate-600">
-        Loading…
+        <LoadingText />
       </div>
     );
   }
@@ -243,7 +244,7 @@ function CompleteProfileInner() {
             disabled={saving || cancelling}
             className="text-sm font-medium text-slate-600 hover:text-slate-900 disabled:opacity-50"
           >
-            {cancelling ? "Signing out…" : "Cancel"}
+            {cancelling ? t("common:status.signing_out") : t("common:actions.cancel")}
           </button>
         </div>
         <h1 className="text-xl font-bold text-slate-900">{t("pages.completeProfile.h1")}</h1>
@@ -313,7 +314,7 @@ function CompleteProfileInner() {
             disabled={saving}
             className="w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
           >
-            {saving ? "Saving…" : "Continue"}
+            {saving ? t("common:status.saving") : t("pages.completeProfile.continue")}
           </button>
         </form>
 

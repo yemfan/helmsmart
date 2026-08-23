@@ -150,7 +150,7 @@ export default async function SwitchFromPage({
               href="#concierge"
               className="inline-flex items-center justify-center rounded-md border border-blue-200 bg-white px-5 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50 dark:border-blue-900/50 dark:bg-slate-900 dark:text-blue-300 dark:hover:bg-slate-900/70"
             >
-              We&apos;ll migrate for you →
+              {t("pages.switchFrom.wellMigrate", { ns: "dashboard" })}
             </a>
           </div>
           {source.companionPost ? (

@@ -161,7 +161,7 @@ export default function GenerateCmaButton({
                   }
                   className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {submitting ? "Generating…" : "Generate"}
+                  {submitting ? t("common:status.generating") : t("common:actions.generate")}
                 </button>
               </div>
             </div>

@@ -133,7 +133,7 @@ export function SendPostcardModal({
             <h3 className="text-base font-semibold text-slate-900">{t("pages.sendPostcard.title")}</h3>
             <p className="mt-0.5 text-xs text-slate-500">
               {step === "pick"
-                ? "Pick a design"
+                ? t("pages.bulkSendPostcard.pickADesign")
                 : step === "customize"
                   ? `${template.title} — personalize + send`
                   : "Sent ✓"}
@@ -351,7 +351,7 @@ export function SendPostcardModal({
               disabled={submitting || !recipientName.trim() || !pickedChannels.length}
               className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
             >
-              {submitting ? "Sending…" : "Send postcard"}
+              {submitting ? t("common:status.sending") : t("pages.sendPostcard.sendPostcard")}
             </button>
           </div>
         ) : step === "sent" ? (

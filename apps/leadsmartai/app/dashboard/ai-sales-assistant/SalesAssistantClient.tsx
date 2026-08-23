@@ -244,7 +244,7 @@ function LeadList({
         <Link href={viewAllHref} className="text-xs font-medium text-blue-600 hover:text-blue-800">{t("assistants.common.viewAll")}</Link>
       </div>
       {leads.length === 0 ? (
-        <p className="py-4 text-center text-sm text-gray-400">{loading ? "Loading…" : empty}</p>
+        <p className="py-4 text-center text-sm text-gray-400">{loading ? t("common:actions.loading") : empty}</p>
       ) : (
         <div className="space-y-2">
           {leads.map((l) => (

@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 /**
  * Form-only variant of the missed-call text-back configuration —
@@ -145,7 +146,7 @@ export default function MissedCallSettingsForm() {
   ]);
 
   if (loading) {
-    return <p className="text-sm text-slate-500">Loading…</p>;
+    return <p className="text-sm text-slate-500"><LoadingText /></p>;
   }
 
   return (
@@ -307,7 +308,7 @@ export default function MissedCallSettingsForm() {
           disabled={saving}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
         >
-          {saving ? "Saving…" : "Save settings"}
+          {saving ? t("common:status.saving") : t("common:actions.save_settings")}
         </button>
         {savedAt && !error ? (
           <span className="text-xs font-medium text-emerald-700">{t("pages.missedCall.saved")}</span>

@@ -66,7 +66,7 @@ export function ReviewContractClient() {
       <div>
         <div className="text-xs text-slate-500">
           <Link href="/dashboard/transactions" className="hover:underline">{t("pages.reviewContract.transactions")}</Link>
-          {" / Contract review"}
+          {` / ${t("pages.contractReview.breadcrumb")}`}
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">{t("pages.contractReview.heading")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("pages.dashFragments.contractReviewBody")}{" "}
@@ -95,7 +95,7 @@ export function ReviewContractClient() {
               disabled={reviewing}
               className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
-              📄 Choose PDF
+              📄 {t("pages.contractReview.choosePdf")}
             </button>
             <span className="text-[11px] text-slate-500">
               {pdfName ? (

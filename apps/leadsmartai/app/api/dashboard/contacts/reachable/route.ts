@@ -18,7 +18,7 @@ export async function GET() {
     const contacts = rows
       .map((c) => ({
         id: String(c.id),
-        name: (c.name ?? "").trim() || "Unnamed contact",
+        name: (c.name ?? "").trim(),
         phone: typeof c.phone === "string" ? c.phone.trim() : "",
         email: typeof c.email === "string" ? c.email.trim() : "",
       }))

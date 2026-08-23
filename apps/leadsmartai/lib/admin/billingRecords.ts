@@ -64,7 +64,6 @@ export function deriveBillingPlan(plan: string | null | undefined, role: string 
   const r = String(role ?? "user").toLowerCase().trim();
 
   const isBroker =
-    r === "loan_broker" ||
     r === "broker" ||
     r === "broker_owner" ||
     r === "managing_broker" ||
@@ -226,7 +225,6 @@ export function roleMatchesFilter(dbRole: string, filter: string): boolean {
   if (filter === "agent") return r === "agent" || r === "admin" || r === "support";
   if (filter === "loan_broker") {
     return (
-      r === "loan_broker" ||
       r === "broker" ||
       r === "broker_owner" ||
       r === "managing_broker" ||

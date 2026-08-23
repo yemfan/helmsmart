@@ -140,7 +140,7 @@ export default function LikelyBuyersPanel(props: { defaultLimit?: number } = {})
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
             {rows.length === 0
-              ? "No past clients or sphere contacts to score yet. Import contacts + capture life-event signals to start surfacing likely buyers."
+              ? t("pages.likelyBuyers.noPastClientsOr")
               : `No ${filter} candidates. Try a different filter.`}
           </div>
         ) : (

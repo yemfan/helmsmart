@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 /**
  * Missed Call Text-Back settings panel.
@@ -53,7 +54,7 @@ export default function MissedCallSettingsPanel() {
 
   // Form state. Initialized from GET on mount; controlled inputs
   // throughout. We don't dirty-track per-field — just save on
-  // explicit "Save settings" click.
+  // explicit t("common:actions.save_settings") click.
   const [enabled, setEnabled] = useState(false);
   const [forwardingPhone, setForwardingPhone] = useState("");
   const [ringTimeout, setRingTimeout] = useState(20);
@@ -155,7 +156,7 @@ export default function MissedCallSettingsPanel() {
   }, [enabled, ringTimeout, messageTemplate, useAi, forwardingPhone]);
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Loading…</p>;
+    return <p className="text-sm text-gray-500"><LoadingText /></p>;
   }
 
   return (
@@ -243,7 +244,7 @@ export default function MissedCallSettingsPanel() {
           disabled={saving}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
         >
-          {saving ? "Saving…" : "Save settings"}
+          {saving ? t("common:status.saving") : t("common:actions.save_settings")}
         </button>
         {savedAt && !error ? (
           <span className="text-xs font-medium text-emerald-700">{t("pages.missedCall.saved")}</span>
@@ -259,7 +260,7 @@ export default function MissedCallSettingsPanel() {
         <p className="mt-0.5 text-xs text-gray-500">{t("pages.missedCall.recentCallsHint")}</p>
         <div className="mt-3">
           {eventsLoading ? (
-            <p className="text-xs text-gray-500">Loading…</p>
+            <p className="text-xs text-gray-500"><LoadingText /></p>
           ) : events.length === 0 ? (
             <p className="text-xs text-gray-500">{t("pages.missedCall.noActivity")}</p>
           ) : (
@@ -272,7 +273,7 @@ export default function MissedCallSettingsPanel() {
                       {ev.contact_name ??
                         ev.from_phone ??
                         ev.to_phone ??
-                        "Unknown"}
+                        t("pages.missedCallActivityLog.unknown")}
                     </p>
                     <p className="truncate text-xs text-gray-500">
                       {formatDate(ev.created_at)}

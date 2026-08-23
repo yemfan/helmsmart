@@ -200,7 +200,7 @@ export default function AccountMenu() {
     >
       <div className="border-b border-gray-100 px-4 py-3">
         <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{t("pages.accountMenu.signedInAs")}</p>
-        <p className="mt-1 break-all text-sm font-semibold text-gray-900">{email || "Your account"}</p>
+        <p className="mt-1 break-all text-sm font-semibold text-gray-900">{email || t("pages.accountMenu.yourAccount")}</p>
         {me ? (
           <p className="mt-1 text-xs text-gray-600">{formatUserRoleLabel(me.role)}</p>
         ) : null}

@@ -363,7 +363,7 @@ function HomePageInner() {
           <div className="min-w-0">
             <div className="text-sm font-semibold text-slate-900 truncate">CloseBoss</div>
             <div className="text-xs text-slate-500 truncate">
-              {isAuthed && userRole ? `Signed in as ${userRole}` : "Home value funnels + CRM"}
+              {isAuthed && userRole ? `Signed in as ${userRole}` : t("pages.homeValueFunnel.homeValueFunnelsCrm")}
             </div>
           </div>
 
@@ -407,7 +407,7 @@ function HomePageInner() {
                     disabled={upgradeLoading}
                     className="text-sm font-semibold px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {upgradeLoading ? "Upgrading..." : LOGGED_IN_GET_AGENT_ACCESS_LABEL}
+                    {upgradeLoading ? t("common:status.upgrading") : LOGGED_IN_GET_AGENT_ACCESS_LABEL}
                   </button>
                 )}
 
@@ -459,7 +459,7 @@ function HomePageInner() {
               className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {upgradeLoading
-                ? "Upgrading..."
+                ? t("common:status.upgrading")
                 : isAuthed
                   ? LOGGED_IN_GET_AGENT_ACCESS_LABEL
                   : START_FREE_AS_AGENT_LABEL}
@@ -554,7 +554,7 @@ function HomePageInner() {
                 onClick={handleMortgageQuote}
                 className="w-full inline-flex items-center justify-center bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {mortgageLoading ? "Checking..." : "Get Mortgage Rate"}
+                {mortgageLoading ? t("common:status.checking") : t("pages.homeValueFunnel.getMortgageRate")}
               </button>
 
               {mortgageResult != null ? (
@@ -658,7 +658,7 @@ function HomePageInner() {
                     disabled={submitting}
                     className="w-full inline-flex items-center justify-center bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {submitting ? "Submitting..." : "Send Me My Full Report"}
+                    {submitting ? t("common:status.submitting") : t("pages.homeValueFunnel.sendMeMyFull")}
                   </button>
                 </form>
               )}

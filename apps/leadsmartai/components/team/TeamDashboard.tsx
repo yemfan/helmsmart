@@ -20,7 +20,7 @@ type SeatUsageProps = { used: number; cap: number | null; full: boolean };
  * Team management surface.
  *
  * Two states:
- *   - No team yet → "Create team" form
+ *   - No team yet → t("dashboard:pages.teamDashboard.createTeam") form
  *   - Team exists → roster + invite form (owner) or read-only roster (member)
  *
  * Invite flow is intentionally manual for MVP: the server returns
@@ -142,7 +142,7 @@ function UpgradeRequiredCard({
       <header>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">{t("pages.team.teamFeature")}</p>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">
-          {isPlanIssue ? "Upgrade to start a team" : "Subscription not found"}
+          {isPlanIssue ? t("pages.teamDashboard.upgradeToStartA") : t("pages.teamDashboard.subscriptionNotFound")}
         </h1>
         <p className="mt-2 max-w-xl text-sm text-slate-600">
           {isPlanIssue ? (
@@ -150,7 +150,7 @@ function UpgradeRequiredCard({
               {t("pages.team.requiresBefore")} <strong>Elite</strong>{t("pages.team.requiresAfter")}
             </>
           ) : (
-            "We couldn't find an active subscription for your account. Reach out to support if this looks wrong."
+            t("pages.teamDashboard.weCouldnTFind")
           )}
         </p>
       </header>
@@ -159,7 +159,7 @@ function UpgradeRequiredCard({
           href="/dashboard/billing"
           className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
         >
-          {isPlanIssue ? "View plans" : "Manage billing"}
+          {isPlanIssue ? t("pages.teamDashboard.viewPlans") : t("pages.teamDashboard.manageBilling")}
         </Link>
       </div>
     </section>
@@ -202,7 +202,7 @@ function CreateTeamCard() {
           disabled={pending}
           className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-60"
         >
-          {pending ? "Creating…" : "Create team"}
+          {pending ? t("common:status.creating") : t("pages.teamDashboard.createTeam")}
         </button>
       </form>
       {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
@@ -326,7 +326,7 @@ function InviteCard({
           disabled={pending}
           className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-60"
         >
-          {pending ? "Sending…" : "Generate invite link"}
+          {pending ? t("common:status.sending") : t("pages.teamDashboard.generateInviteLink")}
         </button>
       </form>
       {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}

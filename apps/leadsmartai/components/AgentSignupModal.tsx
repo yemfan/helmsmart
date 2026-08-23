@@ -51,7 +51,7 @@ export default function AgentSignupModal({
         <div className="max-h-[min(85vh,720px)] overflow-y-auto px-4 pb-5 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
           <Suspense
             fallback={
-              <div className="py-8 text-center text-sm text-slate-500">Loading form…</div>
+              <div className="py-8 text-center text-sm text-slate-500">{t("pages.agentSignupModal.loadingForm")}</div>
             }
           >
             <span id="agent-signup-modal-title" className="sr-only">{t("pages.misc.createAgentAccount")}</span>

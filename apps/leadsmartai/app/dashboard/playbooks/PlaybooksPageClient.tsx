@@ -7,7 +7,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CalendarClock, Check, X } from "lucide-react";
 import { PlaybookPickerModal } from "@/components/dashboard/PlaybooksPanel";
 import { getPlaybook } from "@/lib/playbooks/definitions";
-import type { PlaybookTaskRow } from "@/lib/playbooks/types";
+import type { PlaybookTaskRow } from "@/lib/playbooks/types";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 /**
  * Single unified playbook task list — replaces the prior split between a
@@ -239,7 +240,7 @@ export function PlaybooksPageClient({ leads = [] }: { leads?: LeadInfo[] }) {
 
       {loading && tasks.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-500 shadow-sm">
-          Loading…
+          <LoadingText />
         </div>
       ) : visible.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">

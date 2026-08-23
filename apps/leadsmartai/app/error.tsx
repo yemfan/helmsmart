@@ -20,7 +20,7 @@ export default function AppError({
         <p className="mt-3 text-sm text-slate-600">
           {error.message?.trim()
             ? error.message
-            : "A client error occurred. Try again, or open the site in a private window."}
+            : t("pages.error.aClientErrorOccurred")}
         </p>
         {error.digest ? <p className="mt-2 font-mono text-xs text-slate-400">{t("pages.dashFragments.ref")} {error.digest}</p> : null}
         <button

@@ -42,7 +42,9 @@ export default async function UnauthorizedPage() {
             href={href}
             className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
           >
-            {ctx ? "Go to my dashboard" : "Log in"}
+            {ctx
+              ? t("pages.dashFragments.goToMyDashboard", { ns: "dashboard" })
+              : t("pages.dashFragments.logIn", { ns: "dashboard" })}
           </Link>
           <Link
             href="/"

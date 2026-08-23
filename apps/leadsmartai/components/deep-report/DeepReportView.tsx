@@ -101,7 +101,7 @@ export default function DeepReportView({
               <img src={r.agent.photoUrl} alt="" crossOrigin="anonymous" className="h-12 w-12 rounded-full object-cover" />
             ) : null}
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-bold text-slate-900">{r.agent.name ?? "Your Agent"}</div>
+              <div className="text-sm font-bold text-slate-900">{r.agent.name ?? t("pages.cmaShareView.yourAgent")}</div>
               <div className="text-xs text-slate-600">
                 {[r.agent.brokerage, r.agent.licenseNumber ? `Lic #${r.agent.licenseNumber}` : null].filter(Boolean).join(" · ")}
               </div>

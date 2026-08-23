@@ -118,7 +118,7 @@ export default function SavedSearchesPanel({ contactId }: Props) {
                     <FrequencyBadge frequency={s.alertFrequency} />
                   </div>
                   <div className="mt-0.5 text-[11px] text-gray-500">
-                    {summarizeCriteria(s.criteria) || "Any listing"}
+                    {summarizeCriteria(s.criteria) || t("pages.savedSearches.anyListing")}
                   </div>
                   {s.lastAlertedAt && (
                     <div className="mt-0.5 text-[10px] text-gray-400">
@@ -408,7 +408,7 @@ function SearchForm(props: SearchFormProps) {
           disabled={saving || !name.trim()}
           className="rounded bg-gray-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
         >
-          {saving ? "Saving…" : isEdit ? "Save changes" : "Create search"}
+          {saving ? t("common:status.saving") : isEdit ? t("common:actions.save_changes") : t("pages.savedSearches.createSearch")}
         </button>
         <button
           type="button"

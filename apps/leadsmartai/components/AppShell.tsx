@@ -47,7 +47,6 @@ function isPlatformDashboardPath(pathname: string): boolean {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/account") ||
     pathname.startsWith("/agent/dashboard") ||
-    pathname.startsWith("/loan-broker/") ||
     pathname.startsWith("/support/dashboard") ||
     pathname.startsWith("/admin")
   );
@@ -172,14 +171,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
         </main>
         <footer className="border-t border-slate-200/80 bg-white py-4 text-center text-xs text-slate-500">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-4 sm:px-6">
-            <Link href="/terms" className="hover:text-slate-900">{t("pages.appShell.terms")}</Link>
+            <Link href="/terms" className="hover:text-slate-900">{t("link.terms_of_service")}</Link>
             <span aria-hidden>·</span>
-            <Link href="/privacy" className="hover:text-slate-900">{t("pages.appShell.privacy")}</Link>
+            <Link href="/privacy" className="hover:text-slate-900">{t("link.privacy_policy")}</Link>
             <span aria-hidden>·</span>
-            <Link href="/contact" className="hover:text-slate-900">{t("pages.appShell.contact")}</Link>
+            <Link href="/contact" className="hover:text-slate-900">{t("link.contact")}</Link>
             <span aria-hidden className="hidden sm:inline">·</span>
             <span className="block w-full sm:inline sm:w-auto">
-              © {new Date().getFullYear()} {t("pages.dashFragments.formerlyLeadSmart")}</span>
+              © {new Date().getFullYear()} {t("footer.entity_name")}</span>
           </div>
         </footer>
       </div>

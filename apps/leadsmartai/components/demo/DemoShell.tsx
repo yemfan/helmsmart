@@ -20,17 +20,17 @@ import {
 
 type Item = {
   href: string;
-  label: string;
+  labelKey: string;
   icon: ReactNode;
   match?: string;
 };
 
 const DEMO_NAV: Item[] = [
-  { href: "/demo", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" /> },
-  { href: "/demo/inbox", label: "Inbox", icon: <MessageCircle className="h-4 w-4" /> },
-  { href: "/demo/contacts", label: "Contacts", icon: <Users className="h-4 w-4" /> },
-  { href: "/demo/drafts", label: "AI Drafts", icon: <PenLine className="h-4 w-4" /> },
-  { href: "/demo/calendar", label: "Calendar", icon: <CalendarDays className="h-4 w-4" /> },
+  { href: "/demo", labelKey: "pages.demoShell.navOverview", icon: <LayoutDashboard className="h-4 w-4" /> },
+  { href: "/demo/inbox", labelKey: "pages.demoShell.navInbox", icon: <MessageCircle className="h-4 w-4" /> },
+  { href: "/demo/contacts", labelKey: "pages.demoShell.navContacts", icon: <Users className="h-4 w-4" /> },
+  { href: "/demo/drafts", labelKey: "pages.demoShell.navDrafts", icon: <PenLine className="h-4 w-4" /> },
+  { href: "/demo/calendar", labelKey: "pages.demoShell.navCalendar", icon: <CalendarDays className="h-4 w-4" /> },
 ];
 
 export async function DemoShell({
@@ -52,7 +52,7 @@ export async function DemoShell({
           <div className="sticky top-6 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
             <p className="px-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("pages.demoShell.workspace")}</p>
             <p className="mt-1 px-2 text-sm font-semibold text-slate-900 dark:text-white">
-              Sandbox · Read-only
+              {t("pages.demoShell.sandboxReadOnly")}
             </p>
             <nav className="mt-4 space-y-1">
               {DEMO_NAV.map((item) => {
@@ -68,7 +68,7 @@ export async function DemoShell({
                     }`}
                   >
                     {item.icon}
-                    {item.label}
+                    {t(item.labelKey)}
                   </Link>
                 );
               })}

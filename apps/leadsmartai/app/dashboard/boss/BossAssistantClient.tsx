@@ -10,7 +10,8 @@ import { AI_TEAM } from "@/lib/closeboss/team";
 import { LeadProfileDrawer } from "@/components/closeboss/LeadProfileDrawer";
 import { AssistantAvatar } from "@/components/closeboss/AssistantAvatar";
 import RunCard from "@/components/closeboss/RunCard";
-import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
+import { uploadViaStorage } from "@/lib/uploads/uploadViaStorage";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 /** A file the user attached in the command bar (uploaded to Storage). */
 type CommandAttachment = { path: string; name: string; mime: string; kind: "ad_photo" | "contact_import" };
@@ -646,7 +647,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
               disabled={loadingEarlier}
               className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600 shadow-sm hover:bg-gray-50 disabled:opacity-50"
             >
-              {loadingEarlier ? "Loading…" : "↑ Load earlier conversations"}
+              {loadingEarlier ? <LoadingText /> : "↑ Load earlier conversations"}
             </button>
           </div>
         )}
@@ -853,8 +854,8 @@ function ContextStrip({
           {open === "hot" && (hotLeads.length ? hotLeads.map((l) => (
             <button key={l.id} type="button" onClick={() => onOpenLead(l.id)} className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-gray-50">
               <span className="min-w-0">
-                <span className="block truncate text-sm font-medium text-gray-900">{l.name ?? "Unnamed lead"}</span>
-                <span className="block truncate text-xs text-gray-500">{[l.ai_intent, l.source, l.last_activity_at ? `active ${fmtAgo(l.last_activity_at, locale)}` : null].filter(Boolean).join(" · ") || "No activity yet"}</span>
+                <span className="block truncate text-sm font-medium text-gray-900">{l.name ?? tr("pages.bossAssistant.unnamedLead")}</span>
+                <span className="block truncate text-xs text-gray-500">{[l.ai_intent, l.source, l.last_activity_at ? `active ${fmtAgo(l.last_activity_at, locale)}` : null].filter(Boolean).join(" · ") || tr("pages.bossAssistant.noActivityYet")}</span>
               </span>
               {typeof l.engagement_score === "number" && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">{l.engagement_score}</span>}
             </button>
@@ -981,7 +982,7 @@ function InstructionExchange({
         </BossBubble>
       ) : processing ? (
         <BossBubble bossName={bossName} avatar={avatar}>
-          <p className="text-sm text-gray-500">On it — breaking this into actions…</p>
+          <p className="text-sm text-gray-500">{tr("pages.boss.breakingIntoActions")}</p>
         </BossBubble>
       ) : instruction.status === "failed" ? (
         <BossBubble bossName={bossName} avatar={avatar}>
@@ -1058,7 +1059,7 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
           {t.draft_subject && <p className="mt-1 text-xs font-medium text-gray-800">{t.draft_subject}</p>}
           <p className="mt-1 whitespace-pre-wrap text-xs text-gray-700">{t.draft_body}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <button type="button" disabled={busy !== null} onClick={() => act("approve")} className="rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{busy === "approve" ? "Sending…" : "Approve & send"}</button>
+            <button type="button" disabled={busy !== null} onClick={() => act("approve")} className="rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{busy === "approve" ? tr("common:status.sending") : tr("pages.bossAssistant.approveSend")}</button>
             <button type="button" disabled={busy !== null} onClick={() => act("dismiss")} className="rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50">{tr("boss.dismiss")}</button>
             {error && <span className="text-[11px] text-red-600">{error}</span>}
           </div>
@@ -1067,17 +1068,17 @@ function TaskBubble({ task: t, teamNames, onChanged }: { task: TaskRow; teamName
 
       {t.status === "needs_input" && (
         <div className="mt-1.5 rounded-lg border border-amber-200 bg-amber-50/50 p-2.5">
-          <p className="text-xs text-amber-900">{t.follow_up_question ?? "I need one more detail to start this."}</p>
+          <p className="text-xs text-amber-900">{t.follow_up_question ?? tr("pages.bossAssistant.iNeedOneMore")}</p>
           <div className="mt-2 flex items-center gap-2">
             <input
               type="text"
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void act("answer"); } }}
-              placeholder="Type your answer…"
+              placeholder={tr("pages.boss.typeAnswer")}
               className="min-w-0 flex-1 rounded-lg border border-amber-200 px-2.5 py-1 text-xs text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none"
             />
-            <button type="button" disabled={busy !== null || !answer.trim()} onClick={() => act("answer")} className="shrink-0 rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{busy === "answer" ? "Working…" : "Send"}</button>
+            <button type="button" disabled={busy !== null || !answer.trim()} onClick={() => act("answer")} className="shrink-0 rounded-lg bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-blue-700 disabled:opacity-50">{busy === "answer" ? tr("common:status.working") : tr("common:actions.send")}</button>
           </div>
           {error && <span className="mt-1 block text-[11px] text-red-600">{error}</span>}
         </div>
@@ -1204,7 +1205,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
         >
           <span aria-hidden className="text-sm leading-none">＋</span> {tr("boss.addFile")}
         </button>
-        {uploading && <span className="text-xs text-gray-400">Uploading…</span>}
+        {uploading && <span className="text-xs text-gray-400">{tr("pages.boss.uploading")}</span>}
         {(attach || preview) && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 py-0.5 pl-1 pr-2 text-xs text-gray-700">
             {preview ? (
@@ -1213,7 +1214,7 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
             ) : (
               <span className="pl-1" aria-hidden>📎</span>
             )}
-            <span className="max-w-[160px] truncate">{attach?.name ?? "Image"}</span>
+            <span className="max-w-[160px] truncate">{attach?.name ?? tr("pages.bossAssistant.image")}</span>
             <button type="button" onClick={clearAttach} aria-label={tr("tips.removeFile")} className="text-gray-400 hover:text-gray-700">×</button>
           </span>
         )}
@@ -1321,9 +1322,9 @@ function SettingsModal({
 
 // ── performance (collapsible, lazy) ────────────────────────────────────
 
-const RevenuePanel = nextDynamic(() => import("@/components/dashboard/RevenuePanel").then((m) => m.RevenuePanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> });
-const PipelineForecastPanel = nextDynamic(() => import("@/components/dashboard/PipelineForecastPanel").then((m) => m.PipelineForecastPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> });
-const EmailEngagementPanel = nextDynamic(() => import("@/components/dashboard/EmailEngagementPanel").then((m) => m.EmailEngagementPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400">Loading…</p> });
+const RevenuePanel = nextDynamic(() => import("@/components/dashboard/RevenuePanel").then((m) => m.RevenuePanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400"><LoadingText /></p> });
+const PipelineForecastPanel = nextDynamic(() => import("@/components/dashboard/PipelineForecastPanel").then((m) => m.PipelineForecastPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400"><LoadingText /></p> });
+const EmailEngagementPanel = nextDynamic(() => import("@/components/dashboard/EmailEngagementPanel").then((m) => m.EmailEngagementPanel), { ssr: false, loading: () => <p className="py-4 text-sm text-gray-400"><LoadingText /></p> });
 
 function PerformanceSection() {
   const { t: tr, i18n } = useTranslation("dashboard");

@@ -91,7 +91,7 @@ export default async function NewsletterConfirmPage({ searchParams }: Props) {
             <p className="mt-3 text-lg leading-relaxed text-slate-600">
               {result.agentName
                 ? `Thanks for confirming — you'll hear from ${result.agentName} each week with a plain-English housing briefing for your region.`
-                : "Thanks for confirming your subscription to the CloseBoss weekly housing briefing. Your first issue is on its way."}
+                : t("pages.confirm.thanksForConfirmingYour", { ns: "dashboard" })}
             </p>
           </>
         ) : (
@@ -104,7 +104,7 @@ export default async function NewsletterConfirmPage({ searchParams }: Props) {
           href="/newsletter"
           className="mt-8 inline-flex items-center rounded-lg bg-[#0072ce] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#005ca8]"
         >
-          {result.status === "confirmed" ? "Browse past issues →" : "Back to the newsletter →"}
+          {result.status === "confirmed" ? t("pages.confirm.browsePastIssues", { ns: "dashboard" }) : t("pages.confirm.backToTheNewsletter", { ns: "dashboard" })}
         </Link>
       </div>
     </main>

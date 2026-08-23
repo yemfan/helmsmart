@@ -98,7 +98,7 @@ export default function ClientExplorePage() {
           disabled={loading}
           className="w-full rounded-xl bg-blue-600 text-white font-semibold py-2.5 text-sm disabled:opacity-50"
         >
-          {loading ? "Saving…" : "Save home"}
+          {loading ? t("common:status.saving") : t("pages.explore.saveHome")}
         </button>
       </form>
 
@@ -115,7 +115,7 @@ export default function ClientExplorePage() {
             {h.ai_score != null && (
               <div className="text-xs font-bold text-blue-700">{t("pages.dashFragments.aiScore")} {h.ai_score}</div>
             )}
-            <div className="text-xs text-slate-500">{t("pages.dashFragments.insights")} {Object.keys(h.insights ?? {}).length ? JSON.stringify(h.insights) : "Add notes with your agent"}
+            <div className="text-xs text-slate-500">{t("pages.dashFragments.insights")} {Object.keys(h.insights ?? {}).length ? JSON.stringify(h.insights) : t("pages.explore.addNotesWithYour")}
             </div>
           </div>
         ))}

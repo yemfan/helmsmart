@@ -8,7 +8,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { buildDemoLeads, randomIncomingSnippet } from "./demoLeads";
 import { clearOnboarding, loadOnboarding, saveOnboarding, stepToProgress } from "./storage";
-import type { DemoLead, LeadFocus, OnboardingProfile, OnboardingStep, PriceRangeId } from "./types";
+import type { DemoLead, LeadFocus, OnboardingProfile, OnboardingStep, PriceRangeId } from "./types";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 function effectiveProfile(p: Partial<OnboardingProfile>): OnboardingProfile {
   return {
@@ -102,7 +103,7 @@ export default function OnboardingFunnel({
   /**
    * Content to render on the server (and during client-side hydration until
    * localStorage is loaded). Without this, crawlers and slow connections see
-   * only a "Loading…" stub — see TOM report MJ-003.
+   * only a <LoadingText /> stub — see TOM report MJ-003.
    */
   fallback?: React.ReactNode;
 } = {}) {
@@ -278,7 +279,7 @@ export default function OnboardingFunnel({
     if (fallback) return <>{fallback}</>;
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-400">
-        Loading…
+        <LoadingText />
       </div>
     );
   }
@@ -331,7 +332,7 @@ export default function OnboardingFunnel({
               type="submit"
               className="onboarding-pulse-cta mt-2 w-full rounded-xl bg-[#0072ce] py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-950/40 transition hover:bg-[#005ca8]"
             >
-              Continue →
+              {t("pages.onboardingFunnel.continue")}
             </button>
           </form>
           <p className="mt-6 text-center text-xs text-slate-500">
@@ -425,7 +426,7 @@ export default function OnboardingFunnel({
                 type="submit"
                 className="flex-1 rounded-xl bg-[#0072ce] py-3.5 text-sm font-bold text-white shadow-lg hover:bg-[#005ca8]"
               >
-                Activate my pipeline →
+                {t("pages.onboardingFunnel.activatePipeline")}
               </button>
             </div>
           </form>
@@ -447,7 +448,7 @@ export default function OnboardingFunnel({
             <span className="text-xs font-bold uppercase tracking-wide">{t("pages.onboardingFunnel.simulation")}</span>
           </div>
           <h1 className="font-heading text-xl font-bold text-white sm:text-2xl">
-            Turning on your AI lead desk…
+            {t("pages.onboardingFunnel.turningOn")}
           </h1>
           <ul className="mt-6 min-h-[180px] space-y-2 text-xs text-slate-300 sm:text-sm">
             {activationLog.map((line, idx) => (
@@ -465,10 +466,10 @@ export default function OnboardingFunnel({
               }}
               className="mt-6 w-full rounded-xl bg-emerald-600 py-3.5 text-sm font-bold text-white hover:bg-emerald-500"
             >
-              Open my inbox →
+              {t("pages.onboardingFunnel.openInbox")}
             </button>
           ) : (
-            <p className="mt-6 text-xs text-slate-500">Secure handshake with CloseBoss routing…</p>
+            <p className="mt-6 text-xs text-slate-500">{t("pages.onboardingFunnel.handshake")}</p>
           )}
         </div>
       </Shell>
@@ -627,14 +628,14 @@ export default function OnboardingFunnel({
                 value={replyDraft}
                 onChange={(e) => setReplyDraft(e.target.value)}
                 rows={2}
-                placeholder="Write a fast reply… (demo)"
+                placeholder={t("pages.onboardingFunnel.writeFastReply")}
                 className="w-full resize-none rounded-xl border border-white/15 bg-slate-950/50 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
               />
               <button
                 type="submit"
                 className="mt-3 w-full rounded-xl bg-[#0072ce] py-3 text-sm font-bold text-white hover:bg-[#005ca8]"
               >
-                Send reply →
+                {t("pages.onboardingFunnel.sendReply")}
               </button>
               <p className="mt-2 text-center text-[11px] text-slate-500">{t("pages.onboardingFunnel.draftOnPro")}</p>
             </form>
@@ -677,7 +678,7 @@ export default function OnboardingFunnel({
               onClick={() => go(7, "to_pricing_embed")}
               className="onboarding-pulse-cta rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-rose-950 shadow-lg hover:bg-rose-50"
             >
-              Compare plans & unlock →
+              {t("pages.onboardingFunnel.comparePlans")}
             </button>
             <Link
               href={`/agent/pricing?from=onboarding&email=${encodeURIComponent(fullProfile.email)}`}
@@ -912,7 +913,7 @@ export default function OnboardingFunnel({
                 href="/contact?from=onboarding&topic=team"
                 className="rounded-xl border border-white/20 px-4 py-2 text-xs font-semibold text-white hover:bg-white/5"
               >
-                Contact sales →
+                {t("pages.onboardingFunnel.contactSales")}
               </Link>
             </div>
           </div>
@@ -922,7 +923,7 @@ export default function OnboardingFunnel({
             onClick={() => go(8, "upgrade_flow")}
             className="w-full rounded-xl border border-dashed border-white/20 py-3 text-sm font-semibold text-slate-300 hover:bg-white/5"
           >
-            I&apos;m ready — create my agent account →
+            {t("pages.onboardingFunnel.readyCreateAccount")}
           </button>
         </div>
       </Shell>
@@ -969,7 +970,7 @@ export default function OnboardingFunnel({
   if (step === 5 && !selectedLead) {
     return (
       <Shell step={5}>
-        <p className="text-center text-slate-400">Loading conversation…</p>
+        <p className="text-center text-slate-400">{t("pages.onboardingFunnel.loadingConversation")}</p>
       </Shell>
     );
   }

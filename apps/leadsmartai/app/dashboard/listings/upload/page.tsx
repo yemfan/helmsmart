@@ -2,7 +2,8 @@ import { getServerT } from "@/lib/i18n/server";
 import { Suspense } from "react";
 import { UploadListingClient } from "./UploadListingClient";
 
-import type { Metadata } from "next";
+import type { Metadata } from "next";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
@@ -11,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function UploadListingPage() {
   return (
-    <Suspense fallback={<div className="text-sm text-slate-500">Loading…</div>}>
+    <Suspense fallback={<div className="text-sm text-slate-500"><LoadingText /></div>}>
       <UploadListingClient />
     </Suspense>
   );

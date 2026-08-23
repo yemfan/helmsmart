@@ -70,7 +70,7 @@ export function TransactionNotificationsPanel() {
   }
 
   if (!prefs) {
-    return <div className="text-xs text-slate-500">Loading preferences…</div>;
+    return <div className="text-xs text-slate-500">{t("pages.transactionNotifications.loadingPreferences")}</div>;
   }
 
   return (

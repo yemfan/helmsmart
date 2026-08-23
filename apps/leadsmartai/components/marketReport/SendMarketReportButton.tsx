@@ -7,7 +7,7 @@ import { AiEmailComposer } from "@/components/crm/AiEmailComposer";
 import { OutboundSmsComposer } from "@/components/crm/OutboundSmsComposer";
 
 /**
- * "Send market report" action for a contact.
+ * t("dashboard:pages.sendMarketReportButton.sendMarketReport") action for a contact.
  *
  * Flow: POST /api/market-report/create with the contactId → get a shareable
  * link → open the EXISTING email/SMS composer pre-filled with a short,
@@ -98,7 +98,7 @@ export function SendMarketReportButton({
         disabled={loading || (!canEmail && !canSms)}
         className="rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
       >
-        {loading ? "Building report…" : "Send market report"}
+        {loading ? t("pages.sendMarketReportButton.buildingReport") : t("pages.sendMarketReportButton.sendMarketReport")}
       </button>
       {error && !open ? (
         <span className="self-center text-xs font-medium text-red-600">{error}</span>

@@ -34,7 +34,10 @@
     "distance_unit": "mi",
     "next_steps": "Suggested next steps",
     "estimate_summary": "Estimate summary",
-    "estimate_disclaimer": "This is an automated estimate for planning purposes only, not an appraisal."
+    "estimate_disclaimer": "This is an automated estimate for planning purposes only, not an appraisal.",
+    "unknown": "—",
+    "no_value_heading": "We couldn't value this address",
+    "no_value_body": "No comparable sales came back for this address, so there is nothing to base an estimate on. Check the spelling, or try a nearby address with recent sales."
   },
   "review": {
     "heading": "Get a personalized review",

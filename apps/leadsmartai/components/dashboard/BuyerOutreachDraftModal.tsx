@@ -108,7 +108,7 @@ export default function BuyerOutreachDraftModal(props: {
           <div className="min-w-0">
             <div className="text-base font-semibold text-slate-900">{t("pages.draftModal.buyerTitle")}</div>
             <div className="mt-0.5 truncate text-xs text-slate-600">
-              {props.contactName ?? "Contact"} · review and copy — not auto-sent
+              {props.contactName ?? t("pages.buyerOutreachDraft.contact")} · review and copy — not auto-sent
             </div>
           </div>
           <button
@@ -129,7 +129,7 @@ export default function BuyerOutreachDraftModal(props: {
                   channel === c ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                {c === "sms" ? "SMS" : "Email"}
+                {c === "sms" ? "SMS" : t("pages.drafts.email")}
               </button>
             ))}
           </div>
@@ -140,7 +140,7 @@ export default function BuyerOutreachDraftModal(props: {
             <div className="space-y-2">
               <div className="h-4 animate-pulse rounded bg-slate-100" />
               <div className="h-24 animate-pulse rounded bg-slate-100" />
-              <p className="text-xs text-slate-500">Drafting your message…</p>
+              <p className="text-xs text-slate-500">{t("pages.draftModal.drafting")}</p>
             </div>
           ) : error ? (
             <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
@@ -190,7 +190,7 @@ export default function BuyerOutreachDraftModal(props: {
               onClick={copyCurrent}
               className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
             >
-              {copied === channel ? "Copied!" : channel === "sms" ? "Copy SMS" : "Copy email"}
+              {copied === channel ? t("common:actions.copied_bang") : channel === "sms" ? t("pages.buyerOutreachDraft.copySms") : t("pages.buyerOutreachDraft.copyEmail")}
             </button>
           </footer>
         ) : null}

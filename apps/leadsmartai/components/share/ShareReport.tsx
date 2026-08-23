@@ -203,9 +203,9 @@ export default function ShareReport({
             <div className="flex flex-col">
               {hasLink ? (
                 <>
-                  <MenuItem onClick={onCopy}>{copied ? "✓ Link copied" : "Copy link"}</MenuItem>
-                  <MenuItem onClick={() => void openChannel("email")}>Email…</MenuItem>
-                  <MenuItem onClick={() => void openChannel("sms")}>Text…</MenuItem>
+                  <MenuItem onClick={onCopy}>{copied ? "✓ Link copied" : t("common:actions.copy_link")}</MenuItem>
+                  <MenuItem onClick={() => void openChannel("email")}>{t("pages.shareReport.emailEllipsis")}</MenuItem>
+                  <MenuItem onClick={() => void openChannel("sms")}>{t("pages.shareReport.textEllipsis")}</MenuItem>
                 </>
               ) : null}
               {canDownload ? <MenuItem onClick={() => void onDownload()}>{t("pages.shareReport.downloadPdf")}</MenuItem> : null}
@@ -214,7 +214,7 @@ export default function ShareReport({
             <div className="p-1">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  {channel === "sms" ? "Text a link" : "Email a link"}
+                  {channel === "sms" ? t("pages.shareReport.textALink") : t("pages.shareReport.emailALink")}
                 </span>
                 <button
                   type="button"
@@ -235,7 +235,7 @@ export default function ShareReport({
                   className="mt-1 block w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
                 >
                   <option value="">
-                    {contacts === null ? "Loading contacts…" : "Enter manually…"}
+                    {contacts === null ? t("pages.shareReport.loadingContacts") : t("pages.shareReport.enterManually")}
                   </option>
                   {selectableContacts.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -275,12 +275,12 @@ export default function ShareReport({
                 className="mt-2 w-full rounded-lg bg-emerald-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-60"
               >
                 {status === "sending"
-                  ? "Sending…"
+                  ? t("common:status.sending")
                   : selected
                     ? `Send ${channel === "sms" ? "text" : "email"}`
                     : channel === "sms"
-                      ? "Open messaging app"
-                      : "Open email app"}
+                      ? t("pages.shareReport.openMessagingApp")
+                      : t("pages.shareReport.openEmailApp")}
               </button>
             </div>
           )}

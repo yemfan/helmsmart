@@ -149,7 +149,7 @@ export default function SalesOutreachComposer({
     const addr = c ? (prefill.channel === "email" ? c.email : c.phone) : "";
     if (c && addr) {
       setPicked(c);
-      setQuery(c.name === t("outreach.unnamed") ? addr : c.name);
+      setQuery(c.name || addr);
       setStatus("idle");
       setFeedback(null);
     } else {
@@ -182,7 +182,7 @@ export default function SalesOutreachComposer({
 
   function pick(c: PickContact) {
     setPicked(c);
-    setQuery(c.name === t("outreach.unnamed") ? c.phone || c.email : c.name);
+    setQuery(c.name || c.phone || c.email);
     setOpen(false);
     resetFeedback();
   }
@@ -330,7 +330,7 @@ export default function SalesOutreachComposer({
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              name: picked.name === t("outreach.unnamed") ? "" : picked.name,
+              name: picked.name,
               phone: picked.phone,
               purpose,
               detail: message.trim() || undefined,
@@ -505,7 +505,7 @@ export default function SalesOutreachComposer({
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-blue-50"
                   >
                     <User2 className="h-4 w-4 shrink-0 text-slate-400" strokeWidth={2} />
-                    <span className="min-w-0 flex-1 truncate text-slate-800">{c.name}</span>
+                    <span className="min-w-0 flex-1 truncate text-slate-800">{c.name || t("outreach.unnamed")}</span>
                     <span className="shrink-0 truncate text-xs text-slate-500">{channel === "email" ? c.email : c.phone}</span>
                   </button>
                 ))
@@ -579,7 +579,7 @@ export default function SalesOutreachComposer({
           ) : (
             <MessageSquare className="h-4 w-4" strokeWidth={2} />
           )}
-          {status === "working" ? "Working…" : submitLabel}
+          {status === "working" ? t("common:status.working") : submitLabel}
         </button>
       </div>
 

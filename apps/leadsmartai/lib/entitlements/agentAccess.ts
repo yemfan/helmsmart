@@ -2,7 +2,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import {
   AGENT_DASHBOARD_HOME_PATH,
-  LOAN_BROKER_HOME_PATH,
   START_FREE_AGENT_PATH,
   BROKER_PORTAL_ROLES,
   resolveRoleHomePath,
@@ -69,9 +68,6 @@ export async function ensureAgentWorkspaceAccess(
   }
 
   const r = String(ctx.role ?? "").toLowerCase().trim();
-  if (r === "loan_broker") {
-    redirect(LOAN_BROKER_HOME_PATH);
-  }
   if (BROKER_PORTAL_ROLES.has(r) || r === "support") {
     redirect(resolveRoleHomePath(ctx.role, ctx.hasAgentRow));
   }

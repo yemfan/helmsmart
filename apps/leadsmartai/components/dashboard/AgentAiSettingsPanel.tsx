@@ -103,7 +103,7 @@ export default function AgentAiSettingsPanel({
   if (loading) {
     return (
       <div className="text-sm text-gray-500 py-4" aria-busy="true">
-        Loading AI assistant style…
+        {t("pages.agentAiSettings.loading")}
       </div>
     );
   }
@@ -249,7 +249,7 @@ export default function AgentAiSettingsPanel({
           disabled={saving || !isDirty || (canCustomizeBrand && brandColorInvalid)}
           className="rounded-lg bg-brand-accent text-white text-sm font-medium px-4 py-2 disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save"}
+          {saving ? t("common:status.saving") : t("common:actions.save")}
         </button>
         {message ? <span className="text-sm text-green-700">{message}</span> : null}
         {error ? <span className="text-sm text-red-600">{error}</span> : null}

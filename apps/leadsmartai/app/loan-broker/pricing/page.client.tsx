@@ -193,9 +193,9 @@ export default function LoanBrokerPricingClientPage() {
                       className="w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
                     >
                       {isCurrent
-                        ? "Current Plan"
+                        ? t("pages.page.client.currentPlan")
                         : loadingPlan === plan.priceId
-                          ? "Redirecting..."
+                          ? t("common:status.redirecting")
                           : plan.cta}
                     </button>
                   )}

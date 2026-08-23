@@ -61,7 +61,7 @@ export function AiEmailComposer({
           value={body}
           onChange={(e) => setBody(e.target.value)}
           className="min-h-[160px] w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900"
-          placeholder="Write an email…"
+          placeholder={t("pages.aiComposer.writeEmail")}
         />
         {error ? <div className="text-sm text-red-600">{error}</div> : null}
         <button
@@ -70,7 +70,7 @@ export function AiEmailComposer({
           disabled={disabled}
           className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:bg-slate-300"
         >
-          {loading ? "Sending…" : "Send email"}
+          {loading ? t("common:status.sending") : t("pages.houseSearch.sendEmail")}
         </button>
       </div>
     </section>

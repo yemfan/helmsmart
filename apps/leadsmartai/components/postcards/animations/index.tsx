@@ -58,10 +58,12 @@ function MessageBlock({
   brandName: string | null;
   delayMs?: number;
 }) {
+  const { t } = useTranslation("dashboard");
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delayMs);
-    return () => clearTimeout(t);
+    // Named `timer`, not `t` — the translator above owns that name now.
+    const timer = setTimeout(() => setVisible(true), delayMs);
+    return () => clearTimeout(timer);
   }, [delayMs]);
   return (
     <div
@@ -87,7 +89,7 @@ function MessageBlock({
         )}
         <div>
           <div className="text-sm font-semibold text-slate-900">
-            — {agentName ?? "Your agent"}
+            — {agentName ?? t("pages.postcardScene.yourAgent")}
           </div>
           {brandName ? (
             <div className="text-xs text-slate-500">{brandName}</div>
@@ -279,10 +281,10 @@ function HolidayScene(props: SceneProps) {
           style={{ animation: "pc-fade-in-down 900ms ease-out 400ms both" }}
         >
           {season === "snow"
-            ? "Wishing you a bright winter"
+            ? t("pages.index.wishingYouABright")
             : season === "leaves"
-              ? "Hope autumn treats you well"
-              : "A little sunshine for your day"}
+              ? t("pages.index.hopeAutumnTreatsYou")
+              : t("pages.index.aLittleSunshineFor")}
         </p>
       </div>
       <MessageBlock {...props} delayMs={1000} />

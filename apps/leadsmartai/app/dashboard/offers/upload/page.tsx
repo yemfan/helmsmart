@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { UploadOfferClient } from "./UploadOfferClient";
-import { getServerT } from "@/lib/i18n/server";
+import { getServerT } from "@/lib/i18n/server";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 export const metadata = {
   title: "Upload offer | CloseBoss",
@@ -11,7 +12,7 @@ export const metadata = {
 export default async function UploadOfferPage() {
   const t = await getServerT();
   return (
-    <Suspense fallback={<div className="text-sm text-slate-500">Loading…</div>}>
+    <Suspense fallback={<div className="text-sm text-slate-500"><LoadingText /></div>}>
       <UploadOfferClient />
     </Suspense>
   );

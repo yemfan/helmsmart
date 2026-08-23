@@ -16,7 +16,8 @@ import {
   clearSignupAttribution,
 } from "@/components/attribution/AttributionCapture";
 import { consumeStashedReferralCode } from "@/components/referrals/ReferralCodeCapture";
-import { evaluatePassword, PasswordStrength } from "@/components/auth/PasswordStrength";
+import { evaluatePassword, PasswordStrength } from "@/components/auth/PasswordStrength";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 // BCP-47 base ids shown on the SMS opt-in disclosure. Keep in sync with
 // the POSTs to /api/consent/sms — the `sms_consent_version` string must
@@ -58,18 +59,16 @@ function SignupForm() {
     setError(null);
     setSuccess(null);
 
-    if (!fullName.trim()) return setError("Name is required.");
-    if (!email.trim()) return setError("Email is required.");
+    if (!fullName.trim()) return setError(t("pages.signupPage.nameRequired"));
+    if (!email.trim()) return setError(t("pages.signupPage.emailRequired"));
     if (phone.trim() && !isValidUsPhone(phone)) {
-      return setError("Phone must be a valid US number (10 digits) if provided.");
+      return setError(t("pages.signupPage.phoneInvalid"));
     }
     // TCPA §227 + FCC rules: no SMS without prior express consent. Block the
     // submission if the user filled in a phone but did not check the
     // consent box. Leaving phone empty skips this check.
     if (phone.trim() && !smsConsent) {
-      return setError(
-        "To receive SMS, please check the box confirming you consent to text messages. Or leave the phone field empty.",
-      );
+      return setError(t("pages.signupPage.smsConsentRequired"));
     }
 
     // First-touch signup source (utm/referrer/landing) — stamped onto the
@@ -86,7 +85,7 @@ function SignupForm() {
           error: userErr,
         } = await supabase.auth.getUser();
         if (userErr) throw userErr;
-        if (!user) throw new Error("Session expired. Please log in again.");
+        if (!user) throw new Error(t("pages.signupPage.sessionExpired"));
 
         const phoneVal = phone.trim() ? formatUsPhoneStored(phone) : null;
         const { error: upProfErr } = await supabase.from("user_profiles").upsert(
@@ -142,7 +141,7 @@ function SignupForm() {
         router.push(after ?? "/");
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err ?? "");
-        setError(msg || "Could not save profile.");
+        setError(msg || t("pages.signupPage.couldNotSaveProfile"));
       } finally {
         setLoading(false);
       }
@@ -150,10 +149,10 @@ function SignupForm() {
     }
 
     if (!evaluatePassword(password).allMet) {
-      return setError("Please choose a password that meets all the requirements below.");
+      return setError(t("pages.signupPage.passwordRequirements"));
     }
     if (!acceptTerms) {
-      return setError("Please accept the Terms of Service and Privacy Policy to continue.");
+      return setError(t("pages.signupPage.acceptTerms"));
     }
 
     setLoading(true);
@@ -170,7 +169,7 @@ function SignupForm() {
       if (signUpErr) throw signUpErr;
       const userId = data?.user?.id;
       if (!userId) {
-        setSuccess("Check your email to confirm your account, then come back to log in.");
+        setSuccess(t("pages.signupPage.confirmEmailThenLogIn"));
         return;
       }
 
@@ -267,16 +266,14 @@ function SignupForm() {
       router.push("/");
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e ?? "");
-      if (/rate limit|too many requests/i.test(msg)) {
-        setError(
-          "Too many emails sent from this app. Wait an hour or use a different email. In Supabase: Auth → turn off “Confirm email” for dev, or add custom SMTP for production."
+      if (/rate limit|too many requests/i.test(msg) || /confirmation email|confirm email/i.test(msg)) {
+        console.error(
+          `[signup] ${msg} In Supabase: Auth → turn off “Confirm email” for dev, or add custom SMTP ` +
+            "for production, and confirm the sender domain is verified. Project email rate limits apply."
         );
-      } else if (/confirmation email|confirm email/i.test(msg)) {
-        setError(
-          "Supabase couldn’t send the confirmation email. For local testing, disable email confirmations in Supabase Dashboard (Authentication → Email/Providers → turn off Confirm email). If you want emails, check Supabase SMTP/Resend settings and that the sender domain is verified."
-        );
+        setError(t("pages.signupPage.emailSendFailed"));
       } else {
-        setError(msg || "Signup failed.");
+        setError(msg || t("pages.signupPage.signupFailed"));
       }
     } finally {
       setLoading(false);
@@ -298,7 +295,7 @@ function SignupForm() {
       });
       if (oauthError) throw oauthError;
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Sign in failed.");
+      setError(e instanceof Error ? e.message : t("pages.signupPage.signInFailed"));
       setLoading(false);
     }
   }
@@ -331,7 +328,7 @@ function SignupForm() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
               readOnly={hasSession}
-              title={hasSession ? "Email is tied to your signed-in account" : undefined}
+              title={hasSession ? t("pages.signupPage.emailTiedToAccount") : undefined}
               disabled={prefillLoading}
             />
           </div>
@@ -418,7 +415,13 @@ function SignupForm() {
             }
             className="w-full inline-flex items-center justify-center bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? (hasSession ? "Saving…" : "Creating account...") : hasSession ? "Save profile" : "Sign Up"}
+            {loading
+              ? hasSession
+                ? t("pages.signupPage.saving")
+                : t("pages.signupPage.creatingAccount")
+              : hasSession
+              ? t("pages.signupPage.saveProfile")
+              : t("pages.signupPage.signUp")}
           </button>
         </form>
 
@@ -471,7 +474,7 @@ export default function SignupPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-slate-50 text-sm text-gray-500">
-          Loading…
+          <LoadingText />
         </div>
       }
     >

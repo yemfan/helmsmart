@@ -19,8 +19,12 @@ export default async function DemoCalendar() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{t("pages.demoPages.calendar", { ns: "dashboard" })}</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            This week · {DEMO_EVENTS.length} upcoming events ·{" "}
-            {DEMO_DEALS.length} {t("pages.dashFragments.activeDeals", { ns: "dashboard" })}</p>
+            {t("pages.demoPages.calendarSubtitle", {
+              ns: "dashboard",
+              events: DEMO_EVENTS.length,
+              deals: DEMO_DEALS.length,
+            })}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <DemoDisabledButton label={t("pages.demoPages.connectGoogle", { ns: "dashboard" })} variant="ghost" />

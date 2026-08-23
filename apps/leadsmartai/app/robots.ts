@@ -36,7 +36,6 @@ export default function robots(): MetadataRoute.Robots {
     "/upgrade-to-agent",
     "/agent-signup",
     "/agent-home-value-leads",
-    "/loan-broker",
     "/unauthorized",
   ];
 

@@ -23,7 +23,8 @@
     "form": {
       "first_name_placeholder": "First name",
       "email_placeholder": "Email",
-      "language_label": "Language:",
+      "language_english": "English",
+        "language_label": "Language:",
       "submit": "Email me the prompts",
       "privacy_note": "No spam — just the prompts, straight to your inbox.",
       "error_generic": "Something went wrong. Please try again.",

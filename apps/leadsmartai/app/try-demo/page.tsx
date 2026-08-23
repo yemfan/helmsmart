@@ -144,7 +144,7 @@ export default async function TryDemoPage() {
                     {tour.body}
                   </p>
                   <span className="mt-auto pt-4 text-xs font-semibold text-blue-700 dark:text-blue-300">
-                    Open tour →
+                    {t("pages.tryDemo.openTour", { ns: "dashboard" })}
                   </span>
                 </Link>
               </li>

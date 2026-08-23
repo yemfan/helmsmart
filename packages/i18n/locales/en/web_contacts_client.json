@@ -97,6 +97,7 @@
     "showings_tooltip_with_loved_one": "{{count}} showing, {{loved}} loved",
     "showings_tooltip_with_loved_other": "{{count}} showings, {{loved}} loved",
     "offers_tooltip": "{{active}} active, {{won}} accepted",
+    "open_profile_tooltip": "Open profile",
     "edit_label": "Edit contact",
     "save": "Save",
     "cancel": "Cancel",

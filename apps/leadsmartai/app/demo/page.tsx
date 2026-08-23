@@ -150,7 +150,7 @@ export default async function DemoOverview() {
                 href="/demo/calendar"
                 className="text-xs font-semibold text-blue-700 dark:text-blue-300"
               >
-                Open calendar →
+                {t("pages.demoPage.openCalendar", { ns: "dashboard" })}
               </Link>
             </div>
             <ul className="mt-3 space-y-2">

@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default function ExitIntentPopup({ role }: Props) {
-  const { t } = useTranslation("dashboard");
+  const { t } = useTranslation("web_landing");
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -94,7 +94,7 @@ export default function ExitIntentPopup({ role }: Props) {
     setErrorMsg("");
     const trimmed = email.trim();
     if (!trimmed) {
-      setErrorMsg("Enter your email.");
+      setErrorMsg(t("exit_intent.error_required"));
       return;
     }
     setStatus("loading");
@@ -110,7 +110,9 @@ export default function ExitIntentPopup({ role }: Props) {
       const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
       if (!res.ok || !data.ok) {
         setStatus("error");
-        setErrorMsg(data.error ?? "Something went wrong. Try again.");
+        setErrorMsg(
+          t(res.status === 400 ? "exit_intent.error_invalid" : "exit_intent.error_generic"),
+        );
         return;
       }
       setStatus("success");
@@ -123,7 +125,7 @@ export default function ExitIntentPopup({ role }: Props) {
       setTimeout(() => setOpen(false), 2200);
     } catch {
       setStatus("error");
-      setErrorMsg("Network error. Try again.");
+      setErrorMsg(t("exit_intent.error_network"));
     }
   };
 
@@ -131,13 +133,13 @@ export default function ExitIntentPopup({ role }: Props) {
 
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center p-4 sm:items-center" role="dialog" aria-modal="true" aria-labelledby="exit-popup-title">
-      <button type="button" className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]" aria-label={t("pages.exitIntent.close")} onClick={dismiss} />
+      <button type="button" className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]" aria-label={t("exit_intent.close")} onClick={dismiss} />
       <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/25">
         <button
           type="button"
           onClick={dismiss}
           className="absolute right-3 top-3 rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-          aria-label={t("pages.exitIntent.closeDialog")}
+          aria-label={t("exit_intent.close_dialog")}
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -145,23 +147,23 @@ export default function ExitIntentPopup({ role }: Props) {
         </button>
         <div className="border-b border-slate-100 bg-gradient-to-br from-sky-50 to-white px-6 pb-5 pt-8 sm:px-8">
           <p id="exit-popup-title" className="font-heading text-2xl font-bold text-slate-900">
-            Before you go…
+            {t("exit_intent.title")}
           </p>
-          <p className="mt-3 text-lg font-semibold text-[#0072ce]">{t("pages.exitIntent.headline")}</p>
-          <p className="mt-2 text-sm text-slate-600">{t("pages.exitIntent.sub")}</p>
+          <p className="mt-3 text-lg font-semibold text-[#0072ce]">{t("exit_intent.headline")}</p>
+          <p className="mt-2 text-sm text-slate-600">{t("exit_intent.sub")}</p>
         </div>
         <div className="px-6 py-6 sm:px-8">
           {status === "success" ? (
-            <p className="text-center text-base font-semibold text-emerald-700">{t("pages.exitIntent.done")}</p>
+            <p className="text-center text-base font-semibold text-emerald-700">{t("exit_intent.done")}</p>
           ) : (
             <form onSubmit={onSubmit} className="space-y-4">
               <label className="block">
-                <span className="sr-only">{t("pages.exitIntent.email")}</span>
+                <span className="sr-only">{t("exit_intent.email")}</span>
                 <input
                   type="email"
                   name="email"
                   autoComplete="email"
-                  placeholder="Enter your email →"
+                  placeholder={t("exit_intent.email_placeholder")}
                   value={email}
                   onChange={(ev) => setEmail(ev.target.value)}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#0072ce] focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-200"
@@ -182,7 +184,7 @@ export default function ExitIntentPopup({ role }: Props) {
                 disabled={status === "loading"}
                 className="w-full rounded-xl bg-[#0072ce] px-4 py-3.5 text-base font-bold text-white shadow-lg shadow-blue-900/20 transition hover:bg-[#005ca8] disabled:opacity-70"
               >
-                {status === "loading" ? "Sending…" : "Send me the leads"}
+                {status === "loading" ? t("exit_intent.sending") : t("exit_intent.submit")}
               </button>
             </form>
           )}

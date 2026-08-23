@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 /**
  * Briefing schedule settings — controls when the morning + evening
@@ -132,7 +133,7 @@ export default function BriefingScheduleCard() {
 
   if (loading) {
     return (
-      <div className="space-y-2 text-xs text-gray-500">Loading…</div>
+      <div className="space-y-2 text-xs text-gray-500"><LoadingText /></div>
     );
   }
 
@@ -188,7 +189,7 @@ export default function BriefingScheduleCard() {
               {t.label}
             </option>
           ))}
-          <option value={OTHER}>Other timezone…</option>
+          <option value={OTHER}>{t("pages.briefingSchedule.otherTimezone")}</option>
         </select>
         {tzMode === "other" ? (
           <input
@@ -216,7 +217,7 @@ export default function BriefingScheduleCard() {
           disabled={saving}
           className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-60"
         >
-          {saving ? "Saving…" : "Save schedule"}
+          {saving ? t("common:status.saving") : t("pages.briefingSchedule.saveSchedule")}
         </button>
         {savedAt ? (
           <span className="text-xs font-medium text-emerald-700">{t("pages.briefingSchedule.saved")}</span>

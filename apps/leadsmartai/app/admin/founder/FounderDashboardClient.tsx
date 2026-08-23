@@ -156,7 +156,7 @@ export function FounderDashboardClient() {
       ) : null}
 
       {loading && !overview ? (
-        <div className="text-sm text-gray-500">Loading metrics…</div>
+        <div className="text-sm text-gray-500">{t("pages.founderDashboard.loadingMetrics")}</div>
       ) : overview ? (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -182,7 +182,7 @@ export function FounderDashboardClient() {
               subtext={`${overview.activation.activatedWithin7dOfOnboarding} / ${overview.activation.onboarded} onboarded (7d reply)`}
             />
             <KpiCard
-              label="Checkout → paid"
+              label={t("pages.founderDashboard.checkoutToPaid")}
               value={fmtPct(overview.conversion.rate)}
               subtext={`${overview.conversion.convertedUsers} / ${overview.conversion.checkoutStartedUsers} starters (${overview.scope.usageAndConversionWindowDays}d)`}
             />

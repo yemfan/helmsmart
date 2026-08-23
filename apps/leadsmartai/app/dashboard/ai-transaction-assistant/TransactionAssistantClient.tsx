@@ -131,7 +131,7 @@ export default function TransactionAssistantClient() {
         <h2 className="mb-3 text-sm font-semibold text-gray-900">{tr("assistants.transaction.deadlinesHeading")}</h2>
         {alerts.length === 0 ? (
           <p className="py-6 text-center text-sm text-gray-400">
-            {loading ? "Checking your transactions…" : "No open deadlines in the next 14 days."}
+            {loading ? tr("pages.transactionAssistant.checkingYourTransactions") : tr("pages.transactionAssistant.noOpenDeadlinesIn")}
           </p>
         ) : (
           <div className="space-y-2">
@@ -162,7 +162,7 @@ export default function TransactionAssistantClient() {
         </div>
         {active.length === 0 ? (
           <p className="py-6 text-center text-sm text-gray-400">
-            {loading ? "Loading…" : "Your AI Transaction Assistant is ready — new deals are monitored here automatically."}
+            {loading ? tr("common:actions.loading") : tr("pages.transactionAssistant.yourAiTransactionAssistant")}
           </p>
         ) : (
           <div className="grid gap-3 lg:grid-cols-3">

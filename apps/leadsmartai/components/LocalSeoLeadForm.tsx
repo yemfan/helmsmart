@@ -121,7 +121,7 @@ export default function LocalSeoLeadForm({
           disabled={loading}
           className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
         >
-          {loading ? "Submitting..." : "Get My Free Report"}
+          {loading ? t("common:status.submitting") : t("pages.localSeoLead.getMyFreeReport")}
         </button>
       </form>
       {error && <p className="mt-2 text-xs text-red-600">{error}</p>}

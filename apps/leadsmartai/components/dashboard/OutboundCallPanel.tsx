@@ -234,7 +234,7 @@ export default function OutboundCallPanel() {
         {needsDetail && (
           <div className="mt-3">
             <span className="mb-1 block text-[11px] font-medium text-slate-500">
-              {purpose === "survey" ? "What should Lucy ask?" : "What's the announcement?"}
+              {purpose === "survey" ? t("pages.outboundCall.whatShouldLucyAsk") : t("pages.bulkCall.whatSTheAnnouncement")}
             </span>
             <textarea
               className={`${input} resize-y`}
@@ -258,7 +258,7 @@ export default function OutboundCallPanel() {
             className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50"
           >
             <PhoneOutgoing className="h-4 w-4" strokeWidth={2} />
-            {status === "calling" ? "Placing call…" : "AI Call"}
+            {status === "calling" ? t("pages.outboundCall.placingCall") : t("pages.outboundCall.aiCall")}
           </button>
           {message && (
             <span className={`text-xs font-medium ${status === "error" ? "text-rose-600" : "text-emerald-600"}`}>

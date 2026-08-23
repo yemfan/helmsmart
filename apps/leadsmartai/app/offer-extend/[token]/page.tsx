@@ -193,7 +193,7 @@ async function ConfirmationPage({ outcome, locale }: { outcome: ExtendOutcome; l
           href={outcome.offerUrl}
           className="block rounded-lg border border-slate-200 bg-white px-3 py-3 text-center text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
-          Open offer in CloseBoss →
+          {t("pages.offerExtend.openInCloseBoss", { ns: "dashboard" })}
         </a>
       </div>
     );
@@ -209,7 +209,7 @@ async function ConfirmationPage({ outcome, locale }: { outcome: ExtendOutcome; l
         href="/dashboard"
         className="block rounded-lg border border-slate-200 bg-white px-3 py-3 text-center text-sm font-medium text-slate-700 hover:bg-slate-50"
       >
-        Go to your dashboard →
+        {t("pages.offerExtend.goToDashboard", { ns: "dashboard" })}
       </a>
     </div>
   );

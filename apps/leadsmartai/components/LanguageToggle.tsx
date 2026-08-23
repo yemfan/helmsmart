@@ -4,12 +4,12 @@ import { useTranslation } from "react-i18next";
 
 import { SUPPORTED_LOCALES, type SupportedLocale } from "@leadsmart/i18n";
 
-import { setLocaleCookie } from "@/lib/i18n/client";
+import { useSetLocale } from "@/lib/i18n/client";
 
 /**
  * Compact EN / 中文 language toggle for the header chrome (marketing top-nav
  * + dashboard top bar). One tap flips the live i18next instance and writes the
- * `leadsmart_locale` cookie (via {@link setLocaleCookie}), so translated pages
+ * `leadsmart_locale` cookie (via {@link useSetLocale}), so translated pages
  * re-render immediately and later SSR navigations stay in sync — same mechanism
  * as the fuller LanguagePanel on the Settings page.
  *
@@ -30,6 +30,7 @@ const FULL_LABEL: Record<SupportedLocale, string> = {
 
 export default function LanguageToggle({ className = "" }: { className?: string }) {
   const { t, i18n } = useTranslation("dashboard");
+  const setLocale = useSetLocale();
   const current = (i18n.language as SupportedLocale) ?? "en";
 
   return (
@@ -47,7 +48,7 @@ export default function LanguageToggle({ className = "" }: { className?: string 
             role="radio"
             aria-checked={active}
             aria-label={FULL_LABEL[loc]}
-            onClick={() => setLocaleCookie(loc)}
+            onClick={() => setLocale(loc)}
             className={`rounded-[14px] px-2.5 py-1.5 text-xs font-semibold transition ${
               active
                 ? "bg-blue-600 text-white shadow-sm"

@@ -151,7 +151,7 @@ export default function SocialAutopilotController() {
   );
 
   if (!config) {
-    return <p className="text-xs text-gray-500">{error ?? "Loading…"}</p>;
+    return <p className="text-xs text-gray-500">{error ?? t("common:actions.loading")}</p>;
   }
 
   const aiOn = config.aiManaged;
@@ -207,8 +207,8 @@ export default function SocialAutopilotController() {
         <h3 className="text-sm font-semibold text-gray-900">{t("pages.socialAutopilot.whereToPost")}</h3>
         <p className="mt-0.5 text-xs text-gray-600">
           {config.platforms === null
-            ? "All connected accounts."
-            : "Only the accounts you tick."}
+            ? t("pages.socialAutopilot.allConnectedAccounts")
+            : t("pages.socialAutopilot.onlyTheAccountsYou")}
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {platformOptions.map((p) => {
@@ -240,8 +240,8 @@ export default function SocialAutopilotController() {
         <h3 className="text-sm font-semibold text-gray-900">{t("pages.socialAutopilot.whatToPost")}</h3>
         <p className="mt-0.5 text-xs text-gray-600">
           {config.contentCategories === null
-            ? "Any topic from your content library."
-            : "Only the topics you tick."}
+            ? t("pages.socialAutopilot.anyTopicFromYour")
+            : t("pages.socialAutopilot.onlyTheTopicsYou")}
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {categoryOptions.map((c) => {
@@ -324,8 +324,8 @@ export default function SocialAutopilotController() {
           <span className="block text-xs font-medium text-gray-700">{t("pages.socialAutopilot.daysToPost")}</span>
           <p className="mt-0.5 text-[11px] text-gray-500">
             {config.postDays === null
-              ? "Spread automatically across the week."
-              : "Only the days you pick."}
+              ? t("pages.socialAutopilot.spreadAutomaticallyAcrossThe")
+              : t("pages.socialAutopilot.onlyTheDaysYou")}
           </p>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {DAYS.map((d) => {

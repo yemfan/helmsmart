@@ -164,7 +164,7 @@ function OpenHouseSignupPageInner() {
             <p className="text-sm text-slate-600">{t("pages.openHouseSignup.leaveInfo")}</p>
             <div className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2 text-xs text-slate-700">
               <span className="font-semibold text-slate-900">{t("pages.openHouseSignup.property")}</span>{" "}
-              {isDemo ? DEFAULT_PROPERTY_ADDRESS : "Loading property…"}
+              {isDemo ? DEFAULT_PROPERTY_ADDRESS : t("pages.openHouseSignup.loadingProperty")}
               {isDemo && (
                 <span className="ml-1 text-slate-500">
                   (default demo property — scan a property QR code for
@@ -269,7 +269,7 @@ function OpenHouseSignupPageInner() {
               type="submit"
               className="w-full rounded-xl bg-blue-600 text-white font-semibold py-3 hover:bg-blue-700 disabled:opacity-60"
             >
-              {submitting ? "Submitting..." : "Submit"}
+              {submitting ? t("common:status.submitting") : t("pages.openHouseSignup.submit")}
             </button>
           </form>
 

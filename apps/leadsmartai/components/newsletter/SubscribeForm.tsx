@@ -83,12 +83,12 @@ export default function SubscribeForm({
     return (
       <div className="rounded-2xl border border-[#0072ce]/30 bg-[#0072ce]/5 p-6 text-center">
         <p className="text-lg font-semibold text-slate-900">
-          {message || "Check your email to confirm your subscription."}
+          {message || t("pages.subscribe.checkYourEmailTo")}
         </p>
         <p className="mt-2 text-sm text-slate-600">
           {agentName
             ? `Once you confirm, ${agentName} will send you a weekly rates + housing briefing for the region you picked.`
-            : "We'll send your weekly rates + housing briefing for the region you picked. In the meantime, browse the latest issues below."}
+            : t("pages.subscribe.weLlSendYour")}
         </p>
       </div>
     );
@@ -148,7 +148,7 @@ export default function SubscribeForm({
             disabled={status === "submitting"}
             className="w-full rounded-lg bg-[#0072ce] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#005ca8] disabled:opacity-60 sm:w-auto"
           >
-            {status === "submitting" ? "Subscribing…" : "Subscribe"}
+            {status === "submitting" ? t("common:status.subscribing") : t("pages.subscribe.subscribe")}
           </button>
         </div>
       </div>

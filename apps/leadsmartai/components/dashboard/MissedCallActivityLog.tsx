@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 /**
  * Activity-first view for the missed-call dashboard. Shows the full
@@ -122,7 +123,7 @@ export default function MissedCallActivityLog() {
           className="ml-auto rounded-full border border-slate-200 px-3 py-1 font-medium text-slate-600 hover:bg-slate-50"
           disabled={loading}
         >
-          {loading ? "Refreshing…" : "Refresh"}
+          {loading ? t("common:status.refreshing") : t("common:actions.refresh")}
         </button>
       </div>
 
@@ -130,13 +131,13 @@ export default function MissedCallActivityLog() {
       {error ? (
         <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>
       ) : loading && events.length === 0 ? (
-        <p className="text-sm text-slate-500">Loading…</p>
+        <p className="text-sm text-slate-500"><LoadingText /></p>
       ) : visible.length === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
           <p className="text-sm text-slate-500">
             {events.length === 0
-              ? "No call activity yet. Once you receive your first call, it will appear here."
-              : "No calls match this filter."}
+              ? t("pages.missedCallActivityLog.noCallActivityYet")
+              : t("pages.missedCallActivityLog.noCallsMatchThis")}
           </p>
         </div>
       ) : (
@@ -147,7 +148,7 @@ export default function MissedCallActivityLog() {
                 <CallStatusBadge status={ev.status} direction={ev.direction} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-slate-900">
-                    {ev.contact_name ?? ev.from_phone ?? ev.to_phone ?? "Unknown"}
+                    {ev.contact_name ?? ev.from_phone ?? ev.to_phone ?? t("pages.missedCallActivityLog.unknown")}
                   </p>
                   <p className="truncate text-xs text-slate-500">
                     {ev.contact_name && (ev.from_phone || ev.to_phone)

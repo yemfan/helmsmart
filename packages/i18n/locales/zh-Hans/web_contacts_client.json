@@ -97,6 +97,7 @@
     "showings_tooltip_with_loved_one": "{{count}} 次看房，{{loved}} 次非常满意",
     "showings_tooltip_with_loved_other": "{{count}} 次看房，{{loved}} 次非常满意",
     "offers_tooltip": "{{active}} 个进行中，{{won}} 个已接受",
+    "open_profile_tooltip": "打开联系人档案",
     "edit_label": "编辑联系人",
     "save": "保存",
     "cancel": "取消",

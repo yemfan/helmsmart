@@ -177,7 +177,7 @@ function isCopy(raw: string): boolean {
    */
   if (/;\s*[a-z_$][\w$]*[.(]/.test(t)) return false;
   if (/[{}<>$`]/.test(t)) return false; // interpolated or markup — not a literal
-  if (!/^[A-Za-z][A-Za-z0-9 ,.'’!?:;%()/&+—–-]*$/.test(t)) return false;
+  if (!/^[A-Za-z][A-Za-z0-9 ,.'’!?:;%()/&+…→—–-]*$/.test(t)) return false;
   const words = t.split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length;
   /*
    * One-word copy counts too. Requiring two words hid every Save, Cancel,

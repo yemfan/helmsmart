@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { SUPPORTED_LOCALES, type SupportedLocale } from "@leadsmart/i18n";
 
-import { setLocaleCookie } from "@/lib/i18n/client";
+import { useSetLocale } from "@/lib/i18n/client";
 
 const LANGUAGE_LABEL_KEY: Record<SupportedLocale, string> = {
   en: "language.english",
@@ -22,6 +22,7 @@ const LANGUAGE_LABEL_KEY: Record<SupportedLocale, string> = {
  */
 export default function LanguagePanel() {
   const { t, i18n } = useTranslation(["settings", "common"]);
+  const setLocale = useSetLocale();
   const current = (i18n.language as SupportedLocale) ?? "en";
 
   return (
@@ -41,7 +42,7 @@ export default function LanguagePanel() {
               type="button"
               role="radio"
               aria-checked={active}
-              onClick={() => setLocaleCookie(loc)}
+              onClick={() => setLocale(loc)}
               className={`flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-left text-sm transition mb-2 last:mb-0 ${
                 active
                   ? "border-blue-500 bg-blue-50 text-blue-900 font-semibold"

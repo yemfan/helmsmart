@@ -124,7 +124,7 @@ export default function RunCard({
   }, [live, load]);
 
   if (!run) {
-    return <p className="text-sm text-gray-500">Starting the run…</p>;
+    return <p className="text-sm text-gray-500">{t("pages.runCard.startingRun")}</p>;
   }
 
   const plan = run.plan_json?.plan ?? null;
@@ -291,6 +291,7 @@ function StepRow({
   runId: string;
   onChanged: () => Promise<void>;
 }) {
+  const { t } = useTranslation("dashboard");
   const label = TOOL_LABEL[step.tool_name] ?? step.tool_name;
   const out = step.output_json;
   const persona = step.assignee ? ASSIGNEE_PERSONA[step.assignee] : null;
@@ -343,7 +344,7 @@ function StepRow({
           )}
           {out?.artifactUrl && (
             <Link href={out.artifactUrl} className="text-[11px] font-medium text-blue-600 hover:underline">
-              View deliverable →
+              {t("pages.runCard.viewDeliverable")}
             </Link>
           )}
         </div>
@@ -407,7 +408,7 @@ function ApprovalControls({
           onChange={(e) => setEditBody(e.target.value)}
           rows={3}
           className="mb-1.5 w-full rounded-lg border border-gray-200 p-2 text-xs"
-          placeholder="Edit the message before sending…"
+          placeholder={t("pages.runCard.editBeforeSending")}
         />
       )}
       <div className="flex flex-wrap items-center gap-1.5">
@@ -417,7 +418,7 @@ function ApprovalControls({
           onClick={() => void decide("approved")}
           className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
         >
-          {busy === "approved" ? "Sending…" : editing ? "Save & send" : "Approve & send"}
+          {busy === "approved" ? t("common:status.sending") : editing ? t("pages.run.saveSend") : t("pages.bossAssistant.approveSend")}
         </button>
         {draftId && !editing && (
           <button
@@ -432,7 +433,7 @@ function ApprovalControls({
           onClick={() => void decide("rejected")}
           className="rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-400 hover:bg-gray-50 disabled:opacity-50"
         >
-          {busy === "rejected" ? "Rejecting…" : "Reject"}
+          {busy === "rejected" ? t("common:status.rejecting") : t("common:actions.reject")}
         </button>
       </div>
       {error && <p className="mt-1 text-[11px] text-red-500">{error}</p>}

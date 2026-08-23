@@ -160,7 +160,7 @@ export default function CreditsClient() {
                 disabled={portalBusy}
                 className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-60"
               >
-                {portalBusy ? "Opening…" : tr("more.credits.managePlan")}
+                {portalBusy ? tr("common:status.opening") : tr("more.credits.managePlan")}
               </button>
             )}
           </div>
@@ -229,7 +229,7 @@ export default function CreditsClient() {
                   className="mt-5 w-full rounded-xl py-2.5 text-sm font-bold text-white shadow transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                   style={{ background: isCurrent ? "#94a3b8" : BRAND }}
                 >
-                  {busy === `plan:${t.id}` ? "Working…" : label}
+                  {busy === `plan:${t.id}` ? tr("common:status.working") : label}
                 </button>
               </div>
             );
@@ -262,7 +262,7 @@ export default function CreditsClient() {
                 className="mt-4 w-full rounded-xl border py-2.5 text-sm font-bold shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 style={{ borderColor: BRAND, color: BRAND }}
               >
-                {busy === `pack:${p.id}` ? "Redirecting…" : "Buy"}
+                {busy === `pack:${p.id}` ? tr("common:status.redirecting") : "Buy"}
               </button>
             </div>
           ))}

@@ -71,7 +71,7 @@ export default async function MarketReportShareView({
             <img src={agent.photoUrl} alt="" className="h-12 w-12 rounded-full object-cover" />
           ) : null}
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-slate-900">{agent.name ?? "Your Agent"}</div>
+            <div className="text-sm font-bold text-slate-900">{agent.name ?? t("pages.cmaShareView.yourAgent", { ns: "dashboard" })}</div>
             <div className="text-xs text-slate-600">
               {[agent.brokerage, agent.licenseNumber ? `Lic #${agent.licenseNumber}` : null]
                 .filter(Boolean)
@@ -144,7 +144,7 @@ export default async function MarketReportShareView({
               <p className="mt-0.5 text-xs text-slate-600">
                 {agent.name
                   ? `${agent.name} can walk you through it — no pressure.`
-                  : "I can walk you through it — no pressure."}
+                  : t("pages.marketReportShareView.iCanWalkYou", { ns: "dashboard" })}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">

@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 
-export type PlatformRole = "agent" | "loanBroker" | "support" | "admin";
+export type PlatformRole = "agent" | "support" | "admin";
 
 export type PlatformNavItem = {
   href: string;

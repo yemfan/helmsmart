@@ -145,7 +145,7 @@ export default function InboundDeliveryClient({
         ) : current.extraction_status === "failed" ? (
           <div className="space-y-2">
             <p className="text-sm text-rose-700">
-              {current.extraction_error ?? "Extraction failed."}
+              {current.extraction_error ?? t("pages.inboundDelivery.extractionFailed")}
             </p>
             <button
               type="button"
@@ -224,7 +224,7 @@ export default function InboundDeliveryClient({
               href={`/dashboard/contacts/${current.matched_contact.id}`}
               className="ml-auto text-blue-700 hover:underline"
             >
-              View contact →
+              {t("pages.inboundDelivery.viewContact")}
             </Link>
           </div>
         </section>
