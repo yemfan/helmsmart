@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import { useRef, type MouseEvent, type ReactNode } from "react";
 import {
   motion,
@@ -36,11 +35,6 @@ import { Button } from "@/components/ui/button";
 import { BrandCheck } from "@/components/brand/BrandCheck";
 
 type LandingT = (key: string, options?: Record<string, unknown>) => string;
-
-const ExitIntentPopup = dynamic(
-  () => import("@/components/marketing/ExitIntentPopup"),
-  { ssr: false },
-);
 
 /**
  * V2 conversion-focused landing.
@@ -1197,7 +1191,6 @@ export default function LeadSmartLandingV2() {
             from `components/AppShell.tsx`. */}
       </div>
 
-      <ExitIntentPopup role="agent" />
     </>
   );
 }

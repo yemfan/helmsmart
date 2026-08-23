@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   try {
     const user = await getUserFromRequest(req);
     if (!user) {
-      return NextResponse.json({ plan: "guest", tokens_remaining: null });
+      return NextResponse.json({ authenticated: false, plan: "guest", tokens_remaining: null });
     }
 
     const { data, error } = await supabaseServer
@@ -41,6 +41,7 @@ export async function GET(req: Request) {
     const profileEmail = (data as { email?: string | null } | null)?.email?.trim() || null;
 
     return NextResponse.json({
+      authenticated: true,
       email: profileEmail || user.email || null,
       plan,
       role: (ls?.role as string | undefined) ?? "user",

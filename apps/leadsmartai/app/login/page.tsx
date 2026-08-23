@@ -65,6 +65,16 @@ function LoginPageInner() {
 
       const { data: userData } = await supabase.auth.getUser();
       const user = userData?.user;
+      if (!user) {
+        /*
+         * signInWithPassword resolved, so the credentials were good — getUser
+         * just lost the race with the session write. Guessing a destination
+         * here is how a successful login ends up looking like a failed one;
+         * /dashboard-router resolves the role server-side instead.
+         */
+        window.location.assign("/dashboard-router");
+        return;
+      }
       let role: string | null = null;
       let hasAgentRow = false;
       let isPro = false;
@@ -135,7 +145,9 @@ function LoginPageInner() {
               /* ignore */
             }
           }
-          router.replace(seenWelcome ? resolveRoleHomePath(role, hasAgentRow) : "/welcome");
+          window.location.assign(
+            seenWelcome ? resolveRoleHomePath(role, hasAgentRow) : "/welcome",
+          );
         }
       } else {
         // Signed in, but no agent workspace. Sending them to the marketing
