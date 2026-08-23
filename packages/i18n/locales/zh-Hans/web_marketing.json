@@ -470,5 +470,38 @@
       "title": "资本化率为什么对投资人重要",
       "description": "为什么资本化率对房产投资人如此关键，它在投资决策中到底起什么作用。"
     }
+  },
+  "legal": {
+    "englishOnly": "本文件仅提供英文版本。"
+  },
+  "social": {
+    "blog": {
+      "title": "CloseBoss 博客",
+      "ogDescription": "房产科技、线索转化打法与投资基本功——写给独立经纪人和小团队。",
+      "twitterDescription": "房产科技、线索转化打法与投资基本功。"
+    },
+    "newsletter": {
+      "subscribeTitle": "订阅每周房产简报"
+    },
+    "openHouse": {
+      "title": "开放日"
+    },
+    "skillsLibrary": {
+      "ogDescription": "面向房产经纪人的 59 条 AI 技能，每一条都内置合规要求。免费下载，无需注册。",
+      "twitterTitle": "免费房产经纪 AI 技能库",
+      "twitterDescription": "面向房产经纪人的 59 条合规 AI 提示词，完全免费。"
+    },
+    "switchFrom": {
+      "ogDescription": "LionDesk、Follow Up Boss、kvCORE 等平台的迁移指南——2026 年内免费提供全程协助迁移。",
+      "twitterDescription": "迁移指南 + 免费全程协助，助您从 LionDesk、FUB、kvCORE 等平台顺利搬家。"
+    },
+    "tryDemo": {
+      "title": "试用 CloseBoss 实时演示",
+      "ogDescription": "一个真实的 CloseBoss 工作区只读沙盒——收件箱、草稿、联系人、日历。无需注册。",
+      "twitterDescription": "工作区只读沙盒——收件箱、草稿、联系人、日历。无需注册。"
+    },
+    "voiceAi": {
+      "ogDescription": "为房产打造的原生语音 AI。点一下即可拨打实时演示，或让它打给您。"
+    }
   }
 }

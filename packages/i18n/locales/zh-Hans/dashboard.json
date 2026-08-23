@@ -8161,7 +8161,9 @@
       "goToDashboard": "进入工作台",
       "startAgentSetup": "开始经纪人设置",
       "alreadyHaveAccount": "已经有账号了？",
-      "logIn": "登录"
+      "logIn": "登录",
+      "alreadyRegistered": "这个邮箱已经注册过账户了。",
+      "logInInstead": "直接登录"
     },
     "skillsLibraryPage": {
       "h1": "房产经纪人 AI 技能库",

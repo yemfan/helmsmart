@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Open House",
+    title: t("social.openHouse.title", { ns: "web_marketing" }),
   },
   other: {
     "mobile-web-app-capable": "yes",

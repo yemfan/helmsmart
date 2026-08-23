@@ -13,17 +13,17 @@ export async function generateMetadata(): Promise<Metadata> {
   description,
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "CloseBoss Blog",
+    title: t("social.blog.title", { ns: "web_marketing" }),
     description:
-      "Real estate technology, lead conversion playbooks, and investing fundamentals — written for solo agents and small teams.",
+      t("social.blog.ogDescription", { ns: "web_marketing" }),
     url: "/blog",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "CloseBoss Blog",
+    title: t("social.blog.title", { ns: "web_marketing" }),
     description:
-      "Real estate technology, lead conversion playbooks, and investing fundamentals.",
+      t("social.blog.twitterDescription", { ns: "web_marketing" }),
   },
 };
 }

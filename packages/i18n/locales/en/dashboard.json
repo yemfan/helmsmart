@@ -8161,7 +8161,9 @@
       "goToDashboard": "Go to dashboard",
       "startAgentSetup": "Start agent setup",
       "alreadyHaveAccount": "Already have an account?",
-      "logIn": "Log in"
+      "logIn": "Log in",
+      "alreadyRegistered": "An account already exists for this email.",
+      "logInInstead": "Log in instead"
     },
     "skillsLibraryPage": {
       "h1": "The Realtor AI Skills Library",

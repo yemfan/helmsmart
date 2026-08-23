@@ -5,9 +5,9 @@ import { isRealEstateProfessionalRole } from "@/lib/paidSubscriptionEligibility"
 import { consumerShouldUsePropertyToolsApp } from "@/lib/signupOriginApp";
 import {
   UNAUTHORIZED_PATH,
-  BROKER_PORTAL_ROLES,
   matchesPortalKind,
   resolveRoleHomePath,
+  START_FREE_AGENT_PATH,
   type PortalKind,
 } from "@/lib/rolePortalPaths";
 
@@ -118,7 +118,7 @@ export function ensurePortalAccess(kind: PortalKind, ctx: UserPortalContext | nu
       redirect(getPropertyToolsConsumerPostLoginUrl());
     }
     if (!ctx.isPro) {
-      redirect("/");
+      redirect(START_FREE_AGENT_PATH);
     }
     return;
   }
@@ -127,7 +127,7 @@ export function ensurePortalAccess(kind: PortalKind, ctx: UserPortalContext | nu
     redirect(getPropertyToolsConsumerPostLoginUrl());
   }
   if (!ctx.isPro) {
-    redirect("/");
+    redirect(START_FREE_AGENT_PATH);
   }
   if (!matchesPortalKind(ctx.role, kind)) {
     redirect(resolveRoleHomePath(ctx.role, ctx.hasAgentRow));

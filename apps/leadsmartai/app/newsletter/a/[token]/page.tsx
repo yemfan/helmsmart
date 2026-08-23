@@ -28,8 +28,9 @@ type Props = { params: Promise<{ token: string }> };
 
 export async function generateMetadata(): Promise<Metadata> {
   // Per-agent private signup link — never index.
+  const t = await getServerT();
   return {
-    title: "Subscribe — Weekly Housing Briefing",
+    title: t("social.newsletter.subscribeTitle", { ns: "web_marketing" }),
     robots: { index: false, follow: false },
   };
 }

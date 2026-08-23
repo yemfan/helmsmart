@@ -37,6 +37,7 @@ export default function robots(): MetadataRoute.Robots {
     "/agent-signup",
     "/agent-home-value-leads",
     "/unauthorized",
+    "/financial-services",
   ];
 
   return {

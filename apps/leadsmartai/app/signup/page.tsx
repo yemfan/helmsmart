@@ -22,7 +22,15 @@ import { LoadingText } from "@/components/ui/LoadingText";
 // BCP-47 base ids shown on the SMS opt-in disclosure. Keep in sync with
 // the POSTs to /api/consent/sms — the `sms_consent_version` string must
 // describe the exact set of disclosures the user saw.
-const CONSENT_LANGUAGES = ["en", "zh"] as const;
+//
+// English only, by decision (23 Aug 2026). The stacked EN + ZH disclosure
+// was showing both languages at once on a signup form that is otherwise
+// in one language, which read as a rendering fault rather than as care.
+// SmsConsentNotice still supports a list, and composeConsentVersion reads
+// the same constant — so the audit trail records English-only rather than
+// claiming a bilingual disclosure the user never saw. Re-add "zh" here to
+// restore the bilingual form; see the FCC note in SmsConsentNotice.tsx.
+const CONSENT_LANGUAGES = ["en"] as const;
 
 function SignupForm() {
   const { t } = useTranslation("dashboard");
@@ -41,6 +49,12 @@ function SignupForm() {
   // TODO(db): once user_profiles has `sms_consent_accepted_at`, persist the
   // timestamp + IP here so we have a defensible consent audit trail.
   const [smsConsent, setSmsConsent] = useState(false);
+  /*
+   * Supabase answers a duplicate signup with the bare string "User already
+   * registered" — accurate, English, and a dead end. The reader already has
+   * an account; the useful thing to hand them is the way into it.
+   */
+  const [existingAccount, setExistingAccount] = useState(false);
   const [password, setPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -58,6 +72,7 @@ function SignupForm() {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    setExistingAccount(false);
 
     if (!fullName.trim()) return setError(t("pages.signupPage.nameRequired"));
     if (!email.trim()) return setError(t("pages.signupPage.emailRequired"));
@@ -272,6 +287,9 @@ function SignupForm() {
             "for production, and confirm the sender domain is verified. Project email rate limits apply."
         );
         setError(t("pages.signupPage.emailSendFailed"));
+      } else if (/already registered|already exists|user_already_exists/i.test(msg)) {
+        setExistingAccount(true);
+        setError(t("pages.signupPage.alreadyRegistered"));
       } else {
         setError(msg || t("pages.signupPage.signupFailed"));
       }
@@ -377,7 +395,20 @@ function SignupForm() {
           ) : null}
 
           {error ? (
-            <p className="text-[11px] text-red-600 font-medium whitespace-pre-line">{error}</p>
+            <p className="text-[11px] text-red-600 font-medium whitespace-pre-line">
+              {error}
+              {existingAccount ? (
+                <>
+                  {" "}
+                  <Link
+                    href={`/login?email=${encodeURIComponent(email.trim())}`}
+                    className="font-semibold underline underline-offset-2"
+                  >
+                    {t("pages.signupPage.logInInstead")}
+                  </Link>
+                </>
+              ) : null}
+            </p>
           ) : null}
           {success ? (
             <p className="text-[11px] text-emerald-700 font-medium whitespace-pre-line">{success}</p>
