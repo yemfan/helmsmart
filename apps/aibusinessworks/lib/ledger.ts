@@ -342,6 +342,16 @@ async function markProcessed(supabase: Db, eventId: string) {
     .eq("id", eventId);
 }
 
+/** How many revenue events are waiting for the engine. Read-only. */
+export async function countUnprocessedEvents(): Promise<number> {
+  const supabase = createAdminClient();
+  const { count } = await supabase
+    .from("abw_revenue_events")
+    .select("id", { count: "exact", head: true })
+    .is("processed_at", null);
+  return count ?? 0;
+}
+
 /** Drain the queue of revenue events that have not been through the engine. */
 export async function processUnprocessedEvents(limit = 100): Promise<ProcessOutcome[]> {
   const supabase = createAdminClient();
