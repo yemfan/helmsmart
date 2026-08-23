@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import LeadProfileClient from "./LeadProfileClient";
+import LeadProfileClient from "./LeadProfileClient";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Lead Profile",
-  description: "The person, their story, your AI team's work with them, and the next best action.",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.leadProfile", { ns: "dashboard" });
+  return {
+  title,
+  description: "The person, their story, your AI team's work with them, and the next best action.",
+  robots: { index: false },
 };
+}
 
 /**
  * Person-first lead profile (constitution: present leads as people,

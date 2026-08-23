@@ -5,10 +5,14 @@ import { getOfferWithCounters } from "@/lib/offers/service";
 import { OfferDetailClient } from "./OfferDetailClient";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Offer",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.offer", { ns: "dashboard" });
+  return {
+  title,
+  robots: { index: false },
 };
+}
 
 type PageProps = { params: Promise<{ id: string }> };
 

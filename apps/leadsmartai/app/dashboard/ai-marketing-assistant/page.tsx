@@ -15,11 +15,15 @@ import { loadPresentationAgent } from "@/lib/presentations/loadPresentationAgent
 import { agentHasSocialCustomization } from "@/lib/social/customization";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Marketing Assistant",
-  description: "Your AI Marketing Assistant — social content, marketing plans, and sphere nurture.",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.marketingAssistant", { ns: "dashboard" });
+  return {
+  title,
+  description: "Your AI Marketing Assistant — social content, marketing plans, and sphere nurture.",
+  robots: { index: false },
 };
+}
 
 export const dynamic = "force-dynamic";
 

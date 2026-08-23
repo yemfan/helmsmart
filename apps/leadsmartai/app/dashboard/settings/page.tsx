@@ -23,12 +23,16 @@ import TemplatesSummaryCard from "@/components/dashboard/TemplatesSummaryCard";
 import TimingPanel from "@/components/dashboard/TimingPanel";
 import MlsCsvImportClient from "./MlsCsvImportClient";
 
-export const metadata: Metadata = {
-  title: "Settings",
-  description: "Configure your account, AI preferences, and integrations.",
-  keywords: ["settings", "account", "preferences"],
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.settings", { ns: "dashboard" });
+  return {
+  title,
+  description: "Configure your account, AI preferences, and integrations.",
+  keywords: ["settings", "account", "preferences"],
+  robots: { index: false },
 };
+}
 
 export default async function SettingsPage() {
   const t = await getServerT();

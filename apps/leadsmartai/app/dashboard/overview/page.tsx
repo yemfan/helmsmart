@@ -7,12 +7,16 @@ import OverviewClient from "./OverviewClient";
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Dashboard Overview",
-  description: "View your daily pipeline snapshot, lead activity, and key metrics.",
-  keywords: ["dashboard", "overview", "real estate CRM"],
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.overview", { ns: "dashboard" });
+  return {
+  title,
+  description: "View your daily pipeline snapshot, lead activity, and key metrics.",
+  keywords: ["dashboard", "overview", "real estate CRM"],
+  robots: { index: false },
 };
+}
 
 export default async function OverviewPage() {
   const t = await getServerT();

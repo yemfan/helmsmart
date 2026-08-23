@@ -3,9 +3,13 @@ import type { Metadata } from "next";
 import HouseSearchClient from "./HouseSearchClient";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "AI House Search",
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.houseSearch", { ns: "dashboard" });
+  return {
+  title,
 };
+}
 
 /**
  * Buyer-side AI House Search — describe what a buyer wants in plain

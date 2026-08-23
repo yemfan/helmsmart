@@ -8,14 +8,18 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getCurrentAgentContext, getLeads } from "@/lib/dashboardService";
 import { getMobileReminders } from "@/lib/mobile/remindersMobile";
-import type { Metadata } from "next";
+import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Notifications",
-  description: "View alerts for new leads, tasks, and activity.",
-  keywords: ["notifications", "alerts", "activity feed"],
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.notifications", { ns: "dashboard" });
+  return {
+  title,
+  description: "View alerts for new leads, tasks, and activity.",
+  keywords: ["notifications", "alerts", "activity feed"],
+  robots: { index: false },
 };
+}
 
 type LeadLite = {
   id: string;

@@ -3,12 +3,16 @@ import { getPropertyToolsConsumerPostLoginUrl } from "@/lib/propertyToolsConsume
 import { getServerT } from "@/lib/i18n/server";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Tools",
-  description: "Access calculators, analyzers, and AI-powered tools.",
-  keywords: ["tools", "calculators", "AI tools"],
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.tools", { ns: "dashboard" });
+  return {
+  title,
+  description: "Access calculators, analyzers, and AI-powered tools.",
+  keywords: ["tools", "calculators", "AI tools"],
+  robots: { index: false },
 };
+}
 
 /** `key` indexes `dashboard:more.tools.items.*`; the label resolves at render. */
 const tools = [

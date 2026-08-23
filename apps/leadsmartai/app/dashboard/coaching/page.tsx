@@ -3,10 +3,14 @@ import type { Metadata } from "next";
 import CoachingClient from "./CoachingClient";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Coaching",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.coaching", { ns: "dashboard" });
+  return {
+  title,
+  robots: { index: false },
 };
+}
 
 export default async function CoachingPage() {
   const t = await getServerT();

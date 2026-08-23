@@ -3,11 +3,15 @@ import { Suspense } from "react";
 import CreditsClient from "./CreditsClient";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Credits",
-  description: "Buy credits and manage your usage plan.",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.credits", { ns: "dashboard" });
+  return {
+  title,
+  description: "Buy credits and manage your usage plan.",
+  robots: { index: false },
 };
+}
 
 export default async function CreditsPage() {
   const t = await getServerT();

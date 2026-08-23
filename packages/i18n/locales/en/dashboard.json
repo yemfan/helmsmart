@@ -5280,7 +5280,13 @@
       "aiScore": "AI score {{score}}",
       "timelineSignal": "Timeline signal: {{hint}}",
       "typeMessage": "Type a message…",
-      "askAssistant": "Ask the AI assistant →"
+      "askAssistant": "Ask the AI assistant →",
+      "docTypes": {
+        "report": "Home value / CMA report",
+        "contract": "Contract",
+        "disclosure": "Disclosure",
+        "other": "Document"
+      }
     },
     "demoPages": {
       "greeting": "Good morning, Demo Agent",
@@ -8977,6 +8983,36 @@
       "plansBillingDesc": "Team plans and upgrades",
       "stripePortal": "Stripe billing portal",
       "stripePortalDesc": "Billing and invoices"
+    },
+    "dashboardTitles": {
+      "aiAccountant": "AI Accountant",
+      "marketingAssistant": "Marketing Assistant",
+      "aiReceptionist": "AI Receptionist",
+      "aiSalesAssistant": "AI Sales Assistant",
+      "aiTransactionAssistant": "AI Transaction Assistant",
+      "askMax": "Ask Max",
+      "calendar": "Calendar",
+      "cmaReport": "CMA Report",
+      "coaching": "Coaching",
+      "credits": "Credits",
+      "houseSearch": "AI House Search",
+      "quickPost": "Quick Post",
+      "leadProfile": "Lead Profile",
+      "marketingPlans": "Marketing Plans",
+      "notifications": "Notifications",
+      "offers": "Offers",
+      "uploadOffer": "Upload offer",
+      "offer": "Offer",
+      "overview": "Dashboard Overview",
+      "settings": "Settings",
+      "showings": "Showings",
+      "skillsLibrary": "Skills Library",
+      "supportInbox": "Support inbox",
+      "tasks": "Tasks",
+      "tools": "Tools",
+      "transactions": "Transactions",
+      "transaction": "Transaction",
+      "offersOnListing": "Offers on listing"
     }
   }
 }

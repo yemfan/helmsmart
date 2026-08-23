@@ -8,11 +8,15 @@ import { SkillsManager, type SkillRow } from "./SkillsManager";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Skills Library",
-  description: "The Realtor AI skills library — assign skills to each assistant with state-aware compliance built in.",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.skillsLibrary", { ns: "dashboard" });
+  return {
+  title,
+  description: "The Realtor AI skills library — assign skills to each assistant with state-aware compliance built in.",
+  robots: { index: false },
 };
+}
 
 /**
  * Skills — the Realtor AI skills library, assigned to each AI assistant and
