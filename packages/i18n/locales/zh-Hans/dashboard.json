@@ -7846,7 +7846,18 @@
       "annualCashFlow": "年度现金流",
       "roiYear1": "ROI（第 1 年估算）",
       "aiSummary": "AI 投资摘要",
-      "downloadPdf": "下载 PDF 报告"
+      "downloadPdf": "下载 PDF 报告",
+      "intro": "粘贴 Zillow 或 Redfin 房源链接，生成 AI 式投资速览：估值、租金、现金流、资本化率、投资回报率和交易评分。",
+      "errPasteUrl": "请粘贴 Zillow 或 Redfin 的房源链接。",
+      "errUnsupported": "不支持该链接，目前仅支持 zillow.com 和 redfin.com。",
+      "errNoZpid": "无法从这个 Zillow 链接中解析出 zpid。",
+      "errNoRedfinId": "无法从这个 Redfin 链接中解析出房源 ID。",
+      "errAnalyzeFailed": "房源分析失败。",
+      "errNoAddress": "无法从这个房源链接中解析出地址。",
+      "errGeneric": "分析这个链接时出了问题。可以试试「刷新最新数据」或换一个链接。",
+      "errRefreshFailed": "房源刷新失败。",
+      "errUnsupportedShort": "不支持该链接。",
+      "errRefreshData": "数据刷新失败。"
     },
     "compareRentVsBuy": {
       "intro": "该租还是该买，是多数人一生中最大的财务决定之一。这份指南会教您怎样用切合实际的假设，配合租买对比计算器，把租房和持有并排比较。",

@@ -7846,7 +7846,18 @@
       "annualCashFlow": "Annual Cash Flow",
       "roiYear1": "ROI (Year 1 est.)",
       "aiSummary": "AI Investment Summary",
-      "downloadPdf": "Download PDF Report"
+      "downloadPdf": "Download PDF Report",
+      "intro": "Paste a Zillow or Redfin listing URL to generate an AI-style investment snapshot including value, rent, cash flow, cap rate, ROI, and a deal score.",
+      "errPasteUrl": "Please paste a Zillow or Redfin listing URL.",
+      "errUnsupported": "Unsupported URL. Only zillow.com and redfin.com are supported.",
+      "errNoZpid": "Could not extract a zpid from this Zillow URL.",
+      "errNoRedfinId": "Could not extract a home ID from this Redfin URL.",
+      "errAnalyzeFailed": "Failed to analyze listing.",
+      "errNoAddress": "Could not resolve an address from this listing URL.",
+      "errGeneric": "There was an issue analyzing this link. Try Refresh Latest Data or a different URL.",
+      "errRefreshFailed": "Failed to refresh listing.",
+      "errUnsupportedShort": "Unsupported URL.",
+      "errRefreshData": "Failed to refresh data."
     },
     "compareRentVsBuy": {
       "intro": "Deciding whether to rent or buy is one of the biggest financial choices most people make. This guide shows you how to compare renting and owning side by side using realistic assumptions and the Rent vs Buy Calculator.",

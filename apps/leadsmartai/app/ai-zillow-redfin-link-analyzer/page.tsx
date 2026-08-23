@@ -218,13 +218,13 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
 
     const trimmed = url.trim();
     if (!trimmed) {
-      setError("Please paste a Zillow or Redfin listing URL.");
+      setError(t("pages.linkAnalyzer.errPasteUrl"));
       return;
     }
 
     const platform = detectPlatform(trimmed);
     if (!platform) {
-      setError("Unsupported URL. Only zillow.com and redfin.com are supported.");
+      setError(t("pages.linkAnalyzer.errUnsupported"));
       return;
     }
 
@@ -232,8 +232,8 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
     if (!id) {
       setError(
         platform === "zillow"
-          ? "Could not extract a zpid from this Zillow URL."
-          : "Could not extract a home ID from this Redfin URL."
+          ? t("pages.linkAnalyzer.errNoZpid")
+          : t("pages.linkAnalyzer.errNoRedfinId")
       );
       return;
     }
@@ -244,7 +244,7 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
         `/api/property/from-listing?url=${encodeURIComponent(trimmed)}`
       );
       const body = (await res.json().catch(() => ({}))) as any;
-      if (!res.ok) throw new Error(body.error || "Failed to analyze listing.");
+      if (!res.ok) throw new Error(body.error || t("pages.linkAnalyzer.errAnalyzeFailed"));
 
       const data = body.data ?? {};
       // Helpful debug for mismatches (open DevTools console)
@@ -265,7 +265,7 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
       };
 
       if (!realProperty.address) {
-        throw new Error("Could not resolve an address from this listing URL.");
+        throw new Error(t("pages.linkAnalyzer.errNoAddress"));
       }
       if (!hasListingFacts(realProperty)) {
         throw new Error(t("pages.aiZillowRedfinLinkAnalyzer.notFound"));
@@ -276,7 +276,7 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
       console.error(e);
       setError(
         e?.message ??
-          "There was an issue analyzing this link. Try Refresh Latest Data or a different URL."
+          t("pages.linkAnalyzer.errGeneric")
       );
     } finally {
       setLoading(false);
@@ -295,10 +295,10 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
         )}`
       );
       const body = (await res.json().catch(() => ({}))) as any;
-      if (!res.ok) throw new Error(body.error || "Failed to refresh listing.");
+      if (!res.ok) throw new Error(body.error || t("pages.linkAnalyzer.errRefreshFailed"));
 
       const platform = detectPlatform(trimmed);
-      if (!platform) throw new Error("Unsupported URL.");
+      if (!platform) throw new Error(t("pages.linkAnalyzer.errUnsupportedShort"));
       const id = extractId(trimmed, platform);
 
       const data = body.data ?? {};
@@ -324,7 +324,7 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
 
       setProperty(refreshed);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to refresh data.");
+      setError(e?.message ?? t("pages.linkAnalyzer.errRefreshData"));
     } finally {
       setRefreshing(false);
     }
@@ -437,9 +437,7 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
       <div className="bg-white shadow rounded-xl p-6 border border-gray-100">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">{t("pages.linkAnalyzer.h1")}</h1>
         <p className="text-sm text-gray-600 mb-4">
-          Paste a Zillow or Redfin listing URL to generate an AI‑style
-          investment snapshot including value, rent, cash flow, cap rate, ROI,
-          and a deal score.
+          {t("pages.linkAnalyzer.intro")}
         </p>
         <div className="flex flex-col md:flex-row gap-3 items-stretch">
           <input
