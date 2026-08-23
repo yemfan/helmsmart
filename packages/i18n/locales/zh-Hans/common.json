@@ -94,5 +94,8 @@
     "generic": "出错了，请重试。",
     "network": "无法连接服务器，请检查网络。",
     "unauthorized": "登录已失效，请重新登录。"
+  },
+  "conjunctions": {
+    "and": "和"
   }
 }

@@ -117,7 +117,7 @@ export default function HowCapRateAffectsPropertyValuePage() {
         </ul>
         <p>{t("pages.capRateValue.toolsLike")}{" "}
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-          and{" "}
+          {t("common:conjunctions.and")}{" "}
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}{t("pages.capRateValue.toolsLikeTail")}</p>
       </section>
 

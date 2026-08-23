@@ -78,19 +78,19 @@ export default function RentVsBuyCalculator() {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.rentVsBuy.assumptions")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
-                label="Monthly rent ($)"
+                label={t("pages.calculatorFields.monthlyRent")}
                 value={monthlyRent}
                 onChange={setMonthlyRent}
                 min={0}
               />
               <InputField
-                label="Home price ($)"
+                label={t("pages.calculatorFields.homePrice")}
                 value={homePrice}
                 onChange={setHomePrice}
                 min={1000}
               />
               <InputField
-                label="Down payment ($)"
+                label={t("pages.calculatorFields.downPayment")}
                 value={downPayment}
                 onChange={setDownPayment}
                 min={0}
@@ -141,7 +141,7 @@ export default function RentVsBuyCalculator() {
             <ResultCard
               title={t("pages.rentVsBuy.comparisonAria")}
               value={recommendation}
-              details={`Total cost renting (${yearsToStay} yrs): $${totalCostRenting.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nTotal cost buying (${yearsToStay} yrs): $${totalCostBuying.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nRecommendation: ${recommendation}`}
+              details={`Total cost renting (${yearsToStay} yrs): $${totalCostRenting.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nTotal cost buying (${yearsToStay} yrs): $${totalCostBuying.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.recommendation")}: ${recommendation}`}
             />
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function RentVsBuyCalculator() {
           <h3 className="text-lg font-semibold">{t("pages.rentVsBuy.q1")}</h3>
           <p className="text-gray-600">{t("pages.rentVsBuy.a1")}{" "}
             <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
-            and{" "}
+            {t("common:conjunctions.and")}{" "}
             <Link href="/affordability-calculator" className="text-blue-600 underline">{t("pages.articleChrome.affordabilityCalculator")}</Link>
             .
           </p>
@@ -178,7 +178,7 @@ export default function RentVsBuyCalculator() {
           <h3 className="text-lg font-semibold">{t("pages.rentVsBuy.q3")}</h3>
           <p className="text-gray-600">{t("pages.rentVsBuy.a3")}{" "}
             <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
-            and{" "}
+            {t("common:conjunctions.and")}{" "}
             <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>
@@ -196,7 +196,7 @@ export default function RentVsBuyCalculator() {
           <h3 className="text-lg font-semibold">{t("pages.rentVsBuy.q5")}</h3>
           <p className="text-gray-600">{t("pages.rentVsBuy.a5")}{" "}
             <Link href="/down-payment-calculator" className="text-blue-600 underline">{t("pages.articleChrome.downPaymentCalculator")}</Link>{" "}
-            and{" "}
+            {t("common:conjunctions.and")}{" "}
             <Link href="/mortgage-calculator" className="text-blue-600 underline">{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}{t("pages.rentVsBuy.a5Tail")}</p>
         </article>
 

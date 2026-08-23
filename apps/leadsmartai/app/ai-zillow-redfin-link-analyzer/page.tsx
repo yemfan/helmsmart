@@ -20,6 +20,30 @@ type PropertySummary = {
   imageUrl?: string | null;
 };
 
+/**
+ * Currency with the sign in front of the symbol and the separators kept.
+ * Cash flow printed as `$-4500` before this — the minus inside the amount and
+ * the thousands separator dropped by `toFixed(0)`.
+ */
+function money(n: number): string {
+  const abs = Math.abs(Math.round(n)).toLocaleString();
+  return `${n < 0 ? "-" : ""}$${abs}`;
+}
+
+/**
+ * Whether the lookup actually returned a listing.
+ *
+ * A fabricated listing ID still resolves an address out of the URL slug, so the
+ * old `if (!address)` guard let it through and every number downstream was the
+ * 0 that `Number(undefined ?? 0)` produces. The page then scored it 20/100 —
+ * the same score it gave a real $2.1M listing — and wrote a prose summary
+ * describing a property "priced at $0" with "0 beds, 0 baths, and 0 sqft".
+ * If none of the defining facts came back, there is no listing to analyse.
+ */
+function hasListingFacts(p: PropertySummary): boolean {
+  return p.price > 0 || p.sqft > 0 || p.beds > 0 || p.baths > 0;
+}
+
 function pickListingImageUrl(data: unknown): string | null {
   if (!data || typeof data !== "object") return null;
   const d = data as Record<string, unknown>;
@@ -144,13 +168,13 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
 
     const lines = [];
     lines.push(
-      `This ${platformLabel} listing at ${property.address} is priced at $${property.price.toLocaleString()} and offers approximately ${property.beds} beds, ${property.baths} baths, and ${property.sqft.toLocaleString()} sqft of living space.`
+      `This ${platformLabel} listing at ${property.address} is priced at ${money(property.price)} and offers approximately ${property.beds} beds, ${property.baths} baths, and ${property.sqft.toLocaleString()} sqft of living space.`
     );
     lines.push(
-      `Using an estimated value aligned with the asking price and a rent estimate of $${metrics.rentEstimate.toLocaleString()} per month, the projected cap rate is around ${metrics.capRate.toFixed(
+      `Using an estimated value aligned with the asking price and a rent estimate of ${money(metrics.rentEstimate)} per month, the projected cap rate is around ${metrics.capRate.toFixed(
         1
-      )}% with monthly cash flow of roughly $${metrics.monthlyCashFlow.toFixed(
-        0
+      )}% with monthly cash flow of roughly ${money(
+        metrics.monthlyCashFlow
       )} after typical mortgage and operating expenses.`
     );
     lines.push(
@@ -243,6 +267,9 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
       if (!realProperty.address) {
         throw new Error("Could not resolve an address from this listing URL.");
       }
+      if (!hasListingFacts(realProperty)) {
+        throw new Error(t("pages.aiZillowRedfinLinkAnalyzer.notFound"));
+      }
 
       setProperty(realProperty);
     } catch (e: any) {
@@ -291,6 +318,10 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
         imageUrl: pickListingImageUrl(data),
       };
 
+      if (!hasListingFacts(refreshed)) {
+        throw new Error(t("pages.aiZillowRedfinLinkAnalyzer.notFound"));
+      }
+
       setProperty(refreshed);
     } catch (e: any) {
       setError(e?.message ?? "Failed to refresh data.");
@@ -316,7 +347,7 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
       doc.text(`Address: ${property.address}`, 12, y);
       y += 5;
       doc.text(
-        `Price: $${property.price.toLocaleString()} • ${property.beds} beds / ${property.baths} baths • ${property.sqft.toLocaleString()} sqft`,
+        `Price: ${money(property.price)} • ${property.beds} beds / ${property.baths} baths • ${property.sqft.toLocaleString()} sqft`,
         12,
         y
       );
@@ -331,13 +362,13 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
       doc.text("Investment Metrics", 10, y);
       y += 5;
       doc.text(
-        `Estimated Value: $${metrics.estimatedValue.toLocaleString()}`,
+        `Estimated Value: ${money(metrics.estimatedValue)}`,
         12,
         y
       );
       y += 5;
       doc.text(
-        `Rent Estimate: $${metrics.rentEstimate.toLocaleString()} / mo`,
+        `Rent Estimate: ${money(metrics.rentEstimate)} / mo`,
         12,
         y
       );
@@ -345,13 +376,13 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
       doc.text(`Cap Rate: ${metrics.capRate.toFixed(2)}%`, 12, y);
       y += 5;
       doc.text(
-        `Monthly Cash Flow: $${metrics.monthlyCashFlow.toFixed(0)}`,
+        `Monthly Cash Flow: ${money(metrics.monthlyCashFlow)}`,
         12,
         y
       );
       y += 5;
       doc.text(
-        `Annual Cash Flow: $${metrics.annualCashFlow.toFixed(0)}`,
+        `Annual Cash Flow: ${money(metrics.annualCashFlow)}`,
         12,
         y
       );
@@ -517,12 +548,12 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
               />
               <MetricCard
                 label={t("pages.articleChrome.monthlyCashFlow", { ns: "dashboard" })}
-                value={`$${metrics.monthlyCashFlow.toFixed(0)}`}
+                value={money(metrics.monthlyCashFlow)}
                 tooltip="Monthly Cash Flow = Rent – Mortgage – Operating Expenses"
               />
               <MetricCard
                 label={t("pages.linkAnalyzer.annualCashFlow")}
-                value={`$${metrics.annualCashFlow.toFixed(0)}`}
+                value={money(metrics.annualCashFlow)}
                 tooltip="Annual Cash Flow = Monthly Cash Flow × 12"
               />
               <MetricCard

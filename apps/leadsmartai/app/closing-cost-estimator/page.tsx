@@ -72,13 +72,13 @@ export default function ClosingCostEstimator() {
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
             <h2 className="text-lg font-semibold text-gray-900">{t("pages.closingCostEstimator.costInputs")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Home price ($)" value={homePrice} onChange={setHomePrice} min={1000} />
-              <InputField label="Loan amount ($)" value={loanAmount} onChange={setLoanAmount} min={0} />
+              <InputField label={t("pages.calculatorFields.homePrice")} value={homePrice} onChange={setHomePrice} min={1000} />
+              <InputField label={t("pages.calculatorFields.loanAmount")} value={loanAmount} onChange={setLoanAmount} min={0} />
               <InputField label={t("pages.closingCostEstimator.origination")} value={originationPercent} onChange={setOriginationPercent} min={0} max={5} step={0.25} />
-              <InputField label="Title insurance ($)" value={titleInsurance} onChange={setTitleInsurance} min={0} />
-              <InputField label="Appraisal fee ($)" value={appraisalFee} onChange={setAppraisalFee} min={0} />
-              <InputField label="Inspection fee ($)" value={inspectionFee} onChange={setInspectionFee} min={0} />
-              <InputField label="Other fees ($)" value={otherFees} onChange={setOtherFees} min={0} />
+              <InputField label={t("pages.calculatorFields.titleInsurance")} value={titleInsurance} onChange={setTitleInsurance} min={0} />
+              <InputField label={t("pages.calculatorFields.appraisalFee")} value={appraisalFee} onChange={setAppraisalFee} min={0} />
+              <InputField label={t("pages.calculatorFields.inspectionFee")} value={inspectionFee} onChange={setInspectionFee} min={0} />
+              <InputField label={t("pages.calculatorFields.otherFees")} value={otherFees} onChange={setOtherFees} min={0} />
             </div>
             <div className="pt-2">
               <button
@@ -93,7 +93,7 @@ export default function ClosingCostEstimator() {
             <ResultCard
               title={t("pages.closingCostEstimator.resultsAria")}
               value={`$${results.total.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-              details={`Origination: $${results.origination.toFixed(0)}\nTitle insurance: $${results.titleInsurance.toFixed(0)}\nAppraisal: $${results.appraisalFee.toFixed(0)}\nInspection: $${results.inspectionFee.toFixed(0)}\nOther: $${results.otherFees.toFixed(0)}\nTotal: $${results.total.toFixed(0)}\n(% of price: ${results.asPercentOfPrice.toFixed(2)}%)`}
+              details={`${t("pages.calculatorResults.origination")}: $${results.origination.toFixed(0)}\n${t("pages.calculatorResults.titleInsurance")}: $${results.titleInsurance.toFixed(0)}\n${t("pages.calculatorResults.appraisal")}: $${results.appraisalFee.toFixed(0)}\n${t("pages.calculatorResults.inspection")}: $${results.inspectionFee.toFixed(0)}\n${t("pages.calculatorResults.other")}: $${results.otherFees.toFixed(0)}\n${t("pages.calculatorResults.total")}: $${results.total.toFixed(0)}\n(% of price: ${results.asPercentOfPrice.toFixed(2)}%)`}
             />
           </div>
         </div>

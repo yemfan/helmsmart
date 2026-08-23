@@ -111,8 +111,8 @@ export default function AdjustableRateCalculator() {
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
             <h2 className="text-lg font-semibold text-gray-900">{t("pages.articleChrome.loanDetails")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Home price ($)" value={homePrice} onChange={setHomePrice} min={1000} />
-              <InputField label="Down payment ($)" value={downPayment} onChange={setDownPayment} min={0} />
+              <InputField label={t("pages.calculatorFields.homePrice")} value={homePrice} onChange={setHomePrice} min={1000} />
+              <InputField label={t("pages.calculatorFields.downPayment")} value={downPayment} onChange={setDownPayment} min={0} />
               <InputField label={t("pages.articleChrome.loanTermYears")} value={loanTerm} onChange={setLoanTerm} min={1} max={30} />
               <InputField
                 label={t("pages.armCalculator.initialRate")}
@@ -137,9 +137,9 @@ export default function AdjustableRateCalculator() {
                 max={30}
                 step={0.125}
               />
-              <InputField label="Property tax (yearly $)" value={propertyTax} onChange={setPropertyTax} min={0} />
-              <InputField label="Home insurance (yearly $)" value={homeInsurance} onChange={setHomeInsurance} min={0} />
-              <InputField label="HOA fees (monthly $)" value={hoaFees} onChange={setHoaFees} min={0} />
+              <InputField label={t("pages.calculatorFields.propertyTaxYearly")} value={propertyTax} onChange={setPropertyTax} min={0} />
+              <InputField label={t("pages.calculatorFields.homeInsuranceYearly")} value={homeInsurance} onChange={setHomeInsurance} min={0} />
+              <InputField label={t("pages.calculatorFields.hoaFeesMonthly")} value={hoaFees} onChange={setHoaFees} min={0} />
             </div>
           </div>
         </div>
@@ -149,7 +149,7 @@ export default function AdjustableRateCalculator() {
             <ResultCard
               title={t("pages.armCalculator.resultsAria")}
               value={`$${initialMonthlyPayment.toFixed(2)}`}
-              details={`Initial monthly payment: $${initialMonthlyPayment.toFixed(2)}\nAdjusted monthly payment (after rate change): $${adjustedMonthlyPayment.toFixed(2)}\nTotal interest over loan term: $${totalInterest.toFixed(2)}`}
+              details={`${t("pages.calculatorResults.initialMonthlyPayment")}: $${initialMonthlyPayment.toFixed(2)}\nAdjusted monthly payment (after rate change): $${adjustedMonthlyPayment.toFixed(2)}\n${t("pages.calculatorResults.totalInterestOverTerm")}: $${totalInterest.toFixed(2)}`}
             />
           </div>
         </div>

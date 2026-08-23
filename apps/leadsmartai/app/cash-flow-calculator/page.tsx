@@ -77,13 +77,13 @@ export default function CashFlowCalculator() {
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.cashFlowCalculator.incomeExpenses")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Monthly rent ($)" value={monthlyRent} onChange={setMonthlyRent} min={0} />
-              <InputField label="Monthly mortgage ($)" value={monthlyMortgage} onChange={setMonthlyMortgage} min={0} />
-              <InputField label="Property tax ($/mo)" value={propertyTax} onChange={setPropertyTax} min={0} />
-              <InputField label="Insurance ($/mo)" value={insurance} onChange={setInsurance} min={0} />
-              <InputField label="HOA ($/mo)" value={hoa} onChange={setHoa} min={0} />
-              <InputField label="Maintenance ($/mo)" value={maintenance} onChange={setMaintenance} min={0} />
-              <InputField label="Other ($/mo)" value={otherExpenses} onChange={setOtherExpenses} min={0} />
+              <InputField label={t("pages.calculatorFields.monthlyRent")} value={monthlyRent} onChange={setMonthlyRent} min={0} />
+              <InputField label={t("pages.calculatorFields.monthlyMortgage")} value={monthlyMortgage} onChange={setMonthlyMortgage} min={0} />
+              <InputField label={t("pages.calculatorFields.propertyTaxMo")} value={propertyTax} onChange={setPropertyTax} min={0} />
+              <InputField label={t("pages.calculatorFields.insuranceMo")} value={insurance} onChange={setInsurance} min={0} />
+              <InputField label={t("pages.calculatorFields.hoaMo")} value={hoa} onChange={setHoa} min={0} />
+              <InputField label={t("pages.calculatorFields.maintenanceMo")} value={maintenance} onChange={setMaintenance} min={0} />
+              <InputField label={t("pages.calculatorFields.otherMo")} value={otherExpenses} onChange={setOtherExpenses} min={0} />
               <InputField label={t("pages.cashFlowCalculator.vacancyMonths")} value={vacancyMonths} onChange={setVacancyMonths} min={0} max={12} />
             </div>
             <div className="pt-2">
@@ -99,7 +99,7 @@ export default function CashFlowCalculator() {
             <ResultCard
               title={t("pages.cashFlowCalculator.cashFlowAria")}
               value={`$${results.monthlyCashFlow.toFixed(2)}/mo`}
-              details={`Annual income: $${results.annualIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nAnnual expenses: $${results.annualExpenses.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nAnnual cash flow: $${results.annualCashFlow.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nMonthly cash flow: $${results.monthlyCashFlow.toFixed(2)}`}
+              details={`${t("pages.calculatorResults.annualIncome")}: $${results.annualIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.annualExpenses")}: $${results.annualExpenses.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.annualCashFlow")}: $${results.annualCashFlow.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.monthlyCashFlow")}: $${results.monthlyCashFlow.toFixed(2)}`}
             />
           </div>
         </div>
@@ -140,7 +140,7 @@ export default function CashFlowCalculator() {
           <h3 className="text-lg font-semibold">{t("pages.cashFlowCalculator.q4")}</h3>
           <p className="text-gray-600">{t("pages.cashFlowCalculator.a4")}{" "}
             <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>{" "}
-            and{" "}
+            {t("common:conjunctions.and")}{" "}
             <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>

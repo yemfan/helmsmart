@@ -70,13 +70,13 @@ export default function CapRateCalculator() {
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.capRateCalculator.propertyIncome")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Purchase price ($)" value={purchasePrice} onChange={setPurchasePrice} min={1000} />
-              <InputField label="Annual rent ($)" value={annualRent} onChange={setAnnualRent} min={0} />
+              <InputField label={t("pages.calculatorFields.purchasePrice")} value={purchasePrice} onChange={setPurchasePrice} min={1000} />
+              <InputField label={t("pages.calculatorFields.annualRent")} value={annualRent} onChange={setAnnualRent} min={0} />
               <InputField label={t("pages.capRateCalculator.vacancyRate")} value={vacancyRate} onChange={setVacancyRate} min={0} max={50} step={1} />
-              <InputField label="Property tax ($/yr)" value={propertyTax} onChange={setPropertyTax} min={0} />
-              <InputField label="Insurance ($/yr)" value={insurance} onChange={setInsurance} min={0} />
-              <InputField label="Maintenance ($/yr)" value={maintenance} onChange={setMaintenance} min={0} />
-              <InputField label="Other expenses ($/yr)" value={otherExpenses} onChange={setOtherExpenses} min={0} />
+              <InputField label={t("pages.calculatorFields.propertyTaxYr")} value={propertyTax} onChange={setPropertyTax} min={0} />
+              <InputField label={t("pages.calculatorFields.insuranceYr")} value={insurance} onChange={setInsurance} min={0} />
+              <InputField label={t("pages.calculatorFields.maintenanceYr")} value={maintenance} onChange={setMaintenance} min={0} />
+              <InputField label={t("pages.calculatorFields.otherExpensesYr")} value={otherExpenses} onChange={setOtherExpenses} min={0} />
             </div>
             <div className="pt-2">
               <button
@@ -91,7 +91,7 @@ export default function CapRateCalculator() {
             <ResultCard
               title={t("pages.capRateCalculator.capRateAria")}
               value={`${results.capRate.toFixed(2)}%`}
-              details={`NOI: $${results.noi.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nEffective income: $${results.effectiveIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nTotal expenses: $${results.totalExpenses.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nCap rate: ${results.capRate.toFixed(2)}%`}
+              details={`${t("pages.calculatorResults.noi")}: $${results.noi.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.effectiveIncome")}: $${results.effectiveIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.totalExpenses")}: $${results.totalExpenses.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.capRate")}: ${results.capRate.toFixed(2)}%`}
             />
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function CapRateCalculator() {
           <h3 className="text-lg font-semibold">{t("pages.capRateCalculator.q4")}</h3>
           <p className="text-gray-600">{t("pages.capRateCalculator.a4")}{" "}
             <Link href="/roi-calculator" className="text-blue-600 underline">{t("pages.articleChrome.roiCalculator")}</Link>{" "}
-            and{" "}
+            {t("common:conjunctions.and")}{" "}
             <Link href="/property-investment-analyzer" className="text-blue-600 underline">{t("pages.articleChrome.propertyAnalyzer")}</Link>
             .
           </p>

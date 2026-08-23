@@ -61,7 +61,7 @@ export default async function SmsOptInPage() {
           </ul>
           <p className="text-xs text-slate-500">{t("pages.smsOptIn.bySubmitting", { ns: "dashboard" })}{" "}
             <Link href="/privacy" className="text-[#0072ce] hover:underline">{t("pages.articleChrome.privacyPolicy", { ns: "dashboard" })}</Link>{" "}
-            and{" "}
+            {t("conjunctions.and", { ns: "common" })}{" "}
             <Link href="/terms" className="text-[#0072ce] hover:underline">{t("pages.smsOptIn.termsLink", { ns: "dashboard" })}</Link>
             . Mobile information is never shared with third parties for their own
             marketing.

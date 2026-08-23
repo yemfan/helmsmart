@@ -282,7 +282,7 @@ function InputForm({
         <h2 className="text-lg font-semibold text-gray-900">{t("pages.dealAnalyzer.propertyDetails")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <LabeledNumberInput
-            label="Purchase Price ($)"
+            label={t("pages.calculatorFields.purchasePrice")}
             value={inputs.purchasePrice}
             onChange={onChange("purchasePrice")}
             min={0}
@@ -349,13 +349,13 @@ function InputForm({
         <h2 className="text-lg font-semibold text-gray-900">{t("pages.dealAnalyzer.rentalIncome")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <LabeledNumberInput
-            label="Monthly Rent ($)"
+            label={t("pages.calculatorFields.monthlyRent")}
             value={inputs.monthlyRent}
             onChange={onChange("monthlyRent")}
             min={0}
           />
           <LabeledNumberInput
-            label="Other Monthly Income ($)"
+            label={t("pages.calculatorFields.otherMonthlyIncome")}
             value={inputs.otherIncome}
             onChange={onChange("otherIncome")}
             min={0}
@@ -375,7 +375,7 @@ function InputForm({
             step={0.1}
           />
           <LabeledNumberInput
-            label="Insurance (monthly $)"
+            label={t("pages.calculatorFields.insuranceMonthly")}
             value={inputs.insuranceMonthly}
             onChange={onChange("insuranceMonthly")}
             min={0}

@@ -7779,7 +7779,9 @@
       "similarProps": "Similar properties on the market",
       "valuation": "A home valuation for my property",
       "loadingProperty": "Loading property…",
-      "submit": "Submit"
+      "submit": "Submit",
+      "heading": "Sign up for Open House Updates",
+      "demoNote": "Sample address — scan the QR code at the property to sign in for that listing."
     },
     "callYourSphere": {
       "everyCrmEnds": "Every CRM on the market ends at the same place: an SMS sequence and an email drip. They'll “nurture” your sphere with a happy birthday text and a monthly newsletter. But the deal goes to the agent who has the",
@@ -8669,7 +8671,8 @@
     },
     "aiZillowRedfinLinkAnalyzer": {
       "analyzeListing": "Analyze Listing",
-      "refreshLatestData": "Refresh Latest Data"
+      "refreshLatestData": "Refresh Latest Data",
+      "notFound": "We couldn't find this listing. Check the URL — the listing may have been removed, or the ID may not exist."
     },
     "activity": {
       "priceTbd": "Price TBD"
@@ -8881,6 +8884,70 @@
     },
     "postcardScene": {
       "yourAgent": "Your agent"
+    },
+    "calculatorFields": {
+      "purchasePrice": "Purchase price ($)",
+      "homePrice": "Home price ($)",
+      "downPayment": "Down payment ($)",
+      "loanAmount": "Loan amount ($)",
+      "currentLoanBalance": "Current loan balance ($)",
+      "closingCosts": "Closing costs ($)",
+      "savingsAvailable": "Savings available ($)",
+      "annualIncome": "Annual income ($)",
+      "monthlyDebts": "Monthly debts ($)",
+      "annualRent": "Annual rent ($)",
+      "monthlyRent": "Monthly rent ($)",
+      "otherMonthlyIncome": "Other Monthly Income ($)",
+      "monthlyMortgage": "Monthly mortgage ($)",
+      "monthlyMortgagePayment": "Monthly mortgage payment ($)",
+      "monthlyOperatingExpenses": "Monthly operating expenses ($)",
+      "annualExpenses": "Annual expenses ($)",
+      "otherExpensesYr": "Other expenses ($/yr)",
+      "otherMo": "Other ($/mo)",
+      "otherFees": "Other fees ($)",
+      "propertyTaxYr": "Property tax ($/yr)",
+      "propertyTaxMo": "Property tax ($/mo)",
+      "propertyTaxYearly": "Property tax (yearly $)",
+      "insuranceYr": "Insurance ($/yr)",
+      "insuranceMo": "Insurance ($/mo)",
+      "insuranceMonthly": "Insurance (monthly $)",
+      "homeInsuranceYearly": "Home insurance (yearly $)",
+      "titleInsurance": "Title insurance ($)",
+      "appraisalFee": "Appraisal fee ($)",
+      "inspectionFee": "Inspection fee ($)",
+      "maintenanceYr": "Maintenance ($/yr)",
+      "maintenanceMo": "Maintenance ($/mo)",
+      "hoaMo": "HOA ($/mo)",
+      "hoaFeesMonthly": "HOA fees (monthly $)",
+      "monthlyHoa": "Monthly HOA ($)"
+    },
+    "calculatorResults": {
+      "noi": "NOI",
+      "effectiveIncome": "Effective income",
+      "totalExpenses": "Total expenses",
+      "capRate": "Cap rate",
+      "annualCashFlow": "Annual cash flow",
+      "monthlyCashFlow": "Monthly cash flow",
+      "annualExpenses": "Annual expenses",
+      "annualIncome": "Annual income",
+      "appraisal": "Appraisal",
+      "inspection": "Inspection",
+      "origination": "Origination",
+      "titleInsurance": "Title insurance",
+      "downPaymentAmount": "Down payment amount",
+      "estimatedMonthlyPayment": "Estimated monthly payment",
+      "initialMonthlyPayment": "Initial monthly payment",
+      "firstYearTotal": "First year total",
+      "loanAmount": "Loan amount",
+      "remainingLoanAmount": "Remaining loan amount",
+      "netProfit": "Net profit",
+      "roi": "ROI",
+      "recommendation": "Recommendation",
+      "totalInterestOverTerm": "Total interest over loan term",
+      "totalPayment": "Total payment",
+      "totalRentReceived": "Total rent received",
+      "other": "Other",
+      "total": "Total"
     }
   }
 }

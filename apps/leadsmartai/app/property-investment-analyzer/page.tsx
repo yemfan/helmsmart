@@ -65,25 +65,25 @@ export default function PropertyInvestmentAnalyzer() {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.propertyInvestmentAnalyzer.inputs")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
-                label="Purchase price ($)"
+                label={t("pages.calculatorFields.purchasePrice")}
                 value={purchasePrice}
                 onChange={setPurchasePrice}
                 min={10000}
               />
               <InputField
-                label="Monthly rent ($)"
+                label={t("pages.calculatorFields.monthlyRent")}
                 value={monthlyRent}
                 onChange={setMonthlyRent}
                 min={0}
               />
               <InputField
-                label="Monthly operating expenses ($)"
+                label={t("pages.calculatorFields.monthlyOperatingExpenses")}
                 value={monthlyExpenses}
                 onChange={setMonthlyExpenses}
                 min={0}
               />
               <InputField
-                label="Monthly mortgage payment ($)"
+                label={t("pages.calculatorFields.monthlyMortgagePayment")}
                 value={monthlyMortgage}
                 onChange={setMonthlyMortgage}
                 min={0}
@@ -129,7 +129,7 @@ export default function PropertyInvestmentAnalyzer() {
           <h3 className="text-lg font-semibold">{t("pages.propertyInvestmentAnalyzer.q1")}</h3>
           <p className="text-gray-600">{t("pages.propertyInvestmentAnalyzer.a1")}{" "}
             <Link href="/cash-flow-calculator" className="text-blue-600 underline">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
-            and{" "}
+            {t("common:conjunctions.and")}{" "}
             <Link href="/cap-rate-calculator" className="text-blue-600 underline">{t("pages.articleChrome.capRateCalculator")}</Link>
             .
           </p>

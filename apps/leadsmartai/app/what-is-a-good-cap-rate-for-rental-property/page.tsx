@@ -93,7 +93,7 @@ export default function WhatIsAGoodCapRateForRentalPropertyPage() {
         <p>{t("pages.goodCapRate.s4a")}</p>
         <p>{t("pages.goodCapRate.s4b")}{" "}
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}
-          and{" "}
+          {t("common:conjunctions.and")}{" "}
           <Link href="/cash-flow-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.cashFlowCalculator")}</Link>{" "}
           —to model cash-on-cash return, financing, reserves, and long-term ROI.
         </p>

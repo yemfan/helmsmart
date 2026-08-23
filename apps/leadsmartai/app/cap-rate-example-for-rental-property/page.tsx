@@ -152,7 +152,7 @@ export default function CapRateExampleForRentalPropertyPage() {
         </ul>
         <p>{t("pages.articleLinks.quicklyModel")}{" "}
           <Link href="/cap-rate-calculator" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.capRateCalculator")}</Link>{" "}
-          and{" "}
+          {t("common:conjunctions.and")}{" "}
           <Link href="/property-investment-analyzer" className="text-blue-600 hover:text-blue-700">{t("pages.articleChrome.propertyAnalyzer")}</Link>{" "}{t("pages.articleLinks.toSeeImpact")}</p>
       </section>
 

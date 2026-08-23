@@ -63,7 +63,7 @@ export default function HowToCompareRentVsBuyPage() {
             href="/mortgage-calculator"
             className="text-blue-600 hover:text-blue-700 font-semibold"
           >{t("pages.articleChrome.mortgageCalculator")}</Link>{" "}
-          and{" "}
+          {t("common:conjunctions.and")}{" "}
           <Link
             href="/hoa-fee-tracker"
             className="text-blue-600 hover:text-blue-700 font-semibold"

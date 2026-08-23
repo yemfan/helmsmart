@@ -80,7 +80,7 @@ export default function DownPaymentCalculator() {
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.articleChrome.loanDetails")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Home price ($)" value={homePrice} onChange={setHomePrice} min={1000} />
+              <InputField label={t("pages.calculatorFields.homePrice")} value={homePrice} onChange={setHomePrice} min={1000} />
               <InputField
                 label={t("pages.downPaymentCalculator.downPaymentPct")}
                 value={downPaymentPercent}
@@ -90,7 +90,7 @@ export default function DownPaymentCalculator() {
                 step={0.5}
               />
               <InputField
-                label="Savings available ($)"
+                label={t("pages.calculatorFields.savingsAvailable")}
                 value={savingsAvailable}
                 onChange={setSavingsAvailable}
                 min={0}
@@ -104,9 +104,9 @@ export default function DownPaymentCalculator() {
                 max={30}
                 step={0.125}
               />
-              <InputField label="Property tax (yearly $)" value={propertyTax} onChange={setPropertyTax} min={0} />
-              <InputField label="Home insurance (yearly $)" value={homeInsurance} onChange={setHomeInsurance} min={0} />
-              <InputField label="HOA fees (monthly $)" value={hoaFees} onChange={setHoaFees} min={0} />
+              <InputField label={t("pages.calculatorFields.propertyTaxYearly")} value={propertyTax} onChange={setPropertyTax} min={0} />
+              <InputField label={t("pages.calculatorFields.homeInsuranceYearly")} value={homeInsurance} onChange={setHomeInsurance} min={0} />
+              <InputField label={t("pages.calculatorFields.hoaFeesMonthly")} value={hoaFees} onChange={setHoaFees} min={0} />
             </div>
             <div className="pt-2">
               <button
@@ -122,7 +122,7 @@ export default function DownPaymentCalculator() {
             <ResultCard
               title={t("pages.downPaymentCalculator.resultsAria")}
               value={`$${downPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-              details={`Down payment amount: $${downPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nRemaining loan amount: $${remainingLoanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nMonthly payment (incl. tax, insurance, HOA): $${monthlyPayment.toFixed(2)}`}
+              details={`${t("pages.calculatorResults.downPaymentAmount")}: $${downPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.remainingLoanAmount")}: $${remainingLoanAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nMonthly payment (incl. tax, insurance, HOA): $${monthlyPayment.toFixed(2)}`}
             />
           </div>
         </div>

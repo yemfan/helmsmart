@@ -96,12 +96,12 @@ export default function ROICalculator() {
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.roiCalculator.inputs")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Purchase price ($)" value={purchasePrice} onChange={setPurchasePrice} min={1000} />
-              <InputField label="Down payment ($)" value={downPayment} onChange={setDownPayment} min={0} />
+              <InputField label={t("pages.calculatorFields.purchasePrice")} value={purchasePrice} onChange={setPurchasePrice} min={1000} />
+              <InputField label={t("pages.calculatorFields.downPayment")} value={downPayment} onChange={setDownPayment} min={0} />
               <InputField label={t("pages.articleChrome.interestRate")} value={interestRate} onChange={setInterestRate} min={0.1} max={30} step={0.125} />
               <InputField label={t("pages.articleChrome.loanTermYears")} value={loanTerm} onChange={setLoanTerm} min={1} max={30} />
-              <InputField label="Annual rent ($)" value={annualRent} onChange={setAnnualRent} min={0} />
-              <InputField label="Annual expenses ($)" value={annualExpenses} onChange={setAnnualExpenses} min={0} />
+              <InputField label={t("pages.calculatorFields.annualRent")} value={annualRent} onChange={setAnnualRent} min={0} />
+              <InputField label={t("pages.calculatorFields.annualExpenses")} value={annualExpenses} onChange={setAnnualExpenses} min={0} />
               <InputField label={t("pages.roiCalculator.appreciation")} value={appreciationPercent} onChange={setAppreciationPercent} min={-10} max={20} step={0.5} />
               <InputField label={t("pages.roiCalculator.yearsHeld")} value={yearsHeld} onChange={setYearsHeld} min={1} max={30} />
             </div>
@@ -118,7 +118,7 @@ export default function ROICalculator() {
             <ResultCard
               title={t("pages.roiCalculator.resultsAria")}
               value={`${results.roi.toFixed(2)}%`}
-              details={`Net profit: $${results.netProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nTotal rent received: $${results.totalRentReceived.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nEquity (est.): $${results.equity.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nROI: ${results.roi.toFixed(2)}%`}
+              details={`${t("pages.calculatorResults.netProfit")}: $${results.netProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.totalRentReceived")}: $${results.totalRentReceived.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nEquity (est.): $${results.equity.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.roi")}: ${results.roi.toFixed(2)}%`}
             />
           </div>
         </div>

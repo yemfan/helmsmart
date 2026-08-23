@@ -422,7 +422,7 @@ export default async function NotificationsPage() {
             {reminderCount === 0 ? (
               <p className="py-6 text-center text-sm text-slate-500">{tr("pages.dashFragments.noUpcoming", { ns: "dashboard" })}{" "}
                 <Link href="/dashboard/tasks" className="font-semibold text-[#0072ce] hover:underline">{tr("pages.notifications.tasks", { ns: "dashboard" })}</Link>{" "}
-                and{" "}
+                {tr("conjunctions.and", { ns: "common" })}{" "}
                 <Link href="/dashboard/calendar" className="font-semibold text-[#0072ce] hover:underline">
                   calendar
                 </Link>{" "}{tr("pages.dashFragments.willShowHere", { ns: "dashboard" })}</p>

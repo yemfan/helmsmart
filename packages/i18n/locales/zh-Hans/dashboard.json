@@ -7779,7 +7779,9 @@
       "similarProps": "市面上的同类房源",
       "valuation": "为我自己的房子做一次估价",
       "loadingProperty": "正在加载房产信息…",
-      "submit": "提交"
+      "submit": "提交",
+      "heading": "登记以接收开放日通知",
+      "demoNote": "示例地址——请扫描房源现场的二维码，登记该套房源。"
     },
     "callYourSphere": {
       "everyCrmEnds": "市面上每一家 CRM 都停在同一个地方：一条短信序列，加一条邮件滴灌。它们会用一条生日祝福短信和一份月度简报来「维护」您的人脉圈。但成交属于那个抢先",
@@ -8669,7 +8671,8 @@
     },
     "aiZillowRedfinLinkAnalyzer": {
       "analyzeListing": "分析房源",
-      "refreshLatestData": "刷新最新数据"
+      "refreshLatestData": "刷新最新数据",
+      "notFound": "没有找到这个房源。请检查链接——房源可能已下架，或该 ID 并不存在。"
     },
     "activity": {
       "priceTbd": "价格待定"
@@ -8881,6 +8884,70 @@
     },
     "postcardScene": {
       "yourAgent": "您的经纪人"
+    },
+    "calculatorFields": {
+      "purchasePrice": "购买价格（$）",
+      "homePrice": "房屋价格（$）",
+      "downPayment": "首付（$）",
+      "loanAmount": "贷款金额（$）",
+      "currentLoanBalance": "当前贷款余额（$）",
+      "closingCosts": "过户费用（$）",
+      "savingsAvailable": "可用存款（$）",
+      "annualIncome": "年收入（$）",
+      "monthlyDebts": "每月负债（$）",
+      "annualRent": "年租金（$）",
+      "monthlyRent": "月租金（$）",
+      "otherMonthlyIncome": "其他月收入（$）",
+      "monthlyMortgage": "每月房贷（$）",
+      "monthlyMortgagePayment": "每月房贷还款（$）",
+      "monthlyOperatingExpenses": "每月运营支出（$）",
+      "annualExpenses": "年度支出（$）",
+      "otherExpensesYr": "其他支出（$/年）",
+      "otherMo": "其他（$/月）",
+      "otherFees": "其他费用（$）",
+      "propertyTaxYr": "房产税（$/年）",
+      "propertyTaxMo": "房产税（$/月）",
+      "propertyTaxYearly": "房产税（每年 $）",
+      "insuranceYr": "保险（$/年）",
+      "insuranceMo": "保险（$/月）",
+      "insuranceMonthly": "保险（每月 $）",
+      "homeInsuranceYearly": "房屋保险（每年 $）",
+      "titleInsurance": "产权保险（$）",
+      "appraisalFee": "评估费（$）",
+      "inspectionFee": "验房费（$）",
+      "maintenanceYr": "维护费（$/年）",
+      "maintenanceMo": "维护费（$/月）",
+      "hoaMo": "物业费（$/月）",
+      "hoaFeesMonthly": "物业费（每月 $）",
+      "monthlyHoa": "每月物业费（$）"
+    },
+    "calculatorResults": {
+      "noi": "净营业收入",
+      "effectiveIncome": "有效收入",
+      "totalExpenses": "总支出",
+      "capRate": "资本化率",
+      "annualCashFlow": "年度现金流",
+      "monthlyCashFlow": "每月现金流",
+      "annualExpenses": "年度支出",
+      "annualIncome": "年收入",
+      "appraisal": "评估费",
+      "inspection": "验房费",
+      "origination": "贷款手续费",
+      "titleInsurance": "产权保险",
+      "downPaymentAmount": "首付金额",
+      "estimatedMonthlyPayment": "预计月供",
+      "initialMonthlyPayment": "初始月供",
+      "firstYearTotal": "第一年合计",
+      "loanAmount": "贷款金额",
+      "remainingLoanAmount": "剩余贷款金额",
+      "netProfit": "净利润",
+      "roi": "投资回报率",
+      "recommendation": "建议",
+      "totalInterestOverTerm": "贷款期内总利息",
+      "totalPayment": "还款总额",
+      "totalRentReceived": "累计收到租金",
+      "other": "其他",
+      "total": "合计"
     }
   }
 }

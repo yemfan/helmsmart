@@ -94,5 +94,8 @@
     "generic": "Something went wrong. Try again.",
     "network": "Couldn't reach the server. Check your connection.",
     "unauthorized": "Please sign in again."
+  },
+  "conjunctions": {
+    "and": "and"
   }
 }
