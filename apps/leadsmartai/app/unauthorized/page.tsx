@@ -8,7 +8,7 @@ import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata = {
-  title: "Access denied | CloseBoss",
+  title: "Access denied",
   robots: { index: false, follow: false },
 };
 

@@ -18,7 +18,7 @@ import { getServerT } from "@/lib/i18n/server";
  */
 
 export const metadata: Metadata = {
-  title: "Data Deletion Status | CloseBoss",
+  title: "Data Deletion Status",
   description:
     "Status of a Facebook data-deletion request submitted to CloseBoss.",
   robots: { index: false, follow: false },

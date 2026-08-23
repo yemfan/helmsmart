@@ -5,7 +5,7 @@ import DigitalTwinPanel from "@/components/account/DigitalTwinPanel";
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata = {
-  title: "My Profile | CloseBoss",
+  title: "My Profile",
   description: "Update your name, phone, profile photo, and branding.",
 };
 

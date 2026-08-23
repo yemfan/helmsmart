@@ -4,7 +4,7 @@ import { getServerT } from "@/lib/i18n/server";
 import { LoadingText } from "@/components/ui/LoadingText";
 
 export const metadata = {
-  title: "Upload offer | CloseBoss",
+  title: "Upload offer",
   description:
     "Paste an offer document — CloseBoss extracts price, contingencies, and dates so you don't have to retype them.",
 };

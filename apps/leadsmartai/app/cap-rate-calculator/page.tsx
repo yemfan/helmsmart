@@ -22,7 +22,7 @@ export default function CapRateCalculator() {
     const totalExpenses =
       propertyTax + insurance + maintenance + otherExpenses;
     const noi = effectiveIncome - totalExpenses;
-    const capRate = purchasePrice > 0 ? (noi / purchasePrice) * 100 : 0;
+    const capRate = purchasePrice > 0 ? (noi / purchasePrice) * 100 : null;
     return {
       noi,
       capRate,
@@ -90,8 +90,8 @@ export default function CapRateCalculator() {
           <div className="lg:sticky lg:top-24">
             <ResultCard
               title={t("pages.capRateCalculator.capRateAria")}
-              value={`${results.capRate.toFixed(2)}%`}
-              details={`${t("pages.calculatorResults.noi")}: $${results.noi.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.effectiveIncome")}: $${results.effectiveIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.totalExpenses")}: $${results.totalExpenses.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.capRate")}: ${results.capRate.toFixed(2)}%`}
+              value={results.capRate == null ? "—" : `${results.capRate.toFixed(2)}%`}
+              details={`${t("pages.calculatorResults.noi")}: $${results.noi.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.effectiveIncome")}: $${results.effectiveIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.totalExpenses")}: $${results.totalExpenses.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.capRate")}: ${results.capRate == null ? "—" : `${results.capRate.toFixed(2)}%`}`}
             />
           </div>
         </div>

@@ -4,7 +4,7 @@ import CoachingClient from "./CoachingClient";
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
-  title: "Coaching | CloseBoss",
+  title: "Coaching",
   robots: { index: false },
 };
 

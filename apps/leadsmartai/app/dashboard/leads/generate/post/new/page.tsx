@@ -4,7 +4,7 @@ import QuickPostClient from "./QuickPostClient";
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
-  title: "Quick Post | CloseBoss",
+  title: "Quick Post",
   description: "Draft an AI-written social post about a listing or open house.",
   robots: { index: false },
 };

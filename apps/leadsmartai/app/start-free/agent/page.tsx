@@ -5,7 +5,7 @@ import { getActiveAgentEntitlement } from "@/lib/entitlements/getEntitlements";
 import StartFreeAgentClientPage from "./page.client";
 
 export const metadata = {
-  title: "Choose Your Plan | CloseBoss",
+  title: "Choose Your Plan",
   description: "Pick a plan to unlock your CloseBoss Agent workspace.",
 };
 

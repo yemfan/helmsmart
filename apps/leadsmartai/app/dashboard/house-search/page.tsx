@@ -4,7 +4,7 @@ import HouseSearchClient from "./HouseSearchClient";
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
-  title: "AI House Search | CloseBoss",
+  title: "AI House Search",
 };
 
 /**

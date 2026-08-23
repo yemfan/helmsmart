@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Per-user shared calculator results — thin, one-off, no SEO value. Keep them
   // out of the index so they don't pile up as "crawled, not indexed" in GSC.
   const robots = { index: false, follow: false } as const;
-  if (!row) return { title: "Result | CloseBoss", robots };
+  if (!row) return { title: "Result", robots };
   return {
     title: `${row.title} | CloseBoss`,
     description: row.summary ?? "Shared calculator result",

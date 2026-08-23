@@ -53,7 +53,7 @@
     "partners": "Business partners",
     "rights": "All rights reserved.",
     "entity_name": "CloseBoss (formerly LeadSmart AI)",
-  "entity_line": "CloseBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc."
+    "entity_line": "CloseBoss (formerly LeadSmart AI) is a product of MAXY Investment Inc."
   },
   "link": {
     "features": "Features",
@@ -100,5 +100,79 @@
     "answers": "Answers + cold-calls + qualifies + follows up",
     "coordinates": "Coordinates deals + keeps the books",
     "trained": "Trained on top-agent playbooks"
+  },
+  "routeMeta": {
+    "aiCmaAnalyzer": {
+      "title": "AI CMA Analyzer — Comparative Market Analysis Tool",
+      "description": "Run a comparative market analysis in minutes. Paste an address and get comps, a defensible value range, and a report you can send to a seller."
+    },
+    "dealAnalyzer": {
+      "title": "AI Real Estate Deal Analyzer",
+      "description": "Score a rental deal on cash flow, cap rate and ROI before you write the offer."
+    },
+    "linkAnalyzer": {
+      "title": "AI Zillow / Redfin Link Analyzer",
+      "description": "Paste a Zillow or Redfin listing URL for an investment snapshot: value, rent, cash flow, cap rate, ROI and a deal score."
+    },
+    "smartCmaBuilder": {
+      "title": "Smart CMA Builder",
+      "description": "Build a branded comparative market analysis from one address, grounded in live comparable sales."
+    },
+    "propertyInvestmentAnalyzer": {
+      "title": "Property Investment Analyzer",
+      "description": "Analyse a property's returns — cash flow, cap rate and ROI — from purchase price, rent and operating costs."
+    },
+    "rentalPropertyAnalyzer": {
+      "title": "Rental Property Analyzer",
+      "description": "Check whether a rental pencils out: income, expenses, vacancy and monthly cash flow in one view."
+    },
+    "propertyReport": {
+      "title": "Property Report Generator",
+      "description": "Generate a client-ready property report — value, comps, neighbourhood and financing — from a single address."
+    },
+    "homeValue": {
+      "title": "Find Out What Your Home Is Worth",
+      "description": "Get a free estimate of your home's current market value, based on recent comparable sales nearby."
+    },
+    "homeValueFunnel": {
+      "title": "Turn Home Value Checks Into Listing Appointments",
+      "description": "A home value landing page that captures the seller behind every estimate and books the appointment for you."
+    },
+    "homeValueWidget": {
+      "title": "Home Value Widget for Your Website",
+      "description": "Embed a home value estimator on your own site and capture every seller who uses it."
+    },
+    "openHouseSignup": {
+      "title": "Open House Sign-In",
+      "description": "A open house sign-in page visitors can complete on a phone or an iPad, with every visitor landing in your CRM."
+    },
+    "agentSignup": {
+      "title": "Start Free as an Agent",
+      "description": "Create your CloseBoss agent account and put an AI receptionist, sales assistant and transaction coordinator to work."
+    },
+    "agentHomeValueLeads": {
+      "title": "Home Value Leads for Agents",
+      "description": "Capture sellers with a branded home value tool and route every lead straight into your pipeline."
+    },
+    "dealAssistant": {
+      "title": "AI Deal Closer",
+      "description": "Work a live deal with an AI assistant that tracks the terms, the deadlines and the next move."
+    },
+    "howToAnalyzeRental": {
+      "title": "How to Analyze a Rental Property",
+      "description": "A step-by-step walkthrough of the numbers that decide whether a rental is worth buying."
+    },
+    "howToBuyInvestment": {
+      "title": "How to Buy an Investment Property",
+      "description": "What to check, in what order, from financing and location to cash flow and exit."
+    },
+    "howToRentVsBuy": {
+      "title": "How to Compare Renting vs Buying a Home",
+      "description": "The full cost comparison — not just the monthly payment — so the answer holds up over time."
+    },
+    "howToRentalCashFlow": {
+      "title": "How to Evaluate Rental Property Cash Flow",
+      "description": "Work out what a rental actually puts in your pocket each month, after every expense."
+    }
   }
 }
