@@ -10,7 +10,7 @@ const tickets = [
 ];
 
 export const metadata = {
-  title: "Support Dashboard | CloseBoss",
+  title: "Support Dashboard",
   description: "Tickets, conversations, and operations for platform support.",
 };
 

@@ -6,7 +6,7 @@ import HomesSearchClient from "./HomesSearchClient";
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
-  title: "AI home search | CloseBoss",
+  title: "AI home search",
   description:
     "Describe the home you want in plain English and get real, current listings — powered by AI and live web search.",
 };

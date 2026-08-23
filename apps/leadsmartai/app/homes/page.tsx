@@ -5,7 +5,7 @@ import { HOUSE_SEARCH_DISCLAIMER } from "@/lib/house-search/types";
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
-  title: "Homes for sale | CloseBoss",
+  title: "Homes for sale",
   description:
     "Describe your ideal home in plain English and get real, current listings — powered by AI and live web search. Then connect with a local agent.",
 };

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Set new password | CloseBoss",
+  title: "Set new password",
   description: "Choose a new password for your CloseBoss account.",
 };
 

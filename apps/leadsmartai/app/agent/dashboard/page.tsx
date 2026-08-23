@@ -17,7 +17,7 @@ const alerts = [
 ];
 
 export const metadata = {
-  title: "Agent Dashboard | CloseBoss",
+  title: "Agent Dashboard",
   description: "Leads, pipeline, and AI actions for real estate agents.",
 };
 

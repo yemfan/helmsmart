@@ -2,7 +2,7 @@ import MarketingPlansTabs from "./MarketingPlansTabs";
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata = {
-  title: "Marketing Plans | CloseBoss",
+  title: "Marketing Plans",
   description:
     "Create, customize, and manage automated marketing plans — and monetize your sphere.",
 };

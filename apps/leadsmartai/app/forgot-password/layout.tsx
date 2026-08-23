@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Reset your password | CloseBoss",
+  title: "Reset your password",
   description:
     "Enter your email to receive a link to reset your CloseBoss account password.",
   alternates: { canonical: "/forgot-password" },

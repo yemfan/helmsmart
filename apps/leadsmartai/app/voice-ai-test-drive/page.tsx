@@ -7,7 +7,7 @@ import VoiceAiSampleTranscripts from "@/components/marketing/voice-ai/VoiceAiSam
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
-  title: "Test-drive our voice AI for real estate | CloseBoss",
+  title: "Test-drive our voice AI for real estate",
   description:
     "Hear our voice AI assistant qualify a real-estate lead live. Native voice, sub-3-second response, multi-language, books showings — included with the CloseBoss CRM.",
   openGraph: {

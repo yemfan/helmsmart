@@ -6,7 +6,7 @@ import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   ...pageMetadata({
-    title: "Text Message Updates | CloseBoss",
+    title: "Text Message Updates",
     description:
       "Sign up to receive text message updates from CloseBoss and your real estate agent — property updates, showing confirmations, and follow-ups. Msg & data rates may apply.",
     path: "/sms",

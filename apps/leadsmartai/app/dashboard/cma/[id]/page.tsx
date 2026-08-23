@@ -4,7 +4,7 @@ import CmaDetailClient from "./CmaDetailClient";
 import { getServerT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
-  title: "CMA Report | CloseBoss",
+  title: "CMA Report",
 };
 
 export default async function CmaDetailPage({
