@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "aibusinessworks",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "aibusinessworks", "dev"],
+      "port": 3008
+    }
+  ]
+}
