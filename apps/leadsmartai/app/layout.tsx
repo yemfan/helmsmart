@@ -106,8 +106,11 @@ export const metadata: Metadata = {
     // account exists (the old @leadsmartai handle would misattribute).
   },
   // Favicon/app icons come from Next's file conventions: app/icon.png (the
-  // CloseBoss hexagon mark on a white tile) and app/apple-icon.png. No explicit
-  // `icons` overrides, so app/icon.png is the canonical favicon.
+  // CloseBoss C-mark, transparent) and app/apple-icon.png (the same mark on a
+  // white tile, because iOS composites transparency onto black). No explicit
+  // `icons` overrides, so app/icon.png is the canonical favicon. Both are
+  // generated from public/brand/closeboss/closeboss-mark-master.png via
+  // scripts/generate-brand-icons.mjs — regenerate, never hand-edit.
   // NOTE: Do NOT set a root-level canonical here. Next.js merges root
   // layout metadata into every child page that doesn't override it,
   // which causes all subpages (e.g. /about, /pricing, /blog) to emit
