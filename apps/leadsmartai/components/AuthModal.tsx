@@ -168,12 +168,27 @@ export default function AuthModal({
             credentials: "include",
             headers: token ? { Authorization: `Bearer ${token}` } : {},
           });
-          if (meRes.ok) {
-            const me = (await meRes.json()) as {
-              role?: string;
-              has_agent_record?: boolean;
-              signup_origin_app?: string | null;
-            };
+          const me = meRes.ok
+            ? ((await meRes.json()) as {
+                authenticated?: boolean;
+                role?: string;
+                has_agent_record?: boolean;
+                signup_origin_app?: string | null;
+              })
+            : null;
+          /*
+           * A guest answer is an HTTP 200 with no `role`, so the old check —
+           * `if (meRes.ok)` — read "I could not identify you" as "you are a
+           * consumer" and sent agents to the marketing homepage. That is the
+           * wrong way to fail: when the client cannot tell who signed in, the
+           * server can, from the cookie it now holds. /dashboard-router does
+           * exactly that, and sends a signed-out visitor back to /login.
+           */
+          if (!me?.authenticated) {
+            window.location.assign("/dashboard-router");
+            return;
+          }
+          {
             const role = me?.role ?? null;
             const hasAgent = Boolean(me?.has_agent_record);
             if (isRealEstateProfessionalRole(role) || hasAgent) {
@@ -189,7 +204,8 @@ export default function AuthModal({
             }
           }
         } catch {
-          // Best-effort: if /api/me fails, we just keep the current page refresh.
+          // Same reasoning as above: let the server route rather than guessing.
+          window.location.assign("/dashboard-router");
         }
         return;
       }
