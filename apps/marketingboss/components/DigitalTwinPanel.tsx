@@ -44,9 +44,12 @@ export default function DigitalTwinPanel({
   const supabase = createClient();
   const [twin, setTwin] = useState<Twin | null>(initialTwin);
   const [script, setScript] = useState(SAMPLE_SCRIPT);
-  const [busy, setBusy] = useState<"photo" | "consent" | "film" | null>(null);
+  const [busy, setBusy] = useState<"photo" | "video" | "consent" | "film" | null>(null);
+  // The video path has three slow stages; say which one is running.
+  const [stage, setStage] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const photoRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
 
   const hasPhoto = !!twin?.portrait_url;
   const hasVoice = !!twin?.voice_id;
@@ -88,6 +91,102 @@ export default function DigitalTwinPanel({
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
       setBusy(null);
+    }
+  }
+
+  /**
+   * One video, both halves of the twin: it is kept as the intro clip and its
+   * speech becomes the cloned voice.
+   *
+   * The audio is stripped out in the browser first. A minute of phone video is
+   * routinely 60-100MB while its speech is about 1MB, and the clone route
+   * refuses anything over 25MB - so uploading the picture would fail on most
+   * real recordings, slowly.
+   *
+   * Gated on consent because a cloned voice can be made to say anything. The
+   * note recorded against the clone states the actual basis rather than a
+   * generic string, so it means something if it is ever read back.
+   */
+  async function onPickVideo(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("video/")) return setError("Pick a video file.");
+    if (!consented) {
+      return setError("Tick the consent box first — cloning your voice needs it.");
+    }
+    setError(null);
+    setBusy("video");
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Still signing in — try again in a second.");
+
+      setStage("Reading the audio out of your video…");
+      const { extractVoiceSample } = await import("@/lib/trimClient");
+      let sample: File;
+      try {
+        sample = await extractVoiceSample(file);
+      } catch {
+        throw new Error(
+          "Couldn't read any audio from that video. Check it has sound, or upload a plain audio recording instead.",
+        );
+      }
+      if (sample.size < 60 * 1024) {
+        throw new Error(
+          "There isn't enough speech in that video to clone from. Aim for about 30 seconds of clear talking.",
+        );
+      }
+
+      setStage("Uploading…");
+      const base = `${user.id}/twin/${crypto.randomUUID()}`;
+      const videoExt = (file.name.split(".").pop() || "mp4").toLowerCase();
+      const [videoUp, sampleUp] = await Promise.all([
+        supabase.storage
+          .from("media")
+          .upload(`${base}.${videoExt}`, file, { contentType: file.type, upsert: false }),
+        supabase.storage
+          .from("media")
+          .upload(`${base}-voice.m4a`, sample, { contentType: "audio/mp4", upsert: false }),
+      ]);
+      if (videoUp.error) throw videoUp.error;
+      if (sampleUp.error) throw sampleUp.error;
+
+      const videoUrl = supabase.storage.from("media").getPublicUrl(`${base}.${videoExt}`).data.publicUrl;
+      const sampleUrl = supabase.storage.from("media").getPublicUrl(`${base}-voice.m4a`).data.publicUrl;
+
+      // Save the clip first: if cloning fails the video is still theirs, and
+      // retrying does not mean uploading it again.
+      await patch({ intro_video_url: videoUrl });
+
+      setStage("Cloning your voice…");
+      const voiceName = (brand?.brand_name || email.split("@")[0] || "My voice").slice(0, 60);
+      const res = await fetch("/api/voice-clone", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sampleUrl,
+          name: voiceName,
+          consentNote: `Owner confirmed via the twin consent checkbox that the face and voice are their own, and uploaded this intro video on ${new Date().toISOString().slice(0, 10)}.`,
+        }),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { ok?: boolean; voiceId?: string; name?: string; error?: string }
+        | null;
+      if (!res.ok || !data?.ok) {
+        throw new Error(
+          data?.error || "Your video was saved, but the voice couldn't be cloned from it.",
+        );
+      }
+      setTwin((t) =>
+        t ? { ...t, voice_id: data.voiceId ?? t.voice_id, voice_name: data.name ?? voiceName } : t,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setBusy(null);
+      setStage("");
     }
   }
 
@@ -185,15 +284,64 @@ export default function DigitalTwinPanel({
             {hasVoice
               ? `Cloned — “${twin?.voice_name}”. Your twin speaks with it.`
               : voiceCloning
-                ? "Not cloned yet. Record about 30 seconds of clear speech and your twin will sound like you."
+                ? "Upload a short video of yourself talking. The speech becomes your voice — you don't need a separate recording."
                 : "Voice cloning isn't switched on for this server."}
           </p>
+
+          {voiceCloning && (
+            <>
+              <button
+                onClick={() => videoRef.current?.click()}
+                disabled={busy !== null || !consented}
+                className="mt-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+              >
+                {busy === "video"
+                  ? "Working…"
+                  : hasVoice
+                    ? "Use a new video"
+                    : "Upload a video"}
+              </button>
+              <input
+                ref={videoRef}
+                type="file"
+                accept="video/*"
+                onChange={onPickVideo}
+                className="hidden"
+              />
+              {!consented && (
+                <p className="mt-1.5 text-[11px] text-amber-700">
+                  Tick the consent box below first.
+                </p>
+              )}
+              {busy === "video" && stage && (
+                <p className="mt-1.5 text-[11px] text-slate-500">{stage}</p>
+              )}
+              {busy === "video" && (
+                <p className="mt-0.5 text-[11px] text-slate-400">
+                  The audio is pulled out here in your browser, so only the sound is uploaded.
+                  Keep this tab open.
+                </p>
+              )}
+              <p className="mt-1.5 text-[11px] text-slate-400">
+                About 30 seconds of clear talking, one person, no background music.
+              </p>
+            </>
+          )}
+
           <Link
             href="/settings?tab=voice"
             className="mt-2 inline-block text-xs font-medium text-boss-violet underline underline-offset-2"
           >
-            {hasVoice ? "Re-record →" : "Clone my voice →"}
+            {hasVoice ? "Re-record from audio →" : "Upload an audio file instead →"}
           </Link>
+
+          {twin?.intro_video_url && (
+            <div className="mt-3">
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <video src={twin.intro_video_url} controls className="w-full rounded-lg" />
+              <p className="mt-1 text-[11px] text-slate-400">Your intro video.</p>
+            </div>
+          )}
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-4">
           <p className="text-sm font-semibold">Brand Kit</p>

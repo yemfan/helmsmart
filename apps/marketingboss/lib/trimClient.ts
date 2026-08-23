@@ -151,6 +151,52 @@ export function normalizeFrameRate(file: File): Promise<File> {
 }
 
 /**
+ * Pull a voice sample out of a video, in the browser.
+ *
+ * Cloning needs the speech, not the picture, and the picture is essentially all
+ * of the file: a minute of phone video is routinely 60-100MB while its audio is
+ * about 1MB. Sending the whole clip would blow the 25MB ceiling the clone route
+ * enforces, and would make the user wait on an upload that is 98% wasted bytes.
+ *
+ * AAC in an m4a rather than mp3 because `conformClip` already relies on the aac
+ * encoder being in this core build; libmp3lame is not guaranteed to be.
+ *
+ * Capped at `maxSeconds` because instant cloning gains nothing from a long
+ * sample - a minute of clear speech is what it actually uses.
+ */
+export async function extractVoiceSample(
+  file: File,
+  opts: { maxSeconds?: number } = {},
+): Promise<File> {
+  const seconds = Math.max(10, opts.maxSeconds ?? 120);
+  const bytes = await withFile(
+    file,
+    "voice.m4a",
+    (input, output) => [
+      "-i",
+      input,
+      // Drop the video stream entirely - this is the whole point.
+      "-vn",
+      "-t",
+      String(seconds),
+      // Mono: a clone reads one speaker, and stereo doubles the bytes.
+      "-ac",
+      "1",
+      "-ar",
+      "44100",
+      "-c:a",
+      "aac",
+      "-b:a",
+      "96k",
+      output,
+    ],
+    (b) => b,
+  );
+  const base = file.name.replace(/\.\w{2,4}$/, "");
+  return new File([bytes], `${base}-voice.m4a`, { type: "audio/mp4" });
+}
+
+/**
  * Find where the quietest `seconds`-long stretch of a clip begins.
  *
  * A face/person swap has to invent lip movement, and the seam shows most while
