@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 /**
  * /portal — smart role-based redirect to the right portal hub.
  *
- *  agent / loan_broker      → /agent
+ *  agent                    → /agent
  *  broker / managing_broker → /broker
  *  admin / support          → /admin
  *  unauthenticated          → /login?redirect=/portal

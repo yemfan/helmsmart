@@ -940,7 +940,7 @@ function ContactTabBody({
                 disabled={tab.drafting || !tab.prompt.trim()}
                 className="mt-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
               >
-                {tab.drafting ? "Drafting..." : "Generate draft"}
+                {tab.drafting ? t("common:status.drafting") : t("pages.aiChat.generateDraft")}
               </button>
             </div>
 
@@ -960,11 +960,11 @@ function ContactTabBody({
                     disabled={tab.sending}
                     className="mt-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
                   >
-                    {tab.sending ? "Sending..." : "Send SMS"}
+                    {tab.sending ? t("common:status.sending") : t("pages.outboundSmsComposer.sendSms")}
                   </button>
                 ) : (
                   <p className="mt-1 text-[11px] text-amber-700">
-                    {tab.sending ? "Auto Pilot sending…" : "Auto Pilot will send this draft."}
+                    {tab.sending ? t("pages.aiChat.autoPilotSending") : t("pages.aiChat.autoPilotWillSend")}
                   </p>
                 )}
               </div>
@@ -1085,12 +1085,12 @@ function ContactPicker({ onPick }: { onPick: (c: ContactOption) => void }) {
           setOpen(true);
         }}
         onFocus={() => setOpen(true)}
-        placeholder="Search a contact by name, email, phone…"
+        placeholder={t("pages.aiChatPanel.searchContact")}
         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none"
       />
       {open && q.trim() ? (
         <div className="absolute left-0 right-0 z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
-          {loading && <div className="px-3 py-2 text-xs text-gray-500">Searching…</div>}
+          {loading && <div className="px-3 py-2 text-xs text-gray-500">{t("pages.contactPicker.searching")}</div>}
           {!loading && results.length === 0 && (
             <div className="px-3 py-2 text-xs text-gray-500">{t("pages.aiChatPanel.noMatches")}</div>
           )}

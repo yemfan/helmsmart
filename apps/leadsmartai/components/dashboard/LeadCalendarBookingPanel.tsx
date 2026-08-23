@@ -244,7 +244,7 @@ export default function LeadCalendarBookingPanel({ leadId }: { leadId: string })
               <ul className="space-y-2">
                 {links.map((lk) => (
                   <li key={lk.id} className="rounded-lg border border-emerald-100 bg-emerald-50/80 px-3 py-2">
-                    <div className="text-xs font-semibold text-emerald-900">{lk.label ?? "Scheduling link"}</div>
+                    <div className="text-xs font-semibold text-emerald-900">{lk.label ?? t("pages.leadCalendarBooking.schedulingLink")}</div>
                     <a
                       href={lk.booking_url}
                       target="_blank"

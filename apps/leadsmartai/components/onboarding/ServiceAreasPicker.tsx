@@ -91,7 +91,7 @@ export function ServiceAreasPicker({
             disabled={disabled}
             className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-400 focus:outline-none disabled:bg-gray-50"
           >
-            <option value="">Select state…</option>
+            <option value="">{t("pages.serviceAreas.selectState")}</option>
             {US_STATES.map((s) => (
               <option key={s.code} value={s.code}>
                 {s.name}
@@ -108,7 +108,7 @@ export function ServiceAreasPicker({
             disabled={disabled || !state}
             className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-400 focus:outline-none disabled:bg-gray-50 disabled:text-gray-400"
           >
-            <option value="">{state ? "Select county…" : "Pick a state first"}</option>
+            <option value="">{state ? t("pages.serviceAreasPicker.selectCounty") : t("pages.serviceAreasPicker.pickAStateFirst")}</option>
             {counties.map((c) => (
               <option key={c} value={c}>
                 {c}

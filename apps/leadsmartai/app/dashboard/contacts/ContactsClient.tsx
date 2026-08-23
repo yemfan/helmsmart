@@ -683,7 +683,7 @@ export default function ContactsClient({ leads: initialLeads }: { leads: LeadRow
                         type="button"
                         onClick={() => setProfileLeadId(c.id)}
                         className="rounded text-left font-medium text-gray-900 hover:text-blue-700 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/40"
-                        title={t("row.open_profile_tooltip", "Open profile")}
+                        title={t("row.open_profile_tooltip")}
                       >
                         {c.name ?? t("row.empty_value")}
                       </button>

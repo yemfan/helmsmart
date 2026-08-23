@@ -20,7 +20,7 @@ export default function DashboardError({
       <p className="mt-2 text-sm text-red-800/90">
         {process.env.NODE_ENV === "development" && error.message?.trim()
           ? error.message
-          : "Something went wrong loading this page. Try again, or sign out and back in."}
+          : t("pages.error.somethingWentWrongLoading")}
       </p>
       {error.digest ? (
         <p className="mt-2 font-mono text-xs text-red-700/80">{t("pages.dashFragments.digest")} {error.digest}</p>

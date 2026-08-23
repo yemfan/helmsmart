@@ -12,7 +12,7 @@ import type { LocaleId } from "@/lib/locales/registry";
  *
  * Behavior:
  *   - idle: button reads "Translate to English" (or target label)
- *   - loading: shows "Translating…" and disables the button
+ *   - loading: shows t("common:status.translating") and disables the button
  *   - showing: renders the translated text + a "Hide translation" link
  *   - error: shows the error message + retry button
  *
@@ -115,7 +115,7 @@ export function TranslationToggle({
       disabled={state.kind === "loading"}
       className="mt-1 text-[11px] font-medium text-slate-500 hover:text-slate-800 disabled:opacity-60"
     >
-      {state.kind === "loading" ? "Translating…" : `Translate to ${targetLabel}`}
+      {state.kind === "loading" ? t("common:status.translating") : `Translate to ${targetLabel}`}
     </button>
   );
 }

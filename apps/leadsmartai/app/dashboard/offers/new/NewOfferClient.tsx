@@ -785,7 +785,7 @@ function NewOfferForm() {
             disabled={submitting || !contact?.id || !propertyAddress.trim() || !offerPrice.trim()}
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
           >
-            {submitting ? "Creating…" : submitNow ? t("pages.newOffer.createSubmit") : t("pages.newOffer.createDraft")}
+            {submitting ? t("common:status.creating") : submitNow ? t("pages.newOffer.createSubmit") : t("pages.newOffer.createDraft")}
           </button>
         </div>
       </div>

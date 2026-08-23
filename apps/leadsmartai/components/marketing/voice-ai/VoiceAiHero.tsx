@@ -47,7 +47,7 @@ export default async function VoiceAiHero() {
               href="/contact"
               className="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 text-base font-semibold text-slate-900 shadow-lg hover:shadow-xl"
             >
-              Book a private demo →
+              {t("pages.voiceAiHero.bookDemo", { ns: "dashboard" })}
             </Link>
           )}
 
@@ -55,7 +55,7 @@ export default async function VoiceAiHero() {
             href="#request-callback"
             className="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-6 py-4 text-base font-semibold text-white backdrop-blur transition hover:bg-white/10"
           >
-            Or have it call you →
+            {t("pages.voiceAiHero.haveItCallYou", { ns: "dashboard" })}
           </a>
         </div>
 
@@ -65,7 +65,7 @@ export default async function VoiceAiHero() {
           <li className="flex items-start gap-2">
             <Dot tone="emerald" />{t("pages.voiceHero.languages", { ns: "dashboard" })}</li>
           <li className="flex items-start gap-2">
-            <Dot tone="emerald" /> Hot-lead → text + push to your phone
+            <Dot tone="emerald" /> {t("pages.voiceAiHero.hotLeadPush", { ns: "dashboard" })}
           </li>
         </ul>
       </div>

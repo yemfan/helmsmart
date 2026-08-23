@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -36,13 +35,23 @@ export default function AuthModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetSending, setResetSending] = useState(false);
+  /*
+   * Asking for a reset link used to fire from inside the login form, which left
+   * the password field and the "Log in" button on screen under a message about
+   * email — the dialog said one thing and looked like another. Reset is its own
+   * view now: one field, one action, one way back.
+   */
+  const [resetMode, setResetMode] = useState(false);
   const [resetNotice, setResetNotice] = useState<string | null>(null);
+  /** Reset link is out — the form has nothing left to ask for. */
+  const resetSent = resetMode && Boolean(resetNotice);
 
   useEffect(() => {
     if (!open) return;
     setMode(initialMode ?? "login");
     setError(null);
     setResetNotice(null);
+    setResetMode(false);
 
     let cancelled = false;
     (async () => {
@@ -104,7 +113,7 @@ export default function AuthModal({
       });
       if (oauthError) throw oauthError;
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Sign in failed.");
+      setError(e instanceof Error ? e.message : t("pages.authModal.signInFailedOauth"));
     } finally {
       setLoading(false);
     }
@@ -117,10 +126,16 @@ export default function AuthModal({
     try {
       const result = await sendPasswordResetEmail(email);
       if (result.ok === false) {
-        setError(result.message);
+        setError(
+          t(
+            result.reason === "email_required"
+              ? "pages.authModal.resetEmailRequired"
+              : "pages.authModal.resetSendFailed",
+          ),
+        );
         return;
       }
-      setResetNotice("Check your email for a link to reset your password.");
+      setResetNotice(t("pages.authModal.resetEmailSent"));
     } finally {
       setResetSending(false);
     }
@@ -180,7 +195,7 @@ export default function AuthModal({
       }
 
       if (!fullName.trim()) {
-        setError("Name is required.");
+        setError(t("pages.authModal.nameRequired"));
         return;
       }
 
@@ -274,7 +289,7 @@ export default function AuthModal({
       onClose();
       router.refresh?.();
     } catch (e: any) {
-      setError(e?.message ?? "Authentication failed.");
+      setError(e?.message ?? t("pages.authModal.authFailed"));
     } finally {
       setLoading(false);
     }
@@ -306,29 +321,39 @@ export default function AuthModal({
           <X className="h-4 w-4" strokeWidth={2} aria-hidden />
         </button>
         <div className="p-4 pt-12 sm:p-5 sm:pt-12 space-y-4">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setMode("login")}
-              className={`flex-1 text-sm font-semibold px-3 py-2 rounded-lg border ${
-                mode === "login"
-                  ? "bg-white border-slate-300 text-slate-900"
-                  : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-white"
-              }`}
-            >{t("pages.authModal.login")}</button>
-            <button
-              type="button"
-              onClick={() => setMode("signup")}
-              className={`flex-1 text-sm font-semibold px-3 py-2 rounded-lg border ${
-                mode === "signup"
-                  ? "bg-white border-slate-300 text-slate-900"
-                  : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-white"
-              }`}
-            >{t("pages.authModal.signUp")}</button>
-          </div>
+          {resetMode ? (
+            <div className="space-y-1 text-center">
+              <p className="text-lg font-bold text-slate-900">{t("pages.authModal.resetHeading")}</p>
+              <p className="text-xs text-slate-600">{t("pages.authModal.resetBody")}</p>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setMode("login")}
+                className={`flex-1 text-sm font-semibold px-3 py-2 rounded-lg border ${
+                  mode === "login"
+                    ? "bg-white border-slate-300 text-slate-900"
+                    : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-white"
+                }`}
+              >{t("pages.authModal.login")}</button>
+              <button
+                type="button"
+                onClick={() => setMode("signup")}
+                className={`flex-1 text-sm font-semibold px-3 py-2 rounded-lg border ${
+                  mode === "signup"
+                    ? "bg-white border-slate-300 text-slate-900"
+                    : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-white"
+                }`}
+              >{t("pages.authModal.signUp")}</button>
+            </div>
+          )}
 
-          <form onSubmit={submit} className="space-y-3">
-            {mode === "signup" ? (
+          <form
+            onSubmit={resetMode ? (e) => { e.preventDefault(); void handleForgotPassword(); } : submit}
+            className="space-y-3"
+          >
+            {mode === "signup" && !resetMode ? (
               <div className="space-y-1">
                 <label className="block text-xs font-medium text-slate-700">{t("pages.authModal.name")}<span className="text-red-600"> *</span>
                 </label>
@@ -343,6 +368,7 @@ export default function AuthModal({
               </div>
             ) : null}
 
+            {resetSent ? null : (
             <div className="space-y-1">
               <label className="block text-xs font-medium text-slate-700">{t("pages.dashFragments.emailLabel")}{mode === "signup" ? <span className="text-red-600"> *</span> : null}
               </label>
@@ -355,12 +381,14 @@ export default function AuthModal({
                 required
               />
             </div>
+            )}
 
             {/* Role + Phone dropped from the signup modal — agents capture
                 those (and license / brokerage) via AgentSignupForm on the
                 dedicated /agent-signup path. Consumer signup stays minimal
                 (name / email / password) to protect conversion. */}
 
+            {resetMode ? null : (
             <div className="space-y-1">
               <label className="block text-xs font-medium text-slate-700">{t("pages.dashFragments.passwordLabel")}{mode === "signup" ? <span className="text-red-600"> *</span> : null}
               </label>
@@ -378,20 +406,20 @@ export default function AuthModal({
                 <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
                   <button
                     type="button"
-                    onClick={() => void handleForgotPassword()}
+                    onClick={() => {
+                      setError(null);
+                      setResetNotice(null);
+                      setResetMode(true);
+                    }}
                     disabled={loading || resetSending}
                     className="text-left text-xs font-semibold text-blue-700 hover:text-blue-800 disabled:opacity-50"
                   >
-                    {resetSending ? "Sending…" : "Email me a reset link"}
+                    {t("pages.authModal.emailResetLink")}
                   </button>
-                  <Link
-                    href="/forgot-password"
-                    onClick={() => onClose()}
-                    className="text-xs font-semibold text-blue-700 underline underline-offset-2 hover:text-blue-800"
-                  >{t("pages.authModal.forgotPassword")}</Link>
                 </div>
               ) : null}
             </div>
+            )}
 
             {resetNotice ? (
               <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-medium text-emerald-900">
@@ -405,34 +433,51 @@ export default function AuthModal({
               </p>
             ) : null}
 
+            {resetSent ? null : (
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || resetSending}
               className="w-full inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading
+              {resetMode
+                ? resetSending
+                  ? t("pages.authModal.sending")
+                  : t("pages.authModal.sendResetLink")
+                : loading
                 ? mode === "login"
-                  ? "Logging in..."
-                  : "Creating account..."
+                  ? t("pages.authModal.loggingIn")
+                  : t("pages.authModal.creatingAccount")
                 : mode === "login"
-                ? "Log in"
-                : "Create free account"}
+                ? t("pages.authModal.logIn")
+                : t("pages.authModal.createFreeAccount")}
             </button>
+            )}
 
             <button
               type="button"
-              disabled={loading}
-              onClick={onClose}
+              disabled={loading || resetSending}
+              onClick={() => {
+                if (!resetMode) {
+                  onClose();
+                  return;
+                }
+                setResetMode(false);
+                setError(null);
+                setResetNotice(null);
+              }}
               className="w-full inline-flex items-center justify-center rounded-xl bg-white border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed"
-            >{t("pages.authModal.notNow")}</button>
+            >{resetMode ? t("pages.authModal.backToLogin") : t("pages.authModal.notNow")}</button>
           </form>
 
+          {resetMode ? null : (
           <div className="flex items-center gap-3">
             <span className="h-px flex-1 bg-slate-200" />
-            <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">or</span>
+            <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{t("pages.authModal.or")}</span>
             <span className="h-px flex-1 bg-slate-200" />
           </div>
+          )}
 
+          {resetMode ? null : (
           <div className="flex flex-col gap-2">
             <button
               type="button"
@@ -447,6 +492,7 @@ export default function AuthModal({
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
             >{t("pages.authModal.continueApple")}</button>
           </div>
+          )}
         </div>
       </div>
     </div>

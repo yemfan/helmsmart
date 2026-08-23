@@ -301,7 +301,7 @@ export default function BrandingSettingsPanel() {
               disabled={preview.kind === "loading"}
               className="text-xs font-medium text-blue-600 hover:text-blue-800 disabled:opacity-50"
             >
-              {preview.kind === "loading" ? "Loading preview…" : t("branding.preview")}
+              {preview.kind === "loading" ? t("pages.brandingSettings.loadingPreview") : t("branding.preview")}
             </button>
             {!editingSignature && (
               <button

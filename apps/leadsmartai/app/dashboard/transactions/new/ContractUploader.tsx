@@ -165,8 +165,8 @@ export function ContractUploader(props: Props) {
             <div className="text-slate-700">
               <div className="font-medium">
                 {kind === "listing"
-                  ? "Drop a signed listing agreement here, or click to pick"
-                  : "Drop a ratified purchase agreement here, or click to pick"}
+                  ? t("pages.contractUploader.dropASignedListing")
+                  : t("pages.contractUploader.dropARatifiedPurchase")}
               </div>
               <div className="text-[11px] text-slate-500">
                 {t("pages.contractUploader.nothingStored")}{" "}

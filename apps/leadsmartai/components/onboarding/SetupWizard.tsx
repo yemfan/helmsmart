@@ -140,9 +140,9 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
           </h2>
           <p className="text-sm text-gray-500 mb-6">
             {step === 0 && "Pick the state, county, and city you serve so we can match you with local leads. Check \u201Call cities\u201D if you cover the whole county."}
-            {step === 1 && "Set your brand name so emails and reports carry your identity."}
-            {step === 2 && "Configure how your AI assistant communicates with leads."}
-            {step === 3 && "Choose which mobile push notifications you want to receive."}
+            {step === 1 && t("pages.setupWizard.setYourBrandName")}
+            {step === 2 && t("pages.setupWizard.configureHowYourAi")}
+            {step === 3 && t("pages.setupWizard.chooseWhichMobilePush")}
           </p>
 
           {/* Step 1: Service Areas */}
@@ -236,14 +236,14 @@ export function SetupWizard({ onComplete }: { onComplete: () => void }) {
             disabled={saving}
             className="text-sm text-gray-500 hover:text-gray-700"
           >
-            {step === 3 ? "Skip & Finish" : "Skip"}
+            {step === 3 ? t("pages.setupWizard.skipFinish") : t("pages.setupWizard.skip")}
           </button>
           <button
             onClick={saveAndNext}
             disabled={saving}
             className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
           >
-            {saving ? "Saving..." : step === 3 ? "Finish Setup" : "Next"}
+            {saving ? t("common:status.saving") : step === 3 ? t("pages.setupWizard.finishSetup") : t("common:actions.next")}
           </button>
         </div>
       </div>

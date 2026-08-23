@@ -112,7 +112,7 @@ export function SkillsManager({
                           href={`/dashboard/skills/${s.id}`}
                           className="mt-1.5 inline-block text-xs font-medium text-blue-600 hover:underline dark:text-blue-400"
                         >
-                          Run →
+                          {t("pages.skillsManager.runArrow")}
                         </Link>
                       ) : null}
                     </div>

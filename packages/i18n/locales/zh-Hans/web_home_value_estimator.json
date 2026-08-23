@@ -34,7 +34,10 @@
     "distance_unit": "英里",
     "next_steps": "建议的下一步",
     "estimate_summary": "估值摘要",
-    "estimate_disclaimer": "这是仅供规划参考的自动估算，并非正式评估。"
+    "estimate_disclaimer": "这是仅供规划参考的自动估算，并非正式评估。",
+    "unknown": "—",
+    "no_value_heading": "无法为该地址给出估值",
+    "no_value_body": "没有查到该地址的可比成交记录，因此无法给出估值。请检查地址拼写，或换一个附近近期有成交的地址试试。"
   },
   "review": {
     "heading": "获取个性化评估",

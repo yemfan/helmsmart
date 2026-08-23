@@ -62,7 +62,7 @@ export default function ClientAssistantPage() {
           disabled={loading}
           className="w-full rounded-xl bg-indigo-600 text-white font-semibold py-2.5 text-sm disabled:opacity-50"
         >
-          {loading ? "Thinking…" : "Ask"}
+          {loading ? t("common:status.thinking") : "Ask"}
         </button>
       </form>
 

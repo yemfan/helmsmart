@@ -116,7 +116,7 @@ export default function RecruitPipelineClient() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search recruits…"
+              placeholder={t("pages.recruitPipeline.search")}
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               className="w-64 rounded-full border border-slate-200 bg-white pl-9 pr-4 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"

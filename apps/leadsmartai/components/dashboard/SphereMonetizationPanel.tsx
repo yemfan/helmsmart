@@ -164,7 +164,7 @@ export default function SphereMonetizationPanel(
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-600">
             {rows.length === 0
-              ? "No past clients or sphere contacts to score yet. Import contacts + capture signals to start surfacing leverage."
+              ? t("pages.sphereMonetization.noPastClientsOr")
               : `No matches for "${filterCopy(filter)}". Try a different filter.`}
           </div>
         ) : (
@@ -272,10 +272,11 @@ function SidePill({
   kind: "sell" | "buy";
   side: { score: number; label: string } | null;
 }) {
+  const { t } = useTranslation("dashboard");
   if (!side) {
     return (
       <span className="inline-flex flex-col items-center rounded-lg px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-300 ring-1 ring-slate-100">
-        <span className="leading-none">{kind === "sell" ? "Sell" : "Buy"}</span>
+        <span className="leading-none">{kind === "sell" ? t("pages.sphereMonetization.sell") : t("pages.sphereMonetization.buy")}</span>
         <span className="mt-0.5 text-base font-bold leading-none tabular-nums">—</span>
       </span>
     );
@@ -287,7 +288,7 @@ function SidePill({
       aria-label={`${kind === "sell" ? "Seller" : "Buyer"} score ${side.score}, ${side.label}`}
     >
       <span className="text-[10px] font-semibold uppercase leading-none tracking-wide">
-        {kind === "sell" ? "Sell" : "Buy"}
+        {kind === "sell" ? t("pages.sphereMonetization.sell") : t("pages.sphereMonetization.buy")}
       </span>
       <span className="mt-0.5 text-base font-bold leading-none tabular-nums">
         {side.score}

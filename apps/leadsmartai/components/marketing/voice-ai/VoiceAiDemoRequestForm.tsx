@@ -105,8 +105,8 @@ export default function VoiceAiDemoRequestForm() {
         <h3 className="text-lg font-semibold text-emerald-900">{t("pages.voiceDemo.onTheList")}</h3>
         <p className="mt-1 text-sm text-emerald-900/80">
           {intent === "hear_it"
-            ? "We'll have the AI give you a call shortly. Pick up to hear how it qualifies a real-estate lead."
-            : "Our team will reach out within one business day to schedule your private demo."}
+            ? t("pages.voiceAiDemoRequest.weLlHaveThe")
+            : t("pages.voiceAiDemoRequest.ourTeamWillReach")}
         </p>
       </section>
     );
@@ -220,10 +220,10 @@ export default function VoiceAiDemoRequestForm() {
           className="rounded-xl bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
         >
           {status.kind === "submitting"
-            ? "Sending…"
+            ? t("common:status.sending")
             : intent === "hear_it"
-              ? "Have the AI call me"
-              : "Request a private demo"}
+              ? t("pages.voiceAiDemoRequest.haveTheAiCall")
+              : t("pages.voiceAiDemoRequest.requestAPrivateDemo")}
         </button>
       </form>
     </section>

@@ -102,6 +102,16 @@ describe("dashboard namespace (page copy)", () => {
       "pages.adWizard.privacyPlaceholder",
       "pages.books.clientEmailPlaceholder",
       "pages.calendarBooking.urlPlaceholder",
+      /*
+       * A sample US street address, for the same reason: the agent types a real
+       * US address into these fields whichever language the screen is in, so the
+       * example has to keep the shape the parser and the MLS expect.
+       */
+      "pages.buildOffer.addressPlaceholder",
+      "pages.cma.addressPlaceholder",
+      "pages.deepReport.addressPlaceholder",
+      "pages.presentations.addressPlaceholder",
+      "pages.send.addressPlaceholder",
       // The acronym an agent says out loud in both languages.
       "pages.boss.artifactCma",
       // A platform's own name — LinkedIn does not localise its wordmark.

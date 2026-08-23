@@ -142,7 +142,7 @@ export default async function DataCenterPage() {
             <h2 className="mt-3 text-lg font-semibold tracking-tight text-slate-900">{t("pages.dataCenterPages.exploreTitle", { ns: "dashboard" })}</h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">{t("pages.dataCenterPages.exploreBody", { ns: "dashboard" })}</p>
             <span className="mt-4 inline-flex items-center text-sm font-semibold text-[#0072ce] group-hover:text-[#005ca8]">
-              Browse markets →
+              {t("pages.dataPage.browseMarkets", { ns: "dashboard" })}
             </span>
           </Link>
         </div>

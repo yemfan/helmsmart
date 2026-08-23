@@ -1100,7 +1100,7 @@ function RightRailTabs({
               placeholder={t("detail.transaction.notesPlaceholder")}
             />
             {savingField === "notes" ? (
-              <div className="mt-1 text-[11px] text-slate-500">Saving…</div>
+              <div className="mt-1 text-[11px] text-slate-500">{t("pages.transactionDetail.saving")}</div>
             ) : null}
           </div>
         ) : null}

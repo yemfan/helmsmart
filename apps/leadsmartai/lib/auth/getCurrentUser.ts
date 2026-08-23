@@ -10,7 +10,6 @@ import { supabaseServerClient } from "@/lib/supabaseServerClient";
  */
 export type AppRole =
   | "agent"
-  | "loan_broker"
   | "admin"
   | "support"
   | "broker"

@@ -120,7 +120,7 @@ export default function PipelineClient() {
           <p className="text-sm text-gray-500">{total} application{total !== 1 ? "s" : ""}</p>
         </div>
         <button onClick={() => setShowAdd((v) => !v)} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-          {showAdd ? "Cancel" : "+ Add Borrower"}
+          {showAdd ? t("common:actions.cancel") : "+ Add Borrower"}
         </button>
       </div>
 
@@ -138,7 +138,7 @@ export default function PipelineClient() {
             </select>
           </div>
           <button onClick={addApp} disabled={!addFields.borrower_name.trim() || saving} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">
-            {saving ? "Adding..." : "Add Borrower"}
+            {saving ? t("common:status.adding") : t("pages.pipeline.addBorrower")}
           </button>
         </div>
       )}
@@ -230,7 +230,7 @@ function DetailPanel({ app, onClose, onSave, saving }: {
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-bold text-gray-900">{app.borrower_name}</h2>
-            <p className="text-xs text-gray-500">{app.borrower_email ?? "No email"} · {app.borrower_phone ?? "No phone"}</p>
+            <p className="text-xs text-gray-500">{app.borrower_email ?? t("pages.pipeline.noEmail")} · {app.borrower_phone ?? t("pages.pipeline.noPhone")}</p>
           </div>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100 text-gray-600">✕</button>
         </div>
@@ -277,7 +277,7 @@ function DetailPanel({ app, onClose, onSave, saving }: {
             disabled={saving}
             className="w-full bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60"
           >
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? t("common:status.saving") : t("common:actions.save_changes")}
           </button>
         </div>
       </div>

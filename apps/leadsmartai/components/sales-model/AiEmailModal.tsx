@@ -253,7 +253,7 @@ export function AiEmailModal({
             <h2 id="ai-email-title" className="mt-0.5 text-lg font-semibold text-slate-900">
               {selectedContact?.name?.trim() ||
                 selectedContact?.email ||
-                "Compose an AI-assisted email"}
+                t("pages.aiEmail.composeAnAiAssisted")}
             </h2>
             {selectedContact ? (
               <p className="mt-0.5 truncate text-xs text-slate-500">
@@ -298,7 +298,7 @@ export function AiEmailModal({
               />
               <div className="min-h-[200px] rounded-xl border border-slate-200 bg-slate-50">
                 {searching && contactResults.length === 0 ? (
-                  <p className="px-4 py-6 text-center text-xs text-slate-500">Searching…</p>
+                  <p className="px-4 py-6 text-center text-xs text-slate-500">{t("pages.aiModal.searching")}</p>
                 ) : contactResults.length === 0 ? (
                   <p className="px-4 py-6 text-center text-xs text-slate-500">{t("pages.aiComposeModal.noEmailMatches")}</p>
                 ) : (
@@ -325,7 +325,7 @@ export function AiEmailModal({
                               {c.property_address ? ` · ${c.property_address}` : ""}
                             </p>
                           </div>
-                          <span className="text-xs font-medium text-purple-600">Pick →</span>
+                          <span className="text-xs font-medium text-purple-600">{t("pages.aiModal.pick")}</span>
                         </button>
                       </li>
                     ))}
@@ -356,10 +356,10 @@ export function AiEmailModal({
                 >
                   <SparkIcon />
                   {drafting
-                    ? "Drafting…"
+                    ? t("common:status.drafting")
                     : subject || emailBody
-                      ? "Regenerate draft"
-                      : "Generate draft with AI"}
+                      ? t("pages.aiEmail.regenerateDraft")
+                      : t("pages.aiEmail.generateDraftWithAi")}
                 </button>
                 <span className="text-xs text-slate-500">{t("pages.dashFragments.draftsUseYour")}{" "}
                   <span className="font-medium text-slate-700">{model.name}</span> tone.
@@ -373,7 +373,7 @@ export function AiEmailModal({
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder={
-                    drafting ? "Drafting…" : "Subject line (4-9 words is the sweet spot)"
+                    drafting ? t("common:status.drafting") : "Subject line (4-9 words is the sweet spot)"
                   }
                   className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 />
@@ -387,7 +387,7 @@ export function AiEmailModal({
                   rows={10}
                   placeholder={
                     drafting
-                      ? "Drafting…"
+                      ? t("common:status.drafting")
                       : "Email body. Generate with AI above or write your own."
                   }
                   className="mt-1 block w-full resize-y rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
@@ -426,7 +426,7 @@ export function AiEmailModal({
                 }
                 className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50"
               >
-                {sending ? "Sending…" : successMsg ? "Sent ✓" : "Send Email"}
+                {sending ? t("common:status.sending") : successMsg ? "Sent ✓" : t("pages.aiEmail.sendEmail")}
               </button>
             </div>
           </div>

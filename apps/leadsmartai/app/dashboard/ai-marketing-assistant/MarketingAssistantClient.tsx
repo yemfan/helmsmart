@@ -165,7 +165,7 @@ export default function MarketingAssistantClient({
               href="/dashboard/ai-marketing-assistant/ad-composer"
               className="shrink-0 rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#005ba8]"
             >
-              Open Ad Composer →
+              {t("pages.marketingAssistant.openAdComposer")}
             </Link>
           </section>
 

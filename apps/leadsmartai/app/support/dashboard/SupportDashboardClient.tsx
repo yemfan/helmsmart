@@ -38,7 +38,7 @@ export default function SupportDashboardClient() {
                 { key: "subject", header: "Subject" },
                 { key: "priority", header: "Priority", cell: (r) => <PriorityBadge level={r.priority as "low" | "medium" | "high" | "urgent"} /> },
                 { key: "unread", header: "Unread", cell: (r) => <span className="inline-flex min-w-[2rem] justify-center rounded-full bg-slate-900 px-2 py-0.5 text-xs font-bold text-white">{String(r.unread)}</span> },
-                { key: "waiting", header: "Waiting On", cell: (r) => <span className="text-xs text-slate-600">{Number(r.unread) > 0 ? "Support" : "Customer"}</span> },
+                { key: "waiting", header: "Waiting On", cell: (r) => <span className="text-xs text-slate-600">{Number(r.unread) > 0 ? t("pages.supportDashboard.support") : t("pages.supportDashboard.customer")}</span> },
               ]}
               rows={supportTickets as unknown as Record<string, unknown>[]}
             />

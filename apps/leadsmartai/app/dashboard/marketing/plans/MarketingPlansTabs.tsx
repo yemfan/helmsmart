@@ -54,13 +54,13 @@ export default function MarketingPlansTabs({ initialTab }: { initialTab: "plans"
                 href="/dashboard/sphere/likely-sellers"
                 className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700 hover:bg-slate-50"
               >
-                Seller view →
+                {t("pages.marketingPlans.sellerView")}
               </Link>
               <Link
                 href="/dashboard/sphere/likely-buyers"
                 className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700 hover:bg-slate-50"
               >
-                Buyer view →
+                {t("pages.marketingPlans.buyerView")}
               </Link>
             </div>
           </header>

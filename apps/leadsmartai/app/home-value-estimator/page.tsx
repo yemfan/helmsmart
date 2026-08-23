@@ -15,13 +15,38 @@ type Comparable = {
 
 type PropertyDetails = {
   address: string;
-  beds: number;
-  baths: number;
-  sqft: number;
-  lotSize: number;
-  yearBuilt: number;
-  propertyType: string;
+  /*
+   * Null means "the source had nothing", and it has to survive all the way to
+   * the render. These were `number` and every absent value arrived as 0, so a
+   * property the API knew nothing about was described as having 0 beds, 0
+   * baths and being built in the year 0.
+   */
+  beds: number | null;
+  baths: number | null;
+  sqft: number | null;
+  lotSize: number | null;
+  yearBuilt: number | null;
+  propertyType: string | null;
 };
+
+/** A finite number, or null — never the 0 that `Number(undefined ?? 0)` gives. */
+function num(v: unknown): number | null {
+  if (v == null || v === "") return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+const DASH = "—";
+
+/** What the reader sees for a fact we do not have. */
+function show(v: number | null): string {
+  return v == null ? DASH : v.toLocaleString();
+}
+
+/** Sources return addresses lowercased; a street address is a proper noun. */
+function titleCase(s: string): string {
+  return s.replace(/\b[a-z]/g, (c) => c.toUpperCase());
+}
 
 type ApiResponse = {
   property: PropertyDetails;
@@ -78,7 +103,7 @@ export default function HomeValueEstimatorPage() {
       const compsRaw = (json?.comps ?? []) as any[];
 
       const comps: Comparable[] = compsRaw.map((c) => ({
-        address: String(c?.address ?? "—"),
+        address: titleCase(String(c?.address ?? "—")),
         salePrice: Number(c?.salePrice ?? 0),
         sqft: Number(c?.sqft ?? 0),
         pricePerSqft: Number(c?.pricePerSqft ?? 0),
@@ -102,17 +127,26 @@ export default function HomeValueEstimatorPage() {
       const high = est.high != null ? Number(est.high) : null;
       const summary = String(est.summary ?? t("summary_fallback"));
 
-      const subjectSqft = Number(property?.sqft ?? 0) || comps[0]?.sqft || 1500;
+      /*
+       * Fall back to a comp's footage when the subject's is unknown, but never
+       * to a made-up number. This used to end in `|| 1500`, so every address the
+       * API had no record of was reported at 1,500 sqft — directly above a
+       * summary saying we had no square footage on file for it.
+       */
+      const subjectSqft = num(property?.sqft) ?? comps[0]?.sqft ?? null;
 
       const data: ApiResponse = {
         property: {
-          address: String(property?.address ?? address.trim()),
-          beds: Number(property?.beds ?? 0),
-          baths: Number(property?.baths ?? 0),
+          address: titleCase(String(property?.address ?? address.trim())),
+          beds: num(property?.beds),
+          baths: num(property?.baths),
           sqft: subjectSqft,
-          lotSize: Number(property?.lotSize ?? property?.lot_size ?? 0),
-          yearBuilt: Number(property?.yearBuilt ?? property?.year_built ?? 0),
-          propertyType: String(property?.propertyType ?? property?.property_type ?? "—"),
+          lotSize: num(property?.lotSize ?? property?.lot_size),
+          yearBuilt: num(property?.yearBuilt ?? property?.year_built),
+          propertyType:
+            property?.propertyType ?? property?.property_type
+              ? String(property.propertyType ?? property.property_type)
+              : null,
         },
         comps,
         avgPricePerSqft,
@@ -185,7 +219,16 @@ export default function HomeValueEstimatorPage() {
         {error ? <p className="mt-3 text-xs font-medium text-red-600">{error}</p> : null}
       </div>
 
-      {result ? (
+      {result && result.estimatedValue == null && result.comps.length === 0 ? (
+        /*
+         * Nothing came back to value the address with. Saying that plainly beats
+         * an estimate card reading $0 – $0 beside a confident-looking summary.
+         */
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+          <p className="ui-card-title text-amber-900">{t("result.no_value_heading")}</p>
+          <p className="ui-meta mt-1 text-amber-900/80">{t("result.no_value_body")}</p>
+        </div>
+      ) : result ? (
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -216,15 +259,15 @@ export default function HomeValueEstimatorPage() {
               <p className="ui-card-title mt-1 text-brand-text">{result.property.address}</p>
               <p className="ui-meta mt-2 text-brand-text/70">
                 {t("result.beds_baths_sqft", {
-                  beds: result.property.beds,
-                  baths: result.property.baths,
-                  sqft: result.property.sqft.toLocaleString(),
+                  beds: show(result.property.beds),
+                  baths: show(result.property.baths),
+                  sqft: show(result.property.sqft),
                 })}
               </p>
               <p className="ui-meta text-brand-text/70">
                 {t("result.type_built", {
-                  type: result.property.propertyType,
-                  year: result.property.yearBuilt,
+                  type: result.property.propertyType ?? DASH,
+                  year: show(result.property.yearBuilt),
                 })}
               </p>
             </div>

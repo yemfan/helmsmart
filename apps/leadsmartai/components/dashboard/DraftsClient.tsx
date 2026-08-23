@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import Link from "next/link";
-import type { DraftStatus, MessageDraftView } from "@/lib/drafts/types";
+import type { DraftStatus, MessageDraftView } from "@/lib/drafts/types";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 const STATUS_LABELS: Record<DraftStatus | "all", string> = {
   pending: "Pending",
@@ -92,7 +93,7 @@ export default function DraftsClient() {
         </div>
         <div className="max-h-[75vh] overflow-y-auto">
           {loading ? (
-            <div className="p-6 text-sm text-gray-500">Loading…</div>
+            <div className="p-6 text-sm text-gray-500"><LoadingText /></div>
           ) : error ? (
             <div className="p-6 text-sm text-red-600">{error}</div>
           ) : drafts.length === 0 ? (
@@ -400,7 +401,7 @@ function DraftDetail({
       <section className="grid flex-1 grid-cols-1 divide-gray-100 lg:grid-cols-2 lg:divide-x">
         <div className="flex flex-col gap-3 p-4">
           <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-            {isPending ? "Edit" : "View"}
+            {isPending ? t("common:actions.edit") : t("common:actions.view")}
           </div>
           {draft.channel === "email" && (
             <label className="block">
@@ -433,7 +434,7 @@ function DraftDetail({
                 disabled={!dirty || saving !== null}
                 className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-800 hover:bg-gray-50 disabled:opacity-50"
               >
-                {saving === "edit" ? "Saving…" : "Save edit"}
+                {saving === "edit" ? t("common:status.saving") : t("pages.drafts.saveEdit")}
               </button>
               <button
                 type="button"
@@ -441,7 +442,7 @@ function DraftDetail({
                 disabled={saving !== null}
                 className="rounded-lg bg-brand-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
               >
-                {saving === "approve" ? "Approving…" : "Approve & send"}
+                {saving === "approve" ? t("common:status.approving") : t("pages.bossAssistant.approveSend")}
               </button>
               <button
                 type="button"
@@ -466,7 +467,7 @@ function DraftDetail({
                     disabled={saving !== null}
                     className="rounded-lg bg-brand-accent px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
                   >
-                    {saving === "dispatch" ? "Sending…" : "Send now"}
+                    {saving === "dispatch" ? t("common:status.sending") : t("pages.drafts.sendNow")}
                   </button>
                   {message && <span className="text-green-700">{message}</span>}
                   {error && <span className="text-red-600">{error}</span>}
@@ -502,7 +503,7 @@ function DraftDetail({
                   disabled={saving !== null}
                   className="rounded-lg bg-gray-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
                 >
-                  {saving === "reject" ? "Rejecting…" : "Confirm reject"}
+                  {saving === "reject" ? t("common:status.rejecting") : t("pages.drafts.confirmReject")}
                 </button>
                 <button
                   type="button"

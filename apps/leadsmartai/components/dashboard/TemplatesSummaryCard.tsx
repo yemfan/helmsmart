@@ -81,7 +81,7 @@ export default async function TemplatesSummaryCard({ agentId }: { agentId: strin
           href="/dashboard/templates"
           className="inline-flex text-sm font-medium text-brand-accent-text hover:underline"
         >
-          Open full template library →
+          {t("pages.templatesSummary.openLibrary", { ns: "dashboard" })}
         </Link>
       </div>
     </div>

@@ -144,7 +144,7 @@ export default function HomeValueWidgetPage() {
               {loading && (
                 <span className="mr-2 inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               )}
-              {loading ? "Estimating..." : "Get My Estimate"}
+              {loading ? t("common:status.estimating") : t("pages.homeValueWidget.getMyEstimate")}
             </button>
           </div>
         )}
@@ -190,7 +190,7 @@ export default function HomeValueWidgetPage() {
               disabled={loading}
               className="w-full inline-flex items-center justify-center bg-blue-600 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? "Submitting..." : "Unlock Full Report"}
+              {loading ? t("common:status.submitting") : t("pages.homeValueWidget.unlockFullReport")}
             </button>
           </div>
         )}

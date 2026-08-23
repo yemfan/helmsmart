@@ -87,7 +87,7 @@ export function CoachingProgramsCard() {
           href="/agent/coaching"
           className="text-xs font-semibold text-slate-600 hover:text-slate-900"
         >
-          Learn more →
+          {t("pages.coachingPrograms.learnMore")}
         </a>
       </header>
 
@@ -144,8 +144,8 @@ function ProgramRow({ program }: { program: ProgramView }) {
       {!isEnrolled ? (
         <p className="mt-3 text-[11px] text-slate-600">
           {isOptedOut
-            ? "You opted out earlier. Re-enroll any time from settings."
-            : "Auto-enrollment runs on your next sign-in. Or enroll now to start tracking."}
+            ? t("pages.coachingPrograms.youOptedOutEarlier")
+            : t("pages.coachingPrograms.autoEnrollmentRunsOn")}
         </p>
       ) : (
         <p className="mt-3 text-[11px] text-slate-600">{t("pages.coaching.trackingNote")}</p>

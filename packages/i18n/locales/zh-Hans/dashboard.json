@@ -1643,12 +1643,14 @@
     "likelySellers": {
       "metaTitle": "今日潜在卖家",
       "heading": "今日潜在卖家",
-      "intro": "按未来约 90 天内挂牌可能性排序的老客户与人脉圈联系人。评分基于规则且可解释——每一行都会显示影响其排名的最主要因素。"
+      "intro": "按未来约 90 天内挂牌可能性排序的老客户与人脉圈联系人。评分基于规则且可解释——每一行都会显示影响其排名的最主要因素。",
+      "noPastClientsOr": "还没有可评分的老客户或人脉联系人。导入联系人后才能开始筛出潜在卖家。"
     },
     "likelyBuyers": {
       "metaTitle": "今日潜在买家",
       "heading": "今日潜在买家",
-      "intro": "按未来约 90 天内购买下一套住房可能性排序的老客户与人脉圈联系人。评分基于规则且可解释——工作变动与人生大事是最主要的驱动信号。"
+      "intro": "按未来约 90 天内购买下一套住房可能性排序的老客户与人脉圈联系人。评分基于规则且可解释——工作变动与人生大事是最主要的驱动信号。",
+      "noPastClientsOr": "还没有可评分的老客户或人脉联系人。导入联系人并记录人生大事信号，才能开始筛出潜在买家。"
     },
     "sphereSignals": {
       "metaTitle": "人脉圈 · 信号",
@@ -1672,14 +1674,16 @@
       "closing": "成交",
       "emailPhone": "邮箱／电话",
       "warnings": "提示",
-      "csvOptIn": "CSV 中标记为已同意——仍需您明确确认"
+      "csvOptIn": "CSV 中标记为已同意——仍需您明确确认",
+      "parseCsv": "解析 CSV"
     },
     "sphereContact": {
       "metaTitle": "人脉圈联系人"
     },
     "salesModel": {
       "metaTitle": "销售模式",
-      "metaDescription": "根据您选择的销售模式量身定制的面板、话术、任务与业务管道。"
+      "metaDescription": "根据您选择的销售模式量身定制的面板、话术、任务与业务管道。",
+      "selected": "已选择"
     },
     "leadSourceRoi": {
       "metaTitle": "客源渠道回报",
@@ -1711,7 +1715,8 @@
       "metaDescription": "触发器执行的审计日志：已创建、已抑制、已触发过。用于排查某个触发器为何触发或未触发。",
       "heading": "调度器活动",
       "intro": "调度器评估过的每一个触发器都会记录在这里——无论它创建了草稿还是抑制了草稿。可用它排查某个模板为何没有对某位联系人触发。",
-      "backToDrafts": "← 返回草稿"
+      "backToDrafts": "← 返回草稿",
+      "openDraft": "打开草稿 →"
     },
     "expenses": {
       "metaTitle": "支出",
@@ -1765,7 +1770,11 @@
       "rejectedReason": "驳回原因：{{reason}}",
       "rejectedNoReason": "驳回时未填写原因。",
       "sent": "已发送 {{date}}",
-      "sendFailed": "发送失败——请检查服务商日志。"
+      "sendFailed": "发送失败——请检查服务商日志。",
+      "email": "邮箱",
+      "saveEdit": "保存修改",
+      "sendNow": "立即发送",
+      "confirmReject": "确认拒绝"
     },
     "team": {
       "metaTitle": "团队",
@@ -2153,7 +2162,8 @@
       "willCreateAfter_one": "场开放日（最多 26 场）。",
       "willCreateAfter_other": "场开放日（最多 26 场）。",
       "copiedToAll": "主持人备注和房屋信息会复制到系列中的每一场。",
-      "cancel": "取消"
+      "cancel": "取消",
+      "createOpenHouse": "创建开放日"
     },
     "openHouseDetail": {
       "metaTitle": "开放日",
@@ -2226,7 +2236,9 @@
       "emptyFiltered": "没有符合筛选条件的计划。",
       "empty": "还没有营销计划。",
       "availableTemplates": "可用模板",
-      "useTemplate": "使用这个模板"
+      "useTemplate": "使用这个模板",
+      "sellerView": "卖家视图 →",
+      "buyerView": "买家视图 →"
     },
     "listingOffer": {
       "metaTitle": "房源报价",
@@ -2312,7 +2324,10 @@
       "appraisal": "评估",
       "loan": "贷款",
       "saleOfHome": "需先卖掉现有住房",
-      "cancel": "取消"
+      "cancel": "取消",
+      "readingOfferPdf": "正在读取报价 PDF…",
+      "uploadOfferPdfOptional": "上传报价 PDF（可选）",
+      "dropASignedRpa": "把已签署的购房合同 PDF 拖到这里，或点击选择——我们会用 Claude 提取价格、附加条件和日期。文件不会被保存。"
     },
     "showingDetail": {
       "metaTitle": "带看",
@@ -2651,7 +2666,10 @@
       "contingencies": "附加条件",
       "emd": "定金",
       "cash": "全现金",
-      "counterPrice": "还价金额"
+      "counterPrice": "还价金额",
+      "openContractedDeal": "打开已签约交易 →",
+      "viewAllShowings": "查看全部带看 →",
+      "unnamedBuyer": "未命名买家"
     },
     "adWizard": {
       "metaTitle": "新建引流广告",
@@ -2722,7 +2740,11 @@
       "runForDays": "投放时长：{{days}} {{unit}}",
       "dayOne": "天",
       "dayOther": "天",
-      "campaignCreated": "广告系列已创建"
+      "campaignCreated": "广告系列已创建",
+      "openMetaAdsManager": "在 Meta 广告管理工具中打开 →",
+      "connectAPage": "连接一个主页 →",
+      "estimating": "估算中…",
+      "settingsBranding": "设置 → 品牌"
     },
     "dealCoachPanel": {
       "dealContext": "交易背景",
@@ -2799,7 +2821,9 @@
       "intro": "当有新房源符合这些条件时，联系人会收到提醒邮件，这个行为也会计入他们的互动评分。",
       "emptyBefore": "还没有保存的搜索条件。点击",
       "emptyAfter": "，符合条件的房源上市时就会提醒这位联系人。",
-      "paused": "已暂停（保留条件，不发邮件）"
+      "paused": "已暂停（保留条件，不发邮件）",
+      "anyListing": "任意房源",
+      "createSearch": "创建搜索"
     },
     "revenuePanel": {
       "loading": "正在加载收入数据…",
@@ -2842,7 +2866,8 @@
       "maxPerDay": "每位联系人每日消息上限",
       "maxPerDayHint": "短信与邮件合并计算。硬性上限——模板无法覆盖。",
       "pauseOnReply": "联系人回复后暂停触发的天数",
-      "pauseOnReplyHint": "让您有时间接手对话，避免 AI 抢在您前面回复。"
+      "pauseOnReplyHint": "让您有时间接手对话，避免 AI 抢在您前面回复。",
+      "loading": "正在加载时间规则…"
     },
     "voiceSettings": {
       "enabled": "已启用前台接待",
@@ -2898,7 +2923,13 @@
       "letAiRunSub": "由 AI 决定发布频率、使用哪些已连接的账号、覆盖哪些话题、什么时间发布——并且每周重新规划。下方的审批设置依然有效。",
       "onNotice": "AI 自动化已开启，下面这些设置每周由 AI 替您决定。关闭后即可自行设置——您原本的选择会保留。",
       "marketNews": "每周包含一条市场行情帖",
-      "approvalScope": "仅适用于社交帖子。实时通话和短信回复等不了审批，因此由每位助理各自的设置来管。"
+      "approvalScope": "仅适用于社交帖子。实时通话和短信回复等不了审批，因此由每位助理各自的设置来管。",
+      "allConnectedAccounts": "全部已连接账号。",
+      "onlyTheAccountsYou": "仅您勾选的账号。",
+      "anyTopicFromYour": "内容库中的任意主题。",
+      "onlyTheTopicsYou": "仅您勾选的主题。",
+      "spreadAutomaticallyAcrossThe": "自动分散到一周各天。",
+      "onlyTheDaysYou": "仅您选定的日期。"
     },
     "listingAd": {
       "videoAd": "视频广告",
@@ -2964,7 +2995,11 @@
       "noClips": "还没有片段。请先在上方生成，然后在下方制作品牌广告。",
       "stitchBlurb": "把片段拼成一支看房视频，并配上 AI 文案——可以直接发布。",
       "narrationBlurb": "让 AI 写一段解说词，再配音到您的视频上——如果您克隆过自己的声音就用您的声音，否则使用专业配音。",
-      "confidence": "置信度 {{pct}}%"
+      "confidence": "置信度 {{pct}}%",
+      "selectPhotosAboveTo": "在上方选择照片以确定时长",
+      "addVoiceover": "添加配音",
+      "narratedInAProfessional": "由专业配音朗读。",
+      "narratedInYourCloned": "由您的克隆声音朗读。"
     },
     "contactHealth": {
       "heading": "联系人资料完整度",
@@ -2974,7 +3009,8 @@
       "withPhone": "有电话",
       "withBirthday": "有生日",
       "withPurchaseDate": "有购房日期",
-      "fieldCoverage": "在办客源的信息完整度（已合并的记录不计入）。"
+      "fieldCoverage": "在办客源的信息完整度（已合并的记录不计入）。",
+      "loading": "正在加载联系人健康度…"
     },
     "aiEmailPanel": {
       "heading": "AI 邮件助理",
@@ -3019,7 +3055,10 @@
       "phone": "电话号码",
       "intro": "Lucy 会用您的接待号码拨打给客源，开口就说明自己是 AI 助理，然后代您跟进——通话记录会出现在下方的来电与外呼记录中。",
       "callContact": "给联系人打电话",
-      "creditsNote": "外呼使用您的接待号码，需要消耗 Retell 通话额度。需要一次联系多个人？可以选中多位联系人，批量拨打。"
+      "creditsNote": "外呼使用您的接待号码，需要消耗 Retell 通话额度。需要一次联系多个人？可以选中多位联系人，批量拨打。",
+      "whatShouldLucyAsk": "希望 Lucy 问什么？",
+      "aiCall": "AI 通话",
+      "placingCall": "正在拨号…"
     },
     "dealReview": {
       "executionScore": "执行评分：",
@@ -3053,7 +3092,11 @@
       "priceVerdict": "价格：{{verdict}}",
       "priceTooHigh": "偏高",
       "priceAboutRight": "差不多合适",
-      "priceBargain": "很划算"
+      "priceBargain": "很划算",
+      "loading": "正在加载反馈…",
+      "noEmailOnFile": "档案中没有邮箱",
+      "sendRequest": "发送请求",
+      "addRequest": "添加请求"
     },
     "missedCallLog": {
       "autoTextsSent": "已发送自动短信",
@@ -3110,7 +3153,8 @@
       "draftEditable": "草稿（可编辑）",
       "noMessages": "还没有消息。",
       "pickContact": "请先在上方选择一位联系人，再开始拟写短信。",
-      "autoPilotHint": "自动驾驶——针对这位联系人自动发送草稿，并自动回复其来信短信。"
+      "autoPilotHint": "自动驾驶——针对这位联系人自动发送草稿，并自动回复其来信短信。",
+      "searchContact": "按姓名、邮箱、电话搜索联系人…"
     },
     "comparisonReportView": {
       "yourAgent": "您的经纪人",
@@ -3193,7 +3237,18 @@
       "alreadyHaveAccount": "已经有账号了？",
       "scoreN": "评分 {{score}}",
       "profilesMatched": "与 {{city}} 匹配的真实客户画像",
-      "teamPrice": "团队版——每个团队 {{price}}"
+      "teamPrice": "团队版——每个团队 {{price}}",
+      "continue": "继续 →",
+      "activatePipeline": "启动我的客户漏斗 →",
+      "turningOn": "正在启动您的 AI 客户台…",
+      "openInbox": "打开我的收件箱 →",
+      "handshake": "正在与 CloseBoss 路由建立安全连接…",
+      "writeFastReply": "快速回复一句…（演示）",
+      "sendReply": "发送回复 →",
+      "comparePlans": "对比套餐并解锁 →",
+      "contactSales": "联系销售 →",
+      "readyCreateAccount": "我准备好了——创建我的经纪人账户 →",
+      "loadingConversation": "正在加载对话…"
     },
     "deepReportView": {
       "title": "房产深度报告",
@@ -3219,6 +3274,78 @@
       "concerns": "顾虑：",
       "action": "行动：",
       "bookkeeper": "记账助理"
+    },
+    "cma": {
+      "loadFailed": "无法加载您的 CMA 报告。",
+      "createFailed": "CMA 生成失败。",
+      "loading": "加载中…",
+      "savedCount_one": "已保存 {{count}} 份报告",
+      "savedCount_other": "已保存 {{count}} 份报告",
+      "cancel": "取消",
+      "newCma": "新建 CMA",
+      "generateHeading": "生成 CMA",
+      "generateIntro": "填写目标房产地址。我们会从网络抓取实时可比成交，并标注每一处来源。",
+      "subjectAddress": "目标房产地址",
+      "addressPlaceholder": "123 Main St, Sugar Land, TX",
+      "quotaReached": "本月套餐内的 CMA 次数已用完。",
+      "liveWeb": "基于实时网络数据，附来源引用。",
+      "generating": "生成中…",
+      "generate": "生成 CMA",
+      "working": "正在检索可比成交——大约需要一分钟。",
+      "loadFailedInline": "无法加载您的报告：",
+      "empty": "还没有 CMA 报告。在上方填入地址即可生成一份。",
+      "comps_one": "{{count}} 个可比成交",
+      "comps_other": "{{count}} 个可比成交",
+      "confidence": "置信度 {{score}}%",
+      "quotaTitle": "{{date}} 重置",
+      "unlimited": "不限次数",
+      "remaining": "剩余 {{remaining}} / {{limit}}"
+    },
+    "calls": {
+      "heading": "通话记录",
+      "search": "按联系人、号码或摘要搜索",
+      "colContact": "联系人",
+      "colDirection": "呼叫方向",
+      "colDuration": "时长",
+      "colSummary": "摘要",
+      "colDate": "日期",
+      "hot": "高意向",
+      "needsFollowUp": "待跟进",
+      "close": "收起",
+      "details": "详情",
+      "aiSummary": "AI 摘要",
+      "transcript": "通话文字记录",
+      "recording": "录音",
+      "noDetails": "这通电话没有摘要或文字记录。",
+      "empty": "还没有通话记录。"
+    },
+    "contractReview": {
+      "needFile": "请先选择 PDF 或粘贴合同文本。",
+      "heading": "合同审阅",
+      "disclaimer": "以下内容不构成法律意见——付诸行动前请让您的经纪或律师复核。",
+      "contractPdf": "合同 PDF",
+      "choosePdf": "选择 PDF",
+      "maxSize": "PDF 最大 10 MB，文件不会被保存。",
+      "pasteHeading": "或直接粘贴合同文本",
+      "pastePlaceholder": "手头没有 PDF 的话，把合同文本粘贴到这里。",
+      "reviewing": "审阅中…",
+      "review": "审阅合同",
+      "reading": "正在阅读合同，请稍候。",
+      "summary": "摘要",
+      "dates": "关键日期",
+      "keyTerms": "关键条款",
+      "blanks": "空白与缺失项",
+      "confirm": "签字前请确认",
+      "breadcrumb": "合同审阅"
+    },
+    "playbookRunDetail": {
+      "optimizeHeading": "优化这次执行",
+      "optimizePlaceholder": "希望团队怎么调整？例如：先打电话再发短信、等到周一再动。",
+      "optimizing": "优化中…",
+      "optimize": "优化",
+      "running": "执行中…",
+      "approveRun": "批准并执行",
+      "openTaskBoard": "打开任务看板 →"
     },
     "labels": {
       "call": "电话",
@@ -3248,8 +3375,7 @@
       "melloRoos": "特别税（Mello-Roos）",
       "neighborhood": "周边社区",
       "schools": "学校",
-      "language": "语言",
-      "primaryNav": "主导航"
+      "language": "语言"
     },
     "weeklySocial": {
       "connectToAutoPost": "连接账号以自动发布",
@@ -3263,7 +3389,8 @@
       "replaceCard": "用您自己的照片替换品牌卡片。目前支持图片，短视频即将上线。",
       "usingUpload": "正在使用您上传的图片",
       "downloadImage": "下载图片",
-      "close": "关闭"
+      "close": "关闭",
+      "upgrade": "升级 →"
     },
     "digitalTwin": {
       "notEnabledBefore": "尚未启用（需要",
@@ -3279,7 +3406,10 @@
       "renderDurationSharper": "，开启「更清晰视频」后会更久",
       "renderCloseHint": "。您可以关闭本页面——视频完成后我们会立即通知您。",
       "renderFailed": "视频没有生成完成。",
-      "renderCreditsReturned": "您的额度已退回。"
+      "renderCreditsReturned": "您的额度已退回。",
+      "generateVideoUsesCredits": "生成视频（消耗额度）",
+      "hitPreviewVoiceFree": "请先点「试听配音」（免费）——听过之后才能解锁生成视频。",
+      "draftOrWriteA": "先起草或撰写脚本，再点「试听配音」（免费）解锁生成视频。"
     },
     "houseSearch": {
       "whatLookingFor": "您的买家在找什么样的房子？",
@@ -3289,18 +3419,12 @@
       "noMatches": "没有匹配的真实房源。可以试着放宽条件。",
       "close": "关闭",
       "open": "打开",
-      "cancel": "取消"
-    },
-    "connect": {
-      "pinterestBlurb": "自动把 Pin 发布到您 Pinterest 企业账号的图板上——房源照片、社区指南、品牌卡片都可以。",
-      "pinterestConnect": "连接 Pinterest 企业账号即可排期发布 Pin。新的 Pin 会发到您的第一个图板。",
-      "pinterestRevoke": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 Pinterest 账号设置中移除该应用。",
-      "tiktokBlurb": "把您的视频——房源导览、数字人片段——直接发到 TikTok。在您的 TikTok 应用通过内容发布审核前，新视频默认为私密。",
-      "tiktokConnect": "连接 TikTok 账号即可发布视频。在应用通过审核前，发布的内容是私密的（只有您自己能看到）。",
-      "tiktokRevoke": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 TikTok 账号设置中移除该应用。",
-      "youtubeBlurb": "把您的视频——房源导览、数字人片段——上传到您的 YouTube 频道。竖版短片会作为 Shorts 发布。",
-      "youtubeConnect": "连接 YouTube 频道即可上传视频。竖版视频会作为 Shorts 发布。",
-      "youtubeRevoke": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 Google 账号设置中移除访问权限。"
+      "cancel": "取消",
+      "searchingWeb": "正在全网搜索匹配房源…最多可能需要一分钟。",
+      "quickLineToBuyer": "给买家写一句话…",
+      "unlimitedSearches": "搜索不限次数",
+      "saveSearch": "保存搜索",
+      "sendEmail": "发送邮件"
     },
     "marketingAssistant": {
       "kbTitle": "营销助理的知识库",
@@ -3310,7 +3434,8 @@
       "openScheduler": "打开排期",
       "schedulePost": "排期发布",
       "noActivity": "还没有动态。营销助理开始发布内容和培育客户后，工作记录会显示在这里。",
-      "salesAssistant": "销售助理"
+      "salesAssistant": "销售助理",
+      "openAdComposer": "打开广告编辑器 →"
     },
     "receptionist": {
       "inboundTitle": "接待助理的声音与知识",
@@ -3320,7 +3445,16 @@
       "automationSub": "转接号码、未接来电自动短信模板、AI 个性化，以及短信联系不上时的自动回拨节奏。",
       "callReason": "来电事由",
       "whatItDid": "接待助理做了什么",
-      "callbackSchedule": "回拨安排"
+      "callbackSchedule": "回拨安排",
+      "openContactProfile": "打开联系人档案 →",
+      "loadingCalls": "正在加载通话…",
+      "noCallsYetOnce": "还没有通话。等 AI 接待员开始接听后，每一通电话都会显示在这里。",
+      "inbound": "来电",
+      "outbound": "去电",
+      "messageBodyUnavailable": "无法显示消息内容。",
+      "all3CallBacks": "三次回拨都没人接听——这一位需要您亲自跟进。",
+      "callBacksWereCancelled": "回拨已取消。",
+      "missedCall": "未接来电"
     },
     "inboundDelivery": {
       "showBody": "显示邮件正文预览",
@@ -3334,7 +3468,9 @@
       "looksLike": "看起来是",
       "fromYourCrm": "，来自您的 CRM。转发过来的报价有时是交易协调员或助理发的——套用之前请先确认。",
       "prefilled": "打开上传流程，这些字段会预先填好。",
-      "buyerIsSetTo": "买方已设为"
+      "buyerIsSetTo": "买方已设为",
+      "viewContact": "查看联系人 →",
+      "extractionFailed": "提取失败。"
     },
     "importWizard": {
       "sub": "上传表格、匹配列、预览重复项，然后完成导入。清洗、查重、补全和写入 CRM 的流程与手动录入完全一致。",
@@ -3349,9 +3485,40 @@
       "inserted": "新增：{{count}}",
       "merged": "合并：{{count}}",
       "skipped": "跳过：{{count}}",
-      "errors": "错误：{{count}}"
+      "errors": "错误：{{count}}",
+      "backToLeads": "← 返回客户列表",
+      "heading": "导入联系人",
+      "step1": "第 1 步 —— 上传 CSV",
+      "step1Hint": "从您现在使用的 CRM 导出联系人，把文件拖到这里。",
+      "uploading": "上传中…",
+      "dropzone": "把 CSV 拖到这里，或点击选择文件",
+      "csvOnly": "仅支持 CSV 文件，最大 10 MB",
+      "step2": "第 2 步 —— 匹配字段",
+      "importingFrom": "导入来源",
+      "autoDetect": "我们已自动匹配您的字段。如有不对，请自行调整。",
+      "ignore": "不导入",
+      "duplicateHandling": "当联系人已存在时",
+      "step3": "第 3 步 —— 核对",
+      "colName": "姓名",
+      "colEmail": "邮箱",
+      "colPhone": "电话",
+      "colDup": "重复",
+      "step4": "第 4 步 —— 完成",
+      "history": "历史导入",
+      "noImports": "还没有导入记录。"
     },
     "uploadListing": {
+      "f": {
+        "property": "房产",
+        "cityStateZip": "城市 / 州 / 邮编",
+        "listPrice": "挂牌价",
+        "listingStart": "挂牌开始",
+        "listingExpires": "挂牌到期",
+        "sellers": "卖家",
+        "totalCommission": "总佣金",
+        "buyerCommission": "买方佣金",
+        "confidence": "置信度"
+      },
       "transactions": "交易",
       "title": "上传房源委托协议",
       "sub": "把已签署的 RLA（房源委托协议）PDF 拖进来——挂牌价、委托期限、卖方和佣金会由 AI 自动提取。保存为房源草稿前请先核对结果。",
@@ -3359,7 +3526,15 @@
       "viewSource": "查看原始邮件",
       "uploadPdf": "上传 RLA PDF",
       "maxSize": "最大 5 MB。如果协议更长，请只保留前 4–6 页——价格、当事人和佣金都在那几页里。",
-      "createsNote": "会用解析出的字段创建一笔卖方代理交易。任何内容都可以在交易详情页上修改。"
+      "createsNote": "会用解析出的字段创建一笔卖方代理交易。任何内容都可以在交易详情页上修改。",
+      "needPdf": "请先选择房源 PDF。",
+      "needSeller": "保存前请先选择卖家。",
+      "seller": "卖家",
+      "parsing": "正在读取房源信息…",
+      "review": "保存前请核对信息",
+      "warnings": "以下几项建议再确认一下",
+      "saving": "保存中…",
+      "save": "保存房源"
     },
     "marketing": {
       "shareLinks": "分享链接、跟踪邮件回访，并管理营销活动状态。",
@@ -3378,7 +3553,16 @@
       "phone": "电话",
       "property": "房源／地址",
       "notes": "备注",
-      "createAnyway": "即使重复也仍然创建"
+      "createAnyway": "即使重复也仍然创建",
+      "heading": "添加联系人",
+      "intro": "可以认领一条共享线索，也可以自己手动填写。",
+      "availableLeads": "可认领的线索",
+      "claim": "认领",
+      "orManual": "或手动填写信息",
+      "saving": "保存中…",
+      "save": "保存联系人",
+      "unnamed": "未命名",
+      "noDetails": "暂无详情"
     },
     "leadProfile": {
       "assistantHandling": "AI 销售助理正在负责跟进",
@@ -3387,7 +3571,8 @@
       "conversations": "会话记录",
       "fullRecord": "完整档案",
       "nothingOpen": "暂无待办——需要联系时，您的 AI 团队会提醒您。",
-      "noInteractions": "还没有互动记录——通话、短信和跟进都会记录在这里。"
+      "noInteractions": "还没有互动记录——通话、短信和跟进都会记录在这里。",
+      "gettingFullPicture": "正在了解完整情况…"
     },
     "pricing": {
       "theMath": "算一笔账",
@@ -3396,17 +3581,9 @@
       "humanPerYear": "真人团队——每年",
       "plusBenefits": "还要加上福利、培训和人员流动——而且全都得您来管。",
       "yourAiTeam": "您的 AI 团队——CloseBoss",
-      "virtuallyFree": "整个团队的成本，跟雇一个真人比几乎可以忽略不计。"
-    },
-    "landing": {
-      "meetTeam": "认识您的 AI 团队",
-      "oneTeam": "一支 AI 团队。",
-      "teamSub": "从第一通电话到成交签约，每个环节都有专人负责。他们全天候协作，您只需专心服务客户。",
-      "teamAlt": "认识 CloseBoss AI 房产团队——Emma、Chris、Ruby、Oliver、Grace 和 Max",
-      "hireFree": "免费雇用您的 AI 团队",
-      "whatIs": "什么是 CloseBoss AI？",
-      "whatIsSub": "关于 CloseBoss AI 的常见问题——closebossai.com 上的 AI 房产团队。",
-      "sixSpecialists": "六位专才。"
+      "virtuallyFree": "整个团队的成本，跟雇一个真人比几乎可以忽略不计。",
+      "start7DayFree": "开始 7 天免费试用",
+      "starting": "启动中…"
     },
     "boss": {
       "todaysPriorities": "今天的优先事项",
@@ -3423,7 +3600,10 @@
       "viewArtifact": "查看{{kind}} →",
       "artifactCma": "CMA",
       "artifactPresentation": "演示文稿",
-      "artifactResult": "结果"
+      "artifactResult": "结果",
+      "typeAnswer": "输入您的回答…",
+      "uploading": "上传中…",
+      "breakingIntoActions": "收到——正在拆解成具体行动…"
     },
     "offersList": {
       "offersFor": "报价——",
@@ -3439,7 +3619,25 @@
       "noMatches": "没有符合筛选条件的客源。",
       "goToPricing": "前往价格页",
       "prev": "上一页",
-      "next": "下一页"
+      "next": "下一页",
+      "heading": "客户线索市场",
+      "available": "可购买",
+      "sold": "已售出",
+      "conversion": "转化率",
+      "revenuePerLead": "每条线索收益",
+      "location": "地区",
+      "locationPlaceholder": "城市、县或邮编",
+      "leadType": "线索类型",
+      "all": "全部类型",
+      "minPrice": "最低价",
+      "maxPrice": "最高价",
+      "loading": "正在加载线索…",
+      "colAddress": "地址",
+      "colIntent": "意向度",
+      "colPrice": "价格",
+      "colAction": "操作",
+      "buying": "购买中…",
+      "buy": "购买线索"
     },
     "send": {
       "blurb": "生成一条个性化的房屋估值链接，可以直接粘贴到邮件、短信或社交帖子里。",
@@ -3447,7 +3645,16 @@
       "propertyAddress": "房屋地址",
       "generatedLink": "生成的链接",
       "openLink": "打开链接",
-      "copied": "链接已复制。粘贴到给客户的邮件或消息中即可。"
+      "copied": "链接已复制。粘贴到给客户的邮件或消息中即可。",
+      "needAddress": "请先填写房产地址。",
+      "copyFailed": "复制失败，请手动选中链接复制。",
+      "heading": "发送房屋估值链接",
+      "namePlaceholder": "张三",
+      "addressPlaceholder": "123 Main St, Sugar Land, TX",
+      "tagSource": "给链接打标签，方便您分辨线索来自哪里。",
+      "generating": "生成中…",
+      "generate": "生成链接",
+      "copy": "复制链接"
     },
     "transactionDetail": {
       "transactions": "交易",
@@ -3455,7 +3662,8 @@
       "listingTools": "房源工具",
       "add": "添加",
       "addCounterparty": "添加对接方",
-      "counterpartyHint": "产权公司、贷款经纪、验房师、保险——都记在这里，省得回头翻聊天记录找。"
+      "counterpartyHint": "产权公司、贷款经纪、验房师、保险——都记在这里，省得回头翻聊天记录找。",
+      "saving": "保存中…"
     },
     "credits": {
       "planUsage": "约 {{minutes}} 分钟 AI 通话，或 {{videos}} 条视频",
@@ -3463,14 +3671,55 @@
       "creditsAdded": "额度已充值——新的余额稍后就会显示。",
       "subUpdated": "订阅已更新——每月额度稍后就会到账。",
       "switchingNote": "切换方案只按本计费周期剩余时间补差价。降级不会收回已经发放给您的额度。",
-      "contactBrokerage": "咨询经纪公司方案"
+      "contactBrokerage": "咨询经纪公司方案",
+      "loadingCredits": "正在加载额度…"
     },
     "buildOffer": {
       "offers": "报价",
       "sub": "获取推荐条款——价格、定金、附加条件策略、加价条款，以及一封买家自荐信——帮您做出既有竞争力又稳妥的报价。您核对后保存为草稿。",
       "cancel": "取消",
       "draftBefore": "保存后会创建一份",
-      "draftAfter": "报价，提交前都可以修改。"
+      "draftAfter": "报价，提交前都可以修改。",
+      "heading": "制作报价",
+      "needAddress": "请先填写房产地址。",
+      "needPrice": "请填写大于零的挂牌价。",
+      "needBuyer": "保存草稿前请先选择买家。",
+      "buildFailed": "报价生成失败。",
+      "saveFailed": "报价保存失败。",
+      "networkError": "网络错误，请重试。",
+      "buyer": "买家",
+      "address": "房产地址",
+      "addressPlaceholder": "123 Main St, Sugar Land, TX",
+      "listPrice": "挂牌价",
+      "cmaValue": "CMA 估值",
+      "maxBudget": "买家预算上限",
+      "financing": "贷款方式",
+      "cash": "全现金",
+      "conventional": "常规贷款",
+      "fha": "FHA 贷款",
+      "jumbo": "大额贷款",
+      "market": "市场行情",
+      "marketHot": "火热——卖方市场",
+      "marketBalanced": "平衡",
+      "marketCool": "冷清——买方市场",
+      "competingOffers": "竞争报价数",
+      "buyerNotes": "买家备注",
+      "buyerNotesPlaceholder": "这位买家在意什么——时间安排、必备条件、愿意出到多高。",
+      "building": "生成中…",
+      "build": "生成报价",
+      "rebuild": "重新生成",
+      "recommended": "推荐报价",
+      "offerPrice": "报价金额",
+      "earnestMoney": "定金",
+      "downPayment": "首付",
+      "escalationCap": "加价上限",
+      "closeIn": "过户周期",
+      "closeDays": "{{count}} 天",
+      "keep": "保留",
+      "waive": "放弃",
+      "coverLetter": "随附信",
+      "saving": "保存中…",
+      "saveDraft": "存为草稿"
     },
     "transactionsList": {
       "sub": "从双方接受到成交的每一笔交易——截止日期、待办事项和对接方都集中在一处。",
@@ -3493,7 +3742,20 @@
       "title": "IDX 客源分配池",
       "sub": "轮流分配池中所有经纪人的名单——合并了数据库规则和环境变量白名单。按最近活跃度排序，谁在忙谁在闲一目了然。",
       "editsOn": "每位经纪人可以在",
-      "settingsPage": "自己的设置页"
+      "settingsPage": "自己的设置页",
+      "never": "从未",
+      "today": "今天",
+      "oneDayAgo": "昨天",
+      "daysAgo_one": "{{count}} 天前",
+      "daysAgo_other": "{{count}} 天前",
+      "roster": "经纪人名单",
+      "colAgent": "经纪人",
+      "colSource": "来源",
+      "colEnrolled": "已加入",
+      "colZip": "邮编覆盖",
+      "colPriority": "优先级",
+      "colLastAssigned": "最近分配",
+      "anyZip": "不限邮编"
     },
     "accountant": {
       "ready": "AI 会计已就绪——交易一旦签约，预计佣金就会显示在这里。",
@@ -3517,13 +3779,23 @@
       "missedCall": "未接来电：",
       "appointments": "预约",
       "tasks": "待办",
-      "nearbyActivity": "自动发给客源的周边房源动态（邮件／短信）。"
+      "nearbyActivity": "自动发给客源的周边房源动态（邮件／短信）。",
+      "lead": "线索"
     },
     "presentations": {
       "intro": "输入一个地址，即可生成专业的房源提案（CMA + 定价策略 + 营销方案）。",
       "propertyAddress": "房屋地址",
       "openPast": "打开过往提案即可预览、下载或复制分享链接。",
-      "empty": "还没有提案。"
+      "empty": "还没有提案。",
+      "heading": "卖家推介方案",
+      "addressPlaceholder": "123 Main St, Sugar Land, TX",
+      "generating": "生成中…",
+      "generate": "生成推介方案",
+      "recent": "最近的推介方案",
+      "colProperty": "房产",
+      "colCreated": "创建时间",
+      "open": "打开",
+      "openArrow": "打开 →"
     },
     "showingsList": {
       "visitsFor": "带看记录——",
@@ -3540,7 +3812,18 @@
     "scanCard": {
       "retake": "重拍",
       "scanAnother": "再扫一张",
-      "viewContacts": "查看联系人"
+      "viewContacts": "查看联系人",
+      "heading": "扫描名片",
+      "intro": "拍一张名片照片，我们会自动提取里面的联系方式。",
+      "backToContacts": "返回联系人",
+      "tapToUpload": "点击拍照或上传",
+      "tapHint": "JPG 或 PNG，最大 10 MB",
+      "cardAlt": "您上传的名片",
+      "reading": "正在识别名片…",
+      "review": "保存前请核对信息",
+      "saving": "保存中…",
+      "save": "保存联系人",
+      "saved": "联系人已保存。"
     },
     "generateLeads": {
       "isNew": "新功能",
@@ -3550,7 +3833,11 @@
     "offerDetail": {
       "offers": "报价",
       "createsBuyerRep": "会创建一笔买方代理交易，并自动填入这份报价的价格和成交日。",
-      "cancel": "取消"
+      "cancel": "取消",
+      "sellerToBuyer": "卖家 → 买家（对方还价）",
+      "buyerToSeller": "买家 → 卖家（我方还价）",
+      "counterExample": "过户改为 45 天，定金提高到 4 万…",
+      "offerIsClosedNo": "该报价已关闭，不能再还价。"
     },
     "flyerBuilder": {
       "startOver": "重新开始",
@@ -3560,7 +3847,26 @@
     "openHouses": {
       "intro": "安排活动，在门口用二维码签到，并自动回访来访者。不用再拿纸质签到表。",
       "emptyBefore": "点击",
-      "emptyAfter": "，创建您的第一场活动。"
+      "emptyAfter": "，创建您的第一场活动。",
+      "heading": "开放日",
+      "schedule": "安排开放日",
+      "upcoming": "即将举行",
+      "totalVisitors": "到访人数",
+      "hotLeads": "高意向客户",
+      "optedIn": "已同意接收",
+      "tabUpcoming": "即将举行",
+      "tabPast": "已结束",
+      "tabAll": "全部",
+      "colWhen": "时间",
+      "colProperty": "房产",
+      "colVisitors": "到访",
+      "colHot": "高意向",
+      "colOptedIn": "已同意",
+      "colStatus": "状态",
+      "recurring": "属于一个周期性系列",
+      "series": "系列",
+      "empty": "还没有开放日。",
+      "noMatch": "没有符合该筛选条件的开放日。"
     },
     "playbooksPage": {
       "cancelled": "已取消",
@@ -3571,11 +3877,6 @@
       "exploreTeam": "认识这支团队",
       "closerLook": "逐一了解每位成员负责什么",
       "learnMore": "了解更多"
-    },
-    "appShell": {
-      "terms": "服务条款",
-      "privacy": "隐私政策",
-      "contact": "联系我们"
     },
     "salesAssistant": {
       "voiceTitle": "销售助理的声音与知识",
@@ -3591,12 +3892,28 @@
     },
     "leadQueue": {
       "loading": "正在加载队列…",
-      "refresh": "刷新"
+      "refresh": "刷新",
+      "merged": "已并入一位您已有的联系人。",
+      "claimed": "已认领——这条线索归您了。",
+      "alreadyClaimed": "团队里已有人先认领了这一条。",
+      "networkError": "网络错误，请重试。",
+      "heading": "线索队列",
+      "empty": "队列是空的。",
+      "emptyHint": "新的共享线索会出现在这里，供全团队认领。",
+      "claiming": "认领中…",
+      "claim": "认领",
+      "openContact": "打开联系人 →"
     },
     "openHouseQr": {
       "printBefore": "为每套房源打印这些二维码。扫码会打开手机版登记表，并把来访者记为",
       "printAfter": "客源。",
-      "visitorNote": "来访者可以扫这个二维码登记。他们的信息会作为新客源存入 CloseBoss。"
+      "visitorNote": "来访者可以扫这个二维码登记。他们的信息会作为新客源存入 CloseBoss。",
+      "heading": "开放日二维码",
+      "openHouse": "开放日现场",
+      "signupLink": "登记链接",
+      "copied": "已复制",
+      "copyLink": "复制链接",
+      "open": "打开"
     },
     "optimizePanel": {
       "intro": "记下目前的进展（带看情况、反馈、买家喜欢什么）。AI 会按优先级提出调整建议，并生成一条待审批任务——您批准之前不会有任何改动。",
@@ -3604,7 +3921,11 @@
     },
     "skillRunner": {
       "offBefore": "这项技能已关闭。请到",
-      "offAfter": "中开启后再运行。"
+      "offAfter": "中开启后再运行。",
+      "noInput": "这个技能无需输入即可运行。",
+      "output": "输出",
+      "copied": "已复制",
+      "copy": "复制"
     },
     "tasksPage": {
       "clickSlice": "点击扇区查看明细",
@@ -3612,7 +3933,24 @@
     },
     "coordinator": {
       "title": "交易协调台",
-      "sub": "交易的每个阶段占一列。卡片显示该阶段还有未完成事项的交易，逾期的排在最前。点击卡片可跳转到该交易。"
+      "sub": "交易的每个阶段占一列。卡片显示该阶段还有未完成事项的交易，逾期的排在最前。点击卡片可跳转到该交易。",
+      "show": "显示",
+      "noDeals": "目前没有进行中的交易。",
+      "noDealsHint": "可以从",
+      "transactions": "交易",
+      "inFlight": "进行中",
+      "overdueTasks": "逾期任务",
+      "closingThisWeek": "本周过户",
+      "avgPast": "平均逾期 {{days}} 天",
+      "avgToDeadline": "距截止平均 {{days}} 天",
+      "overdueCount_one": "{{count}} 项逾期",
+      "overdueCount_other": "{{count}} 项逾期",
+      "noWork": "这个阶段暂无事项。",
+      "next": "下一步：",
+      "openCount_one": "{{count}} 项待办",
+      "openCount_other": "{{count}} 项待办",
+      "allStage": "整笔交易 {{done}}/{{total}}",
+      "closingOn": "{{date}} 过户"
     },
     "branding": {
       "signatureHint": "使用 HTML 格式。留空则使用默认签名（姓名、品牌、邮箱、电话、照片、Logo——都取自您的个人资料）。",
@@ -3620,7 +3958,8 @@
     },
     "templatesSummary": {
       "intro": "CloseBoss 代您发出的每一条消息的文案。任何模板都可以编辑、关闭，或添加双语版本。",
-      "notSeeded": "模板库还没有初始化。初始化之后，这里会显示各状态数量和您最常用的模板。"
+      "notSeeded": "模板库还没有初始化。初始化之后，这里会显示各状态数量和您最常用的模板。",
+      "openLibrary": "打开完整模板库 →"
     },
     "callsPage": {
       "callBack": "回拨"
@@ -3631,10 +3970,29 @@
     },
     "deepReport": {
       "instantUpdate": "下方的负担能力会即时更新——不需要重新生成报告。",
-      "pageSub": "买家做决定需要的全部信息——估值、贷款负担能力、交易评级、投资回报、学校、周边社区和位置地图——只需一个地址和他们的用途打算。"
+      "pageSub": "买家做决定需要的全部信息——估值、贷款负担能力、交易评级、投资回报、学校、周边社区和位置地图——只需一个地址和他们的用途打算。",
+      "address": "房产地址",
+      "addressPlaceholder": "123 Main St, Sugar Land, TX",
+      "buyerUse": "买家打算怎么使用这套房？",
+      "usePrimary": "自住主宅",
+      "useSecondHome": "第二住宅",
+      "useInvestment": "投资 / 出租",
+      "loanHide": "收起贷款假设",
+      "loanShow": "贷款假设",
+      "downPct": "首付 %",
+      "ratePct": "利率 %",
+      "termYears": "年限（年）",
+      "quotaReached": "本月套餐内的报告次数已用完。",
+      "liveWeb": "基于实时网络数据，附来源引用。",
+      "generating": "生成中…",
+      "generate": "生成报告",
+      "upgradeForMore": "升级以获得更多 →",
+      "crunching": "正在测算估值、可比成交、负担能力、交易评级、学区和地图…",
+      "unlimitedReports": "报告不限次数"
     },
     "listingOfferDetail": {
-      "cancel": "取消"
+      "cancel": "取消",
+      "incomingOffer": "收到的报价"
     },
     "playbookRun": {
       "you": "您"
@@ -3643,10 +4001,8 @@
       "manageConnected": "管理已连接的账号"
     },
     "skillsManager": {
-      "validators": "校验规则 + 人工把关"
-    },
-    "promptsLeadMagnet": {
-      "english": "英语"
+      "validators": "校验规则 + 人工把关",
+      "runArrow": "运行 →"
     },
     "revenue": {
       "noClosed": "这段时间没有成交的交易。"
@@ -3655,7 +4011,10 @@
       "upgrade": "升级"
     },
     "supportDashboard": {
-      "replyToCustomer": "回复客户"
+      "replyToCustomer": "回复客户",
+      "customer": "客户",
+      "support": "客服",
+      "noSubject": "无主题"
     },
     "adminBilling": {
       "title": "订阅与账单",
@@ -3686,9 +4045,28 @@
       "planConsumerPremium": "普通用户 Premium",
       "planAgentStarter": "经纪人 Starter",
       "planAgentPro": "经纪人 Pro",
-      "planLoanBrokerPro": "贷款经纪 Pro"
+      "planLoanBrokerPro": "贷款经纪 Pro",
+      "unnamedUser": "未命名用户",
+      "cancelAtPeriodEnd": "到期后取消",
+      "keepRenewal": "继续续订"
     },
     "agentSignup": {
+      "startFreeAsAgent": "经纪人免费开始",
+      "completeAgentSetup": "完成经纪人设置",
+      "nameRequired": "请填写姓名。",
+      "emailRequired": "请填写邮箱。",
+      "phoneRequired": "开通经纪人账户需要填写电话。",
+      "phoneInvalid": "请填写有效的美国电话号码（10 位）。",
+      "passwordRequirements": "请设置一个满足下方全部要求的密码。",
+      "acceptTerms": "请先同意服务条款和隐私政策。",
+      "sessionExpired": "登录状态已过期，请重新登录。",
+      "confirmEmailThenLogIn": "请查收邮件确认您的账户，然后登录进入仪表板。",
+      "emailSendFailed": "确认邮件没能发出去，请过几分钟再试。",
+      "signupFailed": "经纪人注册失败。",
+      "emailTiedToAccount": "邮箱与您已登录的账户绑定",
+      "saving": "保存中…",
+      "saveAgentProfile": "保存经纪人资料",
+      "createAgentAccount": "创建经纪人账户",
       "intro": "开通经纪人后台和 CMA 工具的使用权限。",
       "signedInPrefilled": "您已登录——表单已根据您的账号自动填写。补全下面的字段即可激活经纪人资料（不需要另设密码）。",
       "signedInNoPassword": "您已登录——保存经纪人资料不需要密码。",
@@ -3742,7 +4120,8 @@
       "copyLink": "复制链接",
       "open": "打开",
       "cancel": "取消",
-      "done": "完成"
+      "done": "完成",
+      "sendPostcard": "寄出明信片"
     },
     "missedCall": {
       "mobileNumber": "您的个人手机号",
@@ -3780,7 +4159,13 @@
       "langSpanish": "西班牙语",
       "langChinese": "中文",
       "langKorean": "韩语",
-      "langVietnamese": "越南语"
+      "langVietnamese": "越南语",
+      "setYourBrandName": "设置您的品牌名称，让邮件和报告都带上您的标识。",
+      "configureHowYourAi": "设置您的 AI 助理如何与客户沟通。",
+      "chooseWhichMobilePush": "选择您希望接收哪些手机推送通知。",
+      "skip": "跳过",
+      "skipFinish": "跳过并完成",
+      "finishSetup": "完成设置"
     },
     "coaching": {
       "brand": "CloseBoss 教练",
@@ -3860,7 +4245,8 @@
       "signature": "签名",
       "swatch": "品牌色色块",
       "reset": "重置",
-      "accentHint": "用作您生成的社交卡片上的强调色。留空则使用 CloseBoss 默认蓝色。"
+      "accentHint": "用作您生成的社交卡片上的强调色。留空则使用 CloseBoss 默认蓝色。",
+      "loading": "正在加载 AI 助理风格…"
     },
     "sphereProfile": {
       "lastTouch": "最近联系",
@@ -3924,6 +4310,23 @@
       "namePlaceholder": "您的姓名",
       "forgotPassword": "忘记密码？",
       "notNow": "暂不",
+      "resetHeading": "重设您的密码",
+      "resetBody": "填写您在 CloseBoss 使用的邮箱，我们会给您发送重设密码的链接。",
+      "sendResetLink": "发送重设链接",
+      "backToLogin": "返回登录",
+      "emailResetLink": "把重设密码链接发到我邮箱",
+      "sending": "发送中…",
+      "loggingIn": "正在登录…",
+      "creatingAccount": "正在创建账户…",
+      "logIn": "登录",
+      "createFreeAccount": "创建免费账户",
+      "or": "或",
+      "resetEmailSent": "请查收邮件，里面有重设密码的链接。",
+      "resetEmailRequired": "请先填写您的邮箱地址。",
+      "resetSendFailed": "重设密码邮件没能发出去，请稍后再试。",
+      "nameRequired": "请填写姓名。",
+      "signInFailedOauth": "登录失败。",
+      "authFailed": "身份验证失败。",
       "continueGoogle": "使用 Google 继续",
       "continueApple": "使用 Apple 继续"
     },
@@ -3960,7 +4363,14 @@
       "placeholders": "占位符",
       "revert": "恢复为原始模板",
       "preview": "预览",
-      "previewNote": "预览使用的是一位模拟的老客户。等产品确定后，这里会加入更多典型客户类型。"
+      "previewNote": "预览使用的是一位模拟的老客户。等产品确定后，这里会加入更多典型客户类型。",
+      "searchByNameIdBody": "按名称、ID 或正文搜索…",
+      "loadingTemplates": "正在加载模板…",
+      "modeAuto": "自动",
+      "modeAutosend": "自动发送",
+      "modeReview": "先审阅",
+      "modeOff": "关闭",
+      "rendered": "已渲染"
     },
     "voiceDemo": {
       "onTheList": "已经把您加入名单。",
@@ -4013,7 +4423,8 @@
       "wireFraud": "电汇诈骗短信提醒",
       "wireFraudHint": "如果成交前 24–48 小时电汇信息核验待办仍未完成，会给您发短信提醒。这是一项防诈骗提醒——强烈建议不要关闭。",
       "growthDigest": "每周增长摘要",
-      "growthDigestHint": "周一早上发送邮件，列出本周由 AI 找出的三个最值得抓的机会。只有在您有 2 个以上机会时才发送，清闲的一周不会打扰您。"
+      "growthDigestHint": "周一早上发送邮件，列出本周由 AI 找出的三个最值得抓的机会。只有在您有 2 个以上机会时才发送，清闲的一周不会打扰您。",
+      "loadingPreferences": "正在加载偏好设置…"
     },
     "demoShell": {
       "workspace": "演示工作区",
@@ -4024,7 +4435,13 @@
       "sandboxNote": "您看到的是模拟数据——发消息、建交易、改设置的按钮都已停用。可以随便点。",
       "aboutDemo": "关于这个演示",
       "disabledTip": "沙盒模式下已停用。开始免费试用即可实际使用。",
-      "demo": "演示"
+      "demo": "演示",
+      "sandboxReadOnly": "沙盒 · 只读",
+      "navOverview": "总览",
+      "navInbox": "收件箱",
+      "navContacts": "联系人",
+      "navDrafts": "AI 草稿",
+      "navCalendar": "日历"
     },
     "videoEditor": {
       "title": "把视频做成品牌短片",
@@ -4036,7 +4453,9 @@
       "introHook": "开场白",
       "ctaOutro": "行动号召（片尾）",
       "postCaption": "帖子文案（选填）",
-      "captionPlaceholder": "留空则使用开场白。"
+      "captionPlaceholder": "留空则使用开场白。",
+      "createBrandedReel": "制作品牌短视频",
+      "uploadingRendering": "上传并渲染中…"
     },
     "pricingModal": {
       "title": "升级您的方案",
@@ -4046,7 +4465,8 @@
       "limitCma": "您的 CMA 额度已用完。升级到 Premium 即可不限量使用。",
       "mostPopular": "最受欢迎",
       "upgradeCta": "升级到 Premium，增长不设上限。",
-      "needMore": "还需要更多？"
+      "needMore": "还需要更多？",
+      "seeFullLadder": "查看完整方案阶梯 →"
     },
     "pipelineForecast": {
       "empty": "流程中没有在办或待处理的交易。新建交易后会立刻显示在这里。",
@@ -4068,7 +4488,8 @@
       "meansReview": "所有触发产生的消息都会变成草稿。您会收到通知，点一下批准就发出。",
       "meansAutosend": "每条消息在触发的那一刻就直接发出。您可以事后在历史记录里看到。",
       "sphere": "人脉圈：",
-      "recommended": "推荐"
+      "recommended": "推荐",
+      "loading": "正在加载评价策略…"
     },
     "sendRecommendations": {
       "title": "发送房源",
@@ -4079,7 +4500,9 @@
       "remove": "移除",
       "includeSignature": "附上我的邮件签名",
       "sent": "已发送——联系人稍后就会收到邮件。",
-      "cancel": "取消"
+      "cancel": "取消",
+      "brandingHint": "可在「账户 → 资料 → 品牌」中设置。",
+      "samplePreview": "嗨——根据您最近在看的房源，我觉得这三套值得再仔细看看…"
     },
     "sphereDrip": {
       "title": "人脉圈滴灌节奏",
@@ -4101,10 +4524,18 @@
       "yourName": "您的姓名",
       "yourEmail": "您的邮箱",
       "subject": "主题（选填）",
-      "describeIssue": "请在下方描述您的问题或需求。"
+      "describeIssue": "请在下方描述您的问题或需求。",
+      "refreshing": "刷新中…"
     },
     "cookieConsent": {
       "title": "closebossai.com 的 Cookie",
+      "body": "我们使用必要 Cookie 来保证网站正常运行。可选 Cookie 帮助我们衡量并改进产品。您随时可以通过页脚的“Cookie 设置”链接更改选择。",
+      "necessaryName": "严格必要",
+      "necessaryDesc": "用于保持登录状态、记住偏好设置、防止 CSRF 攻击。始终开启——网站运行所必需。",
+      "analyticsName": "分析",
+      "analyticsDesc": "汇总的产品使用与性能数据，帮助我们修复问题并确定改进优先级。不包含广告追踪。",
+      "marketingName": "营销",
+      "marketingDesc": "用于衡量营销效果，并跨访问记住您的偏好。除非您开启，否则不启用。",
       "privacy": "隐私政策",
       "categories": "Cookie 类别",
       "acceptAll": "全部接受",
@@ -4147,7 +4578,10 @@
       "dueToday": "今天到期",
       "dueTomorrow": "明天到期",
       "dueInDays": "{{n}} 天后到期",
-      "dueOn": "{{date}} 到期"
+      "dueOn": "{{date}} 到期",
+      "noPastClientsOr": "还没有可评分的老客户或人脉联系人。导入联系人并记录信号，才能开始挖掘机会。",
+      "sell": "卖房",
+      "buy": "买房"
     },
     "idxCapture": {
       "close": "关闭",
@@ -4167,7 +4601,8 @@
       "billing": "账单与订阅",
       "logOut": "退出登录",
       "photoAlt": "用户头像",
-      "account": "账号"
+      "account": "账号",
+      "yourAccount": "您的账户"
     },
     "assistantCall": {
       "voiceName": "语音名称",
@@ -4186,7 +4621,8 @@
       "copied": "已复制",
       "copyLink": "复制链接",
       "share": "分享",
-      "yourCode": "您的推荐码："
+      "yourCode": "您的推荐码：",
+      "loadingLink": "正在加载您的推荐链接…"
     },
     "vsl": {
       "videoAlt": "CloseBoss 演示视频",
@@ -4215,7 +4651,15 @@
       "bestMove": "最佳行动",
       "instructions": "给 Boss 助理的指令",
       "instructionsHint": "点击发送后立即处理——会拆成任务并分派给您的团队。",
-      "dismiss": "忽略"
+      "dismiss": "忽略",
+      "typeAnswer": "输入您的回答…",
+      "morningBriefingReadThe": "晨间简报已读——下一期明天送达。",
+      "yourFirstMorningBriefing": "第一份晨间简报会在您设定的时间送达。",
+      "sendToBossAssistant": "发送给 Boss 助理",
+      "sent": "已发送",
+      "needsInfo": "待补充信息",
+      "yourBossAssistantNeeds": "您的 Boss 助理还需要一条信息才能开始。",
+      "sendToBoss": "发送给 Boss"
     },
     "bulkCall": {
       "title": "批量拨打联系人",
@@ -4224,7 +4668,10 @@
       "noContacts": "还没有保存过带电话号码的联系人。",
       "noMatches": "没有匹配的联系人。",
       "tcpaWarning": "只能拨打已同意接受联络的联系人。自动外呼受 TCPA 及各州通话规定约束——每个号码是否获得拨打许可，您需要自行确保。",
-      "cancel": "取消"
+      "cancel": "取消",
+      "whatShouldLucyAsk": "希望 Lucy 问每位联系人什么？",
+      "whatSTheAnnouncement": "要宣布什么？",
+      "callContacts": "致电联系人"
     },
     "cmaEmail": {
       "title": "把这份 CMA 发给卖方",
@@ -4242,7 +4689,12 @@
       "close": "关闭",
       "noneForAnchor": "这个节点暂无可用的行动方案。",
       "cancel": "取消",
-      "leadBound": "这份方案与客源绑定——每一项任务都会关联到您选中的联系人。"
+      "leadBound": "这份方案与客源绑定——每一项任务都会关联到您选中的联系人。",
+      "loadingTasks": "正在加载任务…",
+      "viewTasksList": "查看任务列表 →",
+      "reviewTasks": "复核任务 →",
+      "addAContact": "添加联系人 →",
+      "selectAContact": "选择联系人…"
     },
     "growthCapture": {
       "thanks": "谢谢——我们会联系您安排下一步。",
@@ -4278,7 +4730,10 @@
       "approveAnyway": "只有在您确认这项说法属实时，才选择仍然批准。",
       "reschedule": "改期",
       "cancel": "取消",
-      "recentlyPosted": "最近发布"
+      "recentlyPosted": "最近发布",
+      "loadingQueue": "正在加载队列…",
+      "everythingHereIsApproved": "这里的内容都已审核通过，会按预定时间发布。",
+      "nothingQueuedNewPosts": "队列为空。生成每周计划后，新帖子会出现在这里。"
     },
     "commandPalette": {
       "searchPlaceholder": "搜索页面…（按 Esc 关闭）",
@@ -4293,7 +4748,9 @@
       "limits": "最大 5 MB，最多 10,000 行",
       "cancel": "取消",
       "started": "已开始导入",
-      "done": "完成"
+      "done": "完成",
+      "clickToSelectA": "点击选择 CSV 文件",
+      "uploadImport": "上传并导入"
     },
     "briefingSchedule": {
       "morning": "早间简报",
@@ -4301,7 +4758,9 @@
       "timezone": "时区",
       "tzPlaceholder": "例如：Asia/Shanghai",
       "tzHint": "IANA 时区名称——简报会按这个时区在上面设定的时间发出。",
-      "saved": "已保存。"
+      "saved": "已保存。",
+      "otherTimezone": "其他时区…",
+      "saveSchedule": "保存排期"
     },
     "generateCma": {
       "button": "生成 CMA",
@@ -4319,28 +4778,24 @@
       "phone": "电话（选填）",
       "submitted": "已提交！我们会尽快与您联系。"
     },
-    "exitIntent": {
-      "close": "关闭",
-      "closeDialog": "关闭对话框",
-      "headline": "想要 3 条免费买家客源吗？",
-      "sub": "留下邮箱，我们把详情发给您。",
-      "done": "已登记——请注意查收邮件。",
-      "email": "邮箱"
-    },
     "serviceAreas": {
       "state": "州",
       "county": "县",
       "allCities": "本县所有城市我都服务",
       "city": "城市",
       "add": "添加服务区域",
-      "hint": "先选州，再选县，然后填一个城市名，或勾选“所有城市”覆盖整个县。"
+      "hint": "先选州，再选县，然后填一个城市名，或勾选“所有城市”覆盖整个县。",
+      "selectState": "选择州…"
     },
     "runCard": {
       "stoppedAtBudget": "已达到本次运行的预算上限——上方是已完成的部分。",
       "missionAccomplished": "任务完成。",
       "fiveStars": "五星",
       "deliveredBy": "交付人",
-      "edit": "编辑"
+      "edit": "编辑",
+      "startingRun": "正在启动…",
+      "viewDeliverable": "查看成果 →",
+      "editBeforeSending": "发送前可以修改这条消息…"
     },
     "draftModal": {
       "buyerTitle": "AI 买家联络草稿",
@@ -4348,14 +4803,16 @@
       "close": "关闭",
       "smsDraft": "短信草稿",
       "emailSubject": "邮件主题",
-      "emailBody": "邮件正文"
+      "emailBody": "邮件正文",
+      "drafting": "正在起草您的消息…"
     },
     "commissionDefaults": {
       "intro": "作为新建交易的默认值。每笔交易都可以单独覆盖（转介交易、奖金分成、固定收费等情况）。重算时使用的是该交易上已有的数值——修改这里的默认值绝不会回头改动已成交的交易。",
       "buyerSide": "买方佣金",
       "listingSide": "卖方佣金",
       "brokerageSplit": "与经纪公司分成（您的比例）",
-      "referralFee": "默认转介费"
+      "referralFee": "默认转介费",
+      "loadingPreferences": "正在加载偏好设置…"
     },
     "compliance": {
       "title": "合规",
@@ -4405,7 +4862,11 @@
       "twinWarning": "视频使用您的数字分身——请先设置好自我介绍视频和克隆声音（数字分身），否则这一天不会发布。",
       "channels": "渠道",
       "topic": "主题",
-      "intro": "选好要发帖的日子。每一天可以选择发文字、图片或视频，并设定时间、渠道和主题——AI 会研究该主题，自动撰写并发布。文字 → Facebook、LinkedIn、Threads。图片会生成一张品牌卡片，还会同步到 Instagram 和 Pinterest。视频会拍摄您的数字分身讲解该主题 → Facebook、Instagram、LinkedIn、TikTok、YouTube。"
+      "intro": "选好要发帖的日子。每一天可以选择发文字、图片或视频，并设定时间、渠道和主题——AI 会研究该主题，自动撰写并发布。文字 → Facebook、LinkedIn、Threads。图片会生成一张品牌卡片，还会同步到 Instagram 和 Pinterest。视频会拍摄您的数字分身讲解该主题 → Facebook、Instagram、LinkedIn、TikTok、YouTube。",
+      "loading": "正在加载您的每周计划…",
+      "pickTopic": "选择一个主题…",
+      "text": "短信",
+      "video": "视频"
     },
     "voiceHero": {
       "headline": "听听我们的 AI 助理如何甄别一条房产客源。",
@@ -4447,14 +4908,18 @@
       "title": "话术生成器",
       "describe": "描述一下情况",
       "placeholder": "例如：我有一位买家叫 Mary，想约她第一次面谈，但她说利率太高、房价在跌，想再等等。",
-      "hint": "写清楚客户的名字、您希望这条消息达成什么，以及对方提到过的情况（顾虑、时间安排等）。"
+      "hint": "写清楚客户的名字、您希望这条消息达成什么，以及对方提到过的情况（顾虑、时间安排等）。",
+      "generateScript": "生成脚本",
+      "aiGenerated": "AI 生成",
+      "templateFallback": "使用模板兜底"
     },
     "switchModel": {
       "title": "切换销售模式",
       "sub": "切换后，仪表盘、AI 语气、话术、待办和成交流程都会随之调整。之后随时可以再改。",
       "recommended": "推荐",
       "current": "当前",
-      "cancel": "取消"
+      "cancel": "取消",
+      "sameAsCurrent": "与当前相同"
     },
     "cmaShare": {
       "title": "同类房源市场分析（CMA）",
@@ -4468,7 +4933,11 @@
       "adminRun": "管理员：为所有经纪人运行一次（定时任务会自动执行）",
       "empty": "还没有活动——初始化即可添加一个三步的沉睡客源短信序列。",
       "subBefore": "针对沉睡客源的 AI 个性化短信或邮件唤醒，附带定时跟进序列。设置好",
-      "subAfter": "后，每天也会通过定时任务自动运行。"
+      "subAfter": "后，每天也会通过定时任务自动运行。",
+      "createDefaultCampaign": "创建默认广告系列",
+      "runForMyBrokerage": "为我的经纪行席位运行",
+      "untitled": "未命名",
+      "refreshStatus": "刷新状态"
     },
     "aiSuggestedProperties": {
       "title": "AI 推荐房源",
@@ -4589,7 +5058,8 @@
       "title": "收藏的房源",
       "sub": "这位联系人主动收藏的房源。是对具体某套房子感兴趣的最强信号。",
       "empty": "还没有收藏。",
-      "saved": "收藏于 {{date}}"
+      "saved": "收藏于 {{date}}",
+      "addressUnavailable": "地址不可用"
     },
     "outreachStrip": {
       "title": "已排期与近期动作",
@@ -4615,7 +5085,8 @@
     "entitlementUpgrade": {
       "currentPlan": "当前方案：",
       "close": "关闭",
-      "comparePlans": "对比方案"
+      "comparePlans": "对比方案",
+      "upgradeNow": "立即升级"
     },
     "clientNewsletter": {
       "title": "您的客户通讯",
@@ -4650,7 +5121,15 @@
     "shareReport": {
       "share": "分享",
       "downloadPdf": "下载 PDF",
-      "contact": "联系"
+      "contact": "联系",
+      "emailEllipsis": "邮件…",
+      "textEllipsis": "短信…",
+      "emailALink": "用邮件发送链接",
+      "textALink": "用短信发送链接",
+      "enterManually": "手动输入…",
+      "loadingContacts": "正在加载联系人…",
+      "openMessagingApp": "打开短信应用",
+      "openEmailApp": "打开邮件应用"
     },
     "misc": {
       "close": "关闭",
@@ -4716,7 +5195,8 @@
       "welcomeBack": "欢迎回来",
       "goodMorning": "早上好",
       "goodAfternoon": "下午好",
-      "goodEvening": "晚上好"
+      "goodEvening": "晚上好",
+      "noDueDate": "无截止日期"
     },
     "mlsImport": {
       "title": "MLS CSV 导入",
@@ -4798,7 +5278,9 @@
       "isSeparate": "（线索、管道、工具）是另一套——",
       "noMatchExplainer": "我们靠您的登录邮箱去匹配线索上的联系人。请让您的经纪人把这个邮箱原样加到 CloseBoss 里您对应的线索上，然后刷新本页。如果您本来要找的是经纪人 CRM，请使用",
       "aiScore": "AI 评分 {{score}}",
-      "timelineSignal": "时间线信号：{{hint}}"
+      "timelineSignal": "时间线信号：{{hint}}",
+      "typeMessage": "输入消息…",
+      "askAssistant": "问问 AI 助理 →"
     },
     "demoPages": {
       "greeting": "早上好，演示经纪人",
@@ -4857,7 +5339,8 @@
       "videoEmail": "视频邮件",
       "addToDeal": "加入交易",
       "edit": "编辑",
-      "sandbox": "沙盒工作区"
+      "sandbox": "沙盒工作区",
+      "calendarSubtitle": "本周 · {{events}} 个日程 · {{deals}} 笔进行中的交易"
     },
     "adminCommon": {
       "admin": "管理后台",
@@ -4881,7 +5364,11 @@
       "source": "来源",
       "created": "创建时间",
       "property": "房源",
-      "never": "从未"
+      "never": "从未",
+      "searchAgentEmailIdName": "按经纪人邮箱 / ID / 姓名搜索…",
+      "running": "运行中…",
+      "searchAgentVisitorProperty": "搜索经纪人、访客或房产…",
+      "searchAgentSellerAddress": "按经纪人、卖家或地址搜索…"
     },
     "adminPages": {
       "portal": "管理后台",
@@ -5294,7 +5781,8 @@
       "leveragePoint": "{{partner}} 手上有一个撬动点，",
       "transamerica": "Transamerica 的内部工具（TransACT、他们的演示平台）理论上通过 {{partner}} 已有的险企关系更容易对接到，比任何一家普通 CRM 供应商都容易。如果 {{partner}} 的管理层在 Transamerica 技术合作团队里有高层联系人，就可以提出让 CloseBoss AI 成为面向 {{partner}} 旗下营销员的认证集成合作方。",
       "verbatimAnswer": "「可以——而且卡点在供应商协议，不在代码。我们有一个三阶段计划：试点第 2A 阶段接入 NIPR 和 iPipeline 的只读数据，第 2B 阶段做 WinFlex 演示提交，第 3 阶段做电子投保。如果 {{partner}} 把我们引荐给他们的 Transamerica 关系人，2B 和第 3 阶段会推进得快得多——这正是做试点合作方能实实在在拿到的东西之一。」",
-      "confidentialFor": "机密文件——专为 {{partner}} 管理层准备。"
+      "confidentialFor": "机密文件——专为 {{partner}} 管理层准备。",
+      "fnaChain": "「需求分析 → 精美的保险公司演示 → 面对面讲解」整条链路，一气呵成。"
     },
     "competitorComparison": {
       "brief": "竞品对比——已针对打印或另存为 PDF 优化。",
@@ -5385,7 +5873,8 @@
       "agencyBlocA2": "增长的打法设计的。我们可以和它并行，负责培养这一侧；如果你们想要一套整合的技术栈，也可以整个替换掉它。",
       "spreadsheetsA": "因为用 WhatsApp 做获客营销并不符合 TCPA，依赖它的营销员实际上背着真实的法律责任风险。我们给你们表格的速度，配上企业级 CRM 的合规姿态。",
       "carrierPortalA": "不是，而且我们不建议任何机构这么做。险企门户在它们擅长的事情上做得非常好。我们负责的是投保之前的那一层——找到潜在客户、做出 FNA、约到面谈。",
-      "confidentialFor": "机密文件——专为"
+      "confidentialFor": "机密文件——专为",
+      "positioning": "保险公司门户负责保单管理，AgencyBloc 负责后台事务，Salesforce 只要给它一年时间和六位数预算，几乎能配置成任何样子，而表格只能应付今天。但没有一个是围绕金融服务直销的实际流程打造的：获客 → 5 分钟内跟进 → 60 秒生成需求分析 → 面对面洽谈 → 成交 → 招募。这个循环正是 {{partner}} 增长的引擎，也正是我们围绕着搭建的循环。"
     },
     "articles": {
       "backHome": "返回首页"
@@ -6054,7 +6543,9 @@
       "filledFrom": "✓ 已从 {{filename}} 填入",
       "confidenceNote": "置信度 {{pct}}%。请核对下面的字段，把提取错的地方改过来。",
       "nothingStored": "我们用 Claude 读取这份 PDF 并预填表单。不会保存任何内容——字段一返回，PDF 就丢弃了。",
-      "tunedFor": "提取针对 {{form}} 表格做过调优；其他州的表格同样能用，但可能需要快速核对一遍。"
+      "tunedFor": "提取针对 {{form}} 表格做过调优；其他州的表格同样能用，但可能需要快速核对一遍。",
+      "dropASignedListing": "把已签署的委托挂牌协议拖到这里，或点击选择",
+      "dropARatifiedPurchase": "把双方签妥的购房合同拖到这里，或点击选择"
     },
     "crmProblems": {
       "lionPos": "价格亲民的个人经纪人 CRM（$25–$83／月）。",
@@ -6252,7 +6743,10 @@
       "forDetails": "。",
       "submitNote": "提交即表示您同意由您的经纪人就房屋价值和本地市场情况与您联系。只有勾选了上面的方框才会收到短信。我们不发垃圾信息，您随时可以退订。",
       "builtFor": "为现代房源经纪人打造",
-      "builtForBody": "CloseBoss 给您一套可分享的房屋估价漏斗、自动跟进，以及一个轻量 CRM，让您把每一位房主从第一次点击一路跟到签下委托协议。"
+      "builtForBody": "CloseBoss 给您一套可分享的房屋估价漏斗、自动跟进，以及一个轻量 CRM，让您把每一位房主从第一次点击一路跟到签下委托协议。",
+      "homeValueFunnelsCrm": "房屋估值漏斗 + CRM",
+      "getMortgageRate": "获取房贷利率",
+      "sendMeMyFull": "把完整报告发给我"
     },
     "aiCmaAnalyzer": {
       "demoAria": "演示模式提示",
@@ -6404,7 +6898,11 @@
       "aiSummary": "AI CMA 摘要",
       "downloadPdf": "下载 CMA PDF 报告",
       "openSaved": "打开已保存的报告",
-      "tryTomorrow": "明天再试"
+      "tryTomorrow": "明天再试",
+      "loadingLeads": "正在加载客户线索…",
+      "noAddress": "无地址",
+      "generateCma": "生成 CMA",
+      "saveToReports": "保存到报告"
     },
     "capRateMistakes": {
       "intro": "资本化率（Cap Rate）算起来简单，但很容易被误用。假设上的小偏差，能让一处房产看起来远比实际好——或者远比实际差。搞清楚投资人在资本化率上最常犯的错误，您就能避开代价高昂的失误，像专业人士那样使用这个指标。",
@@ -6973,7 +7471,13 @@
       "aNeighbor": "邻居",
       "other": "其他",
       "marketingOptIn": "请给我发送类似房源和后续信息。您可以随时退订。",
-      "poweredBy": "由 CloseBoss 提供支持"
+      "poweredBy": "由 CloseBoss 提供支持",
+      "seePropertyDetails": "查看房产详情 →",
+      "searchSimilar": "搜索附近同类房源 →",
+      "youAre": "您是…",
+      "signIn": "登录",
+      "signingIn": "登录中…",
+      "feelFreeToWalk": "请随意参观这套房子。"
     },
     "switchFrom": {
       "step1": "从 <SOURCE> 把联系人导出为 CSV。多数 CRM 把这个功能放在「设置 → 数据 → 导出」下。",
@@ -7158,7 +7662,8 @@
       "kvS6": "在 CloseBoss 的「模板 → 序列」里重建您最常用的滴灌序列。CloseBoss 自带的默认序列（买家引导、FSBO 拓客、过期房源跟进）开箱即用，往往比 kvCORE 的滴灌表现更好。",
       "kvS7": "可选：启用管家式迁移（链接见下方），由我们替您完成导入和序列重建。",
       "kvQ0": "如果我的 kvCORE 访问权限掌握在经纪公司手里怎么办？",
-      "kvA0": "多数经纪公司在收到申请后会允许经纪人层级的数据导出。如果对方拒绝，经纪人的客户名单在法律上仍然属于经纪人本人——请向 broker／managing broker 反映。作为退路，您可以在我们搭建新 CRM 的同时，从自己的邮箱和手机导出记录里把联系人名单重建起来。"
+      "kvA0": "多数经纪公司在收到申请后会允许经纪人层级的数据导出。如果对方拒绝，经纪人的客户名单在法律上仍然属于经纪人本人——请向 broker／managing broker 反映。作为退路，您可以在我们搭建新 CRM 的同时，从自己的邮箱和手机导出记录里把联系人名单重建起来。",
+      "wellMigrate": "我们帮您迁移 →"
     },
     "switchFromPages": {
       "crmMigration": "CRM 迁移",
@@ -7272,7 +7777,9 @@
       "interestedIn": "我感兴趣的是：",
       "moreInfo": "这处房产的更多信息",
       "similarProps": "市面上的同类房源",
-      "valuation": "为我自己的房子做一次估价"
+      "valuation": "为我自己的房子做一次估价",
+      "loadingProperty": "正在加载房产信息…",
+      "submit": "提交"
     },
     "callYourSphere": {
       "everyCrmEnds": "市面上每一家 CRM 都停在同一个地方：一条短信序列，加一条邮件滴灌。它们会用一条生日祝福短信和一份月度简报来「维护」您的人脉圈。但成交属于那个抢先",
@@ -7317,7 +7824,11 @@
       "wantHelp": "对其中某处房子想了解更多？",
       "connectBody": "联系一位本地经纪人，安排看房、拿一份私人房源清单，或者快速问几个问题。",
       "connectAgent": "联系本地经纪人",
-      "askAnAgent": "问问经纪人"
+      "askAnAgent": "问问经纪人",
+      "youVeHitToday": "今天的免费搜索次数已用完。",
+      "youVeUsedToday": "今天的免费搜索已使用。",
+      "searchesTheLiveWeb": "实时联网搜索——最多需要一分钟出结果。",
+      "searchHomes": "搜索房源"
     },
     "linkAnalyzer": {
       "h1": "AI Zillow／Redfin 链接分析器",
@@ -7382,6 +7893,22 @@
       "freeToTryBody": "每天一次免费 AI 搜索，没有附加条件。注册免费账户可享每天 5 次——付费套餐不限次数。绝不发垃圾信息。",
       "equalHousing": "住房机会均等（Equal Housing Opportunity）。"
     },
+    "resetPasswordPage": {
+      "verifying": "正在验证重设链接…",
+      "linkExpired": "链接已失效或无效",
+      "linkExpiredBody": "请打开重设密码邮件里最新的那条链接，或在登录页重新申请一条。",
+      "backToLogin": "返回登录",
+      "updated": "密码已更新，正在跳转…",
+      "heading": "设置新密码",
+      "sub": "请选择一个您在这里没用过的密码。",
+      "newPassword": "新密码",
+      "confirmPassword": "确认密码",
+      "tooShort": "密码至少需要 6 位。",
+      "mismatch": "两次输入的密码不一致。",
+      "updateFailed": "密码更新失败。",
+      "saving": "保存中…",
+      "submit": "更新密码"
+    },
     "loginPage": {
       "cancel": "取消",
       "trialNotice": "请先登录。接下来我们会打开 Stripe 安全结账页，开通您的 Pro 免费试用（需绑定银行卡；试用期结束前不会扣款）。",
@@ -7392,6 +7919,12 @@
       "orSignIn": "或直接登录",
       "password": "密码",
       "forgotPassword": "忘记密码？",
+      "loggingIn": "正在登录…",
+      "logIn": "登录",
+      "or": "或",
+      "emailPasswordRequired": "请填写邮箱和密码。",
+      "signInFailedGeneric": "登录失败。",
+      "somethingWentWrong": "出了点问题，请重试。",
       "continueGoogle": "使用 Google 继续",
       "continueApple": "使用 Apple 继续",
       "areYouAgent": "您是房产经纪人吗？",
@@ -7410,7 +7943,8 @@
       "whatsSandboxedBody": "任何会真正发出消息的动作",
       "readyForReal": "准备好真正用起来了吗？",
       "startTrial": "开始免费试用",
-      "migrateFrom": "从别的 CRM 迁移过来"
+      "migrateFrom": "从别的 CRM 迁移过来",
+      "openTour": "开始导览 →"
     },
     "propertyReport": {
       "h1": "房产报告",
@@ -7520,7 +8054,9 @@
       "nameOptional": "姓名（选填）",
       "phoneOptional": "电话（选填）",
       "thankYou": "谢谢！您的房屋估价报告请求已发送。经纪人会带着一份详细的 CMA 与您联系。",
-      "poweredBy": "由 CloseBoss 提供支持"
+      "poweredBy": "由 CloseBoss 提供支持",
+      "getMyEstimate": "获取我的估值",
+      "unlockFullReport": "解锁完整报告"
     },
     "analyzeRental": {
       "intro": "一份扎实的出租房产分析，能帮您避开糟糕的项目，也能让您在遇到好项目时快速出手。这份指南会教您怎样用 CloseBoss 里的计算器评估收入、开支、融资和回报。",
@@ -7542,7 +8078,8 @@
       "questions": "有疑问？",
       "onboarding": "引导设置",
       "h1": "10 分钟内拿到您的第一批 AI 筛选线索。",
-      "sub": "告诉我们您所在的市场，先预览一批为您所在区域筛选的 AI 线索，然后解锁完整的 CRM 和自动化功能。预览无需信用卡。"
+      "sub": "告诉我们您所在的市场，先预览一批为您所在区域筛选的 AI 线索，然后解锁完整的 CRM 和自动化功能。预览无需信用卡。",
+      "loadingPreview": "正在加载互动预览…"
     },
     "hoaTracker": {
       "h1": "HOA 费用追踪器",
@@ -7588,6 +8125,23 @@
     "signupPage": {
       "prefilled": "您已登录——这张表单已按您的账户信息填好。下面有需要改的地方改完保存即可（不需要重新设置密码）。",
       "password": "密码",
+      "nameRequired": "请填写姓名。",
+      "emailRequired": "请填写邮箱。",
+      "phoneInvalid": "如填写电话，请填写有效的美国号码（10 位）。",
+      "smsConsentRequired": "如需接收短信，请勾选同意接收短信的选项；否则请留空电话栏。",
+      "sessionExpired": "登录状态已过期，请重新登录。",
+      "couldNotSaveProfile": "资料保存失败。",
+      "passwordRequirements": "请设置一个满足下方全部要求的密码。",
+      "acceptTerms": "请先同意服务条款和隐私政策。",
+      "confirmEmailThenLogIn": "请查收邮件确认您的账户，然后回来登录。",
+      "emailSendFailed": "确认邮件没能发出去，请过几分钟再试。",
+      "signupFailed": "注册失败。",
+      "signInFailed": "登录失败。",
+      "emailTiedToAccount": "邮箱与您已登录的账户绑定",
+      "saving": "保存中…",
+      "creatingAccount": "正在创建账户…",
+      "saveProfile": "保存资料",
+      "signUp": "注册",
       "iAgree": "我同意",
       "continueGoogle": "使用 Google 继续",
       "continueApple": "使用 Apple 继续",
@@ -7686,7 +8240,8 @@
       "fullName": "全名",
       "role": "身份",
       "phoneNumber": "手机号",
-      "cancelNote": "如果您想中止，或者改用另一个账户，点击「取消」即可退出登录并返回首页。"
+      "cancelNote": "如果您想中止，或者改用另一个账户，点击「取消」即可退出登录并返回首页。",
+      "continue": "继续"
     },
     "helpGuides": {
       "helpCenter": "帮助中心",
@@ -7801,6 +8356,11 @@
       "deliveredBy": "由以下机构送达：",
       "resetPassword": "重设您的密码",
       "resetBody": "填写您在 CloseBoss 使用的邮箱，我们会给您发送重设密码的链接。",
+      "sendResetLink": "发送重设链接",
+      "sendingResetLink": "发送中…",
+      "resetEmailSent": "请查收邮件，里面有重设密码的链接。",
+      "resetEmailRequired": "请先填写您的邮箱地址。",
+      "resetSendFailed": "重设密码邮件没能发出去，请稍后再试。",
       "backToLogin": "返回登录",
       "confirmed": "已确认订阅",
       "linkExpired": "此链接已失效",
@@ -7907,6 +8467,8 @@
       "offerExtended": "报价有效期已延长",
       "newExpiration": "新的到期时间：",
       "inviteUnusable": "此邀请无法使用",
+      "goToMyDashboard": "前往我的仪表板",
+      "logIn": "登录",
       "backToDashboard": "返回工作台",
       "noAccess": "您没有访问权限",
       "noAccessBody": "此页面仅限授权员工或特定角色访问。如果您认为这是误判，请联系管理员，或用正确的账户登录。",
@@ -7961,7 +8523,6 @@
       "dInStage": "天处于此阶段",
       "currentPlan": "当前套餐：",
       "unread": "未读",
-      "formerlyLeadSmart": "CloseBoss（原 LeadSmart AI）",
       "daysOnMarketLower": "天在售",
       "seeOur": "详见我们的",
       "activeCampaigns": "进行中的活动：",
@@ -7992,6 +8553,334 @@
       "scoreOutOf": "评分 {{score}}/100",
       "warmWishesTo": "顺祝安好，{{name}}",
       "friend": "朋友"
+    },
+    "founderDashboard": {
+      "loadingMetrics": "正在加载指标…",
+      "checkoutToPaid": "结账 → 已付款"
+    },
+    "listingLookup": {
+      "detected": "已识别 {{label}} 链接——正在查找房源信息…"
+    },
+    "assistantCallSettings": {
+      "loadingCallSettings": "正在加载通话设置…",
+      "loadingVoiceSettings": "正在加载语音设置…",
+      "knowledgePlaceholder": "服务区域、办公地址、您的专长、在售房源、常见问题…",
+      "knowledgeHint": "接待员在接听来电时可以据实陈述的内容。公司名称、电话和营业时间在「设置 → 语音」中维护。",
+      "whatThisAssistantMay": "这位助理在通话中可以据实陈述的内容。留空则沿用接待员的知识库。"
+    },
+    "coachingPrograms": {
+      "learnMore": "了解更多 →",
+      "youOptedOutEarlier": "您此前已退出。随时可以在设置中重新加入。",
+      "autoEnrollmentRunsOn": "下次登录时会自动加入。也可以现在就加入并开始跟踪。"
+    },
+    "aiComposer": {
+      "writeEmail": "写一封邮件…",
+      "writeText": "写一条短信…"
+    },
+    "contactPicker": {
+      "searching": "搜索中…",
+      "pick": "选择 →",
+      "noContactsMatch": "没有匹配的联系人。",
+      "typeToSearchOr": "输入以搜索——最近联系过的人也会显示在这里。"
+    },
+    "suggestedProperties": {
+      "searching": "正在检索实时房源并按客户偏好打分…"
+    },
+    "agentVoiceSettings": {
+      "loading": "正在加载电话语音设置…"
+    },
+    "bossOnboarding": {
+      "typing": "Boss 正在输入…",
+      "askAboutSetup": "向 Boss 咨询设置问题…"
+    },
+    "voiceReceptionistSettings": {
+      "loading": "正在加载接待员设置…",
+      "upgradePlan": "升级您的套餐 →"
+    },
+    "listingAdPanel": {
+      "connectSocials": "连接 Facebook / Instagram / LinkedIn →"
+    },
+    "reelTest": {
+      "rendering": "正在云端渲染… {{pct}}%",
+      "publishing": "发布中…",
+      "renderAnother": "再渲染一条",
+      "renderReel": "渲染短视频"
+    },
+    "aiModal": {
+      "searching": "搜索中…",
+      "pick": "选择 →",
+      "drafting": "AI 起草中…"
+    },
+    "modelTools": {
+      "openTool": "打开工具 →"
+    },
+    "agentSignupModal": {
+      "loadingForm": "正在加载表单…"
+    },
+    "crmBlog": {
+      "liondeskLink": "LionDesk 即将停运：独立经纪人接下来该怎么办 →",
+      "compareLink": "CloseBoss 与其他产品对比——完整功能比较 →",
+      "helpCenterLink": "帮助中心——CloseBoss 的全部使用指南 →"
+    },
+    "dataPage": {
+      "browseMarkets": "浏览各地市场 →"
+    },
+    "demoPage": {
+      "openCalendar": "打开日历 →"
+    },
+    "financialServicesDashboard": {
+      "openRecruitBoard": "打开完整招募看板 →"
+    },
+    "fnaGenerator": {
+      "intro": "填入客户信息 → 一分钟内生成带您品牌的需求分析报告。",
+      "analyzing": "正在分析客户资料…",
+      "generateFna": "生成需求分析",
+      "generatingFna": "正在生成需求分析…",
+      "preparedByYourProducer": "由您的业务员制作"
+    },
+    "recruitPipeline": {
+      "search": "搜索招募对象…"
+    },
+    "newsletter": {
+      "fullData": "完整数据 →",
+      "readSource": "阅读原文 →",
+      "subscribeOrBrowse": "订阅或浏览往期 →",
+      "backToNewsletter": "返回订阅页 →"
+    },
+    "offerExtend": {
+      "openInCloseBoss": "在 CloseBoss 中打开报价 →",
+      "goToDashboard": "前往您的仪表板 →"
+    },
+    "kiosk": {
+      "formResets": "表单即将重置…"
+    },
+    "voiceAiHero": {
+      "bookDemo": "预约一对一演示 →",
+      "haveItCallYou": "或者让它打给您 →",
+      "hotLeadPush": "高意向客户 → 短信 + 推送到您手机"
+    },
+    "jobs": {
+      "runAllJobs": "运行全部任务",
+      "runningAll": "全部运行中…",
+      "result": "结果"
+    },
+    "platformOverview": {
+      "failedToLoadDashboard": "面板加载失败"
+    },
+    "aiZillowRedfinLinkAnalyzer": {
+      "analyzeListing": "分析房源",
+      "refreshLatestData": "刷新最新数据"
+    },
+    "activity": {
+      "priceTbd": "价格待定"
+    },
+    "explore": {
+      "saveHome": "收藏房源",
+      "addNotesWithYour": "和您的经纪人一起记笔记"
+    },
+    "transactionAssistant": {
+      "checkingYourTransactions": "正在检查您的交易…",
+      "noOpenDeadlinesIn": "未来 14 天没有待办截止日期。",
+      "yourAiTransactionAssistant": "您的 AI 交易助理已就绪——新交易会自动在这里跟踪。"
+    },
+    "bossAssistant": {
+      "approveSend": "批准并发送",
+      "iNeedOneMore": "我还需要一条信息才能开始。",
+      "image": "图片",
+      "unnamedLead": "未命名线索",
+      "noActivityYet": "暂无动态"
+    },
+    "error": {
+      "somethingWentWrongLoading": "页面加载出错。请重试，或退出后重新登录。",
+      "aClientErrorOccurred": "浏览器端出错了。请重试，或用无痕窗口打开本站。"
+    },
+    "adCampaignWizard": {
+      "yourMetaLeadAd": "您的 Meta 引流广告已创建，当前为暂停状态。请在 Meta 广告管理工具中复核，准备好后再取消暂停。",
+      "connectedPage": "已连接的主页",
+      "usingClosebossSBundled": " 正在使用 CloseBoss 自带的链接。",
+      "creatingCampaign": "正在创建广告系列…",
+      "launchCampaign": "启动广告系列",
+      "createPausedCampaign": "创建为暂停状态"
+    },
+    "connect": {
+      "pinterestAccount": "Pinterest 账号",
+      "tiktokAccount": "TikTok 账号",
+      "youtubeChannel": "YouTube 频道"
+    },
+    "openHousesList": {
+      "upcoming": "即将到来",
+      "noOpenHousesMatch": "没有符合该筛选条件的开放日。",
+      "liveNow": "正在进行",
+      "completed": "已结束",
+      "cancelled": "已取消"
+    },
+    "playbookRuns": {
+      "task": "任务"
+    },
+    "mlsCsvImport": {
+      "uploadMlsCsv": "上传 MLS CSV"
+    },
+    "listingOffersCompare": {
+      "offer": "报价",
+      "recordOffer": "记录报价"
+    },
+    "financialServicesSidebar": {
+      "producer": "业务员"
+    },
+    "global-error": {
+      "pleaseRefreshOrTry": "请刷新页面或过几分钟再试。若持续出现，请联系客服。"
+    },
+    "pipeline": {
+      "addBorrower": "添加借款人",
+      "noEmail": "无邮箱",
+      "noPhone": "无电话"
+    },
+    "page": {
+      "client": {
+        "currentPlan": "当前套餐"
+      }
+    },
+    "confirm": {
+      "backToTheNewsletter": "返回订阅页 →",
+      "browsePastIssues": "浏览往期 →",
+      "thanksForConfirmingYour": "感谢您确认订阅 CloseBoss 每周房产简报。第一期已在路上。"
+    },
+    "property": {
+      "saveToDatabase": "保存到数据库"
+    },
+    "rentalPropertyAnalyzer": {
+      "analyzeProperty": "分析房产"
+    },
+    "localSeoLead": {
+      "getMyFreeReport": "领取我的免费报告"
+    },
+    "paywall": {
+      "youVeReachedYour": "已达免费额度上限，升级后可继续使用。",
+      "startFreeTrial": "开始免费试用"
+    },
+    "progressiveLeadCapture": {
+      "savePhone": "保存电话"
+    },
+    "run": {
+      "saveSend": "保存并发送"
+    },
+    "cmaShareView": {
+      "yourAgent": "您的经纪人"
+    },
+    "outboundSmsComposer": {
+      "sendSms": "发送短信"
+    },
+    "recentAddressList": {
+      "showing": "带看"
+    },
+    "addSignalButton": {
+      "addSignal": "添加信号"
+    },
+    "aiChat": {
+      "generateDraft": "生成草稿",
+      "autoPilotSending": "自动驾驶发送中…",
+      "autoPilotWillSend": "自动驾驶会发送这份草稿。"
+    },
+    "brandingSettings": {
+      "loadingPreview": "正在加载预览…"
+    },
+    "buyerOutreachDraft": {
+      "contact": "联系人",
+      "copySms": "复制短信",
+      "copyEmail": "复制邮件"
+    },
+    "homeValueSmartLinkCopyShare": {
+      "fullUrlCopied": "完整链接已复制",
+      "linkCopiedUseShare": "链接已复制——在手机上用「分享」可获得更多选项"
+    },
+    "leadCalendarBooking": {
+      "schedulingLink": "预约链接"
+    },
+    "missedCallActivityLog": {
+      "noCallActivityYet": "还没有通话记录。接到第一通电话后就会显示在这里。",
+      "noCallsMatchThis": "没有符合该筛选条件的通话。",
+      "unknown": "未知"
+    },
+    "playbooks": {
+      "applyPlaybook": "套用剧本",
+      "reviewTasks": "复核任务",
+      "pickACuratedChecklist": "挑一份整理好的清单。任务加入前您可以先复核。",
+      "untickAnythingYouDon": "不想加入的可以取消勾选。每项任务的截止日期都按您设定的基准日期推算。"
+    },
+    "runSchedulerButton": {
+      "runNow": "立即运行"
+    },
+    "sendRecommendationsButton": {
+      "previewSignature": "预览签名档"
+    },
+    "aiActionGateBanner": {
+      "chooseAPlan": "选择套餐",
+      "viewPlansUpgrade": "查看套餐并升级"
+    },
+    "marketReportShareView": {
+      "iCanWalkYou": "我可以带您一步步走一遍——不用有压力。"
+    },
+    "sendMarketReportButton": {
+      "buildingReport": "正在生成报告…",
+      "sendMarketReport": "发送市场报告"
+    },
+    "voiceAiComparisonTable": {
+      "partial": "部分"
+    },
+    "voiceAiDemoRequest": {
+      "weLlHaveThe": "AI 稍后就会给您来电。接起来听听它是怎么甄别房产客源的。",
+      "ourTeamWillReach": "我们会在一个工作日内联系您，安排一对一演示。",
+      "haveTheAiCall": "让 AI 打给我",
+      "requestAPrivateDemo": "预约一对一演示"
+    },
+    "subscribe": {
+      "subscribe": "订阅",
+      "checkYourEmailTo": "请查收邮件确认订阅。",
+      "weLlSendYour": "我们会按您选择的地区，每周发送利率与房产简报。在此期间，可以先浏览下方的最新几期。"
+    },
+    "serviceAreasPicker": {
+      "pickAStateFirst": "请先选择州",
+      "selectCounty": "选择县…"
+    },
+    "bulkSendPostcard": {
+      "pickADesign": "挑选一个版式"
+    },
+    "index": {
+      "wishingYouABright": "祝您冬日温暖明亮",
+      "hopeAutumnTreatsYou": "愿这个秋天待您不薄",
+      "aLittleSunshineFor": "送您今天一点阳光",
+      "yourAgent": "您的经纪人"
+    },
+    "aiEmail": {
+      "composeAnAiAssisted": "用 AI 辅助写一封邮件",
+      "regenerateDraft": "重新生成草稿",
+      "generateDraftWithAi": "用 AI 生成草稿",
+      "sendEmail": "发送邮件"
+    },
+    "aiSms": {
+      "launchAnAiSms": "发起一段 AI 短信对话",
+      "generateFirstDraft": "生成初稿",
+      "generateReply": "生成回复"
+    },
+    "modelToolsGrid": {
+      "copyPrompt": "复制提示词"
+    },
+    "customerSupportChat": {
+      "thisConversationRefreshesAutomatically": "本对话会自动刷新。",
+      "startAConversationAnd": "发起对话，我们的客服团队会在这里回复。",
+      "startChat": "开始对话"
+    },
+    "teamDashboard": {
+      "subscriptionNotFound": "未找到订阅",
+      "upgradeToStartA": "升级后可创建团队",
+      "weCouldnTFind": "没有找到您账户下的有效订阅。如果这不对，请联系客服。",
+      "manageBilling": "管理账单",
+      "viewPlans": "查看套餐",
+      "createTeam": "创建团队",
+      "generateInviteLink": "生成邀请链接"
+    },
+    "postcardScene": {
+      "yourAgent": "您的经纪人"
     }
   }
 }

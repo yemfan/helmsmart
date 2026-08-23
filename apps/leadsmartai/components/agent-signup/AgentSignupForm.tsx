@@ -12,7 +12,6 @@ import {
 import { safeInternalRedirect } from "@/lib/loginUrl";
 import { messageFromUnknownError } from "@/lib/supabaseThrow";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
-import { START_FREE_AS_AGENT_LABEL } from "@/lib/auth/startFreeAgentMarketing";
 import { formatUsPhoneInput, formatUsPhoneStored, isValidUsPhone } from "@/lib/usPhone";
 import { ADMIN_SUPPORT_HOME_PATH, isAdminOrSupportRole } from "@/lib/rolePortalPaths";
 import {
@@ -22,8 +21,9 @@ import {
 import { consumeStashedReferralCode } from "@/components/referrals/ReferralCodeCapture";
 import { evaluatePassword, PasswordStrength } from "@/components/auth/PasswordStrength";
 
-/** Matches `leadsmart_users.role` for this onboarding form. */
-type AgentSignupAccountType = "agent" | "loan_broker";
+/** Matches `leadsmart_users.role` for this onboarding form.
+ *  CloseBoss is real-estate-agent only, so this is a single value. */
+type AgentSignupAccountType = "agent";
 
 type AgentSignupFormProps = {
   /** Full page vs compact card (dialog). */
@@ -63,7 +63,7 @@ export function AgentSignupForm({
   const [brokerage, setBrokerage] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [accountType, setAccountType] = useState<AgentSignupAccountType>("agent");
+  const accountType: AgentSignupAccountType = "agent";
   const [acceptTerms, setAcceptTerms] = useState(false);
 
   useEffect(() => {
@@ -113,28 +113,22 @@ export function AgentSignupForm({
     }
   }, [hasSession, prefillLoading, meRole, router]);
 
-  useEffect(() => {
-    if (meRole === "agent" || meRole === "loan_broker") {
-      setAccountType(meRole);
-    }
-  }, [meRole]);
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    if (!fullName.trim()) return setError("Name is required.");
-    if (!email.trim()) return setError("Email is required.");
-    if (!phone.trim()) return setError("Phone is required for agent onboarding.");
+    if (!fullName.trim()) return setError(t("pages.agentSignup.nameRequired"));
+    if (!email.trim()) return setError(t("pages.agentSignup.emailRequired"));
+    if (!phone.trim()) return setError(t("pages.agentSignup.phoneRequired"));
     if (!isValidUsPhone(phone)) {
-      return setError("Phone must be a valid US number (10 digits).");
+      return setError(t("pages.agentSignup.phoneInvalid"));
     }
     if (!hasSession && !evaluatePassword(password).allMet) {
-      return setError("Please choose a password that meets all the requirements below.");
+      return setError(t("pages.agentSignup.passwordRequirements"));
     }
     if (!hasSession && !acceptTerms) {
-      return setError("Please accept the Terms of Service and Privacy Policy to continue.");
+      return setError(t("pages.agentSignup.acceptTerms"));
     }
 
     setLoading(true);
@@ -153,7 +147,7 @@ export function AgentSignupForm({
           error: userErr,
         } = await supabase.auth.getUser();
         if (userErr) throw userErr;
-        if (!user) throw new Error("Session expired. Please log in again.");
+        if (!user) throw new Error(t("pages.agentSignup.sessionExpired"));
 
         const { error: upProfErr } = await supabase.from("user_profiles").upsert(
           {
@@ -213,7 +207,7 @@ export function AgentSignupForm({
 
       const userId = data?.user?.id;
       if (!userId) {
-        setSuccess("Check your email to confirm your account, then log in to access the dashboard.");
+        setSuccess(t("pages.agentSignup.confirmEmailThenLogIn"));
         return;
       }
 
@@ -289,17 +283,15 @@ export function AgentSignupForm({
       router.push(after ?? "/dashboard");
       onClose?.();
     } catch (e: unknown) {
-      const msg = messageFromUnknownError(e, "Agent signup failed.");
-      if (/rate limit|too many requests/i.test(msg)) {
-        setError(
-          "Too many emails sent. Wait before retrying, or in Supabase Dashboard → Authentication → Providers → Email: disable “Confirm email” while testing, or connect custom SMTP."
+      const msg = messageFromUnknownError(e, t("pages.agentSignup.signupFailed"));
+      if (/rate limit|too many requests/i.test(msg) || /confirmation email|confirm email/i.test(msg)) {
+        console.error(
+          `[agent-signup] ${msg} In Supabase Dashboard → Authentication → Providers → Email: ` +
+            "disable “Confirm email” while testing, or connect custom SMTP and verify the sender domain."
         );
-      } else if (/confirmation email|confirm email/i.test(msg)) {
-        setError(
-          "Supabase couldn’t send the confirmation email. For local testing, disable email confirmations in Supabase Dashboard (Authentication → Email/Providers → turn off Confirm email). If you want emails, check Supabase SMTP/Resend settings and that the sender domain is verified."
-        );
+        setError(t("pages.agentSignup.emailSendFailed"));
       } else {
-        setError(msg || "Agent signup failed.");
+        setError(msg || t("pages.agentSignup.signupFailed"));
       }
     } finally {
       setLoading(false);
@@ -336,7 +328,9 @@ export function AgentSignupForm({
     >
       <div className="space-y-1 text-center">
         <h1 className="text-xl font-bold text-gray-900">
-          {signedInAgentFlow ? "Complete agent setup" : START_FREE_AS_AGENT_LABEL}
+          {signedInAgentFlow
+            ? t("pages.agentSignup.completeAgentSetup")
+            : t("pages.agentSignup.startFreeAsAgent")}
         </h1>
         <p className="text-xs text-gray-600">{t("pages.agentSignup.intro")}</p>
         {showSignedInPrefillBanner && signedInAgentFlow ? (
@@ -354,28 +348,6 @@ export function AgentSignupForm({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
-        <fieldset className="space-y-2">
-          <legend className="block text-xs font-medium text-gray-700">{t("pages.agentSignup.accountType")}</legend>
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-x-5 sm:gap-y-2">
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-800">
-              <input
-                type="radio"
-                name="accountType"
-                checked={accountType === "agent"}
-                onChange={() => setAccountType("agent")}
-                className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
-              />{t("pages.agentSignup.realEstateAgent")}</label>
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-800">
-              <input
-                type="radio"
-                name="accountType"
-                checked={accountType === "loan_broker"}
-                onChange={() => setAccountType("loan_broker")}
-                className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
-              />{t("pages.agentSignup.loanBroker")}</label>
-          </div>
-        </fieldset>
-
         <div className="space-y-1">
           <label className="block text-xs font-medium text-gray-700">{t("pages.agentSignup.name")}<span className="text-red-600"> *</span>
           </label>
@@ -436,7 +408,7 @@ export function AgentSignupForm({
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             readOnly={signedInAgentFlow}
-            title={signedInAgentFlow ? "Email is tied to your signed-in account" : undefined}
+            title={signedInAgentFlow ? t("pages.agentSignup.emailTiedToAccount") : undefined}
             disabled={prefillLoading}
           />
         </div>
@@ -496,7 +468,11 @@ export function AgentSignupForm({
           }
           className="w-full inline-flex items-center justify-center bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {loading ? "Saving…" : signedInAgentFlow ? "Save agent profile" : "Create Agent Account"}
+          {loading
+            ? t("pages.agentSignup.saving")
+            : signedInAgentFlow
+            ? t("pages.agentSignup.saveAgentProfile")
+            : t("pages.agentSignup.createAgentAccount")}
         </button>
       </form>
 

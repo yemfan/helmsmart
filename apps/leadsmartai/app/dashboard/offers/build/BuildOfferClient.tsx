@@ -71,10 +71,10 @@ export function BuildOfferClient() {
         }),
       });
       const body = (await res.json().catch(() => ({}))) as { ok?: boolean; offer?: BuiltOffer; error?: string };
-      if (!res.ok || !body.ok || !body.offer) throw new Error(body.error ?? "Could not build the offer.");
+      if (!res.ok || !body.ok || !body.offer) throw new Error(body.error ?? t("pages.buildOffer.buildFailed"));
       setResult(body.offer);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not build the offer.");
+      setError(e instanceof Error ? e.message : t("pages.buildOffer.buildFailed"));
     } finally {
       setBuilding(false);
     }
@@ -114,18 +114,18 @@ export function BuildOfferClient() {
           financingType: result.financingType,
           closingDateProposed: closeDate,
           // offers POST expects "kept" booleans (true = contingency retained).
-          inspectionContingency: result.contingencies.inspection === t("pages.buildOffer.keep"),
-          appraisalContingency: result.contingencies.appraisal === t("pages.buildOffer.keep"),
-          loanContingency: result.contingencies.loan === t("pages.buildOffer.keep"),
+          inspectionContingency: result.contingencies.inspection === "keep",
+          appraisalContingency: result.contingencies.appraisal === "keep",
+          loanContingency: result.contingencies.loan === "keep",
           notes,
           submitNow: false,
         }),
       });
       const body = (await res.json().catch(() => ({}))) as { ok?: boolean; offer?: { id: string }; error?: string };
-      if (!res.ok || !body.ok || !body.offer) throw new Error(body.error ?? "Failed to save offer.");
+      if (!res.ok || !body.ok || !body.offer) throw new Error(body.error ?? t("pages.buildOffer.saveFailed"));
       router.push(`/dashboard/offers/${body.offer.id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Network error.");
+      setError(e instanceof Error ? e.message : t("pages.buildOffer.networkError"));
     } finally {
       setSaving(false);
     }
@@ -203,7 +203,7 @@ export function BuildOfferClient() {
             disabled={building || !address.trim() || !listPrice.trim()}
             className="rounded-lg bg-[#0072ce] px-4 py-2 text-sm font-semibold text-white hover:bg-[#005fa8] disabled:opacity-50"
           >
-            {building ? "Building…" : result ? t("pages.buildOffer.rebuild") : t("pages.buildOffer.build")}
+            {building ? t("pages.buildOffer.building") : result ? t("pages.buildOffer.rebuild") : t("pages.buildOffer.build")}
           </button>
         </div>
       </div>
@@ -222,11 +222,11 @@ export function BuildOfferClient() {
             <Stat label={t("pages.buildOffer.downPayment")} value={money(result.downPayment)} />
             <Stat label={t("pages.labels.financing")} value={result.financingType ?? "—"} />
             <Stat label={t("pages.buildOffer.escalationCap")} value={money(result.escalationCap)} />
-            <Stat label={t("pages.buildOffer.closeIn")} value={result.closeDays ? `${result.closeDays} days` : "—"} />
+            <Stat label={t("pages.buildOffer.closeIn")} value={result.closeDays ? t("pages.buildOffer.closeDays", { count: result.closeDays }) : "—"} />
           </div>
           <div className="flex flex-wrap gap-2 text-[11px]">
             {(["inspection", "appraisal", "loan"] as const).map((k) => {
-              const keep = result.contingencies[k] === t("pages.buildOffer.keep");
+              const keep = result.contingencies[k] === "keep";
               return (
                 <span
                   key={k}

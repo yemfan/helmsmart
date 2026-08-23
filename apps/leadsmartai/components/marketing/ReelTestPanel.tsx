@@ -152,7 +152,7 @@ export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean 
             onClick={startRender}
             className="shrink-0 rounded-lg bg-[#0072ce] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-[#005ba8]"
           >
-            {phase === "done" || phase === "error" ? "Render another" : "Render reel"}
+            {phase === "done" || phase === "error" ? t("pages.reelTest.renderAnother") : t("pages.reelTest.renderReel")}
           </button>
         ) : null}
       </div>
@@ -177,7 +177,7 @@ export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean 
 
           {phase === "rendering" ? (
             <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
-              Rendering on the cloud… {Math.round(progress * 100)}%
+              {t("pages.reelTest.rendering", { pct: Math.round(progress * 100) })}
               <span className="mt-1 block text-xs text-gray-400">{t("pages.reelPanel.takesAMinute")}</span>
             </div>
           ) : null}
@@ -218,7 +218,7 @@ export default function ReelTestPanel({ canCustomize }: { canCustomize: boolean 
             </div>
           ) : null}
 
-          {phase === "publishing" ? <p className="text-sm text-gray-500">Publishing…</p> : null}
+          {phase === "publishing" ? <p className="text-sm text-gray-500">{t("pages.reelTest.publishing")}</p> : null}
 
           {phase === "done" && results ? (
             <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">

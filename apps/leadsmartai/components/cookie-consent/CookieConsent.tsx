@@ -258,9 +258,7 @@ function CookieConsentBanner() {
               className="text-sm font-semibold text-slate-900"
             >{t("pages.cookieConsent.title")}</h2>
             <p id="cookie-consent-description" className="mt-1 text-xs leading-relaxed text-slate-600">
-              We use strictly necessary cookies so the site works. Optional cookies help us
-              measure and improve the product. You can change your mind any time from the
-              footer &ldquo;Cookie settings&rdquo; link.{" "}
+              {t("pages.cookieConsent.body")}{" "}
               <Link href="/privacy" className="text-[#0072ce] underline">{t("pages.cookieConsent.privacy")}</Link>
               .
             </p>
@@ -271,21 +269,21 @@ function CookieConsentBanner() {
           <fieldset className="mt-4 space-y-2.5 rounded-lg border border-slate-200 bg-slate-50 p-3">
             <legend className="sr-only">{t("pages.cookieConsent.categories")}</legend>
             <Category
-              name="Strictly necessary"
-              description="Keeps you signed in, remembers preferences, prevents CSRF. Always on — required for the site to function."
+              name={t("pages.cookieConsent.necessaryName")}
+              description={t("pages.cookieConsent.necessaryDesc")}
               checked
               disabled
               onChange={() => {}}
             />
             <Category
-              name="Analytics"
-              description="Aggregated product usage and performance data. Helps us fix bugs and prioritize improvements. Does not include advertising tracking."
+              name={t("pages.cookieConsent.analyticsName")}
+              description={t("pages.cookieConsent.analyticsDesc")}
               checked={analytics}
               onChange={setAnalytics}
             />
             <Category
-              name="Marketing"
-              description="Measures the effectiveness of marketing and remembers your preferences across visits. Off unless you enable it."
+              name={t("pages.cookieConsent.marketingName")}
+              description={t("pages.cookieConsent.marketingDesc")}
               checked={marketing}
               onChange={setMarketing}
             />

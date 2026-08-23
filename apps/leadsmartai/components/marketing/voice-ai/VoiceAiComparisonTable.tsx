@@ -160,7 +160,7 @@ export default async function VoiceAiComparisonTable() {
                       i === 0 ? "bg-blue-50/40" : ""
                     }`}
                   >
-                    <CellMark cell={cell} />
+                    <CellMark cell={cell} t={t} />
                   </td>
                 ))}
               </tr>
@@ -172,7 +172,7 @@ export default async function VoiceAiComparisonTable() {
   );
 }
 
-function CellMark({ cell }: { cell: Cell }) {
+function CellMark({ cell, t }: { cell: Cell; t: (k: string, o?: Record<string, unknown>) => string }) {
   if (cell.state === "yes") {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
@@ -183,7 +183,7 @@ function CellMark({ cell }: { cell: Cell }) {
   if (cell.state === "partial") {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
-        <span aria-hidden>~</span> {cell.text ?? "Partial"}
+        <span aria-hidden>~</span> {cell.text ?? t("pages.voiceAiComparisonTable.partial", { ns: "dashboard" })}
       </span>
     );
   }

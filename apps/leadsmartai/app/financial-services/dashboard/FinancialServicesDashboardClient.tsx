@@ -113,7 +113,7 @@ export default function FinancialServicesDashboardClient() {
               href="/financial-services/dashboard/recruits"
               className="text-sm font-medium text-indigo-700 hover:text-indigo-900"
             >
-              Open full recruit board →
+              {t("pages.financialServicesDashboard.openRecruitBoard")}
             </Link>
           </div>
         </SectionCard>

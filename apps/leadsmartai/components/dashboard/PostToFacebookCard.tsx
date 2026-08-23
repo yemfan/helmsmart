@@ -269,7 +269,7 @@ export default function PostToFacebookCard({
                     disabled={postState.kind === "submitting" || !connectionId}
                     className="rounded-lg bg-[#1877F2] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#155FC4] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {postState.kind === "submitting" ? "Posting…" : "Post"}
+                    {postState.kind === "submitting" ? t("common:status.posting") : t("common:actions.post")}
                   </button>
                 </div>
               </div>

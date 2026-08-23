@@ -189,7 +189,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{tr("pages.dashFragments.tasksCount", { ns: "dashboard" })}{openTasks.length} open)</h2>
           <Link href="/dashboard/tasks" className="text-xs text-blue-600 hover:underline dark:text-blue-400">
-            Open task board →
+            {tr("pages.playbookRunDetail.openTaskBoard", { ns: "dashboard" })}
           </Link>
         </div>
         <ul className="mt-3 space-y-2.5">
@@ -205,7 +205,7 @@ export default async function PlaybookRunPage({ params }: { params: Promise<{ id
                       : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                   }`}
                 >
-                  {PHASE_LABEL[m.phase ?? ""] ?? "Task"}
+                  {PHASE_LABEL[m.phase ?? ""] ?? tr("pages.playbookRuns.task", { ns: "dashboard" })}
                 </span>
                 <div className="min-w-0 flex-1">
                   <span className="text-slate-800 dark:text-slate-200">{t.title}</span>

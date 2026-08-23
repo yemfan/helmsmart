@@ -23,7 +23,8 @@
     "form": {
       "first_name_placeholder": "名字",
       "email_placeholder": "邮箱",
-      "language_label": "语言：",
+      "language_english": "English",
+        "language_label": "语言：",
       "submit": "把提示词发到我邮箱",
       "privacy_note": "绝不发垃圾邮件——只把提示词直接送到你的收件箱。",
       "error_generic": "出了点问题，请重试。",

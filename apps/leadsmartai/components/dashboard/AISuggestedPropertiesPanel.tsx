@@ -168,13 +168,13 @@ export default function AISuggestedPropertiesPanel({
           className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
         >
           <RefreshCw className={`h-3 w-3 ${state.kind === "loading" ? "animate-spin" : ""}`} aria-hidden />
-          {state.kind === "closed" ? "Suggest" : state.kind === "loading" ? "Thinking…" : "Refresh"}
+          {state.kind === "closed" ? t("common:actions.suggest") : state.kind === "loading" ? t("common:status.thinking") : t("common:actions.refresh")}
         </button>
       </div>
 
       {state.kind === "loading" && (
         <div className="mt-3 text-xs text-gray-400">
-          Searching live listings and scoring against their pattern…
+          {t("pages.suggestedProperties.searching")}
         </div>
       )}
 
@@ -265,7 +265,7 @@ export default function AISuggestedPropertiesPanel({
                   className="inline-flex items-center gap-1 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
                 >
                   <Send className="h-3.5 w-3.5" aria-hidden />
-                  {sending ? "Sending…" : `Send ${picked.size || ""}`}
+                  {sending ? t("common:status.sending") : `Send ${picked.size || ""}`}
                 </button>
               </div>
             </>

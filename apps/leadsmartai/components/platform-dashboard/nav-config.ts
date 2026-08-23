@@ -1,7 +1,6 @@
 import {
   BarChart3,
   CreditCard,
-  GitCompare,
   LayoutDashboard,
   LineChart,
   MessageSquare,
@@ -19,19 +18,6 @@ const agent: PlatformNavSection[] = [
       { href: "/dashboard/leads", label: "Leads", icon: Users },
       { href: "/dashboard/opportunities", label: "Pipeline", icon: LineChart },
       { href: "/dashboard/contacts", label: "Clients", icon: MessageSquare },
-      { href: "/dashboard/tools", label: "AI Tools", icon: Wrench },
-      { href: "/dashboard/reports", label: "Reports", icon: BarChart3 },
-    ],
-  },
-];
-
-const loanBroker: PlatformNavSection[] = [
-  {
-    items: [
-      { href: "/loan-broker/dashboard", label: "Dashboard", icon: LayoutDashboard },
-      { href: "/dashboard/broker", label: "Borrowers", icon: Users },
-      { href: "/dashboard/opportunities", label: "Pipeline", icon: LineChart },
-      { href: "/dashboard/comparison-report", label: "Scenarios", icon: GitCompare },
       { href: "/dashboard/tools", label: "AI Tools", icon: Wrench },
       { href: "/dashboard/reports", label: "Reports", icon: BarChart3 },
     ],
@@ -66,8 +52,6 @@ export function getPlatformNav(role: PlatformRole): PlatformNavSection[] {
   switch (role) {
     case "agent":
       return agent;
-    case "loanBroker":
-      return loanBroker;
     case "support":
       return support;
     case "admin":

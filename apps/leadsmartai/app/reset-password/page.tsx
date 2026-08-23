@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 
 type Phase = "checking" | "ready" | "no_session" | "success";
@@ -11,6 +12,7 @@ type Phase = "checking" | "ready" | "no_session" | "success";
  * Supabase recovery landing — same path as Property Tools (`/reset-password`) so one Redirect URL per host works.
  */
 export default function ResetPasswordPage() {
+  const { t } = useTranslation("dashboard");
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("checking");
   const [password, setPassword] = useState("");
@@ -61,11 +63,11 @@ export default function ResetPasswordPage() {
     e.preventDefault();
     setError(null);
     if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError(t("pages.resetPasswordPage.tooShort"));
       return;
     }
     if (password !== confirm) {
-      setError("Passwords do not match.");
+      setError(t("pages.resetPasswordPage.mismatch"));
       return;
     }
     setSubmitting(true);
@@ -82,7 +84,7 @@ export default function ResetPasswordPage() {
         router.replace("/dashboard-router");
       }, 1200);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Could not update password.");
+      setError(e instanceof Error ? e.message : t("pages.resetPasswordPage.updateFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -91,7 +93,7 @@ export default function ResetPasswordPage() {
   if (phase === "checking") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-        <p className="text-sm text-slate-600">Verifying reset link…</p>
+        <p className="text-sm text-slate-600">{t("pages.resetPasswordPage.verifying")}</p>
       </div>
     );
   }
@@ -100,15 +102,15 @@ export default function ResetPasswordPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
         <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-4 text-center">
-          <h1 className="text-lg font-bold text-gray-900">Link expired or invalid</h1>
+          <h1 className="text-lg font-bold text-gray-900">{t("pages.resetPasswordPage.linkExpired")}</h1>
           <p className="text-sm text-gray-600">
-            Open the latest link from your password reset email, or request a new one from the log in page.
+            {t("pages.resetPasswordPage.linkExpiredBody")}
           </p>
           <Link
             href="/login"
             className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
           >
-            Back to log in
+            {t("pages.resetPasswordPage.backToLogin")}
           </Link>
         </div>
       </div>
@@ -119,7 +121,7 @@ export default function ResetPasswordPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
         <div className="w-full max-w-sm rounded-xl border border-emerald-200 bg-emerald-50 p-6 text-center text-sm font-medium text-emerald-900">
-          Password updated. Redirecting…
+          {t("pages.resetPasswordPage.updated")}
         </div>
       </div>
     );
@@ -129,12 +131,12 @@ export default function ResetPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-5">
         <div className="space-y-1 text-center">
-          <h1 className="text-xl font-bold text-gray-900">Set a new password</h1>
-          <p className="text-xs text-gray-600">Choose a password you haven&apos;t used here before.</p>
+          <h1 className="text-xl font-bold text-gray-900">{t("pages.resetPasswordPage.heading")}</h1>
+          <p className="text-xs text-gray-600">{t("pages.resetPasswordPage.sub")}</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">New password</label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.resetPasswordPage.newPassword")}</label>
             <input
               type="password"
               value={password}
@@ -146,7 +148,7 @@ export default function ResetPasswordPage() {
             />
           </div>
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-gray-700">Confirm password</label>
+            <label className="block text-xs font-medium text-gray-700">{t("pages.resetPasswordPage.confirmPassword")}</label>
             <input
               type="password"
               value={confirm}
@@ -163,12 +165,12 @@ export default function ResetPasswordPage() {
             disabled={submitting}
             className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting ? "Saving…" : "Update password"}
+            {submitting ? t("pages.resetPasswordPage.saving") : t("pages.resetPasswordPage.submit")}
           </button>
         </form>
         <p className="text-center text-[11px] text-gray-500">
           <Link href="/login" className="font-semibold text-blue-700 hover:underline">
-            Back to log in
+            {t("pages.resetPasswordPage.backToLogin")}
           </Link>
         </p>
       </div>

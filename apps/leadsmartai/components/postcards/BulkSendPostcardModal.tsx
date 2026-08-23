@@ -142,11 +142,11 @@ export function BulkSendPostcardModal({
             </h3>
             <p className="mt-0.5 text-xs text-slate-500">
               {step === "pick"
-                ? "Pick a design"
+                ? t("pages.bulkSendPostcard.pickADesign")
                 : step === "customize"
                   ? `${template.title} — shared message for all`
                   : step === "sending"
-                    ? "Sending…"
+                    ? t("common:status.sending")
                     : "Sent ✓"}
             </p>
           </div>

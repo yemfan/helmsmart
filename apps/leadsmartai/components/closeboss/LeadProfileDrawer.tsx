@@ -55,7 +55,7 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
       <button type="button" aria-label={t("pages.leadDrawer.close")} onClick={onClose} className="absolute inset-0 bg-slate-900/30" />
       <aside className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col overflow-y-auto bg-white shadow-2xl">
         {error && <p className="m-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</p>}
-        {!data && !error && <p className="m-6 text-center text-sm text-gray-400">Getting the full picture…</p>}
+        {!data && !error && <p className="m-6 text-center text-sm text-gray-400">{t("pages.leadProfile.gettingFullPicture")}</p>}
         {p && (
           <>
             {/* ── Who they are ── */}

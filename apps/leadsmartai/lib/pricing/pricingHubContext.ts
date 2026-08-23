@@ -3,7 +3,7 @@ import type { InternalPlan } from "@/lib/billing/stripe-plan-map";
 import { BROKER_PORTAL_ROLES } from "@/lib/rolePortalPaths";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
-export type PricingHubRole = "admin" | "agent" | "loan_broker" | "support" | "consumer";
+export type PricingHubRole = "admin" | "agent" | "support" | "consumer";
 
 /**
  * Snapshot for `/pricing/hub`: auth, coarse role, Stripe-backed plan, and product flags for UX.
@@ -16,8 +16,6 @@ export type PricingHubContext = {
   entitlements: {
     /** Active `leadsmart_agent` row and/or `agent_starter` / `agent_pro` billing. */
     leadsmartAgent: boolean;
-    /** Active `leadsmart_loan_broker` entitlement and/or `loan_broker_pro` billing. */
-    leadsmartLoanBroker: boolean;
     /** `consumer_premium` subscription. */
     consumerPremium: boolean;
   };
@@ -29,7 +27,6 @@ export const emptyPricingHubContext: PricingHubContext = {
   billingPlan: null,
   entitlements: {
     leadsmartAgent: false,
-    leadsmartLoanBroker: false,
     consumerPremium: false,
   },
 };
@@ -41,7 +38,7 @@ export function normalizePricingHubRole(role: string | null): PricingHubRole | n
   const r = String(role ?? "").toLowerCase().trim();
   if (!r) return null;
   if (r === "user") return "consumer";
-  if (r === "admin" || r === "support" || r === "agent" || r === "loan_broker" || r === "consumer") {
+  if (r === "admin" || r === "support" || r === "agent" || r === "consumer") {
     return r;
   }
   if (BROKER_PORTAL_ROLES.has(r)) return "agent";
@@ -81,8 +78,6 @@ export async function buildPricingHubContext(
   const products = new Set((entRes.data ?? []).map((e) => e.product));
 
   const consumerPremium = billingPlan === "consumer_premium";
-  const leadsmartLoanBroker =
-    products.has("leadsmart_loan_broker") || billingPlan === "loan_broker_pro";
   const leadsmartAgent =
     products.has("leadsmart_agent") ||
     billingPlan === "agent_starter" ||
@@ -94,7 +89,6 @@ export async function buildPricingHubContext(
     billingPlan,
     entitlements: {
       leadsmartAgent,
-      leadsmartLoanBroker,
       consumerPremium,
     },
   };

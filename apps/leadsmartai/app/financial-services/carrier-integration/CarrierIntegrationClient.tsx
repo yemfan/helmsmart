@@ -176,7 +176,7 @@ export default function CarrierIntegrationClient() {
               <span className="rounded-full bg-indigo-200 px-3 py-0.5 text-[9pt] font-semibold uppercase tracking-wider text-indigo-900">{t("pages.carrierIntegration.p2bWhen")}</span>
             </div>
             <p className="mt-2 text-[10pt] text-slate-700">
-              The &quot;FNA → polished carrier illustration → kitchen-table presentation&quot; loop, end-to-end.
+              {t("pages.carrierIntegration.fnaChain")}
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-[10pt] text-slate-700">
               <li>{t("pages.carrierIntegration.p2bItem1")}</li>

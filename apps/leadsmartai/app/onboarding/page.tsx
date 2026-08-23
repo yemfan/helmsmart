@@ -68,7 +68,7 @@ export default async function OnboardingPage() {
               >{t("pages.onboardingPage.seePricing", { ns: "dashboard" })}</Link>
             </div>
             <p className="mt-6 text-xs text-slate-500" aria-live="polite">
-              Loading interactive preview…
+              {t("pages.onboardingPage.loadingPreview", { ns: "dashboard" })}
             </p>
           </section>
         }

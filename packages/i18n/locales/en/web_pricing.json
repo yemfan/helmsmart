@@ -168,5 +168,71 @@
     "body_prefix": " Every paid plan starts with a 14-day free trial. Cancel anytime before your trial ends — no charge. Need a custom plan for a large brokerage? ",
     "link": "Talk to us",
     "suffix": "."
+  },
+  "hub": {
+    "heading": "Choose the right plan",
+    "sub": "Find the best fit for your workflow, whether you're exploring properties, converting leads as an agent, or managing borrower pipelines.",
+    "signedInAs": "Signed in as {{role}}",
+    "memberFallback": "member",
+    "products": {
+      "consumer": {
+        "title": "PropertyToolsAI",
+        "audience": "Buyers, sellers, and investors",
+        "price": "From $0",
+        "description": "Smart real estate tools for home value, financing, comparisons, and decision support.",
+        "f1": "Property insights",
+        "f2": "Mortgage tools",
+        "f3": "AI comparisons",
+        "f4": "Premium consumer features"
+      },
+      "agent": {
+        "title": "CloseBoss for Agents",
+        "audience": "Real estate agents",
+        "price": "Free to start",
+        "description": "Lead capture, CRM, CMA workflow, follow-up tools, and AI-powered deal conversion.",
+        "f1": "Starter / Pro / Premium",
+        "f2": "CMA workflow",
+        "f3": "Lead pipeline",
+        "f4": "CRM + AI follow-up"
+      },
+      "loan_broker": {
+        "title": "CloseBoss for Loan Brokers",
+        "audience": "Loan brokers and mortgage professionals",
+        "price": "From $99/mo",
+        "description": "Borrower pipeline, financing workflow, loan scenarios, and stronger conversion tools.",
+        "f1": "Borrower pipeline",
+        "f2": "Loan scenarios",
+        "f3": "Broker workflow tools",
+        "f4": "Advanced finance workspace"
+      }
+    },
+    "badge": {
+      "mostPopular": "Most Popular",
+      "currentPlan": "Current Plan",
+      "recommended": "Recommended",
+      "agentActive": "Agent Access Active",
+      "loanBrokerActive": "Loan Broker Access Active",
+      "setup": "Setup"
+    },
+    "cta": {
+      "viewPricing": "View Pricing",
+      "manageBilling": "Manage Billing",
+      "manageAgentBilling": "Manage Agent Billing",
+      "viewConsumerPricing": "View Consumer Pricing",
+      "viewLoanBrokerPricing": "View Loan Broker Pricing",
+      "getAgentAccess": "Get agent access",
+      "activateAgentAccess": "Activate agent access",
+      "viewAgentPricing": "View agent pricing",
+      "viewAgentPlans": "View agent plans"
+    },
+    "help": {
+      "heading": "Need help choosing?",
+      "researchingTitle": "Researching homes",
+      "researchingBody": "Start with PropertyToolsAI if you want smarter property and financing tools.",
+      "agentTitle": "Growing as an agent",
+      "agentBody": "Start with CloseBoss for Agents if you need lead workflow, CRM, and AI follow-up.",
+      "brokerTitle": "Managing borrowers",
+      "brokerBody": "Start with CloseBoss for Loan Brokers if you need borrower workflow and finance tools."
+    }
   }
 }

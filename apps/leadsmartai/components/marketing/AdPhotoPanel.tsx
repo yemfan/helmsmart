@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 /**
  * Ad photo pool manager — upload brand/lifestyle photos that the Marketing
@@ -134,7 +135,7 @@ export default function AdPhotoPanel({ canCustomize }: { canCustomize: boolean }
             disabled={busy}
             className="shrink-0 rounded-lg bg-[#0072ce] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-[#005ba8] disabled:opacity-60"
           >
-            {busy ? "Uploading…" : "Upload"}
+            {busy ? t("common:status.uploading") : t("common:actions.upload")}
           </button>
         ) : null}
       </div>
@@ -179,7 +180,7 @@ export default function AdPhotoPanel({ canCustomize }: { canCustomize: boolean }
 
           <div className="mt-4">
             {loading ? (
-              <p className="text-sm text-gray-400">Loading…</p>
+              <p className="text-sm text-gray-400"><LoadingText /></p>
             ) : photos.length === 0 ? (
               <p className="text-sm text-gray-400">{t("pages.adPhotos.empty")}</p>
             ) : (

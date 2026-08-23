@@ -31,11 +31,28 @@
     "h2_highlight": "问问 Max。",
     "body": "Max 是您的 AI 队长。告诉他您的需求 —— 跟进客户、上线房源、追签合同 —— 他就会调动您的整支 AI 团队，全天候为您效力。",
     "cta": "免费问 Max",
+    "avatar_alt": "Max —— 您的 CloseBoss AI 团队队长",
     "bubble_prefix": "问问 Max",
     "bubble": " —— 今天想让您的 AI 团队做点什么？",
     "name": "Max",
     "role": "您的 AI 团队队长",
     "quote": "“有我在，放心。”"
+  },
+  "team": {
+    "members": {
+      "max": { "role": "队长", "line": "统筹整个团队，帮您盯住今天最重要的事。" },
+      "emma": { "role": "AI 接待员", "line": "每一通电话、每一条短信都即时接住，昼夜不歇。" },
+      "chris": { "role": "AI 销售专员", "line": "锲而不舍地跟进，把客户变成上门预约。" },
+      "ruby": { "role": "AI 营销专员", "line": "持续产出内容与推广活动，让您的客户池不断档。" },
+      "grace": { "role": "AI 交易协调员", "line": "盯紧每一个截止日期，让交易顺利走到过户那一天。" },
+      "oliver": { "role": "AI 财务分析师", "line": "看住每一笔钱，把您的佣金和账目理得清清楚楚。" }
+    },
+    "eyebrow": "认识您的 AI 团队",
+    "h2_prefix": "六位专才。",
+    "h2_highlight": "一支 AI 团队。",
+    "sub": "从第一通电话到成交签约，每个环节都有专人负责。他们全天候协作，您只需专心服务客户。",
+    "image_alt": "认识 CloseBoss AI 房产团队——Emma、Chris、Ruby、Oliver、Grace 和 Max",
+    "cta": "免费雇用您的 AI 团队"
   },
   "brokerage_strip": {
     "eyebrow": "深受以下经纪行的经纪人信赖"
@@ -340,5 +357,25 @@
       "chinese": "中文",
       "more": "+ 更多语言"
     }
+  },
+  "faq": {
+    "h2": "什么是 CloseBoss AI？",
+    "sub": "关于 CloseBoss AI 的常见问题——closebossai.com 上的 AI 房产团队。"
+  },
+  "exit_intent": {
+    "close": "关闭",
+    "close_dialog": "关闭对话框",
+    "title": "先别急着走…",
+    "headline": "想要 3 条免费买家客源吗？",
+    "sub": "留下邮箱，我们把详情发给您。",
+    "done": "已登记——请注意查收邮件。",
+    "email": "邮箱",
+    "email_placeholder": "请输入您的邮箱 →",
+    "submit": "把客源发给我",
+    "sending": "发送中…",
+    "error_required": "请输入邮箱。",
+    "error_invalid": "请输入有效的邮箱地址。",
+    "error_generic": "出了点问题，请重试。",
+    "error_network": "网络错误，请重试。"
   }
 }

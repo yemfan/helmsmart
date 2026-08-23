@@ -166,7 +166,7 @@ export default function SphereImportClient() {
             disabled={!file || parsing}
             className="rounded-lg bg-brand-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
           >
-            {parsing ? "Parsing…" : "Parse CSV"}
+            {parsing ? t("common:status.parsing") : t("pages.sphereImport.parseCsv")}
           </button>
           {parseError && <span className="text-sm text-red-600">{parseError}</span>}
         </div>
@@ -200,7 +200,7 @@ export default function SphereImportClient() {
                   disabled={committing || !stats.included}
                   className="rounded-lg bg-brand-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
                 >
-                  {committing ? "Importing…" : `Import ${stats.included} contact${stats.included === 1 ? "" : "s"}`}
+                  {committing ? t("common:status.importing") : `Import ${stats.included} contact${stats.included === 1 ? "" : "s"}`}
                 </button>
               </div>
             </div>

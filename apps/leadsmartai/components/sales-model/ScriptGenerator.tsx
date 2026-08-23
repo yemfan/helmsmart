@@ -214,7 +214,7 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
           disabled={busy}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
         >
-          {busy ? "Generating…" : "Generate Script"}
+          {busy ? t("common:status.generating") : t("pages.scriptGenerator.generateScript")}
         </button>
         {output ? (
           <button
@@ -229,7 +229,7 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
             ].join(" ")}
           >
             {copied ? <CheckIcon /> : <CopyIcon />}
-            {copied ? "Copied!" : "Copy"}
+            {copied ? t("common:actions.copied_bang") : t("common:actions.copy")}
           </button>
         ) : null}
         {source ? (
@@ -241,7 +241,7 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
                 : "bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-200",
             ].join(" ")}
           >
-            {source === "ai" ? "AI-generated" : "Template fallback"}
+            {source === "ai" ? t("pages.scriptGenerator.aiGenerated") : t("pages.scriptGenerator.templateFallback")}
           </span>
         ) : null}
         {detectedLabel ? (
@@ -276,7 +276,7 @@ export function ScriptGenerator({ model }: { model: SalesModel }) {
             ].join(" ")}
           >
             {copied ? <CheckIcon /> : <CopyIcon />}
-            {copied ? "Copied" : "Copy"}
+            {copied ? t("common:actions.copied") : t("common:actions.copy")}
           </button>
           <pre className="max-h-96 overflow-y-auto whitespace-pre-wrap break-words rounded-xl border border-slate-200 bg-slate-50 p-4 pr-20 font-mono text-xs leading-relaxed text-slate-800">
             {output}

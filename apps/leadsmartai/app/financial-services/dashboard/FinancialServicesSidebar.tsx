@@ -341,7 +341,7 @@ export default function FinancialServicesSidebar({
         <div className="flex items-center gap-2 rounded-lg px-2 py-2 text-xs">
           <UserCircle2 className="h-7 w-7 shrink-0 text-slate-400" />
           <div className="min-w-0 flex-1">
-            <p className="truncate font-medium text-slate-700">{email ?? "Producer"}</p>
+            <p className="truncate font-medium text-slate-700">{email ?? t("pages.financialServicesSidebar.producer")}</p>
             <p className="text-[10px] uppercase tracking-wider text-slate-400">{t("pages.financialServices.producer")}</p>
           </div>
           <Link

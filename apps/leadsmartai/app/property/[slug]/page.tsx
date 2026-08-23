@@ -376,7 +376,7 @@ export default function PropertyReportPage() {
           disabled={saving}
           className="inline-flex items-center bg-emerald-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {saving ? "Saving..." : "Save to Database"}
+          {saving ? t("common:status.saving") : t("pages.property.saveToDatabase")}
         </button>
       </div>
 

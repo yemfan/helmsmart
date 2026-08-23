@@ -129,7 +129,7 @@ export default function FnaGeneratorClient() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{t("pages.fsMarketing.fna")}</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Type the client&apos;s info → get an agent-branded FNA in under a minute.
+            {t("pages.fnaGenerator.intro")}
           </p>
         </div>
         {report && (
@@ -244,7 +244,7 @@ export default function FnaGeneratorClient() {
               className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               <Sparkles className="h-4 w-4" />
-              {loading ? "Generating FNA…" : "Generate FNA"}
+              {loading ? t("pages.fnaGenerator.generatingFna") : t("pages.fnaGenerator.generateFna")}
             </button>
 
             {error && (
@@ -264,7 +264,7 @@ export default function FnaGeneratorClient() {
           {loading && (
             <div className="flex h-full min-h-[400px] flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-10 text-center">
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600" />
-              <p className="mt-4 text-sm font-medium text-slate-700">Analyzing client profile…</p>
+              <p className="mt-4 text-sm font-medium text-slate-700">{t("pages.fnaGenerator.analyzing")}</p>
               <p className="mt-1 text-xs text-slate-500">{t("pages.fsMarketing.computing")}</p>
             </div>
           )}
@@ -277,7 +277,7 @@ export default function FnaGeneratorClient() {
                 </h1>
                 <p className="mt-1 text-xs text-slate-500">
                   {t("pages.fsMarketing.generatedOn", { date: new Date().toLocaleDateString(locale) })} ·{" "}
-                  {form.advisorName ? `Prepared by ${form.advisorName}` : "Prepared by your producer"}
+                  {form.advisorName ? `Prepared by ${form.advisorName}` : t("pages.fnaGenerator.preparedByYourProducer")}
                   {form.agencyName ? ` · ${form.agencyName}` : ""}
                 </p>
               </header>

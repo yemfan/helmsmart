@@ -182,8 +182,8 @@ export default function ReceptionistClient() {
         {calls.length === 0 ? (
           <p className="py-10 text-center text-sm text-gray-400">
             {loading
-              ? "Loading calls…"
-              : "No calls yet. Once your AI Receptionist starts answering, every call shows up here."}
+              ? t("pages.receptionist.loadingCalls")
+              : t("pages.receptionist.noCallsYetOnce")}
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -262,10 +262,10 @@ export default function ReceptionistClient() {
 
 type VoiceTab = "inbound" | "outbound" | "missed";
 
-const VOICE_TABS: { key: VoiceTab; label: string }[] = [
-  { key: "inbound", label: "Inbound" },
-  { key: "outbound", label: "Outbound" },
-  { key: "missed", label: "Missed call" },
+const VOICE_TABS: { key: VoiceTab; labelKey: string }[] = [
+  { key: "inbound", labelKey: "pages.receptionist.inbound" },
+  { key: "outbound", labelKey: "pages.receptionist.outbound" },
+  { key: "missed", labelKey: "pages.receptionist.missedCall" },
 ];
 
 function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
@@ -298,20 +298,20 @@ function VoiceSettingsModal({ onClose }: { onClose: () => void }) {
 
         {/* Tabs */}
         <div className="mb-4 flex gap-1 rounded-lg bg-gray-100 p-1" role="tablist">
-          {VOICE_TABS.map((t) => (
+          {VOICE_TABS.map((voiceTab) => (
             <button
-              key={t.key}
+              key={voiceTab.key}
               type="button"
               role="tab"
-              aria-selected={tab === t.key}
-              onClick={() => setTab(t.key)}
+              aria-selected={tab === voiceTab.key}
+              onClick={() => setTab(voiceTab.key)}
               className={`flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
-                tab === t.key
+                tab === voiceTab.key
                   ? "bg-white text-[#0B1F44] shadow-sm"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              {t.label}
+              {t(voiceTab.labelKey)}
             </button>
           ))}
         </div>
@@ -371,7 +371,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
               {call.contact_name ?? t("assistants.unknownCaller")}
             </h3>
             <p className="text-xs text-gray-500">
-              {callerPhone(call)} · {call.direction === "inbound" ? "Inbound" : "Outbound"} ·{" "}
+              {callerPhone(call)} · {call.direction === "inbound" ? t("pages.receptionist.inbound") : t("pages.receptionist.outbound")} ·{" "}
               {fmtWhen(call.created_at, locale)}
             </p>
           </div>
@@ -423,7 +423,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
               <h4 className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{t("pages.dashFragments.textBackSent")}{call.textback_status ? ` · ${call.textback_status}` : ""}
               </h4>
               <p className="mt-1 whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-xs text-gray-700">
-                {call.textback_message ?? "Message body unavailable."}
+                {call.textback_message ?? t("pages.receptionist.messageBodyUnavailable")}
               </p>
             </section>
           )}
@@ -439,8 +439,8 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
                 {call.callback.status === "answered" &&
                   `Reached after ${Math.max(call.callback.attempts, 1)} call-back${call.callback.attempts === 1 ? "" : "s"}.`}
                 {call.callback.status === "exhausted" &&
-                  "All 3 call-backs placed without an answer — this one needs your personal touch."}
-                {call.callback.status === "cancelled" && "Call-backs were cancelled."}
+                  t("pages.receptionist.all3CallBacks")}
+                {call.callback.status === "cancelled" && t("pages.receptionist.callBacksWereCancelled")}
               </p>
             </section>
           )}
@@ -451,7 +451,7 @@ function CallDetailModal({ call, onClose }: { call: ReceptionistCall; onClose: (
                 href={`/dashboard/leads/${call.contact_id}`}
                 className="text-xs font-medium text-[#0B1F44] underline-offset-2 hover:underline"
               >
-                Open contact profile →
+                {t("pages.receptionist.openContactProfile")}
               </Link>
             </div>
           )}

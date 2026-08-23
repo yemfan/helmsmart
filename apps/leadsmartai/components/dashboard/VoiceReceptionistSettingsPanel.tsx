@@ -107,7 +107,7 @@ export default function VoiceReceptionistSettingsPanel() {
   if (loading) {
     return (
       <div className="text-sm text-gray-500 py-4" aria-busy="true">
-        Loading receptionist settings…
+        {t("pages.voiceReceptionistSettings.loading")}
       </div>
     );
   }
@@ -279,7 +279,7 @@ export default function VoiceReceptionistSettingsPanel() {
         </div>
         <p className="mt-1 text-[11px] text-gray-400">{t("pages.dashFragments.needMoreMinutes")}{" "}
           <a href="/agent/pricing" className="text-brand-accent-text underline underline-offset-2">
-            Upgrade your plan →
+            {t("pages.voiceReceptionistSettings.upgradePlan")}
           </a>
         </p>
       </div>

@@ -22,7 +22,7 @@ export default function GlobalError({
           <p className="mt-3 text-sm text-slate-600">
             {error.message?.trim()
               ? error.message
-              : "Please refresh or try again in a few minutes. If it keeps happening, contact support."}
+              : t("pages.global-error.pleaseRefreshOrTry")}
           </p>
           {error.digest ? <p className="mt-2 font-mono text-xs text-slate-400">{t("pages.dashFragments.ref")} {error.digest}</p> : null}
           <button

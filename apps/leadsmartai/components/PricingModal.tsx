@@ -331,7 +331,7 @@ export default function PricingModal({
                       disabled={trialLoading || Boolean(planInfo?.trial_used)}
                       className="w-full rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 disabled:opacity-60"
                     >
-                      {trialLoading ? "Starting..." : "Start 7-day free trial"}
+                      {trialLoading ? t("pages.pricing.starting") : t("pages.pricing.start7DayFree")}
                     </button>
                   ) : (
                     <button
@@ -340,7 +340,7 @@ export default function PricingModal({
                       disabled={loading === p.key}
                       className="w-full rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 disabled:opacity-60"
                     >
-                      {loading === p.key ? "Redirecting..." : p.cta}
+                      {loading === p.key ? t("common:status.redirecting") : p.cta}
                     </button>
                   )}
                 </div>
@@ -363,7 +363,7 @@ export default function PricingModal({
               <strong>Team</strong> ($299/mo per team) adds round-robin routing and shared
               workflows for up to 5 agents.{" "}
               <a href="/agent/pricing" className="font-semibold text-blue-700 hover:underline">
-                See the full ladder →
+                {t("pages.pricingModal.seeFullLadder")}
               </a>
             </p>
           </div>

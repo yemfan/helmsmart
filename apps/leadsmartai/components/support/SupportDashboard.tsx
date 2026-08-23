@@ -345,7 +345,7 @@ export default function SupportDashboard() {
                         </div>
 
                         <div className={`mt-3 text-xs ${selected ? "text-gray-300" : "text-gray-500"}`}>
-                          {conversation.subject || "No subject"}
+                          {conversation.subject || t("pages.supportDashboard.noSubject")}
                         </div>
                         <div className={`mt-1 text-xs ${selected ? "text-gray-400" : "text-gray-400"}`}>
                           {formatTime(conversation.lastMessageAt, dateLocale)}
@@ -369,7 +369,7 @@ export default function SupportDashboard() {
                       </h2>
                       <div className="mt-1 text-sm text-gray-500">{selectedConversation.customerEmail}</div>
                       <div className="mt-2 text-sm text-gray-700">
-                        {selectedConversation.subject || "No subject"}
+                        {selectedConversation.subject || t("pages.supportDashboard.noSubject")}
                       </div>
                       <SupportRealtimePresencePill text={peerPresenceLabel} />
                     </div>

@@ -62,6 +62,27 @@
       "title": "Google Ads",
       "phase_badge": "Phase 3",
       "body": "Search + Performance Max campaigns from inside Generate Leads."
+    },
+    "pinterest": {
+      "body": "Auto-publish Pins — listing photos, neighborhood guides, branded cards — to a board on your Pinterest business account.",
+      "empty": "Connect a Pinterest business account to schedule Pins. New Pins post to your first board.",
+      "revoke_hint": "Disconnecting removes the token stored here. To fully revoke, remove the app in your Pinterest account settings.",
+      "cta_connect": "Connect Pinterest",
+      "cta_reconnect": "Reconnect"
+    },
+    "tiktok": {
+      "body": "Post your videos — listing tours, avatar clips — straight to TikTok. New videos start private until your TikTok app passes the Content Posting audit.",
+      "empty": "Connect a TikTok account to post videos. Until your app is audited, posts are private (only you see them).",
+      "revoke_hint": "Disconnecting removes the token stored here. To fully revoke, remove the app in your TikTok account settings.",
+      "cta_connect": "Connect TikTok",
+      "cta_reconnect": "Reconnect"
+    },
+    "youtube": {
+      "body": "Upload your videos — listing tours, avatar clips — to your YouTube channel. Vertical clips land as Shorts.",
+      "empty": "Connect a YouTube channel to upload videos. Vertical videos post as Shorts.",
+      "revoke_hint": "Disconnecting removes the token stored here. To fully revoke, remove access in your Google account settings.",
+      "cta_connect": "Connect YouTube",
+      "cta_reconnect": "Reconnect"
     }
   },
   "campaigns": {

@@ -118,7 +118,7 @@ export function ListingOfferDetailClient({
           <span>{offer.buyer_name ?? "(unknown buyer)"}</span>
         </div>
         <h1 className="mt-1 text-2xl font-semibold text-slate-900">
-          {offer.buyer_name ?? "Incoming offer"}
+          {offer.buyer_name ?? t("pages.listingOfferDetail.incomingOffer")}
         </h1>
         <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-600">
           {offer.buyer_agent_name ? (

@@ -173,8 +173,8 @@ export default function CustomerSupportChat({
           <h2 className="text-xl font-semibold text-gray-900">{t("pages.supportChat.title")}</h2>
           <p className="mt-1 text-sm text-gray-500">
             {conversationPublicId
-              ? "This conversation refreshes automatically."
-              : "Start a conversation and our support team will reply here."}
+              ? t("pages.customerSupportChat.thisConversationRefreshesAutomatically")
+              : t("pages.customerSupportChat.startAConversationAnd")}
           </p>
           {conversationPublicId ? <SupportRealtimePresencePill text={peerPresenceLabel} /> : null}
         </div>
@@ -248,7 +248,7 @@ export default function CustomerSupportChat({
           })}
 
           {isLoading && conversationPublicId && (
-            <div className="text-sm text-gray-400">Refreshing…</div>
+            <div className="text-sm text-gray-400">{t("pages.supportChat.refreshing")}</div>
           )}
         </div>
 
@@ -283,7 +283,7 @@ export default function CustomerSupportChat({
                 disabled={!canStart || starting}
                 className="self-end rounded-2xl bg-gray-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
               >
-                {starting ? "Starting..." : "Start chat"}
+                {starting ? t("pages.pricing.starting") : t("pages.customerSupportChat.startChat")}
               </button>
             ) : (
               <button
@@ -292,7 +292,7 @@ export default function CustomerSupportChat({
                 disabled={!messageInput.trim() || sending}
                 className="self-end rounded-2xl bg-gray-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
               >
-                {sending ? "Sending..." : "Send"}
+                {sending ? t("common:status.sending") : t("common:actions.send")}
               </button>
             )}
           </div>

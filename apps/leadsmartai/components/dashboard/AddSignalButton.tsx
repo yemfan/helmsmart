@@ -39,7 +39,7 @@ const CONFIDENCE = ["low", "medium", "high"] as const;
 export default function AddSignalButton({
   contactId,
   variant = "primary",
-  label = "Add signal",
+  label,
 }: {
   contactId: string;
   variant?: "primary" | "ghost";
@@ -111,7 +111,7 @@ export default function AddSignalButton({
           : "rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-50"
       }
     >
-      + {label}
+      + {label ?? t("pages.addSignalButton.addSignal")}
     </button>
   );
 
@@ -216,7 +216,7 @@ export default function AddSignalButton({
               disabled={saving || !signalLabel.trim()}
               className="rounded-lg bg-brand-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
-              {saving ? "Saving…" : "Add signal"}
+              {saving ? t("common:status.saving") : t("pages.addSignalButton.addSignal")}
             </button>
           </div>
         </form>

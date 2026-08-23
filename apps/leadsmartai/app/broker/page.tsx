@@ -19,7 +19,7 @@ export default function BrokerPortalPage() {
         { href: "/dashboard/growth", label: "Growth & SEO", description: "Traffic and landing tools" },
         { href: "/dashboard/leads", label: "Leads & CRM", description: "Pipeline and follow-ups" },
         { href: "/dashboard/marketing", label: "Marketing", description: "Campaigns and assets" },
-        { href: "/loan-broker/pricing", label: "Plans & billing", description: "Team plans and upgrades" },
+        { href: "/agent/pricing", label: "Plans & billing", description: "Team plans and upgrades" },
         { href: "/portal", label: "Stripe billing portal", description: "Billing and invoices" },
       ]}
     />

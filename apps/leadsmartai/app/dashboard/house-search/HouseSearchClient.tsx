@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import type { HouseListing, HouseSearchResult } from "@/lib/house-search/types";
+import type { HouseListing, HouseSearchResult } from "@/lib/house-search/types";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 type ReachableContact = { id: string; name: string; phone: string; email: string };
 
@@ -281,7 +282,7 @@ export default function HouseSearchClient() {
 
       {loading ? (
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-600">
-          Searching the web for matching listings… this can take up to a minute.
+          {t("pages.houseSearch.searchingWeb")}
         </div>
       ) : null}
 
@@ -459,6 +460,7 @@ export default function HouseSearchClient() {
 }
 
 function QuotaPill({ quota }: { quota: HouseSearchQuota }) {
+  const { t } = useTranslation("dashboard");
   const tone = quota.reached
     ? "bg-rose-50 text-rose-700 ring-rose-200"
     : quota.warning
@@ -469,7 +471,7 @@ function QuotaPill({ quota }: { quota: HouseSearchQuota }) {
       className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold ring-1 ${tone}`}
       title={`Daily House Search quota — resets ${quota.resetDate}`}
     >
-      {quota.unlimited ? "Unlimited searches" : `${quota.remaining} of ${quota.limit} left today`}
+      {quota.unlimited ? t("pages.houseSearch.unlimitedSearches") : `${quota.remaining} of ${quota.limit} left today`}
     </span>
   );
 }
@@ -546,7 +548,7 @@ function SavedSearchesPanel({
           ))}
         </select>
       </label>
-      {loading ? <p className="mt-3 text-xs text-slate-500">Loading…</p> : null}
+      {loading ? <p className="mt-3 text-xs text-slate-500"><LoadingText /></p> : null}
       {items && items.length === 0 ? (
         <p className="mt-3 text-xs text-slate-500">{t("houseSearch.noSavedSearches")}</p>
       ) : null}
@@ -692,7 +694,7 @@ function SaveToContactPanel({
           disabled={saving || !contactId || !name.trim()}
           className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {saving ? "Saving…" : "Save search"}
+          {saving ? t("common:status.saving") : t("pages.houseSearch.saveSearch")}
         </button>
       </div>
     </section>
@@ -843,7 +845,7 @@ function EmailToBuyer({
             value={note}
             onChange={(e) => setNote(e.target.value)}
             rows={2}
-            placeholder="A quick line to your buyer…"
+            placeholder={t("pages.houseSearch.quickLineToBuyer")}
             className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
           />
         </label>
@@ -863,7 +865,7 @@ function EmailToBuyer({
           disabled={sending || selectedListings.length === 0 || email.trim().length === 0}
           className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {sending ? "Sending…" : "Send email"}
+          {sending ? t("common:status.sending") : t("pages.houseSearch.sendEmail")}
         </button>
       </div>
     </section>

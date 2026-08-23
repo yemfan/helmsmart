@@ -131,7 +131,7 @@ export default function EntitlementUpgradeModal({ open, onClose, reason, plan }:
             className="rounded-2xl bg-gray-900 px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-gray-800"
             onClick={onClose}
           >
-            {crm ? "View plans & upgrade" : "Upgrade Now"}
+            {crm ? t("pages.aiActionGateBanner.viewPlansUpgrade") : t("pages.entitlementUpgrade.upgradeNow")}
           </Link>
           <Link
             href="/agent/pricing"

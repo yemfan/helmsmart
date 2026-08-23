@@ -158,8 +158,8 @@ function MorningBriefingPane() {
         <span aria-hidden>☀️</span>
         <p className="text-xs text-slate-400">
           {briefing
-            ? "Morning briefing read — the next one arrives tomorrow."
-            : "Your first morning briefing arrives at your scheduled time."}
+            ? t("pages.briefings.morningBriefingReadThe")
+            : t("pages.briefings.yourFirstMorningBriefing")}
         </p>
       </article>
     );
@@ -307,7 +307,7 @@ function BossInstructionsPane() {
             className="inline-flex items-center gap-1.5 rounded-lg bg-[#0B1F44] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#142c5c] disabled:opacity-50"
           >
             <Send className="h-3 w-3" strokeWidth={2.5} />
-            {submitting ? "Sending…" : "Send to Boss Assistant"}
+            {submitting ? t("common:status.sending") : t("pages.briefings.sendToBossAssistant")}
           </button>
         </div>
       </form>
@@ -422,11 +422,11 @@ function TaskItem({
           }`}
         >
           {t.status === "sent"
-            ? "Sent"
+            ? tr("pages.briefings.sent")
             : t.status === "completed"
-              ? "Done"
+              ? tr("common:actions.done")
               : t.status === "needs_input"
-                ? "Needs info"
+                ? tr("pages.briefings.needsInfo")
                 : assistantNames[t.assigned_to] ?? ASSIGNEE_LABELS[t.assigned_to]}
         </span>
       </div>
@@ -451,7 +451,7 @@ function TaskItem({
               onClick={() => act("approve")}
               className="rounded-lg bg-[#0B1F44] px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-[#142c5c] disabled:opacity-50"
             >
-              {busy === "approve" ? "Sending…" : "Approve & send"}
+              {busy === "approve" ? tr("common:status.sending") : tr("pages.bossAssistant.approveSend")}
             </button>
             <button
               type="button"
@@ -469,7 +469,7 @@ function TaskItem({
       {t.status === "needs_input" && (
         <div className="mt-1.5 rounded-lg border border-amber-200 bg-amber-50/60 p-2.5">
           <p className="text-xs text-amber-900">
-            {t.follow_up_question ?? "Your Boss Assistant needs one more detail to start this."}
+            {t.follow_up_question ?? tr("pages.briefings.yourBossAssistantNeeds")}
           </p>
           <div className="mt-2 flex items-center gap-2">
             <input
@@ -482,7 +482,7 @@ function TaskItem({
                   void act("answer");
                 }
               }}
-              placeholder="Type your answer…"
+              placeholder={tr("pages.briefings.typeAnswer")}
               className="min-w-0 flex-1 rounded-lg border border-amber-200 px-2.5 py-1 text-xs text-slate-900 placeholder:text-slate-400 focus:border-[#0B1F44] focus:outline-none"
             />
             <button
@@ -491,7 +491,7 @@ function TaskItem({
               onClick={() => act("answer")}
               className="shrink-0 rounded-lg bg-[#0B1F44] px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-[#142c5c] disabled:opacity-50"
             >
-              {busy === "answer" ? "Working…" : "Send to Boss"}
+              {busy === "answer" ? tr("common:status.working") : tr("pages.briefings.sendToBoss")}
             </button>
           </div>
           {error && <span className="mt-1 block text-[11px] text-red-600">{error}</span>}

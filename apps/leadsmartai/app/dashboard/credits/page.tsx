@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function CreditsPage() {
   const t = await getServerT();
   return (
-    <Suspense fallback={<div className="p-4 text-sm text-gray-600">Loading credits…</div>}>
+    <Suspense fallback={<div className="p-4 text-sm text-gray-600">{t("pages.credits.loadingCredits", { ns: "dashboard" })}</div>}>
       <CreditsClient />
     </Suspense>
   );

@@ -87,7 +87,7 @@ export function NudgeLogClient({
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search by agent email / id / name…"
+          placeholder={t("pages.adminCommon.searchAgentEmailIdName")}
           className="min-w-[240px] flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
         />
         <select

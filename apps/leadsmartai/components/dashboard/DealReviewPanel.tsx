@@ -89,7 +89,7 @@ export function DealReviewPanel({ transactionId }: { transactionId: string }) {
             disabled={regenerating || loading}
             className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
           >
-            {regenerating ? "Generating…" : "↻ Regenerate"}
+            {regenerating ? t("common:status.generating") : "↻ Regenerate"}
           </button>
         ) : null}
       </div>

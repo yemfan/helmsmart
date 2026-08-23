@@ -95,7 +95,7 @@ export default function TemplatePickerClient() {
   }
 
   if (loading) {
-    return <div className="p-6 text-sm text-gray-500" aria-busy="true">Loading templates…</div>;
+    return <div className="p-6 text-sm text-gray-500" aria-busy="true">{t("pages.templatePicker.loadingTemplates")}</div>;
   }
   if (error) {
     return <div className="p-6 text-sm text-red-600">{error}</div>;
@@ -115,7 +115,7 @@ export default function TemplatePickerClient() {
         <div className="space-y-2 border-b border-gray-100 p-3">
           <input
             type="search"
-            placeholder="Search by name, ID, or body…"
+            placeholder={t("pages.templatePicker.searchByNameIdBody")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
@@ -146,7 +146,7 @@ export default function TemplatePickerClient() {
               options={[
                 { value: "all", label: "All status" },
                 { value: "autosend", label: "Autosend" },
-                { value: "review", label: "Review" },
+                { value: "review", label: t("common:actions.review") },
                 { value: "off", label: "Off" },
               ]}
             />
@@ -237,13 +237,19 @@ function SelectTiny({
 }
 
 function StatusPill({ status }: { status: TemplateStatus }) {
+  const { t } = useTranslation("dashboard");
   const cls =
     status === "autosend"
       ? "bg-green-50 text-green-700"
       : status === "review"
         ? "bg-amber-50 text-amber-700"
         : "bg-gray-100 text-gray-500";
-  const label = status === "autosend" ? "Auto" : status === "review" ? "Review" : "Off";
+  const label =
+    status === "autosend"
+      ? t("pages.templatePicker.modeAuto")
+      : status === "review"
+        ? t("pages.templatePicker.modeReview")
+        : t("pages.templatePicker.modeOff");
   return <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${cls}`}>{label}</span>;
 }
 
@@ -444,7 +450,7 @@ function TemplateDetail({
               disabled={saving || !dirty || overLimit}
               className="rounded-lg bg-brand-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
-              {saving ? "Saving…" : "Save"}
+              {saving ? t("common:status.saving") : t("common:actions.save")}
             </button>
             {template.override?.edited && (
               <button
@@ -472,7 +478,7 @@ function TemplateDetail({
                     previewMode === m ? "bg-white shadow-sm text-gray-900" : "text-gray-500"
                   }`}
                 >
-                  {m === "rendered" ? "Rendered" : "Raw"}
+                  {m === "rendered" ? t("pages.templatePicker.rendered") : "Raw"}
                 </button>
               ))}
             </div>
@@ -536,6 +542,7 @@ function StatusSelect({
   value: TemplateStatus;
   onChange: (v: TemplateStatus) => void;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="inline-flex rounded-md border border-gray-200 bg-gray-50 p-0.5 text-xs">
       {(["autosend", "review", "off"] as const).map((s) => (
@@ -547,7 +554,11 @@ function StatusSelect({
             value === s ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
           }`}
         >
-          {s === "autosend" ? "Autosend" : s === "review" ? "Review" : "Off"}
+          {s === "autosend"
+            ? t("pages.templatePicker.modeAutosend")
+            : s === "review"
+              ? t("pages.templatePicker.modeReview")
+              : t("pages.templatePicker.modeOff")}
         </button>
       ))}
     </div>

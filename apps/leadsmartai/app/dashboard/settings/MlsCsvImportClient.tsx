@@ -73,7 +73,7 @@ export default function MlsCsvImportClient() {
             disabled={loading}
             className="inline-flex items-center justify-center bg-brand-primary text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-[#005ca8] disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
           >
-            {loading ? "Importing..." : "Upload MLS CSV"}
+            {loading ? t("common:status.importing") : t("pages.mlsCsvImport.uploadMlsCsv")}
           </button>
         </div>
 

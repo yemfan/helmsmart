@@ -123,7 +123,7 @@ export default function TimingPanel() {
   if (loading) {
     return (
       <div className="text-sm text-gray-500" aria-busy="true">
-        Loading timing rules…
+        {t("pages.timingPanel.loading")}
       </div>
     );
   }
@@ -204,7 +204,7 @@ export default function TimingPanel() {
           disabled={saving || !isDirty}
           className="rounded-lg bg-brand-accent text-white text-sm font-medium px-4 py-2 disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save"}
+          {saving ? t("common:status.saving") : t("common:actions.save")}
         </button>
         {message ? <span className="text-sm text-green-700">{message}</span> : null}
         {error ? <span className="text-sm text-red-600">{error}</span> : null}

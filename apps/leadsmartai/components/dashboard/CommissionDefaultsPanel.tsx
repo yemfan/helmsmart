@@ -64,7 +64,7 @@ export function CommissionDefaultsPanel() {
     }
   }
 
-  if (!prefs) return <div className="text-xs text-slate-500">Loading preferences…</div>;
+  if (!prefs) return <div className="text-xs text-slate-500">{t("pages.commissionDefaults.loadingPreferences")}</div>;
 
   return (
     <div className="space-y-4">

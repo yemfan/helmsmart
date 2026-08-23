@@ -182,7 +182,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
               href={reg.dataHref}
               className="text-sm font-semibold text-[#0072ce] hover:text-[#005ca8]"
             >
-              Full data →
+              {t("pages.newsletter.fullData", { ns: "dashboard" })}
             </Link>
           </div>
           {reg.stats.length === 0 ? (
@@ -269,7 +269,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
                             rel="noopener noreferrer"
                             className="font-medium text-[#0072ce] hover:underline"
                           >
-                            Read source →{it.publisher ? ` ${it.publisher}` : ""}
+                            {t("pages.newsletter.readSource", { ns: "dashboard" })}{it.publisher ? ` ${it.publisher}` : ""}
                           </a>
                         </p>
                       )}
@@ -306,7 +306,7 @@ export default async function NewsletterIssuePage({ params }: Props) {
 
         <footer className="border-t border-slate-200 pt-6 text-sm text-slate-500">{t("pages.newsletterIssue.provenance", { ns: "dashboard" })} {reg.name} {t("pages.newsletterIssue.provenanceTail", { ns: "dashboard" })}{" "}
           <Link href="/newsletter" className="font-medium text-[#0072ce] hover:underline">
-            Subscribe or browse past issues →
+            {t("pages.newsletter.subscribeOrBrowse", { ns: "dashboard" })}
           </Link>
         </footer>
       </div>

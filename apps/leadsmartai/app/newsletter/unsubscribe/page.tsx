@@ -47,7 +47,7 @@ export default async function NewsletterUnsubscribePage({ searchParams }: Props)
           href="/newsletter"
           className="mt-8 inline-flex items-center rounded-lg bg-[#0072ce] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#005ca8]"
         >
-          Back to the newsletter →
+          {t("pages.newsletter.backToNewsletter", { ns: "dashboard" })}
         </Link>
       </div>
     </main>

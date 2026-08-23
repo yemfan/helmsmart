@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
-import { Heart } from "lucide-react";
+import { Heart } from "lucide-react";
+import { LoadingText } from "@/components/ui/LoadingText";
 
 type Favorite = {
   id: string;
@@ -76,7 +77,7 @@ export default function FavoritesPanel({ contactId }: Props) {
       </div>
 
       {loading ? (
-        <div className="mt-3 text-xs text-gray-400">Loading…</div>
+        <div className="mt-3 text-xs text-gray-400"><LoadingText /></div>
       ) : favorites.length === 0 ? (
         <div className="mt-3 rounded border border-dashed border-gray-200 p-4 text-center text-xs text-gray-500">
           <Heart className="mx-auto h-5 w-5 text-gray-300" aria-hidden />
@@ -101,7 +102,7 @@ export default function FavoritesPanel({ contactId }: Props) {
               <div className="p-2">
                 <div className="text-sm font-semibold text-gray-900">{money(f.price)}</div>
                 <div className="truncate text-[11px] text-gray-600">
-                  {f.address ?? "Address unavailable"}
+                  {f.address ?? t("pages.favorites.addressUnavailable")}
                 </div>
                 {(f.beds || f.baths || f.sqft) && (
                   <div className="mt-0.5 text-[10px] text-gray-400">

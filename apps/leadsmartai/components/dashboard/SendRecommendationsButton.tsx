@@ -203,7 +203,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     rows={3}
-                    placeholder="Hey — based on what you've been looking at, thought these three might be worth a closer look…"
+                    placeholder={t("pages.sendRecommendations.samplePreview")}
                     className="mt-0.5 w-full rounded border border-gray-300 px-2 py-1.5 text-sm"
                   />
                 </label>
@@ -313,7 +313,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                     className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-600 hover:text-blue-800 disabled:opacity-50"
                   >
                     <Eye className="h-3 w-3" aria-hidden />
-                    {signaturePreview.kind === "loading" ? "Loading…" : "Preview signature"}
+                    {signaturePreview.kind === "loading" ? t("common:actions.loading") : t("pages.sendRecommendationsButton.previewSignature")}
                   </button>
                 </div>
                 {!suppressSignature && signaturePreview.kind === "ready" && (
@@ -328,7 +328,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                   </div>
                 )}
                 <p className="mt-1.5 text-[10px] text-gray-500">
-                  Configure it under Account → Profile → Branding.
+                  {t("pages.sendRecommendations.brandingHint")}
                 </p>
               </div>
 
@@ -355,7 +355,7 @@ export default function SendRecommendationsButton({ contactId, contactFirstName 
                 className="inline-flex items-center gap-1 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
               >
                 <Send className="h-3.5 w-3.5" aria-hidden />
-                {sending ? "Sending…" : `Send ${picked.length || ""}`}
+                {sending ? t("common:status.sending") : `Send ${picked.length || ""}`}
               </button>
             </div>
           </div>

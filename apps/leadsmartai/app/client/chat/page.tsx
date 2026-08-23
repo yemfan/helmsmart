@@ -126,7 +126,7 @@ export default function ClientChatPage() {
           <form onSubmit={send} className="mt-3 flex gap-2">
             <input
               className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm"
-              placeholder="Type a message…"
+              placeholder={t("pages.clientPortal.typeMessage")}
               value={text}
               onChange={(e) => setText(e.target.value)}
             />

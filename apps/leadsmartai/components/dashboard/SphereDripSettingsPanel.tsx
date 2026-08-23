@@ -198,7 +198,7 @@ export default function SphereDripSettingsPanel() {
                 disabled={saving}
                 className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {saving ? "Saving…" : "Save"}
+                {saving ? t("common:status.saving") : t("common:actions.save")}
               </button>
             </div>
           </>

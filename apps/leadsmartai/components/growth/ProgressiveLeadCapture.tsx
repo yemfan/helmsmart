@@ -129,7 +129,7 @@ export default function ProgressiveLeadCapture({
         disabled={busy}
         className="w-full rounded-xl bg-blue-600 text-white font-semibold py-2 text-sm disabled:opacity-50"
       >
-        {busy ? "Sending…" : "Submit"}
+        {busy ? t("common:status.sending") : t("pages.openHouseSignup.submit")}
       </button>
     </form>
   );

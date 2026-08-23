@@ -9,7 +9,7 @@ import type { SalesModel } from "@/lib/sales-models";
  *
  * Renders the icon, name, "Recommended" pill, description, "Best for"
  * + "Strengths" lists, and a Select button. The button is async-aware
- * — it shows "Saving…" while the parent's onSelect promise resolves
+ * — it shows t("common:status.saving") while the parent's onSelect promise resolves
  * so a misclick doesn't trigger a second submit.
  *
  * Selected state is purely visual (the parent owns the choice); we
@@ -95,7 +95,7 @@ export function SalesModelCard({
           busy ? "opacity-70" : "",
         ].join(" ")}
       >
-        {busy ? "Saving…" : selected ? "Selected" : `Select ${model.name.split(" ")[0]}`}
+        {busy ? t("common:status.saving") : selected ? t("pages.salesModel.selected") : `Select ${model.name.split(" ")[0]}`}
       </button>
     </div>
   );

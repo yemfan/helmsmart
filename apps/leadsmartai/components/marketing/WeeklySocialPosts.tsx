@@ -392,7 +392,7 @@ export default function WeeklySocialPosts({
                   ) : (
                     <Copy className="h-3.5 w-3.5" />
                   )}
-                  {copiedId === rec.id ? t("social.copied") : "Copy"}
+                  {copiedId === rec.id ? t("social.copied") : t("common:actions.copy")}
                 </button>
 
                 {/* Schedule to social — the glue to the real publish engine. */}
@@ -417,7 +417,7 @@ export default function WeeklySocialPosts({
                     ) : (
                       <Send className="h-3.5 w-3.5" />
                     )}
-                    {schedulingId === rec.id ? "Scheduling…" : `Schedule to ${platformsLabel}`}
+                    {schedulingId === rec.id ? t("common:status.scheduling") : `Schedule to ${platformsLabel}`}
                   </button>
                 )}
 
@@ -524,7 +524,7 @@ export default function WeeklySocialPosts({
                       ) : (
                         <ImagePlus className="h-3.5 w-3.5" />
                       )}
-                      {uploadingId === previewRec.id ? "Uploading…" : t("social.uploadImage")}
+                      {uploadingId === previewRec.id ? t("common:status.uploading") : t("social.uploadImage")}
                     </button>
                   </div>
                   {previewRec.image_source === "custom" && (
@@ -549,7 +549,7 @@ export default function WeeklySocialPosts({
                   <span className="font-semibold text-[#0072ce]">{t("social.signature")}</span>: swap in
                   your own photo or short video and put your logo &amp; colors on every post.{" "}
                   <a href="/dashboard/billing" className="font-semibold text-[#0072ce] underline hover:no-underline">
-                    Upgrade →
+                    {t("pages.weeklySocial.upgrade")}
                   </a>
                 </div>
               )}

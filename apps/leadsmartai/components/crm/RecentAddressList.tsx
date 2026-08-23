@@ -207,7 +207,7 @@ export function RecentAddressList({
                       : "bg-blue-50 text-blue-800"
                   }`}
                 >
-                  {item.source === "offer" ? "Offer" : "Showing"}
+                  {item.source === "offer" ? t("pages.listingOffersCompare.offer") : t("pages.recentAddressList.showing")}
                 </span>
                 <span className="mt-0.5 block">{relativeAge(item.occurredAt, t, locale)}</span>
               </span>

@@ -324,7 +324,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
               disabled={submitting}
               className="w-full rounded-2xl bg-emerald-500 py-6 text-xl font-semibold text-slate-950 hover:bg-emerald-400 disabled:opacity-50"
             >
-              {submitting ? "Saving…" : "Sign in"}
+              {submitting ? t("common:status.saving") : t("pages.openHouseSignin.signIn")}
             </button>
           </section>
         </div>
@@ -339,7 +339,7 @@ export function KioskClient({ info }: { info: PublicOpenHouseInfo }) {
               {confirmation}
             </div>
             <div className="mt-2 text-sm text-slate-900/80">
-              Form resets in a moment…
+              {t("pages.kiosk.formResets")}
             </div>
           </div>
         </div>

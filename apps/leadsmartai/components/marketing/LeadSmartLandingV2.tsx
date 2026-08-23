@@ -100,13 +100,19 @@ const BUY_FASTER = ["auto_criteria", "ai_machine"] as const;
  * the page. Names + portraits match the in-app roster (lib/closeboss/team.ts,
  * /avatars/personas). Copy is brand content, kept inline (not i18n) for now.
  */
+/*
+ * Identity only — the persona name and the color that identifies it. Role and
+ * one-liner are copy and live in `web_landing.team.members.*`; holding them
+ * here made all six cards render English under a Chinese heading, because a
+ * module constant is evaluated once, before any locale is known.
+ */
 const AI_TEAM_MEMBERS = [
-  { id: "max", name: "Max", role: "Captain", color: "#6C5BD0", line: "Runs the team and keeps you focused on what matters most today." },
-  { id: "emma", name: "Emma", role: "AI Receptionist", color: "#E86FA6", line: "Answers every call and text — instantly, day or night." },
-  { id: "chris", name: "Chris", role: "AI Sales Specialist", color: "#2F6FE0", line: "Follows up relentlessly and turns leads into booked appointments." },
-  { id: "ruby", name: "Ruby", role: "AI Marketing Specialist", color: "#E68A2E", line: "Creates content and campaigns that keep your pipeline full." },
-  { id: "grace", name: "Grace", role: "AI Transaction Coordinator", color: "#2E9E6B", line: "Tracks every deadline so deals move smoothly to the closing table." },
-  { id: "oliver", name: "Oliver", role: "AI Financial Analyst", color: "#3A6E8F", line: "Watches every dollar and keeps your commissions and books straight." },
+  { id: "max", name: "Max", color: "#6C5BD0" },
+  { id: "emma", name: "Emma", color: "#E86FA6" },
+  { id: "chris", name: "Chris", color: "#2F6FE0" },
+  { id: "ruby", name: "Ruby", color: "#E68A2E" },
+  { id: "grace", name: "Grace", color: "#2E9E6B" },
+  { id: "oliver", name: "Oliver", color: "#3A6E8F" },
 ] as const;
 
 /* JUMP_LINKS removed — the in-page jump-link strip was deleted when
@@ -412,9 +418,7 @@ export default function LeadSmartLandingV2() {
                 <div className="flex items-center gap-4">
                   <Image
                     src="/avatars/personas/max.png"
-                    alt={t("ask_max.avatar_alt", {
-                      defaultValue: "Max, the captain of your CloseBoss AI team",
-                    })}
+                    alt={t("ask_max.avatar_alt")}
                     width={80}
                     height={80}
                     className="h-20 w-20 shrink-0 rounded-full border-2 border-[#F2C94C] object-cover"
@@ -438,19 +442,19 @@ export default function LeadSmartLandingV2() {
         >
           <div className="mx-auto max-w-6xl">
             <RevealSection className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">{t("pages.landing.meetTeam")}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#0072ce]">{t("team.eyebrow")}</p>
               <h2 className="mt-2 font-heading text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-                {t("pages.landing.sixSpecialists")}{" "}
-                <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">{t("pages.landing.oneTeam")}</span>
+                {t("team.h2_prefix")}{" "}
+                <span className="bg-gradient-to-r from-[#0072ce] to-[#4F46E5] bg-clip-text text-transparent">{t("team.h2_highlight")}</span>
               </h2>
-              <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">{t("pages.landing.teamSub")}</p>
+              <p className="mt-4 text-base text-slate-600 dark:text-slate-400 md:text-lg">{t("team.sub")}</p>
             </RevealSection>
 
             {/* The team lineup */}
             <RevealSection delay={100} className="mt-10">
               <Image
                 src="/brand/closeboss/ai-team.png"
-                alt={t("pages.landing.teamAlt")}
+                alt={t("team.image_alt")}
                 width={1536}
                 height={1024}
                 sizes="(max-width: 896px) 100vw, 896px"
@@ -486,11 +490,11 @@ export default function LeadSmartLandingV2() {
                           className="rounded-full px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:text-slate-200"
                           style={{ backgroundColor: `${m.color}1A` }}
                         >
-                          {m.role}
+                          {t(`team.members.${m.id}.role`)}
                         </span>
                       </div>
                       <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                        {m.line}
+                        {t(`team.members.${m.id}.line`)}
                       </p>
                     </div>
                   </div>
@@ -503,7 +507,7 @@ export default function LeadSmartLandingV2() {
                 <Button
                   href={PRIMARY_CTA_HREF}
                   className="min-h-[48px] px-7 text-base shadow-floating hover:shadow-overlay"
-                >{t("pages.landing.hireFree")}</Button>
+                >{t("team.cta")}</Button>
               </MagneticButton>
             </RevealSection>
           </div>
@@ -1223,7 +1227,7 @@ const HOME_FAQ: { q: string; a: string }[] = [
 ];
 
 function FaqSection() {
-  const { t } = useTranslation("dashboard");
+  const { t } = useTranslation("web_landing");
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -1236,8 +1240,8 @@ function FaqSection() {
   return (
     <section id="faq" className="px-6 py-16 md:py-20">
       <div className="mx-auto max-w-3xl">
-        <h2 className="font-heading text-2xl font-bold text-slate-900 dark:text-white md:text-3xl">{t("pages.landing.whatIs")}</h2>
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t("pages.landing.whatIsSub")}</p>
+        <h2 className="font-heading text-2xl font-bold text-slate-900 dark:text-white md:text-3xl">{t("faq.h2")}</h2>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t("faq.sub")}</p>
         <dl className="mt-8 space-y-4">
           {HOME_FAQ.map((f) => (
             <div

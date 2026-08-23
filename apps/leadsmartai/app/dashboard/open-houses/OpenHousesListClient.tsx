@@ -6,11 +6,11 @@ import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import type { OpenHouseListItem, OpenHouseStatus } from "@/lib/open-houses/types";
 
-const STATUS_LABEL: Record<OpenHouseStatus, string> = {
-  scheduled: "Upcoming",
-  in_progress: "Live now",
-  completed: "Completed",
-  cancelled: "Cancelled",
+const STATUS_LABEL_KEY: Record<OpenHouseStatus, string> = {
+  scheduled: "pages.openHousesList.upcoming",
+  in_progress: "pages.openHousesList.liveNow",
+  completed: "pages.openHousesList.completed",
+  cancelled: "pages.openHousesList.cancelled",
 };
 
 const STATUS_BADGE: Record<OpenHouseStatus, string> = {
@@ -126,7 +126,7 @@ export function OpenHousesListClient({
               filter === f ? "bg-white text-slate-900 shadow" : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            {f === "upcoming" ? "Upcoming" : f === "past" ? t("pages.openHouses.tabPast") : t("pages.openHouses.tabAll")}
+            {f === "upcoming" ? t("pages.openHousesList.upcoming") : f === "past" ? t("pages.openHouses.tabPast") : t("pages.openHouses.tabAll")}
           </button>
         ))}
       </div>
@@ -195,7 +195,7 @@ export function OpenHousesListClient({
                     <span
                       className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[oh.displayStatus]}`}
                     >
-                      {STATUS_LABEL[oh.displayStatus]}
+                      {t(STATUS_LABEL_KEY[oh.displayStatus])}
                     </span>
                   </td>
                 </tr>
@@ -211,7 +211,7 @@ export function OpenHousesListClient({
                         </div>
                       </>
                     ) : (
-                      "No open houses match this filter."
+                      t("pages.openHousesList.noOpenHousesMatch")
                     )}
                   </td>
                 </tr>

@@ -2,70 +2,38 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { PricingHubContext } from "@/lib/pricing/pricingHubContext";
-import {
-  LOGGED_IN_ACTIVATE_AGENT_ACCESS_LABEL,
-  LOGGED_IN_GET_AGENT_ACCESS_LABEL,
-  LOGGED_IN_VIEW_AGENT_PLANS_LABEL,
-  LOGGED_IN_VIEW_AGENT_PRICING_LABEL,
-} from "@/lib/auth/startFreeAgentMarketing";
 
+/*
+ * Cards carry a key and a route, never copy — a module constant is evaluated
+ * once, before any locale is known, so a title stored here renders English to
+ * every reader. Titles, prices and feature bullets come from
+ * `web_pricing.hub.products.*` at render time.
+ */
 type ProductCard = {
-  key: "consumer" | "agent" | "loan_broker";
-  title: string;
-  audience: string;
-  price: string;
-  description: string;
-  features: string[];
+  key: "consumer" | "agent";
   href: string;
 };
 
 const baseProducts: ProductCard[] = [
-  {
-    key: "consumer",
-    title: "PropertyToolsAI",
-    audience: "Buyers, sellers, and investors",
-    price: "From $0",
-    description:
-      "Smart real estate tools for home value, financing, comparisons, and decision support.",
-    features: [
-      "Property insights",
-      "Mortgage tools",
-      "AI comparisons",
-      "Premium consumer features",
-    ],
-    href: "/pricing/consumer",
-  },
-  {
-    key: "agent",
-    title: "CloseBoss for Agents",
-    audience: "Real estate agents",
-    price: "Free to start",
-    description:
-      "Lead capture, CRM, CMA workflow, follow-up tools, and AI-powered deal conversion.",
-    features: ["Starter / Pro / Premium", "CMA workflow", "Lead pipeline", "CRM + AI follow-up"],
-    href: "/pricing/agent",
-  },
-  {
-    key: "loan_broker",
-    title: "CloseBoss for Loan Brokers",
-    audience: "Loan brokers and mortgage professionals",
-    price: "From $99/mo",
-    description:
-      "Borrower pipeline, financing workflow, loan scenarios, and stronger conversion tools.",
-    features: [
-      "Borrower pipeline",
-      "Loan scenarios",
-      "Broker workflow tools",
-      "Advanced finance workspace",
-    ],
-    href: "/pricing/loan-broker",
-  },
+  { key: "consumer", href: "/pricing/consumer" },
+  { key: "agent", href: "/pricing/agent" },
 ];
+
+const FEATURE_KEYS = ["f1", "f2", "f3", "f4"] as const;
 
 type CardState = {
   featured: boolean;
+  /** Key under `hub.badge`, or null for no badge. */
   badge: string | null;
+  /**
+   * Whether the badge means "you already have this". It used to be read back
+   * out of the badge TEXT (`badge.includes("Active")`), which stops being true
+   * the moment the text is translated — 已开通 contains no "Active".
+   */
+  badgeActive: boolean;
+  /** Key under `hub.cta`. */
   cta: string;
   href: string;
 };
@@ -74,14 +42,10 @@ function getCardState(key: ProductCard["key"], context: PricingHubContext | null
   if (!context?.loggedIn) {
     return {
       featured: key === "agent",
-      badge: key === "agent" ? "Most Popular" : null,
-      cta: "View Pricing",
-      href:
-        key === "consumer"
-          ? "/pricing/consumer"
-          : key === "agent"
-            ? "/pricing/agent"
-            : "/pricing/loan-broker",
+      badge: key === "agent" ? "mostPopular" : null,
+      badgeActive: false,
+      cta: "viewPricing",
+      href: key === "consumer" ? "/pricing/consumer" : "/pricing/agent",
     };
   }
 
@@ -89,16 +53,18 @@ function getCardState(key: ProductCard["key"], context: PricingHubContext | null
     if (context.entitlements.consumerPremium || context.billingPlan === "consumer_premium") {
       return {
         featured: false,
-        badge: "Current Plan",
-        cta: "Manage Billing",
+        badge: "currentPlan",
+        badgeActive: true,
+        cta: "manageBilling",
         href: "/account/billing",
       };
     }
 
     return {
       featured: context.role === "consumer",
-      badge: context.role === "consumer" ? "Recommended" : null,
-      cta: "View Consumer Pricing",
+      badge: context.role === "consumer" ? "recommended" : null,
+      badgeActive: false,
+      cta: "viewConsumerPricing",
       href: "/pricing/consumer",
     };
   }
@@ -107,8 +73,9 @@ function getCardState(key: ProductCard["key"], context: PricingHubContext | null
     if (context.entitlements.leadsmartAgent) {
       return {
         featured: true,
-        badge: "Agent Access Active",
-        cta: "Manage Agent Billing",
+        badge: "agentActive",
+        badgeActive: true,
+        cta: "manageAgentBilling",
         href: "/account/billing",
       };
     }
@@ -118,32 +85,27 @@ function getCardState(key: ProductCard["key"], context: PricingHubContext | null
     if (role === "consumer") {
       return {
         featured: true,
-        badge: "Recommended",
-        cta: LOGGED_IN_GET_AGENT_ACCESS_LABEL,
+        badge: "recommended",
+        badgeActive: false,
+        cta: "getAgentAccess",
         href: "/agent/pricing",
       };
     }
     if (role === "agent") {
       return {
         featured: true,
-        badge: "Setup",
-        cta: LOGGED_IN_ACTIVATE_AGENT_ACCESS_LABEL,
+        badge: "setup",
+        badgeActive: false,
+        cta: "activateAgentAccess",
         href: "/start-free/agent",
-      };
-    }
-    if (role === "loan_broker") {
-      return {
-        featured: true,
-        badge: null,
-        cta: LOGGED_IN_VIEW_AGENT_PRICING_LABEL,
-        href: "/agent/pricing",
       };
     }
     if (role === "admin" || role === "support") {
       return {
         featured: false,
         badge: null,
-        cta: LOGGED_IN_VIEW_AGENT_PRICING_LABEL,
+        badgeActive: false,
+        cta: "viewAgentPricing",
         href: "/agent/pricing",
       };
     }
@@ -151,41 +113,23 @@ function getCardState(key: ProductCard["key"], context: PricingHubContext | null
     return {
       featured: false,
       badge: null,
-      cta: LOGGED_IN_VIEW_AGENT_PLANS_LABEL,
+      badgeActive: false,
+      cta: "viewAgentPlans",
       href: "/agent/pricing",
-    };
-  }
-
-  if (key === "loan_broker") {
-    if (
-      context.entitlements.leadsmartLoanBroker ||
-      context.billingPlan === "loan_broker_pro"
-    ) {
-      return {
-        featured: true,
-        badge: "Loan Broker Access Active",
-        cta: "Manage Billing",
-        href: "/account/billing",
-      };
-    }
-
-    return {
-      featured: context.role === "loan_broker",
-      badge: context.role === "loan_broker" ? "Recommended" : null,
-      cta: "View Loan Broker Pricing",
-      href: "/pricing/loan-broker",
     };
   }
 
   return {
     featured: false,
     badge: null,
-    cta: "View Pricing",
+    badgeActive: false,
+    cta: "viewPricing",
     href: "/pricing/hub",
   };
 }
 
 export default function PricingHubClientPage() {
+  const { t } = useTranslation("web_pricing");
   const [context, setContext] = useState<PricingHubContext | null>(null);
 
   useEffect(() => {
@@ -221,16 +165,15 @@ export default function PricingHubClientPage() {
       <div className="mx-auto max-w-6xl space-y-10">
         <div className="text-center">
           <h1 className="text-4xl font-semibold tracking-tight text-gray-900 md:text-5xl">
-            Choose the Right Plan
+            {t("hub.heading")}
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-base leading-7 text-gray-600 md:text-lg">
-            Find the best fit for your workflow, whether you&apos;re exploring properties,
-            converting leads as an agent, or managing borrower pipelines.
+            {t("hub.sub")}
           </p>
 
           {context?.loggedIn && (
             <div className="mt-4 inline-flex rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white">
-              Signed in as {roleDisplay ?? "member"}
+              {t("hub.signedInAs", { role: roleDisplay ?? t("hub.memberFallback") })}
             </div>
           )}
         </div>
@@ -246,10 +189,14 @@ export default function PricingHubClientPage() {
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="text-sm font-medium text-gray-500">{product.audience}</div>
-                  <h2 className="mt-2 text-2xl font-semibold text-gray-900">{product.title}</h2>
+                  <div className="text-sm font-medium text-gray-500">
+                    {t(`hub.products.${product.key}.audience`)}
+                  </div>
+                  <h2 className="mt-2 text-2xl font-semibold text-gray-900">
+                    {t(`hub.products.${product.key}.title`)}
+                  </h2>
                   <div className="mt-3 text-3xl font-semibold tracking-tight text-gray-900">
-                    {product.price}
+                    {t(`hub.products.${product.key}.price`)}
                   </div>
                 </div>
 
@@ -257,25 +204,27 @@ export default function PricingHubClientPage() {
                   <span
                     className={[
                       "shrink-0 rounded-full px-3 py-1 text-xs font-medium",
-                      product.state.badge.includes("Active") || product.state.badge === "Current Plan"
+                      product.state.badgeActive
                         ? "bg-emerald-100 text-emerald-900"
                         : "bg-gray-900 text-white",
                     ].join(" ")}
                   >
-                    {product.state.badge}
+                    {t(`hub.badge.${product.state.badge}`)}
                   </span>
                 )}
               </div>
 
-              <p className="mt-4 text-sm leading-6 text-gray-600">{product.description}</p>
+              <p className="mt-4 text-sm leading-6 text-gray-600">
+                {t(`hub.products.${product.key}.description`)}
+              </p>
 
               <ul className="mt-6 space-y-3">
-                {product.features.map((feature) => (
+                {FEATURE_KEYS.map((f) => (
                   <li
-                    key={feature}
+                    key={f}
                     className="rounded-xl bg-gray-50 px-4 py-3 text-sm text-gray-700"
                   >
-                    {feature}
+                    {t(`hub.products.${product.key}.${f}`)}
                   </li>
                 ))}
               </ul>
@@ -285,7 +234,7 @@ export default function PricingHubClientPage() {
                   href={product.state.href}
                   className="block w-full rounded-2xl bg-gray-900 px-4 py-3 text-center text-sm font-medium text-white transition hover:bg-gray-800"
                 >
-                  {product.state.cta}
+                  {t(`hub.cta.${product.state.cta}`)}
                 </Link>
               </div>
             </div>
@@ -293,28 +242,23 @@ export default function PricingHubClientPage() {
         </div>
 
         <div className="rounded-3xl border bg-white p-6 shadow-sm">
-          <h3 className="text-xl font-semibold text-gray-900">Need help choosing?</h3>
+          <h3 className="text-xl font-semibold text-gray-900">{t("hub.help.heading")}</h3>
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             <div className="rounded-2xl bg-gray-50 p-5">
-              <div className="text-sm font-semibold text-gray-900">Researching homes</div>
-              <p className="mt-2 text-sm text-gray-600">
-                Start with PropertyToolsAI if you want smarter property and financing tools.
-              </p>
+              <div className="text-sm font-semibold text-gray-900">
+                {t("hub.help.researchingTitle")}
+              </div>
+              <p className="mt-2 text-sm text-gray-600">{t("hub.help.researchingBody")}</p>
             </div>
 
             <div className="rounded-2xl bg-gray-50 p-5">
-              <div className="text-sm font-semibold text-gray-900">Growing as an agent</div>
-              <p className="mt-2 text-sm text-gray-600">
-                Start with CloseBoss for Agents if you need lead workflow, CRM, and AI follow-up.
-              </p>
+              <div className="text-sm font-semibold text-gray-900">{t("hub.help.agentTitle")}</div>
+              <p className="mt-2 text-sm text-gray-600">{t("hub.help.agentBody")}</p>
             </div>
 
             <div className="rounded-2xl bg-gray-50 p-5">
-              <div className="text-sm font-semibold text-gray-900">Managing borrowers</div>
-              <p className="mt-2 text-sm text-gray-600">
-                Start with CloseBoss for Loan Brokers if you need borrower workflow and finance
-                tools.
-              </p>
+              <div className="text-sm font-semibold text-gray-900">{t("hub.help.brokerTitle")}</div>
+              <p className="mt-2 text-sm text-gray-600">{t("hub.help.brokerBody")}</p>
             </div>
           </div>
         </div>

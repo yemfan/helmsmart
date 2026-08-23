@@ -13,13 +13,12 @@ export const BROKER_PORTAL_ROLES = new Set([
 
 /**
  * Agent workspace upsells (sidebar promo, Upgrade CTA) — not for consumers, admins, or support.
- * Includes mortgage `loan_broker` as a “broker” professional.
  */
 export function isAgentOrBrokerProfileRole(role: string | null | undefined): boolean {
   const r = String(role ?? "")
     .toLowerCase()
     .trim();
-  if (r === "agent" || r === "loan_broker") return true;
+  if (r === "agent") return true;
   return BROKER_PORTAL_ROLES.has(r);
 }
 
@@ -56,8 +55,6 @@ export const START_FREE_AGENT_PATH = "/start-free/agent";
 /** Strict RBAC denial (admin/support-only areas). */
 export const UNAUTHORIZED_PATH = "/unauthorized";
 
-/** Loan officer / mortgage broker workspace entry. */
-export const LOAN_BROKER_HOME_PATH = "/loan-broker/dashboard";
 
 /**
  * Where to send a signed-in professional after login / “Dashboard” in account menu.

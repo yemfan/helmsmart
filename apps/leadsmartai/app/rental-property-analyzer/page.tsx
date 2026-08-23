@@ -546,7 +546,7 @@ function RentalPropertyAnalyzerPageInner() {
                 onClick={handleAnalyze}
                 disabled={loading}
               >
-                {loading ? "Analyzing..." : "Analyze Property"}
+                {loading ? t("common:status.analyzing") : t("pages.rentalPropertyAnalyzer.analyzeProperty")}
               </button>
             </div>
             {error ? <p className="text-xs text-rose-600">{error}</p> : null}

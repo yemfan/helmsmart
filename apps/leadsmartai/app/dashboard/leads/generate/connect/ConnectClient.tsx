@@ -636,14 +636,14 @@ export default function ConnectClient({
             </div>
             <div>
               <h2 className="text-base font-semibold text-gray-900">Pinterest</h2>
-              <p className="text-sm text-gray-600">{t("pages.connect.pinterestBlurb")}</p>
+              <p className="text-sm text-gray-600">{t("connect.pinterest.body")}</p>
             </div>
           </div>
           <a
             href="/api/leads-gen/connect/pinterest/start"
             className="shrink-0 rounded-lg bg-[#E60023] px-4 py-2 text-sm font-semibold text-white hover:bg-[#ad001a]"
           >
-            {pinterestConnections.length > 0 ? "Reconnect" : "Connect Pinterest"}
+            {pinterestConnections.length > 0 ? t("connect.pinterest.cta_reconnect") : t("connect.pinterest.cta_connect")}
           </a>
         </div>
 
@@ -669,7 +669,7 @@ export default function ConnectClient({
                   )}
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-gray-900">
-                      {c.account_display_name ?? c.pinterest_username ?? "Pinterest account"}
+                      {c.account_display_name ?? c.pinterest_username ?? t("dashboard:pages.connect.pinterestAccount")}
                     </p>
                     <p className="truncate text-xs text-gray-500">
                       {c.pinterest_username ? `@${c.pinterest_username}` : "Pinterest"}
@@ -704,10 +704,10 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">{t("pages.connect.pinterestConnect")}</p>
+          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">{t("connect.pinterest.empty")}</p>
         )}
 
-        <p className="mt-4 text-xs text-gray-400">{t("pages.connect.pinterestRevoke")}</p>
+        <p className="mt-4 text-xs text-gray-400">{t("connect.pinterest.revoke_hint")}</p>
       </section>
 
       {/* TikTok card */}
@@ -719,14 +719,14 @@ export default function ConnectClient({
             </div>
             <div>
               <h2 className="text-base font-semibold text-gray-900">TikTok</h2>
-              <p className="text-sm text-gray-600">{t("pages.connect.tiktokBlurb")}</p>
+              <p className="text-sm text-gray-600">{t("connect.tiktok.body")}</p>
             </div>
           </div>
           <a
             href="/api/leads-gen/connect/tiktok/start"
             className="shrink-0 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-gray-800"
           >
-            {tiktokConnections.length > 0 ? "Reconnect" : "Connect TikTok"}
+            {tiktokConnections.length > 0 ? t("connect.tiktok.cta_reconnect") : t("connect.tiktok.cta_connect")}
           </a>
         </div>
 
@@ -752,7 +752,7 @@ export default function ConnectClient({
                   )}
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-gray-900">
-                      {c.account_display_name ?? c.tiktok_username ?? "TikTok account"}
+                      {c.account_display_name ?? c.tiktok_username ?? t("dashboard:pages.connect.tiktokAccount")}
                     </p>
                     <p className="truncate text-xs text-gray-500">
                       {c.tiktok_username ? `@${c.tiktok_username}` : "TikTok"}
@@ -786,10 +786,10 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">{t("pages.connect.tiktokConnect")}</p>
+          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">{t("connect.tiktok.empty")}</p>
         )}
 
-        <p className="mt-4 text-xs text-gray-400">{t("pages.connect.tiktokRevoke")}</p>
+        <p className="mt-4 text-xs text-gray-400">{t("connect.tiktok.revoke_hint")}</p>
       </section>
 
       {/* YouTube card */}
@@ -801,14 +801,14 @@ export default function ConnectClient({
             </div>
             <div>
               <h2 className="text-base font-semibold text-gray-900">YouTube</h2>
-              <p className="text-sm text-gray-600">{t("pages.connect.youtubeBlurb")}</p>
+              <p className="text-sm text-gray-600">{t("connect.youtube.body")}</p>
             </div>
           </div>
           <a
             href="/api/leads-gen/connect/youtube/start"
             className="shrink-0 rounded-lg bg-[#FF0000] px-4 py-2 text-sm font-semibold text-white hover:bg-[#cc0000]"
           >
-            {youtubeConnections.length > 0 ? "Reconnect" : "Connect YouTube"}
+            {youtubeConnections.length > 0 ? t("connect.youtube.cta_reconnect") : t("connect.youtube.cta_connect")}
           </a>
         </div>
 
@@ -834,7 +834,7 @@ export default function ConnectClient({
                   )}
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-gray-900">
-                      {c.account_display_name ?? c.youtube_channel_title ?? "YouTube channel"}
+                      {c.account_display_name ?? c.youtube_channel_title ?? t("dashboard:pages.connect.youtubeChannel")}
                     </p>
                     <p className="truncate text-xs text-gray-500">{t("youtubeChannel")}</p>
                   </div>
@@ -866,10 +866,10 @@ export default function ConnectClient({
             ))}
           </ul>
         ) : (
-          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">{t("pages.connect.youtubeConnect")}</p>
+          <p className="mt-4 rounded-lg border border-dashed border-gray-300 bg-gray-50/60 px-3 py-3 text-sm text-gray-500">{t("connect.youtube.empty")}</p>
         )}
 
-        <p className="mt-4 text-xs text-gray-400">{t("pages.connect.youtubeRevoke")}</p>
+        <p className="mt-4 text-xs text-gray-400">{t("connect.youtube.revoke_hint")}</p>
       </section>
 
       {/* Phase 3 placeholders */}

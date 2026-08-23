@@ -397,7 +397,7 @@ export function AiSmsModal({
               AI SMS · {model.name}
             </p>
             <h2 id="ai-sms-title" className="mt-0.5 text-lg font-semibold text-slate-900">
-              {selectedContact?.name?.trim() || selectedContact?.phone || "Launch an AI SMS conversation"}
+              {selectedContact?.name?.trim() || selectedContact?.phone || t("pages.aiSms.launchAnAiSms")}
             </h2>
             {selectedContact ? (
               <p className="mt-0.5 truncate text-xs text-slate-500">
@@ -443,7 +443,7 @@ export function AiSmsModal({
               />
               <div className="min-h-[200px] rounded-xl border border-slate-200 bg-slate-50">
                 {searching && contactResults.length === 0 ? (
-                  <p className="px-4 py-6 text-center text-xs text-slate-500">Searching…</p>
+                  <p className="px-4 py-6 text-center text-xs text-slate-500">{t("pages.aiModal.searching")}</p>
                 ) : contactResults.length === 0 ? (
                   <p className="px-4 py-6 text-center text-xs text-slate-500">{t("pages.aiComposeModal.noPhoneMatches")}</p>
                 ) : (
@@ -467,7 +467,7 @@ export function AiSmsModal({
                               {c.property_address ? ` · ${c.property_address}` : ""}
                             </p>
                           </div>
-                          <span className="text-xs font-medium text-blue-600">Pick →</span>
+                          <span className="text-xs font-medium text-blue-600">{t("pages.aiModal.pick")}</span>
                         </button>
                       </li>
                     ))}
@@ -518,7 +518,7 @@ export function AiSmsModal({
                 )}
                 {drafting ? (
                   <div className="self-end rounded-2xl bg-blue-100 px-3 py-1.5 text-[11px] italic text-blue-700">
-                    AI drafting…
+                    {t("pages.aiModal.drafting")}
                   </div>
                 ) : null}
               </div>
@@ -579,12 +579,12 @@ export function AiSmsModal({
                     >
                       <SparkIcon />
                       {drafting
-                        ? "Drafting…"
+                        ? t("common:status.drafting")
                         : compose.trim()
-                          ? "Regenerate draft"
+                          ? t("pages.aiEmail.regenerateDraft")
                           : messages.length === 0
-                            ? "Generate first draft"
-                            : "Generate reply"}
+                            ? t("pages.aiSms.generateFirstDraft")
+                            : t("pages.aiSms.generateReply")}
                     </button>
                     <CharCounter value={compose} />
                   </div>
@@ -595,7 +595,7 @@ export function AiSmsModal({
                     className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
                     title={optedOut ? "Sending blocked — contact opted out." : undefined}
                   >
-                    {sending ? "Sending…" : "Send SMS"}
+                    {sending ? t("common:status.sending") : t("pages.outboundSmsComposer.sendSms")}
                   </button>
                 </div>
               </div>

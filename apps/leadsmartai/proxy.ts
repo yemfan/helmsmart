@@ -21,10 +21,6 @@ function isAgentPath(pathname: string) {
   return pathname === "/agent" || pathname.startsWith("/agent/");
 }
 
-function isLoanBrokerPath(pathname: string) {
-  return pathname === "/loan-broker" || pathname.startsWith("/loan-broker/");
-}
-
 /**
  * `/support` itself is a public help page — FAQ + contact form (TVR-011 /
  * BF-037 found that gating the bare `/support` route created a paradox
@@ -60,7 +56,6 @@ export async function proxy(req: NextRequest) {
     pathname === "/portal" ||
     pathname.startsWith("/portal/") ||
     isAgentPath(pathname) ||
-    isLoanBrokerPath(pathname) ||
     isSupportPath(pathname) ||
     isAdminPath(pathname) ||
     pathname.startsWith("/account/") ||
@@ -222,8 +217,6 @@ export const config = {
     "/portal/:path*",
     "/agent",
     "/agent/:path*",
-    "/loan-broker",
-    "/loan-broker/:path*",
     "/support",
     "/support/:path*",
     "/admin",

@@ -49,6 +49,8 @@ function hhmm(h: number, m: number): string {
 
 export default function WeeklyScheduleController() {
   const { t } = useTranslation("dashboard");
+  // The media-type buttons below map over a variable also named `t`.
+  const tr = t;
   const [days, setDays] = useState<Day[] | null>(null);
   const [presets, setPresets] = useState<string[]>([]);
   const [configured, setConfigured] = useState(true);
@@ -133,7 +135,7 @@ export default function WeeklyScheduleController() {
   }
 
   if (!days) {
-    return <div className="py-4 text-sm text-gray-500">Loading your weekly schedule…</div>;
+    return <div className="py-4 text-sm text-gray-500">{t("pages.weeklySchedule.loading")}</div>;
   }
 
   return (
@@ -191,7 +193,11 @@ export default function WeeklyScheduleController() {
                             d.mediaType === t ? "bg-brand-accent text-white" : "bg-white text-gray-600"
                           }`}
                         >
-                          {t === "text" ? "Text" : t === "image" ? "Image" : "Video"}
+                          {t === "text"
+                            ? tr("pages.weeklySchedule.text")
+                            : t === "image"
+                              ? tr("pages.bossAssistant.image")
+                              : tr("pages.weeklySchedule.video")}
                         </button>
                       ))}
                     </div>
@@ -227,7 +233,7 @@ export default function WeeklyScheduleController() {
                         onChange={(e) => e.target.value && patch(d.weekday, { topic: e.target.value })}
                         className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm"
                       >
-                        <option value="">Pick a topic…</option>
+                        <option value="">{t("pages.weeklySchedule.pickTopic")}</option>
                         {presets.map((t) => (
                           <option key={t} value={t}>
                             {t}
@@ -257,7 +263,7 @@ export default function WeeklyScheduleController() {
           disabled={saving}
           className="rounded-lg bg-brand-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save schedule"}
+          {saving ? t("common:status.saving") : t("pages.briefingSchedule.saveSchedule")}
         </button>
         {note ? <span className="text-sm text-green-700">{note}</span> : null}
         {error ? <span className="text-sm text-red-600">{error}</span> : null}

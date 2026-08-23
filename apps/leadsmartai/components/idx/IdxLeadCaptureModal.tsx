@@ -205,7 +205,7 @@ export default function IdxLeadCaptureModal(props: {
                 disabled={loading}
                 className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Saving..." : copy.cta}
+                {loading ? t("common:status.saving") : copy.cta}
               </button>
               <p className="text-[11px] text-slate-500">{t("pages.idxCapture.privacyNote")}</p>
             </>

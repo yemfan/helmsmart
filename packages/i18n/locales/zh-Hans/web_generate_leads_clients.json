@@ -62,6 +62,27 @@
       "title": "Google 广告",
       "phase_badge": "第三阶段",
       "body": "在获取客户中投放搜索 + Performance Max 广告。"
+    },
+    "pinterest": {
+      "body": "自动把 Pin 发布到您 Pinterest 企业账号的图板上——房源照片、社区指南、品牌卡片都可以。",
+      "empty": "连接 Pinterest 企业账号即可排期发布 Pin。新的 Pin 会发到您的第一个图板。",
+      "revoke_hint": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 Pinterest 账号设置中移除该应用。",
+      "cta_connect": "连接 Pinterest",
+      "cta_reconnect": "重新连接"
+    },
+    "tiktok": {
+      "body": "把您的视频——房源导览、数字人片段——直接发到 TikTok。在您的 TikTok 应用通过内容发布审核前，新视频默认为私密。",
+      "empty": "连接 TikTok 账号即可发布视频。在应用通过审核前，发布的内容是私密的（只有您自己能看到）。",
+      "revoke_hint": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 TikTok 账号设置中移除该应用。",
+      "cta_connect": "连接 TikTok",
+      "cta_reconnect": "重新连接"
+    },
+    "youtube": {
+      "body": "把您的视频——房源导览、数字人片段——上传到您的 YouTube 频道。竖版短片会作为 Shorts 发布。",
+      "empty": "连接 YouTube 频道即可上传视频。竖版视频会作为 Shorts 发布。",
+      "revoke_hint": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 Google 账号设置中移除访问权限。",
+      "cta_connect": "连接 YouTube",
+      "cta_reconnect": "重新连接"
     }
   },
   "campaigns": {

@@ -53,7 +53,7 @@ export function AiActionGateBanner({
           onClick={() => emitLeadsmartUpgradePrompt(reason)}
           className="rounded-md bg-amber-900 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-amber-800"
         >
-          {isLimit ? "View plans & upgrade" : "Choose a plan"}
+          {isLimit ? t("pages.aiActionGateBanner.viewPlansUpgrade") : t("pages.aiActionGateBanner.chooseAPlan")}
         </button>
         <a
           href="/agent/pricing"

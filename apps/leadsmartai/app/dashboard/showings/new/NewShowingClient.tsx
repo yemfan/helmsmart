@@ -336,7 +336,7 @@ function NewShowingForm() {
     const platform = detectPlatform(value);
     if (!platform) return;
     const label = platformLabel(platform);
-    setStatusBanner({ tone: "info", text: `${label} URL detected — looking up listing details…` });
+    setStatusBanner({ tone: "info", text: t("pages.listingLookup.detected", { label }) });
     try {
       const res = await fetch(
         `/api/property/from-listing?url=${encodeURIComponent(value)}`,
@@ -812,8 +812,7 @@ function NewShowingForm() {
               <div className="mt-1 text-[11px]">
                 {listingUrlDetected.status === "looking-up" && (
                   <span className="text-slate-500">
-                    🔍 {listingUrlDetected.label} detected — looking up
-                    listing…
+                    🔍 {t("pages.listingLookup.detected", { label: listingUrlDetected.label })}
                   </span>
                 )}
                 {listingUrlDetected.status === "filled" && (

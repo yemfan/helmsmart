@@ -157,10 +157,10 @@ export function AddContactClient() {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-gray-900 truncate">
-                      {lead.name || "Unnamed"}
+                      {lead.name || t("pages.addContact.unnamed")}
                     </p>
                     <p className="text-xs text-gray-500 truncate">
-                      {lead.property_address || lead.email || "No details"}
+                      {lead.property_address || lead.email || t("pages.addContact.noDetails")}
                       {" · "}
                       {lead.source ?? "unknown"}
                       {" · "}

@@ -426,14 +426,14 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
             {loading && (
               <span className="mr-2 inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             )}
-            {loading ? "Analyzing..." : "Analyze Listing"}
+            {loading ? t("common:status.analyzing") : t("pages.aiZillowRedfinLinkAnalyzer.analyzeListing")}
           </button>
           <button
             onClick={handleRefresh}
             disabled={refreshing || loading}
             className="inline-flex items-center justify-center bg-white text-blue-700 text-sm font-semibold px-4 py-2 rounded-lg border border-blue-200 hover:bg-blue-50 disabled:opacity-60 disabled:cursor-not-allowed min-w-[180px]"
           >
-            {refreshing ? "Refreshing..." : "Refresh Latest Data"}
+            {refreshing ? t("common:status.refreshing") : t("pages.aiZillowRedfinLinkAnalyzer.refreshLatestData")}
           </button>
         </div>
         {error && (

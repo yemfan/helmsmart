@@ -552,8 +552,8 @@ function ActivityTimeline({
               onChange={(e) => setDirection(e.target.value as CounterDirection)}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             >
-              <option value="seller_to_buyer">Seller → Buyer (they countered us)</option>
-              <option value="buyer_to_seller">Buyer → Seller (we countered them)</option>
+              <option value="seller_to_buyer">{t("pages.offerDetail.sellerToBuyer")}</option>
+              <option value="buyer_to_seller">{t("pages.offerDetail.buyerToSeller")}</option>
             </select>
           </div>
           <div>
@@ -570,7 +570,7 @@ function ActivityTimeline({
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Closing moved to 45d, EMD bumped to 40k…"
+              placeholder={t("pages.offerDetail.counterExample")}
               className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             />
           </div>
@@ -590,7 +590,7 @@ function ActivityTimeline({
               disabled={saving}
               className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50"
             >
-              {saving ? "Recording…" : t("detail.offerDetail.recordCounter")}
+              {saving ? t("common:status.recording") : t("detail.offerDetail.recordCounter")}
             </button>
           </div>
         </div>
@@ -598,7 +598,7 @@ function ActivityTimeline({
 
       {events.length === 0 ? (
         <p className="mt-3 text-sm text-slate-500">
-          {disabled ? "Offer is closed — no further counters." : t("detail.offerDetail.noActivity")}
+          {disabled ? t("pages.offerDetail.offerIsClosedNo") : t("detail.offerDetail.noActivity")}
         </p>
       ) : (
         <ol className="mt-3 space-y-2">

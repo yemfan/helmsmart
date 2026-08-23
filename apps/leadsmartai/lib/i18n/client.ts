@@ -1,6 +1,8 @@
 "use client";
 
 import i18n, { type Resource } from "i18next";
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 import { initReactI18next } from "react-i18next";
 
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, type SupportedLocale } from "@leadsmart/i18n";
@@ -60,6 +62,32 @@ export function setLocaleCookie(locale: SupportedLocale): void {
     .filter(Boolean)
     .join("; ");
   void i18n.changeLanguage(locale);
+}
+
+/**
+ * Flip the language for the WHOLE page, server-rendered parts included.
+ *
+ * {@link setLocaleCookie} only reaches client components: it swaps the live
+ * i18next instance, so anything calling `useTranslation` re-renders, and
+ * anything rendered on the server keeps the locale it was built with. On a page
+ * that is mostly server-rendered — the demo workspace, most marketing routes —
+ * that reads as a toggle that does nothing at all. Where the page mixes the
+ * two, it reads worse: a Chinese header over an English body, or one sentence
+ * split down the middle ("This week · 5 upcoming events · 4 笔进行中的交易").
+ *
+ * `router.refresh()` re-requests the RSC payload, which carries the cookie that
+ * was just written, so the server half catches up in the same interaction. It
+ * also re-runs the root layout, which is where `<html lang>` is set.
+ */
+export function useSetLocale(): (locale: SupportedLocale) => void {
+  const router = useRouter();
+  return useCallback(
+    (locale: SupportedLocale) => {
+      setLocaleCookie(locale);
+      router.refresh();
+    },
+    [router],
+  );
 }
 
 export { i18n };

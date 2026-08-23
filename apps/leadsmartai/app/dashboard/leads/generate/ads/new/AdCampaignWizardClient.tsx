@@ -559,7 +559,7 @@ export default function AdCampaignWizardClient() {
               href="/dashboard/leads/generate/connect"
               className="font-medium underline hover:text-amber-700"
             >
-              Connect a Page →
+              {t("pages.adWizard.connectAPage")}
             </Link>
           </div>
         ) : (
@@ -573,7 +573,7 @@ export default function AdCampaignWizardClient() {
               <option value="">{t("pages.adWizard.pickPage")}</option>
               {connections.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.fbPageName ?? "Connected Page"}
+                  {c.fbPageName ?? t("pages.adCampaignWizard.connectedPage")}
                   {c.igBusinessUsername ? ` (+ IG @${c.igBusinessUsername})` : ""}
                 </option>
               ))}
@@ -685,7 +685,7 @@ export default function AdCampaignWizardClient() {
               <p className="font-semibold">{t("pages.adWizard.audienceSize")}</p>
               {audienceEstimateLoading && (
                 <span className="text-[10px] uppercase tracking-wide text-blue-700">
-                  Estimating…
+                  {t("pages.adWizard.estimating")}
                 </span>
               )}
             </div>
@@ -834,12 +834,12 @@ export default function AdCampaignWizardClient() {
                   rel="noopener noreferrer"
                   className="font-medium text-blue-600 hover:underline"
                 >
-                  Settings → Branding
+                  {t("pages.adWizard.settingsBranding")}
                 </a>
                 .
                 {privacyDefaultLoaded &&
                   !privacyPolicyUrl.trim() &&
-                  " Using CloseBoss's bundled URL."}
+                  t("pages.adCampaignWizard.usingClosebossSBundled")}
               </p>
             </div>
 
@@ -992,10 +992,10 @@ export default function AdCampaignWizardClient() {
                 className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
               >
                 {submitting
-                  ? "Creating campaign…"
+                  ? t("pages.adCampaignWizard.creatingCampaign")
                   : launchImmediately
-                    ? "Launch campaign"
-                    : "Create paused campaign"}
+                    ? t("pages.adCampaignWizard.launchCampaign")
+                    : t("pages.adCampaignWizard.createPausedCampaign")}
               </button>
             </div>
           </div>
@@ -1066,8 +1066,8 @@ function DoneState({
           </h2>
           <p className="text-sm text-emerald-800">
             {result.status === "active"
-              ? "Your Meta Lead Ad is now running. Leads will appear in your CRM as they come in."
-              : "Your Meta Lead Ad was created in paused state. Review it in Meta Ads Manager, then unpause when you're ready."}
+              ? t("pages.adCampaignWizard.yourMetaLeadAd")
+              : t("pages.adCampaignWizard.yourMetaLeadAd")}
           </p>
         </div>
       </div>
@@ -1097,7 +1097,7 @@ function DoneState({
           rel="noopener noreferrer"
           className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
         >
-          Open in Meta Ads Manager →
+          {t("pages.adWizard.openMetaAdsManager")}
         </a>
         <button
           type="button"

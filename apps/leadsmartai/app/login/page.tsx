@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter, useSearchParams } from "next/navigation";
-import { sendPasswordResetEmail } from "@/lib/auth/sendPasswordResetEmail";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { safeInternalRedirect } from "@/lib/loginUrl";
 import { isRealEstateProfessionalRole } from "@/lib/paidSubscriptionEligibility";
@@ -44,14 +43,12 @@ function LoginPageInner() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [resetSending, setResetSending] = useState(false);
-  const [resetNotice, setResetNotice] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (!email.trim() || !password.trim()) {
-      setError("Email and password are required.");
+      setError(t("pages.loginPage.emailPasswordRequired"));
       return;
     }
     setLoading(true);
@@ -146,7 +143,7 @@ function LoginPageInner() {
         router.replace(safeFallback ?? "/");
       }
     } catch (e: any) {
-      setError(e?.message ?? "Something went wrong. Please try again.");
+      setError(e?.message ?? t("pages.loginPage.somethingWentWrong"));
     } finally {
       setLoading(false);
     }
@@ -168,7 +165,7 @@ function LoginPageInner() {
       });
       if (oauthError) throw oauthError;
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Sign in failed.");
+      setError(e instanceof Error ? e.message : t("pages.loginPage.signInFailedGeneric"));
     } finally {
       setLoading(false);
     }
@@ -187,22 +184,6 @@ function LoginPageInner() {
       /* ignore invalid referrer */
     }
     router.push("/");
-  }
-
-  async function handleForgotPassword() {
-    setError(null);
-    setResetNotice(null);
-    setResetSending(true);
-    try {
-      const result = await sendPasswordResetEmail(email);
-      if (result.ok === false) {
-        setError(result.message);
-        return;
-      }
-      setResetNotice("Check your email for a link to reset your password.");
-    } finally {
-      setResetSending(false);
-    }
   }
 
   return (
@@ -263,26 +244,13 @@ function LoginPageInner() {
               autoComplete="current-password"
               required
             />
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
-              <button
-                type="button"
-                onClick={() => void handleForgotPassword()}
-                disabled={loading || resetSending}
-                className="text-xs font-semibold text-blue-700 hover:text-blue-800 disabled:opacity-50"
-              >
-                {resetSending ? "Sending…" : "Email me a reset link"}
-              </button>
+            <div className="flex flex-wrap items-center justify-end gap-2 pt-0.5">
               <Link
                 href="/forgot-password"
                 className="text-xs font-semibold text-blue-700 hover:underline"
               >{t("pages.loginPage.forgotPassword")}</Link>
             </div>
           </div>
-          {resetNotice ? (
-            <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-medium text-emerald-900">
-              {resetNotice}
-            </p>
-          ) : null}
           {error && (
             <p className="text-[11px] text-red-600 font-medium whitespace-pre-line">
               {error}
@@ -293,12 +261,12 @@ function LoginPageInner() {
             disabled={loading}
             className="w-full inline-flex items-center justify-center bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? "Logging in..." : "Log in"}
+            {loading ? t("pages.loginPage.loggingIn") : t("pages.loginPage.logIn")}
           </button>
         </form>
         <div className="flex items-center gap-3">
           <span className="h-px flex-1 bg-gray-200" />
-          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">or</span>
+          <span className="text-[11px] font-medium uppercase tracking-wide text-gray-400">{t("pages.loginPage.or")}</span>
           <span className="h-px flex-1 bg-gray-200" />
         </div>
         <div className="space-y-2">

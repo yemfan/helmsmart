@@ -17,7 +17,6 @@ const APP_PREFIXES = [
   "/broker",
   "/account",
   "/portal",
-  "/loan-broker",
   "/admin",
   "/client",
   "/propertytools/dashboard",

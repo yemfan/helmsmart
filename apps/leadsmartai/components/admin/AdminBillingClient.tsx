@@ -305,7 +305,7 @@ export default function AdminBillingClient() {
                 filteredRows.map((row) => (
                   <tr key={row.id} className="border-b last:border-b-0">
                     <td className="px-5 py-4">
-                      <div className="font-medium text-gray-900">{row.full_name || "Unnamed User"}</div>
+                      <div className="font-medium text-gray-900">{row.full_name || t("pages.adminBilling.unnamedUser")}</div>
                       <div className="text-gray-500">{row.email}</div>
                     </td>
 
@@ -359,7 +359,7 @@ export default function AdminBillingClient() {
                           }
                           className="rounded-xl border px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
                         >
-                          {row.status === "active" ? "Cancel" : "Activate"}
+                          {row.status === "active" ? t("common:actions.cancel") : t("common:actions.activate")}
                         </button>
 
                         <button
@@ -372,7 +372,7 @@ export default function AdminBillingClient() {
                           }
                           className="rounded-xl border px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
                         >
-                          {row.cancel_at_period_end ? "Keep Renewal" : "Cancel at Period End"}
+                          {row.cancel_at_period_end ? t("pages.adminBilling.keepRenewal") : t("pages.adminBilling.cancelAtPeriodEnd")}
                         </button>
                       </div>
                     </td>

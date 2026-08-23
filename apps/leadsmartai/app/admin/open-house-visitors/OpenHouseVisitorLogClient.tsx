@@ -113,7 +113,7 @@ export function OpenHouseVisitorLogClient({
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search agent, visitor, or property…"
+          placeholder={t("pages.adminCommon.searchAgentVisitorProperty")}
           className="min-w-[240px] flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
         />
         <select

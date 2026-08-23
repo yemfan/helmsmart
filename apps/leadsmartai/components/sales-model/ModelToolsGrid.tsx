@@ -46,7 +46,7 @@ export function ModelToolsGrid({ model }: { model: SalesModel }) {
                 onClick={() => setOpenTool(tool)}
                 className="mt-3 inline-flex items-center justify-center self-start rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
               >
-                Open Tool →
+                {t("pages.modelTools.openTool")}
               </button>
             </article>
           </li>
@@ -142,7 +142,7 @@ function ToolPromptModal({
             onClick={onCopy}
             className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
           >
-            {copied ? "Copied!" : "Copy prompt"}
+            {copied ? t("common:actions.copied_bang") : t("pages.modelToolsGrid.copyPrompt")}
           </button>
         </div>
       </div>

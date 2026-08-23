@@ -151,7 +151,7 @@ export function LeadQueueClient() {
               >
                 <div className="mb-3 space-y-1">
                   <h3 className="font-medium text-gray-900 truncate">
-                    {lead.name || "Unnamed lead"}
+                    {lead.name || t("pages.bossAssistant.unnamedLead")}
                   </h3>
                   {lead.email && (
                     <p className="text-sm text-gray-500 truncate">{lead.email}</p>
@@ -190,6 +190,7 @@ export function LeadQueueClient() {
 }
 
 function FeedbackBanner({ feedback }: { feedback: Feedback }) {
+  const { t } = useTranslation("dashboard");
   if (feedback.kind === "success") {
     return (
       <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
@@ -205,7 +206,7 @@ function FeedbackBanner({ feedback }: { feedback: Feedback }) {
           href={`/dashboard/contacts/${encodeURIComponent(feedback.existingContactId)}`}
           className="font-semibold underline hover:text-amber-950"
         >
-          Open contact →
+          {t("pages.leadQueue.openContact")}
         </a>
       </div>
     );
