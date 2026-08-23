@@ -73,7 +73,9 @@ export default function ClientDocumentsPage() {
             className="rounded-2xl border border-slate-200 bg-white p-4 flex items-center justify-between gap-3"
           >
             <div>
-              <div className="font-semibold text-slate-900 text-sm">{d.title}</div>
+              <div className="font-semibold text-slate-900 text-sm">
+                {t(`pages.clientPortal.docTypes.${d.doc_type}`, { defaultValue: d.title })}
+              </div>
               <div className="text-[11px] text-slate-500 mt-0.5 capitalize">{d.doc_type}</div>
             </div>
             {d.url ? (

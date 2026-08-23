@@ -5280,7 +5280,13 @@
       "aiScore": "AI 评分 {{score}}",
       "timelineSignal": "时间线信号：{{hint}}",
       "typeMessage": "输入消息…",
-      "askAssistant": "问问 AI 助理 →"
+      "askAssistant": "问问 AI 助理 →",
+      "docTypes": {
+        "report": "房屋估值 / CMA 报告",
+        "contract": "合同",
+        "disclosure": "披露文件",
+        "other": "文件"
+      }
     },
     "demoPages": {
       "greeting": "早上好，演示经纪人",
@@ -8977,6 +8983,36 @@
       "plansBillingDesc": "团队套餐与升级",
       "stripePortal": "Stripe 账单门户",
       "stripePortalDesc": "账单与发票"
+    },
+    "dashboardTitles": {
+      "aiAccountant": "AI 会计",
+      "marketingAssistant": "营销助理",
+      "aiReceptionist": "AI 接待员",
+      "aiSalesAssistant": "AI 销售助理",
+      "aiTransactionAssistant": "AI 交易助理",
+      "askMax": "问 Max",
+      "calendar": "日历",
+      "cmaReport": "CMA 报告",
+      "coaching": "辅导",
+      "credits": "额度",
+      "houseSearch": "AI 房源搜索",
+      "quickPost": "快速发帖",
+      "leadProfile": "客户档案",
+      "marketingPlans": "营销方案",
+      "notifications": "通知",
+      "offers": "报价",
+      "uploadOffer": "上传报价",
+      "offer": "报价详情",
+      "overview": "工作台总览",
+      "settings": "设置",
+      "showings": "带看",
+      "skillsLibrary": "技能库",
+      "supportInbox": "客服收件箱",
+      "tasks": "任务",
+      "tools": "工具",
+      "transactions": "交易",
+      "transaction": "交易详情",
+      "offersOnListing": "该房源的报价"
     }
   }
 }

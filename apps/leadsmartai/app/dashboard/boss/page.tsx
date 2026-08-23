@@ -5,12 +5,16 @@ import BossAssistantClient from "./BossAssistantClient";
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Ask Max",
-  description:
-    "Max, captain of your AI team — morning briefing, today's priorities, hot leads, and AI team activity.",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.askMax", { ns: "dashboard" });
+  return {
+  title,
+  description:
+    "Max, captain of your AI team — morning briefing, today's priorities, hot leads, and AI team activity.",
+  robots: { index: false },
 };
+}
 
 /**
  * CloseBoss command center — the default home for agents. The Boss

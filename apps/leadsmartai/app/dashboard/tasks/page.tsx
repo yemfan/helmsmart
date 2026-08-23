@@ -1,14 +1,19 @@
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { supabaseServer } from "@/lib/supabaseServer";
 import TasksClient from "./TasksClient";
-import type { Metadata } from "next";
+import type { Metadata } from "next";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Tasks",
-  description: "Manage your daily tasks and follow-up reminders.",
-  keywords: ["tasks", "to-do", "follow-ups"],
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.tasks", { ns: "dashboard" });
+  return {
+  title,
+  description: "Manage your daily tasks and follow-up reminders.",
+  keywords: ["tasks", "to-do", "follow-ups"],
+  robots: { index: false },
 };
+}
 
 export default async function TasksPage() {
   const ctx = await getCurrentAgentContext();

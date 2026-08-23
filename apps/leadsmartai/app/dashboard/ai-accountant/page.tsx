@@ -4,13 +4,18 @@ import { listInvoices } from "@/lib/books/invoices";
 import { expenseTotalsForAgent, listExpensesForAgent } from "@/lib/books/expenses";
 import { listTransactionsForAgent } from "@/lib/transactions/service";
 import { getRevenueSummary } from "@/lib/performance/revenueService";
-import AccountantClient from "./AccountantClient";
+import AccountantClient from "./AccountantClient";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "AI Accountant",
-  description: "Your commission pipeline, expenses, and receivables — know what you'll make and keep more of it.",
-  robots: { index: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  const title = t("pages.dashboardTitles.aiAccountant", { ns: "dashboard" });
+  return {
+  title,
+  description: "Your commission pipeline, expenses, and receivables — know what you'll make and keep more of it.",
+  robots: { index: false },
 };
+}
 
 /**
  * AI Accountant — fifth member of the AI team (modeled on HelmSmart's
