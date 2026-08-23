@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
-import JsonLd from "../../components/JsonLd";
+import JsonLd from "../../components/JsonLd";
+import CalculateButton from "@/components/CalculateButton";
 
 export default function CashFlowCalculator() {
   const { t } = useTranslation("dashboard");
@@ -87,10 +88,7 @@ export default function CashFlowCalculator() {
               <InputField label={t("pages.cashFlowCalculator.vacancyMonths")} value={vacancyMonths} onChange={setVacancyMonths} min={0} max={12} />
             </div>
             <div className="pt-2">
-              <button
-                type="button"
-                className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >{t("pages.articleChrome.calculate")}</button>
+              <CalculateButton />
             </div>
           </div>
         </div>

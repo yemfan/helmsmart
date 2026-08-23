@@ -24,7 +24,7 @@
       "first_name_placeholder": "名字",
       "email_placeholder": "邮箱",
       "language_english": "English",
-        "language_label": "语言：",
+      "language_label": "语言：",
       "submit": "把提示词发到我邮箱",
       "privacy_note": "绝不发垃圾邮件——只把提示词直接送到你的收件箱。",
       "error_generic": "出了点问题，请重试。",
@@ -60,31 +60,31 @@
       "blurb": "输入一个地址或一条 Zillow 链接——不到一分钟即可获得完整交易备忘、可比房源集或 CMA。与驱动 CloseBoss 跟进的引擎同源。",
       "tools": {
         "deal-analyzer": {
-          "name": "AI Real Estate Deal Analyzer",
+          "name": "AI 房产交易分析器",
           "description": "粘贴任意房产网址或地址——获得一页 AI 交易备忘，涵盖房况、风险、可比成交与目标价。约 30 秒。"
         },
         "link-analyzer": {
-          "name": "AI Zillow / Redfin Link Analyzer",
+          "name": "Zillow / Redfin 链接 AI 分析器",
           "description": "输入一条 Zillow 或 Redfin 链接。AI 会提取房源详情、从照片中判读房况信号、可比成交基准，以及一份价格合理性判断。"
         },
         "cma-analyzer": {
-          "name": "AI CMA Analyzer",
+          "name": "AI CMA 分析器",
           "description": "自动拉取可比成交，生成含完整推理的 CMA 式价格区间，可直接分享给卖家。"
         },
         "smart-cma": {
-          "name": "Smart CMA Builder",
+          "name": "智能 CMA 生成器",
           "description": "交互式 CMA——调整可比房源权重、推荐价格区间，并导出品牌化 PDF。每份 CMA 用时不到 5 分钟。"
         },
         "investment-analyzer": {
-          "name": "Property Investment Analyzer",
+          "name": "房产投资分析器",
           "description": "3 分钟内算出任意出租房的资本化率、现金回报率、NOI 与 5 年 IRR。已保存的方案始终附于该交易。"
         },
         "rental-analyzer": {
-          "name": "Rental Property Analyzer",
+          "name": "出租房分析器",
           "description": "并排式出租分析，含租金估算、依据本地均值预填的支出默认值，以及压力测试方案。"
         },
         "report-generator": {
-          "name": "Property Report Generator",
+          "name": "房产报告生成器",
           "description": "输入一个地址——获得一份 6 页品牌化 PDF 报告，涵盖市场背景、可比成交、估值与社区数据。"
         }
       }
@@ -94,31 +94,31 @@
       "blurb": "把一个定制、品牌化、可自由调整的计算器发给买家——让他们直观看到自己的月供、可负担能力或租买对比的真实情况。",
       "tools": {
         "mortgage": {
-          "name": "Mortgage Calculator",
+          "name": "房贷计算器",
           "description": "含本金、利息、税费与保险，首付与利率可调。可为任意客户生成品牌化分享链接。"
         },
         "affordability": {
-          "name": "Affordability Calculator",
+          "name": "购房力计算器",
           "description": "基于收入的价格区间，并以负债收入比设限。向买家展示他们实际能够获批的额度。"
         },
         "down-payment": {
-          "name": "Down Payment Calculator",
+          "name": "首付计算器",
           "description": "在任意价位下，你在成交时需准备多少——首付 + 交割费用 + 储备金。"
         },
         "rent-vs-buy": {
-          "name": "Rent vs Buy Calculator",
+          "name": "租房 vs 买房计算器",
           "description": "含升值、税收优惠与机会成本的盈亏平衡分析。30 秒击破“租房一辈子”的迷思。"
         },
         "closing-cost": {
-          "name": "Closing Cost Estimator",
+          "name": "过户费用估算器",
           "description": "按州列明的交割费用——产权、过户税、托管、预付款项。在意外发生前先行揭示。"
         },
         "refinance": {
-          "name": "Refinance Calculator",
+          "name": "再融资计算器",
           "description": "含交割费用的再融资盈亏平衡分析。与向老客户比价触达的场景相得益彰。"
         },
         "arm": {
-          "name": "ARM Calculator",
+          "name": "浮动利率贷款计算器",
           "description": "将 5/1、7/1、10/1 浮动利率贷款与固定 30 年贷款对比。含最坏情形月供，让对话有据可依。"
         }
       }
@@ -128,15 +128,15 @@
       "blurb": "决定是否出价的收益性房产测算。资本化率、现金流、ROI——全部可编辑、可分享。",
       "tools": {
         "cap-rate": {
-          "name": "Cap Rate & ROI Calculator",
+          "name": "资本化率与回报率计算器",
           "description": "一分钟内算出任意出租房的 NOI、资本化率与 ROI。可搭配 Investment Analyzer 获得完整 DCF 模型。"
         },
         "cash-flow": {
-          "name": "Cash Flow Calculator",
+          "name": "现金流计算器",
           "description": "含空置、维护、管理与储备金的月度与年度现金流。出价前先做压力测试。"
         },
         "roi": {
-          "name": "ROI Calculator",
+          "name": "投资回报率计算器",
           "description": "含融资杠杆在内的投入资本总回报。可将多种方案并排比较。"
         }
       }
@@ -146,11 +146,11 @@
       "blurb": "用即时房屋估值抓住卖家线索，再把地址转化为一份 CMA 和一份房源展示演示。",
       "tools": {
         "home-value": {
-          "name": "Home Value Estimator",
+          "name": "房屋估值工具",
           "description": "为任意美国地址提供 AI 支持的房屋估值区间。可将小工具嵌入你的 IDX 网站以抓取卖家线索。"
         },
         "cap-rate-by-city": {
-          "name": "Cap Rate by City",
+          "name": "各城市资本化率",
           "description": "美国主要市场的典型资本化率区间——在对照本地可比房源为收益性房产定价时非常有用。"
         }
       }
@@ -160,7 +160,7 @@
       "blurb": "无需注册、今天就能用起来的免费资源——从面向经纪人的完整 AI 技能库开始。",
       "tools": {
         "skills-library": {
-          "name": "Realtor AI Skills Library (59 prompts)",
+          "name": "房产经纪 AI 技能库（59 条提示词）",
           "description": "59 条内置合规审查的 AI 提示词，涵盖获客、房源、买方代理、谈判与运营——每条都标注了它能带来的价值。免费浏览或下载，无需注册。"
         }
       }

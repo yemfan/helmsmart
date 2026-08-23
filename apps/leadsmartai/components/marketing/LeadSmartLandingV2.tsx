@@ -421,6 +421,9 @@ export default function LeadSmartLandingV2() {
                     alt={t("ask_max.avatar_alt")}
                     width={80}
                     height={80}
+                    /* Above the fold and the face of the section — lazy-loading it
+                       left a dark empty circle where Max should be. */
+                    priority
                     className="h-20 w-20 shrink-0 rounded-full border-2 border-[#F2C94C] object-cover"
                     style={{ backgroundColor: "#0b1424" }}
                   />

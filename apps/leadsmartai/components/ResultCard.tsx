@@ -9,7 +9,12 @@ export default function ResultCard({ title, value, details }: Props) {
   const lines = details.split("\n").filter((line) => line.trim().length > 0);
 
   return (
-    <section className="bg-white border border-gray-100 shadow-sm rounded-xl p-6 lg:p-8">
+    /* Tagged so the Calculate button can find the results without every
+       calculator having to thread a ref through its own layout. */
+    <section
+      data-calc-results
+      className="bg-white border border-gray-100 shadow-sm rounded-xl p-6 lg:p-8"
+    >
       <header className="mb-4">
         <p className="text-xs font-semibold tracking-wide text-gray-500 uppercase">
           {title}

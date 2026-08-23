@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import InputField from "../../components/InputField";
 import ResultCard from "../../components/ResultCard";
-import JsonLd from "../../components/JsonLd";
+import JsonLd from "../../components/JsonLd";
+import CalculateButton from "@/components/CalculateButton";
 
 export default function HOAFeeTracker() {
   const { t } = useTranslation("dashboard");
@@ -65,10 +66,9 @@ export default function HOAFeeTracker() {
               <InputField label={t("pages.hoaTracker.annualIncrease")} value={annualIncreasePercent} onChange={setAnnualIncreasePercent} min={0} max={20} step={0.5} />
               <InputField label={t("pages.hoaTracker.years")} value={years} onChange={setYears} min={1} max={30} />
             </div>
-            <button
-              type="button"
-              className="mt-6 w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >{t("pages.articleChrome.calculate")}</button>
+            <div className="mt-6">
+              <CalculateButton />
+            </div>
           </div>
         </div>
         <div className="lg:col-span-1">
