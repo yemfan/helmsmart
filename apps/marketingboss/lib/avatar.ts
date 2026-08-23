@@ -79,25 +79,19 @@ async function fabric(imageUrl: string, audioUrl: string): Promise<string> {
 }
 
 /**
- * Make `characterId` say `script`, and store the result.
+ * Drive a portrait with a spoken script and store the finished clip.
  *
- * Credits are reserved first and refunded on any failure, so a provider hiccup
- * never costs someone a video they did not receive.
+ * The shared core behind both render paths — a Character from Character Studio,
+ * and the user's own digital twin. Extracted rather than copied so the credit
+ * reserve/refund and the storage write cannot drift apart between them: a
+ * refund that exists on one path and not the other is exactly the bug that
+ * charges someone for a video they never received.
  */
-export async function buildTalkingAvatar(
+export async function renderTalkingVideo(
   supabase: SupabaseClient,
   userId: string,
-  characterId: string,
-  script: string,
-  voiceId = "",
+  opts: { portraitUrl: string; script: string; voiceId?: string; label: string },
 ): Promise<{ url: string; credits: number }> {
-  const character = await getCharacter(userId, characterId);
-  if (!character) throw new Error("That character was not found.");
-  const portrait = (character.reference_images ?? []).find((u) => typeof u === "string" && u);
-  if (!portrait) {
-    throw new Error(`${character.name} has no picture yet — add one in Character Studio first.`);
-  }
-
   const { data: remaining, error: reserveErr } = await supabase.rpc("consume_credits", {
     p_cost: AVATAR_CREDIT,
   });
@@ -107,8 +101,13 @@ export async function buildTalkingAvatar(
   try {
     // Same TTS step the voiceover uses, so a cloned voice works here too and
     // the two cannot drift apart on engine or voice selection.
-    const audioUrl = await speak(supabase, userId, script.slice(0, MAX_SCRIPT_CHARS), voiceId);
-    const rendered = await fabric(portrait, audioUrl);
+    const audioUrl = await speak(
+      supabase,
+      userId,
+      opts.script.slice(0, MAX_SCRIPT_CHARS),
+      opts.voiceId ?? "",
+    );
+    const rendered = await fabric(opts.portraitUrl, audioUrl);
 
     const media = await fetch(rendered);
     if (!media.ok) throw new Error(`Could not fetch the finished video (${media.status}).`);
@@ -123,16 +122,40 @@ export async function buildTalkingAvatar(
     await supabase.from("generations").insert({
       user_id: userId,
       type: "video",
-      prompt: `${character.name} says: ${script.slice(0, 160)}`,
+      prompt: `${opts.label}: ${opts.script.slice(0, 160)}`,
       model: FABRIC_MODEL,
       aspect: "1:1",
       media_url: publicUrl,
     });
-    void recordCharacterUsage(userId, characterId);
 
     return { url: publicUrl, credits: typeof remaining === "number" ? remaining : 0 };
   } catch (e) {
     await supabase.rpc("consume_credits", { p_cost: -AVATAR_CREDIT }); // best-effort refund
     throw e;
   }
+}
+
+/** Make `characterId` say `script`, and store the result. */
+export async function buildTalkingAvatar(
+  supabase: SupabaseClient,
+  userId: string,
+  characterId: string,
+  script: string,
+  voiceId = "",
+): Promise<{ url: string; credits: number }> {
+  const character = await getCharacter(userId, characterId);
+  if (!character) throw new Error("That character was not found.");
+  const portraitUrl = (character.reference_images ?? []).find((u) => typeof u === "string" && u);
+  if (!portraitUrl) {
+    throw new Error(`${character.name} has no picture yet — add one in Character Studio first.`);
+  }
+
+  const out = await renderTalkingVideo(supabase, userId, {
+    portraitUrl,
+    script,
+    voiceId,
+    label: `${character.name} says`,
+  });
+  void recordCharacterUsage(userId, characterId);
+  return out;
 }
