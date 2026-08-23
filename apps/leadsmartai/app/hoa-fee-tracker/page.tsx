@@ -61,7 +61,7 @@ export default function HOAFeeTracker() {
           <div className="bg-white shadow-md rounded-lg p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.hoaTracker.assumptions")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Monthly HOA ($)" value={monthlyHoa} onChange={setMonthlyHoa} min={0} />
+              <InputField label={t("pages.calculatorFields.monthlyHoa")} value={monthlyHoa} onChange={setMonthlyHoa} min={0} />
               <InputField label={t("pages.hoaTracker.annualIncrease")} value={annualIncreasePercent} onChange={setAnnualIncreasePercent} min={0} max={20} step={0.5} />
               <InputField label={t("pages.hoaTracker.years")} value={years} onChange={setYears} min={1} max={30} />
             </div>
@@ -76,7 +76,7 @@ export default function HOAFeeTracker() {
             <ResultCard
               title={t("pages.hoaTracker.projectionAria")}
               value={`$${results.totalHoaOverPeriod.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
-              details={`Total HOA over ${years} years: $${results.totalHoaOverPeriod.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nFirst year total: $${results.firstYearTotal.toFixed(0)}\nLast year (monthly): $${results.lastYearMonthly.toFixed(2)}\nLast year (annual): $${results.lastYearAnnual.toFixed(0)}`}
+              details={`Total HOA over ${years} years: $${results.totalHoaOverPeriod.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.firstYearTotal")}: $${results.firstYearTotal.toFixed(0)}\nLast year (monthly): $${results.lastYearMonthly.toFixed(2)}\nLast year (annual): $${results.lastYearAnnual.toFixed(0)}`}
             />
           </div>
         </div>

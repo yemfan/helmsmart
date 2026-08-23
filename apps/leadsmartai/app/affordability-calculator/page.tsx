@@ -75,19 +75,19 @@ export default function AffordabilityCalculator() {
             <h2 className="text-lg font-semibold text-gray-900">{t("pages.affordabilityCalculator.yourFinances")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
-                label="Annual income ($)"
+                label={t("pages.calculatorFields.annualIncome")}
                 value={annualIncome}
                 onChange={setAnnualIncome}
                 min={0}
               />
               <InputField
-                label="Monthly debts ($)"
+                label={t("pages.calculatorFields.monthlyDebts")}
                 value={monthlyDebts}
                 onChange={setMonthlyDebts}
                 min={0}
               />
               <InputField
-                label="Down payment ($)"
+                label={t("pages.calculatorFields.downPayment")}
                 value={downPayment}
                 onChange={setDownPayment}
                 min={0}
@@ -128,7 +128,7 @@ export default function AffordabilityCalculator() {
             <ResultCard
               title={t("pages.affordabilityCalculator.maxPriceAria")}
               value={`$${Math.round(maxHomePrice).toLocaleString()}`}
-              details={`Estimated monthly payment: $${estimatedMonthlyPayment.toFixed(2)}`}
+              details={`${t("pages.calculatorResults.estimatedMonthlyPayment")}: $${estimatedMonthlyPayment.toFixed(2)}`}
             />
           </div>
         </div>

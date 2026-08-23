@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
 import { useSignupProfilePrefill, type SignupPrefillConsumer } from "@/lib/hooks/useSignupProfilePrefill";
@@ -69,7 +69,7 @@ function OpenHouseSignupPageInner() {
     }
   }, [message]);
 
-  const title = useMemo(() => "Sign up for Open House Updates", []);
+  const title = t("pages.openHouseSignup.heading");
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -167,8 +167,7 @@ function OpenHouseSignupPageInner() {
               {isDemo ? DEFAULT_PROPERTY_ADDRESS : t("pages.openHouseSignup.loadingProperty")}
               {isDemo && (
                 <span className="ml-1 text-slate-500">
-                  (default demo property — scan a property QR code for
-                  property-specific signup)
+                  {t("pages.openHouseSignup.demoNote")}
                 </span>
               )}
             </div>
@@ -255,7 +254,7 @@ function OpenHouseSignupPageInner() {
                   rel="noopener noreferrer"
                   className="font-medium text-blue-600 hover:underline"
                 >{t("pages.articleChrome.privacyPolicy")}</a>{" "}
-                and{" "}
+                {t("common:conjunctions.and")}{" "}
                 <a
                   href="/terms"
                   target="_blank"

@@ -67,8 +67,8 @@ export default function MortgageCalculator() {
           <div className="bg-white shadow-md rounded-lg p-6 space-y-4">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.articleChrome.loanDetails")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <InputField label="Home price ($)" value={homePrice} onChange={setHomePrice} min={1000} />
-              <InputField label="Down payment ($)" value={downPayment} onChange={setDownPayment} min={0} />
+              <InputField label={t("pages.calculatorFields.homePrice")} value={homePrice} onChange={setHomePrice} min={1000} />
+              <InputField label={t("pages.calculatorFields.downPayment")} value={downPayment} onChange={setDownPayment} min={0} />
               <InputField
                 label={t("pages.articleChrome.loanTermYears")}
                 value={loanTerm}
@@ -99,7 +99,7 @@ export default function MortgageCalculator() {
             <ResultCard
               title={t("pages.mortgageCalculator.paymentAria")}
               value={`$${monthlyPayment.toFixed(2)}`}
-              details={`Loan amount: $${principal.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nTotal interest over ${loanTerm} years: $${totalInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nTotal payment: $${totalPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+              details={`${t("pages.calculatorResults.loanAmount")}: $${principal.toLocaleString(undefined, { maximumFractionDigits: 0 })}\nTotal interest over ${loanTerm} years: $${totalInterest.toLocaleString(undefined, { maximumFractionDigits: 0 })}\n${t("pages.calculatorResults.totalPayment")}: $${totalPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
             />
           </div>
         </div>

@@ -67,7 +67,7 @@ export default function RefinanceCalculator() {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.articleChrome.loanDetails")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
-                label="Current loan balance ($)"
+                label={t("pages.calculatorFields.currentLoanBalance")}
                 value={currentBalance}
                 onChange={setCurrentBalance}
                 min={1000}
@@ -96,7 +96,7 @@ export default function RefinanceCalculator() {
                 max={30}
               />
               <InputField
-                label="Closing costs ($)"
+                label={t("pages.calculatorFields.closingCosts")}
                 value={closingCosts}
                 onChange={setClosingCosts}
                 min={0}

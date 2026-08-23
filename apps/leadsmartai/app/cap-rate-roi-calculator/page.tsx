@@ -106,19 +106,19 @@ export default function CapRateRoiCalculator() {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t("pages.capRateRoiCalculator.propertyFinancing")}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField
-                label="Purchase price ($)"
+                label={t("pages.calculatorFields.purchasePrice")}
                 value={purchasePrice}
                 onChange={setPurchasePrice}
                 min={1000}
               />
               <InputField
-                label="Down payment ($)"
+                label={t("pages.calculatorFields.downPayment")}
                 value={downPayment}
                 onChange={setDownPayment}
                 min={0}
               />
               <InputField
-                label="Annual rent ($)"
+                label={t("pages.calculatorFields.annualRent")}
                 value={annualRent}
                 onChange={setAnnualRent}
                 min={0}
@@ -132,25 +132,25 @@ export default function CapRateRoiCalculator() {
                 step={1}
               />
               <InputField
-                label="Property tax ($/yr)"
+                label={t("pages.calculatorFields.propertyTaxYr")}
                 value={propertyTax}
                 onChange={setPropertyTax}
                 min={0}
               />
               <InputField
-                label="Insurance ($/yr)"
+                label={t("pages.calculatorFields.insuranceYr")}
                 value={insurance}
                 onChange={setInsurance}
                 min={0}
               />
               <InputField
-                label="Maintenance ($/yr)"
+                label={t("pages.calculatorFields.maintenanceYr")}
                 value={maintenance}
                 onChange={setMaintenance}
                 min={0}
               />
               <InputField
-                label="Other expenses ($/yr)"
+                label={t("pages.calculatorFields.otherExpensesYr")}
                 value={otherExpenses}
                 onChange={setOtherExpenses}
                 min={0}
@@ -184,9 +184,9 @@ export default function CapRateRoiCalculator() {
             <ResultCard
               title={t("pages.capRateRoiCalculator.resultsAria")}
               value={`${results.capRate.toFixed(2)}% cap`}
-              details={`NOI: $${results.noi.toLocaleString(undefined, {
+              details={`${t("pages.calculatorResults.noi")}: $${results.noi.toLocaleString(undefined, {
                 maximumFractionDigits: 0,
-              })}\nEffective income: $${results.effectiveIncome.toLocaleString(
+              })}\n${t("pages.calculatorResults.effectiveIncome")}: $${results.effectiveIncome.toLocaleString(
                 undefined,
                 { maximumFractionDigits: 0 }
               )}\nOperating expenses: $${results.operatingExpenses.toLocaleString(
@@ -195,7 +195,7 @@ export default function CapRateRoiCalculator() {
               )}\nAnnual debt service: $${results.annualDebtService.toLocaleString(
                 undefined,
                 { maximumFractionDigits: 0 }
-              )}\nCap rate: ${results.capRate.toFixed(
+              )}\n${t("pages.calculatorResults.capRate")}: ${results.capRate.toFixed(
                 2
               )}%\nCash-on-cash ROI (year 1): ${results.simpleRoi.toFixed(2)}%`}
             />

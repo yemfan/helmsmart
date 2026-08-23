@@ -399,7 +399,7 @@ function SignupForm() {
               />
               <span className="text-[11px] leading-relaxed text-slate-600">{t("pages.signupPage.iAgree")}{" "}
                 <Link href="/terms" className="font-medium text-slate-700 underline hover:text-slate-900">{t("pages.articleChrome.termsOfService")}</Link>{" "}
-                and{" "}
+                {t("common:conjunctions.and")}{" "}
                 <Link href="/privacy" className="font-medium text-slate-700 underline hover:text-slate-900">{t("pages.articleChrome.privacyPolicy")}</Link>
                 .
               </span>

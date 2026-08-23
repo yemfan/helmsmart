@@ -644,7 +644,7 @@ function HomePageInner() {
                         rel="noopener noreferrer"
                         className="font-medium text-blue-600 hover:underline"
                       >{t("pages.articleChrome.privacyPolicy")}</a>{" "}
-                      and{" "}
+                      {t("common:conjunctions.and")}{" "}
                       <a
                         href="/terms"
                         target="_blank"

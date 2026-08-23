@@ -45,7 +45,7 @@ export function SmsConsentNotice({
   const termsBlock = (
     <>{t("pages.dashFragments.seeOur")}{" "}
       <Link href="/privacy" className="underline" target="_blank">{t("pages.misc.privacyPolicy")}</Link>{" "}
-      and{" "}
+      {t("common:conjunctions.and")}{" "}
       <Link href="/terms" className="underline" target="_blank">{t("pages.misc.terms")}</Link>
       .
     </>

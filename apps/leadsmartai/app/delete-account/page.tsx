@@ -80,7 +80,7 @@ export default async function DeleteAccountPage() {
 
       <div className="mt-12 border-t border-slate-200 pt-6 text-sm text-slate-500">{t("pages.deleteAccount.seeAlso", { ns: "dashboard" })}{" "}
         <Link href="/privacy" className="text-[#0072ce] hover:underline">{t("pages.articleChrome.privacyPolicy", { ns: "dashboard" })}</Link>{" "}
-        and{" "}
+        {t("conjunctions.and", { ns: "common" })}{" "}
         <Link href="/terms" className="text-[#0072ce] hover:underline">{t("pages.articleChrome.termsOfService", { ns: "dashboard" })}</Link>
         .
       </div>
