@@ -24,11 +24,11 @@ export async function generateMetadata(): Promise<Metadata> {
   openGraph: {
     title,
     description:
-      "59 AI skills for real estate agents, each with a compliance-baked prompt. Free download, no signup.",
+      t("social.skillsLibrary.ogDescription", { ns: "web_marketing" }),
     url: "/skills-library",
     type: "website",
   },
-  twitter: { card: "summary_large_image", title: "Free Realtor AI Skills Library", description: "59 compliance-ready AI prompts for real estate agents. Free." },
+  twitter: { card: "summary_large_image", title: t("social.skillsLibrary.twitterTitle", { ns: "web_marketing" }), description: t("social.skillsLibrary.twitterDescription", { ns: "web_marketing" }) },
 };
 }
 

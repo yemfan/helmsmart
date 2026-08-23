@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import type { MobileSidebarUser } from "@repo/ui";
 import { useAuth } from "@/components/AuthProvider";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 import { CloseBossLogo } from "@/components/brand/CloseBossLogo";

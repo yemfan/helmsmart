@@ -470,5 +470,38 @@
       "title": "Why Cap Rate Matters for Real Estate Investors",
       "description": "Understand the importance of cap rate for real estate investors. Learn why capitalization rate matters in property analysis."
     }
+  },
+  "legal": {
+    "englishOnly": "This document is available in English only."
+  },
+  "social": {
+    "blog": {
+      "title": "CloseBoss Blog",
+      "ogDescription": "Real estate technology, lead conversion playbooks, and investing fundamentals — written for solo agents and small teams.",
+      "twitterDescription": "Real estate technology, lead conversion playbooks, and investing fundamentals."
+    },
+    "newsletter": {
+      "subscribeTitle": "Subscribe — Weekly Housing Briefing"
+    },
+    "openHouse": {
+      "title": "Open House"
+    },
+    "skillsLibrary": {
+      "ogDescription": "59 AI skills for real estate agents, each with a compliance-baked prompt. Free download, no signup.",
+      "twitterTitle": "Free Realtor AI Skills Library",
+      "twitterDescription": "59 compliance-ready AI prompts for real estate agents. Free."
+    },
+    "switchFrom": {
+      "ogDescription": "Migration guides for LionDesk, Follow Up Boss, kvCORE, and more — with free concierge migration through 2026.",
+      "twitterDescription": "Migration guides + free concierge migration for agents leaving LionDesk, FUB, kvCORE, and more."
+    },
+    "tryDemo": {
+      "title": "Try the live CloseBoss demo",
+      "ogDescription": "A real read-only sandbox of the CloseBoss workspace — inbox, drafts, contacts, calendar. No signup required.",
+      "twitterDescription": "Read-only sandbox of the workspace — inbox, drafts, contacts, calendar. No signup."
+    },
+    "voiceAi": {
+      "ogDescription": "Native voice AI for real estate. Tap to call the live demo or have it call you."
+    }
   }
 }

@@ -728,12 +728,18 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   },
 ];
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const t = await getServerT();
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
 
       <h1 className="text-3xl font-bold text-slate-900 mb-2">Privacy Policy</h1>
-      <p className="text-sm text-slate-500 mb-8">Last updated: {LAST_UPDATED}</p>
+      <p className="text-sm text-slate-500 mb-2">Last updated: {LAST_UPDATED}</p>
+      {/* The body stays in English by decision. Saying so turns a page that
+          looks half-translated into one that is plainly deliberate. */}
+      <p className="mb-8 text-sm text-slate-500">
+        {t("legal.englishOnly", { ns: "web_marketing" })}
+      </p>
 
       <nav
         aria-label="Table of contents"

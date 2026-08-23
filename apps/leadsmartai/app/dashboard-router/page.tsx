@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getPropertyToolsConsumerPostLoginUrl } from "@/lib/propertyToolsConsumerUrl";
-import { resolveRoleHomePath } from "@/lib/rolePortalPaths";
+import { resolveRoleHomePath, START_FREE_AGENT_PATH } from "@/lib/rolePortalPaths";
 import { fetchUserPortalContext } from "@/lib/rolePortalServer";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
 import { consumerShouldUsePropertyToolsApp } from "@/lib/signupOriginApp";
@@ -11,11 +11,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
   const title = t("routeMeta.dashboardRouter.title", { ns: "web_marketing" });
   const description = t("routeMeta.dashboardRouter.description", { ns: "web_marketing" });
-  return {
-  title,
-  description,
-  keywords: ["dashboard", "redirect"],
-  robots: { index: false },
+  return {
+
+  title,
+
+  description,
+
+  keywords: ["dashboard", "redirect"],
+
+  robots: { index: false },
+
 };
 }
 
@@ -34,7 +39,7 @@ export default async function DashboardRouterPage() {
     if (consumerShouldUsePropertyToolsApp(ctx.signupOriginApp)) {
       redirect(getPropertyToolsConsumerPostLoginUrl());
     }
-    redirect("/");
+    redirect(START_FREE_AGENT_PATH);
   }
   redirect(resolveRoleHomePath(ctx.role, ctx.hasAgentRow));
 }

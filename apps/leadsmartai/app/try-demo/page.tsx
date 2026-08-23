@@ -21,17 +21,17 @@ export async function generateMetadata(): Promise<Metadata> {
   description,
   alternates: { canonical: "/try-demo" },
   openGraph: {
-    title: "Try the live CloseBoss demo",
+    title: t("social.tryDemo.title", { ns: "web_marketing" }),
     description:
-      "A real read-only sandbox of the CloseBoss workspace — inbox, drafts, contacts, calendar. No signup required.",
+      t("social.tryDemo.ogDescription", { ns: "web_marketing" }),
     url: "/try-demo",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Try the live CloseBoss demo",
+    title: t("social.tryDemo.title", { ns: "web_marketing" }),
     description:
-      "Read-only sandbox of the workspace — inbox, drafts, contacts, calendar. No signup.",
+      t("social.tryDemo.twitterDescription", { ns: "web_marketing" }),
   },
 };
 }

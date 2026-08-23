@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
   openGraph: {
     title,
     description:
-      "Migration guides for LionDesk, Follow Up Boss, kvCORE, and more — with free concierge migration through 2026.",
+      t("social.switchFrom.ogDescription", { ns: "web_marketing" }),
     url: "/switch-from",
     type: "website",
   },
@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
     card: "summary_large_image",
     title,
     description:
-      "Migration guides + free concierge migration for agents leaving LionDesk, FUB, kvCORE, and more.",
+      t("social.switchFrom.twitterDescription", { ns: "web_marketing" }),
   },
 };
 }

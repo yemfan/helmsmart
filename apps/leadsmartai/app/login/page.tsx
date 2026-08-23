@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
 import { safeInternalRedirect } from "@/lib/loginUrl";
 import { isRealEstateProfessionalRole } from "@/lib/paidSubscriptionEligibility";
-import { resolveRoleHomePath } from "@/lib/rolePortalPaths";
+import { resolveRoleHomePath, START_FREE_AGENT_PATH } from "@/lib/rolePortalPaths";
 import { getOAuthRedirectOrigin } from "@/lib/siteUrl";
 import { useAuth } from "@/components/AuthProvider";
 
@@ -138,9 +138,14 @@ function LoginPageInner() {
           router.replace(seenWelcome ? resolveRoleHomePath(role, hasAgentRow) : "/welcome");
         }
       } else {
-        const fallback = redirectParam ?? "/";
-        const safeFallback = safeInternalRedirect(fallback);
-        router.replace(safeFallback ?? "/");
+        // Signed in, but no agent workspace. Sending them to the marketing
+        // home here is what made a successful login look like a broken one —
+        // route to the conversion page instead, carrying their intent.
+        const safeFallback = redirectParam ? safeInternalRedirect(redirectParam) : null;
+        router.replace(
+          safeFallback ??
+            `${START_FREE_AGENT_PATH}?next=${encodeURIComponent("/dashboard")}`
+        );
       }
     } catch (e: any) {
       setError(e?.message ?? t("pages.loginPage.somethingWentWrong"));

@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   openGraph: {
     title,
     description:
-      "Native voice AI for real estate. Tap to call the live demo or have it call you.",
+      t("social.voiceAi.ogDescription", { ns: "web_marketing" }),
     type: "website",
   },
 };
