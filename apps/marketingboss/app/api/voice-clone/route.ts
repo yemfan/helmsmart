@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { saveTwin } from "@/lib/digitalTwin";
 import {
   cloneVoice,
   MAX_SAMPLE_BYTES,
@@ -85,6 +86,17 @@ export async function POST(req: Request) {
       filename: sampleUrl.split("/").pop() || "sample.mp3",
       mimeType: res.headers.get("content-type") || "audio/mpeg",
     });
+
+    // Record who this voice belongs to. ElevenLabs holds every user's clones on
+    // one shared account and `listVoices()` returns all of them, so without an
+    // owner recorded here a cloned voice is effectively public to the app —
+    // and a cloned voice is a person's likeness.
+    await saveTwin(supabase, user.id, { voice_id: voiceId, voice_name: name }).catch((err: unknown) => {
+      // The clone itself succeeded; losing the association is worth logging but
+      // not worth failing the request the user actually made.
+      console.error("[voice-clone] could not attach voice to twin:", err);
+    });
+
     return NextResponse.json({ ok: true, voiceId, name });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Voice cloning failed.";

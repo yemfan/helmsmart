@@ -100,6 +100,14 @@ export default function Nav({ email, credits }: { email: string; credits?: numbe
                 </div>
                 <nav className="py-1.5">
                   <Link
+                    href="/profile"
+                    onClick={() => setOpen(false)}
+                    className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
+                  >
+                    Your profile
+                    <span className="block text-[11px] text-slate-400">Photo, voice and your twin</span>
+                  </Link>
+                  <Link
                     href="/settings"
                     onClick={() => setOpen(false)}
                     className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"

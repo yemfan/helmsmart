@@ -49,7 +49,16 @@ export default async function SettingsPage({
     youtube: youtubeConfigured(),
   };
 
-  const initialTab = sp.tab === "billing" ? "billing" : sp.tab === "connections" ? "connections" : "brand";
+  // "voice" is in the list because the profile page links straight to it —
+  // without it, "Clone my voice →" silently landed on the Brand Kit tab.
+  const initialTab =
+    sp.tab === "billing"
+      ? "billing"
+      : sp.tab === "connections"
+        ? "connections"
+        : sp.tab === "voice"
+          ? "voice"
+          : "brand";
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-8 px-5 py-8 sm:py-12">
