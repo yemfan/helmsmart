@@ -1581,6 +1581,8 @@
     "quiet7d": "静默 7 天以上",
     "settingsSections": "设置分区",
     "profilePhoto": "用户头像",
+    "calendarEmail": "日历与邮件",
+    "calendarEmailHelp": "Google 日历双向同步，以及将报价、委托协议和看房请求自动转为任务的转发地址。",
     "connectedSocial": "已连接的社交账号",
     "socialAutoposting": "社交自动发布",
     "weeklySchedule": "每周发布计划",

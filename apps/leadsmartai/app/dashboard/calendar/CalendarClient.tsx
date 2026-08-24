@@ -6,6 +6,7 @@ import { intlLocale } from "@/lib/i18n/locale";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CalendarClock, Check, Eye, Pencil, X } from "lucide-react";
+import GoogleCalendarConnectPanel from "@/components/dashboard/GoogleCalendarConnectPanel";
 
 type CalendarEvent = { id: string; contact_id: string; lead_name: string | null; title: string; starts_at: string; };
 // Mirrors /api/dashboard/tasks/unified output. Ids are namespaced
@@ -78,8 +79,6 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   const [showTasks, setShowTasks] = useState(true);
   const [showFollowups, setShowFollowups] = useState(true);
   const [showDrafts, setShowDrafts] = useState(true);
-  const [gcalStatus, setGcalStatus] = useState<{ configured: boolean; connected: boolean } | null>(null);
-  const [gcalDisconnecting, setGcalDisconnecting] = useState(false);
   // Month grid (default) vs flat chronological list. Persisted so the
   // user's preference survives navigations.
   const [view, setView] = useState<"month" | "list">(() => {
@@ -161,12 +160,6 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   }, [currentMonth]);
 
   useEffect(() => { loadData(); }, [loadData]);
-
-  useEffect(() => {
-    fetch("/api/dashboard/calendar/google-status").then((r) => r.json()).then((b) => {
-      if (b.ok) setGcalStatus({ configured: b.configured, connected: b.connected });
-    }).catch(() => {});
-  }, []);
 
   // Build day → entries map
   const dayMap = useMemo(() => {
@@ -356,40 +349,8 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
           where forwarded mail actually lands, and the calendar gets
           its vertical space back. */}
 
-      {/* Google Calendar integration */}
-      {gcalStatus?.configured && (
-        <div className={`flex items-center justify-between rounded-xl border p-4 ${gcalStatus.connected ? "border-green-200 bg-green-50" : "border-blue-200 bg-blue-50"}`}>
-          <div>
-            <p className="text-sm font-semibold text-gray-900">
-              {gcalStatus.connected ? tr("calendar.gcal.connected") : tr("calendar.gcal.connect")}
-            </p>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {gcalStatus.connected
-                ? tr("calendar.gcal.connectedHelp")
-                : tr("calendar.gcal.connectHelp")}
-            </p>
-          </div>
-          {gcalStatus.connected ? (
-            <button
-              onClick={async () => {
-                setGcalDisconnecting(true);
-                await fetch("/api/auth/google-calendar/disconnect", { method: "POST" }).catch(() => {});
-                setGcalStatus({ configured: true, connected: false });
-                setGcalDisconnecting(false);
-              }}
-              disabled={gcalDisconnecting}
-              className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
-            >
-              {gcalDisconnecting ? tr("calendar.gcal.working") : tr("calendar.gcal.disconnect")}
-            </button>
-          ) : (
-            <a
-              href="/api/auth/google-calendar"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700"
-            >{tr("pages.calendarPage.connect")}</a>
-          )}
-        </div>
-      )}
+      {/* Google Calendar integration — same panel Settings renders. */}
+      <GoogleCalendarConnectPanel />
 
       {/* Add form */}
       {showAdd && (

@@ -1581,6 +1581,8 @@
     "quiet7d": "Quiet 7d+",
     "settingsSections": "Settings sections",
     "profilePhoto": "User profile photo",
+    "calendarEmail": "Calendar & email",
+    "calendarEmailHelp": "Two-way Google Calendar sync, and the forwarding address that turns offers, listing agreements and showing requests into tasks.",
     "connectedSocial": "Connected social accounts",
     "socialAutoposting": "Social auto-posting",
     "weeklySchedule": "Weekly post schedule",

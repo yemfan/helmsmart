@@ -33,7 +33,16 @@ type InboundAlias = {
  * provisions it on first call, so a gear that opened onto an empty
  * address would be worse than no gear at all.
  */
-export default function InboundEmailSetupButton() {
+export default function InboundEmailSetupButton({
+  variant = "button",
+}: {
+  /**
+   * "button" — a bare gear, for a page header (Conversations).
+   * "row"    — gear inside a titled row, for a Settings card where it
+   *            sits beside Google Calendar and needs to explain itself.
+   */
+  variant?: "button" | "row";
+}) {
   const { t, i18n } = useTranslation("dashboard");
   const timeLocale = intlLocale(i18n.language);
   const [alias, setAlias] = useState<InboundAlias | null>(null);
@@ -63,18 +72,32 @@ export default function InboundEmailSetupButton() {
 
   if (!alias) return null;
 
+  const gear = (
+    <button
+      type="button"
+      onClick={() => setOpen(true)}
+      title={t("calendar.inbound.settingsLabel")}
+      aria-label={t("calendar.inbound.settingsLabel")}
+      className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+    >
+      <Settings className="h-4 w-4" aria-hidden />
+      <span className="hidden sm:inline">{t("calendar.inbound.settingsLabel")}</span>
+    </button>
+  );
+
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        title={t("calendar.inbound.settingsLabel")}
-        aria-label={t("calendar.inbound.settingsLabel")}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
-      >
-        <Settings className="h-4 w-4" aria-hidden />
-        <span className="hidden sm:inline">{t("calendar.inbound.settingsLabel")}</span>
-      </button>
+      {variant === "row" ? (
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-gray-900">{t("calendar.inbound.heading")}</p>
+            <p className="mt-0.5 text-xs text-gray-500">{t("calendar.inbound.body")}</p>
+          </div>
+          {gear}
+        </div>
+      ) : (
+        gear
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-xl">
