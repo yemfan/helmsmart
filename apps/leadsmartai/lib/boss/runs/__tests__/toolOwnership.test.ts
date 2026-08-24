@@ -54,3 +54,40 @@ describe("tool ownership reaches the model", () => {
     }
   });
 });
+
+/**
+ * hand_off_to_agent is the one tool whose owner is decided at runtime: the
+ * escalation is the same, but a wire to escrow belongs to the Transaction team
+ * and a billing question to the Receptionist. It used to be stamped
+ * "Emma · Receptionist" either way, so a deal question came back looking like
+ * the team had misread it.
+ */
+describe("hand_off_to_agent routes by domain", () => {
+  const handoff = listBossTools().find((t) => t.name === "hand_off_to_agent");
+
+  /** The zod field behind `owner`, reached without leaning on zod's public types. */
+  type OwnerField = {
+    description?: string;
+    _def?: { innerType?: { _def?: { values?: string[] } } };
+  };
+  const ownerField = (): OwnerField | undefined => {
+    const schema = handoff?.inputSchema as unknown as
+      | { shape?: Record<string, OwnerField> }
+      | undefined;
+    return schema?.shape?.owner;
+  };
+
+  it("offers an owner covering every teammate on the roster", () => {
+    const options = ownerField()?._def?.innerType?._def?.values ?? [];
+    expect(options.sort()).toEqual(
+      ["accountant", "marketing_assistant", "receptionist", "sales_assistant", "transaction_assistant"].sort(),
+    );
+    for (const o of options) expect(ASSIGNEE_PERSONA[o]).toBeTruthy();
+  });
+
+  it("tells the model to pick by domain, naming the escrow case", () => {
+    const desc = ownerField()?.description ?? "";
+    expect(desc).toContain("transaction_assistant");
+    expect(desc).toContain("escrow");
+  });
+});

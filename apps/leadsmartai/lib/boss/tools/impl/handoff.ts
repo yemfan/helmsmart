@@ -30,10 +30,26 @@ export const handOffToAgent = defineTool({
         "needs_action = only the realtor can do it (funds, signing, account/security); out_of_scope = not something CloseBoss does; unclear = couldn't pin down intent; capability_gap = the team should be able to do this but has no tool yet.",
       ),
     suggested_next_step: z.string().optional().describe("A concrete next step for the realtor, if you have one."),
+    owner: z
+      .enum([
+        "receptionist",
+        "sales_assistant",
+        "marketing_assistant",
+        "transaction_assistant",
+        "accountant",
+      ])
+      .optional()
+      .describe(
+        "The teammate who carries the follow-up, by DOMAIN — transaction_assistant for anything on an open deal (escrow, wires, contracts, closing, disclosures), accountant for money and books, sales_assistant for a lead or a buyer, marketing_assistant for listings and promotion, receptionist for the account itself and general messages. Handing an escrow question to the receptionist tells the realtor the team did not understand what they asked.",
+      ),
   }),
   riskClass: "crm_write",
   assignee: "receptionist",
   execute: async (ctx, input) => {
+    // Who follows this up. The receptionist is the fallback, not the default:
+    // a wire to escrow is transaction work, and stamping Emma on it read as
+    // though the team had not understood the question.
+    const owner = input.owner ?? "receptionist";
     const description = [input.why, input.suggested_next_step ? `Next step: ${input.suggested_next_step}` : null]
       .filter(Boolean)
       .join("\n\n");
@@ -47,14 +63,14 @@ export const handOffToAgent = defineTool({
       priority: "medium",
       source: "automation",
       task_type: "boss_handoff",
-      metadata_json: { from: "boss_handoff", category: input.category },
+      metadata_json: { from: "boss_handoff", category: input.category, owner },
     });
 
     // Learning signal: capability_gap / unclear handoffs tell us what to build
     // or clarify next. Surfaced in the assistant-activity feed, flagged for you.
     await logAssistantActivity({
       agentId: ctx.agentId,
-      assistantType: "boss_assistant",
+      assistantType: owner,
       activityType: `handoff_${input.category}`,
       summary: input.summary.slice(0, 200),
       outcome: input.why.slice(0, 300),
@@ -72,7 +88,7 @@ export const handOffToAgent = defineTool({
     return {
       status: "completed",
       summary: `Handed to you — ${label}: ${input.summary}`,
-      data: { category: input.category },
+      data: { category: input.category, owner },
     };
   },
 });
