@@ -7,6 +7,8 @@ import AgentVoiceSettingsPanel from "@/components/dashboard/AgentVoiceSettingsPa
 import VoiceReceptionistSettingsPanel from "@/components/dashboard/VoiceReceptionistSettingsPanel";
 import MissedCallSettingsPanel from "@/components/dashboard/MissedCallSettingsPanel";
 import ChannelsCard from "@/components/dashboard/ChannelsCard";
+import GoogleCalendarConnectPanel from "@/components/dashboard/GoogleCalendarConnectPanel";
+import InboundEmailSetupButton from "@/components/dashboard/InboundEmailSetupButton";
 import ComplianceCard from "@/components/dashboard/ComplianceCard";
 import { CommissionDefaultsPanel } from "@/components/dashboard/CommissionDefaultsPanel";
 import { TransactionNotificationsPanel } from "@/components/dashboard/TransactionNotificationsPanel";
@@ -26,11 +28,11 @@ import MlsCsvImportClient from "./MlsCsvImportClient";
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
   const title = t("pages.dashboardTitles.settings", { ns: "dashboard" });
-  return {
-  title,
-  description: "Configure your account, AI preferences, and integrations.",
-  keywords: ["settings", "account", "preferences"],
-  robots: { index: false },
+  return {
+  title,
+  description: "Configure your account, AI preferences, and integrations.",
+  keywords: ["settings", "account", "preferences"],
+  robots: { index: false },
 };
 }
 
@@ -117,6 +119,19 @@ export default async function SettingsPage() {
         channels={
           <>
             <ChannelsCard agentId={ctx.agentId} />
+            {/* Calendar + email in one card: two-way appointment sync and the
+                Gmail forwarding address are the same job to an agent — "make
+                my calendar and inbox talk to CloseBoss" — so they configure
+                together here as well as on their own pages. */}
+            <Card
+              title={tr("tips.calendarEmail")}
+              description={tr("tips.calendarEmailHelp")}
+            >
+              <div className="space-y-3">
+                <GoogleCalendarConnectPanel />
+                <InboundEmailSetupButton variant="row" />
+              </div>
+            </Card>
             {/* Connections live on ONE page. This used to be a second, older
                 connect panel that read a narrower projection (so it could show
                 "no Pages" while the connect page showed the Page), pointed at a
