@@ -67,8 +67,8 @@
     "change": "更换",
     "remove": "移除",
     "attached_fallback": "已附图片",
-    "permission_library_denied": "未获相册权限。请在 \"设置 → LeadSmart\" 中开启。",
-    "permission_camera_denied": "未获相机权限。请在 \"设置 → LeadSmart\" 中开启。"
+    "permission_library_denied": "未获相册权限。请在 \"设置 → CloseBoss\" 中开启。",
+    "permission_camera_denied": "未获相机权限。请在 \"设置 → CloseBoss\" 中开启。"
   },
   "platform": {
     "section_label": "发布平台"

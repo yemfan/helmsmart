@@ -67,8 +67,8 @@
     "change": "Change",
     "remove": "Remove",
     "attached_fallback": "Attached image",
-    "permission_library_denied": "Photo library access denied. Enable it in Settings → LeadSmart.",
-    "permission_camera_denied": "Camera access denied. Enable it in Settings → LeadSmart."
+    "permission_library_denied": "Photo library access denied. Enable it in Settings → CloseBoss.",
+    "permission_camera_denied": "Camera access denied. Enable it in Settings → CloseBoss."
   },
   "platform": {
     "section_label": "Platform"

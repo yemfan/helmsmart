@@ -43,7 +43,7 @@
   "faq_categories": {
     "getting_started": "入门上手",
     "ai_followup": "AI 跟进",
-    "coaching": "CloseBoss AI 教练",
+    "coaching": "CloseBoss 教练",
     "billing": "计费与套餐",
     "integrations": "集成",
     "privacy": "隐私与数据"
@@ -112,7 +112,7 @@
       "a": "AI 会继续对话，根据客户来源（Zillow、Facebook、您的网站）提出有针对性的筛选问题。当意向超过您设定的阈值——他们询问看房、提到价格区间或要求通话时——您会立即收到通知，AI 随即移交该会话。"
     },
     "what_is_coaching": {
-      "q": "什么是 CloseBoss AI 教练？",
+      "q": "什么是 CloseBoss 教练？",
       "a": "教练是内置于面板的生产者成长计划。Producer Track（Pro 及以上）以 10 单成交 / 3% 转化率为目标；Top Producer Track（Premium 和 Team）以 15 单成交 / 5% 转化率为目标。含每日计划、每周打法手册、每月 AI 深度剖析和同行对标，无需额外付费。"
     },
     "opt_out_coaching": {

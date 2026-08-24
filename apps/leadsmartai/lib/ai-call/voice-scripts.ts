@@ -9,10 +9,10 @@ import type { VoiceCallIntent } from "./types";
 // --- Bilingual inbound (English + Chinese) — single language preference ask ---
 
 export const VOICE_BILINGUAL_GREETING_EN =
-  "Hi, thanks for calling LeadSmart AI. I'm your agent's phone assistant.";
+  "Hi, thanks for calling CloseBoss. I'm your agent's phone assistant.";
 
 export const VOICE_BILINGUAL_GREETING_ZH =
-  "您好，欢迎使用 LeadSmart AI，我是您房产经纪的电话助手。";
+  "您好，欢迎使用 CloseBoss，我是您房产经纪的电话助手。";
 
 /** Ask preferred language once; do not repeat on later TwiML turns. */
 export const VOICE_LANGUAGE_PROMPT_EN =
@@ -25,7 +25,7 @@ export const VOICE_LANGUAGE_PROMPT_ZH =
 
 /** Legacy single-language greeting (prefer bilingual inbound in `twilio.ts`). */
 export const VOICE_GREETING_SCRIPT =
-  "Hi — thanks for calling. I'm the LeadSmart AI assistant for your agent. Are you mainly calling about selling a home, buying, getting financing help, or scheduling a time to talk?";
+  "Hi — thanks for calling. I'm the CloseBoss assistant for your agent. Are you mainly calling about selling a home, buying, getting financing help, or scheduling a time to talk?";
 
 export const VOICE_GATHER_REPROMPT =
   "Sorry, I didn't catch that. In a few words — is this about selling, buying, a loan or pre-approval, or scheduling a callback?";
@@ -60,7 +60,7 @@ export const VOICE_SAFE_FALLBACK_SCRIPT =
 
 /** When the call routes to voicemail or no live pickup (future TwiML / carrier). */
 export const VOICE_VOICEMAIL_SCRIPT =
-  "Hi, you've reached the team through LeadSmart AI. Please leave your name, number, and whether you're buying or selling — and the best time to call you back. Thanks, and we'll talk soon.";
+  "Hi, you've reached the team through CloseBoss. Please leave your name, number, and whether you're buying or selling — and the best time to call you back. Thanks, and we'll talk soon.";
 
 // --- Flow-specific lines (Realtime / multi-turn TwiML) ------------------------
 

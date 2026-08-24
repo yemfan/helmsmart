@@ -14,7 +14,7 @@
   },
   "header": {
     "eyebrow": "集成",
-    "h1": "LeadSmart 融入您已有的工作流程。",
+    "h1": "CloseBoss 融入您已有的工作流程。",
     "summary": "{{live}} 项集成已上线，另有 {{rest}} 项处于测试或即将推出——涵盖获客渠道、日历、邮件、电话通信、电子签名、计费与 AI。",
     "ask_pre": "没找到您需要的？",
     "ask_link": "告诉我们",
@@ -28,8 +28,8 @@
       "items": {
         "zillow": { "name": "Zillow Premier Agent", "description": "连接您的 Zillow 账户，新的买家/卖家咨询会在数秒内进入客户队列并触发 AI 跟进。" },
         "realtor": { "name": "Realtor.com", "description": "以与 Zillow 相同的分配规则同步新的 Realtor.com 客户。每位联系人都保留来源归属信息。" },
-        "facebook": { "name": "Facebook Lead Ads", "description": "投放 Meta 引流广告，并把回应直接汇入 LeadSmart。支持买家/卖家/开放日表单的自定义字段映射。" },
-        "idx": { "name": "IDX 网站 Webhook", "description": "适用于任意 IDX 网站（Sierra、kvCORE、自建 WordPress）的一行嵌入代码——新的表单提交在一秒内送达 LeadSmart。" },
+        "facebook": { "name": "Facebook Lead Ads", "description": "投放 Meta 引流广告，并把回应直接汇入 CloseBoss。支持买家/卖家/开放日表单的自定义字段映射。" },
+        "idx": { "name": "IDX 网站 Webhook", "description": "适用于任意 IDX 网站（Sierra、kvCORE、自建 WordPress）的一行嵌入代码——新的表单提交在一秒内送达 CloseBoss。" },
         "google_lsa": { "name": "Google 本地服务广告", "description": "将 Google LSA 咨询导入与门户客户相同的 AI 跟进流程。" },
         "open_house_qr": { "name": "开放日二维码登记", "description": "原生开放日登记页面——访客扫描二维码即进入您的 CRM，并自动打标签和标注来源。" }
       }
@@ -39,8 +39,8 @@
       "description": "与您日常使用的日历和收件箱双向同步。每一次会面、每一条发出的消息和回复，都会汇入联系人时间线。",
       "items": {
         "google": { "name": "Google Workspace", "description": "双向日历同步、Gmail 会话关联，基于 OAuth 发送，让您的回复来自真实邮箱地址。" },
-        "microsoft": { "name": "Microsoft 365 / Outlook", "description": "采用与 Google 相同的 OAuth 方式进行日历 + 邮件同步。您的 Outlook 事件会显示在 LeadSmart 日历中。" },
-        "apple": { "name": "Apple iCloud 日历", "description": "通过 CalDAV 进行只读同步，让您在 LeadSmart 预约旁边看到 Apple 日历事件。" }
+        "microsoft": { "name": "Microsoft 365 / Outlook", "description": "采用与 Google 相同的 OAuth 方式进行日历 + 邮件同步。您的 Outlook 事件会显示在 CloseBoss 日历中。" },
+        "apple": { "name": "Apple iCloud 日历", "description": "通过 CalDAV 进行只读同步，让您在 CloseBoss 预约旁边看到 Apple 日历事件。" }
       }
     },
     "telephony": {
@@ -111,11 +111,11 @@
     },
     "automation": {
       "title": "自动化与开发者接口",
-      "description": "通过 Webhook 或通用自动化平台，将 LeadSmart 与任意系统连接。",
+      "description": "通过 Webhook 或通用自动化平台，将 CloseBoss 与任意系统连接。",
       "items": {
         "zapier": { "name": "Zapier", "description": "标准 Zapier 应用——可由\"新客户\"\"新会话\"\"交易阶段变更\"触发，并执行\"发送模板\"\"创建任务\"\"更新联系人\"等动作。" },
         "make": { "name": "Make.com", "description": "支持 Make.com 场景，触发器和动作与 Zapier 相同。" },
-        "webhooks": { "name": "自定义 Webhook", "description": "将 LeadSmart 的任意事件 POST 到您自己的端点，或接收入站 Webhook，从外部系统创建客户/联系人/任务。" }
+        "webhooks": { "name": "自定义 Webhook", "description": "将 CloseBoss 的任意事件 POST 到您自己的端点，或接收入站 Webhook，从外部系统创建客户/联系人/任务。" }
       }
     }
   },

@@ -14,7 +14,7 @@
   },
   "header": {
     "eyebrow": "Integrations",
-    "h1": "LeadSmart fits into the workflow you already have.",
+    "h1": "CloseBoss fits into the workflow you already have.",
     "summary": "{{live}} live integrations and {{rest}} more in beta or coming soon — across lead sources, calendar, email, telephony, e-signature, billing, and AI.",
     "ask_pre": "Don't see what you need? ",
     "ask_link": "Ask us",
@@ -28,8 +28,8 @@
       "items": {
         "zillow": { "name": "Zillow Premier Agent", "description": "Connect your Zillow account so new buyer / seller inquiries land in the Lead Queue within seconds and trigger AI follow-up." },
         "realtor": { "name": "Realtor.com", "description": "Sync new Realtor.com leads with the same routing rules as Zillow. Source attribution is preserved on every contact." },
-        "facebook": { "name": "Facebook Lead Ads", "description": "Run Meta lead ads and feed responses straight into LeadSmart. Custom field mapping for buyer / seller / open-house forms." },
-        "idx": { "name": "IDX website webhook", "description": "One-line embed for any IDX site (Sierra, kvCORE, custom WordPress) — new form submissions hit LeadSmart in under a second." },
+        "facebook": { "name": "Facebook Lead Ads", "description": "Run Meta lead ads and feed responses straight into CloseBoss. Custom field mapping for buyer / seller / open-house forms." },
+        "idx": { "name": "IDX website webhook", "description": "One-line embed for any IDX site (Sierra, kvCORE, custom WordPress) — new form submissions hit CloseBoss in under a second." },
         "google_lsa": { "name": "Google Local Service Ads", "description": "Pipe Google LSA inquiries into the same AI follow-up sequences as your portal leads." },
         "open_house_qr": { "name": "Open-house QR signup", "description": "Native open-house signup page — visitors scan a QR code and land in your CRM with auto-tagging and source attribution." }
       }
@@ -39,8 +39,8 @@
       "description": "Two-way sync with the calendar and inbox you already live in. Every appointment, sent message, and reply lands on the contact timeline.",
       "items": {
         "google": { "name": "Google Workspace", "description": "Two-way calendar sync, Gmail thread attachment, OAuth-based sending so your replies come from your real email address." },
-        "microsoft": { "name": "Microsoft 365 / Outlook", "description": "Calendar + email sync with the same OAuth pattern as Google. Your Outlook events appear on the LeadSmart calendar." },
-        "apple": { "name": "Apple iCloud Calendar", "description": "Read-only sync via CalDAV so you can see Apple-calendar events alongside LeadSmart bookings." }
+        "microsoft": { "name": "Microsoft 365 / Outlook", "description": "Calendar + email sync with the same OAuth pattern as Google. Your Outlook events appear on the CloseBoss calendar." },
+        "apple": { "name": "Apple iCloud Calendar", "description": "Read-only sync via CalDAV so you can see Apple-calendar events alongside CloseBoss bookings." }
       }
     },
     "telephony": {
@@ -111,11 +111,11 @@
     },
     "automation": {
       "title": "Automation & developer access",
-      "description": "Connect LeadSmart to anything via webhooks or general-purpose automation platforms.",
+      "description": "Connect CloseBoss to anything via webhooks or general-purpose automation platforms.",
       "items": {
         "zapier": { "name": "Zapier", "description": "Standard Zapier app — trigger on New lead, New conversation, Deal stage change, and act with Send template, Create task, Update contact." },
         "make": { "name": "Make.com", "description": "Make.com scenario support with the same triggers and actions as Zapier." },
-        "webhooks": { "name": "Custom webhooks", "description": "POST any event from LeadSmart to your own endpoint, or accept inbound webhooks to create leads / contacts / tasks from external systems." }
+        "webhooks": { "name": "Custom webhooks", "description": "POST any event from CloseBoss to your own endpoint, or accept inbound webhooks to create leads / contacts / tasks from external systems." }
       }
     }
   },
