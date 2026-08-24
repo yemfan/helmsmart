@@ -125,7 +125,7 @@ export const SETTINGS_GUIDES: ReadonlyArray<HelpGuide> = [
       "Nothing here is dangerous to look at. The only settings that change what your contacts receive are Review Policy, Timing, and the Channels tab — everything else affects you, not them.",
     ],
     steps: [
-      "Voice & Style — how CloseBoss sounds. App language, AI writing personality and style notes, the phone assistant's voice, your AI Receptionist, missed-call text-back, and your daily briefing schedule.",
+      "Voice & Style — how CloseBoss sounds. App language, AI writing personality and style notes, the phone assistant's voice, your AI Receptionist, and missed-call text-back.",
       "Messages — what CloseBoss sends, and when. Review Policy (review each one, autosend everything, or pick per category), your templates, Timing & Frequency, and the sphere drip cadence.",
       "Data & Tools — the Home Value Smart Link you share with homeowners, and CSV/MLS contact import.",
       "Channels & Compliance — the plumbing: your sending number and email address (read-only — contact support to change a verified sender), connected social accounts, auto-posting and the weekly schedule, IDX lead routing, deal notifications, commission defaults, and the compliance guardrails.",
@@ -198,14 +198,24 @@ export const SETTINGS_GUIDES: ReadonlyArray<HelpGuide> = [
     category: "workflows",
     body: [
       "The morning briefing is a start-of-day plan: hot leads and follow-ups. The evening summary is the recap — what you missed, and a preview of tomorrow. Both appear on your dashboard and in the mobile app.",
-      "The timezone on this panel is the one your briefings use. Your AI Receptionist has its own timezone setting, so if your times look wrong, check both.",
+      "The timezone here is your whole account's — briefings, office hours, and every appointment your AI Receptionist books all run on it. There is only one, so setting it once is enough.",
     ],
     steps: [
-      "Open Settings → Voice & Style and find the briefing schedule.",
+      "Open Ask Max and click Briefing schedule, under the opening briefing.",
       "Set a Morning briefing time, or leave it blank to turn the morning plan off.",
       "Set an Evening summary time, or leave it blank to skip the recap.",
       "Choose your Timezone from the list. If your zone is not listed, pick “Other timezone…” and enter an IANA name such as Europe/Berlin.",
       "Click Save schedule. Briefings fire at the times above, in the zone you chose.",
+    ],
+    // Carried on the guide itself rather than through the Settings card map:
+    // this panel is no longer a Settings card, but the panel is unchanged and
+    // a picture of it still helps.
+    images: [
+      {
+        src: "/help/settings/daily-briefings.png",
+        alt: "The briefing schedule: morning time, evening time and timezone",
+        caption: "Ask Max → Briefing schedule",
+      },
     ],
     related: [
       { label: "Read your performance dashboard", href: "/help/guides/performance-dashboard" },

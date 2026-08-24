@@ -2882,7 +2882,7 @@
       "businessNameZh": "公司名称（中文）",
       "receptionistName": "前台接待姓名",
       "receptionistNamePlaceholder": "例如：Maria（可选）",
-      "timezoneAccountNote": "用于营业时间以及 AI 预约的每一次约见。请在「每日简报」中修改——整个账户共用一个时区。",
+      "timezoneAccountNote": "用于营业时间以及 AI 预约的每一次约见。请在「Ask Max」的简报时间设置中修改——整个账户共用一个时区。",
       "businessNameUnset": "尚未设置",
       "businessNameBrandNote": "这是来电者听到的名称，取自你的品牌设置——请在「个人资料 → 品牌」中修改。",
       "open247": "全天候营业——AI 随时接听并预约",
@@ -3596,6 +3596,7 @@
       "starting": "启动中…"
     },
     "boss": {
+      "briefingScheduleToggle": "简报时间",
       "todaysPriorities": "今天的优先事项",
       "nothingUrgent": "没有紧急事项——团队都处理好了。告诉我您想让他们做什么。",
       "handedToTeam": "已交给您的团队——详见下方。",

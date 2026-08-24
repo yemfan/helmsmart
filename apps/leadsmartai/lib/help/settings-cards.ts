@@ -16,6 +16,9 @@
  *     each card element. Re-run it when the UI changes; do not touch the PNGs
  *     by hand, and never capture from a real agent's account.
  *
+ * `Daily Briefings` is absent because it is no longer a Settings card — it
+ * moved to Ask Max, where the briefing it schedules actually appears.
+ *
  * `Recent calls` is deliberately absent: it renders live call rows with real
  * names and numbers, so it is excluded from capture and has no guide.
  */
@@ -78,13 +81,6 @@ export const SETTINGS_CARDS: ReadonlyArray<SettingsCard> = [
     guide: "missed-call-text-back",
     summary: "The SMS that goes out when you cannot pick up, and where your calls forward.",
     image: "/help/settings/missed-call-text-back.png",
-  },
-  {
-    card: "Daily Briefings",
-    tab: "Voice & Style",
-    guide: "daily-briefings",
-    summary: "When your morning plan and evening recap appear, and in which timezone.",
-    image: "/help/settings/daily-briefings.png",
   },
 
   // ── Messages ───────────────────────────────────────────────────────────────

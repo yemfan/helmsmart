@@ -1,5 +1,7 @@
 "use client";
 
+
+import BriefingScheduleCard from "@/components/dashboard/BriefingScheduleCard";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 
@@ -221,6 +223,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [activities, setActivities] = useState<ActivityRow[]>([]);
   const [briefing, setBriefing] = useState<BriefingRow | null>(null);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
   const [instructions, setInstructions] = useState<InstructionRow[]>([]);
   const [tasks, setTasks] = useState<TaskRow[]>([]);
   const [runs, setRuns] = useState<RunRow[]>([]);
@@ -605,6 +608,28 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
             </p>
           )}
         </BossBubble>
+
+        {/* When the briefing arrives, set where the briefing arrives.
+
+            This lived in Settings → Voice & Style, which is a strange place to
+            look for it: nothing about the briefing is a voice or a style, and
+            the thing it schedules shows up here. Collapsed by default so the
+            page still opens on the day's work rather than on a form. */}
+        <div className="px-1">
+          <button
+            type="button"
+            onClick={() => setScheduleOpen((v) => !v)}
+            className="text-[11px] font-medium text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline"
+            aria-expanded={scheduleOpen}
+          >
+            {tr("pages.boss.briefingScheduleToggle")}
+          </button>
+          {scheduleOpen && (
+            <div className="mt-2">
+              <BriefingScheduleCard />
+            </div>
+          )}
+        </div>
 
         {/* Today's priorities — the proposals the recommendations engine surfaced */}
         {recommendations.length > 0 && (

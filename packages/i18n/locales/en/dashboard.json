@@ -2882,7 +2882,7 @@
       "businessNameZh": "Business name (Chinese)",
       "receptionistName": "Receptionist name",
       "receptionistNamePlaceholder": "e.g. Maria (optional)",
-      "timezoneAccountNote": "Used for office hours and every appointment the AI books. Change it under Daily Briefings — one timezone covers your whole account.",
+      "timezoneAccountNote": "Used for office hours and every appointment the AI books. Change it under Ask Max → briefing schedule — one timezone covers your whole account.",
       "businessNameUnset": "Not set yet",
       "businessNameBrandNote": "This is what callers hear. It comes from your branding — change it in Profile → Branding.",
       "open247": "Open 24/7 — the AI answers and books at any hour",
@@ -3596,6 +3596,7 @@
       "starting": "Starting..."
     },
     "boss": {
+      "briefingScheduleToggle": "Briefing schedule",
       "todaysPriorities": "Today's priorities",
       "nothingUrgent": "Nothing urgent — your team has things under control. Tell me what you'd like done.",
       "handedToTeam": "Handed to your team — see below.",
