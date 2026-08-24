@@ -23,6 +23,8 @@ type PageProps = {
     count?: string;
     /** Which network the flash refers to (set by the callback). */
     network?: string;
+    /** How many newly-granted Pages are waiting to be chosen. */
+    awaiting?: string;
   }>;
 };
 
@@ -108,7 +110,7 @@ type YouTubeAccountRow = {
  */
 export default async function ConnectPage({ searchParams }: PageProps) {
   const { agentId } = await getCurrentAgentContext();
-  const { status, reason, count, network } = await searchParams;
+  const { status, reason, count, network, awaiting } = await searchParams;
   const t = await getServerT();
 
   // Pull this agent's existing connections in parallel. Service-role
@@ -202,6 +204,7 @@ export default async function ConnectPage({ searchParams }: PageProps) {
         initialReason={reason ?? null}
         initialCount={count ?? null}
         initialNetwork={network ?? null}
+        initialAwaiting={awaiting ?? null}
         metaConnections={metaConnections}
         linkedinConnections={linkedinConnections}
         threadsConnections={threadsConnections}
