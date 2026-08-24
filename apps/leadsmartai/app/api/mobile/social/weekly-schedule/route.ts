@@ -15,6 +15,7 @@ import {
   type WeeklyPlatform,
   type WeeklyScheduleDay,
 } from "@/lib/social/weeklySchedule";
+import { clampPostsPerDay } from "@/lib/social/planWeeklySlot";
 import { getAvatarState } from "@/lib/agent/avatarStudio";
 
 export const runtime = "nodejs";
@@ -91,6 +92,9 @@ export async function PUT(req: Request) {
         mediaType,
         platforms: platforms && platforms.length ? platforms : null,
         topic: typeof d?.topic === "string" ? (d.topic as string) : "",
+        postsPerDay: clampPostsPerDay(d?.postsPerDay),
+        timeMode: d?.timeMode === "ai" ? "ai" : "fixed",
+        topicMode: d?.topicMode === "ai" ? "ai" : "fixed",
       });
     }
 

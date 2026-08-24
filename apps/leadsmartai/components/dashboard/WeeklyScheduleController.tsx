@@ -5,14 +5,23 @@ import { useTranslation } from "react-i18next";
 
 /**
  * Weekly Social Schedule — check the days you want a post, and per checked day
- * set a time, a content type (text or image), channels, and a topic. AI
- * researches the topic and publishes on schedule. Text posts → Facebook /
- * LinkedIn / Threads; image posts render a branded card and additionally reach
- * Instagram + Pinterest. Config for CloseBoss; a sibling exists in MarketingBoss.
+ * set how many posts, when, a content type (text / image / video), channels,
+ * and a topic. AI researches the topic and publishes on schedule. Text posts →
+ * Facebook / LinkedIn / Threads; image posts render a branded card and
+ * additionally reach Instagram + Pinterest; video posts use the digital twin.
+ *
+ * Two things can be delegated per day: the publish TIME and the TOPIC. Handing
+ * over both means a day the agent never has to think about again — which is the
+ * point of "post every day" at the top, since nobody wants to fill in seven
+ * identical forms.
+ *
+ * Config for CloseBoss; a sibling exists in MarketingBoss.
  */
 
 type Platform = "facebook" | "instagram" | "linkedin" | "threads" | "pinterest" | "tiktok" | "youtube";
 type MediaType = "text" | "image" | "video";
+type TimeMode = "fixed" | "ai";
+type TopicMode = "fixed" | "ai";
 
 type Day = {
   weekday: number;
@@ -23,6 +32,9 @@ type Day = {
   mediaType: MediaType;
   platforms: Platform[] | null; // null = all of this content type
   topic: string;
+  postsPerDay: number;
+  timeMode: TimeMode;
+  topicMode: TopicMode;
 };
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -38,6 +50,7 @@ const LABELS: Record<Platform, string> = {
 const TEXT_PLATFORMS: Platform[] = ["facebook", "linkedin", "threads"];
 const IMAGE_PLATFORMS: Platform[] = ["facebook", "instagram", "linkedin", "threads", "pinterest"];
 const VIDEO_PLATFORMS: Platform[] = ["facebook", "instagram", "linkedin", "tiktok", "youtube"];
+const POSTS_PER_DAY_CHOICES = [1, 2, 3, 4, 5];
 
 function platformsFor(mediaType: MediaType): Platform[] {
   return mediaType === "video" ? VIDEO_PLATFORMS : mediaType === "image" ? IMAGE_PLATFORMS : TEXT_PLATFORMS;
@@ -45,6 +58,18 @@ function platformsFor(mediaType: MediaType): Platform[] {
 
 function hhmm(h: number, m: number): string {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+/** Fill in anything a never-saved row has no value for. */
+function hydrate(d: Day, fallbackTz: string): Day {
+  return {
+    ...d,
+    mediaType: d.mediaType ?? "text",
+    timezone: d.timezone || fallbackTz,
+    postsPerDay: d.postsPerDay ?? 1,
+    timeMode: d.timeMode ?? "fixed",
+    topicMode: d.topicMode ?? "fixed",
+  };
 }
 
 export default function WeeklyScheduleController() {
@@ -71,8 +96,7 @@ export default function WeeklyScheduleController() {
       };
       if (!b.ok || !b.days) return;
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
-      // Default any never-saved day to the viewer's timezone; default content type to text.
-      setDays(b.days.map((d) => ({ ...d, mediaType: d.mediaType ?? "text", timezone: d.timezone || tz })));
+      setDays(b.days.map((d) => hydrate(d, tz)));
       setPresets(b.topicPresets ?? []);
       setConfigured(b.configured ?? true);
       setVideoReady(b.videoReady ?? false);
@@ -87,6 +111,16 @@ export default function WeeklyScheduleController() {
 
   function patch(weekday: number, next: Partial<Day>) {
     setDays((cur) => cur?.map((d) => (d.weekday === weekday ? { ...d, ...next } : d)) ?? cur);
+    setNote(null);
+  }
+
+  /**
+   * "Post every day" is a bulk switch over the same per-day rows, not a mode of
+   * its own — so the days stay individually editable afterwards and there is no
+   * second source of truth about which days are on.
+   */
+  function setEveryDay(on: boolean) {
+    setDays((cur) => cur?.map((d) => ({ ...d, enabled: on })) ?? cur);
     setNote(null);
   }
 
@@ -119,16 +153,16 @@ export default function WeeklyScheduleController() {
       });
       const b = (await res.json().catch(() => ({}))) as { ok?: boolean; days?: Day[]; error?: string };
       if (!res.ok || !b.ok) {
-        setError(b.error ?? "Couldn't save.");
+        setError(b.error ?? t("pages.weeklySchedule.saveFailed"));
         return;
       }
       if (b.days) {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Los_Angeles";
-        setDays(b.days.map((d) => ({ ...d, mediaType: d.mediaType ?? "text", timezone: d.timezone || tz })));
+        setDays(b.days.map((d) => hydrate(d, tz)));
       }
-      setNote("Schedule saved.");
+      setNote(t("pages.weeklySchedule.saved"));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Network error.");
+      setError(e instanceof Error ? e.message : t("pages.weeklySchedule.networkError"));
     } finally {
       setSaving(false);
     }
@@ -137,6 +171,8 @@ export default function WeeklyScheduleController() {
   if (!days) {
     return <div className="py-4 text-sm text-gray-500">{t("pages.weeklySchedule.loading")}</div>;
   }
+
+  const everyDay = days.every((d) => d.enabled);
 
   return (
     <div className="space-y-3">
@@ -150,11 +186,26 @@ export default function WeeklyScheduleController() {
         </p>
       ) : null}
 
+      <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={everyDay}
+            onChange={(e) => setEveryDay(e.target.checked)}
+            className="accent-brand-accent"
+          />
+          <span className="text-sm font-semibold text-gray-900">{t("pages.weeklySchedule.everyDay")}</span>
+        </label>
+        <p className="mt-0.5 pl-6 text-[11px] text-gray-500">{t("pages.weeklySchedule.everyDayHint")}</p>
+      </div>
+
       <ul className="space-y-2">
         {days.map((d) => {
           const all = platformsFor(d.mediaType);
           const selected = d.platforms ?? all;
           const allSelected = d.platforms === null;
+          const aiTime = d.timeMode === "ai";
+          const aiTopic = d.topicMode === "ai";
           return (
             <li key={d.weekday} className="rounded-xl border border-gray-200 bg-white p-3">
               <label className="flex items-center gap-2">
@@ -172,17 +223,58 @@ export default function WeeklyScheduleController() {
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] font-medium text-gray-500">{t("pages.weeklySchedule.time")}</span>
-                      <input
-                        type="time"
-                        value={hhmm(d.postHour, d.postMinute)}
-                        onChange={(e) => {
-                          const [h, m] = e.target.value.split(":").map((n) => parseInt(n, 10));
-                          patch(d.weekday, { postHour: h || 0, postMinute: m || 0 });
-                        }}
-                        className="rounded-lg border border-gray-300 px-2 py-1 text-sm"
-                      />
+                      {aiTime ? (
+                        <span className="rounded-lg border border-dashed border-gray-300 px-2 py-1 text-sm text-gray-500">
+                          {t("pages.weeklySchedule.aiPicksTimeValue")}
+                        </span>
+                      ) : (
+                        <input
+                          type="time"
+                          value={hhmm(d.postHour, d.postMinute)}
+                          onChange={(e) => {
+                            const [h, m] = e.target.value.split(":").map((n) => parseInt(n, 10));
+                            patch(d.weekday, { postHour: h || 0, postMinute: m || 0 });
+                          }}
+                          className="rounded-lg border border-gray-300 px-2 py-1 text-sm"
+                        />
+                      )}
                       <span className="text-[10px] text-gray-400">{d.timezone}</span>
                     </div>
+
+                    <label className="flex items-center gap-2 text-[11px] text-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={aiTime}
+                        onChange={(e) => patch(d.weekday, { timeMode: e.target.checked ? "ai" : "fixed" })}
+                        className="accent-brand-accent"
+                      />
+                      {t("pages.weeklySchedule.aiPicksTime")}
+                    </label>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-medium text-gray-500">
+                        {t("pages.weeklySchedule.postsPerDay")}
+                      </span>
+                      <select
+                        value={d.postsPerDay}
+                        onChange={(e) => patch(d.weekday, { postsPerDay: Number(e.target.value) })}
+                        className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm"
+                      >
+                        {POSTS_PER_DAY_CHOICES.map((n) => (
+                          <option key={n} value={n}>
+                            {n}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {d.postsPerDay > 1 ? (
+                      <p className="text-[10px] leading-tight text-gray-500">
+                        {aiTime
+                          ? t("pages.weeklySchedule.spreadHintAi")
+                          : t("pages.weeklySchedule.spreadHintFixed")}
+                      </p>
+                    ) : null}
+
                     <div className="inline-flex overflow-hidden rounded-lg border border-gray-300 text-[11px] font-medium">
                       {(["text", "image", "video"] as MediaType[]).map((t) => (
                         <button
@@ -223,31 +315,51 @@ export default function WeeklyScheduleController() {
                           {LABELS[p]}
                         </button>
                       ))}
-                      <span className="text-[10px] text-gray-400">{allSelected ? "all connected" : ""}</span>
+                      <span className="text-[10px] text-gray-400">
+                        {allSelected ? t("pages.weeklySchedule.allConnected") : ""}
+                      </span>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-[11px] font-medium text-gray-500">{t("pages.weeklySchedule.topic")}</span>
-                      <select
-                        value={presets.includes(d.topic) ? d.topic : ""}
-                        onChange={(e) => e.target.value && patch(d.weekday, { topic: e.target.value })}
-                        className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm"
-                      >
-                        <option value="">{t("pages.weeklySchedule.pickTopic")}</option>
-                        {presets.map((t) => (
-                          <option key={t} value={t}>
-                            {t}
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="text"
-                        value={d.topic}
-                        onChange={(e) => patch(d.weekday, { topic: e.target.value })}
-                        placeholder="…or type your own"
-                        className="min-w-[180px] flex-1 rounded-lg border border-gray-300 px-2 py-1 text-sm"
-                      />
+                      {aiTopic ? (
+                        <span className="rounded-lg border border-dashed border-gray-300 px-2 py-1 text-sm text-gray-500">
+                          {t("pages.weeklySchedule.aiPicksTopicValue")}
+                        </span>
+                      ) : (
+                        <>
+                          <select
+                            value={presets.includes(d.topic) ? d.topic : ""}
+                            onChange={(e) => e.target.value && patch(d.weekday, { topic: e.target.value })}
+                            className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm"
+                          >
+                            <option value="">{t("pages.weeklySchedule.pickTopic")}</option>
+                            {presets.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            type="text"
+                            value={d.topic}
+                            onChange={(e) => patch(d.weekday, { topic: e.target.value })}
+                            placeholder={t("pages.weeklySchedule.typeYourOwn")}
+                            className="min-w-[180px] flex-1 rounded-lg border border-gray-300 px-2 py-1 text-sm"
+                          />
+                        </>
+                      )}
                     </div>
+
+                    <label className="flex items-center gap-2 text-[11px] text-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={aiTopic}
+                        onChange={(e) => patch(d.weekday, { topicMode: e.target.checked ? "ai" : "fixed" })}
+                        className="accent-brand-accent"
+                      />
+                      {t("pages.weeklySchedule.aiPicksTopic")}
+                    </label>
                   </div>
                 </div>
               ) : null}
