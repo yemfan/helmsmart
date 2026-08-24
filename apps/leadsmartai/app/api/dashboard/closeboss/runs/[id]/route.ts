@@ -30,11 +30,21 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
       .eq("run_id", id)
       .order("step_index", { ascending: true });
 
-    // Attribute each step to the teammate who ran it (the tool's assignee), so
-    // the UI can show "Ruby · Marketing Specialist" instead of a generic label.
+    // Attribute each step to the teammate who ran it, so the UI can show
+    // "Ruby · Marketing Specialist" instead of a generic label. Usually that is
+    // the tool's static assignee — but a few tools pick their owner at runtime
+    // (hand_off_to_agent routes an escrow question to Grace and a billing one
+    // to Emma), and those report it back as `data.owner`.
     const enriched = (steps ?? []).map((s) => {
-      const toolName = (s as { tool_name: string }).tool_name;
-      return { ...s, assignee: getBossTool(toolName)?.assignee ?? null };
+      const row = s as { tool_name: string; output_json?: { data?: { owner?: unknown } } | null };
+      const runtimeOwner = row.output_json?.data?.owner;
+      return {
+        ...s,
+        assignee:
+          (typeof runtimeOwner === "string" && runtimeOwner) ||
+          getBossTool(row.tool_name)?.assignee ||
+          null,
+      };
     });
 
     return NextResponse.json({ ok: true, run, steps: enriched });

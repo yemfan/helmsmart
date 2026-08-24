@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { AssistantAvatar } from "@/components/closeboss/AssistantAvatar";
+import { ASSIGNEE_PERSONA } from "@/lib/closeboss/assigneePersona";
 
 /**
  * Live Boss v2 run card (HANDOFF_BOSS_V2 PR-4): plan + step timeline with
@@ -37,15 +38,8 @@ type RunStep = {
   finished_at?: string | null;
 };
 
-/** assignee → the AI employee who owns it (name · avatar · profession). */
-const ASSIGNEE_PERSONA: Record<string, { name: string; avatar: string; role: string }> = {
-  receptionist: { name: "Emma", avatar: "emma", role: "Receptionist" },
-  sales_assistant: { name: "Chris", avatar: "chris", role: "Sales Specialist" },
-  marketing_assistant: { name: "Ruby", avatar: "ruby", role: "Marketing Specialist" },
-  transaction_assistant: { name: "Grace", avatar: "grace", role: "Transaction Coordinator" },
-  accountant: { name: "Oliver", avatar: "oliver", role: "Financial Analyst" },
-  boss_assistant: { name: "Max", avatar: "max", role: "Captain" },
-};
+// The roster moved to lib/closeboss/assigneePersona so the model prompt reads
+// the same names this badge renders — see that file for why.
 
 function fmtDuration(start?: string | null, end?: string | null): string | null {
   if (!start || !end) return null;
