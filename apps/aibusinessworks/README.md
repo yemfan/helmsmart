@@ -208,6 +208,13 @@ fine and then finds none of the `abw_` tables. Decode the `ref` claim to check.
 returns 401 rather than running unauthenticated - the safe failure, but nothing
 gets processed. See the commission engine section above.
 
+**Set `NEXT_PUBLIC_APP_URL` to a URL that actually resolves.** Every referral
+link, QR code and canonical URL is built from it. Pointing it at the custom
+domain before DNS is live means a Partner who shares their link sends people to
+a dead address - and the links are already in their hands by the time anyone
+notices. Use the `*.vercel.app` URL until the domain resolves, then change it
+and redeploy.
+
 **`NEXT_PUBLIC_*` values are inlined at build time**, so changing one needs a
 redeploy, not just a restart.
 
