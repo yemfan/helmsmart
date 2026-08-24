@@ -142,6 +142,34 @@ export default async function HelpGuidePage({
           </ol>
         </section>
 
+        {guide.images && guide.images.length > 0 ? (
+          <section className="mt-10">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+              {t("pages.helpGuides.whatItLooksLike", { ns: "dashboard" })}
+            </h2>
+            <div className="mt-4 space-y-8">
+              {guide.images.map((img) => (
+                <figure key={img.src}>
+                  {/* Plain <img>: these are prerendered screenshots of a fixed
+                      size, so next/image buys nothing and costs a config entry. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    loading="lazy"
+                    className="w-full rounded-xl border border-slate-200 shadow-sm"
+                  />
+                  {img.caption ? (
+                    <figcaption className="mt-2 text-sm leading-6 text-slate-500">
+                      {img.caption}
+                    </figcaption>
+                  ) : null}
+                </figure>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         {guide.related && guide.related.length > 0 ? (
           <section className="mt-12 border-t border-slate-200 pt-8">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">{t("pages.helpGuides.related", { ns: "dashboard" })}</h2>

@@ -14,6 +14,7 @@ import {
   Scale,
   Search,
   Settings,
+  CircleQuestionMark,
   Sparkles,
   User,
   UserPlus,
@@ -321,6 +322,18 @@ function ProfileMenu({
       >
         <Settings className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
         {t("topbar.mySettings")}
+      </Link>
+      {/* The help center existed for months with no route into it from the
+          dashboard - the only links anywhere in the app were on one blog post.
+          Agents were asking support for instructions that were already written. */}
+      <Link
+        href="/help"
+        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        role="menuitem"
+        onClick={() => setOpen(false)}
+      >
+        <CircleQuestionMark className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
+        {t("topbar.helpGuides")}
       </Link>
       <Link
         href="/dashboard/credits"

@@ -37,7 +37,7 @@ export const HELP_FAQ_CATEGORIES: ReadonlyArray<{
 }> = [
   { id: "getting_started", label: "Getting started" },
   { id: "ai_followup", label: "AI follow-up" },
-  { id: "coaching", label: "LeadSmart AI Coaching" },
+  { id: "coaching", label: "CloseBoss AI Coaching" },
   { id: "billing", label: "Billing & plans" },
   { id: "integrations", label: "Integrations" },
   { id: "privacy", label: "Privacy & data" },
@@ -55,7 +55,7 @@ export const HELP_FAQ: ReadonlyArray<HelpFaqEntry> = [
     category: "getting_started",
     key: "import_contacts",
     q: "How do I import contacts from another CRM?",
-    a: "Go to Settings → Data & Tools → MLS Data Import (the same panel handles general contact imports via CSV). Map your CSV columns to LeadSmart fields and run the import. Imports respect duplicate detection by email + phone, so re-importing won't double up your contacts.",
+    a: "Go to Settings → Data & Tools → MLS Data Import (the same panel handles general contact imports via CSV). Map your CSV columns to CloseBoss fields and run the import. Imports respect duplicate detection by email + phone, so re-importing won't double up your contacts.",
   },
 
   // ── AI follow-up ──────────────────────────────────────────────
@@ -76,7 +76,7 @@ export const HELP_FAQ: ReadonlyArray<HelpFaqEntry> = [
   {
     category: "coaching",
     key: "what_is_coaching",
-    q: "What is LeadSmart AI Coaching?",
+    q: "What is CloseBoss AI Coaching?",
     a: "Coaching is a producer-development program built into the dashboard. Producer Track (Pro and above) targets 10 transactions / 3% conversion; Top Producer Track (Premium and Team) targets 15 transactions / 5% conversion. Daily plans, weekly playbooks, monthly AI deep-dives, peer benchmarks. No add-on fee.",
   },
   {

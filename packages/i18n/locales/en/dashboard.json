@@ -10,6 +10,7 @@
     "home": "Home",
     "myProfile": "My Profile",
     "mySettings": "My Settings",
+    "helpGuides": "Help & guides",
     "creditsBilling": "Credits & Billing",
     "logOut": "Log out",
     "upsell": "Grow with AI follow-ups",
@@ -8267,6 +8268,7 @@
     "helpGuides": {
       "helpCenter": "Help center",
       "guides": "Guides",
+      "whatItLooksLike": "What it looks like",
       "stepByStep": "Step by step",
       "related": "Related",
       "needHelp": "Need help with something else?",
