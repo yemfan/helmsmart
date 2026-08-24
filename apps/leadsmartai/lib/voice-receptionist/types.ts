@@ -3,6 +3,8 @@
  * Receptionist). Persisted in `voice_receptionist_settings`, consumed by the
  * Retell inbound webhook to build the agent's greeting + system prompt.
  */
+import { DEFAULT_ACCOUNT_TIMEZONE } from "@/lib/agent/accountTimezone";
+
 export type ReceptionistConfig = {
   /** When false, the inbound webhook serves no prompt (receptionist is off). */
   enabled: boolean;
@@ -52,7 +54,7 @@ export const DEFAULT_RECEPTIONIST_CONFIG: ReceptionistConfig = {
   businessNameZh: "",
   agentName: "",
   greeting: "",
-  timezone: "America/New_York",
+  timezone: DEFAULT_ACCOUNT_TIMEZONE,
   extraNotes: "",
   voiceLimitBehavior: "text_back",
 };

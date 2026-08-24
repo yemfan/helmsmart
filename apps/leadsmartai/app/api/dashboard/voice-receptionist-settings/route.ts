@@ -65,8 +65,10 @@ export async function PATCH(req: Request) {
     const greeting = str(body.greeting, 1000);
     if (greeting !== undefined) input.greeting = greeting;
 
-    const timezone = str(body.timezone, 64);
-    if (timezone) input.timezone = timezone;
+    // Timezone is deliberately NOT accepted here. One timezone per account,
+    // set in one place — see lib/agent/accountTimezone.ts. Silently ignoring a
+    // posted value is right: an old client sending one should not be able to
+    // reintroduce the split that had the receptionist booking 3 hours out.
 
     const extraNotes = str(body.extraNotes, 4000);
     if (extraNotes !== undefined) input.extraNotes = extraNotes;

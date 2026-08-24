@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getAccountTimezone } from "@/lib/agent/accountTimezone";
 import { type BusinessHours, DAY_KEYS } from "@repo/voice";
 import {
   DEFAULT_RECEPTIONIST_CONFIG,
@@ -10,9 +11,14 @@ export { DEFAULT_RECEPTIONIST_CONFIG };
 export type { ReceptionistConfig };
 
 const SELECT_COLS =
-  "agent_id, enabled, phone_number, business_name, business_name_zh, agent_name, greeting, timezone, extra_notes, voice_limit_behavior";
+  "agent_id, enabled, phone_number, business_name, business_name_zh, agent_name, greeting, extra_notes, voice_limit_behavior";
 
-function mapRow(row: ReceptionistConfigRow): ReceptionistConfig {
+/**
+ * The timezone is NOT read from this row. There is one timezone per account
+ * (agents.briefing_timezone) and the caller fills it in - see
+ * lib/agent/accountTimezone.ts for why the second one had to go.
+ */
+function mapRow(row: ReceptionistConfigRow): Omit<ReceptionistConfig, "timezone"> {
   return {
     enabled: row.enabled ?? true,
     phoneNumber: row.phone_number ?? "",
@@ -20,7 +26,6 @@ function mapRow(row: ReceptionistConfigRow): ReceptionistConfig {
     businessNameZh: row.business_name_zh ?? "",
     agentName: row.agent_name ?? "",
     greeting: row.greeting ?? "",
-    timezone: row.timezone || "America/New_York",
     extraNotes: row.extra_notes ?? "",
     voiceLimitBehavior: row.voice_limit_behavior === "overage" ? "overage" : "text_back",
   };
@@ -41,8 +46,9 @@ export async function getReceptionistConfig(
       .select(SELECT_COLS)
       .eq("agent_id", agentId as never)
       .maybeSingle();
-    if (error || !data) return { ...DEFAULT_RECEPTIONIST_CONFIG };
-    return mapRow(data as unknown as ReceptionistConfigRow);
+    const timezone = await getAccountTimezone(agentId);
+    if (error || !data) return { ...DEFAULT_RECEPTIONIST_CONFIG, timezone };
+    return { ...mapRow(data as unknown as ReceptionistConfigRow), timezone };
   } catch {
     return { ...DEFAULT_RECEPTIONIST_CONFIG };
   }
@@ -176,7 +182,8 @@ export async function upsertReceptionistConfig(
     businessNameZh: input.businessNameZh ?? current.businessNameZh,
     agentName: input.agentName ?? current.agentName,
     greeting: input.greeting ?? current.greeting,
-    timezone: input.timezone || current.timezone,
+    // Not settable here. One timezone per account, changed in one place.
+    timezone: current.timezone,
     extraNotes: input.extraNotes ?? current.extraNotes,
     voiceLimitBehavior: input.voiceLimitBehavior ?? current.voiceLimitBehavior,
   };
@@ -190,7 +197,6 @@ export async function upsertReceptionistConfig(
       business_name_zh: next.businessNameZh || null,
       agent_name: next.agentName || null,
       greeting: next.greeting || null,
-      timezone: next.timezone,
       extra_notes: next.extraNotes || null,
       voice_limit_behavior: next.voiceLimitBehavior,
       updated_at: new Date().toISOString(),

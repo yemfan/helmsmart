@@ -168,14 +168,16 @@ export default function VoiceReceptionistSettingsPanel() {
             placeholder={t("pages.voiceSettings.receptionistNamePlaceholder")}
           />
         </div>
+        {/* Read-only. There is one timezone per account and it is set in one
+            place; an editable copy here is what let the receptionist book on a
+            different clock from everything else. Shown rather than hidden, because
+            "when does the AI think 9am is" is a fair question to ask on this panel. */}
         <div>
           <span className={LABEL}>{t("pages.voiceSettings.timezone")}</span>
-          <input
-            className={FIELD}
-            value={settings.timezone}
-            onChange={(e) => update("timezone", e.target.value)}
-            placeholder="America/New_York"
-          />
+          <p className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+            {settings.timezone}
+          </p>
+          <p className="mt-1 text-[11px] text-gray-500">{t("pages.voiceSettings.timezoneAccountNote")}</p>
         </div>
       </div>
 
