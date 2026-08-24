@@ -1,3 +1,4 @@
+import { findOverrunningShots } from "./speechTiming";
 import "server-only";
 import { anthropicJson } from "@/lib/ai";
 import { personaBlock, type Character } from "@/lib/characters";
@@ -408,15 +409,7 @@ export async function recastForTwin(
    * 2.6 words/second is unhurried delivery to camera. Flagged at 1.3x rather
    * than 1.0 because the estimate is rough and a small overrun is unnoticeable.
    */
-  const WORDS_PER_SEC = 2.6;
-  const overrunning = shots
-    .filter((s) => s.render === "avatar" && s.line)
-    .map((s) => ({
-      index: s.index,
-      needed: s.line.trim().split(/\s+/).length / WORDS_PER_SEC,
-      have: s.seconds,
-    }))
-    .filter((s) => s.needed > s.have * 1.3);
+  const overrunning = findOverrunningShots(shots);
   if (overrunning.length) {
     const worst = overrunning.reduce((a, b) => (b.needed - b.have > a.needed - a.have ? b : a));
     notes.push(

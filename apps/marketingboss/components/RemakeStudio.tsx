@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { AdBlueprint, RecastPlan } from "@/lib/adBlueprint";
+import { estimateSpeechSeconds, findOverrunningShots } from "@/lib/speechTiming";
 
 /**
  * Remake — re-shoot a reference ad with the user's own twin.
@@ -224,6 +225,40 @@ export default function RemakeStudio() {
 
   const twin = characters.find((c) => c.id === twinId);
   const twinUsable = !!twin && twin.identity_type !== "fictional" && !!(twin.reference_images ?? []).length;
+  /**
+   * Edit a spoken line in place.
+   *
+   * The plan is a draft, not a verdict: the length warning below tells you a
+   * line is too long for its slot, and until now there was nothing to do about
+   * it but re-plan and hope. Only `line` is editable - the shot's seconds,
+   * framing and camera come from the reference and are what keep the remake
+   * faithful to it.
+   */
+  function editLine(index: number, line: string) {
+    setPlan((cur) =>
+      cur ? { ...cur, shots: cur.shots.map((s) => (s.index === index ? { ...s, line } : s)) } : cur,
+    );
+  }
+
+  // Recomputed from the edited lines, so the warning clears as you trim rather
+  // than sitting there stale from the original plan.
+  const overruns = plan ? findOverrunningShots(plan.shots) : [];
+  // Editing introduces a failure the planner could not produce: a spoken shot
+  // with no words. Fabric drives the portrait FROM the voice track, so an
+  // empty line is not a silent beat - there is nothing to render. Block the
+  // render rather than let it fail several minutes in.
+  const emptySpoken = plan
+    ? plan.shots.filter((sh) => sh.render === "avatar" && !sh.line.trim()).map((sh) => sh.index + 1)
+    : [];
+
+  const spokenScript = plan
+    ? plan.shots
+        .filter((sh) => sh.render === "avatar" && sh.line.trim())
+        .map((sh) => sh.line.trim())
+        .join(" ")
+    : "";
+  const overrunByIndex = new Map(overruns.map((o) => [o.index, o]));
+
   const avatarShots = plan?.shots.filter((s) => s.render === "avatar").length ?? 0;
   const sceneShots = plan?.shots.filter((s) => s.render === "scene").length ?? 0;
 
@@ -358,7 +393,9 @@ export default function RemakeStudio() {
           <div className="mb-2 text-xs font-semibold text-slate-600">
             4 · Your version · {plan.totalSeconds.toFixed(1)}s · {avatarShots} on camera, {sceneShots} generated
           </div>
-          <p className="mb-2 rounded-lg bg-slate-50 p-2 text-xs text-slate-600">{plan.script}</p>
+          {/* Derived from the shots, not the planner's script field, so it
+              tracks edits instead of showing the version you replaced. */}
+          <p className="mb-2 rounded-lg bg-slate-50 p-2 text-xs text-slate-600">{spokenScript || plan.script}</p>
           <ol className="space-y-2">
             {plan.shots.map((s) => (
               <li key={s.index} className="rounded-lg border border-slate-100 p-2 text-[11px]">
@@ -372,23 +409,59 @@ export default function RemakeStudio() {
                   </span>
                   <span className="tabular-nums text-slate-400">{s.seconds.toFixed(1)}s</span>
                 </div>
-                <p className="mt-1 text-slate-600">{s.line || s.prompt}</p>
+                {s.render === "avatar" ? (
+                  <>
+                    <textarea
+                      value={s.line}
+                      onChange={(e) => editLine(s.index, e.target.value)}
+                      rows={2}
+                      aria-label={`Line for shot ${s.index + 1}`}
+                      className={`mt-1 w-full resize-y rounded-md border px-2 py-1 text-[11px] text-slate-700 ${
+                        overrunByIndex.has(s.index) ? "border-amber-400 bg-amber-50/40" : "border-slate-200"
+                      }`}
+                    />
+                    <p className="mt-0.5 tabular-nums text-slate-400">
+                      about {estimateSpeechSeconds(s.line).toFixed(1)}s of speech in a {s.seconds.toFixed(1)}s shot
+                      {overrunByIndex.has(s.index) ? " — trim it, or the ad runs longer than planned" : ""}
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-1 text-slate-600">{s.line || s.prompt}</p>
+                )}
                 <p className="mt-0.5 text-slate-400">{s.reason}</p>
               </li>
             ))}
           </ol>
-          {plan.notes.map((n) => (
-            <p key={n} className="mt-2 text-[11px] text-amber-700">
-              {n}
+          {/* The planner's own length note is dropped once the lines are
+              editable - it was computed from the draft and goes stale the
+              moment you type. The live per-shot readout replaces it. */}
+          {plan.notes
+            .filter((n) => !n.includes("more words than their slot"))
+            .map((n) => (
+              <p key={n} className="mt-2 text-[11px] text-amber-700">
+                {n}
+              </p>
+            ))}
+          {overruns.length > 0 && (
+            <p className="mt-2 text-[11px] text-amber-700">
+              {overruns.length} spoken shot{overruns.length === 1 ? "" : "s"} still run long. A spoken shot
+              lasts as long as its audio, so the ad will come out longer than the reference unless you trim
+              them.
             </p>
-          ))}
+          )}
           <button
             onClick={render}
-            disabled={busy}
+            disabled={busy || emptySpoken.length > 0}
             className="mt-3 rounded-lg bg-boss-violet px-4 py-2 text-sm font-medium text-white shadow disabled:opacity-40"
           >
             {stage === "rendering" ? "Filming…" : "Film it"}
           </button>
+          {emptySpoken.length > 0 && (
+            <p className="mt-1 text-[11px] text-amber-700">
+              Shot{emptySpoken.length === 1 ? "" : "s"} {emptySpoken.join(", ")} have no words. A shot of you on
+              camera is filmed from your voice, so it needs a line — write one, or there is nothing to film.
+            </p>
+          )}
           {stage === "rendering" && (
             <p className="mt-1 text-[11px] text-slate-400">
               Each shot renders in turn, so this takes a few minutes. Keep this tab open.
