@@ -20,6 +20,100 @@ import type { HelpGuide } from "./guides";
  */
 export const SETTINGS_GUIDES: ReadonlyArray<HelpGuide> = [
   {
+    slug: "review-policy",
+    title: "Review Policy: decide what sends without you",
+    description:
+      "The single most consequential setting in Messages — autosend, review every message, or pick per category.",
+    readTime: "3 min",
+    category: "communication",
+    body: [
+      "Review Policy decides one thing: when a trigger fires, does the message go out, or does it wait for you? It applies to every template on every channel, so it is worth getting right before anything else.",
+      "There is no wrong answer, only a trade. Review is slower but nothing goes out in your name unread. Autosend is faster and is the whole point of automated follow-up — a lead answered in 60 seconds converts better than one answered in an hour.",
+    ],
+    steps: [
+      "Open Settings → Messages. Review Policy is the first card.",
+      "Review each one — every triggered message becomes a draft in your approval queue and nothing sends silently. This is the right choice for your first weeks, or coming back after a break.",
+      "Autosend everything — messages go out the moment triggers fire, and you see them in the history log. Choose this once you trust how the templates read in your voice.",
+      "Let me pick per category — different rules for different kinds of message. Review sphere outreach, autosend tour confirmations.",
+      "Read the “What this means right now” line before you save. It spells out, in plain words, what your current choice does.",
+      "Save. Note that for your first 30 days everything stays in review regardless of what you pick here — see the compliance guide.",
+    ],
+    related: [
+      { label: "Approve or edit AI drafts before they send", href: "/help/guides/drafts" },
+      { label: "The compliance rules you cannot turn off", href: "/help/guides/compliance-guardrails" },
+      { label: "Set quiet hours and daily message limits", href: "/help/guides/message-timing" },
+    ],
+  },
+  {
+    slug: "home-value-smart-link",
+    title: "Share your Home Value Smart Link",
+    description:
+      "The link you hand homeowners: they type an address, get an estimate, and become a lead attributed to you.",
+    readTime: "2 min",
+    category: "lead-capture",
+    body: [
+      "This is a seller-lead magnet. A homeowner opens the link, types nothing but an address, and gets an estimated value straight away. To see the full report they leave an email — and that is the trade.",
+      "It is not a passive calculator. A submitted address creates a contact and a lead in your CRM, emails you, and starts a follow-up sequence.",
+    ],
+    steps: [
+      "Open Settings → Data & Tools and find Home Value Smart Link.",
+      "The box shows your full link, including the agentId that attributes the lead to you. Click it to select it, or use Copy link.",
+      "Use Share to hand it straight to someone, or paste it anywhere homeowners already are: a “What's my home worth?” button on your site, your Instagram bio, a QR code on a mailer or open-house sign.",
+      "Keep the whole URL. The agentId on the end is what makes the lead yours — share the bare page and the lead lands unattributed.",
+      "When someone submits, you get an email, a contact and lead appear in your CRM, and an email sequence starts automatically. Nothing else to set up.",
+    ],
+    related: [
+      { label: "Capture home-value leads from your IDX site", href: "/help/guides/home-value-leads" },
+      { label: "Work the Lead Queue", href: "/help/guides/lead-queue-triage" },
+    ],
+  },
+  {
+    slug: "sending-identity",
+    title: "The number and address your contacts see",
+    description:
+      "What the Channels card tells you about your sending phone number and email — and why you cannot edit it yourself.",
+    readTime: "2 min",
+    category: "account",
+    body: [
+      "Everything CloseBoss sends goes out from one number and one address. This card shows you which, and whether each is verified.",
+      "It is deliberately read-only. A verified sender is what keeps your texts out of carrier spam filters and your email out of junk folders, so changing one is a support request rather than a text field.",
+    ],
+    steps: [
+      "Open Settings → Channels & Compliance. Channels is the first card.",
+      "Check the SMS side: the number your contacts see, its verification state, and its 10DLC registration state. 10DLC is the carrier registration that makes business texting deliverable in the US.",
+      "Note the opt-out keywords listed there — they are handled for you, in English and Chinese, and cannot be turned off.",
+      "Check the email side: your sending address and whether it is verified, plus DKIM, SPF and DMARC — the three DNS records that tell inbox providers your mail is really yours.",
+      "To change a verified number or address, contact support. There is no self-serve edit, by design.",
+    ],
+    related: [
+      { label: "Provision a CloseBoss phone number", href: "/help/guides/phone-number-setup" },
+      { label: "The compliance rules you cannot turn off", href: "/help/guides/compliance-guardrails" },
+    ],
+  },
+  {
+    slug: "connect-social-accounts",
+    title: "Connect your social accounts",
+    description:
+      "Where to link Facebook, Instagram, LinkedIn and Threads — the step everything else on the Channels tab depends on.",
+    readTime: "2 min",
+    category: "marketing",
+    body: [
+      "Auto-posting and the weekly schedule can only publish where you are connected. If nothing is linked, both will look configured and quietly post nowhere.",
+      "Connections live on one page. This card is the pointer to it.",
+    ],
+    steps: [
+      "Open Settings → Channels & Compliance and find Connected social accounts.",
+      "Click Manage connected accounts.",
+      "Connect each network you want to publish to. Instagram publishing needs a business Instagram account linked to your Facebook Page — a personal account cannot be posted to by any tool.",
+      "Come back and set up Social auto-posting or the Weekly post schedule. Both will now have somewhere to publish.",
+      "If a post never appears, check here first — a disconnected or expired account is the usual cause.",
+    ],
+    related: [
+      { label: "Let AI run my social media", href: "/help/guides/social-autopilot" },
+      { label: "Schedule a specific week of social posts", href: "/help/guides/weekly-social-schedule" },
+    ],
+  },
+  {
     slug: "settings-tour",
     title: "The Settings tour: what lives on each tab",
     description:
@@ -38,9 +132,10 @@ export const SETTINGS_GUIDES: ReadonlyArray<HelpGuide> = [
       "Each panel saves on its own. There is no global Save button, and no setting silently changes another.",
     ],
     related: [
+      { label: "Settings, card by card (with screenshots)", href: "/help/settings" },
+      { label: "Review Policy: decide what sends without you", href: "/help/guides/review-policy" },
       { label: "Set quiet hours and daily message limits", href: "/help/guides/message-timing" },
       { label: "The compliance rules you cannot turn off", href: "/help/guides/compliance-guardrails" },
-      { label: "Set up AI follow-up for new leads", href: "/help/guides/ai-followup-setup" },
     ],
   },
   {

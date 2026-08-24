@@ -56,6 +56,20 @@ export default async function HelpIndexPage() {
           </p>
         </header>
 
+        {/* The single most-asked-for thing: "where do I configure X". Give it
+            a front door instead of leaving it to search. */}
+        <section className="mt-10">
+          <Link
+            href="/help/settings"
+            className="block rounded-2xl border border-blue-200 bg-blue-50/60 px-5 py-4 transition hover:bg-blue-50"
+          >
+            <p className="text-base font-semibold text-slate-900">Settings, card by card <span aria-hidden>→</span></p>
+            <p className="mt-1 text-sm leading-6 text-slate-600">
+              Every card on your Settings page, with a screenshot and a guide for each one.
+            </p>
+          </Link>
+        </section>
+
         <section className="mt-12">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="text-xl font-semibold text-slate-900 md:text-2xl">
