@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Copy, Share2 } from "lucide-react";
 
@@ -15,12 +15,25 @@ type Props = {
   relativePath: string;
   /** Optional compact icon-only layout */
   compact?: boolean;
+  /**
+   * Render the link itself in a read-only box above the buttons. The box shows
+   * the SAME absolute URL the buttons copy - a bare path pasted into a browser
+   * or a social bio is treated as a search query, not a link.
+   */
+  showUrl?: boolean;
 };
 
-export default function HomeValueSmartLinkCopyShare({ relativePath, compact = false }: Props) {
+export default function HomeValueSmartLinkCopyShare({ relativePath, compact = false, showUrl = false }: Props) {
   const { t } = useTranslation("dashboard");
   const [copied, setCopied] = useState(false);
   const [shareHint, setShareHint] = useState(false);
+  // The origin is only knowable in the browser, so the first paint shows the
+  // path and the effect upgrades it. Deriving it from window rather than an
+  // env var means the box always matches the host the agent is actually on.
+  const [displayUrl, setDisplayUrl] = useState(relativePath);
+  useEffect(() => {
+    setDisplayUrl(absoluteUrl(relativePath));
+  }, [relativePath]);
 
   const copyLink = useCallback(async () => {
     try {
@@ -76,8 +89,21 @@ export default function HomeValueSmartLinkCopyShare({ relativePath, compact = fa
     );
   }
 
+  const urlBox = showUrl ? (
+    <input
+      readOnly
+      value={displayUrl}
+      onFocus={(e) => e.currentTarget.select()}
+      onClick={(e) => e.currentTarget.select()}
+      aria-label={t("pages.smartLinkShare.copyFull")}
+      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-700"
+    />
+  ) : null;
+
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+    <div className="flex flex-col gap-2">
+      {urlBox}
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
       <button type="button" className={btnBase} onClick={copyLink}>
         <Copy className="h-4 w-4 shrink-0" />
         {copied ? t("common:actions.copied_bang") : t("common:actions.copy_link")}
@@ -87,6 +113,7 @@ export default function HomeValueSmartLinkCopyShare({ relativePath, compact = fa
       {shareHint && !copied && (
         <span className="text-xs text-slate-600" role="status">{t("pages.smartLinkShare.copiedNote")}</span>
       )}
+      </div>
     </div>
   );
 }

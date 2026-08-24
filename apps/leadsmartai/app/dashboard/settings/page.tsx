@@ -109,18 +109,10 @@ export default async function SettingsPage() {
               <p className="mt-0.5 text-xs text-gray-500 mb-3">
                 {tr("settings.smartLinkHelp")}
               </p>
-              <div className="flex items-center gap-2">
-                <input
-                  readOnly
-                  value={`/home-value-widget?agentId=${ctx.agentId}`}
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-xs font-mono bg-gray-50 text-gray-700"
-                />
-              </div>
-              <div className="mt-2">
-                <HomeValueSmartLinkCopyShare
-                  relativePath={`/home-value-widget?agentId=${encodeURIComponent(widgetAgentKey)}`}
-                />
-              </div>
+              <HomeValueSmartLinkCopyShare
+                showUrl
+                relativePath={`/home-value-widget?agentId=${encodeURIComponent(widgetAgentKey)}`}
+              />
             </div>
 
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">

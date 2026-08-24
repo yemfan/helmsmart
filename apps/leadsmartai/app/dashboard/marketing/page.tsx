@@ -91,22 +91,12 @@ export default async function MarketingPage() {
           <div className="space-y-3">
             <div>
               <div className="text-xs font-semibold text-slate-700 mb-1">{t("pages.marketing.homeValueLink", { ns: "dashboard" })}</div>
-              <div className="flex gap-2 flex-wrap items-center">
-                <input
-                  readOnly
-                  className="flex-1 min-w-[260px] border border-slate-300 rounded-xl px-3 py-2 text-sm font-mono bg-white"
-                  value={homeValueSmartLink}
-                />
+              <HomeValueSmartLinkCopyShare showUrl relativePath={homeValueSmartLink} />
+              <div className="mt-2">
                 <Link
                   href="/dashboard/settings"
                   className="text-sm font-semibold px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50"
                 >{t("pages.marketing.updateBranding", { ns: "dashboard" })}</Link>
-              </div>
-              <div className="mt-2">
-                <HomeValueSmartLinkCopyShare relativePath={homeValueSmartLink} />
-              </div>
-              <div className="mt-1 text-[11px] text-slate-500">{t("pages.marketing.pathOnly", { ns: "dashboard" })}<strong>{t("pages.marketing.copyLink", { ns: "dashboard" })}</strong> and <strong>{t("pages.marketing.share", { ns: "dashboard" })}</strong> {t("pages.marketing.fullUrlNote", { ns: "dashboard" })}{" "}
-                <span className="font-mono">{homeValueSmartLink}</span>).
               </div>
             </div>
 
