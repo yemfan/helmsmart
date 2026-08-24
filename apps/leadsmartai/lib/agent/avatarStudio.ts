@@ -163,7 +163,8 @@ export async function draftAvatarScript(
       "Ground it ONLY in the agent's brand profile and the topic; never invent stats, awards, or claims they didn't make. " +
       "Return ONLY the words they should say. " +
       (language === "zh-Hans"
-        ? "Write the script in Simplified Chinese (简体中文), natural spoken Mandarin as a real estate agent would actually say it to camera — not a literal translation of English phrasing. Aim for 90-140 characters. Keep proper nouns (city names, the agent's brand) in whatever form the brand profile uses."
+        ? "Write the script in Simplified Chinese (简体中文), natural spoken Mandarin as a real estate agent would actually say it to camera — not a literal translation of English phrasing. Aim for 90-140 characters. Keep proper nouns (city names, the agent's brand) in whatever form the brand profile uses. "
+          + "This is SPOKEN, so write it the way it is said, not the way it is written: avoid enumeration chains with 、 (a run like 好学区、好环境、好产品 is delivered as a staccato list — say it as a flowing sentence instead), keep sentences short enough to say in one breath, and do not wrap the script in quotation marks."
         : "Write the script in English."),
     messages: [
       {
@@ -187,13 +188,79 @@ export async function draftAvatarScript(
  * signed preview URL and the storage path (so a later render can reuse the
  * exact audio the agent approved).
  */
+/** Does the text read as Chinese? Cheap CJK check - enough to pick a voice profile. */
+export function looksChinese(text: string): boolean {
+  const cjk = (text.match(/[一-鿿]/g) ?? []).length;
+  // A stray CJK character in an English script should not flip the profile;
+  // a Mandarin script is overwhelmingly CJK even with a place name in Latin.
+  return cjk >= 8 && cjk / Math.max(1, text.replace(/\s/g, "").length) > 0.3;
+}
+
+/**
+ * Voice settings, per language. These are not cosmetic - they were the reason
+ * Mandarin came out choppy and non-native.
+ *
+ * `style` is the main offender. ElevenLabs' own guidance is that raising style
+ * costs stability, and instability in a TONAL language reads as wrong tones,
+ * which is exactly what "not like a native speaker" sounds like. English can
+ * carry a little style; Mandarin cannot.
+ *
+ * `stability` moves the same way for the same reason: 0.4 is expressive for
+ * English and erratic for Mandarin, where the pitch contour carries meaning
+ * rather than just affect.
+ *
+ * Both are env-overridable so they can be tuned against real output without a
+ * code change.
+ */
+function voiceSettingsFor(text: string) {
+  const zh = looksChinese(text);
+  const num = (v: string | undefined, fallback: number) => {
+    const n = Number(v);
+    return Number.isFinite(n) && n >= 0 && n <= 1 ? n : fallback;
+  };
+  return zh
+    ? {
+        stability: num(process.env.ELEVENLABS_ZH_STABILITY, 0.6),
+        similarity_boost: num(process.env.ELEVENLABS_ZH_SIMILARITY, 0.85),
+        style: num(process.env.ELEVENLABS_ZH_STYLE, 0),
+        use_speaker_boost: true,
+      }
+    : {
+        stability: num(process.env.ELEVENLABS_EN_STABILITY, 0.45),
+        similarity_boost: num(process.env.ELEVENLABS_EN_SIMILARITY, 0.85),
+        style: num(process.env.ELEVENLABS_EN_STYLE, 0.3),
+        use_speaker_boost: true,
+      };
+}
+
+/**
+ * Punctuation the synthesiser turns into silence.
+ *
+ * A Mandarin script written by an LLM tends to enumerate - 好学区、好环境、
+ * 好产品、好配套 - and every 、 becomes its own pause, so a perfectly natural
+ * sentence is delivered as a staccato list. Straight quotes wrapping the whole
+ * script get read as a beat of silence at both ends too.
+ */
+export function smoothForSpeech(text: string): string {
+  let out = text.trim();
+  // Wrapping quotes (straight or curly) are punctuation for the reader, not
+  // the speaker.
+  out = out.replace(/^["“‘「]+/, "").replace(/["”’」]+$/, "");
+  // A run of enumeration commas is a list read aloud. Keep the last one (it
+  // carries the "and" beat) and let the rest flow.
+  out = out.replace(/、/g, "，");
+  // Collapse doubled commas the substitution can create.
+  out = out.replace(/，{2,}/g, "，");
+  return out.trim();
+}
+
 export async function previewAvatarVoice(
   agentId: string,
   text: string,
   voice?: string | null,
 ): Promise<{ audioUrl: string; audioPath: string }> {
   const voiceId = await resolveVoiceId(agentId, voice);
-  const clean = text.trim();
+  const clean = smoothForSpeech(text);
   if (!clean) throw new Error("Nothing to say — draft or write a script first.");
 
   const key = process.env.ELEVENLABS_API_KEY?.trim();
@@ -208,9 +275,10 @@ export async function previewAvatarVoice(
       // be switched on with an env change, no redeploy of logic. Default stays a
       // GA model so a missing/misset var can never break synthesis.
       model_id: process.env.ELEVENLABS_TTS_MODEL?.trim() || "eleven_multilingual_v2",
-      // More expressive delivery: a touch of style + speaker boost, slightly
-      // looser stability, higher similarity for fidelity to the cloned voice.
-      voice_settings: { stability: 0.4, similarity_boost: 0.85, style: 0.35, use_speaker_boost: true },
+      // Tuned per language - see voiceSettingsFor. A single profile made
+      // Mandarin sound wobbly, because the settings that read as expressive in
+      // English read as unstable tones in a tonal language.
+      voice_settings: voiceSettingsFor(clean),
     }),
   });
   if (!res.ok) {
