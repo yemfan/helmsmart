@@ -174,6 +174,51 @@ stripped from the build.
 
 ---
 
+## Deploying
+
+Its own Vercel project in the **AI-Property-Tools** team, alongside the other
+apps in this repo. Settings that are not defaults:
+
+| Setting | Value | Why |
+| --- | --- | --- |
+| Framework Preset | `Next.js` | Must be set explicitly. A project created through the API before the repo is linked has nothing to detect from and lands on `Other`, which builds it as a static site: no serverless functions, no SSR, no API routes. |
+| Root Directory | `apps/aibusinessworks` | |
+| Include files outside the root directory | Enabled | The pnpm workspace root holds the lockfile and `node_modules`. |
+| Skip deployments when unchanged | Enabled | Stops every unrelated commit in the monorepo rebuilding this app. |
+| Build Command | `npm run build` | Optional - the Next.js preset already defaults to this. Matches `marketingboss`. |
+
+Environment variables go on the Vercel project, not just in `.env.local`. All
+are in the root `turbo.json` allowlist; anything absent from it is silently
+stripped at build time.
+
+### Things that fail quietly
+
+**A missing `SUPABASE_SERVICE_ROLE_KEY` does not take the site down.** Public
+pages fall back to the bundled plan in `lib/compensation/defaults.ts` and render
+correct-looking rates, while registration, `/admin` and the commission engine
+all fail. The site looks healthy and is not. After deploying, confirm
+`/compensation` shows the plan version's real effective date rather than the
+fallback's.
+
+**The service-role key must belong to the same project as the URL.** Both point
+at `babmbowmzwizoahkmshx`. A key from a sibling Supabase project authenticates
+fine and then finds none of the `abw_` tables. Decode the `ref` claim to check.
+
+**`CRON_SECRET` gates the hourly commission run.** Without it the cron endpoint
+returns 401 rather than running unauthenticated - the safe failure, but nothing
+gets processed. See the commission engine section above.
+
+**`NEXT_PUBLIC_*` values are inlined at build time**, so changing one needs a
+redeploy, not just a restart.
+
+### Triggering a build when only config changed
+
+Because deployments are skipped when `apps/aibusinessworks` is untouched, a
+settings-only change does not produce a build. Use Redeploy in the dashboard, or
+push a commit that touches this directory.
+
+---
+
 ## Verification
 
 ```bash
