@@ -5,7 +5,6 @@ import { agentHasSocialCustomization } from "@/lib/social/customization";
 import AgentAiSettingsPanel from "@/components/dashboard/AgentAiSettingsPanel";
 import AgentVoiceSettingsPanel from "@/components/dashboard/AgentVoiceSettingsPanel";
 import VoiceReceptionistSettingsPanel from "@/components/dashboard/VoiceReceptionistSettingsPanel";
-import BriefingScheduleCard from "@/components/dashboard/BriefingScheduleCard";
 import MissedCallSettingsPanel from "@/components/dashboard/MissedCallSettingsPanel";
 import ChannelsCard from "@/components/dashboard/ChannelsCard";
 import ComplianceCard from "@/components/dashboard/ComplianceCard";
@@ -71,13 +70,6 @@ export default async function SettingsPage() {
                 {tr("settings.missedCallHelp")}
               </p>
               <MissedCallSettingsPanel />
-            </div>
-            <div className="p-5">
-              <h2 className="text-sm font-semibold text-gray-900 mb-1">{tr("settings.briefings")}</h2>
-              <p className="mb-3 text-xs text-gray-500">
-                {tr("settings.briefingsHelp")}
-              </p>
-              <BriefingScheduleCard />
             </div>
             </div>
           </div>
