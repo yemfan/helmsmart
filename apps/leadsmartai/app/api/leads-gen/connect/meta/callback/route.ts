@@ -138,9 +138,24 @@ export async function GET(req: Request) {
       });
     }
 
-    // 5. Upsert one row per Page. Re-connecting an existing Page updates the
-    //    existing row (fresh tokens, refreshed scopes, last_refreshed_at
-    //    stamped).
+    // 5. Upsert one row per Page — but a NEW Page lands as "awaiting_selection",
+    //    not "connected".
+    //
+    //    Facebook's Page grant is cumulative: the picker shows a fresh
+    //    selection, but the token still carries every Page ever granted to this
+    //    app, and /me/accounts returns all of them. Linking everything we can
+    //    see meant an agent who ticked one Page got five connected — including
+    //    Pages they had disconnected here earlier, which came straight back on
+    //    the next connect.
+    //
+    //    "Pages you have access to" and "Pages you want us posting to" are
+    //    different things, and this code used to conflate them. New Pages now
+    //    wait for an explicit choice. publish.ts requires status === "connected"
+    //    and getConnectedSocialAccounts filters on it too, so a Page waiting to
+    //    be chosen cannot post and is invisible to autopilot.
+    //
+    //    An ALREADY-connected Page keeps its status and just gets fresh tokens:
+    //    reconnecting to refresh a token must not knock a working Page offline.
     //
     //    Manual select-then-write, NOT `.upsert({onConflict})`: the prod
     //    social_accounts table has no unique constraint on
@@ -150,6 +165,8 @@ export async function GET(req: Request) {
     //    connectionsService + the LinkedIn callback already do, and it throws a
     //    real Error so any future failure shows its actual message.
     const nowIso = new Date().toISOString();
+    let refreshed = 0;
+    let awaiting = 0;
     const userTokenEnc = encryptToken(longLived.accessToken);
     for (const p of pages) {
       const fields = {
@@ -165,7 +182,6 @@ export async function GET(req: Request) {
         user_access_token_enc: userTokenEnc,
         user_token_expires_at: userTokenExpiresAt,
         scopes: META_OAUTH_SCOPES as unknown as string[],
-        status: "connected",
         last_error: null,
         last_refreshed_at: nowIso,
         updated_at: nowIso,
@@ -180,16 +196,24 @@ export async function GET(req: Request) {
         .maybeSingle();
 
       if ((existing as { id?: string } | null)?.id) {
+        // Refresh only. Status is deliberately absent so a live Page stays live
+        // and a Page still awaiting a choice stays awaiting one.
         const { error } = await supabaseAdmin
           .from("social_accounts")
           .update(fields as never)
           .eq("id", (existing as { id: string }).id);
         if (error) throw new Error(error.message);
+        refreshed += 1;
       } else {
         const { error } = await supabaseAdmin
           .from("social_accounts")
-          .insert({ ...fields, connected_at: nowIso } as never);
+          .insert({
+            ...fields,
+            status: "awaiting_selection",
+            connected_at: nowIso,
+          } as never);
         if (error) throw new Error(error.message);
+        awaiting += 1;
       }
     }
 
@@ -197,6 +221,8 @@ export async function GET(req: Request) {
     const res = back({
       status: "success",
       count: String(pages.length),
+      refreshed: String(refreshed),
+      awaiting: String(awaiting),
     });
     res.cookies.set("meta_oauth_state", "", {
       httpOnly: true,

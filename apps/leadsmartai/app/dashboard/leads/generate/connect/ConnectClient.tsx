@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
+import MetaPageSelector from "@/components/dashboard/MetaPageSelector";
 
 /**
  * Client-side bits of the connect page:
@@ -112,6 +113,7 @@ function buildFlash(
   reason: string | null,
   count: string | null,
   network: string | null,
+  awaiting: string | null,
   t: ConnectT,
 ): Flash | null {
   if (!status) return null;
@@ -153,10 +155,17 @@ function buildFlash(
         body: "Your YouTube channel is connected. Videos post as Shorts from Quick Post and the video ad.",
       };
     }
+    // "Linked N Pages" was a promise the old code kept by linking everything
+    // it could see. Now that new Pages wait for a choice, say what actually
+    // happened: found this many, none connected until you pick.
+    const waiting = Number(awaiting) || 0;
     return {
       kind: "success",
       title: t("connect.flash.success_facebook_title"),
-      body: t("connect.flash.success_meta_body", { count: n }),
+      body:
+        waiting > 0
+          ? t("connect.flash.success_meta_choose", { count: waiting })
+          : t("connect.flash.success_meta_refreshed", { count: n }),
     };
   }
   if (status === "cancelled") {
@@ -180,6 +189,7 @@ export default function ConnectClient({
   initialReason,
   initialCount,
   initialNetwork,
+  initialAwaiting,
   metaConnections,
   linkedinConnections,
   threadsConnections,
@@ -191,6 +201,7 @@ export default function ConnectClient({
   initialReason: string | null;
   initialCount: string | null;
   initialNetwork: string | null;
+  initialAwaiting: string | null;
   metaConnections: MetaAccountRow[];
   linkedinConnections: LinkedInAccountRow[];
   threadsConnections: ThreadsAccountRow[];
@@ -202,7 +213,7 @@ export default function ConnectClient({
   const { t, i18n } = useTranslation("web_generate_leads_clients");
   const locale = intlLocale(i18n.language);
   const [flash, setFlash] = useState<Flash | null>(() =>
-    buildFlash(initialStatus, initialReason, initialCount, initialNetwork, t),
+    buildFlash(initialStatus, initialReason, initialCount, initialNetwork, initialAwaiting, t),
   );
   const [disconnectingId, setDisconnectingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -217,6 +228,8 @@ export default function ConnectClient({
     url.searchParams.delete("reason");
     url.searchParams.delete("count");
     url.searchParams.delete("network");
+    url.searchParams.delete("refreshed");
+    url.searchParams.delete("awaiting");
     window.history.replaceState(null, "", url.toString());
   }, [initialStatus]);
 
@@ -328,6 +341,10 @@ export default function ConnectClient({
               : t("connect.meta.cta_connect")}
           </a>
         </div>
+
+        {/* Pages from the newest grant that nobody has chosen yet. Renders
+            nothing when there are none. */}
+        <MetaPageSelector onDone={() => router.refresh()} />
 
         {metaConnections.length > 0 ? (
           <ul className="mt-5 space-y-2">
