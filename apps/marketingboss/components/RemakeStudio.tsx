@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { AdBlueprint, RecastPlan } from "@/lib/adBlueprint";
-import { estimateSpeechSeconds, findOverrunningShots } from "@/lib/adBlueprint";
+import { estimateSpeechSeconds, findOverrunningShots } from "@/lib/speechTiming";
 
 /**
  * Remake — re-shoot a reference ad with the user's own twin.

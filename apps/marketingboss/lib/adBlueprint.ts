@@ -1,3 +1,4 @@
+import { findOverrunningShots } from "./speechTiming";
 import "server-only";
 import { anthropicJson } from "@/lib/ai";
 import { personaBlock, type Character } from "@/lib/characters";
@@ -220,39 +221,6 @@ export async function analyzeAd(opts: {
 }
 
 /** What one rebuilt shot needs, and which renderer it belongs to. */
-/**
- * Unhurried delivery to camera. Shared by the planner and by the editor UI so
- * the warning a user sees while typing is the same one the plan carries.
- */
-export const SPOKEN_WORDS_PER_SEC = 2.6;
-
-/** Roughly how long a line takes to say, in seconds. */
-export function estimateSpeechSeconds(line: string): number {
-  const words = line.trim().split(/\s+/).filter(Boolean).length;
-  return words / SPOKEN_WORDS_PER_SEC;
-}
-
-/**
- * Spoken shots whose line cannot be said in the seconds it was written for.
- *
- * A scene shot is rendered to a requested duration, but an avatar shot is only
- * as long as its audio - Fabric drives a portrait with a voice track and stops
- * when the voice does. So an over-long line is not cut off; it silently
- * stretches the finished ad past the length the plan promised, and the pacing
- * that made the reference work goes with it.
- *
- * Flagged at 1.3x rather than 1.0 because the estimate is rough and a small
- * overrun is unnoticeable.
- */
-export function findOverrunningShots(
-  shots: ReadonlyArray<{ index: number; render: string; line: string; seconds: number }>,
-): Array<{ index: number; needed: number; have: number }> {
-  return shots
-    .filter((s) => s.render === "avatar" && s.line)
-    .map((s) => ({ index: s.index, needed: estimateSpeechSeconds(s.line), have: s.seconds }))
-    .filter((s) => s.needed > s.have * 1.3);
-}
-
 export type RecastShot = {
   index: number;
   seconds: number;
