@@ -9,6 +9,12 @@ import { agentHasSocialCustomization } from "@/lib/social/customization";
 import { getAgentAiSettings } from "@/lib/agent-ai/settings";
 import { draftAvatarScript, getAvatarState, renderAvatarVideo } from "@/lib/agent/avatarStudio";
 import { scheduleReel, type ReelPlatform } from "@/lib/social/scheduleReel";
+import {
+  clampPostsPerDay,
+  defaultAiSlotTimes,
+  fixedSlotTimes,
+  planSlotTimes,
+} from "@/lib/social/planWeeklySlot";
 
 /**
  * Weekly social schedule. The agent checks weekdays; each checked day carries a
@@ -63,15 +69,26 @@ export const TOPIC_PRESETS: readonly string[] = [
   "Seasonal home maintenance tip",
 ];
 
+/** Where a slot's publish times come from. */
+export type TimeMode = "fixed" | "ai";
+/** Where a slot's subject comes from. */
+export type TopicMode = "fixed" | "ai";
+
 export type WeeklyScheduleDay = {
   weekday: number; // 0=Sun..6=Sat
   enabled: boolean;
-  postHour: number; // 0-23 (local, in `timezone`)
+  postHour: number; // 0-23 (local, in `timezone`) - the FIRST post when timeMode is "fixed"
   postMinute: number; // 0-59
   timezone: string;
   mediaType: MediaType;
   platforms: WeeklyPlatform[] | null; // null/empty = all connected of this media type
   topic: string;
+  /** How many posts this weekday produces (1-5), spread across the day. */
+  postsPerDay: number;
+  /** "ai" ignores postHour/postMinute and lets the planner choose. */
+  timeMode: TimeMode;
+  /** "ai" ignores `topic` and lets the generator choose a timely one. */
+  topicMode: TopicMode;
 };
 
 type Row = {
@@ -85,7 +102,19 @@ type Row = {
   platforms: string[] | null;
   topic: string;
   last_fired_on: string | null;
+  posts_per_day: number | null;
+  time_mode: string | null;
+  topic_mode: string | null;
+  fired_count_on: number | null;
 };
+
+function normalizeTimeMode(v: unknown): TimeMode {
+  return v === "ai" ? "ai" : "fixed";
+}
+
+function normalizeTopicMode(v: unknown): TopicMode {
+  return v === "ai" ? "ai" : "fixed";
+}
 
 function defaultDay(weekday: number): WeeklyScheduleDay {
   return {
@@ -97,6 +126,9 @@ function defaultDay(weekday: number): WeeklyScheduleDay {
     mediaType: "text",
     platforms: null,
     topic: "",
+    postsPerDay: 1,
+    timeMode: "fixed",
+    topicMode: "fixed",
   };
 }
 
@@ -115,11 +147,15 @@ function rowToDay(r: Row): WeeklyScheduleDay {
     mediaType,
     platforms: platforms && platforms.length ? platforms : null,
     topic: r.topic ?? "",
+    postsPerDay: clampPostsPerDay(r.posts_per_day ?? 1),
+    timeMode: normalizeTimeMode(r.time_mode),
+    topicMode: normalizeTopicMode(r.topic_mode),
   };
 }
 
 const SELECT_COLS =
-  "agent_id, weekday, enabled, post_hour, post_minute, timezone, media_type, platforms, topic, last_fired_on";
+  "agent_id, weekday, enabled, post_hour, post_minute, timezone, media_type, platforms, topic, " +
+  "last_fired_on, posts_per_day, time_mode, topic_mode, fired_count_on";
 
 /** All 7 days for an agent (defaults filled in for days with no row yet). */
 export async function getWeeklySchedule(agentId: string): Promise<WeeklyScheduleDay[]> {
@@ -149,8 +185,14 @@ export async function saveWeeklySchedule(agentId: string, days: WeeklyScheduleDa
       media_type: mediaType,
       platforms: platforms && platforms.length ? platforms : null,
       topic: (d.topic ?? "").slice(0, 300),
-      // Editing resets the per-day fire marker so a changed time/topic can fire today.
+      posts_per_day: clampPostsPerDay(d.postsPerDay),
+      time_mode: normalizeTimeMode(d.timeMode),
+      topic_mode: normalizeTopicMode(d.topicMode),
+      // Editing resets the per-day fire markers so a changed time/topic/count
+      // can fire today. Both must reset together or the new count is measured
+      // against posts the old settings already produced.
       last_fired_on: null,
+      fired_count_on: 0,
       updated_at: nowIso,
     };
   });
@@ -187,20 +229,35 @@ function extractJson(text: string): { caption?: unknown; hashtags?: unknown } | 
   }
 }
 
+/**
+ * The instruction handed to the generator when the agent chose "let AI pick
+ * the topic". Everything else about the call is identical, so an AI-topic post
+ * is researched and written exactly the way a typed-topic one is.
+ */
+const AI_TOPIC_DIRECTIVE =
+  "Choose the topic yourself: search the web for what is genuinely timely and useful " +
+  "for a residential real-estate audience this week - rates, local market movement, a " +
+  "seasonal concern, a common buyer or seller question - and write today's post on it. " +
+  "Pick something an agent could post without it reading as generic filler.";
+
 /** Research the topic and write a post. Returns null on any failure (cron-safe). */
 export async function generatePostFromTopic(
   topic: string,
+  /** When true, the AI chooses the subject and `topic` is ignored. */
+  aiChoosesTopic = false,
 ): Promise<{ caption: string; hashtags: string[] } | null> {
-  if (!isAnthropicConfigured() || !topic.trim()) return null;
+  if (!isAnthropicConfigured()) return null;
+  if (!aiChoosesTopic && !topic.trim()) return null;
   const client = getAnthropicClient();
   const tools = [{ type: "web_search_20250305", name: "web_search", max_uses: WEB_SEARCH_MAX_USES }];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const messages: any[] = [
     {
       role: "user",
-      content:
-        `Write today's social post on this topic: "${topic.trim()}". ` +
-        "Search the web for anything current/local that makes it accurate and timely, then write the post.",
+      content: aiChoosesTopic
+        ? AI_TOPIC_DIRECTIVE
+        : `Write today's social post on this topic: "${topic.trim()}". ` +
+          "Search the web for anything current/local that makes it accurate and timely, then write the post.",
     },
   ];
 
@@ -418,20 +475,54 @@ export async function runDueWeeklySlots(): Promise<{ fired: number; enqueued: nu
   let enqueued = 0;
 
   for (const r of rows) {
-    if (!r.topic?.trim()) continue;
+    const topicMode = normalizeTopicMode(r.topic_mode);
+    // A blank topic is only legal when the AI is choosing one.
+    if (topicMode === "fixed" && !r.topic?.trim()) continue;
+
     const tz = r.timezone || "America/Los_Angeles";
     const now = localNow(tz);
     if (now.weekday !== r.weekday) continue;
-    if (now.minutes < r.post_hour * 60 + r.post_minute) continue;
-    if (r.last_fired_on === now.date) continue; // already fired today
 
-    // Claim the day up-front so a slow generate + a second cron tick don't
-    // double-post. Optimistic: only succeeds if last_fired_on is still what we read.
+    const postsPerDay = clampPostsPerDay(r.posts_per_day ?? 1);
+    // How many this slot has already produced TODAY. A stale marker from an
+    // earlier date counts as zero rather than blocking the day.
+    const firedToday = r.last_fired_on === now.date ? Math.max(0, r.fired_count_on ?? 0) : 0;
+    if (firedToday >= postsPerDay) continue;
+
+    // The publish times for this weekday. Fixed mode anchors on the agent's
+    // chosen time; AI mode asks the planner (which falls back to engagement
+    // windows if it cannot be reached, so this never returns empty).
+    const timeMode = normalizeTimeMode(r.time_mode);
+    const slotTimes =
+      timeMode === "ai"
+        ? await planSlotTimes({
+            weekdayLabel: WEEKDAY_LABELS[r.weekday] ?? "today",
+            postsPerDay,
+            platforms: r.platforms ?? platformsForMedia(normalizeMediaType(r.media_type)),
+          }).catch(() => defaultAiSlotTimes(postsPerDay))
+        : fixedSlotTimes(r.post_hour * 60 + r.post_minute, postsPerDay);
+
+    // Due when the time for the NEXT unfired post has passed. Indexing by
+    // firedToday means a cron outage catches up one post per tick rather than
+    // dumping the whole day at once.
+    const dueAt = slotTimes[Math.min(firedToday, slotTimes.length - 1)];
+    if (dueAt === undefined || now.minutes < dueAt) continue;
+
+    // Claim this post up-front so a slow generate plus a second cron tick
+    // cannot double-post. Optimistic: the update only lands if the counter is
+    // still what we read, so whichever tick gets there first wins.
     let claimQuery = supabaseAdmin
       .from("social_weekly_schedules")
-      .update({ last_fired_on: now.date, updated_at: new Date().toISOString() } as never)
+      .update({
+        last_fired_on: now.date,
+        fired_count_on: firedToday + 1,
+        updated_at: new Date().toISOString(),
+      } as never)
       .eq("agent_id", r.agent_id as never)
-      .eq("weekday", r.weekday as never);
+      .eq("weekday", r.weekday as never)
+      // Match the counter we READ, not the one we derived: on a stale date the
+      // stored value is yesterday's count while firedToday is 0.
+      .eq("fired_count_on", (r.fired_count_on ?? 0) as never);
     claimQuery =
       r.last_fired_on === null
         ? claimQuery.is("last_fired_on", null)
@@ -441,13 +532,16 @@ export async function runDueWeeklySlots(): Promise<{ fired: number; enqueued: nu
 
     try {
       const mediaType = normalizeMediaType(r.media_type);
-      const post = await generatePostFromTopic(r.topic);
+      const post = await generatePostFromTopic(r.topic, topicMode === "ai");
       if (!post) continue;
       fired += 1;
 
       // Video days render a talking-avatar clip and fan out via the reel pipeline.
       if (mediaType === "video") {
-        enqueued += await enqueueTopicVideo(String(r.agent_id), r.topic, post, r.platforms);
+        // With an AI-chosen topic there is no typed subject to script from, so
+        // the researched caption becomes the subject.
+        const videoTopic = r.topic?.trim() || post.caption;
+        enqueued += await enqueueTopicVideo(String(r.agent_id), videoTopic, post, r.platforms);
         continue;
       }
 
