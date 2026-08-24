@@ -11,6 +11,7 @@ import {
 import { publishThreadsPost } from "./threads-post";
 import { publishPinterestPin } from "./pinterest-post";
 import { ensureTikTokAccessToken, publishTikTokVideo } from "./tiktok-publish";
+import type { TikTokPostPrefs } from "./tiktok-creator-info";
 import { ensureYouTubeAccessToken, uploadYouTubeVideo } from "./youtube-publish";
 import { decryptToken } from "./token-enc";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -160,7 +161,11 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   const { data: connRow, error: connErr } = await supabaseAdmin
     .from("social_accounts")
     .select(
-      "id, agent_id, platform, fb_page_id, ig_business_user_id, page_access_token_enc, user_access_token_enc, linkedin_member_urn, threads_user_id, pinterest_board_id, tiktok_open_id, tiktok_refresh_token_enc, youtube_channel_id, youtube_refresh_token_enc, user_token_expires_at, status",
+      // NB: one string literal. Supabase infers the row type from it, and a
+      // concatenation degrades that to an error type. The tiktok_* columns are
+      // the creator's own posting choices, which TikTok requires travel with
+      // every send rather than being decided by us.
+      "id, agent_id, platform, fb_page_id, ig_business_user_id, page_access_token_enc, user_access_token_enc, linkedin_member_urn, threads_user_id, pinterest_board_id, tiktok_open_id, tiktok_refresh_token_enc, youtube_channel_id, youtube_refresh_token_enc, user_token_expires_at, status, tiktok_privacy_level, tiktok_disable_comment, tiktok_disable_duet, tiktok_disable_stitch, tiktok_brand_organic, tiktok_brand_content, tiktok_prefs_confirmed_at",
     )
     .eq("id", connectionId)
     .eq("agent_id", agentId)
@@ -198,6 +203,14 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     youtube_refresh_token_enc: string | null;
     user_token_expires_at: string | null;
     status: string;
+    // The creator's own TikTok posting choices (null until they pick).
+    tiktok_privacy_level: string | null;
+    tiktok_disable_comment: boolean | null;
+    tiktok_disable_duet: boolean | null;
+    tiktok_disable_stitch: boolean | null;
+    tiktok_brand_organic: boolean | null;
+    tiktok_brand_content: boolean | null;
+    tiktok_prefs_confirmed_at: string | null;
   };
 
   // Validate platform / connection alignment.
@@ -565,7 +578,19 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
         // TikTok Direct Post (FILE_UPLOAD): refresh the token if stale, then PUT
         // the MP4 bytes. Returns a publish_id (async processing, no public URL).
         const token = await ensureTikTokAccessToken(conn);
-        const result = await publishTikTokVideo(token, { bytes: imageBytes!, title: caption });
+        const result = await publishTikTokVideo(token, {
+          bytes: imageBytes!,
+          title: caption,
+          prefs: {
+            privacyLevel: (conn.tiktok_privacy_level as TikTokPostPrefs["privacyLevel"]) ?? null,
+            disableComment: conn.tiktok_disable_comment === true,
+            disableDuet: conn.tiktok_disable_duet === true,
+            disableStitch: conn.tiktok_disable_stitch === true,
+            brandOrganic: conn.tiktok_brand_organic === true,
+            brandContent: conn.tiktok_brand_content === true,
+            confirmedAt: (conn.tiktok_prefs_confirmed_at as string | null) ?? null,
+          },
+        });
         externalPostId = result.externalPostId;
         externalPostUrl = result.externalPostUrl;
       } else if (platform === "youtube") {
