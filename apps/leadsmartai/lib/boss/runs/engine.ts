@@ -1,6 +1,7 @@
 import "server-only";
 
 import { zodToJsonSchema } from "zod-to-json-schema";
+import { personaFor } from "@/lib/closeboss/assigneePersona";
 import { listBossTools } from "../tools/registry";
 import {
   executeTool,
@@ -86,7 +87,16 @@ export function bossToolsForModel(
       unknown
     >;
     delete schema.$schema;
-    return { name: t.name, description: t.description, input_schema: schema };
+    // Who owns this tool, stated in the description the model reads. Max is
+    // told to speak as a manager delegating to a named team, but nothing used
+    // to tell him WHICH team owned which tool — so he guessed, and announced
+    // "I'll have the Transaction team set up the open house" over a step the
+    // UI then stamped "Ruby · Marketing Specialist" from this same assignee.
+    const persona = personaFor(t.assignee);
+    const description = persona
+      ? `${t.description} [Owned by ${persona.name}, the ${persona.team} team.]`
+      : t.description;
+    return { name: t.name, description, input_schema: schema };
   });
 }
 
