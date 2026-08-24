@@ -63,9 +63,9 @@ export default async function HelpIndexPage() {
             href="/help/settings"
             className="block rounded-2xl border border-blue-200 bg-blue-50/60 px-5 py-4 transition hover:bg-blue-50"
           >
-            <p className="text-base font-semibold text-slate-900">Settings, card by card <span aria-hidden>→</span></p>
+            <p className="text-base font-semibold text-slate-900">{th("index.settings_ref_title")} <span aria-hidden>→</span></p>
             <p className="mt-1 text-sm leading-6 text-slate-600">
-              Every card on your Settings page, with a screenshot and a guide for each one.
+              {th("index.settings_ref_body")}
             </p>
           </Link>
         </section>

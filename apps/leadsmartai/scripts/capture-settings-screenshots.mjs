@@ -1,9 +1,9 @@
 /**
  * Usage (from the repo root, with a dev server running):
  *
- *   node apps/leadsmartai/scripts/capture-settings-screenshots.mjs  *     apps/leadsmartai/.env.local  *     apps/leadsmartai/public/help/settings  *     <sandbox-account-email>
+ *   node apps/leadsmartai/scripts/capture-settings-screenshots.mjs  *     apps/leadsmartai/.env.local  *     apps/leadsmartai/public/help/settings  *     <sandbox-account-email> [app-origin]
  *
- * APP_ORIGIN overrides the default http://localhost:3031.
+ * app-origin defaults to http://localhost:3031.
  *
  * Re-run this after changing the Settings UI so /help/settings does not show a
  * screenshot of a card that no longer looks like that.
@@ -33,8 +33,10 @@ import { chromium } from "playwright";
 import fs from "node:fs";
 import path from "node:path";
 
-const APP = process.env.APP_ORIGIN || "http://localhost:3031";
-const [, , ENV_FILE, OUT_DIR, EMAIL] = process.argv;
+// 4th arg rather than an env var: turbo.json has to declare every env var the
+// repo reads, and a dev-only script has no business in the build allowlist.
+const [, , ENV_FILE, OUT_DIR, EMAIL, ORIGIN] = process.argv;
+const APP = ORIGIN || "http://localhost:3031";
 
 function readEnv(file) {
   const out = {};
