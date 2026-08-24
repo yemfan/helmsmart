@@ -1,9 +1,11 @@
+import { SETTINGS_GUIDES } from "./settings-guides";
+
 /**
  * Help guides — short how-to articles for /help/guides/[slug].
  *
  * Each guide produces an Article + HowTo JSON-LD payload so it
  * can earn rich-result eligibility on long-tail "how do I X with
- * LeadSmart" queries. Content is intentionally concise — the goal
+ * CloseBoss" queries. Content is intentionally concise — the goal
  * is a useful first-result answer, not an exhaustive manual.
  *
  * Adding a guide: pick a slug that matches the search query the
@@ -38,6 +40,11 @@ export type HelpGuide = {
   body: string[];
   /** Numbered steps. Each is a short instruction sentence. */
   steps: string[];
+  /**
+   * Optional screenshots of the surface the guide describes. Rendered under
+   * the steps. `src` is a path under /public.
+   */
+  images?: Array<{ src: string; alt: string; caption?: string }>;
   /** Optional related links shown under the steps. */
   related?: Array<{ label: string; href: string }>;
 };
@@ -47,11 +54,11 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     slug: "ai-followup-setup",
     title: "Set up AI follow-up for new leads",
     description:
-      "Configure LeadSmart AI to reply to every new lead within 60 seconds — pick a review policy, edit a template, and you're live.",
+      "Configure CloseBoss AI to reply to every new lead within 60 seconds — pick a review policy, edit a template, and you're live.",
     readTime: "3 min",
     category: "setup",
     body: [
-      "AI follow-up is the heart of LeadSmart. Once it's running, every new lead — from your website, Zillow, Facebook, missed calls — gets a personalized SMS + email response within 60 seconds, even at 11pm on a Sunday.",
+      "AI follow-up is the heart of CloseBoss. Once it's running, every new lead — from your website, Zillow, Facebook, missed calls — gets a personalized SMS + email response within 60 seconds, even at 11pm on a Sunday.",
       "Setup is a single decision (auto-send vs require approval) plus optional template tweaks. Most agents are live in under 10 minutes.",
     ],
     steps: [
@@ -70,17 +77,17 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     slug: "lead-import",
     title: "Import contacts from another CRM",
     description:
-      "Bring your existing contacts and pipeline into LeadSmart via CSV — duplicate-aware, one-click rollback if anything looks wrong.",
+      "Bring your existing contacts and pipeline into CloseBoss via CSV — duplicate-aware, one-click rollback if anything looks wrong.",
     readTime: "4 min",
     category: "setup",
     body: [
-      "If you're switching from Follow Up Boss, kvCORE, or any other CRM, you can bring your full contact list into LeadSmart in one CSV upload. The import is duplicate-aware (matched by email + phone), so re-running it after a fix-up won't double your contacts.",
+      "If you're switching from Follow Up Boss, kvCORE, or any other CRM, you can bring your full contact list into CloseBoss in one CSV upload. The import is duplicate-aware (matched by email + phone), so re-running it after a fix-up won't double your contacts.",
       "Most agents import in a single pass; if you want to validate first, we recommend importing 10 test rows, confirming the field mapping looks right, and then running the full file.",
     ],
     steps: [
       "Export your contacts from your current CRM as a CSV. Most CRMs put this under Settings → Data → Export.",
-      "In LeadSmart, open Settings → Data & Tools and click Import contacts.",
-      "Upload the CSV. LeadSmart auto-detects standard columns (Name, Email, Phone, City, Notes); review the mapping for any custom fields.",
+      "In CloseBoss, open Settings → Data & Tools and click Import contacts.",
+      "Upload the CSV. CloseBoss auto-detects standard columns (Name, Email, Phone, City, Notes); review the mapping for any custom fields.",
       "Run the import. Duplicates are merged into existing rows; new contacts are created with lifecycle_stage='lead'.",
       "Confirm the count on your Contacts page matches the row count of your CSV. If anything looks wrong, click Undo last import within 24 hours to roll the entire batch back.",
     ],
@@ -90,7 +97,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
   },
   {
     slug: "coaching-enrollment",
-    title: "Manage your LeadSmart AI Coaching enrollment",
+    title: "Manage your CloseBoss AI Coaching enrollment",
     description:
       "Enroll, opt out, or re-enroll in Producer Track and Top Producer Track from one settings panel. Auto-enrollment respects prior opt-outs.",
     readTime: "2 min",
@@ -105,7 +112,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       "To stop a program, click Opt out. Optional: leave a short note about why — it helps us improve the program. We won't re-enroll you automatically after that.",
     ],
     related: [
-      { label: "What is LeadSmart AI Coaching?", href: "/agent/coaching" },
+      { label: "What is CloseBoss AI Coaching?", href: "/agent/coaching" },
       { label: "Coaching FAQ", href: "/help/faq#coaching" },
     ],
   },
@@ -117,7 +124,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "3 min",
     category: "deals",
     body: [
-      "Post-NAR settlement, every brokerage needs a Buyer Broker Agreement signed before showing homes. LeadSmart's BBA workflow makes that a one-click step on the deal record — generate the agreement, send it for e-signature, and watch the status flip when the buyer signs.",
+      "Post-NAR settlement, every brokerage needs a Buyer Broker Agreement signed before showing homes. CloseBoss's BBA workflow makes that a one-click step on the deal record — generate the agreement, send it for e-signature, and watch the status flip when the buyer signs.",
     ],
     steps: [
       "Open the deal (or buyer contact). In the deal sidebar, click Buyer Broker Agreement → Send for signature.",
@@ -134,11 +141,11 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     slug: "video-email",
     title: "Record and send video email",
     description:
-      "Send a personalized 60-second video to any lead or client without leaving LeadSmart. Track plays + completion rate inside the contact.",
+      "Send a personalized 60-second video to any lead or client without leaving CloseBoss. Track plays + completion rate inside the contact.",
     readTime: "2 min",
     category: "communication",
     body: [
-      "Video email lifts response rates significantly — buyers and sellers feel they know you before the first call. LeadSmart records and hosts video natively (no extensions, no upload step) and tracks who watched and how much.",
+      "Video email lifts response rates significantly — buyers and sellers feel they know you before the first call. CloseBoss records and hosts video natively (no extensions, no upload step) and tracks who watched and how much.",
     ],
     steps: [
       "Open any contact and click Message → Video.",
@@ -159,11 +166,11 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "3 min",
     category: "setup",
     body: [
-      "Missed-call text-back is the highest-ROI feature for solo agents — when a caller reaches voicemail and no human, they usually call the next agent on the list. With LeadSmart, the moment a call goes unanswered, an SMS goes out automatically.",
+      "Missed-call text-back is the highest-ROI feature for solo agents — when a caller reaches voicemail and no human, they usually call the next agent on the list. With CloseBoss, the moment a call goes unanswered, an SMS goes out automatically.",
     ],
     steps: [
       "Open Settings → Voice & Style → Missed Call Text-Back.",
-      "Pick the LeadSmart number you want callers to dial. (If you don't have one yet, Settings → Channels & Compliance → Phone numbers will provision one in your area code.)",
+      "Pick the CloseBoss number you want callers to dial. (If you don't have one yet, Settings → Channels & Compliance → Phone numbers will provision one in your area code.)",
       "Set up call forwarding from that number to your personal mobile so you can pick up live when you're available.",
       "Customize the auto-text. The default — 'Sorry I missed you! Are you calling about [property]?' — works well; agents who personalize it see noticeably higher reply rates.",
       "Ring duration: keep it short (12–15 seconds) so callers don't sit on hold. The auto-text fires within 60 seconds of the missed call.",
@@ -173,14 +180,14 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
   /* ─────────── Getting started (additional) ─────────── */
   {
     slug: "phone-number-setup",
-    title: "Provision a LeadSmart phone number",
+    title: "Provision a CloseBoss phone number",
     description:
-      "Get a local LeadSmart number for inbound calls, missed-call text-back, and outbound texting — provisioned in your area code in under five minutes.",
+      "Get a local CloseBoss number for inbound calls, missed-call text-back, and outbound texting — provisioned in your area code in under five minutes.",
     readTime: "3 min",
     category: "setup",
     body: [
-      "Every LeadSmart workspace gets a dedicated phone number for SMS + voice. The number is what powers missed-call text-back, AI voice answering, and outbound texts that don't trip carrier spam filters.",
-      "Provisioning is automatic — pick an area code, accept the carrier terms, and you're live. You can keep your personal number for direct contacts; LeadSmart's number sits in front of it as the public-facing line.",
+      "Every CloseBoss workspace gets a dedicated phone number for SMS + voice. The number is what powers missed-call text-back, AI voice answering, and outbound texts that don't trip carrier spam filters.",
+      "Provisioning is automatic — pick an area code, accept the carrier terms, and you're live. You can keep your personal number for direct contacts; CloseBoss's number sits in front of it as the public-facing line.",
     ],
     steps: [
       "Open Settings → Channels & Compliance → Phone numbers.",
@@ -198,7 +205,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     slug: "team-seats",
     title: "Invite a team member or assistant",
     description:
-      "Add a teammate, ISA, transaction coordinator, or admin to your LeadSmart workspace. Each seat gets role-scoped access.",
+      "Add a teammate, ISA, transaction coordinator, or admin to your CloseBoss workspace. Each seat gets role-scoped access.",
     readTime: "3 min",
     category: "setup",
     body: [
@@ -244,14 +251,14 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "4 min",
     category: "lead-capture",
     body: [
-      "Open houses are still one of the highest-quality lead sources in residential — but only if you actually capture the contact. The LeadSmart open-house flow gives every visitor a QR code that opens a phone-optimized signup page, and adds them to the CRM the moment they tap Submit.",
+      "Open houses are still one of the highest-quality lead sources in residential — but only if you actually capture the contact. The CloseBoss open-house flow gives every visitor a QR code that opens a phone-optimized signup page, and adds them to the CRM the moment they tap Submit.",
     ],
     steps: [
       "Open Leads → Open Houses → Create open house. Pick the property (or add the address manually), date, and your hosting agent name.",
       "Print the auto-generated QR code (it links to a signup page branded with the property photo and your name).",
       "At the open house, ask each visitor to scan and sign in on their phone — most do, since it's faster than writing on a clipboard.",
       "Visitors land in your Contacts immediately, tagged with the open-house source and the property. AI follow-up fires the first message within 60 seconds of their submission.",
-      "After the open house, open the event in LeadSmart and add a quick note per visitor (hot, lukewarm, looking just for fun) — these notes feed the lead-qualification model and shape the next-step sequence.",
+      "After the open house, open the event in CloseBoss and add a quick note per visitor (hot, lukewarm, looking just for fun) — these notes feed the lead-qualification model and shape the next-step sequence.",
     ],
     related: [
       { label: "Run the post-open-house follow-up sequence", href: "/help/guides/post-open-house-followup" },
@@ -265,7 +272,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "3 min",
     category: "lead-capture",
     body: [
-      "Visitors who sign in at an open house are golden — they showed up, they're actively looking, and they know you by name. The default LeadSmart post–open house sequence is a 5-touch, 7-day cadence designed to convert them to an appointment.",
+      "Visitors who sign in at an open house are golden — they showed up, they're actively looking, and they know you by name. The default CloseBoss post–open house sequence is a 5-touch, 7-day cadence designed to convert them to an appointment.",
     ],
     steps: [
       "When you create an open house, the Post–Open House sequence auto-attaches to every signup. No extra setup required.",
@@ -302,11 +309,11 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     slug: "home-value-leads",
     title: "Capture home-value leads from your IDX site",
     description:
-      "Embed the LeadSmart home-value widget on any page to capture seller leads with an AI-generated CMA preview.",
+      "Embed the CloseBoss home-value widget on any page to capture seller leads with an AI-generated CMA preview.",
     readTime: "3 min",
     category: "lead-capture",
     body: [
-      "Home-value pages are the single best seller-lead generator. The LeadSmart widget lets visitors enter their address, see a teaser estimate, and submit their email for the full report — which is auto-generated as an AI CMA snapshot you can follow up on.",
+      "Home-value pages are the single best seller-lead generator. The CloseBoss widget lets visitors enter their address, see a teaser estimate, and submit their email for the full report — which is auto-generated as an AI CMA snapshot you can follow up on.",
     ],
     steps: [
       "Open Settings → Channels & Compliance → Widgets → Home Value Widget.",
@@ -351,7 +358,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "3 min",
     category: "communication",
     body: [
-      "Templates speed up the repetitive 80% of messaging — first-touch replies, scheduling, follow-ups after a showing. LeadSmart templates support merge tags (first name, property address, agent signature) and an optional AI personalization layer that rewrites the body to match the contact's voice and history.",
+      "Templates speed up the repetitive 80% of messaging — first-touch replies, scheduling, follow-ups after a showing. CloseBoss templates support merge tags (first name, property address, agent signature) and an optional AI personalization layer that rewrites the body to match the contact's voice and history.",
     ],
     steps: [
       "Open Communicate → Templates → New template.",
@@ -409,7 +416,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "3 min",
     category: "marketing",
     body: [
-      "Postcards still convert in residential — especially on geographic farms. LeadSmart has a built-in designer + integrated print/mail vendor, so you can send a Just Listed or Just Sold postcard to 200 nearby homes in under 10 minutes without leaving the dashboard.",
+      "Postcards still convert in residential — especially on geographic farms. CloseBoss has a built-in designer + integrated print/mail vendor, so you can send a Just Listed or Just Sold postcard to 200 nearby homes in under 10 minutes without leaving the dashboard.",
     ],
     steps: [
       "Open Communicate → Postcards → New mailer.",
@@ -438,7 +445,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       "Configure the opener — what the AI says when it picks up. Default: 'Hi, this is [Your Name]'s assistant — they're with a client right now, can I help?'",
       "Set the goal: book a callback, qualify the lead, send a property packet, or escalate to a live transfer.",
       "Set call-routing rules: answer-after rings (default 4), business hours vs after hours, transfer-to-human keywords ('I need to talk to a person').",
-      "Toggle Voice AI on. Test it by calling your LeadSmart number from a phone you don't normally call from. The full transcript lands in Conversations with the contact's qualification summary.",
+      "Toggle Voice AI on. Test it by calling your CloseBoss number from a phone you don't normally call from. The full transcript lands in Conversations with the contact's qualification summary.",
     ],
     related: [
       { label: "Test-drive the voice AI", href: "/voice-ai-test-drive" },
@@ -470,7 +477,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "3 min",
     category: "ai-and-voice",
     body: [
-      "The Deal Coach is the LeadSmart sidekick that watches your pipeline overnight and surfaces a prioritized to-do list each morning. It reads every active deal's history — last touchpoint, days since contact, what's blocking progression — and suggests the single highest-leverage next action.",
+      "The Deal Coach is the CloseBoss sidekick that watches your pipeline overnight and surfaces a prioritized to-do list each morning. It reads every active deal's history — last touchpoint, days since contact, what's blocking progression — and suggests the single highest-leverage next action.",
     ],
     steps: [
       "Open Insights → Coaching from the sidebar.",
@@ -618,7 +625,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "3 min",
     category: "analysis",
     body: [
-      "Lead Source ROI is the single most clarifying report in LeadSmart. It connects ad spend / referral cost / portal subscription cost to actual closed transactions, by source, over your chosen window.",
+      "Lead Source ROI is the single most clarifying report in CloseBoss. It connects ad spend / referral cost / portal subscription cost to actual closed transactions, by source, over your chosen window.",
     ],
     steps: [
       "Open Insights → Lead Source ROI.",
@@ -762,7 +769,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       "Enter the home price (or pre-fill from the buyer's saved deal record).",
       "Set the default down payment and rate. The buyer can change anything from their end.",
       "Click Generate share link. The URL opens a branded calculator with your photo, name, and contact button.",
-      "Send via SMS or email from inside LeadSmart. Every interaction (open, change, contact click) shows up on the contact timeline.",
+      "Send via SMS or email from inside CloseBoss. Every interaction (open, change, contact click) shows up on the contact timeline.",
     ],
   },
   {
@@ -802,7 +809,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       "Enter the address. The report auto-builds with the latest comp data and market context.",
       "Customize the cover slide and the agent bio page (saved from Settings).",
       "Preview the full PDF; edit any text inline.",
-      "Export or Email — sending from LeadSmart logs the touchpoint on the contact's timeline.",
+      "Export or Email — sending from CloseBoss logs the touchpoint on the contact's timeline.",
     ],
   },
 
@@ -811,11 +818,11 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     slug: "sales-model",
     title: "Configure your sales model",
     description:
-      "Tell LeadSmart how you run your business — lifecycle stages, target conversion rates, average commission — so it can coach you in your context.",
+      "Tell CloseBoss how you run your business — lifecycle stages, target conversion rates, average commission — so it can coach you in your context.",
     readTime: "3 min",
     category: "workflows",
     body: [
-      "The Sales Model panel is where you define how your business actually works: lifecycle stages from new lead to closed, target conversion rates between stages, your average commission per close, and your annual GCI target. This data feeds every projection, coaching nudge, and growth recommendation across LeadSmart.",
+      "The Sales Model panel is where you define how your business actually works: lifecycle stages from new lead to closed, target conversion rates between stages, your average commission per close, and your annual GCI target. This data feeds every projection, coaching nudge, and growth recommendation across CloseBoss.",
     ],
     steps: [
       "Open Workflow → Sales Model from the sidebar.",
@@ -871,7 +878,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "2 min",
     category: "account",
     body: [
-      "Your profile is the single source of truth for branding across LeadSmart — emails, video email cover frame, postcards, CMAs, property reports, marketing posts. Update it once and every outbound surface reflects the change.",
+      "Your profile is the single source of truth for branding across CloseBoss — emails, video email cover frame, postcards, CMAs, property reports, marketing posts. Update it once and every outbound surface reflects the change.",
     ],
     steps: [
       "Open Account → Profile.",
@@ -889,11 +896,11 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "3 min",
     category: "account",
     body: [
-      "Integrations are the wiring that lets LeadSmart sit inside your existing workflow. Email + calendar sync means every conversation and appointment lands on the contact timeline automatically; lead-source connectors mean new leads flow through AI follow-up without you forwarding anything.",
+      "Integrations are the wiring that lets CloseBoss sit inside your existing workflow. Email + calendar sync means every conversation and appointment lands on the contact timeline automatically; lead-source connectors mean new leads flow through AI follow-up without you forwarding anything.",
     ],
     steps: [
       "Open Settings → Channels & Compliance → Integrations.",
-      "Connect Google or Microsoft 365 — this enables email sync (Gmail/Outlook threads attach to contacts), calendar sync (your bookings show on the LeadSmart calendar), and OAuth-based sending.",
+      "Connect Google or Microsoft 365 — this enables email sync (Gmail/Outlook threads attach to contacts), calendar sync (your bookings show on the CloseBoss calendar), and OAuth-based sending.",
       "Connect lead sources: Zillow Premier Agent, Facebook Lead Ads, Realtor.com, plus your IDX site forms via the embeddable webhook.",
       "For each source, test it: trigger a sample submission. The lead should land in your Lead Queue within 30 seconds.",
       "Optional: connect Dotloop or DocuSign for e-signature, and Zapier / Make for any custom workflow.",
@@ -907,7 +914,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
     readTime: "2 min",
     category: "account",
     body: [
-      "You can export everything in LeadSmart at any time. Contacts, deals, and conversation history come as CSVs; documents (offers, BBAs, CMAs) come as a ZIP of PDFs. Use this to back up your data, to bring it to an accountant, or to leave for another platform.",
+      "You can export everything in CloseBoss at any time. Contacts, deals, and conversation history come as CSVs; documents (offers, BBAs, CMAs) come as a ZIP of PDFs. Use this to back up your data, to bring it to an accountant, or to leave for another platform.",
     ],
     steps: [
       "Open Settings → Data & Tools → Export.",
@@ -1012,6 +1019,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       { label: "Configure voice AI for inbound calls", href: "/help/guides/voice-ai-inbound" },
     ],
   },
+  ...SETTINGS_GUIDES,
 ];
 
 /** Lookup helper for the dynamic [slug] page. */
@@ -1030,7 +1038,7 @@ export function groupedGuides(): Array<{
     {
       id: "setup",
       label: "Getting started",
-      description: "Set up LeadSmart in your first week — pick a follow-up policy, import data, configure phone numbers.",
+      description: "Set up CloseBoss in your first week — pick a follow-up policy, import data, configure phone numbers.",
     },
     {
       id: "lead-capture",

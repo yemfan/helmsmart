@@ -10,6 +10,7 @@
     "home": "首页",
     "myProfile": "个人资料",
     "mySettings": "我的设置",
+    "helpGuides": "帮助与指南",
     "creditsBilling": "额度与账单",
     "logOut": "退出登录",
     "upsell": "用 AI 跟进赢得更多客户",
@@ -8267,6 +8268,7 @@
     "helpGuides": {
       "helpCenter": "帮助中心",
       "guides": "指南",
+      "whatItLooksLike": "界面示例",
       "stepByStep": "分步操作",
       "related": "相关内容",
       "needHelp": "还有别的问题？",
