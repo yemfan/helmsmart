@@ -30,6 +30,32 @@ function dnaChips(dna: CharacterDna): string[] {
 
 export default function CharacterStudio({ initial, aiConfigured }: { initial: Character[]; aiConfigured: boolean }) {
   const router = useRouter();
+  const [twinBusy, setTwinBusy] = useState(false);
+  const [twinError, setTwinError] = useState<string | null>(null);
+
+  /**
+   * Bring the profile twin in as a brand persona.
+   *
+   * The twin and this cast list were two separate ideas of the same person.
+   * Created as brand_owned rather than real_person because the portrait is
+   * generated - but the consent note still names the real person, since a
+   * synthetic likeness carries the same obligations as a photograph.
+   */
+  async function useMyTwin() {
+    setTwinError(null);
+    setTwinBusy(true);
+    try {
+      const res = await fetch("/api/characters/from-twin", { method: "POST" });
+      const data = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+      if (!res.ok || !data?.ok) throw new Error(data?.error || "Couldn't bring your twin in.");
+      router.refresh();
+    } catch (e) {
+      setTwinError(e instanceof Error ? e.message : "Couldn't bring your twin in.");
+    } finally {
+      setTwinBusy(false);
+    }
+  }
+
   const [creating, setCreating] = useState(false);
   const [step, setStep] = useState<"type" | "describe" | "review">("type");
   const [type, setType] = useState<CharacterType>("human");
@@ -478,6 +504,18 @@ export default function CharacterStudio({ initial, aiConfigured }: { initial: Ch
       {initial.length === 0 && !creating ? (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center text-sm text-slate-500">
           No characters yet. Create your first — a presenter your audience will recognize in every post.
+          <span className="mt-3 block text-[11px] text-slate-400">
+            Already set up your twin on your profile? Bring it in as your brand persona — same face,
+            same cloned voice, rather than describing yourself twice.
+          </span>
+          <button
+            onClick={() => void useMyTwin()}
+            disabled={twinBusy}
+            className="mt-3 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-700 transition hover:text-slate-900 disabled:opacity-40"
+          >
+            {twinBusy ? "Setting it up…" : "Use my twin"}
+          </button>
+          {twinError && <span className="mt-2 block text-[11px] text-rose-700">{twinError}</span>}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
