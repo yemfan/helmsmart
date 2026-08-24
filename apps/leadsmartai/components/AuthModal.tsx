@@ -31,6 +31,7 @@ export default function AuthModal({
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -212,6 +213,11 @@ export default function AuthModal({
 
       if (!fullName.trim()) {
         setError(t("pages.authModal.nameRequired"));
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setError(t("pages.signupPage.passwordMismatch"));
         return;
       }
 
@@ -436,6 +442,32 @@ export default function AuthModal({
               ) : null}
             </div>
             )}
+
+            {/* Confirm, on the signup path only — same reasoning as the reset
+                form and /signup: a password typed once and blind stands between
+                someone and their account, and a typo only surfaces at the next
+                login, looking like we lost it. */}
+            {mode === "signup" && !resetMode ? (
+              <div className="space-y-1">
+                <label className="block text-xs font-medium text-slate-700">
+                  {t("pages.signupPage.confirmPassword")}
+                  <span className="text-red-600"> *</span>
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  autoComplete="new-password"
+                  required
+                />
+                {confirmPassword && confirmPassword !== password ? (
+                  <p className="text-[11px] font-medium text-red-600">
+                    {t("pages.signupPage.passwordMismatch")}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
 
             {resetNotice ? (
               <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-medium text-emerald-900">
