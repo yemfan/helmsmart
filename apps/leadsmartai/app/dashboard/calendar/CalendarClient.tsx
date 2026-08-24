@@ -79,20 +79,6 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   const [showFollowups, setShowFollowups] = useState(true);
   const [showDrafts, setShowDrafts] = useState(true);
   const [gcalStatus, setGcalStatus] = useState<{ configured: boolean; connected: boolean } | null>(null);
-  /**
-   * Inbound email forwarding panel state. Populated lazily from
-   * /api/dashboard/inbound-alias which provisions the alias on first
-   * call. Replaces the Gmail OAuth flow for Phase 1 — Google's
-   * restricted-scope verification path was costing too much time
-   * without a clear unblock.
-   */
-  const [inboundAlias, setInboundAlias] = useState<{
-    address: string;
-    domain: string;
-    lastReceivedAt: string | null;
-    inboundCount: number;
-  } | null>(null);
-  const [aliasCopied, setAliasCopied] = useState(false);
   const [gcalDisconnecting, setGcalDisconnecting] = useState(false);
   // Month grid (default) vs flat chronological list. Persisted so the
   // user's preference survives navigations.
@@ -177,20 +163,6 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   useEffect(() => { loadData(); }, [loadData]);
 
   useEffect(() => {
-    fetch("/api/dashboard/inbound-alias")
-      .then((r) => r.json())
-      .then((b) => {
-        if (b.ok) {
-          setInboundAlias({
-            address: b.address,
-            domain: b.domain,
-            lastReceivedAt: b.lastReceivedAt ?? null,
-            inboundCount: b.inboundCount ?? 0,
-          });
-        }
-      })
-      .catch(() => {});
-
     fetch("/api/dashboard/calendar/google-status").then((r) => r.json()).then((b) => {
       if (b.ok) setGcalStatus({ configured: b.configured, connected: b.connected });
     }).catch(() => {});
@@ -378,82 +350,11 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
         </button>
       </div>
 
-      {/* Inbound email forwarding (Phase 1) — replaces the prior
-          "Connect Gmail" OAuth flow which was blocked by Google's
-          restricted-scope verification path. The agent gets a unique
-          forwarding address; they set up a Gmail filter to forward
-          listing-related emails there; SendGrid Inbound Parse posts
-          to /api/inbound/forwarded-email which classifies intent and
-          creates a "Review" task. Phase 2 will layer on AI extraction
-          + draft creation for offers / listings / showings. */}
-      {inboundAlias && (
-        <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-gray-900">
-                {tr("calendar.inbound.heading")}
-              </p>
-              <p className="mt-0.5 text-xs text-gray-600">
-                {tr("calendar.inbound.body")}
-              </p>
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <code className="rounded-md border border-blue-200 bg-white px-2 py-1 font-mono text-[12px] text-gray-900">
-                  {inboundAlias.address}
-                </code>
-                <button
-                  type="button"
-                  onClick={() => {
-                    void navigator.clipboard.writeText(inboundAlias.address);
-                    setAliasCopied(true);
-                    setTimeout(() => setAliasCopied(false), 1500);
-                  }}
-                  className="rounded-md border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-medium text-gray-700 hover:bg-gray-50"
-                >
-                  {aliasCopied ? tr("calendar.inbound.copied") : tr("calendar.inbound.copy")}
-                </button>
-              </div>
-              <details className="mt-3 text-xs text-gray-600">
-                <summary className="cursor-pointer font-medium text-gray-700 hover:text-gray-900">
-                  {tr("calendar.inbound.setupSummary")}
-                </summary>
-                {/* Steps quote Gmail's own menu labels, so the translations use
-                    Google's published Chinese strings rather than literal ones. */}
-                <ol className="mt-2 list-decimal space-y-1 pl-5 leading-relaxed">
-                  <li>{tr("calendar.inbound.step1")}</li>
-                  <li>{tr("calendar.inbound.step2")}</li>
-                  <li>
-                    {tr("calendar.inbound.step3")}{" "}
-                    <code className="rounded bg-white px-1 font-mono">offer OR &quot;purchase agreement&quot; OR &quot;listing agreement&quot; OR &quot;showing request&quot;</code>
-                  </li>
-                  <li>{tr("calendar.inbound.step4")}</li>
-                  <li>
-                    {tr("calendar.inbound.step5")}{" "}
-                    <code className="rounded bg-white px-1 font-mono">{inboundAlias.address}</code>
-                  </li>
-                  <li>{tr("calendar.inbound.step6")}</li>
-                </ol>
-                <p className="mt-2 text-[11px] text-gray-500">
-                  {tr("calendar.inbound.verifyNote")}
-                </p>
-              </details>
-            </div>
-          </div>
-          <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-blue-200 pt-3 text-[11px] text-gray-600">
-            <span>
-              <strong className="text-gray-900">{inboundAlias.inboundCount}</strong>{" "}
-              email{inboundAlias.inboundCount === 1 ? "" : "s"} imported
-            </span>
-            {inboundAlias.lastReceivedAt && (
-              <span>
-                · last received{" "}
-                <time dateTime={inboundAlias.lastReceivedAt}>
-                  {new Date(inboundAlias.lastReceivedAt).toLocaleString(timeLocale)}
-                </time>
-              </span>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Inbound email forwarding used to live here as a permanently
+          expanded card. It moved to a gear on the Conversations page
+          (components/dashboard/InboundEmailSetupButton.tsx) — that is
+          where forwarded mail actually lands, and the calendar gets
+          its vertical space back. */}
 
       {/* Google Calendar integration */}
       {gcalStatus?.configured && (

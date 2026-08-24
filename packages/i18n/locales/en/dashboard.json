@@ -175,7 +175,11 @@
       "step4": "Click Create filter at the bottom-right",
       "step5": "Tick Forward it to: and pick (or add)",
       "step6": "Click Create filter. Done.",
-      "verifyNote": "Gmail will email you a verification code the first time you forward to a new address — paste it back into the Forwarding settings to confirm. After that, every matching email auto-flows into your task list."
+      "verifyNote": "Gmail will email you a verification code the first time you forward to a new address — paste it back into the Forwarding settings to confirm. After that, every matching email auto-flows into your task list.",
+      "settingsLabel": "Email auto-import",
+      "imported_one": "{{count}} email imported",
+      "imported_other": "{{count}} emails imported",
+      "lastReceived": "· last received"
     },
     "actions": {
       "markDone": "Mark done",
