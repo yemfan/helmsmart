@@ -9,6 +9,7 @@ import {
   Eye,
   FileSignature,
   Handshake,
+  CircleQuestionMark,
   Headphones,
   House,
   KeyRound,
@@ -315,6 +316,14 @@ const navConfig = {
           href: "/account/profile",
           match: ["/account/profile"],
           icon: l(<User size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
+          // Ungated, unlike the staff Support inbox below: this is the agent-
+          // facing help center, and it is the only help entry point in the nav.
+          label: "Help & Guides",
+          href: "/help",
+          match: ["/help"],
+          icon: l(<CircleQuestionMark size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
           // Support staff inbox — hidden for non-staff roles.
