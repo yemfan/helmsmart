@@ -4245,6 +4245,10 @@
       "optedOut": "Contact opted out.",
       "needsYou": "This needs you, not AI."
     },
+    "advancedSection": {
+      "label": "Advanced",
+      "count": "({{count}})"
+    },
     "agentAiSettings": {
       "intro": "Choose how CloseBoss sounds for SMS, email, call summaries, and automated greetings. This adjusts tone and wording only — compliance and safety rules are unchanged.",
       "personality": "Personality",

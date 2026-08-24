@@ -4245,6 +4245,10 @@
       "optedOut": "该联系人已退订。",
       "needsYou": "这条得您亲自来，不能交给 AI。"
     },
+    "advancedSection": {
+      "label": "高级设置",
+      "count": "（{{count}}）"
+    },
     "agentAiSettings": {
       "intro": "设置 CloseBoss 在短信、邮件、通话摘要和自动问候中的说话方式。这只调整语气和措辞——合规与安全规则不受影响。",
       "personality": "性格风格",

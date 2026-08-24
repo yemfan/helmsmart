@@ -1,5 +1,6 @@
 "use client";
 
+import AdvancedSection from "@/components/dashboard/AdvancedSection";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { AgentVoiceSettings, VoicePresetOption, VoiceProvider } from "@/lib/agent-voice/types";
@@ -208,12 +209,43 @@ export default function AgentVoiceSettingsPanel() {
         <span>{t("pages.agentVoice.bilingualGreeting")}</span>
       </label>
 
-      <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50/80 p-3 space-y-2">
-        <div className="text-[11px] font-semibold text-gray-600">{t("pages.agentVoice.customVoice")}</div>
-        <p className="text-[11px] text-gray-500">
-          {t("pages.agentVoice.cloneBefore")} <span className="font-mono">voice_clone_*</span>{t("pages.agentVoice.cloneAfter")}
-        </p>
-      </div>
+      {/* A not-yet-available feature and a read-only readout of voice ids.
+          Neither is something an agent picks; both were taking the same room
+          as the voice and speaking style that are. */}
+      <AdvancedSection count={2}>
+        <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50/80 p-3 space-y-2">
+          <div className="text-[11px] font-semibold text-gray-600">{t("pages.agentVoice.customVoice")}</div>
+          <p className="text-[11px] text-gray-500">
+            {t("pages.agentVoice.cloneBefore")} <span className="font-mono">voice_clone_*</span>{t("pages.agentVoice.cloneAfter")}
+          </p>
+        </div>
+
+        <div className="border-t border-gray-100 pt-4 space-y-2">
+          <div className="text-sm font-semibold text-gray-700">{t("pages.agentVoice.preview")}</div>
+          <p className="text-[11px] text-gray-500">{t("pages.agentVoice.englishLabel")}<span className="font-mono text-gray-700">{previewPlayback.voiceEn}</span> · Chinese:{" "}
+            <span className="font-mono text-gray-700">{previewPlayback.voiceZh}</span>
+            {previewPlayback.ratePercent ? (
+              <>
+                {" "}
+                · Rate: <span className="font-mono">{previewPlayback.ratePercent}</span>
+              </>
+            ) : null}
+          </p>
+          <p className="text-[11px] text-gray-600">{t("pages.dashFragments.disclosureSample")}{" "}
+            <span className="italic text-gray-800">{VOICE_BILINGUAL_GREETING_EN}</span>
+          </p>
+          {activePreset ? (
+            <p className="text-[10px] text-gray-500">{t("pages.agentVoice.futureVoiceId")}<span className="font-mono">{activePreset.openaiVoiceId}</span>
+              {settings.provider === "elevenlabs" ? (
+                <>
+                  {" "}
+                  · ElevenLabs preset ref: <span className="font-mono">{activePreset.elevenLabsVoiceId}</span>
+                </>
+              ) : null}
+            </p>
+          ) : null}
+        </div>
+      </AdvancedSection>
 
       <div className="flex items-center gap-3">
         <button
@@ -226,32 +258,6 @@ export default function AgentVoiceSettingsPanel() {
         </button>
         {message ? <span className="text-sm text-green-700">{message}</span> : null}
         {error ? <span className="text-sm text-red-600">{error}</span> : null}
-      </div>
-
-      <div className="border-t border-gray-100 pt-4 space-y-2">
-        <div className="text-sm font-semibold text-gray-700">{t("pages.agentVoice.preview")}</div>
-        <p className="text-[11px] text-gray-500">{t("pages.agentVoice.englishLabel")}<span className="font-mono text-gray-700">{previewPlayback.voiceEn}</span> · Chinese:{" "}
-          <span className="font-mono text-gray-700">{previewPlayback.voiceZh}</span>
-          {previewPlayback.ratePercent ? (
-            <>
-              {" "}
-              · Rate: <span className="font-mono">{previewPlayback.ratePercent}</span>
-            </>
-          ) : null}
-        </p>
-        <p className="text-[11px] text-gray-600">{t("pages.dashFragments.disclosureSample")}{" "}
-          <span className="italic text-gray-800">{VOICE_BILINGUAL_GREETING_EN}</span>
-        </p>
-        {activePreset ? (
-          <p className="text-[10px] text-gray-500">{t("pages.agentVoice.futureVoiceId")}<span className="font-mono">{activePreset.openaiVoiceId}</span>
-            {settings.provider === "elevenlabs" ? (
-              <>
-                {" "}
-                · ElevenLabs preset ref: <span className="font-mono">{activePreset.elevenLabsVoiceId}</span>
-              </>
-            ) : null}
-          </p>
-        ) : null}
       </div>
     </div>
   );
