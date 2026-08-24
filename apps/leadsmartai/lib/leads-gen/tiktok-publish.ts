@@ -12,10 +12,20 @@ import { refreshAccessToken } from "./tiktok-oauth";
  * Access tokens live ~24h; ensureTikTokAccessToken refreshes (and persists) with
  * the stored refresh token before publishing.
  *
- * Direct Post to a PUBLIC audience requires an audited app. Unaudited apps must
- * post SELF_ONLY (default). Set TIKTOK_PRIVACY_LEVEL=PUBLIC_TO_EVERYONE once the
- * app passes TikTok's Content Posting audit.
+ * Direct Post to a PUBLIC audience requires an audited app; until the app passes
+ * TikTok's Content Posting audit, TikTok only accepts posts to private accounts.
+ *
+ * The audience is NOT ours to choose. It comes from the creator's own stored
+ * choice, checked against creator_info on every post - see
+ * tiktok-creator-info.ts. This used to read a TIKTOK_PRIVACY_LEVEL env var,
+ * which is precisely the "the client decided" pattern the audit rejects.
  */
+
+import {
+  enforceAgainstCreatorInfo,
+  queryTikTokCreatorInfo,
+  type TikTokPostPrefs,
+} from "./tiktok-creator-info";
 
 const PUBLISH_INIT = "https://open.tiktokapis.com/v2/post/publish/video/init/";
 
@@ -54,10 +64,17 @@ export async function ensureTikTokAccessToken(conn: TikTokConn): Promise<string>
 /** Publish a video via Direct Post (FILE_UPLOAD, single chunk). Returns publish_id. */
 export async function publishTikTokVideo(
   accessToken: string,
-  opts: { bytes: Uint8Array; title: string },
+  opts: { bytes: Uint8Array; title: string; prefs: TikTokPostPrefs },
 ): Promise<{ externalPostId: string; externalPostUrl: string | null }> {
   const size = opts.bytes.length;
-  const privacy = process.env.TIKTOK_PRIVACY_LEVEL?.trim() || "SELF_ONLY";
+
+  // TikTok requires creator_info before a Direct Post, and requires that the
+  // values we send respect the account as it is NOW - not as it was when the
+  // creator chose. Querying here rather than trusting stored prefs is the
+  // difference between passing the Content Posting audit and failing it.
+  const info = await queryTikTokCreatorInfo(accessToken);
+  const gate = enforceAgainstCreatorInfo(opts.prefs, info);
+  if (!gate.ok) throw new Error(gate.reason);
 
   const initRes = await fetch(PUBLISH_INIT, {
     method: "POST",
@@ -65,10 +82,7 @@ export async function publishTikTokVideo(
     body: JSON.stringify({
       post_info: {
         title: opts.title.slice(0, 2200),
-        privacy_level: privacy,
-        disable_duet: false,
-        disable_comment: false,
-        disable_stitch: false,
+        ...gate.postInfo,
       },
       source_info: { source: "FILE_UPLOAD", video_size: size, chunk_size: size, total_chunk_count: 1 },
     }),

@@ -1580,6 +1580,8 @@
     "connectedSocial": "Connected social accounts",
     "socialAutoposting": "Social auto-posting",
     "weeklySchedule": "Weekly post schedule",
+    "tiktokPosting": "TikTok posting",
+    "tiktokPostingHelp": "TikTok requires the account holder to choose the audience and declare commercial content. Applies to every post published for you.",
     "tcNotifications": "Transaction Coordinator notifications",
     "commissionDefaults": "Commission defaults",
     "offerAiTermsBuyer": "Get AI-recommended terms (price, contingencies, escalation) + a cover letter for a new buyer offer."

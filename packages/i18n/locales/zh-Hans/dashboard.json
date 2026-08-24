@@ -1580,6 +1580,8 @@
     "connectedSocial": "已连接的社交账号",
     "socialAutoposting": "社交自动发布",
     "weeklySchedule": "每周发布计划",
+    "tiktokPosting": "TikTok 发布设置",
+    "tiktokPostingHelp": "TikTok 要求由账号持有人选择可见范围并声明商业内容。适用于为你发布的每一条帖子。",
     "tcNotifications": "交易协调通知",
     "commissionDefaults": "佣金默认设置",
     "offerAiTermsBuyer": "为新的买方报价获取 AI 推荐条款（价格、附加条件、加价条款）以及一封说明信。"
