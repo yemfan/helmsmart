@@ -97,7 +97,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
   },
   {
     slug: "coaching-enrollment",
-    title: "Manage your CloseBoss AI Coaching enrollment",
+    title: "Manage your CloseBoss Coaching enrollment",
     description:
       "Enroll, opt out, or re-enroll in Producer Track and Top Producer Track from one settings panel. Auto-enrollment respects prior opt-outs.",
     readTime: "2 min",
@@ -112,7 +112,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       "To stop a program, click Opt out. Optional: leave a short note about why — it helps us improve the program. We won't re-enroll you automatically after that.",
     ],
     related: [
-      { label: "What is CloseBoss AI Coaching?", href: "/agent/coaching" },
+      { label: "What is CloseBoss Coaching?", href: "/agent/coaching" },
       { label: "Coaching FAQ", href: "/help/faq#coaching" },
     ],
   },
