@@ -44,7 +44,7 @@ export default function DigitalTwinPanel({
   const supabase = createClient();
   const [twin, setTwin] = useState<Twin | null>(initialTwin);
   const [script, setScript] = useState(SAMPLE_SCRIPT);
-  const [busy, setBusy] = useState<"photo" | "video" | "consent" | "film" | null>(null);
+  const [busy, setBusy] = useState<"photo" | "video" | "consent" | "film" | "script" | null>(null);
   // The video path has three slow stages; say which one is running.
   const [stage, setStage] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -197,6 +197,39 @@ export default function DigitalTwinPanel({
       await patch({ consent: next });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't save.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  /**
+   * Draft the line from their own intro video.
+   *
+   * The panel ships with a sample sentence, so without this the first thing
+   * anyone films is a stranger's words in their own face and voice. They
+   * already said what they do on camera - this reads it back.
+   *
+   * Suggestion only: it lands in the box to edit, and nothing is saved until
+   * they film it.
+   */
+  async function writeScript() {
+    setError(null);
+    setBusy("script");
+    try {
+      const res = await fetch("/api/twin/script", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { ok?: boolean; script?: string; error?: string }
+        | null;
+      if (!res.ok || !data?.ok || !data.script) {
+        throw new Error(data?.error || "Couldn't write a script from that video.");
+      }
+      setScript(data.script);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't write a script.");
     } finally {
       setBusy(null);
     }
@@ -365,12 +398,27 @@ export default function DigitalTwinPanel({
         <p className="mt-1 text-xs text-slate-500">
           Give it a line and it films itself — your face, your voice, real lip sync.
         </p>
+        {twin?.intro_video_url && (
+          <button
+            onClick={() => void writeScript()}
+            disabled={busy !== null}
+            className="mt-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:text-slate-900 disabled:opacity-40"
+          >
+            {busy === "script" ? "Reading your video…" : "✍️ Write it from my video"}
+          </button>
+        )}
         <textarea
           value={script}
           onChange={(e) => setScript(e.target.value)}
           rows={3}
           className="mt-2 w-full rounded-lg border border-slate-200 p-2 text-sm"
         />
+        {twin?.intro_video_url && (
+          <p className="-mt-1 mb-1 text-[11px] text-slate-400">
+            Written from what you actually said, in the language you said it in. Edit it before
+            filming — it is your face and voice saying it.
+          </p>
+        )}
         <button
           onClick={film}
           disabled={busy !== null || !ready || !script.trim()}
