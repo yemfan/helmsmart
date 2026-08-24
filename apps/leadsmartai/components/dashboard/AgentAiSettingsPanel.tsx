@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import AdvancedSection from "@/components/dashboard/AdvancedSection";
 import { useTranslation } from "react-i18next";
 import type { AgentAiSettings } from "@/lib/agent-ai/types";
 import { listOutboundEnabled } from "@/lib/locales/registry";
@@ -173,74 +174,85 @@ export default function AgentAiSettingsPanel({
         <span>Bilingual assistant (English / 中文)</span>
       </label>
 
-      <div className="space-y-1">
-        <label className="block text-[11px] font-medium text-gray-500">{t("pages.agentAiSettings.styleNotes")}<span className="text-gray-400 font-normal">(optional, max 500 chars)</span>
-        </label>
-        <textarea
-          className="w-full min-h-[88px] border border-gray-300 rounded-lg px-3 py-2 text-sm"
-          placeholder={t("pages.agentAiSettings.stylePlaceholder")}
-          maxLength={500}
-          value={settings.styleNotes ?? ""}
-          onChange={(e) => setSettings((s) => ({ ...s, styleNotes: e.target.value || null }))}
-        />
-      </div>
-
-      <div className="space-y-1 border-t border-gray-100 pt-4">
-        <div className="flex items-center justify-between">
-          <label className="block text-[11px] font-medium text-gray-500" htmlFor="brand-color">{t("pages.dashFragments.brandColor")}{" "}
-            <span className="font-normal text-gray-400">(social cards)</span>
+      {/* The long tail: free text, a colour, and a read-only sample. Real
+          settings, but not what anyone opens this panel for — they were
+          sitting at the same weight as the personality choice that actually
+          changes how every message reads. */}
+      <AdvancedSection count={3}>
+        <div className="space-y-1">
+          <label className="block text-[11px] font-medium text-gray-500">{t("pages.agentAiSettings.styleNotes")}<span className="text-gray-400 font-normal">(optional, max 500 chars)</span>
           </label>
-          {!canCustomizeBrand && (
-            <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-medium text-[#0072ce]">{t("pages.agentAiSettings.signature")}</span>
-          )}
+          <textarea
+            className="w-full min-h-[88px] border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            placeholder={t("pages.agentAiSettings.stylePlaceholder")}
+            maxLength={500}
+            value={settings.styleNotes ?? ""}
+            onChange={(e) => setSettings((s) => ({ ...s, styleNotes: e.target.value || null }))}
+          />
         </div>
-        <div className="flex items-center gap-2">
-          <input
-            type="color"
-            aria-label={t("pages.agentAiSettings.swatch")}
-            disabled={!canCustomizeBrand}
-            value={
-              settings.brandColor && isValidHex(settings.brandColor)
-                ? (settings.brandColor.startsWith("#") ? settings.brandColor : `#${settings.brandColor}`)
-                : "#0072ce"
-            }
-            onChange={(e) => setSettings((s) => ({ ...s, brandColor: e.target.value }))}
-            className="h-9 w-12 shrink-0 cursor-pointer rounded-lg border border-gray-300 bg-white p-1 disabled:cursor-not-allowed disabled:opacity-50"
-          />
-          <input
-            id="brand-color"
-            type="text"
-            inputMode="text"
-            disabled={!canCustomizeBrand}
-            placeholder="#0072ce (default)"
-            maxLength={7}
-            value={settings.brandColor ?? ""}
-            onChange={(e) =>
-              setSettings((s) => ({ ...s, brandColor: e.target.value || null }))
-            }
-            className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-400"
-          />
-          {settings.brandColor && (
-            <button
-              type="button"
+
+        <div className="space-y-1 border-t border-gray-100 pt-4">
+          <div className="flex items-center justify-between">
+            <label className="block text-[11px] font-medium text-gray-500" htmlFor="brand-color">{t("pages.dashFragments.brandColor")}{" "}
+              <span className="font-normal text-gray-400">(social cards)</span>
+            </label>
+            {!canCustomizeBrand && (
+              <span className="rounded-full bg-[#0072ce]/10 px-2 py-0.5 text-[10px] font-medium text-[#0072ce]">{t("pages.agentAiSettings.signature")}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              aria-label={t("pages.agentAiSettings.swatch")}
               disabled={!canCustomizeBrand}
-              onClick={() => setSettings((s) => ({ ...s, brandColor: null }))}
-              className="text-[11px] text-gray-500 underline-offset-2 hover:underline disabled:opacity-50"
-            >{t("pages.agentAiSettings.reset")}</button>
+              value={
+                settings.brandColor && isValidHex(settings.brandColor)
+                  ? (settings.brandColor.startsWith("#") ? settings.brandColor : `#${settings.brandColor}`)
+                  : "#0072ce"
+              }
+              onChange={(e) => setSettings((s) => ({ ...s, brandColor: e.target.value }))}
+              className="h-9 w-12 shrink-0 cursor-pointer rounded-lg border border-gray-300 bg-white p-1 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+            <input
+              id="brand-color"
+              type="text"
+              inputMode="text"
+              disabled={!canCustomizeBrand}
+              placeholder="#0072ce (default)"
+              maxLength={7}
+              value={settings.brandColor ?? ""}
+              onChange={(e) =>
+                setSettings((s) => ({ ...s, brandColor: e.target.value || null }))
+              }
+              className="w-32 rounded-lg border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50 disabled:text-gray-400"
+            />
+            {settings.brandColor && (
+              <button
+                type="button"
+                disabled={!canCustomizeBrand}
+                onClick={() => setSettings((s) => ({ ...s, brandColor: null }))}
+                className="text-[11px] text-gray-500 underline-offset-2 hover:underline disabled:opacity-50"
+              >{t("pages.agentAiSettings.reset")}</button>
+            )}
+          </div>
+          {canCustomizeBrand ? (
+            <p className="text-[11px] text-gray-500">{t("pages.agentAiSettings.accentHint")}</p>
+          ) : (
+            <p className="text-[11px] text-gray-500">{t("pages.dashFragments.ownBrandColor")}{" "}
+              <a href="/dashboard/billing" className="font-medium text-[#0072ce] underline hover:no-underline">{t("pages.agentAiSettings.signature")}</a>
+              .
+            </p>
+          )}
+          {canCustomizeBrand && brandColorInvalid && (
+            <p className="text-[11px] text-red-600">Enter a valid hex color like #0072ce.</p>
           )}
         </div>
-        {canCustomizeBrand ? (
-          <p className="text-[11px] text-gray-500">{t("pages.agentAiSettings.accentHint")}</p>
-        ) : (
-          <p className="text-[11px] text-gray-500">{t("pages.dashFragments.ownBrandColor")}{" "}
-            <a href="/dashboard/billing" className="font-medium text-[#0072ce] underline hover:no-underline">{t("pages.agentAiSettings.signature")}</a>
-            .
-          </p>
-        )}
-        {canCustomizeBrand && brandColorInvalid && (
-          <p className="text-[11px] text-red-600">Enter a valid hex color like #0072ce.</p>
-        )}
-      </div>
+
+        <div className="border-t border-gray-100 pt-4">
+          <div className="text-sm font-semibold text-gray-700">{t("pages.dashFragments.preview")}{settings.personality})</div>
+          <PersonalityPreview personality={settings.personality} />
+        </div>
+      </AdvancedSection>
 
       <div className="flex items-center gap-3">
         <button
@@ -253,11 +265,6 @@ export default function AgentAiSettingsPanel({
         </button>
         {message ? <span className="text-sm text-green-700">{message}</span> : null}
         {error ? <span className="text-sm text-red-600">{error}</span> : null}
-      </div>
-
-      <div className="border-t border-gray-100 pt-4">
-        <div className="text-sm font-semibold text-gray-700">{t("pages.dashFragments.preview")}{settings.personality})</div>
-        <PersonalityPreview personality={settings.personality} />
       </div>
     </div>
   );
