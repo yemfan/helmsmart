@@ -1,5 +1,3 @@
-import { supabaseBrowser } from "@/lib/supabaseBrowser";
-import { getOAuthRedirectOrigin } from "@/lib/siteUrl";
 
 /**
  * Why the reset could not be sent, as a code rather than a sentence.
@@ -12,34 +10,9 @@ import { getOAuthRedirectOrigin } from "@/lib/siteUrl";
 export type PasswordResetFailure = "email_required" | "send_failed";
 
 /**
- * Supabase's own error text is a configuration diagnostic — a redirect URL that
- * is not on the allow-list, SMTP that is not set up. That is for whoever
- * deployed the app, not for the person who just wants a reset link, so it goes
- * to the console with the fix attached and never to the screen.
- */
-function logResetPasswordError(raw: string): void {
-  const msg = raw.trim() || "Could not send reset email.";
-  if (/redirect|url|not allowed|invalid.*redirect/i.test(msg)) {
-    console.error(
-      `[sendPasswordResetEmail] ${msg} In Supabase → Authentication → URL Configuration, add Redirect URL ` +
-        "`https://your-domain/reset-password` (and `http://localhost:3000/reset-password` for dev). " +
-        "Set `NEXT_PUBLIC_SITE_URL` to your public `https://…` origin so the link matches production."
-    );
-    return;
-  }
-  if (/recovery|sending|email|smtp|mail/i.test(msg)) {
-    console.error(
-      `[sendPasswordResetEmail] ${msg} Check Supabase → Project Settings → Authentication: email templates enabled, ` +
-        "custom SMTP if you use it, and project email rate limits. Confirm the user exists and signed up with email/password."
-    );
-    return;
-  }
-  console.error(`[sendPasswordResetEmail] ${msg}`);
-}
-
-/**
- * Sends Supabase recovery email. Add `…/reset-password` under Supabase → Authentication →
- * URL Configuration → Redirect URLs (same path as Property Tools; same origin as {@link getOAuthRedirectOrigin}).
+ * Ask the server to send a password-reset link.
+ *
+ * Delivery is ours, not Supabase's — see app/api/auth/password-reset.
  */
 export async function sendPasswordResetEmail(
   email: string
@@ -49,15 +22,27 @@ export async function sendPasswordResetEmail(
     return { ok: false, reason: "email_required" };
   }
 
-  const origin = getOAuthRedirectOrigin();
-  const supabase = supabaseBrowser();
-  const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
-    redirectTo: `${origin}/reset-password`,
-  });
-
-  if (error) {
-    logResetPasswordError(error.message);
+  // Posted to our own endpoint rather than calling Supabase from the browser.
+  // Supabase's built-in email service is rate-limited, unbranded and often
+  // filtered, and it reported a clean success the whole time it was not
+  // arriving. The server mints the same recovery link and sends it through the
+  // verified domain the rest of the product sends from.
+  try {
+    const res = await fetch("/api/auth/password-reset", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: trimmed }),
+    });
+    // The endpoint answers 200 whether or not an account exists — it must not
+    // become an account-enumeration oracle — so only a transport or server
+    // failure gets here.
+    if (!res.ok) {
+      console.error(`[sendPasswordResetEmail] reset endpoint returned ${res.status}`);
+      return { ok: false, reason: "send_failed" };
+    }
+    return { ok: true };
+  } catch (e) {
+    console.error("[sendPasswordResetEmail] could not reach the reset endpoint:", e);
     return { ok: false, reason: "send_failed" };
   }
-  return { ok: true };
 }
