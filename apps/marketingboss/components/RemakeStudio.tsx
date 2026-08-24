@@ -71,6 +71,7 @@ export default function RemakeStudio() {
   const [uid, setUid] = useState<string | null>(null);
   const [characters, setCharacters] = useState<Character[]>([]);
   const [twinId, setTwinId] = useState("");
+  const [makingTwin, setMakingTwin] = useState(false);
   const [business, setBusiness] = useState("");
   const [market, setMarket] = useState("");
   const [offer, setOffer] = useState("");
@@ -96,13 +97,40 @@ export default function RemakeStudio() {
         setCharacters(list);
         // Default to a real-person character with a photo — the only kind that
         // can legally and technically be the on-camera twin.
-        const twin = list.find((c) => c.identity_type === "real_person" && (c.reference_images ?? []).length);
+        const twin = list.find((c) => c.identity_type !== "fictional" && (c.reference_images ?? []).length);
         if (twin) setTwinId(twin.id);
       })
       .catch(() => setCharacters([]));
   }, []);
 
   const busy = stage !== "idle";
+
+  /**
+   * Bring the profile twin in as a character.
+   *
+   * Everything downstream of a remake is keyed on a character, so a user who
+   * set up a twin still met an empty dropdown here and was asked to describe
+   * themselves again in Character Studio's vocabulary.
+   */
+  async function useMyTwin() {
+    setError(null);
+    setMakingTwin(true);
+    try {
+      const res = await fetch("/api/characters/from-twin", { method: "POST" });
+      const data = (await res.json().catch(() => null)) as
+        | { ok?: boolean; character?: Character; error?: string }
+        | null;
+      if (!res.ok || !data?.ok || !data.character) {
+        throw new Error(data?.error || "Couldn't bring your twin in.");
+      }
+      setCharacters((prev) => [data.character as Character, ...prev.filter((c) => c.id !== data.character!.id)]);
+      setTwinId(data.character.id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't bring your twin in.");
+    } finally {
+      setMakingTwin(false);
+    }
+  }
 
   async function onPickReference(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -195,7 +223,7 @@ export default function RemakeStudio() {
   }
 
   const twin = characters.find((c) => c.id === twinId);
-  const twinUsable = !!twin && twin.identity_type === "real_person" && !!(twin.reference_images ?? []).length;
+  const twinUsable = !!twin && twin.identity_type !== "fictional" && !!(twin.reference_images ?? []).length;
   const avatarShots = plan?.shots.filter((s) => s.render === "avatar").length ?? 0;
   const sceneShots = plan?.shots.filter((s) => s.render === "scene").length ?? 0;
 
@@ -269,14 +297,29 @@ export default function RemakeStudio() {
               <option key={c.id} value={c.id}>
                 {c.name}
                 {c.role ? ` — ${c.role}` : ""}
-                {c.identity_type === "real_person" ? "" : " (not your likeness)"}
+                {c.identity_type === "fictional" ? " (invented — can't go on camera)" : ""}
               </option>
             ))}
           </select>
+          {!characters.some((c) => c.identity_type !== "fictional" && (c.reference_images ?? []).length) && (
+            <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
+              <p className="text-[11px] text-slate-600">
+                Nothing here yet. If you have set up your twin on your profile, bring it in as a
+                character — same face, same cloned voice, no need to describe yourself twice.
+              </p>
+              <button
+                onClick={() => void useMyTwin()}
+                disabled={busy || makingTwin}
+                className="mt-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:text-slate-900 disabled:opacity-40"
+              >
+                {makingTwin ? "Setting it up…" : "Use my twin"}
+              </button>
+            </div>
+          )}
           {twinId && !twinUsable && (
             <p className="mt-1 text-[11px] text-amber-700">
-              Only a character marked as your own likeness, with a photo, can appear on camera. Set that in
-              Character Studio.
+              An invented character can&rsquo;t appear on camera. Use one marked as your own likeness or as
+              your brand persona, with a photo.
             </p>
           )}
           <div className="mt-2 grid gap-2">

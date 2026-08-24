@@ -311,9 +311,24 @@ export async function recastForTwin(
   twin: Character,
   context: { business?: string; market?: string; offer?: string } = {},
 ): Promise<RecastPlan> {
-  if (twin.identity_type !== "real_person") {
+  // Gate on the consent RECORD, not on one identity_type. What matters is that
+  // a real person agreed to a face being put on camera saying things - and that
+  // is equally true of a generated portrait of someone as of a photograph of
+  // them. A brand may own the asset; it does not thereby own the person in it.
+  //
+  // `fictional` stays out: an invented character has nobody to consent, so
+  // routing one down this path is how a real person's face ends up here by the
+  // back door, mislabelled.
+  if (twin.identity_type === "fictional") {
     throw new Error(
-      `${twin.name} isn't set up as a real person, so it can't be used as your on-camera twin. Mark it as your own likeness in Character Studio first.`,
+      `${twin.name} is an invented character, so it can't be your on-camera twin. Use a character marked as your own likeness or as your brand persona.`,
+    );
+  }
+  // Previously unchecked, despite this function's contract claiming otherwise:
+  // a real_person character with no consent note used to pass straight through.
+  if (!twin.consent_note?.trim()) {
+    throw new Error(
+      `${twin.name} has no consent note, so it can't be put on camera. Record who agreed to this likeness being used, in Character Studio.`,
     );
   }
   if (!(twin.reference_images ?? []).some((u) => typeof u === "string" && u)) {
