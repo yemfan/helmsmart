@@ -43,7 +43,7 @@
   "faq_categories": {
     "getting_started": "Getting started",
     "ai_followup": "AI follow-up",
-    "coaching": "CloseBoss AI Coaching",
+    "coaching": "CloseBoss Coaching",
     "billing": "Billing & plans",
     "integrations": "Integrations",
     "privacy": "Privacy & data"
@@ -112,7 +112,7 @@
       "a": "AI continues the conversation, asking qualifying questions tailored to the lead's source (Zillow, Facebook, your site). When intent crosses your threshold — they ask about a tour, mention a price range, or request to talk — you're notified immediately and AI hands off the thread."
     },
     "what_is_coaching": {
-      "q": "What is CloseBoss AI Coaching?",
+      "q": "What is CloseBoss Coaching?",
       "a": "Coaching is a producer-development program built into the dashboard. Producer Track (Pro and above) targets 10 transactions / 3% conversion; Top Producer Track (Premium and Team) targets 15 transactions / 5% conversion. Daily plans, weekly playbooks, monthly AI deep-dives, peer benchmarks. No add-on fee."
     },
     "opt_out_coaching": {

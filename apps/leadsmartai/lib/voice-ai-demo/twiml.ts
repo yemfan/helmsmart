@@ -6,7 +6,7 @@ import type { TwilioVoicePlayback } from "@/lib/agent-voice/types";
 /**
  * TwiML for the OUTBOUND voice-AI demo call. Structurally similar to the
  * inbound greeting flow in `lib/ai-call/twilio.ts`, but with a demo-specific
- * opening ("Hi, this is the LeadSmart AI assistant — calling because you
+ * opening ("Hi, this is the CloseBoss assistant — calling because you
  * requested a demo") so the recipient understands the context.
  *
  * Once the prospect speaks, Twilio POSTs the SpeechResult to the
@@ -17,7 +17,7 @@ import type { TwilioVoicePlayback } from "@/lib/agent-voice/types";
  */
 
 const DEMO_GREETING_EN =
-  "Hi, this is the LeadSmart AI voice assistant. I'm calling because you requested a demo on our website. " +
+  "Hi, this is the CloseBoss voice assistant. I'm calling because you requested a demo on our website. " +
   "I'll behave exactly like I would on a real lead's call. Mind if I ask you a few quick qualifying questions?";
 
 const DEMO_GATHER_REPROMPT =
@@ -25,7 +25,7 @@ const DEMO_GATHER_REPROMPT =
   "or say 'hand me to a human' if you'd rather skip the demo.";
 
 const DEMO_CLOSING_FALLBACK =
-  "Sounds like we got cut off. I'll have a real person from LeadSmart reach out — " +
+  "Sounds like we got cut off. I'll have a real person from CloseBoss reach out — " +
   "thanks for the interest, and have a great rest of your day.";
 
 type SayAttrs = Parameters<typeof twilio.twiml.VoiceResponse.prototype.say>[0];

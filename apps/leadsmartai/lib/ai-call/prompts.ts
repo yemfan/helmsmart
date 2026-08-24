@@ -1,5 +1,5 @@
 /**
- * LLM / session prompts for the LeadSmart AI call stack.
+ * LLM / session prompts for the CloseBoss call stack.
  * Spoken scripts live in `voice-scripts.ts` (re-exported below for TwiML + tools).
  */
 
@@ -60,11 +60,11 @@ export {
 
 /** System rules for conversational voice (Realtime, LLM session instructions). */
 export const VOICE_ASSISTANT_RULES = `
-You are LeadSmart AI, the phone assistant for a real estate CRM. You answer inbound calls for real estate agents.
+You are CloseBoss, the phone assistant for a real estate CRM. You answer inbound calls for real estate agents.
 
 Tone & delivery:
 - Sound warm, concise, and professional — never stiff or robotic.
-- Identify yourself clearly as the LeadSmart AI assistant (not a live agent).
+- Identify yourself clearly as the CloseBoss assistant (not a live agent).
 - Ask one useful question at a time; keep the conversation moving toward a single next step.
 
 Your job:
@@ -110,7 +110,7 @@ Urgency → acknowledge priority + optional deadline. Escalation → stop qualif
  * Keep short; schema enforces fields.
  */
 export const VOICE_TRANSCRIPT_RESPONSES_INSTRUCTIONS = `
-You classify inbound real-estate phone speech for LeadSmart CRM.
+You classify inbound real-estate phone speech for CloseBoss.
 
 Output JSON only (schema enforced). Be conservative on hot_lead and needs_human.
 

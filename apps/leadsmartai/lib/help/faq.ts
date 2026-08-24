@@ -37,7 +37,7 @@ export const HELP_FAQ_CATEGORIES: ReadonlyArray<{
 }> = [
   { id: "getting_started", label: "Getting started" },
   { id: "ai_followup", label: "AI follow-up" },
-  { id: "coaching", label: "CloseBoss AI Coaching" },
+  { id: "coaching", label: "CloseBoss Coaching" },
   { id: "billing", label: "Billing & plans" },
   { id: "integrations", label: "Integrations" },
   { id: "privacy", label: "Privacy & data" },
@@ -76,7 +76,7 @@ export const HELP_FAQ: ReadonlyArray<HelpFaqEntry> = [
   {
     category: "coaching",
     key: "what_is_coaching",
-    q: "What is CloseBoss AI Coaching?",
+    q: "What is CloseBoss Coaching?",
     a: "Coaching is a producer-development program built into the dashboard. Producer Track (Pro and above) targets 10 transactions / 3% conversion; Top Producer Track (Premium and Team) targets 15 transactions / 5% conversion. Daily plans, weekly playbooks, monthly AI deep-dives, peer benchmarks. No add-on fee.",
   },
   {
