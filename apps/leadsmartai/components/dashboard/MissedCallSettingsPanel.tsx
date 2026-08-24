@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LoadingText } from "@/components/ui/LoadingText";
@@ -28,20 +29,6 @@ type Settings = {
   use_ai_personalization: boolean;
 };
 
-type CallEvent = {
-  id: string;
-  contact_id: string | null;
-  contact_name: string | null;
-  direction: "inbound" | "outbound";
-  status: string;
-  from_phone: string | null;
-  to_phone: string | null;
-  duration_seconds: number | null;
-  textback_sent: boolean;
-  notes: string | null;
-  created_at: string;
-};
-
 const DEFAULT_TEMPLATE =
   "Hey {{caller_name}} — {{agent_first_name}} here. Sorry I missed your call. What's the best way I can help? Happy to text or set up a quick call back.";
 
@@ -62,8 +49,6 @@ export default function MissedCallSettingsPanel() {
   const [useAi, setUseAi] = useState(true);
 
   // Activity log.
-  const [events, setEvents] = useState<CallEvent[]>([]);
-  const [eventsLoading, setEventsLoading] = useState(true);
 
   const refreshSettings = useCallback(async () => {
     try {
@@ -88,28 +73,9 @@ export default function MissedCallSettingsPanel() {
     }
   }, []);
 
-  const refreshEvents = useCallback(async () => {
-    try {
-      const res = await fetch("/api/dashboard/missed-call/events?limit=20", {
-        credentials: "include",
-        cache: "no-store",
-      });
-      const json = (await res.json().catch(() => null)) as {
-        ok?: boolean;
-        events?: CallEvent[];
-      } | null;
-      if (json?.ok && Array.isArray(json.events)) {
-        setEvents(json.events);
-      }
-    } finally {
-      setEventsLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
     void refreshSettings();
-    void refreshEvents();
-  }, [refreshSettings, refreshEvents]);
+  }, [refreshSettings]);
 
   const onSave = useCallback(async () => {
     setSaving(true);
@@ -254,86 +220,16 @@ export default function MissedCallSettingsPanel() {
         ) : null}
       </div>
 
-      {/* Activity log */}
-      <div className="border-t border-gray-200 pt-5">
-        <h3 className="text-sm font-semibold text-gray-900">{t("pages.missedCall.recentCalls")}</h3>
-        <p className="mt-0.5 text-xs text-gray-500">{t("pages.missedCall.recentCallsHint")}</p>
-        <div className="mt-3">
-          {eventsLoading ? (
-            <p className="text-xs text-gray-500"><LoadingText /></p>
-          ) : events.length === 0 ? (
-            <p className="text-xs text-gray-500">{t("pages.missedCall.noActivity")}</p>
-          ) : (
-            <ul className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white">
-              {events.map((ev) => (
-                <li key={ev.id} className="flex items-start gap-3 px-3 py-2.5">
-                  <CallStatusBadge status={ev.status} direction={ev.direction} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-gray-900">
-                      {ev.contact_name ??
-                        ev.from_phone ??
-                        ev.to_phone ??
-                        t("pages.missedCallActivityLog.unknown")}
-                    </p>
-                    <p className="truncate text-xs text-gray-500">
-                      {formatDate(ev.created_at)}
-                      {ev.duration_seconds != null
-                        ? ` · ${ev.duration_seconds}s`
-                        : ""}
-                      {ev.notes ? ` · ${ev.notes}` : ""}
-                    </p>
-                  </div>
-                  {ev.textback_sent ? (
-                    <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-200">{t("pages.missedCall.textSent")}</span>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
+
+      {/* The call log used to be rendered here. It is not a setting, and the
+          Receptionist page already had a better version of it - 100 calls with
+          callbacks and per-call detail, against the 20 rows shown here. Two
+          lists of the same thing means one of them is always the stale one. */}
+      <p className="border-t border-gray-200 pt-4 text-xs text-gray-500">
+        <Link href="/dashboard/ai-receptionist" className="font-medium text-[#0072ce] underline hover:no-underline">
+          {t("pages.missedCall.seeCallHistory")}
+        </Link>
+      </p>
     </div>
   );
-}
-
-function CallStatusBadge({
-  status,
-  direction,
-}: {
-  status: string;
-  direction: "inbound" | "outbound";
-}) {
-  const tone =
-    status === "missed"
-      ? "amber"
-      : status === "completed"
-        ? "emerald"
-        : status === "failed" || status === "busy"
-          ? "red"
-          : "slate";
-  const palette: Record<string, string> = {
-    amber: "bg-amber-50 text-amber-800 ring-amber-200",
-    emerald: "bg-emerald-50 text-emerald-800 ring-emerald-200",
-    red: "bg-red-50 text-red-800 ring-red-200",
-    slate: "bg-slate-50 text-slate-800 ring-slate-200",
-  };
-  return (
-    <span
-      className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ring-1 ring-inset ${palette[tone]}`}
-    >
-      <span aria-hidden>{direction === "inbound" ? "↓" : "↑"}</span>
-      {status}
-    </span>
-  );
-}
-
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  if (!Number.isFinite(d.getTime())) return "";
-  return d.toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
 }
