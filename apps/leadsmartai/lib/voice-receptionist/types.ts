@@ -3,7 +3,7 @@
  * Receptionist). Persisted in `voice_receptionist_settings`, consumed by the
  * Retell inbound webhook to build the agent's greeting + system prompt.
  */
-import { DEFAULT_ACCOUNT_TIMEZONE } from "@/lib/agent/accountTimezone";
+import { DEFAULT_ACCOUNT_TIMEZONE } from "@/lib/agent/timezone";
 
 export type ReceptionistConfig = {
   /** When false, the inbound webhook serves no prompt (receptionist is off). */

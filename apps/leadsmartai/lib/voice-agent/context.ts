@@ -1,4 +1,4 @@
-import { getAgentDisplayName } from "@/lib/ai-call/lead-resolution";
+import { getReceptionistBusinessName } from "@/lib/voice-receptionist/businessName";
 import { getReceptionistConfig, getBookingSettings } from "@/lib/voice-receptionist/settings";
 import {
   getAssistantVoiceSettings,
@@ -53,9 +53,11 @@ export async function loadReceptionistContext(
   const { enabled: bookingEnabled, hours: configuredHours } = await getBookingSettings(agentId);
   const hours = configuredHours ?? defaultBusinessHours();
 
-  // Only look up the account display name when no business name is configured —
-  // skips two DB round-trips (agents + user_profiles) on the call's hot path.
-  const orgName = cfg.businessName || (await getAgentDisplayName(agentId)) || "our team";
+  // The business name comes from BRANDING, not a second copy typed into the
+  // receptionist panel. Those fields defaulted to blank, and a blank one fell
+  // through to the person's own name — so an agent who skipped them had their
+  // AI answering with their personal name instead of their business.
+  const orgName = await getReceptionistBusinessName(agentId);
   const timezone = safeTimezone(cfg.timezone);
   const todayISO = new Intl.DateTimeFormat("en-CA", {
     timeZone: timezone,
@@ -73,7 +75,9 @@ export async function loadReceptionistContext(
   return {
     orgId: agentId,
     orgName,
-    orgNameZh: cfg.businessNameZh || orgName,
+    // No separate Chinese brand name exists in branding, so Chinese callers
+    // hear the same one. Better than a stale second copy going out of date.
+    orgNameZh: orgName,
     // Her configured receptionist name wins; otherwise she introduces herself
     // by her persona name (Emma) so callers hear a real name, not silence.
     agentName: cfg.agentName || receptionistVoice.voiceName || "",

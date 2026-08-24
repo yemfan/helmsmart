@@ -29,6 +29,8 @@ export default function VoiceReceptionistSettingsPanel() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [brandName, setBrandName] = useState<string>("");
+  const [brandDraft, setBrandDraft] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   const configDirty = (Object.keys(settings) as (keyof ReceptionistConfig)[]).some(
@@ -37,6 +39,29 @@ export default function VoiceReceptionistSettingsPanel() {
   const hoursDirty = JSON.stringify(hours) !== JSON.stringify(savedHours);
   const isDirty = configDirty || hoursDirty;
   const displayHours = hours ?? defaultBusinessHours();
+
+  // Derived, not stored: "every day, all day" IS 24/7, so there is nothing to
+  // keep in sync and no way for a flag and the hours to disagree.
+  const isAlwaysOpen =
+    displayHours != null &&
+    DAY_KEYS.every((d) => {
+      const h = displayHours[d];
+      return h?.open === "00:00" && h?.close === "23:59";
+    });
+
+  function setAlwaysOpen(on: boolean) {
+    if (on) {
+      const all = {} as BusinessHours;
+      for (const d of DAY_KEYS) all[d] = { open: "00:00", close: "23:59" };
+      setHours(all);
+    } else {
+      const weekdays = {} as BusinessHours;
+      for (const d of DAY_KEYS) {
+        weekdays[d] = d === "sat" || d === "sun" ? null : { open: "09:00", close: "17:00" };
+      }
+      setHours(weekdays);
+    }
+  }
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -59,6 +84,51 @@ export default function VoiceReceptionistSettingsPanel() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // Shown, not edited: the panel should answer "what will callers hear" without
+  // making that a second place to change it.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch("/api/dashboard/branding", { cache: "no-store" });
+        const b = (await res.json().catch(() => ({}))) as {
+          branding?: { brandName?: string | null };
+          profile?: { fullName?: string | null };
+        };
+        // Same order the server uses, so this shows what callers will hear
+        // rather than a hopeful version of it.
+        const name = b?.branding?.brandName?.trim() || b?.profile?.fullName?.trim() || "";
+        if (!cancelled) setBrandName(name);
+
+        // The brand profile the digital twin already built. Offered as a
+        // starting draft rather than written in: the receptionist knowledge
+        // box is free text an agent may have spent time on, and silently
+        // replacing it would be the wrong kind of helpful.
+        const tw = await fetch("/api/dashboard/digital-twin", { cache: "no-store" })
+          .then((r) => r.json())
+          .catch(() => null);
+        const bp = tw?.profile as
+          | { bio?: string; specialties?: string[]; market?: string; tagline?: string }
+          | null
+          | undefined;
+        if (!cancelled && bp) {
+          const parts = [
+            bp.bio?.trim(),
+            bp.market?.trim() ? `Market: ${bp.market.trim()}` : "",
+            bp.specialties?.length ? `Specialties: ${bp.specialties.join(", ")}` : "",
+            bp.tagline?.trim(),
+          ].filter(Boolean);
+          setBrandDraft(parts.join("\n\n"));
+        }
+      } catch {
+        /* leave blank; the copy below explains where to set it */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -141,23 +211,15 @@ export default function VoiceReceptionistSettingsPanel() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Read-only, from branding. Typing it a second time here is what let
+            an agent leave it blank and have the AI answer with their personal
+            name instead of their business. */}
         <div>
           <span className={LABEL}>{t("pages.voiceSettings.businessName")}</span>
-          <input
-            className={FIELD}
-            value={settings.businessName}
-            onChange={(e) => update("businessName", e.target.value)}
-            placeholder={t("pages.voiceSettings.businessNamePlaceholder")}
-          />
-        </div>
-        <div>
-          <span className={LABEL}>{t("pages.voiceSettings.businessNameZh")}</span>
-          <input
-            className={FIELD}
-            value={settings.businessNameZh}
-            onChange={(e) => update("businessNameZh", e.target.value)}
-            placeholder="中文名称（可选）"
-          />
+          <p className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+            {brandName || t("pages.voiceSettings.businessNameUnset")}
+          </p>
+          <p className="mt-1 text-[11px] text-gray-500">{t("pages.voiceSettings.businessNameBrandNote")}</p>
         </div>
         <div>
           <span className={LABEL}>{t("pages.voiceSettings.receptionistName")}</span>
@@ -199,11 +261,46 @@ export default function VoiceReceptionistSettingsPanel() {
           onChange={(e) => update("extraNotes", e.target.value)}
           placeholder={t("pages.voiceReceptionist.kbHint")}
         />
+        {brandDraft && settings.extraNotes.trim() !== brandDraft ? (
+          <button
+            type="button"
+            onClick={() =>
+              update(
+                "extraNotes",
+                settings.extraNotes.trim()
+                  ? `${settings.extraNotes.trim()}\n\n${brandDraft}`
+                  : brandDraft,
+              )
+            }
+            className="mt-1 text-[11px] font-medium text-[#0072ce] underline hover:no-underline"
+          >
+            {settings.extraNotes.trim()
+              ? t("pages.voiceSettings.kbAppendBrand")
+              : t("pages.voiceSettings.kbFillFromBrand")}
+          </button>
+        ) : null}
       </div>
 
       <div>
         <span className={LABEL}>{t("pages.voiceSettings.officeHours")}</span>
-        <div className="space-y-1.5">
+
+        {/* 24/7 is expressed as every day 00:00-23:59 rather than a separate
+            flag: the booking engine already reads these hours, so a flag would
+            be a second thing it had to be taught about — and a second thing to
+            forget. Unticking restores Mon-Fri 9-5 rather than leaving no hours
+            at all, which would silently stop the AI booking anything. */}
+        <label className="mb-2 flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+          <input
+            type="checkbox"
+            checked={isAlwaysOpen}
+            onChange={(e) => setAlwaysOpen(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300"
+          />
+          <span className="text-sm font-medium text-gray-800">{t("pages.voiceSettings.open247")}</span>
+        </label>
+        <p className="mb-2 text-[11px] text-gray-500">{t("pages.voiceSettings.open247Hint")}</p>
+
+        <div className={`space-y-1.5 ${isAlwaysOpen ? "pointer-events-none opacity-50" : ""}`}>
           {DAY_KEYS.map((d) => {
             const dh = displayHours[d];
             const open = Boolean(dh);

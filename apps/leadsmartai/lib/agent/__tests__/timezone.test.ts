@@ -1,10 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
-
-vi.mock("server-only", () => ({}));
-vi.mock("@/lib/supabase/admin", () => ({ supabaseAdmin: {} }));
+import { describe, expect, it } from "vitest";
 
 const { DEFAULT_ACCOUNT_TIMEZONE, isValidTimezone, safeAccountTimezone } = await import(
-  "../accountTimezone"
+  "../timezone"
 );
 
 describe("the account default", () => {
