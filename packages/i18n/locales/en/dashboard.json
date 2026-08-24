@@ -8178,6 +8178,8 @@
     "signupPage": {
       "prefilled": "You're signed in — we filled this form from your account. Update anything below and save (no new password needed).",
       "password": "Password",
+      "confirmPassword": "Confirm password",
+      "passwordMismatch": "Passwords don't match.",
       "nameRequired": "Name is required.",
       "emailRequired": "Email is required.",
       "phoneInvalid": "Phone must be a valid US number (10 digits) if provided.",

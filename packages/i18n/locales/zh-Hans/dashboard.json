@@ -8178,6 +8178,8 @@
     "signupPage": {
       "prefilled": "您已登录——这张表单已按您的账户信息填好。下面有需要改的地方改完保存即可（不需要重新设置密码）。",
       "password": "密码",
+      "confirmPassword": "确认密码",
+      "passwordMismatch": "两次输入的密码不一致。",
       "nameRequired": "请填写姓名。",
       "emailRequired": "请填写邮箱。",
       "phoneInvalid": "如填写电话，请填写有效的美国号码（10 位）。",
