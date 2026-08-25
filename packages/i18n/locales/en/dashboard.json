@@ -8618,6 +8618,24 @@
       "loadingMetrics": "Loading metrics…",
       "checkoutToPaid": "Checkout → paid"
     },
+    "propertyLookup": {
+      "beds": "{{count}} bd",
+      "baths": "{{count}} ba",
+      "sqft": "{{value}} sqft",
+      "built": "built {{year}}",
+      "label": "Look up the property",
+      "placeholder": "Paste a Zillow, Redfin, Realtor.com or Compass link — or type the address",
+      "hint": "Paste a listing link or type an address, and we'll fill in what we find. Check the numbers before you save.",
+      "lookUp": "Look up",
+      "working": "Looking…",
+      "detected": "{{site}} link — press Look up to pull the details.",
+      "readingListing": "Reading the {{site}} listing — this can take up to a minute.",
+      "lookingUpAddress": "Looking up the address — this can take up to a minute the first time.",
+      "filledFrom": "Filled in from {{site}}. Check the numbers before you save.",
+      "filledFromRecords": "Filled in from property records. Check the numbers before you save.",
+      "listingFailed": "Couldn't read that {{site}} link — enter the details by hand.",
+      "addressNotFound": "No records found for that address — enter the details by hand."
+    },
     "listingLookup": {
       "detected": "{{label}} URL detected — looking up listing details…"
     },
