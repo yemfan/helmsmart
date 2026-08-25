@@ -1381,6 +1381,22 @@
       "accountant": "精准、善于分析，每一分钱都盯得住。"
     },
     "skill": {
+      "buyer_motivation": {
+        "name": "买方动机",
+        "desc": "了解来电者为什么要搬家，而不只是想买什么房子。"
+      },
+      "buy_sell_contingency": {
+        "name": "先卖后买",
+        "desc": "弄清楚买方是否必须先卖掉现有的房子。"
+      },
+      "financing_referral": {
+        "name": "贷款转介",
+        "desc": "买方尚未获得预批时，为其引荐贷款经纪。"
+      },
+      "market_conversation": {
+        "name": "本地市场交流",
+        "desc": "像专业人士一样谈本地市场，但不编造数据。"
+      },
       "follow_up": {
         "name": "跟进",
         "desc": "按合适的节奏跟进潜在客户。"

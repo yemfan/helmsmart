@@ -41,7 +41,7 @@ export async function loadKnownCaller(
     const { data } = await supabaseAdmin
       .from("contacts")
       .select(
-        "type, preferred_language, search_location, property_address, price_min, price_max, beds, baths, timeline",
+        "type, preferred_language, search_location, property_address, price_min, price_max, beds, baths, timeline, email",
       )
       .eq("id", contact.id as never)
       .maybeSingle();
@@ -68,6 +68,12 @@ export async function loadKnownCaller(
 
     const timeline = String(c.timeline ?? "").trim();
     if (timeline) parts.push(`timeline ${timeline}`);
+
+    // The email is the one detail she otherwise asks every returning caller for,
+    // every single time. Given it, she confirms instead: "I have you as ... —
+    // still the best one?"
+    const email = String(c.email ?? "").trim();
+    if (email) parts.push(`email on file ${email}`);
 
     const lang = String(c.preferred_language ?? "").trim().toLowerCase();
 

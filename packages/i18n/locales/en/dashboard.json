@@ -1381,6 +1381,22 @@
       "accountant": "Accurate, analytical, watches every dollar."
     },
     "skill": {
+      "buyer_motivation": {
+        "name": "Buyer Motivation",
+        "desc": "Understand why the caller is moving, not just what they want to buy."
+      },
+      "buy_sell_contingency": {
+        "name": "Buy / Sell Contingency",
+        "desc": "Find out whether the buyer has to sell an existing home first."
+      },
+      "financing_referral": {
+        "name": "Financing Referral",
+        "desc": "Offer a lender introduction when a buyer has no pre-approval."
+      },
+      "market_conversation": {
+        "name": "Local Market Conversation",
+        "desc": "Discuss the local market like a professional, without inventing numbers."
+      },
       "follow_up": {
         "name": "Follow-Up",
         "desc": "Follow up with leads on an appropriate cadence."
