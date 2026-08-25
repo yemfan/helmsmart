@@ -109,11 +109,11 @@ export const SKILLS: readonly Skill[] = [
   {
     key: "market_conversation",
     name: "Local Market Conversation",
-    description: "Discuss the local market like a professional, without inventing numbers.",
+    description: "Turn \"how's the market?\" into discovery — no opinions of her own, published figures only.",
     category: "qualification",
-    prompt: `Callers ask "how's the market?", and a blank answer costs the Realtor credibility. Talk about it the way an experienced agent does: what they're seeing, which areas and price bands they're weighing, how competitive their bracket is, what tends to matter at their price point. Discuss dynamics freely. State SPECIFIC figures — median prices, days on market, appreciation, interest rates, comps — only when they are in your knowledge base. When you don't have the number, say so and offer to have the Realtor send real figures, which is what a good agent does anyway.`,
+    prompt: `Callers ask "how's the market?", and going blank costs the Realtor credibility — but a market opinion is licensed work, and you are not licensed. Turn the question around, which is what a good agent does anyway: ask which areas and price bands they're weighing, what they've been seeing, what's making them hesitate. That is listening, not advising, and it hands the Realtor everything they need for the first meeting. Repeat published figures only when they are in your knowledge base. Never offer a view of your own on value, timing, whether it's a good moment to buy or sell, or how competitive their bracket is — say the Realtor will give them the real numbers and their read on it.`,
     voiceLine:
-      "Talk about the local market like a professional — areas, price bands, how competitive their bracket is. State specific numbers (medians, days on market, rates, comps) ONLY from your knowledge base; otherwise say you'll have the Realtor send real figures.",
+      "Asked about the market, turn it around: which areas and price bands are they weighing, what have they seen, what's making them hesitate. Never give a market opinion of your own — that needs a license. Published figures only from your knowledge base; otherwise the Realtor sends real numbers and their read.",
   },
   {
     key: "speed_to_lead",
