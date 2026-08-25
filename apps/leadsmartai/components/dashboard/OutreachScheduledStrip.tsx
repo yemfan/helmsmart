@@ -14,7 +14,13 @@ type ScheduledAction = {
   scheduledFor: string;
   status: "scheduled" | "sending" | "sent" | "failed" | "cancelled";
   sentAt: string | null;
-  result: { sent?: number; failed?: number; total?: number } | null;
+  result: {
+    sent?: number;
+    failed?: number;
+    total?: number;
+    /** Per-contact outcomes — where the drain records WHY one failed. */
+    results?: Array<{ id?: string; ok?: boolean; error?: string }>;
+  } | null;
 };
 
 const CHANNEL_ICON = { call: Phone, sms: MessageSquare, email: Mail } as const;
@@ -118,8 +124,22 @@ function Row({
   const locale = intlLocale(i18n.language);
   const Icon = CHANNEL_ICON[a.channel];
   const badge = STATUS_BADGE[a.status];
-  const noun = CHANNEL_NOUN[a.channel];
+  // `t(...)`, like every sibling label. CHANNEL_NOUN holds translation KEYS, and
+  // this one was interpolated raw — the row read "1 pages.outreachStrip.channelCall".
+  const noun = t(CHANNEL_NOUN[a.channel], { count: a.count });
   const when = a.status === "sent" || a.status === "failed" ? a.sentAt ?? a.scheduledFor : a.scheduledFor;
+  /**
+   * Why it failed, not just that it did.
+   *
+   * A call to a contact with no phone number came back as a bare red "Failed"
+   * while the actual reason — "Invalid phone number." — sat unread in the
+   * result JSON. The first distinct error stands in for the batch; the count
+   * carries the rest.
+   */
+  const failureNote =
+    a.status === "failed" || (a.result?.failed ?? 0) > 0
+      ? (a.result?.results ?? []).find((r) => !r.ok && r.error)?.error ?? null
+      : null;
   const resultNote =
     a.status === "sent" && a.result
       ? a.result.failed
@@ -132,10 +152,10 @@ function Row({
       <span className="min-w-0 flex-1 truncate text-xs text-gray-700">
         <span className="font-medium text-gray-900">
           {a.count} {noun}
-          {a.count === 1 ? "" : "s"}
         </span>{" "}
         · {t(PURPOSE_LABEL[a.purpose])}
         <span className="text-gray-400">{resultNote}</span>
+        {failureNote ? <span className="text-red-600"> · {failureNote}</span> : null}
       </span>
       <span className="shrink-0 text-[11px] text-gray-400">{fmtWhen(when, locale)}</span>
       <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${badge.cls}`}>

@@ -271,3 +271,42 @@ export const AI_USAGE_MONTHLY_LIMIT: Record<PlanSlug | "free", number> = {
   signature: 999_999,
   team: 999_999,
 };
+
+/**
+ * Human names for the gated features, for the message someone reads when a
+ * gate stops them. "ai_calling" is the flag; "AI calling" is the thing they
+ * were trying to do.
+ */
+export const PLAN_FEATURE_LABEL: Record<PlanFeature, string> = {
+  basic_crm: "The CRM",
+  limited_ai: "AI drafting",
+  full_ai: "Full AI",
+  automation: "Automations",
+  prediction: "Predictions",
+  multi_agent: "Multiple agents",
+  routing: "Lead routing",
+  producer_track_coaching: "Producer Track coaching",
+  top_producer_track_coaching: "Top Producer Track coaching",
+  bilingual_ai: "Bilingual AI",
+  sphere_intelligence_pro: "Sphere Intelligence Pro",
+  white_glove_onboarding: "White-glove onboarding",
+  concierge_support: "Concierge support",
+  cultural_calendar: "The cultural calendar",
+  custom_voice_tuning: "Custom voice tuning",
+  bookkeeping: "Bookkeeping",
+  ai_calling: "AI calling",
+  social_customization: "Social customization",
+  premium_avatar: "Premium avatars",
+};
+
+/**
+ * The cheapest plan that includes `feature` — what to name when telling
+ * someone their current plan doesn't cover what they just tried. Sales-assisted
+ * tiers are included: "Team adds it" is still a true and useful answer.
+ */
+export function lowestPlanWithFeature(feature: PlanFeature): PlanSlug | null {
+  const candidates = (Object.values(PLANS) as PlanDefinition[])
+    .filter((p) => p.features.includes(feature))
+    .sort((a, b) => a.price - b.price);
+  return candidates[0]?.slug ?? null;
+}
