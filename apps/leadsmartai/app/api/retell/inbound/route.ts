@@ -16,8 +16,11 @@ function formatCallerNumber(e164: string): string {
 }
 
 /**
- * Follow-up text to the caller after a forwarded (missed) call reaches the AI —
- * runs after the response so it never blocks Retell. Sends from TWILIO_FROM_NUMBER,
+ * Follow-up text to the caller when we do NOT answer — the out-of-minutes
+ * decline below is the only such branch. It must never fire on a call the
+ * receptionist picks up: the caller is about to speak to her live, so
+ * "we'll follow up shortly" is both wrong and redundant.
+ * Runs after the response so it never blocks Retell. Sends from TWILIO_FROM_NUMBER,
  * so that env must be an SMS-capable number (a toll-free with rejected verification
  * can't text). No-ops on a missing/invalid caller number.
  */
@@ -105,7 +108,6 @@ export async function POST(req: NextRequest) {
         // stays undefined (generic greeting) for unknown callers or on error.
         ctx.knownCaller = (await loadKnownCaller(agentId, fromNumber)) ?? undefined;
         dynamic_variables = buildReceptionistDynamicVariables(ctx);
-        sendCallerTextBack(ctx, fromNumber);
 
         if (enforce && overrideAgentId) {
           // With enforcement on, always name the agent so the "decline" branch
