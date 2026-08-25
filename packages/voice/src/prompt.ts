@@ -72,8 +72,16 @@ function fillPlaceholders(text: string, ctx: ReceptionistContext): string {
  * every business without touching Retell.
  */
 export function buildSystemPrompt(ctx: ReceptionistContext): string {
-  return `## Languages
-Your opening greeting has ALREADY been played to the caller automatically. Do NOT greet again, do NOT re-introduce yourself, and do NOT repeat the business name — just respond to what the caller says. Speak in whichever language the caller uses, and switch the moment they switch. Never ask which language they prefer. CRITICAL — this rule overrides everything else and applies on EVERY single turn, INCLUDING the turn right after you use a tool: reply in the language the caller last spoke. check_availability and book_appointment return English text for the system's use only — that English must NOT change the language you speak. If the caller has been speaking Chinese, keep speaking Chinese after checking the calendar (translate the times, e.g. "6月2号星期一上午11点"). Never switch to English unless the caller switches first.${ctx.orgNameZh !== ctx.orgName ? ` When you speak Chinese, call the business "${ctx.orgNameZh}"; in English call it "${ctx.orgName}".` : ""}
+  return `## Your first reply
+${ctx.knownCaller ? `You already greeted this caller by name — do NOT greet again or re-introduce yourself. Just respond to what they say.` : `All the caller has heard so far is "${OPENING_HELLO}" — a hello in each language you speak, and nothing else. They have not been told the business name, and you have not introduced yourself.
+
+The moment they speak, note which language they used. Your FIRST reply is this greeting, spoken in THAT language:
+
+"${firstReplyGreeting(ctx)}"
+
+Translate it naturally into the caller's language — do not read the English wording to a caller who spoke Chinese or Spanish, and never mix languages in one sentence. Say it once, then carry on with whatever they asked. Every reply after this one follows the language rules below.`}
+
+## Languages Speak in whichever language the caller uses, and switch the moment they switch. Never ask which language they prefer. CRITICAL — this rule overrides everything else and applies on EVERY single turn, INCLUDING the turn right after you use a tool: reply in the language the caller last spoke. check_availability and book_appointment return English text for the system's use only — that English must NOT change the language you speak. If the caller has been speaking Chinese, keep speaking Chinese after checking the calendar (translate the times, e.g. "6月2号星期一上午11点"). Never switch to English unless the caller switches first.${ctx.orgNameZh !== ctx.orgName ? ` When you speak Chinese, call the business "${ctx.orgNameZh}"; in English call it "${ctx.orgName}".` : ""}
 
 You are ${ctx.agentName ? `${ctx.agentName}, ` : ""}the AI phone receptionist for ${ctx.orgName}. This is a LIVE phone call — speak naturally, keep every reply to 1–3 short sentences, no lists or markdown, and ask only one question at a time.${ctx.agentName ? ` If the caller asks your name, you're ${ctx.agentName}.` : ""}
 
@@ -123,6 +131,47 @@ function buildKnownCallerGreeting(ctx: ReceptionistContext): string {
 }
 
 /**
+ * The spoken opening, in two parts.
+ *
+ *   1. this — a short hello in each language we speak, and nothing else.
+ *   2. the account's custom greeting, delivered on the receptionist's FIRST
+ *      reply, translated into whatever language the caller answered in
+ *      (see FIRST_REPLY_INSTRUCTION in the system prompt).
+ *
+ * Splitting it this way is what makes a bilingual line work. A spoken opening has
+ * to commit to a language before the caller has said a word, so any real greeting
+ * up front is a guess — and the wrong guess makes half the callers feel like they
+ * reached the wrong business. Three words of hello commit to nothing, and by the
+ * time the actual greeting is spoken the caller has already chosen the language.
+ *
+ * The business name is deliberately NOT here. It belongs in part two, where it can
+ * be said in the caller's own language, rather than in an English preamble bolted
+ * onto a Chinese sentence.
+ */
+const OPENING_HELLO = "Hello, 您好, Hola";
+
+/**
+ * Part two: what the receptionist says on her first reply, once the caller's
+ * language is known. The account's own greeting when it set one, otherwise this.
+ *
+ * The default names the business and the receptionist because part one no longer
+ * does — after three words of hello the caller still doesn't know who answered.
+ * A custom greeting that opens with its own introduction keeps it: it is being
+ * spoken as the first real sentence of the call now, not stacked behind a
+ * preamble, so "Thank you for calling X! I'm Emma." is correct rather than a
+ * duplicate.
+ */
+function firstReplyGreeting(ctx: ReceptionistContext): string {
+  const custom = fillPlaceholders(ctx.greeting || "", ctx)
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+  if (custom) return custom;
+  const who = ctx.agentName?.trim();
+  return `Thank you for calling ${ctx.orgName}!${who ? ` I'm ${who}.` : ""} How can I help you today? Are you thinking about buying or selling a home, or are you just looking for some information?`;
+}
+
+
+/**
  * Per-call dynamic variables for the Retell agent. Retell requires string→string;
  * keys are referenced as {{key}} in RETELL_AGENT_PROMPT_TEMPLATE. `org_id` lets the
  * function/webhook endpoints resolve the tenant without a second lookup.
@@ -132,19 +181,13 @@ export function buildReceptionistDynamicVariables(ctx: ReceptionistContext): Rec
   // {{agent_name}} / {{business_name}} placeholders HERE (server-side): Retell
   // sets its Welcome Message to {{greeting}} and does NOT recursively expand
   // placeholders nested inside a dynamic variable, so they must be resolved
-  // before we hand the greeting over. Auto-prepend the business name only if the
-  // resolved greeting doesn't already name it.
-  const g = fillPlaceholders(ctx.greeting || "Hello! Thank you for calling. How can I help you today?", ctx)
-    .replace(/[ \t]{2,}/g, " ")
-    .trim();
-  // Returning caller (matched by caller ID): open by confirming who they are
-  // instead of the generic org greeting — "I see you're calling from this number,
-  // is this Michael?". Greet in their known language when we have it (zh today).
-  const greeting = ctx.knownCaller
-    ? buildKnownCallerGreeting(ctx)
-    : g.includes(ctx.orgName)
-      ? g
-      : `${ctx.orgName}. ${g}`;
+  // before we hand the greeting over.
+  //
+  // For an unknown caller the spoken opening is only OPENING_HELLO — the real
+  // greeting waits for the first reply, once the caller's language is known.
+  // A RECOGNIZED caller is different: we already know their language, so there is
+  // nothing to wait for and confirming who they are beats a generic hello.
+  const greeting = ctx.knownCaller ? buildKnownCallerGreeting(ctx) : OPENING_HELLO;
 
   return {
     org_id: ctx.orgId,

@@ -15,6 +15,7 @@ import { appliedLearningsHint, latestLearningAt, synthesizeLearnings } from "@/l
 import { refreshViralLibrary, templateHints } from "@/lib/viralIntelligence";
 import type { BrandBrief } from "@/lib/research";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isJobEnabled } from "@/lib/cron/switches";
 
 // Vercel Cron hits this on a schedule (see vercel.json). Protected by CRON_SECRET.
 export const maxDuration = 300;
@@ -79,6 +80,12 @@ export async function GET(req: Request) {
   if (!secret) return NextResponse.json({ error: "Cron is not configured." }, { status: 503 });
   if (req.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  }
+
+  // Parked from the admin page? Say so and stop — before any work, any model
+  // call, and any spend.
+  if (!(await isJobEnabled("cron_run"))) {
+    return NextResponse.json({ ok: true, skipped: "disabled" });
   }
 
   const admin = createAdminClient();
