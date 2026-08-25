@@ -38,6 +38,11 @@ type Extracted = {
   /** ISO 639-1 code of the language the caller spoke, e.g. "en" | "zh" | "es".
    *  "" when unclear. Stored on contacts.preferred_language for future outreach. */
   language: string;
+  /** True only when the caller ASKED to be spoken to in a language ("can we do
+   *  this in Chinese?"), as opposed to us inferring it from what they happened
+   *  to speak. A stored preference is only overwritten on an explicit request —
+   *  one English sentence from a Chinese-speaking client must not flip them. */
+  languageRequested: boolean;
   /** Budget + property preferences the caller stated — persisted as durable
    *  contact memory (search_location, price_min/max, beds, baths). null = unknown. */
   priceMin: number | null;
@@ -94,6 +99,7 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
     timeline: "",
     rating: null,
     language: "",
+    languageRequested: false,
     priceMin: null,
     priceMax: null,
     beds: null,
@@ -127,6 +133,10 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
               'timeline (e.g. "2 months", or ""), ' +
               'language (ISO 639-1 code of the language the caller mainly SPOKE: "en", "zh", "es", ' +
               '"vi", "ko", etc.; "" if unclear), ' +
+              'language_requested (true ONLY if the caller explicitly asked to speak a particular ' +
+              'language, e.g. "can we speak Chinese?" or "English please", or answered a question ' +
+              'about which language they prefer. false if you are only inferring it from what they ' +
+              'happened to speak), ' +
               'price_min (number in USD, or null), price_max (number in USD, or null), ' +
               'beds (integer bedrooms wanted, or null), baths (number of bathrooms wanted, or null), ' +
               'email (the caller\'s email address, or "" if not given. It was SPOKEN, so reassemble it: ' +
@@ -161,6 +171,7 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
       timeline: String(parsed.timeline ?? "").trim().slice(0, 80),
       rating: (["hot", "warm", "cold"].includes(rt) ? rt : null) as CallRating,
       language: /^[a-z]{2}$/.test(lang) ? lang : "",
+      languageRequested: parsed.language_requested === true,
       priceMin: toNum(parsed.price_min),
       priceMax: toNum(parsed.price_max),
       beds: bedsN != null ? Math.round(bedsN) : null,
@@ -177,14 +188,18 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
  *  seller it's the address they're selling (→ property_address). */
 function contactMemoryPatch(
   ex: Extracted,
-  opts: { includeName: boolean; fillEmail: boolean },
+  opts: { includeName: boolean; fillEmail: boolean; fillLanguage: boolean },
 ): Record<string, unknown> {
   const p: Record<string, unknown> = {};
   if (opts.includeName && ex.name) p.name = ex.name;
   // Fill a blank only. A mis-heard address must never overwrite one the
   // contact already gave us in writing.
   if (ex.email && opts.fillEmail) p.email = ex.email;
-  if (ex.language) p.preferred_language = ex.language;
+  // Fill a blank, or honour an explicit request — never let one call's spoken
+  // language quietly overwrite a preference already on file.
+  if (ex.language && (opts.fillLanguage || ex.languageRequested)) {
+    p.preferred_language = ex.language;
+  }
   // Two independent places, because a caller can have both: somewhere they want
   // to buy, and a home they own that has to sell first. Keying this off a single
   // partyType threw one of them away.
@@ -217,6 +232,7 @@ export async function captureLeadFromInboundCall(args: {
   // 1. Upsert contact by phone (agent-scoped) — reuse the known-caller match.
   let contactId: string | null = null;
   let existingEmail: string | null = null;
+  let existingLanguage: string | null = null;
   let existingName: string | null = null;
   try {
     const existing = await findContactByPhone(args.agentId, args.fromPhone);
@@ -224,6 +240,14 @@ export async function captureLeadFromInboundCall(args: {
       contactId = existing.id;
       existingName = existing.name;
       existingEmail = existing.email;
+      // Not part of findContactByPhone's projection, and worth one small read:
+      // it decides whether this call may change a language already on file.
+      const { data: langRow } = await supabaseAdmin
+        .from("contacts")
+        .select("preferred_language")
+        .eq("id", existing.id as never)
+        .maybeSingle();
+      existingLanguage = (langRow as { preferred_language?: string | null } | null)?.preferred_language ?? null;
     }
   } catch {
     // fall through to insert
@@ -239,7 +263,7 @@ export async function captureLeadFromInboundCall(args: {
       lead_status: "new",
       notes: `AI receptionist call: ${summary}`,
       // Durable memory captured on this call: language, area, budget, beds/baths.
-      ...contactMemoryPatch(ex, { includeName: false, fillEmail: true }),
+      ...contactMemoryPatch(ex, { includeName: false, fillEmail: true, fillLanguage: true }),
     };
     if (ex.partyType === "buyer" || ex.partyType === "seller") row.type = ex.partyType;
     // Note: the lead's rating is set by the composite recomputeLeadRating below
@@ -262,6 +286,7 @@ export async function captureLeadFromInboundCall(args: {
     const patch = contactMemoryPatch(ex, {
       includeName: !(existingName && existingName.trim()),
       fillEmail: !(existingEmail && existingEmail.trim()),
+      fillLanguage: !(existingLanguage && existingLanguage.trim()),
     });
     if (Object.keys(patch).length > 0) {
       patch.updated_at = new Date().toISOString();
