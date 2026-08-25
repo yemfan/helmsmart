@@ -8,6 +8,9 @@ import AddressAutocomplete, {
   type AddressAutocompleteValue,
 } from "@/components/AddressAutocomplete";
 import ContactPicker, { type ContactPickerValue } from "@/components/crm/ContactPicker";
+import PropertyLookupField, {
+  type PropertyLookupResult,
+} from "@/components/dashboard/PropertyLookupField";
 import { ContractUploader, type RlaUploadResult, type RpaUploadResult } from "./ContractUploader";
 
 /**
@@ -437,6 +440,26 @@ function NewTransactionForm() {
     if (ext.closingDate) setClosingDate(ext.closingDate);
   }
 
+  /**
+   * Fill from a pasted listing link or address.
+   *
+   * Overwrites, unlike the warehouse price helper that fires quietly off a
+   * Google address pick. This one only runs because the agent typed something
+   * and pressed Look up — looking up a second property and watching the first
+   * one's city stay put would read as broken. The chips under the field show
+   * what came back, so an overwrite is never invisible.
+   */
+  function applyPropertyLookup(res: PropertyLookupResult) {
+    if (res.address) setPropertyAddress(res.address);
+    if (res.city) setCity(res.city);
+    if (res.state) setStateValue(res.state);
+    if (res.zip) setZip(res.zip);
+    if (res.listPrice != null) setPurchasePrice(String(Math.round(res.listPrice)));
+    // The address field's own Google-pick handler owns this note; clear it so
+    // a stale "Loading from records…" can't sit under a freshly filled address.
+    setAddressNote(null);
+  }
+
   function applyRlaExtraction(ext: RlaUploadResult) {
     if (ext.propertyAddress) setPropertyAddress(ext.propertyAddress);
     if (ext.city) setCity(ext.city);
@@ -516,6 +539,12 @@ function NewTransactionForm() {
             <ContractUploader onExtracted={applyRpaExtraction} disabled={submitting} />
           )}
         </div>
+
+        {/* The PDF drop only helps once a signed agreement exists. Before that
+            the agent is usually looking at the listing in another tab, or just
+            knows the address — so let them paste either one and fill the same
+            fields from it. */}
+        <PropertyLookupField onResolved={applyPropertyLookup} disabled={submitting} />
 
         {/* Deal-type selector hidden when the URL pinned the type
             (e.g. arrived via "+ New listing" → ?type=listing_rep).

@@ -8618,6 +8618,24 @@
       "loadingMetrics": "正在加载指标…",
       "checkoutToPaid": "结账 → 已付款"
     },
+    "propertyLookup": {
+      "beds": "{{count}} 卧",
+      "baths": "{{count}} 卫",
+      "sqft": "{{value}} 平方英尺",
+      "built": "{{year}} 年建",
+      "label": "查询房源信息",
+      "placeholder": "粘贴 Zillow、Redfin、Realtor.com 或 Compass 链接，或直接输入地址",
+      "hint": "粘贴房源链接或输入地址，我们会自动填入查到的信息。保存前请核对各项数据。",
+      "lookUp": "查询",
+      "working": "查询中…",
+      "detected": "识别到 {{site}} 链接 —— 点击「查询」获取详情。",
+      "readingListing": "正在读取 {{site}} 房源 —— 可能需要一分钟左右。",
+      "lookingUpAddress": "正在查询该地址 —— 首次查询可能需要一分钟左右。",
+      "filledFrom": "已根据 {{site}} 填入。保存前请核对各项数据。",
+      "filledFromRecords": "已根据房产记录填入。保存前请核对各项数据。",
+      "listingFailed": "无法读取该 {{site}} 链接 —— 请手动填写。",
+      "addressNotFound": "未找到该地址的记录 —— 请手动填写。"
+    },
     "listingLookup": {
       "detected": "已识别 {{label}} 链接——正在查找房源信息…"
     },
