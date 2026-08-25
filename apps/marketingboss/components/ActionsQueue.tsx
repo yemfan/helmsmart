@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 export type ScheduleRow = { id: string; name: string; frequency: number; nextRunAt: string | null };
 
-type Metric = { likes?: number; comments?: number; views?: number };
+type Metric = { likes?: number; comments?: number; views?: number; saves?: number; clicks?: number };
 export type QueuePost = {
   id: string;
   campaign_id: string | null;

@@ -16,7 +16,24 @@ import { metaGraphBase, threadsGraphBase } from "@helm/dna-marketing";
  * Every fetcher is resilient: any network/permission failure returns null.
  */
 
-export type Metric = { likes?: number; comments?: number; views?: number };
+/**
+ * One platform's numbers for one post.
+ *
+ * `saves` and `clicks` exist because folding them into likes/comments threw
+ * away the two most valuable signals we collect: a save is a stronger vote than
+ * a like, and a click is the closest thing to intent any of these APIs expose.
+ * Pinterest used to report SAVE as `likes` and PIN_CLICK as `comments`, which
+ * made outbound-click data invisible to every consumer.
+ */
+export type Metric = {
+  likes?: number;
+  comments?: number;
+  views?: number;
+  /** Saves / bookmarks — a stronger signal than a like where the platform has it. */
+  saves?: number;
+  /** Outbound or post clicks, where the platform reports them (Pinterest today). */
+  clicks?: number;
+};
 
 export const METRIC_SUPPORTED = new Set(["facebook", "instagram", "youtube", "threads", "pinterest", "linkedin"]);
 
@@ -83,8 +100,11 @@ async function pinterest(pinId: string, token: string): Promise<Metric | null> {
   );
   const summary = (d?.all as { summary_metrics?: Record<string, number> } | undefined)?.summary_metrics;
   if (!summary) return null;
-  // Map Pinterest's engagement shape onto our common metric.
-  return { likes: summary.SAVE ?? 0, comments: summary.PIN_CLICK ?? 0, views: summary.IMPRESSION ?? 0 };
+  // Pinterest's shape maps cleanly now that Metric has saves/clicks. Rows written
+  // before this change still carry SAVE in `likes` and PIN_CLICK in `comments`;
+  // the cron re-reads metrics for 14 days after publish, so recent posts
+  // self-correct and only long-dormant rows keep the old shape.
+  return { saves: summary.SAVE ?? 0, clicks: summary.PIN_CLICK ?? 0, views: summary.IMPRESSION ?? 0 };
 }
 
 async function linkedin(urn: string, token: string): Promise<Metric | null> {
@@ -117,10 +137,68 @@ export async function fetchMetric(platform: string, externalId: string, token: s
   }
 }
 
-/** Total engagement across a metrics map, for ranking. */
-export function engagementScore(metrics: Record<string, Metric> | null | undefined): number {
+/**
+ * What a post is being judged on. A campaign chasing reach and one chasing
+ * clicks are not the same campaign, and scoring them with one number is how a
+ * learning loop ends up "optimizing" a metric nobody asked for.
+ */
+export type MetricGoal = "awareness" | "engagement" | "traffic";
+
+/**
+ * Per-signal weights by goal.
+ *
+ * The previous score summed likes + comments + views at weight 1, which meant
+ * views swamped everything — a clip with 10k views and 3 likes outranked a post
+ * with 500 likes, because views run one to two orders of magnitude higher on
+ * every platform that reports them. That single number fed buildInsights,
+ * the performance scout, AND the learning synthesizer, so all three concluded
+ * "post more video" by arithmetic rather than by evidence.
+ *
+ * The weights below are a stated judgement, not a measurement: a view is
+ * passive, a like is cheap, a comment or save costs the viewer something, and a
+ * click is the closest thing to intent these APIs expose. They live here so
+ * there is exactly one place to argue with them.
+ */
+const WEIGHTS: Record<MetricGoal, Required<Omit<Metric, never>>> = {
+  awareness: { views: 1, likes: 0.5, comments: 1, saves: 1, clicks: 2 },
+  engagement: { views: 0.05, likes: 1, comments: 4, saves: 3, clicks: 5 },
+  traffic: { views: 0.01, likes: 0.25, comments: 1, saves: 1, clicks: 10 },
+};
+
+/** Score a metrics map against one goal. Deterministic; missing signals count 0. */
+export function scoreFor(goal: MetricGoal, metrics: Record<string, Metric> | null | undefined): number {
   if (!metrics) return 0;
+  const w = WEIGHTS[goal];
   let total = 0;
-  for (const m of Object.values(metrics)) total += (m.likes ?? 0) + (m.comments ?? 0) + (m.views ?? 0);
-  return total;
+  for (const m of Object.values(metrics)) {
+    total +=
+      (m.views ?? 0) * w.views +
+      (m.likes ?? 0) * w.likes +
+      (m.comments ?? 0) * w.comments +
+      (m.saves ?? 0) * w.saves +
+      (m.clicks ?? 0) * w.clicks;
+  }
+  return Math.round(total * 10) / 10;
+}
+
+/**
+ * Total engagement across a metrics map, for ranking. Kept as the default so
+ * every existing caller (buildInsights, buildPerformanceSummary, Home's top
+ * post) improves together rather than drifting apart.
+ */
+export function engagementScore(metrics: Record<string, Metric> | null | undefined): number {
+  return scoreFor("engagement", metrics);
+}
+
+/** Raw totals across platforms — for display, where weighting would mislead. */
+export function metricTotals(metrics: Record<string, Metric> | null | undefined): Required<Metric> {
+  const out = { likes: 0, comments: 0, views: 0, saves: 0, clicks: 0 };
+  for (const m of Object.values(metrics ?? {})) {
+    out.likes += m.likes ?? 0;
+    out.comments += m.comments ?? 0;
+    out.views += m.views ?? 0;
+    out.saves += m.saves ?? 0;
+    out.clicks += m.clicks ?? 0;
+  }
+  return out;
 }
