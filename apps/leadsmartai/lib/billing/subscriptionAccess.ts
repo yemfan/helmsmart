@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import {
   hasFeature,
+  lowestPlanWithFeature,
+  PLAN_FEATURE_LABEL,
   PLANS,
   type BillingCadence,
   type PlanFeature,
@@ -147,17 +149,51 @@ export async function getCrmSubscriptionSnapshot(userId: string): Promise<{
 
 const DEFAULT_LIMIT_REASON: LimitReason = "no_agent_entitlement";
 
-export function subscriptionRequiredResponse(feature: string, limitReason: LimitReason = DEFAULT_LIMIT_REASON) {
+/**
+ * What to say when a gate stops someone.
+ *
+ * "An active subscription is required for this feature" was the answer to every
+ * refusal, including the most common one: a paying customer on a plan that
+ * simply doesn't carry that feature. A Pro subscriber told they need a
+ * subscription has nothing to act on — they have one. Naming the feature, their
+ * plan, and the cheapest plan that includes it turns a dead end into a decision.
+ */
+function entitlementMessage(
+  feature: string,
+  limitReason: LimitReason,
+  currentPlan: PlanSlug | null,
+): string {
+  if (limitReason === "ai_usage_limit_reached") {
+    return "You’ve reached your monthly AI usage on this plan. Upgrade for more.";
+  }
+  const label = PLAN_FEATURE_LABEL[feature as PlanFeature] ?? "This feature";
+  if (!currentPlan) {
+    return `${label} needs an active subscription.`;
+  }
+  const upgrade = lowestPlanWithFeature(feature as PlanFeature);
+  const current = PLANS[currentPlan].displayName;
+  if (!upgrade || upgrade === currentPlan) {
+    // Either nothing sells it, or the plan does carry it and the refusal came
+    // from elsewhere — don't invent an upsell we can't stand behind.
+    return `${label} isn’t available on your ${current} plan right now.`;
+  }
+  return `${label} isn’t part of your ${current} plan — ${PLANS[upgrade].displayName} includes it.`;
+}
+
+export function subscriptionRequiredResponse(
+  feature: string,
+  limitReason: LimitReason = DEFAULT_LIMIT_REASON,
+  currentPlan: PlanSlug | null = null,
+) {
   return NextResponse.json(
     {
       ok: false,
-      error:
-        limitReason === "ai_usage_limit_reached"
-          ? "You’ve reached your monthly AI usage on this plan. Upgrade for more."
-          : "An active subscription is required for this feature.",
+      error: entitlementMessage(feature, limitReason, currentPlan),
       code: "SUBSCRIPTION_REQUIRED",
       feature,
       limitReason,
+      currentPlan,
+      upgradePlan: lowestPlanWithFeature(feature as PlanFeature),
       billingPath: "/dashboard/billing",
     },
     { status: 402 }
