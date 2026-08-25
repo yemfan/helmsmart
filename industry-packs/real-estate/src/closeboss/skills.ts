@@ -59,9 +59,13 @@ export const SKILLS: readonly Skill[] = [
     description: "Book consultations, showings, listing appointments, or demos.",
     category: "scheduling",
     prompt: `When booking an appointment, confirm: appointment type, date and time, timezone, attendees, and location or meeting method. Repeat the details back to confirm before booking.`,
+    voiceLine:
+      "OFFER the appointment — don't wait to be asked, and don't settle for \"the Realtor will call you back\". Once a caller shows real interest in buying or selling, propose a specific time (\"Thursday at 2, or Friday morning — which suits you?\") instead of asking whether they'd like to schedule something. A booked appointment is the result; a promised call-back is what you fall back to only if they won't commit to a time.",
   },
   {
     key: "faq",
+    voiceLine:
+      "Answer what you actually know from the business information you were given — hours, areas served, how the process works, what the Realtor does. Say plainly when something isn't yours to answer, and offer to have it answered properly rather than guessing.",
     name: "FAQ",
     description: "Answer approved business FAQs from the knowledge base.",
     category: "reception",
