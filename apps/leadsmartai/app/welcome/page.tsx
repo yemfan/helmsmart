@@ -111,12 +111,33 @@ export default function WelcomePage() {
         onboarding: { ...a, completed_at: new Date().toISOString() },
       };
       if (a.brokerage?.trim()) agentUpdate.brokerage = a.brokerage.trim();
-      await supabase.from("agents").update(agentUpdate).eq("auth_user_id", uid);
-      if (a.name?.trim()) {
-        await supabase.from("user_profiles").upsert({ user_id: uid, full_name: a.name.trim() }, { onConflict: "user_id" });
+      // `.select()` so a write that matches NO rows is visible. Supabase resolves
+      // rather than throws on a failed update, so the old bare await reported
+      // success for a write that never happened — which is how every agent
+      // finished onboarding with `onboarding = {}` and no service area, while
+      // the prompt quietly rendered "" everywhere it expected their market.
+      const { data: updated, error: agentErr } = await supabase
+        .from("agents")
+        .update(agentUpdate)
+        .eq("auth_user_id", uid)
+        .select("id");
+      if (agentErr) {
+        console.error("[welcome] could not save your answers to agents:", agentErr.message);
+      } else if (!updated || updated.length === 0) {
+        console.error(
+          "[welcome] onboarding answers matched no agent row for auth_user_id",
+          uid,
+          "— answers were not saved.",
+        );
       }
-    } catch {
-      /* best-effort */
+      if (a.name?.trim()) {
+        const { error: profErr } = await supabase
+          .from("user_profiles")
+          .upsert({ user_id: uid, full_name: a.name.trim() }, { onConflict: "user_id" });
+        if (profErr) console.error("[welcome] could not save your name:", profErr.message);
+      }
+    } catch (e) {
+      console.error("[welcome] saving your answers threw:", e);
     }
   }, []);
 
