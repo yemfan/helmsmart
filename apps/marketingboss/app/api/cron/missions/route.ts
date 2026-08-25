@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { advanceRun } from "@/lib/workforce/missions";
 import { missionsReady } from "@/lib/workforce/store";
+import { isJobEnabled } from "@/lib/cron/switches";
 
 /**
  * Mission continuation — its own cron path, deliberately.
@@ -26,6 +27,9 @@ export async function GET(req: Request) {
   if (!secret) return NextResponse.json({ error: "Cron is not configured." }, { status: 503 });
   if (req.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  }
+  if (!(await isJobEnabled("cron_missions"))) {
+    return NextResponse.json({ ok: true, skipped: "disabled" });
   }
   if (!(await missionsReady())) return NextResponse.json({ ok: true, skipped: "missions tables not migrated yet" });
 
