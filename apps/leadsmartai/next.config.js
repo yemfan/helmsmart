@@ -103,6 +103,35 @@ const nextConfig = {
       ["/loan-amortization-calculator", "/mortgage-calculator"],
     ];
 
+    /**
+     * Financial Services vertical — unpublished 2026-08-23. CloseBoss is
+     * real-estate-agent only. The route files are retained on purpose: see
+     * `app/financial-services/FROZEN.md` (extraction to
+     * `@helm/pack-financial-services`, Extraction Plan Phase 5). These
+     * redirects run before routing, so the pages are off the public site
+     * without deleting the work.
+     */
+    const unpublishedFinancialServices = [
+      ["/financial-services", "/"],
+      ["/financial-services/:path*", "/"],
+      ["/api/financial-services/:path*", "/"],
+    ];
+
+    /**
+     * Retired vertical — mortgage / loan broker (removed 2026-08-23).
+     * CloseBoss is real-estate-agent only. `/loan-broker/*` and
+     * `/pricing/loan-broker` were indexable marketing pages, so they redirect
+     * permanently to the agent equivalents instead of 404ing. These rules run
+     * before routing, so they also make any leftover route files unreachable.
+     */
+    const retiredLoanBroker = [
+      ["/loan-broker", "/agent/pricing"],
+      ["/loan-broker/:path*", "/agent/pricing"],
+      ["/pricing/loan-broker", "/agent/pricing"],
+      ["/start-free/loan-broker", "/start-free/agent"],
+      ["/api/loan-broker/:path*", "/agent/pricing"],
+    ];
+
     return [
       ...toDashboard.map(([source, destination]) => ({
         source,
@@ -110,6 +139,16 @@ const nextConfig = {
         permanent: false,
       })),
       ...canonicalSlug.map(([source, destination]) => ({
+        source,
+        destination,
+        permanent: true,
+      })),
+      ...retiredLoanBroker.map(([source, destination]) => ({
+        source,
+        destination,
+        permanent: true,
+      })),
+      ...unpublishedFinancialServices.map(([source, destination]) => ({
         source,
         destination,
         permanent: true,
