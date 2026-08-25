@@ -76,6 +76,42 @@ export const SKILLS: readonly Skill[] = [
     voiceLine: "Treat a ready-to-list seller, ready-to-offer buyer, active-client issue, complaint, or legal/contract question as urgent: take their details and promise a prompt call-back from the Realtor.",
   },
   {
+    key: "buyer_motivation",
+    name: "Buyer Motivation",
+    description: "Understand WHY the caller is moving, not just what they want to buy.",
+    category: "qualification",
+    prompt: `Find out what is actually driving the move: a growing family, a commute, schools, a lease ending, an investment, a relocation. Motivation is what tells you whether a "6 to 12 months" timeline is real or soft, and it is what the Realtor needs before the first meeting. Ask it the way a person would, not the way a form would.`,
+    voiceLine:
+      "Ask what's behind the move — family, schools, commute, a lease ending, investment — and listen. The reason tells you more about their timeline than the timeline does.",
+  },
+  {
+    key: "buy_sell_contingency",
+    name: "Buy / Sell Contingency",
+    description: "Find out whether the buyer has to sell an existing home first.",
+    category: "qualification",
+    prompt: `Ask every buyer whether they own now, and if so whether that home has to sell before they can close. A buyer with a house to sell is two transactions, a different timeline, and often a listing the Realtor would otherwise never hear about. When they say yes, get the address and rough timing.`,
+    voiceLine:
+      "Ask every buyer whether they own a home now and whether it has to sell first. If yes, get the address and their timing — that's a listing as well as a purchase.",
+  },
+  {
+    key: "financing_referral",
+    name: "Financing Referral",
+    description: "Offer a lender introduction when a buyer has no pre-approval.",
+    category: "qualification",
+    prompt: `When a buyer is not pre-approved, do not leave it there. Explain plainly that a pre-approval decides what they can actually write an offer on, and offer an introduction to a lender the Realtor works with. Never quote rates, fees, monthly payments, or what they would qualify for — that is the lender's job; yours is the introduction.`,
+    voiceLine:
+      "If a buyer isn't pre-approved, say why it matters and offer an introduction to a lender the Realtor works with — never quote rates, payments, or what they'd qualify for.",
+  },
+  {
+    key: "market_conversation",
+    name: "Local Market Conversation",
+    description: "Discuss the local market like a professional, without inventing numbers.",
+    category: "qualification",
+    prompt: `Callers ask "how's the market?", and a blank answer costs the Realtor credibility. Talk about it the way an experienced agent does: what they're seeing, which areas and price bands they're weighing, how competitive their bracket is, what tends to matter at their price point. Discuss dynamics freely. State SPECIFIC figures — median prices, days on market, appreciation, interest rates, comps — only when they are in your knowledge base. When you don't have the number, say so and offer to have the Realtor send real figures, which is what a good agent does anyway.`,
+    voiceLine:
+      "Talk about the local market like a professional — areas, price bands, how competitive their bracket is. State specific numbers (medians, days on market, rates, comps) ONLY from your knowledge base; otherwise say you'll have the Realtor send real figures.",
+  },
+  {
     key: "speed_to_lead",
     name: "Speed-to-Lead",
     description: "Contact new leads immediately and attempt appointment booking.",

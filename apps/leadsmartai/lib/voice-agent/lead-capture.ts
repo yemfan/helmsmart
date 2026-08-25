@@ -25,7 +25,12 @@ type Extracted = {
   name: string;
   partyType: PartyType;
   interest: string;
+  /** Where they want to BUY or rent. */
   location: string;
+  /** A property they already OWN and may sell. Independent of `location`: a
+   *  buyer who has to sell first has both, and partyType can only be one of
+   *  them, so folding these together loses a listing. "" when none. */
+  ownedPropertyAddress: string;
   timeline: string;
   /** Lead potential from this call — drives contacts.rating so hot leads
    *  surface at the top of the list. null when we can't judge (no OpenAI). */
@@ -39,7 +44,33 @@ type Extracted = {
   priceMax: number | null;
   beds: number | null;
   baths: number | null;
+  /** Email the caller gave on the call. It was SPOKEN, so it arrives mangled
+   *  ("at gmail dot com", letter-by-letter spelling) — normalised here, and
+   *  kept only when it parses as a real address. "" when not given. */
+  email: string;
 };
+
+/**
+ * Turn a spoken email into a real one, or return "" — never a guess.
+ *
+ * A wrong email is worse than no email: it silently sends the follow-up nobody
+ * receives, and it looks like the CRM has the contact covered. So anything that
+ * doesn't come out as a plausible address is dropped rather than stored.
+ */
+function normalizeSpokenEmail(raw: unknown): string {
+  let v = String(raw ?? "").trim().toLowerCase();
+  if (!v) return "";
+  // Speech-to-text spells the symbols out; the model usually reassembles them,
+  // but not always.
+  v = v
+    .replace(/\s*\bat\b\s*/g, "@")
+    .replace(/\s*\bdot\b\s*/g, ".")
+    .replace(/\s*\bunderscore\b\s*/g, "_")
+    .replace(/\s*\b(dash|hyphen)\b\s*/g, "-")
+    .replace(/\s+/g, "");
+  // One @, something either side, a dot in the domain, a sane TLD.
+  return /^[^@\s]+@[^@\s.]+(\.[^@\s.]+)+$/.test(v) && v.length <= 254 ? v : "";
+}
 
 function toNum(v: unknown): number | null {
   if (typeof v === "number" && Number.isFinite(v)) return v;
@@ -54,10 +85,12 @@ function toNum(v: unknown): number | null {
  *  phone-only contact (no name) when OpenAI is unavailable. */
 async function extractLead(summary: string, transcript: string): Promise<Extracted> {
   const fallback: Extracted = {
+    email: "",
     name: "",
     partyType: "other",
     interest: summary.slice(0, 200),
     location: "",
+    ownedPropertyAddress: "",
     timeline: "",
     rating: null,
     language: "",
@@ -86,12 +119,19 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
               'Extract the caller\'s lead details from a real-estate AI receptionist phone call. ' +
               'Return ONLY a JSON object with keys: name (caller\'s full name, or "" if not given), ' +
               'party_type (one of "buyer","seller","renter","other"), interest (one short phrase, ' +
-              'e.g. "buying in Alhambra, ~$1M"), location (city/area they want to buy/rent, or the ' +
-              'address they\'re selling, or ""), timeline (e.g. "2 months", or ""), ' +
+              'e.g. "buying in Alhambra, ~$1M"), location (city/area they want to BUY or rent in, ' +
+              'or "" if they are only selling), ' +
+              'owned_property_address (the address of a home the caller ALREADY OWNS and may sell — ' +
+              'including when they are mainly a buyer who has to sell first. This is separate from ' +
+              'location: a caller can have both. "" if none), ' +
+              'timeline (e.g. "2 months", or ""), ' +
               'language (ISO 639-1 code of the language the caller mainly SPOKE: "en", "zh", "es", ' +
               '"vi", "ko", etc.; "" if unclear), ' +
               'price_min (number in USD, or null), price_max (number in USD, or null), ' +
               'beds (integer bedrooms wanted, or null), baths (number of bathrooms wanted, or null), ' +
+              'email (the caller\'s email address, or "" if not given. It was SPOKEN, so reassemble it: ' +
+              '"michael at gmail dot com" -> "michael@gmail.com", and join letter-by-letter spelling ' +
+              'into one word. Return "" rather than a guess unless you heard the WHOLE address), ' +
               'rating (lead potential: "hot" = ready / near-term / ' +
               'strong intent or pre-approved; "warm" = interested but exploring; "cold" = low or ' +
               'no real-estate intent, wrong number, or just a question). Use "" or null when unknown. ' +
@@ -112,10 +152,12 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
     const lang = String(parsed.language ?? "").trim().toLowerCase().slice(0, 5);
     const bedsN = toNum(parsed.beds);
     return {
+      email: normalizeSpokenEmail(parsed.email),
       name: String(parsed.name ?? "").trim().slice(0, 120),
       partyType: (["buyer", "seller", "renter", "other"].includes(pt) ? pt : "other") as PartyType,
       interest: String(parsed.interest ?? "").trim().slice(0, 200),
       location: String(parsed.location ?? "").trim().slice(0, 120),
+      ownedPropertyAddress: String(parsed.owned_property_address ?? "").trim().slice(0, 200),
       timeline: String(parsed.timeline ?? "").trim().slice(0, 80),
       rating: (["hot", "warm", "cold"].includes(rt) ? rt : null) as CallRating,
       language: /^[a-z]{2}$/.test(lang) ? lang : "",
@@ -135,15 +177,22 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
  *  seller it's the address they're selling (→ property_address). */
 function contactMemoryPatch(
   ex: Extracted,
-  opts: { includeName: boolean },
+  opts: { includeName: boolean; fillEmail: boolean },
 ): Record<string, unknown> {
   const p: Record<string, unknown> = {};
   if (opts.includeName && ex.name) p.name = ex.name;
+  // Fill a blank only. A mis-heard address must never overwrite one the
+  // contact already gave us in writing.
+  if (ex.email && opts.fillEmail) p.email = ex.email;
   if (ex.language) p.preferred_language = ex.language;
+  // Two independent places, because a caller can have both: somewhere they want
+  // to buy, and a home they own that has to sell first. Keying this off a single
+  // partyType threw one of them away.
   if (ex.location) {
     if (ex.partyType === "seller") p.property_address = ex.location;
     else p.search_location = ex.location;
   }
+  if (ex.ownedPropertyAddress) p.property_address = ex.ownedPropertyAddress;
   if (ex.priceMin != null) p.price_min = ex.priceMin;
   if (ex.priceMax != null) p.price_max = ex.priceMax;
   if (ex.beds != null) p.beds = ex.beds;
@@ -167,12 +216,14 @@ export async function captureLeadFromInboundCall(args: {
 
   // 1. Upsert contact by phone (agent-scoped) — reuse the known-caller match.
   let contactId: string | null = null;
+  let existingEmail: string | null = null;
   let existingName: string | null = null;
   try {
     const existing = await findContactByPhone(args.agentId, args.fromPhone);
     if (existing) {
       contactId = existing.id;
       existingName = existing.name;
+      existingEmail = existing.email;
     }
   } catch {
     // fall through to insert
@@ -188,7 +239,7 @@ export async function captureLeadFromInboundCall(args: {
       lead_status: "new",
       notes: `AI receptionist call: ${summary}`,
       // Durable memory captured on this call: language, area, budget, beds/baths.
-      ...contactMemoryPatch(ex, { includeName: false }),
+      ...contactMemoryPatch(ex, { includeName: false, fillEmail: true }),
     };
     if (ex.partyType === "buyer" || ex.partyType === "seller") row.type = ex.partyType;
     // Note: the lead's rating is set by the composite recomputeLeadRating below
@@ -210,6 +261,7 @@ export async function captureLeadFromInboundCall(args: {
     // Only fields the AI captured are included, so we never wipe prior values.
     const patch = contactMemoryPatch(ex, {
       includeName: !(existingName && existingName.trim()),
+      fillEmail: !(existingEmail && existingEmail.trim()),
     });
     if (Object.keys(patch).length > 0) {
       patch.updated_at = new Date().toISOString();
@@ -257,6 +309,7 @@ export async function captureLeadFromInboundCall(args: {
   const description = [
     ex.interest ? `Interest: ${ex.interest}` : "",
     ex.location ? `Area: ${ex.location}` : "",
+    ex.ownedPropertyAddress ? `Owns / may sell: ${ex.ownedPropertyAddress}` : "",
     ex.timeline ? `Timeline: ${ex.timeline}` : "",
     summary,
     "Captured by Lucy (AI receptionist).",
