@@ -1,7 +1,7 @@
 "use client";
 
 type PubResult = { platform: string; ok: boolean; url?: string | null; error?: string };
-type Metric = { likes?: number; comments?: number; views?: number };
+type Metric = { likes?: number; comments?: number; views?: number; saves?: number; clicks?: number };
 export type PublishedPost = {
   id: string;
   status: string;
@@ -36,17 +36,19 @@ function fmt(iso: string | null): string {
   }
 }
 
-function totalMetrics(metrics: Record<string, Metric> | null): { likes: number; comments: number; views: number } | null {
+type Totals = { likes: number; comments: number; views: number; saves: number; clicks: number };
+
+function totalMetrics(metrics: Record<string, Metric> | null): Totals | null {
   if (!metrics || Object.keys(metrics).length === 0) return null;
-  let likes = 0,
-    comments = 0,
-    views = 0;
+  const t: Totals = { likes: 0, comments: 0, views: 0, saves: 0, clicks: 0 };
   for (const m of Object.values(metrics)) {
-    likes += m.likes ?? 0;
-    comments += m.comments ?? 0;
-    views += m.views ?? 0;
+    t.likes += m.likes ?? 0;
+    t.comments += m.comments ?? 0;
+    t.views += m.views ?? 0;
+    t.saves += m.saves ?? 0;
+    t.clicks += m.clicks ?? 0;
   }
-  return { likes, comments, views };
+  return t;
 }
 
 /**
@@ -88,6 +90,8 @@ export default function PublishedHistory({ history }: { history: PublishedPost[]
                   <span>♥ {t.likes}</span>
                   <span>💬 {t.comments}</span>
                   {t.views > 0 && <span>▶ {t.views}</span>}
+                  {t.saves > 0 && <span title="Saves">🔖 {t.saves}</span>}
+                  {t.clicks > 0 && <span title="Link clicks">🔗 {t.clicks}</span>}
                 </div>
               ) : null;
             })()}
