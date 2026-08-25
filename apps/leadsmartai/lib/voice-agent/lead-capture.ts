@@ -25,7 +25,12 @@ type Extracted = {
   name: string;
   partyType: PartyType;
   interest: string;
+  /** Where they want to BUY or rent. */
   location: string;
+  /** A property they already OWN and may sell. Independent of `location`: a
+   *  buyer who has to sell first has both, and partyType can only be one of
+   *  them, so folding these together loses a listing. "" when none. */
+  ownedPropertyAddress: string;
   timeline: string;
   /** Lead potential from this call — drives contacts.rating so hot leads
    *  surface at the top of the list. null when we can't judge (no OpenAI). */
@@ -85,6 +90,7 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
     partyType: "other",
     interest: summary.slice(0, 200),
     location: "",
+    ownedPropertyAddress: "",
     timeline: "",
     rating: null,
     language: "",
@@ -113,8 +119,12 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
               'Extract the caller\'s lead details from a real-estate AI receptionist phone call. ' +
               'Return ONLY a JSON object with keys: name (caller\'s full name, or "" if not given), ' +
               'party_type (one of "buyer","seller","renter","other"), interest (one short phrase, ' +
-              'e.g. "buying in Alhambra, ~$1M"), location (city/area they want to buy/rent, or the ' +
-              'address they\'re selling, or ""), timeline (e.g. "2 months", or ""), ' +
+              'e.g. "buying in Alhambra, ~$1M"), location (city/area they want to BUY or rent in, ' +
+              'or "" if they are only selling), ' +
+              'owned_property_address (the address of a home the caller ALREADY OWNS and may sell — ' +
+              'including when they are mainly a buyer who has to sell first. This is separate from ' +
+              'location: a caller can have both. "" if none), ' +
+              'timeline (e.g. "2 months", or ""), ' +
               'language (ISO 639-1 code of the language the caller mainly SPOKE: "en", "zh", "es", ' +
               '"vi", "ko", etc.; "" if unclear), ' +
               'price_min (number in USD, or null), price_max (number in USD, or null), ' +
@@ -147,6 +157,7 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
       partyType: (["buyer", "seller", "renter", "other"].includes(pt) ? pt : "other") as PartyType,
       interest: String(parsed.interest ?? "").trim().slice(0, 200),
       location: String(parsed.location ?? "").trim().slice(0, 120),
+      ownedPropertyAddress: String(parsed.owned_property_address ?? "").trim().slice(0, 200),
       timeline: String(parsed.timeline ?? "").trim().slice(0, 80),
       rating: (["hot", "warm", "cold"].includes(rt) ? rt : null) as CallRating,
       language: /^[a-z]{2}$/.test(lang) ? lang : "",
@@ -174,10 +185,14 @@ function contactMemoryPatch(
   // contact already gave us in writing.
   if (ex.email && opts.fillEmail) p.email = ex.email;
   if (ex.language) p.preferred_language = ex.language;
+  // Two independent places, because a caller can have both: somewhere they want
+  // to buy, and a home they own that has to sell first. Keying this off a single
+  // partyType threw one of them away.
   if (ex.location) {
     if (ex.partyType === "seller") p.property_address = ex.location;
     else p.search_location = ex.location;
   }
+  if (ex.ownedPropertyAddress) p.property_address = ex.ownedPropertyAddress;
   if (ex.priceMin != null) p.price_min = ex.priceMin;
   if (ex.priceMax != null) p.price_max = ex.priceMax;
   if (ex.beds != null) p.beds = ex.beds;
@@ -294,6 +309,7 @@ export async function captureLeadFromInboundCall(args: {
   const description = [
     ex.interest ? `Interest: ${ex.interest}` : "",
     ex.location ? `Area: ${ex.location}` : "",
+    ex.ownedPropertyAddress ? `Owns / may sell: ${ex.ownedPropertyAddress}` : "",
     ex.timeline ? `Timeline: ${ex.timeline}` : "",
     summary,
     "Captured by Lucy (AI receptionist).",
