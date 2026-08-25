@@ -73,7 +73,11 @@ function fillPlaceholders(text: string, ctx: ReceptionistContext): string {
  */
 export function buildSystemPrompt(ctx: ReceptionistContext): string {
   return `## Your first reply
-${ctx.knownCaller ? `You already greeted this caller by name — do NOT greet again or re-introduce yourself. Just respond to what they say.` : `All the caller has heard so far is "${OPENING_HELLO}" — a hello in each language you speak, and nothing else. They have not been told the business name, and you have not introduced yourself.
+${ctx.knownCaller ? `You have already welcomed this caller back by name. Do NOT ask who they are — we recognised their number. Your FIRST reply is this greeting${knownCallerLanguageName(ctx.knownCaller.language) ? `, spoken in ${knownCallerLanguageName(ctx.knownCaller.language)} because that is the language on their record` : ""}:
+
+"${firstReplyGreeting(ctx)}"
+
+Translate it naturally${knownCallerLanguageName(ctx.knownCaller.language) ? ` into ${knownCallerLanguageName(ctx.knownCaller.language)}` : ""} — never read the English wording to a caller whose language is not English, and never mix two languages in one sentence. Say it once, then carry on.` : `All the caller has heard so far is "${OPENING_HELLO}" — a hello in each language you speak, and nothing else. They have not been told the business name, and you have not introduced yourself.
 
 The moment they speak, note which language they used. Your FIRST reply is this greeting, spoken in THAT language:
 
@@ -81,7 +85,7 @@ The moment they speak, note which language they used. Your FIRST reply is this g
 
 Translate it naturally into the caller's language — do not read the English wording to a caller who spoke Chinese or Spanish, and never mix languages in one sentence. Say it once, then carry on with whatever they asked. Every reply after this one follows the language rules below.`}
 
-## Languages Speak in whichever language the caller uses, and switch the moment they switch. Never ask which language they prefer. CRITICAL — this rule overrides everything else and applies on EVERY single turn, INCLUDING the turn right after you use a tool: reply in the language the caller last spoke. check_availability and book_appointment return English text for the system's use only — that English must NOT change the language you speak. If the caller has been speaking Chinese, keep speaking Chinese after checking the calendar (translate the times, e.g. "6月2号星期一上午11点"). Never switch to English unless the caller switches first.${ctx.orgNameZh !== ctx.orgName ? ` When you speak Chinese, call the business "${ctx.orgNameZh}"; in English call it "${ctx.orgName}".` : ""}
+## Languages ${ctx.knownCaller?.language ? `This caller's language is on file. Speak it for the whole call. Switch only if they ASK you to — not because a word or a place name came out in English. ` : ""}Speak in whichever language the caller uses, and switch the moment they switch.${ctx.knownCaller?.language ? "" : ` If after a couple of exchanges you still are not sure which language they want — they mixed two, or the line was unclear — ask them once, plainly, in both: "Would you prefer English or Chinese? / 您想用中文还是英文？" Then use their answer for the rest of the call. Ask this at most once, and never when it is already obvious.`} CRITICAL — this rule overrides everything else and applies on EVERY single turn, INCLUDING the turn right after you use a tool: reply in the language the caller last spoke. check_availability and book_appointment return English text for the system's use only — that English must NOT change the language you speak. If the caller has been speaking Chinese, keep speaking Chinese after checking the calendar (translate the times, e.g. "6月2号星期一上午11点"). Never switch to English unless the caller switches first.${ctx.orgNameZh !== ctx.orgName ? ` When you speak Chinese, call the business "${ctx.orgNameZh}"; in English call it "${ctx.orgName}".` : ""}
 
 You are ${ctx.agentName ? `${ctx.agentName}, ` : ""}the AI phone receptionist for ${ctx.orgName}. This is a LIVE phone call — speak naturally, keep every reply to 1–3 short sentences, no lists or markdown, and ask only one question at a time.${ctx.agentName ? ` If the caller asks your name, you're ${ctx.agentName}.` : ""}
 
@@ -130,14 +134,32 @@ export function buildVoiceSystemPrompt(ctx: ReceptionistContext): string {
  *  have the number but no name. Chinese when language==="zh", else English. */
 function buildKnownCallerGreeting(ctx: ReceptionistContext): string {
   const first = firstName(ctx.knownCaller?.name);
-  if (ctx.knownCaller?.language === "zh") {
-    return first
-      ? `${ctx.orgNameZh}，您好！我看到您用这个号码来电，请问是${first}吗？`
-      : `${ctx.orgNameZh}，您好！很高兴再次接到您的来电。`;
+  // We know this caller's language from their record, so part one is spoken in
+  // it directly — no "Hello, 您好, Hola" needed when there is nothing to detect.
+  // It stays a welcome, not an interrogation: asking "is this Michael?" of
+  // someone whose number we have makes the recognition feel like doubt.
+  switch (ctx.knownCaller?.language) {
+    case "zh":
+      return first ? `${first}，欢迎回来！` : `欢迎回来！`;
+    case "es":
+      return first ? `¡${first}, bienvenido de nuevo!` : `¡Bienvenido de nuevo!`;
+    default:
+      return first ? `Welcome back, ${first}.` : `Welcome back!`;
   }
-  return first
-    ? `${ctx.orgName}. Hi! I see you're calling from this number — is this ${first}?`
-    : `${ctx.orgName}. Hi, welcome back! How can I help you today?`;
+}
+
+/** The language a returning caller's greeting and first reply are spoken in. */
+function knownCallerLanguageName(code: string | undefined): string {
+  switch (code) {
+    case "zh":
+      return "Chinese";
+    case "es":
+      return "Spanish";
+    case "en":
+      return "English";
+    default:
+      return "";
+  }
 }
 
 /**
