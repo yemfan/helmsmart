@@ -1395,7 +1395,7 @@
       },
       "market_conversation": {
         "name": "Local Market Conversation",
-        "desc": "Discuss the local market like a professional, without inventing numbers."
+        "desc": "Turn “how’s the market?” into discovery — no opinions of her own, published figures only."
       },
       "follow_up": {
         "name": "Follow-Up",
