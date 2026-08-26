@@ -5,6 +5,10 @@ import {
   type BriefingOutput,
 } from "@/lib/dailyBriefingAI";
 import { dispatchMobileBriefingPush } from "@/lib/mobile/pushDispatch";
+import { draftInactiveLeadNudge, hasPendingNudge, INACTIVE_FOLLOWUP_PREFIX } from "@/lib/briefing/inactiveLeadNudge";
+
+/** How many inactive-lead texts Chris drafts per briefing run. */
+const MAX_NUDGE_DRAFTS = 8;
 
 /**
  * Last night's Boss v2 overnight run (finished within 14h), shaped for the
@@ -370,6 +374,7 @@ async function writeMorningTasks(
     source: "briefing";
     priority: "high" | "normal";
     due_at: string;
+    metadata_json?: Record<string, unknown>;
   };
   const tasks: TaskInsert[] = [];
 
@@ -385,6 +390,13 @@ async function writeMorningTasks(
       due_at: dueAt,
     });
   }
+  // Each draft is a model round-trip, and this runs inside a cron. Ten quiet
+  // leads is a normal morning; a hundred would blow the function's budget and
+  // the agent would not read a hundred drafts anyway. Cap it, and say out loud
+  // what didn't get one — a silent cap reads as "everything was handled".
+  let draftsMade = 0;
+  let draftsSkipped = 0;
+
   for (const l of ai.insights.needsFollowUp ?? []) {
     // daysInactive can be the 999 sentinel if last_activity_at was
     // somehow null at AI-input time (post-PR #385 this shouldn't
@@ -394,16 +406,55 @@ async function writeMorningTasks(
       l.daysInactive >= 999
         ? `Lead hasn't been contacted yet at ${l.address || "no address"}.`
         : `Lead has been inactive for ${l.daysInactive} days at ${l.address || "no address"}.`;
+    const inactiveContactId = l.name ? nameToContactId.get(l.name) ?? null : null;
+
+    // Have Chris write the text instead of reminding the agent to write one.
+    // A bare reminder restates a problem they already knew about; a draft they
+    // can approve is the work actually done. Best-effort — if the model is
+    // unreachable the task below still stands, which is exactly the old
+    // behaviour rather than a regression.
+    let draftId: string | null = null;
+    if (inactiveContactId && draftsMade < MAX_NUDGE_DRAFTS && !(await hasPendingNudge(agentId, inactiveContactId))) {
+      draftId = await draftInactiveLeadNudge({
+        agentId,
+        contactId: inactiveContactId,
+        contactName: l.name ?? null,
+        daysInactive: l.daysInactive,
+        address: l.address ?? null,
+      });
+      if (draftId) draftsMade += 1;
+    } else if (inactiveContactId && draftsMade >= MAX_NUDGE_DRAFTS) {
+      draftsSkipped += 1;
+    }
+
     tasks.push({
       agent_id: agentId,
-      contact_id: l.name ? nameToContactId.get(l.name) ?? null : null,
-      title: `Follow up with inactive lead: ${l.name}`,
-      description: inactiveDesc,
-      task_type: "follow_up",
+      contact_id: inactiveContactId,
+      // Prefix is load-bearing — markContactActivity closes these by it, and the
+      // dedup below keys off it. Only the description changes.
+      title: `${INACTIVE_FOLLOWUP_PREFIX} ${l.name}`,
+      description: draftId
+        ? `${inactiveDesc} Chris drafted a text for your approval — approve it, or call them.`
+        : `${inactiveDesc} Give them a call.`,
+      // A call is the ask now: the text is already written and waiting, so what
+      // is left for the agent is the human half.
+      task_type: "call",
       source: "briefing",
       priority: "normal",
       due_at: dueAt,
+      metadata_json: {
+        assignee: "sales_assistant",
+        needs_approval: true,
+        ...(draftId ? { draft_id: draftId } : {}),
+      },
     });
+  }
+
+  if (draftsSkipped > 0) {
+    console.log(
+      `[briefing] drafted ${draftsMade} inactive-lead nudges for agent ${agentId}; ` +
+        `${draftsSkipped} more got a task but no draft (cap ${MAX_NUDGE_DRAFTS}).`,
+    );
   }
 
   if (!tasks.length) return;
@@ -448,6 +499,6 @@ async function writeMorningTasks(
  */
 function prefixOf(title: string): string {
   if (title.startsWith("Call hot lead:")) return "Call hot lead";
-  if (title.startsWith("Follow up with inactive lead:")) return "Follow up with inactive lead";
+  if (title.startsWith(INACTIVE_FOLLOWUP_PREFIX)) return INACTIVE_FOLLOWUP_PREFIX.replace(/:$/, "");
   return title;
 }
