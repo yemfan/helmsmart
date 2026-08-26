@@ -16,8 +16,8 @@ import { logAssistantActivity } from "@/lib/closeboss/activities";
 import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
 import { recordVoiceUsageForAgent } from "@/lib/entitlements/recordVoiceUsage";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { sendMissedCallTextBack } from "@/lib/voice-agent/callerTextBack";
-import { callerSpoke } from "@/lib/voice-agent/callerTextBackCopy";
+import { sendMissedCallTextBack, bookedDuringCall } from "@/lib/voice-agent/callerTextBack";
+import { finishedNormally } from "@/lib/voice-agent/callerTextBackCopy";
 
 export const runtime = "nodejs";
 
@@ -212,35 +212,43 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // A caller who rang, heard the greeting and hung up without speaking has
-    // missed us as surely as one who never got through — the receptionist
-    // answered and nobody learned anything. That is the case the text-back was
-    // always meant for. It cannot live in the branch below: that one requires a
-    // summary, and a silent call produces none, so it no-ops exactly when this
-    // is needed.
+    // Any inbound call that did NOT end normally gets a courtesy text.
+    //
+    // "Normal" means the receptionist wrapped up and hung up herself. A caller
+    // who rang off mid-sentence, went quiet, hit voicemail or hit an error never
+    // got a conclusion — whether they said nothing at all or talked for four
+    // minutes — and that is exactly who should hear from us.
+    //
+    // It cannot live in the branch below: that one requires a summary, and the
+    // shortest calls produce none, so it no-ops precisely when this is needed.
     if (
       body.event === "call_analyzed" &&
       call.direction === "inbound" &&
       call.from_number &&
       call.to_number &&
-      !callerSpoke(call.transcript)
+      !finishedNormally(call.disconnection_reason)
     ) {
-      const silentFrom = call.from_number;
-      const silentTo = call.to_number;
+      const cutFrom = call.from_number;
+      const cutTo = call.to_number;
+      const startedAtISO = new Date(call.start_timestamp ?? Date.now()).toISOString();
+      const reason = call.disconnection_reason || "unknown";
       after(async () => {
         try {
-          const agentId = await resolveAgentIdByReceptionistNumber(silentTo);
+          const agentId = await resolveAgentIdByReceptionistNumber(cutTo);
           if (!agentId) return;
-          await sendMissedCallTextBack({ agentId, toPhone: silentFrom });
+          // They booked on this very call, so they already have a confirmation.
+          // Two texts a minute apart reads as though the booking didn't take.
+          if (await bookedDuringCall(agentId, cutFrom, startedAtISO)) return;
+          await sendMissedCallTextBack({ agentId, toPhone: cutFrom });
           await logAssistantActivity({
             agentId,
             assistantType: "receptionist",
             activityType: "missed_call_text_back",
-            summary: `Caller ${silentFrom} hung up without speaking — texted them back`,
+            summary: `Call from ${cutFrom} ended early (${reason}) — texted them back`,
             requiresAttention: false,
           });
         } catch (e) {
-          console.error("retell/call-events: missed-call text-back failed", e);
+          console.error("retell/call-events: early-ending text-back failed", e);
         }
       });
     }

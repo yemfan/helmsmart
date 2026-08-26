@@ -14,12 +14,21 @@ export function missedCallTextBack(orgName: string, agentName?: string | null): 
 }
 
 /**
- * Did the caller actually say anything?
+ * Did the call reach a natural end?
  *
- * Retell transcripts are line-oriented, "Agent:" / "User:" per turn. The agent
- * always speaks — she opens the call — so her turns say nothing about whether a
- * human engaged.
+ * The receptionist closes a finished conversation by invoking `end_call`, and
+ * Retell records that as `agent_hangup`. Every other ending — the caller hanging
+ * up mid-sentence, silence timing out, voicemail, an error, hitting the duration
+ * cap — means she never got to wrap up, whatever was or wasn't said.
+ *
+ * Checked against twelve real calls: `agent_hangup` and an `end_call`
+ * invocation matched on every one, so the disconnection reason alone is enough
+ * and we don't need to dig through the tool calls.
+ *
+ * Anything unrecognised counts as NOT normal. A reason we've never seen is far
+ * more likely to be a new failure mode than a new way of succeeding, and the
+ * cost of being wrong is one extra courtesy text.
  */
-export function callerSpoke(transcript: string | null | undefined): boolean {
-  return /^\s*(user|caller)\s*:\s*\S/im.test(transcript || "");
+export function finishedNormally(disconnectionReason: string | null | undefined): boolean {
+  return (disconnectionReason || "").trim().toLowerCase() === "agent_hangup";
 }
