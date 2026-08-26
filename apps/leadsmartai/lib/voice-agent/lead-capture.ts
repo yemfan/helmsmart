@@ -268,7 +268,9 @@ export async function captureLeadFromInboundCall(args: {
       // Durable memory captured on this call: language, area, budget, beds/baths.
       ...contactMemoryPatch(ex, { includeName: false, fillEmail: true, fillLanguage: true }),
     };
-    if (ex.partyType === "buyer" || ex.partyType === "seller") row.type = ex.partyType;
+    // contacts has no `type` column; writing one failed the entire insert, so a
+    // caller identified as a buyer or seller was never saved at all.
+    if (ex.partyType === "buyer" || ex.partyType === "seller") row.lead_type = ex.partyType;
     // Note: the lead's rating is set by the composite recomputeLeadRating below
     // (off a `call_rated` event), not written directly here.
     try {
