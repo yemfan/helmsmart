@@ -251,19 +251,18 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   // Land at the newest message, the way a chat does — the useful end of this
   // page is the bottom, and opening at the top means scrolling past a briefing
   // you already read to find what Max just said.
-  const conversationEndRef = useRef<HTMLDivElement>(null);
   const landedRef = useRef(false);
   useEffect(() => {
     if (loading) return;
-    const end = conversationEndRef.current;
-    if (!end) return;
+    const pane = document.getElementById("agent-portal-main");
+    if (!pane) return;
     // First paint jumps; later messages glide, so an arriving reply reads as
     // movement rather than a redraw.
     const behavior: ScrollBehavior = landedRef.current ? "smooth" : "auto";
     landedRef.current = true;
     // A frame's grace so the cards below have laid out — scrolling to a
     // half-measured page lands short of the bottom.
-    const id = requestAnimationFrame(() => end.scrollIntoView({ behavior, block: "end" }));
+    const id = requestAnimationFrame(() => pane.scrollTo({ top: pane.scrollHeight, behavior }));
     return () => cancelAnimationFrame(id);
   }, [loading, instructions.length, tasks.length]);
 
@@ -731,36 +730,17 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           </BossBubble>
         )}
 
-        <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} initialText={askPrefill} />
-      </section>
-
-      {/* ── Your AI team (compact) ── */}
-      <section>
-        <h2 className="mb-2 text-sm font-semibold text-gray-900">{tr("boss.team.heading")}</h2>
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          {AI_TEAM.filter((a) => a.type !== "boss_assistant").map((a) => {
-            const latest = activities.find((act) => act.assistant_type === a.type);
-            const av = teamAvatars[a.type];
-            return (
-              <Link key={a.type} href={a.href} className="flex min-w-0 items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-3 hover:bg-gray-50">
-                {av ? <AssistantAvatar id={av.id} url={av.url} size={32} /> : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-xs font-semibold text-blue-700">{(teamNames[a.type] || tr(`roster.${a.type}.name`, { defaultValue: a.name })).slice(0, 1)}</span>}
-                <div className="min-w-0">
-                  <p className="flex items-center gap-1.5 truncate text-sm font-medium text-gray-900">
-                    {teamNames[a.type] || tr(`roster.${a.type}.name`, { defaultValue: a.name })}
-                    <span className={`h-1.5 w-1.5 rounded-full ${(teamStatus[a.type] ?? "active") === "active" ? "bg-emerald-500" : "bg-gray-300"}`} />
-                  </p>
-                  <p className="truncate text-[11px] text-gray-500">{latest ? `${latest.summary} · ${fmtAgo(latest.created_at, locale)}` : tr(`roster.${a.type}.role`, { defaultValue: a.role })}</p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
       </section>
 
       <PerformanceSection />
 
-      {/* Scroll target: the end of the conversation. */}
-      <div ref={conversationEndRef} aria-hidden />
+      {/* The composer sits last and sticks to the bottom of the scroll pane, so
+          it is always reachable without scrolling to find it. Negative margins
+          cancel <main>'s padding so the bar spans the full width; the blur keeps
+          the conversation legible as it passes underneath. */}
+      <div className="sticky bottom-0 z-10 -mx-4 border-t border-gray-200 bg-slate-50/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8 lg:-mx-10 lg:px-10">
+        <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} initialText={askPrefill} />
+      </div>
 
       <LeadProfileDrawer leadId={profileLeadId} onClose={() => setProfileLeadId(null)} />
       {settingsOpen && (
@@ -824,8 +804,9 @@ const TEAM_DOT: Record<TeamState, string> = {
 /**
  * The live team ribbon: a glanceable row of the AI employees and what each is
  * doing this moment. Working/needs-you dots pulse so the floor feels alive.
- * Purely a status view (no navigation — the "Your AI team" grid below links
- * out); it reads from state already loaded, so it re-derives on every poll.
+ * This is now the ONLY roster on the page: the duplicate grid that used to sit
+ * at the bottom said the same six names a second time, far below where anyone
+ * looks. Reads from state already loaded, so it re-derives on every poll.
  */
 function TeamStatusStrip({
   team, names, avatars,
@@ -1238,6 +1219,9 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
           rows={1}
           placeholder={pendingQuestion ? tr("boss.composer.answer") : autopilot ? tr("boss.composer.autopilot") : tr("boss.composer.ask")}
           className="max-h-[120px] min-h-[38px] flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          // The page exists to be typed into; landing with the cursor already
+          // here saves a click every single visit.
+          autoFocus
         />
         <button type="button" onClick={send} disabled={!text.trim()} className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" aria-label={tr("pages.labels.send")}>↑</button>
       </div>
