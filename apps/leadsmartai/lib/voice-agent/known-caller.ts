@@ -38,18 +38,25 @@ export async function loadKnownCaller(
     const contact = await findContactByPhone(agentId, fromPhone);
     if (!contact) return null;
 
-    const { data } = await supabaseAdmin
+    // `lead_type`, NOT `type` — there is no contacts.type column. Asking for it
+    // failed the WHOLE select with 42703, so every field here came back empty:
+    // the caller's language, email, budget, area and timeline all silently
+    // vanished, and the receptionist greeted a returning Chinese speaker in
+    // English while appearing to recognise them. Never let this one fail quietly
+    // again.
+    const { data, error } = await supabaseAdmin
       .from("contacts")
       .select(
-        "type, preferred_language, search_location, property_address, price_min, price_max, beds, baths, timeline, email",
+        "lead_type, preferred_language, search_location, property_address, price_min, price_max, beds, baths, timeline, email",
       )
       .eq("id", contact.id as never)
       .maybeSingle();
+    if (error) console.error("[known-caller] contact memory select failed:", error.message);
     const c = (data ?? {}) as Record<string, unknown>;
 
     // One-line, human-readable memory the prompt confirms back to the caller.
     const parts: string[] = [];
-    const type = String(c.type ?? "").toLowerCase();
+    const type = String(c.lead_type ?? "").toLowerCase();
     if (type === "buyer" || type === "seller" || type === "renter") parts.push(type);
 
     const area = (c.search_location as string) || (c.property_address as string) || "";
