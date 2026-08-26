@@ -110,7 +110,13 @@ export default function AppDashboardShell({
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100/70 text-slate-900">
+    // h-[100dvh] + overflow-hidden, NOT min-h-screen: with min-h-screen the
+    // column below is free to grow past the viewport, so <main>'s overflow-y-auto
+    // never engages and the whole document scrolls — taking the sidebar and top
+    // bar with it. Pinning the shell to the viewport is what makes the content
+    // pane the only thing that scrolls. dvh rather than vh so mobile browser
+    // chrome doesn't cut the bottom off.
+    <div className="flex h-[100dvh] overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100/70 text-slate-900">
       {/* Left: sidebar spans full height (same as PropertyTools) */}
       <PremiumSidebarV2
         appName={APP_NAME}
@@ -129,7 +135,7 @@ export default function AppDashboardShell({
         footer={showAgentBrokerPromotion ? <SidebarFooter /> : undefined}
       />
       {/* Right: header then scrollable content */}
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+      <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
         <div className="shrink-0">
           <TopBar email={email} appRole={appRole} fullName={fullName} avatarUrl={avatarUrl} />
         </div>
