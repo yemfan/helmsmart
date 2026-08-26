@@ -63,10 +63,14 @@ export async function confirmBookingToCaller(input: {
       when = new Intl.DateTimeFormat(zh ? "zh-CN" : "en-US", {
         timeZone: timezone || "America/Los_Angeles",
         weekday: "long",
-        month: zh ? "numeric" : "long",
+        month: "long",
         day: "numeric",
         hour: "numeric",
         minute: "2-digit",
+        // zh-CN defaults to a 24-hour clock and, with a numeric month, renders
+        // "9/4星期五 15:30" — which reads like a date fragment, not a time you
+        // would say. Forcing hour12 and a long month gives "9月4日星期五 下午3:30".
+        hour12: true,
       }).format(start);
     }
 
