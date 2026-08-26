@@ -247,6 +247,9 @@ export type ToolResult = {
   bookedNote?: string;
   bookedContactId?: string | null;
   bookedCallerName?: string | null;
+  /** UTC start, so the confirmation can be re-rendered in the caller's own
+   *  language rather than reusing the English `bookedLabel`. */
+  bookedStartISO?: string;
 };
 
 /** Dispatch a Retell custom-function call to the right booking action. Returns a
@@ -367,6 +370,7 @@ export async function runReceptionistTool(
       bookedNote: r.title,
       bookedContactId: contactId,
       bookedCallerName: callerName || null,
+      bookedStartISO: r.startISO,
     };
   }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { resolveAgentIdByReceptionistNumber } from "@/lib/voice-receptionist/settings";
 import { notifyAgentOfBooking } from "@/lib/voice-agent/bookingNotify";
+import { confirmBookingToCaller } from "@/lib/voice-agent/bookingConfirmSms";
 import { runReceptionistTool } from "@/lib/voice-agent/booking";
 
 export const runtime = "nodejs";
@@ -55,19 +56,22 @@ export async function POST(req: NextRequest) {
       const title = out.bookedNote ?? null;
       const contactId = out.bookedContactId ?? null;
       const callerName = out.bookedCallerName ?? null;
+      const startISO = out.bookedStartISO ?? "";
       after(async () => {
-        try {
-          await notifyAgentOfBooking({
+        // Independent of each other on purpose: a Twilio outage must not cost
+        // the Realtor their alert, and a mail failure must not cost the caller
+        // their confirmation.
+        await Promise.allSettled([
+          notifyAgentOfBooking({
             agentId,
             label,
             title,
             callerName,
             callerPhone: fromNumber,
             contactId,
-          });
-        } catch (e) {
-          console.error("retell/function: booking notification failed", e);
-        }
+          }),
+          confirmBookingToCaller({ agentId, toPhone: fromNumber, startISO, label, contactId }),
+        ]);
       });
     }
     return NextResponse.json({ result: out.text });
