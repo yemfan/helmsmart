@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendSMS } from "@/lib/twilioSms";
 import { logAssistantActivity } from "@/lib/closeboss/activities";
 import type { TransactionRow, TransactionTaskRow } from "./types";
+import { EMAIL_BRAND } from "@/lib/email";
 
 /**
  * Fires an SMS to the buyer's agent 24-48 hours before close, but only
@@ -208,7 +209,7 @@ export function buildWireFraudSms(input: {
   return (
     `⚠️ WIRE FRAUD ALERT: ${input.propertyAddress} closes ${when} (${input.closingDate}). ` +
     `VERBALLY verify wire instructions — call title on a KNOWN number. ` +
-    `Scammers spoof emails. LeadSmart AI.`
+    `Scammers spoof emails. ${EMAIL_BRAND}.`
   );
 }
 

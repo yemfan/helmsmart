@@ -1,5 +1,6 @@
 import { supabaseServer } from "@/lib/supabaseServer";
 import { sendSMS } from "@/lib/twilioSms";
+import { agentBrandName } from "@/lib/branding/agentBrand";
 
 function clampMessage(message: string, maxChars = 320) {
   const clean = String(message ?? "").trim().replace(/\s+/g, " ");
@@ -223,8 +224,10 @@ export async function runSmsFollowupCron() {
 
     const leadName = String((lead as any).name ?? "").trim() || "there";
     const city = String((lead as any).city ?? parseCity((lead as any).property_address ?? "")).trim() || "your area";
+    // The lead hears from their agent, not from the software.
+    const brand = await agentBrandName(String((lead as any).agent_id ?? ""));
     const templates: Record<number, string> = {
-      1: `Hi ${leadName}, just checking in from LeadSmart AI — would it help if I shared a quick ${city} pricing snapshot for your home?`,
+      1: `Hi ${leadName}, just checking in from ${brand} — would it help if I shared a quick ${city} pricing snapshot for your home?`,
       2: `Following up in case I missed you — I can send a short local comps summary with likely price range. Want me to send it?`,
       3: `Last check-in for now — if timing changes, I can help with a simple no-pressure plan based on your neighborhood. Interested?`,
     };

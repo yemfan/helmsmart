@@ -20,6 +20,7 @@ import {
 } from "@/lib/mobile/pushNotificationsService";
 import { autoDetectContactLanguage } from "@/lib/locales/autoDetectContactLanguage";
 import type { SmsAssistantReply } from "@/lib/ai-sms/types";
+import { agentBrandName } from "@/lib/branding/agentBrand";
 
 function digitsOnly(input: string) {
   return input.replace(/\D/g, "");
@@ -364,8 +365,10 @@ export async function POST(req: Request) {
       } catch {}
 
       const toE164 = normalizeUsPhoneToE164(fromUsPhone);
+      // Names the agent they actually opted in to hear from.
+      const unsubBrand = await agentBrandName(agentId);
       const unsubReply =
-        "Thanks — you’ve been unsubscribed from LeadSmart AI SMS follow-ups. Reply HELP for assistance.";
+        `Thanks — you’ve been unsubscribed from ${unsubBrand} SMS follow-ups. Reply HELP for assistance.`;
 
       // Persist conversation.
       const { data: convoRow } = await supabaseServer
