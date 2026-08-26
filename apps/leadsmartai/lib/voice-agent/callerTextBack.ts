@@ -2,6 +2,7 @@ import "server-only";
 
 import { sendSMS } from "@/lib/twilioSms";
 import { loadReceptionistContext } from "@/lib/voice-agent/context";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { missedCallTextBack } from "@/lib/voice-agent/callerTextBackCopy";
 
 /**
@@ -36,5 +37,35 @@ export async function sendMissedCallTextBack(input: {
     await sendSMS(to, missedCallTextBack(ctx.orgName, ctx.agentName));
   } catch (e) {
     console.error("sendMissedCallTextBack failed", e);
+  }
+}
+
+/**
+ * Did this caller book something during the call that just ended?
+ *
+ * If so they already have a confirmation text, and following it with "we'll
+ * follow up shortly" reads as though the booking didn't take. Someone who books
+ * and then hangs up while the receptionist is still saying goodbye is the common
+ * case here, and it should not produce two texts a minute apart.
+ */
+export async function bookedDuringCall(
+  agentId: string,
+  callerPhone: string,
+  callStartedAtISO: string,
+): Promise<boolean> {
+  try {
+    const digits = (callerPhone || "").replace(/\D/g, "").slice(-10);
+    if (!digits) return false;
+    const { data } = await supabaseAdmin
+      .from("voice_appointments")
+      .select("caller_phone")
+      .eq("agent_id", agentId as never)
+      .gte("created_at", callStartedAtISO)
+      .limit(20);
+    return ((data ?? []) as { caller_phone: string | null }[]).some(
+      (r) => (r.caller_phone || "").replace(/\D/g, "").slice(-10) === digits,
+    );
+  } catch {
+    return false;
   }
 }
