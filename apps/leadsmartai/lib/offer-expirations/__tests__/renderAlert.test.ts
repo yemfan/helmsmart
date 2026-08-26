@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderAlertEmail, renderAlertSms, type AlertInput } from "../renderAlert";
+import { EMAIL_BRAND } from "@/lib/email";
 
 function input(overrides: Partial<AlertInput> = {}): AlertInput {
   return {
@@ -87,6 +88,14 @@ describe("renderAlertSms", () => {
     );
     expect(sms).toMatch(/FINAL ALERT/);
     expect(sms).toContain("2h");
+  });
+
+  it("signs off with the current brand, not the retired one", () => {
+    // This alert went out to a live agent still signed "LeadSmart AI" — a brand
+    // retired long enough ago that its domain now 404s.
+    const sms = renderAlertSms(input({ alertLevel: "final" }));
+    expect(sms).not.toMatch(/LeadSmart/i);
+    expect(sms).toContain(EMAIL_BRAND);
   });
 
   it("clamps hours to min 1 (so we never say 'in 0h')", () => {

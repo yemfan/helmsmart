@@ -70,8 +70,10 @@ const EN: LocaleEntry = {
   outboundToneDirective:
     "Respond in natural, warm American English. Real-estate-professional register. No idioms that won't translate well if quoted back. Keep tone friendly but never over-familiar.",
   smsConsentCopy: {
-    version: "en-1",
-    text: "By checking this box, you consent to receive SMS messages from LeadSmart AI and the agent who invited you, including automated messages. Consent is not a condition of any purchase. Message & data rates may apply. Reply STOP to opt out or HELP for help. See our Privacy Policy and Terms.",
+    // Bumped from en-1: the platform is CloseBoss now. The version exists so
+    // it stays clear which wording a given contact actually agreed to.
+    version: "en-2",
+    text: "By checking this box, you consent to receive SMS messages from CloseBoss and the agent who invited you, including automated messages. Consent is not a condition of any purchase. Message & data rates may apply. Reply STOP to opt out or HELP for help. See our Privacy Policy and Terms.",
   },
 };
 
@@ -101,8 +103,8 @@ const ZH: LocaleEntry = {
     "Both categories violate brand tone and Tencent content policy (matters when we add WeChat). " +
     "Write numbers as Arabic digits (500,000) not Chinese numerals (五十万) unless mirroring the lead. For dollar amounts, use USD (e.g., 500,000 美元) to avoid RMB confusion.",
   smsConsentCopy: {
-    version: "zh-1",
-    text: "勾选此框即表示您同意 LeadSmart AI 及邀请您的房产经纪人通过短信（包括自动发送的短信）与您联系。同意并非购买任何服务的前提条件。可能会产生短信和数据费用。回复 STOP（或 ALTO）取消订阅，回复 HELP 获得帮助。请查阅我们的《隐私政策》和《服务条款》（以英文为准）。",
+    version: "zh-2",
+    text: "勾选此框即表示您同意 CloseBoss 及邀请您的房产经纪人通过短信（包括自动发送的短信）与您联系。同意并非购买任何服务的前提条件。可能会产生短信和数据费用。回复 STOP（或 ALTO）取消订阅，回复 HELP 获得帮助。请查阅我们的《隐私政策》和《服务条款》（以英文为准）。",
   },
 };
 

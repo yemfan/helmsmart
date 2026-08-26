@@ -7,6 +7,7 @@ import { sendEmail } from "@/lib/email";
 import { scheduleEmailSequenceForLeadSkipDay0 } from "@/lib/emailSequences";
 import { getMarketplaceSessionId } from "@/lib/marketplaceSessionId";
 import { getUserFromRequest } from "@/lib/authFromRequest";
+import { EMAIL_BRAND } from "@/lib/email";
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -149,7 +150,7 @@ export async function POST(req: Request) {
       await sendEmail({
         to: email,
         subject: "Your Home Value Report",
-        text: `Hi there,\n\nHere is your home value report:\n\n👉 ${reportLink}\n\n— LeadSmart AI`,
+        text: `Hi there,\n\nHere is your home value report:\n\n👉 ${reportLink}\n\n— ${EMAIL_BRAND}`,
       });
     } catch {}
 
