@@ -248,6 +248,25 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [profileLeadId, setProfileLeadId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Land at the newest message, the way a chat does — the useful end of this
+  // page is the bottom, and opening at the top means scrolling past a briefing
+  // you already read to find what Max just said.
+  const conversationEndRef = useRef<HTMLDivElement>(null);
+  const landedRef = useRef(false);
+  useEffect(() => {
+    if (loading) return;
+    const end = conversationEndRef.current;
+    if (!end) return;
+    // First paint jumps; later messages glide, so an arriving reply reads as
+    // movement rather than a redraw.
+    const behavior: ScrollBehavior = landedRef.current ? "smooth" : "auto";
+    landedRef.current = true;
+    // A frame's grace so the cards below have laid out — scrolling to a
+    // half-measured page lands short of the bottom.
+    const id = requestAnimationFrame(() => end.scrollIntoView({ behavior, block: "end" }));
+    return () => cancelAnimationFrame(id);
+  }, [loading, instructions.length, tasks.length]);
+
   const loadConversation = useCallback(async () => {
     const [res, runsRes] = await Promise.all([
       fetch(`/api/dashboard/closeboss/instructions?limit=${RECENT_LIMIT}`).then((r) => r.json()).catch(() => ({})),
@@ -739,6 +758,9 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       </section>
 
       <PerformanceSection />
+
+      {/* Scroll target: the end of the conversation. */}
+      <div ref={conversationEndRef} aria-hidden />
 
       <LeadProfileDrawer leadId={profileLeadId} onClose={() => setProfileLeadId(null)} />
       {settingsOpen && (
