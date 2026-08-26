@@ -1,6 +1,7 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { INACTIVE_FOLLOWUP_PREFIX } from "@/lib/briefing/inactiveLeadNudge";
 
 /**
  * Single source of truth for "the agent just did something with
@@ -77,7 +78,7 @@ export async function markContactActivity(
       .eq("source", "briefing")
       .eq("contact_id", contactId)
       .eq("status", "open")
-      .ilike("title", "Follow up with inactive lead:%");
+      .ilike("title", `${INACTIVE_FOLLOWUP_PREFIX}%`);
 
     // Fallback for legacy briefing rows where contact_id is NULL
     // (the briefing job set null until contact_id-aware insert
@@ -92,7 +93,7 @@ export async function markContactActivity(
         .eq("source", "briefing")
         .is("contact_id", null)
         .eq("status", "open")
-        .ilike("title", `Follow up with inactive lead: ${name}%`);
+        .ilike("title", `${INACTIVE_FOLLOWUP_PREFIX} ${name}%`);
     }
   } catch (e) {
     console.warn(
