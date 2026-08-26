@@ -237,7 +237,17 @@ async function createCallbackTask(
   }
 }
 
-export type ToolResult = { text: string; bookedEventId?: string; bookedLabel?: string; bookedNote?: string };
+export type ToolResult = {
+  text: string;
+  /** Set only by a successful book_appointment. The caller of this module is
+   *  expected to act on these — they are what /api/retell/function turns into
+   *  the Realtor's "you have a new appointment" alert. */
+  bookedEventId?: string;
+  bookedLabel?: string;
+  bookedNote?: string;
+  bookedContactId?: string | null;
+  bookedCallerName?: string | null;
+};
 
 /** Dispatch a Retell custom-function call to the right booking action. Returns a
  *  short instruction string for the agent (Retell shows `result` to the LLM). */
@@ -355,6 +365,8 @@ export async function runReceptionistTool(
       bookedEventId: r.eventId,
       bookedLabel: r.label,
       bookedNote: r.title,
+      bookedContactId: contactId,
+      bookedCallerName: callerName || null,
     };
   }
 
