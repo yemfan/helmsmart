@@ -16,6 +16,8 @@ import { logAssistantActivity } from "@/lib/closeboss/activities";
 import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
 import { recordVoiceUsageForAgent } from "@/lib/entitlements/recordVoiceUsage";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { sendMissedCallTextBack } from "@/lib/voice-agent/callerTextBack";
+import { callerSpoke } from "@/lib/voice-agent/callerTextBackCopy";
 
 export const runtime = "nodejs";
 
@@ -206,6 +208,39 @@ export async function POST(req: NextRequest) {
           });
         } catch (e) {
           console.error("retell/call-events: outbound activity log failed", e);
+        }
+      });
+    }
+
+    // A caller who rang, heard the greeting and hung up without speaking has
+    // missed us as surely as one who never got through — the receptionist
+    // answered and nobody learned anything. That is the case the text-back was
+    // always meant for. It cannot live in the branch below: that one requires a
+    // summary, and a silent call produces none, so it no-ops exactly when this
+    // is needed.
+    if (
+      body.event === "call_analyzed" &&
+      call.direction === "inbound" &&
+      call.from_number &&
+      call.to_number &&
+      !callerSpoke(call.transcript)
+    ) {
+      const silentFrom = call.from_number;
+      const silentTo = call.to_number;
+      after(async () => {
+        try {
+          const agentId = await resolveAgentIdByReceptionistNumber(silentTo);
+          if (!agentId) return;
+          await sendMissedCallTextBack({ agentId, toPhone: silentFrom });
+          await logAssistantActivity({
+            agentId,
+            assistantType: "receptionist",
+            activityType: "missed_call_text_back",
+            summary: `Caller ${silentFrom} hung up without speaking — texted them back`,
+            requiresAttention: false,
+          });
+        } catch (e) {
+          console.error("retell/call-events: missed-call text-back failed", e);
         }
       });
     }
