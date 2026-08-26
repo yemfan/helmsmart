@@ -1,4 +1,5 @@
 import "server-only";
+import { callerSpokenScript } from "@/lib/voice-agent/callerScript";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getOpenAIConfig } from "@/lib/ai/openaiClient";
@@ -160,6 +161,7 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
     const pt = String(parsed.party_type ?? "other").toLowerCase();
     const rt = String(parsed.rating ?? "").toLowerCase();
     const lang = String(parsed.language ?? "").trim().toLowerCase().slice(0, 5);
+    const script = callerSpokenScript(transcript);
     const bedsN = toNum(parsed.beds);
     return {
       email: normalizeSpokenEmail(parsed.email),
@@ -170,7 +172,8 @@ async function extractLead(summary: string, transcript: string): Promise<Extract
       ownedPropertyAddress: String(parsed.owned_property_address ?? "").trim().slice(0, 200),
       timeline: String(parsed.timeline ?? "").trim().slice(0, 80),
       rating: (["hot", "warm", "cold"].includes(rt) ? rt : null) as CallRating,
-      language: /^[a-z]{2}$/.test(lang) ? lang : "",
+      // Script evidence from the caller's own lines beats the model's guess.
+      language: script || (/^[a-z]{2}$/.test(lang) ? lang : ""),
       languageRequested: parsed.language_requested === true,
       priceMin: toNum(parsed.price_min),
       priceMax: toNum(parsed.price_max),
