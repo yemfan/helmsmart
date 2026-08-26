@@ -241,6 +241,41 @@ export type ToolResult = { text: string; bookedEventId?: string; bookedLabel?: s
 
 /** Dispatch a Retell custom-function call to the right booking action. Returns a
  *  short instruction string for the agent (Retell shows `result` to the LLM). */
+/**
+ * Upcoming booked appointments for THIS caller, soonest first.
+ *
+ * Matching is done in JS rather than in the query on purpose: an appointment
+ * booked before the contact existed has `contact_id` null and only a phone, and
+ * the stored phone format varies ("(626) 625-5055" vs "+16266255055"). Comparing
+ * the last ten digits catches both. The agent's upcoming list is small, so
+ * over-fetching and filtering here is cheaper than getting the filter wrong.
+ */
+async function upcomingForCaller(
+  agentId: string,
+  fromPhone: string,
+  contactId: string | null,
+): Promise<{ title: string | null; start_at: string }[]> {
+  const { data } = await supabaseAdmin
+    .from("voice_appointments")
+    .select("title,start_at,contact_id,caller_phone")
+    .eq("agent_id", agentId as never)
+    .eq("status", "booked")
+    .gte("start_at", new Date().toISOString())
+    .order("start_at", { ascending: true })
+    .limit(50);
+
+  const digits = (v: string | null | undefined) => (v ?? "").replace(/\D/g, "").slice(-10);
+  const mine = digits(fromPhone);
+  return ((data ?? []) as {
+    title: string | null;
+    start_at: string;
+    contact_id: string | null;
+    caller_phone: string | null;
+  }[]).filter(
+    (r) => (contactId && r.contact_id === contactId) || (!!mine && digits(r.caller_phone) === mine),
+  );
+}
+
 export async function runReceptionistTool(
   name: string,
   args: Record<string, unknown>,
@@ -256,6 +291,43 @@ export async function runReceptionistTool(
     // Spell the duration ("thirty") so TTS doesn't read "30" as "three zero".
     return {
       text: `Open thirty-minute appointment times: ${r.slots.map((s) => s.label).join("; ")}. Offer these and confirm one. Say times as words (e.g. "eleven thirty"), not digit by digit.`,
+    };
+  }
+
+  if (name === "lookup_appointment") {
+    const { timezone } = await loadBookingOrg(ctx.agentId);
+    let contactId: string | null = null;
+    try {
+      const c = await findContactByPhone(ctx.agentId, ctx.fromPhone);
+      contactId = c?.id ?? null;
+    } catch {
+      /* best-effort — fall back to phone matching */
+    }
+    const rows = await upcomingForCaller(ctx.agentId, ctx.fromPhone, contactId);
+    if (!rows.length) {
+      return {
+        text:
+          "No upcoming appointment on file for this caller. Say so plainly. If they are sure they " +
+          "have one, do NOT book a new one to cover it — take a message with create_callback so " +
+          "someone can check.",
+      };
+    }
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    const list = rows
+      .map((r) => `${speakTime(fmt.format(new Date(r.start_at)))}${r.title ? ` (${r.title})` : ""}`)
+      .join("; ");
+    return {
+      text:
+        `This caller already has: ${list}. Confirm that back to them. Do NOT book another ` +
+        "appointment unless they clearly want an ADDITIONAL one — if they want this one moved or " +
+        "cancelled, say the Realtor will take care of it and use create_callback.",
     };
   }
 
