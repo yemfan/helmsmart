@@ -36,11 +36,30 @@ describe("sales model cadence", () => {
     }
   });
 
-  it("gives up no sooner than it has touches to spend", () => {
+  it("does not reconsider before it has spent its ladder", () => {
     for (const m of models) {
-      expect(m.cadence.stopAfterUnanswered, m.id).toBeGreaterThanOrEqual(
+      expect(m.cadence.reconsiderAfterUnanswered, m.id).toBeGreaterThanOrEqual(
         m.cadence.hotLadderDays.length - 1,
       );
+    }
+  });
+
+  it("leaves room between reconsidering and the hard ceiling", () => {
+    // If these met, "slow down and keep a light touch" could never happen —
+    // an engaged lurker would be reconsidered and stopped in the same breath.
+    for (const m of models) {
+      expect(m.cadence.hardStopAfterUnanswered, m.id).toBeGreaterThan(
+        m.cadence.reconsiderAfterUnanswered,
+      );
+    }
+  });
+
+  it("sets an engagement floor that a real lurker can clear", () => {
+    // 40 is "hot" elsewhere in the app. A floor at or above that would only
+    // spare leads who were never at risk of being dropped.
+    for (const m of models) {
+      expect(m.cadence.keepGoingAboveEngagement, m.id).toBeGreaterThan(0);
+      expect(m.cadence.keepGoingAboveEngagement, m.id).toBeLessThan(40);
     }
   });
 
