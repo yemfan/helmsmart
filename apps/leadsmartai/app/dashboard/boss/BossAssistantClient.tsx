@@ -249,23 +249,65 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [pendingDrafts, setPendingDrafts] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Land at the newest message, the way a chat does — the useful end of this
-  // page is the bottom, and opening at the top means scrolling past a briefing
-  // you already read to find what Max just said.
+  // Stay pinned to the newest message, the way a chat does.
+  //
+  // A single scroll on load was not enough. This page fills in over several
+  // seconds — recommendations, runs, tasks and the performance block all land
+  // after first paint, and each one grows the page underneath a scroll that has
+  // already happened, leaving you stranded short of the end. So we follow the
+  // content down until you scroll away, and give you a way back when you do.
+  const [atBottom, setAtBottom] = useState(true);
+  const stickRef = useRef(true);
   const landedRef = useRef(false);
-  useEffect(() => {
-    if (loading) return;
+
+  const scrollToEnd = useCallback((behavior: ScrollBehavior = "smooth") => {
     const pane = document.getElementById("agent-portal-main");
     if (!pane) return;
-    // First paint jumps; later messages glide, so an arriving reply reads as
-    // movement rather than a redraw.
-    const behavior: ScrollBehavior = landedRef.current ? "smooth" : "auto";
+    stickRef.current = true;
+    setAtBottom(true);
+    pane.scrollTo({ top: pane.scrollHeight, behavior });
+  }, []);
+
+  useEffect(() => {
+    const pane = document.getElementById("agent-portal-main");
+    if (!pane) return;
+    // Generous: "near enough the bottom" is what a reader means by being at the
+    // bottom, and a few pixels of drift should not unpin them or flash a button.
+    const NEAR_BOTTOM_PX = 120;
+    const check = () => {
+      const near = pane.scrollHeight - pane.scrollTop - pane.clientHeight <= NEAR_BOTTOM_PX;
+      stickRef.current = near;
+      setAtBottom(near);
+    };
+    pane.addEventListener("scroll", check, { passive: true });
+
+    // Follow late-arriving content down — but only while the reader has not
+    // deliberately gone somewhere else. Yanking someone back mid-read is worse
+    // than leaving them short of the end.
+    const content = pane.firstElementChild;
+    const ro =
+      content && typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => {
+            if (stickRef.current) pane.scrollTo({ top: pane.scrollHeight });
+          })
+        : null;
+    ro?.observe(content as Element);
+
+    check();
+    return () => {
+      pane.removeEventListener("scroll", check);
+      ro?.disconnect();
+    };
+  }, []);
+
+  // The first landing jumps rather than glides: animating through a page you
+  // have not seen yet is disorienting, and slow.
+  useEffect(() => {
+    if (loading || landedRef.current) return;
     landedRef.current = true;
-    // A frame's grace so the cards below have laid out — scrolling to a
-    // half-measured page lands short of the bottom.
-    const id = requestAnimationFrame(() => pane.scrollTo({ top: pane.scrollHeight, behavior }));
+    const id = requestAnimationFrame(() => scrollToEnd("auto"));
     return () => cancelAnimationFrame(id);
-  }, [loading, instructions.length, tasks.length]);
+  }, [loading, scrollToEnd]);
 
   const loadConversation = useCallback(async () => {
     const [res, runsRes] = await Promise.all([
@@ -756,6 +798,17 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           cancel <main>'s padding so the bar spans the full width; the blur keeps
           the conversation legible as it passes underneath. */}
       <div className="sticky bottom-0 z-10 -mx-4 border-t border-gray-200 bg-slate-50/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8 lg:-mx-10 lg:px-10">
+        {!atBottom && (
+          <button
+            type="button"
+            onClick={() => scrollToEnd()}
+            aria-label={tr("pages.boss.scrollToEnd")}
+            title={tr("pages.boss.scrollToEnd")}
+            className="absolute -top-5 left-1/2 z-20 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-gray-300 bg-white text-base text-gray-700 shadow-md transition hover:bg-gray-50"
+          >
+            <span aria-hidden>↓</span>
+          </button>
+        )}
         <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} initialText={askPrefill} />
       </div>
 

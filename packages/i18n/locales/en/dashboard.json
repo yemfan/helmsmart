@@ -3638,7 +3638,8 @@
       "uploading": "Uploading…",
       "breakingIntoActions": "On it — breaking this into actions…",
       "draftsAwaiting_one": "1 draft needs your approval",
-      "draftsAwaiting_other": "{{count}} drafts need your approval"
+      "draftsAwaiting_other": "{{count}} drafts need your approval",
+      "scrollToEnd": "Scroll to latest"
     },
     "offersList": {
       "offersFor": "Offers for",
