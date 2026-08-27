@@ -90,6 +90,35 @@ describe("sales model cadence", () => {
     }
   });
 
+  it("has something to say at every rung of its ladder", () => {
+    // The drip previously carried three generic lines for everyone, which
+    // silently capped every model at three touches however long its ladder was.
+    // A ladder longer than its copy is a ladder that stops early for a reason
+    // nobody would find.
+    for (const m of models) {
+      expect(m.cadence.ladderMessages.length, m.id).toBe(m.cadence.hotLadderDays.length);
+      for (const msg of m.cadence.ladderMessages) {
+        expect(msg.trim().length, m.id).toBeGreaterThan(0);
+        // Compliance text is appended at send time; writing it here would
+        // double it up.
+        expect(msg, m.id).not.toMatch(/reply stop/i);
+        // Room for " Reply STOP to unsubscribe." inside one SMS segment budget.
+        expect(msg.length, `${m.id}: "${msg.slice(0, 40)}…"`).toBeLessThanOrEqual(290);
+      }
+    }
+  });
+
+  it("only uses placeholders the sender knows how to fill", () => {
+    const known = new Set(["name", "city", "brand"]);
+    for (const m of models) {
+      for (const msg of m.cadence.ladderMessages) {
+        for (const match of msg.matchAll(/\{\{(\w+)\}\}/g)) {
+          expect(known.has(match[1]), `${m.id} uses {{${match[1]}}}`).toBe(true);
+        }
+      }
+    }
+  });
+
   it("posts within what the schedule can hold", () => {
     // boss_autopilot_settings.posts_per_week is CHECKed to 1..7; a model
     // proposing more would fail the write with a constraint error at save time.
