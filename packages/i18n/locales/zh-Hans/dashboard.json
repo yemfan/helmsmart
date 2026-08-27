@@ -329,7 +329,15 @@
     "couldNotWorkOut": "这条我没能理解 —— 换个说法再试试。",
     "addFile": "添加文件",
     "businessPerformance": "业务表现",
-    "defaultHeadline": "这是目前的情况 —— 以及我建议为您做的事。"
+    "defaultHeadline": "这是目前的情况 —— 以及我建议为您做的事。",
+    "approval": {
+      "ask": "您审批",
+      "assisted": "Max 审批",
+      "auto": "自动",
+      "askHint": "未经您审批不会发送。",
+      "assistedHint": "Max 负责校对和风险把关，只有拿不准时才会询问您。",
+      "autoHint": "在免打扰时段和联系频率限制内自动发送。"
+    }
   },
   "support": {
     "title": "客服工作台",

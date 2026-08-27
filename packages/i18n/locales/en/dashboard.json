@@ -329,7 +329,15 @@
     "couldNotWorkOut": "Couldn't work that one out — try rephrasing it.",
     "addFile": "Add a file",
     "businessPerformance": "Business performance",
-    "defaultHeadline": "Here's where things stand — and what I'd like to do for you."
+    "defaultHeadline": "Here's where things stand — and what I'd like to do for you.",
+    "approval": {
+      "ask": "you approve",
+      "assisted": "Max approves",
+      "auto": "auto",
+      "askHint": "Nothing sends until you approve it.",
+      "assistedHint": "Max proofreads and risk-checks it, and only asks you when he's unsure.",
+      "autoHint": "Sends on its own, within quiet hours and contact limits."
+    }
   },
   "support": {
     "title": "Support Dashboard",

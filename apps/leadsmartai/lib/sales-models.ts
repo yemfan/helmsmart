@@ -25,6 +25,37 @@ export type ScriptKind =
   | "appointment_setting"
   | "consultation_opening";
 
+/**
+ * How often the model reaches out, and how loudly it posts.
+ *
+ * Until now a sales model changed the words and nothing else — same tone knob,
+ * same cadence underneath. These are the numbers that make Advisor and Closer
+ * behave differently rather than merely read differently.
+ *
+ * Defaults, not rules. The model seeds these and the agent overrides any of
+ * them; a model that cannot be adjusted just pushes people to "Custom".
+ *
+ * Everything here proposes. The draft sender disposes — quiet hours, per-contact
+ * caps and opt-outs sit above cadence, and a ladder must never out-vote a cap.
+ * Every ladder also stops dead the moment the contact replies, in every model.
+ */
+export type SalesCadence = {
+  /** Minutes to the first touch on a brand-new lead. Speed is the whole game here. */
+  firstTouchMinutes: number;
+  /** Days after first contact to touch again, for a lead who is actively looking. */
+  hotLadderDays: number[];
+  /** Slower ladder for someone interested but not in a hurry. */
+  warmLadderDays: number[];
+  /** Days between touches for cold leads and sphere contacts. */
+  coldIntervalDays: number;
+  /** Unanswered touches before the ladder gives up. Silence is an answer. */
+  stopAfterUnanswered: number;
+  /** Social posts per week. */
+  postsPerWeek: number;
+  /** What those posts are mostly about — seeds the weekly schedule's topics. */
+  postThemes: string[];
+};
+
 export type SalesModel = {
   id: SalesModelId;
   name: string;
@@ -55,6 +86,8 @@ export type SalesModel = {
    * "Recommended" badge.
    */
   recommended?: boolean;
+  /** Follow-up and posting rhythm this model implies. */
+  cadence: SalesCadence;
 };
 
 export const salesModels: Record<SalesModelId, SalesModel> = {
@@ -77,6 +110,17 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
     philosophy:
       "Lead with relationships — be warm, human, and consistently in touch so people actually reply.",
     tone: "Warm, casual, personable, relationship-first",
+    // Light and frequent, and by far the most social: for this model staying
+    // top-of-mind IS the strategy, so the touches are cheap and the posting loud.
+    cadence: {
+      firstTouchMinutes: 15,
+      hotLadderDays: [1, 2, 5, 10],
+      warmLadderDays: [1, 5, 14],
+      coldIntervalDays: 21,
+      stopAfterUnanswered: 5,
+      postsPerWeek: 5,
+      postThemes: ["lifestyle", "community", "personal", "client stories"],
+    },
     leadTypes: ["First-time buyers", "Social media leads", "Sphere & referrals", "Warm inbound leads"],
     tasks: [
       "Check in with 5 sphere or past clients",
@@ -109,6 +153,17 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
     philosophy:
       "Control your pipeline through daily action, strong scripts, and confident follow-up.",
     tone: "Direct, structured, confident, action-oriented",
+    // Front-loaded and then done. Seven touches inside a fortnight, no long
+    // tail: this model wins by speed to contact, not by patience.
+    cadence: {
+      firstTouchMinutes: 5,
+      hotLadderDays: [1, 2, 3, 5, 7],
+      warmLadderDays: [1, 3, 7, 14],
+      coldIntervalDays: 14,
+      stopAfterUnanswered: 7,
+      postsPerWeek: 3,
+      postThemes: ["new listings", "just sold", "market moves", "call to action"],
+    },
     leadTypes: ["Expired listings", "FSBO", "Seller leads", "Cold prospects"],
     tasks: [
       "Make 20 prospecting calls",
@@ -142,6 +197,17 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
     philosophy:
       "Help clients think clearly, reduce risk, and make confident real estate decisions.",
     tone: "Calm, analytical, trustworthy, client-first",
+    // Fewest touches, each carrying something worth reading. A high-trust
+    // client is annoyed by volume, so this model spends its budget on substance.
+    cadence: {
+      firstTouchMinutes: 60,
+      hotLadderDays: [1, 3, 7, 14],
+      warmLadderDays: [2, 7, 21],
+      coldIntervalDays: 30,
+      stopAfterUnanswered: 4,
+      postsPerWeek: 2,
+      postThemes: ["market analysis", "buyer & seller guides", "risk and pitfalls"],
+    },
     leadTypes: ["Buyer leads", "Investor leads", "Relocation clients", "Referral clients"],
     tasks: [
       "Review 3 new leads",
@@ -188,6 +254,17 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
     philosophy:
       "Use LeadSmart's standard CRM and shape every screen, script, and pipeline stage to your own approach.",
     tone: "Neutral — define your own voice in Settings",
+    // Advisor's numbers as a neutral starting point, the same way this model
+    // already borrows a tone. Every field is meant to be overridden.
+    cadence: {
+      firstTouchMinutes: 60,
+      hotLadderDays: [1, 3, 7, 14],
+      warmLadderDays: [2, 7, 21],
+      coldIntervalDays: 30,
+      stopAfterUnanswered: 4,
+      postsPerWeek: 2,
+      postThemes: ["market analysis", "new listings", "client stories"],
+    },
     leadTypes: ["Any lead type", "Mixed sources", "Custom segments"],
     tasks: [
       "Review new leads",
