@@ -3636,7 +3636,9 @@
       "artifactResult": "结果",
       "typeAnswer": "输入您的回答…",
       "uploading": "上传中…",
-      "breakingIntoActions": "收到——正在拆解成具体行动…"
+      "breakingIntoActions": "收到——正在拆解成具体行动…",
+      "draftsAwaiting_other": "有 {{count}} 条草稿等待您审批",
+      "draftsAwaiting_one": "有 1 条草稿等待您审批"
     },
     "offersList": {
       "offersFor": "报价——",

@@ -246,6 +246,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const [profileLeadId, setProfileLeadId] = useState<string | null>(null);
+  const [pendingDrafts, setPendingDrafts] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // Land at the newest message, the way a chat does — the useful end of this
@@ -318,7 +319,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
     const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59).toISOString();
 
-    const [summaryRes, eventsRes, hotRes, txRes, recsRes, actsRes, teamRes, briefRes, apRes] = await Promise.all([
+    const [summaryRes, eventsRes, hotRes, txRes, recsRes, actsRes, teamRes, briefRes, apRes, draftsRes] = await Promise.all([
       fetch("/api/dashboard/summary").then((r) => r.json()).catch(() => ({})),
       fetch(`/api/dashboard/calendar/events?from=${todayStart}&to=${todayEnd}`).then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/leads?filter=hot&pageSize=5").then((r) => r.json()).catch(() => ({})),
@@ -328,6 +329,10 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       fetch("/api/dashboard/closeboss/team").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/briefings?limit=1").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/closeboss/autopilot").then((r) => r.json()).catch(() => ({})),
+      // Drafts Chris and the others have written but nobody has approved. They
+      // sit on their own page, which is fine until you stop visiting it — so
+      // Max says the number out loud.
+      fetch("/api/dashboard/drafts?status=pending").then((r) => r.json()).catch(() => ({})),
     ]);
 
     const m = summaryRes?.metrics;
@@ -337,6 +342,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     setTransactions((txRes?.transactions ?? []) as TransactionItem[]);
     setRecommendations((recsRes?.recommendations ?? []) as Recommendation[]);
     setActivities((actsRes?.activities ?? []) as ActivityRow[]);
+    setPendingDrafts(((draftsRes?.drafts ?? []) as unknown[]).length);
     const morning = (briefRes?.morning?.[0] ?? null) as BriefingRow | null;
     setBriefing(morning && !morning.read_at ? morning : null);
 
@@ -623,6 +629,17 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
                   {tr("pages.boss.needsYou", { count: teamDigest.needsYou })}
                 </span>
               )}
+            </p>
+          )}
+          {pendingDrafts > 0 && (
+            <p className="mt-2">
+              <Link
+                href="/dashboard/drafts"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs font-medium text-amber-900 ring-1 ring-amber-200 hover:bg-amber-100"
+              >
+                ✍️ {tr("pages.boss.draftsAwaiting", { count: pendingDrafts })}
+                <span aria-hidden>→</span>
+              </Link>
             </p>
           )}
         </BossBubble>
