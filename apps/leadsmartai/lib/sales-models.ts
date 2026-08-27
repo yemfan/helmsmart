@@ -56,8 +56,14 @@ export type SalesCadence = {
   reconsiderAfterUnanswered: number;
   /** Engagement (0-100) at or above which silence is not disinterest. */
   keepGoingAboveEngagement: number;
-  /** Ceiling. Even an engaged lurker is not chased forever. */
+  /** Ceiling on active chasing — after this they move to the nurture group. */
   hardStopAfterUnanswered: number;
+  /**
+   * Days between touches once someone is in the nurture group. This is the
+   * long orbit: a market update, not a follow-up. It is what makes "we stopped
+   * chasing" different from "we forgot about them".
+   */
+  nurtureIntervalDays: number;
   /** Social posts per week. */
   postsPerWeek: number;
   /** What those posts are mostly about — seeds the weekly schedule's topics. */
@@ -128,6 +134,7 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       reconsiderAfterUnanswered: 5,
       keepGoingAboveEngagement: 20,
       hardStopAfterUnanswered: 10,
+      nurtureIntervalDays: 30,
       postsPerWeek: 5,
       postThemes: ["lifestyle", "community", "personal", "client stories"],
     },
@@ -173,6 +180,7 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       reconsiderAfterUnanswered: 7,
       keepGoingAboveEngagement: 30,
       hardStopAfterUnanswered: 12,
+      nurtureIntervalDays: 90,
       postsPerWeek: 3,
       postThemes: ["new listings", "just sold", "market moves", "call to action"],
     },
@@ -219,6 +227,7 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       reconsiderAfterUnanswered: 4,
       keepGoingAboveEngagement: 25,
       hardStopAfterUnanswered: 8,
+      nurtureIntervalDays: 60,
       postsPerWeek: 2,
       postThemes: ["market analysis", "buyer & seller guides", "risk and pitfalls"],
     },
@@ -278,6 +287,7 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       reconsiderAfterUnanswered: 4,
       keepGoingAboveEngagement: 25,
       hardStopAfterUnanswered: 8,
+      nurtureIntervalDays: 60,
       postsPerWeek: 2,
       postThemes: ["market analysis", "new listings", "client stories"],
     },

@@ -14,17 +14,22 @@
  * own — which is the "lower the rating first, then decide" rule, already built,
  * with no second writer touching contacts.rating.
  *
- * Three outcomes:
+ * Four outcomes, and only one of them is really an ending:
  *   continue   — still inside the ladder, nothing to reconsider yet.
  *   slow_down  — silent, but still reading. Drop to the cold interval and keep
- *                a light touch rather than stopping.
- *   stop       — silent AND no longer looking, or past the ceiling.
+ *                a light touch rather than backing off.
+ *   nurture    — active follow-up is over, but they are not written off: hand
+ *                them to the re-engagement rail for periodic updates. A lead
+ *                who is not ready this quarter may be ready next year, and the
+ *                cost of a market update every couple of months is nothing
+ *                against the cost of forgetting them.
+ *   stop       — they asked us to stop. The only true ending.
  *
  * Pure, so it can be tested and so the same rule can be read by the drip rail,
  * the briefing, and anything else that decides whether to send again.
  */
 
-export type FollowUpDecision = "continue" | "slow_down" | "stop";
+export type FollowUpDecision = "continue" | "slow_down" | "nurture" | "stop";
 
 export type FollowUpCadenceRules = {
   /** Silent touches before we stop assuming they are merely busy. */
@@ -52,12 +57,13 @@ export function decideFollowUp(input: {
   if (unanswered < cadence.reconsiderAfterUnanswered) {
     return { decision: "continue", reason: "Still early in the follow-up." };
   }
-  // The ceiling is absolute. Someone who has read twelve messages and answered
-  // none of them has told us something, even if the score has not caught up.
+  // The ceiling ends the CHASE, not the relationship. Someone who has read
+  // twelve messages and answered none has told us something — but the answer is
+  // "not now", not "never".
   if (unanswered >= cadence.hardStopAfterUnanswered) {
     return {
-      decision: "stop",
-      reason: `${unanswered} messages with no reply — time to leave it.`,
+      decision: "nurture",
+      reason: `${unanswered} messages with no reply — easing them into periodic updates.`,
     };
   }
   if (engagementScore >= cadence.keepGoingAboveEngagement) {
@@ -67,7 +73,7 @@ export function decideFollowUp(input: {
     };
   }
   return {
-    decision: "stop",
-    reason: `${unanswered} messages, no replies, and nothing being opened (engagement ${Math.round(engagementScore)}).`,
+    decision: "nurture",
+    reason: `No replies and nothing being opened (engagement ${Math.round(engagementScore)}) — moving them to periodic updates.`,
   };
 }

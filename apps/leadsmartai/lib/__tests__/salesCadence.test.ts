@@ -80,6 +80,16 @@ describe("sales model cadence", () => {
     }
   });
 
+  it("keeps the nurture orbit slower than active follow-up", () => {
+    // If nurture came round faster than the ladder it would not be a slower
+    // orbit at all — it would be the chase again under a calmer name.
+    for (const m of models) {
+      const lastLadderDay = Math.max(...m.cadence.hotLadderDays);
+      expect(m.cadence.nurtureIntervalDays, m.id).toBeGreaterThan(lastLadderDay);
+      expect(m.cadence.nurtureIntervalDays, m.id).toBeGreaterThanOrEqual(m.cadence.coldIntervalDays);
+    }
+  });
+
   it("posts within what the schedule can hold", () => {
     // boss_autopilot_settings.posts_per_week is CHECKed to 1..7; a model
     // proposing more would fail the write with a constraint error at save time.

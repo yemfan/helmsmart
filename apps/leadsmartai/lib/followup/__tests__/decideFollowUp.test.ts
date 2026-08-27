@@ -22,15 +22,30 @@ describe("decideFollowUp", () => {
     expect(r.reason).toMatch(/opening/i);
   });
 
-  it("stops a silent lead who has gone dark", () => {
+  it("nurtures — does not abandon — a lead who has gone dark", () => {
+    // The point of the whole change: they stop being chased, not forgotten.
     const r = decideFollowUp({ unanswered: 4, engagementScore: 2, cadence: advisor });
-    expect(r.decision).toBe("stop");
+    expect(r.decision).toBe("nurture");
   });
 
-  it("stops at the ceiling even for someone still reading", () => {
-    // Twelve unanswered messages says something regardless of opens.
+  it("nurtures at the ceiling even for someone still reading", () => {
     const r = decideFollowUp({ unanswered: 99, engagementScore: 100, cadence: advisor });
-    expect(r.decision).toBe("stop");
+    expect(r.decision).toBe("nurture");
+  });
+
+  it("reserves 'stop' for an opt-out and nothing else", () => {
+    // Every other path leaves a way back. Only the person telling us to go away
+    // ends the relationship, which is the one case that must be absolute.
+    const paths = [
+      { unanswered: 0, engagementScore: 0 },
+      { unanswered: 4, engagementScore: 0 },
+      { unanswered: 4, engagementScore: 99 },
+      { unanswered: 999, engagementScore: 0 },
+      { unanswered: 999, engagementScore: 99 },
+    ];
+    for (const p of paths) {
+      expect(decideFollowUp({ ...p, cadence: advisor }).decision).not.toBe("stop");
+    }
   });
 
   it("an opt-out ends it immediately, whatever the score", () => {
@@ -56,7 +71,7 @@ describe("decideFollowUp", () => {
       engagementScore: advisor.keepGoingAboveEngagement - 1,
       cadence: advisor,
     });
-    expect(below.decision).toBe("stop");
+    expect(below.decision).toBe("nurture");
   });
 
   it("gives every model a window where a lurker is spared", () => {
