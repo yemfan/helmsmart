@@ -4,7 +4,6 @@ import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { sendEmail } from "@/lib/email";
 import { sendSMS } from "@/lib/twilioSms";
 import { appendMessages } from "@/lib/leadConversationHelpers";
-import { scheduleFollowUpsForLead } from "@/lib/followUp";
 
 export const runtime = "nodejs";
 
@@ -97,13 +96,6 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       metadata: { contact_id: leadId, channel, source: "ai_assistant_dashboard" },
     } as any);
 
-    if (body.scheduleFollowups !== false) {
-      try {
-        await scheduleFollowUpsForLead(leadId, agentId);
-      } catch (e) {
-        console.warn("scheduleFollowUpsForLead", e);
-      }
-    }
 
     return NextResponse.json({ ok: true, sent: true, channel });
   } catch (e: any) {
