@@ -42,9 +42,14 @@ export type ScriptKind =
 export type SalesCadence = {
   /** Minutes to the first touch on a brand-new lead. Speed is the whole game here. */
   firstTouchMinutes: number;
-  /** Days after first contact to touch again, for a lead who is actively looking. */
+  /**
+   * Days to wait since the PREVIOUS touch before the next one, for a lead who
+   * is actively looking. Gaps, not days-from-first-contact — [1, 3, 7] means
+   * tomorrow, then three days after that, then a week after that. This matches
+   * what the drip has always measured, so the numbers mean what the code does.
+   */
   hotLadderDays: number[];
-  /** Slower ladder for someone interested but not in a hurry. */
+  /** The same gaps, stretched, for someone interested but not in a hurry. */
   warmLadderDays: number[];
   /** Days between touches for cold leads and sphere contacts. */
   coldIntervalDays: number;
@@ -68,6 +73,16 @@ export type SalesCadence = {
   postsPerWeek: number;
   /** What those posts are mostly about — seeds the weekly schedule's topics. */
   postThemes: string[];
+  /**
+   * What to actually say at each rung, in this model's voice — one message per
+   * entry in hotLadderDays. The drip used to carry three generic lines for
+   * everyone, which capped every model at three touches however long its ladder
+   * was, and made Advisor and Closer sound identical while claiming not to.
+   *
+   * {{name}}, {{city}} and {{brand}} are substituted at send time. Compliance
+   * text is appended separately — do not write "reply STOP" here.
+   */
+  ladderMessages: string[];
 };
 
 export type SalesModel = {
@@ -135,6 +150,12 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       keepGoingAboveEngagement: 20,
       hardStopAfterUnanswered: 10,
       nurtureIntervalDays: 30,
+      ladderMessages: [
+        "Hi {{name}}! {{brand}} here — how's everything going? Happy to send a quick {{city}} update if that'd be useful.",
+        "Just checking in again, no pressure at all. Anything you're curious about in {{city}}?",
+        "A few things moved in {{city}} this week. Want me to pass along anything interesting?",
+        "I'll stop filling up your phone! I'm here whenever you feel like talking {{city}}.",
+      ],
       postsPerWeek: 5,
       postThemes: ["lifestyle", "community", "personal", "client stories"],
     },
@@ -181,6 +202,13 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       keepGoingAboveEngagement: 30,
       hardStopAfterUnanswered: 12,
       nurtureIntervalDays: 90,
+      ladderMessages: [
+        "Hi {{name}}, {{brand}}. Would a {{city}} price range for your home be useful this week?",
+        "Following up — can I send you the recent {{city}} comps? Two minutes to read.",
+        "Quick one: are you looking to move in the next 90 days, or is this longer term?",
+        "Happy to put 15 minutes aside this week to go through the {{city}} numbers. Morning or afternoon?",
+        "I'll leave it there unless I hear from you. If the timing changes, text me anytime.",
+      ],
       postsPerWeek: 3,
       postThemes: ["new listings", "just sold", "market moves", "call to action"],
     },
@@ -228,6 +256,12 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       keepGoingAboveEngagement: 25,
       hardStopAfterUnanswered: 8,
       nurtureIntervalDays: 60,
+      ladderMessages: [
+        "Hi {{name}}, {{brand}} here. Would a short {{city}} pricing snapshot for your home be useful?",
+        "Following up with something concrete: recent {{city}} comps and a likely range for your home. Want me to send it?",
+        "No rush at all. When you're weighing a move, the numbers matter more than the timing — happy to walk you through what {{city}} looks like now.",
+        "Last note from me for now. If anything changes, I can give you a straight read on where your home sits in this market.",
+      ],
       postsPerWeek: 2,
       postThemes: ["market analysis", "buyer & seller guides", "risk and pitfalls"],
     },
@@ -288,6 +322,12 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       keepGoingAboveEngagement: 25,
       hardStopAfterUnanswered: 8,
       nurtureIntervalDays: 60,
+      ladderMessages: [
+        "Hi {{name}}, {{brand}} here. Would a short {{city}} pricing snapshot for your home be useful?",
+        "Following up with something concrete: recent {{city}} comps and a likely range for your home. Want me to send it?",
+        "No rush at all. When you're weighing a move, the numbers matter more than the timing — happy to walk you through what {{city}} looks like now.",
+        "Last note from me for now. If anything changes, I can give you a straight read on where your home sits in this market.",
+      ],
       postsPerWeek: 2,
       postThemes: ["market analysis", "new listings", "client stories"],
     },
