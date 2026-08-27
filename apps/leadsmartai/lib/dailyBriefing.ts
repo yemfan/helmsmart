@@ -413,16 +413,16 @@ async function writeMorningTasks(
     // can approve is the work actually done. Best-effort — if the model is
     // unreachable the task below still stands, which is exactly the old
     // behaviour rather than a regression.
-    let draftId: string | null = null;
+    let draft: { id: string; status: "pending" | "approved" } | null = null;
     if (inactiveContactId && draftsMade < MAX_NUDGE_DRAFTS && !(await hasPendingNudge(agentId, inactiveContactId))) {
-      draftId = await draftInactiveLeadNudge({
+      draft = await draftInactiveLeadNudge({
         agentId,
         contactId: inactiveContactId,
         contactName: l.name ?? null,
         daysInactive: l.daysInactive,
         address: l.address ?? null,
       });
-      if (draftId) draftsMade += 1;
+      if (draft) draftsMade += 1;
     } else if (inactiveContactId && draftsMade >= MAX_NUDGE_DRAFTS) {
       draftsSkipped += 1;
     }
@@ -433,9 +433,13 @@ async function writeMorningTasks(
       // Prefix is load-bearing — markContactActivity closes these by it, and the
       // dedup below keys off it. Only the description changes.
       title: `${INACTIVE_FOLLOWUP_PREFIX} ${l.name}`,
-      description: draftId
-        ? `${inactiveDesc} Chris drafted a text for your approval — approve it, or call them.`
-        : `${inactiveDesc} Give them a call.`,
+      // Say what actually happened. A task that asks for approval Max has
+      // already given sends the agent to a queue with nothing in it.
+      description: !draft
+        ? `${inactiveDesc} Give them a call.`
+        : draft.status === "approved"
+          ? `${inactiveDesc} Chris's text is approved and going out — a call would still land better.`
+          : `${inactiveDesc} Chris drafted a text for your approval — approve it, or call them.`,
       // A call is the ask now: the text is already written and waiting, so what
       // is left for the agent is the human half.
       task_type: "call",
@@ -445,7 +449,7 @@ async function writeMorningTasks(
       metadata_json: {
         assignee: "sales_assistant",
         needs_approval: true,
-        ...(draftId ? { draft_id: draftId } : {}),
+        ...(draft ? { draft_id: draft.id, draft_status: draft.status } : {}),
       },
     });
   }
