@@ -21,6 +21,8 @@ export type DispatchReason =
   | "do_not_contact"
   | "paused_on_reply"
   | "missing_address"
+  /** Approved so long ago that sending it now would land as a non sequitur. */
+  | "stale"
   | "send_failed";
 
 export type DispatchOutcome = {
@@ -47,7 +49,7 @@ type SenderOptions = {
 };
 
 type FullDraftRow = MessageDraftRow & {
-  sphere_contacts: {
+  contacts: {
     id: string;
     phone: string | null;
     email: string | null;
@@ -67,6 +69,15 @@ type FullDraftRow = MessageDraftRow & {
  * `scheduled_for` but leave status='approved'. Permanent blocks (DNC, missing
  * phone/email) flip to 'failed' so we don't loop forever.
  */
+/**
+ * NOTE: the embed is `contacts`, and must stay that way.
+ *
+ * message_drafts.contact_id was repointed to `contacts` by a later migration;
+ * this join was left behind. An INNER join matching nothing returns nothing —
+ * no error, no warning, a 200 and an empty page — so every approved draft for a
+ * CRM contact was skipped in silence. One had been sitting approved since 2 July
+ * when this was found. Approving a draft did nothing at all.
+ */
 export async function dispatchApprovedDrafts(
   opts: SenderOptions = {},
 ): Promise<DispatchResult> {
@@ -75,7 +86,7 @@ export async function dispatchApprovedDrafts(
   let q = supabaseAdmin
     .from("message_drafts")
     .select(
-      "*, sphere_contacts!inner(id, phone, email, do_not_contact_sms, do_not_contact_email, preferred_language)",
+      "*, contacts!inner(id, phone, email, do_not_contact_sms, do_not_contact_email, preferred_language)",
     )
     .eq("status", "approved")
     .order("approved_at", { ascending: true })
@@ -108,15 +119,29 @@ export async function dispatchApprovedDrafts(
   return { processed: rows.length, sent, deferred, failed, outcomes };
 }
 
+/** Past this, an approved draft is history rather than a message. */
+const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
+
 async function processOne(
   row: FullDraftRow,
   now: Date,
   settingsCache: Map<string, AgentMessageSettingsEffective | null>,
 ): Promise<DispatchOutcome> {
   const draftId = row.id;
-  const contact = row.sphere_contacts;
+  const contact = row.contacts;
 
-  // Permanent blocks first — fail the draft so it drops out of the queue.
+  // Staleness first. A message written for a moment that has passed should not
+  // arrive as though it were written today — "just checking in about Saturday's
+  // showing" is worse than silence three weeks later. This also matters right
+  // now: the join above was broken, so approved drafts have been accumulating
+  // unsent, and repairing it must not fire a backlog at real people.
+  const approvedAt = row.approved_at ? new Date(row.approved_at).getTime() : null;
+  if (approvedAt && now.getTime() - approvedAt > STALE_AFTER_MS) {
+    await markFailed(draftId, "approved too long ago to send — redraft it");
+    return { draftId, reason: "stale" };
+  }
+
+  // Permanent blocks — fail the draft so it drops out of the queue.
   if (row.channel === "sms" && (contact.do_not_contact_sms || !contact.phone)) {
     await markFailed(draftId, "contact opted out of SMS or has no phone");
     return {
