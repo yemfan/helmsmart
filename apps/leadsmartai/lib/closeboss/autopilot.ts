@@ -18,7 +18,20 @@ import type { BossAssignee, BossChannel } from "@/lib/closeboss/actions/registry
  * to act on its own (auto) or prepare the work and ask for approval (ask).
  */
 
-export type AutopilotMode = "ask" | "auto";
+/**
+ * Who has to bless an outbound action before it goes.
+ *
+ *   ask      — the realtor approves it. Nothing leaves without a human.
+ *   assisted — Max proofreads and risk-checks it, and only bothers the realtor
+ *              when he is not sure. The middle setting people actually want:
+ *              not "read every text", not "send anything".
+ *   auto     — it goes, subject to the usual compliance rails.
+ *
+ * The DB CHECK has allowed 'ask' | 'review' | 'assisted' | 'auto' all along;
+ * only this type was narrower, so the middle tier needed no migration.
+ * 'review' stays unused — 'assisted' says whose review it is.
+ */
+export type AutopilotMode = "ask" | "assisted" | "auto";
 
 export type AutopilotCell = {
   assignee: BossAssignee;
@@ -46,6 +59,37 @@ async function globalAutopilot(agentId: string): Promise<boolean> {
  * with no outbound channel (CMA, presentation, scheduling) pass `channel`
  * undefined and resolve purely on the global policy.
  */
+/**
+ * The full three-way answer. `effectiveAutopilot` below is the boolean view of
+ * this — true only for "auto" — and is left alone so every existing caller keeps
+ * its current behaviour; a caller that has never heard of "assisted" must not
+ * start treating it as autopilot.
+ */
+export async function resolveApprovalMode(
+  agentId: string,
+  assignee: BossAssignee,
+  channel?: BossChannel,
+): Promise<AutopilotMode> {
+  const fallback: AutopilotMode = (await globalAutopilot(agentId)) ? "auto" : "ask";
+  if (!channel) return fallback;
+  try {
+    const { data } = await supabaseAdmin
+      .from("boss_autopilot_settings")
+      .select("mode")
+      .eq("agent_id", agentId)
+      .eq("assignee", assignee)
+      .eq("channel", channel)
+      .maybeSingle();
+    const mode = (data as { mode?: string } | null)?.mode;
+    if (mode === "auto") return "auto";
+    if (mode === "assisted") return "assisted";
+    if (mode === "ask" || mode === "review") return "ask";
+    return fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export async function effectiveAutopilot(
   agentId: string,
   assignee: BossAssignee,

@@ -3,6 +3,8 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getAnthropicClient } from "@/lib/anthropic";
 import { BOSS_AGENT_MODEL } from "@/lib/ai/config";
+import { resolveApprovalMode } from "@/lib/closeboss/autopilot";
+import { maxReviewDraft } from "@/lib/boss/maxReview";
 
 /**
  * Title prefix for the briefing's inactive-lead task.
@@ -14,6 +16,41 @@ import { BOSS_AGENT_MODEL } from "@/lib/ai/config";
  * so the string lives here and everyone imports it.
  */
 export const INACTIVE_FOLLOWUP_PREFIX = "Follow up with inactive lead:";
+
+/**
+ * Write it again, with Max's objection as the brief.
+ *
+ * Called at most once. A reject/redraft loop that can run twice can run
+ * forever, and a lead who has been quiet for three weeks can wait for tomorrow's
+ * briefing — so a second rejection goes to the realtor rather than a third try.
+ */
+async function redraft(system: string, facts: string, objection: string): Promise<string | null> {
+  try {
+    const response = await getAnthropicClient().messages.create({
+      model: BOSS_AGENT_MODEL,
+      max_tokens: 400,
+      system,
+      messages: [
+        { role: "user", content: facts },
+        {
+          role: "user",
+          content: `That draft was rejected by the team lead: "${objection}". Write it again, fixing exactly that. Return only the JSON object.`,
+        },
+      ],
+    });
+    const tb = response.content.find((b) => b.type === "text");
+    if (!tb || tb.type !== "text") return null;
+    const text = tb.text.replace(/```(?:json)?|```/g, "");
+    const first = text.indexOf("{");
+    const last = text.lastIndexOf("}");
+    if (first < 0 || last <= first) return null;
+    const raw = JSON.parse(text.slice(first, last + 1)) as { body?: unknown };
+    const out = typeof raw.body === "string" ? raw.body.trim() : "";
+    return out || null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Have the Sales assistant draft the text, rather than telling the realtor to
@@ -38,7 +75,7 @@ export async function draftInactiveLeadNudge(input: {
   contactName: string | null;
   daysInactive: number;
   address?: string | null;
-}): Promise<string | null> {
+}): Promise<{ id: string; status: "pending" | "approved" } | null> {
   try {
     // No phone, no text worth drafting — the call task still stands on its own.
     const { data: contactRow } = await supabaseAdmin
@@ -115,18 +152,76 @@ Output ONLY a JSON object: { "body": "string" }`;
     }
     if (!body) return null;
 
+    body = body.slice(0, 320);
+
+    // Whose approval this needs — the realtor's, Max's, or nobody's. Set per
+    // (assistant, channel), so "auto-text but ask before calling" is expressible.
+    const mode = await resolveApprovalMode(input.agentId, "sales_assistant", "sms");
+
+    let status: "pending" | "approved" = "pending";
+    let edited = false;
+    let review: { verdict: string; reason: string } | null = null;
+
+    if (mode === "auto") {
+      status = "approved";
+    } else if (mode === "assisted") {
+      const intent = `Re-open the conversation with a lead who has gone quiet for ${input.daysInactive} days.`;
+      let verdict = await maxReviewDraft({
+        channel: "sms",
+        body,
+        intent,
+        recipientName: recipient,
+        brandName: brand,
+      });
+
+      // One redo, with Max's objection as the brief. Bounded on purpose: a
+      // reject/redraft loop that can run twice can run forever, and a lead who
+      // has been quiet for three weeks can wait for tomorrow's briefing.
+      if (verdict.verdict === "reject") {
+        const retry = await redraft(system, facts, verdict.reason);
+        if (retry) {
+          body = retry.slice(0, 320);
+          verdict = await maxReviewDraft({
+            channel: "sms",
+            body,
+            intent,
+            recipientName: recipient,
+            brandName: brand,
+          });
+        }
+      }
+
+      review = { verdict: verdict.verdict, reason: verdict.reason };
+      if (verdict.verdict === "approve") {
+        status = "approved";
+      } else if (verdict.verdict === "fix" && verdict.body) {
+        body = verdict.body;
+        edited = true;
+        status = "approved";
+      } else {
+        // escalate, or a second rejection — the realtor decides. A rejected
+        // draft is still saved: "Max sent this back and here is why" is more
+        // use than a lead that silently produced nothing.
+        status = "pending";
+      }
+    }
+
     const { data: draft, error } = await supabaseAdmin
       .from("message_drafts")
       .insert({
         agent_id: input.agentId,
         contact_id: input.contactId,
         channel: "sms",
-        body: body.slice(0, 320),
-        status: "pending",
+        body,
+        status,
+        edited,
+        ...(status === "approved" ? { approved_at: new Date().toISOString() } : {}),
         trigger_context: {
           source: "briefing_inactive_lead",
           assignee: "sales_assistant",
           days_inactive: input.daysInactive,
+          approval_mode: mode,
+          ...(review ? { max_review: review } : {}),
         },
       })
       .select("id")
@@ -135,7 +230,7 @@ Output ONLY a JSON object: { "body": "string" }`;
       console.error("[inactive-nudge] draft insert failed:", error?.message);
       return null;
     }
-    return String((draft as { id: unknown }).id);
+    return { id: String((draft as { id: unknown }).id), status };
   } catch (e) {
     console.error("[inactive-nudge] draft failed:", e instanceof Error ? e.message : e);
     return null;
