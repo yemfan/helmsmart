@@ -107,7 +107,7 @@ type TaskRow = {
 };
 
 type Channel = "call" | "sms" | "email" | "social";
-type AutopilotCell = { assignee: string; channel: Channel; mode: "ask" | "auto" };
+type AutopilotCell = { assignee: string; channel: Channel; mode: "ask" | "assisted" | "auto" };
 type AutopilotChannels = { assignee: string; channels: Channel[] };
 
 /** Boss v2 live run (see /api/dashboard/closeboss/runs). */
@@ -494,7 +494,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     }).catch(() => setAutopilot(!on));
   }, []);
 
-  const setCell = useCallback(async (assignee: string, channel: Channel, mode: "ask" | "auto") => {
+  const setCell = useCallback(async (assignee: string, channel: Channel, mode: "ask" | "assisted" | "auto") => {
     setAutopilotCells((prev) => {
       const next = prev.filter((c) => !(c.assignee === assignee && c.channel === channel));
       return [...next, { assignee, channel, mode }];
@@ -1341,7 +1341,7 @@ function SettingsModal({
   channels: AutopilotChannels[];
   cells: AutopilotCell[];
   onGlobal: (on: boolean) => void;
-  onCell: (assignee: string, channel: Channel, mode: "ask" | "auto") => void;
+  onCell: (assignee: string, channel: Channel, mode: "ask" | "assisted" | "auto") => void;
   onPauseAll: () => void;
   overnightMode: boolean;
   onOvernight: (on: boolean) => void;
@@ -1349,10 +1349,22 @@ function SettingsModal({
 }) {
   const { t: tr, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
-  const cellMode = (assignee: string, channel: Channel): "ask" | "auto" => {
+  type Mode = "ask" | "assisted" | "auto";
+  const cellMode = (assignee: string, channel: Channel): Mode => {
     const c = cells.find((x) => x.assignee === assignee && x.channel === channel);
-    if (c) return c.mode;
+    if (c) return c.mode as Mode;
     return global ? "auto" : "ask";
+  };
+  // Tapping cycles you outward, one step at a time: you approve → Max approves →
+  // it just goes. Then back to the strictest, so the loop cannot leave someone
+  // on autopilot by accident.
+  const nextMode = (m: Mode): Mode => (m === "ask" ? "assisted" : m === "assisted" ? "auto" : "ask");
+  // Colour carries the amount of trust being handed over: grey nothing, amber
+  // some, green all of it.
+  const modeClass: Record<Mode, string> = {
+    ask: "border border-gray-200 bg-white text-gray-500",
+    assisted: "bg-amber-100 text-amber-900",
+    auto: "bg-emerald-100 text-emerald-800",
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" onClick={onClose}>
@@ -1393,10 +1405,11 @@ function SettingsModal({
                     <button
                       key={ch}
                       type="button"
-                      onClick={() => onCell(row.assignee, ch, mode === "auto" ? "ask" : "auto")}
-                      className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition ${mode === "auto" ? "bg-emerald-100 text-emerald-800" : "border border-gray-200 bg-white text-gray-500"}`}
+                      onClick={() => onCell(row.assignee, ch, nextMode(mode))}
+                      title={tr(`boss.approval.${mode}Hint`)}
+                      className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition ${modeClass[mode]}`}
                     >
-                      {tr(`boss.channel.${ch}`)}: {mode === "auto" ? "auto" : "ask"}
+                      {tr(`boss.channel.${ch}`)}: {tr(`boss.approval.${mode}`)}
                     </button>
                   );
                 })}

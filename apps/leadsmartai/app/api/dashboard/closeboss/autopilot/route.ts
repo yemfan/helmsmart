@@ -18,7 +18,10 @@ export const runtime = "nodejs";
  *
  *   GET   → { global: boolean, channels: {assignee, channels[]}, cells: [...] }
  *   PATCH { global: boolean }                         → flip the master switch
- *   PATCH { assignee, channel, mode: "ask"|"auto" }   → set one per-channel cell
+ *   PATCH { assignee, channel, mode: "ask"|"assisted"|"auto" } → one per-channel cell
+ *     ask      — the realtor approves it
+ *     assisted — Max proofreads and risk-checks, escalating only when unsure
+ *     auto     — it goes, subject to the usual compliance rails
  *   PATCH { pauseAll: true }                          → global off + every cell "ask"
  */
 export async function GET(req: Request) {
@@ -98,7 +101,7 @@ export async function PATCH(req: Request) {
     if (
       !ASSIGNEES.includes(assignee) ||
       !(AUTOPILOT_CHANNELS[assignee] ?? []).includes(channel) ||
-      (mode !== "ask" && mode !== "auto")
+      (mode !== "ask" && mode !== "assisted" && mode !== "auto")
     ) {
       return NextResponse.json({ ok: false, error: "Invalid setting." }, { status: 400 });
     }
