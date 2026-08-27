@@ -48,8 +48,16 @@ export type SalesCadence = {
   warmLadderDays: number[];
   /** Days between touches for cold leads and sphere contacts. */
   coldIntervalDays: number;
-  /** Unanswered touches before the ladder gives up. Silence is an answer. */
-  stopAfterUnanswered: number;
+  /**
+   * Silence alone never ends a ladder — see `decideFollowUp`. Someone who reads
+   * every listing and replies to none is the most interested person in the
+   * pipeline, and a flat "stop after 4" throws them away for being quiet.
+   */
+  reconsiderAfterUnanswered: number;
+  /** Engagement (0-100) at or above which silence is not disinterest. */
+  keepGoingAboveEngagement: number;
+  /** Ceiling. Even an engaged lurker is not chased forever. */
+  hardStopAfterUnanswered: number;
   /** Social posts per week. */
   postsPerWeek: number;
   /** What those posts are mostly about — seeds the weekly schedule's topics. */
@@ -117,7 +125,9 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       hotLadderDays: [1, 2, 5, 10],
       warmLadderDays: [1, 5, 14],
       coldIntervalDays: 21,
-      stopAfterUnanswered: 5,
+      reconsiderAfterUnanswered: 5,
+      keepGoingAboveEngagement: 20,
+      hardStopAfterUnanswered: 10,
       postsPerWeek: 5,
       postThemes: ["lifestyle", "community", "personal", "client stories"],
     },
@@ -160,7 +170,9 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       hotLadderDays: [1, 2, 3, 5, 7],
       warmLadderDays: [1, 3, 7, 14],
       coldIntervalDays: 14,
-      stopAfterUnanswered: 7,
+      reconsiderAfterUnanswered: 7,
+      keepGoingAboveEngagement: 30,
+      hardStopAfterUnanswered: 12,
       postsPerWeek: 3,
       postThemes: ["new listings", "just sold", "market moves", "call to action"],
     },
@@ -204,7 +216,9 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       hotLadderDays: [1, 3, 7, 14],
       warmLadderDays: [2, 7, 21],
       coldIntervalDays: 30,
-      stopAfterUnanswered: 4,
+      reconsiderAfterUnanswered: 4,
+      keepGoingAboveEngagement: 25,
+      hardStopAfterUnanswered: 8,
       postsPerWeek: 2,
       postThemes: ["market analysis", "buyer & seller guides", "risk and pitfalls"],
     },
@@ -261,7 +275,9 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
       hotLadderDays: [1, 3, 7, 14],
       warmLadderDays: [2, 7, 21],
       coldIntervalDays: 30,
-      stopAfterUnanswered: 4,
+      reconsiderAfterUnanswered: 4,
+      keepGoingAboveEngagement: 25,
+      hardStopAfterUnanswered: 8,
       postsPerWeek: 2,
       postThemes: ["market analysis", "new listings", "client stories"],
     },
