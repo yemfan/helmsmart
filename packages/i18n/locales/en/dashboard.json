@@ -3636,7 +3636,9 @@
       "artifactResult": "result",
       "typeAnswer": "Type your answer…",
       "uploading": "Uploading…",
-      "breakingIntoActions": "On it — breaking this into actions…"
+      "breakingIntoActions": "On it — breaking this into actions…",
+      "draftsAwaiting_one": "1 draft needs your approval",
+      "draftsAwaiting_other": "{{count}} drafts need your approval"
     },
     "offersList": {
       "offersFor": "Offers for",
