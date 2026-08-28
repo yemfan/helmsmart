@@ -11,6 +11,7 @@ import { getAgentMessageSettingsEffective } from "@/lib/agent-messaging/settings
 import { quietHoursBlockReason } from "@/lib/agent-messaging/sendWindow";
 import type { AgentMessageSettingsEffective } from "@/lib/agent-messaging/types";
 import type { DraftChannel, MessageDraft, MessageDraftRow } from "./types";
+import { logSmsMessage } from "@/lib/smsAutoFollow";
 
 export type DispatchReason =
   | "sent"
@@ -186,7 +187,27 @@ async function processOne(
     if (row.channel === "sms") {
       // SMS doesn't carry signatures — the character cap + SMS norms
       // mean the agent's identity is implicit in the sender number.
-      await sendSMS(contact.phone!, row.body);
+      const sent = await sendSMS(contact.phone!, row.body, row.contact_id);
+      // Put it in the conversation. Approving a draft used to update
+      // message_drafts and nothing else, so the text reached the contact's
+      // phone and appeared nowhere in the app — the agent who approved it had
+      // no way to see what had been said, and the next person to open the
+      // thread saw a gap where an outbound message should be.
+      try {
+        await logSmsMessage({
+          leadId: row.contact_id,
+          agentId: String(row.agent_id),
+          message: row.body,
+          direction: "outbound",
+          assistantType: "marketing_assistant",
+          externalMessageId: sent?.sid || null,
+          twilioStatus: sent?.sid ? "queued" : null,
+        });
+      } catch (e) {
+        // The message is already gone; failing the send now would only
+        // re-send it on the next tick.
+        console.error("[drafts/sender] could not log the sent SMS:", e);
+      }
     } else {
       // Append the agent's signature to every outbound email. Custom
       // signatureHtml on the agent row wins; otherwise we compose a
