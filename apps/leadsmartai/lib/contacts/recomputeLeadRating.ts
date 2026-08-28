@@ -33,7 +33,7 @@ export async function recomputeLeadRating(contactId: string): Promise<LeadRating
   const { data: c } = await supabaseAdmin
     .from("contacts")
     .select(
-      "rating, rating_manual_override, agent_id, sms_opt_in, sms_opted_out_at, sms_last_inbound_at",
+      "rating, rating_manual_override, agent_id, sms_opt_in, sms_opted_out_at, sms_last_inbound_at, do_not_contact_sms, contact_opt_out_sms",
     )
     .eq("id", contactId)
     .maybeSingle();
@@ -45,6 +45,8 @@ export async function recomputeLeadRating(contactId: string): Promise<LeadRating
     sms_opt_in: boolean | null;
     sms_opted_out_at: string | null;
     sms_last_inbound_at: string | null;
+    do_not_contact_sms: boolean | null;
+    contact_opt_out_sms: boolean | null;
   };
 
   const now = Date.now();
@@ -88,7 +90,20 @@ export async function recomputeLeadRating(contactId: string): Promise<LeadRating
   const emailReply = evs.find((e) => e.event_type === "email_reply");
   const emailRepliedRecent =
     emailReply != null && now - new Date(emailReply.created_at).getTime() < 14 * DAY;
-  const optedOut = row.sms_opt_in === false || row.sms_opted_out_at != null;
+  // "Never opted in" is NOT "opted out".
+  //
+  // sms_opt_in defaults to false for anyone the receptionist creates from a
+  // phone call — nobody asks a caller for texting consent mid-conversation. It
+  // records the absence of a decision, not a refusal. Treating it as a refusal
+  // made EVERY inbound caller permanently cold, however the call went: a lead
+  // who rang, was rated warm by the AI, and rang again two days later still
+  // showed as cold, with the reason invisible.
+  //
+  // A real opt-out is someone actually saying no.
+  const optedOut =
+    row.sms_opted_out_at != null ||
+    row.do_not_contact_sms === true ||
+    row.contact_opt_out_sms === true;
 
   // Blend — strongest signal wins (only upgrades).
   let rating: LeadRating = "cold";
@@ -103,7 +118,12 @@ export async function recomputeLeadRating(contactId: string): Promise<LeadRating
   if (openHouse) bump(openHouseTimeline === "now" || openHouseTimeline === "3_6_months" ? "hot" : "warm");
   if (smsRepliedRecent) bump("warm");
   if (emailRepliedRecent) bump("warm");
-  if (optedOut) rating = "cold"; // opted out → never nurture-rated
+  // Even a real opt-out is a preference about ONE channel, not a verdict on the
+  // lead. It still cancels warmth inferred from nurture activity, but it cannot
+  // erase someone turning up in person or having a conversation — the SMS rails
+  // enforce consent themselves, so the rating does not need to do it for them.
+  const spokeToUs = callRating === "warm" || callRating === "hot" || !!openHouse;
+  if (optedOut && !spokeToUs) rating = "cold";
 
   // Manual override: keep the agent's pinned rating, but still refresh the
   // engagement score so the rest of the UI stays current.
