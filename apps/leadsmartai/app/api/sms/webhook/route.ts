@@ -594,7 +594,10 @@ export async function POST(req: Request) {
         const replyBase = String(assistant.replyText ?? "").trim();
         const reply = withOptOutFooter(replyBase);
 
-        await sendSMS(toE164, reply, leadId);
+        // Keep Twilio's id: the status webhook matches on it, so without it a
+        // delivery failure has no message to attach itself to and the thread
+        // shows a reply that may never have arrived.
+        const sent = await sendSMS(toE164, reply, leadId);
         try {
           await logSmsMessage({
             leadId,
@@ -602,6 +605,8 @@ export async function POST(req: Request) {
             message: reply,
             direction: "outbound",
             assistantType: "sales_assistant",
+            externalMessageId: sent?.sid || null,
+            twilioStatus: sent?.sid ? "queued" : null,
           });
         } catch {}
 
