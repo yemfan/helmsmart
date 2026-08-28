@@ -237,6 +237,7 @@ export async function captureLeadFromInboundCall(args: {
   let existingEmail: string | null = null;
   let existingLanguage: string | null = null;
   let existingName: string | null = null;
+  let existingOptedOut = false;
   try {
     // The name the caller gave, so a number shared by two contacts resolves to
     // the right one instead of whichever was touched most recently.
@@ -249,10 +250,16 @@ export async function captureLeadFromInboundCall(args: {
       // it decides whether this call may change a language already on file.
       const { data: langRow } = await supabaseAdmin
         .from("contacts")
-        .select("preferred_language")
+        .select("preferred_language, sms_opted_out_at, do_not_contact_sms")
         .eq("id", existing.id as never)
         .maybeSingle();
-      existingLanguage = (langRow as { preferred_language?: string | null } | null)?.preferred_language ?? null;
+      const lr = langRow as {
+        preferred_language?: string | null;
+        sms_opted_out_at?: string | null;
+        do_not_contact_sms?: boolean | null;
+      } | null;
+      existingLanguage = lr?.preferred_language ?? null;
+      existingOptedOut = lr?.sms_opted_out_at != null || lr?.do_not_contact_sms === true;
     }
   } catch {
     // fall through to insert
@@ -266,6 +273,14 @@ export async function captureLeadFromInboundCall(args: {
       phone_number: display,
       source: "ai_receptionist",
       lead_status: "new",
+      // They rang us on this number. That is the same reasoning the inbound-SMS
+      // path already uses, and it is recorded rather than assumed: the consent
+      // columns exist precisely so "where did this come from" has an answer
+      // later. Anyone who says STOP is opted out by the webhook and never
+      // re-opted-in by this code.
+      sms_opt_in: true,
+      tcpa_consent_at: new Date().toISOString(),
+      tcpa_consent_source: "inbound_call",
       notes: `AI receptionist call: ${summary}`,
       // Durable memory captured on this call: language, area, budget, beds/baths.
       ...contactMemoryPatch(ex, { includeName: false, fillEmail: true, fillLanguage: true }),
@@ -295,6 +310,13 @@ export async function captureLeadFromInboundCall(args: {
       fillEmail: !(existingEmail && existingEmail.trim()),
       fillLanguage: !(existingLanguage && existingLanguage.trim()),
     });
+    // A returning caller counts too — but never override a real opt-out. Someone
+    // who said STOP and then rang about something else has not taken it back.
+    if (!existingOptedOut) {
+      patch.sms_opt_in = true;
+      patch.tcpa_consent_at = new Date().toISOString();
+      patch.tcpa_consent_source = "inbound_call";
+    }
     if (Object.keys(patch).length > 0) {
       patch.updated_at = new Date().toISOString();
       try {

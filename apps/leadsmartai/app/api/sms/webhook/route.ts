@@ -301,7 +301,15 @@ export async function POST(req: Request) {
       try {
         await supabaseServer
           .from("contacts")
-          .update({ sms_opt_in: true } as any)
+          // Record where the consent came from, not just that it exists. The
+          // web-form path already stamps these; this one set the flag and left
+          // no trace of why, which is the half that matters if it is ever
+          // questioned.
+          .update({
+            sms_opt_in: true,
+            tcpa_consent_at: new Date().toISOString(),
+            tcpa_consent_source: "inbound_sms",
+          } as any)
           .eq("id", leadId);
       } catch {}
     }
