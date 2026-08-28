@@ -34,12 +34,37 @@ export const replyJsonSchema = {
       properties: {
         name: { type: ["string", "null"] },
         email: { type: ["string", "null"] },
+        // A specific street address: a home they own, are selling, or a listing
+        // they asked about.
         propertyAddress: { type: ["string", "null"] },
+        // The city, neighbourhood or area they want to buy or rent in. Separate
+        // from propertyAddress because a lead can have both, and because with a
+        // single field an area like "Alhambra" was stored as their address.
+        searchLocation: { type: ["string", "null"] },
         timeline: { type: ["string", "null"] },
-        budget: { type: ["number", "null"] },
+        // A range, because one number cannot hold "1 to 1.2 million" — an end
+        // of it was always lost. Whole US dollars.
+        budgetMin: { type: ["number", "null"] },
+        budgetMax: { type: ["number", "null"] },
+        beds: { type: ["number", "null"] },
+        baths: { type: ["number", "null"] },
+        // Language tag, e.g. "en" or "zh".
+        preferredLanguage: { type: ["string", "null"] },
       },
-      required: ["name", "email", "propertyAddress", "timeline", "budget"],
+      required: [
+        "name",
+        "email",
+        "propertyAddress",
+        "searchLocation",
+        "timeline",
+        "budgetMin",
+        "budgetMax",
+        "beds",
+        "baths",
+        "preferredLanguage",
+      ],
     },
+
     nextBestAction: {
       type: "string",
       enum: [
