@@ -8778,7 +8778,9 @@
     "aiZillowRedfinLinkAnalyzer": {
       "analyzeListing": "分析房源",
       "refreshLatestData": "刷新最新数据",
-      "notFound": "没有找到这个房源。请检查链接——房源可能已下架，或该 ID 并不存在。"
+      "notFound": "没有找到这个房源。请检查链接——房源可能已下架，或该 ID 并不存在。",
+      "fetchingListing": "正在获取房源信息…",
+      "fetchingListingSlow": "仍在从房源网站获取，最长可能需要 30 秒。（{{seconds}} 秒）"
     },
     "activity": {
       "priceTbd": "价格待定"

@@ -8778,7 +8778,9 @@
     "aiZillowRedfinLinkAnalyzer": {
       "analyzeListing": "Analyze Listing",
       "refreshLatestData": "Refresh Latest Data",
-      "notFound": "We couldn't find this listing. Check the URL — the listing may have been removed, or the ID may not exist."
+      "notFound": "We couldn't find this listing. Check the URL — the listing may have been removed, or the ID may not exist.",
+      "fetchingListing": "Fetching the live listing…",
+      "fetchingListingSlow": "Still fetching from the listing site — this can take up to 30 seconds. ({{seconds}}s)"
     },
     "activity": {
       "priceTbd": "Price TBD"

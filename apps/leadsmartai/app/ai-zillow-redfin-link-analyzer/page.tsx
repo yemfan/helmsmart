@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 type Platform = "zillow" | "redfin";
@@ -83,6 +83,24 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
   const [error, setError] = useState<string | null>(null);
   const [property, setProperty] = useState<PropertySummary | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Say how long this is taking, because it takes a long time.
+  //
+  // Fetching a live listing goes out to the portal through a scraper: measured
+  // at 11s for an unknown id and 24s for a real one. A spinner that sits there
+  // for twenty-four seconds saying nothing is indistinguishable from a broken
+  // page — a field tester read exactly this as "the button does nothing", and
+  // the error it eventually rendered was correct all along.
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    if (!loading && !refreshing) {
+      setElapsed(0);
+      return;
+    }
+    const started = Date.now();
+    const id = setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 1000);
+    return () => clearInterval(id);
+  }, [loading, refreshing]);
 
   const metrics: Metrics | null = useMemo(() => {
     if (!property) return null;
@@ -465,6 +483,13 @@ export default function AIZillowRedfinLinkAnalyzerPage() {
             {refreshing ? t("common:status.refreshing") : t("pages.aiZillowRedfinLinkAnalyzer.refreshLatestData")}
           </button>
         </div>
+        {(loading || refreshing) && (
+          <p className="mt-2 text-xs text-gray-500" aria-live="polite">
+            {elapsed < 6
+              ? t("pages.aiZillowRedfinLinkAnalyzer.fetchingListing")
+              : t("pages.aiZillowRedfinLinkAnalyzer.fetchingListingSlow", { seconds: elapsed })}
+          </p>
+        )}
         {error && (
           <p className="mt-2 text-xs text-red-600 font-medium">{error}</p>
         )}
