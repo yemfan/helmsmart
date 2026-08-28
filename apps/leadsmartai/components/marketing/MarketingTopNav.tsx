@@ -22,6 +22,7 @@ import {
   type NavSection,
 } from "@repo/ui";
 import HeaderAuthActions from "@/components/HeaderAuthActions";
+import MarketingPrimaryCta from "@/components/marketing/MarketingPrimaryCta";
 import LanguageToggle from "@/components/LanguageToggle";
 import { CloseBossLogo, CloseBossMark } from "@/components/brand/CloseBossLogo";
 import { SupportChatLauncher } from "@/components/support/CustomerSupportChat";
@@ -99,12 +100,10 @@ export function MarketingTopNav({
               iPhone (still reachable in the mobile drawer / Settings). */}
           <LanguageToggle className="hidden sm:inline-flex" />
           <HeaderAuthActions />
-          <Link
-            href="/onboarding"
-            className="hidden items-center justify-center rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:inline-flex sm:text-sm"
-          >
-            {t("cta.hire_ai_team", { defaultValue: "Hire Your AI Team" })}
-          </Link>
+          {/* Says "sign up" to visitors, "upgrade" to free accounts, and "open
+              the app" to customers — it used to pitch a free signup to people
+              who were signed in two elements away. */}
+          <MarketingPrimaryCta />
           {/* Chat launcher hidden below sm — FloatingCTA still surfaces
               support chat as a separate floating button so we don't lose
               the entry point. */}
