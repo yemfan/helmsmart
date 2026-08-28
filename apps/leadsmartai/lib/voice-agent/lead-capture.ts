@@ -238,7 +238,9 @@ export async function captureLeadFromInboundCall(args: {
   let existingLanguage: string | null = null;
   let existingName: string | null = null;
   try {
-    const existing = await findContactByPhone(args.agentId, args.fromPhone);
+    // The name the caller gave, so a number shared by two contacts resolves to
+    // the right one instead of whichever was touched most recently.
+    const existing = await findContactByPhone(args.agentId, args.fromPhone, ex.name || null);
     if (existing) {
       contactId = existing.id;
       existingName = existing.name;
