@@ -46,11 +46,13 @@ export type SmsAssistantReply = {
   replyText: string;
   inferredIntent: SmsAssistantIntent;
   extractedData?: {
-    name?: string;
-    email?: string;
-    propertyAddress?: string;
-    timeline?: string;
-    budget?: number;
+    // Nullable: strict structured output cannot mark a field optional, so the
+    // model returns null for anything the caller did not mention.
+    name?: string | null;
+    email?: string | null;
+    propertyAddress?: string | null;
+    timeline?: string | null;
+    budget?: number | null;
   };
   nextBestAction:
     | "continue_ai"

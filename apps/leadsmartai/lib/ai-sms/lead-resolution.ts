@@ -155,11 +155,13 @@ export async function logSmsActivity(params: {
 export async function applySmsExtractedLeadFields(
   leadId: string,
   extracted: {
-    name?: string;
-    email?: string;
-    propertyAddress?: string;
-    timeline?: string;
-    budget?: number;
+    // Nullable — strict structured output returns null for anything the caller
+    // did not mention. The `?.trim()` guards below already skip those.
+    name?: string | null;
+    email?: string | null;
+    propertyAddress?: string | null;
+    timeline?: string | null;
+    budget?: number | null;
   },
   inferredIntent: string
 ) {
