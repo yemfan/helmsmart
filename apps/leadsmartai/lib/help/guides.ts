@@ -63,7 +63,7 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       "You will see the work happen — each step appears as a card with the teammate's name against it, and anything they produce (a CMA, a flyer, a video, a draft) comes back as a link you can open.",
     ],
     steps: [
-      "Type what you want into the box at the bottom of Ask Max. Plain language, one thing at a time.",
+      "Go to Ask Max — it is the first item in the sidebar, and the page you land on when you sign in. Type what you want into the box pinned at the bottom.",
       "Watch the steps appear. Each names the teammate doing it, so you can see who is working and how far along they are.",
       "Answer Max if he asks a question. If he needs a date, a contact, or an address he does not have, he asks rather than inventing one.",
       "Open what comes back. Finished work — CMA, seller presentation, deep report, social post, video — appears as a link in the conversation.",
@@ -71,6 +71,8 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       "Ask him what is going on, too. \"What is in my pipeline?\", \"Which deals are at risk?\", \"How did last month look?\" are all questions he can answer directly.",
     ],
     related: [
+      { label: "Open Ask Max", href: "/dashboard/boss" },
+      { label: "Open Drafts", href: "/dashboard/drafts" },
       { label: "Decide what Max can send without asking", href: "/help/guides/ask-max-approvals" },
       { label: "Approve or edit AI drafts before they send", href: "/help/guides/drafts" },
       { label: "Configure your sales model", href: "/help/guides/sales-model" },
@@ -88,13 +90,15 @@ export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
       "The middle option is the one most agents settle on. Max reads the message before it goes and asks one question: would this reflect badly on you? If it would, he sends it back to be rewritten. If it is a typo or a clumsy line, he fixes it and lets it through. If he is not sure, it comes to you — he escalates rather than guessing.",
     ],
     steps: [
-      "Open Ask Max and click the gear in the top right.",
+      "Go to Ask Max (first item in the sidebar) and click the gear beside Max's name, top right of the page.",
       "Find the teammate you want to set — Reception, Sales, Marketing, Transaction, Accounting.",
       "Tap a channel chip to cycle it: you approve → Max approves → auto → back to you approve. Grey means nothing sends without you; amber means Max checks it first; green means it goes on its own.",
       "Leave anything you are unsure about on 'you approve'. You can loosen it later once you have read a few of that teammate's messages and trust the voice.",
       "Check Drafts for anything waiting. Max's card links straight there whenever something needs you.",
     ],
     related: [
+      { label: "Open Ask Max", href: "/dashboard/boss" },
+      { label: "Open Drafts", href: "/dashboard/drafts" },
       { label: "Approve or edit AI drafts before they send", href: "/help/guides/drafts" },
       { label: "Ask Max to run your day", href: "/help/guides/ask-max" },
       { label: "Tune the AI's writing voice and tone", href: "/help/guides/ai-voice-style" },
