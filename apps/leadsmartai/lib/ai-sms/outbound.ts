@@ -47,6 +47,18 @@ export async function sendOutboundSms(params: {
   actorName?: string | null;
   /** Which AI assistant sent this — persisted on sms_messages for timeline attribution. */
   assistantType?: string | null;
+  /**
+   * This text went to the AGENT about the contact, not to the contact.
+   *
+   * `leadId` is still needed to look the contact up, but none of the
+   * contact-side bookkeeping below applies: an internal alert is not a message
+   * the customer received. Recording it as one put the alert in their SMS
+   * thread, reset sms_last_outbound_at so the follow-up ladder thought they had
+   * just been contacted, and — through markContactActivity — auto-closed the
+   * "Follow up with inactive lead" task. Telling the agent a lead was hot
+   * quietly cancelled the reminder to chase them.
+   */
+  internal?: boolean;
 }) {
   const client = getTwilioClient();
   const rawFrom = fromNumber();
@@ -105,6 +117,12 @@ export async function sendOutboundSms(params: {
 
   const sid = String(message.sid ?? "");
   const status = String(message.status ?? "queued");
+
+  // An alert about the contact is not a message to the contact. Everything
+  // below writes to their record, so an internal send stops here.
+  if (params.internal) {
+    return { sid, status, to: toE164 };
+  }
 
   const { error: smsErr } = await supabaseAdmin.from("sms_messages").insert({
     contact_id: params.leadId,
