@@ -243,31 +243,39 @@ export async function findContactByPhone(
   const cols =
     "id, name, first_name, last_name, phone, phone_number, email, property_address, lifecycle_stage, relationship_type";
 
-  if (usPhone) {
-    const byNumber = await supabaseAdmin
-      .from("contacts")
-      .select(cols)
-      .eq("agent_id", agentId)
-      .eq("phone_number", usPhone)
-      .maybeSingle();
-    if (byNumber.data) return shape(byNumber.data as Row);
+  // Newest first, everywhere. Phone is NOT unique on contacts — the only
+  // uniqueness the schema enforces is (agent_id, lower(email)) where email is
+  // set — so one number can legitimately resolve to several rows, and the same
+  // caller must not reach a different record depending on how Postgres felt.
+  // The most recently updated row is the one someone has actually been working.
+  const newestFirst = <T,>(q: T) =>
+    (q as { order: (c: string, o: object) => T }).order("updated_at", {
+      ascending: false,
+      nullsFirst: false,
+    });
 
-    const byPhone = await supabaseAdmin
-      .from("contacts")
-      .select(cols)
-      .eq("agent_id", agentId)
-      .eq("phone", usPhone)
-      .maybeSingle();
-    if (byPhone.data) return shape(byPhone.data as Row);
+  if (usPhone) {
+    // .maybeSingle() used to sit here, and it ERRORS on more than one row
+    // (PGRST116). With a duplicate present both exact tiers returned nothing and
+    // fell through to the fuzzy match below — the exact hit was thrown away in
+    // precisely the case that needed it most.
+    const byNumber = await newestFirst(
+      supabaseAdmin.from("contacts").select(cols).eq("agent_id", agentId).eq("phone_number", usPhone),
+    ).limit(1);
+    const numberHit = (byNumber.data as Row[] | null)?.[0];
+    if (numberHit) return shape(numberHit);
+
+    const byPhone = await newestFirst(
+      supabaseAdmin.from("contacts").select(cols).eq("agent_id", agentId).eq("phone", usPhone),
+    ).limit(1);
+    const phoneHit = (byPhone.data as Row[] | null)?.[0];
+    if (phoneHit) return shape(phoneHit);
   }
 
   if (digits.length === 10) {
-    const byDigits = await supabaseAdmin
-      .from("contacts")
-      .select(cols)
-      .eq("agent_id", agentId)
-      .ilike("phone", `%${digits}%`)
-      .limit(1);
+    const byDigits = await newestFirst(
+      supabaseAdmin.from("contacts").select(cols).eq("agent_id", agentId).ilike("phone", `%${digits}%`),
+    ).limit(1);
     const first = (byDigits.data as Row[] | null)?.[0];
     if (first) return shape(first);
   }
