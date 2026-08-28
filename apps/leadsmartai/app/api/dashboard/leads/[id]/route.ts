@@ -110,7 +110,15 @@ export async function PATCH(
     const directPatch: Record<string, unknown> = {};
     if (typeof body.name === "string") directPatch.name = body.name;
     if (typeof body.email === "string") directPatch.email = body.email;
-    if (typeof body.phone === "string") directPatch.phone = body.phone;
+    if (typeof body.phone === "string") {
+      directPatch.phone = body.phone;
+      // Both columns, always. findContactByPhone checks phone_number FIRST, so
+      // updating only `phone` left every inbound call and text still matching
+      // the OLD number — the edit appeared to work and the receptionist carried
+      // on recognising the number the contact no longer had. The two columns
+      // have never disagreed in production; this keeps it that way.
+      directPatch.phone_number = body.phone;
+    }
     if (typeof body.property_address === "string") directPatch.property_address = body.property_address;
     if (body.last_contacted_at) directPatch.last_contacted_at = body.last_contacted_at;
     if ("preferred_language" in body) {
@@ -130,11 +138,27 @@ export async function PATCH(
       // Scope to the caller's agent so one agent can't edit another's contact
       // by guessing its UUID (supabaseServer is service-role and bypasses RLS).
       const { agentId } = await getCurrentAgentContext();
-      await supabaseServer
+      // The result was thrown away here, and that is how an edit could report
+      // success while changing nothing: a scope mismatch matches zero rows, and
+      // a rejected write (the unique email index, a bad value) returns an error
+      // nobody read. Either way the route answered ok:true and the UI, which
+      // trusts res.ok, redrew the row with values that were never saved.
+      const { data: updated, error: updateErr } = await supabaseServer
         .from("contacts")
         .update(directPatch)
         .eq("id", id)
-        .eq("agent_id", agentId);
+        .eq("agent_id", agentId)
+        .select("id");
+      if (updateErr) {
+        console.error("dashboard lead update failed", updateErr);
+        return NextResponse.json({ error: updateErr.message }, { status: 400 });
+      }
+      if (!updated || updated.length === 0) {
+        return NextResponse.json(
+          { error: "That contact wasn't found on your account, so nothing was saved." },
+          { status: 404 },
+        );
+      }
     }
 
     return NextResponse.json({ ok: true });
