@@ -6,6 +6,7 @@ import { logAssistantActivity } from "@/lib/closeboss/activities";
 import { getOpenAIConfig } from "@/lib/ai/openaiClient";
 import { getSelectedSalesModelServer } from "@/lib/sales-model-server";
 import { getSalesModel, DEFAULT_SALES_MODEL } from "@/lib/sales-models";
+import { contactMatchesName } from "@/lib/contacts/nameMatch";
 
 /**
  * Missed-call text-back service.
@@ -213,6 +214,20 @@ export function toUsDisplayPhone(raw: string | null | undefined): string | null 
 export async function findContactByPhone(
   agentId: string,
   phoneRaw: string,
+  /**
+   * A name to disambiguate with, when the caller has told us one.
+   *
+   * Phone alone is not an identity here: the schema only enforces uniqueness on
+   * (agent_id, lower(email)) where email is set, so one number can sit on
+   * several contacts — a household sharing a line, a duplicate import, or an
+   * agent whose own number is on a test record. When a name is available it is
+   * a far better tie-break than "most recently updated", which is only a guess
+   * about which row someone touched last.
+   *
+   * Only used to CHOOSE among rows that already match the phone. A name never
+   * widens the search, so it can never pull in a different person.
+   */
+  nameHint?: string | null,
 ): Promise<{
   id: string;
   name: string | null;
@@ -254,6 +269,14 @@ export async function findContactByPhone(
       nullsFirst: false,
     });
 
+  /** Prefer the row whose name matches; otherwise the newest. */
+  const pick = (rows: Row[] | null): Row | null => {
+    const list = rows ?? [];
+    if (!list.length) return null;
+    const named = nameHint ? list.find((r) => contactMatchesName(r, nameHint)) : undefined;
+    return named ?? list[0] ?? null; // list is already ordered newest-first
+  };
+
   if (usPhone) {
     // .maybeSingle() used to sit here, and it ERRORS on more than one row
     // (PGRST116). With a duplicate present both exact tiers returned nothing and
@@ -261,22 +284,22 @@ export async function findContactByPhone(
     // precisely the case that needed it most.
     const byNumber = await newestFirst(
       supabaseAdmin.from("contacts").select(cols).eq("agent_id", agentId).eq("phone_number", usPhone),
-    ).limit(1);
-    const numberHit = (byNumber.data as Row[] | null)?.[0];
+    ).limit(5);
+    const numberHit = pick(byNumber.data as Row[] | null);
     if (numberHit) return shape(numberHit);
 
     const byPhone = await newestFirst(
       supabaseAdmin.from("contacts").select(cols).eq("agent_id", agentId).eq("phone", usPhone),
-    ).limit(1);
-    const phoneHit = (byPhone.data as Row[] | null)?.[0];
+    ).limit(5);
+    const phoneHit = pick(byPhone.data as Row[] | null);
     if (phoneHit) return shape(phoneHit);
   }
 
   if (digits.length === 10) {
     const byDigits = await newestFirst(
       supabaseAdmin.from("contacts").select(cols).eq("agent_id", agentId).ilike("phone", `%${digits}%`),
-    ).limit(1);
-    const first = (byDigits.data as Row[] | null)?.[0];
+    ).limit(5);
+    const first = pick(byDigits.data as Row[] | null);
     if (first) return shape(first);
   }
 
