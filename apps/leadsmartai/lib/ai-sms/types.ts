@@ -51,8 +51,13 @@ export type SmsAssistantReply = {
     name?: string | null;
     email?: string | null;
     propertyAddress?: string | null;
+    searchLocation?: string | null;
     timeline?: string | null;
-    budget?: number | null;
+    budgetMin?: number | null;
+    budgetMax?: number | null;
+    beds?: number | null;
+    baths?: number | null;
+    preferredLanguage?: string | null;
   };
   nextBestAction:
     | "continue_ai"

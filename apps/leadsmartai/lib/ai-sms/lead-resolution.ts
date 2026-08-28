@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { SmsLeadSnapshot } from "./types";
+import { buildSmsContactPatch, type SmsExtractedData } from "./extractedPatch";
 
 function digitsOnly(input: string) {
   return input.replace(/\D/g, "");
@@ -154,24 +155,29 @@ export async function logSmsActivity(params: {
 
 export async function applySmsExtractedLeadFields(
   leadId: string,
-  extracted: {
-    // Nullable — strict structured output returns null for anything the caller
-    // did not mention. The `?.trim()` guards below already skip those.
-    name?: string | null;
-    email?: string | null;
-    propertyAddress?: string | null;
-    timeline?: string | null;
-    budget?: number | null;
-  },
-  inferredIntent: string
+  extracted: SmsExtractedData | null | undefined,
+  inferredIntent: string,
 ) {
-  const patch: Record<string, unknown> = {};
-  if (extracted.name?.trim()) patch.name = extracted.name.trim();
-  if (extracted.email?.trim()) patch.email = extracted.email.trim();
-  if (extracted.propertyAddress?.trim()) patch.property_address = extracted.propertyAddress.trim();
-  if (inferredIntent && inferredIntent !== "unknown") {
-    patch.intent = inferredIntent;
+  // Read first: identity fields fill a blank rather than overwrite, so the
+  // builder has to know what is already on file. Without this it would rename
+  // a contact whenever a text was signed differently.
+  const { data: current, error: readError } = await supabaseAdmin
+    .from("contacts")
+    .select("name, email, preferred_language, lead_type")
+    .eq("id", leadId)
+    .maybeSingle();
+
+  if (readError) {
+    console.error("[ai-sms] could not read contact before saving what the lead told us:", readError);
   }
+
+  const patch = buildSmsContactPatch(extracted, inferredIntent, current);
   if (Object.keys(patch).length === 0) return;
-  await supabaseAdmin.from("contacts").update(patch).eq("id", leadId);
+
+  // Report the failure. This used to discard its result, so a rejected write
+  // — a bad column, a constraint — looked exactly like a saved one.
+  const { error } = await supabaseAdmin.from("contacts").update(patch).eq("id", leadId);
+  if (error) {
+    console.error("[ai-sms] could not save what the lead told us:", error, Object.keys(patch));
+  }
 }

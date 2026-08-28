@@ -12,6 +12,7 @@ import { quietHoursBlockReason } from "@/lib/agent-messaging/sendWindow";
 import type { AgentMessageSettingsEffective } from "@/lib/agent-messaging/types";
 import type { DraftChannel, MessageDraft, MessageDraftRow } from "./types";
 import { logSmsMessage } from "@/lib/smsAutoFollow";
+import { isPausedOnReply } from "./pauseOnReply";
 
 export type DispatchReason =
   | "sent"
@@ -233,6 +234,26 @@ async function processOne(
     }
     await markSent(draftId);
 
+    // Record that we reached out. Without this an approved send was invisible
+    // to everything that reasons about contact recency: the contact list read
+    // "never contacted" for someone texted an hour ago, the rating decayed as
+    // though they had been neglected, and the automation crons — which select
+    // on a stale last_contacted_at — queued another "it's been a while" touch
+    // at someone we had just spoken to.
+    try {
+      const touchedAt = new Date().toISOString();
+      const touch: Record<string, unknown> = { last_contacted_at: touchedAt };
+      if (row.channel === "sms") touch.sms_last_outbound_at = touchedAt;
+      const { error: touchError } = await supabaseAdmin
+        .from("contacts")
+        .update(touch as never)
+        .eq("id", row.contact_id);
+      if (touchError) console.error("[drafts/sender] could not record the outreach:", touchError);
+    } catch (e) {
+      // The message is already delivered; this is bookkeeping, not the send.
+      console.error("[drafts/sender] could not record the outreach:", e);
+    }
+
     // CloseBoss activity feed — sphere/nurture touches are the
     // Marketing Assistant's work (fire-and-forget, never fails the send).
     void (async () => {
@@ -281,16 +302,36 @@ async function exceededPerContactCap(
   return (count ?? 0) >= cap;
 }
 
+/**
+ * Has this contact written to us inside the pause window?
+ *
+ * Was a stub that always returned false, so a pause-on-reply window set in
+ * the UI never held anything back — a contact could reply and still receive
+ * the queued nurture line as though nobody had read it.
+ */
 async function pausedOnReply(
-  _contactId: string,
-  _pauseDays: number,
-  _now: Date,
+  contactId: string,
+  pauseDays: number,
+  now: Date,
 ): Promise<boolean> {
-  // TODO: wire to `communications` table (inbound messages) once the thread
-  // model is unified across leads + sphere contacts. For now this is a stub
-  // that never blocks — the agent-level policy still captures pause-on-reply
-  // in the UI, but the sender doesn't yet know about inbound replies.
-  return false;
+  if (!pauseDays || pauseDays <= 0) return false;
+
+  const { data, error } = await supabaseAdmin
+    .from("sms_messages")
+    .select("created_at")
+    .eq("contact_id", contactId)
+    .eq("direction", "inbound")
+    .order("created_at", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    // Fail open: a lookup failure should not strand the whole queue. Say so,
+    // rather than silently behaving like the stub it replaced.
+    console.error("[drafts/sender] could not check for a recent reply:", error);
+    return false;
+  }
+
+  return isPausedOnReply(data?.[0]?.created_at ?? null, pauseDays, now);
 }
 
 // ---------- state transitions ----------
