@@ -80,6 +80,18 @@ export async function logSmsMessage(input: {
   direction: "inbound" | "outbound";
   /** Which AI assistant sent this (outbound only) — drives timeline attribution. */
   assistantType?: string | null;
+  /**
+   * Twilio's id and status for an outbound message.
+   *
+   * Two senders write to sms_messages: sendOutboundSms records these, and this
+   * function did not — so every AI reply landed with external_message_id null
+   * and twilio_status null. The row said the message existed and nothing said
+   * whether it arrived, which reads exactly like a message that was never sent.
+   * The status webhook keys off external_message_id, so without it a delivery
+   * failure could never be attached to the message that failed.
+   */
+  externalMessageId?: string | null;
+  twilioStatus?: string | null;
 }) {
   await supabaseServer.from("sms_messages").insert({
     contact_id: input.leadId as any,
@@ -87,6 +99,8 @@ export async function logSmsMessage(input: {
     message: clampMessage(input.message, 500),
     direction: input.direction,
     assistant_type: input.assistantType ?? null,
+    external_message_id: input.externalMessageId ?? null,
+    twilio_status: input.twilioStatus ?? null,
   } as any);
 }
 
