@@ -281,6 +281,11 @@ export async function captureLeadFromInboundCall(args: {
       sms_opt_in: true,
       tcpa_consent_at: new Date().toISOString(),
       tcpa_consent_source: "inbound_call",
+      // A call IS contact. Outbound calls, emails, texts, marketing sends and
+      // open-house sign-ins all stamp this; the inbound receptionist path did
+      // not, so the most direct contact there is left the column empty and the
+      // contact list showed "Last Contacted —" for someone who rang three times.
+      last_contacted_at: new Date().toISOString(),
       notes: `AI receptionist call: ${summary}`,
       // Durable memory captured on this call: language, area, budget, beds/baths.
       ...contactMemoryPatch(ex, { includeName: false, fillEmail: true, fillLanguage: true }),
@@ -317,6 +322,8 @@ export async function captureLeadFromInboundCall(args: {
       patch.tcpa_consent_at = new Date().toISOString();
       patch.tcpa_consent_source = "inbound_call";
     }
+    // Set unconditionally — they just spoke to us, whatever their SMS wishes.
+    patch.last_contacted_at = new Date().toISOString();
     if (Object.keys(patch).length > 0) {
       patch.updated_at = new Date().toISOString();
       try {
