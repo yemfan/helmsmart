@@ -567,11 +567,15 @@ export function AiChatPanel() {
         className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg ring-1 ring-blue-100 transition-transform hover:scale-105 hover:ring-blue-200"
         aria-label={t("pages.aiChatPanel.open")}
       >
+        {/* Max, not the old house mascot. The panel is a conversation with a
+            named member of the team — the captain — and the button that opens it
+            should be his face, the same one that appears beside his replies
+            everywhere else in the app. */}
         <img
-          src="/ai-assistant-mascot.png"
+          src="/avatars/personas/max.png"
           alt=""
           aria-hidden
-          className="h-14 w-14 object-contain"
+          className="h-14 w-14 rounded-full object-cover"
         />
       </button>
     );
@@ -606,7 +610,7 @@ export function AiChatPanel() {
       >
         <div className="flex min-w-0 items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/95 ring-1 ring-white/40">
-            <img src="/ai-assistant-mascot.png" alt="" aria-hidden className="h-8 w-8 object-contain" />
+            <img src="/avatars/personas/max.png" alt="" aria-hidden className="h-8 w-8 rounded-full object-cover" />
           </span>
           <div className="min-w-0">
             <p className="truncate text-sm font-bold">CloseBoss</p>
