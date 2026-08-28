@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { buildSmsSystemInstructions } from "@/lib/agent-ai/promptBuilder";
+import { replyJsonSchema } from "@/lib/ai-sms/replySchema";
 import { getAgentAiSettings } from "@/lib/agent-ai/settings";
 import { resolveLeadOutboundLocale } from "@/lib/locales/resolveLocale";
 import { buildSmsUserPrompt, SMS_ASSISTANT_SYSTEM_PROMPT } from "./prompts";
@@ -115,51 +116,7 @@ function fallbackReply(ctx: SmsReplyContext): SmsAssistantReply {
   };
 }
 
-const replyJsonSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    replyText: { type: "string" },
-    inferredIntent: {
-      type: "string",
-      enum: [
-        "buyer_listing_inquiry",
-        "buyer_financing",
-        "seller_home_value",
-        "seller_list_home",
-        "support",
-        "appointment",
-        "unknown",
-      ],
-    },
-    extractedData: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        name: { type: "string" },
-        email: { type: "string" },
-        propertyAddress: { type: "string" },
-        timeline: { type: "string" },
-        budget: { type: "number" },
-      },
-      required: [] as string[],
-    },
-    nextBestAction: {
-      type: "string",
-      enum: [
-        "continue_ai",
-        "notify_agent",
-        "schedule_call",
-        "send_valuation_link",
-        "send_listing_link",
-      ],
-    },
-    hotLead: { type: "boolean" },
-    needsHuman: { type: "boolean" },
-    tags: { type: "array", items: { type: "string" } },
-  },
-  required: ["replyText", "inferredIntent", "nextBestAction", "hotLead", "needsHuman", "tags"],
-} as const;
+
 
 export async function generateSmsAssistantReply(ctx: SmsReplyContext): Promise<SmsAssistantReply> {
   if (shouldStopMessaging(ctx.inboundBody)) {
