@@ -5,7 +5,7 @@
   "description": "MarketingBoss AI — generate cinematic marketing images & video on demand (fal.ai, pay-as-you-go).",
   "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev --port 3007",

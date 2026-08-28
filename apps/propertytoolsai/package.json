@@ -5,7 +5,7 @@
   "description": "Public LeadSmart AI lead-gen app (Next.js). Workspace path: apps/propertytoolsai.",
   "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev",
