@@ -21,6 +21,7 @@ import {
 import { autoDetectContactLanguage } from "@/lib/locales/autoDetectContactLanguage";
 import type { SmsAssistantReply } from "@/lib/ai-sms/types";
 import { agentBrandName } from "@/lib/branding/agentBrand";
+import { shouldAiReply, type ConversationMessage } from "@/lib/ai-sms/replyGate";
 
 function digitsOnly(input: string) {
   return input.replace(/\D/g, "");
@@ -441,10 +442,17 @@ export async function POST(req: Request) {
       { role: "user", content: body, created_at: nowIso },
     ];
 
-    const cooldownMinutes = getSmsAiCooldownMinutes();
-    const lastAiAt = (convo as any)?.last_ai_reply_at ? String((convo as any).last_ai_reply_at) : null;
-    const lastAiTime = lastAiAt ? new Date(lastAiAt).getTime() : 0;
-    const shouldReply = !lastAiTime || Date.now() - lastAiTime >= cooldownMinutes * 60 * 1000;
+    // A human just wrote to us — that is the moment to answer, not to go quiet.
+    // The old gate blocked any reply within SMS_AI_COOLDOWN_MINUTES of our own
+    // last message, so answering the AI's own question promptly got silence.
+    // The window now bounds a BURST rather than muting a conversation.
+    const gate = shouldAiReply(updatedMessages as ConversationMessage[], Date.now(), {
+      windowMs: getSmsAiCooldownMinutes() * 60 * 1000,
+    });
+    const shouldReply = gate.reply;
+    if (!shouldReply) {
+      console.log(`[ai-sms] holding back for ${leadId}: ${gate.reason}`);
+    }
 
     if (convo?.id) {
       await supabaseServer
