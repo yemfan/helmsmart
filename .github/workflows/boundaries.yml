@@ -40,7 +40,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
       # Zero-dependency script — deliberately no `pnpm install`, so this gate
       # stays fast enough that nobody is tempted to skip it.
