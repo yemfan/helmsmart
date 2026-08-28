@@ -13,6 +13,7 @@ import type { AgentMessageSettingsEffective } from "@/lib/agent-messaging/types"
 import type { DraftChannel, MessageDraft, MessageDraftRow } from "./types";
 import { logSmsMessage } from "@/lib/smsAutoFollow";
 import { isPausedOnReply } from "./pauseOnReply";
+import { contactSmsNumber } from "@/lib/contacts/smsNumber";
 
 export type DispatchReason =
   | "sent"
@@ -54,6 +55,7 @@ type FullDraftRow = MessageDraftRow & {
   contacts: {
     id: string;
     phone: string | null;
+    phone_number: string | null;
     email: string | null;
     do_not_contact_sms: boolean;
     do_not_contact_email: boolean;
@@ -88,7 +90,7 @@ export async function dispatchApprovedDrafts(
   let q = supabaseAdmin
     .from("message_drafts")
     .select(
-      "*, contacts!inner(id, phone, email, do_not_contact_sms, do_not_contact_email, preferred_language)",
+      "*, contacts!inner(id, phone, phone_number, email, do_not_contact_sms, do_not_contact_email, preferred_language)",
     )
     .eq("status", "approved")
     .order("approved_at", { ascending: true })
@@ -144,7 +146,12 @@ async function processOne(
   }
 
   // Permanent blocks — fail the draft so it drops out of the queue.
-  if (row.channel === "sms" && (contact.do_not_contact_sms || !contact.phone)) {
+  // Both phone columns, because the same fact lives in either one depending on
+  // which screen or import created the contact. Reading only `phone` failed
+  // messages for "no phone number" while a perfectly good number sat in
+  // `phone_number` — see lib/contacts/smsNumber.ts.
+  const smsTo = contactSmsNumber(contact);
+  if (row.channel === "sms" && (contact.do_not_contact_sms || !smsTo)) {
     await markFailed(draftId, "contact opted out of SMS or has no phone");
     return {
       draftId,
@@ -188,7 +195,7 @@ async function processOne(
     if (row.channel === "sms") {
       // SMS doesn't carry signatures — the character cap + SMS norms
       // mean the agent's identity is implicit in the sender number.
-      const sent = await sendSMS(contact.phone!, row.body, row.contact_id);
+      const sent = await sendSMS(smsTo!, row.body, row.contact_id);
       // Put it in the conversation. Approving a draft used to update
       // message_drafts and nothing else, so the text reached the contact's
       // phone and appeared nowhere in the app — the agent who approved it had
