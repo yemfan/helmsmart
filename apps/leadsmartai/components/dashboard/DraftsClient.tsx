@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { dispatchOutcomeMessage } from "@/lib/drafts/dispatchMessage";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
 import Link from "next/link";
@@ -348,8 +349,7 @@ function DraftDetail({
         const merged: MessageDraftView = { ...draft, ...data.draft } as MessageDraftView;
         onUpdate(merged);
       }
-      if (reason === "sent") setMessage("Sent.");
-      else if (reason) setMessage(`Deferred: ${reason}${detail ? ` — ${detail}` : ""}`);
+      if (reason) setMessage(dispatchOutcomeMessage(reason, detail));
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Dispatch failed");
     } finally {
