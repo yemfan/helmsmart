@@ -1,4 +1,5 @@
 import type { DripStep } from "./cadence";
+import { contactSmsNumber } from "@/lib/contacts/smsNumber";
 
 /**
  * Pure decider for what the send-pipeline processor should do with a single
@@ -21,6 +22,7 @@ import type { DripStep } from "./cadence";
  */
 export type ContactSendContext = {
   phone: string | null;
+  phoneNumber?: string | null;
   email: string | null;
   doNotContactSms: boolean;
   doNotContactEmail: boolean;
@@ -54,7 +56,10 @@ export function decideSendOutcome(args: {
 
   if (args.step.channel === "sms") {
     if (smsBlocked) return { kind: "skip_advance", reason: "dnc_channel" };
-    if (!args.contact.phone || !args.contact.phone.trim()) {
+    // Both columns: `contacts` stores the same number in either `phone` or
+    // `phone_number` depending on which screen or import created the row, so
+    // judging on one silently drops contacts who are perfectly reachable.
+    if (!contactSmsNumber({ phone: args.contact.phone, phone_number: args.contact.phoneNumber })) {
       return { kind: "skip_advance", reason: "missing_field" };
     }
     return { kind: "create_draft" };
