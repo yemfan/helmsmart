@@ -302,12 +302,43 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
 
   // The first landing jumps rather than glides: animating through a page you
   // have not seen yet is disorienting, and slow.
+  //
+  // It also has to keep trying. Verified on production: a single scroll after
+  // `loading` flips lands at the top, because the cards, runs and performance
+  // block are still arriving — the page grew from ~600px to ~4,900px AFTER that
+  // moment. The ResizeObserver above was supposed to catch that and measurably
+  // did not, so this no longer depends on it: pin repeatedly until the height
+  // stops changing, then stop. Self-limiting on both a stable height and a hard
+  // timeout, so it can never keep fighting the reader.
   useEffect(() => {
     if (loading || landedRef.current) return;
     landedRef.current = true;
-    const id = requestAnimationFrame(() => scrollToEnd("auto"));
-    return () => cancelAnimationFrame(id);
-  }, [loading, scrollToEnd]);
+    const pane = document.getElementById("agent-portal-main");
+    if (!pane) return;
+
+    let lastHeight = -1;
+    let stableTicks = 0;
+    const tick = setInterval(() => {
+      // The moment the reader scrolls away, this stops — being dragged back is
+      // worse than starting short.
+      if (!stickRef.current) {
+        clearInterval(tick);
+        return;
+      }
+      pane.scrollTo({ top: pane.scrollHeight });
+      if (pane.scrollHeight === lastHeight) {
+        if (++stableTicks >= 3) clearInterval(tick);
+      } else {
+        stableTicks = 0;
+        lastHeight = pane.scrollHeight;
+      }
+    }, 150);
+    const stop = setTimeout(() => clearInterval(tick), 6000);
+    return () => {
+      clearInterval(tick);
+      clearTimeout(stop);
+    };
+  }, [loading]);
 
   const loadConversation = useCallback(async () => {
     const [res, runsRes] = await Promise.all([
