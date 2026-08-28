@@ -51,6 +51,56 @@ export type HelpGuide = {
 
 export const HELP_GUIDES: ReadonlyArray<HelpGuide> = [
   {
+    slug: "ask-max",
+    title: "Ask Max to run your day",
+    description:
+      "Ask Max is the front door to CloseBoss — tell him what you want in plain language and he assigns it to the right AI teammate.",
+    readTime: "4 min",
+    category: "setup",
+    body: [
+      "Ask Max is the screen you land on, and it is the fastest way to use CloseBoss. Instead of hunting for the CMA page or the social composer, you tell Max what you want and he works out who on the team should do it — Chris for sales, Ruby for marketing, Emma on the phones, Grace on transactions, Oliver on the books.",
+      "Write the way you would text an assistant. One instruction, and name the person or the address if it matters: \"prepare a seller presentation for 20679 E Peach Blossom Rd\" beats \"presentation\". Max asks if something is missing rather than guessing.",
+      "You will see the work happen — each step appears as a card with the teammate's name against it, and anything they produce (a CMA, a flyer, a video, a draft) comes back as a link you can open.",
+    ],
+    steps: [
+      "Type what you want into the box at the bottom of Ask Max. Plain language, one thing at a time.",
+      "Watch the steps appear. Each names the teammate doing it, so you can see who is working and how far along they are.",
+      "Answer Max if he asks a question. If he needs a date, a contact, or an address he does not have, he asks rather than inventing one.",
+      "Open what comes back. Finished work — CMA, seller presentation, deep report, social post, video — appears as a link in the conversation.",
+      "Approve anything that leaves the building. Messages to clients wait for you at Drafts unless you have said otherwise; see 'Decide what Max can send without asking'.",
+      "Ask him what is going on, too. \"What is in my pipeline?\", \"Which deals are at risk?\", \"How did last month look?\" are all questions he can answer directly.",
+    ],
+    related: [
+      { label: "Decide what Max can send without asking", href: "/help/guides/ask-max-approvals" },
+      { label: "Approve or edit AI drafts before they send", href: "/help/guides/drafts" },
+      { label: "Configure your sales model", href: "/help/guides/sales-model" },
+    ],
+  },
+  {
+    slug: "ask-max-approvals",
+    title: "Decide what Max can send without asking",
+    description:
+      "Three settings per channel: you approve everything, Max proofreads and only asks when unsure, or it just goes.",
+    readTime: "3 min",
+    category: "ai-and-voice",
+    body: [
+      "Anything that leaves CloseBoss — a text, an email, a social post, an outbound call — passes an approval check first. You choose how tight that check is, separately for each teammate and each channel, so \"text people without asking me, but never call anyone\" is a setting rather than a compromise.",
+      "The middle option is the one most agents settle on. Max reads the message before it goes and asks one question: would this reflect badly on you? If it would, he sends it back to be rewritten. If it is a typo or a clumsy line, he fixes it and lets it through. If he is not sure, it comes to you — he escalates rather than guessing.",
+    ],
+    steps: [
+      "Open Ask Max and click the gear in the top right.",
+      "Find the teammate you want to set — Reception, Sales, Marketing, Transaction, Accounting.",
+      "Tap a channel chip to cycle it: you approve → Max approves → auto → back to you approve. Grey means nothing sends without you; amber means Max checks it first; green means it goes on its own.",
+      "Leave anything you are unsure about on 'you approve'. You can loosen it later once you have read a few of that teammate's messages and trust the voice.",
+      "Check Drafts for anything waiting. Max's card links straight there whenever something needs you.",
+    ],
+    related: [
+      { label: "Approve or edit AI drafts before they send", href: "/help/guides/drafts" },
+      { label: "Ask Max to run your day", href: "/help/guides/ask-max" },
+      { label: "Tune the AI's writing voice and tone", href: "/help/guides/ai-voice-style" },
+    ],
+  },
+  {
     slug: "ai-followup-setup",
     title: "Set up AI follow-up for new leads",
     description:
