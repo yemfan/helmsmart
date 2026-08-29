@@ -1,4 +1,9 @@
 import "server-only";
+import {
+  normalizeAppointmentMode,
+  normalizeAppointmentType,
+  resolveAppointmentMode,
+} from "@repo/voice";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getReceptionistConfig, getBookingSettings } from "@/lib/voice-receptionist/settings";
@@ -114,6 +119,9 @@ export async function bookAppointment(
   agentId: string,
   input: {
     typeName?: string;
+    /** What the caller asked for — "video", "over the phone". Free text; the
+     *  catalogue maps it, and a mode the purpose cannot honour is dropped. */
+    meetingMode?: string;
     startISO?: string;
     dateStr?: string;
     timeStr?: string;
@@ -136,6 +144,10 @@ export async function bookAppointment(
   const endMs = startMs + duration * 60_000;
   const startISO = new Date(startMs).toISOString();
   const endISO = new Date(endMs).toISOString();
+  // Null when the agent said something the catalogue does not recognise —
+  // better recorded as absent than as the wrong thing. The title keeps the
+  // agent's own words either way.
+  const bookedType = normalizeAppointmentType(input.typeName);
   const title = `${(input.typeName || "Appointment").trim()}${input.callerName ? ` — ${input.callerName}` : ""}`;
   const fmtLabel = new Intl.DateTimeFormat("en-US", {
     timeZone: timezone,
@@ -173,6 +185,13 @@ export async function bookAppointment(
       caller_name: input.callerName ?? null,
       caller_phone: input.callerPhone ?? null,
       title,
+      // The purpose and the medium, kept apart and kept countable. Before
+      // this both lived only inside `title`, so nothing could count the
+      // month's valuations or filter the calendar to showings.
+      appointment_type: bookedType?.id ?? null,
+      meeting_mode: bookedType
+        ? resolveAppointmentMode(bookedType, normalizeAppointmentMode(input.meetingMode))
+        : null,
       start_at: startISO,
       end_at: endISO,
       status: "booked",

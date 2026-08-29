@@ -88,6 +88,7 @@ export async function loadKnownCaller(
       name: contact.name || "",
       language: /^[a-z]{2}$/.test(lang) ? lang : "",
       summary: parts.join(", "),
+      leadType: type,
     };
   } catch {
     return null;
