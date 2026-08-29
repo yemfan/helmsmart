@@ -6,6 +6,7 @@ import { dispatchMobileNeedsHumanPush } from "@/lib/mobile/pushNotificationsServ
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { createVoiceHotFollowUpTask, resolveEffectiveAgentId } from "./hot-call-task";
 import type { VoiceCallIntent } from "./types";
+import { recordNurtureAlert } from "@/lib/nurture/recordAlert";
 
 const NURTURE_HOT_DEDUPE_MS = 24 * 60 * 60 * 1000;
 
@@ -30,12 +31,7 @@ async function insertVoiceHotNurtureAlertIfNeeded(params: {
   const prefix = params.needsHuman ? "Inbound voice — needs human" : "Inbound voice — hot lead";
   const msg = `${prefix}: ${params.summary.trim().slice(0, 200)}`;
   try {
-    await supabaseAdmin.from("nurture_alerts").insert({
-      agent_id: params.agentId,
-      contact_id: params.leadId,
-      type: "hot",
-      message: msg,
-    } as Record<string, unknown>);
+    await recordNurtureAlert({ agentId: params.agentId, contactId: params.leadId, type: "hot", message: msg }, supabaseAdmin);
   } catch {
     // ignore
   }
