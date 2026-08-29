@@ -9,7 +9,7 @@ import {
   publishInstagramReel,
 } from "./meta-post";
 import { publishThreadsPost } from "./threads-post";
-import { publishPinterestPin } from "./pinterest-post";
+import { ensurePinterestAccessToken, publishPinterestPin } from "./pinterest-post";
 import { ensureTikTokAccessToken, publishTikTokVideo } from "./tiktok-publish";
 import type { TikTokPostPrefs } from "./tiktok-creator-info";
 import { ensureYouTubeAccessToken, uploadYouTubeVideo } from "./youtube-publish";
@@ -165,7 +165,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       // concatenation degrades that to an error type. The tiktok_* columns are
       // the creator's own posting choices, which TikTok requires travel with
       // every send rather than being decided by us.
-      "id, agent_id, platform, fb_page_id, ig_business_user_id, page_access_token_enc, user_access_token_enc, linkedin_member_urn, threads_user_id, pinterest_board_id, tiktok_open_id, tiktok_refresh_token_enc, youtube_channel_id, youtube_refresh_token_enc, user_token_expires_at, status, tiktok_privacy_level, tiktok_disable_comment, tiktok_disable_duet, tiktok_disable_stitch, tiktok_brand_organic, tiktok_brand_content, tiktok_prefs_confirmed_at",
+      "id, agent_id, platform, fb_page_id, ig_business_user_id, page_access_token_enc, user_access_token_enc, linkedin_member_urn, threads_user_id, pinterest_board_id, pinterest_refresh_token_enc, tiktok_open_id, tiktok_refresh_token_enc, youtube_channel_id, youtube_refresh_token_enc, user_token_expires_at, status, tiktok_privacy_level, tiktok_disable_comment, tiktok_disable_duet, tiktok_disable_stitch, tiktok_brand_organic, tiktok_brand_content, tiktok_prefs_confirmed_at",
     )
     .eq("id", connectionId)
     .eq("agent_id", agentId)
@@ -197,6 +197,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     linkedin_member_urn: string | null;
     threads_user_id: string | null;
     pinterest_board_id: string | null;
+    pinterest_refresh_token_enc: string | null;
     tiktok_open_id: string | null;
     tiktok_refresh_token_enc: string | null;
     youtube_channel_id: string | null;
@@ -213,53 +214,34 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     tiktok_prefs_confirmed_at: string | null;
   };
 
-  // Validate platform / connection alignment.
-  const requiresMeta = platform === "facebook" || platform === "instagram";
-  if (requiresMeta && conn.platform !== "meta") {
+  // Validate platform / connection alignment. A mismatch means the post was
+  // queued against the wrong account — historically a producer that defaulted
+  // any unrecognised connection to 'facebook', which sent Facebook posts at a
+  // Pinterest row. Retrying can never fix it, so the message has to tell the
+  // agent what to do instead of naming an internal invariant.
+  const PROVIDER_FOR_TARGET: Record<PublishPlatform, string> = {
+    facebook: "meta",
+    instagram: "meta",
+    linkedin: "linkedin",
+    threads: "threads",
+    pinterest: "pinterest",
+    tiktok: "tiktok",
+    youtube: "youtube",
+  };
+  const PLATFORM_LABEL: Record<PublishPlatform, string> = {
+    facebook: "Facebook",
+    instagram: "Instagram",
+    linkedin: "LinkedIn",
+    threads: "Threads",
+    pinterest: "Pinterest",
+    tiktok: "TikTok",
+    youtube: "YouTube",
+  };
+  if (conn.platform !== PROVIDER_FOR_TARGET[platform]) {
     return {
       ok: false,
       status: 422,
-      error: "Connection platform is not Meta.",
-      retryable: false,
-    };
-  }
-  if (platform === "linkedin" && conn.platform !== "linkedin") {
-    return {
-      ok: false,
-      status: 422,
-      error: "Connection platform is not LinkedIn.",
-      retryable: false,
-    };
-  }
-  if (platform === "threads" && conn.platform !== "threads") {
-    return {
-      ok: false,
-      status: 422,
-      error: "Connection platform is not Threads.",
-      retryable: false,
-    };
-  }
-  if (platform === "pinterest" && conn.platform !== "pinterest") {
-    return {
-      ok: false,
-      status: 422,
-      error: "Connection platform is not Pinterest.",
-      retryable: false,
-    };
-  }
-  if (platform === "tiktok" && conn.platform !== "tiktok") {
-    return {
-      ok: false,
-      status: 422,
-      error: "Connection platform is not TikTok.",
-      retryable: false,
-    };
-  }
-  if (platform === "youtube" && conn.platform !== "youtube") {
-    return {
-      ok: false,
-      status: 422,
-      error: "Connection platform is not YouTube.",
+      error: `This post targets ${PLATFORM_LABEL[platform]} but was queued against a ${conn.platform} account. Reschedule it to a connected ${PLATFORM_LABEL[platform]} account.`,
       retryable: false,
     };
   }
@@ -273,6 +255,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
   }
 
   // Platform-specific shape checks before we touch any tokens.
+  const requiresMeta = platform === "facebook" || platform === "instagram";
   if (requiresMeta && (!conn.fb_page_id || !conn.page_access_token_enc)) {
     return {
       ok: false,
@@ -655,8 +638,11 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       // Pin title = first line of the caption (Pinterest caps it at 100);
       // the full caption is the description; `link` is the outbound URL.
       const title = caption.split("\n")[0]?.trim() || "CloseBoss";
+      // Pinterest access tokens live ~30 days — refresh at the point of use so
+      // a month-old connection doesn't quietly stop publishing.
+      const pinToken = await ensurePinterestAccessToken(conn);
       const result = await publishPinterestPin({
-        accessToken,
+        accessToken: pinToken,
         boardId: conn.pinterest_board_id!,
         title,
         description: caption,
@@ -709,8 +695,10 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       linkedinCode?: string | null;
       linkedinServiceErrorCode?: number | null;
       linkedinMessage?: string | null;
-      // Pinterest-tagged error field (HTTP status)
+      // Pinterest-tagged error fields (HTTP status + the scopes it says are
+      // missing, parsed out of the 403 body)
       pinterestStatus?: number | null;
+      pinterestMissingScopes?: string[] | null;
     } | null;
 
     await supabaseAdmin
@@ -741,6 +729,8 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
     //   - FORBIDDEN_PERMISSIONS
     // Service error codes: 65600/65601 (token), 100 (invalid request).
     let retryable = true;
+    /** Set when the failure means the AGENT must reconnect, not that we retry. */
+    let pinterestActionNeeded: string | null = null;
     if (platform === "linkedin") {
       const permanentLinkedInCodes = new Set([
         "UNAUTHORIZED",
@@ -764,6 +754,29 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       // 429 rate-limit + 5xx are transient and worth retrying.
       const s = tagged?.pinterestStatus ?? null;
       retryable = !(s === 400 || s === 401 || s === 403);
+
+      // An under-scoped or expired token is an ACCOUNT problem, not a post
+      // problem: every later Pin fails the same way until the agent
+      // reauthorizes. Flag the connection so the Marketing screens show
+      // "Reconnect" instead of the queue quietly filling with failures.
+      const missingScopes = tagged?.pinterestMissingScopes ?? null;
+      if ((missingScopes && missingScopes.length > 0) || s === 401) {
+        pinterestActionNeeded = missingScopes?.length
+          ? `Pinterest needs to be reconnected — its saved permission is missing ${missingScopes.join(", ")}. Reconnect Pinterest under Marketing, then approve every permission.`
+          : "Pinterest needs to be reconnected — its saved access has expired. Reconnect Pinterest under Marketing.";
+        try {
+          await supabaseAdmin
+            .from("social_accounts")
+            .update({
+              status: "error",
+              last_error: pinterestActionNeeded.slice(0, 1000),
+              updated_at: new Date().toISOString(),
+            } as Record<string, unknown>)
+            .eq("id", conn.id);
+        } catch {
+          // best-effort housekeeping — never mask the publish error
+        }
+      }
     } else {
       const PERMANENT_META_CODES = new Set([100, 190, 200, 803, 506]);
       retryable = tagged?.metaCode
@@ -775,6 +788,7 @@ export async function publishPost(input: PublishInput): Promise<PublishResult> {
       ok: false,
       status: 502,
       error:
+        pinterestActionNeeded ||
         tagged?.metaUserMessage ||
         tagged?.linkedinMessage ||
         msg,
