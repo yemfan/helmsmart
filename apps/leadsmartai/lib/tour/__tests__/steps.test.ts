@@ -12,7 +12,7 @@ describe("TOUR_STEPS", () => {
       "/dashboard/inbox",
       "/dashboard/contacts",
       "/dashboard/tasks",
-      "/dashboard/ai-receptionist",
+      "/dashboard/ai-team",
     ]);
   });
 

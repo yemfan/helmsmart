@@ -9131,7 +9131,7 @@
         },
         "aiTeam": {
           "title": "Your AI team",
-          "body": "Five assistants. The Receptionist answers calls and books appointments; each one has its own settings and its own log of what it did."
+          "body": "Five assistants — Receptionist, Sales, Marketing, Transaction, Accountant. Each has its own settings and its own record of what it did. Manage them here."
         },
         "quickActions": {
           "title": "Start something quickly",

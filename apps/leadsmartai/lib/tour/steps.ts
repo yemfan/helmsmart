@@ -44,7 +44,11 @@ export const TOUR_STEPS: TourStep[] = [
   step("conversations", 'a[href="/dashboard/inbox"]', "right"),
   step("leads", 'a[href="/dashboard/contacts"]', "right"),
   step("tasks", 'a[href="/dashboard/tasks"]', "right"),
-  step("aiTeam", 'a[href="/dashboard/ai-receptionist"]', "right"),
+  // The receptionist route looks like the obvious anchor and is a trap: it is
+  // the Overview link INSIDE the Receptionist submenu, which stays in the DOM
+  // with a full-size box while collapsed. "Manage AI Team" is a top-level row
+  // that is always really there.
+  step("aiTeam", 'a[href="/dashboard/ai-team"]', "right"),
   step("quickActions", '[data-tour="quick-actions"]', "bottom"),
 ];
 
