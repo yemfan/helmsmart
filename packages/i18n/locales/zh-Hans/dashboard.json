@@ -8003,6 +8003,8 @@
       "meetMax": "几分钟内认识 Max 和您的 AI 房产团队。",
       "orSignIn": "或直接登录",
       "password": "密码",
+      "showPassword": "显示密码",
+      "hidePassword": "隐藏密码",
       "forgotPassword": "忘记密码？",
       "loggingIn": "正在登录…",
       "logIn": "登录",
