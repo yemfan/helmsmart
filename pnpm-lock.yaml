@@ -543,6 +543,9 @@ importers:
       '@helm/dna-marketing':
         specifier: workspace:*
         version: link:../../packages/dna-marketing
+      '@leadsmart/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@supabase/ssr':
         specifier: ^0.6.1
         version: 0.6.1(@supabase/supabase-js@2.100.1)
@@ -933,6 +936,9 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.73.0
         version: 0.73.0(zod@4.4.3)
+      '@leadsmart/shared':
+        specifier: workspace:*
+        version: link:../shared
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
