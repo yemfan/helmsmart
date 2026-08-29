@@ -60,18 +60,34 @@ export function buildOutboundDemoTwiml(args: BuildOutboundDemoTwimlArgs): string
 
   vr.say(sayAttributes(playback), DEMO_GREETING_EN);
 
-  const gather = vr.gather({
-    input: ["speech"],
-    action: args.gatherActionUrl,
-    method: "POST",
-    speechTimeout: "auto",
-    language: "en-US",
-    speechModel: "phone_call",
-    enhanced: true,
-    timeout: 12,
-    hints: "buying,selling,tour,schedule,human,hand off",
-  });
-  gather.say(sayAttributes(playback), DEMO_GATHER_REPROMPT);
+  // Two chances to speak, and nothing said over the top of them.
+  //
+  // This used to be a single <Gather> with the reprompt nested inside it.
+  // Twilio plays a nested <Say> WHILE listening, so the prompt landed on the
+  // caller a beat after a question — talking over the pause it had just asked
+  // for — and one miss fell straight through to the goodbye and a hangup.
+  // Reported as "she hung up the phone too quick", which is exactly right.
+  const listen = (isRetry: boolean) =>
+    vr.gather({
+      input: ["speech"],
+      action: args.gatherActionUrl,
+      method: "POST",
+      speechTimeout: "auto",
+      language: "en-US",
+      speechModel: "phone_call",
+      enhanced: true,
+      // Long enough to think after being asked a question. The old 12s was
+      // measured from the end of the greeting, but the reprompt ate the
+      // first seconds of it.
+      timeout: isRetry ? 12 : 15,
+      hints: "buying,selling,tour,schedule,human,hand off",
+    });
+
+  listen(false);
+
+  // Only now, having actually waited, ask again — and listen again.
+  vr.say(sayAttributes(playback), DEMO_GATHER_REPROMPT);
+  listen(true);
 
   vr.say(sayAttributes(playback), DEMO_CLOSING_FALLBACK);
   vr.hangup();
