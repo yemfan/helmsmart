@@ -505,5 +505,33 @@
     "voiceAi": {
       "ogDescription": "Native voice AI for real estate. Tap to call the live demo or have it call you."
     }
+  },
+  "hub": {
+    "comingSoonBody": "This page is being set up. Check back shortly.",
+    "comingSoonTitle": "Coming soon",
+    "consentLabel": "Yes, you can text me about my enquiry. Message and data rates may apply. Reply STOP to opt out. Consent is not a condition of any purchase.",
+    "ctaFindHome": "Find me a home",
+    "ctaHomeValue": "What's my home worth?",
+    "ctaTalk": "Talk to my AI assistant",
+    "errorContact": "Add an email or a phone number so I can reply.",
+    "errorGeneric": "That didn't send. Please try again, or call the number above.",
+    "errorName": "Please add your name.",
+    "feedEmpty": "Nothing posted yet.",
+    "feedTitle": "Recent posts",
+    "fieldEmail": "Email",
+    "fieldMessage": "What can I help with?",
+    "fieldName": "Your name",
+    "fieldPhone": "Phone",
+    "formBlurb": "Tell me what you're looking for and I'll follow up personally.",
+    "formTitle": "Get in touch",
+    "licenseLabel": "License",
+    "notFoundBody": "That link does not match an agent. Check the spelling and try again.",
+    "notFoundTitle": "No agent here",
+    "poweredBy": "Powered by CloseBoss AI",
+    "servingAreas": "Serving",
+    "submit": "Send",
+    "submitting": "Sending",
+    "thanksBody": "Your message is in. I'll be in touch shortly.",
+    "thanksTitle": "Thank you"
   }
 }

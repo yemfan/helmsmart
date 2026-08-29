@@ -161,3 +161,20 @@ export const CONSENT_SOURCE_OPEN_HOUSE_SIGNIN = "open_house_signin";
 export const CONSENT_SOURCE_OPEN_HOUSE_SIGNUP = "open_house_signup";
 export const CONSENT_SOURCE_IDX_LEAD_CAPTURE = "idx_lead_capture";
 export const CONSENT_SOURCE_HOME_VALUE_FUNNEL = "home_value_funnel";
+export const CONSENT_SOURCE_MARKETING_HUB = "marketing_hub";
+
+/**
+ * /@[username] agent marketing-hub enquiry form.
+ *
+ * v1.0 — initial — shipped with the Marketing Hub. Consent is to hear from the
+ * AGENT, not from CloseBoss: the visitor is on that agent's page, the number
+ * reaches that agent's receptionist and SMS sender, and the disclosure names
+ * them rather than us. Unticked is a complete submission — it means "email me,
+ * do not text me" — so the box never blocks an enquiry. Disclosure text:
+ *   "Yes, you can text me about my enquiry. Message and data rates may apply.
+ *    Reply STOP to opt out. Consent is not a condition of any purchase."
+ *
+ * Bump the version (and snapshot the prior text here) whenever the on-screen
+ * disclosure changes materially.
+ */
+export const HUB_LEAD_DISCLOSURE_VERSION = "v1.0_2026-08-29";
