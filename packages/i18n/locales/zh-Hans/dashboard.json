@@ -1485,6 +1485,26 @@
       "transaction_deadlines": {
         "name": "交易节点跟踪",
         "desc": "跟踪关键交易日期并生成提醒。"
+      },
+      "work_approval": {
+        "name": "内容审批",
+        "desc": "团队要发出的任何内容，先校对并评估风险。"
+      },
+      "task_assignment": {
+        "name": "任务分配",
+        "desc": "把工作交给合适的助理，并跟踪到完成。"
+      },
+      "team_oversight": {
+        "name": "团队监督",
+        "desc": "掌握每位助理在做什么，发现停滞的工作。"
+      },
+      "daily_priorities": {
+        "name": "每日重点",
+        "desc": "判断今天真正重要的事，并优先告知。"
+      },
+      "risk_escalation": {
+        "name": "风险上报",
+        "desc": "判断哪些事必须您亲自处理，其余由他搞定。"
       }
     },
     "barTooltip": "第 {{day}} 天 {{count}} 条",

@@ -41,7 +41,13 @@ export const AI_TEAM: readonly AssistantDef[] = [
     role: "Captain of your AI real estate team",
     mission: "Help you focus on the most important actions today.",
     href: "/dashboard/boss",
-    skills: [],
+    skills: [
+      "work_approval",
+      "task_assignment",
+      "team_oversight",
+      "daily_priorities",
+      "risk_escalation",
+    ],
     kpis: ["Priorities surfaced", "Briefings delivered", "Risks flagged"],
   },
   {

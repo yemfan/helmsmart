@@ -1485,6 +1485,26 @@
       "transaction_deadlines": {
         "name": "Transaction Deadline Tracking",
         "desc": "Track important transaction dates and create alerts."
+      },
+      "work_approval": {
+        "name": "Work Approval",
+        "desc": "Proof-read and risk-check anything the team wants to send, before it goes."
+      },
+      "task_assignment": {
+        "name": "Task Assignment",
+        "desc": "Route work to the right assistant and chase it until it is done."
+      },
+      "team_oversight": {
+        "name": "Team Oversight",
+        "desc": "Watch what each assistant is doing, and notice what has stalled."
+      },
+      "daily_priorities": {
+        "name": "Daily Priorities",
+        "desc": "Decide what actually matters today and say so first."
+      },
+      "risk_escalation": {
+        "name": "Risk Escalation",
+        "desc": "Judge what needs you personally, and handle the rest."
       }
     },
     "barTooltip": "{{count}} on day {{day}}",
