@@ -45,6 +45,9 @@ export type KnownCaller = {
    *  e.g. "buyer, interested in Alhambra, budget $800k–$1M, 3 bed / 2 bath,
    *  timeline 2 months". Empty when we only know their name. */
   summary?: string;
+  /** contacts.lead_type — buyer / seller / renter. Decides which appointment
+   *  types she offers, so a seller is not read the showing option. */
+  leadType?: string;
 };
 
 /** First name only, for a natural "is this Michael?" confirmation. */

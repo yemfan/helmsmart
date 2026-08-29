@@ -5,7 +5,13 @@ import { resolveAgentIdByReceptionistNumber } from "@/lib/voice-receptionist/set
 import { shouldTextBackInsteadOfAnswer } from "@/lib/entitlements/voiceInboundGate";
 import { loadKnownCaller } from "@/lib/voice-agent/known-caller";
 import { sendSMS } from "@/lib/twilioSms";
-import { buildReceptionistDynamicVariables, type ReceptionistContext } from "@repo/voice";
+import {
+  buildReceptionistDynamicVariables,
+  callerKind,
+  describeAppointmentTypes,
+  offerableAppointmentTypes,
+  type ReceptionistContext,
+} from "@repo/voice";
 
 /** Format a caller's E.164 number for SPEECH, e.g. "+16266255055" ->
  *  "6 2 6, 6 2 5, 5 0 5 5". This value is only ever read aloud, and the
@@ -112,6 +118,15 @@ export async function POST(req: NextRequest) {
         // and confirm — rather than re-ask — what we already know. Best-effort;
         // stays undefined (generic greeting) for unknown callers or on error.
         ctx.knownCaller = (await loadKnownCaller(agentId, fromNumber)) ?? undefined;
+
+        // Now that we know who is calling, offer the appointment types that
+        // suit them. A seller asking what their house is worth should not be
+        // read the showing option, and a buyer should not be read valuations.
+        if (ctx.knownCaller?.leadType) {
+          ctx.typesText = describeAppointmentTypes(
+            offerableAppointmentTypes(callerKind(ctx.knownCaller.leadType)),
+          );
+        }
         dynamic_variables = buildReceptionistDynamicVariables(ctx);
 
         if (enforce && overrideAgentId) {
