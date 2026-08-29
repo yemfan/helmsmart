@@ -6,6 +6,11 @@ import {
 import { extractRequestMeta } from "@/lib/consent/extractRequestMeta";
 import { recordInboundContactRequest } from "@/lib/consent/service";
 import { resolveAgentIdByUsername } from "@/lib/marketing-hub/loadHub";
+import {
+  SESSION_COOKIE,
+  VISITOR_COOKIE,
+  readCookieFromHeader,
+} from "@/lib/marketing-hub/visitor";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -123,6 +128,27 @@ export async function POST(
       }
     }
 
+    // THE STITCH. Everything this browser did for THIS agent now belongs to
+    // the contact they just became — which is what lets the agent be told
+    // "they read three of your posts before calling you".
+    //
+    // Scoped by agent as well as visitor: one browser can visit two agents'
+    // hubs, and those are two separate relationships. Without the agent
+    // filter, one agent's page views would land in another agent's CRM.
+    //
+    // Only rows that are still anonymous are claimed, so a shared computer
+    // does not reassign an earlier person's history to a later one.
+    const visitorId = readCookieFromHeader(req.headers.get("cookie"), VISITOR_COOKIE);
+    if (contactId && visitorId) {
+      const { error: stitchErr } = await supabaseAdmin
+        .from("traffic_events")
+        .update({ contact_id: contactId } as never)
+        .eq("agent_id", agentId as never)
+        .eq("visitor_id", visitorId)
+        .is("contact_id", null);
+      if (stitchErr) console.warn("[hub.lead] stitch:", stitchErr.message);
+    }
+
     const meta = extractRequestMeta(req);
 
     // Audit trail. Best-effort: the lead is already saved and must not be lost
@@ -152,6 +178,12 @@ export async function POST(
         agent_id: agentId,
         source: utmSource,
         campaign: utmCampaign,
+        // The conversion belongs to the same visitor and session as the views
+        // that led to it, so the journey reads as one story rather than an
+        // anonymous trail and an unrelated enquiry.
+        visitor_id: readCookieFromHeader(req.headers.get("cookie"), VISITOR_COOKIE),
+        session_id: readCookieFromHeader(req.headers.get("cookie"), SESSION_COOKIE),
+        contact_id: contactId,
         metadata: { kind: "hub_lead", contactId },
       } as never)
       .then(({ error }) => {
