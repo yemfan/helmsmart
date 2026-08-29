@@ -1,5 +1,5 @@
 import "server-only";
-import { cachedSystem, markTranscriptCached } from "./promptCache";
+import { cachedSystem, markTranscriptCached } from "@leadsmart/shared/utils/promptCache";
 
 import { getAnthropicClient, isAnthropicConfigured } from "./anthropic";
 import {

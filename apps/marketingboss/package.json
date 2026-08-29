@@ -24,7 +24,8 @@
     "next": "16.1.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.2.1",
+    "@leadsmart/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.4.2",

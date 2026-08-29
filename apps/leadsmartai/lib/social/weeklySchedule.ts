@@ -1,4 +1,5 @@
 import "server-only";
+import { cachedSystem, markTranscriptCached } from "@leadsmart/shared/utils/promptCache";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
@@ -271,7 +272,9 @@ export async function generatePostFromTopic(
           max_tokens: MAX_OUTPUT_TOKENS,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           thinking: { type: "adaptive" } as any,
-          system: SYSTEM_PROMPT,
+          // Cached — identical every call, and the cached prefix covers the tools
+        // sent ahead of it. See @leadsmart/shared/utils/promptCache.
+        system: cachedSystem(SYSTEM_PROMPT) as never,
           messages,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           tools: tools as any,
@@ -285,6 +288,9 @@ export async function generatePostFromTopic(
       }
       if (res?.stop_reason === "pause_turn") {
         messages.push({ role: "assistant", content: res.content });
+        // That turn holds the search results; move the breakpoint onto it
+        // so the next round reads them from cache instead of re-paying.
+        markTranscriptCached(messages as never);
         continue;
       }
       break;
