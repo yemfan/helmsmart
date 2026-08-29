@@ -61,6 +61,22 @@ const nextConfig = {
         source: "/brand/realtyboss/realtyboss-:file",
         destination: "/brand/closeboss/closeboss-:file",
       },
+      // The agent's public handle: closebossai.com/@michaelye
+      //
+      // A rewrite rather than a route folder because the App Router reserves a
+      // leading "@" for parallel-route slots — `app/@[username]` is a slot, not
+      // a page, and would never render. The page therefore lives at
+      // /a/[username] and this makes the shareable URL the pretty one. It is a
+      // rewrite, not a redirect, so what the agent puts on a business card is
+      // what stays in the address bar.
+      //
+      // A bare /:username was not an option: there are 117 top-level routes
+      // here, and any route added later would silently shadow whoever already
+      // owned that name. The sigil makes collision impossible by construction.
+      {
+        source: "/@:username",
+        destination: "/a/:username",
+      },
     ];
   },
   /** Short nav-style paths → `/dashboard/*` (app lives under dashboard) */
