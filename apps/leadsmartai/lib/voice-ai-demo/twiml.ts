@@ -10,10 +10,14 @@ import type { TwilioVoicePlayback } from "@/lib/agent-voice/types";
  * requested a demo") so the recipient understands the context.
  *
  * Once the prospect speaks, Twilio POSTs the SpeechResult to the
- * `gatherActionUrl` — which should be the existing inbound speech-handler
- * route. That reuse means the demo conversation runs through the same
- * processGatheredSpeech engine the production CRM uses, so what the
- * prospect hears is exactly what their leads would hear.
+ * `gatherActionUrl` — the inbound speech-handler route.
+ *
+ * NOTE: this no longer matches what agents actually ship. The production
+ * receptionist moved to Retell (/api/retell/inbound, with booking via custom
+ * functions); this demo still runs the older Twilio Say/Gather engine, which
+ * sounds turn-by-turn next to it. The comment here used to claim the demo was
+ * 'exactly what their leads would hear' — it was true once and is not now.
+ * Routing the demo through Retell is the open fix.
  */
 
 const DEMO_GREETING_EN =

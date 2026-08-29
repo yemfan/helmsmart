@@ -8309,9 +8309,9 @@
     },
     "voiceTestDrive": {
       "q1": "Is this really an AI on the live demo number?",
-      "a1": "Yes — the demo number routes to the same Twilio + OpenAI Realtime engine we ship to paying agents. There's no human on the line.",
+      "a1": "Yes — there's no human on the line. An AI places the call and asks the qualifying questions.",
       "q2": "Will my contacts be sent to a third-party ISA service?",
-      "a2": "No. The voice AI lives inside CloseBoss — your call recordings, transcripts, and contact records stay in your account, not on a separate vendor.",
+      "a2": "No. No outsourced call centre or ISA ever touches your leads. Calls run through our voice provider, and the recordings, transcripts and contact records land in your CloseBoss account.",
       "q3": "How does it hand off when a caller wants a human?",
       "a3": "The AI routes to you immediately — SMS + push notification with a one-line summary and the caller's number. Most agents reach the lead in under 60 seconds.",
       "q4": "What languages does it speak?",
