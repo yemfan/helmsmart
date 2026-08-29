@@ -9104,6 +9104,40 @@
       "transactions": "Transactions",
       "transaction": "Transaction",
       "offersOnListing": "Offers on listing"
+    },
+    "tour": {
+      "next": "Next",
+      "back": "Back",
+      "skip": "Skip",
+      "done": "Done",
+      "close": "Close the tour",
+      "progress": "{{current}} of {{total}}",
+      "steps": {
+        "askMax": {
+          "title": "Start with Max",
+          "body": "Tell Max what you want done in plain words — \"text my hot leads\", \"plan my day\" — and your AI team carries it out."
+        },
+        "conversations": {
+          "title": "Every conversation, one place",
+          "body": "Calls, texts and emails for a contact sit in a single thread, whether you or your AI team sent them."
+        },
+        "leads": {
+          "title": "Your book",
+          "body": "Everyone you know, with ratings that update themselves as people call, reply and open what you send."
+        },
+        "tasks": {
+          "title": "What needs you",
+          "body": "Anything your AI team wants approved before it goes out waits here — you stay the last word."
+        },
+        "aiTeam": {
+          "title": "Your AI team",
+          "body": "Five assistants. The Receptionist answers calls and books appointments; each one has its own settings and its own log of what it did."
+        },
+        "quickActions": {
+          "title": "Start something quickly",
+          "body": "Add a contact, write a post or send a message without leaving the page you are on."
+        }
+      }
     }
   }
 }
