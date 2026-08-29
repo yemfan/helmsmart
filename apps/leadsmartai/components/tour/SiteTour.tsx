@@ -15,6 +15,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import {
   TOUR_STEPS,
+  TOUR_START_EVENT,
   TOUR_STORAGE_KEY,
   shouldAutoStart,
   visibleSteps,
@@ -140,6 +141,17 @@ export default function SiteTour() {
       setOpen(true);
     }
   }, [mounted, steps.length]);
+
+  // Reopened from the account menu. Starts from the top rather than resuming:
+  // someone asking for the tour again wants the tour, not where they left off.
+  useEffect(() => {
+    const reopen = () => {
+      setIndex(0);
+      setOpen(true);
+    };
+    window.addEventListener(TOUR_START_EVENT, reopen);
+    return () => window.removeEventListener(TOUR_START_EVENT, reopen);
+  }, []);
 
   const current = open ? steps[index] : undefined;
 

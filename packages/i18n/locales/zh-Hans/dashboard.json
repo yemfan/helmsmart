@@ -23,7 +23,8 @@
       "compareProperties": "房源对比"
     },
     "searchLeads": "搜索客户",
-    "topUp": "随时充值额度 — 功能全部包含。"
+    "topUp": "随时充值额度 — 功能全部包含。",
+    "takeTheTour": "重新导览"
   },
   "sidebar": {
     "upsellTitle": "用 AI 跟进赢得更多客户",
@@ -9136,6 +9137,10 @@
         "quickActions": {
           "title": "快速开始",
           "body": "无需离开当前页面，就能添加联系人、撰写帖子或发送消息。"
+        },
+        "account": {
+          "title": "你和你的账户",
+          "body": "个人资料、设置、账单和帮助指南都在你的名字下面——想再看一次导览，也从这里进入。"
         }
       }
     }
