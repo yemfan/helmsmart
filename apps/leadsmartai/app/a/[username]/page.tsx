@@ -6,6 +6,7 @@ import { displayUsername } from "@/lib/identity/username";
 import { loadHubByUsername, type Hub } from "@/lib/marketing-hub/loadHub";
 import { postedAgo } from "@/lib/marketing-hub/feedItems";
 import HubLeadForm from "./HubLeadForm";
+import HubTracker from "./HubTracker";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -143,6 +144,12 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
 
   return (
     <Shell>
+      {/* Records the view and issues the visitor cookies. Renders nothing. */}
+      <HubTracker
+        username={hub.username}
+        utmSource={utm.source}
+        utmCampaign={utm.campaign}
+      />
       <header className="flex flex-col gap-5 sm:flex-row sm:items-center">
         {hub.portraitUrl ? (
           <Image
