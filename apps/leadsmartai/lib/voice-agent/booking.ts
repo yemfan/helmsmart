@@ -374,6 +374,10 @@ export async function runReceptionistTool(
     }
     const r = await bookAppointment(ctx.agentId, {
       typeName: String(a.appointment_type ?? a.type ?? "Appointment"),
+      // Retell names its arguments in snake_case; this is the medium the
+      // caller asked for. Undefined when the agent did not send it, in which
+      // case the purpose falls back to its own default mode.
+      meetingMode: a.meeting_mode ? String(a.meeting_mode) : undefined,
       startISO: a.start ? String(a.start) : undefined,
       dateStr: a.date ? String(a.date) : undefined,
       timeStr: a.time ? String(a.time) : undefined,
