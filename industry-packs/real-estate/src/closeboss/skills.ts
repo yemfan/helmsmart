@@ -13,7 +13,8 @@ export type SkillCategory =
   | "conversion"
   | "marketing"
   | "transaction"
-  | "finance";
+  | "finance"
+  | "oversight";
 
 export type Skill = {
   key: string;
@@ -29,6 +30,85 @@ export type Skill = {
 };
 
 export const SKILLS: readonly Skill[] = [
+  // ── Marketing (Ruby) — social ────────────────────────────────────
+  // `social_content` was one line covering everything Ruby can actually do.
+  // These name the parts that already exist as their own machinery, so the
+  // agent can switch off reels without losing scheduled posts.
+  {
+    key: "social_scheduling",
+    name: "Social Schedule",
+    description: "Run a weekly posting schedule — which day, which channel, which topic.",
+    category: "marketing",
+    prompt: `Keep a weekly posting rhythm rather than posting in bursts. For each slot decide the channel and the topic, research it against what is actually happening in this market, and queue the post for its time. A steady week beats five posts on Monday and silence after.`,
+  },
+  {
+    key: "social_publishing",
+    name: "Multi-Channel Publishing",
+    description: "Publish to Facebook, Instagram, LinkedIn, Pinterest, Threads, TikTok and YouTube.",
+    category: "marketing",
+    prompt: `Publish to the networks the agent has actually connected, and fit the post to each one rather than pasting the same text everywhere — length, hashtags, and whether an image or video is expected all differ. If a network is not connected, say so instead of silently skipping it.`,
+  },
+  {
+    key: "listing_promo_ads",
+    name: "Listing Promo Ads",
+    description: "Turn a listing’s photos and facts into a branded ad graphic.",
+    category: "marketing",
+    prompt: `Build a branded promotional graphic from a listing: its best photo, the facts worth leading with, and the agent's own branding. Never state a price, status, or feature the listing record does not support, and include the disclaimers the state requires.`,
+  },
+  {
+    key: "social_carousels",
+    name: "Carousel Posts",
+    description: "Build multi-slide carousels — tours, market updates, tips.",
+    category: "marketing",
+    prompt: `Build carousels where one image cannot carry the idea: a room-by-room tour, a market update with several numbers, a step-by-step explainer. Lead with the slide that earns the swipe, and end on what the reader should do next.`,
+  },
+  {
+    key: "social_reels",
+    name: "Video Reels",
+    description: "Cut short vertical videos from listing photos and clips.",
+    category: "marketing",
+    prompt: `Cut short vertical video from a listing's photos and clips, paced so the first second earns the second one. Caption it for silent viewing, because most of it is watched with the sound off.`,
+  },
+  // ── Captain (Max) ────────────────────────────────────────────────
+  // Max had none of these. His roster entry listed no skills and the team
+  // screen hard-excluded him on the assumption that the Captain only
+  // coordinates — but coordinating IS the work, and none of it was
+  // inspectable or switchable by the agent.
+  {
+    key: "work_approval",
+    name: "Work Approval",
+    description: "Proof-read and risk-check anything the team wants to send, before it goes.",
+    category: "oversight",
+    prompt: `Before any drafted message, post, or document reaches a client, review it and decide one of four things. Ask first whether this could land badly for the agent — reputation, compliance, or a relationship. If yes, reject it and say what to redo. If the problem is minor and you are confident, fix it and approve. If you are unsure, send it to the agent rather than guessing. Never approve something you would not be comfortable defending to them.`,
+  },
+  {
+    key: "task_assignment",
+    name: "Task Assignment",
+    description: "Route work to the right assistant and chase it until it is done.",
+    category: "oversight",
+    prompt: `When work needs doing, pick the assistant whose job it actually is rather than doing it yourself, and say why. Give them what they need to start — the contact, the deadline, the outcome you want. Follow up on anything that has not moved, and surface it to the agent only once it is genuinely stuck rather than merely slow.`,
+  },
+  {
+    key: "team_oversight",
+    name: "Team Oversight",
+    description: "Watch what each assistant is doing, and notice what has stalled.",
+    category: "oversight",
+    prompt: `Keep track of what each assistant has in flight and what they have finished. Notice the quiet failures — an assistant with nothing to show for a week, a queue that only grows, work that is repeatedly returned. Report it in plain terms with the specific example that made you say it, not a score.`,
+  },
+  {
+    key: "daily_priorities",
+    name: "Daily Priorities",
+    description: "Decide what actually matters today and say so first.",
+    category: "oversight",
+    prompt: `Open the day with the few things that will change the outcome, in order, each with the reason it is on the list. Prefer a deadline or a person waiting over a task that merely looks tidy. Three items the agent will actually do beats ten they will skim.`,
+  },
+  {
+    key: "risk_escalation",
+    name: "Risk Escalation",
+    description: "Judge what needs the agent personally, and handle the rest.",
+    category: "oversight",
+    prompt: `Decide what genuinely needs the agent: money, legal exposure, an unhappy client, or anything irreversible. Handle the rest and tell them afterwards. When you escalate, lead with what happened and what you recommend — an escalation without a recommendation is just a forwarded problem.`,
+  },
   {
     key: "lead_capture",
     name: "Lead Capture",

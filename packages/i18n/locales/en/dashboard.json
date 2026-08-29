@@ -1485,6 +1485,46 @@
       "transaction_deadlines": {
         "name": "Transaction Deadline Tracking",
         "desc": "Track important transaction dates and create alerts."
+      },
+      "work_approval": {
+        "name": "Work Approval",
+        "desc": "Proof-read and risk-check anything the team wants to send, before it goes."
+      },
+      "task_assignment": {
+        "name": "Task Assignment",
+        "desc": "Route work to the right assistant and chase it until it is done."
+      },
+      "team_oversight": {
+        "name": "Team Oversight",
+        "desc": "Watch what each assistant is doing, and notice what has stalled."
+      },
+      "daily_priorities": {
+        "name": "Daily Priorities",
+        "desc": "Decide what actually matters today and say so first."
+      },
+      "risk_escalation": {
+        "name": "Risk Escalation",
+        "desc": "Judge what needs you personally, and handle the rest."
+      },
+      "social_scheduling": {
+        "name": "Social Schedule",
+        "desc": "Run a weekly posting schedule — which day, which channel, which topic."
+      },
+      "social_publishing": {
+        "name": "Multi-Channel Publishing",
+        "desc": "Publish to Facebook, Instagram, LinkedIn, Pinterest, Threads, TikTok and YouTube."
+      },
+      "listing_promo_ads": {
+        "name": "Listing Promo Ads",
+        "desc": "Turn a listing’s photos and facts into a branded ad graphic."
+      },
+      "social_carousels": {
+        "name": "Carousel Posts",
+        "desc": "Build multi-slide carousels — tours, market updates, tips."
+      },
+      "social_reels": {
+        "name": "Video Reels",
+        "desc": "Cut short vertical videos from listing photos and clips."
       }
     },
     "barTooltip": "{{count}} on day {{day}}",

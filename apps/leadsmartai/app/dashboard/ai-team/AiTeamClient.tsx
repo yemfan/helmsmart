@@ -195,8 +195,11 @@ export default function AiTeamClient() {
           {assistants.map((a) => {
             const def = AI_TEAM.find((d) => d.type === a.type);
             const rosterSkills = new Set(def?.skills ?? []);
-            // Boss Assistant has no attachable skills — it coordinates the others.
-            const configurable = a.type !== "boss_assistant";
+            // Every assistant with skills on its roster can configure them,
+            // Max included. He used to be excluded on the grounds that the
+            // Captain only coordinates — but coordinating is the work, and it
+            // was neither inspectable nor switchable.
+            const configurable = rosterSkills.size > 0;
             return (
               <section key={a.type} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -227,7 +230,7 @@ export default function AiTeamClient() {
                     >
                       {editing === a.type ? t("aiTeam.close") : t("aiTeam.editAvatar")}
                     </button>
-                    {def && def.type !== "boss_assistant" && (
+                    {def?.href && (
                       <Link href={def.href} className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50">
                         {t("aiTeam.viewDashboard")}
                       </Link>
