@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cachedSystem, readCacheUsage } from "@leadsmart/shared/utils/promptCache";
+import { cacheHitRatio, totalContextTokens } from "./tokenAccounting";
 import { getAnthropicClient } from "@/lib/anthropic";
 import { BOSS_AGENT_MODEL } from "@/lib/ai/config";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -53,7 +55,12 @@ function realModelClient(): ModelClient {
       const res = await client.messages.create({
         model: BOSS_AGENT_MODEL,
         max_tokens: args.maxTokens,
-        system: args.system,
+        // One breakpoint here covers the tool definitions too: the cached
+        // prefix runs tools -> system -> messages, so the 27 tool schemas and
+        // the system prompt — the two things identical on every call of the
+        // loop — are read from cache after the first round instead of being
+        // re-billed at full input price on each tool round-trip.
+        system: cachedSystem(args.system) as never,
         // Transcript is persisted as raw Anthropic blocks.
         messages: args.messages as never,
         tools: args.tools as never,
@@ -68,11 +75,29 @@ function realModelClient(): ModelClient {
           const t = b as { id: string; name: string; input: unknown };
           return { id: t.id, name: t.name, input: t.input };
         });
+      // Caching splits what used to be one number: `input_tokens` now counts
+      // ONLY the uncached remainder, with the rest in cache_read/cache_creation.
+      //
+      // The engine spends `inputTokens` against run.token_budget, which is the
+      // guard against a loop that never terminates. Reporting the uncached
+      // figure alone would shrink every reading by ~80% and quietly let runs go
+      // five times longer than their budget allows. Caching is meant to change
+      // what a run COSTS, not how long it is permitted to think, so the budget
+      // keeps counting the whole context — the same number it counted before
+      // this change, and comparable to the boss_runs rows already stored.
+      const cache = readCacheUsage(res.usage);
+      const totalInput = totalContextTokens(res.usage);
+      if (cache.read > 0 || cache.written > 0) {
+        console.info(
+          `[boss] cache read=${cache.read} written=${cache.written} ` +
+            `uncached=${cache.uncached} hit=${(cacheHitRatio(res.usage) * 100).toFixed(0)}%`,
+        );
+      }
       return {
         text,
         toolUses,
         stopReason: res.stop_reason,
-        inputTokens: res.usage.input_tokens,
+        inputTokens: totalInput,
         outputTokens: res.usage.output_tokens,
         rawContent: res.content as unknown[],
       };
