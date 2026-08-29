@@ -1,6 +1,5 @@
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { supabaseServer } from "@/lib/supabaseServer";
-import { UpgradeBanner } from "@/components/upsell/UpgradeBanner";
 import { BossOnboardingCard } from "@/components/dashboard/BossOnboardingCard";
 import { computeActivationChecklist } from "@/lib/activation/checklist";
 import OverviewClient from "./OverviewClient";
@@ -40,7 +39,6 @@ export default async function OverviewPage() {
 
   return (
     <div className="space-y-4">
-      <UpgradeBanner planType={ctx.planType} variant="banner" />
       <BossOnboardingCard checklist={activation} />
       <OverviewClient greetingName={greetingName} planType={ctx.planType} />
     </div>

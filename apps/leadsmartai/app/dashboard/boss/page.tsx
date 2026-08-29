@@ -1,6 +1,5 @@
 import { getCurrentAgentContext } from "@/lib/dashboardService";
 import { supabaseServer } from "@/lib/supabaseServer";
-import { UpgradeBanner } from "@/components/upsell/UpgradeBanner";
 import BossAssistantClient from "./BossAssistantClient";
 import type { Metadata } from "next";
 import { getServerT } from "@/lib/i18n/server";
@@ -38,7 +37,6 @@ export default async function BossAssistantPage() {
 
   return (
     <div className="space-y-4">
-      <UpgradeBanner planType={ctx.planType} variant="banner" />
       <BossAssistantClient greetingName={greetingName} />
     </div>
   );
