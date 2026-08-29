@@ -34,10 +34,15 @@ export async function GET(req: Request) {
       }
     }
 
+    // Platform traffic only. Agent marketing hubs write to this same table
+    // with agent_id set, so every aggregate here has to say which it wants.
+    // Omitting the filter would not error — it would quietly fold every
+    // agent's visitors into CloseBoss's own numbers.
     const { data: viewsRows } = await supabaseServer
       .from("traffic_events")
       .select("id,metadata")
       .eq("event_type", "page_view")
+      .is("agent_id", null)
       .gte("created_at", since)
       .limit(8000);
 
@@ -45,6 +50,7 @@ export async function GET(req: Request) {
       .from("traffic_events")
       .select("id,metadata")
       .eq("event_type", "conversion")
+      .is("agent_id", null)
       .gte("created_at", since)
       .limit(8000);
 
@@ -52,6 +58,7 @@ export async function GET(req: Request) {
       .from("traffic_events")
       .select("id,page_path")
       .eq("event_type", "tool_usage")
+      .is("agent_id", null)
       .gte("created_at", since)
       .limit(8000);
 
