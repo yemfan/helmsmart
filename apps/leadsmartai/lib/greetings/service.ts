@@ -41,7 +41,7 @@ function parseTagsJson(raw: unknown): string[] {
 }
 
 function mapLeadRow(row: Record<string, unknown>): GreetingLead {
-  const phone = String((row.phone_number as string) || (row.phone as string) || "").trim() || null;
+  const phone = String((row.phone as string) || "").trim() || null;
   return {
     id: String(row.id),
     assignedAgentId: row.agent_id != null ? String(row.agent_id) : null,
@@ -70,7 +70,7 @@ const leadSelect = [
   "name",
   "email",
   "phone",
-  "phone_number",
+  "phone",
   "property_address",
   "city",
   "state",

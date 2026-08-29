@@ -1,26 +1,23 @@
 /**
- * Which number should we text this contact on?
+ * Which number should we text this contact on, in the shape Twilio wants?
  *
- * `contacts` carries the same fact in two columns — `phone` and `phone_number`
- * — and different parts of the app have filled in different ones. Today 19
- * contacts have only `phone`, 8 have only `phone_number`. Any code that reads
- * one column decides a quarter of the book is unreachable, and says so with a
- * straight face: the draft sender failed messages to Sofia Marin and David Kim
- * for "no phone number" while `+16265550166` sat in the column it did not read.
+ * `contacts.phone` is now the single phone column. It used to be two — `phone`
+ * and `phone_number` — carrying the same fact with nothing keeping them in
+ * step, so which one a row had filled in depended on which screen or import
+ * created it. Code that read one column decided a quarter of the book had no
+ * number: the draft sender failed messages for "no phone number" while a
+ * perfectly good +1626555xxxx sat in the column it did not read. That column is
+ * gone; this exists for the part of the problem that outlived it.
  *
- * Reading both is the fix that matches the data as it actually is. Which
- * column wins barely matters — what matters is that neither is ignored.
- *
- * Also normalises to E.164, because a number is stored in whichever shape the
- * screen that captured it used: "(626) 555-0166" from the contact form,
- * "+16265550166" from an import. Twilio is happiest with one of those.
+ * A number is stored in whichever shape the screen that captured it used —
+ * "(626) 555-0166" from the contact form, "+16265550166" from an import — and
+ * Twilio is happiest with one of them.
  *
  * Pure, so it can be tested without a database or a provider.
  */
 
 export type ContactPhoneFields = {
   phone?: string | null;
-  phone_number?: string | null;
 };
 
 /** US national digits, tolerating a leading 1 / +1. Empty when it is not one. */
@@ -40,26 +37,15 @@ function usNationalDigits(input: string): string {
 export function toE164(input: string): string {
   const trimmed = input.trim();
   if (!trimmed) return "";
-  if (/^\+\d{7,15}$/.test(trimmed.replace(/[\s()-]/g, ""))) {
-    return trimmed.replace(/[\s()-]/g, "");
-  }
+  const compact = trimmed.replace(/[\s()-]/g, "");
+  if (/^\+\d{7,15}$/.test(compact)) return compact;
   const national = usNationalDigits(trimmed);
   return national ? `+1${national}` : trimmed;
 }
 
-/**
- * The number to text, or null if this contact genuinely has none.
- *
- * `phone` first only because it is the column the contact form writes, so it is
- * the one a person most recently confirmed by hand.
- */
+/** The number to text, or null if this contact genuinely has none. */
 export function contactSmsNumber(contact: ContactPhoneFields | null | undefined): string | null {
-  const candidates = [contact?.phone, contact?.phone_number];
-  for (const candidate of candidates) {
-    const value = (candidate ?? "").trim();
-    if (!value) continue;
-    const e164 = toE164(value);
-    if (e164) return e164;
-  }
-  return null;
+  const value = (contact?.phone ?? "").trim();
+  if (!value) return null;
+  return toE164(value) || null;
 }

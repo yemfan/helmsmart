@@ -70,7 +70,6 @@ export async function POST(req: Request) {
       name: body.name ?? null,
       email: body.email ?? null,
       phone: formattedPhone ?? null,
-      phone_number: formattedPhone ?? null,
       property_address: body.property_address ?? null,
       source: body.source ?? "crm",
       lead_status: "new",

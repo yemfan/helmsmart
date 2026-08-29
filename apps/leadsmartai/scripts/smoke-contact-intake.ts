@@ -25,8 +25,8 @@ const card = extractBusinessCardFieldsFromText("John Smith\njohn@example.com\n41
 assert(card.email?.includes("@") ?? false, "card email");
 
 const score = incomingDuplicateScore(
-  { id: "1", email: "a@b.com", phone: "(415) 555-1212", phone_number: "(415) 555-1212" },
-  { id: "2", email: "a@b.com", phone: "(415) 555-1212", phone_number: "(415) 555-1212" }
+  { id: "1", email: "a@b.com", phone: "(415) 555-1212" },
+  { id: "2", email: "a@b.com", phone: "(415) 555-1212" }
 );
 assert(score >= 50, "dup score");
 

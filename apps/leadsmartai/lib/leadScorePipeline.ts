@@ -19,7 +19,6 @@ type LeadRow = {
   intent?: string | null;
   email?: string | null;
   phone?: string | null;
-  phone_number?: string | null;
   property_value?: number | null;
   estimated_home_value?: number | null;
   timeframe?: string | null;
@@ -82,7 +81,7 @@ export function buildLeadScoringInput(lead: LeadRow, leadEvents: { metadata?: un
     intent: lead.intent,
     tool_used: primaryTool,
     email: lead.email,
-    phone: lead.phone ?? lead.phone_number,
+    phone: lead.phone,
     property_value: numOr(lead.property_value, lead.estimated_home_value),
     timeframe: lead.timeframe,
     distinct_tools_used: distinct,

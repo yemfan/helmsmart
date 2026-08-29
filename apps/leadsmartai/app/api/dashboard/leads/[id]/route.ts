@@ -110,15 +110,7 @@ export async function PATCH(
     const directPatch: Record<string, unknown> = {};
     if (typeof body.name === "string") directPatch.name = body.name;
     if (typeof body.email === "string") directPatch.email = body.email;
-    if (typeof body.phone === "string") {
-      directPatch.phone = body.phone;
-      // Both columns, always. findContactByPhone checks phone_number FIRST, so
-      // updating only `phone` left every inbound call and text still matching
-      // the OLD number — the edit appeared to work and the receptionist carried
-      // on recognising the number the contact no longer had. The two columns
-      // have never disagreed in production; this keeps it that way.
-      directPatch.phone_number = body.phone;
-    }
+    if (typeof body.phone === "string") directPatch.phone = body.phone;
     if (typeof body.property_address === "string") directPatch.property_address = body.property_address;
     if (body.last_contacted_at) directPatch.last_contacted_at = body.last_contacted_at;
     if ("preferred_language" in body) {

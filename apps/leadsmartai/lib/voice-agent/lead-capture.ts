@@ -270,7 +270,6 @@ export async function captureLeadFromInboundCall(args: {
       agent_id: args.agentId,
       name: ex.name || null,
       phone: display,
-      phone_number: display,
       source: "ai_receptionist",
       lead_status: "new",
       // They rang us on this number. That is the same reasoning the inbound-SMS

@@ -103,7 +103,7 @@ export async function buildLeadPredictionFeatures(leadId: string): Promise<LeadP
     pricePoint: priceFromLead(row),
     hasPhone: Boolean(
       (row.phone as string)?.trim() ||
-        (row.phone_number as string)?.trim()
+        (row.phone as string)?.trim()
     ),
     hasEmail: Boolean((row.email as string)?.trim()),
     sourceSessionId:

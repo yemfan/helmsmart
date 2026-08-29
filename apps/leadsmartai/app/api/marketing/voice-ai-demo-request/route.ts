@@ -82,7 +82,6 @@ export async function POST(req: Request) {
       name,
       email,
       phone,
-      phone_number: phone,
       source: "voice_ai_demo",
       stage: "voice_demo_requested",
       lead_status: "new",

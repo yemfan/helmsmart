@@ -68,11 +68,11 @@ export async function sendDraftedBossTask(
     if (!task.matched_contact_id) return { ok: false, error: "No contact on this draft." };
     const { data: c } = await supabaseAdmin
       .from("contacts")
-      .select("phone, phone_number, name")
+      .select("phone, name")
       .eq("id", task.matched_contact_id)
       .maybeSingle();
-    const row = c as { phone: string | null; phone_number: string | null; name: string | null } | null;
-    const e164 = toE164(row?.phone_number ?? row?.phone ?? null);
+    const row = c as { phone: string | null; name: string | null } | null;
+    const e164 = toE164(row?.phone ?? null);
     if (!e164) return { ok: false, error: "The contact has no valid US phone number." };
     await sendSMS(e164, task.draft_body, task.matched_contact_id);
     sentTo = row?.name ?? e164;

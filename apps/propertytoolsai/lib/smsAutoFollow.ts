@@ -84,7 +84,7 @@ export async function logSmsMessage(input: {
 export async function sendInitialSmsAfterPurchase(leadId: string | number) {
   const { data: lead } = await supabaseServer
     .from("leads")
-    .select("id,agent_id,name,city,property_address,estimated_home_value,phone_number,phone,sms_opt_in,sms_ai_enabled,sms_agent_takeover")
+    .select("id,agent_id,name,city,property_address,estimated_home_value,phone,sms_opt_in,sms_ai_enabled,sms_agent_takeover")
     .eq("id", leadId)
     .maybeSingle();
   if (!lead) return { ok: false, reason: "lead_not_found" };
@@ -95,7 +95,7 @@ export async function sendInitialSmsAfterPurchase(leadId: string | number) {
     return { ok: false, reason: "ai_disabled_or_takeover" };
   }
 
-  const phone = String((lead as any).phone_number ?? (lead as any).phone ?? "").trim();
+  const phone = String((lead as any).phone ?? "").trim();
   if (!phone) return { ok: false, reason: "missing_phone" };
 
   let agentName = "";
@@ -152,7 +152,7 @@ export async function runSmsFollowupCron() {
   try {
     const res = await supabaseServer
       .from("leads")
-      .select("id,agent_id,name,city,property_address,estimated_home_value,phone_number,phone,sms_opt_in,sms_ai_enabled,sms_agent_takeover,sms_followup_stage,sms_last_outbound_at,sms_last_inbound_at")
+      .select("id,agent_id,name,city,property_address,estimated_home_value,phone,sms_opt_in,sms_ai_enabled,sms_agent_takeover,sms_followup_stage,sms_last_outbound_at,sms_last_inbound_at")
       .eq("sms_opt_in", true)
       .eq("sms_ai_enabled", true)
       .eq("sms_agent_takeover", false)
@@ -164,7 +164,7 @@ export async function runSmsFollowupCron() {
     error = e;
   }
   if (error) {
-    // Legacy schema fallback where phone_number may not exist.
+    // Legacy schema fallback where sms columns may not exist.
     const res = await supabaseServer
       .from("leads")
       .select("id,agent_id,name,city,property_address,estimated_home_value,phone,contact_method,sms_followup_stage,sms_last_outbound_at,sms_last_inbound_at")
@@ -226,7 +226,7 @@ export async function runSmsFollowupCron() {
       3: `Last check-in for now — if timing changes, I can help with a simple no-pressure plan based on your neighborhood. Interested?`,
     };
     const msg = addCompliance(templates[stage] ?? templates[1]);
-    const phone = String((lead as any).phone_number ?? (lead as any).phone ?? "").trim();
+    const phone = String((lead as any).phone ?? "").trim();
     if (!phone) {
       skipped += 1;
       continue;

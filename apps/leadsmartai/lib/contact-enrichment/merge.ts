@@ -74,7 +74,6 @@ export function mergeLeadRecords(primary: LeadLike, duplicate: LeadLike): Record
     name,
     email,
     phone,
-    phone_number: phone,
     property_address,
     city,
     state,

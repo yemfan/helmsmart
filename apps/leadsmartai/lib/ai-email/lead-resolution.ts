@@ -2,14 +2,14 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { EmailAssistantReply, EmailLeadSnapshot } from "./types";
 
 const leadSelect =
-  "id,name,email,phone,phone_number,lead_status,status,nurture_score,rating,property_address,city,state,intent,agent_id";
+  "id,name,email,phone,lead_status,status,nurture_score,rating,property_address,city,state,intent,agent_id";
 
 export function emailLeadRowToSnapshot(data: Record<string, unknown>): EmailLeadSnapshot {
   return {
     leadId: data.id != null ? String(data.id) : null,
     name: (data.name as string) ?? null,
     email: (data.email as string) ?? null,
-    phone: ((data.phone_number as string) ?? (data.phone as string)) || null,
+    phone: (data.phone as string) || null,
     status: ((data.lead_status as string) ?? (data.status as string)) || null,
     leadScore: typeof data.nurture_score === "number" ? data.nurture_score : null,
     leadTemperature: (data.rating as string) ?? null,
@@ -114,7 +114,6 @@ export async function applyEmailExtractedLeadFields(
   if (extracted.email?.trim()) patch.email = normalizeEmail(extracted.email);
   if (extracted.phone?.trim()) {
     patch.phone = extracted.phone.trim();
-    patch.phone_number = extracted.phone.trim();
   }
   if (extracted.propertyAddress?.trim()) patch.property_address = extracted.propertyAddress.trim();
   if (inferredIntent && inferredIntent !== "unknown") patch.intent = inferredIntent;

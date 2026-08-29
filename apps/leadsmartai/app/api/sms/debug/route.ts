@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     const leadId = String(url.searchParams.get("leadId") ?? "").trim();
     if (!leadId) return NextResponse.json({ ok: false, error: "leadId required" }, { status: 400 });
 
-    // Some environments may not yet have `phone_number` / `sms_opt_in`.
+    // Some environments may not yet have `sms_opt_in`.
     // Prefer selecting the older stable columns.
     const { data: leadRow } = await supabaseServer
       .from("contacts")

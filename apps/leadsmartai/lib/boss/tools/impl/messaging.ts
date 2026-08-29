@@ -25,7 +25,7 @@ import { defineTool } from "../types";
 async function loadContact(agentId: string, contactId: string) {
   const { data } = await supabaseAdmin
     .from("contacts")
-    .select("id, name, first_name, phone, phone_number, email, notes")
+    .select("id, name, first_name, phone, email, notes")
     .eq("id", contactId)
     .eq("agent_id", agentId)
     .maybeSingle();
@@ -34,7 +34,6 @@ async function loadContact(agentId: string, contactId: string) {
     name: string | null;
     first_name: string | null;
     phone: string | null;
-    phone_number: string | null;
     email: string | null;
     notes: string | null;
   } | null;
@@ -61,7 +60,7 @@ export const draftMessage = defineTool({
   execute: async (ctx, input) => {
     const contact = await loadContact(ctx.agentId, input.contact_id);
     if (!contact) return { status: "failed", error: "Contact not found for this agent." };
-    if (input.channel === "sms" && !contact.phone_number && !contact.phone) {
+    if (input.channel === "sms" && !contact.phone) {
       return { status: "failed", error: "Contact has no phone number on file." };
     }
     if (input.channel === "email" && !contact.email) {
@@ -204,7 +203,7 @@ export const sendMessage = defineTool({
     // rail below instead.
     const { data: c } = await supabaseAdmin
       .from("contacts")
-      .select("id, name, lifecycle_stage, phone, phone_number, email")
+      .select("id, name, lifecycle_stage, phone, email")
       .eq("id", draft.contact_id)
       .eq("agent_id", ctx.agentId)
       .maybeSingle();
@@ -213,7 +212,6 @@ export const sendMessage = defineTool({
       name: string | null;
       lifecycle_stage: string | null;
       phone: string | null;
-      phone_number: string | null;
       email: string | null;
     } | null;
     if (!contact) return { status: "failed", error: "Contact not found for this agent." };
@@ -276,7 +274,7 @@ export const sendMessage = defineTool({
 
     try {
       if (input.channel === "sms") {
-        const phone = contact.phone_number ?? contact.phone;
+        const phone = contact.phone;
         if (!phone) return { status: "rejected", reason: "Contact has no phone number." };
         await sendOutboundSms({
           leadId: contact.id,

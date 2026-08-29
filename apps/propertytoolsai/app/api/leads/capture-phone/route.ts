@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
     const { data, error } = await supabaseServer
       .from("leads")
-      .update({ phone: formatted, phone_number: formatted, stage: nextStage } as any)
+      .update({ phone: formatted, stage: nextStage } as any)
       .eq("id", leadId)
       .select("id,stage")
       .maybeSingle();

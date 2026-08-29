@@ -11,10 +11,10 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { MobileEmailMessageDto, MobileSmsMessageDto } from "@leadsmart/shared";
 
 const LEAD_REPLY_SELECT =
-  "id,agent_id,name,email,phone,phone_number,property_address,search_location,price_min,price_max,intent,rating,source,lead_status";
+  "id,agent_id,name,email,phone,property_address,search_location,price_min,price_max,intent,rating,source,lead_status";
 
 function leadPhone(row: Record<string, unknown>): string | null {
-  const p = String(row.phone_number || row.phone || "").trim();
+  const p = String(row.phone || "").trim();
   return p || null;
 }
 
