@@ -120,7 +120,81 @@ export async function listMobileCalendarEvents(params: {
     }
   }
 
-  return rows.map((r) => mapEventRow(r as Record<string, unknown>, nameById.get(String((r as { contact_id: unknown }).contact_id)) ?? null));
+  const manual = rows.map((r) =>
+    mapEventRow(r as Record<string, unknown>, nameById.get(String((r as { contact_id: unknown }).contact_id)) ?? null),
+  );
+
+  // Everything Emma books lives in `voice_appointments`, not here. The
+  // calendar has been reading only `lead_calendar_events` — the table the
+  // retired Twilio-era flow wrote to — so an agent could take five bookings
+  // on the phone and see an empty month.
+  const booked = await listVoiceAppointmentsAsEvents({
+    agentId,
+    from,
+    to,
+    leadId: params.leadId,
+  });
+
+  return [...manual, ...booked].sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+}
+
+/**
+ * Appointments the AI receptionist booked, shaped like calendar events.
+ *
+ * Read-only here: `voice_appointments` stays the source of truth for what was
+ * agreed on a call — including its purpose and meeting mode — and this only
+ * surfaces it alongside manually created events. Copying rows between the two
+ * tables would mean two records of one appointment that can disagree, which
+ * is the shape of bug this is fixing.
+ */
+async function listVoiceAppointmentsAsEvents(params: {
+  agentId: string;
+  from: string;
+  to: string;
+  leadId?: string;
+}): Promise<MobileCalendarEventDto[]> {
+  let q = supabaseAdmin
+    .from("voice_appointments")
+    .select(
+      "id,contact_id,caller_name,title,start_at,end_at,status,appointment_type,meeting_mode,created_at",
+    )
+    .eq("agent_id", params.agentId as never)
+    .neq("status", "cancelled")
+    .gte("start_at", params.from)
+    .lte("start_at", params.to);
+
+  if (params.leadId) q = q.eq("contact_id", params.leadId as never);
+
+  const { data, error } = await q.order("start_at", { ascending: true }).limit(500);
+  if (error) {
+    // Never fail the whole calendar over this half — a manual event the agent
+    // typed in should still render if the booking read goes wrong.
+    console.error("[calendar] could not read voice_appointments:", error.message);
+    return [];
+  }
+
+  return (data ?? []).map((raw) => {
+    const r = raw as Record<string, unknown>;
+    const mode = r.meeting_mode != null ? String(r.meeting_mode) : null;
+    return {
+      id: `voice:${String(r.id ?? "")}`,
+      contact_id: String(r.contact_id ?? ""),
+      lead_name: r.caller_name != null ? String(r.caller_name) : null,
+      title: String(r.title ?? "Appointment"),
+      // The mode is the one thing the title never carries, and it is what
+      // tells the agent whether to drive somewhere.
+      description: mode ? mode.replace("_", " ") : null,
+      starts_at: String(r.start_at ?? ""),
+      ends_at: r.end_at != null ? String(r.end_at) : null,
+      timezone: null,
+      status: "scheduled" as const,
+      calendar_provider: null,
+      external_event_id: null,
+      external_calendar_id: null,
+      created_at: String(r.created_at ?? ""),
+      updated_at: String(r.created_at ?? ""),
+    };
+  });
 }
 
 export async function fetchNextAppointmentForLead(

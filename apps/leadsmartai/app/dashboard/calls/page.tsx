@@ -17,9 +17,17 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CallsPage() {
   const ctx = await getCurrentAgentContext();
 
+  // `call_logs`, not `lead_calls`. lead_calls is written only by the retired
+  // Twilio voice flow (/api/voice/status-callback) and has never held a single
+  // row; the Retell receptionist writes call_logs, which has hundreds. This
+  // page has therefore always said "No calls yet" no matter how many calls
+  // were answered.
+  //
+  // call_logs carries the AI summary in `notes` and has no transcript column,
+  // so those are mapped rather than selected.
   const { data: calls } = await supabaseServer
-    .from("lead_calls")
-    .select("id, contact_id, direction, from_phone, to_phone, status, duration_seconds, summary, transcript, recording_url, needs_human, hot_lead, started_at, created_at")
+    .from("call_logs")
+    .select("id, contact_id, direction, from_phone, to_phone, status, duration_seconds, recording_url, notes, created_at")
     .eq("agent_id", ctx.agentId)
     .order("created_at", { ascending: false })
     .limit(200);
@@ -34,6 +42,13 @@ export default async function CallsPage() {
 
   const enriched = (calls ?? []).map((c: any) => ({
     ...c,
+    // The client expects the lead_calls shape; fill the fields call_logs
+    // does not have rather than leaving the columns blank.
+    summary: c.notes ?? null,
+    transcript: null,
+    started_at: c.created_at,
+    needs_human: false,
+    hot_lead: false,
     lead_name: c.contact_id ? leadMap.get(String(c.contact_id)) ?? null : null,
   }));
 
