@@ -22,30 +22,39 @@ export async function GET(req: Request) {
   }
 
   try {
+    // contact_saved_searches, not lead_saved_searches. The legacy table was
+    // dropped during the leads -> contacts migration and the API route that
+    // writes saved searches was updated to match — this cron was not, so it
+    // has failed every morning since with PGRST205 (table not found) and no
+    // saved-search alert has gone out.
+    //
+    // Columns were renamed with it: lead_id -> contact_id, preferences ->
+    // criteria, last_sent_at -> last_alerted_at.
     const { data: rows, error } = await supabaseAdmin
-      .from("lead_saved_searches")
-      .select("id, lead_id, preferences, last_sent_at");
+      .from("contact_saved_searches")
+      .select("id, contact_id, criteria, last_alerted_at, is_active")
+      .eq("is_active", true);
 
     if (error) throw error;
 
     const cutoff = Date.now() - 23 * 60 * 60 * 1000;
     const due =
       rows?.filter((r) => {
-        if (!r.last_sent_at) return true;
-        return new Date(r.last_sent_at).getTime() < cutoff;
+        if (!r.last_alerted_at) return true;
+        return new Date(r.last_alerted_at).getTime() < cutoff;
       }) ?? [];
 
     let sent = 0;
 
     for (const row of due) {
-      const prefsRaw = row.preferences;
+      const prefsRaw = row.criteria;
       const prefs = parseMatchPreferences(prefsRaw);
       if (!prefs) continue;
 
       const { data: leadRow } = await supabaseAdmin
         .from("leads")
         .select("email, name")
-        .eq("id", row.lead_id)
+        .eq("id", row.contact_id)
         .maybeSingle();
 
       const to = leadRow?.email?.trim();
@@ -72,8 +81,8 @@ Want to see more or schedule a tour? Reply to this email.`;
       });
 
       await supabaseAdmin
-        .from("lead_saved_searches")
-        .update({ last_sent_at: new Date().toISOString() })
+        .from("contact_saved_searches")
+        .update({ last_alerted_at: new Date().toISOString() })
         .eq("id", row.id);
 
       sent += 1;
