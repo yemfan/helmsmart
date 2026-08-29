@@ -20,6 +20,7 @@ import {
   visibleSteps,
   type TourStep,
 } from "@/lib/tour/steps";
+import { isAnchorUsable } from "@/lib/tour/visibility";
 
 /** Breathing room around the lit element, in px. */
 const HALO = 6;
@@ -31,6 +32,39 @@ type Rect = { top: number; left: number; width: number; height: number };
 function rectOf(el: Element): Rect {
   const r = el.getBoundingClientRect();
   return { top: r.top, left: r.left, width: r.width, height: r.height };
+}
+
+/**
+ * Boxes of the ancestors that clip, nearest first.
+ *
+ * A collapsed submenu is a wrapper of `height: 0; overflow: hidden` whose
+ * children keep full-size boxes, so the element alone cannot say whether it is
+ * on screen — only its clippers can.
+ */
+function clippingBoxes(el: Element): Rect[] {
+  const out: Rect[] = [];
+  let n: Element | null = el.parentElement;
+  while (n && n !== document.body) {
+    const overflow = getComputedStyle(n).overflow;
+    if (overflow && overflow !== "visible") out.push(rectOf(n));
+    n = n.parentElement;
+  }
+  return out;
+}
+
+/**
+ * The first match for this selector that a viewer could actually see.
+ *
+ * Not `querySelector` alone: it happily returns a link inside a collapsed
+ * submenu, which is how the tour once lit the row BELOW the one it was
+ * describing.
+ */
+function findAnchor(selector: string): { el: Element; rect: Rect } | null {
+  for (const el of Array.from(document.querySelectorAll(selector))) {
+    const rect = rectOf(el);
+    if (isAnchorUsable(rect, clippingBoxes(el))) return { el, rect };
+  }
+  return null;
 }
 
 /**
@@ -76,7 +110,7 @@ export default function SiteTour() {
   // filtered by role, so not everyone sees the same nav.
   const steps = useMemo(() => {
     if (!mounted) return [] as TourStep[];
-    return visibleSteps(TOUR_STEPS, (sel) => Boolean(document.querySelector(sel)));
+    return visibleSteps(TOUR_STEPS, (sel) => findAnchor(sel) !== null);
   }, [mounted]);
 
   useEffect(() => setMounted(true), []);
@@ -116,15 +150,10 @@ export default function SiteTour() {
       return;
     }
     const measure = () => {
-      const el = document.querySelector(current.selector);
-      if (!el) {
-        setAnchor(null);
-        return;
-      }
-      setAnchor(rectOf(el));
+      const found = findAnchor(current.selector);
+      setAnchor(found ? found.rect : null);
     };
-    const el = document.querySelector(current.selector);
-    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    findAnchor(current.selector)?.el.scrollIntoView({ block: "nearest", behavior: "smooth" });
     measure();
 
     window.addEventListener("resize", measure);
