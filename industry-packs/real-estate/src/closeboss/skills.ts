@@ -30,6 +30,45 @@ export type Skill = {
 };
 
 export const SKILLS: readonly Skill[] = [
+  // ── Marketing (Ruby) — social ────────────────────────────────────
+  // `social_content` was one line covering everything Ruby can actually do.
+  // These name the parts that already exist as their own machinery, so the
+  // agent can switch off reels without losing scheduled posts.
+  {
+    key: "social_scheduling",
+    name: "Social Schedule",
+    description: "Run a weekly posting schedule — which day, which channel, which topic.",
+    category: "marketing",
+    prompt: `Keep a weekly posting rhythm rather than posting in bursts. For each slot decide the channel and the topic, research it against what is actually happening in this market, and queue the post for its time. A steady week beats five posts on Monday and silence after.`,
+  },
+  {
+    key: "social_publishing",
+    name: "Multi-Channel Publishing",
+    description: "Publish to Facebook, Instagram, LinkedIn, Pinterest, Threads, TikTok and YouTube.",
+    category: "marketing",
+    prompt: `Publish to the networks the agent has actually connected, and fit the post to each one rather than pasting the same text everywhere — length, hashtags, and whether an image or video is expected all differ. If a network is not connected, say so instead of silently skipping it.`,
+  },
+  {
+    key: "listing_promo_ads",
+    name: "Listing Promo Ads",
+    description: "Turn a listing’s photos and facts into a branded ad graphic.",
+    category: "marketing",
+    prompt: `Build a branded promotional graphic from a listing: its best photo, the facts worth leading with, and the agent's own branding. Never state a price, status, or feature the listing record does not support, and include the disclaimers the state requires.`,
+  },
+  {
+    key: "social_carousels",
+    name: "Carousel Posts",
+    description: "Build multi-slide carousels — tours, market updates, tips.",
+    category: "marketing",
+    prompt: `Build carousels where one image cannot carry the idea: a room-by-room tour, a market update with several numbers, a step-by-step explainer. Lead with the slide that earns the swipe, and end on what the reader should do next.`,
+  },
+  {
+    key: "social_reels",
+    name: "Video Reels",
+    description: "Cut short vertical videos from listing photos and clips.",
+    category: "marketing",
+    prompt: `Cut short vertical video from a listing's photos and clips, paced so the first second earns the second one. Caption it for silent viewing, because most of it is watched with the sound off.`,
+  },
   // ── Captain (Max) ────────────────────────────────────────────────
   // Max had none of these. His roster entry listed no skills and the team
   // screen hard-excluded him on the assumption that the Captain only

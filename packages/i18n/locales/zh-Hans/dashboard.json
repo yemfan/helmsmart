@@ -1505,6 +1505,26 @@
       "risk_escalation": {
         "name": "风险上报",
         "desc": "判断哪些事必须您亲自处理，其余由他搞定。"
+      },
+      "social_scheduling": {
+        "name": "社交排期",
+        "desc": "按周安排发帖：哪天、哪个平台、什么主题。"
+      },
+      "social_publishing": {
+        "name": "多平台发布",
+        "desc": "发布到 Facebook、Instagram、LinkedIn、Pinterest、Threads、TikTok 和 YouTube。"
+      },
+      "listing_promo_ads": {
+        "name": "房源广告图",
+        "desc": "用房源的照片和信息生成带品牌的广告图。"
+      },
+      "social_carousels": {
+        "name": "多图轮播",
+        "desc": "制作多张轮播：看房导览、市场更新、实用建议。"
+      },
+      "social_reels": {
+        "name": "短视频",
+        "desc": "用房源照片和片段剪辑竖屏短视频。"
       }
     },
     "barTooltip": "第 {{day}} 天 {{count}} 条",

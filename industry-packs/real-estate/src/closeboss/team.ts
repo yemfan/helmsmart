@@ -110,6 +110,11 @@ export const AI_TEAM: readonly AssistantDef[] = [
     href: "/dashboard/ai-marketing-assistant",
     skills: [
       "social_content",
+      "social_scheduling",
+      "social_publishing",
+      "listing_promo_ads",
+      "social_carousels",
+      "social_reels",
       "marketing_plans",
       "sphere_nurture",
       "lead_generation",
