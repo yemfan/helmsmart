@@ -50,6 +50,9 @@ export const TOUR_STEPS: TourStep[] = [
   // that is always really there.
   step("aiTeam", 'a[href="/dashboard/ai-team"]', "right"),
   step("quickActions", '[data-tour="quick-actions"]', "bottom"),
+  // Last, because it is the one people find on their own — but it holds the
+  // help guides and billing, so leaving it out made the tour feel incomplete.
+  step("account", '[data-tour="account-menu"]', "bottom"),
 ];
 
 /**
@@ -66,6 +69,13 @@ export function visibleSteps(
 }
 
 export const TOUR_STORAGE_KEY = "closeboss.tour.v1";
+
+/**
+ * Fired to reopen the tour on demand. An event rather than a `?tour=1` reload:
+ * restarting a tour should not cost a page load, and the menu item that fires
+ * it can then live anywhere without knowing where the tour is mounted.
+ */
+export const TOUR_START_EVENT = "closeboss:start-tour";
 
 /**
  * Should the tour open by itself?

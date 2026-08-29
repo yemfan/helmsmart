@@ -31,6 +31,12 @@ describe("TOUR_STEPS", () => {
 });
 
 describe("visibleSteps", () => {
+  it("ends on the account menu, the last thing to point out", () => {
+    expect(TOUR_STEPS[TOUR_STEPS.length - 1].id).toBe("account");
+  });
+});
+
+describe("visibleSteps extra", () => {
   it("skips a step whose anchor is not on the page", () => {
     // The sidebar is filtered by role, so a broker and an agent do not see the
     // same items — pointing at nothing is worse than a shorter tour.

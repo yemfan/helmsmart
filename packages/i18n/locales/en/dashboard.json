@@ -23,7 +23,8 @@
       "compareProperties": "Compare properties"
     },
     "searchLeads": "Search leads",
-    "topUp": "Top up credits any time — everything included."
+    "topUp": "Top up credits any time — everything included.",
+    "takeTheTour": "Take the tour"
   },
   "sidebar": {
     "upsellTitle": "Grow with AI follow-ups",
@@ -9136,6 +9137,10 @@
         "quickActions": {
           "title": "Start something quickly",
           "body": "Add a contact, write a post or send a message without leaving the page you are on."
+        },
+        "account": {
+          "title": "You and your account",
+          "body": "Your profile, settings, billing and the help guides sit behind your name — along with this tour, whenever you want it again."
         }
       }
     }
