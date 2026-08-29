@@ -10,6 +10,7 @@ import { translateNavSections } from "@/lib/i18n/navLabels";
 import navConfig, { leadSmartNav } from "@/nav.config";
 import brokerNavConfig from "@/brokerNav.config";
 import TopBar from "@/components/dashboard/TopBar";
+import SiteTour from "@/components/tour/SiteTour";
 import { isAgentOrBrokerProfileRole } from "@/lib/rolePortalPaths";
 import { signOutWithFullReload } from "@/lib/auth/signOutClient";
 
@@ -144,6 +145,8 @@ export default function AppDashboardShell({
           className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/60 px-4 py-6 md:px-8 md:py-8 lg:px-10"
         >
           {children}
+          {/* Points at the live sidebar, so it cannot drift from the app. */}
+          <SiteTour />
         </main>
       </div>
     </div>

@@ -181,6 +181,9 @@ function QuickActionsDropdown() {
       <button
         ref={buttonRef}
         type="button"
+        // Anchor for the guided tour — see lib/tour/steps.ts. The aria-label
+        // is translated, so it cannot be the handle.
+        data-tour="quick-actions"
         onClick={() => setOpen((v) => !v)}
         className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3 text-slate-700 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40"
         aria-expanded={open}
