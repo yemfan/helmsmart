@@ -22,6 +22,7 @@ import { autoDetectContactLanguage } from "@/lib/locales/autoDetectContactLangua
 import type { SmsAssistantReply } from "@/lib/ai-sms/types";
 import { agentBrandName } from "@/lib/branding/agentBrand";
 import { shouldAiReply, type ConversationMessage } from "@/lib/ai-sms/replyGate";
+import { recordNurtureAlert } from "@/lib/nurture/recordAlert";
 
 function digitsOnly(input: string) {
   return input.replace(/\D/g, "");
@@ -490,12 +491,7 @@ export async function POST(req: Request) {
       await supabaseServer.from("contacts").update({ automation_disabled: true } as any).eq("id", leadId);
 
       if (agentId) {
-        await supabaseServer.from("nurture_alerts").insert({
-          agent_id: agentId,
-          contact_id: leadId,
-          type: "replied",
-          message: "Lead replied via SMS — nurture sequence stopped.",
-        } as any);
+        await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "replied", message: "Lead replied via SMS — nurture sequence stopped." }, supabaseServer);
       }
     }
 
@@ -513,12 +509,7 @@ export async function POST(req: Request) {
 
       if (!existingHot?.id) {
         try {
-          await supabaseServer.from("nurture_alerts").insert({
-            agent_id: agentId,
-            contact_id: leadId,
-            type: "hot",
-            message: `High intent SMS received: "${body.slice(0, 120)}"`,
-          } as any);
+          await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "hot", message: `High intent SMS received: "${body.slice(0, 120)}"` }, supabaseServer);
         } catch {}
       }
     }
@@ -571,12 +562,7 @@ export async function POST(req: Request) {
 
           if (!existingAlert?.id) {
             try {
-              await supabaseServer.from("nurture_alerts").insert({
-                agent_id: agentId,
-                contact_id: leadId,
-                type: "hot",
-                message: `AI SMS escalation (${assistant.inferredIntent}): ${body.slice(0, 100)}`,
-              } as any);
+              await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "hot", message: `AI SMS escalation (${assistant.inferredIntent}): ${body.slice(0, 100)}` }, supabaseServer);
             } catch {}
           }
         }

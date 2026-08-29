@@ -5,6 +5,7 @@ import { generateSmsAssistantReply } from "@/lib/ai-sms/service";
 import { inferIntentHeuristic } from "@/lib/ai-sms/intent";
 import { logAssistantActivity } from "@/lib/closeboss/activities";
 import type { SmsReplyContext } from "@/lib/ai-sms/types";
+import { recordNurtureAlert } from "@/lib/nurture/recordAlert";
 
 function digitsOnly(input: string) {
   return input.replace(/\D/g, "");
@@ -251,20 +252,10 @@ export async function POST(req: Request) {
 
       // Alerts
       if (agentId) {
-        await supabaseServer.from("nurture_alerts").insert({
-          agent_id: agentId,
-          contact_id: leadId,
-          type: "replied",
-          message: "Lead replied via SMS — nurture sequence stopped.",
-        } as Record<string, unknown>);
+        await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "replied", message: "Lead replied via SMS — nurture sequence stopped." }, supabaseServer);
 
         if (rating === "hot") {
-          await supabaseServer.from("nurture_alerts").insert({
-            agent_id: agentId,
-            contact_id: leadId,
-            type: "hot",
-            message: "Lead temperature turned HOT (reply).",
-          } as Record<string, unknown>);
+          await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "hot", message: "Lead temperature turned HOT (reply)." }, supabaseServer);
         }
       }
     }

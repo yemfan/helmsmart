@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
+import { recordNurtureAlert } from "@/lib/nurture/recordAlert";
 
 // 1x1 transparent GIF
 const GIF_BASE64 =
@@ -65,12 +66,7 @@ export async function GET(req: Request) {
                 .limit(1)
                 .maybeSingle();
               if (!existing?.id) {
-                await supabaseServer.from("nurture_alerts").insert({
-                  agent_id: agentId,
-                  contact_id: leadId,
-                  type: "hot",
-                  message: "Lead temperature turned HOT (email opened).",
-                } as any);
+                await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "hot", message: "Lead temperature turned HOT (email opened)." }, supabaseServer);
               }
             }
           }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
+import { recordNurtureAlert } from "@/lib/nurture/recordAlert";
 
 export async function POST(req: Request) {
   try {
@@ -100,12 +101,7 @@ export async function POST(req: Request) {
     const agentId = (leadRow as any)?.agent_id ?? null;
 
     if (agentId) {
-      await supabaseServer.from("nurture_alerts").insert({
-        agent_id: agentId,
-        contact_id: leadId,
-        type: "replied",
-        message: "Lead replied — nurture sequence stopped.",
-      } as any);
+      await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "replied", message: "Lead replied — nurture sequence stopped." }, supabaseServer);
 
       if (newRating === "hot") {
         const { data: existingHot } = await supabaseServer
@@ -119,12 +115,7 @@ export async function POST(req: Request) {
           .maybeSingle();
 
         if (!existingHot?.id) {
-          await supabaseServer.from("nurture_alerts").insert({
-            agent_id: agentId,
-            contact_id: leadId,
-            type: "hot",
-            message: "Lead temperature turned HOT (reply).",
-          } as any);
+          await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "hot", message: "Lead temperature turned HOT (reply)." }, supabaseServer);
         }
       }
     }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
+import { recordNurtureAlert } from "@/lib/nurture/recordAlert";
 
 export async function POST(req: Request) {
   try {
@@ -70,12 +71,7 @@ export async function POST(req: Request) {
             .maybeSingle();
 
           if (!existing?.id) {
-            await supabaseServer.from("nurture_alerts").insert({
-              agent_id: agentId,
-              contact_id: body.contact_id,
-              type: "hot",
-              message: "Lead temperature turned HOT (report viewed).",
-            } as any);
+            await recordNurtureAlert({ agentId: agentId, contactId: body.contact_id, type: "hot", message: "Lead temperature turned HOT (report viewed)." }, supabaseServer);
           }
         }
       }
