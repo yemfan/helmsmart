@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 import twilio from "twilio";
 import Anthropic from "@anthropic-ai/sdk";
 import { createServiceClient } from "@/lib/supabase/server";
+import { cachedSystem, markTranscriptCached, readCacheUsage } from "@/lib/promptCache";
 import { shouldStopMessaging } from "@helm/dna-communication";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { analyzeInbound, translateToEnglish, localizeOutbound, intentLabel, languageName, type Lang } from "@/lib/language";
@@ -359,10 +360,24 @@ async function handleAppointmentSelfService(args: {
   return false;
 }
 
-// Sonnet pricing (per million tokens): input $3, output $15.
-// Used to estimate cost_cents for run accounting — not billed to customers.
-function estimateCostCents(inputTokens: number, outputTokens: number): number {
-  return Math.round((inputTokens * 3 + outputTokens * 15) / 10_000);
+// Sonnet pricing (per million tokens): input $3, output $15, cache read $0.30,
+// cache write $3.75. Used to estimate cost_cents for run accounting — not
+// billed to customers.
+//
+// The cached rates are not a detail: a cached read is a TENTH of fresh input,
+// so pricing reads at $3 would report a loop as costing roughly what it did
+// before caching and hide the entire saving. This figure is one of the few
+// places we can see what the AI actually costs, so it has to tell the truth.
+function estimateCostCents(
+  inputTokens: number,
+  outputTokens: number,
+  cacheReadTokens = 0,
+  cacheWriteTokens = 0,
+): number {
+  return Math.round(
+    (inputTokens * 3 + outputTokens * 15 + cacheReadTokens * 0.3 + cacheWriteTokens * 3.75) /
+      10_000,
+  );
 }
 
 /**
@@ -447,11 +462,31 @@ async function runAutoPilotReply(opts: {
     let bookedRescheduleToken: string | null = null;
     let totalInput = 0;
     let totalOutput = 0;
+    // Tracked separately because they are priced differently — and because
+    // `tokensUsed` must still describe the whole context, not just the part
+    // that happened to miss the cache.
+    let totalCacheRead = 0;
+    let totalCacheWrite = 0;
 
     const anthropic = new Anthropic({ apiKey: apiKey! });
     for (let i = 0; i < 4; i++) {
-      const resp = await anthropic.messages.create({ model: SMS_BOOKING_MODEL, max_tokens: 500, system, tools: SMS_TOOLS, messages });
-      totalInput += resp.usage.input_tokens;
+      // Each round re-sends the system prompt, every SMS tool schema and the
+      // whole conversation. Two breakpoints — one on the system prompt (which
+      // covers the tool schemas, since the cached prefix runs tools -> system
+      // -> messages) and one moved to the end of the transcript — let rounds
+      // after the first read all of that from cache instead of re-buying it.
+      markTranscriptCached(messages as never);
+      const resp = await anthropic.messages.create({
+        model: SMS_BOOKING_MODEL,
+        max_tokens: 500,
+        system: cachedSystem(system) as never,
+        tools: SMS_TOOLS,
+        messages,
+      });
+      const usage = readCacheUsage(resp.usage);
+      totalInput += usage.uncached;
+      totalCacheRead += usage.read;
+      totalCacheWrite += usage.written;
       totalOutput += resp.usage.output_tokens;
 
       const textPart = resp.content
@@ -489,8 +524,8 @@ async function runAutoPilotReply(opts: {
       bookedNote,
       bookedLabel,
       bookedRescheduleToken,
-      tokensUsed: totalInput + totalOutput,
-      costCents: estimateCostCents(totalInput, totalOutput),
+      tokensUsed: totalInput + totalCacheRead + totalCacheWrite + totalOutput,
+      costCents: estimateCostCents(totalInput, totalOutput, totalCacheRead, totalCacheWrite),
     };
   }
 
