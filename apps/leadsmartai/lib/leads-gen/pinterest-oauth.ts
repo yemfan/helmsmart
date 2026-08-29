@@ -23,15 +23,25 @@ import {
  * app owner's own account, public rollout needs Pinterest review):
  *   - user_accounts:read — read the profile (username)
  *   - boards:read        — list boards to pick a default
+ *   - boards:write       — REQUIRED to create a Pin. POST /v5/pins writes INTO
+ *                          a board, so Pinterest bills it against the board
+ *                          scope, not just pins:write. Omitting it publishes
+ *                          nothing: every Pin comes back 403 with
+ *                          "Missing: ['boards:write']" — which is exactly what
+ *                          happened to every scheduled Pin before this was
+ *                          added. Tokens minted without it must be re-granted;
+ *                          scopes are fixed at authorize time.
  *   - pins:read / pins:write — create Pins on the user's behalf
  *
  * Tokens: access_token expires in ~30 days, refresh_token in ~1 year. We store
- * both; a future refresh cron uses the refresh token to avoid a re-connect.
+ * both, and `ensurePinterestAccessToken` (pinterest-post.ts) refreshes at the
+ * point of use so a 30-day-old connection doesn't silently stop publishing.
  */
 
 export const PINTEREST_OAUTH_SCOPES = [
   "user_accounts:read",
   "boards:read",
+  "boards:write",
   "pins:read",
   "pins:write",
 ] as const;
@@ -124,11 +134,22 @@ type TokenResponse = {
  * authenticates the token call with HTTP Basic (app_id:app_secret), not body
  * params.
  */
-export async function exchangeCodeForToken(code: string): Promise<{
+export type PinterestToken = {
   accessToken: string;
   refreshToken: string | null;
   expiresIn: number;
-}> {
+  /**
+   * The scopes Pinterest actually GRANTED, parsed from the token response.
+   * Null when Pinterest didn't say. Worth storing over the requested constant:
+   * a scope the app isn't approved for is dropped from the grant silently, so
+   * recording what we asked for makes the row claim a permission the token
+   * doesn't have — which is why the missing `boards:write` was invisible in
+   * `social_accounts.scopes` while every Pin failed on it.
+   */
+  grantedScopes: string[] | null;
+};
+
+export async function exchangeCodeForToken(code: string): Promise<PinterestToken> {
   const basic = Buffer.from(`${clientId()}:${clientSecret()}`).toString("base64");
   const body = new URLSearchParams({
     grant_type: "authorization_code",
@@ -152,7 +173,60 @@ export async function exchangeCodeForToken(code: string): Promise<{
     accessToken: json.access_token,
     refreshToken: json.refresh_token ?? null,
     expiresIn: json.expires_in ?? 30 * 24 * 60 * 60, // default ~30 days
+    grantedScopes: parseGrantedScopes(json.scope),
   };
+}
+
+/**
+ * Exchange the stored refresh token for a fresh access token. Pinterest's
+ * refresh grant keeps the ORIGINAL grant's scopes — it cannot add a new one,
+ * so a connection minted before `boards:write` still needs a re-authorize.
+ */
+export async function refreshAccessToken(refreshToken: string): Promise<PinterestToken> {
+  const basic = Buffer.from(`${clientId()}:${clientSecret()}`).toString("base64");
+  const body = new URLSearchParams({
+    grant_type: "refresh_token",
+    refresh_token: refreshToken,
+  });
+  const res = await fetch(PINTEREST_OAUTH_TOKEN, {
+    method: "POST",
+    headers: {
+      authorization: `Basic ${basic}`,
+      "content-type": "application/x-www-form-urlencoded",
+    },
+    body,
+  });
+  const json = (await res.json().catch(() => ({}))) as TokenResponse;
+  if (!res.ok || !json.access_token) {
+    const msg = json.error_description || json.message || json.error || `HTTP ${res.status}`;
+    throw new Error(`Pinterest token refresh failed: ${msg}`);
+  }
+  return {
+    accessToken: json.access_token,
+    // Pinterest only returns a new refresh token when it rotates one; keep the
+    // caller's existing token when it doesn't.
+    refreshToken: json.refresh_token ?? null,
+    expiresIn: json.expires_in ?? 30 * 24 * 60 * 60,
+    grantedScopes: parseGrantedScopes(json.scope),
+  };
+}
+
+/** Pinterest returns `scope` space- or comma-delimited depending on endpoint. */
+function parseGrantedScopes(scope: string | undefined): string[] | null {
+  if (!scope) return null;
+  const parts = scope.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+  return parts.length > 0 ? parts : null;
+}
+
+/**
+ * Which of the scopes we need are absent from a granted list. Used to tell the
+ * agent to reconnect BEFORE a Pin fails, rather than after 21 of them have.
+ * A null/empty granted list means Pinterest didn't tell us — assume fine.
+ */
+export function missingPinterestScopes(granted: string[] | null | undefined): string[] {
+  if (!granted || granted.length === 0) return [];
+  const have = new Set(granted);
+  return PINTEREST_OAUTH_SCOPES.filter((s) => !have.has(s));
 }
 
 // ── Profile + boards ─────────────────────────────────────────────────────────
