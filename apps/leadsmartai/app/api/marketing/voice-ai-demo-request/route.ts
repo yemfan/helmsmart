@@ -6,6 +6,8 @@ import {
   dispatchOutboundDemoCall,
   isDispatchOutboundDemoCallFailure,
 } from "@/lib/voice-ai-demo/outboundCall";
+import { placeRetellDemoCall } from "@/lib/voice-ai-demo/retellOutbound";
+import { demoLanguage } from "@/lib/voice-ai-demo/retellAgent";
 
 export const runtime = "nodejs";
 
@@ -113,13 +115,48 @@ export async function POST(req: Request) {
 
     const leadId = String(inserted.id);
 
-    // For "have it call me" intent, fire the outbound demo call. Best-effort —
-    // any failure (Twilio not configured, network, etc.) falls back to the
-    // sales-notification email path so a human can do the call manually.
+    // For "have it call me" intent, fire the outbound demo call.
+    //
+    // Retell first, because that is what the prospect will actually get as a
+    // customer. The old Twilio Say/Gather path stays as a fallback for when
+    // Retell is not configured — losing the demo entirely would be worse —
+    // but it is a different, older engine, so falling back is logged loudly
+    // rather than passing silently the way it did for months.
     let outboundCallSid: string | null = null;
     let outboundCallError: string | null = null;
     if (intent === "hear_it" && phone) {
-      try {
+      const language = demoLanguage(
+        (body as { language?: string } | null)?.language ?? req.headers.get("accept-language"),
+      );
+      const viaRetell = await placeRetellDemoCall({
+        toPhoneE164: phone,
+        language,
+        prospectName: name,
+      });
+
+      if (viaRetell.ok) {
+        outboundCallSid = viaRetell.callId;
+        try {
+          await supabaseServer
+            .from("contacts")
+            .update({
+              stage: "voice_demo_dialing",
+              notes: JSON.stringify({
+                voice_ai_demo: { intent, brokerage, engine: "retell", retell_call_id: viaRetell.callId, language },
+              }),
+            } as Record<string, unknown>)
+            .eq("id", leadId);
+        } catch (e) {
+          console.warn("[voice-ai-demo-request] post-dispatch update failed", e);
+        }
+      } else {
+        console.warn(
+          "[voice-ai-demo-request] Retell demo unavailable, using the legacy Twilio engine:",
+          viaRetell.reason,
+        );
+      }
+
+      if (!outboundCallSid) try {
         const result = await dispatchOutboundDemoCall({ toPhone: phone, leadId });
         if (isDispatchOutboundDemoCallFailure(result)) {
           outboundCallError = `${result.code}:${result.reason}`;
