@@ -210,18 +210,30 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   const weeks = Math.ceil((startOffset + daysInMonth) / 7);
   const today = new Date();
 
+  // Counted from the data, NOT from dayMap.
+  //
+  // dayMap is built with the filter chips applied, so counting it made the
+  // summary read "0 tasks · 0 follow-ups · 0 drafts" whenever the Appointments
+  // chip was selected — indistinguishable from having none, and reported as
+  // missing data more than once. The line describes the month; the chips
+  // decide what is drawn on it. Those are different questions.
   const monthStats = useMemo(() => {
-    let evCount = 0, tkCount = 0, fuCount = 0, drCount = 0;
-    dayMap.forEach((entries) => {
-      for (const e of entries) {
-        if (e.type === "event") evCount++;
-        else if (e.type === "task") tkCount++;
-        else if (e.type === "followup") fuCount++;
-        else if (e.type === "draft") drCount++;
-      }
-    });
-    return { events: evCount, tasks: tkCount, followups: fuCount, drafts: drCount };
-  }, [dayMap]);
+    const inMonth = (iso: string | null | undefined) => {
+      if (!iso) return false;
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return false;
+      return (
+        d.getFullYear() === currentMonth.getFullYear() &&
+        d.getMonth() === currentMonth.getMonth()
+      );
+    };
+    return {
+      events: events.filter((e) => inMonth(e.starts_at)).length,
+      tasks: tasks.filter((t) => inMonth(t.due_at)).length,
+      followups: followups.filter((f) => inMonth(f.next_contact_at)).length,
+      drafts: drafts.filter((d) => inMonth(d.scheduledFor ?? d.createdAt)).length,
+    };
+  }, [events, tasks, followups, drafts, currentMonth]);
 
   const selectedEntries = selectedDate ? (dayMap.get(dateKey(selectedDate)) ?? []) : [];
 
