@@ -133,7 +133,7 @@ export const queryCrm = defineTool({
         const stale = input.query === "stale_hot_leads";
         let q = supabaseAdmin
           .from("contacts")
-          .select("id, name, phone_number, email, lifecycle_stage, last_contacted_at, updated_at")
+          .select("id, name, phone, email, lifecycle_stage, last_contacted_at, updated_at")
           .eq("agent_id", agentId)
           .eq("rating", "hot")
           .limit(20);
@@ -200,7 +200,7 @@ export const queryCrm = defineTool({
         }
         const { data } = await supabaseAdmin
           .from("contacts")
-          .select("id, name, phone_number, email, lifecycle_stage, rating, notes")
+          .select("id, name, phone, email, lifecycle_stage, rating, notes")
           .eq("agent_id", agentId)
           .ilike("name", `%${name}%`)
           .limit(5);

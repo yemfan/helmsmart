@@ -144,7 +144,6 @@ export async function POST(req: Request) {
       name,
       email,
       phone: formattedPhone ?? null,
-      phone_number: formattedPhone ?? null,
       sms_opt_in: false,
       property_address: propertyAddress,
       source,

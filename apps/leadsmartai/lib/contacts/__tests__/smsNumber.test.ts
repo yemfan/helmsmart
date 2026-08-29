@@ -2,34 +2,17 @@ import { describe, expect, it } from "vitest";
 import { contactSmsNumber, toE164 } from "../smsNumber";
 
 describe("contactSmsNumber", () => {
-  it("finds the number when only phone_number is filled in", () => {
-    // The regression: the draft sender failed Sofia Marin and David Kim for
-    // "no phone number" while +16265550166 sat in the column it did not read.
-    expect(contactSmsNumber({ phone: null, phone_number: "+16265550166" })).toBe(
-      "+16265550166",
-    );
+  it("normalises whatever shape the number was stored in", () => {
+    expect(contactSmsNumber({ phone: "(626) 625-5055" })).toBe("+16266255055");
+    expect(contactSmsNumber({ phone: "+16265550166" })).toBe("+16265550166");
   });
 
-  it("finds the number when only phone is filled in", () => {
-    expect(contactSmsNumber({ phone: "(626) 625-5055", phone_number: null })).toBe(
-      "+16266255055",
-    );
-  });
-
-  it("prefers phone, the column a person types into", () => {
-    expect(
-      contactSmsNumber({ phone: "(626) 111-2222", phone_number: "+16263334444" }),
-    ).toBe("+16261112222");
-  });
-
-  it("skips a blank column rather than treating it as an answer", () => {
-    expect(contactSmsNumber({ phone: "   ", phone_number: "+16265550166" })).toBe(
-      "+16265550166",
-    );
+  it("treats a blank as no number rather than as an answer", () => {
+    expect(contactSmsNumber({ phone: "   " })).toBeNull();
   });
 
   it("reports honestly when there is genuinely no number", () => {
-    expect(contactSmsNumber({ phone: null, phone_number: null })).toBeNull();
+    expect(contactSmsNumber({ phone: null })).toBeNull();
     expect(contactSmsNumber({})).toBeNull();
     expect(contactSmsNumber(null)).toBeNull();
   });

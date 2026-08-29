@@ -18,7 +18,7 @@ export function leadRowToSnapshot(data: Record<string, unknown>): SmsLeadSnapsho
     leadId: data.id != null ? String(data.id) : null,
     name: (data.name as string) ?? null,
     email: (data.email as string) ?? null,
-    phone: ((data.phone_number as string) ?? (data.phone as string)) || null,
+    phone: (data.phone as string) || null,
     status: ((data.lead_status as string) ?? (data.status as string)) || null,
     leadScore: typeof data.nurture_score === "number" ? data.nurture_score : null,
     leadTemperature: (data.rating as string) ?? null,
@@ -30,67 +30,41 @@ export function leadRowToSnapshot(data: Record<string, unknown>): SmsLeadSnapsho
   };
 }
 
+const LEAD_COLS =
+  "id,name,email,phone,lead_status,status,nurture_score,rating,property_address,city,state,intent,agent_id";
+
+/**
+ * Find the contact this number belongs to.
+ *
+ * Two tiers: the exact stored value, then the last ten digits, which catches a
+ * number saved in a different shape. There used to be four — the same two
+ * queries run once against `phone` and once against `phone_number`. With one
+ * phone column, half of them were the identical query.
+ */
 export async function findLeadByPhone(phoneDisplay: string): Promise<SmsLeadSnapshot | null> {
   const fromDigits = digitsOnly(phoneDisplay);
 
-  let data: Record<string, unknown> | null = null;
-
-  try {
-    const { data: byPn, error: e1 } = await supabaseAdmin
-      .from("contacts")
-      .select(
-        "id,name,email,phone,phone_number,lead_status,status,nurture_score,rating,property_address,city,state,intent,agent_id"
-      )
-      .eq("phone_number", phoneDisplay)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (e1) throw e1;
-    data = (byPn as Record<string, unknown>) ?? null;
-  } catch {
-    // fallback below
-  }
-
-  if (!data) {
-    const { data: byPhone, error: e2 } = await supabaseAdmin
-      .from("contacts")
-      .select(
-        "id,name,email,phone,phone_number,lead_status,status,nurture_score,rating,property_address,city,state,intent,agent_id"
-      )
-      .eq("phone", phoneDisplay)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (e2) throw e2;
-    data = (byPhone as Record<string, unknown>) ?? null;
-  }
+  const { data: exact, error: exactError } = await supabaseAdmin
+    .from("contacts")
+    .select(LEAD_COLS)
+    .eq("phone", phoneDisplay)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (exactError) throw exactError;
+  let data = (exact as Record<string, unknown>) ?? null;
 
   if (!data && fromDigits.length >= 10) {
     const tail = fromDigits.slice(-10);
-    const { data: byDigitsPhone, error: e3a } = await supabaseAdmin
+    const { data: loose, error: looseError } = await supabaseAdmin
       .from("contacts")
-      .select(
-        "id,name,email,phone,phone_number,lead_status,status,nurture_score,rating,property_address,city,state,intent,agent_id"
-      )
+      .select(LEAD_COLS)
       .ilike("phone", `%${tail}%`)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    if (e3a) throw e3a;
-    data = (byDigitsPhone as Record<string, unknown>) ?? null;
-    if (!data) {
-      const { data: byDigitsPn, error: e3b } = await supabaseAdmin
-        .from("contacts")
-        .select(
-          "id,name,email,phone,phone_number,lead_status,status,nurture_score,rating,property_address,city,state,intent,agent_id"
-        )
-        .ilike("phone_number", `%${tail}%`)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (e3b) throw e3b;
-      data = (byDigitsPn as Record<string, unknown>) ?? null;
-    }
+    if (looseError) throw looseError;
+    data = (loose as Record<string, unknown>) ?? null;
   }
 
   if (!data) return null;
@@ -107,14 +81,13 @@ export async function createSmsLeadIfMissing(params: {
     .insert({
       agent_id: null,
       phone: params.phoneDisplay,
-      phone_number: params.phoneDisplay,
       source: params.source || "sms_inbound",
       intent: params.intent || "unknown",
       lead_status: "new",
       sms_opt_in: true,
     } as Record<string, unknown>)
     .select(
-      "id,name,email,phone,phone_number,lead_status,status,nurture_score,rating,property_address,city,state,intent,agent_id"
+      "id,name,email,phone,lead_status,status,nurture_score,rating,property_address,city,state,intent,agent_id"
     )
     .single();
 

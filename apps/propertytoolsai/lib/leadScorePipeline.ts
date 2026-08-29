@@ -21,7 +21,6 @@ type LeadRow = {
   intent?: string | null;
   email?: string | null;
   phone?: string | null;
-  phone_number?: string | null;
   property_value?: number | null;
   estimated_home_value?: number | null;
   timeframe?: string | null;
@@ -84,7 +83,7 @@ export function buildLeadScoringInput(lead: LeadRow, leadEvents: { metadata?: un
     intent: lead.intent,
     tool_used: primaryTool,
     email: lead.email,
-    phone: lead.phone ?? lead.phone_number,
+    phone: lead.phone,
     property_value: numOr(lead.property_value, lead.estimated_home_value),
     timeframe: lead.timeframe,
     distinct_tools_used: distinct,
@@ -105,7 +104,7 @@ export async function runLeadMarketplacePipeline(leadId: string): Promise<LeadMa
   const { data: lead, error: leadErr } = await supabaseServer
     .from("leads")
     .select(
-      // `phone` is the canonical column; `phone_number` exists only after Twilio migration — omit to avoid 42703 on older DBs.
+      // `phone` is the canonical (and only) phone column.
       "id,intent,email,phone,property_value,estimated_home_value,timeframe,location,tool_used,property_address,traffic_source"
     )
     .eq("id", leadId)

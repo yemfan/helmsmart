@@ -55,7 +55,6 @@ type FullDraftRow = MessageDraftRow & {
   contacts: {
     id: string;
     phone: string | null;
-    phone_number: string | null;
     email: string | null;
     do_not_contact_sms: boolean;
     do_not_contact_email: boolean;
@@ -90,7 +89,7 @@ export async function dispatchApprovedDrafts(
   let q = supabaseAdmin
     .from("message_drafts")
     .select(
-      "*, contacts!inner(id, phone, phone_number, email, do_not_contact_sms, do_not_contact_email, preferred_language)",
+      "*, contacts!inner(id, phone, email, do_not_contact_sms, do_not_contact_email, preferred_language)",
     )
     .eq("status", "approved")
     .order("approved_at", { ascending: true })
@@ -146,10 +145,8 @@ async function processOne(
   }
 
   // Permanent blocks — fail the draft so it drops out of the queue.
-  // Both phone columns, because the same fact lives in either one depending on
-  // which screen or import created the contact. Reading only `phone` failed
-  // messages for "no phone number" while a perfectly good number sat in
-  // `phone_number` — see lib/contacts/smsNumber.ts.
+  // Normalised to E.164 — a number is stored in whichever shape the screen that
+  // captured it used. See lib/contacts/smsNumber.ts.
   const smsTo = contactSmsNumber(contact);
   if (row.channel === "sms" && (contact.do_not_contact_sms || !smsTo)) {
     await markFailed(draftId, "contact opted out of SMS or has no phone");

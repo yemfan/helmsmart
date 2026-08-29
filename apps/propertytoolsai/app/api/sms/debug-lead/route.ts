@@ -15,9 +15,9 @@ export async function GET(req: Request) {
 
     const { data: leadRow } = await supabaseServer
       .from("leads")
-      .select("id,phone_number,sms_opt_in,automation_disabled,rating,property_address,name")
+      .select("id,phone,sms_opt_in,automation_disabled,rating,property_address,name")
       .eq("sms_opt_in", true)
-      .not("phone_number", "is", null)
+      .not("phone", "is", null)
       .order("created_at", { ascending: false })
       .limit(Number.isFinite(limit) ? Math.max(1, limit) : 1);
 

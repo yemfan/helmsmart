@@ -154,7 +154,7 @@ async function matchContactForCall(
   if (name.length < 2) return null;
   const { data } = await supabaseAdmin
     .from("contacts")
-    .select("id, name, phone, phone_number")
+    .select("id, name, phone")
     .eq("agent_id", agentId)
     .ilike("name", `%${name}%`)
     .limit(2);
@@ -162,11 +162,10 @@ async function matchContactForCall(
     id: string;
     name: string | null;
     phone: string | null;
-    phone_number: string | null;
   }[];
   if (rows.length !== 1) return null;
   const r = rows[0];
-  return { id: r.id, name: r.name, phone: r.phone_number ?? r.phone ?? null };
+  return { id: r.id, name: r.name, phone: r.phone ?? null };
 }
 
 async function draftSocialCaption(topic: string): Promise<string> {

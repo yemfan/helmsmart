@@ -88,14 +88,14 @@ export async function POST(req: Request) {
     const fromDigits = digitsOnly(fromUsPhone);
 
     // Best-effort match:
-    // 1) prefer phone_number + sms_opt_in if columns exist
+    // 1) prefer an exact phone match with sms_opt_in if the column exists
     // 2) fallback to phone + contact_method if those columns don't exist
     let leadRow: any = null;
     try {
       const { data: leadByPhoneNumber, error: leadErr1 } = await supabaseServer
         .from("leads")
-        .select("id,agent_id,phone_number,sms_opt_in,contact_method,rating,property_address,name,lead_status,phone")
-        .eq("phone_number", fromUsPhone)
+        .select("id,agent_id,sms_opt_in,contact_method,rating,property_address,name,lead_status,phone")
+        .eq("phone", fromUsPhone)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();

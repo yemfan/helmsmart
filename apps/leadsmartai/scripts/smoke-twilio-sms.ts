@@ -34,14 +34,14 @@ async function main() {
 
   const { error: leadsErr } = await supabase
     .from("contacts")
-    .select("id,phone_number,sms_opt_in")
+    .select("id,phone,sms_opt_in")
     .limit(1);
   if (leadsErr) {
-    console.error(`✗ leads (phone_number, sms_opt_in): ${leadsErr.message}`);
+    console.error(`✗ leads (phone, sms_opt_in): ${leadsErr.message}`);
     process.exitCode = 1;
     return;
   }
-  console.log("✓ leads: phone_number, sms_opt_in OK (readable)");
+  console.log("✓ leads: phone, sms_opt_in OK (readable)");
 
   const { error: logsErr } = await supabase
     .from("message_logs")

@@ -31,10 +31,7 @@ export function normalizeAddress(address?: string | null) {
 }
 
 export function displayPhone(lead: LeadLike): string | null {
-  const p =
-    (typeof lead.phone_number === "string" && lead.phone_number.trim()) ||
-    (typeof lead.phone === "string" && lead.phone.trim()) ||
-    "";
+  const p = (typeof lead.phone === "string" && lead.phone.trim()) || "";
   return p || null;
 }
 

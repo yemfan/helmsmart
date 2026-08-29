@@ -111,7 +111,7 @@ export async function GET(req: Request) {
       const { data: lead, error: leadErr } = await supabaseServer
         .from("contacts")
         .select(
-          "id,name,email,phone,phone_number,sms_opt_in,agent_id,property_address,lead_type,source,created_at,report_id"
+          "id,name,email,phone,sms_opt_in,agent_id,property_address,lead_type,source,created_at,report_id"
         )
         .eq("id", leadId)
         .maybeSingle();
@@ -261,7 +261,7 @@ export async function GET(req: Request) {
           await sendEmail({ to: String(lead.email), subject, text, html });
         } else if (channel === "sms") {
           const smsOptIn = Boolean((lead as any).sms_opt_in);
-          const leadPhone = String((lead as any).phone_number ?? lead.phone ?? "").trim();
+          const leadPhone = String(lead.phone ?? "").trim();
           const toE164 = normalizeUsPhoneToE164(leadPhone);
 
           // Do not send SMS without consent.

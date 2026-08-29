@@ -69,12 +69,12 @@ export async function executeActivePlans(): Promise<ExecutionResult> {
       if (leadId) {
         const { data: lead } = await supabaseAdmin
           .from("contacts")
-          .select("email, phone, phone_number")
+          .select("email, phone")
           .eq("id", leadId)
           .maybeSingle();
         if (lead) {
           leadEmail = String((lead as Record<string, unknown>).email ?? "");
-          leadPhone = String((lead as Record<string, unknown>).phone ?? (lead as Record<string, unknown>).phone_number ?? "");
+          leadPhone = String((lead as Record<string, unknown>).phone ?? "");
         }
       }
 

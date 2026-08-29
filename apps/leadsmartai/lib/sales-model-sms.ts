@@ -59,7 +59,7 @@ export async function searchContactsForSms(
   let query = supabaseAdmin
     .from("contacts")
     .select(
-      "id, name, first_name, last_name, phone, phone_number, email, property_address, last_contacted_at, created_at",
+      "id, name, first_name, last_name, phone, email, property_address, last_contacted_at, created_at",
     )
     .eq("agent_id", agentId)
     .order("last_contacted_at", { ascending: false, nullsFirst: false })
@@ -77,7 +77,6 @@ export async function searchContactsForSms(
         `last_name.ilike.${pattern}`,
         `email.ilike.${pattern}`,
         `phone.ilike.${pattern}`,
-        `phone_number.ilike.${pattern}`,
       ].join(","),
     );
   }
@@ -93,19 +92,18 @@ export async function searchContactsForSms(
     first_name: string | null;
     last_name: string | null;
     phone: string | null;
-    phone_number: string | null;
     email: string | null;
     property_address: string | null;
   };
   return (data as Row[] | null)
-    ?.filter((r) => Boolean(r.phone || r.phone_number))
+    ?.filter((r) => Boolean(r.phone))
     .map((r) => ({
       id: r.id,
       name:
         r.first_name || r.last_name
           ? `${r.first_name ?? ""} ${r.last_name ?? ""}`.trim()
           : (r.name ?? null),
-      phone: r.phone_number ?? r.phone ?? null,
+      phone: r.phone ?? null,
       email: r.email,
       property_address: r.property_address,
     })) ?? [];
@@ -131,7 +129,7 @@ export async function loadSmsConversation(
   const { data: contactRow } = await supabaseAdmin
     .from("contacts")
     .select(
-      "id, name, first_name, last_name, phone, phone_number, email, property_address, agent_id",
+      "id, name, first_name, last_name, phone, email, property_address, agent_id",
     )
     .eq("id", contactId)
     .eq("agent_id", agentId)
@@ -147,7 +145,6 @@ export async function loadSmsConversation(
     first_name: string | null;
     last_name: string | null;
     phone: string | null;
-    phone_number: string | null;
     email: string | null;
     property_address: string | null;
   };
@@ -158,7 +155,7 @@ export async function loadSmsConversation(
       c.first_name || c.last_name
         ? `${c.first_name ?? ""} ${c.last_name ?? ""}`.trim()
         : (c.name ?? null),
-    phone: c.phone_number ?? c.phone ?? null,
+    phone: c.phone ?? null,
     email: c.email,
     property_address: c.property_address,
   };
@@ -374,7 +371,7 @@ export async function sendSmsForAgent(args: {
 
   const { data: contactRow } = await supabaseAdmin
     .from("contacts")
-    .select("id, phone, phone_number, agent_id")
+    .select("id, phone, agent_id")
     .eq("id", contactId)
     .eq("agent_id", agentId)
     .maybeSingle();
@@ -387,10 +384,7 @@ export async function sendSmsForAgent(args: {
       status: 404,
     };
   }
-  const phone =
-    (contactRow as { phone_number?: string | null; phone?: string | null }).phone_number ||
-    (contactRow as { phone_number?: string | null; phone?: string | null }).phone ||
-    "";
+  const phone = (contactRow as { phone?: string | null }).phone || "";
   if (!phone) {
     return {
       ok: false,

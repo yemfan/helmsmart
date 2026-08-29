@@ -132,7 +132,6 @@ export async function POST(req: Request) {
       name,
       email,
       phone,
-      phone_number: phone,
       property_address: body.listingAddress ?? null,
       source: "idx_homes_for_sale",
       stage: pickStage(action, Boolean(phone)),

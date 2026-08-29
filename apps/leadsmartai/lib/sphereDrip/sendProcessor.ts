@@ -55,7 +55,6 @@ type EnrollmentRow = {
 type ContactRow = {
   id: string;
   phone: string | null;
-  phone_number: string | null;
   email: string | null;
   do_not_contact_sms: boolean | null;
   do_not_contact_email: boolean | null;
@@ -300,7 +299,7 @@ async function fetchContacts(contactIds: string[]): Promise<Map<string, ContactR
   const { data, error } = await supabaseAdmin
     .from("contacts")
     .select(
-      "id, phone, phone_number, email, do_not_contact_sms, do_not_contact_email, first_name, property_address",
+      "id, phone, email, do_not_contact_sms, do_not_contact_email, first_name, property_address",
     )
     .in("id", contactIds);
   if (error) {
@@ -324,7 +323,6 @@ async function fetchAgent(agentId: string): Promise<AgentRow | null> {
 function toSendContext(contact: ContactRow): ContactSendContext {
   return {
     phone: contact.phone,
-    phoneNumber: contact.phone_number,
     email: contact.email,
     doNotContactSms: Boolean(contact.do_not_contact_sms),
     doNotContactEmail: Boolean(contact.do_not_contact_email),

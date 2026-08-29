@@ -175,7 +175,6 @@ export async function persistToolLead(
       name,
       email,
       phone: formattedPhone ?? null,
-      phone_number: formattedPhone ?? null,
       sms_opt_in: false,
       property_address: propertyAddress || null,
       session_id: sessionId,

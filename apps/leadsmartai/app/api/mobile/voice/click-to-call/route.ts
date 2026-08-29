@@ -65,7 +65,7 @@ export async function POST(req: Request) {
   // Contact phone — must belong to this agent (authorization).
   const { data: contactRow } = await supabaseAdmin
     .from("contacts")
-    .select("phone, phone_number, name, first_name, last_name")
+    .select("phone, name, first_name, last_name")
     .eq("id", contactId)
     .eq("agent_id", auth.ctx.agentId)
     .maybeSingle();
@@ -82,12 +82,11 @@ export async function POST(req: Request) {
   }
   const c = contactRow as {
     phone?: string | null;
-    phone_number?: string | null;
     name?: string | null;
     first_name?: string | null;
     last_name?: string | null;
   };
-  const contactPhone = c.phone ?? c.phone_number ?? null;
+  const contactPhone = c.phone ?? null;
   const whisper = buildWhisper(c);
 
   const appBaseUrl =

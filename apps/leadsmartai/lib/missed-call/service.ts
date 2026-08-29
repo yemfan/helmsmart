@@ -206,7 +206,7 @@ export function toUsDisplayPhone(raw: string | null | undefined): string | null 
 
 /**
  * Resolves a contact for `agentId` by an inbound caller's phone.
- * Tries `phone_number` first (canonical CRM format), then `phone`
+ * Tries an exact match on `phone` (canonical CRM format), then a loose one
  * (legacy column), then digits-only ilike. Returns null when none
  * of the lookups land — which means the caller is "unknown" and the
  * text-back falls back to a generic salutation.
@@ -248,7 +248,6 @@ export async function findContactByPhone(
     first_name: string | null;
     last_name: string | null;
     phone: string | null;
-    phone_number: string | null;
     email: string | null;
     property_address: string | null;
     lifecycle_stage: string | null;
@@ -256,7 +255,7 @@ export async function findContactByPhone(
   };
 
   const cols =
-    "id, name, first_name, last_name, phone, phone_number, email, property_address, lifecycle_stage, relationship_type";
+    "id, name, first_name, last_name, phone, email, property_address, lifecycle_stage, relationship_type";
 
   // Newest first, everywhere. Phone is NOT unique on contacts — the only
   // uniqueness the schema enforces is (agent_id, lower(email)) where email is
@@ -283,16 +282,11 @@ export async function findContactByPhone(
     // fell through to the fuzzy match below — the exact hit was thrown away in
     // precisely the case that needed it most.
     const byNumber = await newestFirst(
-      supabaseAdmin.from("contacts").select(cols).eq("agent_id", agentId).eq("phone_number", usPhone),
+      supabaseAdmin.from("contacts").select(cols).eq("agent_id", agentId).eq("phone", usPhone),
     ).limit(5);
     const numberHit = pick(byNumber.data as Row[] | null);
     if (numberHit) return shape(numberHit);
 
-    const byPhone = await newestFirst(
-      supabaseAdmin.from("contacts").select(cols).eq("agent_id", agentId).eq("phone", usPhone),
-    ).limit(5);
-    const phoneHit = pick(byPhone.data as Row[] | null);
-    if (phoneHit) return shape(phoneHit);
   }
 
   if (digits.length === 10) {
@@ -312,7 +306,7 @@ export async function findContactByPhone(
         r.first_name || r.last_name
           ? `${r.first_name ?? ""} ${r.last_name ?? ""}`.trim()
           : (r.name ?? null),
-      phone: r.phone_number ?? r.phone ?? null,
+      phone: r.phone ?? null,
       email: r.email,
       property_address: r.property_address,
       personal:

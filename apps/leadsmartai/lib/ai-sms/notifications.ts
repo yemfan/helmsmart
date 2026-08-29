@@ -24,7 +24,6 @@ export type AssignedAgentContact = {
     id: string;
     name: string | null;
     phone: string | null;
-    phone_number: string | null;
     property_address: string | null;
     agent_id: string | null;
   };
@@ -42,7 +41,7 @@ export type AssignedAgentContact = {
 export async function getAssignedAgentContact(leadId: string): Promise<AssignedAgentContact | null> {
   const { data: lead, error: leadError } = await supabaseAdmin
     .from("contacts")
-    .select("id,agent_id,name,phone,phone_number,property_address")
+    .select("id,agent_id,name,phone,property_address")
     .eq("id", leadId)
     .maybeSingle();
 
@@ -74,7 +73,6 @@ export async function getAssignedAgentContact(leadId: string): Promise<AssignedA
       id: String(lead.id),
       name: lead.name ?? null,
       phone: lead.phone ?? null,
-      phone_number: (lead as { phone_number?: string | null }).phone_number ?? null,
       property_address: lead.property_address ?? null,
       agent_id: agentId,
     },
@@ -113,7 +111,7 @@ export async function notifyAgentOfHotLead(params: NotifyAgentOfHotLeadParams) {
     return { notified: false, reason: "no_assigned_agent" as const };
   }
 
-  const leadPhone = contact.lead.phone_number || contact.lead.phone;
+  const leadPhone = contact.lead.phone;
   const pushTitle = `Hot lead — ${EMAIL_BRAND}`;
   const pushBody = [
     contact.lead.name ? contact.lead.name : `Lead ${params.leadId}`,

@@ -80,7 +80,7 @@ export async function draftInactiveLeadNudge(input: {
     // No phone, no text worth drafting — the call task still stands on its own.
     const { data: contactRow } = await supabaseAdmin
       .from("contacts")
-      .select("first_name, name, phone, phone_number, notes, preferred_language")
+      .select("first_name, name, phone, notes, preferred_language")
       .eq("id", input.contactId as never)
       .eq("agent_id", input.agentId as never)
       .maybeSingle();
@@ -88,12 +88,11 @@ export async function draftInactiveLeadNudge(input: {
       first_name?: string | null;
       name?: string | null;
       phone?: string | null;
-      phone_number?: string | null;
       notes?: string | null;
       preferred_language?: string | null;
     } | null;
     if (!c) return null;
-    if (!c.phone && !c.phone_number) return null;
+    if (!c.phone) return null;
 
     const { data: agentRow } = await supabaseAdmin
       .from("agents")

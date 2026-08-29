@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     if (id) {
       const { data, error } = await supabaseAdmin
         .from("contacts")
-        .select("id, first_name, last_name, email, phone, phone_number, property_address")
+        .select("id, first_name, last_name, email, phone, property_address")
         .eq("agent_id", String(agentId) as never)
         .eq("id", id)
         .maybeSingle();
@@ -45,7 +45,7 @@ export async function GET(req: Request) {
 
     let query = supabaseAdmin
       .from("contacts")
-      .select("id, first_name, last_name, email, phone, phone_number, property_address")
+      .select("id, first_name, last_name, email, phone, property_address")
       .eq("agent_id", String(agentId) as never)
       .order("last_contacted_at", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false })
@@ -62,7 +62,6 @@ export async function GET(req: Request) {
           `last_name.ilike.${like}`,
           `email.ilike.${like}`,
           `phone.ilike.${like}`,
-          `phone_number.ilike.${like}`,
         ].join(","),
       );
     }
@@ -92,7 +91,7 @@ function toPickerRow(r: Record<string, unknown>): PickerRow {
   const last = (r.last_name as string | null) ?? "";
   const email = (r.email as string | null) ?? null;
   const phone =
-    (r.phone as string | null) ?? (r.phone_number as string | null) ?? null;
+    (r.phone as string | null) ?? null;
   const joined = `${first} ${last}`.trim();
   const name = joined || email || "(no name)";
   return {

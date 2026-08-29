@@ -68,7 +68,6 @@ export async function POST(req: Request) {
         name,
         email,
         phone: phoneRaw ? formatUsPhone(phoneRaw) : null,
-        phone_number: phoneRaw ? formatUsPhone(phoneRaw) : null,
         source: "Home Value",
         lead_status: "new",
         notes: null,

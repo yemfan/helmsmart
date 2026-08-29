@@ -11,7 +11,6 @@ export function toLeadLike(fields: ContactFieldsInput, agentId: string): LeadLik
     name: fields.name ?? null,
     email: fields.email ?? null,
     phone,
-    phone_number: phone,
     property_address: fields.property_address ?? null,
     notes: fields.notes ?? null,
   };
