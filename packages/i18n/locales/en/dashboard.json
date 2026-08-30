@@ -9152,7 +9152,8 @@
       "tools": "Tools",
       "transactions": "Transactions",
       "transaction": "Transaction",
-      "offersOnListing": "Offers on listing"
+      "offersOnListing": "Offers on listing",
+      "hub": "Marketing hub"
     },
     "tour": {
       "next": "Next",
@@ -9191,6 +9192,39 @@
           "body": "Your profile, settings, billing and the help guides sit behind your name — along with this tour, whenever you want it again."
         }
       }
+    },
+    "hubSettings": {
+      "bioHint": "A few sentences in your own voice. This is the first thing a visitor reads.",
+      "bioLabel": "About you",
+      "blurb": "A public page with your posts, your bio and a way for people to reach you.",
+      "gaHint": "Looks like G-XXXXXXXXXX. Available on every plan.",
+      "gaLabel": "Google Analytics measurement ID",
+      "indexedNo": "Won't appear in search yet: needs a longer bio and at least three published posts.",
+      "indexedYes": "Ready for search engines.",
+      "loadFailed": "Couldn't load your hub settings. Refresh to try again.",
+      "needUsername": "Choose a username first — that becomes your hub's address.",
+      "pixelActive": "Running on your hub.",
+      "pixelHint": "15 or 16 digits, from Meta Events Manager.",
+      "pixelLabel": "Meta Pixel ID",
+      "pixelNeedsPremium": "Saved. Runs once you're on Premium.",
+      "postedItems_one": "{{count}} published post will show on your hub",
+      "postedItems_other": "{{count}} published posts will show on your hub",
+      "privacyNote": "Visitors who send a Do Not Track signal are not sent to Meta.",
+      "publishHintOff": "Only you can see it. Visitors get a “coming soon” page.",
+      "publishHintOn": "Anyone with the link can see it.",
+      "publishLabel": "Hub is live",
+      "save": "Save",
+      "saveFailed": "That didn't save. Please try again.",
+      "saved": "Saved",
+      "saving": "Saving",
+      "specialtiesHint": "Comma separated — first-time buyers, luxury, relocation, 中文.",
+      "specialtiesLabel": "What you specialise in",
+      "title": "Your marketing hub",
+      "trackingTitle": "Your own analytics",
+      "usernameHint": "Letters, numbers, hyphens and underscores. This becomes your public link, so pick one you can say out loud.",
+      "usernameLabel": "Your address",
+      "usernameTaken": "That username is taken.",
+      "viewHub": "View my hub"
     }
   }
 }

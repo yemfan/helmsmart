@@ -9152,7 +9152,8 @@
       "tools": "工具",
       "transactions": "交易",
       "transaction": "交易详情",
-      "offersOnListing": "该房源的报价"
+      "offersOnListing": "该房源的报价",
+      "hub": "营销主页"
     },
     "tour": {
       "next": "下一步",
@@ -9191,6 +9192,39 @@
           "body": "个人资料、设置、账单和帮助指南都在你的名字下面——想再看一次导览，也从这里进入。"
         }
       }
+    },
+    "hubSettings": {
+      "bioHint": "用您自己的语气写几句话。这是访客最先看到的内容。",
+      "bioLabel": "关于您",
+      "blurb": "一个公开页面，展示您的动态、简介，以及联系您的方式。",
+      "gaHint": "格式为 G-XXXXXXXXXX。所有套餐均可使用。",
+      "gaLabel": "Google Analytics 衡量 ID",
+      "indexedNo": "暂不会出现在搜索结果中：需要更完整的简介，以及至少三条已发布的动态。",
+      "indexedYes": "已可被搜索引擎收录。",
+      "loadFailed": "无法加载主页设置。请刷新后重试。",
+      "needUsername": "请先选择一个用户名 — 它将成为您主页的地址。",
+      "pixelActive": "已在您的主页上运行。",
+      "pixelHint": "15 或 16 位数字，可在 Meta 事件管理工具中找到。",
+      "pixelLabel": "Meta 像素 ID",
+      "pixelNeedsPremium": "已保存。升级到 Premium 后即会生效。",
+      "postedItems_one": "有 {{count}} 条已发布动态将显示在您的主页",
+      "postedItems_other": "有 {{count}} 条已发布动态将显示在您的主页",
+      "privacyNote": "发送“请勿追踪”信号的访客不会被发送至 Meta。",
+      "publishHintOff": "目前仅您可见。访客会看到“即将上线”页面。",
+      "publishHintOn": "任何拥有链接的人都可以查看。",
+      "publishLabel": "主页已上线",
+      "save": "保存",
+      "saveFailed": "保存失败，请重试。",
+      "saved": "已保存",
+      "saving": "保存中",
+      "specialtiesHint": "用逗号分隔 — 首次购房、豪宅、搬迁、中文。",
+      "specialtiesLabel": "您的专长",
+      "title": "您的营销主页",
+      "trackingTitle": "您自己的分析工具",
+      "usernameHint": "可用字母、数字、连字符和下划线。这将成为您的公开链接，请选一个方便口头告知的。",
+      "usernameLabel": "您的地址",
+      "usernameTaken": "该用户名已被占用。",
+      "viewHub": "查看我的主页"
     }
   }
 }
