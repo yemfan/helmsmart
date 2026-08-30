@@ -4,6 +4,8 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { normalizeUsername } from "@/lib/identity/username";
 import { loadPresentationAgent, type PresentationAgent } from "@/lib/presentations/loadPresentationAgent";
 import { buildFeed, isIndexable, type FeedItem } from "./feedItems";
+import { resolveAgentPlan } from "@/lib/billing/resolveAgentPlan";
+import { decideTracking, type TrackingDecision } from "./tracking";
 
 /**
  * Everything the public hub page needs, from a username.
@@ -34,6 +36,8 @@ export type Hub = {
   feed: FeedItem[];
   /** Whether search engines should index this. Thin hubs are noindex. */
   indexable: boolean;
+  /** Which analytics tags this render should emit, if any. */
+  tracking: TrackingDecision;
 };
 
 const NOT_FOUND: Hub = {
@@ -49,6 +53,7 @@ const NOT_FOUND: Hub = {
   introVideoUrl: null,
   feed: [],
   indexable: false,
+  tracking: { metaPixelId: null, gaMeasurementId: null, pixelSuppressedBy: null },
 };
 
 /** Storage paths are stored bare; public URLs are absolute. Only build one for a path. */
@@ -95,7 +100,11 @@ function bioOf(row: Record<string, unknown>): string | null {
   return inferred || null;
 }
 
-export async function loadHubByUsername(rawUsername: string): Promise<Hub> {
+export async function loadHubByUsername(
+  rawUsername: string,
+  /** True when the visitor sent Global Privacy Control. Suppresses the pixel. */
+  privacySignal = false,
+): Promise<Hub> {
   const username = normalizeUsername(rawUsername);
   if (!username) return NOT_FOUND;
 
@@ -134,8 +143,16 @@ export async function loadHubByUsername(rawUsername: string): Promise<Hub> {
       };
     }
 
-    const [agent, posts, carousels, reels] = await Promise.all([
+    const [agent, plan, trackingRow, posts, carousels, reels] = await Promise.all([
       loadPresentationAgent(agentId),
+      // Read across every plan source — see planRank.ts. Gating on one
+      // column would tell a Signature customer to upgrade.
+      resolveAgentPlan(agentId),
+      supabaseAdmin
+        .from("agent_tracking_config")
+        .select("meta_pixel_id, ga_measurement_id")
+        .eq("agent_id", agentId as never)
+        .maybeSingle(),
       supabaseAdmin
         .from("scheduled_posts")
         .select("id, platform, caption, image_url, status, published_at, created_at")
@@ -165,6 +182,11 @@ export async function loadHubByUsername(rawUsername: string): Promise<Hub> {
       reels: (reels.data as Record<string, unknown>[] | null) ?? [],
     });
 
+    const cfg = (trackingRow.data ?? {}) as {
+      meta_pixel_id?: string | null;
+      ga_measurement_id?: string | null;
+    };
+
     const bio = bioOf(row);
 
     return {
@@ -180,6 +202,11 @@ export async function loadHubByUsername(rawUsername: string): Promise<Hub> {
       introVideoUrl: String(row.dt_avatar_video_url ?? "").trim() || null,
       feed,
       indexable: isIndexable({ published, bio, feedCount: feed.length }),
+      tracking: decideTracking(
+        { metaPixelId: cfg.meta_pixel_id ?? null, gaMeasurementId: cfg.ga_measurement_id ?? null },
+        plan.tier,
+        privacySignal,
+      ),
     };
   } catch (e) {
     console.warn("[marketing-hub] loadHubByUsername failed:", e);

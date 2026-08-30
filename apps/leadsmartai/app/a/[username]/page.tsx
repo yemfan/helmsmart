@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { getServerT } from "@/lib/i18n/server";
 import { displayUsername } from "@/lib/identity/username";
 import { loadHubByUsername, type Hub } from "@/lib/marketing-hub/loadHub";
 import { postedAgo } from "@/lib/marketing-hub/feedItems";
+import { hasPrivacySignal } from "@/lib/marketing-hub/tracking";
 import HubLeadForm from "./HubLeadForm";
 import HubTracker from "./HubTracker";
+import { HubTags } from "./HubTags";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -103,7 +106,10 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
   const t = await getServerT();
   const { username } = await params;
   const query = await searchParams;
-  const hub: Hub = await loadHubByUsername(username);
+  // Read Sec-GPC before loading: the pixel decision has to be made before a
+  // script tag exists in the tree, not after it has already loaded.
+  const privacySignal = hasPrivacySignal(await headers());
+  const hub: Hub = await loadHubByUsername(username, privacySignal);
 
   if (hub.status === "not_found") {
     return (
@@ -150,6 +156,9 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
         utmSource={utm.source}
         utmCampaign={utm.campaign}
       />
+      {/* The agent's own GA4 / Meta Pixel — already gated by plan and by the
+          visitor's privacy signal before this point. */}
+      <HubTags decision={hub.tracking} />
       <header className="flex flex-col gap-5 sm:flex-row sm:items-center">
         {hub.portraitUrl ? (
           <Image
