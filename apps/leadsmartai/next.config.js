@@ -102,7 +102,9 @@ const nextConfig = {
       ["/reports/conversion", "/dashboard/growth"],
       ["/settings/profile", "/dashboard/settings"],
       ["/settings/team", "/dashboard/settings"],
-      ["/settings/billing", "/pricing"],
+      // Was "/pricing", which now redirects to /plans. Pointed straight
+      // at the destination rather than making the browser take two hops.
+      ["/settings/billing", "/plans"],
       ["/settings/notifications", "/dashboard/notifications"],
     ];
     /**
@@ -141,11 +143,12 @@ const nextConfig = {
      * before routing, so they also make any leftover route files unreachable.
      */
     const retiredLoanBroker = [
-      ["/loan-broker", "/agent/pricing"],
-      ["/loan-broker/:path*", "/agent/pricing"],
-      ["/pricing/loan-broker", "/agent/pricing"],
+      // These pointed at /agent/pricing, which now redirects to /plans.
+      ["/loan-broker", "/plans"],
+      ["/loan-broker/:path*", "/plans"],
+      ["/pricing/loan-broker", "/plans"],
       ["/start-free/loan-broker", "/start-free/agent"],
-      ["/api/loan-broker/:path*", "/agent/pricing"],
+      ["/api/loan-broker/:path*", "/plans"],
     ];
 
     return [
@@ -169,6 +172,23 @@ const nextConfig = {
         destination,
         permanent: true,
       })),
+      /*
+       * Retired price list -> the live one.
+       *
+       * /agent/pricing and /pricing advertised the feature-tier catalog
+       * ($79 Pro / $199 Premium / $399 Signature) months after Stripe moved to
+       * the usage catalog on /plans. They were not dead ends: both were linked
+       * from the agent landing page, the compare page and a blog post, and
+       * /agent/pricing is the CANCEL URL for Stripe checkout — so abandoning a
+       * purchase landed you on prices we no longer sell.
+       *
+       * 302, not 301. A permanent redirect is cached by browsers effectively
+       * forever, and these URLs may well come back as real marketing pages once
+       * they carry the current numbers. Cheap to make permanent later;
+       * expensive to undo.
+       */
+      { source: "/agent/pricing", destination: "/plans", permanent: false },
+      { source: "/pricing", destination: "/plans", permanent: false },
     ];
   },
 };

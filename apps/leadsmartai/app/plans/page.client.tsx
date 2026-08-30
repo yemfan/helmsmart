@@ -10,8 +10,8 @@ import {
   CREDIT_COSTS,
   CREDIT_PACKS,
   CREDIT_TIERS,
-  TRIAL_CREDITS,
-  TRIAL_DAYS,
+  FREE_TIER,
+  WELCOME_CREDITS,
 } from "@/lib/credits/pricing";
 
 const BRAND = "#0072ce";
@@ -66,7 +66,7 @@ export default function PlansClientPage() {
             {t("header.subtitle")}
           </p>
           <p className="mt-3 text-sm text-gray-500">
-            {t("header.trial", { days: TRIAL_DAYS, credits: TRIAL_CREDITS.toLocaleString() })}
+            {t("header.trial")}
           </p>
         </header>
 
@@ -76,7 +76,40 @@ export default function PlansClientPage() {
         <section>
           <h2 className="mb-1 text-lg font-bold text-gray-900">{t("plans.heading")}</h2>
           <p className="mb-4 text-sm text-gray-500">{t("plans.help")}</p>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {/* Free is not in CREDIT_TIERS — that list drives Stripe checkout and
+                every row in it needs a price id. It is rendered first because
+                it is where most people start. */}
+            <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <p className="text-sm font-semibold" style={{ color: BRAND }}>
+                {t("plans.freeName")}
+              </p>
+              <p className="mt-1 text-3xl font-extrabold text-gray-900">
+                {t("plans.freePrice")}
+              </p>
+              <p className="mt-1 text-sm font-semibold text-gray-700">
+                {FREE_TIER.monthlyCredits.toLocaleString()} {t("plans.creditsPerMo")}
+              </p>
+              <p className="mt-0.5 text-xs text-gray-500">
+                {t("plans.usage", {
+                  minutes: approxCallMinutes(FREE_TIER.monthlyCredits).toLocaleString(),
+                  videos: approxVideos(FREE_TIER.monthlyCredits, "twinAvatar").toLocaleString(),
+                })}
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                {t("plans.welcomeGrant", { credits: WELCOME_CREDITS.toLocaleString() })}
+              </p>
+              <p className="mt-1 flex-1 text-xs text-gray-500">
+                {t("plans.blurb.free", { defaultValue: FREE_TIER.blurb })}
+              </p>
+              <a
+                href="/agent-signup"
+                className="mt-5 w-full rounded-xl border py-2.5 text-center text-sm font-bold shadow-sm transition hover:bg-gray-50"
+                style={{ borderColor: BRAND, color: BRAND }}
+              >
+                {t("plans.freeCta")}
+              </a>
+            </div>
             {CREDIT_TIERS.map((tier) => (
               <div
                 key={tier.id}
@@ -101,6 +134,11 @@ export default function PlansClientPage() {
                 {/* Positioning prose, so it belongs in i18n — pricing.ts holds
                     the English original and is the fallback if a key is missing.
                     Numbers deliberately stay out of it; that is what drifted. */}
+                {tier.setupFeeUsd ? (
+                  <p className="mt-1 text-xs font-medium text-gray-700">
+                    {t("plans.setupFee", { amount: tier.setupFeeUsd.toLocaleString() })}
+                  </p>
+                ) : null}
                 <p className="mt-1 flex-1 text-xs text-gray-500">
                   {t(`plans.blurb.${tier.id}`, { defaultValue: tier.blurb })}
                 </p>
@@ -130,7 +168,7 @@ export default function PlansClientPage() {
         <section>
           <h2 className="mb-1 text-lg font-bold text-gray-900">{t("packs.heading")}</h2>
           <p className="mb-4 text-sm text-gray-500">{t("packs.help")}</p>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {CREDIT_PACKS.map((pack) => (
               <div
                 key={pack.id}
