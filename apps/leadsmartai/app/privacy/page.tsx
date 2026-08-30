@@ -348,8 +348,83 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
     ),
   },
   {
+    id: "google-user-data",
+    title: "6. Google user data",
+    body: (
+      <>
+        <p>
+          CloseBoss can connect to your Google Calendar so that appointments you
+          schedule in CloseBoss appear on your own calendar. Connecting is optional,
+          you initiate it yourself, and you can disconnect at any time from Settings
+          &rarr; Calendar. This section describes our use of Google user data and
+          applies in addition to the rest of this policy.
+        </p>
+        <p>
+          <strong>What we access.</strong> We request a single Google OAuth scope,
+          <code> https://www.googleapis.com/auth/calendar.events</code>, and use it
+          only to create, update, and delete events on your primary Google Calendar:
+        </p>
+        <ul>
+          <li>
+            <strong>Create</strong> — when you book a showing or appointment in
+            CloseBoss, we add a matching event to your calendar.
+          </li>
+          <li>
+            <strong>Update</strong> — when you change that appointment&rsquo;s time,
+            title, or location in CloseBoss, we update the same event.
+          </li>
+          <li>
+            <strong>Delete</strong> — when you cancel the appointment in CloseBoss, we
+            remove the event we created.
+          </li>
+        </ul>
+        <p>
+          <strong>What we do not do.</strong> We do not read, list, or download your
+          existing calendars or events. We do not access secondary calendars. We do not
+          import calendar contents into CloseBoss, and we do not use Google user data
+          to build profiles, target advertising, or train artificial-intelligence or
+          machine-learning models.
+        </p>
+        <p>
+          <strong>What we store.</strong> The only Google Calendar data we retain is
+          the identifier of the event we created, stored so that we can update or
+          delete that same event later. Your OAuth tokens are stored encrypted
+          (AES-256-GCM) and are used solely to make the calls described above. Both are
+          deleted when you disconnect Google Calendar or delete your account.
+        </p>
+        <p>
+          <strong>Limited Use.</strong> CloseBoss&rsquo;s use and transfer of
+          information received from Google APIs adheres to the{" "}
+          <a
+            href="https://developers.google.com/terms/api-services-user-data-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline"
+          >
+            Google API Services User Data Policy
+          </a>
+          , including the Limited Use requirements. We do not sell Google user data,
+          and we do not share it with third parties except as required by law.
+        </p>
+        <p>
+          You can review or revoke CloseBoss&rsquo;s access at any time from your Google
+          Account&rsquo;s{" "}
+          <a
+            href="https://myaccount.google.com/permissions"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline"
+          >
+            Third-party apps &amp; services
+          </a>{" "}
+          page.
+        </p>
+      </>
+    ),
+  },
+  {
     id: "sharing",
-    title: "6. How we share information",
+    title: "7. How we share information",
     body: (
       <>
         <p>We share information only with:</p>
@@ -389,7 +464,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   },
   {
     id: "sms-email-compliance",
-    title: "7. SMS and email compliance",
+    title: "8. SMS and email compliance",
     body: (
       <>
         <p className="font-semibold text-slate-900">
@@ -476,7 +551,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   },
   {
     id: "cookies",
-    title: "8. Cookies and tracking",
+    title: "9. Cookies and tracking",
     body: (
       <>
         <p>
@@ -515,7 +590,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   },
   {
     id: "rights",
-    title: "9. Your rights",
+    title: "10. Your rights",
     body: (
       <>
         <p>Depending on where you live, you may have the right to:</p>
@@ -600,7 +675,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   },
   {
     id: "retention",
-    title: "10. Retention",
+    title: "11. Retention",
     body: (
       <>
         <p>
@@ -630,9 +705,9 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
             consent-recordkeeping standard.
           </li>
           <li>
-            <strong>Gmail-synced messages</strong> (when Gmail sync is connected) — see
-            section 5 (Google user data); retained until you delete the message, the
-            associated contact, or your account.
+            <strong>Google Calendar event IDs</strong> (when Google Calendar is
+            connected) — see section 6 (Google user data); retained until you delete the
+            appointment, disconnect Google Calendar, or delete your account.
           </li>
           <li>
             <strong>Billing + tax records</strong> — retained for at least 7 years for
@@ -668,7 +743,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   },
   {
     id: "security",
-    title: "11. Security",
+    title: "12. Security",
     body: (
       <>
         <p>
@@ -683,7 +758,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   },
   {
     id: "children",
-    title: "12. Children",
+    title: "13. Children",
     body: (
       <>
         <p>
@@ -696,7 +771,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   },
   {
     id: "changes",
-    title: "13. Changes to this policy",
+    title: "14. Changes to this policy",
     body: (
       <>
         <p>
@@ -710,7 +785,7 @@ const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
   },
   {
     id: "contact",
-    title: "14. Contact",
+    title: "15. Contact",
     body: (
       <>
         <p>
