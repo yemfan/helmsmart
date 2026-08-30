@@ -4488,7 +4488,15 @@
       "openFullProfile": "打开完整档案",
       "conversations": "会话记录",
       "unnamed": "未命名客源",
-      "withYouSince": "自 {{date}} 起跟进"
+      "withYouSince": "自 {{date}} 起跟进",
+      "howTheyFoundYou": "他们是如何找到您的",
+      "journeyPages_one": "浏览了 {{count}} 个页面",
+      "journeyPages_other": "浏览了 {{count}} 个页面",
+      "journeyVisits": "分 {{count}} 次访问",
+      "journeyBefore": "之后才联系您",
+      "journeyFirstVia": "首次通过 {{source}} 找到您",
+      "journeyCampaign": "推广活动 {{campaign}}",
+      "journeyStillBrowsing": "仍在浏览 — 尚未咨询"
     },
     "teamBreakdown": {
       "title": "成员明细",

@@ -4488,7 +4488,15 @@
       "openFullProfile": "Open full profile",
       "conversations": "Conversations",
       "unnamed": "Unnamed lead",
-      "withYouSince": "with you since {{date}}"
+      "withYouSince": "with you since {{date}}",
+      "howTheyFoundYou": "How they found you",
+      "journeyPages_one": "Read {{count}} page",
+      "journeyPages_other": "Read {{count}} pages",
+      "journeyVisits": "across {{count}} visits",
+      "journeyBefore": "before getting in touch",
+      "journeyFirstVia": "First arrived via {{source}}",
+      "journeyCampaign": "campaign {{campaign}}",
+      "journeyStillBrowsing": "Still browsing — no enquiry yet"
     },
     "teamBreakdown": {
       "title": "Member breakdown",
