@@ -12,6 +12,7 @@ const COMMANDS = [
   { label: "Inbox", path: "/dashboard/inbox", keywords: "inbox messages sms email" },
   { label: "Performance", path: "/dashboard/performance", keywords: "performance stats metrics" },
   { label: "Marketing Plans", path: "/dashboard/marketing/plans", keywords: "marketing campaigns plans" },
+  { label: "Marketing Hub", path: "/dashboard/hub", keywords: "hub website public page username handle pixel analytics" },
   { label: "Open Houses", path: "/dashboard/open-houses", keywords: "open house flyer" },
   { label: "Reports", path: "/dashboard/reports", keywords: "reports cma" },
   { label: "Properties", path: "/dashboard/properties", keywords: "properties listings" },
