@@ -18,7 +18,15 @@
  * one-sentence story for users: "you only pay for AI calls and the videos you make."
  */
 export const CREDIT_COSTS = {
-  // Voice calling. 15 credits is a PRICING choice, not cost recovery — see below.
+  // Voice calling. 8 credits is a PRICING choice, not cost recovery — see below.
+  //
+  // Was 15 until 2026-08-30. At that rate an $79 plan bought 53 minutes, and
+  // the standalone AI receptionists a prospect compares us against sell 150-250
+  // for $49-109 (Rosie, AgentZap, Goodcall). Losing that comparison mattered
+  // more than the extra margin: at 8 credits the same plan buys 100 minutes,
+  // which is defensible beside them AND includes a CRM they do not have.
+  // Margin barely moved — 81% instead of 87% — because voice was carrying
+  // roughly twice the margin of everything else in the first place.
   //
   // MEASURED from the Retell invoice, 2026-08-18 (25-minute billing period):
   //   voice infra $1.38 + voice LLM $1.13 + TTS $0.38     = $0.116/min
@@ -33,7 +41,7 @@ export const CREDIT_COSTS = {
   //
   // Excluded: Twilio telephony, billed separately. Measured on low volume, so
   // re-check if minutes scale into a different Retell tier.
-  voicePerMinute: 15,
+  voicePerMinute: 8,
   listingClip: 15, // video creation — a cinematic listing clip (fal Kling, ~$0.30)
   twinAvatar: 20, // video creation — digital-twin lipsync render (~$0.35)
   ctaEndCard: 5, // video creation — branded end-card appended to a video
@@ -42,7 +50,41 @@ export const CREDIT_COSTS = {
   image: 0, // social images render via next/og — no marginal cost
 } as const;
 
-export type CreditTierId = "starter" | "growth" | "scale";
+export type CreditTierId = "solo" | "pro" | "premium" | "signature";
+
+/**
+ * The free tier.
+ *
+ * Not in CREDIT_TIERS because it is not purchasable — that list drives Stripe
+ * checkout and every row in it needs a price id.
+ *
+ * PERMANENT, not a trial. Two reasons. A CRM proves itself over about ninety
+ * days, not fourteen, and asking an agent to pay before they have imported the
+ * contacts that create the demand is asking in the wrong order. And the
+ * competitive scan came back explicit: no AI receptionist product offers a free
+ * tier, so this is the one thing on the price list nobody else has.
+ *
+ * Everything is included; only the credit allowance is small. 100 credits is
+ * about twelve voice minutes — roughly $1.80 of cost per user per month, which
+ * buys top-of-funnel far cheaper than advertising does.
+ */
+export const FREE_TIER = {
+  id: "free" as const,
+  name: "Free",
+  priceUsd: 0,
+  monthlyCredits: 100,
+  blurb: "Every feature, one seat. Enough to try the AI receptionist.",
+} as const;
+
+/**
+ * A one-off grant on signup, on top of the monthly allowance.
+ *
+ * The monthly 100 is not enough to experience a receptionist answering real
+ * calls, and an agent who never hears it has no reason to upgrade. This buys
+ * about thirty-seven minutes once. The drop to twelve the following month is
+ * the upgrade trigger, and it is felt rather than announced.
+ */
+export const WELCOME_CREDITS = 300;
 
 /**
  * Monthly subscription plans.
@@ -54,6 +96,11 @@ export type CreditTierId = "starter" | "growth" | "scale";
  *
  * Worth stating because the plan cards show a credit count most prominently,
  * which reads as "you are buying credits" unless the copy says otherwise.
+ *
+ * The per-credit rate falls as the tier rises — $0.099, $0.080, $0.075 — so
+ * volume is genuinely cheaper rather than merely larger. Signature is the
+ * exception at $0.100: it carries the same allowance as Premium because what
+ * the extra $100 buys is people, not capacity.
  */
 export const CREDIT_TIERS: ReadonlyArray<{
   id: CreditTierId;
@@ -62,31 +109,54 @@ export const CREDIT_TIERS: ReadonlyArray<{
   monthlyCredits: number;
   /** Env var holding this plan's Stripe recurring price id. */
   priceEnv: string;
+  /** One-time setup fee in USD, or null. */
+  setupFeeUsd: number | null;
   blurb: string;
 }> = [
   {
-    id: "starter",
-    name: "Starter",
-    priceUsd: 59,
-    monthlyCredits: 500,
-    priceEnv: "STRIPE_PRICE_ID_CB_STARTER",
+    id: "solo",
+    name: "Solo",
+    priceUsd: 79,
+    monthlyCredits: 800,
+    priceEnv: "STRIPE_PRICE_ID_CB_SOLO",
+    setupFeeUsd: null,
     blurb: "Every feature, one seat. For steady solo marketing.",
   },
   {
-    id: "growth",
-    name: "Growth",
+    id: "pro",
+    name: "Pro",
     priceUsd: 159,
     monthlyCredits: 2000,
-    priceEnv: "STRIPE_PRICE_ID_CB_GROWTH",
+    priceEnv: "STRIPE_PRICE_ID_CB_PRO",
+    setupFeeUsd: null,
     blurb: "Every feature, one seat. For daily calling and regular video.",
   },
   {
-    id: "scale",
-    name: "Scale",
+    id: "premium",
+    name: "Premium",
     priceUsd: 299,
     monthlyCredits: 4000,
-    priceEnv: "STRIPE_PRICE_ID_CB_SCALE",
+    priceEnv: "STRIPE_PRICE_ID_CB_PREMIUM",
+    setupFeeUsd: null,
     blurb: "Every feature, one seat. For high-volume calling and video.",
+  },
+  {
+    // Same credits as Premium on purpose. The extra $100 a month buys people —
+    // white-glove onboarding, concierge support, a named contact — not
+    // capacity, and the price list should say so rather than inventing a
+    // larger allowance to justify the gap.
+    //
+    // The setup fee is not greed. White-glove onboarding is two to four hours
+    // of a specialist; at +$100/month alone this tier does not break even until
+    // about month four, and loses money outright on anyone who leaves before
+    // then. Lofty charges $299-1,499 for the same thing.
+    id: "signature",
+    name: "Signature",
+    priceUsd: 399,
+    monthlyCredits: 4000,
+    priceEnv: "STRIPE_PRICE_ID_CB_SIGNATURE",
+    setupFeeUsd: 499,
+    blurb: "Everything in Premium, plus a specialist who sets it all up with you.",
   },
 ] as const;
 
@@ -151,9 +221,18 @@ export function readStripePriceId(envVar: string): { id: string } | { error: str
   return { id: raw };
 }
 
-/** New signups: a 14-day trial with a sample of credits (no perpetual free tier). */
-export const TRIAL_CREDITS = 300;
-export const TRIAL_DAYS = 14;
+/**
+ * Kept as aliases so nothing breaks mid-rename.
+ *
+ * The 14-day trial is gone: FREE_TIER is permanent, so free IS the trial and a
+ * second countdown alongside it would only confuse the page. WELCOME_CREDITS
+ * is the one-off grant that used to be the trial allowance.
+ *
+ * @deprecated use WELCOME_CREDITS and FREE_TIER.
+ */
+export const TRIAL_CREDITS = WELCOME_CREDITS;
+/** @deprecated there is no trial window any more — the free tier does not expire. */
+export const TRIAL_DAYS = 0;
 
 /** Existing paid users get this many months of credits up front on migration. */
 export const GRANDFATHER_MONTHS = 2;
