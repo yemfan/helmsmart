@@ -5,11 +5,11 @@ import { headers } from "next/headers";
 import { getServerT } from "@/lib/i18n/server";
 import { displayUsername } from "@/lib/identity/username";
 import { loadHubByUsername, type Hub } from "@/lib/marketing-hub/loadHub";
-import { postedAgo } from "@/lib/marketing-hub/feedItems";
 import { hasPrivacySignal } from "@/lib/marketing-hub/tracking";
 import HubLeadForm from "./HubLeadForm";
 import HubTracker from "./HubTracker";
 import { HubTags } from "./HubTags";
+import HubFeed from "./HubFeed";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -230,41 +230,19 @@ export default async function AgentHubPage({ params, searchParams }: Props) {
         <h2 className="text-xl font-semibold">
           {t("hub.feedTitle", { ns: "web_marketing" })}
         </h2>
-        {hub.feed.length === 0 ? (
-          <p className="mt-3 text-slate-500">
-            {t("hub.feedEmpty", { ns: "web_marketing" })}
-          </p>
-        ) : (
-          <ul className="mt-5 grid gap-5 sm:grid-cols-2">
-            {hub.feed.map((item) => (
-              <li
-                key={item.id}
-                className="overflow-hidden rounded-xl bg-white ring-1 ring-slate-200"
-              >
-                {item.imageUrl ? (
-                  <Image
-                    src={item.imageUrl}
-                    alt=""
-                    width={640}
-                    height={640}
-                    className="aspect-square w-full object-cover"
-                    unoptimized
-                  />
-                ) : null}
-                <div className="p-4">
-                  <p className="text-xs uppercase tracking-wide text-slate-400">
-                    {[item.platform, postedAgo(item.postedAt)].filter(Boolean).join(" · ")}
-                  </p>
-                  {item.caption ? (
-                    <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-slate-700">
-                      {item.caption}
-                    </p>
-                  ) : null}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+        <HubFeed
+          items={hub.feed}
+          labels={{
+            all: t("hub.feedAll", { ns: "web_marketing" }),
+            newest: t("hub.feedOrderNewest", { ns: "web_marketing" }),
+            oldest: t("hub.feedOrderOldest", { ns: "web_marketing" }),
+            readOn: t("hub.feedReadOn", { ns: "web_marketing" }),
+            alsoOn: t("hub.feedAlsoOn", { ns: "web_marketing" }),
+            filterLabel: t("hub.feedFilterLabel", { ns: "web_marketing" }),
+            orderLabel: t("hub.feedOrderLabel", { ns: "web_marketing" }),
+            empty: t("hub.feedEmpty", { ns: "web_marketing" }),
+          }}
+        />
       </section>
 
       <section className="mt-14">

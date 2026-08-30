@@ -32,17 +32,29 @@
 /** What a feed entry is, which decides how it renders. */
 export type FeedKind = "post" | "carousel" | "reel";
 
+/** One network a piece of content went out on, and where to read it there. */
+export type FeedLink = {
+  platform: string;
+  /** Permalink on that network. Null when the publish did not return one. */
+  url: string | null;
+  postedAt: string;
+};
+
 export type FeedItem = {
   id: string;
   kind: FeedKind;
-  /** Network it went out on. Null when the row does not record one. */
-  platform: string | null;
   /** The words. Trimmed; may be empty for an image-only post. */
   caption: string;
   /** Cover image. Null renders as a text card rather than a broken frame. */
   imageUrl: string | null;
-  /** When it went public. ISO. Used for ordering and for the dateline. */
+  /**
+   * When this content FIRST went public, across every network it reached.
+   * Earliest rather than latest: it answers "when did the agent publish this",
+   * and a cross-post finishing a day later should not make old work look new.
+   */
   postedAt: string;
+  /** Every network it reached. One entry for a single post, several for a cross-post. */
+  links: FeedLink[];
 };
 
 /** The one status that means "this is public". */
@@ -76,7 +88,17 @@ function postedAt(row: RawRow): string | null {
   return created || null;
 }
 
-function toItem(row: RawRow, kind: FeedKind): FeedItem | null {
+type Draft = {
+  id: string;
+  kind: FeedKind;
+  caption: string;
+  imageUrl: string | null;
+  postedAt: string;
+  platform: string;
+  url: string | null;
+};
+
+function toDraft(row: RawRow, kind: FeedKind): Draft | null {
   if (str(row.status) !== POSTED_STATUS) return null;
   const id = str(row.id);
   const when = postedAt(row);
@@ -85,21 +107,44 @@ function toItem(row: RawRow, kind: FeedKind): FeedItem | null {
   return {
     id: `${kind}:${id}`,
     kind,
-    platform: str(row.platform) || null,
     caption: firstString(row, ["caption", "title"]),
     imageUrl: firstString(row, ["image_url", "cover_url", "thumbnail_url"]) || null,
     postedAt: when,
+    platform: str(row.platform),
+    url: firstString(row, ["external_post_url", "post_url", "permalink"]) || null,
   };
 }
 
 /**
- * Merge the three sources into one feed, newest first.
+ * The key that decides whether two rows are the same piece of content.
+ *
+ * Cross-posting is one act — an agent writes something once and it goes to
+ * Threads, Facebook and Instagram. Three rows, one thing said. Rendering them
+ * as three cards makes a hub look padded and makes a reader scroll past the
+ * same paragraph three times, which is worse than showing less.
+ *
+ * Keyed on the caption because that is what a reader recognises as "the same
+ * post"; the networks each mangle it differently at the edges, so it is
+ * normalised first.
+ *
+ * An EMPTY caption never groups. Image-only posts share the empty string, and
+ * keying on it would collapse every one of them into a single card — the one
+ * case where grouping destroys content rather than tidying it.
+ */
+function groupKey(d: Draft): string {
+  const words = d.caption.toLowerCase().replace(/\s+/g, " ").trim();
+  return words ? `${d.kind}|${words}` : `unique|${d.id}`;
+}
+
+/**
+ * Merge the three sources into one feed, newest first, one card per piece of
+ * content however many networks it reached.
  *
  * @param sources raw rows straight from the tables; unknown shapes are
  *   tolerated rather than trusted, because a column added upstream should
  *   never take a public page down.
- * @param limit how many to keep after sorting. Applied last, so the newest
- *   survive regardless of which table they came from.
+ * @param limit how many to keep after grouping and sorting. Applied last, so
+ *   the newest survive regardless of which table they came from.
  */
 export function buildFeed(
   sources: {
@@ -109,18 +154,62 @@ export function buildFeed(
   },
   limit = 24,
 ): FeedItem[] {
-  const items: FeedItem[] = [];
-  for (const row of sources.posts ?? []) {
-    const item = toItem(row, "post");
-    if (item) items.push(item);
+  const drafts: Draft[] = [];
+  const collect = (rows: RawRow[] | null | undefined, kind: FeedKind) => {
+    for (const row of rows ?? []) {
+      const d = toDraft(row, kind);
+      if (d) drafts.push(d);
+    }
+  };
+  collect(sources.posts, "post");
+  collect(sources.carousels, "carousel");
+  collect(sources.reels, "reel");
+
+  const groups = new Map<string, FeedItem>();
+  for (const d of drafts) {
+    const key = groupKey(d);
+    const existing = groups.get(key);
+
+    if (!existing) {
+      groups.set(key, {
+        id: d.id,
+        kind: d.kind,
+        caption: d.caption,
+        imageUrl: d.imageUrl,
+        postedAt: d.postedAt,
+        links: d.platform ? [{ platform: d.platform, url: d.url, postedAt: d.postedAt }] : [],
+      });
+      continue;
+    }
+
+    if (d.platform) {
+      // One link per NETWORK, not per row. The same content can reach the same
+      // network twice — a retry, or a scheduler firing twice seconds apart —
+      // and "Read it on facebook · Also on facebook" is noise that makes the
+      // agent look like they are spamming. The first publication wins, since
+      // that is the post their audience actually saw and engaged with; a later
+      // duplicate only supplies a URL if the first never got one.
+      const already = existing.links.find((l) => l.platform === d.platform);
+      if (!already) {
+        existing.links.push({ platform: d.platform, url: d.url, postedAt: d.postedAt });
+      } else {
+        if (!already.url && d.url) already.url = d.url;
+        if (Date.parse(d.postedAt) < Date.parse(already.postedAt)) {
+          already.postedAt = d.postedAt;
+        }
+      }
+    }
+    // Earliest publication wins — see FeedItem.postedAt.
+    if (Date.parse(d.postedAt) < Date.parse(existing.postedAt)) {
+      existing.postedAt = d.postedAt;
+    }
+    // Any image beats none: one network may return a cover the others did not.
+    if (!existing.imageUrl && d.imageUrl) existing.imageUrl = d.imageUrl;
   }
-  for (const row of sources.carousels ?? []) {
-    const item = toItem(row, "carousel");
-    if (item) items.push(item);
-  }
-  for (const row of sources.reels ?? []) {
-    const item = toItem(row, "reel");
-    if (item) items.push(item);
+
+  const items = [...groups.values()];
+  for (const item of items) {
+    item.links.sort((a, b) => a.platform.localeCompare(b.platform));
   }
 
   items.sort((a, b) => {
@@ -131,6 +220,38 @@ export function buildFeed(
   });
 
   return items.slice(0, Math.max(0, limit));
+}
+
+/** Every network represented in a feed, for the filter control. */
+export function platformsIn(items: FeedItem[]): string[] {
+  const seen = new Set<string>();
+  for (const item of items) for (const link of item.links) seen.add(link.platform);
+  return [...seen].sort();
+}
+
+export type FeedOrder = "newest" | "oldest";
+
+/**
+ * Apply the reader's choices.
+ *
+ * Filtering keeps a whole card when ANY of its networks match. The content is
+ * what the reader is browsing; hiding a cross-post because they picked one of
+ * the two networks it went to would be pedantry rather than filtering.
+ */
+export function applyFeedView(
+  items: FeedItem[],
+  view: { platform?: string | null; order?: FeedOrder },
+): FeedItem[] {
+  const platform = (view.platform ?? "").trim();
+  const filtered = platform
+    ? items.filter((i) => i.links.some((l) => l.platform === platform))
+    : items;
+
+  return [...filtered].sort((a, b) => {
+    const diff = Date.parse(a.postedAt) - Date.parse(b.postedAt);
+    const ordered = view.order === "oldest" ? diff : -diff;
+    return ordered !== 0 ? ordered : a.id.localeCompare(b.id);
+  });
 }
 
 /**

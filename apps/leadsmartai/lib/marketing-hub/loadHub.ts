@@ -153,13 +153,18 @@ export async function loadHubByUsername(
         .select("meta_pixel_id, ga_measurement_id")
         .eq("agent_id", agentId as never)
         .maybeSingle(),
+      // The permalink lives on lead_posts, reached via published_lead_post_id.
+      // Embedded rather than fetched separately: every posted row has one, and
+      // a card without a link is a card a reader cannot act on.
       supabaseAdmin
         .from("scheduled_posts")
-        .select("id, platform, caption, image_url, status, published_at, created_at")
+        .select(
+          "id, platform, caption, image_url, status, published_at, created_at, lead_posts:published_lead_post_id (external_post_url)",
+        )
         .eq("agent_id", agentId as never)
         .eq("status", "posted")
         .order("published_at", { ascending: false })
-        .limit(40),
+        .limit(60),
       supabaseAdmin
         .from("social_carousels")
         .select("id, title, caption, status, created_at")
@@ -176,8 +181,14 @@ export async function loadHubByUsername(
         .limit(20),
     ]);
 
+    // Flatten the embed so the pure builder never has to know the join shape.
+    const postRows = ((posts.data as Record<string, unknown>[] | null) ?? []).map((r) => {
+      const joined = r.lead_posts as { external_post_url?: unknown } | null;
+      return { ...r, external_post_url: joined?.external_post_url ?? null };
+    });
+
     const feed = buildFeed({
-      posts: (posts.data as Record<string, unknown>[] | null) ?? [],
+      posts: postRows,
       carousels: (carousels.data as Record<string, unknown>[] | null) ?? [],
       reels: (reels.data as Record<string, unknown>[] | null) ?? [],
     });
