@@ -1,4 +1,6 @@
 import type Stripe from "stripe";
+import { tierOf } from "@/lib/billing/planRank";
+import { resolveInternalPlanFromStripeSubscription } from "@/lib/billing/stripe-plan-map";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { throwIfSupabaseError } from "@/lib/supabaseThrow";
 import { setUserPlanFromStripe, type Plan } from "@/lib/subscriptionSync";
@@ -31,71 +33,75 @@ export function checkoutSuccessShouldSyncSubscription(params: {
   );
 }
 
-/** Maps Stripe subscription status + resolved SKU to the plan stored on `agents` / `user_profiles`. */
+/** Maps Stripe subscription status + resolved SKU to the plan cached on `agents` / `leadsmart_users`. */
 export function computeAgentPlanFromSubscriptionSync(params: {
   subscriptionStatus: Stripe.Subscription["status"];
-  resolvedPaidPlan: "pro" | "premium" | "free";
-}): "free" | "pro" | "premium" {
+  resolvedPaidPlan: "pro" | "premium" | "free" | null;
+}): "free" | "pro" | "premium" | null {
   if (!subscriptionStatusIndicatesPaidAccess(params.subscriptionStatus)) return "free";
-  return params.resolvedPaidPlan !== "free" ? params.resolvedPaidPlan : "pro";
-}
-
-function planFromPriceId(priceId: string | null | undefined): "pro" | "premium" | null {
-  if (!priceId) return null;
-  if (priceId === process.env.STRIPE_PRICE_ID_PRO) return "pro";
-  // CRM annual variants — same legacy collapse (annual cadence doesn't change tier mapping).
-  if (priceId === process.env.STRIPE_PRICE_ID_PRO_ANNUAL) return "pro";
-  if (priceId === process.env.STRIPE_PRICE_ID_PREMIUM) return "premium";
-  if (priceId === process.env.STRIPE_PRICE_ID_PREMIUM_ANNUAL) return "premium";
-  if (priceId === process.env.STRIPE_PRICE_ID_SIGNATURE) return "premium";
-  if (priceId === process.env.STRIPE_PRICE_ID_SIGNATURE_ANNUAL) return "premium";
-  if (priceId === process.env.STRIPE_PRICE_ID_TEAM) return "premium";
-  if (priceId === process.env.STRIPE_PRICE_ID_TEAM_ANNUAL) return "premium";
-  const consumerPrem = (process.env.STRIPE_PRICE_ID_CONSUMER_PREMIUM ?? "").trim();
-  if (consumerPrem && priceId === consumerPrem) return "premium";
-  const agentPro = (process.env.STRIPE_PRICE_ID_AGENT_PRO ?? "").trim();
-  if (agentPro && priceId === agentPro) return "pro";
-  const agentPremium = (process.env.STRIPE_PRICE_ID_AGENT_PREMIUM ?? "").trim();
-  if (agentPremium && priceId === agentPremium) return "premium";
-  return null;
+  // `null` means "this price maps to nothing we know". It used to mean `pro`,
+  // which is how a $59 Signature subscriber ended up cached as Pro: the price
+  // wasn't in the map, so the guess was written as if it were a reading.
+  // Propagate the uncertainty instead — the caller leaves the cache alone.
+  return params.resolvedPaidPlan;
 }
 
 /**
- * Map Stripe price + checkout metadata to a plan stored on `agents.plan_type` /
- * `leadsmart_users.plan`. These legacy columns are a 3-value collapse (`free` /
- * `pro` / `premium`) — the TRUE source of truth for v2.0 tier features is
- * `public.subscriptions.plan` written by `syncPublicSubscriptionFromStripe`.
+ * Collapse the canonical `InternalPlan` onto the legacy three-value cache kept
+ * in `agents.plan_type` / `leadsmart_users.plan`.
  *
- * Mapping under the v2.0 catalog (post-rename):
- *   - `crm_starter`  → `free`     (Starter IS the free tier in v2.0)
- *   - `crm_pro`      → `pro`      ($49 tier)
- *   - `crm_premium`  → `premium`  ($99 tier)
- *   - `crm_signature`→ `premium`  ($249 tier; legacy collapse — features gate
- *                                  via subscriptions.plan = 'signature')
- *   - `crm_team`     → `premium`  ($299 tier; legacy collapse — multi-seat
- *                                  features gate via subscriptions.plan = 'team')
+ * These columns no longer gate anything — `billing_subscriptions` does, via
+ * `getActiveCrmSubscription`. They are kept in step because plenty of read-only
+ * surfaces (admin lists, signup reports) still display them.
+ *
+ * Returns `null` when the subscription's price maps to nothing. There is no
+ * safe three-value answer for an unknown paid SKU, and inventing one is what
+ * this function used to do.
  */
 export function resolvePaidPlanFromStripe(
   subscription: Stripe.Subscription,
   checkoutPlanMeta?: string | null
-): "pro" | "premium" | "free" {
-  const internal = String(subscription.metadata?.internal_plan ?? "").trim();
-  if (internal === "crm_starter") return "free";
-  if (internal === "crm_pro") return "pro";
-  if (
-    internal === "crm_premium" ||
-    internal === "crm_signature" ||
-    internal === "crm_team"
-  ) {
-    return "premium";
+): "pro" | "premium" | "free" | null {
+  const priceId = subscription.items.data[0]?.price?.id ?? null;
+  // ONE price map for the whole codebase. This used to keep a second, narrower
+  // copy that omitted the live CloseBoss price ids entirely — so every CB
+  // checkout fell through it, including the first real paying customer's.
+  const internalPlan = resolveInternalPlanFromStripeSubscription(priceId, subscription.metadata);
+
+  if (internalPlan === "consumer_free") {
+    // Legacy checkouts wrote the tier straight into `metadata.plan`. Matched
+    // EXACTLY, and only against the two legacy values — CloseBoss checkouts put
+    // their credit tier there ("starter"/"growth"/"scale"), and reading
+    // "growth" as a plan hint is the kind of near-miss that starts this whole
+    // class of bug over again.
+    const hint = String(checkoutPlanMeta ?? subscription.metadata?.plan ?? "")
+      .trim()
+      .toLowerCase();
+    if (hint === "pro" || hint === "premium") return hint;
+
+    // `consumer_free` is also this mapper's "no idea" answer, so a genuinely
+    // priced subscription landing here is an unmapped SKU, not a free plan.
+    const amount = subscription.items.data[0]?.price?.unit_amount ?? 0;
+    if (amount > 0) {
+      console.error("[billing] unmapped Stripe price — plan cache left unchanged", {
+        subscriptionId: subscription.id,
+        priceId,
+        unitAmount: amount,
+        metadata: subscription.metadata,
+        hint: checkoutPlanMeta ?? null,
+      });
+      return null;
+    }
+    return "free";
   }
 
-  const priceId = subscription.items.data[0]?.price?.id;
-  const fromEnv = planFromPriceId(priceId);
-  if (fromEnv) return fromEnv;
-  const hint = String(checkoutPlanMeta ?? subscription.metadata?.plan ?? "").toLowerCase();
-  if (hint === "pro" || hint === "premium") return hint;
-  return "free";
+  const tier = tierOf(internalPlan);
+  if (!tier) return null;
+  if (tier === "free" || tier === "starter") return "free";
+  if (tier === "pro") return "pro";
+  // premium / signature / team all collapse onto `premium` — the cache only has
+  // three values, and the real tier lives on the billing row.
+  return "premium";
 }
 
 /**
@@ -127,8 +133,11 @@ export async function persistAgentAndProfileFromSubscription(params: {
       .maybeSingle();
     throwIfSupabaseError(selAgentErr, "Could not load agents row");
 
+    // An unidentified SKU (`agentPlan === null`) still updates the Stripe ids —
+    // those are facts — but leaves `plan_type` alone. Overwriting a known plan
+    // with a guess is what put `pro` on a Signature account.
     const agentPayload = {
-      plan_type: agentPlan,
+      ...(agentPlan === null ? {} : { plan_type: agentPlan }),
       stripe_customer_id: params.customerId ?? null,
       stripe_subscription_id: params.subscriptionId,
     };
@@ -144,7 +153,7 @@ export async function persistAgentAndProfileFromSubscription(params: {
       if (error) throw error;
     }
 
-    const profilePlan: Plan = agentPlan === "free" ? "free" : agentPlan;
+    const profilePlan: Plan | null = agentPlan;
     await setUserPlanFromStripe({
       userId: params.userId,
       plan: profilePlan,
@@ -161,7 +170,7 @@ export async function persistAgentAndProfileFromSubscription(params: {
     const { error } = await supabaseServer
       .from("agents")
       .update({
-        plan_type: agentPlan,
+        ...(agentPlan === null ? {} : { plan_type: agentPlan }),
         stripe_customer_id: params.customerId ?? null,
         stripe_subscription_id: params.subscriptionId,
       })
