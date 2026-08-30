@@ -1,6 +1,6 @@
 import "server-only";
 
-import { PINTEREST_API_BASE, pinUrl } from "@/lib/pinterest/graph";
+import { PINTEREST_API_BASE, isPinterestSandbox, pinUrl } from "@/lib/pinterest/graph";
 import { refreshAccessToken } from "./pinterest-oauth";
 import { decryptToken, encryptToken } from "./token-enc";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -22,14 +22,52 @@ export type PublishResult = {
 function tagError(
   message: string,
   status?: number | null,
-  opts?: { missingScopes?: string[] },
+  opts?: { missingScopes?: string[]; code?: number | null },
 ): Error {
   const err = new Error(message);
   Object.assign(err, {
     pinterestStatus: status ?? null,
     pinterestMissingScopes: opts?.missingScopes ?? null,
+    pinterestCode: opts?.code ?? null,
   });
   return err;
+}
+
+/**
+ * Pinterest's application-level error code for an app that hasn't been granted
+ * Standard access:
+ *
+ *   403 code 29: Apps with Trial access may not create Pins in production
+ *   https://api.pinterest.com - use API Sandbox https://api-sandbox.pinterest.com
+ *
+ * Worth naming as its own case. Verbatim, it tells a real-estate agent to go
+ * use an API sandbox, which is advice for us, not them — and unlike the
+ * missing-scope error there is nothing they can do about it: reconnecting is
+ * useless, because the block is on the app, not on their account.
+ */
+export const PINTEREST_TRIAL_ACCESS_CODE = 29;
+
+/** Message shown to the agent when Pinterest hasn't approved the app to publish. */
+export const PINTEREST_TRIAL_ACCESS_MESSAGE =
+  "Pinterest hasn't approved CloseBoss for publishing yet, so Pins can't be sent. " +
+  "Nothing is wrong with your Pinterest account — this is on our side and doesn't " +
+  "need a reconnect.";
+
+/**
+ * Turn a raw Pinterest failure into what the agent should read. Returns null
+ * when we have nothing better to say than the platform's own words.
+ */
+export function agentFacingPinterestError(
+  code: number | null | undefined,
+  message: string,
+): string | null {
+  if (code === PINTEREST_TRIAL_ACCESS_CODE) return PINTEREST_TRIAL_ACCESS_MESSAGE;
+  // Belt and braces: Pinterest has changed numeric codes before, and the
+  // sandbox sentence is unmistakable even if code 29 is ever renumbered.
+  if (/Trial access/i.test(message) && /sandbox/i.test(message)) {
+    return PINTEREST_TRIAL_ACCESS_MESSAGE;
+  }
+  return null;
 }
 
 /**
@@ -128,8 +166,18 @@ export async function publishPinterestPin(params: {
   if (!res.ok || !json.id) {
     const msg = json.message || `HTTP ${res.status}`;
     const missingScopes = parseMissingScopes(msg);
-    throw tagError(`Pinterest publish failed: ${msg}`, res.status, { missingScopes });
+    const friendly = agentFacingPinterestError(json.code, msg);
+    throw tagError(friendly ?? `Pinterest publish failed: ${msg}`, res.status, {
+      missingScopes,
+      code: json.code ?? null,
+    });
   }
 
-  return { externalPostId: json.id, externalPostUrl: pinUrl(json.id) };
+  // A sandbox Pin has a real id but no page on pinterest.com. Handing back a
+  // pinUrl() for one would put a dead link in the agent's public feed, so the
+  // URL is omitted rather than fabricated.
+  return {
+    externalPostId: json.id,
+    externalPostUrl: isPinterestSandbox() ? null : pinUrl(json.id),
+  };
 }
