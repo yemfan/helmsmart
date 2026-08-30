@@ -77,6 +77,16 @@ export async function POST(req: Request) {
     const tier = CREDIT_TIERS.find((t) => t.id === plan);
 
     // New credit plans resolve their price from env; legacy pro/premium still work.
+    //
+    // PRECEDENCE MATTERS AND CHANGED ON 2026-08-30. The credit ladder gained
+    // tiers literally named "pro" and "premium", and the CREDIT_TIERS lookup
+    // above runs first — so those two strings now resolve to the CREDIT plans
+    // ($159/2,000 and $299/4,000), and the legacy branch below is unreachable
+    // for them. That is intended: the feature-tier catalog those ids belonged
+    // to is retired, and its pricing pages now redirect to /plans.
+    //
+    // It is spelled out because the legacy branch still LOOKS live. Anything
+    // that genuinely needs the old Agent Pro price must not ask for "pro".
     let price: string | undefined;
     if (tier) {
       const resolved = readStripePriceId(tier.priceEnv);
