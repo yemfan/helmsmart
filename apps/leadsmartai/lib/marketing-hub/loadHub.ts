@@ -158,7 +158,7 @@ export async function loadHubByUsername(
       supabaseAdmin
         .from("scheduled_posts")
         .select(
-          "id, platform, caption, image_url, status, published_at, created_at, lead_posts:published_lead_post_id (external_post_url)",
+          "id, platform, caption, image_url, hashtags, status, published_at, created_at, lead_posts:published_lead_post_id (external_post_url)",
         )
         .eq("agent_id", agentId as never)
         .eq("status", "posted")
@@ -166,14 +166,14 @@ export async function loadHubByUsername(
         .limit(60),
       supabaseAdmin
         .from("social_carousels")
-        .select("id, title, caption, status, created_at")
+        .select("id, title, caption, hashtags, status, created_at")
         .eq("agent_id", agentId as never)
         .eq("status", "posted")
         .order("created_at", { ascending: false })
         .limit(20),
       supabaseAdmin
         .from("social_reels")
-        .select("id, caption, status, created_at")
+        .select("id, caption, hashtags, status, created_at")
         .eq("agent_id", agentId as never)
         .eq("status", "posted")
         .order("created_at", { ascending: false })

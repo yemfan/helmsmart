@@ -507,6 +507,7 @@
     }
   },
   "hub": {
+    "backToHub": "Back to all posts",
     "comingSoonBody": "This page is being set up. Check back shortly.",
     "comingSoonTitle": "Coming soon",
     "consentLabel": "Yes, you can text me about my enquiry. Message and data rates may apply. Reply STOP to opt out. Consent is not a condition of any purchase.",
@@ -534,11 +535,14 @@
     "licenseLabel": "License",
     "notFoundBody": "That link does not match an agent. Check the spelling and try again.",
     "notFoundTitle": "No agent here",
+    "postNotFound": "That post is not here",
     "poweredBy": "Powered by CloseBoss AI",
+    "related": "More from this agent",
     "servingAreas": "Serving",
     "submit": "Send",
     "submitting": "Sending",
     "thanksBody": "Your message is in. I'll be in touch shortly.",
-    "thanksTitle": "Thank you"
+    "thanksTitle": "Thank you",
+    "topics": "Topics"
   }
 }

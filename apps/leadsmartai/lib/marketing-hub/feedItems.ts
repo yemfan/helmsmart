@@ -55,6 +55,8 @@ export type FeedItem = {
   postedAt: string;
   /** Every network it reached. One entry for a single post, several for a cross-post. */
   links: FeedLink[];
+  /** The agent's hashtags, lower-cased and without the "#". Drives related content. */
+  topics: string[];
 };
 
 /** The one status that means "this is public". */
@@ -81,6 +83,27 @@ function firstString(row: RawRow, keys: string[]): string {
  * fallback. Ordering a feed by created_at alone would put a post drafted in
  * June but published in August in the wrong place entirely.
  */
+/**
+ * Hashtags → topic strings.
+ *
+ * Lower-cased without the leading "#" so `#FirstTimeBuyer` and
+ * `#firsttimebuyer` are one topic rather than two; otherwise "related" misses
+ * the posts it most obviously ought to find. The agent's own ordering is kept
+ * as a rough relevance signal.
+ */
+function toTopics(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const entry of raw) {
+    const tag = str(entry).replace(/^#+/, "").toLowerCase();
+    if (!tag || seen.has(tag)) continue;
+    seen.add(tag);
+    out.push(tag);
+  }
+  return out;
+}
+
 function postedAt(row: RawRow): string | null {
   const explicit = firstString(row, ["published_at", "posted_at"]);
   if (explicit) return explicit;
@@ -96,6 +119,7 @@ type Draft = {
   postedAt: string;
   platform: string;
   url: string | null;
+  topics: string[];
 };
 
 function toDraft(row: RawRow, kind: FeedKind): Draft | null {
@@ -112,6 +136,7 @@ function toDraft(row: RawRow, kind: FeedKind): Draft | null {
     postedAt: when,
     platform: str(row.platform),
     url: firstString(row, ["external_post_url", "post_url", "permalink"]) || null,
+    topics: toTopics(row.hashtags),
   };
 }
 
@@ -178,6 +203,7 @@ export function buildFeed(
         imageUrl: d.imageUrl,
         postedAt: d.postedAt,
         links: d.platform ? [{ platform: d.platform, url: d.url, postedAt: d.postedAt }] : [],
+        topics: [...d.topics],
       });
       continue;
     }
@@ -205,6 +231,12 @@ export function buildFeed(
     }
     // Any image beats none: one network may return a cover the others did not.
     if (!existing.imageUrl && d.imageUrl) existing.imageUrl = d.imageUrl;
+    // Networks are tagged separately, so one publication may carry a hashtag
+    // the others lack. Union them: a topic on any publication is a topic of
+    // the content.
+    for (const topic of d.topics) {
+      if (!existing.topics.includes(topic)) existing.topics.push(topic);
+    }
   }
 
   const items = [...groups.values()];

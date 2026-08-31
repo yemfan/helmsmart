@@ -77,6 +77,16 @@ const nextConfig = {
         source: "/@:username",
         destination: "/a/:username",
       },
+      // Everything BELOW the handle — /@michaelye/p/<slug>, the per-post pages
+      // the feed's titles link to. The rule above matches ONE segment, so
+      // without this every content page 404s while the hub itself looks fine.
+      // A second rule rather than widening the first: ":path*" also matches the
+      // empty path on some Next versions, and a bare /@handle resolving through
+      // the wildcard is a regression waiting to happen.
+      {
+        source: "/@:username/:path*",
+        destination: "/a/:username/:path*",
+      },
     ];
   },
   /** Short nav-style paths → `/dashboard/*` (app lives under dashboard) */
