@@ -145,8 +145,7 @@ export async function loadHubByUsername(
 
     const [agent, plan, trackingRow, posts, carousels, reels] = await Promise.all([
       loadPresentationAgent(agentId),
-      // Read across every plan source — see planRank.ts. Gating on one
-      // column would tell a Signature customer to upgrade.
+      // The agent's tier off the canonical billing row — see currentPlan.ts.
       resolveAgentPlan(agentId),
       supabaseAdmin
         .from("agent_tracking_config")

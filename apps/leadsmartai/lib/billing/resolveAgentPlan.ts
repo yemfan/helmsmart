@@ -1,100 +1,78 @@
 import "server-only";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { plansDisagree, resolvePlanTier, type PlanTier } from "./planRank";
+import { pickCurrentSubscription, type BillingRow } from "./currentPlan";
+import { tierOf, type PlanTier } from "./planRank";
 
 /**
- * Read every place a plan is recorded and return the highest.
+ * An agent's plan, read from the one place that records it.
  *
- * See planRank.ts for why this is necessary rather than reading one column.
- * Short version: four fields, three answers, and picking the wrong one tells
- * a paying Signature customer to upgrade.
+ * This used to read four columns and take the highest, because the four
+ * disagreed and no one knew which to trust. They no longer disagree:
+ * `billing_subscriptions` is canonical, `agents.plan_type` and
+ * `leadsmart_users.plan` are caches derived from it, and
+ * `agents.subscription_plan` is gone. See `planRank.ts`.
  *
- * One round trip per source, run together. Cheap enough for a gate, and the
- * alternative — trusting a single denormalised column — is what produces the
- * bug this exists to avoid.
+ * Ranking still happens, but over rows rather than over columns — `currentPlan.ts`
+ * explains why a user can legitimately have more than one.
  */
 
 export type AgentPlan = {
   tier: PlanTier;
-  /** True when the sources disagreed. Logged, because nothing else reports it. */
-  drifted: boolean;
-  /** What each source said, for the log line and for support. */
-  sources: Record<string, string | null>;
+  /** The Stripe subscription behind the tier, for support and the billing UI. */
+  subscriptionId: string | null;
+  /** The canonical `plan` value on the winning row. Null when there is none. */
+  internalPlan: string | null;
 };
 
-export async function resolveAgentPlan(agentId: string | number): Promise<AgentPlan> {
-  const fallback: AgentPlan = { tier: "free", drifted: false, sources: {} };
+const FREE: AgentPlan = { tier: "free", subscriptionId: null, internalPlan: null };
 
+export async function resolveAgentPlan(agentId: string | number): Promise<AgentPlan> {
   try {
     const { data: agentRow } = await supabaseAdmin
       .from("agents")
-      .select("plan_type, subscription_plan, auth_user_id")
+      .select("auth_user_id")
       .eq("id", agentId as never)
       .maybeSingle();
 
-    const agent = (agentRow ?? {}) as {
-      plan_type?: string | null;
-      subscription_plan?: string | null;
-      auth_user_id?: string | null;
-    };
+    const authUserId = (agentRow as { auth_user_id?: string | null } | null)?.auth_user_id ?? null;
+    if (!authUserId) return FREE;
 
-    const authUserId = agent.auth_user_id ?? null;
-
-    const [userRow, subRow] = await Promise.all([
-      authUserId
-        ? supabaseAdmin
-            .from("leadsmart_users")
-            .select("plan")
-            .eq("user_id", authUserId as never)
-            .maybeSingle()
-        : Promise.resolve({ data: null }),
-      authUserId
-        ? supabaseAdmin
-            .from("billing_subscriptions")
-            .select("plan")
-            .eq("user_id", authUserId as never)
-            .eq("status", "active")
-            // A user can hold more than one active row — agent 26 has both
-            // crm_signature and consumer_free. Take them all and let the rank
-            // decide; consumer_* maps to free, so it cannot mask the real one.
-            .limit(10)
-        : Promise.resolve({ data: null }),
-    ]);
-
-    const userPlan = (userRow.data as { plan?: string | null } | null)?.plan ?? null;
-    const subPlans = ((subRow.data as Array<{ plan?: string | null }> | null) ?? []).map(
-      (r) => r.plan ?? null,
-    );
-
-    const sources: Record<string, string | null> = {
-      "agents.plan_type": agent.plan_type ?? null,
-      "agents.subscription_plan": agent.subscription_plan ?? null,
-      "leadsmart_users.plan": userPlan,
-      "billing_subscriptions.plan": subPlans.join(",") || null,
-    };
-
-    const candidates = [
-      agent.plan_type,
-      agent.subscription_plan,
-      userPlan,
-      ...subPlans,
-    ];
-
-    const drifted = plansDisagree(candidates);
-    if (drifted) {
-      // Every occurrence is a billing record that needs reconciling, and no
-      // other code path notices. Warn rather than fail: the customer gets the
-      // tier they paid for regardless.
-      console.warn(
-        `[plan] sources disagree for agent ${agentId}:`,
-        JSON.stringify(sources),
-      );
-    }
-
-    return { tier: resolvePlanTier(candidates), drifted, sources };
+    return await resolvePlanForUser(authUserId);
   } catch (e) {
     console.warn("[plan] resolveAgentPlan failed:", e instanceof Error ? e.message : e);
-    return fallback;
+    return FREE;
+  }
+}
+
+/**
+ * Same read, keyed by auth user id.
+ *
+ * `limit(10)` rather than `maybeSingle()`: more than one row is expected — see
+ * `currentPlan.ts` — and `maybeSingle()` would turn that into an error instead
+ * of a decision.
+ */
+export async function resolvePlanForUser(authUserId: string): Promise<AgentPlan> {
+  try {
+    const { data } = await supabaseAdmin
+      .from("billing_subscriptions")
+      .select("plan, status, livemode, current_period_start, current_period_end, provider_subscription_id")
+      .eq("user_id", authUserId as never)
+      .in("status", ["active", "trialing"])
+      .limit(10);
+
+    const rows = (data as Array<BillingRow & { provider_subscription_id?: string | null }> | null) ?? [];
+    const winner = pickCurrentSubscription(rows);
+    if (!winner) return FREE;
+
+    return {
+      tier: tierOf(winner.plan) ?? "free",
+      subscriptionId:
+        (winner as { provider_subscription_id?: string | null }).provider_subscription_id ?? null,
+      internalPlan: winner.plan ?? null,
+    };
+  } catch (e) {
+    console.warn("[plan] resolvePlanForUser failed:", e instanceof Error ? e.message : e);
+    return FREE;
   }
 }
