@@ -97,7 +97,7 @@
     "health": {
       "connected": "Connected",
       "attention": "Needs attention",
-      "reconnect": "Reconnect"
+      "reconnect": "Fix connection"
     }
   },
   "campaigns": {

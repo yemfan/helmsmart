@@ -97,7 +97,7 @@
     "health": {
       "connected": "已连接",
       "attention": "需要处理",
-      "reconnect": "重新连接"
+      "reconnect": "修复连接"
     }
   },
   "campaigns": {
