@@ -156,7 +156,25 @@ export function contentBody(item: FeedItem): string {
 
   const lines = caption.split(/\r?\n/);
   const firstLine = lines[0]?.trim() ?? "";
-  const rest = firstLine === titleOf(item).trim() ? lines.slice(1) : lines;
+  const title = titleOf(item).trim();
+
+  let rest: string[];
+  if (title && firstLine === title) {
+    // The whole first line became the title.
+    rest = lines.slice(1);
+  } else if (title && !title.endsWith("…") && firstLine.startsWith(title)) {
+    // `deriveTitle` cut a long first line at a SENTENCE end, so the title is a
+    // verbatim prefix of that line rather than the whole of it. Equality alone
+    // missed this and printed the headline again directly beneath itself —
+    // which is what a 168-character first line does in production. Drop the
+    // part that is already the h1 and keep the sentence that follows it.
+    const remainder = firstLine.slice(title.length).trim();
+    rest = remainder ? [remainder, ...lines.slice(1)] : lines.slice(1);
+  } else {
+    // Truncated with an ellipsis, or a carousel's own `title` column: those
+    // words are NOT on the page, so keep the line whole.
+    rest = lines;
+  }
 
   const trimmed = [...rest];
   if (item.topics.length > 0) {

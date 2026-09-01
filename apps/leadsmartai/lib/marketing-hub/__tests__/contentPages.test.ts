@@ -208,6 +208,29 @@ describe("contentBody", () => {
     ).toBe("Ask me about #escrow today.");
   });
 
+  it("drops a title that was cut at a sentence break inside a longer first line", () => {
+    // Verbatim from production, and the case that shipped broken. The first
+    // line runs 168 characters, so deriveTitle cuts it at "slip through." —
+    // making the title a PREFIX of the line rather than equal to it. An
+    // equality check keeps the whole line and prints the headline twice.
+    const caption =
+      "A missed call isn't a lost lead — unless nobody calls back. Here's how CloseBoss handles the ones that slip through. How many callbacks did you make manually last week?\n\n#RealEstate";
+    const item = stub({ caption, topics: ["realestate"] });
+
+    expect(titleOf(item)).toBe(
+      "A missed call isn't a lost lead — unless nobody calls back. Here's how CloseBoss handles the ones that slip through.",
+    );
+    expect(contentBody(item)).toBe("How many callbacks did you make manually last week?");
+    expect(contentBody(item)).not.toContain("A missed call isn't a lost lead");
+  });
+
+  it("empties the body when the sentence-cut title used up the whole line", () => {
+    const caption = `${"a".repeat(70)}. ${"b".repeat(60)}`;
+    const item = stub({ caption });
+    // Title is the first sentence; the remainder is the rest of that line.
+    expect(contentBody(item)).toBe("b".repeat(60));
+  });
+
   it("keeps the first line when the title was truncated — those words are NOT shown", () => {
     const caption = `${"word ".repeat(40)}end\n\nBody.`;
     const item = stub({ caption });
