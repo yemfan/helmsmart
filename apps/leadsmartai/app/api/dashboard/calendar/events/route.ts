@@ -68,18 +68,25 @@ export async function POST(req: Request) {
       calendarProvider: body.calendarProvider ?? "local",
     });
 
-    // Best-effort sync to Google Calendar
+    // Sync to Google Calendar. Awaited rather than detached: once the response
+    // is sent the function can freeze before a floating promise runs, so
+    // fire-and-forget made syncing a coin flip. Wrapped so a Google-side
+    // problem never fails the booking itself — the event is already saved.
     if (event?.id) {
       const defaultEnd = new Date(new Date(startsAt).getTime() + 60 * 60 * 1000).toISOString();
-      syncEventToGoogle({
-        agentId,
-        eventId: event.id,
-        title,
-        description: body.description ?? undefined,
-        startAt: startsAt,
-        endAt: body.endsAt ?? defaultEnd,
-        timezone: body.timezone ?? undefined,
-      }).catch((e) => console.error("Google Calendar sync (non-fatal):", e));
+      try {
+        await syncEventToGoogle({
+          agentId,
+          eventId: event.id,
+          title,
+          description: body.description ?? undefined,
+          startAt: startsAt,
+          endAt: body.endsAt ?? defaultEnd,
+          timezone: body.timezone ?? undefined,
+        });
+      } catch (e) {
+        console.error("Google Calendar sync (non-fatal):", e);
+      }
     }
 
     return NextResponse.json({ ok: true, event });

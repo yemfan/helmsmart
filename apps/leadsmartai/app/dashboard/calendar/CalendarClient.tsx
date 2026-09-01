@@ -75,6 +75,8 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   const [addFields, setAddFields] = useState({ title: "", leadId: "", startsAt: "", dueAt: "", priority: "normal" });
   const [addLoading, setAddLoading] = useState(false);
   const [addMsg, setAddMsg] = useState<string | null>(null);
+  // When set, the form is editing this appointment instead of creating one.
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [showEvents, setShowEvents] = useState(true);
   const [showTasks, setShowTasks] = useState(true);
   const [showFollowups, setShowFollowups] = useState(true);
@@ -241,6 +243,39 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   function nextMonth() { setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)); }
   function goToday() { const d = new Date(); setCurrentMonth(new Date(d.getFullYear(), d.getMonth(), 1)); setSelectedDate(d); }
 
+  /**
+   * ISO instant -> the value a <input type="datetime-local"> expects, which is
+   * wall-clock in the BROWSER's zone with no offset. Using toISOString() here
+   * would shift the time by the UTC offset every time an event was opened.
+   */
+  function toLocalInputValue(iso: string): string {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  /** Open the form on an existing appointment. */
+  function startEditEvent(entry: DayEntry) {
+    setEditingEventId(entry.id);
+    setAddType("event");
+    setAddMsg(null);
+    setAddFields({
+      title: entry.title,
+      leadId: "",
+      startsAt: toLocalInputValue(entry.time),
+      dueAt: "",
+      priority: "normal",
+    });
+    setShowAdd(true);
+  }
+
+  function resetForm() {
+    setEditingEventId(null);
+    setShowAdd(false);
+    setAddFields({ title: "", leadId: "", startsAt: "", dueAt: "", priority: "normal" });
+  }
+
   /** Throw carrying the API's own `error`, so the user sees the real reason. */
   async function throwOnFailure(res: Response): Promise<void> {
     const body = (await res.json().catch(() => null)) as
@@ -253,7 +288,18 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   async function addItem() {
     setAddLoading(true); setAddMsg(null);
     try {
-      if (addType === "event") {
+      if (editingEventId) {
+        // Editing only ever touches an appointment; the contact cannot be
+        // changed here because the PATCH route does not accept one.
+        const res = await fetch(`/api/dashboard/calendar/events/${editingEventId}`, {
+          method: "PATCH", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: addFields.title,
+            startsAt: addFields.startsAt ? new Date(addFields.startsAt).toISOString() : undefined,
+          }),
+        });
+        await throwOnFailure(res);
+      } else if (addType === "event") {
         const res = await fetch("/api/dashboard/calendar/events", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title: addFields.title, leadId: addFields.leadId || null, startsAt: addFields.startsAt ? new Date(addFields.startsAt).toISOString() : null }),
@@ -266,8 +312,8 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
         });
         await throwOnFailure(res);
       }
-      setAddMsg(tr("calendar.added")); setShowAdd(false);
-      setAddFields({ title: "", leadId: "", startsAt: "", dueAt: "", priority: "normal" });
+      setAddMsg(editingEventId ? tr("calendar.saved") : tr("calendar.added"));
+      resetForm();
       loadData();
     } catch (e) {
       // Prefer whatever the server said over the generic line. A bare
@@ -366,7 +412,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
             {monthStats.events} {tr("pages.dashFragments.appointments")} {monthStats.tasks} {tr("pages.dashFragments.tasksSep")} {monthStats.followups} {tr("pages.dashFragments.followUps")} {monthStats.drafts} {tr("pages.dashFragments.drafts")}
           </p>
         </div>
-        <button onClick={() => setShowAdd((v) => !v)} className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800">
+        <button onClick={() => (showAdd ? resetForm() : setShowAdd(true))} className="rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-gray-800">
           {showAdd ? tr("calendar.cancel") : tr("calendar.addEvent")}
         </button>
       </div>
@@ -383,17 +429,23 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
       {/* Add form */}
       {showAdd && (
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm space-y-3">
-          <div className="flex gap-2">
-            <button onClick={() => setAddType("event")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "event" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}>{tr("calendar.appointment")}</button>
-            <button onClick={() => setAddType("task")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "task" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700"}`}>{tr("calendar.task")}</button>
-          </div>
+          {editingEventId ? (
+            <p className="text-xs font-medium text-gray-500">{tr("calendar.editingAppointment")}</p>
+          ) : (
+            <div className="flex gap-2">
+              <button onClick={() => setAddType("event")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "event" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}>{tr("calendar.appointment")}</button>
+              <button onClick={() => setAddType("task")} className={`rounded-lg px-3 py-1 text-xs font-medium ${addType === "task" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700"}`}>{tr("calendar.task")}</button>
+            </div>
+          )}
           <div className="grid gap-3 sm:grid-cols-2">
             <input value={addFields.title} onChange={(e) => setAddFields((f) => ({ ...f, title: e.target.value }))} placeholder={tr("calendar.titlePlaceholder")} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
-            <select value={addFields.leadId} onChange={(e) => setAddFields((f) => ({ ...f, leadId: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
-              <option value="">{tr("calendar.noContact")}</option>
-              {leads.map((l) => <option key={l.id} value={l.id}>{l.name ?? `Lead #${l.id}`}</option>)}
-            </select>
-            {addType === "event" ? (
+            {editingEventId ? null : (
+              <select value={addFields.leadId} onChange={(e) => setAddFields((f) => ({ ...f, leadId: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+                <option value="">{tr("calendar.noContact")}</option>
+                {leads.map((l) => <option key={l.id} value={l.id}>{l.name ?? `Lead #${l.id}`}</option>)}
+              </select>
+            )}
+            {editingEventId || addType === "event" ? (
               <input type="datetime-local" value={addFields.startsAt} onChange={(e) => setAddFields((f) => ({ ...f, startsAt: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
             ) : (
               <>
@@ -406,7 +458,9 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
           </div>
           {addMsg && <p className={`text-xs ${addMsg === "Added!" ? "text-green-700" : "text-red-600"}`}>{addMsg}</p>}
           <button onClick={() => void addItem()} disabled={addLoading || !addFields.title.trim()} className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50">
-            {addLoading ? tr("calendar.adding") : tr("calendar.add")}
+            {addLoading
+              ? editingEventId ? tr("calendar.saving") : tr("calendar.adding")
+              : editingEventId ? tr("calendar.save") : tr("calendar.add")}
           </button>
         </div>
       )}
@@ -548,6 +602,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
           markTaskCancelled={markTaskCancelled}
           snoozeTaskBy={snoozeTaskBy}
           cancelEvent={cancelEvent}
+          editEvent={startEditEvent}
           prevMonth={prevMonth}
           nextMonth={nextMonth}
           goToday={goToday}
@@ -586,6 +641,7 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
                     markTaskCancelled={markTaskCancelled}
                     snoozeTaskBy={snoozeTaskBy}
                     cancelEvent={cancelEvent}
+                    editEvent={startEditEvent}
                   />
                 </div>
               ))}
@@ -613,6 +669,7 @@ function ListView({
   markTaskCancelled,
   snoozeTaskBy,
   cancelEvent,
+  editEvent,
   prevMonth,
   nextMonth,
   goToday,
@@ -631,6 +688,7 @@ function ListView({
   markTaskCancelled: (taskId: string) => Promise<void> | void;
   snoozeTaskBy: (taskId: string, days: number) => Promise<void> | void;
   cancelEvent: (eventId: string) => Promise<void> | void;
+  editEvent?: (entry: DayEntry) => void;
   prevMonth: () => void;
   nextMonth: () => void;
   goToday: () => void;
@@ -717,6 +775,7 @@ function ListView({
                         markTaskCancelled={markTaskCancelled}
                         snoozeTaskBy={snoozeTaskBy}
                         cancelEvent={cancelEvent}
+                    editEvent={editEvent}
                       />
                     </div>
                   ))}
@@ -741,12 +800,14 @@ function EntryActions({
   markTaskCancelled,
   snoozeTaskBy,
   cancelEvent,
+  editEvent,
 }: {
   entry: DayEntry;
   markTaskDone: (taskId: string) => Promise<void> | void;
   markTaskCancelled: (taskId: string) => Promise<void> | void;
   snoozeTaskBy: (taskId: string, days: number) => Promise<void> | void;
   cancelEvent: (eventId: string) => Promise<void> | void;
+  editEvent?: (entry: DayEntry) => void;
 }) {
   const { t: tr } = useTranslation("dashboard");
   if (entry.type === "task" && entry.status !== "done") {
@@ -787,6 +848,15 @@ function EntryActions({
   if (entry.type === "event") {
     return (
       <div className="inline-flex items-center gap-0.5 shrink-0 ml-2">
+        {editEvent ? (
+          <TaskIconButton
+            onClick={() => editEvent(entry)}
+            title={tr("calendar.actions.editAppointment")}
+            ariaLabel={tr("calendar.actions.editAppointment")}
+          >
+            <Pencil className="h-4 w-4" strokeWidth={2} />
+          </TaskIconButton>
+        ) : null}
         <TaskIconButton
           onClick={() => void cancelEvent(entry.id)}
           title={tr("calendar.actions.cancelAppointment")}
