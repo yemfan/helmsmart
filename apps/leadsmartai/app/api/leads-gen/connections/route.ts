@@ -35,7 +35,7 @@ export async function GET() {
     const { data, error } = await supabaseAdmin
       .from("social_accounts")
       .select(
-        "id, platform, fb_page_id, fb_page_name, ig_business_user_id, ig_business_username, linkedin_member_urn, linkedin_member_email, threads_user_id, threads_username, account_display_name, account_picture_url, status",
+        "id, platform, fb_page_id, fb_page_name, ig_business_user_id, ig_business_username, linkedin_member_urn, linkedin_member_email, threads_user_id, threads_username, account_display_name, account_picture_url, status, last_error",
       )
       .eq("agent_id", auth.agentId)
       .eq("status", "connected")

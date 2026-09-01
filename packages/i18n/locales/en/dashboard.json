@@ -166,7 +166,9 @@
       "connectedHelp": "New appointments auto-sync to your Google Calendar.",
       "connectHelp": "Connect to automatically sync appointments both ways.",
       "disconnect": "Disconnect",
-      "working": "..."
+      "working": "...",
+      "pillConnected": "Connected",
+      "pillDisconnected": "Not connected"
     },
     "inbound": {
       "heading": "Forward emails for auto-import",

@@ -166,7 +166,9 @@
       "connectedHelp": "新建的预约会自动同步到您的 Google 日历。",
       "connectHelp": "连接后可双向自动同步预约。",
       "disconnect": "断开连接",
-      "working": "…"
+      "working": "…",
+      "pillConnected": "已连接",
+      "pillDisconnected": "未连接"
     },
     "inbound": {
       "heading": "转发邮件自动导入",

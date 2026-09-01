@@ -93,6 +93,11 @@
       "revoke_hint": "断开连接会删除这里保存的授权令牌。若要彻底撤销授权，请在 Google 账号设置中移除访问权限。",
       "cta_connect": "连接 YouTube",
       "cta_reconnect": "重新连接"
+    },
+    "health": {
+      "connected": "已连接",
+      "attention": "需要处理",
+      "reconnect": "重新连接"
     }
   },
   "campaigns": {
