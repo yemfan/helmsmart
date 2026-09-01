@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { sendEmail } from "@/lib/email";
+import {
+  emailSuppression,
+  unsubscribeHeaders,
+  withUnsubscribeFooter,
+} from "@/lib/email/unsubscribe";
 import { sendSMS } from "@/lib/twilioSms";
 
 export const runtime = "nodejs";
@@ -111,7 +116,7 @@ export async function GET(req: Request) {
       const { data: lead, error: leadErr } = await supabaseServer
         .from("contacts")
         .select(
-          "id,name,email,phone,sms_opt_in,agent_id,property_address,lead_type,source,created_at,report_id"
+          "id,name,email,phone,sms_opt_in,contact_opt_out_email,do_not_contact_email,email_unsubscribe_token,agent_id,property_address,lead_type,source,created_at,report_id"
         )
         .eq("id", leadId)
         .maybeSingle();
@@ -258,7 +263,40 @@ export async function GET(req: Request) {
   <img src="${pixelUrl}" width="1" height="1" alt="" style="display:none;" />
 </div>`;
 
-          await sendEmail({ to: String(lead.email), subject, text, html });
+          // The email counterpart of the SMS consent gate below. This branch
+          // used to send unconditionally — automated marketing, with an
+          // open-tracking pixel, to anyone in the sequence — while the SMS
+          // branch fifteen lines down refused to send without `sms_opt_in`.
+          // Both suppression flags bind: the contact's own opt-out and the
+          // agent's do-not-contact. Same shape as the SMS skip, including
+          // advancing the sequence, so a suppressed contact quietly falls out
+          // of the rail instead of being retried forever.
+          const suppressed = emailSuppression(lead as Parameters<typeof emailSuppression>[0]);
+          if (suppressed) {
+            console.info("[send-emails] suppressed", { contactId: leadId, reason: suppressed });
+          } else {
+            const token = (lead as { email_unsubscribe_token?: string | null })
+              .email_unsubscribe_token;
+            // The footer carries the visible way out and the postal address;
+            // the headers give Gmail and Outlook their native one-click button.
+            // The header alone is not enough — it is invisible to the reader,
+            // and someone who cannot find a way out clicks "spam" instead,
+            // which costs every app sending from this domain.
+            const withFooter = withUnsubscribeFooter({
+              html,
+              text,
+              token,
+              senderName: agentName,
+            });
+
+            await sendEmail({
+              to: String(lead.email),
+              subject,
+              text: withFooter.text,
+              html: withFooter.html,
+              headers: unsubscribeHeaders(token),
+            });
+          }
         } else if (channel === "sms") {
           const smsOptIn = Boolean((lead as any).sms_opt_in);
           const leadPhone = String(lead.phone ?? "").trim();

@@ -1,5 +1,10 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
+import {
+  emailSuppression,
+  unsubscribeHeaders,
+  withUnsubscribeFooter,
+} from "@/lib/email/unsubscribe";
 import { loadAgentSignatureProfile } from "@/lib/signatures/loadProfile";
 import {
   appendHtmlSignature,
@@ -58,6 +63,9 @@ type FullDraftRow = MessageDraftRow & {
     email: string | null;
     do_not_contact_sms: boolean;
     do_not_contact_email: boolean;
+    /** The contact's OWN opt-out, set by the unsubscribe link. */
+    contact_opt_out_email: boolean | null;
+    email_unsubscribe_token: string | null;
     preferred_language: "en" | "zh";
   };
 };
@@ -89,7 +97,7 @@ export async function dispatchApprovedDrafts(
   let q = supabaseAdmin
     .from("message_drafts")
     .select(
-      "*, contacts!inner(id, phone, email, do_not_contact_sms, do_not_contact_email, preferred_language)",
+      "*, contacts!inner(id, phone, email, do_not_contact_sms, do_not_contact_email, contact_opt_out_email, email_unsubscribe_token, preferred_language)",
     )
     .eq("status", "approved")
     .order("approved_at", { ascending: true })
@@ -155,11 +163,16 @@ async function processOne(
       reason: contact.do_not_contact_sms ? "do_not_contact" : "missing_address",
     };
   }
-  if (row.channel === "email" && (contact.do_not_contact_email || !contact.email)) {
+  // Both flags bind. This checked only `do_not_contact_email` — the AGENT's
+  // suppression — so a contact who used the unsubscribe link in a drip email
+  // would still receive approved drafts, which is precisely the promise the
+  // unsubscribe made.
+  const suppressed = emailSuppression(contact);
+  if (row.channel === "email" && suppressed) {
     await markFailed(draftId, "contact opted out of email or has no address");
     return {
       draftId,
-      reason: contact.do_not_contact_email ? "do_not_contact" : "missing_address",
+      reason: suppressed === "no_email" ? "missing_address" : "do_not_contact",
     };
   }
 
@@ -230,10 +243,19 @@ async function processOne(
       // the draft composer grows an HTML mode.
       // Kept as a separate const so a future HTML-mode toggle drops in cleanly.
       void appendHtmlSignature;
+      // Same footer and one-click headers as the drip rail: an approved draft
+      // is still marketing email, and an opt-out route that exists on one
+      // sender and not the other is not an opt-out route.
+      const withFooter = withUnsubscribeFooter({
+        html: "",
+        text,
+        token: contact.email_unsubscribe_token,
+      });
       await sendEmail({
         to: contact.email!,
         subject: row.subject ?? "(no subject)",
-        text,
+        text: withFooter.text,
+        headers: unsubscribeHeaders(contact.email_unsubscribe_token),
       });
     }
     await markSent(draftId);
