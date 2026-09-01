@@ -15,7 +15,7 @@ export default async function AdminPortalPage() {
     <RolePortalHub
       eyebrow="LeadSmart AI"
       title={t("pages.adminPages.portal", { ns: "dashboard" })}
-      description="Platform administration and operational tools. Open the full dashboard for day-to-day work."
+      description={t("pages.adminPages.portalDesc", { ns: "dashboard" })}
       links={[
         { href: "/admin/platform-overview", label: "Platform overview", description: "Cross-product KPIs, funnel, and ops" },
         { href: "/admin/signups", label: "Signups by source", description: "Where new agent signups come from" },

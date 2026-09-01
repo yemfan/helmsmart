@@ -14,7 +14,7 @@ export default async function BpmsPage() {
     <ComingSoon
       icon={ClipboardCheck}
       title={t("pages.financialServices.navBpms", { ns: "dashboard" })}
-      description="Business Presentation Meetings — schedule, invite, and follow up with prospective associates."
+      description={t("pages.financialServices.descBpms", { ns: "dashboard" })}
       availability="Pilot week 2"
       bulletPoints={[
         "Public BPM signup page per event (in-person + Zoom)",

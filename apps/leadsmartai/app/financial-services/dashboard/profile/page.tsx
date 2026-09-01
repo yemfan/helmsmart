@@ -14,7 +14,7 @@ export default async function ProfilePage() {
     <ComingSoon
       icon={UserCircle2}
       title={t("pages.financialServices.navProfile", { ns: "dashboard" })}
-      description="Your producer profile, agent branding, agency hierarchy, carrier appointments, and notification preferences."
+      description={t("pages.financialServices.descProfile", { ns: "dashboard" })}
       availability="Pilot week 2"
       bulletPoints={[
         "Public profile + agent branding (logo, photo, calendar link)",

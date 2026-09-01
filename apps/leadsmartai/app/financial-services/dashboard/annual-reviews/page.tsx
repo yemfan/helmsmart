@@ -14,7 +14,7 @@ export default async function AnnualReviewsPage() {
     <ComingSoon
       icon={RefreshCcw}
       title={t("pages.financialServices.navAnnualReviews", { ns: "dashboard" })}
-      description="Automated 30-day-before nudges, AI-prepped briefing per client, and review-meeting templates."
+      description={t("pages.financialServices.descAnnualReviews", { ns: "dashboard" })}
       availability="Pilot week 4"
       bulletPoints={[
         "Auto-outreach 30 days before each policy anniversary",

@@ -82,7 +82,7 @@ export function PlatformOverviewClient() {
     <DashboardShell
       className="min-h-0 bg-transparent p-0"
       title={t("pages.adminPages.platformOverview")}
-      subtitle="Business performance across PropertyToolsAI and LeadSmart AI."
+      subtitle={t("pages.adminPages.platformOverviewSub")}
       kpiGridClassName="md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
       kpis={
         <>

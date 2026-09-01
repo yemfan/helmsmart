@@ -14,7 +14,7 @@ export default async function FieldTrainingPage() {
     <ComingSoon
       icon={GraduationCap}
       title={t("pages.financialServices.navFieldTraining", { ns: "dashboard" })}
-      description="New-associate onboarding and licensing path — track each recruit's progress from BPM to first sale."
+      description={t("pages.financialServices.descFieldTraining", { ns: "dashboard" })}
       availability="Pilot week 2"
       bulletPoints={[
         "Module checklist per new associate (pre-licensing, product, AML)",

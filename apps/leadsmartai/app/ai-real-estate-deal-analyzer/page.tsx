@@ -461,7 +461,7 @@ function ResultsPanel({ inputs, results }: ResultsPanelProps) {
         <MetricCard
           label={t("pages.dealAnalyzer.totalMonthly")}
           value={`$${totalMonthlyExpenses.toFixed(0)}`}
-          hint="Includes operating expenses and mortgage."
+          hint={t("pages.dealAnalyzer.totalMonthlyHint")}
         />
         <MetricCard
           label={t("pages.articleChrome.monthlyCashFlow")}

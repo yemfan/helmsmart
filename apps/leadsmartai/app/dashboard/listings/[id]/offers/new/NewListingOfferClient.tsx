@@ -375,7 +375,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
             </Field>
             <Field
               label={t("pages.newListingOffer.concessions")}
-              hint="Buyer-requested credit at closing"
+              hint={t("pages.newListingOffer.concessionsHint")}
             >
               <input
                 type="number"
@@ -387,7 +387,7 @@ export function NewListingOfferClient({ listing }: { listing: ListingDetail }) {
             </Field>
             <Field
               label={t("pages.newListingOffer.buyerCommission")}
-              hint="Offered to buyer's brokerage"
+              hint={t("pages.newListingOffer.buyerCommissionHint")}
             >
               <input
                 type="number"

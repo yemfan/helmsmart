@@ -14,7 +14,7 @@ export default async function ProductionPage() {
     <ComingSoon
       icon={BarChart}
       title={t("pages.financialServices.navProduction", { ns: "dashboard" })}
-      description="Team production — submitted, issued, placed — rolled up by hierarchy tier with month-over-month trend."
+      description={t("pages.financialServices.descProduction", { ns: "dashboard" })}
       availability="Pilot week 3"
       bulletPoints={[
         "Total team annualized premium (submitted vs. issued vs. placed)",

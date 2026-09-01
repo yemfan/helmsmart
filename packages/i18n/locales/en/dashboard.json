@@ -2408,7 +2408,9 @@
       "cancel": "Cancel",
       "readingOfferPdf": "Reading offer PDF…",
       "uploadOfferPdfOptional": "Upload offer PDF (optional)",
-      "dropASignedRpa": "Drop a signed RPA PDF here or click to pick — we'll extract price, contingencies, and dates with Claude. Nothing is stored."
+      "dropASignedRpa": "Drop a signed RPA PDF here or click to pick — we'll extract price, contingencies, and dates with Claude. Nothing is stored.",
+      "concessionsHint": "Buyer-requested credit at closing",
+      "buyerCommissionHint": "Offered to buyer's brokerage"
     },
     "showingDetail": {
       "metaTitle": "Showing",
@@ -2825,7 +2827,11 @@
       "openMetaAdsManager": "Open in Meta Ads Manager →",
       "connectAPage": "Connect a Page →",
       "estimating": "Estimating…",
-      "settingsBranding": "Settings → Branding"
+      "settingsBranding": "Settings → Branding",
+      "whereItRunsSub": "Pick a connected Facebook Page and an ad account.",
+      "whoSeesItSub": "Real-estate ads are HOUSING-restricted by Meta — only broad geo + age targeting allowed.",
+      "budgetLaunchSub": "Daily spend cap and how long the campaign runs.",
+      "whatItSaysSub": "The ad's body, image, headline, and what the lead form asks for."
     },
     "dealCoachPanel": {
       "dealContext": "Deal context",
@@ -2867,7 +2873,9 @@
         "counter": "Counter-offer response",
         "multiple": "Multiple-offer scenario",
         "pushback": "Seller pushback"
-      }
+      },
+      "doNextSub": "Prioritized — top items first.",
+      "scriptsSub": "Three scenarios — adapt the wording to your buyer's voice."
     },
     "savedSearches": {
       "heading": "Saved searches",
@@ -4157,7 +4165,11 @@
       "you": "You"
     },
     "settingsPage": {
-      "manageConnected": "Manage connected accounts"
+      "manageConnected": "Manage connected accounts",
+      "connectedSocialDesc": "Facebook, Instagram, LinkedIn and Threads are connected in one place.",
+      "socialAutopostingDesc": "Your AI team writes and publishes posts for your feed. This decides what goes out, where, how often — and who signs off.",
+      "tcNotificationsDesc": "Delivery preferences for deal-level nudges: daily email digest of overdue tasks, plus a closing-window wire-fraud SMS escalation.",
+      "commissionDefaultsDesc": "Applied to new transactions + revenue analytics on /dashboard/performance. Per-deal overrides stay intact."
     },
     "skillsManager": {
       "validators": "validators + oversight",
@@ -4661,7 +4673,19 @@
       "meansAutosend": "Every message sends the moment its trigger fires. You'll see them in your history after the fact.",
       "sphere": "Sphere:",
       "recommended": "Recommended",
-      "loading": "Loading review policy…"
+      "loading": "Loading review policy…",
+      "reviewEachSub": "Safer. Every triggered message becomes a draft in your approval queue. Nothing sends silently.",
+      "reviewEachNote": "Recommended for your first 30 days, or if you're coming back after a break.",
+      "autosendAllSub": "Faster. Messages go out the moment triggers fire. You'll see them in the history log.",
+      "autosendAllNote": "Best once you trust how the templates read in your voice.",
+      "perCategorySub": "Different rules for different types — review sphere outreach, autosend tour confirmations.",
+      "catSphere": "Sphere · past clients",
+      "catSphereDesc": "Home anniversaries, equity updates, dormant re-engage, referral thank-yous.",
+      "catLead": "Lead response · new inquiries",
+      "catLeadDesc": "First-touch, no-reply follow-ups, tour confirmations. Speed matters here.",
+      "catLifecycle": "Lifecycle · from CloseBoss",
+      "catLifecycleDesc": "Product emails about your account — trial ending, feature updates.",
+      "catLifecycleLocked": "Lifecycle emails come from CloseBoss, not from you. They always send automatically."
     },
     "sendRecommendations": {
       "title": "Send properties",
@@ -4984,7 +5008,11 @@
       "listingSide": "Listing-side commission",
       "brokerageSplit": "Brokerage split (your share)",
       "referralFee": "Default referral fee",
-      "loadingPreferences": "Loading preferences…"
+      "loadingPreferences": "Loading preferences…",
+      "buyerSideHint": "Typical buyer-side commission is 2.5–3.0%, negotiated as offer of cooperation.",
+      "listingSideHint": "Typical listing commission is 2.5–3.0%.",
+      "brokerageSplitHint": "70 = 70/30 favoring you. 100 if solo on your own license.",
+      "referralFeeHint": "Usually 0. Set if you owe a fixed referrer. Applied off the TOP before split."
     },
     "compliance": {
       "title": "Compliance",
@@ -5219,7 +5247,9 @@
       "footerFreeTools": "Free tools",
       "footerCompany": "Company",
       "footerLegal": "Legal",
-      "madeForAgents": "Made for agents who close"
+      "madeForAgents": "Made for agents who close",
+      "firstReplyHint": "Median first-reply time across 30-day trial users.",
+      "replyLiftHint": "Measured against the agent's prior 30-day average."
     },
     "salesModelDashboard": {
       "title": "Sales Model",
@@ -5238,7 +5268,11 @@
     "channelsCard": {
       "title": "Channels",
       "sub": "The phone number and email address your contacts see. Verification is required for deliverability.",
-      "readOnly": "Read-only. Sender verification is managed by CloseBoss — contact support to change a verified number or address."
+      "readOnly": "Read-only. Sender verification is managed by CloseBoss — contact support to change a verified number or address.",
+      "smsSubtitle": "Your sending number",
+      "emailSubtitle": "Your sending address",
+      "noNumber": "No number configured",
+      "noEmail": "No email configured"
     },
     "favorites": {
       "title": "Favorited properties",
@@ -5666,7 +5700,10 @@
       "skippedNoTasks": "Skipped (no tasks)",
       "tasks": "Tasks",
       "overdue": "Overdue",
-      "upcoming": "Upcoming"
+      "upcoming": "Upcoming",
+      "stuckCronsHint": "no run in expected window",
+      "platformOverviewSub": "Business performance across PropertyToolsAI and LeadSmart AI.",
+      "portalDesc": "Platform administration and operational tools. Open the full dashboard for day-to-day work."
     },
     "supportDash": {
       "title": "System Support Dashboard",
@@ -5697,7 +5734,9 @@
       "resolve": "Resolve",
       "tag": "Tag",
       "typeReply": "Type reply…",
-      "send": "Send"
+      "send": "Send",
+      "subtitle": "Queue triage, active conversation handling, and team operations in a single view.",
+      "pageSubtitle": "Resolve issues faster and keep the platform running smoothly."
     },
     "financialServices": {
       "cohortFeedback": "Cohort feedback during weeks 1-2 of the pilot shapes the final spec for this feature.",
@@ -5738,7 +5777,21 @@
       "navProduction": "Production",
       "navProfile": "Profile",
       "navProspects": "Prospects",
-      "navSitDowns": "Sit-Downs"
+      "navSitDowns": "Sit-Downs",
+      "descAnnualReviews": "Automated 30-day-before nudges, AI-prepped briefing per client, and review-meeting templates.",
+      "descBpms": "Business Presentation Meetings — schedule, invite, and follow up with prospective associates.",
+      "descCompliance": "Your compliance hub — license status, AML training, supervised-review queue, and audit-ready communications archive.",
+      "descDials": "Outbound call queue with AI prep notes, click-to-dial, and post-call disposition logging.",
+      "descDownline": "Your full hierarchy — every associate under you, their pipeline, their production, their licensing status.",
+      "descFieldTraining": "New-associate onboarding and licensing path — track each recruit's progress from BPM to first sale.",
+      "descInbox": "Unified SMS + email inbox. AI handles routine replies; you handle the ones that matter.",
+      "descIntegrations": "Connect your existing carrier portals, illustrators, e-app providers, and calendar so LeadSmart AI fits into the workflow you already have.",
+      "descOverrides": "Hierarchical override commissions — earned, advanced, charged back, and projected from your downline's production.",
+      "descPolicyholders": "Your book of business — every active policy, carrier, anniversary, and beneficiary in one place.",
+      "descProduction": "Team production — submitted, issued, placed — rolled up by hierarchy tier with month-over-month trend.",
+      "descProfile": "Your producer profile, agent branding, agency hierarchy, carrier appointments, and notification preferences.",
+      "descProspects": "Every inbound lead from your funnels, with AI nurture status, intent score, and next-best action.",
+      "descSitDowns": "Kitchen-table appointments — booked, confirmed, prepped with an FNA so you walk in ready to present."
     },
     "fsMarketing": {
       "howItWorks": "How it works",
@@ -5916,7 +5969,8 @@
       "settingsSoon": "Profile settings, branding, and notification preferences will be available here.",
       "pricingTitle": "CloseBoss for Loan Brokers",
       "pricingSub": "Upgrade to unlock a stronger borrower workflow, more powerful pipeline tools, and a better financing workspace.",
-      "popular": "Popular"
+      "popular": "Popular",
+      "dashboardSub": "Borrower flow from inquiry to funded, with AI finance tools on-demand."
     },
     "carrierIntegration": {
       "brief": "Carrier integration brief — optimized for print or save-as-PDF.",
@@ -7097,7 +7151,9 @@
       "loadingLeads": "Loading leads…",
       "noAddress": "No address",
       "generateCma": "Generate CMA",
-      "saveToReports": "Save to Reports"
+      "saveToReports": "Save to Reports",
+      "paywallMessage": "You’ve reached your limit. Upgrade to continue.",
+      "paywallCta": "Upgrade Now"
     },
     "capRateMistakes": {
       "intro": "Cap rate is simple to calculate, but easy to misuse. Small mistakes in your assumptions can make a property look far better—or worse—than it really is. By understanding the most common errors investors make with cap rate, you can avoid costly missteps and use this metric the way professionals do.",
@@ -7308,7 +7364,8 @@
       "cocModest": "Cash-on-cash return is modest. Consider whether appreciation or value-add improvements could justify the investment.",
       "verifyLocally": "Investors should verify local rental demand, property condition, and market trends before making any final decision.",
       "confirmByTyping": "Confirm by typing",
-      "andTapping": "and tapping the red confirmation button."
+      "andTapping": "and tapping the red confirmation button.",
+      "totalMonthlyHint": "Includes operating expenses and mortgage."
     },
     "deleteAccount": {
       "h1": "Delete your CloseBoss account",
@@ -7644,7 +7701,8 @@
       "recentActivity": "Recent Activity",
       "act1": "Buyer opened property comparison report",
       "act2": "Seller requested updated valuation",
-      "act3": "Lead score increased for San Gabriel inquiry"
+      "act3": "Lead score increased for San Gabriel inquiry",
+      "subtitle": "Focus on the highest-intent leads and close faster."
     },
     "openHouseSignin": {
       "thanks": "Thanks for signing in!",
@@ -8054,7 +8112,8 @@
       "errGeneric": "There was an issue analyzing this link. Try Refresh Latest Data or a different URL.",
       "errRefreshFailed": "Failed to refresh listing.",
       "errUnsupportedShort": "Unsupported URL.",
-      "errRefreshData": "Failed to refresh data."
+      "errRefreshData": "Failed to refresh data.",
+      "roiYear1Tip": "Approximate ROI including cash flow plus simple appreciation."
     },
     "compareRentVsBuy": {
       "intro": "Deciding whether to rent or buy is one of the biggest financial choices most people make. This guide shows you how to compare renting and owning side by side using realistic assumptions and the Rent vs Buy Calculator.",

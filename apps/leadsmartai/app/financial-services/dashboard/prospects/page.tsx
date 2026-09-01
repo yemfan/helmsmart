@@ -14,7 +14,7 @@ export default async function ProspectsPage() {
     <ComingSoon
       icon={Users}
       title={t("pages.financialServices.navProspects", { ns: "dashboard" })}
-      description="Every inbound lead from your funnels, with AI nurture status, intent score, and next-best action."
+      description={t("pages.financialServices.descProspects", { ns: "dashboard" })}
       availability="Pilot week 1"
       bulletPoints={[
         "Unified view of inbound leads from web funnels, referrals, social",

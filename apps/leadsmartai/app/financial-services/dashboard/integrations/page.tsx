@@ -14,7 +14,7 @@ export default async function IntegrationsPage() {
     <ComingSoon
       icon={Plug}
       title={t("pages.financialServices.navIntegrations", { ns: "dashboard" })}
-      description="Connect your existing carrier portals, illustrators, e-app providers, and calendar so LeadSmart AI fits into the workflow you already have."
+      description={t("pages.financialServices.descIntegrations", { ns: "dashboard" })}
       availability="Pilot week 3"
       bulletPoints={[
         "Carrier illustration tools (WinFlex, iPipeline) — pending API access",

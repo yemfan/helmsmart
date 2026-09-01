@@ -668,8 +668,8 @@ function SmartCmaBuilderPageInner() {
     <PaywallModal
       open={paywallOpen}
       onClose={() => setPaywallOpen(false)}
-      message="You’ve reached your limit. Upgrade to continue."
-      ctaLabel="Upgrade Now"
+      message={t("pages.smartCmaBuilder.paywallMessage")}
+      ctaLabel={t("pages.smartCmaBuilder.paywallCta")}
     />
     {paywallOpen ? (
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">

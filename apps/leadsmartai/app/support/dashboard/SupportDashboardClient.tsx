@@ -25,7 +25,7 @@ export default function SupportDashboardClient() {
   return (
     <DashboardShell
       title={t("pages.supportDash.title")}
-      subtitle="Queue triage, active conversation handling, and team operations in a single view."
+      subtitle={t("pages.supportDash.subtitle")}
       kpis={supportKpis.map((k) => (
         <KpiCard key={k.label} label={k.label} value={k.value} subtext={kpiSubtext(k)} />
       ))}
