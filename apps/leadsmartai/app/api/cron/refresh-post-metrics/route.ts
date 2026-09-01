@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { fetchPostInsights } from "@/lib/leads-gen/meta-post";
 import { decryptToken } from "@/lib/leads-gen/token-enc";
+import { fetchPinterestPinInsights } from "@/lib/leads-gen/pinterest-insights";
+import { ensurePinterestAccessToken } from "@/lib/leads-gen/pinterest-post";
 import {
   dispatchMobilePostMilestonePush,
   highestCrossedMilestone,
@@ -26,8 +28,12 @@ export const maxDuration = 300;
  *
  * Selection:
  *   - status = 'published' (failed posts have nothing to refresh)
- *   - platform IN ('facebook','instagram') — LinkedIn doesn't
- *     expose post-level analytics on the consumer scope we use
+ *   - platform IN ('facebook','instagram','pinterest') — LinkedIn
+ *     doesn't expose post-level analytics on the consumer scope we use.
+ *     Pinterest does, via /v5/pins/{id}/analytics on the pins:read scope
+ *     the connect flow already requests. It reports impressions, saves and
+ *     Pin clicks but has no likes/comments/shares/reach at Pin level, so
+ *     those stay null rather than being written as a fabricated 0.
  *   - external_post_id IS NOT NULL (post landed on Meta)
  *   - published_at >= now() - 14 days (engagement plateaus after
  *     that; refreshing 6-month-old posts is wasted Graph budget)
@@ -63,7 +69,7 @@ type StaleRow = {
   id: string;
   agent_id: string;
   social_account_id: string;
-  platform: "facebook" | "instagram";
+  platform: "facebook" | "instagram" | "pinterest";
   external_post_id: string;
   caption: string;
   last_milestone_pushed: number;
@@ -88,7 +94,7 @@ async function selectStalePosts(): Promise<StaleRow[]> {
     .from("lead_posts")
     .select(selectCols)
     .eq("status", "published")
-    .in("platform", ["facebook", "instagram"])
+    .in("platform", ["facebook", "instagram", "pinterest"])
     .not("external_post_id", "is", null)
     .is("metrics_refreshed_at", null)
     .gte("published_at", windowStartIso)
@@ -103,7 +109,7 @@ async function selectStalePosts(): Promise<StaleRow[]> {
     .from("lead_posts")
     .select(selectCols)
     .eq("status", "published")
-    .in("platform", ["facebook", "instagram"])
+    .in("platform", ["facebook", "instagram", "pinterest"])
     .not("external_post_id", "is", null)
     .lte("metrics_refreshed_at", staleCutoffIso)
     .gte("published_at", windowStartIso)
@@ -150,12 +156,19 @@ export async function POST(req: Request) {
     );
     const { data: conns } = await supabaseAdmin
       .from("social_accounts")
-      .select("id, agent_id, page_access_token_enc, status")
+      .select(
+        "id, agent_id, page_access_token_enc, user_access_token_enc, pinterest_refresh_token_enc, user_token_expires_at, status",
+      )
       .in("id", socialAccountIds);
     type Conn = {
       id: string;
       agent_id: string;
       page_access_token_enc: string | null;
+      // Pinterest signs with the USER token and refreshes it in place; Meta
+      // uses the Page token. Both columns travel so the loop can pick.
+      user_access_token_enc: string | null;
+      pinterest_refresh_token_enc: string | null;
+      user_token_expires_at: string | null;
       status: string;
     };
     const connById = new Map<string, Conn>();
@@ -173,11 +186,11 @@ export async function POST(req: Request) {
       const conn = connById.get(row.social_account_id);
       const nowIso = new Date().toISOString();
 
-      if (
-        !conn ||
-        conn.status !== "connected" ||
-        !conn.page_access_token_enc
-      ) {
+      const isPinterest = row.platform === "pinterest";
+      const hasToken = isPinterest
+        ? !!conn?.user_access_token_enc
+        : !!conn?.page_access_token_enc;
+      if (!conn || conn.status !== "connected" || !hasToken) {
         // Stamp metrics_refreshed_at anyway so this row drops off
         // the stale list — agent has to reconnect before metrics
         // resume.
@@ -191,7 +204,14 @@ export async function POST(req: Request) {
 
       let token: string;
       try {
-        token = decryptToken(conn.page_access_token_enc);
+        token = isPinterest
+          ? await ensurePinterestAccessToken({
+              id: conn.id,
+              user_access_token_enc: conn.user_access_token_enc,
+              pinterest_refresh_token_enc: conn.pinterest_refresh_token_enc,
+              user_token_expires_at: conn.user_token_expires_at,
+            })
+          : decryptToken(conn.page_access_token_enc!);
       } catch {
         await supabaseAdmin
           .from("lead_posts")
@@ -202,11 +222,16 @@ export async function POST(req: Request) {
       }
 
       try {
-        const insights = await fetchPostInsights({
-          platform: row.platform,
-          externalPostId: row.external_post_id,
-          pageAccessToken: token,
-        });
+        const insights = isPinterest
+          ? await fetchPinterestPinInsights({
+              accessToken: token,
+              pinId: row.external_post_id,
+            })
+          : await fetchPostInsights({
+              platform: row.platform as "facebook" | "instagram",
+              externalPostId: row.external_post_id,
+              pageAccessToken: token,
+            });
         const update: Record<string, unknown> = {
           metrics_refreshed_at: nowIso,
           updated_at: nowIso,
