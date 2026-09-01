@@ -2097,7 +2097,7 @@
       "couldntLoad": "无法载入这份 CMA：{{reason}}",
       "notFound": "未找到",
       "savedLine": "保存于 {{date}} · {{count}} 套可比房源",
-      "confidenceSuffix": " · 置信度 {{score}}",
+      "confidenceSuffix": " · 置信度 {{score}}%",
       "comparableSales": "可比成交（{{count}}）",
       "sourcesN": "数据来源（{{count}}）"
     },
@@ -3396,7 +3396,8 @@
       "quotaTitle": "{{date}} 重置",
       "unlimited": "不限次数",
       "remaining": "剩余 {{remaining}} / {{limit}}",
-      "metaTitle": "市场比较分析报告"
+      "metaTitle": "市场比较分析报告",
+      "valuationUnavailable": "无法估值"
     },
     "calls": {
       "heading": "通话记录",
