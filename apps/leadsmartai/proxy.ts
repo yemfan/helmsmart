@@ -6,7 +6,7 @@ import { getPropertyToolsConsumerPostLoginUrl } from "@/lib/propertyToolsConsume
 import { getSupabasePublicEnv } from "@/lib/supabasePublicEnv";
 import { fetchUserPortalContext } from "@/lib/rolePortalServer";
 import { consumerShouldUsePropertyToolsApp } from "@/lib/signupOriginApp";
-import { matchesPortalKind } from "@/lib/rolePortalPaths";
+import { matchesPortalKind, START_FREE_AGENT_PATH } from "@/lib/rolePortalPaths";
 
 /** Public marketing pages under /agent/* that bypass the auth gate.
  *  Keep in sync with the matching set in app/agent/layout.tsx. */
@@ -142,10 +142,14 @@ export async function proxy(req: NextRequest) {
       if (pathname.startsWith("/account/")) {
         return res;
       }
-      const home = req.nextUrl.clone();
-      home.pathname = "/";
-      home.search = "";
-      return NextResponse.redirect(home);
+      // Signed in, but no agent workspace yet. Send them to the conversion
+      // page that explains how to get one. Dropping them on the public
+      // marketing home is indistinguishable from a failed login.
+      const upsell = req.nextUrl.clone();
+      upsell.pathname = START_FREE_AGENT_PATH;
+      upsell.search = "";
+      upsell.searchParams.set("next", `${pathname}${search || ""}`);
+      return NextResponse.redirect(upsell);
     }
   }
 

@@ -1,4 +1,9 @@
 import "server-only";
+import {
+  normalizeAppointmentMode,
+  normalizeAppointmentType,
+  resolveAppointmentMode,
+} from "@repo/voice";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getReceptionistConfig, getBookingSettings } from "@/lib/voice-receptionist/settings";
@@ -114,6 +119,9 @@ export async function bookAppointment(
   agentId: string,
   input: {
     typeName?: string;
+    /** What the caller asked for — "video", "over the phone". Free text; the
+     *  catalogue maps it, and a mode the purpose cannot honour is dropped. */
+    meetingMode?: string;
     startISO?: string;
     dateStr?: string;
     timeStr?: string;
@@ -136,6 +144,10 @@ export async function bookAppointment(
   const endMs = startMs + duration * 60_000;
   const startISO = new Date(startMs).toISOString();
   const endISO = new Date(endMs).toISOString();
+  // Null when the agent said something the catalogue does not recognise —
+  // better recorded as absent than as the wrong thing. The title keeps the
+  // agent's own words either way.
+  const bookedType = normalizeAppointmentType(input.typeName);
   const title = `${(input.typeName || "Appointment").trim()}${input.callerName ? ` — ${input.callerName}` : ""}`;
   const fmtLabel = new Intl.DateTimeFormat("en-US", {
     timeZone: timezone,
@@ -173,6 +185,13 @@ export async function bookAppointment(
       caller_name: input.callerName ?? null,
       caller_phone: input.callerPhone ?? null,
       title,
+      // The purpose and the medium, kept apart and kept countable. Before
+      // this both lived only inside `title`, so nothing could count the
+      // month's valuations or filter the calendar to showings.
+      appointment_type: bookedType?.id ?? null,
+      meeting_mode: bookedType
+        ? resolveAppointmentMode(bookedType, normalizeAppointmentMode(input.meetingMode))
+        : null,
       start_at: startISO,
       end_at: endISO,
       status: "booked",
@@ -237,10 +256,58 @@ async function createCallbackTask(
   }
 }
 
-export type ToolResult = { text: string; bookedEventId?: string; bookedLabel?: string; bookedNote?: string };
+export type ToolResult = {
+  text: string;
+  /** Set only by a successful book_appointment. The caller of this module is
+   *  expected to act on these — they are what /api/retell/function turns into
+   *  the Realtor's "you have a new appointment" alert. */
+  bookedEventId?: string;
+  bookedLabel?: string;
+  bookedNote?: string;
+  bookedContactId?: string | null;
+  bookedCallerName?: string | null;
+  /** UTC start, so the confirmation can be re-rendered in the caller's own
+   *  language rather than reusing the English `bookedLabel`. */
+  bookedStartISO?: string;
+};
 
 /** Dispatch a Retell custom-function call to the right booking action. Returns a
  *  short instruction string for the agent (Retell shows `result` to the LLM). */
+/**
+ * Upcoming booked appointments for THIS caller, soonest first.
+ *
+ * Matching is done in JS rather than in the query on purpose: an appointment
+ * booked before the contact existed has `contact_id` null and only a phone, and
+ * the stored phone format varies ("(626) 625-5055" vs "+16266255055"). Comparing
+ * the last ten digits catches both. The agent's upcoming list is small, so
+ * over-fetching and filtering here is cheaper than getting the filter wrong.
+ */
+async function upcomingForCaller(
+  agentId: string,
+  fromPhone: string,
+  contactId: string | null,
+): Promise<{ title: string | null; start_at: string }[]> {
+  const { data } = await supabaseAdmin
+    .from("voice_appointments")
+    .select("title,start_at,contact_id,caller_phone")
+    .eq("agent_id", agentId as never)
+    .eq("status", "booked")
+    .gte("start_at", new Date().toISOString())
+    .order("start_at", { ascending: true })
+    .limit(50);
+
+  const digits = (v: string | null | undefined) => (v ?? "").replace(/\D/g, "").slice(-10);
+  const mine = digits(fromPhone);
+  return ((data ?? []) as {
+    title: string | null;
+    start_at: string;
+    contact_id: string | null;
+    caller_phone: string | null;
+  }[]).filter(
+    (r) => (contactId && r.contact_id === contactId) || (!!mine && digits(r.caller_phone) === mine),
+  );
+}
+
 export async function runReceptionistTool(
   name: string,
   args: Record<string, unknown>,
@@ -259,6 +326,43 @@ export async function runReceptionistTool(
     };
   }
 
+  if (name === "lookup_appointment") {
+    const { timezone } = await loadBookingOrg(ctx.agentId);
+    let contactId: string | null = null;
+    try {
+      const c = await findContactByPhone(ctx.agentId, ctx.fromPhone);
+      contactId = c?.id ?? null;
+    } catch {
+      /* best-effort — fall back to phone matching */
+    }
+    const rows = await upcomingForCaller(ctx.agentId, ctx.fromPhone, contactId);
+    if (!rows.length) {
+      return {
+        text:
+          "No upcoming appointment on file for this caller. Say so plainly. If they are sure they " +
+          "have one, do NOT book a new one to cover it — take a message with create_callback so " +
+          "someone can check.",
+      };
+    }
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    const list = rows
+      .map((r) => `${speakTime(fmt.format(new Date(r.start_at)))}${r.title ? ` (${r.title})` : ""}`)
+      .join("; ");
+    return {
+      text:
+        `This caller already has: ${list}. Confirm that back to them. Do NOT book another ` +
+        "appointment unless they clearly want an ADDITIONAL one — if they want this one moved or " +
+        "cancelled, say the Realtor will take care of it and use create_callback.",
+    };
+  }
+
   if (name === "book_appointment") {
     const callerName = String(a.name ?? a.caller_name ?? "").trim();
     let contactId: string | null = null;
@@ -270,6 +374,10 @@ export async function runReceptionistTool(
     }
     const r = await bookAppointment(ctx.agentId, {
       typeName: String(a.appointment_type ?? a.type ?? "Appointment"),
+      // Retell names its arguments in snake_case; this is the medium the
+      // caller asked for. Undefined when the agent did not send it, in which
+      // case the purpose falls back to its own default mode.
+      meetingMode: a.meeting_mode ? String(a.meeting_mode) : undefined,
       startISO: a.start ? String(a.start) : undefined,
       dateStr: a.date ? String(a.date) : undefined,
       timeStr: a.time ? String(a.time) : undefined,
@@ -283,6 +391,9 @@ export async function runReceptionistTool(
       bookedEventId: r.eventId,
       bookedLabel: r.label,
       bookedNote: r.title,
+      bookedContactId: contactId,
+      bookedCallerName: callerName || null,
+      bookedStartISO: r.startISO,
     };
   }
 

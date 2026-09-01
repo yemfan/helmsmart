@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse, after } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { cachedSystem, markTranscriptCached } from "@/lib/promptCache";
 import {
   loadReceptionistContext,
   buildVoiceSystemPrompt,
@@ -169,7 +170,19 @@ export async function POST(request: NextRequest) {
 
   try {
     for (let i = 0; i < 5; i++) {
-      const resp = await anthropic.messages.create({ model: MODEL, max_tokens: 400, system: systemPrompt, tools: TOOLS, messages });
+      // A caller on the line waits through every one of these rounds, and each
+      // one re-sends the system prompt, all the tool schemas and the whole
+      // conversation. Caching the stable prefix cuts what the later rounds
+      // cost — and, because a cached prefix is faster to process, shortens the
+      // silence the caller sits through.
+      markTranscriptCached(messages as never);
+      const resp = await anthropic.messages.create({
+        model: MODEL,
+        max_tokens: 400,
+        system: cachedSystem(systemPrompt) as never,
+        tools: TOOLS,
+        messages,
+      });
       const textPart = resp.content
         .filter((b): b is Anthropic.TextBlock => b.type === "text")
         .map((b) => b.text)

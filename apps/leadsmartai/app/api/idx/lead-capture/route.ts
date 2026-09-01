@@ -8,7 +8,6 @@ import { extractRequestMeta } from "@/lib/consent/extractRequestMeta";
 import { recordInboundContactRequest } from "@/lib/consent/service";
 import { scheduleEmailSequenceForLeadSkipDay0 } from "@/lib/emailSequences";
 import { generateReply, type IdxReplyContext } from "@/lib/aiReplyGenerator";
-import { scheduleFollowUpsForLead } from "@/lib/followUp";
 import { sendSMS } from "@/lib/twilioSms";
 import { appendMessages, getOrCreateConversation } from "@/lib/leadConversationHelpers";
 import { createSavedSearch } from "@/lib/contacts/savedSearches";
@@ -133,7 +132,6 @@ export async function POST(req: Request) {
       name,
       email,
       phone,
-      phone_number: phone,
       property_address: body.listingAddress ?? null,
       source: "idx_homes_for_sale",
       stage: pickStage(action, Boolean(phone)),
@@ -220,13 +218,6 @@ export async function POST(req: Request) {
     // up. Requires an agent_id (the table FKs to agents). When no agent could
     // be assigned (both IDX_ROUND_ROBIN_AGENT_IDS and IDX_DEMO_AGENT_ID unset)
     // we silently skip — the email sequence still runs.
-    if (agentId) {
-      try {
-        await scheduleFollowUpsForLead(leadId, agentId);
-      } catch (e) {
-        console.warn("[idx-lead-capture] follow-up scheduling failed", e);
-      }
-    }
 
     // Speed-to-lead: fire an immediate AI SMS for high-intent actions when the
     // consumer gave a phone + TCPA consent. This is the differentiator vs.

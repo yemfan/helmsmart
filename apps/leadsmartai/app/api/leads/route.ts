@@ -84,7 +84,6 @@ export async function POST(req: Request) {
         name: name || address,
         email,
         phone: formattedPhone ?? null,
-        phone_number: formattedPhone ?? null,
         // Load-bearing TCPA flag — only flip when the visitor ticked the
         // homepage SMS consent box. The disclosure version they saw is
         // captured in the inbound_contact_requests audit row below.
@@ -185,7 +184,7 @@ export async function GET() {
     const { data, error } = await supabaseServer
       .from("contacts")
       .select(
-        "id,name,email,phone,phone_number,sms_opt_in,property_address,source,lead_status,notes,rating,contact_frequency,contact_method,last_contacted_at,next_contact_at,created_at,search_location,search_radius,price_min,price_max,beds,baths"
+        "id,name,email,phone,sms_opt_in,property_address,source,lead_status,notes,rating,contact_frequency,contact_method,last_contacted_at,next_contact_at,created_at,search_location,search_radius,price_min,price_max,beds,baths"
       )
       .eq("agent_id", agentId)
       .order("created_at", { ascending: false });

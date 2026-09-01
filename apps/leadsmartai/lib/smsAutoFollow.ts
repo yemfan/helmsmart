@@ -1,5 +1,11 @@
 import { supabaseServer } from "@/lib/supabaseServer";
 import { sendSMS } from "@/lib/twilioSms";
+import { agentBrandName } from "@/lib/branding/agentBrand";
+import { cadenceForAgent } from "@/lib/followup/cadenceForAgent";
+import { renderLadderMessage } from "@/lib/followup/renderLadderMessage";
+import { decideFollowUp } from "@/lib/followup/decideFollowUp";
+import { moveToNurtureGroup } from "@/lib/followup/nurtureGroup";
+import type { SalesCadence } from "@/lib/sales-models";
 
 function clampMessage(message: string, maxChars = 320) {
   const clean = String(message ?? "").trim().replace(/\s+/g, " ");
@@ -74,6 +80,18 @@ export async function logSmsMessage(input: {
   direction: "inbound" | "outbound";
   /** Which AI assistant sent this (outbound only) — drives timeline attribution. */
   assistantType?: string | null;
+  /**
+   * Twilio's id and status for an outbound message.
+   *
+   * Two senders write to sms_messages: sendOutboundSms records these, and this
+   * function did not — so every AI reply landed with external_message_id null
+   * and twilio_status null. The row said the message existed and nothing said
+   * whether it arrived, which reads exactly like a message that was never sent.
+   * The status webhook keys off external_message_id, so without it a delivery
+   * failure could never be attached to the message that failed.
+   */
+  externalMessageId?: string | null;
+  twilioStatus?: string | null;
 }) {
   await supabaseServer.from("sms_messages").insert({
     contact_id: input.leadId as any,
@@ -81,13 +99,15 @@ export async function logSmsMessage(input: {
     message: clampMessage(input.message, 500),
     direction: input.direction,
     assistant_type: input.assistantType ?? null,
+    external_message_id: input.externalMessageId ?? null,
+    twilio_status: input.twilioStatus ?? null,
   } as any);
 }
 
 export async function sendInitialSmsAfterPurchase(leadId: string | number) {
   const { data: lead } = await supabaseServer
     .from("contacts")
-    .select("id,agent_id,name,city,property_address,estimated_home_value,phone_number,phone,sms_opt_in,sms_ai_enabled,sms_agent_takeover")
+    .select("id,agent_id,name,city,property_address,estimated_home_value,phone,sms_opt_in,sms_ai_enabled,sms_agent_takeover")
     .eq("id", leadId)
     .maybeSingle();
   if (!lead) return { ok: false, reason: "lead_not_found" };
@@ -98,7 +118,7 @@ export async function sendInitialSmsAfterPurchase(leadId: string | number) {
     return { ok: false, reason: "ai_disabled_or_takeover" };
   }
 
-  const phone = String((lead as any).phone_number ?? (lead as any).phone ?? "").trim();
+  const phone = String((lead as any).phone ?? "").trim();
   if (!phone) return { ok: false, reason: "missing_phone" };
 
   let agentName = "";
@@ -155,11 +175,14 @@ export async function runSmsFollowupCron() {
   try {
     const res = await supabaseServer
       .from("contacts")
-      .select("id,agent_id,name,city,property_address,estimated_home_value,phone_number,phone,sms_opt_in,sms_ai_enabled,sms_agent_takeover,sms_followup_stage,sms_last_outbound_at,sms_last_inbound_at")
+      .select("id,agent_id,name,city,property_address,estimated_home_value,phone,sms_opt_in,sms_ai_enabled,sms_agent_takeover,sms_followup_stage,sms_last_outbound_at,sms_last_inbound_at,engagement_score,sms_opted_out_at")
       .eq("sms_opt_in", true)
       .eq("sms_ai_enabled", true)
       .eq("sms_agent_takeover", false)
-      .lt("sms_followup_stage", 4)
+      // Was 4, the old three-template ceiling. Ladders are per-model now;
+      // 12 is the largest hardStopAfterUnanswered we ship, so nobody is
+      // excluded from the query before decideFollowUp gets a look at them.
+      .lt("sms_followup_stage", 12)
       .limit(1000);
     leads = (res.data as any[]) ?? null;
     error = res.error;
@@ -167,7 +190,7 @@ export async function runSmsFollowupCron() {
     error = e;
   }
   if (error) {
-    // Legacy schema fallback where phone_number may not exist.
+    // Legacy schema fallback where sms columns may not exist.
     const res = await supabaseServer
       .from("contacts")
       .select("id,agent_id,name,city,property_address,estimated_home_value,phone,contact_method,sms_followup_stage,sms_last_outbound_at,sms_last_inbound_at")
@@ -180,6 +203,10 @@ export async function runSmsFollowupCron() {
 
   let sent = 0;
   let skipped = 0;
+  let nurtured = 0;
+  // One lookup per agent, not per lead — a cron pass covers many contacts
+  // belonging to the same handful of agents.
+  const cadenceCache = new Map<string, SalesCadence>();
   for (const lead of leads ?? []) {
     if (legacyMode) {
       // Legacy behavior: infer opt-in from contact_method when sms_opt_in and AI flags are missing.
@@ -211,25 +238,53 @@ export async function runSmsFollowupCron() {
       continue;
     }
 
+    const agentId = String((lead as any).agent_id ?? "");
+    let cadence = cadenceCache.get(agentId);
+    if (!cadence) {
+      cadence = await cadenceForAgent(agentId);
+      cadenceCache.set(agentId, cadence);
+    }
+
+    // Past the end of the ladder there is nothing left to say, so the question
+    // stops being "when" and becomes "at all". Engagement decides: someone who
+    // never replies but keeps opening listings is reading, not gone.
+    if (stage > cadence.ladderMessages.length) {
+      const decision = decideFollowUp({
+        unanswered: stage - 1,
+        engagementScore: Number((lead as any).engagement_score ?? 0),
+        cadence,
+        optedOut: Boolean((lead as any).sms_opted_out_at),
+      });
+      if (decision.decision === "nurture" && agentId) {
+        // Idempotent — this branch is reached on every pass once the ladder is
+        // spent, and only the first one actually moves them.
+        if (await moveToNurtureGroup({ contactId: String((lead as any).id), agentId, reason: decision.reason })) {
+          nurtured += 1;
+        }
+      }
+      skipped += 1;
+      continue;
+    }
+
+    // Ladder entries are GAPS since the previous touch, which is what this cron
+    // has always measured — [1, 3, 7] is tomorrow, three days after that, then a
+    // week after that.
+    const waitDays = cadence.hotLadderDays[stage - 1] ?? cadence.hotLadderDays.at(-1) ?? 7;
     const elapsedHrs = (Date.now() - lastOut) / (1000 * 60 * 60);
-    const due =
-      (stage === 1 && elapsedHrs >= 24) ||
-      (stage === 2 && elapsedHrs >= 72) ||
-      (stage === 3 && elapsedHrs >= 168);
-    if (!due) {
+    if (elapsedHrs < waitDays * 24) {
       skipped += 1;
       continue;
     }
 
     const leadName = String((lead as any).name ?? "").trim() || "there";
     const city = String((lead as any).city ?? parseCity((lead as any).property_address ?? "")).trim() || "your area";
-    const templates: Record<number, string> = {
-      1: `Hi ${leadName}, just checking in from LeadSmart AI — would it help if I shared a quick ${city} pricing snapshot for your home?`,
-      2: `Following up in case I missed you — I can send a short local comps summary with likely price range. Want me to send it?`,
-      3: `Last check-in for now — if timing changes, I can help with a simple no-pressure plan based on your neighborhood. Interested?`,
-    };
-    const msg = addCompliance(templates[stage] ?? templates[1]);
-    const phone = String((lead as any).phone_number ?? (lead as any).phone ?? "").trim();
+    // The lead hears from their agent, not from the software.
+    const brand = await agentBrandName(agentId);
+    // Copy comes from the chosen sales model, so an Advisor and a Closer no
+    // longer send word-for-word identical texts while claiming different styles.
+    const template = cadence.ladderMessages[stage - 1] ?? cadence.ladderMessages[0];
+    const msg = addCompliance(renderLadderMessage(template, { name: leadName, city, brand }));
+    const phone = String((lead as any).phone ?? "").trim();
     if (!phone) {
       skipped += 1;
       continue;
@@ -251,5 +306,5 @@ export async function runSmsFollowupCron() {
     sent += 1;
   }
 
-  return { sent, skipped };
+  return { sent, skipped, nurtured };
 }

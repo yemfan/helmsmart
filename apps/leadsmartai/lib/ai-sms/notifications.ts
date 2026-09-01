@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { dispatchMobileHotLeadPush } from "@/lib/mobile/pushNotificationsService";
 import { normalizeToE164, sendOutboundSms } from "./outbound";
+import { EMAIL_BRAND } from "@/lib/email";
 
 const DEDUPE_HOURS = 6;
 
@@ -23,7 +24,6 @@ export type AssignedAgentContact = {
     id: string;
     name: string | null;
     phone: string | null;
-    phone_number: string | null;
     property_address: string | null;
     agent_id: string | null;
   };
@@ -41,7 +41,7 @@ export type AssignedAgentContact = {
 export async function getAssignedAgentContact(leadId: string): Promise<AssignedAgentContact | null> {
   const { data: lead, error: leadError } = await supabaseAdmin
     .from("contacts")
-    .select("id,agent_id,name,phone,phone_number,property_address")
+    .select("id,agent_id,name,phone,property_address")
     .eq("id", leadId)
     .maybeSingle();
 
@@ -73,7 +73,6 @@ export async function getAssignedAgentContact(leadId: string): Promise<AssignedA
       id: String(lead.id),
       name: lead.name ?? null,
       phone: lead.phone ?? null,
-      phone_number: (lead as { phone_number?: string | null }).phone_number ?? null,
       property_address: lead.property_address ?? null,
       agent_id: agentId,
     },
@@ -112,8 +111,8 @@ export async function notifyAgentOfHotLead(params: NotifyAgentOfHotLeadParams) {
     return { notified: false, reason: "no_assigned_agent" as const };
   }
 
-  const leadPhone = contact.lead.phone_number || contact.lead.phone;
-  const pushTitle = "Hot lead — LeadSmart AI";
+  const leadPhone = contact.lead.phone;
+  const pushTitle = `Hot lead — ${EMAIL_BRAND}`;
   const pushBody = [
     contact.lead.name ? contact.lead.name : `Lead ${params.leadId}`,
     params.reason,
@@ -162,7 +161,7 @@ export async function notifyAgentOfHotLead(params: NotifyAgentOfHotLeadParams) {
   }
 
   const body = [
-    "Hot lead (LeadSmart AI)",
+    `Hot lead (${EMAIL_BRAND})`,
     contact.lead.name ? `Lead: ${contact.lead.name}` : `Lead ID: ${params.leadId}`,
     leadPhone ? `Phone: ${leadPhone}` : null,
     contact.lead.property_address ? `Property: ${contact.lead.property_address}` : null,
@@ -178,7 +177,9 @@ export async function notifyAgentOfHotLead(params: NotifyAgentOfHotLeadParams) {
     body,
     agentId: contact.agent.id,
     actorType: "system",
-    actorName: "LeadSmart AI Alert",
+    actorName: `${EMAIL_BRAND} Alert`,
+    // To the agent, about the contact — not to the contact.
+    internal: true,
   });
 
   try {

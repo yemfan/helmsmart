@@ -118,6 +118,84 @@ async function syncAgentEntitlement(params: {
   if (insErr) throw insErr;
 }
 
+/**
+ * Close out the user's OTHER rows that still claim to be paying.
+ *
+ * Every Stripe subscription gets its own row and nothing in the write path ever
+ * touched a sibling, so an upgrade — or a checkout that was abandoned and
+ * retried — left the previous row `active` forever. `customer.subscription.deleted`
+ * would eventually fix it, but only if that one delivery lands; when it doesn't,
+ * the row outlives the subscription and the account reads as holding two plans.
+ *
+ * Every sibling is RE-READ FROM STRIPE rather than inferred. A row whose period
+ * has lapsed looks dead but may simply have missed a renewal webhook, and
+ * guessing in that direction cancels a paying customer. Stripe is asked, and
+ * only its answer is written.
+ *
+ * Scoped to the same `livemode`: a test-mode subscription is invisible to a live
+ * key (and vice versa), so retrieval would 404 and be indistinguishable from a
+ * deleted subscription.
+ */
+async function reconcileSiblingSubscriptions(params: {
+  userId: string | null;
+  keepSubscriptionId: string;
+  livemode: boolean;
+}): Promise<void> {
+  if (!params.userId) return;
+
+  const { data, error } = await supabaseAdmin
+    .from("billing_subscriptions")
+    .select("id, provider_subscription_id, status")
+    .eq("user_id", params.userId)
+    .eq("livemode", params.livemode)
+    .in("status", ["active", "trialing"])
+    .neq("provider_subscription_id", params.keepSubscriptionId)
+    .limit(25);
+
+  if (error) {
+    console.warn("[billing] sibling reconcile: could not list rows:", error.message);
+    return;
+  }
+
+  const siblings =
+    (data as Array<{ id: string; provider_subscription_id: string | null; status: string }> | null) ?? [];
+
+  for (const sibling of siblings) {
+    if (!sibling.provider_subscription_id) continue;
+    try {
+      const live = await stripe.subscriptions.retrieve(sibling.provider_subscription_id);
+      const trueStatus = mapStripeStatus(live.status);
+      if (trueStatus === sibling.status) continue;
+      const { error: updErr } = await supabaseAdmin
+        .from("billing_subscriptions")
+        .update({ status: trueStatus, updated_at: new Date().toISOString() })
+        .eq("id", sibling.id);
+      if (updErr) throw updErr;
+      console.info("[billing] sibling reconciled from Stripe", {
+        subscriptionId: sibling.provider_subscription_id,
+        was: sibling.status,
+        now: trueStatus,
+      });
+    } catch (e) {
+      // A subscription Stripe no longer has is genuinely gone; anything else
+      // (network, rate limit) is left alone rather than guessed at.
+      const code = (e as { code?: string } | null)?.code;
+      if (code === "resource_missing") {
+        await supabaseAdmin
+          .from("billing_subscriptions")
+          .update({ status: "canceled", updated_at: new Date().toISOString() })
+          .eq("id", sibling.id);
+        continue;
+      }
+      console.warn(
+        "[billing] sibling reconcile skipped:",
+        sibling.provider_subscription_id,
+        e instanceof Error ? e.message : e,
+      );
+    }
+  }
+}
+
 async function resolveCustomerContact(subscription: Stripe.Subscription): Promise<{
   email: string | null;
   name: string | null;
@@ -214,6 +292,11 @@ export async function syncStripeSubscription(subscription: Stripe.Subscription) 
     provider_customer_id: customerId,
     provider_subscription_id: subscription.id,
     provider_price_id: priceId,
+    // Which Stripe ledger this came from. Test-mode webhooks reach the same
+    // handler and the same table as live ones, and until this column existed
+    // nothing recorded the difference — a sandbox checkout was
+    // indistinguishable from a paid one and entitled the account just as much.
+    livemode: subscription.livemode,
     current_period_start: periodStart,
     current_period_end: periodEnd,
     cancel_at_period_end: subscription.cancel_at_period_end ?? false,
@@ -225,6 +308,12 @@ export async function syncStripeSubscription(subscription: Stripe.Subscription) 
   });
 
   if (error) throw error;
+
+  await reconcileSiblingSubscriptions({
+    userId,
+    keepSubscriptionId: subscription.id,
+    livemode: subscription.livemode,
+  });
 
   const nextStatus = record.status;
   const nextAmount = Number(record.amount_monthly);

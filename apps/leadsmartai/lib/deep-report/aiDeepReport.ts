@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAnthropicClient, isAnthropicConfigured } from "@/lib/anthropic";
+import { cachedSystem, markTranscriptCached } from "@leadsmart/shared/utils/promptCache";
 import type { PresentationSchool } from "@/lib/presentationAI";
 import type { PropertyUse } from "./types";
 
@@ -103,7 +104,9 @@ When done searching, respond with EXACTLY ONE fenced JSON block and nothing afte
         max_tokens: 4000,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         thinking: { type: "adaptive" } as any,
-        system,
+        // Cached. This one matters most: Opus, six searches, up to eight
+        // rounds — every round re-sent the lot at full price.
+        system: cachedSystem(system) as never,
         messages,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tools: tools as any,
@@ -118,6 +121,7 @@ When done searching, respond with EXACTLY ONE fenced JSON block and nothing afte
       }
       if (res?.stop_reason === "pause_turn") {
         messages.push({ role: "assistant", content: res.content });
+        markTranscriptCached(messages as never);
         continue;
       }
       break;

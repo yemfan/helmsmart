@@ -44,7 +44,7 @@ export async function scanForDuplicateLeads(limit = 2000) {
   let q = supabaseAdmin
     .from("contacts")
     .select(
-      "id, agent_id, created_at, name, email, phone, phone_number, property_address, merged_into_lead_id"
+      "id, agent_id, created_at, name, email, phone, property_address, merged_into_lead_id"
     )
     .is("merged_into_lead_id", null)
     .order("created_at", { ascending: false })
@@ -184,7 +184,7 @@ export async function getContactHealthSummary(agentId?: string | null) {
   let q = supabaseAdmin
     .from("contacts")
     .select(
-      "id, email, phone, phone_number, property_address, birthday, home_purchase_date, contact_completeness_score, merged_into_lead_id"
+      "id, email, phone, property_address, birthday, home_purchase_date, contact_completeness_score, merged_into_lead_id"
     )
     .is("merged_into_lead_id", null)
     .limit(5000);
@@ -221,7 +221,7 @@ export async function runBulkNormalize(limit = 500) {
   const { data, error } = await supabaseAdmin
     .from("contacts")
     .select(
-      "id, email, phone, phone_number, property_address, city, state, zip_code, birthday, home_purchase_date, relationship_stage, merged_into_lead_id"
+      "id, email, phone, property_address, city, state, zip_code, birthday, home_purchase_date, relationship_stage, merged_into_lead_id"
     )
     .is("merged_into_lead_id", null)
     .order("updated_at", { ascending: true })

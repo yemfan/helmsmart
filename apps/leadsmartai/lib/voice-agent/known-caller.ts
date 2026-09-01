@@ -38,18 +38,25 @@ export async function loadKnownCaller(
     const contact = await findContactByPhone(agentId, fromPhone);
     if (!contact) return null;
 
-    const { data } = await supabaseAdmin
+    // `lead_type`, NOT `type` — there is no contacts.type column. Asking for it
+    // failed the WHOLE select with 42703, so every field here came back empty:
+    // the caller's language, email, budget, area and timeline all silently
+    // vanished, and the receptionist greeted a returning Chinese speaker in
+    // English while appearing to recognise them. Never let this one fail quietly
+    // again.
+    const { data, error } = await supabaseAdmin
       .from("contacts")
       .select(
-        "type, preferred_language, search_location, property_address, price_min, price_max, beds, baths, timeline",
+        "lead_type, preferred_language, search_location, property_address, price_min, price_max, beds, baths, timeline, email",
       )
       .eq("id", contact.id as never)
       .maybeSingle();
+    if (error) console.error("[known-caller] contact memory select failed:", error.message);
     const c = (data ?? {}) as Record<string, unknown>;
 
     // One-line, human-readable memory the prompt confirms back to the caller.
     const parts: string[] = [];
-    const type = String(c.type ?? "").toLowerCase();
+    const type = String(c.lead_type ?? "").toLowerCase();
     if (type === "buyer" || type === "seller" || type === "renter") parts.push(type);
 
     const area = (c.search_location as string) || (c.property_address as string) || "";
@@ -69,12 +76,19 @@ export async function loadKnownCaller(
     const timeline = String(c.timeline ?? "").trim();
     if (timeline) parts.push(`timeline ${timeline}`);
 
+    // The email is the one detail she otherwise asks every returning caller for,
+    // every single time. Given it, she confirms instead: "I have you as ... —
+    // still the best one?"
+    const email = String(c.email ?? "").trim();
+    if (email) parts.push(`email on file ${email}`);
+
     const lang = String(c.preferred_language ?? "").trim().toLowerCase();
 
     return {
       name: contact.name || "",
       language: /^[a-z]{2}$/.test(lang) ? lang : "",
       summary: parts.join(", "),
+      leadType: type,
     };
   } catch {
     return null;

@@ -8,7 +8,6 @@ import { AgentWorkspaceProviders } from "@/components/entitlements/AgentWorkspac
 import { ADMIN_SUPPORT_HOME_PATH, isAdminOrSupportRole } from "@/lib/rolePortalPaths";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { supabaseServerClient } from "@/lib/supabaseServerClient";
-import { UpgradeBanner } from "@/components/upsell/UpgradeBanner";
 import { OnboardingGate } from "@/components/onboarding/OnboardingGate";
 import { AiChatPanel } from "@/components/dashboard/AiChatPanel";
 import { ToastProvider } from "@/components/ui/Toast";

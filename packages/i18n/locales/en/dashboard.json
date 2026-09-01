@@ -23,7 +23,8 @@
       "compareProperties": "Compare properties"
     },
     "searchLeads": "Search leads",
-    "topUp": "Top up credits any time — everything included."
+    "topUp": "Top up credits any time — everything included.",
+    "takeTheTour": "Take the tour"
   },
   "sidebar": {
     "upsellTitle": "Grow with AI follow-ups",
@@ -175,7 +176,11 @@
       "step4": "Click Create filter at the bottom-right",
       "step5": "Tick Forward it to: and pick (or add)",
       "step6": "Click Create filter. Done.",
-      "verifyNote": "Gmail will email you a verification code the first time you forward to a new address — paste it back into the Forwarding settings to confirm. After that, every matching email auto-flows into your task list."
+      "verifyNote": "Gmail will email you a verification code the first time you forward to a new address — paste it back into the Forwarding settings to confirm. After that, every matching email auto-flows into your task list.",
+      "settingsLabel": "Email auto-import",
+      "imported_one": "{{count}} email imported",
+      "imported_other": "{{count}} emails imported",
+      "lastReceived": "· last received"
     },
     "actions": {
       "markDone": "Mark done",
@@ -325,7 +330,15 @@
     "couldNotWorkOut": "Couldn't work that one out — try rephrasing it.",
     "addFile": "Add a file",
     "businessPerformance": "Business performance",
-    "defaultHeadline": "Here's where things stand — and what I'd like to do for you."
+    "defaultHeadline": "Here's where things stand — and what I'd like to do for you.",
+    "approval": {
+      "ask": "you approve",
+      "assisted": "Max approves",
+      "auto": "auto",
+      "askHint": "Nothing sends until you approve it.",
+      "assistedHint": "Max proofreads and risk-checks it, and only asks you when he's unsure.",
+      "autoHint": "Sends on its own, within quiet hours and contact limits."
+    }
   },
   "support": {
     "title": "Support Dashboard",
@@ -1377,6 +1390,22 @@
       "accountant": "Accurate, analytical, watches every dollar."
     },
     "skill": {
+      "buyer_motivation": {
+        "name": "Buyer Motivation",
+        "desc": "Understand why the caller is moving, not just what they want to buy."
+      },
+      "buy_sell_contingency": {
+        "name": "Buy / Sell Contingency",
+        "desc": "Find out whether the buyer has to sell an existing home first."
+      },
+      "financing_referral": {
+        "name": "Financing Referral",
+        "desc": "Offer a lender introduction when a buyer has no pre-approval."
+      },
+      "market_conversation": {
+        "name": "Local Market Conversation",
+        "desc": "Turn “how’s the market?” into discovery — no opinions of her own, published figures only."
+      },
       "follow_up": {
         "name": "Follow-Up",
         "desc": "Follow up with leads on an appropriate cadence."
@@ -1456,6 +1485,46 @@
       "transaction_deadlines": {
         "name": "Transaction Deadline Tracking",
         "desc": "Track important transaction dates and create alerts."
+      },
+      "work_approval": {
+        "name": "Work Approval",
+        "desc": "Proof-read and risk-check anything the team wants to send, before it goes."
+      },
+      "task_assignment": {
+        "name": "Task Assignment",
+        "desc": "Route work to the right assistant and chase it until it is done."
+      },
+      "team_oversight": {
+        "name": "Team Oversight",
+        "desc": "Watch what each assistant is doing, and notice what has stalled."
+      },
+      "daily_priorities": {
+        "name": "Daily Priorities",
+        "desc": "Decide what actually matters today and say so first."
+      },
+      "risk_escalation": {
+        "name": "Risk Escalation",
+        "desc": "Judge what needs you personally, and handle the rest."
+      },
+      "social_scheduling": {
+        "name": "Social Schedule",
+        "desc": "Run a weekly posting schedule — which day, which channel, which topic."
+      },
+      "social_publishing": {
+        "name": "Multi-Channel Publishing",
+        "desc": "Publish to Facebook, Instagram, LinkedIn, Pinterest, Threads, TikTok and YouTube."
+      },
+      "listing_promo_ads": {
+        "name": "Listing Promo Ads",
+        "desc": "Turn a listing’s photos and facts into a branded ad graphic."
+      },
+      "social_carousels": {
+        "name": "Carousel Posts",
+        "desc": "Build multi-slide carousels — tours, market updates, tips."
+      },
+      "social_reels": {
+        "name": "Video Reels",
+        "desc": "Cut short vertical videos from listing photos and clips."
       }
     },
     "barTooltip": "{{count}} on day {{day}}",
@@ -1577,6 +1646,8 @@
     "quiet7d": "Quiet 7d+",
     "settingsSections": "Settings sections",
     "profilePhoto": "User profile photo",
+    "calendarEmail": "Calendar & email",
+    "calendarEmailHelp": "Two-way Google Calendar sync, and the forwarding address that turns offers, listing agreements and showing requests into tasks.",
     "connectedSocial": "Connected social accounts",
     "socialAutoposting": "Social auto-posting",
     "weeklySchedule": "Weekly post schedule",
@@ -3614,7 +3685,10 @@
       "artifactResult": "result",
       "typeAnswer": "Type your answer…",
       "uploading": "Uploading…",
-      "breakingIntoActions": "On it — breaking this into actions…"
+      "breakingIntoActions": "On it — breaking this into actions…",
+      "draftsAwaiting_one": "1 draft needs your approval",
+      "draftsAwaiting_other": "{{count}} drafts need your approval",
+      "scrollToEnd": "Scroll to latest"
     },
     "offersList": {
       "offersFor": "Offers for",
@@ -4414,7 +4488,15 @@
       "openFullProfile": "Open full profile",
       "conversations": "Conversations",
       "unnamed": "Unnamed lead",
-      "withYouSince": "with you since {{date}}"
+      "withYouSince": "with you since {{date}}",
+      "howTheyFoundYou": "How they found you",
+      "journeyPages_one": "Read {{count}} page",
+      "journeyPages_other": "Read {{count}} pages",
+      "journeyVisits": "across {{count}} visits",
+      "journeyBefore": "before getting in touch",
+      "journeyFirstVia": "First arrived via {{source}}",
+      "journeyCampaign": "campaign {{campaign}}",
+      "journeyStillBrowsing": "Still browsing — no enquiry yet"
     },
     "teamBreakdown": {
       "title": "Member breakdown",
@@ -5095,9 +5177,12 @@
       "title": "Scheduled & recent actions",
       "cancelScheduled": "Cancel scheduled action",
       "cancel": "Cancel",
-      "channelCall": "call",
-      "channelSms": "text",
-      "channelEmail": "email",
+      "channelCall_one": "call",
+      "channelCall_other": "calls",
+      "channelSms_one": "text",
+      "channelSms_other": "texts",
+      "channelEmail_one": "email",
+      "channelEmail_other": "emails",
       "purposeFollowUp": "Follow-up",
       "purposeSurvey": "Survey",
       "purposePromo": "Promo",
@@ -7967,6 +8052,8 @@
       "meetMax": "Meet Max and your AI real estate team in minutes.",
       "orSignIn": "or sign in",
       "password": "Password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
       "forgotPassword": "Forgot password?",
       "loggingIn": "Logging in…",
       "logIn": "Log in",
@@ -8174,6 +8261,8 @@
     "signupPage": {
       "prefilled": "You're signed in — we filled this form from your account. Update anything below and save (no new password needed).",
       "password": "Password",
+      "confirmPassword": "Confirm password",
+      "passwordMismatch": "Passwords don't match.",
       "nameRequired": "Name is required.",
       "emailRequired": "Email is required.",
       "phoneInvalid": "Phone must be a valid US number (10 digits) if provided.",
@@ -8268,9 +8357,9 @@
     },
     "voiceTestDrive": {
       "q1": "Is this really an AI on the live demo number?",
-      "a1": "Yes — the demo number routes to the same Twilio + OpenAI Realtime engine we ship to paying agents. There's no human on the line.",
+      "a1": "Yes — there's no human on the line. An AI places the call and asks the qualifying questions.",
       "q2": "Will my contacts be sent to a third-party ISA service?",
-      "a2": "No. The voice AI lives inside CloseBoss — your call recordings, transcripts, and contact records stay in your account, not on a separate vendor.",
+      "a2": "No. No outsourced call centre or ISA ever touches your leads. Calls run through our voice provider, and the recordings, transcripts and contact records land in your CloseBoss account.",
       "q3": "How does it hand off when a caller wants a human?",
       "a3": "The AI routes to you immediately — SMS + push notification with a one-line summary and the caller's number. Most agents reach the lead in under 60 seconds.",
       "q4": "What languages does it speak?",
@@ -8610,6 +8699,24 @@
       "loadingMetrics": "Loading metrics…",
       "checkoutToPaid": "Checkout → paid"
     },
+    "propertyLookup": {
+      "beds": "{{count}} bd",
+      "baths": "{{count}} ba",
+      "sqft": "{{value}} sqft",
+      "built": "built {{year}}",
+      "label": "Look up the property",
+      "placeholder": "Paste a Zillow, Redfin, Realtor.com or Compass link — or type the address",
+      "hint": "Paste a listing link or type an address, and we'll fill in what we find. Check the numbers before you save.",
+      "lookUp": "Look up",
+      "working": "Looking…",
+      "detected": "{{site}} link — press Look up to pull the details.",
+      "readingListing": "Reading the {{site}} listing — this can take up to a minute.",
+      "lookingUpAddress": "Looking up the address — this can take up to a minute the first time.",
+      "filledFrom": "Filled in from {{site}}. Check the numbers before you save.",
+      "filledFromRecords": "Filled in from property records. Check the numbers before you save.",
+      "listingFailed": "Couldn't read that {{site}} link — enter the details by hand.",
+      "addressNotFound": "No records found for that address — enter the details by hand."
+    },
     "listingLookup": {
       "detected": "{{label}} URL detected — looking up listing details…"
     },
@@ -8722,7 +8829,9 @@
     "aiZillowRedfinLinkAnalyzer": {
       "analyzeListing": "Analyze Listing",
       "refreshLatestData": "Refresh Latest Data",
-      "notFound": "We couldn't find this listing. Check the URL — the listing may have been removed, or the ID may not exist."
+      "notFound": "We couldn't find this listing. Check the URL — the listing may have been removed, or the ID may not exist.",
+      "fetchingListing": "Fetching the live listing…",
+      "fetchingListingSlow": "Still fetching from the listing site — this can take up to 30 seconds. ({{seconds}}s)"
     },
     "activity": {
       "priceTbd": "Price TBD"
@@ -9043,7 +9152,79 @@
       "tools": "Tools",
       "transactions": "Transactions",
       "transaction": "Transaction",
-      "offersOnListing": "Offers on listing"
+      "offersOnListing": "Offers on listing",
+      "hub": "Marketing hub"
+    },
+    "tour": {
+      "next": "Next",
+      "back": "Back",
+      "skip": "Skip",
+      "done": "Done",
+      "close": "Close the tour",
+      "progress": "{{current}} of {{total}}",
+      "steps": {
+        "askMax": {
+          "title": "Start with Max",
+          "body": "Tell Max what you want done in plain words — \"text my hot leads\", \"plan my day\" — and your AI team carries it out."
+        },
+        "conversations": {
+          "title": "Every conversation, one place",
+          "body": "Calls, texts and emails for a contact sit in a single thread, whether you or your AI team sent them."
+        },
+        "leads": {
+          "title": "Your book",
+          "body": "Everyone you know, with ratings that update themselves as people call, reply and open what you send."
+        },
+        "tasks": {
+          "title": "What needs you",
+          "body": "Anything your AI team wants approved before it goes out waits here. Nothing sends without you."
+        },
+        "aiTeam": {
+          "title": "Your AI team",
+          "body": "Five assistants — Receptionist, Sales, Marketing, Transaction, Accountant. Each has its own settings and its own record of what it did. Manage them here."
+        },
+        "quickActions": {
+          "title": "Start something quickly",
+          "body": "Add a contact, write a post or send a message without leaving the page you are on."
+        },
+        "account": {
+          "title": "You and your account",
+          "body": "Your profile, settings, billing and the help guides sit behind your name — along with this tour, whenever you want it again."
+        }
+      }
+    },
+    "hubSettings": {
+      "bioHint": "A few sentences in your own voice. This is the first thing a visitor reads.",
+      "bioLabel": "About you",
+      "blurb": "A public page with your posts, your bio and a way for people to reach you.",
+      "gaHint": "Looks like G-XXXXXXXXXX. Available on every plan.",
+      "gaLabel": "Google Analytics measurement ID",
+      "indexedNo": "Won't appear in search yet: needs a longer bio and at least three published posts.",
+      "indexedYes": "Ready for search engines.",
+      "loadFailed": "Couldn't load your hub settings. Refresh to try again.",
+      "needUsername": "Choose a username first — that becomes your hub's address.",
+      "pixelActive": "Running on your hub.",
+      "pixelHint": "15 or 16 digits, from Meta Events Manager.",
+      "pixelLabel": "Meta Pixel ID",
+      "pixelNeedsPremium": "Saved. Runs once you're on Premium.",
+      "postedItems_one": "{{count}} published post will show on your hub",
+      "postedItems_other": "{{count}} published posts will show on your hub",
+      "privacyNote": "Visitors who send a Do Not Track signal are not sent to Meta.",
+      "publishHintOff": "Only you can see it. Visitors get a “coming soon” page.",
+      "publishHintOn": "Anyone with the link can see it.",
+      "publishLabel": "Hub is live",
+      "save": "Save",
+      "saveFailed": "That didn't save. Please try again.",
+      "saved": "Saved",
+      "saving": "Saving",
+      "specialtiesHint": "Comma separated — first-time buyers, luxury, relocation, 中文.",
+      "specialtiesLabel": "What you specialise in",
+      "title": "Your marketing hub",
+      "trackingTitle": "Your own analytics",
+      "usernameHint": "Letters, numbers, hyphens and underscores. This becomes your public link, so pick one you can say out loud.",
+      "usernameLabel": "Your address",
+      "usernameTaken": "That username is taken.",
+      "viewHub": "View my hub"
     }
   }
 }

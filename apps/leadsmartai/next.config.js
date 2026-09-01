@@ -61,6 +61,22 @@ const nextConfig = {
         source: "/brand/realtyboss/realtyboss-:file",
         destination: "/brand/closeboss/closeboss-:file",
       },
+      // The agent's public handle: closebossai.com/@michaelye
+      //
+      // A rewrite rather than a route folder because the App Router reserves a
+      // leading "@" for parallel-route slots — `app/@[username]` is a slot, not
+      // a page, and would never render. The page therefore lives at
+      // /a/[username] and this makes the shareable URL the pretty one. It is a
+      // rewrite, not a redirect, so what the agent puts on a business card is
+      // what stays in the address bar.
+      //
+      // A bare /:username was not an option: there are 117 top-level routes
+      // here, and any route added later would silently shadow whoever already
+      // owned that name. The sigil makes collision impossible by construction.
+      {
+        source: "/@:username",
+        destination: "/a/:username",
+      },
     ];
   },
   /** Short nav-style paths → `/dashboard/*` (app lives under dashboard) */
@@ -86,7 +102,9 @@ const nextConfig = {
       ["/reports/conversion", "/dashboard/growth"],
       ["/settings/profile", "/dashboard/settings"],
       ["/settings/team", "/dashboard/settings"],
-      ["/settings/billing", "/pricing"],
+      // Was "/pricing", which now redirects to /plans. Pointed straight
+      // at the destination rather than making the browser take two hops.
+      ["/settings/billing", "/plans"],
       ["/settings/notifications", "/dashboard/notifications"],
     ];
     /**
@@ -103,6 +121,36 @@ const nextConfig = {
       ["/loan-amortization-calculator", "/mortgage-calculator"],
     ];
 
+    /**
+     * Financial Services vertical — unpublished 2026-08-23. CloseBoss is
+     * real-estate-agent only. The route files are retained on purpose: see
+     * `app/financial-services/FROZEN.md` (extraction to
+     * `@helm/pack-financial-services`, Extraction Plan Phase 5). These
+     * redirects run before routing, so the pages are off the public site
+     * without deleting the work.
+     */
+    const unpublishedFinancialServices = [
+      ["/financial-services", "/"],
+      ["/financial-services/:path*", "/"],
+      ["/api/financial-services/:path*", "/"],
+    ];
+
+    /**
+     * Retired vertical — mortgage / loan broker (removed 2026-08-23).
+     * CloseBoss is real-estate-agent only. `/loan-broker/*` and
+     * `/pricing/loan-broker` were indexable marketing pages, so they redirect
+     * permanently to the agent equivalents instead of 404ing. These rules run
+     * before routing, so they also make any leftover route files unreachable.
+     */
+    const retiredLoanBroker = [
+      // These pointed at /agent/pricing, which now redirects to /plans.
+      ["/loan-broker", "/plans"],
+      ["/loan-broker/:path*", "/plans"],
+      ["/pricing/loan-broker", "/plans"],
+      ["/start-free/loan-broker", "/start-free/agent"],
+      ["/api/loan-broker/:path*", "/plans"],
+    ];
+
     return [
       ...toDashboard.map(([source, destination]) => ({
         source,
@@ -114,6 +162,33 @@ const nextConfig = {
         destination,
         permanent: true,
       })),
+      ...retiredLoanBroker.map(([source, destination]) => ({
+        source,
+        destination,
+        permanent: true,
+      })),
+      ...unpublishedFinancialServices.map(([source, destination]) => ({
+        source,
+        destination,
+        permanent: true,
+      })),
+      /*
+       * Retired price list -> the live one.
+       *
+       * /agent/pricing and /pricing advertised the feature-tier catalog
+       * ($79 Pro / $199 Premium / $399 Signature) months after Stripe moved to
+       * the usage catalog on /plans. They were not dead ends: both were linked
+       * from the agent landing page, the compare page and a blog post, and
+       * /agent/pricing is the CANCEL URL for Stripe checkout — so abandoning a
+       * purchase landed you on prices we no longer sell.
+       *
+       * 302, not 301. A permanent redirect is cached by browsers effectively
+       * forever, and these URLs may well come back as real marketing pages once
+       * they carry the current numbers. Cheap to make permanent later;
+       * expensive to undo.
+       */
+      { source: "/agent/pricing", destination: "/plans", permanent: false },
+      { source: "/pricing", destination: "/plans", permanent: false },
     ];
   },
 };

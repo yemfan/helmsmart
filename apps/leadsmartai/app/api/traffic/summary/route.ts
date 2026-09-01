@@ -7,10 +7,15 @@ export async function GET(req: Request) {
     const days = Math.max(1, Math.min(90, Number(url.searchParams.get("days") ?? "30")));
     const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
 
+    // Platform traffic only. Agent marketing hubs write to this same table
+    // with agent_id set, so every aggregate here has to say which it wants.
+    // Omitting the filter would not error — it would quietly fold every
+    // agent's visitors into CloseBoss's own numbers.
     const { data: viewsRows } = await supabaseServer
       .from("traffic_events")
       .select("id,source,page_path,metadata")
       .eq("event_type", "page_view")
+      .is("agent_id", null)
       .gte("created_at", since)
       .limit(5000);
 
@@ -18,6 +23,7 @@ export async function GET(req: Request) {
       .from("traffic_events")
       .select("id,source,page_path,metadata")
       .eq("event_type", "conversion")
+      .is("agent_id", null)
       .gte("created_at", since)
       .limit(5000);
 

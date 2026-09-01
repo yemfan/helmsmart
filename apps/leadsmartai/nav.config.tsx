@@ -8,6 +8,7 @@ import {
   CreditCard,
   Eye,
   FileSignature,
+  Globe,
   Handshake,
   CircleQuestionMark,
   Headphones,
@@ -189,6 +190,16 @@ const navConfig = {
           href: "/dashboard/ai-marketing-assistant",
           match: ["/dashboard/ai-marketing-assistant"],
           icon: l(<Megaphone size={14} strokeWidth={STROKE} aria-hidden />),
+        },
+        {
+          // The agent's public page — the only outward-facing surface the
+          // Marketing Assistant owns, which is why it sits beside the
+          // Overview rather than inside Actions. Everything in Actions is
+          // something the AI does; this is somewhere a stranger lands.
+          label: "Marketing Hub",
+          href: "/dashboard/hub",
+          match: ["/dashboard/hub"],
+          icon: l(<Globe size={14} strokeWidth={STROKE} aria-hidden />),
         },
         {
           label: "Actions",

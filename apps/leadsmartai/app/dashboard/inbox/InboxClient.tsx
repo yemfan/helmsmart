@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import InboundEmailSetupButton from "@/components/dashboard/InboundEmailSetupButton";
 import { intlLocale } from "@/lib/i18n/locale";
 
 type Thread = {
@@ -157,7 +158,14 @@ export default function InboxClient() {
   if (loading) return <div className="py-20 text-center text-gray-400">{t("inbox.loading")}</div>;
 
   return (
-    <div className="flex h-[calc(100vh-140px)] min-h-[500px] rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+    <div className="space-y-2">
+      {/* Gmail auto-import setup — a gear rather than a standing card,
+          on the page where forwarded mail arrives. */}
+      <div className="flex justify-end">
+        <InboundEmailSetupButton />
+      </div>
+
+      <div className="flex h-[calc(100vh-180px)] min-h-[500px] rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
       {/* Left panel — conversation list */}
       <div className="w-full max-w-sm shrink-0 flex flex-col border-r border-gray-200">
         <div className="shrink-0 border-b border-gray-100 p-3 space-y-2">
@@ -332,6 +340,7 @@ export default function InboxClient() {
             </div>
           </>
         )}
+        </div>
       </div>
     </div>
   );

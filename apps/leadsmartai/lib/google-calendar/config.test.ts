@@ -52,11 +52,20 @@ describe("getGoogleOAuthConfig", () => {
 });
 
 describe("GOOGLE_CALENDAR_SCOPES", () => {
-  it("includes calendar.events scope", () => {
+  it("requests calendar.events — the write scope sync.ts actually uses", () => {
     expect(GOOGLE_CALENDAR_SCOPES).toContain("calendar.events");
   });
 
-  it("includes calendar.readonly scope", () => {
-    expect(GOOGLE_CALENDAR_SCOPES).toContain("calendar.readonly");
+  it("requests nothing else", () => {
+    // Guards the consent screen against creeping back open. Every scope here
+    // has to be one the code demonstrably calls, or Google verification bounces
+    // it and users are asked to grant access the app never uses.
+    expect(GOOGLE_CALENDAR_SCOPES.split(" ")).toEqual([
+      "https://www.googleapis.com/auth/calendar.events",
+    ]);
+  });
+
+  it("does not request calendar.readonly — nothing reads or lists", () => {
+    expect(GOOGLE_CALENDAR_SCOPES).not.toContain("calendar.readonly");
   });
 });

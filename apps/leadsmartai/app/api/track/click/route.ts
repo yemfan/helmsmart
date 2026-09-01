@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { logEngagementEvent } from "@/lib/contacts/logEngagementEvent";
+import { recordNurtureAlert } from "@/lib/nurture/recordAlert";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -67,12 +68,7 @@ export async function GET(req: Request) {
               .maybeSingle();
 
             if (!existing?.id) {
-              await supabaseServer.from("nurture_alerts").insert({
-                agent_id: agentId,
-                contact_id: leadId,
-                type: "hot",
-                message: "Lead temperature turned HOT (link clicked).",
-              } as any);
+              await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "hot", message: "Lead temperature turned HOT (link clicked)." }, supabaseServer);
             }
           }
         }

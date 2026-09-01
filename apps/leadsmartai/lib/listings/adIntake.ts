@@ -1,4 +1,5 @@
 import "server-only";
+import { cachedSystem, markTranscriptCached } from "@leadsmart/shared/utils/promptCache";
 
 import { getAnthropicClient } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -123,7 +124,9 @@ async function extractViaWebFetch(url: string): Promise<ListingAdFacts> {
     const res = await client.messages.create({
       model: MODEL,
       max_tokens: 3000,
-      system: SYSTEM_PROMPT,
+      // Cached — identical every call, and the cached prefix covers the tools
+        // sent ahead of it. See @leadsmart/shared/utils/promptCache.
+        system: cachedSystem(SYSTEM_PROMPT) as never,
       messages: messages as never,
       tools: [{ type: "web_fetch_20260209", name: "web_fetch", max_uses: 3 } as never],
     });
@@ -137,6 +140,9 @@ async function extractViaWebFetch(url: string): Promise<ListingAdFacts> {
     // The server ran the tool; if it paused mid-turn, echo the turn back to resume.
     if (res.stop_reason === "pause_turn") {
       messages.push({ role: "assistant", content: res.content });
+        // That turn holds the search results; move the breakpoint onto it
+        // so the next round reads them from cache instead of re-paying.
+        markTranscriptCached(messages as never);
       continue;
     }
     break;

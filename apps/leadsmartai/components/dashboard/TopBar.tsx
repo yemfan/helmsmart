@@ -15,11 +15,14 @@ import {
   Search,
   Settings,
   CircleQuestionMark,
+
+  Compass,
   Sparkles,
   User,
   UserPlus,
 } from "lucide-react";
 import Link from "next/link";
+import { TOUR_START_EVENT } from "@/lib/tour/steps";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { FormEvent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -181,6 +184,9 @@ function QuickActionsDropdown() {
       <button
         ref={buttonRef}
         type="button"
+        // Anchor for the guided tour — see lib/tour/steps.ts. The aria-label
+        // is translated, so it cannot be the handle.
+        data-tour="quick-actions"
         onClick={() => setOpen((v) => !v)}
         className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3 text-slate-700 shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40"
         aria-expanded={open}
@@ -344,6 +350,21 @@ function ProfileMenu({
         <CreditCard className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
         {t("topbar.creditsBilling")}
       </Link>
+      {/* Next to the help guides, because that is where someone looks when they
+          want showing rather than telling. Without this the tour could only be
+          reopened by typing ?tour=1, which nobody would ever discover. */}
+      <button
+        type="button"
+        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        role="menuitem"
+        onClick={() => {
+          setOpen(false);
+          window.dispatchEvent(new CustomEvent(TOUR_START_EVENT));
+        }}
+      >
+        <Compass className="h-4 w-4 shrink-0 text-slate-500" strokeWidth={2} aria-hidden />
+        {t("topbar.takeTheTour")}
+      </button>
       <div className="mt-1 border-t border-slate-100 pt-1">
         <button
           type="button"
@@ -370,6 +391,8 @@ function ProfileMenu({
         className="inline-flex h-11 max-w-[220px] items-center gap-2.5 rounded-2xl border border-slate-200/90 bg-white px-2.5 py-1.5 text-left shadow-sm ring-1 ring-slate-900/[0.03] transition hover:border-slate-300 hover:bg-slate-50/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40 sm:gap-3 sm:px-3"
         aria-expanded={open}
         aria-haspopup="menu"
+        // Anchor for the guided tour — see lib/tour/steps.ts.
+        data-tour="account-menu"
       >
         <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-slate-800 to-slate-900 text-xs font-bold text-white shadow-inner shadow-white/10 ring-2 ring-slate-100">
           {avatarUrl?.trim() ? (

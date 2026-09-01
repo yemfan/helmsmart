@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { buildSmsSystemInstructions } from "@/lib/agent-ai/promptBuilder";
+import { replyJsonSchema } from "@/lib/ai-sms/replySchema";
 import { getAgentAiSettings } from "@/lib/agent-ai/settings";
 import { resolveLeadOutboundLocale } from "@/lib/locales/resolveLocale";
 import { buildSmsUserPrompt, SMS_ASSISTANT_SYSTEM_PROMPT } from "./prompts";
@@ -42,10 +43,59 @@ function buildRecentMessagesText(ctx: SmsReplyContext) {
   return ctx.recentMessages.map((m) => `${m.direction.toUpperCase()}: ${m.body}`).join("\n");
 }
 
+/** First name only. "Hi Angel Zhao" is how a database greets someone. */
+function firstName(full: string | null | undefined): string {
+  const n = (full ?? "").trim().split(/\s+/)[0] ?? "";
+  return n || "there";
+}
+
+/**
+ * Shorten a stored address for speech-sized text. The CRM holds the full postal
+ * form — "1613 S Atlantic Blvd apt b, Alhambra, CA 91803, USA" — and reciting a
+ * ZIP and a country back at someone about their own home reads like a mail
+ * merge. Street and city is how a person refers to it.
+ */
+function shortAddress(addr: string | null | undefined): string {
+  const parts = (addr ?? "").split(",").map((p) => p.trim()).filter(Boolean);
+  if (parts.length <= 1) return parts[0] ?? "";
+  return `${parts[0]}, ${parts[1]}`;
+}
+
+/**
+ * What we send when the AI could not answer.
+ *
+ * This used to be a first-touch greeting, sent whatever point the conversation
+ * had reached. Someone who had just written "we're thinking of upgrading" got
+ * "thanks for texting about <full postal address>. What's the best way to help
+ * you today — buying, selling, or a quick question?" — a question they had
+ * answered in the previous message, from a system that appeared to have
+ * forgotten them mid-conversation.
+ *
+ * So the fallback now depends on whether we are actually at the start. On a
+ * first contact the greeting is right. Once someone has said something, the
+ * honest move is to acknowledge it and put a human on it — bluffing a fresh
+ * start is worse than admitting the handover, and the agent gets pulled in
+ * rather than finding out later.
+ */
 function fallbackReply(ctx: SmsReplyContext): SmsAssistantReply {
   const intent = inferIntentHeuristic(ctx.inboundBody);
-  const name = ctx.lead?.name?.trim() || "there";
-  const addr = ctx.lead?.propertyAddress?.trim();
+  const name = firstName(ctx.lead?.name);
+  const addr = shortAddress(ctx.lead?.propertyAddress);
+  const midConversation = ctx.recentMessages.some((m) => m.direction === "inbound");
+
+  if (midConversation) {
+    return {
+      replyText: `Thanks ${name} — let me get you a proper answer on that. I'll have someone follow up shortly.`,
+      inferredIntent: intent,
+      // The AI failed on a live conversation. That is precisely when a person
+      // should be looking at it.
+      nextBestAction: "notify_agent",
+      hotLead: false,
+      needsHuman: true,
+      tags: ["fallback", "ai_unavailable"],
+    };
+  }
+
   let replyText = `Hi ${name} — thanks for texting${addr ? ` about ${addr}` : ""}. What’s the best way to help you today — buying, selling, or a quick question?`;
   if (intent === "seller_home_value" || intent === "seller_list_home") {
     replyText = `Hi ${name} — happy to help. What’s the property address you’re thinking about?`;
@@ -66,51 +116,7 @@ function fallbackReply(ctx: SmsReplyContext): SmsAssistantReply {
   };
 }
 
-const replyJsonSchema = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    replyText: { type: "string" },
-    inferredIntent: {
-      type: "string",
-      enum: [
-        "buyer_listing_inquiry",
-        "buyer_financing",
-        "seller_home_value",
-        "seller_list_home",
-        "support",
-        "appointment",
-        "unknown",
-      ],
-    },
-    extractedData: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        name: { type: "string" },
-        email: { type: "string" },
-        propertyAddress: { type: "string" },
-        timeline: { type: "string" },
-        budget: { type: "number" },
-      },
-      required: [] as string[],
-    },
-    nextBestAction: {
-      type: "string",
-      enum: [
-        "continue_ai",
-        "notify_agent",
-        "schedule_call",
-        "send_valuation_link",
-        "send_listing_link",
-      ],
-    },
-    hotLead: { type: "boolean" },
-    needsHuman: { type: "boolean" },
-    tags: { type: "array", items: { type: "string" } },
-  },
-  required: ["replyText", "inferredIntent", "nextBestAction", "hotLead", "needsHuman", "tags"],
-} as const;
+
 
 export async function generateSmsAssistantReply(ctx: SmsReplyContext): Promise<SmsAssistantReply> {
   if (shouldStopMessaging(ctx.inboundBody)) {
@@ -139,6 +145,7 @@ export async function generateSmsAssistantReply(ctx: SmsReplyContext): Promise<S
 
   const openai = getOpenAI();
   if (!openai) {
+    console.error("[ai-sms] OPENAI_API_KEY missing — replying from the fallback script");
     return fallbackReply(ctx);
   }
 
@@ -181,6 +188,7 @@ export async function generateSmsAssistantReply(ctx: SmsReplyContext): Promise<S
 
     const outputText = response.output_text?.trim();
     if (!outputText) {
+      console.error("[ai-sms] model returned no text — replying from the fallback script");
       return fallbackReply(ctx);
     }
 
@@ -192,7 +200,10 @@ export async function generateSmsAssistantReply(ctx: SmsReplyContext): Promise<S
       parsed.tags = [];
     }
     return parsed;
-  } catch {
+  } catch (e) {
+    // Swallowing this is how a generic script reached a live conversation with
+    // nobody the wiser. The customer still gets an answer; we get a reason.
+    console.error("[ai-sms] reply generation failed:", e instanceof Error ? e.message : e);
     return fallbackReply(ctx);
   }
 }

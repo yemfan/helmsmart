@@ -107,7 +107,7 @@ type TaskRow = {
 };
 
 type Channel = "call" | "sms" | "email" | "social";
-type AutopilotCell = { assignee: string; channel: Channel; mode: "ask" | "auto" };
+type AutopilotCell = { assignee: string; channel: Channel; mode: "ask" | "assisted" | "auto" };
 type AutopilotChannels = { assignee: string; channels: Channel[] };
 
 /** Boss v2 live run (see /api/dashboard/closeboss/runs). */
@@ -246,7 +246,99 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const [profileLeadId, setProfileLeadId] = useState<string | null>(null);
+  const [pendingDrafts, setPendingDrafts] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  // Stay pinned to the newest message, the way a chat does.
+  //
+  // A single scroll on load was not enough. This page fills in over several
+  // seconds — recommendations, runs, tasks and the performance block all land
+  // after first paint, and each one grows the page underneath a scroll that has
+  // already happened, leaving you stranded short of the end. So we follow the
+  // content down until you scroll away, and give you a way back when you do.
+  const [atBottom, setAtBottom] = useState(true);
+  const stickRef = useRef(true);
+  const landedRef = useRef(false);
+
+  const scrollToEnd = useCallback((behavior: ScrollBehavior = "smooth") => {
+    const pane = document.getElementById("agent-portal-main");
+    if (!pane) return;
+    stickRef.current = true;
+    setAtBottom(true);
+    pane.scrollTo({ top: pane.scrollHeight, behavior });
+  }, []);
+
+  useEffect(() => {
+    const pane = document.getElementById("agent-portal-main");
+    if (!pane) return;
+    // Generous: "near enough the bottom" is what a reader means by being at the
+    // bottom, and a few pixels of drift should not unpin them or flash a button.
+    const NEAR_BOTTOM_PX = 120;
+    const check = () => {
+      const near = pane.scrollHeight - pane.scrollTop - pane.clientHeight <= NEAR_BOTTOM_PX;
+      stickRef.current = near;
+      setAtBottom(near);
+    };
+    pane.addEventListener("scroll", check, { passive: true });
+
+    // Follow late-arriving content down — but only while the reader has not
+    // deliberately gone somewhere else. Yanking someone back mid-read is worse
+    // than leaving them short of the end.
+    const content = pane.firstElementChild;
+    const ro =
+      content && typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => {
+            if (stickRef.current) pane.scrollTo({ top: pane.scrollHeight });
+          })
+        : null;
+    ro?.observe(content as Element);
+
+    check();
+    return () => {
+      pane.removeEventListener("scroll", check);
+      ro?.disconnect();
+    };
+  }, []);
+
+  // The first landing jumps rather than glides: animating through a page you
+  // have not seen yet is disorienting, and slow.
+  //
+  // It also has to keep trying. Verified on production: a single scroll after
+  // `loading` flips lands at the top, because the cards, runs and performance
+  // block are still arriving — the page grew from ~600px to ~4,900px AFTER that
+  // moment. The ResizeObserver above was supposed to catch that and measurably
+  // did not, so this no longer depends on it: pin repeatedly until the height
+  // stops changing, then stop. Self-limiting on both a stable height and a hard
+  // timeout, so it can never keep fighting the reader.
+  useEffect(() => {
+    if (loading || landedRef.current) return;
+    landedRef.current = true;
+    const pane = document.getElementById("agent-portal-main");
+    if (!pane) return;
+
+    let lastHeight = -1;
+    let stableTicks = 0;
+    const tick = setInterval(() => {
+      // The moment the reader scrolls away, this stops — being dragged back is
+      // worse than starting short.
+      if (!stickRef.current) {
+        clearInterval(tick);
+        return;
+      }
+      pane.scrollTo({ top: pane.scrollHeight });
+      if (pane.scrollHeight === lastHeight) {
+        if (++stableTicks >= 3) clearInterval(tick);
+      } else {
+        stableTicks = 0;
+        lastHeight = pane.scrollHeight;
+      }
+    }, 150);
+    const stop = setTimeout(() => clearInterval(tick), 6000);
+    return () => {
+      clearInterval(tick);
+      clearTimeout(stop);
+    };
+  }, [loading]);
 
   const loadConversation = useCallback(async () => {
     const [res, runsRes] = await Promise.all([
@@ -300,7 +392,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
     const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59).toISOString();
 
-    const [summaryRes, eventsRes, hotRes, txRes, recsRes, actsRes, teamRes, briefRes, apRes] = await Promise.all([
+    const [summaryRes, eventsRes, hotRes, txRes, recsRes, actsRes, teamRes, briefRes, apRes, draftsRes] = await Promise.all([
       fetch("/api/dashboard/summary").then((r) => r.json()).catch(() => ({})),
       fetch(`/api/dashboard/calendar/events?from=${todayStart}&to=${todayEnd}`).then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/leads?filter=hot&pageSize=5").then((r) => r.json()).catch(() => ({})),
@@ -310,6 +402,10 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
       fetch("/api/dashboard/closeboss/team").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/briefings?limit=1").then((r) => r.json()).catch(() => ({})),
       fetch("/api/dashboard/closeboss/autopilot").then((r) => r.json()).catch(() => ({})),
+      // Drafts Chris and the others have written but nobody has approved. They
+      // sit on their own page, which is fine until you stop visiting it — so
+      // Max says the number out loud.
+      fetch("/api/dashboard/drafts?status=pending").then((r) => r.json()).catch(() => ({})),
     ]);
 
     const m = summaryRes?.metrics;
@@ -319,6 +415,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     setTransactions((txRes?.transactions ?? []) as TransactionItem[]);
     setRecommendations((recsRes?.recommendations ?? []) as Recommendation[]);
     setActivities((actsRes?.activities ?? []) as ActivityRow[]);
+    setPendingDrafts(((draftsRes?.drafts ?? []) as unknown[]).length);
     const morning = (briefRes?.morning?.[0] ?? null) as BriefingRow | null;
     setBriefing(morning && !morning.read_at ? morning : null);
 
@@ -428,7 +525,7 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
     }).catch(() => setAutopilot(!on));
   }, []);
 
-  const setCell = useCallback(async (assignee: string, channel: Channel, mode: "ask" | "auto") => {
+  const setCell = useCallback(async (assignee: string, channel: Channel, mode: "ask" | "assisted" | "auto") => {
     setAutopilotCells((prev) => {
       const next = prev.filter((c) => !(c.assignee === assignee && c.channel === channel));
       return [...next, { assignee, channel, mode }];
@@ -607,6 +704,17 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
               )}
             </p>
           )}
+          {pendingDrafts > 0 && (
+            <p className="mt-2">
+              <Link
+                href="/dashboard/drafts"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs font-medium text-amber-900 ring-1 ring-amber-200 hover:bg-amber-100"
+              >
+                ✍️ {tr("pages.boss.draftsAwaiting", { count: pendingDrafts })}
+                <span aria-hidden>→</span>
+              </Link>
+            </p>
+          )}
         </BossBubble>
 
         {/* When the briefing arrives, set where the briefing arrives.
@@ -712,33 +820,28 @@ export default function BossAssistantClient({ greetingName }: { greetingName: st
           </BossBubble>
         )}
 
-        <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} initialText={askPrefill} />
-      </section>
-
-      {/* ── Your AI team (compact) ── */}
-      <section>
-        <h2 className="mb-2 text-sm font-semibold text-gray-900">{tr("boss.team.heading")}</h2>
-        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          {AI_TEAM.filter((a) => a.type !== "boss_assistant").map((a) => {
-            const latest = activities.find((act) => act.assistant_type === a.type);
-            const av = teamAvatars[a.type];
-            return (
-              <Link key={a.type} href={a.href} className="flex min-w-0 items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-3 hover:bg-gray-50">
-                {av ? <AssistantAvatar id={av.id} url={av.url} size={32} /> : <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-xs font-semibold text-blue-700">{(teamNames[a.type] || tr(`roster.${a.type}.name`, { defaultValue: a.name })).slice(0, 1)}</span>}
-                <div className="min-w-0">
-                  <p className="flex items-center gap-1.5 truncate text-sm font-medium text-gray-900">
-                    {teamNames[a.type] || tr(`roster.${a.type}.name`, { defaultValue: a.name })}
-                    <span className={`h-1.5 w-1.5 rounded-full ${(teamStatus[a.type] ?? "active") === "active" ? "bg-emerald-500" : "bg-gray-300"}`} />
-                  </p>
-                  <p className="truncate text-[11px] text-gray-500">{latest ? `${latest.summary} · ${fmtAgo(latest.created_at, locale)}` : tr(`roster.${a.type}.role`, { defaultValue: a.role })}</p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
       </section>
 
       <PerformanceSection />
+
+      {/* The composer sits last and sticks to the bottom of the scroll pane, so
+          it is always reachable without scrolling to find it. Negative margins
+          cancel <main>'s padding so the bar spans the full width; the blur keeps
+          the conversation legible as it passes underneath. */}
+      <div className="sticky bottom-0 z-10 -mx-4 border-t border-gray-200 bg-slate-50/95 px-4 py-3 backdrop-blur md:-mx-8 md:px-8 lg:-mx-10 lg:px-10">
+        {!atBottom && (
+          <button
+            type="button"
+            onClick={() => scrollToEnd()}
+            aria-label={tr("pages.boss.scrollToEnd")}
+            title={tr("pages.boss.scrollToEnd")}
+            className="absolute -top-5 left-1/2 z-20 flex h-9 w-9 -translate-x-1/2 items-center justify-center rounded-full border border-gray-300 bg-white text-base text-gray-700 shadow-md transition hover:bg-gray-50"
+          >
+            <span aria-hidden>↓</span>
+          </button>
+        )}
+        <CommandBar onSubmit={submitCommand} autopilot={autopilot} pendingQuestion={pendingQuestion} initialText={askPrefill} />
+      </div>
 
       <LeadProfileDrawer leadId={profileLeadId} onClose={() => setProfileLeadId(null)} />
       {settingsOpen && (
@@ -802,8 +905,9 @@ const TEAM_DOT: Record<TeamState, string> = {
 /**
  * The live team ribbon: a glanceable row of the AI employees and what each is
  * doing this moment. Working/needs-you dots pulse so the floor feels alive.
- * Purely a status view (no navigation — the "Your AI team" grid below links
- * out); it reads from state already loaded, so it re-derives on every poll.
+ * This is now the ONLY roster on the page: the duplicate grid that used to sit
+ * at the bottom said the same six names a second time, far below where anyone
+ * looks. Reads from state already loaded, so it re-derives on every poll.
  */
 function TeamStatusStrip({
   team, names, avatars,
@@ -1216,6 +1320,9 @@ function CommandBar({ onSubmit, autopilot, pendingQuestion, initialText }: { onS
           rows={1}
           placeholder={pendingQuestion ? tr("boss.composer.answer") : autopilot ? tr("boss.composer.autopilot") : tr("boss.composer.ask")}
           className="max-h-[120px] min-h-[38px] flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          // The page exists to be typed into; landing with the cursor already
+          // here saves a click every single visit.
+          autoFocus
         />
         <button type="button" onClick={send} disabled={!text.trim()} className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50" aria-label={tr("pages.labels.send")}>↑</button>
       </div>
@@ -1265,7 +1372,7 @@ function SettingsModal({
   channels: AutopilotChannels[];
   cells: AutopilotCell[];
   onGlobal: (on: boolean) => void;
-  onCell: (assignee: string, channel: Channel, mode: "ask" | "auto") => void;
+  onCell: (assignee: string, channel: Channel, mode: "ask" | "assisted" | "auto") => void;
   onPauseAll: () => void;
   overnightMode: boolean;
   onOvernight: (on: boolean) => void;
@@ -1273,10 +1380,22 @@ function SettingsModal({
 }) {
   const { t: tr, i18n } = useTranslation("dashboard");
   const locale = intlLocale(i18n.language);
-  const cellMode = (assignee: string, channel: Channel): "ask" | "auto" => {
+  type Mode = "ask" | "assisted" | "auto";
+  const cellMode = (assignee: string, channel: Channel): Mode => {
     const c = cells.find((x) => x.assignee === assignee && x.channel === channel);
-    if (c) return c.mode;
+    if (c) return c.mode as Mode;
     return global ? "auto" : "ask";
+  };
+  // Tapping cycles you outward, one step at a time: you approve → Max approves →
+  // it just goes. Then back to the strictest, so the loop cannot leave someone
+  // on autopilot by accident.
+  const nextMode = (m: Mode): Mode => (m === "ask" ? "assisted" : m === "assisted" ? "auto" : "ask");
+  // Colour carries the amount of trust being handed over: grey nothing, amber
+  // some, green all of it.
+  const modeClass: Record<Mode, string> = {
+    ask: "border border-gray-200 bg-white text-gray-500",
+    assisted: "bg-amber-100 text-amber-900",
+    auto: "bg-emerald-100 text-emerald-800",
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true" onClick={onClose}>
@@ -1317,10 +1436,11 @@ function SettingsModal({
                     <button
                       key={ch}
                       type="button"
-                      onClick={() => onCell(row.assignee, ch, mode === "auto" ? "ask" : "auto")}
-                      className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition ${mode === "auto" ? "bg-emerald-100 text-emerald-800" : "border border-gray-200 bg-white text-gray-500"}`}
+                      onClick={() => onCell(row.assignee, ch, nextMode(mode))}
+                      title={tr(`boss.approval.${mode}Hint`)}
+                      className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition ${modeClass[mode]}`}
                     >
-                      {tr(`boss.channel.${ch}`)}: {mode === "auto" ? "auto" : "ask"}
+                      {tr(`boss.channel.${ch}`)}: {tr(`boss.approval.${mode}`)}
                     </button>
                   );
                 })}

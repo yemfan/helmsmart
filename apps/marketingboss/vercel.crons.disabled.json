@@ -1,0 +1,13 @@
+{
+  "_why": "Crons paused 2026-08-29 while tracking down Anthropic token spend. To restore: move this \"crons\" array back into vercel.json and redeploy.",
+  "crons": [
+    {
+      "path": "/api/cron/run",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/missions",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}

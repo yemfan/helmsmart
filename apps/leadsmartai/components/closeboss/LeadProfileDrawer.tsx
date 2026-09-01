@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { intlLocale } from "@/lib/i18n/locale";
+import { HubJourney } from "./HubJourney";
 
 /**
  * Lead profile drawer — the constitution's lead experience: a PERSON
@@ -101,6 +102,9 @@ export function LeadProfileDrawer({ leadId, onClose }: { leadId: string | null; 
                   )}
                 </div>
               )}
+
+              {/* ── How they found you (marketing hub journey) ── */}
+              <HubJourney contactId={p.id} />
 
               {/* ── Notes (the relationship, in the Realtor's words) ── */}
               {p.notes && (

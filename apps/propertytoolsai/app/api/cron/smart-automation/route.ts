@@ -21,12 +21,13 @@ export async function GET() {
       .eq("active", true);
     if (rulesErr) throw rulesErr;
 
-    // Load candidate leads. We intentionally avoid selecting columns like `leads.email`
-    // because some schemas store contact info in `contacts` via `contact_id`.
+    // `leads` is a VIEW over `contacts`, so name/email/phone are columns on it.
+    // This used to embed `contact:contact_id(...)`, which PostgREST cannot resolve
+    // on a view — every run died with PGRST200 and the job has been doing nothing.
     const { data: leads, error: leadsErr } = await supabaseServer
       .from("leads")
       .select(
-        "id,agent_id,property_address,rating,contact_frequency,contact_method,engagement_score,last_activity_at,automation_disabled,contact:contact_id(name,email,phone)"
+        "id,agent_id,property_address,rating,contact_frequency,contact_method,engagement_score,last_activity_at,automation_disabled,name,email,phone"
       )
       .limit(200);
     if (leadsErr) throw leadsErr;
@@ -38,12 +39,12 @@ export async function GET() {
 
     for (const lead of (leads as any[]) ?? []) {
       processed++;
-      const leadId = Number(lead.id);
+      const contactId = String(lead.id ?? "");
       if (lead.automation_disabled) {
         skipped++;
         continue;
       }
-      const email = String(lead?.contact?.email ?? "");
+      const email = String(lead?.email ?? "");
       const method = String(lead.contact_method ?? "email");
       if (!email || (method !== "email" && method !== "both")) {
         skipped++;
@@ -54,7 +55,7 @@ export async function GET() {
       const { data: recentLog } = await supabaseServer
         .from("automation_logs")
         .select("id")
-        .eq("lead_id", leadId)
+        .eq("contact_id", contactId)
         .gte("created_at", hoursAgoIso(24))
         .limit(1)
         .maybeSingle();
@@ -70,7 +71,7 @@ export async function GET() {
       const { data: events } = await supabaseServer
         .from("lead_events")
         .select("event_type,created_at")
-        .eq("lead_id", leadId)
+        .eq("lead_id", contactId)
         .order("created_at", { ascending: false })
         .limit(10);
 
@@ -151,33 +152,37 @@ export async function GET() {
         });
 
         await supabaseServer.from("automation_logs").insert({
-          lead_id: leadId,
-          rule_id: matchedRule.id,
-          message,
-          status: "sent",
-          created_at: nowIso,
-        } as any);
-
-        // Also log in communications for unified timeline.
-        await supabaseServer.from("communications").insert({
-          lead_id: leadId,
           agent_id: lead.agent_id ?? null,
-          type: "email",
-          content: message,
-          status: "sent",
+          contact_id: contactId,
+          rule_id: matchedRule.id,
+          event: "sent",
+          reason: matchedRule.name ?? null,
+          payload: { message },
           created_at: nowIso,
-        } as any);
+        } as never);
+
+        // Unified timeline. This used to write to `communications`, which no
+        // longer exists; message_logs replaced it.
+        await supabaseServer.from("message_logs").insert({
+          contact_id: contactId,
+          type: "email",
+          status: "sent",
+          content: message,
+          created_at: nowIso,
+        } as never);
 
         sent++;
       } catch (e) {
         failed++;
         await supabaseServer.from("automation_logs").insert({
-          lead_id: leadId,
+          agent_id: lead.agent_id ?? null,
+          contact_id: contactId,
           rule_id: matchedRule.id,
-          message,
-          status: "failed",
+          event: "failed",
+          reason: e instanceof Error ? e.message : "send failed",
+          payload: { message },
           created_at: nowIso,
-        } as any);
+        } as never);
       }
     }
 

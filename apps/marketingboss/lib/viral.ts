@@ -1,4 +1,5 @@
 import "server-only";
+import { cachedSystem, markTranscriptCached } from "@leadsmart/shared/utils/promptCache";
 import { ANTHROPIC_API_URL, ANTHROPIC_MODEL, anthropicJson } from "@/lib/ai";
 
 /**
@@ -63,7 +64,7 @@ async function scoutRaw(intent: string): Promise<string> {
     const res = await fetch(ANTHROPIC_API_URL, {
       method: "POST",
       headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({ model: ANTHROPIC_MODEL, max_tokens: 6000, system, messages, tools }),
+      body: JSON.stringify({ model: ANTHROPIC_MODEL, max_tokens: 6000, system: cachedSystem(system), messages, tools }),
     });
     const data = (await res.json().catch(() => ({}))) as {
       content?: Block[];
@@ -80,6 +81,9 @@ async function scoutRaw(intent: string): Promise<string> {
 
     if (data.stop_reason === "pause_turn" && data.content) {
       messages.push({ role: "assistant", content: data.content });
+      // The turn just added holds the search results — cache it so the
+      // next round reads them back instead of re-paying for them.
+      markTranscriptCached(messages as never);
       continue;
     }
     break;

@@ -194,7 +194,6 @@ export async function runContactIngestion(params: {
     name: fields.name?.trim() || null,
     email: fields.email?.trim() || null,
     phone: phoneDisplay,
-    phone_number: phoneDisplay,
     property_address: fields.property_address?.trim() || null,
     source: fields.source?.trim() || "crm",
     intake_channel: intakeChannel,

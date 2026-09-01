@@ -1,4 +1,5 @@
 import type { DripStep } from "./cadence";
+import { contactSmsNumber } from "@/lib/contacts/smsNumber";
 
 /**
  * Pure decider for what the send-pipeline processor should do with a single
@@ -54,7 +55,7 @@ export function decideSendOutcome(args: {
 
   if (args.step.channel === "sms") {
     if (smsBlocked) return { kind: "skip_advance", reason: "dnc_channel" };
-    if (!args.contact.phone || !args.contact.phone.trim()) {
+    if (!contactSmsNumber({ phone: args.contact.phone })) {
       return { kind: "skip_advance", reason: "missing_field" };
     }
     return { kind: "create_draft" };

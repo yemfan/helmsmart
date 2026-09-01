@@ -58,7 +58,7 @@ function evalTools(): BossTool<never>[] {
         summary: `${input.query} ok`,
         data:
           input.query === "find_contact"
-            ? { contacts: [{ id: "11111111-1111-4111-8111-111111111111", name: input.name ?? "Jane Chen", phone_number: "+16265550100", email: "jane@example.com", preferred_language: "zh-Hans" }] }
+            ? { contacts: [{ id: "11111111-1111-4111-8111-111111111111", name: input.name ?? "Jane Chen", phone: "+16265550100", email: "jane@example.com", preferred_language: "zh-Hans" }] }
             : input.query === "upcoming_deadlines"
               ? { transactions: [{ id: "tx-1", property_address: "87 Birchwood Ln", closing_date: "2026-07-10", status: "active" }] }
               : input.query === "stale_hot_leads"

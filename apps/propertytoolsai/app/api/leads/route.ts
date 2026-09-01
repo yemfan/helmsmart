@@ -42,7 +42,6 @@ export async function POST(req: Request) {
         name: name || address,
         email,
         phone: formattedPhone ?? null,
-        phone_number: formattedPhone ?? null,
         sms_opt_in: false,
         property_address: address,
         source: source || "landing",
@@ -159,7 +158,7 @@ export async function GET() {
     const { data, error } = await supabaseServer
       .from("leads")
       .select(
-        "id,name,email,phone,phone_number,sms_opt_in,property_address,source,lead_status,notes,rating,contact_frequency,contact_method,last_contacted_at,next_contact_at,created_at,search_location,search_radius,price_min,price_max,beds,baths"
+        "id,name,email,phone,sms_opt_in,property_address,source,lead_status,notes,rating,contact_frequency,contact_method,last_contacted_at,next_contact_at,created_at,search_location,search_radius,price_min,price_max,beds,baths"
       )
       .order("created_at", { ascending: false });
 

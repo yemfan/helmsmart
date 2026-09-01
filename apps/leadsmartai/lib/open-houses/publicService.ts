@@ -284,7 +284,6 @@ async function upsertContactFromVisitor(
   const orParts: string[] = [];
   if (visitor.email) orParts.push(`email.eq.${visitor.email}`);
   if (visitor.phone) orParts.push(`phone.eq.${visitor.phone}`);
-  if (visitor.phone) orParts.push(`phone_number.eq.${visitor.phone}`);
 
   if (orParts.length) {
     const { data: existing } = await supabaseAdmin
@@ -323,7 +322,6 @@ async function upsertContactFromVisitor(
       name: visitor.name,
       email: visitor.email,
       phone: visitor.phone,
-      phone_number: visitor.phone,
       source: "Open House",
       // Timeline "now" or "3_6_months" → hot. Otherwise warm.
       rating: visitor.timeline === "now" || visitor.timeline === "3_6_months" ? "hot" : "warm",

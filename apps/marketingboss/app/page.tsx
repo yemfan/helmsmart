@@ -9,6 +9,10 @@ import { listCampaigns, listDrafts, listHistory, listScheduled } from "@/lib/cam
 import { listOpenOpportunities } from "@/lib/opportunities";
 import { listLearnings } from "@/lib/learnings";
 import { engagementScore } from "@/lib/metrics";
+import MissionLauncher from "@/components/MissionLauncher";
+import WorkforceRail from "@/components/WorkforceRail";
+import { listMissions, activeWorkers, getMissionDetail } from "@/lib/workforce/missions";
+import { missionsReady } from "@/lib/workforce/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -71,6 +75,15 @@ export default async function Home({
       listLearnings(user.id, 1).catch(() => []),
     ]);
 
+  // Missions are hidden entirely until 0025-0026 are applied — MB migrations are
+  // user-applied, and a goal box that throws when you type in it is worse than
+  // no goal box.
+  const workforceReady = await missionsReady().catch(() => false);
+  const missions = workforceReady ? await listMissions(user.id, 3).catch(() => []) : [];
+  const liveMission = missions.find((m) => m.status === "running" || m.status === "planning" || m.status === "awaiting_approval") ?? null;
+  const liveDetail = liveMission ? await getMissionDetail(user.id, liveMission.id).catch(() => null) : null;
+  const railStates = liveDetail ? activeWorkers(liveDetail.steps) : {};
+
   const credits = profile?.credits ?? 0;
   const connectedCount = ALL_PLATFORMS.filter((p) => socialStatuses[p]?.connected).length;
   const activePlaybooks = campaigns.filter((c) => c.status === "active");
@@ -103,7 +116,7 @@ export default async function Home({
           : null;
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-8 px-5 py-8 sm:py-12">
+    <main className="mx-auto flex min-h-dvh max-w-6xl flex-col gap-8 px-5 py-8 sm:py-12">
       <Nav email={user.email ?? ""} credits={credits} />
 
       {creditsAdded !== null && (
@@ -131,6 +144,51 @@ export default async function Home({
             {n.text}
           </div>
         ) : null,
+      )}
+
+      {workforceReady && (
+        <>
+          <MissionLauncher />
+          <WorkforceRail states={railStates} compact />
+          {missions.length > 0 && (
+            <section className="flex flex-col gap-2">
+              <h2 className="text-sm font-semibold text-slate-900">Missions</h2>
+              <ul className="flex flex-col gap-1.5">
+                {missions.map((m) => (
+                  <li key={m.id}>
+                    <Link
+                      href={`/missions/${m.id}`}
+                      className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 transition hover:border-boss-violet"
+                    >
+                      <span className="min-w-0 flex-1 truncate text-sm text-slate-800">{m.objective}</span>
+                      <span
+                        className={`shrink-0 text-[11px] font-semibold ${
+                          m.status === "awaiting_approval"
+                            ? "text-amber-600"
+                            : m.status === "completed"
+                              ? "text-slate-400"
+                              : m.status === "failed" || m.status === "cancelled"
+                                ? "text-slate-400"
+                                : "text-emerald-600"
+                        }`}
+                      >
+                        {m.status === "awaiting_approval"
+                          ? "Needs you"
+                          : m.status === "completed"
+                            ? "Done"
+                            : m.status === "failed"
+                              ? "Didn't finish"
+                              : m.status === "cancelled"
+                                ? "Cancelled"
+                                : "Working"}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </>
       )}
 
       {/* Briefing header */}

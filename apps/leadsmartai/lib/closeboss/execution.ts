@@ -43,7 +43,7 @@ async function matchContactByName(
   if (name.length < 2) return null;
   const { data } = await supabaseAdmin
     .from("contacts")
-    .select("id, name, first_name, last_name, phone, phone_number, email, notes")
+    .select("id, name, first_name, last_name, phone, email, notes")
     .eq("agent_id", agentId)
     .ilike("name", `%${name}%`)
     .limit(2);
@@ -53,7 +53,6 @@ async function matchContactByName(
     first_name: string | null;
     last_name: string | null;
     phone: string | null;
-    phone_number: string | null;
     email: string | null;
     notes: string | null;
   };
@@ -64,7 +63,7 @@ async function matchContactByName(
     if (first && first.length >= 2 && first !== name) {
       const { data: byFirst } = await supabaseAdmin
         .from("contacts")
-        .select("id, name, first_name, last_name, phone, phone_number, email, notes")
+        .select("id, name, first_name, last_name, phone, email, notes")
         .eq("agent_id", agentId)
         .ilike("name", `${first}%`)
         .limit(2);
@@ -79,7 +78,7 @@ async function matchContactByName(
       r.first_name || r.last_name
         ? `${r.first_name ?? ""} ${r.last_name ?? ""}`.trim()
         : r.name,
-    phone: r.phone_number ?? r.phone ?? null,
+    phone: r.phone ?? null,
     email: r.email,
     notes: r.notes,
   };

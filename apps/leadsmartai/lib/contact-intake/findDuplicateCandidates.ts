@@ -5,7 +5,7 @@ import type { LeadLike } from "@/lib/contact-enrichment/types";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 const SELECT_LEADS =
-  "id, agent_id, created_at, name, email, phone, phone_number, property_address, merged_into_lead_id, notes";
+  "id, agent_id, created_at, name, email, phone, property_address, merged_into_lead_id, notes";
 
 /**
  * Best-effort duplicate lookup for a not-yet-persisted contact (same rules as admin duplicate scan).

@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import Anthropic from "@anthropic-ai/sdk";
+import { cachedSystem, markTranscriptCached } from "@/lib/promptCache";
 import { publishToPlatform } from "@/lib/social-publish";
 import { canPublish, patchSocialPost, unsupportedReason } from "@/lib/social-platforms";
 // NOTE: import types only — never RE-EXPORT a type from a "use server" file.
@@ -102,16 +103,24 @@ export async function researchAndWriteSocialPost(
     `Research the topic on the web for anything current, then write the post.`;
 
   const tools = [{ type: "web_search_20250305", name: "web_search", max_uses: 3 }];
+  // Sent as a block rather than a bare string so the transcript breakpoint has
+  // something to attach to — `markTranscriptCached` skips string content
+  // silently, which would leave this loop looking cached while it was not.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const messages: any[] = [{ role: "user", content: userPrompt }];
+  const messages: any[] = [{ role: "user", content: [{ type: "text", text: userPrompt }] }];
 
   try {
     let finalText = "";
     for (let round = 0; round < 5; round++) {
+      // The pause_turn shape this helper was written for: each round re-sends
+      // the transcript, and the transcript IS the web-search results. With
+      // max_uses: 3 the early results get paid for up to three times over —
+      // on Opus, the most expensive model in the codebase.
+      markTranscriptCached(messages as never);
       const res = await anthropic.messages.create({
         model: "claude-opus-4-5",
         max_tokens: 1200,
-        system,
+        system: cachedSystem(system) as never,
         messages,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tools: tools as any,

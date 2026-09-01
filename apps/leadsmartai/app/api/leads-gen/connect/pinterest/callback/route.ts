@@ -5,6 +5,7 @@ import {
   exchangeCodeForToken,
   fetchDefaultBoard,
   fetchProfile,
+  missingPinterestScopes,
   verifyState,
 } from "@/lib/leads-gen/pinterest-oauth";
 import { encryptToken } from "@/lib/leads-gen/token-enc";
@@ -91,6 +92,13 @@ export async function GET(req: Request) {
     // 4. Default board — a Pin always needs one.
     const board = await fetchDefaultBoard(token.accessToken);
 
+    // 4b. Did Pinterest actually grant everything publishing needs? A scope the
+    //     app isn't approved for is dropped from the grant WITHOUT an OAuth
+    //     error, so the connection looks healthy and then every Pin 403s on it.
+    //     Say so here, at the one moment the agent can do something about it.
+    const missing = missingPinterestScopes(token.grantedScopes);
+    const canPublish = !missing.includes("boards:write") && !missing.includes("pins:write");
+
     // 5. Upsert one social_accounts row keyed by (agent_id, platform, username).
     const nowIso = new Date().toISOString();
     const row = {
@@ -104,9 +112,14 @@ export async function GET(req: Request) {
       user_access_token_enc: encryptToken(token.accessToken),
       pinterest_refresh_token_enc: token.refreshToken ? encryptToken(token.refreshToken) : null,
       user_token_expires_at: tokenExpiresAt,
-      scopes: PINTEREST_OAUTH_SCOPES as unknown as string[],
-      status: "connected",
-      last_error: null,
+      // What Pinterest GRANTED, not what we asked for — a scope the app is not
+      // approved for is dropped from the grant silently, and recording the
+      // request instead made the row claim a permission the token lacked.
+      scopes: token.grantedScopes ?? (PINTEREST_OAUTH_SCOPES as unknown as string[]),
+      status: canPublish ? "connected" : "error",
+      last_error: canPublish
+        ? null
+        : `Pinterest did not grant ${missing.join(", ")}. Reconnect and approve every permission, or check the app's approved scopes on Pinterest.`,
       last_refreshed_at: nowIso,
       updated_at: nowIso,
     };
@@ -133,7 +146,12 @@ export async function GET(req: Request) {
       if (insErr) throw new Error(insErr.message);
     }
 
-    const res = back({ status: "success", count: "1" });
+    const res = canPublish
+      ? back({ status: "success", count: "1" })
+      : back({
+          status: "error",
+          reason: `Pinterest connected, but didn't grant ${missing.join(", ")} — posts can't be published. Reconnect and approve every permission.`,
+        });
     res.cookies.set("pinterest_oauth_state", "", {
       httpOnly: true,
       secure: true,

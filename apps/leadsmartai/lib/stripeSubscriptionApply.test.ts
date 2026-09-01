@@ -117,13 +117,25 @@ describe("computeAgentPlanFromSubscriptionSync", () => {
       })
     ).toBe("premium");
   });
-  it("defaults active + unknown SKU to pro", () => {
+  it("passes an unidentified SKU through as null instead of guessing pro", () => {
+    // This default is how a $59 Signature subscriber ended up cached as `pro`:
+    // the live CloseBoss price wasn't in the map, so the guess got written as
+    // if it were a reading. The caller now leaves the cache untouched.
+    expect(
+      computeAgentPlanFromSubscriptionSync({
+        subscriptionStatus: "active",
+        resolvedPaidPlan: null,
+      })
+    ).toBeNull();
+  });
+
+  it("keeps free as free — a resolved free plan is an answer, not a gap", () => {
     expect(
       computeAgentPlanFromSubscriptionSync({
         subscriptionStatus: "active",
         resolvedPaidPlan: "free",
       })
-    ).toBe("pro");
+    ).toBe("free");
   });
   it("trialing + pro stays pro", () => {
     expect(
@@ -156,10 +168,20 @@ describe("resolvePaidPlanFromStripe", () => {
   it("uses env price id for pro", () => {
     expect(resolvePaidPlanFromStripe(mockSubscription("active", { priceId: "price_pro_test" }))).toBe("pro");
   });
-  it("uses env price id for premium (STRIPE_PRICE_ID_CONSUMER_PREMIUM)", () => {
+  it("does not credit a homeowner product as an agent plan", () => {
+    // STRIPE_PRICE_ID_CONSUMER_PREMIUM is the homeowner SKU. It used to set the
+    // agent's plan cache to `premium`; an agent who also buys the consumer
+    // product has not thereby bought an agent tier. Matches the decision
+    // planRank already makes for `consumer_premium`.
     expect(resolvePaidPlanFromStripe(mockSubscription("active", { priceId: "price_premium_test" }))).toBe(
-      "premium"
+      "free"
     );
+  });
+
+  it("refuses to place a priced-but-unmapped SKU, rather than inventing a tier", () => {
+    const sub = mockSubscription("active", { priceId: "price_not_in_any_map" });
+    (sub.items.data[0].price as { unit_amount?: number }).unit_amount = 5900;
+    expect(resolvePaidPlanFromStripe(sub)).toBeNull();
   });
   it("uses subscription metadata when price id unknown", () => {
     expect(resolvePaidPlanFromStripe(mockSubscription("active", { planMeta: "premium" }))).toBe("premium");

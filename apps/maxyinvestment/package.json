@@ -5,7 +5,7 @@
   "description": "MAXY Investment Inc. — corporate site for the innovation holding company (investment, technology, real estate).",
   "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev --port 3006",

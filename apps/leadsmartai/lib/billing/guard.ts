@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { getCurrentAgentContext } from "@/lib/dashboardService";
-import { userHasCrmFeature, subscriptionRequiredResponse } from "@/lib/billing/subscriptionAccess";
+import {
+  getActiveCrmSubscription,
+  userHasCrmFeature,
+  subscriptionRequiredResponse,
+} from "@/lib/billing/subscriptionAccess";
 import type { PlanFeature } from "@/lib/billing/plans";
 
 type AgentCtx = Awaited<ReturnType<typeof getCurrentAgentContext>>;
@@ -35,7 +39,11 @@ export async function requireCrmFeature(
     return { ok: false, response: unauthenticatedResponse() };
   }
   if (!(await userHasCrmFeature(ctx.userId, feature))) {
-    return { ok: false, response: subscriptionRequiredResponse(feature) };
+    // Pass the plan they're actually on so the refusal can name it. Without
+    // this every wall said "an active subscription is required", including to
+    // subscribers whose plan just doesn't carry the feature.
+    const sub = await getActiveCrmSubscription(ctx.userId).catch(() => null);
+    return { ok: false, response: subscriptionRequiredResponse(feature, undefined, sub?.plan ?? null) };
   }
   return { ok: true, ctx };
 }

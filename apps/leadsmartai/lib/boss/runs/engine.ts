@@ -1,6 +1,8 @@
 import "server-only";
 
 import { zodToJsonSchema } from "zod-to-json-schema";
+import { markTranscriptCached } from "@leadsmart/shared/utils/promptCache";
+import { personaFor } from "@/lib/closeboss/assigneePersona";
 import { listBossTools } from "../tools/registry";
 import {
   executeTool,
@@ -86,7 +88,16 @@ export function bossToolsForModel(
       unknown
     >;
     delete schema.$schema;
-    return { name: t.name, description: t.description, input_schema: schema };
+    // Who owns this tool, stated in the description the model reads. Max is
+    // told to speak as a manager delegating to a named team, but nothing used
+    // to tell him WHICH team owned which tool — so he guessed, and announced
+    // "I'll have the Transaction team set up the open house" over a step the
+    // UI then stamped "Ruby · Marketing Specialist" from this same assignee.
+    const persona = personaFor(t.assignee);
+    const description = persona
+      ? `${t.description} [Owned by ${persona.name}, the ${persona.team} team.]`
+      : t.description;
+    return { name: t.name, description, input_schema: schema };
   });
 }
 
@@ -162,6 +173,15 @@ export async function driveRun(runId: string, deps: EngineDeps): Promise<DriveRe
 
     let response: ModelResponse;
     try {
+      // Move the transcript breakpoint to the end of what has been said so far,
+      // so this round reads every previous round from cache. It has to MOVE
+      // rather than accumulate — the API allows four breakpoints, and a loop
+      // that leaves one behind per tool call exhausts them almost immediately.
+      //
+      // Together with the system/tools breakpoint in the real model client this
+      // is where the saving lives: a question answered in five tool round-trips
+      // used to re-send the whole conversation five times at full price.
+      markTranscriptCached(messages as never);
       response = await deps.model.createMessage({
         system,
         messages,
@@ -184,7 +204,13 @@ export async function driveRun(runId: string, deps: EngineDeps): Promise<DriveRe
     if (response.toolUses.length === 0) {
       if (!verifyDone) {
         verifyDone = true;
-        messages.push({ role: "user", content: VERIFY_PROMPT });
+        // Sent as a block rather than a bare string so the transcript
+        // breakpoint has something to attach to. The verify round carries the
+        // ENTIRE conversation and is the single most expensive call in a run;
+        // with a string here `markTranscriptCached` finds no block on the last
+        // message, places nothing, and that one call pays full price for the
+        // whole transcript.
+        messages.push({ role: "user", content: [{ type: "text", text: VERIFY_PROMPT }] });
         await persist();
         continue;
       }

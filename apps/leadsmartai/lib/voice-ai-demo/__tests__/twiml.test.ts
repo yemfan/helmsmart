@@ -57,4 +57,44 @@ describe("buildOutboundDemoTwiml", () => {
   it("mentions 'demo' in the greeting so the prospect knows the context", () => {
     expect(OUTBOUND_DEMO_PROMPTS.greeting.toLowerCase()).toContain("demo");
   });
+
+  // These pin the fix for "she hung up the phone too quick". The suite passed
+  // before that fix and after it, which is precisely why it never caught this:
+  // nothing asserted how many chances the caller got, or whether the reprompt
+  // was spoken over the pause the greeting had just asked for.
+  it("gives the caller two chances to speak, not one", () => {
+    const xml = buildOutboundDemoTwiml(baseArgs);
+    expect(xml.split("<Gather").length - 1).toBe(2);
+  });
+
+  it("does not speak the reprompt while it is listening", () => {
+    // Twilio plays a <Say> nested inside <Gather> WHILE it listens, so nesting
+    // the reprompt talked over the caller a beat after asking them a question.
+    // Every <Gather> is therefore self-closing now: no children, nothing said
+    // over the pause. A closing tag anywhere would mean something is nested.
+    const xml = buildOutboundDemoTwiml(baseArgs);
+    expect(xml).not.toContain("</Gather>");
+
+    // It is still said — just after the first listen has actually finished.
+    expect(xml).toContain(OUTBOUND_DEMO_PROMPTS.gatherReprompt);
+    expect(xml.indexOf(OUTBOUND_DEMO_PROMPTS.gatherReprompt)).toBeGreaterThan(
+      xml.indexOf("<Gather"),
+    );
+  });
+
+  it("waits longer on the first ask than the old single attempt did", () => {
+    const xml = buildOutboundDemoTwiml(baseArgs);
+    const timeouts = [...xml.matchAll(/timeout="(\d+)"/g)].map((m) => Number(m[1]));
+    expect(timeouts.length).toBeGreaterThanOrEqual(2);
+    expect(timeouts[0]).toBeGreaterThanOrEqual(15);
+  });
+
+  it("only hangs up after both attempts and the goodbye", () => {
+    const xml = buildOutboundDemoTwiml(baseArgs);
+    const hangupAt = xml.indexOf("<Hangup");
+    const closingAt = xml.indexOf(OUTBOUND_DEMO_PROMPTS.closingFallback);
+    const lastGatherAt = xml.lastIndexOf("<Gather");
+    expect(hangupAt).toBeGreaterThan(closingAt);
+    expect(closingAt).toBeGreaterThan(lastGatherAt);
+  });
 });

@@ -16,7 +16,7 @@ import {
   clearSignupAttribution,
 } from "@/components/attribution/AttributionCapture";
 import { consumeStashedReferralCode } from "@/components/referrals/ReferralCodeCapture";
-import { evaluatePassword, PasswordStrength } from "@/components/auth/PasswordStrength";
+import { evaluatePassword, PasswordStrength } from "@/components/auth/PasswordStrength";
 import { LoadingText } from "@/components/ui/LoadingText";
 
 // BCP-47 base ids shown on the SMS opt-in disclosure. Keep in sync with
@@ -56,6 +56,7 @@ function SignupForm() {
    */
   const [existingAccount, setExistingAccount] = useState(false);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -165,6 +166,9 @@ function SignupForm() {
 
     if (!evaluatePassword(password).allMet) {
       return setError(t("pages.signupPage.passwordRequirements"));
+    }
+    if (password !== confirmPassword) {
+      return setError(t("pages.signupPage.passwordMismatch"));
     }
     if (!acceptTerms) {
       return setError(t("pages.signupPage.acceptTerms"));
@@ -393,6 +397,31 @@ function SignupForm() {
               <PasswordStrength password={password} />
             </div>
           ) : null}
+          {/* Confirm, as on the password reset form. A signup password is typed
+              once, blind, and then stands between the agent and their account
+              forever — a typo here is only discovered at the next login, by
+              which point it looks like the product lost their password. */}
+          {!hasSession ? (
+            <div className="space-y-1">
+              <label className="block text-xs font-medium text-gray-700">
+                {t("pages.signupPage.confirmPassword")}
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required={!hasSession}
+                disabled={prefillLoading}
+                autoComplete="new-password"
+              />
+              {confirmPassword && confirmPassword !== password ? (
+                <p className="text-[11px] font-medium text-red-600">
+                  {t("pages.signupPage.passwordMismatch")}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
 
           {error ? (
             <p className="text-[11px] text-red-600 font-medium whitespace-pre-line">
@@ -442,7 +471,10 @@ function SignupForm() {
             disabled={
               loading ||
               prefillLoading ||
-              (!hasSession && (!evaluatePassword(password).allMet || !acceptTerms))
+              (!hasSession &&
+                (!evaluatePassword(password).allMet ||
+                  password !== confirmPassword ||
+                  !acceptTerms))
             }
             className="w-full inline-flex items-center justify-center bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
           >

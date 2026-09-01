@@ -27,7 +27,9 @@
     "start_free_trial": "免费试用",
     "hire_ai_team": "免费雇用您的 AI 团队",
     "schedule_demo": "预约演示",
-    "menu": "菜单"
+    "menu": "菜单",
+    "upgrade": "升级",
+    "open_app": "打开 CloseBoss"
   },
   "ask_max_band": {
     "eyebrow": "一位队长。一支 AI 团队。您的成功。",
@@ -503,5 +505,40 @@
     "voiceAi": {
       "ogDescription": "为房产打造的原生语音 AI。点一下即可拨打实时演示，或让它打给您。"
     }
+  },
+  "hub": {
+    "comingSoonBody": "此页面正在设置中，请稍后再来查看。",
+    "comingSoonTitle": "即将上线",
+    "consentLabel": "同意接收关于我咨询内容的短信。可能产生信息和数据费用。回复 STOP 可退订。同意并非任何购买的前提条件。",
+    "ctaFindHome": "帮我找房",
+    "ctaHomeValue": "我的房子值多少钱？",
+    "ctaTalk": "与我的 AI 助理对话",
+    "errorContact": "请填写邮箱或电话，以便我回复您。",
+    "errorGeneric": "发送失败，请重试，或拨打上方电话。",
+    "errorName": "请填写您的姓名。",
+    "feedAll": "全部",
+    "feedAlsoOn": "同时发布于",
+    "feedEmpty": "暂无发布内容。",
+    "feedFilterLabel": "按平台筛选动态",
+    "feedOrderLabel": "动态排序",
+    "feedOrderNewest": "最新优先",
+    "feedOrderOldest": "最早优先",
+    "feedReadOn": "前往查看",
+    "feedTitle": "最新动态",
+    "fieldEmail": "电子邮箱",
+    "fieldMessage": "我能为您做些什么？",
+    "fieldName": "您的姓名",
+    "fieldPhone": "电话",
+    "formBlurb": "告诉我您的需求，我会亲自跟进。",
+    "formTitle": "联系我",
+    "licenseLabel": "执照编号",
+    "notFoundBody": "该链接与任何经纪人不匹配。请检查拼写后重试。",
+    "notFoundTitle": "未找到该经纪人",
+    "poweredBy": "由 CloseBoss AI 提供技术支持",
+    "servingAreas": "服务区域",
+    "submit": "发送",
+    "submitting": "发送中",
+    "thanksBody": "我已收到您的信息，会尽快与您联系。",
+    "thanksTitle": "感谢您的留言"
   }
 }

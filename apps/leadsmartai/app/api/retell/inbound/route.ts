@@ -5,19 +5,33 @@ import { resolveAgentIdByReceptionistNumber } from "@/lib/voice-receptionist/set
 import { shouldTextBackInsteadOfAnswer } from "@/lib/entitlements/voiceInboundGate";
 import { loadKnownCaller } from "@/lib/voice-agent/known-caller";
 import { sendSMS } from "@/lib/twilioSms";
-import { buildReceptionistDynamicVariables, type ReceptionistContext } from "@repo/voice";
+import {
+  buildReceptionistDynamicVariables,
+  callerKind,
+  describeAppointmentTypes,
+  offerableAppointmentTypes,
+  type ReceptionistContext,
+} from "@repo/voice";
 
-/** Format a caller's E.164 number into a spoken-friendly US form, e.g.
- *  "+16267557917" -> "(626) 755-7917". Falls back to the raw input. */
+/** Format a caller's E.164 number for SPEECH, e.g. "+16266255055" ->
+ *  "6 2 6, 6 2 5, 5 0 5 5". This value is only ever read aloud, and the
+ *  written form "(626) 625-5055" is spoken by TTS as a quantity — "six
+ *  hundred twenty-six, six hundred twenty-five..." — which is unusable as a
+ *  phone number. Spaced digits force digit-by-digit; the commas give the
+ *  grouping pauses a person would make. Falls back to the raw input. */
 function formatCallerNumber(e164: string): string {
   const d = (e164 || "").replace(/\D/g, "").slice(-10);
   if (d.length !== 10) return e164 || "";
-  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+  const spell = (chunk: string) => chunk.split("").join(" ");
+  return `${spell(d.slice(0, 3))}, ${spell(d.slice(3, 6))}, ${spell(d.slice(6))}`;
 }
 
 /**
- * Follow-up text to the caller after a forwarded (missed) call reaches the AI —
- * runs after the response so it never blocks Retell. Sends from TWILIO_FROM_NUMBER,
+ * Follow-up text to the caller when we do NOT answer — the out-of-minutes
+ * decline below is the only such branch. It must never fire on a call the
+ * receptionist picks up: the caller is about to speak to her live, so
+ * "we'll follow up shortly" is both wrong and redundant.
+ * Runs after the response so it never blocks Retell. Sends from TWILIO_FROM_NUMBER,
  * so that env must be an SMS-capable number (a toll-free with rejected verification
  * can't text). No-ops on a missing/invalid caller number.
  */
@@ -104,8 +118,16 @@ export async function POST(req: NextRequest) {
         // and confirm — rather than re-ask — what we already know. Best-effort;
         // stays undefined (generic greeting) for unknown callers or on error.
         ctx.knownCaller = (await loadKnownCaller(agentId, fromNumber)) ?? undefined;
+
+        // Now that we know who is calling, offer the appointment types that
+        // suit them. A seller asking what their house is worth should not be
+        // read the showing option, and a buyer should not be read valuations.
+        if (ctx.knownCaller?.leadType) {
+          ctx.typesText = describeAppointmentTypes(
+            offerableAppointmentTypes(callerKind(ctx.knownCaller.leadType)),
+          );
+        }
         dynamic_variables = buildReceptionistDynamicVariables(ctx);
-        sendCallerTextBack(ctx, fromNumber);
 
         if (enforce && overrideAgentId) {
           // With enforcement on, always name the agent so the "decline" branch

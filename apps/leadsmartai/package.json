@@ -5,7 +5,7 @@
   "description": "LeadSmart CRM, dashboard, AI assistant, automation (Next.js). Workspace path: apps/leadsmartai.",
   "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev",

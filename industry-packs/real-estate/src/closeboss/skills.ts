@@ -13,7 +13,8 @@ export type SkillCategory =
   | "conversion"
   | "marketing"
   | "transaction"
-  | "finance";
+  | "finance"
+  | "oversight";
 
 export type Skill = {
   key: string;
@@ -29,6 +30,85 @@ export type Skill = {
 };
 
 export const SKILLS: readonly Skill[] = [
+  // ── Marketing (Ruby) — social ────────────────────────────────────
+  // `social_content` was one line covering everything Ruby can actually do.
+  // These name the parts that already exist as their own machinery, so the
+  // agent can switch off reels without losing scheduled posts.
+  {
+    key: "social_scheduling",
+    name: "Social Schedule",
+    description: "Run a weekly posting schedule — which day, which channel, which topic.",
+    category: "marketing",
+    prompt: `Keep a weekly posting rhythm rather than posting in bursts. For each slot decide the channel and the topic, research it against what is actually happening in this market, and queue the post for its time. A steady week beats five posts on Monday and silence after.`,
+  },
+  {
+    key: "social_publishing",
+    name: "Multi-Channel Publishing",
+    description: "Publish to Facebook, Instagram, LinkedIn, Pinterest, Threads, TikTok and YouTube.",
+    category: "marketing",
+    prompt: `Publish to the networks the agent has actually connected, and fit the post to each one rather than pasting the same text everywhere — length, hashtags, and whether an image or video is expected all differ. If a network is not connected, say so instead of silently skipping it.`,
+  },
+  {
+    key: "listing_promo_ads",
+    name: "Listing Promo Ads",
+    description: "Turn a listing’s photos and facts into a branded ad graphic.",
+    category: "marketing",
+    prompt: `Build a branded promotional graphic from a listing: its best photo, the facts worth leading with, and the agent's own branding. Never state a price, status, or feature the listing record does not support, and include the disclaimers the state requires.`,
+  },
+  {
+    key: "social_carousels",
+    name: "Carousel Posts",
+    description: "Build multi-slide carousels — tours, market updates, tips.",
+    category: "marketing",
+    prompt: `Build carousels where one image cannot carry the idea: a room-by-room tour, a market update with several numbers, a step-by-step explainer. Lead with the slide that earns the swipe, and end on what the reader should do next.`,
+  },
+  {
+    key: "social_reels",
+    name: "Video Reels",
+    description: "Cut short vertical videos from listing photos and clips.",
+    category: "marketing",
+    prompt: `Cut short vertical video from a listing's photos and clips, paced so the first second earns the second one. Caption it for silent viewing, because most of it is watched with the sound off.`,
+  },
+  // ── Captain (Max) ────────────────────────────────────────────────
+  // Max had none of these. His roster entry listed no skills and the team
+  // screen hard-excluded him on the assumption that the Captain only
+  // coordinates — but coordinating IS the work, and none of it was
+  // inspectable or switchable by the agent.
+  {
+    key: "work_approval",
+    name: "Work Approval",
+    description: "Proof-read and risk-check anything the team wants to send, before it goes.",
+    category: "oversight",
+    prompt: `Before any drafted message, post, or document reaches a client, review it and decide one of four things. Ask first whether this could land badly for the agent — reputation, compliance, or a relationship. If yes, reject it and say what to redo. If the problem is minor and you are confident, fix it and approve. If you are unsure, send it to the agent rather than guessing. Never approve something you would not be comfortable defending to them.`,
+  },
+  {
+    key: "task_assignment",
+    name: "Task Assignment",
+    description: "Route work to the right assistant and chase it until it is done.",
+    category: "oversight",
+    prompt: `When work needs doing, pick the assistant whose job it actually is rather than doing it yourself, and say why. Give them what they need to start — the contact, the deadline, the outcome you want. Follow up on anything that has not moved, and surface it to the agent only once it is genuinely stuck rather than merely slow.`,
+  },
+  {
+    key: "team_oversight",
+    name: "Team Oversight",
+    description: "Watch what each assistant is doing, and notice what has stalled.",
+    category: "oversight",
+    prompt: `Keep track of what each assistant has in flight and what they have finished. Notice the quiet failures — an assistant with nothing to show for a week, a queue that only grows, work that is repeatedly returned. Report it in plain terms with the specific example that made you say it, not a score.`,
+  },
+  {
+    key: "daily_priorities",
+    name: "Daily Priorities",
+    description: "Decide what actually matters today and say so first.",
+    category: "oversight",
+    prompt: `Open the day with the few things that will change the outcome, in order, each with the reason it is on the list. Prefer a deadline or a person waiting over a task that merely looks tidy. Three items the agent will actually do beats ten they will skim.`,
+  },
+  {
+    key: "risk_escalation",
+    name: "Risk Escalation",
+    description: "Judge what needs the agent personally, and handle the rest.",
+    category: "oversight",
+    prompt: `Decide what genuinely needs the agent: money, legal exposure, an unhappy client, or anything irreversible. Handle the rest and tell them afterwards. When you escalate, lead with what happened and what you recommend — an escalation without a recommendation is just a forwarded problem.`,
+  },
   {
     key: "lead_capture",
     name: "Lead Capture",
@@ -59,9 +139,13 @@ export const SKILLS: readonly Skill[] = [
     description: "Book consultations, showings, listing appointments, or demos.",
     category: "scheduling",
     prompt: `When booking an appointment, confirm: appointment type, date and time, timezone, attendees, and location or meeting method. Repeat the details back to confirm before booking.`,
+    voiceLine:
+      "OFFER the appointment — don't wait to be asked, and don't settle for \"the Realtor will call you back\". Once a caller shows real interest in buying or selling, propose a specific time (\"Thursday at 2, or Friday morning — which suits you?\") instead of asking whether they'd like to schedule something. A booked appointment is the result; a promised call-back is what you fall back to only if they won't commit to a time.",
   },
   {
     key: "faq",
+    voiceLine:
+      "Answer what you actually know from the business information you were given — hours, areas served, how the process works, what the Realtor does. Say plainly when something isn't yours to answer, and offer to have it answered properly rather than guessing.",
     name: "FAQ",
     description: "Answer approved business FAQs from the knowledge base.",
     category: "reception",
@@ -74,6 +158,42 @@ export const SKILLS: readonly Skill[] = [
     category: "reception",
     prompt: `Escalate to the Realtor when: the caller asks for a human, there is a transaction emergency, a legal or contract issue, a complaint, an active client issue, a ready-to-list seller, or a ready-to-offer buyer.`,
     voiceLine: "Treat a ready-to-list seller, ready-to-offer buyer, active-client issue, complaint, or legal/contract question as urgent: take their details and promise a prompt call-back from the Realtor.",
+  },
+  {
+    key: "buyer_motivation",
+    name: "Buyer Motivation",
+    description: "Understand WHY the caller is moving, not just what they want to buy.",
+    category: "qualification",
+    prompt: `Find out what is actually driving the move: a growing family, a commute, schools, a lease ending, an investment, a relocation. Motivation is what tells you whether a "6 to 12 months" timeline is real or soft, and it is what the Realtor needs before the first meeting. Ask it the way a person would, not the way a form would.`,
+    voiceLine:
+      "Ask what's behind the move — family, schools, commute, a lease ending, investment — and listen. The reason tells you more about their timeline than the timeline does.",
+  },
+  {
+    key: "buy_sell_contingency",
+    name: "Buy / Sell Contingency",
+    description: "Find out whether the buyer has to sell an existing home first.",
+    category: "qualification",
+    prompt: `Ask every buyer whether they own now, and if so whether that home has to sell before they can close. A buyer with a house to sell is two transactions, a different timeline, and often a listing the Realtor would otherwise never hear about. When they say yes, get the address and rough timing.`,
+    voiceLine:
+      "Ask every buyer whether they own a home now and whether it has to sell first. If yes, get the address and their timing — that's a listing as well as a purchase.",
+  },
+  {
+    key: "financing_referral",
+    name: "Financing Referral",
+    description: "Offer a lender introduction when a buyer has no pre-approval.",
+    category: "qualification",
+    prompt: `When a buyer is not pre-approved, do not leave it there. Explain plainly that a pre-approval decides what they can actually write an offer on, and offer an introduction to a lender the Realtor works with. Never quote rates, fees, monthly payments, or what they would qualify for — that is the lender's job; yours is the introduction.`,
+    voiceLine:
+      "If a buyer isn't pre-approved, say why it matters and offer an introduction to a lender the Realtor works with — never quote rates, payments, or what they'd qualify for.",
+  },
+  {
+    key: "market_conversation",
+    name: "Local Market Conversation",
+    description: "Turn \"how's the market?\" into discovery — no opinions of her own, published figures only.",
+    category: "qualification",
+    prompt: `Callers ask "how's the market?", and going blank costs the Realtor credibility — but a market opinion is licensed work, and you are not licensed. Turn the question around, which is what a good agent does anyway: ask which areas and price bands they're weighing, what they've been seeing, what's making them hesitate. That is listening, not advising, and it hands the Realtor everything they need for the first meeting. Repeat published figures only when they are in your knowledge base. Never offer a view of your own on value, timing, whether it's a good moment to buy or sell, or how competitive their bracket is — say the Realtor will give them the real numbers and their read on it.`,
+    voiceLine:
+      "Asked about the market, turn it around: which areas and price bands are they weighing, what have they seen, what's making them hesitate. Never give a market opinion of your own — that needs a license. Published figures only from your knowledge base; otherwise the Realtor sends real numbers and their read.",
   },
   {
     key: "speed_to_lead",

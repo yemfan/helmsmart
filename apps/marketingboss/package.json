@@ -5,7 +5,7 @@
   "description": "MarketingBoss AI — generate cinematic marketing images & video on demand (fal.ai, pay-as-you-go).",
   "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev --port 3007",
@@ -17,13 +17,15 @@
   "dependencies": {
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
+    "@helm/dna-marketing": "workspace:*",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.47.10",
     "@tailwindcss/postcss": "^4.2.1",
     "next": "16.1.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.2.1",
+    "@leadsmart/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.4.2",

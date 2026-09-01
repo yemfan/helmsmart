@@ -130,11 +130,27 @@ export async function PATCH(
       // Scope to the caller's agent so one agent can't edit another's contact
       // by guessing its UUID (supabaseServer is service-role and bypasses RLS).
       const { agentId } = await getCurrentAgentContext();
-      await supabaseServer
+      // The result was thrown away here, and that is how an edit could report
+      // success while changing nothing: a scope mismatch matches zero rows, and
+      // a rejected write (the unique email index, a bad value) returns an error
+      // nobody read. Either way the route answered ok:true and the UI, which
+      // trusts res.ok, redrew the row with values that were never saved.
+      const { data: updated, error: updateErr } = await supabaseServer
         .from("contacts")
         .update(directPatch)
         .eq("id", id)
-        .eq("agent_id", agentId);
+        .eq("agent_id", agentId)
+        .select("id");
+      if (updateErr) {
+        console.error("dashboard lead update failed", updateErr);
+        return NextResponse.json({ error: updateErr.message }, { status: 400 });
+      }
+      if (!updated || updated.length === 0) {
+        return NextResponse.json(
+          { error: "That contact wasn't found on your account, so nothing was saved." },
+          { status: 404 },
+        );
+      }
     }
 
     return NextResponse.json({ ok: true });

@@ -74,6 +74,45 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Add a message to send." }, { status: 400 });
     }
 
+    // Every contact must actually be reachable on this channel. The composer
+    // filters its own picker, but it is not the only way a row gets here — a
+    // quick-action, a segment, or the Boss can all queue one — and the drain
+    // 15 minutes later has no way to recover. A call to a contact with no
+    // phone number sat in the strip as a bare "Failed" with the real reason
+    // ("Invalid phone number.") buried in the result JSON.
+    const contactColumn = channel === "email" ? "email" : "phone";
+    const { data: targets, error: targetErr } = await supabaseServer
+      .from("contacts")
+      .select(`id, name, ${contactColumn}`)
+      .eq("agent_id", agentId)
+      .in("id", contactIds);
+    if (targetErr) throw targetErr;
+    const rows = (targets ?? []) as unknown as Array<Record<string, unknown>>;
+    const unreachable = contactIds.filter((id) => {
+      const row = rows.find((r) => String(r.id) === id);
+      if (!row) return true;
+      const value = row[contactColumn];
+      return !(typeof value === "string" && value.trim());
+    });
+    if (unreachable.length > 0) {
+      const missing = channel === "email" ? "email address" : "phone number";
+      const names = unreachable.map((id) => {
+        const row = rows.find((r) => String(r.id) === id);
+        const name = typeof row?.name === "string" ? row.name.trim() : "";
+        return name || "One contact";
+      });
+      const shown = names.slice(0, 3).join(", ");
+      const rest = names.length > 3 ? ` and ${names.length - 3} more` : "";
+      const error =
+        names.length === 1
+          ? `${shown} has no ${missing} on file — add one, or reach them another way.`
+          : `${shown}${rest} have no ${missing} on file. Remove them, or pick another channel.`;
+      return NextResponse.json(
+        { ok: false, error, code: "UNREACHABLE_CONTACTS", contactIds: unreachable },
+        { status: 400 },
+      );
+    }
+
     const { data, error } = await supabaseServer
       .from("scheduled_actions")
       .insert({

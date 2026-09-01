@@ -25,6 +25,66 @@ export type ScriptKind =
   | "appointment_setting"
   | "consultation_opening";
 
+/**
+ * How often the model reaches out, and how loudly it posts.
+ *
+ * Until now a sales model changed the words and nothing else — same tone knob,
+ * same cadence underneath. These are the numbers that make Advisor and Closer
+ * behave differently rather than merely read differently.
+ *
+ * Defaults, not rules. The model seeds these and the agent overrides any of
+ * them; a model that cannot be adjusted just pushes people to "Custom".
+ *
+ * Everything here proposes. The draft sender disposes — quiet hours, per-contact
+ * caps and opt-outs sit above cadence, and a ladder must never out-vote a cap.
+ * Every ladder also stops dead the moment the contact replies, in every model.
+ */
+export type SalesCadence = {
+  /** Minutes to the first touch on a brand-new lead. Speed is the whole game here. */
+  firstTouchMinutes: number;
+  /**
+   * Days to wait since the PREVIOUS touch before the next one, for a lead who
+   * is actively looking. Gaps, not days-from-first-contact — [1, 3, 7] means
+   * tomorrow, then three days after that, then a week after that. This matches
+   * what the drip has always measured, so the numbers mean what the code does.
+   */
+  hotLadderDays: number[];
+  /** The same gaps, stretched, for someone interested but not in a hurry. */
+  warmLadderDays: number[];
+  /** Days between touches for cold leads and sphere contacts. */
+  coldIntervalDays: number;
+  /**
+   * Silence alone never ends a ladder — see `decideFollowUp`. Someone who reads
+   * every listing and replies to none is the most interested person in the
+   * pipeline, and a flat "stop after 4" throws them away for being quiet.
+   */
+  reconsiderAfterUnanswered: number;
+  /** Engagement (0-100) at or above which silence is not disinterest. */
+  keepGoingAboveEngagement: number;
+  /** Ceiling on active chasing — after this they move to the nurture group. */
+  hardStopAfterUnanswered: number;
+  /**
+   * Days between touches once someone is in the nurture group. This is the
+   * long orbit: a market update, not a follow-up. It is what makes "we stopped
+   * chasing" different from "we forgot about them".
+   */
+  nurtureIntervalDays: number;
+  /** Social posts per week. */
+  postsPerWeek: number;
+  /** What those posts are mostly about — seeds the weekly schedule's topics. */
+  postThemes: string[];
+  /**
+   * What to actually say at each rung, in this model's voice — one message per
+   * entry in hotLadderDays. The drip used to carry three generic lines for
+   * everyone, which capped every model at three touches however long its ladder
+   * was, and made Advisor and Closer sound identical while claiming not to.
+   *
+   * {{name}}, {{city}} and {{brand}} are substituted at send time. Compliance
+   * text is appended separately — do not write "reply STOP" here.
+   */
+  ladderMessages: string[];
+};
+
 export type SalesModel = {
   id: SalesModelId;
   name: string;
@@ -55,6 +115,8 @@ export type SalesModel = {
    * "Recommended" badge.
    */
   recommended?: boolean;
+  /** Follow-up and posting rhythm this model implies. */
+  cadence: SalesCadence;
 };
 
 export const salesModels: Record<SalesModelId, SalesModel> = {
@@ -77,6 +139,26 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
     philosophy:
       "Lead with relationships — be warm, human, and consistently in touch so people actually reply.",
     tone: "Warm, casual, personable, relationship-first",
+    // Light and frequent, and by far the most social: for this model staying
+    // top-of-mind IS the strategy, so the touches are cheap and the posting loud.
+    cadence: {
+      firstTouchMinutes: 15,
+      hotLadderDays: [1, 2, 5, 10],
+      warmLadderDays: [1, 5, 14],
+      coldIntervalDays: 21,
+      reconsiderAfterUnanswered: 5,
+      keepGoingAboveEngagement: 20,
+      hardStopAfterUnanswered: 10,
+      nurtureIntervalDays: 30,
+      ladderMessages: [
+        "Hi {{name}}! {{brand}} here — how's everything going? Happy to send a quick {{city}} update if that'd be useful.",
+        "Just checking in again, no pressure at all. Anything you're curious about in {{city}}?",
+        "A few things moved in {{city}} this week. Want me to pass along anything interesting?",
+        "I'll stop filling up your phone! I'm here whenever you feel like talking {{city}}.",
+      ],
+      postsPerWeek: 5,
+      postThemes: ["lifestyle", "community", "personal", "client stories"],
+    },
     leadTypes: ["First-time buyers", "Social media leads", "Sphere & referrals", "Warm inbound leads"],
     tasks: [
       "Check in with 5 sphere or past clients",
@@ -109,6 +191,27 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
     philosophy:
       "Control your pipeline through daily action, strong scripts, and confident follow-up.",
     tone: "Direct, structured, confident, action-oriented",
+    // Front-loaded and then done. Seven touches inside a fortnight, no long
+    // tail: this model wins by speed to contact, not by patience.
+    cadence: {
+      firstTouchMinutes: 5,
+      hotLadderDays: [1, 2, 3, 5, 7],
+      warmLadderDays: [1, 3, 7, 14],
+      coldIntervalDays: 14,
+      reconsiderAfterUnanswered: 7,
+      keepGoingAboveEngagement: 30,
+      hardStopAfterUnanswered: 12,
+      nurtureIntervalDays: 90,
+      ladderMessages: [
+        "Hi {{name}}, {{brand}}. Would a {{city}} price range for your home be useful this week?",
+        "Following up — can I send you the recent {{city}} comps? Two minutes to read.",
+        "Quick one: are you looking to move in the next 90 days, or is this longer term?",
+        "Happy to put 15 minutes aside this week to go through the {{city}} numbers. Morning or afternoon?",
+        "I'll leave it there unless I hear from you. If the timing changes, text me anytime.",
+      ],
+      postsPerWeek: 3,
+      postThemes: ["new listings", "just sold", "market moves", "call to action"],
+    },
     leadTypes: ["Expired listings", "FSBO", "Seller leads", "Cold prospects"],
     tasks: [
       "Make 20 prospecting calls",
@@ -142,6 +245,26 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
     philosophy:
       "Help clients think clearly, reduce risk, and make confident real estate decisions.",
     tone: "Calm, analytical, trustworthy, client-first",
+    // Fewest touches, each carrying something worth reading. A high-trust
+    // client is annoyed by volume, so this model spends its budget on substance.
+    cadence: {
+      firstTouchMinutes: 60,
+      hotLadderDays: [1, 3, 7, 14],
+      warmLadderDays: [2, 7, 21],
+      coldIntervalDays: 30,
+      reconsiderAfterUnanswered: 4,
+      keepGoingAboveEngagement: 25,
+      hardStopAfterUnanswered: 8,
+      nurtureIntervalDays: 60,
+      ladderMessages: [
+        "Hi {{name}}, {{brand}} here. Would a short {{city}} pricing snapshot for your home be useful?",
+        "Following up with something concrete: recent {{city}} comps and a likely range for your home. Want me to send it?",
+        "No rush at all. When you're weighing a move, the numbers matter more than the timing — happy to walk you through what {{city}} looks like now.",
+        "Last note from me for now. If anything changes, I can give you a straight read on where your home sits in this market.",
+      ],
+      postsPerWeek: 2,
+      postThemes: ["market analysis", "buyer & seller guides", "risk and pitfalls"],
+    },
     leadTypes: ["Buyer leads", "Investor leads", "Relocation clients", "Referral clients"],
     tasks: [
       "Review 3 new leads",
@@ -188,6 +311,26 @@ export const salesModels: Record<SalesModelId, SalesModel> = {
     philosophy:
       "Use LeadSmart's standard CRM and shape every screen, script, and pipeline stage to your own approach.",
     tone: "Neutral — define your own voice in Settings",
+    // Advisor's numbers as a neutral starting point, the same way this model
+    // already borrows a tone. Every field is meant to be overridden.
+    cadence: {
+      firstTouchMinutes: 60,
+      hotLadderDays: [1, 3, 7, 14],
+      warmLadderDays: [2, 7, 21],
+      coldIntervalDays: 30,
+      reconsiderAfterUnanswered: 4,
+      keepGoingAboveEngagement: 25,
+      hardStopAfterUnanswered: 8,
+      nurtureIntervalDays: 60,
+      ladderMessages: [
+        "Hi {{name}}, {{brand}} here. Would a short {{city}} pricing snapshot for your home be useful?",
+        "Following up with something concrete: recent {{city}} comps and a likely range for your home. Want me to send it?",
+        "No rush at all. When you're weighing a move, the numbers matter more than the timing — happy to walk you through what {{city}} looks like now.",
+        "Last note from me for now. If anything changes, I can give you a straight read on where your home sits in this market.",
+      ],
+      postsPerWeek: 2,
+      postThemes: ["market analysis", "new listings", "client stories"],
+    },
     leadTypes: ["Any lead type", "Mixed sources", "Custom segments"],
     tasks: [
       "Review new leads",

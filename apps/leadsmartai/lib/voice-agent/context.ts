@@ -1,4 +1,5 @@
 import { getReceptionistBusinessName } from "@/lib/voice-receptionist/businessName";
+import { callerKind, describeAppointmentTypes, offerableAppointmentTypes } from "@repo/voice";
 import { getReceptionistConfig, getBookingSettings } from "@/lib/voice-receptionist/settings";
 import {
   getAssistantVoiceSettings,
@@ -89,9 +90,13 @@ export async function loadReceptionistContext(
     // When booking is on, the agent offers 30-minute appointments via the Retell
     // check_availability / book_appointment tools (backed by /api/retell/function).
     // When off, steer callers to a message / call-back instead.
+    // Every type, because the caller is not known yet at this point. The
+    // inbound route narrows this once loadKnownCaller has run — see
+    // app/api/retell/inbound. This used to be one hardcoded sentence read to
+    // everyone, so a seller was offered a property showing.
     typesText: bookingEnabled
-      ? "Thirty-minute appointments you can book: property showings, buyer consultations, listing consultations, and general meetings. Use check_availability first, then book_appointment. Always speak durations and times as words (say \"thirty minutes\", never \"three zero\")."
-      : "No online appointment booking. If the caller wants to schedule, take a message or offer a call-back.",
+      ? describeAppointmentTypes(offerableAppointmentTypes("unknown"))
+      : describeAppointmentTypes([]),
     knowledgeText: cfg.extraNotes || "",
     // CloseBoss: qualification/escalation playbook from the skills
     // enabled on this agent's AI Receptionist, plus voice-channel

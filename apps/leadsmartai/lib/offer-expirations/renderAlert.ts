@@ -1,3 +1,4 @@
+import { EMAIL_BRAND } from "@/lib/email";
 /**
  * Pure renderers for offer-expiration alert messages. Both kinds of
  * offer share the same template shape; only the perspective language
@@ -118,7 +119,7 @@ export function renderAlertSms(input: AlertInput): string {
       : "the incoming offer";
   return (
     `${prefix} ${perspective} on ${input.propertyAddress} (${priceLabel}) expires in ${hours}h. ` +
-    `Decide now or extend. LeadSmart AI.`
+    `Decide now or extend. ${EMAIL_BRAND}.`
   );
 }
 

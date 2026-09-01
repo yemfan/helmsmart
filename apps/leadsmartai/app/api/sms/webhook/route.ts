@@ -20,6 +20,9 @@ import {
 } from "@/lib/mobile/pushNotificationsService";
 import { autoDetectContactLanguage } from "@/lib/locales/autoDetectContactLanguage";
 import type { SmsAssistantReply } from "@/lib/ai-sms/types";
+import { agentBrandName } from "@/lib/branding/agentBrand";
+import { shouldAiReply, type ConversationMessage } from "@/lib/ai-sms/replyGate";
+import { recordNurtureAlert } from "@/lib/nurture/recordAlert";
 
 function digitsOnly(input: string) {
   return input.replace(/\D/g, "");
@@ -90,7 +93,7 @@ function twilioWebhookPublicUrl(req: Request) {
 }
 
 const leadSmsSelect =
-  "id,agent_id,phone_number,sms_opt_in,contact_method,rating,property_address,name,lead_status,phone,email,nurture_score,intent,city,state,sms_ai_enabled,sms_agent_takeover";
+  "id,agent_id,sms_opt_in,contact_method,rating,property_address,name,lead_status,phone,email,nurture_score,intent,city,state,sms_ai_enabled,sms_agent_takeover";
 
 export const runtime = "nodejs";
 
@@ -140,14 +143,14 @@ export async function POST(req: Request) {
     const fromDigits = digitsOnly(fromUsPhone);
 
     // Best-effort match:
-    // 1) prefer phone_number + sms_opt_in if columns exist
+    // 1) prefer an exact phone match with sms_opt_in if the column exists
     // 2) fallback to phone + contact_method if those columns don't exist
     let leadRow: any = null;
     try {
       const { data: leadByPhoneNumber, error: leadErr1 } = await supabaseServer
         .from("contacts")
         .select(leadSmsSelect)
-        .eq("phone_number", fromUsPhone)
+        .eq("phone", fromUsPhone)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -193,7 +196,7 @@ export async function POST(req: Request) {
         const { data: createdLead, error: createdErr } = await supabaseServer
           .from("contacts")
           .select(leadSmsSelect)
-          .eq("phone_number", fromUsPhone)
+          .eq("phone", fromUsPhone)
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle();
@@ -300,7 +303,15 @@ export async function POST(req: Request) {
       try {
         await supabaseServer
           .from("contacts")
-          .update({ sms_opt_in: true } as any)
+          // Record where the consent came from, not just that it exists. The
+          // web-form path already stamps these; this one set the flag and left
+          // no trace of why, which is the half that matters if it is ever
+          // questioned.
+          .update({
+            sms_opt_in: true,
+            tcpa_consent_at: new Date().toISOString(),
+            tcpa_consent_source: "inbound_sms",
+          } as any)
           .eq("id", leadId);
       } catch {}
     }
@@ -364,8 +375,10 @@ export async function POST(req: Request) {
       } catch {}
 
       const toE164 = normalizeUsPhoneToE164(fromUsPhone);
+      // Names the agent they actually opted in to hear from.
+      const unsubBrand = await agentBrandName(agentId);
       const unsubReply =
-        "Thanks — you’ve been unsubscribed from LeadSmart AI SMS follow-ups. Reply HELP for assistance.";
+        `Thanks — you’ve been unsubscribed from ${unsubBrand} SMS follow-ups. Reply HELP for assistance.`;
 
       // Persist conversation.
       const { data: convoRow } = await supabaseServer
@@ -430,10 +443,17 @@ export async function POST(req: Request) {
       { role: "user", content: body, created_at: nowIso },
     ];
 
-    const cooldownMinutes = getSmsAiCooldownMinutes();
-    const lastAiAt = (convo as any)?.last_ai_reply_at ? String((convo as any).last_ai_reply_at) : null;
-    const lastAiTime = lastAiAt ? new Date(lastAiAt).getTime() : 0;
-    const shouldReply = !lastAiTime || Date.now() - lastAiTime >= cooldownMinutes * 60 * 1000;
+    // A human just wrote to us — that is the moment to answer, not to go quiet.
+    // The old gate blocked any reply within SMS_AI_COOLDOWN_MINUTES of our own
+    // last message, so answering the AI's own question promptly got silence.
+    // The window now bounds a BURST rather than muting a conversation.
+    const gate = shouldAiReply(updatedMessages as ConversationMessage[], Date.now(), {
+      windowMs: getSmsAiCooldownMinutes() * 60 * 1000,
+    });
+    const shouldReply = gate.reply;
+    if (!shouldReply) {
+      console.log(`[ai-sms] holding back for ${leadId}: ${gate.reason}`);
+    }
 
     if (convo?.id) {
       await supabaseServer
@@ -471,12 +491,7 @@ export async function POST(req: Request) {
       await supabaseServer.from("contacts").update({ automation_disabled: true } as any).eq("id", leadId);
 
       if (agentId) {
-        await supabaseServer.from("nurture_alerts").insert({
-          agent_id: agentId,
-          contact_id: leadId,
-          type: "replied",
-          message: "Lead replied via SMS — nurture sequence stopped.",
-        } as any);
+        await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "replied", message: "Lead replied via SMS — nurture sequence stopped." }, supabaseServer);
       }
     }
 
@@ -494,12 +509,7 @@ export async function POST(req: Request) {
 
       if (!existingHot?.id) {
         try {
-          await supabaseServer.from("nurture_alerts").insert({
-            agent_id: agentId,
-            contact_id: leadId,
-            type: "hot",
-            message: `High intent SMS received: "${body.slice(0, 120)}"`,
-          } as any);
+          await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "hot", message: `High intent SMS received: "${body.slice(0, 120)}"` }, supabaseServer);
         } catch {}
       }
     }
@@ -552,12 +562,7 @@ export async function POST(req: Request) {
 
           if (!existingAlert?.id) {
             try {
-              await supabaseServer.from("nurture_alerts").insert({
-                agent_id: agentId,
-                contact_id: leadId,
-                type: "hot",
-                message: `AI SMS escalation (${assistant.inferredIntent}): ${body.slice(0, 100)}`,
-              } as any);
+              await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "hot", message: `AI SMS escalation (${assistant.inferredIntent}): ${body.slice(0, 100)}` }, supabaseServer);
             } catch {}
           }
         }
@@ -591,7 +596,10 @@ export async function POST(req: Request) {
         const replyBase = String(assistant.replyText ?? "").trim();
         const reply = withOptOutFooter(replyBase);
 
-        await sendSMS(toE164, reply, leadId);
+        // Keep Twilio's id: the status webhook matches on it, so without it a
+        // delivery failure has no message to attach itself to and the thread
+        // shows a reply that may never have arrived.
+        const sent = await sendSMS(toE164, reply, leadId);
         try {
           await logSmsMessage({
             leadId,
@@ -599,6 +607,8 @@ export async function POST(req: Request) {
             message: reply,
             direction: "outbound",
             assistantType: "sales_assistant",
+            externalMessageId: sent?.sid || null,
+            twilioStatus: sent?.sid ? "queued" : null,
           });
         } catch {}
 

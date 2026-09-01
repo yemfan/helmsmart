@@ -58,6 +58,9 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "CCBot", disallow: "/" },
     ],
     sitemap: `${base}/sitemap.xml`,
-    host: base,
+    // No `host:`. It emits a `Host:` line, which is a Yandex directive — Google
+    // ignores it and reports "Rule ignored by Googlebot" against robots.txt in
+    // Search Console. The canonical tag already states the preferred host, and a
+    // standing warning on a file this important trains you to ignore the file.
   };
 }

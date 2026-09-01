@@ -5,7 +5,7 @@
   "description": "AI Business Works Partner Program — partner platform, referral attribution, and configurable compensation engine.",
   "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev --port 3008",

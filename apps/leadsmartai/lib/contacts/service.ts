@@ -44,7 +44,7 @@ function mapContactRow(row: Record<string, unknown>): Contact {
     initials,
     email,
     phone: (row.phone as string | null) ?? null,
-    phoneNumber: (row.phone_number as string | null) ?? null,
+    phoneNumber: (row.phone as string | null) ?? null,
 
     address: (row.address as string | null) ?? null,
     propertyAddress: (row.property_address as string | null) ?? null,

@@ -19,7 +19,7 @@ import {
 import { fetchNextOpenTaskForLead } from "@/lib/mobile/leadTasksMobile";
 
 const LIST_SELECT =
-  "id,agent_id,name,email,phone,phone_number,property_address,source,lead_status,notes,engagement_score,last_activity_at,rating,contact_frequency,contact_method,last_contacted_at,next_contact_at,search_location,created_at,merged_into_lead_id,prediction_score,prediction_label,prediction_computed_at,pipeline_stage_id";
+  "id,agent_id,name,email,phone,property_address,source,lead_status,notes,engagement_score,last_activity_at,rating,contact_frequency,contact_method,last_contacted_at,next_contact_at,search_location,created_at,merged_into_lead_id,prediction_score,prediction_label,prediction_computed_at,pipeline_stage_id";
 
 /**
  * Paginated leads for mobile (active leads only — not merged into another).
@@ -54,7 +54,7 @@ export async function listMobileLeads(params: {
   const term = (search ?? "").trim().replace(/[,()*%]/g, "");
   if (term) {
     q = q.or(
-      `name.ilike.%${term}%,phone.ilike.%${term}%,phone_number.ilike.%${term}%,email.ilike.%${term}%`
+      `name.ilike.%${term}%,phone.ilike.%${term}%,email.ilike.%${term}%`
     );
   }
 
@@ -99,7 +99,7 @@ export async function listMobileLeads(params: {
     return {
       ...row,
       id,
-      display_phone: String(row.phone_number || row.phone || "").trim() || null,
+      display_phone: String(row.phone || "").trim() || null,
       ai_lead_score: s ? s.score : null,
       ai_intent: s?.intent ?? null,
       ai_timeline: s?.timeline ?? null,
@@ -146,7 +146,7 @@ export async function hydrateMobileLeadRecord(
   return {
     ...row,
     id: String(row.id ?? leadId),
-    display_phone: String(row.phone_number || row.phone || "").trim() || null,
+    display_phone: String(row.phone || "").trim() || null,
     ai_lead_score: s ? s.score : null,
     ai_intent: s?.intent ?? null,
     ai_timeline: s?.timeline ?? null,

@@ -9,3 +9,4 @@ export * from "./prompt";
 export * from "./brain";
 export * from "./datetime";
 export * from "./scheduling";
+export * from "./appointmentTypes";

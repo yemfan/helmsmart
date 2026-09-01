@@ -41,7 +41,13 @@ export const AI_TEAM: readonly AssistantDef[] = [
     role: "Captain of your AI real estate team",
     mission: "Help you focus on the most important actions today.",
     href: "/dashboard/boss",
-    skills: [],
+    skills: [
+      "work_approval",
+      "task_assignment",
+      "team_oversight",
+      "daily_priorities",
+      "risk_escalation",
+    ],
     kpis: ["Priorities surfaced", "Briefings delivered", "Risks flagged"],
   },
   {
@@ -104,6 +110,11 @@ export const AI_TEAM: readonly AssistantDef[] = [
     href: "/dashboard/ai-marketing-assistant",
     skills: [
       "social_content",
+      "social_scheduling",
+      "social_publishing",
+      "listing_promo_ads",
+      "social_carousels",
+      "social_reels",
       "marketing_plans",
       "sphere_nurture",
       "lead_generation",

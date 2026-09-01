@@ -20,7 +20,12 @@ function planTokens(plan: Plan) {
 
 export async function setUserPlanFromStripe(params: {
   userId: string;
-  plan: Plan;
+  /**
+   * `null` when the Stripe price maps to no plan we recognise. The Stripe ids
+   * and status still sync — those are facts — but `plan` is left as it was
+   * rather than overwritten with a guess.
+   */
+  plan: Plan | null;
   subscriptionStatus: SubscriptionStatus;
   stripeCustomerId?: string | null;
   stripeSubscriptionId?: string | null;
@@ -28,14 +33,14 @@ export async function setUserPlanFromStripe(params: {
   /** When set (including `null`), syncs `trial_ends_at` from Stripe. Omit to leave column unchanged. */
   trialEndsAt?: string | null;
 }) {
-  const tokens = planTokens(params.plan);
+  const tokens = planTokens(params.plan ?? "free");
   const nextReset = new Date();
   nextReset.setUTCMonth(nextReset.getUTCMonth() + 1, 1);
   nextReset.setUTCHours(0, 0, 0, 0);
 
   // Keep tokens in sync whenever plan changes. On downgrade/cancel, resetTokens=true.
   const update: Record<string, unknown> = {
-    plan: params.plan,
+    ...(params.plan === null ? {} : { plan: params.plan }),
     subscription_status: params.subscriptionStatus,
     stripe_customer_id: params.stripeCustomerId ?? null,
     stripe_subscription_id: params.stripeSubscriptionId ?? null,
@@ -72,6 +77,9 @@ export async function setUserPlanFromStripe(params: {
   const insertRow: Record<string, unknown> = {
     user_id: params.userId,
     role: "user",
+    // A brand-new row needs SOME plan; `free` is the honest default when the
+    // SKU is unknown, and the billing row is what actually entitles either way.
+    plan: params.plan ?? "free",
     ...update,
     tokens_remaining: tokens,
     tokens_reset_date: nextReset.toISOString(),

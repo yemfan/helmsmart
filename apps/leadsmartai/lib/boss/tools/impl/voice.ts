@@ -33,7 +33,7 @@ export const scheduleVoiceCall = defineTool({
   execute: async (ctx, input) => {
     const { data } = await supabaseAdmin
       .from("contacts")
-      .select("id, name, phone, phone_number")
+      .select("id, name, phone")
       .eq("id", input.contact_id)
       .eq("agent_id", ctx.agentId)
       .maybeSingle();
@@ -41,10 +41,9 @@ export const scheduleVoiceCall = defineTool({
       id: string;
       name: string | null;
       phone: string | null;
-      phone_number: string | null;
     } | null;
     if (!contact) return { status: "failed", error: "Contact not found for this agent." };
-    if (!contact.phone_number && !contact.phone) {
+    if (!contact.phone) {
       return { status: "failed", error: `${contact.name ?? "Contact"} has no phone number on file.` };
     }
 

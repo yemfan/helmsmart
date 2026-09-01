@@ -24,38 +24,75 @@ export default function ResetPasswordPage() {
     const supabase = supabaseBrowser();
     let cancelled = false;
 
-    async function hasSession(): Promise<boolean> {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (cancelled) return false;
-      if (session?.user) {
-        setPhase("ready");
-        return true;
+    /**
+     * Turn the recovery link into a session ourselves.
+     *
+     * `createBrowserClient` (@supabase/ssr) hard-codes `flowType: "pkce"`, and
+     * auth-js refuses to read an implicit-grant callback under that flow —
+     * `_getSessionFromURL` throws `Not a valid PKCE flow url.` the moment it
+     * sees `#access_token=…`. Our recovery mail is exactly that shape
+     * (`/auth/v1/verify?token=…&type=recovery` → `…/reset-password#access_token=…`),
+     * so its auto-detection silently dropped every single link and this page
+     * called a perfectly good token expired. Reading the URL by hand works for
+     * whichever shape arrives — implicit hash, PKCE `?code=`, or `?token_hash=`.
+     */
+    async function establishSession(): Promise<boolean> {
+      // Let the client finish its own (failed) URL detection first, so our
+      // write isn't racing its initialization.
+      const { data: existing } = await supabase.auth.getSession();
+
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const query = new URLSearchParams(window.location.search);
+      const param = (key: string) => hash.get(key) ?? query.get(key);
+
+      // Supabase reports a genuinely dead link in the fragment rather than as
+      // an HTTP error — treat it as such instead of silently retrying.
+      if (param("error") || param("error_description")) return false;
+
+      const accessToken = param("access_token");
+      const refreshToken = param("refresh_token");
+      const code = query.get("code");
+      const tokenHash = param("token_hash");
+
+      let ok = Boolean(existing.session?.user);
+
+      if (accessToken && refreshToken) {
+        const { data, error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        ok = Boolean(data.session?.user) && !error;
+      } else if (code) {
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+        ok = Boolean(data.session?.user) && !error;
+      } else if (tokenHash) {
+        const { data, error } = await supabase.auth.verifyOtp({
+          type: "recovery",
+          token_hash: tokenHash,
+        });
+        ok = Boolean(data.session?.user) && !error;
       }
-      return false;
+
+      // Don't leave the one-time credentials sitting in the address bar.
+      if (ok && (accessToken || code || tokenHash)) {
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+      return ok;
     }
 
-    void hasSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    void (async () => {
+      let ok = false;
+      try {
+        ok = await establishSession();
+      } catch {
+        ok = false;
+      }
       if (cancelled) return;
-      if (session?.user) setPhase("ready");
-    });
-
-    const failTimer = window.setTimeout(() => {
-      void (async () => {
-        const ok = await hasSession();
-        if (!ok && !cancelled) setPhase("no_session");
-      })();
-    }, 1200);
+      setPhase(ok ? "ready" : "no_session");
+    })();
 
     return () => {
       cancelled = true;
-      window.clearTimeout(failTimer);
-      subscription.unsubscribe();
     };
   }, []);
 

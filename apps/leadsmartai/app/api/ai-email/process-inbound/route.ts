@@ -16,6 +16,7 @@ import {
   dispatchMobileInboundEmailPush,
   dispatchMobileNeedsHumanPush,
 } from "@/lib/mobile/pushNotificationsService";
+import { recordNurtureAlert } from "@/lib/nurture/recordAlert";
 
 export const runtime = "nodejs";
 
@@ -153,12 +154,7 @@ export async function POST(req: Request) {
 
     if (wantsAgent && agentId) {
       try {
-        await supabaseAdmin.from("nurture_alerts").insert({
-          agent_id: agentId,
-          contact_id: leadId,
-          type: "hot",
-          message: `AI email escalation (${reply.inferredIntent}): ${subject.slice(0, 80)}`,
-        } as Record<string, unknown>);
+        await recordNurtureAlert({ agentId: agentId, contactId: leadId, type: "hot", message: `AI email escalation (${reply.inferredIntent}): ${subject.slice(0, 80)}` }, supabaseAdmin);
       } catch {
         // ignore
       }

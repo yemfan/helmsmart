@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { resolveAgentIdByReceptionistNumber } from "@/lib/voice-receptionist/settings";
+import { notifyAgentOfBooking } from "@/lib/voice-agent/bookingNotify";
+import { confirmBookingToCaller } from "@/lib/voice-agent/bookingConfirmSms";
 import { runReceptionistTool } from "@/lib/voice-agent/booking";
 
 export const runtime = "nodejs";
@@ -46,6 +48,32 @@ export async function POST(req: NextRequest) {
 
   try {
     const out = await runReceptionistTool(name, args, { agentId, fromPhone: fromNumber });
+    // A booking is the one outcome the Realtor has to know about straight away —
+    // the appointment can be hours from now. `after` so the caller isn't left
+    // waiting on an email round-trip mid-sentence.
+    if (out.bookedEventId && out.bookedLabel) {
+      const label = out.bookedLabel;
+      const title = out.bookedNote ?? null;
+      const contactId = out.bookedContactId ?? null;
+      const callerName = out.bookedCallerName ?? null;
+      const startISO = out.bookedStartISO ?? "";
+      after(async () => {
+        // Independent of each other on purpose: a Twilio outage must not cost
+        // the Realtor their alert, and a mail failure must not cost the caller
+        // their confirmation.
+        await Promise.allSettled([
+          notifyAgentOfBooking({
+            agentId,
+            label,
+            title,
+            callerName,
+            callerPhone: fromNumber,
+            contactId,
+          }),
+          confirmBookingToCaller({ agentId, toPhone: fromNumber, startISO, label, contactId }),
+        ]);
+      });
+    }
     return NextResponse.json({ result: out.text });
   } catch (e) {
     console.error("retell/function", e);

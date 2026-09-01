@@ -16,6 +16,8 @@ import { logAssistantActivity } from "@/lib/closeboss/activities";
 import { recomputeLeadRating } from "@/lib/contacts/recomputeLeadRating";
 import { recordVoiceUsageForAgent } from "@/lib/entitlements/recordVoiceUsage";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { sendMissedCallTextBack, bookedDuringCall } from "@/lib/voice-agent/callerTextBack";
+import { finishedNormally } from "@/lib/voice-agent/callerTextBackCopy";
 
 export const runtime = "nodejs";
 
@@ -206,6 +208,47 @@ export async function POST(req: NextRequest) {
           });
         } catch (e) {
           console.error("retell/call-events: outbound activity log failed", e);
+        }
+      });
+    }
+
+    // Any inbound call that did NOT end normally gets a courtesy text.
+    //
+    // "Normal" means the receptionist wrapped up and hung up herself. A caller
+    // who rang off mid-sentence, went quiet, hit voicemail or hit an error never
+    // got a conclusion — whether they said nothing at all or talked for four
+    // minutes — and that is exactly who should hear from us.
+    //
+    // It cannot live in the branch below: that one requires a summary, and the
+    // shortest calls produce none, so it no-ops precisely when this is needed.
+    if (
+      body.event === "call_analyzed" &&
+      call.direction === "inbound" &&
+      call.from_number &&
+      call.to_number &&
+      !finishedNormally(call.disconnection_reason)
+    ) {
+      const cutFrom = call.from_number;
+      const cutTo = call.to_number;
+      const startedAtISO = new Date(call.start_timestamp ?? Date.now()).toISOString();
+      const reason = call.disconnection_reason || "unknown";
+      after(async () => {
+        try {
+          const agentId = await resolveAgentIdByReceptionistNumber(cutTo);
+          if (!agentId) return;
+          // They booked on this very call, so they already have a confirmation.
+          // Two texts a minute apart reads as though the booking didn't take.
+          if (await bookedDuringCall(agentId, cutFrom, startedAtISO)) return;
+          await sendMissedCallTextBack({ agentId, toPhone: cutFrom });
+          await logAssistantActivity({
+            agentId,
+            assistantType: "receptionist",
+            activityType: "missed_call_text_back",
+            summary: `Call from ${cutFrom} ended early (${reason}) — texted them back`,
+            requiresAttention: false,
+          });
+        } catch (e) {
+          console.error("retell/call-events: early-ending text-back failed", e);
         }
       });
     }

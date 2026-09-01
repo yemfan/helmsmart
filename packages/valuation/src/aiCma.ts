@@ -1,4 +1,5 @@
 import "server-only";
+import { cachedSystem, markTranscriptCached } from "@leadsmart/shared/utils/promptCache";
 
 import { getAnthropicClient, isAnthropicConfigured } from "./anthropic";
 import {
@@ -113,7 +114,9 @@ export async function generateAiCma(input: ValuationInput): Promise<ValuationRes
         max_tokens: 8000,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         thinking: { type: "adaptive" } as any,
-        system: SYSTEM_PROMPT,
+        // Cached: identical on every call, and the cached prefix covers the tool
+        // definitions sent ahead of it. See promptCache.ts.
+        system: cachedSystem(SYSTEM_PROMPT) as never,
         messages,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tools: tools as any,
@@ -131,6 +134,10 @@ export async function generateAiCma(input: ValuationInput): Promise<ValuationRes
       // Server tool loop hit its internal cap — append the turn and resume.
       if (res?.stop_reason === "pause_turn") {
         messages.push({ role: "assistant", content: res.content });
+        // The turn just appended holds the web-search results. Move the
+        // breakpoint onto it so the next round reads them from cache
+        // rather than paying full price for them again.
+        markTranscriptCached(messages);
         continue;
       }
       break;

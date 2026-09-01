@@ -6,7 +6,7 @@
   "header": {
     "title": "Plans & Pricing",
     "subtitle": "Every feature on every plan, one seat. Credits are only spent on AI phone minutes and video — the CRM, texting, Ask Max, reports and social posting are all included.",
-    "trial": "New accounts start with a {{days}}-day trial and {{credits}} credits."
+    "trial": "Start free — no card, no expiry. Every plan includes every feature; only the credit allowance changes."
   },
   "plans": {
     "heading": "Monthly plans",
@@ -16,10 +16,17 @@
     "usage": "About {{minutes}} AI call-minutes, or {{videos}} videos",
     "cta": "Get started",
     "blurb": {
-      "starter": "Every feature, one seat. For steady solo marketing.",
-      "growth": "Every feature, one seat. For daily calling and regular video.",
-      "scale": "Every feature, one seat. For high-volume calling and video."
-    }
+      "free": "Every feature, one seat. Enough to try the AI receptionist.",
+      "solo": "Every feature, one seat. For steady solo marketing.",
+      "pro": "Every feature, one seat. For daily calling and regular video.",
+      "premium": "Every feature, one seat. For high-volume calling and video.",
+      "signature": "Everything in Premium, plus a specialist who sets it all up with you."
+    },
+    "freeName": "Free",
+    "freeCta": "Start free",
+    "freePrice": "$0",
+    "welcomeGrant": "Plus {{credits}} bonus credits when you sign up.",
+    "setupFee": "One-time ${{amount}} setup with a specialist."
   },
   "packs": {
     "heading": "Top-up packs",

@@ -44,7 +44,7 @@ export async function sendSMS(
   });
 
   // Only log to message_logs when a lead_id is provided.
-  // This avoids hard dependency on phone_number columns / migrations during testing.
+  // This avoids a hard dependency on the contacts table during testing.
   const resolvedLeadId: string | null = leadId ? String(leadId) : null;
 
   let messageLogId: string | null = null;
