@@ -74,6 +74,25 @@ function mapBookingRow(row: Record<string, unknown>, leadName: string | null): M
   };
 }
 
+/**
+ * The contact ids worth looking up names for.
+ *
+ * `contact_id` is nullable, and this used to be `rows.map((r) => String(r.contact_id))`.
+ * `String(null)` is the literal "null", which Postgres rejects as a uuid — so a
+ * single contactless appointment failed the whole `.in()` query and took every
+ * other event on the agent's calendar down with it. Nulls are dropped here
+ * rather than stringified.
+ */
+export function contactIdsForLookup(rows: readonly unknown[]): string[] {
+  return [
+    ...new Set(
+      rows
+        .map((r) => (r as { contact_id?: unknown }).contact_id)
+        .filter((v): v is string => typeof v === "string" && v.trim().length > 0),
+    ),
+  ];
+}
+
 export async function listMobileCalendarEvents(params: {
   agentId: string;
   fromIso?: string;
@@ -105,7 +124,7 @@ export async function listMobileCalendarEvents(params: {
   if (error) throw new Error(error.message);
 
   const rows = evs ?? [];
-  const leadIds = [...new Set(rows.map((r) => String((r as { contact_id: unknown }).contact_id)))];
+  const leadIds = contactIdsForLookup(rows);
   const nameById = new Map<string, string | null>();
   if (leadIds.length) {
     const { data: leads, error: le } = await supabaseAdmin
@@ -120,9 +139,11 @@ export async function listMobileCalendarEvents(params: {
     }
   }
 
-  const manual = rows.map((r) =>
-    mapEventRow(r as Record<string, unknown>, nameById.get(String((r as { contact_id: unknown }).contact_id)) ?? null),
-  );
+  const manual = rows.map((r) => {
+    const cid = (r as { contact_id: unknown }).contact_id;
+    const name = typeof cid === "string" && cid ? nameById.get(cid) ?? null : null;
+    return mapEventRow(r as Record<string, unknown>, name);
+  });
 
   // Everything Emma books lives in `voice_appointments`, not here. The
   // calendar has been reading only `lead_calendar_events` — the table the
@@ -341,7 +362,9 @@ export async function patchMobileCalendarEvent(params: {
   if (e0) throw new Error(e0.message);
   if (!existing) throw new Error("NOT_FOUND");
 
-  const leadId = String((existing as { contact_id: unknown }).contact_id);
+  const rawContactId = (existing as { contact_id: unknown }).contact_id;
+  const leadId =
+    typeof rawContactId === "string" && rawContactId ? rawContactId : null;
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (params.status != null) patch.status = params.status;
   if (params.title != null) patch.title = params.title.trim();
@@ -360,6 +383,10 @@ export async function patchMobileCalendarEvent(params: {
     .single();
 
   if (error) throw new Error(error.message);
+
+  // An event with no contact has nothing to name and no activity to touch —
+  // and querying contacts for a null id is what broke the list query.
+  if (!leadId) return mapEventRow(data as Record<string, unknown>, null);
 
   const { data: lead } = await supabaseAdmin
     .from("contacts")
