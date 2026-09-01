@@ -258,9 +258,17 @@ export async function listRecentBookingLinksForLead(params: {
   return (rows ?? []).map((r) => mapBookingRow(r as Record<string, unknown>, leadName));
 }
 
+/**
+ * Create a calendar event. `leadId` is OPTIONAL: `lead_calendar_events.contact_id`
+ * is nullable, and plenty of an agent's day — a personal block, an open house,
+ * a caravan — has no single contact attached. The dashboard has always offered
+ * "No contact" as the default, so requiring one here rejected exactly what the
+ * UI invited.
+ */
 export async function createMobileCalendarEvent(params: {
   agentId: string;
-  leadId: string;
+  /** contacts.id to attach, or null/undefined for an appointment with no contact. */
+  leadId?: string | null;
   title: string;
   description?: string | null;
   startsAt: string;
@@ -270,10 +278,12 @@ export async function createMobileCalendarEvent(params: {
   externalEventId?: string | null;
   externalCalendarId?: string | null;
 }): Promise<MobileCalendarEventDto> {
-  await assertLeadOwned(params.agentId, params.leadId);
+  const leadId = params.leadId?.trim() || null;
+  // Ownership only means something when a contact is actually attached.
+  if (leadId) await assertLeadOwned(params.agentId, leadId);
   const now = new Date().toISOString();
   const insert = {
-    contact_id: params.leadId,
+    contact_id: leadId,
     agent_id: params.agentId,
     title: params.title.trim(),
     description: params.description ?? null,
@@ -298,14 +308,17 @@ export async function createMobileCalendarEvent(params: {
 
   if (error) throw new Error(error.message);
 
+  // No contact — nothing to name and nothing whose activity to touch.
+  if (!leadId) return mapEventRow(data as Record<string, unknown>, null);
+
   const { data: lead } = await supabaseAdmin
     .from("contacts")
     .select("name")
-    .eq("id", params.leadId as never)
+    .eq("id", leadId as never)
     .maybeSingle();
 
   const nm = (lead as { name?: unknown } | null)?.name;
-  await touchLeadActivity(params.leadId);
+  await touchLeadActivity(leadId);
   return mapEventRow(data as Record<string, unknown>, nm != null ? String(nm) : null);
 }
 

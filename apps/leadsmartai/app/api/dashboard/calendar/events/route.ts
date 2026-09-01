@@ -46,9 +46,10 @@ export async function POST(req: Request) {
     const leadId = String(body.leadId ?? "").trim();
     const title = String(body.title ?? "").trim();
     const startsAt = String(body.startsAt ?? "").trim();
-    if (!leadId) {
-      return NextResponse.json({ ok: false, error: "leadId is required" }, { status: 400 });
-    }
+    // leadId is OPTIONAL. The dashboard's contact picker defaults to "No
+    // contact", and contact_id is nullable, so an appointment with nobody
+    // attached is a normal thing to book — it used to 400 here, which the UI
+    // then showed as a bare "Failed to add."
     if (!title) {
       return NextResponse.json({ ok: false, error: "title is required" }, { status: 400 });
     }
@@ -58,7 +59,7 @@ export async function POST(req: Request) {
 
     const event = await createMobileCalendarEvent({
       agentId,
-      leadId,
+      leadId: leadId || null,
       title,
       description: body.description,
       startsAt,

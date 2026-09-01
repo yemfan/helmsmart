@@ -241,6 +241,15 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
   function nextMonth() { setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)); }
   function goToday() { const d = new Date(); setCurrentMonth(new Date(d.getFullYear(), d.getMonth(), 1)); setSelectedDate(d); }
 
+  /** Throw carrying the API's own `error`, so the user sees the real reason. */
+  async function throwOnFailure(res: Response): Promise<void> {
+    const body = (await res.json().catch(() => null)) as
+      | { ok?: boolean; error?: string }
+      | null;
+    if (body?.ok) return;
+    throw new Error(body?.error?.trim() || tr("calendar.failed"));
+  }
+
   async function addItem() {
     setAddLoading(true); setAddMsg(null);
     try {
@@ -249,18 +258,25 @@ export default function CalendarClient({ leads }: { leads: Array<{ id: string; n
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title: addFields.title, leadId: addFields.leadId || null, startsAt: addFields.startsAt ? new Date(addFields.startsAt).toISOString() : null }),
         });
-        if (!(await res.json()).ok) throw new Error(tr("calendar.failed"));
+        await throwOnFailure(res);
       } else {
         const res = await fetch("/api/dashboard/tasks", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title: addFields.title, leadId: addFields.leadId || null, dueAt: addFields.dueAt ? new Date(addFields.dueAt).toISOString() : null, priority: addFields.priority }),
         });
-        if (!(await res.json()).ok) throw new Error(tr("calendar.failed"));
+        await throwOnFailure(res);
       }
       setAddMsg(tr("calendar.added")); setShowAdd(false);
       setAddFields({ title: "", leadId: "", startsAt: "", dueAt: "", priority: "normal" });
       loadData();
-    } catch { setAddMsg(tr("calendar.failedToAdd")); }
+    } catch (e) {
+      // Prefer whatever the server said over the generic line. A bare
+      // "Failed to add." is what hid a 400 saying the contact was required,
+      // which sent someone hunting through the UI for a problem that was in
+      // the request all along.
+      const detail = e instanceof Error ? e.message.trim() : "";
+      setAddMsg(detail || tr("calendar.failedToAdd"));
+    }
     finally { setAddLoading(false); }
   }
 
