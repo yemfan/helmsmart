@@ -2,9 +2,10 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { createNotificationService } from "@/lib/actions/notifications";
 import { getAvailability, bookAppointment, matchOrCreateClient } from "@/lib/booking";
 import { recordEmmaBooking } from "@/lib/workforce-attribution";
-import { describeHours, type BusinessHours, type AppointmentType, type KnowledgeEntry } from "@/lib/receptionist";
+import { describeHours, defaultBusinessHours, type BusinessHours, type AppointmentType, type KnowledgeEntry } from "@/lib/receptionist";
 import twilio from "twilio";
 import type { ReceptionistContext } from "@repo/voice/prompt";
+import { speakTime } from "@repo/voice/datetime";
 
 /**
  * The receptionist's shared brain — transport-agnostic.
@@ -39,7 +40,11 @@ export async function loadReceptionistContext(db: ServiceClient, orgId: string):
   const knowledgeText = (knowledge ?? []).length
     ? (knowledge as KnowledgeEntry[]).map((k) => `### ${k.title}\n${k.content}`).join("\n\n")
     : "";
-  const hoursText = describeHours((org?.business_hours as BusinessHours | null) ?? null);
+  // Fall back to Mon–Fri 9–5 rather than "not set". An org with no hours used to
+  // be told to the caller as "Business hours not set." while the booking engine
+  // treated null as "never open" — so the receptionist offered to book and then
+  // called every single date closed. One default, used by both, ends that.
+  const hoursText = describeHours((org?.business_hours as BusinessHours | null) ?? defaultBusinessHours());
 
   // The business name the agent SAYS — a per-business override (brand/DBA) that
   // falls back to the legal org name. The Chinese name is used when the agent
@@ -72,36 +77,95 @@ export async function loadReceptionistContext(db: ServiceClient, orgId: string):
   };
 }
 
-/** Resolve an org by the dialed (business) phone number.
+/** The org a dialed number belongs to, plus whether its receptionist is on. */
+export type InboundOrg = { id: string; voiceAgentEnabled: boolean };
+
+/** Resolve the org behind a dialed (business) phone number.
  *
- * Tries an exact match first, then falls back to matching on the last 10 digits
- * so differences in formatting (+1 prefix, spaces, dashes) never silently break
- * booking — a phone-format mismatch used to make the agent say it couldn't reach
- * the booking system. */
-export async function findOrgIdByNumber(db: ServiceClient, toNumber: string): Promise<string | null> {
+ * Matches on the last 10 digits so formatting differences (+1 prefix, spaces,
+ * dashes) never silently break booking — a phone-format mismatch used to make
+ * the agent say it couldn't reach the booking system.
+ *
+ * The result is ORDERED, which matters: two orgs can hold the same number (a
+ * number moved between tenants and the old row kept it). This used to be an
+ * `.eq(...).maybeSingle()` — which ERRORS on two rows rather than picking one —
+ * followed by an unordered `limit(1)`, so the winner was whatever Postgres
+ * happened to return first and could flip after any unrelated row update. A
+ * caller would then reach a different business than the one that owns the
+ * number. Prefer the org whose receptionist is actually switched on, then the
+ * oldest, so the answer is stable and is the tenant in service.
+ */
+export async function resolveInboundOrg(db: ServiceClient, toNumber: string): Promise<InboundOrg | null> {
   if (!toNumber) return null;
 
-  const { data } = await db.from("organizations").select("id").eq("twilio_number", toNumber).maybeSingle();
-  if (data?.id) return data.id as string;
-
-  // Fallback: normalize to the last 10 digits and suffix-match.
   const last10 = toNumber.replace(/\D/g, "").slice(-10);
-  if (last10.length === 10) {
-    const { data: rows } = await db
-      .from("organizations")
-      .select("id")
-      .ilike("twilio_number", `%${last10}`)
-      .limit(1);
-    if (rows?.[0]?.id) return rows[0].id as string;
-  }
+  const query = db.from("organizations").select("id, voice_agent_enabled");
+  const { data: rows } = await (last10.length === 10
+    ? query.ilike("twilio_number", `%${last10}`)
+    : query.eq("twilio_number", toNumber)
+  )
+    .order("voice_agent_enabled", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: true })
+    .limit(5);
 
-  return null;
+  const matches = (rows ?? []) as { id: string; voice_agent_enabled: boolean | null }[];
+  if (matches.length === 0) return null;
+  if (matches.length > 1) {
+    // Not fatal — we pick deterministically — but it is always a data problem
+    // worth someone's attention, so say so rather than resolving in silence.
+    console.warn(
+      `[receptionist] ${matches.length} orgs share the number ${toNumber}: ` +
+        `${matches.map((m) => m.id).join(", ")}. Serving ${matches[0].id}.`
+    );
+  }
+  return { id: matches[0].id, voiceAgentEnabled: Boolean(matches[0].voice_agent_enabled) };
+}
+
+/** Org id only — for callers that don't care about the enabled flag. */
+export async function findOrgIdByNumber(db: ServiceClient, toNumber: string): Promise<string | null> {
+  return (await resolveInboundOrg(db, toNumber))?.id ?? null;
 }
 
 // ─── Tools ────────────────────────────────────────────────────────────────────────
 
 export type ToolResult = { text: string; bookedEventId?: string; bookedNote?: string; bookedLabel?: string; bookedRescheduleToken?: string };
 export type ToolCtx = { db: ServiceClient; orgId: string; fromNumber: string };
+
+/**
+ * Upcoming appointments for THIS caller, soonest first.
+ *
+ * Matched on the last ten digits of the phone, not an exact string: a client
+ * added by hand may be stored as "(626) 755-7917" while the caller ID arrives as
+ * "+16267557917", and an exact match finds neither. Cancellation hard-deletes the
+ * row, so anything still here and still in the future is live.
+ */
+async function upcomingForCaller(
+  db: ServiceClient,
+  orgId: string,
+  fromNumber: string
+): Promise<{ title: string | null; start_at: string }[]> {
+  const last10 = (fromNumber || "").replace(/\D/g, "").slice(-10);
+  if (last10.length !== 10) return [];
+
+  const { data: clients } = await db
+    .from("clients")
+    .select("id")
+    .eq("organization_id", orgId)
+    .ilike("phone", `%${last10}`);
+  const ids = (clients ?? []).map((c) => c.id as string);
+  if (ids.length === 0) return [];
+
+  const { data } = await db
+    .from("events")
+    .select("title, start_at")
+    .eq("organization_id", orgId)
+    .eq("type", "appointment")
+    .in("client_id", ids)
+    .gte("start_at", new Date().toISOString())
+    .order("start_at", { ascending: true })
+    .limit(10);
+  return (data ?? []) as { title: string | null; start_at: string }[];
+}
 
 /** Execute one receptionist tool. Returns a natural-language result for the LLM. */
 export async function runReceptionistTool(name: string, input: unknown, ctx: ToolCtx): Promise<ToolResult> {
@@ -164,7 +228,44 @@ export async function runReceptionistTool(name: string, input: unknown, ctx: Too
     return { text: "Let the caller know someone from the team will call them back." };
   }
 
-  return { text: "Done." };
+  // The shared prompt tells the agent to call this FIRST whenever a caller
+  // mentions an appointment they already have. Without it the call fell through
+  // to the catch-all below and answered "Done." — so the agent, told never to
+  // answer from memory and given nothing to answer from, would book a second
+  // appointment to stand in for the one it could not see.
+  if (name === "lookup_appointment") {
+    const rows = await upcomingForCaller(ctx.db, ctx.orgId, ctx.fromNumber);
+    if (rows.length === 0) {
+      return {
+        text:
+          "No upcoming appointment on file for this caller. Say so plainly. If they are sure they " +
+          "have one, do NOT book a new one to cover it — take a message with create_callback so " +
+          "someone can check.",
+      };
+    }
+    const { data: org } = await ctx.db.from("organizations").select("timezone").eq("id", ctx.orgId).maybeSingle();
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: (org?.timezone as string) || "America/New_York",
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    const list = rows
+      .map((r) => `${speakTime(fmt.format(new Date(r.start_at)))}${r.title ? ` (${r.title})` : ""}`)
+      .join("; ");
+    return {
+      text:
+        `This caller already has: ${list}. Confirm that back to them. Do NOT book another ` +
+        "appointment unless they clearly want an ADDITIONAL one — if they want this one moved or " +
+        "cancelled, say the team will take care of it and use create_callback.",
+    };
+  }
+
+  // Never "Done." for a tool we don't implement: that reads to the agent as a
+  // completed action, and it carries on as though the thing happened.
+  return { text: "Unsupported request — take a message instead." };
 }
 
 // ─── Booking side-effects (shared by both transports) ─────────────────────────────

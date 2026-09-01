@@ -13,17 +13,9 @@
 
 import { NextRequest, NextResponse, after } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
-import { loadReceptionistContext, buildReceptionistDynamicVariables, findOrgIdByNumber } from "@/lib/receptionist-agent";
+import { loadReceptionistContext, buildReceptionistDynamicVariables, resolveInboundOrg } from "@/lib/receptionist-agent";
 import { matchOrCreateClient } from "@/lib/booking";
-import { normalizePhoneE164 } from "@/lib/phone";
-
-/** Format a caller's E.164 number into a spoken-friendly US form, e.g.
- *  "+16267557917" -> "(626) 755-7917". Falls back to the raw input. */
-function formatCallerNumber(e164: string): string {
-  const d = (e164 || "").replace(/\D/g, "").slice(-10);
-  if (d.length !== 10) return e164 || "";
-  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
-}
+import { normalizePhoneE164, formatPhoneForSpeech } from "@/lib/phone";
 
 export async function POST(req: NextRequest) {
   const secret = process.env.RETELL_FUNCTION_SECRET;
@@ -43,15 +35,25 @@ export async function POST(req: NextRequest) {
 
   const db = await createServiceClient();
   let dynamic_variables: Record<string, string> = {};
-  // findOrgIdByNumber tolerates phone-format differences (+1 prefix, spacing).
-  const orgId = await findOrgIdByNumber(db, toNumber);
+  // resolveInboundOrg tolerates phone-format differences (+1 prefix, spacing) and
+  // picks deterministically when more than one org claims the number.
+  const org = await resolveInboundOrg(db, toNumber);
+  // Honour the Settings toggle. It was read only by the legacy Twilio path, so
+  // switching the receptionist off left the Retell rail answering with the org's
+  // full brain — the one control the owner has, doing nothing. Serving no
+  // variables leaves the agent with no prompt, which is the "off" the toggle
+  // promises.
+  if (org && !org.voiceAgentEnabled) {
+    return NextResponse.json({ call_inbound: { dynamic_variables: {} } });
+  }
+  const orgId = org?.id ?? null;
   if (orgId) {
     const ctx = await loadReceptionistContext(db, orgId);
 
     // Give the receptionist the caller's own number so it can confirm it as the
     // callback number (and catch a mistyped/different number the caller dictates).
     const caller = normalizePhoneE164(fromNumber);
-    if (caller.ok) ctx.callerNumber = formatCallerNumber(caller.value);
+    if (caller.ok) ctx.callerNumber = formatPhoneForSpeech(caller.value);
 
     dynamic_variables = buildReceptionistDynamicVariables(ctx);
 

@@ -1,6 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/server";
 import { getGoogleFreeBusy, upsertGoogleEvent, deleteGoogleEvent, type BusyInterval } from "@/lib/google-calendar";
-import { type BusinessHours } from "@/lib/receptionist";
+import { defaultBusinessHours, type BusinessHours } from "@/lib/receptionist";
 import { speakTime, zonedToUtc, normalizeDateStr, resolveStartMs } from "@repo/voice/datetime";
 import {
   overlapsBusy,
@@ -20,12 +20,17 @@ export { normalizeDateStr, resolveStartMs };
 const DEFAULT_TZ = "America/New_York";
 const SLOT_STEP_MS = 30 * 60_000;
 
-async function loadOrg(orgId: string): Promise<{ timezone: string; hours: BusinessHours | null }> {
+async function loadOrg(orgId: string): Promise<{ timezone: string; hours: BusinessHours }> {
   const db = await createServiceClient();
   const { data } = await db.from("organizations").select("timezone, business_hours").eq("id", orgId).single();
   return {
     timezone: (data?.timezone as string) || DEFAULT_TZ,
-    hours: (data?.business_hours as BusinessHours | null) ?? null,
+    // Never null. `nextOpenDay(date, null)` returns null, which check_availability
+    // reports as "closed" — for every date, forever — while validateBookingTime
+    // treats null hours as "always ok" and books anyway. An org that had not filled
+    // in its hours got exactly that split: told it was closed, booked regardless.
+    // Defaulting to Mon–Fri 9–5 makes both halves agree.
+    hours: (data?.business_hours as BusinessHours | null) ?? defaultBusinessHours(),
   };
 }
 

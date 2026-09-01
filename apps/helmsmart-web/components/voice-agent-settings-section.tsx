@@ -59,7 +59,9 @@ export async function VoiceAgentSettingsSection() {
     googleConfigured,
     googleConnected,
     inboundUrl: `${canonicalBase}/api/retell/inbound?k=<RETELL_FUNCTION_SECRET>`,
-    functionUrl: `${canonicalBase}/api/retell/function`,
+    // Carries ?k= like the inbound URL above: the function endpoint is now gated
+    // too, so a URL without it gets a 401 and the agent can't book anything.
+    functionUrl: `${canonicalBase}/api/retell/function?k=<RETELL_FUNCTION_SECRET>`,
   };
 
   const pack = await getActivePack();
