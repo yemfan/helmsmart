@@ -126,14 +126,23 @@ export async function publishPinterest(opts: {
       media_source: { source_type: "image_url", url: imageUrl },
     }),
   });
-  const body = (await res.json().catch(() => ({}))) as { id?: string; message?: string };
+  const body = (await res.json().catch(() => ({}))) as { id?: string; message?: string; code?: number };
   if (res.status >= 200 && res.status < 300 && body.id) {
     return { platform: "pinterest" as never, ok: true, externalId: body.id, url: `https://www.pinterest.com/pin/${body.id}/` };
   }
+  // Pinterest answers an app that lacks Standard access with code 29 and a
+  // message telling the caller to use the API sandbox — advice for us, not for
+  // the person who scheduled the post, and unlike a missing scope there is
+  // nothing they can do about it. Say so plainly instead.
+  const raw = body.message || `HTTP ${res.status}`;
+  const trialBlocked =
+    body.code === 29 || (/Trial access/i.test(raw) && /sandbox/i.test(raw));
   return {
     platform: "pinterest" as never,
     ok: false,
-    error: `Pinterest publish failed: ${body.message || `HTTP ${res.status}`}`,
+    error: trialBlocked
+      ? "Pinterest hasn't approved MarketingBoss for publishing yet, so Pins can't be sent. Nothing is wrong with your Pinterest account."
+      : `Pinterest publish failed: ${raw}`,
     retryable: res.status === 429 || res.status >= 500,
   };
 }
