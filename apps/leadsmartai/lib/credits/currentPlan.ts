@@ -26,9 +26,21 @@ export type CurrentPlan = {
   status: string | null;
 };
 
-const PAY_AS_YOU_GO: CurrentPlan = {
+/**
+ * No subscription.
+ *
+ * Called "Free" because that is what `/plans` sells and what the agent chose.
+ * It read "Pay-as-you-go" until 2026-09-01, which described the mechanism
+ * rather than the plan and meant the pricing page and the dashboard used two
+ * names for one thing — visible to the same person in the same session, which
+ * makes a product look like it does not know itself.
+ *
+ * Someone here may also have bought top-up packs; that is still the Free tier
+ * with credits on it, not a different plan.
+ */
+const FREE_PLAN: CurrentPlan = {
   planId: null,
-  name: "Pay-as-you-go",
+  name: "Free",
   priceUsd: null,
   monthlyCredits: null,
   renewsAt: null,
@@ -46,17 +58,17 @@ export async function getCurrentPlan(userId: string): Promise<CurrentPlan> {
     .eq("user_id", userId)
     .maybeSingle();
   const customerId = (data as { stripe_customer_id?: string | null } | null)?.stripe_customer_id;
-  if (!customerId) return PAY_AS_YOU_GO;
+  if (!customerId) return FREE_PLAN;
 
   let subs;
   try {
     subs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 10 });
   } catch {
-    return PAY_AS_YOU_GO; // Stripe unreachable — don't invent a plan.
+    return FREE_PLAN; // Stripe unreachable — don't invent a plan.
   }
 
   const sub = subs.data.find((s) => LIVE.has(s.status));
-  if (!sub) return PAY_AS_YOU_GO;
+  if (!sub) return FREE_PLAN;
 
   // Match the subscribed price back to our catalog. Prefer the plan recorded in
   // metadata at checkout; fall back to the price id.
